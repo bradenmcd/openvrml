@@ -32,10 +32,14 @@
 #   include "bvolume.h"
 #   include "VrmlMatrix.h"
 
+typedef unsigned int FT_UInt;
+typedef struct FT_LibraryRec_ * FT_Library;
+typedef struct FT_FaceRec_ * FT_Face;
+typedef unsigned int FcChar32;
+
 namespace OpenVRML {
 
     class Audio;
-    class FontFace;
 
     namespace Vrml97Node {
 
@@ -1124,6 +1128,7 @@ namespace OpenVRML {
         class OPENVRML_SCOPE FontStyle : public AbstractBase,
                                          public FontStyleNode {
             friend class FontStyleClass;
+
             MFString family;
             SFBool horizontal;
             MFString justify;
@@ -1133,8 +1138,6 @@ namespace OpenVRML {
             SFFloat spacing;
             SFString style;
             SFBool topToBottom;
-
-            FontFace * ftface;
 
         public:
             FontStyle(const NodeType & nodeType,
@@ -1153,7 +1156,6 @@ namespace OpenVRML {
             virtual const SFFloat & getSpacing() const throw ();
             virtual const SFString & getStyle() const throw ();
             virtual const SFBool & getTopToBottom() const throw ();
-            virtual const FontFace & getFtFace(void) throw(std::bad_alloc);
         };
 
 
@@ -2230,6 +2232,8 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE TextClass : public NodeClass {
         public:
+            FT_Library freeTypeLibrary;
+
             explicit TextClass(Browser & browser);
             virtual ~TextClass() throw ();
 
@@ -2246,6 +2250,31 @@ namespace OpenVRML {
             MFFloat length;
             SFFloat maxExtent;
 
+            struct GlyphGeometry {
+                MFVec2f coord;
+                MFInt32 coordIndex;
+                float advanceWidth;
+                float advanceHeight;
+                
+                GlyphGeometry(const std::vector<MFVec2f> & contours,
+                              float advanceWidth, float advanceHeight)
+                    throw (std::bad_alloc);
+            };
+            
+            struct TextGeometry {
+                MFVec3f coord;
+                MFInt32 coordIndex;
+                MFVec3f normal;
+            };
+            
+            typedef std::vector<std::vector<FcChar32> > Ucs4String;
+            typedef std::map<FT_UInt, GlyphGeometry> GlyphGeometryMap;
+            
+            Ucs4String ucs4String;
+            FT_Face face;
+            GlyphGeometryMap glyphGeometryMap;
+            TextGeometry textGeometry;
+
         public:
             Text(const NodeType & nodeType,
                  const ScopePtr & scope);
@@ -2259,6 +2288,8 @@ namespace OpenVRML {
                                                   VrmlRenderContext rc);
         
         private:
+            virtual void initializeImpl(double timestamp) throw ();
+            
             //
             // eventIn handlers
             //
@@ -2273,6 +2304,10 @@ namespace OpenVRML {
                     throw (std::bad_cast, std::bad_alloc);
             void processSet_maxExtent(const FieldValue & sffloat,
                                       double timestamp) throw (std::bad_cast);
+
+            void updateUcs4() throw (std::bad_alloc);
+            void updateFace() throw (std::bad_alloc);
+            void updateGeometry() throw (std::bad_alloc);
         };
 
 

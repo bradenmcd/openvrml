@@ -122,6 +122,12 @@ depends on.
      are rendered.  By default OpenVRML uses libpng and libjpeg to read
      get ImageTexture data.
 
+ --disable-text-node
+     Disable support for the Text node.  The node is still parsed, and
+     events to and from it are processed; but no text is rendered.  By
+     default OpenVRML uses Fontconfig for font discovery and FreeType to
+     get font data.
+
  --disable-script-node-javascript
      Disable support for JavaScript in the Script node.  By default,
      OpenVRML uses the Mozilla JavaScript library to execute JavaScript.

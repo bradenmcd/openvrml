@@ -4,6 +4,7 @@ AM_INIT_AUTOMAKE([$PACKAGE_TARNAME], [$PACKAGE_VERSION])
 
 AM_CONFIG_HEADER([config.h])
 
+REQUIRE_FONTCONFIG="fontconfig"
 REQUIRE_MOZILLA_JS="mozilla-js >= 1.2.1"
 
 #
@@ -42,6 +43,9 @@ AC_CHECK_LIB([jpeg], [jpeg_read_header],
 AC_CHECK_HEADER([jpeglib.h], ,
                 [have_libjpeg=no])
 
+PKG_CHECK_MODULES([FONTCONFIG], [$REQUIRE_FONTCONFIG], , [have_fontconfig=no])
+AC_PATH_PROG([FREETYPE_CONFIG], [freetype-config])
+
 PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
 
 OV_CHECK_GL
@@ -76,6 +80,32 @@ else
 fi
 AC_SUBST([PNG_LIBS])
 AC_SUBST([JPEG_LIBS])
+
+#
+# Text node support
+#
+AC_ARG_ENABLE([text-node], [  --disable-text-node     disable Text node support])
+if test "X$enable_text_node" = "Xno"; then
+  FONTCONFIG_CFLAGS=""
+  FONTCONFIG_LIBS=""
+  FREETYPE_CFLAGS=""
+  FREETYPE_LIBS=""
+else
+  if test "X$have_fontconfig" = "Xno" -o -z "$FREETYPE_CONFIG"; then
+    AC_MSG_ERROR([fontconfig and FreeType are required for Text node support.])
+  fi
+  if test -n "${OPENVRML_PKG_REQUIRES}"; then
+    OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
+  fi
+  OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${REQUIRE_FONTCONFIG}"
+  FREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
+  FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
+  AC_DEFINE([OPENVRML_ENABLE_TEXT_NODE], [1], [Defined if Text node support is enabled.])
+fi
+AC_SUBST([FONTCONFIG_CFLAGS])
+AC_SUBST([FONTCONFIG_LIBS])
+AC_SUBST([FREETYPE_CFLAGS])
+AC_SUBST([FREETYPE_LIBS])
 
 #
 # Script node JavaScript support
@@ -151,27 +181,6 @@ if test "X$enable_lookat" != "Xno"; then
 fi
 AM_CONDITIONAL([ENABLE_LOOKAT],
                [test "X$enable_lookat" != "Xno" -a "X$no_glut" != "Xyes"])
-
-AC_ARG_WITH(ftflib, [  --with-ftflib           use ftflib (required for font support)], ,
-            [# Use ftflib by default.
-             with_ftflib=yes])
-
-#
-# Check for ftflib.
-#
-if test "X$with_ftflib" = "Xyes"; then
-  OV_CHECK_FONTS
-  if test "X$have_font" = "Xyes"; then 
-    OV_CHECK_FTFLIB
-    if test "X$no_ftflib" = "Xyes"; then
-      AC_MSG_ERROR([ftflib not found.])
-    else
-      AC_DEFINE([OPENVRML_HAVE_FREETYPEFONTS], , [Defined if ftflib is available and should be used.])
-    fi
-  else
-    AC_MSG_ERROR([At least SerifPlain, SansPlain and TypewriterPlain fonts must exist to support font. Check TrueType (*.ttf) or Type1 (*.pfa,*.pfb) in your system.])
-  fi
-fi
 
 AC_SUBST([OPENVRML_PKG_REQUIRES])
     

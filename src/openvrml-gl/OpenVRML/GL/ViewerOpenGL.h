@@ -262,12 +262,6 @@ namespace OpenVRML {
 
             virtual Object insertSphere(float radius);
 
-            virtual Object insertText(FontFace &  fface,
-                                      size_t strarraysize,
-                                      const std::string * string,
-                                      size_t lsize, const float length[],
-                                      float maxextent);
-
             // Lights
             virtual Object insertDirLight(float a, float i, const float rgb[], const float xyz[]);
 

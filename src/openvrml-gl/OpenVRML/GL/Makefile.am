@@ -12,7 +12,7 @@ LIBRARY_VERSION = 3:0:0
 #          +- Increment if interfaces have been added, removed or changed
 
 INCLUDES = -I$(top_srcdir)/src/openvrml
-AM_CXXFLAGS = @GL_CFLAGS@
+AM_CXXFLAGS = @FONTCONFIG_CFLAGS@ @FREETYPE_CFLAGS@ @GL_CFLAGS@
 
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES = libopenvrml-gl.la

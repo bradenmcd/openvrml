@@ -14,11 +14,11 @@ LIBRARY_VERSION = 2:2:0
 INCLUDES = -I$(top_srcdir)/lib -I$(top_builddir)/java
 AM_CPPFLAGS = -DOPENVRML_LIBDIR_=\"$(libdir)\" \
 -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\"
-AM_CXXFLAGS = $(JNI_CFLAGS) $(JS_CFLAGS)
+AM_CXXFLAGS = @FONTCONFIG_CFLAGS@ @FREETYPE_CFLAGS@ @JNI_CFLAGS@ @JS_CFLAGS@
 
 lib_LTLIBRARIES = libopenvrml.la 
-libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) $(JPEG_LIBS) \
-$(PNG_LIBS) $(Z_LIBS) $(JS_LIBS) $(JNI_LIBS) $(FTF_LIBS)
+libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ \
+@PNG_LIBS@ @Z_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE_LIBS@ @JS_LIBS@ @JNI_LIBS@
 
 libopenvrml_la_SOURCES = \
         MathUtils.cpp \
@@ -42,7 +42,6 @@ libopenvrml_la_SOURCES = \
         ScriptJDK.cpp \
         browser.cpp \
         Viewer.cpp \
-        font.cpp \
         VrmlRenderContext.cpp \
         VrmlFrustum.cpp \
         vrml97node.cpp
@@ -71,7 +70,6 @@ OpenVRMLinclude_HEADERS = \
         script.h \
         browser.h \
         Viewer.h \
-        font.h \
         VrmlRenderContext.h \
         VrmlFrustum.h \
         vrml97node.h

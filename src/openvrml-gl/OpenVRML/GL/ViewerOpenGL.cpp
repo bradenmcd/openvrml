@@ -50,17 +50,9 @@
 # include <OpenVRML/vrml97node.h>
 # include <OpenVRML/bvolume.h>
 # include <OpenVRML/VrmlFrustum.h>
-# include <OpenVRML/font.h>
 
 # include "ViewerOpenGL.h"
 # include "OpenGLEvent.h"
-
-// Put geometry into display lists.
-// If geometry is not in display lists, performance will suffer,
-// especially for non-convex geometries. You probably shouldn't
-// change these unless you know what you are doing.
-
-# define USE_GEOMETRY_DISPLAY_LISTS 1
 
 // Textures are now done using OGL1.1 bindTexture API rather than
 // display lists when this flag is set. Don't define this if you
@@ -190,7 +182,7 @@ void ViewerOpenGL::ModelviewMatrixStack::push()
     glGetIntegerv(GL_MATRIX_MODE, &matrixMode);
 # endif
     assert(matrixMode == GL_MODELVIEW);
-    if (this->size == glCapabilities.maxModelviewStackDepth - 1) {
+    if (this->size == size_t(glCapabilities.maxModelviewStackDepth - 1)) {
         VrmlMatrix mat;
         glGetFloatv(GL_MODELVIEW_MATRIX, &mat[0][0]);
         this->spillover.push(mat);
@@ -229,12 +221,10 @@ void ViewerOpenGL::ModelviewMatrixStack::pop()
  */
 ViewerOpenGL::ViewerOpenGL(Browser & browser):
     Viewer(browser),
-# ifdef GLU_VERSION_1_2
     tesselator(gluNewTess()),
-# endif
     d_nSensitive(0),
-    d_overSensitive(0),
     d_activeSensitive(0),
+    d_overSensitive(0),
     d_selectMode(false),
     d_selectZ(0.0)
 {
@@ -281,9 +271,7 @@ ViewerOpenGL::ViewerOpenGL(Browser & browser):
 
 ViewerOpenGL::~ViewerOpenGL()
 {
-# ifdef GLU_VERSION_1_2
     gluDeleteTess(this->tesselator);
-# endif
 }
 
 void ViewerOpenGL::initialize()
@@ -510,7 +498,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
 
     // Need to separate the geometry from the transformation so the
     // dlist doesn't have to get rebuilt for every mouse movement...
-# if USE_GEOMETRY_DISPLAY_LISTS && 0
+# if 0
     // Don't bother with a dlist if we aren't drawing anything
     if (!this->d_selectMode
             && (nSkyAngles > 0 || nGroundAngles > 0 || pixels)) {
@@ -541,7 +529,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
         glScalef(1000.0, 1000.0, 1000.0);
 
         // Sphere constants
-        const int nCirc = 8; // number of circumferential slices
+        const size_t nCirc = 8; // number of circumferential slices
         const double cd = 2.0 * pi / nCirc;
 
         double heightAngle0, heightAngle1 = 0.0;
@@ -780,13 +768,11 @@ Viewer::Object ViewerOpenGL::insertBox(float x, float y, float z)
 {
   GLuint glid = 0;
 
-#if USE_GEOMETRY_DISPLAY_LISTS
   if (! d_selectMode)
     {
       glid = glGenLists(1);
       glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
-#endif
 
   static GLint faces[6][4] =
   {
@@ -917,13 +903,11 @@ Viewer::Object ViewerOpenGL::insertCone(float h,
 {
   GLuint glid = 0;
 
-#if USE_GEOMETRY_DISPLAY_LISTS
   if (! d_selectMode)
     {
       glid = glGenLists(1);
       glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
-#endif
 
   beginGeometry();
   if (! bottom || ! side )
@@ -1001,13 +985,11 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 {
   GLuint glid = 0;
 
-#if USE_GEOMETRY_DISPLAY_LISTS
   if (! d_selectMode)
     {
       glid = glGenLists(1);
       glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
-#endif
 
   beginGeometry();
   if (! bottom || ! side || ! top)
@@ -1151,13 +1133,11 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 
   GLuint glid = 0;
 
-#if USE_GEOMETRY_DISPLAY_LISTS
   if (! d_selectMode)
     {
       glid = glGenLists(1);
       glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
-#endif
 
   beginGeometry();
 
@@ -1263,17 +1243,15 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 }
 
 
-# ifdef GLU_VERSION_1_2
-
 // Tesselator callback
 
-#   if defined(__CYGWIN__) || defined(__MINGW32__)
-#     define OPENVRML_GL_CALLBACK_ __attribute__ ((__stdcall__))
-#   elif defined (_WIN32)
-#     define OPENVRML_GL_CALLBACK_ APIENTRY
-#   else
-#     define OPENVRML_GL_CALLBACK_
-#   endif
+# if defined(__CYGWIN__) || defined(__MINGW32__)
+#   define OPENVRML_GL_CALLBACK_ __attribute__ ((__stdcall__))
+# elif defined (_WIN32)
+#   define OPENVRML_GL_CALLBACK_ APIENTRY
+# else
+#   define OPENVRML_GL_CALLBACK_
+# endif
 extern "C" {
     typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)();
 }
@@ -1308,7 +1286,6 @@ namespace {
         glVertex3fv(&(p->c[3 * (j + p->vOffset)]));
     }
 }
-# endif
 
 void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
                                         size_t nSpine,
@@ -1335,7 +1312,6 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
 
   // If geometry is in dlists, should just always use the tesselator...
 
-#if GLU_VERSION_1_2
   int last = 2*(nCrossSection-1);
   bool equalEndpts = fpequal(cs[0], cs[last]) && fpequal(cs[1], cs[last+1]);
 
@@ -1393,7 +1369,6 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
     }
 
   else
-#endif
 
     // Convex (or not GLU1.2 ...)
     {
@@ -1655,13 +1630,11 @@ Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
 
   GLuint glid = 0;
 
-#if USE_GEOMETRY_DISPLAY_LISTS
   if (! d_selectMode)
     {
       glid = glGenLists(1);
       glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
-#endif
 
   beginGeometry();
 
@@ -1721,13 +1694,11 @@ Viewer::Object ViewerOpenGL::insertLineSet(size_t npoints,
 
   if (npoints < 2) return 0;
 
-#if USE_GEOMETRY_DISPLAY_LISTS
   if (! d_selectMode)
     {
       glid = glGenLists(1);
       glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
-#endif
 
   beginGeometry();
 
@@ -1773,13 +1744,11 @@ Viewer::Object ViewerOpenGL::insertPointSet(size_t npoints,
 {
   GLuint glid = 0;
 
-#if USE_GEOMETRY_DISPLAY_LISTS
   if (! d_selectMode)
     {
       glid = glGenLists(1);
       glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
-#endif
 
   beginGeometry();
 
@@ -1984,8 +1953,6 @@ namespace {
     }
 }
 
-# ifdef GLU_VERSION_1_2
-
 namespace {
 
     void OPENVRML_GL_CALLBACK_ tessShellBegin(GLenum type, void * pdata)
@@ -2104,7 +2071,6 @@ namespace {
         }
     }
 }
-# endif // GLU_VERSION_1_2
 
 
 // There are too many arguments to this...
@@ -2125,75 +2091,69 @@ ViewerOpenGL::insertShell(unsigned int mask,
                           size_t nci,
                           const long * ci)
 {
-  if (nfaces < 4) return 0;        // 3 pts and a trailing -1
+    if (nfaces < 4) { return 0; } // 3 pts and a trailing -1
 
-  // Texture coordinate generation parameters.
-  int texAxes[2];                        // Map s,t to x,y,z
-  float texParams[4];                // s0, 1/sSize, t0, 1/tSize
+    // Texture coordinate generation parameters.
+    int texAxes[2];                        // Map s,t to x,y,z
+    float texParams[4];                // s0, 1/sSize, t0, 1/tSize
 
-  // Compute bounding box for texture coord generation and lighting.
-  if ( ! tc )  // || any positional lights are active...
-    {
-      float bounds[6];                // xmin,xmax, ymin,ymax, zmin,zmax
-      computeBounds( npoints, points, bounds );
+    // Compute bounding box for texture coord generation and lighting.
+    if (!tc) { // || any positional lights are active...
+        float bounds[6]; // xmin,xmax, ymin,ymax, zmin,zmax
+        computeBounds(npoints, points, bounds);
 
-      // do the bounds intersect the radius of any active positional lights...
+        // do the bounds intersect the radius of any active positional lights...
 
-      texGenParams( bounds, texAxes, texParams );
-      if ( fpzero( texParams[1] ) || fpzero( texParams[3] )) return 0;
+        texGenParams(bounds, texAxes, texParams);
+        if (fpzero(texParams[1]) || fpzero(texParams[3])) { return 0; }
     }
 
-  GLuint glid = 0;
+    GLuint glid = 0;
 
-#if USE_GEOMETRY_DISPLAY_LISTS
-  if (! d_selectMode)
-    {
-      glid = glGenLists(1);
-      glNewList( glid, GL_COMPILE_AND_EXECUTE );
+    if (!this->d_selectMode) {
+        glid = glGenLists(1);
+        glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
-#endif
 
-  beginGeometry();
+    beginGeometry();
 
-  // Face orientation & culling
-  glFrontFace( (mask & MASK_CCW) ? GL_CCW : GL_CW );
-  if (! (mask & MASK_SOLID) )
-    glDisable( GL_CULL_FACE );
+    // Face orientation & culling
+    glFrontFace((mask & MASK_CCW) ? GL_CCW : GL_CW);
+    if (!(mask & MASK_SOLID)) { glDisable(GL_CULL_FACE); }
 
-  // Color per face
-  if (color && ! (mask & MASK_COLOR_PER_VERTEX))
-    glShadeModel(GL_FLAT);
+    // Color per face
+    if (color && ! (mask & MASK_COLOR_PER_VERTEX)) { glShadeModel(GL_FLAT); }
 
-  // -------------------------------------------------------
+    // -------------------------------------------------------
 
-  // Generation of per vertex normals isn't implemented yet...
-  if (! normal && (mask & MASK_NORMAL_PER_VERTEX))
-    mask &= ~MASK_NORMAL_PER_VERTEX;
+    // Generation of per vertex normals isn't implemented yet...
+    if (!normal && (mask & MASK_NORMAL_PER_VERTEX)) {
+        mask &= ~MASK_NORMAL_PER_VERTEX;
+    }
 
-  // -------------------------------------------------------
+    // -------------------------------------------------------
 
-  // Should build tri strips (probably at the VrmlNode level)...
+    // Should build tri strips (probably at the VrmlNode level)...
 
-  ShellData s = {
-    mask, points, nfaces, faces,
-    { tc, ntci, tci },
-    { normal, nni, ni },
-    { color, nci, ci },
-    texAxes, texParams, 0
-  };
+    ShellData s = {
+        mask, points, nfaces, faces,
+        { tc, ntci, tci },
+        { normal, nni, ni },
+        { color, nci, ci },
+        texAxes, texParams, 0
+    };
 
-#if GLU_VERSION_1_2
-  // Handle non-convex polys
-  if (! (mask & MASK_CONVEX))
-    insertShellTess(this->tesselator, &s);
-  else
-#endif
-    insertShellConvex( &s );
+    // Handle non-convex polys
+    if (!(mask & MASK_CONVEX)) {
+        insertShellTess(this->tesselator, &s);
+    } else {
+        insertShellConvex(&s);
+    }
 
-  endGeometry();
-  if (glid) glEndList();
+    endGeometry();
+    if (glid) { glEndList(); }
 
-  return (Object) glid;
+    return Object(glid);
 }
 
 namespace {
@@ -2248,13 +2208,11 @@ Viewer::Object ViewerOpenGL::insertSphere(float radius)
 {
   GLuint glid = 0;
 
-#if USE_GEOMETRY_DISPLAY_LISTS
   if (! d_selectMode)
     {
       glid = glGenLists(1);
       glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
-#endif
 
   const int numLatLong = 10;
   const int npts = numLatLong * numLatLong;
@@ -2300,276 +2258,6 @@ Viewer::Object ViewerOpenGL::insertSphere(float radius)
 
   return (Object) glid;
 }
-
-
-# if defined(OPENVRML_HAVE_FREETYPEFONTS) && defined(GLU_VERSION_1_2)
-namespace {
-
-    struct TextData {
-         float cwidth,cheight; // width and height of a character
-    };
-
-    void OPENVRML_GL_CALLBACK_ tessTextBegin(GLenum type)
-    {
-        glBegin(type);
-    }
-
-    void OPENVRML_GL_CALLBACK_ tessTextVertex(void * vdata, void * pdata)
-    {
-        float v[3];
-        Vertex* td = static_cast<Vertex *>(vdata);
-        TextData *t = static_cast<TextData *>(pdata);
-        float width = t->cwidth;
-        float height = t->cheight;
-        v[0] = td->V[0];
-        v[1] = td->V[1];
-        v[2] = 0.0;
-        float tx = fabs(v[0]/width);
-        float ty = fabs(v[1]/height);
-        glTexCoord2f(tx,ty);
-        glVertex3fv(v);
-    }
-
-    void OPENVRML_GL_CALLBACK_ tessTextError(GLenum error_code)
-    {
-        std::cout << "Error in tessellation" << gluErrorString(error_code) << std::endl;
-    }
-
-    void OPENVRML_GL_CALLBACK_ tessTextCombine(GLdouble coords[3], void * vertex_data[4],
-                                GLfloat weight[4], void ** outdata)
-    {
-        Vertex* vertex = new Vertex;
-        vertex->V[0] = coords[0];
-        vertex->V[1] = coords[1];
-        *outdata = vertex;
-    }
-
-    void insertTextTess(GLUtesselator * tesselator,
-                        const FontVectoriser & fVector,
-                        TextData & tdata)
-    {
-        gluTessCallback(tesselator, GLU_TESS_BEGIN,
-                        reinterpret_cast<TessCB>(tessTextBegin));
-        gluTessCallback(tesselator, GLU_TESS_VERTEX_DATA,
-                        reinterpret_cast<TessCB>(tessTextVertex));
-        gluTessCallback(tesselator, GLU_TESS_END,
-                        reinterpret_cast<TessCB>(glEnd));
-        gluTessCallback(tesselator, GLU_TESS_ERROR,
-                        reinterpret_cast<TessCB>(tessTextError));
-        gluTessCallback(tesselator, GLU_TESS_COMBINE,
-                        reinterpret_cast<TessCB>(tessTextCombine));
-        int ncontours = fVector.getTotContours();
-        const Contour *contour_list = &fVector.getContourlist();
-        GLdouble vertex[3];
-        gluTessBeginPolygon(tesselator, &tdata);
-        for (size_t j = 0; j < ncontours; j++) {
-            gluTessBeginContour(tesselator);
-            const Contour & contour = contour_list[j];
-            size_t size = contour.size();
-            for (size_t k = 0; k < size; k++){
-                const Vertex* ver = &contour[k];
-                vertex[0] = contour[k].V[0];
-                vertex[1] = contour[k].V[1];
-                vertex[2] = 0.0;
-                gluTessVertex(tesselator,vertex,(void *)ver);
-            }
-            gluTessEndContour(tesselator);
-        }
-        gluTessEndPolygon(tesselator);
-    }
-}
-# endif
-
-/** 
- * @class ViewerOpenGL::insertText
- *                
- * @brief Insert text into a display list.
- *
- * @param ftface FontFace object
- * @param strarraysize size of string array
- * @param string pointer to string array
- * @param lsize size of length array
- * @param length length array for the length of each text string
- * @param maxextent maxextent of all text strings
- */
-
-Viewer::Object ViewerOpenGL::insertText(FontFace & fface, 
-                                        size_t strarraysize, const std::string * string,
-                                        size_t lsize, const float length[], 
-                                        float maxExtent)
-{
-
-  GLuint glid = 0;
-
-#ifdef OPENVRML_HAVE_FREETYPEFONTS
-
-#if USE_GEOMETRY_DISPLAY_LISTS
-  if (! this->d_selectMode)
-    {
-      glid = glGenLists(1);
-      glNewList( glid, GL_COMPILE_AND_EXECUTE );
-    }
-#endif
-
-  beginGeometry();
-  glShadeModel( GL_FLAT );
-  glDisable( GL_CULL_FACE );
-  float x = 0.0, y = 0.0;
-  float nextLine;
-  float xmin,xmax,ymin,ymax;
-  float width,height;
-  GLfloat escalex = 1.0, escaley = 1.0;
-  int tlength=0, tindex = 0;
-  for (size_t j=0; j < strarraysize; ++j){
-   if(string[j].length() > 0){
-    if(string[j].length() > tlength){
-     tlength = string[j].length();
-     tindex = j;
-    }
-   }
-  }
-  fface.getBbox(string[tindex],xmin,ymin,xmax,ymax);
-  width = xmax - xmin;
-  height = ymax - ymin;
-  if (maxExtent != 0.0){
-   if(fface.getHorizontal()){
-    if(width > maxExtent)
-    escalex = maxExtent/width;
-   }
-   else {
-    if(height > maxExtent)
-    escaley = maxExtent/height;
-   }
-  }
-  for (size_t i=0; i < strarraysize; ++i) {
-    if ( string[i].length() > 0 ){
-     GLfloat transx = x, transy = y;
-     GLfloat scalex = 1.0, scaley = 1.0;
-     float cwidth,cheight;
-     int text_index = 0;
-     GLfloat stepx = 0.0, stepy = 0.0;
-     float advx = 0.0, advy = 0.0;
-     std::string text = string[i];
-     int slength = text.length();
-     fface.getBbox(text,xmin,ymin,xmax,ymax);
-     width = xmax - xmin;
-     height = ymax - ymin;
-     if(length && i < lsize && (length[i] != 0.0)){
-       if(fface.getHorizontal())
-         scalex = length[i]/width;
-       else 
-         scaley = length[i]/height;     
-     }
-     scalex = escalex * scalex;
-     scaley = escaley * scaley;
-     const std::string * justify = fface.getJustify();
-     if (fface.getHorizontal()) {
-       cwidth = width/slength;
-       cheight = height;
-       if (!fface.getLeftToRight())
-           text_index = slength - 1;
-       if ((justify[0] == "BEGIN" || justify[0] == "FIRST") && 
-           (!fface.getLeftToRight())) 
-           transx = x - width;
-       else if (justify[0] == "MIDDLE") 
-           transx = x - width/2.0;
-       else if (justify[0] == "END" && fface.getLeftToRight()) 
-           transx = x - width;
-           if (fface.getTopToBottom()) {
-             if (justify[1] == "BEGIN")
-               transy = y - height;
-             else if (justify[1] == "MIDDLE")
-               transy = y - height/2.0;
-           }
-           else {
-              if (justify[1] == "END")
-               transy = y - height;
-              else if (justify[1] == "MIDDLE")
-               transy = y - height/2.0;           
-           }
-     }
-     else {
-       cwidth = width;
-       cheight = height/slength;
-       if (fface.getTopToBottom())
-           text_index = slength - 1;
-       if ((justify[0] == "BEGIN" || justify[0] == "FIRST") && 
-           (fface.getTopToBottom())) 
-           transy = y - height;
-       else if (justify[0] == "MIDDLE") 
-           transy = y - height/2.0;
-       else if (justify[0] == "END" && !fface.getTopToBottom()) 
-           transy = y - height;
-           if (fface.getLeftToRight()) {
-             if (justify[1] == "END")
-               transx = x - width;
-             else if (justify[1] == "MIDDLE")
-               transx = x - width/2.0;
-           }
-           else {
-              if (justify[1] == "BEGIN" || justify[1] == "FIRST")
-               transx = x - width;
-             else if (justify[1] == "MIDDLE")
-               transx = x - height/2.0;           
-           }
-     }
-     this->modelviewMatrixStack.push();
-     glTranslatef(transx*scalex, transy*scaley, 0.0);
-     glScalef(scalex,scaley,1.0);
-     for (int j=0; j < slength; j++){
-      unsigned char ch = text[text_index];                   
-      const FontVectoriser *fVector = fface.getVectoriser(ch);
-      if(fVector){
-       glFrontFace(fVector->getOrientation() ? GL_CW : GL_CCW );
-       TextData td = {cwidth,cheight};
-       glNormal3f(0.0,0.0,1.0);
-       insertTextTess(this->tesselator, *fVector, td);
-       if(fface.getHorizontal())
-        stepx = fVector->getHoriadvance();
-       else
-        stepy = fVector->getVertadvance();
-       glTranslatef(stepx,stepy,0.0);
-       advx += stepx;
-       advy += stepy;
-      }
-      if(fface.getHorizontal()){
-       if(fface.getLeftToRight())
-         text_index++;
-        else
-         text_index--;
-      }
-      else{
-       if(fface.getTopToBottom())
-         text_index--;
-       else
-         text_index++;
-      }
-     }
-     this->modelviewMatrixStack.pop();
-     }
-     if(fface.getHorizontal()){
-       nextLine = fface.getAdvanceHeight();
-       if(fface.getTopToBottom())
-         y-=nextLine;
-       else
-         y+=nextLine;
-    }
-    else {
-       nextLine = fface.getAdvanceWidth();
-       if(fface.getLeftToRight())
-        x+=nextLine;
-       else
-        x-=nextLine;
-    }
-   }
-  endGeometry();
-  if (glid) glEndList();
-
-#endif              // HAVE_OPENVRML_FREETYPEFONTS
-
-  return (Object) glid;
-}
-
 
 // Lights
 

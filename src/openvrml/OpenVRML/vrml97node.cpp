@@ -3,7 +3,8 @@
 //
 // Copyright (C) 1998  Chris Morley
 // Copyright (C) 1999  Kumaran Santhanam
-// Copyright (C) 2001  Braden McDaniel
+// Copyright (C) 2001, 2002  Braden McDaniel
+// Copyright (C) 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,12 +21,22 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
 # include <iostream>
 # include <algorithm>
+# ifdef OPENVRML_ENABLE_TEXT_NODE
+#   include <ft2build.h>
+#   include FT_FREETYPE_H
+#   include FT_GLYPH_H
+#   include FT_OUTLINE_H
+#   include <fontconfig/fontconfig.h>
+extern "C" {
+#   include <fontconfig/fcfreetype.h>
+}
+# endif
 # include "vrml97node.h"
 # include "Doc.h"
 # include "doc2.hpp"
@@ -35,7 +46,103 @@
 # include "private.h"
 # include "MathUtils.h"
 # include "System.h"
-# include "font.h"
+
+namespace std {
+
+    template <>
+    struct char_traits<unsigned char> {
+
+        typedef unsigned char char_type;
+        typedef int int_type;
+        typedef streampos pos_type;
+        typedef streamoff off_type;
+        typedef mbstate_t state_type;
+
+        static void assign(char_type & c1, const char_type & c2)
+        {
+            c1 = c2;
+        }
+
+        static bool eq(const char_type & c1, const char_type & c2)
+        {
+            return c1 == c2;
+        }
+
+        static bool lt(const char_type & c1, const char_type & c2)
+        {
+            return c1 < c2;
+        }
+
+        static int compare(const char_type * s1, const char_type * s2, size_t n)
+        {
+            for (size_t i = 0; i < n; ++i) {
+                if (!eq(s1[i], s2[i])) { return lt(s1[i], s2[i]) ? -1 : 1; }
+            }
+            return 0;
+        }
+
+        static size_t length(const char_type * s)
+        {
+            const char_type * p = s;
+            while (*p) { ++p; }
+            return (p - s);
+        }
+
+        static const char_type * find(const char_type * s, size_t n,
+                                      const char_type & a)
+        {
+            for (const char_type * p = s; size_t(p - s) < n; ++p) {
+                if (*p == a) { return p; }
+            }
+            return 0;
+        }
+
+        static char_type * move(char_type * s1, const char_type * s2, size_t n)
+        {
+            return reinterpret_cast<char_type *>
+                        (memmove(s1, s2, n * sizeof(char_type)));
+        }
+
+        static char_type * copy(char_type * s1, const char_type * s2, size_t n)
+        {
+            return reinterpret_cast<char_type *>
+                        (memcpy(s1, s2, n * sizeof(char_type)));
+        }
+
+        static char_type * assign(char_type * s, size_t n, char_type a)
+        {
+            for (char_type * p = s; p < s + n; ++p) {
+                assign(*p, a);
+            }
+            return s;
+        }
+
+        static int_type eof()
+        {
+            return static_cast<int_type>(-1);
+        }
+
+        static int_type not_eof(const int_type & c)
+        {
+            return eq_int_type(c, eof()) ? int_type(0) : c;
+        }
+
+        static char_type to_char_type(const int_type & e)
+        {
+            return char_type(e);
+        }
+
+        static int_type to_int_type(const char_type & c)
+        {
+            return int_type(c);
+        }
+
+        static bool eq_int_type(const int_type & e1, const int_type & e2)
+        {
+            return e1 == e2;
+        }
+    };
+}
 
 namespace OpenVRML {
 
@@ -5314,29 +5421,24 @@ namespace {
  */
 FontStyle::FontStyle(const NodeType & nodeType,
                      const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractBase(nodeType, scope),
-        FontStyleNode(nodeType, scope),
-        family(1, fontStyleInitFamily_),
-        horizontal(true),
-        justify(1, fontStyleInitJustify_),
-        leftToRight(true),
-        size(1.0),
-        spacing(1.0),
-        style("PLAIN"),
-        topToBottom(true), 
-        ftface(0){}
+    Node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    FontStyleNode(nodeType, scope),
+    family(1, fontStyleInitFamily_),
+    horizontal(true),
+    justify(1, fontStyleInitJustify_),
+    leftToRight(true),
+    size(1.0),
+    spacing(1.0),
+    style("PLAIN"),
+    topToBottom(true)
+{}
 
 /**
  * @brief Destructor.
  */
-FontStyle::~FontStyle() throw () {
-
-#ifdef OPENVRML_HAVE_FREETYPEFONTS
-        if(ftface) delete ftface;
-#endif
-
-}
+FontStyle::~FontStyle() throw ()
+{}
 
 /**
  * @brief Get the list of font families.
@@ -5419,42 +5521,6 @@ const SFBool & FontStyle::getTopToBottom() const throw () {
     return this->topToBottom;
 }
 
-/**
- * @brief Set parameters of FontFace object and initialize FontFace lib.
- *
- * @return FontFace object
- *
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const FontFace & FontStyle::getFtFace() throw (std::bad_alloc) { 
-
-#ifdef OPENVRML_HAVE_FREETYPEFONTS
-
-  if ( !this->ftface) {
-    size_t i;
-    this->ftface = new FontFace();
-    this->ftface->setHorizontal(this->horizontal.get());
-    this->ftface->setLeftToRight(this->leftToRight.get());
-    this->ftface->setSpacing(this->spacing.get());
-    this->ftface->setTopToBottom(this->topToBottom.get());
-    this->ftface->setLanguage(this->language.get());
-    std::string* justify = new std::string[this->justify.getLength()]; 
-    for (i = 0; i < this->justify.getLength(); ++i)
-      justify[i] = this->justify.getElement(i);
-    this->ftface->setJustify(this->justify.getLength(), justify);
-    std::string* family = new std::string[this->family.getLength()]; 
-    for (i = 0; i < this->family.getLength(); ++i)
-      family[i] = this->family.getElement(i);
-    this->ftface->openFace(this->family.getLength(), family, this->style.get(),
-                      this->size.get());
-    delete []justify;
-    delete []family;
-  }
-
-#endif          // HAVE_OPENVRML_FREETYPEFONTS
-
-  return *this->ftface;
-}
 
 /**
  * @class GroupClass
@@ -11426,12 +11492,26 @@ void Switch::processSet_whichChoice(const FieldValue & sfint32,
  * @param browser the Browser associated with this NodeClass.
  */
 TextClass::TextClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{
+    FT_Error error = 0;
+    error = FT_Init_FreeType(&this->freeTypeLibrary);
+    if (error) {
+        browser.err << "Error initializing FreeType library." << std::endl;
+    }
+}
 
 /**
  * @brief Destructor.
  */
-TextClass::~TextClass() throw () {}
+TextClass::~TextClass() throw ()
+{
+    FT_Error error = 0;
+    error = FT_Done_FreeType(this->freeTypeLibrary);
+    if (error) {
+        browser.err << "Error shutting down FreeType library." << std::endl;
+    }
+}
 
 /**
  * @brief Create a NodeType.
@@ -11539,13 +11619,21 @@ const NodeTypePtr TextClass::createType(const std::string & id,
  */
 Text::Text(const NodeType & nodeType,
            const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractGeometry(nodeType, scope) {}
+    Node(nodeType, scope),
+    AbstractGeometry(nodeType, scope),
+    face(0)
+{}
 
 /**
  * @brief Destructor.
  */
-Text::~Text() throw () {}
+Text::~Text() throw ()
+{
+    if (this->face) {
+        FT_Error ftError = FT_Done_Face(this->face);
+        assert(ftError == FT_Err_Ok); // Surely this can't fail.
+    }
+}
 
 bool Text::isModified() const {
     return (this->Node::isModified()
@@ -11564,42 +11652,29 @@ void Text::clearFlags() {
     if (this->fontStyle.get()) { this->fontStyle.get()->clearFlags(); }
 }
 
-Viewer::Object Text::insertGeometry(Viewer *viewer, VrmlRenderContext rc) {
-
+Viewer::Object Text::insertGeometry(Viewer * const viewer, VrmlRenderContext rc)
+{
     Viewer::Object retval(0);
-
-#ifdef OPENVRML_HAVE_FREETYPEFONTS
-    FontFace ftface_ ;   
-    FontStyleNode *f = 0;
-    if (this->fontStyle.get()) {
-        f = this->fontStyle.get()->toFontStyle();
-    }
-
-    if (f) {
-        ftface_ = f->getFtFace();
-    }
-    else {
-        ftface_ = ftface_.getDefFontFace();
-    }
-
-    std::string * strs = new std::string [this->string.getLength()];
-    size_t i;
-    for (i = 0; i < this->string.getLength(); ++i) 
-        strs[i] = this->string.getElement(i);
-    if(!ftface_.getError()) {
-      for (i = 0; i < this->string.getLength(); ++i)
-        ftface_.ProcessText(this->string.getElement(i));
-        retval = viewer->insertText(ftface_,this->string.getLength(), 
-                                    strs,
-                                    this->length.getLength(),
-                                    (this->length.getLength() > 0)
-                                    ? &this->length.getElement(0) : 0,
-                                    this->maxExtent.get());
-    }
-    delete [] strs;
-#endif                // HAVE_OPENVRML_FREETYPEFONTS
-    
+    assert(this->textGeometry.coord.getLength() > 0);
+    assert(this->textGeometry.coordIndex.getLength() > 0);
+    assert(this->textGeometry.normal.getLength() > 0);
+    retval = viewer->insertShell(Viewer::MASK_CCW,
+                                 this->textGeometry.coord.getLength(),
+                                 &this->textGeometry.coord.getElement(0)[0],
+                                 this->textGeometry.coordIndex.getLength(),
+                                 &this->textGeometry.coordIndex.getElement(0),
+                                 0, 0, 0,
+                                 &this->textGeometry.normal.getElement(0)[0], 0, 0,
+                                 0, 0, 0);
+    if (this->fontStyle.get()) { this->fontStyle.get()->clearModified(); }
     return retval;
+}
+
+void Text::initializeImpl(const double timestamp) throw ()
+{
+    this->updateUcs4();
+    this->updateFace();
+    this->updateGeometry();
 }
 
 /**
@@ -11613,8 +11688,11 @@ Viewer::Object Text::insertGeometry(Viewer *viewer, VrmlRenderContext rc) {
  */
 void Text::processSet_string(const FieldValue & mfstring,
                              const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->string = dynamic_cast<const MFString &>(mfstring);
+    this->updateUcs4();
+    this->updateGeometry();
     this->setModified();
     this->emitEvent("string_changed", this->string, timestamp);
 }
@@ -11630,8 +11708,11 @@ void Text::processSet_string(const FieldValue & mfstring,
  */
 void Text::processSet_fontStyle(const FieldValue & sfnode,
                                 const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->fontStyle = dynamic_cast<const SFNode &>(sfnode);
+    this->updateFace();
+    this->updateGeometry();
     this->setModified();
     this->emitEvent("fontStyle_changed", this->fontStyle, timestamp);
 }
@@ -11647,8 +11728,10 @@ void Text::processSet_fontStyle(const FieldValue & sfnode,
  */
 void Text::processSet_length(const FieldValue & mffloat,
                              const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->length = dynamic_cast<const MFFloat &>(mffloat);
+    this->updateGeometry();
     this->setModified();
     this->emitEvent("length_changed", this->length, timestamp);
 }
@@ -11663,10 +11746,893 @@ void Text::processSet_length(const FieldValue & mffloat,
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void Text::processSet_maxExtent(const FieldValue & sffloat,
-                                const double timestamp) throw (std::bad_cast) {
+                                const double timestamp) throw (std::bad_cast)
+{
     this->maxExtent = dynamic_cast<const SFFloat &>(sffloat);
+    this->updateGeometry();
     this->setModified();
     this->emitEvent("maxExtent_changed", this->maxExtent, timestamp);
+}
+
+void Text::updateUcs4() throw (std::bad_alloc)
+{
+# ifdef OPENVRML_ENABLE_TEXT_NODE
+    this->ucs4String.clear();
+    this->ucs4String.resize(this->string.getLength());
+    
+    for (size_t i = 0; i < this->string.getLength(); ++i) {
+        using std::string;
+        using std::vector;
+        
+        const string & element = this->string.getElement(i);
+        
+        vector<FcChar32> & ucs4Element = this->ucs4String[i];
+        
+        //
+        // First, we need to convert the characters from UTF-8 to UCS-4.
+        //
+        vector<FcChar8> utf8String(element.begin(), element.end());
+        int nchar = 0, wchar = 0;
+        FcUtf8Len(&utf8String[0], utf8String.size(), &nchar, &wchar);
+        ucs4Element.resize(nchar);
+        {
+            vector<FcChar8>::iterator utf8itr = utf8String.begin();
+            vector<FcChar32>::iterator ucs4itr = ucs4Element.begin();
+            while (utf8itr != utf8String.end()) {
+                const int utf8bytes = FcUtf8ToUcs4(&*utf8itr, &*ucs4itr,
+                                                   utf8String.end() - utf8itr);
+                utf8itr += utf8bytes;
+                ucs4itr++;
+            }
+        }
+    }
+# endif // OPENVRML_ENABLE_TEXT_NODE
+}
+
+void Text::updateFace() throw (std::bad_alloc)
+{
+# ifdef OPENVRML_ENABLE_TEXT_NODE
+    static const char * const fcResultMessage[] = { "match",
+                                                    "no match",
+                                                    "type mismatch",
+                                                    "no id" };
+    
+    class FontconfigError : public std::runtime_error {
+    public:
+        explicit FontconfigError(const FcResult result):
+            std::runtime_error(fcResultMessage[result])
+        {}
+        
+        virtual ~FontconfigError() throw ()
+        {}
+    };
+    
+    class FreeTypeError : public std::runtime_error {
+    public:
+        //
+        // The normal build of FreeType doesn't include a means of mapping
+        // error codes to human-readable strings.  There's a means of letting
+        // client apps do this by defining some macros, but that's too much
+        // trouble for now.
+        //
+        explicit FreeTypeError(const FT_Error error):
+            std::runtime_error("FreeType error.")
+        {}
+        
+        virtual ~FreeTypeError() throw ()
+        {}
+    };
+    
+    using std::string;
+    typedef std::basic_string<FcChar8> FcChar8String;
+    
+    FcChar8String language;
+    
+    MFString family;
+    family.addElement("SERIF");
+    
+    string style;
+    
+    FontStyleNode * const fontStyle = this->fontStyle.get()
+                                    ? this->fontStyle.get()->toFontStyle()
+                                    : 0;
+    if (fontStyle) {
+        if (fontStyle->getFamily().getLength() > 0) {
+            family = fontStyle->getFamily();
+            style = fontStyle->getStyle().get();
+            language.assign(fontStyle->getLanguage().get().begin(),
+                            fontStyle->getLanguage().get().end());
+        }
+    }
+    
+    try {
+        FcPattern * initialPattern = 0;
+        FcPattern * matchedPattern = 0;
+
+        try {
+            using std::vector;
+            
+            string fontName;
+            //
+            // Set the family.
+            //
+            for (size_t i = 0; i < family.getLength(); ++i) {
+                const std::string & element = family.getElement(i);
+                if (element == "SERIF") {
+                    fontName += "serif";
+                } else if (element == "SANS") {
+                    fontName += "sans";
+                } else if (element == "TYPEWRITER") {
+                    fontName += "monospace";
+                } else {
+                    fontName += element;
+                }
+                if (i + 1 < family.getLength()) { fontName += ", "; }
+            }
+            
+            //
+            // Set the weight.
+            //
+            if (style.find("BOLD") != string::npos) {
+                fontName += ":bold";
+            }
+            
+            //
+            // Set the slant.
+            //
+            if (style.find("ITALIC") != string::npos) {
+                fontName += ":italic";
+            }
+
+            //
+            // For now, at least, we only want outline fonts.
+            //
+            fontName += ":outline=True";
+            
+            initialPattern = FcNameParse(FcChar8String(fontName.begin(),
+                                                       fontName.end()).c_str());
+            if (!initialPattern) { throw std::bad_alloc(); }
+            
+            //
+            // Set the language.
+            //
+            if (!language.empty()) {
+                FcPatternAddString(initialPattern, FC_LANG, language.c_str());
+            }
+
+            FcConfigSubstitute(0, initialPattern, FcMatchPattern);
+            FcDefaultSubstitute(initialPattern);
+
+            FcResult result = FcResultMatch;
+            matchedPattern = FcFontMatch(0, initialPattern, &result);
+            if (result != FcResultMatch) { throw FontconfigError(result); }
+            assert(matchedPattern);
+
+            FcChar8 * filename = 0;
+            result = FcPatternGetString(matchedPattern, FC_FILE, 0, &filename);
+            if (result != FcResultMatch) { throw FontconfigError(result); }
+
+            int id = 0;
+            result = FcPatternGetInteger(matchedPattern, FC_INDEX, 0, &id);
+            if (result != FcResultMatch) { throw FontconfigError(result); }
+            
+            TextClass & nodeClass =
+                    static_cast<TextClass &>(this->nodeType.nodeClass);
+            
+            size_t filenameLen = 0;
+            for (; filename[filenameLen]; ++filenameLen);
+            
+            const vector<char> ftFilename(filename, filename + filenameLen + 1);
+            
+            FT_Face newFace = 0;
+            FT_Error ftError = FT_Err_Ok;
+            ftError = FT_New_Face(nodeClass.freeTypeLibrary,
+                                  &ftFilename[0], id, &newFace);
+            if (ftError) { throw FreeTypeError(ftError); }
+            
+            if (this->face) {
+                ftError = FT_Done_Face(this->face);
+                assert(ftError == FT_Err_Ok); // Surely this can't fail.
+            }
+            
+            this->face = newFace;
+            this->glyphGeometryMap.clear();
+            
+            FcPatternDestroy(initialPattern);
+            FcPatternDestroy(matchedPattern);
+        } catch (std::runtime_error & ex) {
+            FcPatternDestroy(initialPattern);
+            FcPatternDestroy(matchedPattern);
+            throw;
+        }
+    } catch (std::bad_alloc & ex) {
+        throw;
+    } catch (FontconfigError & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    } catch (FreeTypeError & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+# endif // OPENVRML_ENABLE_TEXT_NODE
+}
+
+# ifdef OPENVRML_ENABLE_TEXT_NODE
+namespace {
+
+    struct GlyphContours_ {
+        const float scale;
+        std::vector<MFVec2f> contours;
+        
+        explicit GlyphContours_(float scale);
+    };
+
+    GlyphContours_::GlyphContours_(const float scale):
+        scale(scale)
+    {}
+
+    const float stepSize_ = 0.2;
+
+    int moveTo_(FT_Vector * const to, void * const user) throw ()
+    {
+        assert(user);
+        GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
+        try {
+            c.contours.push_back(MFVec2f(1));
+        } catch (std::bad_alloc & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+            return FT_Err_Out_Of_Memory;
+        }
+        c.contours.back().getElement(0)[0] = to->x * c.scale;
+        c.contours.back().getElement(0)[1] = to->y * c.scale;
+        return 0;
+    }
+
+    int lineTo_(FT_Vector * const to, void * const user) throw ()
+    {
+        assert(user);
+        GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
+        const float vertex[2] = { to->x * c.scale, to->y * c.scale};
+        try {
+            c.contours.back().addElement(vertex);
+        } catch (std::bad_alloc & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+            return FT_Err_Out_Of_Memory;
+        }
+        return 0;
+    }
+
+    /**
+     * @brief de Casteljau's algorithm.
+     *
+     * This is a nice recursive algorithm defined by de-Casteljau which
+     * calculates for a given control polygon the point that lies on the bezier
+     * curve for any value of t, and can be used to evaluate and draw the
+     * Bezier spline without using the Bernstein polynomials.
+     *
+     * The algorithm advances by creating in each step a polygons of degree one
+     * less than the one created in the previous step until there is only one
+     * point left, which is the point on the curve. The polygon vertices for
+     * each step are defined by linear interpolation of two consecutive
+     * vertices of the polygon from the previous step with a value of t (the
+     * parameter):
+     *
+     * @param buffer    an array including the control points for the curve in
+     *                  the first @p npoints elements. The total size of the
+     *                  array must be @p npoints * @p npoints. The remaining
+     *                  elements of the array will be used by the algorithm to
+     *                  store temporary values.
+     * @param npoints   the number of control points.
+     * @param contour   the points on the curve are added to this array.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    void evaluateCurve_(float (*buffer)[2], const size_t npoints,
+                        MFVec2f & contour)
+        throw (std::bad_alloc)
+    {
+        for (size_t i = 0; i <= (1 / stepSize_); i++){
+            const float t = i * stepSize_; // Parametric points 0 <= t <= 1
+            for (size_t j = 1; j < npoints; j++) {
+                for (size_t k = 0; k < (npoints - j); k++) {
+                    buffer[j * npoints + k][0] =
+                            (1 - t) * buffer[(j - 1) * npoints + k][0]
+                            + t * buffer[(j - 1) * npoints + k + 1][0];
+                    buffer[j * npoints + k][1] =
+                            (1 - t) * buffer[(j - 1) * npoints + k][1]
+                            + t * buffer[(j - 1) * npoints + k + 1][1];
+                }
+            }
+            //
+            // Specify next vertex to be included on curve
+            //
+            contour.addElement(buffer[(npoints - 1) * npoints]); // throws std::bad_alloc
+        }
+    }
+
+    int conicTo_(FT_Vector * const control, FT_Vector * const to,
+                 void * const user)
+        throw ()
+    {
+        assert(control);
+        assert(to);
+        assert(user);
+        GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
+        
+        assert(!c.contours.empty());
+        MFVec2f & contour = c.contours.back();
+        const float (&lastVertex)[2] =
+                contour.getElement(contour.getLength() - 1);
+        
+        assert(contour.getLength() > 0);
+        const size_t npoints = 3;
+        float buffer[npoints * npoints][2] = {
+            { lastVertex[0], lastVertex[1] },
+            { control->x * c.scale, control->y * c.scale },
+            { to->x * c.scale, to->y * c.scale }
+        };
+        
+        try {
+            evaluateCurve_(buffer, npoints, contour);
+        } catch (std::bad_alloc & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+            return FT_Err_Out_Of_Memory;
+        }
+        return 0;
+    }
+
+    int cubicTo_(FT_Vector * const control1, FT_Vector * const control2,
+                 FT_Vector * const to, void * const user)
+        throw ()
+    {
+        assert(control1);
+        assert(control2);
+        assert(to);
+        assert(user);
+        GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
+        
+        assert(!c.contours.empty());
+        MFVec2f & contour = c.contours.back();
+        const float (&lastVertex)[2] =
+                contour.getElement(contour.getLength() - 1);
+        
+        assert(contour.getLength() > 0);
+        const size_t npoints = 4;
+        float buffer[npoints * npoints][2] = {
+            { lastVertex[0], lastVertex[1] },
+            { control1->x * c.scale, control1->y * c.scale },
+            { control2->x * c.scale, control2->y * c.scale },
+            { to->x * c.scale, to->y * c.scale }
+        };
+        
+        try {
+            evaluateCurve_(buffer, npoints, contour);
+        } catch (std::bad_alloc & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+            return FT_Err_Out_Of_Memory;
+        }
+        return 0;
+    }
+}
+# endif // OPENVRML_ENABLE_TEXT_NODE
+
+void Text::updateGeometry() throw (std::bad_alloc)
+{
+# ifdef OPENVRML_ENABLE_TEXT_NODE
+    using std::pair;
+    using std::string;
+    using std::vector;
+    
+    bool horizontal = true;
+    string justify[2] = { "BEGIN", "FIRST" };
+    bool leftToRight = true;
+    bool topToBottom = true;
+    float size = 1.0;
+    float spacing = 1.0;
+    FontStyleNode * fontStyle;
+    if (this->fontStyle.get()
+            && (fontStyle = this->fontStyle.get()->toFontStyle())) {
+        horizontal = fontStyle->getHorizontal().get();
+        if (fontStyle->getJustify().getLength() > 0) {
+            justify[0] = fontStyle->getJustify().getElement(0);
+        }
+        if (fontStyle->getJustify().getLength() > 1) {
+            justify[1] = fontStyle->getJustify().getElement(1);
+        }
+        leftToRight = fontStyle->getLeftToRight().get();
+        topToBottom = fontStyle->getTopToBottom().get();
+        size = fontStyle->getSize().get();
+        spacing = fontStyle->getSpacing().get();
+    }
+    
+    TextGeometry newGeometry;
+    float geometryXMin = 0.0, geometryXMax = 0.0;
+    float geometryYMin = 0.0, geometryYMax = 0.0;
+    size_t npolygons = 0;
+    for (Ucs4String::const_iterator string = this->ucs4String.begin();
+            string != this->ucs4String.end(); ++string) {
+        float penPos[2] = { 0.0, 0.0 };
+        const size_t line = string - this->ucs4String.begin();
+        const float lineAdvance = size * spacing * line;
+        if (horizontal) {
+            if (topToBottom) {
+                penPos[1] -= lineAdvance;
+            } else {
+                penPos[1] += lineAdvance;
+            }
+        } else {
+            if (leftToRight) {
+                penPos[0] += lineAdvance;
+            } else {
+                penPos[0] -= lineAdvance;
+            }
+        }
+        
+        struct LineGeometry {
+            MFVec2f coord;
+            MFInt32 coordIndex;
+            float xMin, xMax;
+            float yMin, yMax;
+        };
+
+        LineGeometry lineGeometry = {};
+        for (vector<FcChar32>::const_iterator character = string->begin();
+                character != string->end(); ++character) {
+            assert(this->face);
+            const FT_UInt glyphIndex =
+                    FcFreeTypeCharIndex(this->face, *character);
+            
+            const GlyphGeometry * glyphGeometry = 0;
+            const GlyphGeometryMap::iterator pos =
+                    this->glyphGeometryMap.find(glyphIndex);
+            if (pos != this->glyphGeometryMap.end()) {
+                glyphGeometry = &pos->second;
+            } else {
+                FT_Error error = FT_Err_Ok;
+                error = FT_Load_Glyph(this->face, glyphIndex, FT_LOAD_NO_SCALE);
+                assert(error == FT_Err_Ok);
+                FT_Glyph glyph;
+                error = FT_Get_Glyph(this->face->glyph, &glyph);
+                assert(error == FT_Err_Ok);
+                static FT_Outline_Funcs outlineFuncs = { moveTo_,
+                                                         lineTo_,
+                                                         conicTo_,
+                                                         cubicTo_,
+                                                         0,
+                                                         0 };
+                const float glyphScale = (this->face->bbox.yMax > 0.0)
+                                       ? 1.0f / this->face->bbox.yMax
+                                       : 1.0;
+                GlyphContours_ glyphContours(glyphScale);
+                assert(glyph->format == ft_glyph_format_outline);
+                const FT_OutlineGlyph outlineGlyph = 
+                        reinterpret_cast<FT_OutlineGlyph>(glyph);
+                error = FT_Outline_Decompose(&outlineGlyph->outline,
+                                             &outlineFuncs,
+                                             &glyphContours);
+                assert(error == FT_Err_Ok);
+                
+                assert(this->face->glyph);
+                const float advanceWidth =
+                        FT_HAS_HORIZONTAL(this->face)
+                        ? this->face->glyph->metrics.horiAdvance * glyphScale
+                        : 0.0;
+                const float advanceHeight =
+                        FT_HAS_VERTICAL(this->face)
+                        ? this->face->glyph->metrics.vertAdvance * glyphScale
+                        : 0.0;
+                
+                const GlyphGeometryMap::value_type
+                        value(glyphIndex, GlyphGeometry(glyphContours.contours,
+                                                        advanceWidth,
+                                                        advanceHeight));
+                const pair<GlyphGeometryMap::iterator, bool> result =
+                        this->glyphGeometryMap.insert(value);
+                assert(result.second);
+                glyphGeometry = &result.first->second;
+            }
+
+            for (size_t i = 0; i < glyphGeometry->coord.getLength(); ++i) {
+                const float (&glyphVertex)[2] =
+                        glyphGeometry->coord.getElement(i);
+                const float textVertex[2] = { glyphVertex[0] + penPos[0],
+                                              glyphVertex[1] + penPos[1] };
+                lineGeometry.coord.addElement(textVertex);
+                lineGeometry.xMin = (lineGeometry.xMin < textVertex[0])
+                                  ? lineGeometry.xMin
+                                  : textVertex[0];
+                lineGeometry.xMax = (lineGeometry.xMax > textVertex[0])
+                                  ? lineGeometry.xMax
+                                  : textVertex[0];
+                lineGeometry.yMin = (lineGeometry.yMin < textVertex[1])
+                                  ? lineGeometry.yMin
+                                  : textVertex[1];
+                lineGeometry.yMax = (lineGeometry.yMax > textVertex[1])
+                                  ? lineGeometry.yMax
+                                  : textVertex[1];
+            }
+            
+            for (size_t i = 0; i < glyphGeometry->coordIndex.getLength(); ++i) {
+                const long index = glyphGeometry->coordIndex.getElement(i);
+                if (index > -1) {
+                    const size_t offset = lineGeometry.coord.getLength()
+                                          - glyphGeometry->coord.getLength();
+                    lineGeometry.coordIndex.addElement(offset + index);
+                } else {
+                    lineGeometry.coordIndex.addElement(-1);
+                    ++npolygons;
+                }
+            }
+            if (horizontal) {
+                const float xAdvance = glyphGeometry->advanceWidth;
+                if (leftToRight) {
+                    penPos[0] += xAdvance;
+                } else {
+                    penPos[0] -= xAdvance;
+                }
+            } else {
+                const float yAdvance = glyphGeometry->advanceHeight;
+                if (topToBottom) {
+                    penPos[1] -= yAdvance;
+                } else {
+                    penPos[1] += yAdvance;
+                }
+            }
+        }
+        
+        //
+        // Scale to length.
+        //
+        const float length = (line < this->length.getLength())
+                           ? this->length.getElement(line)
+                           : 0.0;
+        if (length > 0.0) {
+            const float currentLength = lineGeometry.xMax - lineGeometry.xMin;
+            for (size_t i = 0; i < lineGeometry.coord.getLength(); ++i) {
+                float (&vertex)[2] = lineGeometry.coord.getElement(i);
+                vertex[0] = vertex[0] / currentLength * length;
+            }
+        }
+        
+        //
+        // Add the line to the text geometry. We need to adjust for the major
+        // alignment.
+        //
+        float xOffset = 0.0f, yOffset = 0.0f;
+        //
+        // Offset is 0 for "BEGIN" or "FIRST" (or anything else, in our case).
+        //
+        if (justify[0] == "MIDDLE") {
+            if (horizontal) {
+                xOffset = -((lineGeometry.xMax - lineGeometry.xMin) / 2.0f);
+            } else {
+                yOffset = (lineGeometry.yMax - lineGeometry.yMin) / 2.0f;
+            }
+        } else if (justify[0] == "END") {
+            if (horizontal) {
+                xOffset = lineGeometry.xMax - lineGeometry.xMin;
+            } else {
+                yOffset = lineGeometry.yMax - lineGeometry.yMin;
+            }
+        }
+        for (size_t i = 0; i < lineGeometry.coordIndex.getLength(); ++i) {
+            const long index = lineGeometry.coordIndex.getElement(i);
+            if (index > -1) {
+                const float (&lineVertex)[2] =
+                        lineGeometry.coord.getElement(index);
+                const float textVertex[3] = { lineVertex[0] + xOffset,
+                                              lineVertex[1] + yOffset,
+                                              0.0f };
+                newGeometry.coord.addElement(textVertex);
+                newGeometry.coordIndex
+                        .addElement(newGeometry.coord.getLength() - 1);
+                geometryXMin = (geometryXMin < textVertex[0])
+                             ? geometryXMin
+                             : textVertex[0];
+                geometryXMax = (geometryXMax > textVertex[0])
+                             ? geometryXMax
+                             : textVertex[0];
+                geometryYMin = (geometryYMin < textVertex[1])
+                             ? geometryYMin
+                             : textVertex[1];
+                geometryYMax = (geometryYMax > textVertex[1])
+                             ? geometryYMax
+                             : textVertex[1];
+            } else {
+                newGeometry.coordIndex.addElement(-1);
+            }
+        }
+    }
+    
+    //
+    // Scale to maxExtent.
+    //
+    const float maxExtent = (this->maxExtent.get() > 0.0)
+                          ? this->maxExtent.get()
+                          : 0.0;
+    if (maxExtent > 0.0) {
+        const float currentMaxExtent = geometryXMax - geometryXMin;
+        if (currentMaxExtent > maxExtent) {
+            for (size_t i = 0; i < newGeometry.coord.getLength(); ++i) {
+                float (&vertex)[3] = newGeometry.coord.getElement(i);
+                vertex[0] = vertex[0] / currentMaxExtent * maxExtent;
+            }
+        }
+    }
+
+    //
+    // Adjust for the minor alignment.
+    //
+    float xOffset = 0.0f, yOffset = 0.0f;
+    if (justify[1] == "FIRST" || justify[1] == "") {
+    } else if (justify[1] == "BEGIN") {
+        if (horizontal) {
+            yOffset = -(size * spacing);
+        } else {
+            xOffset = 0.0f;
+        }
+    } else if (justify[1] == "MIDDLE") {
+        if (horizontal) {
+            yOffset = ((size * spacing * this->string.getLength()) / 2.0f)
+                      - (size * spacing);
+        } else {
+            xOffset = ((size * spacing * this->string.getLength()) / 2.0f)
+                      - (size * spacing);
+        }
+    } else if (justify[1] == "END") {
+        if (horizontal) {
+            yOffset = size * spacing * (this->string.getLength() - 1);
+        } else {
+            xOffset = size * spacing * (this->string.getLength() - 1);
+        }
+    }
+    for (size_t i = 0; i < newGeometry.coord.getLength(); ++i) {
+        float (&vertex)[3] = newGeometry.coord.getElement(i);
+        vertex[0] += xOffset;
+        vertex[1] += yOffset;
+    }
+    
+    //
+    // Create the normals.
+    //
+    newGeometry.normal.setLength(npolygons);
+    for (size_t i = 0; i < newGeometry.normal.getLength(); ++i) {
+        newGeometry.normal.getElement(i)[2] = 1.0f;
+    }
+    
+    this->textGeometry = newGeometry;
+# endif // OPENVRML_ENABLE_TEXT_NODE
+}
+
+# ifdef OPENVRML_ENABLE_TEXT_NODE
+namespace {
+
+    const float (* getClosestVertex_(const MFVec2f & contour,
+                                     const float (&point)[2]) throw ())[2]
+    {
+        assert(contour.getLength() > 1);
+        const float (*result)[2] = 0;
+        float shortestDistance = std::numeric_limits<float>::max();
+        for (size_t i = 0; i < contour.getLength(); ++i) {
+            const float (&element)[2] = contour.getElement(i);
+            const float x = point[0] - element[0];
+            const float y = point[1] - element[1];
+            const float distance = sqrt(x * x + y * y);
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                result = &element;
+            }
+        }
+        assert(result);
+        return result;
+    }
+    
+    bool insideContour_(const MFVec2f & contour, const float (&point)[2])
+        throw ()
+    {
+        bool result = false;
+        const size_t nvert = contour.getLength();
+        for (size_t i = 0, j = nvert - 1; i < nvert; j = i++) {
+            const float (&vi)[2] = contour.getElement(i);
+            const float (&vj)[2] = contour.getElement(j);
+            if ((((vi[1] <= point[1]) && (point[1] < vj[1]))
+                        || ((vj[1] <= point[1]) && (point[1] < vi[1])))
+                    && (point[0] < (vj[0] - vi[0])
+                        * (point[1] - vi[1]) / (vj[1] - vi[1]) + vi[0])) {
+                result = !result;
+            }
+        }
+        return result;
+    }
+    
+    enum ContourType_ { exterior_, interior_ };
+
+    ContourType_ getType(const MFVec2f & contour,
+                         const std::vector<MFVec2f> & contours)
+        throw ()
+    {
+        using std::vector;
+        
+        assert(contour.getLength() > 0);
+        const float (&vertex)[2] = contour.getElement(0);
+        
+        bool isInterior = false;
+        for (vector<MFVec2f>::const_iterator testContour = contours.begin();
+                testContour != contours.end(); ++testContour) {
+            if (&*testContour == &contour) { continue; }
+            if (insideContour_(*testContour, vertex)) {
+                isInterior = !isInterior;
+            }
+        }
+        return isInterior ? interior_ : exterior_;
+    }
+    
+    struct Polygon_ {
+        const MFVec2f * exterior;
+        std::vector<const MFVec2f *> interiors;
+    };
+    
+    struct Inside_ : std::binary_function {
+        bool operator()(const MFVec2f * const lhs,
+                        const MFVec2f * const rhs) const
+        {
+            assert(lhs);
+            assert(rhs);
+            assert(lhs->getLength() > 0);
+            //
+            // Assume contours don't intersect. So if one point on lhs is
+            // inside rhs, then assume all of lhs is inside rhs.
+            //
+            return insideContour_(*rhs, lhs->getElement(0));
+        }
+    };
+    
+    const std::vector<Polygon_>
+    getPolygons_(const std::vector<MFVec2f> & contours)
+        throw (std::bad_alloc)
+    {
+        using std::vector;
+        typedef std::multiset<const MFVec2f *, Inside_> Contours;
+        
+        //
+        // First, divide the contours into interior and exterior contours.
+        //
+        Contours interiors, exteriors;
+        for (vector<MFVec2f>::const_iterator contour = contours.begin();
+                contour != contours.end(); ++contour) {
+            switch (getType(*contour, contours)) {
+            case interior_:
+                interiors.insert(&*contour);
+                break;
+            case exterior_:
+                exteriors.insert(&*contour);
+                break;
+            default:
+                assert(false);
+            }
+        }
+
+        //
+        // For each exterior, find its associated interiors and group them in
+        // a Polygon_.
+        //
+        vector<Polygon_> polygons;
+        while (!exteriors.empty()) {
+            Polygon_ polygon;
+            polygon.exterior = *exteriors.begin();
+            Contours::iterator interior = interiors.begin();
+            while (interior != interiors.end()) {
+                assert((*interior)->getLength() > 0);
+                if (insideContour_(*polygon.exterior,
+                                   (*interior)->getElement(0))) {
+                    polygon.interiors.push_back(*interior);
+                    Contours::iterator next = interior;
+                    ++next;
+                    interiors.erase(interior);
+                    interior = next;
+                } else {
+                    ++interior;
+                }
+            }
+            polygons.push_back(polygon);
+            exteriors.erase(exteriors.begin());
+        }
+        return polygons;
+    }
+    
+    long getVertexIndex_(const MFVec2f & vertices, const float (&vertex)[2])
+        throw ()
+    {
+        using OpenVRML_::fpequal;
+        for (size_t i = 0; i < vertices.getLength(); ++i) {
+            const float (&element)[2] = vertices.getElement(i);
+            if (fpequal(vertex[0], element[0])
+                    && fpequal(vertex[1], element[1])) {
+                return i;
+            }
+        }
+        return -1;
+    }
+# endif // OPENVRML_ENABLE_TEXT_NODE
+}
+
+Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
+                                   const float advanceWidth,
+                                   const float advanceHeight)
+    throw (std::bad_alloc):
+    advanceWidth(advanceWidth),
+    advanceHeight(advanceHeight)
+{
+# ifdef OPENVRML_ENABLE_TEXT_NODE
+    using std::vector;
+
+    const vector<Polygon_> polygons = getPolygons_(contours);
+    for (vector<Polygon_>::const_iterator polygon = polygons.begin();
+            polygon != polygons.end(); ++polygon) {
+        //
+        // connectionMap is keyed on a pointer to a vertex on the exterior
+        // contour, and maps to a pointer to the interior contour whose
+        // first vertex is closest to the exterior vertex.
+        //
+        typedef std::multimap<const float (*)[2], const MFVec2f *> ConnectionMap;
+        ConnectionMap connectionMap;
+
+        //
+        // Fill connectionMap. For each interior contour, find the exterior
+        // vertex that is closes to the first vertex in the interior
+        // contour, and the put the pair in the map.
+        //
+        for (vector<const MFVec2f *>::const_iterator interior =
+                polygon->interiors.begin();
+                interior != polygon->interiors.end();
+                ++interior) {
+            assert(*interior);
+            assert((*interior)->getLength() > 0);
+            const float (* const exteriorVertex)[2] =
+                    getClosestVertex_(*polygon->exterior,
+                                      (*interior)->getElement(0));
+            assert(exteriorVertex);
+            const ConnectionMap::value_type value(exteriorVertex, *interior);
+            connectionMap.insert(value);
+        }
+        
+        //
+        // Finally, draw the polygon.
+        //
+        for (size_t i = 0; i < polygon->exterior->getLength(); ++i) {
+            const float (&exteriorVertex)[2] = polygon->exterior->getElement(i);
+            long index = getVertexIndex_(this->coord, exteriorVertex);
+            if (index > -1) {
+                this->coordIndex.addElement(index);
+            } else {
+                this->coord.addElement(exteriorVertex);
+                assert(this->coord.getLength() > 0);
+                index = this->coord.getLength() - 1;
+                this->coordIndex.addElement(index);
+            }
+            ConnectionMap::iterator pos;
+            while ((pos = connectionMap.find(&exteriorVertex))
+                    != connectionMap.end()) {
+                for (int i = pos->second->getLength() - 1; i > -1; --i) {
+                    const float (&interiorVertex)[2] =
+                            pos->second->getElement(i);
+                    const long index = getVertexIndex_(this->coord,
+                                                       interiorVertex);
+                    if (index > -1) {
+                        this->coordIndex.addElement(index);
+                    } else {
+                        this->coord.addElement(interiorVertex);
+                        assert(this->coord.getLength() > 0);
+                        this->coordIndex
+                            .addElement(this->coord.getLength() - 1);
+                    }
+                }
+                this->coordIndex.addElement(index);
+                connectionMap.erase(pos);
+            }
+        }
+        assert(connectionMap.empty());
+        this->coordIndex.addElement(-1);
+    }
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 

@@ -3,6 +3,19 @@
         * src/openvrml/OpenVRML/field.cpp:  MSVC6 doesn't like in-class
           initialization of static const integers.  Use enum instead.
 
+        * README, configure.ac, openvrml.pc.in,
+          src/openvrml/OpenVRML/Makefile.am,
+          src/openvrml/OpenVRML/Viewer.h,
+          src/openvrml/OpenVRML/font.cpp, src/openvrml/OpenVRML/font.h
+          src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h,
+          src/openvrml-gl/OpenVRML/GL/Makefile.am,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Use fontconfig
+          for font discovery.  Refactored glyph data->polygon conversion
+          to Text node implementation.
+
 2002-12-09  Braden McDaniel  <braden@endoframe.com>
 
         * README, configure.ac, java/Makefile.am, java/vrml/Makefile.am,
