@@ -9,6 +9,15 @@
           src/openvrml/OpenVRML/quaternion.h:  Added set method to set
           the quaternion value from a 4-element float array.
 
+        * src/openvrml-gl/OpenVRML/GL/Makefile.am,
+          src/openvrml-gl/OpenVRML/GL/OpenGLEvent.cpp,
+          src/openvrml-gl/OpenVRML/GL/OpenGLEvent.h,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Modified
+          quaternion manipulation code to use Quaternion class.
+          Consolidated trackball functions in ViewerOpenGL.cpp; this
+          obsoletes OpenGLEvent.cpp and OpenGLEvent.h.
+
 2003-01-25  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Makefile.am,
