@@ -55,10 +55,13 @@ To build LibVRML and Lookat
            
 7) Compile the Lookat.mcp project in lookat/macos
 
-For steps 3 and 7, you will probably need to adjust the project access paths so that
+For steps 3 and 7, you will need to adjust the project access paths so that
 CodeWarrior can locate your OpenGL SDK files. If you do not have the JPEG, PNG, Z, and
 InternetConfig files in the default file structure described above then you will need
-to adjust the access paths for those for steps 4 and 5.
+to adjust the access paths for those for steps 4 and 5 too.
+
+[If you have problems with the project files then create new ones using the supplied XML
+files instead (using the "Import Project..." command in CodeWarrior's "File" menu).]
 
 The final result should be a LibVRML97.Lib library in libvrml97core/macos and a simple
 GLUT-based viewer in lookat/macos. You can enter URLs (file or http) into the dialog
@@ -95,8 +98,11 @@ I'm currently working on a Mac-friendly viewer called MacLookat. It uses a modif
 version of GLUT. Go to this URL for details:
 
       <http://home.telia.no/mlouka/vr/mac/maclookat/>
-
+      
+The source code is available in the OVAL CVS (module: maclookat).
 
 
 Michael louka (Michael.Louka@hrp.no)
 26 January 2000
+
+(Updated: 4 April 2000)
