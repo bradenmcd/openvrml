@@ -1,5 +1,11 @@
 2005-03-21 Braden McDaniel  <braden@endoframe.com>
 
+	Removed file left over from GLUT-based lookat.
+
+	* src/lookat/glutint.h:  Removed file.
+
+2005-03-21 Braden McDaniel  <braden@endoframe.com>
+
 	Asynchronously--and progressively--load PNG and JPEG textures.
 	Removed support for GIF textures as well as MPEG movie textures;
 	MPEG support will be added back in the future by depending on
