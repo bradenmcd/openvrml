@@ -664,9 +664,7 @@ idRestChar      ([^\x00-\x20\x22\x23\x27\x2c\x2e\x5b-\x5d\x7b\x7d])
 void yystring(char *s) 
 {
   yyin = 0;
-#if HAVE_LIBPNG || HAVE_ZLIB
   yygz = 0;
-#endif
   yyinStr = s;
   yyinFunc = 0;
   BEGIN NODE;
@@ -680,9 +678,7 @@ void yystring(char *s)
 void yyfunction( int (*f)(char *, int) )
 {
   yyin = 0;
-#if HAVE_LIBPNG || HAVE_ZLIB
   yygz = 0;
-#endif
   yyinStr = 0;
   yyinFunc = f;
   BEGIN INITIAL;
