@@ -1,0 +1,17 @@
+To: antlr-interest@egroups.com
+From: "Millaway, John" <john@intersphere.com>
+Date: Wed, 5 Jul 2000 10:13:31 -0400 
+
+> Can someone tell me where how to build antlr CPP Library with 
+> MS Visual C++?
+> Where can I get the workspace? Thanks
+
+Here is a project/workspace that will make antlr.lib and antlrd.lib. Put
+these in your antrl-2xxx/lib/cpp  directory.
+
+The steps to build the libs yourself are simple:
+1. Create a win32 static library project.
+2. Enable RTTI.
+3. Add the .cpp and .hpp files to the project.
+
+-John

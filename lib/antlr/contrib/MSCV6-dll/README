@@ -1,0 +1,37 @@
+From: Michael T. Richter  <mtr@xxx.xxxx>
+Date: Fri Aug 6, 1999 2:11pm 
+Subject: Visual C++ 6.0 projects for ANTLR C++ generation. 
+
+I've attached a ZIP file containing the alterations needed to make ANTLR
+2.6.1 compile with Visual C++ 6.0 as both a static library and as a DLL.
+Here is a summary of the changes I had to make:
+
+- Config.hpp had some code added to define a macro called DLLEXPORT.  This
+macro is defined as blank unless a macro called ANTLRDLL is defined
+(presumably on the command line).  This makes it compatible with non-DLL
+compilations and non-MSVC compilers.
+
+- The remaining .hpp files have been altered to include the DLLEXPORT macro
+after all uses of the class keyword.  For non-DLL/non-MSVC compilations
+this will have no impact.  For a DLL compilation this will export the
+symbols for use by other projects.
+
+- A new (trivial) source file, DLL.CPP, has been added to the cpp
+directory.
+
+- The project files ANTLR.dsw, LIB.dsp and DLL.dsp have been added to the
+cpp directory.
+
+None of the .cpp files have been altered.
+
+The project generates two DLLs and four LIBs:
+- ANTLR.dll: release mode DLL
+- ANTLR.lib: release mode DLL import library
+- ANTLRd.dll: debug mode DLL
+- ANTLRd.lib: debug mode DLL import library
+- ANTLRs.lib: release mode static library
+- ANTLRsd.lib: debug mode static library
+
+--
+Michael T. Richter    mtr@o...    http://www.igs.net/~mtr/
+PGP Key: http://www.igs.net/~mtr/pgp-key.html
