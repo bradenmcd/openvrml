@@ -201,14 +201,21 @@ const std::string system::http_fetch(const char * url)
             if (abspath) { abspath = strchr(abspath+2, '/'); }
             if (!abspath) { abspath = (char*) url; }
 
-            char request[1024];
-            sprintf(request,"GET %s HTTP/1.0\nAccept: */*\n\r\n", abspath);
+            std::ostringstream request;
+            request << "GET " << abspath << " HTTP/1.0\r\n"
+                    << "Host: " << hostname << "\r\n"
+                    << "Accept: */*\r\n"
+                    << "\r\n";
 
-            size_t nbytes = strlen(request);
+            std::cout << request.str() << std::endl;
+
+            const std::string request_string = request.str();
+            const char * request_c_str = request_string.c_str();
+            size_t nbytes = request_string.length();
 #if defined(_WIN32) && !defined(__CYGWIN__)
-            if (send(sockfd, request, int(nbytes), 0) != nbytes) {
+            if (send(sockfd, request_c_str, int(nbytes), 0) != nbytes) {
 #else
-            if (write(sockfd, request, nbytes) != ssize_t(nbytes)) {
+            if (write(sockfd, request_c_str, nbytes) != ssize_t(nbytes)) {
 #endif
                 std::ostringstream error_sstream;
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -224,31 +231,33 @@ const std::string system::http_fetch(const char * url)
                                         + ").");
 #endif
             } else {
+                char buffer[1024];
                 int gothdr = 0, nread = 0, nwrote = 0, nmore;
                 char *start;
 #if defined(_WIN32) && !defined(__CYGWIN__)
-                while ((nmore = recv(sockfd, request, sizeof(request)-1,0)) > 0) {
+                while ((nmore = recv(sockfd, buffer, sizeof buffer - 1, 0))
+                       > 0) {
 #else
-                while ((nmore = read(sockfd, request, sizeof(request)-1)) > 0) {
+                while ((nmore = read(sockfd, buffer, sizeof buffer - 1)) > 0) {
 #endif
                     nread += nmore;
 
                     // Skip header (should read return code, content-type...)
                     if (gothdr) {
-                        start = request;
+                        start = &buffer[0];
                     } else {
-                        start = strstr(request, "\r\n\r\n");
+                        start = strstr(buffer, "\r\n\r\n");
                         if (start) {
                             start += 4;
                         } else {
-                            start = strstr(request, "\n\n");
+                            start = strstr(buffer, "\n\n");
                             if (start) { start += 2; }
                         }
                         if (!start) { continue; }
                         gothdr = 1;
                     }
 
-                    nmore -= int(start - request);
+                    nmore -= int(start - &buffer[0]);
 # if defined(_WIN32) && !defined(__CYGWIN__)
                     if (_write(fd, start, nmore) != nmore) {
 # else
