@@ -66,8 +66,6 @@ namespace {
     }
 }
 
-// Define the built in NodeType:: "Script" fields
-
 /**
  * Define the built in NodeType:: "Script" fields
  */
@@ -670,12 +668,14 @@ ScriptObject * VrmlNodeScript::createScript() {
 #ifdef OPENVRML_HAVE_JAVA
 	const char javaExtension1[] = ".class";
 	const char javaExtension2[] = ".CLASS";
-        int slen = this->d_url.getLength();
-        if (slen > 6 &&
-	    (std::equal(javaExtension1, javaExtension1 + slen - 6, 
-			this->d_url.getElement(i).end()) ||
-	     std::equal(javaExtension2, javaExtension2 + slen - 6, 
-			this->d_url.getElement(i).end())))
+
+        int slen = this->d_url.getElement(i).length();
+
+        if (slen > 6  &&
+	    (std::equal(javaExtension1, javaExtension1 + 6, 
+			this->d_url.getElement(i).end() - 6) ||
+	     std::equal(javaExtension2, javaExtension2 + 6, 
+			this->d_url.getElement(i).end() - 6)))
 	{
 	  Doc2 *relative = 0;
 	  if ( browser() ) {
