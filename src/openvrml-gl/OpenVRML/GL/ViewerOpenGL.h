@@ -40,12 +40,13 @@
 #include <wingdi.h>
 #endif
 
+extern "C" struct GLUtesselator;
+
 /**
  * Abstract class for display of VRML models using OpenGL/Mesa.
  * A window-system specific subclass needs to redefine the pure
  * virtual methods.
  */
-
 class ViewerOpenGL : public Viewer {
 
 public:
@@ -344,7 +345,7 @@ protected:
   int d_nObjects, d_nestedObjects;
 
   // Tessellation
-  struct GLUtesselator *d_tess;
+  GLUtesselator * d_tess;
   void insertExtrusionCaps(unsigned int mask, size_t nSpine, const float * c,
 			   size_t nCrossSection, const float * cs);
 
