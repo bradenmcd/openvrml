@@ -1,3 +1,8 @@
+2004-11-22 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp:  Fixed declaration of
+	PluginInstance constructor to throw std::bad_alloc.
+
 2004-11-21 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp:  Removed attempt at factoring

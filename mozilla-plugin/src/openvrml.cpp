@@ -47,7 +47,8 @@ namespace {
 	nsCOMPtr<VrmlBrowser> scriptablePeer;
 
     public:
-        explicit PluginInstance(const std::string & initialURL) throw ();
+        explicit PluginInstance(const std::string & initialURL)
+            throw (std::bad_alloc);
         ~PluginInstance() throw ();
 
 	nsISupports * GetScriptablePeer() throw ();
