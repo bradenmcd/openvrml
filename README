@@ -88,6 +88,8 @@ If not, consult the URIs below.
      zlib                   <http://www.gzip.org/zlib/index.html>
      libpng                 <http://www.libpng.org/pub/png/libpng.html>
      libjpeg                <http://www.ijg.org>
+     FreeType               <http://freetype.org>
+     Fontconfig             <http://fontconfig.org>
      Mozilla                <http://mozilla.org>
      Java Development Kit   <http://java.sun.com/j2se/>
      OpenGL/Mesa            <http://mesa3d.org>
@@ -102,7 +104,7 @@ for details.
 obtain for POSIX systems.  Windows users may encounter additional
 difficulty compiling some of these dependencies, so compiled versions
 are provided for convenience:
-     <http://openvrml.org/dist/win32_required_libs.zip>
+     <http://openvrml.org/dist/win32_required_libs_and_includes.zip>
 
 
 configure options

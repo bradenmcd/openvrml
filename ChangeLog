@@ -3,6 +3,9 @@
         * src/openvrml/OpenVRML/browser.cpp:  Convert backslashes in
           output of _fullpath to slashes.
 
+        * README:  Updated dependency list to include FreeType and
+          Fontconfig; updated link to Win32 dependencies archive.
+
 2003-01-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/VrmlMatrix.h,
