@@ -7,6 +7,10 @@
         * Use JS_NewRuntime() and JS_DestroyRuntime() instead of the
           deprecated JS_Init() and JS_Finish() functions.
 
+        * Factored means of constructing a VrmlField type from its
+          corresponding JavaScript class into separate per-type
+          functions.
+
 2001-06-20  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Update *.dsp and *.dsw to support OpenVRML WIN32 DLL and
