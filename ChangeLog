@@ -1,3 +1,10 @@
+2003-02-13  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h:  Added do_shutdown
+          implementations to AudioClip, MovieTexture, PointLight,
+          SpotLight, TimeSensor.
+
 2003-02-09  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp:  Only call Scene::shutdown

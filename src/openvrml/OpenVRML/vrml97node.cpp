@@ -1654,7 +1654,6 @@ AudioClip::AudioClip(const NodeType & nodeType,
 AudioClip::~AudioClip() throw ()
 {
     delete this->audio;
-    if (this->getScene()) { this->getScene()->browser.removeAudioClip(*this); }
 }
 
 /**
@@ -1765,6 +1764,17 @@ void AudioClip::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addAudioClip(*this);
+}
+
+/**
+ * @brief Shut down.
+ *
+ * @param timestamp the current time.
+ */
+void AudioClip::do_shutdown(const double timestamp) throw ()
+{
+    assert(this->getScene());
+    this->getScene()->browser.removeAudioClip(*this);
 }
 
 /**
@@ -7676,10 +7686,8 @@ MovieTexture::MovieTexture(const NodeType & nodeType,
 /**
  * @brief Destructor.
  */
-MovieTexture::~MovieTexture() throw () {
-    if (this->getScene()) {
-        this->getScene()->browser.removeMovie(*this);
-    }
+MovieTexture::~MovieTexture() throw ()
+{
     delete this->image;
 }
 
@@ -7898,6 +7906,17 @@ void MovieTexture::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addMovie(*this);
+}
+
+/**
+ * @brief Shut down.
+ *
+ * @param timestamp the current time.
+ */
+void MovieTexture::do_shutdown(const double timestamp) throw ()
+{
+    assert(this->getScene());
+    this->getScene()->browser.removeMovie(*this);
 }
 
 /**
@@ -9583,11 +9602,7 @@ PointLight::PointLight(const NodeType & nodeType,
  * @brief Destructor.
  */
 PointLight::~PointLight() throw ()
-{
-    if (this->getScene()) {
-        this->getScene()->browser.removeScopedLight(*this);
-    }
-}
+{}
 
 /**
  * @brief Cast to a PointLight.
@@ -9635,6 +9650,17 @@ void PointLight::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addScopedLight(*this);
+}
+
+/**
+ * @brief Shut down.
+ *
+ * @param timestamp the current time.
+ */
+void PointLight::do_shutdown(const double timestamp) throw ()
+{
+    assert(this->getScene());
+    this->getScene()->browser.removeScopedLight(*this);
 }
 
 /**
@@ -12057,11 +12083,7 @@ SpotLight::SpotLight(const NodeType & nodeType,
  * @brief Destructor.
  */
 SpotLight::~SpotLight() throw ()
-{
-    if (this->getScene()) {
-        this->getScene()->browser.removeScopedLight(*this);
-    }
-}
+{}
 
 /**
  * @brief Cast to a SpotLight.
@@ -12112,6 +12134,17 @@ void SpotLight::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addScopedLight(*this);
+}
+
+/**
+ * @brief Shut down.
+ *
+ * @param timestamp the current time.
+ */
+void SpotLight::do_shutdown(const double timestamp) throw ()
+{
+    assert(this->getScene());
+    this->getScene()->browser.removeScopedLight(*this);
 }
 
 /**
@@ -14412,11 +14445,7 @@ TimeSensor::TimeSensor(const NodeType & nodeType,
  * @brief Destructor.
  */
 TimeSensor::~TimeSensor() throw ()
-{
-    if (this->getScene()) {
-        this->getScene()->browser.removeTimeSensor(*this);
-    }
-}
+{}
 
 /**
  * @brief Cast to a TimeSensor.
@@ -14545,6 +14574,17 @@ void TimeSensor::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addTimeSensor(*this);
+}
+
+/**
+ * @brief Shut down.
+ *
+ * @param timestamp the current time.
+ */
+void TimeSensor::do_shutdown(const double timestamp) throw ()
+{
+    assert(this->getScene());
+    this->getScene()->browser.removeTimeSensor(*this);
 }
 
 /**
@@ -15595,11 +15635,7 @@ Viewpoint::Viewpoint(const NodeType & nodeType,
  * @brief Destructor.
  */
 Viewpoint::~Viewpoint() throw ()
-{
-    if (this->getScene()) {
-        this->getScene()->browser.removeViewpoint(*this);
-    }
-}
+{}
 
 /**
  * @brief Viewpoint cast implementation.
