@@ -112,7 +112,7 @@ bounding_volume::~bounding_volume() {}
  * @return inside, outside, or partial.
  *
  * @see bounding_volume::transform
- * @see bounding_volume::orthoTransform
+ * @see bounding_volume::ortho_transform
  */
 
 /**
@@ -173,7 +173,7 @@ bounding_volume::~bounding_volume() {}
  */
 
 /**
- * @fn void bounding_volume::orthoTransform(const mat4f & M)
+ * @fn void bounding_volume::ortho_transform(const mat4f & M)
  *
  * @brief Transform this bounding volume using an orthogonal transfom.
  *
@@ -199,7 +199,7 @@ bounding_volume::~bounding_volume() {}
  * messier to deal with them, but VRML allows nonuniform scaling, so
  * we have to handle it. Note that since all orthogonal transforms
  * are affine, it's safe to always call this routine instead of
- * <code>orthoTransform</code>, but it's likely to be slower.
+ * <code>ortho_transform</code>, but it's likely to be slower.
  * The results are undefined if this routine is called with a
  * non-affine argument. Note that VRML Transform nodes only allow
  * affine transformations, so unless you're doing something tricky
@@ -557,7 +557,7 @@ bool bounding_sphere::maximized() const
 
 
 
-void bounding_sphere::orthoTransform(const mat4f & M)
+void bounding_sphere::ortho_transform(const mat4f & M)
 {
     if (this->maximized()) { return; }
     if (this->radius_ == -1) { return; }
@@ -660,7 +660,7 @@ bool axis_aligned_bounding_box::maximized() const
   return true;
 }
 
-void axis_aligned_bounding_box::orthoTransform(const mat4f & M)
+void axis_aligned_bounding_box::ortho_transform(const mat4f & M)
 {
 }
 

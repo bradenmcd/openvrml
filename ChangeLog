@@ -1,5 +1,17 @@
 2003-05-31  Braden McDaniel  <braden@endoframe.com>
 
+	Fixed bounding_volume::ortho_transform that was missed as part
+	of earlier renaming.
+
+	* src/openvrml/OpenVRML/bounding_volume.cpp:  Renamed
+	bounding_volume::orthoTransform to
+	bounding_volume::ortho_transform.
+	* src/openvrml/OpenVRML/bounding_volume.h:  Renamed
+	bounding_volume::orthoTransform to
+	bounding_volume::ortho_transform.
+
+2003-05-31  Braden McDaniel  <braden@endoframe.com>
+
 	Moved OpenVRML_::length and OpenVRML_::normalize to
 	basetypes.cpp, which is the only place they were being used.
 

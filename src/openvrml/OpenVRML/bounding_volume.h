@@ -51,7 +51,7 @@ namespace OpenVRML {
         virtual void extend(const axis_aligned_bounding_box & b) = 0;
         virtual void extend(const bounding_sphere & b) = 0;
         virtual void enclose(const std::vector<vec3f> & points) = 0;
-        virtual void orthoTransform(const mat4f & M) = 0;
+        virtual void ortho_transform(const mat4f & M) = 0;
         virtual void transform(const mat4f & M) = 0;
     };
 
@@ -78,7 +78,7 @@ namespace OpenVRML {
         virtual void maximize();
         virtual bool maximized() const;
 
-        virtual void orthoTransform(const mat4f & M);
+        virtual void ortho_transform(const mat4f & M);
         virtual void transform(const mat4f & M);
 
         void center(const vec3f & c);
@@ -101,7 +101,7 @@ namespace OpenVRML {
         virtual void enclose(const std::vector<vec3f> & points);
         virtual void maximize();
         virtual bool maximized() const;
-        virtual void orthoTransform(const mat4f & M);
+        virtual void ortho_transform(const mat4f & M);
         virtual void transform(const mat4f & M);
     };
 }
