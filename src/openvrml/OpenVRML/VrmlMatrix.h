@@ -21,10 +21,9 @@
 # ifndef OPENVRML_VRMLMATRIX_H
 #   define OPENVRML_VRMLMATRIX_H
 
+#   include <assert.h>
 #   include <iostream.h>
 #   include "common.h"
-
-//typedef float Matrix[4][4];
 
 namespace OpenVRML {
     class VrmlMatrix;
@@ -83,8 +82,6 @@ namespace OpenVRML {
 
         // Returns a reference to 4x4 array
         const float (&get() const)[4][4] { return matrix; }
-
-//        void     makeIdentity();
 
         // Multiplies matrix by given matrix on right or left
         const VrmlMatrix  multRight(const VrmlMatrix &m);	

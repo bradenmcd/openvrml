@@ -15,6 +15,8 @@
         * Removed VrmlMatrix::makeIdentity. Just assign to a default
           VrmlMatrix instead.
 
+        * VrmlMatrix.h should include <assert.h>.
+
 2002-02-13  Braden McDaniel  <braden@endoframe.com>
 
         * Updated doc/Makefile.am for Autoconf 2.52; added openvrml.css
