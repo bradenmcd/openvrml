@@ -313,9 +313,9 @@ node_interface::node_interface(const type_id type,
  *
  * @param interface a node_interface.
  *
- * @throw std::invalid argument if @p nodeInterface conflicts with an interface
+ * @exception std::invalid argument if @p nodeInterface conflicts with an interface
  *                              already in the node_interface_set.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 void node_interface_set::add(const node_interface & interface)
     throw (std::invalid_argument, std::bad_alloc)
@@ -472,10 +472,10 @@ void node_class::render(OpenVRML::viewer & viewer) throw ()
  *
  * @return a node_type_ptr to the newly created node_type.
  *
- * @throw std::invalid_argument if the node_class cannot support one of the
+ * @exception std::invalid_argument if the node_class cannot support one of the
  *                              @link node_interface node_interfaces@endlink in
  *                              @p interfaces.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 
 
@@ -503,7 +503,7 @@ void node_class::render(OpenVRML::viewer & viewer) throw ()
  * @param c     the class object associated with the node_type.
  * @param id    the name for the node_type.
  *
- * @throw std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 node_type::node_type(OpenVRML::node_class & c, const std::string & id)
     throw (std::bad_alloc):
@@ -817,6 +817,12 @@ node::route::route(const route & route):
  */
 
 /**
+ * @typedef node::routes_t
+ *
+ * @brief list of @link node::route routes@endlink.
+ */
+
+/**
  * @struct node::polled_eventout_value
  *
  * @brief Simple struct for use in implementing nodes that are polled for
@@ -836,14 +842,14 @@ node::route::route(const route & route):
  */
 
 /**
- * @brief Default constructor.
+ * @brief Construct.
  */
 node::polled_eventout_value::polled_eventout_value():
     modified(false)
 {}
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
  * @param value     the value.
  * @param modified  a flag to indicate whether the eventOut has been modified.
@@ -856,21 +862,71 @@ node::polled_eventout_value::polled_eventout_value(
 {}
 
 /**
+ * @internal
+ *
  * @var scope_ptr node::scope_
  *
- * @brief The Scope to which the node belongs.
+ * @brief The scope to which the node belongs.
  */
 
 /**
- * @var Scene * node::scene_
+ * @internal
  *
- * @brief The Scene with which the node is associated.
+ * @var scene * node::scene_
+ *
+ * @brief The scene with which the node is associated.
  */
 
 /**
+ * @internal
+ *
+ * @var bool node::modified_
+ *
+ * @brief Indicate whether the node has been modified.
+ *
+ * @see node::modified
+ */
+
+/**
+ * @internal
+ *
+ * @var bool node::bounding_volume_dirty_
+ *
+ * @brief Indicate whether the node's cached bounding volume needs updating.
+ *
+ * @see node::bounding_volume_dirty
+ */
+
+/**
+ * @internal
+ *
  * @var node::routes_t node::routes_
  *
- * @brief The list of routes from the node.
+ * @brief @link node::route routes@endlink from the node.
+ */
+
+/**
+ * @internal
+ *
+ * @typedef node::eventout_is_map_t
+ *
+ * @brief map of eventOut identifiers to
+ *        @link node::polled_eventout_value polled_eventout_values@endlink.
+ */
+
+/**
+ * @internal
+ *
+ * @var node::eventout_is_map_t node::eventout_is_map
+ *
+ * @brief map of eventOut identifiers to
+ *        @link node::polled_eventout_value polled_eventout_values@endlink.
+ *
+ * This is an ugly artifact of the PROTO implementation. When an eventOut of
+ * a node in a PROTO definition is IS'd to an eventOut in the PROTO definition,
+ * an entry is added to this map. When emitting an event, the node checks to
+ * see if any entries in the map need updating, thereby propagating the event
+ * out of the PROTO instance.
  */
 
 /**
@@ -898,7 +954,9 @@ node::node(const node_type & type, const scope_ptr & scope) throw ():
  *
  * @fn node::node(const node &)
  *
- * @brief Construct a copy. (Not implemented--non-copyable.)
+ * @brief Not implemented.
+ *
+ * node is not copyable.
  */
 
 typedef std::map<std::string, node *> named_node_map;
@@ -947,13 +1005,15 @@ node::~node() throw ()
  *
  * @fn node & node::operator=(const node &)
  *
- * @brief Assign. (Not implemented--non-copyable.)
+ * @brief Not implemented.
+ *
+ * node is not copyable.
  */
 
 /**
- * @brief Set the ID of the node.
+ * @brief Set the name of the node.
  *
- * @param node_id the ID for the node.
+ * @param node_id the name for the node.
  */
 void node::id(const std::string & node_id)
 {
@@ -962,9 +1022,9 @@ void node::id(const std::string & node_id)
 }
 
 /**
- * @brief Retrieve the nodeId of this node.
+ * @brief Retrieve the name of this node.
  *
- * @return the node ID
+ * @return the node name.
  */
 const std::string node::id() const
 {
@@ -985,11 +1045,11 @@ const std::string node::id() const
  */
 
 /**
- * @fn Scene * node::scene() const throw ()
+ * @fn scene * node::scene() const throw ()
  *
- * @brief Get the Scene with which the node is associated.
+ * @brief Get the scene with which the node is associated.
  *
- * @return the Scene with which the node is associated.
+ * @return the scene with which the node is associated.
  */
 
 /**
@@ -1107,9 +1167,9 @@ void node::relocate() throw (std::bad_alloc)
  * @param id    the name of the field.
  * @param value the new value.
  *
- * @throw unsupported_interface  if the node has no field named @p id.
- * @throw std::bad_cast         if @p value is not the correct type.
- * @throw std::bad_alloc        if memory allocation fails.
+ * @exception unsupported_interface  if the node has no field named @p id.
+ * @exception std::bad_cast         if @p value is not the correct type.
+ * @exception std::bad_alloc        if memory allocation fails.
  *
  * @pre @p value must be the appropriate type for the interface.
  */
@@ -1120,11 +1180,26 @@ void node::field(const std::string & id, const field_value & value)
 }
 
 /**
+ * @fn void node::do_field(const std::string & id, const field_value & value) throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+ *
+ * @brief Called by node::field to set a field.
+ *
+ * @param id    field identifier.
+ * @param value value.
+ *
+ * @exception unsupported_interface if the node has no field @p id.
+ * @exception std::bad_cast         if @p value is not the correct type.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+
+/**
  * @brief Generalized field accessor.
  *
  * @param id    the name of the field.
  *
- * @throw unsupported_interface  if the node has no field named @p id.
+ * @return the field value.
+ *
+ * @exception unsupported_interface if the node has no field named @p id.
  */
 const field_value & node::field(const std::string & id) const
     throw (unsupported_interface)
@@ -1133,17 +1208,27 @@ const field_value & node::field(const std::string & id) const
 }
 
 /**
+ * @fn const field_value & node::do_field(const std::string & id) const throw (unsupported_interface)
+ *
+ * @brief Called by node::field to get a field.
+ *
+ * @param id    field identifier.
+ *
+ * @return the field value.
+ *
+ * @exception unsupported_interface if the node has no field @p id.
+ */
+
+/**
  * @brief Process an event.
  *
  * @param id        the name of the eventIn to which the event is being sent.
  * @param value     the new value.
  * @param timestamp the current time.
  *
- * @throw unsupported_interface  if the node has no eventIn named @p id.
- * @throw std::bad_cast         if @p value is not the correct type.
- * @throw std::bad_alloc        if memory allocation fails.
- *
- * @pre @p value must be the appropriate type for the interface.
+ * @exception unsupported_interface if the node has no eventIn named @p id.
+ * @exception std::bad_cast         if @p value is not the correct type.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 void node::process_event(const std::string & id,
                          const field_value & value,
@@ -1153,19 +1238,44 @@ void node::process_event(const std::string & id,
     this->do_process_event(id, value, timestamp);
 }
 
+/**
+ * @fn void node::do_process_event(const std::string & id, const field_value & value, double timestamp) throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+ *
+ * @brief Called by node::process_event.
+ *
+ * @param id        eventIn identifier.
+ * @param value     event value.
+ * @param timestamp the current time.
+ *
+ * @exception unsupported_interface if the node has no eventIn @p id.
+ * @exception std::bad_cast         if @p value is not the correct time.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
 
 /**
  * @brief Generalized eventOut accessor.
  *
  * @param id    the name of the eventOut.
  *
- * @throw unsupported_interface  if the node has no eventOut named @p id.
+ * @exception unsupported_interface if the node has no eventOut named @p id.
  */
 const field_value & node::eventout(const std::string & id) const
     throw (unsupported_interface)
 {
     return this->do_eventout(id);
 }
+
+/**
+ * @fn const field_value & node::do_eventout(const std::string & id) const throw (unsupported_interface)
+ *
+ * @brief Called by node::eventout.
+ *
+ * @param id    eventOut identifier.
+ *
+ * @return the last value sent from the eventOut.
+ *
+ * @exception unsupported_interface if the node has no eventOut @p id.
+ */
 
 /**
  * @brief Shut down the node.
@@ -1210,6 +1320,14 @@ void node::shutdown(const double timestamp) throw ()
     }
     assert(!this->scene_);
 }
+
+/**
+ * @fn void node::do_shutdown(double timestamp) throw ()
+ *
+ * @brief Called by node::shutdown.
+ *
+ * @param timestamp the current time.
+ */
 
 /**
  * @brief Cast to a const script_node.
@@ -1595,73 +1713,125 @@ viewpoint_node * node::to_viewpoint() throw ()
     return 0;
 }
 
-
-// Safe node downcasts. These avoid the dangerous casts of node* (esp in
-// presence of protos), but are ugly in that this class must know about all
-// the subclasses. These return 0 if the typecast is invalid.
-// Remember to also add new ones to NodeProto. Protos should
-// return their first implementation node (except toProto()).
-
+/**
+ * @brief Cast to an anchor_node.
+ *
+ * @return 0.
+ */
 vrml97_node::anchor_node * node::to_anchor() const
 {
     return 0;
 }
 
+/**
+ * @brief Cast to an audio_clip_node.
+ *
+ * @return 0.
+ */
 vrml97_node::audio_clip_node * node::to_audio_clip() const
 {
     return 0;
 }
 
+/**
+ * @brief Cast to an abstract_light_node.
+ *
+ * @return 0.
+ */
 vrml97_node::abstract_light_node * node::to_light() const
 {
     return 0;
 }
 
+/**
+ * @brief Cast to a movie_texture_node.
+ *
+ * @return 0.
+ */
 vrml97_node::movie_texture_node * node::to_movie_texture() const
 {
     return 0;
 }
 
+/**
+ * @brief Cast to a navigation_info_node.
+ *
+ * @return 0.
+ */
 vrml97_node::navigation_info_node * node::to_navigation_info() const
 {
     return 0;
 }
 
+/**
+ * @brief Cast to a plane_sensor_node.
+ *
+ * @return 0.
+ */
 vrml97_node::plane_sensor_node * node::to_plane_sensor() const
 {
     return 0;
 }
 
+/**
+ * @brief Cast to a sphere_sensor_node.
+ *
+ * @return 0.
+ */
 vrml97_node::sphere_sensor_node * node::to_sphere_sensor() const
 {
     return 0;
 }
 
+/**
+ * @brief Cast to a cylinder_sensor_node.
+ *
+ * @return 0.
+ */
 vrml97_node::cylinder_sensor_node * node::to_cylinder_sensor() const
 {
     return 0;
 }
 
+/**
+ * @brief Cast to a point_light_node.
+ *
+ * @return 0.
+ */
 vrml97_node::point_light_node * node::to_point_light() const
 {
     return 0;
 }
 
+/**
+ * @brief Cast to a spot_light_node.
+ *
+ * @return 0.
+ */
 vrml97_node::spot_light_node * node::to_spot_light() const
 {
     return 0;
 }
 
+/**
+ * @brief Cast to a time_sensor_node.
+ *
+ * @return 0.
+ */
 vrml97_node::time_sensor_node * node::to_time_sensor() const
 {
     return 0;
 }
 
+/**
+ * @brief Cast to a touch_sensor_node.
+ *
+ * @return 0.
+ */
 vrml97_node::touch_sensor_node * node::to_touch_sensor() const
 {
     return 0;
 }
-
 
 /**
  * @brief Add a route from an eventOut of this node to an eventIn of another
@@ -1972,6 +2142,14 @@ namespace {
     };
 }
 
+/**
+ * @brief Pretty print.
+ *
+ * @param out       output stream.
+ * @param indent    number of spaces per indentation level.
+ *
+ * @return @p out.
+ */
 std::ostream & node::print(std::ostream & out, const size_t indent) const
 {
     for (size_t i = 0; i < indent; ++i) { out << ' '; }

@@ -50,6 +50,8 @@ namespace OpenVRML {
  */
 
 /**
+ * @internal
+ *
  * @var float color::rgb[3]
  *
  * @brief RGB triplet.
@@ -262,6 +264,8 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  */
 
 /**
+ * @internal
+ *
  * @var float vec2f::vec[2]
  *
  * @brief Vector components.
@@ -537,6 +541,8 @@ std::ostream & operator<<(std::ostream & out, const vec2f & v)
  */
 
 /**
+ * @internal
+ *
  * @var float vec3f::vec[3]
  *
  * @brief Vector components.
@@ -1549,7 +1555,7 @@ mat4f::mat4f(float f11, float f12, float f13, float f14,
 /**
  * @brief Construct from an array of 16 values.
  *
- * @param m an array of values in row-major order.
+ * @param mat   an array of values in row-major order.
  */
 mat4f::mat4f(const float mat[16]) throw ()
 {
@@ -1559,7 +1565,7 @@ mat4f::mat4f(const float mat[16]) throw ()
 /**
  * @brief Construct from a 4x4 array.
  *
- * @param m a 4x4 array of elements in row-major order.
+ * @param mat   a 4x4 array of elements in row-major order.
  */
 mat4f::mat4f(const float (&mat)[4][4]) throw ()
 {

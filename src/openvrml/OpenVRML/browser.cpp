@@ -2055,20 +2055,6 @@ scene::scene(OpenVRML::browser & browser,
  */
 
 /**
- * @brief Get the absolute URI for the scene.
- *
- * @return the absolute URI for the scene.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-const std::string scene::url() const throw (std::bad_alloc) {
-    using std::string;
-    return this->parent
-            ? string(URI(this->url_).resolveAgainst(URI(this->parent->url())))
-            : this->url_;
-}
-
-/**
  * @brief Initialize the scene.
  *
  * @param timestamp the current time.
@@ -2084,6 +2070,29 @@ void scene::initialize(const double timestamp) throw (std::bad_alloc)
         (*node)->initialize(*this, timestamp);
         (*node)->relocate();
     }
+}
+
+/**
+ * @fn const std::vector<node_ptr> & scene::nodes() const throw ()
+ *
+ * @brief Root nodes for the scene.
+ *
+ * @return the root nodes for the scene.
+ */
+
+/**
+ * @brief Get the absolute URI for the scene.
+ *
+ * @return the absolute URI for the scene.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+const std::string scene::url() const throw (std::bad_alloc)
+{
+    using std::string;
+    return this->parent
+            ? string(URI(this->url_).resolveAgainst(URI(this->parent->url())))
+            : this->url_;
 }
 
 /**

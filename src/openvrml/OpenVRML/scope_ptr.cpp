@@ -37,6 +37,18 @@ namespace OpenVRML {
  */
 
 /**
+ * @fn bool scope_ptr::operator==(const scope_ptr & lhs, const scope_ptr & rhs) throw ()
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs point to the same scope; @c false
+ *         otherwise.
+ */
+
+/**
  * @var scope * scope_ptr::scope_
  *
  * @brief Pointer to a scope.
@@ -49,6 +61,8 @@ namespace OpenVRML {
  */
 
 /**
+ * @fn scope_ptr::scope_ptr(OpenVRML::scope * scope) throw (std::bad_alloc)
+ *
  * @brief Construct.
  *
  * @param scope a pointer to a scope constructed with @c new.
@@ -126,6 +140,8 @@ scope_ptr & scope_ptr::operator=(const scope_ptr & ptr) throw ()
  */
 
 /**
+ * @fn void scope_ptr::reset(OpenVRML::scope * scope) throw (std::bad_alloc)
+ *
  * @brief Reset the scope_ptr to a new scope.
  *
  * @param scope a pointer to a scope constructed with @c new.
@@ -163,20 +179,14 @@ void scope_ptr::dispose() throw ()
 }
 
 /**
- * @fn bool operator==(const scope_ptr & lhs, const scope_ptr & rhs) throw ()
- *
- * @brief Compare for equality.
- *
- * @return @c true if @p lhs and @p rhs point to the same scope; @c false
- *         otherwise.
- */
-
-/**
  * @fn bool operator!=(const scope_ptr & lhs, const scope_ptr & rhs) throw ()
  *
- * @relates scope_ptr
+ * @relates OpenVRML::scope_ptr
  *
  * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs point to different
  *         @link scope scopes@endlink; @c false otherwise.

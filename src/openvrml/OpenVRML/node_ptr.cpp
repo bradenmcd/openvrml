@@ -38,6 +38,18 @@ namespace OpenVRML {
  *      magic.
  */
 
+/**
+ * @fn bool node_ptr::operator==(const node_ptr & lhs, const node_ptr & rhs) throw ()
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs point to the same node; @c false
+ *         otherwise.
+ */
+
 namespace {
     typedef std::map<OpenVRML::node *, size_t> count_map_t;
     count_map_t count_map;
@@ -137,13 +149,15 @@ node_ptr::node_ptr(const node_ptr & ptr) throw ():
  */
 
 /**
+ * @fn void node_ptr::reset(node * node) throw (std::bad_alloc)
+ *
  * @brief Reset the node_ptr to point to a different node.
  *
  * @param node
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void node_ptr::reset(node * node) throw (std::bad_alloc)
+void node_ptr::reset(node * const node) throw (std::bad_alloc)
 {
     if (this->count_ptr && this->count_ptr->first == node) {
         return;
@@ -184,7 +198,7 @@ void node_ptr::dispose() throw ()
  *
  * @param count_ptr a pointer to an entry in the count map to share.
  */
-void node_ptr::share(count_map_t::value_type * count_ptr) throw ()
+void node_ptr::share(std::map<node *, size_t>::value_type * count_ptr) throw ()
 {
     if (this->count_ptr != count_ptr) {
         if (count_ptr) { ++count_ptr->second; }
@@ -194,20 +208,14 @@ void node_ptr::share(count_map_t::value_type * count_ptr) throw ()
 }
 
 /**
- * @fn bool operator==(const node_ptr & lhs, const node_ptr & rhs) throw ()
- *
- * @brief Compare for equality.
- *
- * @return @c true if @p lhs and @p rhs point to the same node; @c false
- *         otherwise.
- */
-
-/**
  * @fn bool operator!=(const node_ptr & lhs, const node_ptr & rhs) throw ()
  *
  * @relates node_ptr
  *
  * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs point to different
  *         @link node nodes@endlink; @c false otherwise.

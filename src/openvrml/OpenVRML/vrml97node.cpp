@@ -819,7 +819,7 @@ abstract_indexed_set_node::~abstract_indexed_set_node() throw ()
  */
 bool abstract_indexed_set_node::modified() const
 {
-    return (this->modified_
+    return (this->modified()
             || (this->color_.value && this->color_.value->modified())
             || (this->coord.value && this->coord.value->modified()));
 }
@@ -1647,7 +1647,7 @@ void appearance_node::process_set_textureTransform(const field_value & value,
  */
 bool appearance_node::modified() const
 {
-    return (this->modified_
+    return (this->modified()
           || (this->material_.value && this->material_.value->modified())
           || (this->texture_.value && this->texture_.value->modified())
           || (this->textureTransform.value
@@ -5657,7 +5657,7 @@ elevation_grid_node::~elevation_grid_node() throw ()
  */
 bool elevation_grid_node::modified() const
 {
-    return (this->modified_
+    return (this->modified()
             || (this->color.value && this->color.value->modified())
             || (this->normal.value && this->normal.value->modified())
             || (this->texCoord.value && this->texCoord.value->modified()));
@@ -7153,7 +7153,7 @@ void group_node::process_set_children(const field_value & value,
  */
 bool group_node::modified() const
 {
-    if (this->modified_) { return true; }
+    if (this->modified()) { return true; }
     for (size_t i = 0; i < this->children_.value.size(); ++i) {
         if (this->children_.value[i]->modified()) { return true; }
     }
@@ -7891,7 +7891,7 @@ indexed_face_set_node::~indexed_face_set_node() throw () {}
  *      @c false otherwise.
  */
 bool indexed_face_set_node::modified() const {
-    return (this->modified_
+    return (this->modified()
             || (this->color_.value && this->color_.value->modified())
             || (this->coord.value && this->coord.value->modified())
             || (this->normal.value && this->normal.value->modified())
@@ -8697,7 +8697,7 @@ lod_node::~lod_node() throw ()
  */
 bool lod_node::modified() const
 {
-    if (this->modified_) { return true; }
+    if (this->modified()) { return true; }
 
     // This should really check which range is being rendered...
     for (size_t i = 0; i < this->level.value.size(); ++i) {
@@ -11893,7 +11893,7 @@ point_set_node::~point_set_node() throw ()
  */
 bool point_set_node::modified() const
 {
-    return (modified_
+    return (modified()
             || (this->color.value && this->color.value->modified())
             || (this->coord.value && this->coord.value->modified()));
 }
@@ -12922,7 +12922,7 @@ shape_node::~shape_node() throw ()
  */
 bool shape_node::modified() const
 {
-    return (modified_
+    return (modified()
             || (this->geometry.value && this->geometry.value->modified())
             || (this->appearance.value && this->appearance.value->modified()));
 }
@@ -14478,7 +14478,7 @@ switch_node::~switch_node() throw () {}
  *      @c false otherwise.
  */
 bool switch_node::modified() const {
-    if (modified_) { return true; }
+    if (this->modified()) { return true; }
 
     long w = this->whichChoice.value;
 

@@ -253,6 +253,8 @@ namespace OpenVRML {
     private:
         scope_ptr scope_;
         OpenVRML::scene * scene_;
+        bool modified_;
+        bool bounding_volume_dirty_;
         routes_t routes_;
 
         typedef std::map<std::string, polled_eventout_value *>
@@ -260,6 +262,9 @@ namespace OpenVRML {
         eventout_is_map_t eventout_is_map;
 
     public:
+        static void mark_path_modified(node_path & path, bool mod,
+                                       int flags = 0x003);
+
         const node_type & type;
 
         virtual ~node() throw () = 0;
@@ -344,13 +349,7 @@ namespace OpenVRML {
         virtual bool modified() const;
         void modified(bool value);
 
-        static void mark_path_modified(node_path & path, bool mod,
-                                       int flags = 0x003);
-
-        // do the work of updatemodified. move this to be protected
-        //
         virtual void update_modified(node_path & path, int flags = 0x003);
-
         void update_modified(int flags = 0x003);
 
         virtual void bounding_volume(const OpenVRML::bounding_volume & v);
@@ -376,14 +375,10 @@ namespace OpenVRML {
     protected:
         node(const node_type & type, const scope_ptr & scope) throw ();
 
-        // Send a named event from this node.
         void emit_event(const std::string & id,
                         const field_value & value,
                         double timestamp)
             throw (std::bad_cast, std::bad_alloc);
-
-        bool modified_;
-        bool bounding_volume_dirty_;
 
     private:
         // Not copyable.

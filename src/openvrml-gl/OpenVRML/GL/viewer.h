@@ -268,7 +268,7 @@ namespace OpenVRML {
 
             virtual void set_fog(const color & color,
                                  float visibilityRange,
-                                 const char * fogType);
+                                 const char * type);
 
             virtual void set_material(float ambientIntensity,
                                       const color & diffuseColor,

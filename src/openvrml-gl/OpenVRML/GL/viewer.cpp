@@ -3043,6 +3043,8 @@ void viewer::set_color(const color & rgb, const float a)
 }
 
 /**
+ * @fn void viewer::set_fog(const color & color, const float visibilityRange, const char * type)
+ *
  * @brief Set the fog.
  *
  * @param color             fog color.

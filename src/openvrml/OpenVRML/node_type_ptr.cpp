@@ -39,6 +39,32 @@ namespace OpenVRML {
  */
 
 /**
+ * @fn bool node_type_ptr::operator==(const node_type_ptr & lhs, const node_type_ptr & rhs) throw ()
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs point to the same node_type; @c false
+ *         otherwise.
+ */
+
+/**
+ * @var node_type * node_type_ptr::type
+ *
+ * @brief node_type.
+ */
+
+/**
+ * @var size_t * node_type_ptr::count
+ *
+ * @brief Reference count.
+ */
+
+/**
+ * @fn node_type_ptr::node_type_ptr(node_type * type) throw (std::bad_alloc)
+ *
  * @brief Construct.
  *
  * @param type a pointer to a node_type constructed with @c new.
@@ -120,6 +146,8 @@ node_type_ptr & node_type_ptr::operator=(const node_type_ptr & ptr) throw ()
  */
 
 /**
+ * @fn void node_type_ptr::reset(node_type * type) throw (std::bad_alloc)
+ *
  * @brief Reset the node_type_ptr to a new node_type.
  *
  * @param type a pointer to a node_type constructed with @c new.
@@ -157,20 +185,14 @@ void node_type_ptr::dispose() throw ()
 }
 
 /**
- * @fn bool operator==(const node_type_ptr & lhs, const node_type_ptr & rhs) throw ()
- *
- * @brief Compare for equality.
- *
- * @return @c true if @p lhs and @p rhs point to the same node_type; @c false
- *         otherwise.
- */
-
-/**
  * @fn bool operator!=(const node_type_ptr & lhs, const node_type_ptr & rhs) throw ()
  *
- * @relates node_type_ptr
+ * @relates OpenVRML::node_type_ptr
  *
  * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs point to different
  *         @link node_type node_types@endlink; @c false otherwise.

@@ -39,6 +39,32 @@ namespace OpenVRML {
  */
 
 /**
+ * @fn bool node_class_ptr::operator==(const node_class_ptr & lhs, const node_class_ptr & rhs) throw ()
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs point to the same node_class; @c false
+ *         otherwise.
+ */
+
+/**
+ * @var node_class * node_class_ptr::class_
+ *
+ * @brief The node_class.
+ */
+
+/**
+ * @var size_t * node_class_ptr::count
+ *
+ * @brief Reference count.
+ */
+
+/**
+ * @fn node_class_ptr::node_class_ptr(node_class * class_)
+ *
  * @brief Constructor.
  *
  * @param class_ a pointer to a NodeClass constructed with @c new.
@@ -56,6 +82,12 @@ node_class_ptr::node_class_ptr(node_class * const class_)
         throw;
     }
 }
+
+/**
+ * @fn node_class_ptr::~node_class_ptr() throw ()
+ *
+ * @brief Destroy.
+ */
 
 /**
  * @brief Copy constructor.
@@ -87,6 +119,14 @@ node_class_ptr & node_class_ptr::operator=(const node_class_ptr & ptr) throw ()
 }
 
 /**
+ * @fn node_class_ptr::operator bool() const throw ()
+ *
+ * @brief Automatic conversion to @c bool.
+ *
+ * @return @c true if the node_class_ptr is non-null; @c false otherwise.
+ */
+
+/**
  * @fn node_class & node_class_ptr::operator*() const throw ()
  *
  * @brief Dereference.
@@ -111,6 +151,8 @@ node_class_ptr & node_class_ptr::operator=(const node_class_ptr & ptr) throw ()
  */
 
 /**
+ * @fn void node_class_ptr::reset(node_class * class_) throw (std::bad_alloc)
+ *
  * @brief Reset the node_class_ptr to a new node_class.
  *
  * @param class_ a pointer to a node_class constructed with @c new.
@@ -148,20 +190,14 @@ void node_class_ptr::dispose() throw ()
 }
 
 /**
- * @fn bool operator==(const node_class_ptr & lhs, const node_class_ptr & rhs) throw ()
- *
- * @brief Compare for equality.
- *
- * @return @c true if @p lhs and @p rhs point to the same node_class; @c false
- *         otherwise.
- */
-
-/**
  * @fn bool operator!=(const node_class_ptr & lhs, const node_class_ptr & rhs) throw ()
  *
- * @relates node_class_ptr
+ * @relates OpenVRML::node_class_ptr
  *
  * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs point to different
  *         @link node_class node_classes@endlink; @c false otherwise.

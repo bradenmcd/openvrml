@@ -1,3 +1,30 @@
+2003-07-27  Braden McDaniel  <braden@endoframe.com>
+
+	Doxygen documentation improvements.
+
+	* src/openvrml/OpenVRML/basetypes.cpp:  Doxygen documentation
+	improvements.
+	* src/openvrml/OpenVRML/browser.cpp:  Doxygen documentation
+	improvements.
+	* src/openvrml/OpenVRML/node.cpp:  Doxygen documentation
+	improvements.
+	* src/openvrml/OpenVRML/node.h:  Doxygen documentation
+	improvements.
+	* src/openvrml/OpenVRML/node_class_ptr.cpp:  Doxygen
+	documentation improvements.
+	* src/openvrml/OpenVRML/node_ptr.h:  Doxygen documentation
+	improvements.
+	* src/openvrml/OpenVRML/node_type_ptr.cpp:  Doxygen
+	documentation improvements.
+	* src/openvrml/OpenVRML/scope_ptr.h:  Doxygen documentation
+	improvements.
+	* src/openvrml/OpenVRML/vrml97node.h:  Doxygen documentation
+	improvements.
+	* src/openvrml-gl/OpenVRML/GL/viewer.cpp:  Doxygen documentation
+	improvements.
+	* src/openvrml-gl/OpenVRML/GL/viewer.h:  Doxygen documentation
+	improvements.
+
 2003-07-26  Braden McDaniel  <braden@endoframe.com>
 
 	* m4/ax_check_gl.m4:  Updated macro description.
