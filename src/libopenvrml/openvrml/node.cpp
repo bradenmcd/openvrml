@@ -597,9 +597,11 @@ node_class::~node_class() throw ()
 {}
 
 /**
- * @brief The <code>browser</code> associated with this <code>node_class</code>.
+ * @brief The <code>browser</code> associated with this
+ *        <code>node_class</code>.
  *
- * @return the <code>browser</code> associated with this <code>node_class</code>.
+ * @return the <code>browser</code> associated with this
+ *         <code>node_class</code>.
  */
 browser & node_class::browser() const throw ()
 {
@@ -915,6 +917,8 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  * @fn To * node_cast(node * n) throw ()
  *
  * @ingroup nodes
+ *
+ * @relatesalso openvrml::node
  *
  * @brief Downcast a node to one of the abstract node types.
  *
@@ -3355,23 +3359,37 @@ viewpoint_node * viewpoint_node::to_viewpoint() throw ()
  *
  * @brief Traverse the children of each node in a node hierarchy only once.
  *
- * The node_traverser provides a generalized traversal mechanism that avoids
- * redundantly traversing branches of the node hierarchy. If a node occurs
- * multiple places in a branch, <b>the children of that node will be visted in
- * the traversal only once</b>.
+ * The <code>node_traverser</code> provides a generalized traversal mechanism
+ * that avoids redundantly traversing branches of the node hierarchy. If a node
+ * occurs multiple places in a branch, <b>the children of that node will be
+ * visted in the traversal only once</b>.
  *
- * For each node encountered in the traversal, node_traverser::performAction
- * is called. Concrete subclasses of node_traverser implement this method in
- * order to perform some operation on each node.
+ * For each node encountered in the traversal, <code>node_traverser</code>
+ * does the following:
+ *
+ * -# Call <code>node_traverser::on_entering</code>.
+ * -# Traverse descendants, if any.
+ * -# Call <code>node_traverser::on_leaving</code>.
+ *
+ * Concrete subclasses of <code>node_traverser</code> implement the
+ * <code>@link node_traverser::on_entering on_entering@endlink</code> and/or
+ * <code>@link node_traverser::on_leaving on_leaving@endlink</code> member
+ * functions in order to perform some operation(s) on each node. The traversal
+ * can be ended prematurely by calling
+ * <code>node_traverser::halt_traversal</code>.
  */
 
 /**
+ * @internal
+ *
  * @var std::set<node *> node_traverser::traversed_nodes
  *
  * @brief The set of nodes that have already been traversed.
  */
 
 /**
+ * @internal
+ *
  * @var bool node_traverser::halt
  *
  * @brief Flag to indicate if the traversal should be halted.
@@ -3398,8 +3416,10 @@ node_traverser::~node_traverser() throw ()
  * No guarantee is made about the state of the node_traverser instance in the
  * event that this method throws.
  *
- * In addition to std::bad_alloc, this function throws any exception thrown
- * from onEntering or onLeaving.
+ * In addition to <code>std::bad_alloc</code>, this function throws any
+ * exception thrown from
+ * <code>@link node_traverser::on_entering on_entering@endlink</code> or
+ * <code>@link node_traverser::on_leaving on_leaving@endlink</code>.
  *
  * @param n  the root node of the branch to traverse.
  *
@@ -3420,17 +3440,11 @@ void node_traverser::traverse(node & n)
 }
 
 /**
- * @brief Traverse an sfnode.
+ * @brief Traverse a <code>node</code>.
  *
- * No guarantee is made about the state of the node_traverser instance in the
- * event that this method throws.
- *
- * In addition to std::bad_alloc, this function throws any exception thrown
- * from onEntering or onLeaving.
+ * @overload
  *
  * @param node  the root node of the branch to traverse.
- *
- * @exception std::bad_alloc    if memory allocation fails.
  */
 void node_traverser::traverse(const node_ptr & node)
 {
@@ -3452,18 +3466,12 @@ void node_traverser::traverse(const node_ptr & node)
 }
 
 /**
- * @brief Traverse an mfnode.
+ * @brief Traverse a <code>std::vector</code> of <code>node</code>s.
  *
- * No guarantee is made about the state of the node_traverser instance in the
- * event that this method throws.
- *
- * In addition to std::bad_alloc, this function throws any exception thrown
- * from on_entering or on_leaving.
+ * @overload
  *
  * @param nodes  the root @link openvrml::node nodes@endlink of the branch to
  *               traverse.
- *
- * @exception std::bad_alloc    if memory allocation fails.
  */
 void node_traverser::traverse(const std::vector<node_ptr> & nodes)
 {
@@ -3490,10 +3498,11 @@ void node_traverser::traverse(const std::vector<node_ptr> & nodes)
 /**
  * @brief Halt the traversal.
  *
- * If this method is called during a traversal, no more descendent
+ * If this method is called during a traversal, no more descendant
  * @link openvrml::node nodes@endlink will be traversed. Note that if
- * halt_traversal is called in the implementation of on_entering, on_leaving
- * will still be called for the current node.
+ * halt_traversal is called in the implementation of
+ * <code>@link node_traverser::on_entering on_entering@endlink</code>,
+ * <code>on_leaving</code> will still be called for the current node.
  */
 void node_traverser::halt_traversal() throw ()
 {
@@ -3503,9 +3512,9 @@ void node_traverser::halt_traversal() throw ()
 /**
  * @internal
  *
- * @brief Traverse a node.
+ * @brief Traverse a <code>node</code>.
  *
- * @param n  the node to traverse.
+ * @param n  the <code>node</code> to traverse.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -3546,19 +3555,19 @@ void node_traverser::do_traversal(node & n)
 }
 
 /**
- * @brief Called for each node in the traversal <em>before</em>
+ * @brief Called for each <code>node</code> in the traversal <em>before</em>
  *      traversing the its descendants.
  *
- * @param n  the node currently being traversed.
+ * @param n  the <code>node</code> currently being traversed.
  */
 void node_traverser::on_entering(node & n)
 {}
 
 /**
- * @brief Called for each node in the traversal <em>after</em>
+ * @brief Called for each <code>node</code> in the traversal <em>after</em>
  *      traversing the its descendants.
  *
- * @param n  the node currently being traversed.
+ * @param n  the <code>node</code> currently being traversed.
  */
 void node_traverser::on_leaving(node & n)
 {}
