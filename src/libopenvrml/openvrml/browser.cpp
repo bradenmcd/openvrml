@@ -2753,10 +2753,7 @@ browser::browser(std::ostream & out, std::ostream & err)
     err(err),
     flags_need_updating(false)
 {
-    using std::string;
-    using std::vector;
     assert(this->active_viewpoint_);
-    this->browser::load_url(vector<string>(), vector<string>());
 }
 
 /**
