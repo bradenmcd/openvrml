@@ -23,20 +23,21 @@
 //  The Image class is a format-independent API for loading textures.
 //
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
-#include "Image.h"
-#include "doc.h"
-#include "system.h"
-#include "field.h"
+# include <stdarg.h>
+# include <stdio.h>
+# include <stdlib.h>		// free()
+# include <string.h>
+# include <algorithm>
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>		// free()
-#include <string.h>
-#include <algorithm>
+# include "private.h"
+# include "Image.h"
+# include "doc.h"
+# include "system.h"
+# include "field.h"
 
 /************************************************************************
 	GIF File Reader
@@ -6882,12 +6883,14 @@ bool Image::setURL(const char * const url, const doc2 * const relative)
             break;
 # endif
         default:
-            the_system->error("Error: unrecognized image file format (%s).\n", url);
+            OPENVRML_PRINT_MESSAGE_("Unrecognized image file format ("
+                                    + std::string(url) + ").");
             break;
 	}
 
         if (! d_pixels) {
-            the_system->error("Error: unable to read image file (%s).\n", url);
+            OPENVRML_PRINT_MESSAGE_("Unable to read image file ("
+                                    + std::string(url) + ").");
         }
 
         this->d_url->fclose();

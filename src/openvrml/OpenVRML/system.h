@@ -32,10 +32,6 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE system {
     public:
-        virtual void error(const char *, ...);
-        virtual void warn(const char *, ...);
-        virtual void inform(const char *, ...);
-        virtual void debug(const char *, ...);
         virtual bool load_url(const std::string & url,
                              const mfstring & parameters);
         virtual int connect_socket( const char *host, int port );

@@ -1,3 +1,34 @@
+2003-06-04  Braden McDaniel  <braden@endoframe.com>
+
+	Removed system::error, system::warn, system::inform,
+	system::debug.  Use OPENVRML_PRINT_MESSAGE_ instead.
+
+	* src/lookat/ViewerGlut.cpp (ViewerGlut::ViewerGlut):  Do not
+	use system::error.
+	* src/openvrml/OpenVRML/Audio.cpp (Audio::setURL):  Use
+	OPENVRML_PRINT_MESSAGE_ instead of system::warn.
+	* src/openvrml/OpenVRML/Image.cpp (Image::setURL):  Use
+	OPENVRML_PRINT_MESSAGE_ instead of system::error.
+	* src/openvrml/OpenVRML/ScriptJDK.cpp (ScriptJDK::ScriptJDK,
+	ScriptJDK::activate):  Use OPENVRML_PRINT_MESSAGE_ instead of
+	system::error.
+	* src/openvrml/OpenVRML/doc.cpp (doc::fopen):  Use
+	OPENVRML_PRINT_MESSAGE_ instead of system::error.
+	* src/openvrml/OpenVRML/script.cpp (setDescription):  Use
+	browser::description instead of system::inform.
+	* src/openvrml/OpenVRML/system.cpp (system::error, system::warn,
+	system::inform, system::debug, system::common_socket,
+	system::http_fetch):  Removed error, warn, inform, and debug
+	member functions.
+	* src/openvrml/OpenVRML/system.h (system::error, system::warn,
+	system::inform, system::debug):  Removed functions.
+	* src/openvrml/OpenVRML/vrml97node.cpp
+	(Group::processAddChildren, ImageTexture::render):  Use
+	OPENVRML_PRINT_MESSAGE_ instead of system::error.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp (checkErrors,
+	ViewerOpenGL::handleKey):  Use OPENVRML_GL_PRINT_MESSAGE_ instead of
+	system::error and system::inform.
+
 2003-06-03  Braden McDaniel  <braden@endoframe.com>
 
 	Applied naming convention changes:  System -> system.

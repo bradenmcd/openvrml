@@ -19,13 +19,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#include <stdio.h>
-#include <string.h>
+# include <stdio.h>
+# include <string.h>
 
-#include "Audio.h"
-#include "doc.h"
-#include "system.h"
-#include "field.h"
+# include "private.h"
+# include "Audio.h"
+# include "doc.h"
+# include "system.h"
+# include "field.h"
 
 namespace OpenVRML {
 
@@ -139,33 +140,30 @@ bool Audio::setURL(const std::string & url, doc *relative)
     FILE *fp = _doc->fopen ("rb");
 
     bool success = false;
-    if (fp)
-    {
-        switch (audioFileType (url, fp))
-        {
-          case AudioFile_WAV:
+    if (fp) {
+        switch (audioFileType (url, fp)) {
+        case AudioFile_WAV:
             success = wavread (fp);
             break;
 
-          default:
-            the_system->warn("Unrecognized audio file format (%s).\n", url.c_str());
-
+        default:
+            OPENVRML_PRINT_MESSAGE_("Unrecognized audio file format (" + url
+                                    + ").");
 
             // Suppress the error message below
             success = true;
             break;
         }
 
-        if (success == false)
-            the_system->warn("Unable to read audio file (%s).\n", url.c_str());
-
+        if (success == false) {
+            OPENVRML_PRINT_MESSAGE_("Unable to read audio file (" + url
+                                    + ").");
+        }
 
         _doc->fclose ();
+    } else {
+        OPENVRML_PRINT_MESSAGE_("Unable to find audio file (" + url +").");
     }
-
-    else
-        the_system->warn("Unable to find audio file (%s).\n", url.c_str());
-
 
     return (_num_samples > 0);
 }

@@ -89,7 +89,7 @@
 #   include <vrml_node_Node.h>
 #   include <vrml_node_Script.h>
 
-#   include "system.h"
+#   include "private.h"
 #   include "script.h"
 #   include "browser.h"
 #   include "node.h"
@@ -231,8 +231,9 @@ ScriptJDK::ScriptJDK(script_node & node,
     res = JNI_CreateJavaVM(&d_jvm, (void**) &d_env, &vm_args);
     appendedClassPath.rdbuf()->freeze(false);
 
-    if (res < 0)
-      the_system->error("Can't create Java VM");
+    if (res < 0) {
+      OPENVRML_PRINT_MESSAGE_("Can't create Java VM");
+    }
   }
 
   if (d_jvm && d_env)		// Per-object initialization
@@ -244,7 +245,8 @@ ScriptJDK::ScriptJDK(script_node & node,
     d_class = d_env->FindClass(fqClassName);
     if (!d_class)
     {
-      the_system->error( "Can't find Java class %s.\n", className);
+      OPENVRML_PRINT_MESSAGE_("Can't find Java class "
+                              + std::string(className) + ".");
       return;
     }
 
@@ -456,7 +458,7 @@ void ScriptJDK::activate( double timeStamp,
 
     if (!clazz)
     {
-      the_system->error("Can't find Java class vrml/Event");
+      OPENVRML_PRINT_MESSAGE_("Can't find Java class vrml/Event");
       return;
     }
 

@@ -22,17 +22,19 @@
 //  A class to contain system-dependent/non-standard utilities
 //
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <algorithm>
+# include <stdarg.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <algorithm>
+# include <sstream>
 
-#include "system.h"
+# include "private.h"
+# include "system.h"
 
 # ifndef NDEBUG
 #   define SYSTEM_DEBUG
@@ -46,58 +48,6 @@ static system defaultSystem;
 // The global system object
 system * OpenVRML::the_system = &defaultSystem;
 
-
-// Should make these iostream objects...
-
-void system::error(const char *fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    vfprintf(stderr, fmt, ap);
-    va_end(ap);
-}
-
-void system::warn(const char *fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    fprintf(stderr,"Warning: ");
-    vfprintf(stderr, fmt, ap);
-    va_end(ap);
-}
-
-
-// Write to the browser status line...
-
-void system::inform(const char *fmt, ...)
-{
-    static char lastbuf[1024] = { 0 };
-    char buf[1024];
-
-    va_list ap;
-    va_start(ap, fmt);
-    vsprintf(buf, fmt, ap);
-    va_end(ap);
-    if (strcmp(lastbuf, buf)) {
-        fprintf(stderr,"%s", buf);
-        putc('\n', stderr);
-        strcpy(lastbuf, buf);
-    }
-}
-
-#ifdef SYSTEM_DEBUG
-void system::debug(const char *fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    vfprintf(stderr, fmt, ap);
-    va_end(ap);
-#else
-void system::debug(const char *, ...)
-{
-#endif
-}
-
 // This won't work under windows or if netscape isn't running...
 
 bool system::load_url(const std::string & url, const mfstring & parameters)
@@ -106,21 +56,21 @@ bool system::load_url(const std::string & url, const mfstring & parameters)
 }
 
 // added for working under windows (and is not needed for mac os)...
-#if defined(_WIN32) && !defined(__CYGWIN__)
-#include <sys/types.h>
-#include <winsock2.h>
-#include <string.h>
-#include <ctype.h>
-#else
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <string.h>        // memset
-#include <ctype.h>
-#endif // _WIN32
+# if defined(_WIN32) && !defined(__CYGWIN__)
+#   include <sys/types.h>
+#   include <winsock2.h>
+#   include <string.h>
+#   include <ctype.h>
+# else
+#   include <sys/types.h>
+#   include <sys/socket.h>
+#   include <netinet/in.h>
+#   include <arpa/inet.h>
+#   include <unistd.h>
+#   include <netdb.h>
+#   include <string.h>        // memset
+#   include <ctype.h>
+# endif // _WIN32
 
 int system::connect_socket(const char * host, int port)
 {
@@ -207,22 +157,30 @@ const char *system::http_fetch(const char * url)
     const char *hostname = this->http_host(url, &port);
 
     if (port == 80) {
-        the_system->inform("Connecting to %s ...", hostname);
+        OPENVRML_PRINT_MESSAGE_("Connecting to " + std::string(hostname)
+                                + " ...");
     } else {
-        the_system->inform("Connecting to %s:%d ...", hostname, port);
+        std::ostringstream port_sstream;
+        port_sstream << port;
+        OPENVRML_PRINT_MESSAGE_("Connecting to " + std::string(hostname)
+                                + ":" + port_sstream.str() << " ...");
     }
 
     int sockfd;
     if ((sockfd = system::connect_socket( hostname, port )) != -1) {
-        the_system->inform("connected.");
+        OPENVRML_PRINT_MESSAGE_("connected.");
     } else {
+        std::ostringstream error_sstream;
 #if defined(_WIN32) && !defined(__CYGWIN__)
-        the_system->warn("Connect failed:  (errno %d)\n",
-        WSAGetLastError());
+        error_sstream << WSAGetLastError();
+        OPENVRML_PRINT_MESSAGE_("Connect failed:  (errno "
+                                + error_sstream.str() + ").");
         WSACleanup();
 # else
-        the_system->warn("Connect failed: %s (errno %d).\n",
-                        strerror(errno), errno);
+        error_sstream << errno;
+        OPENVRML_PRINT_MESSAGE_("Connect failed: "
+                                + std::string(strerror(errno)) + " (errno "
+                                + error_sstream.str() + ").");
 #endif
     }
     // Copy to a local temp file
@@ -248,13 +206,18 @@ const char *system::http_fetch(const char * url)
 #else
             if (write(sockfd, request, nbytes) != nbytes) {
 #endif
+                std::ostringstream error_sstream;
 #if defined(_WIN32) && !defined(__CYGWIN__)
-                the_system->warn("http GET failed:  (errno %d)\n",
-                WSAGetLastError());
+                error_sstream << WSAGetLastError();
+                OPENVRML_PRINT_MESSAGE_("http GET failed:  (errno "
+                                        + error_sstream.str() + ").");
                 WSACleanup();
 #else
-                the_system->warn("http GET failed: %s (errno %d)\n",
-                                strerror(errno), errno);
+                error_sstream << errno;
+                OPENVRML_PRINT_MESSAGE_("http GET failed: "
+                                        + std::string(strerror(errno))
+                                        + " (errno " + error_sstream.str()
+                                        + ").");
 #endif
             } else {
                 int gothdr = 0, nread = 0, nwrote = 0, nmore;
@@ -287,13 +250,15 @@ const char *system::http_fetch(const char * url)
 # else
                     if (write(fd, start, nmore) != nmore) {
 # endif
-                        the_system->warn("http: temp file write error\n");
+                        OPENVRML_PRINT_MESSAGE_("http: temp file write error");
                         break;
                     }
                     nwrote += nmore;
                 }
-
-                the_system->inform("Read %dk from %s", (nread+1023)/1024, url);
+                std::ostringstream nread_sstream;
+                nread_sstream << (nread + 1023) / 1024;
+                OPENVRML_PRINT_MESSAGE_("Read " + nread_sstream.str()
+                                        + "k from " + std::string(url));
             }
 
 # if defined(_WIN32) && !defined(__CYGWIN__)

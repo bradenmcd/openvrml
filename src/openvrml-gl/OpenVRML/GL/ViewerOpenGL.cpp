@@ -40,7 +40,6 @@
 
 # include <math.h>
 
-# include <OpenVRML/system.h>
 # include <OpenVRML/browser.h>
 # include <OpenVRML/vrml97node.h>
 # include <OpenVRML/bounding_volume.h>
@@ -52,6 +51,14 @@
 // are still at OpenGL 1.0 (or get a newer OpenGL).
 
 # define USE_TEXTURE_DISPLAY_LISTS 1
+
+#   ifdef NDEBUG
+#     define OPENVRML_GL_PRINT_MESSAGE_(message_)
+#   else
+#     define OPENVRML_GL_PRINT_MESSAGE_(message_) \
+            std::cerr << __FILE__ << ":" << __LINE__ << ": " \
+                      << message_ << std::endl
+#   endif
 
 namespace {
     const float FPTOLERANCE(1.0e-6);
@@ -400,11 +407,15 @@ void ViewerOpenGL::initialize()
 namespace {
 
     // Call this after each frame for debugging...
-    void checkErrors(const char * s)
+    void checkErrors(const std::string & s)
     {
         GLenum glerr;
         while ((glerr = glGetError()) != GL_NO_ERROR) {
-            the_system->error("GL ERROR: %s %s\n", s, gluErrorString(glerr));
+            const GLubyte * const error_str = gluErrorString(glerr);
+            const GLubyte * end;
+            for (end = error_str; *end; ++end) {}
+            OPENVRML_GL_PRINT_MESSAGE_("GL ERROR: " + s + " "
+                                       + std::string(error_str, end));
         }
     }
 }
@@ -2740,7 +2751,8 @@ void ViewerOpenGL::set_sensitive(node * object)
     if (object) {
         // should make this dynamic...
         if (this->d_nSensitive == MAXSENSITIVE) {
-            the_system->error("Internal Error: too many sensitive objects.\n");
+            OPENVRML_GL_PRINT_MESSAGE_("Internal Error: too many sensitive "
+                                       "objects.");
             return;
         }
 
@@ -3323,25 +3335,32 @@ void ViewerOpenGL::handleKey(int key)
     case 'b':
       d_blend = ! d_blend;
       wsPostRedraw();
-      the_system->inform(" Alpha blending %sabled.",
-                     d_blend ? "en" : "dis");
+      OPENVRML_GL_PRINT_MESSAGE_(" Alpha blending "
+                                 + std::string(d_blend ? "en" : "dis")
+                                 + "sabled.");
       break;
 
     case 'd':
       d_drawBSpheres = ! d_drawBSpheres;
-      the_system->inform(" bspheres %sabled.", d_drawBSpheres ? "en" : "dis");
+      OPENVRML_GL_PRINT_MESSAGE_(" bspheres "
+                                 + std::string(d_drawBSpheres ? "en" : "dis")
+                                 + "sabled.");
       wsPostRedraw();
       break;
 
     case 'c':
       d_cull = ! d_cull;
-      the_system->inform(" culling %sabled.", d_cull ? "en" : "dis");
+      OPENVRML_GL_PRINT_MESSAGE_(" culling "
+                                 + std::string(d_cull ? "en" : "dis")
+                                 + "sabled.");
       wsPostRedraw();
       break;
 
     case 'l':
       d_lit = ! d_lit;
-      the_system->inform(" Lighting %sabled.", d_lit ? "en" : "dis");
+      OPENVRML_GL_PRINT_MESSAGE_(" Lighting "
+                                 + std::string(d_lit ? "en" : "dis")
+                                 + "sabled.");
       wsPostRedraw();
       break;
 
@@ -3353,15 +3372,20 @@ void ViewerOpenGL::handleKey(int key)
     case 't':
       d_texture = ! d_texture;
       wsPostRedraw();
-      the_system->inform(" Texture mapping %sabled.",
-                     d_texture ? "en" : "dis");
+      OPENVRML_GL_PRINT_MESSAGE_(" Texture mapping "
+                                 + std::string(d_texture ? "en" : "dis")
+                                 + "sabled.");
       break;
 
     case 'w':                        // Wireframe (should disable texturing)
       d_wireframe = ! d_wireframe;
       glPolygonMode(GL_FRONT_AND_BACK, d_wireframe ? GL_LINE : GL_FILL);
       wsPostRedraw();
-      the_system->inform(" Drawing polygons in %s mode.", d_wireframe ? "wireframe" : "filled");
+      OPENVRML_GL_PRINT_MESSAGE_(" Drawing polygins in "
+                                 + std::string(d_wireframe
+                                               ?"wireframe"
+                                               : "filled")
+                                 + " mode.");
       break;
 
     default:

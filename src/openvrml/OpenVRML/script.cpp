@@ -30,7 +30,6 @@
 # include "scope.h"
 # include "browser.h"
 # include "doc.h"
-# include "system.h"
 # include "ScriptJDK.h"
 
 namespace OpenVRML {
@@ -2736,8 +2735,11 @@ JSBool setDescription(JSContext * const cx, JSObject *,
     if (!JSVAL_IS_STRING(argv[0])) {
         return JS_FALSE;
     }
-    the_system->inform("%s",
-                       JS_GetStringBytes(JSVAL_TO_STRING(argv[0])));
+    Script * const script =
+            static_cast<Script *>(JS_GetContextPrivate(cx));
+    assert(script);
+    OpenVRML::browser & browser = script->getScriptNode().scene()->browser;
+    browser.description(JS_GetStringBytes(JSVAL_TO_STRING(argv[0])));
     *rval = JSVAL_VOID;
     return JS_TRUE;
 }

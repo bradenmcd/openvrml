@@ -26,6 +26,7 @@
 # include <fstream>
 # include <regex.h>
 
+# include "private.h"
 # include "doc.h"
 # include "system.h"
 # include "browser.h"
@@ -426,26 +427,24 @@ bool doc::filename(char * fn, int nfn)
  */
 FILE *doc::fopen(const char *mode)
 {
-  if (fp_)
-    the_system->error("doc::fopen: %s is already open.\n", url_ ? url_ : "");
-
-  char fn[256];
-  if (filename(fn, sizeof(fn)))
-    {
-      if (strcmp(fn, "-") == 0)
-	{
-	  if (*mode == 'r')
-	    fp_ = stdin;
-	  else if (*mode == 'w')
-	    fp_ = stdout;
-	}
-      else
-	{
-      fp_ = ::fopen( fn, mode );
-	}
+    if (this->fp_) {
+        OPENVRML_PRINT_MESSAGE_(std::string(this->url_ ? this->url_ : "")
+                                + "is already open.");
     }
 
-  return fp_;
+    char fn[256];
+    if (filename(fn, sizeof(fn))) {
+        if (strcmp(fn, "-") == 0) {
+            if (*mode == 'r') {
+                fp_ = stdin;
+            } else if (*mode == 'w') {
+                fp_ = stdout;
+            }
+        } else {
+            fp_ = ::fopen( fn, mode );
+        }
+    }
+    return fp_;
 }
 
 /**
