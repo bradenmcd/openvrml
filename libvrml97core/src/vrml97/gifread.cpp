@@ -350,9 +350,7 @@ DoExtension(FILE *fd, int label)
 }
 
 static int
-GetDataBlock(fd, buf)
-FILE		*fd;
-unsigned char 	*buf;
+GetDataBlock(FILE * fd, unsigned char * buf)
 {
 	unsigned char	count;
 
@@ -372,10 +370,7 @@ unsigned char 	*buf;
 }
 
 static int
-GetCode(fd, code_size, flag)
-FILE	*fd;
-int	code_size;
-int	flag;
+GetCode(FILE * fd, int code_size, int flag)
 {
 	static unsigned char	buf[280];
 	static int		curbit, lastbit, done, last_byte;
@@ -418,10 +413,7 @@ int	flag;
 }
 
 static int
-LWZReadByte(fd, flag, input_code_size)
-FILE	*fd;
-int	flag;
-int	input_code_size;
+LWZReadByte(FILE * fd, int flag, int input_code_size)
 {
 	static int	fresh = FALSE;
 	int		code, incode;

@@ -130,9 +130,9 @@ parser.cpp : parser.ypp
 libvrml97_la_SOURCES = \
 	parser.cpp lexer.cpp \
 	MathUtils.cpp \
-	gifread.c \
-	jpgread.c \
-	pngread.c \
+	gifread.cpp \
+	jpgread.cpp \
+	pngread.cpp \
         dummysound.cpp \
 	VrmlScene.cpp VrmlNodeType.cpp VrmlNamespace.cpp \
 	Doc.cpp Image.cpp Audio.cpp System.cpp \

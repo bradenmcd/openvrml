@@ -7,10 +7,13 @@
 #endif
 
 #include "jpgread.h"
-#include "jpeglib.h"
+
+extern "C" {
+#include <jpeglib.h>
+}
+
 #include <stdlib.h>
 #include <string.h>
-
 #include <setjmp.h>
 
 struct my_error_mgr {
