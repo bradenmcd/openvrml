@@ -34,7 +34,7 @@ public abstract class BaseNode
    * Returns the type of the node.  If the node is a prototype
    * it returns the name of the prototype.
    *
-   * @param Type of the node.
+   * @return Type of the node.
    */
   public native String getType();
 
