@@ -87,6 +87,8 @@ SOURCE=..\src\vrml97gl\ViewerOpenGL.cpp
 
 !IF  "$(CFG)" == "libvrml97gl - Win32 Release"
 
+# ADD CPP /I "..\..\libvrml97core\win32"
+
 !ELSEIF  "$(CFG)" == "libvrml97gl - Win32 Debug"
 
 # ADD CPP /I "..\..\libvrml97core\win32"
