@@ -22,6 +22,8 @@
           src/openvrml/OpenVRML/Audio.h:  Reformatted comments as doc-
           comments.
 
+        * src/openvrml/OpenVRML/field.cpp:  Doc-comment fixes.
+
 2002-12-14  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,

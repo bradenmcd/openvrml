@@ -32,8 +32,6 @@
 namespace OpenVRML {
 
 /**
- * @relates FieldValue
- *
  * @brief Stream output.
  *
  * @param out           an output stream.
@@ -233,8 +231,9 @@ FieldValue & FieldValue::operator=(const FieldValue & value) throw ()
  *
  * @return this object.
  *
- * @exception std::bad_cast if value is not of the same concrete type as this
- *                          object.
+ * @exception std::bad_cast     if @p value is not of the same concrete type as
+ *                              this object.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 
 /**
@@ -2843,6 +2842,9 @@ namespace {
     };
 }
 
+/**
+ * @internal
+ */
 typedef array_vector<float, 3> ColorVec;
 
 /**
@@ -3660,6 +3662,9 @@ void MFNode::print(std::ostream & out) const
     out << ']';
 }
 
+/**
+ * @internal
+ */
 typedef array_vector<float, 4> RotationVec;
 
 /**
@@ -4252,6 +4257,9 @@ void MFTime::print(std::ostream & out) const
 }
 
 
+/**
+ * @internal
+ */
 typedef array_vector<float, 2> Vec2fVec;
 
 /**
@@ -4464,6 +4472,9 @@ void MFVec2f::print(std::ostream & out) const
 }
 
 
+/**
+ * @internal
+ */
 typedef array_vector<float, 3> Vec3fVec;
 
 /**
