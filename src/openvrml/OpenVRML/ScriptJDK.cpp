@@ -64,7 +64,9 @@ ScriptJDK::ScriptJDK( VrmlNodeScript *node,
   d_class(0),
   d_object(0),
   d_processEventsID(0),
-  d_eventsProcessedID(0)
+  d_processEventID(0),
+  d_eventsProcessedID(0),
+  ScriptObject(*node)
 {
   if (! d_jvm)			// Initialize static members
     {
@@ -149,7 +151,7 @@ ScriptJDK::~ScriptJDK()
 
 void ScriptJDK::activate( double timeStamp,
 			  const char *fname,
-			  int argc,
+			  size_t argc,
 			  const VrmlField *argv[] )
 {
   jstring jstr;
