@@ -1,5 +1,10 @@
 2004-03-02 Braden McDaniel  <braden@endoframe.com>
 
+	* m4/acx_pthread.m4:  Updated to most recent version of the
+	ACX_PTHREAD macro.
+
+2004-03-02 Braden McDaniel  <braden@endoframe.com>
+
 	* README:  List Boost as a dependency.
 
 2004-03-02 Braden McDaniel  <braden@endoframe.com>
