@@ -6195,8 +6195,9 @@ JSBool MFString::initObject(JSContext * const cx, JSObject * const obj,
     try {
         std::auto_ptr<MFData> mfdata(new MFData(argc));
         for (uintN i = 0; i < argc; ++i) {
-            if (!JSVAL_IS_STRING(argv[i])) { return JS_FALSE; }
-            mfdata->array[i] = argv[i];
+            JSString * const str = JS_ValueToString(cx, argv[i]);
+            if (!str) { return JS_FALSE; }
+            mfdata->array[i] = STRING_TO_JSVAL(str);
         }
 
         //
@@ -6221,11 +6222,6 @@ JSBool MFString::setElement(JSContext * const cx, JSObject * const obj,
     assert(mfdata);
 
     //
-    // Make sure new value is a string.
-    //
-    if (!JSVAL_IS_STRING(*vp)) { return JS_FALSE; }
-
-    //
     // Make sure the index is valid.
     //
     if (!JSVAL_IS_INT(id) || JSVAL_TO_INT(id) < 0) { return JS_FALSE; }
@@ -6239,9 +6235,15 @@ JSBool MFString::setElement(JSContext * const cx, JSObject * const obj,
     }
 
     //
+    // Convert the value to a JSString, if necessary.
+    //
+    JSString * const str = JS_ValueToString(cx, *vp);
+    if (!str) { return JS_FALSE; }
+    
+    //
     // Put the new element in the array.
     //
-    mfdata->array[JSVAL_TO_INT(id)] = *vp;
+    mfdata->array[JSVAL_TO_INT(id)] = STRING_TO_JSVAL(str);
     mfdata->changed = true;
     return JS_TRUE;
 }

@@ -1,3 +1,12 @@
+2002-12-11  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/script.cpp:  Fixed problem with
+          initializing MFStrings with "new String()" objects in
+          JavaScript.  This is a general fix that converts *any*
+          argument to a JSString before making the assignment to the
+          MFString element.  This behavior is consistent with that of
+          the String object constructor.
+
 2002-12-10  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp:  MSVC6 doesn't like in-class
