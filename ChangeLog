@@ -1,5 +1,10 @@
 2004-03-21 Braden McDaniel  <braden@endoframe.com>
 
+	* test/node_interface_set.cpp:  Added some unit tests for
+	node_interface_set.
+
+2004-03-21 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/script.cpp
 	({anonymous}::js_::script::activate):  When converting the script
 	function arguments to jsvals, only add GC roots to garbage-collected

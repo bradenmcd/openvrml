@@ -102,5 +102,36 @@ int main()
         }
     }
 
+    {
+        test_desc = "insert an exposedfield";
+
+        const node_interface interface(node_interface::exposedfield_id,
+                                       field_value::sfrotation_id,
+                                       "yyy");
+        succeeded = interfaces.insert(interface).second;
+        if (succeeded) {
+            ts.pass(test_desc);
+        } else {
+            ts.fail(test_desc);
+        }
+    }
+
+    {
+        test_desc = "find an exposedField that matches an eventIn";
+
+        const node_interface interface(node_interface::eventin_id,
+                                       field_value::sfbool_id,
+                                       "set_yyy");
+
+        const node_interface_set::const_iterator pos =
+            interfaces.find(interface);
+
+        if (pos != interfaces.end()) {
+            ts.pass(test_desc);
+        } else {
+            ts.fail(test_desc);
+        }
+    }
+
     return ::failed > 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
