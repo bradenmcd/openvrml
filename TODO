@@ -79,3 +79,10 @@ Furthermore...
   platform I was using when I wrote each node).
 
 - Direct3D renderer for Win32.
+
+- Real VRMLScript support.  This is of interest mostly for legacy worlds.  The
+  SGI VRMLScript parser looks like it has a compatible license, and is probably
+  usable.
+
+- Universal Media support.  Or perhaps this support really belongs in a client
+  program rather than LibVRML97 proper.  Worth investigating.

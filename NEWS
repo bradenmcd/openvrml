@@ -3,6 +3,9 @@ Changes new in version 0.8.2, January 2000
 
 - S. K. Bose <bose@pavan.barc.ernet.in> has revived the Win32 build.
 
+- Braden McDaniel <braden@endoframe.com> backed out requirement for "namespace"
+  support from the C++ compiler ... for now.
+
 
 Changes new in version 0.8.1, December 1999
 ===========================================
