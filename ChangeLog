@@ -1,3 +1,10 @@
+2000-01-16  Braden McDaniel <braden@endoframe.com>
+
+        * Submissions from S. K. Bose <bose@pavan.barc.ernet.in>: Added "std::"
+          in a number of places where it was needed, as well as conditional
+          inclusion of the file "winconfig.h" (which now resides in
+          libvrml97core/win32) for the MS Visual C++ Windows build.
+
 2000-01-03  Braden McDaniel <braden@endoframe.com>
 
         * In lbvrml97core, changed the toString() function in ScriptJS.cpp to
