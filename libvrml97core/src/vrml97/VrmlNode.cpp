@@ -487,7 +487,7 @@ void VrmlNode::setField(const char *fieldName, const VrmlField &)
 
 const VrmlField *VrmlNode::getField(const char *fieldName) const
 {
-  theSystem->error("%s::getField: no such field (%s)",
+  theSystem->error("%s::getField: no such field (%s)\n",
 		   nodeType()->getName(), fieldName);
   return 0;
 }
