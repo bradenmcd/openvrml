@@ -46,13 +46,13 @@ public:
   virtual void getPosition( float *x, float *y, float *z ) = 0;
   virtual void getOrientation( float *orientation ) = 0;
 
-  enum {
+  enum RenderMode {
     RENDER_MODE_DRAW,
     RENDER_MODE_PICK
   };
 
   // Return renderMode
-  virtual int getRenderMode() = 0;
+  virtual RenderMode getRenderMode() = 0;
 
   virtual double getFrameRate() = 0;
 

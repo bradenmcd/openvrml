@@ -104,7 +104,6 @@ ViewerOpenGL::ViewerOpenGL(VrmlScene *scene) : Viewer(scene)
 
 }
 
-
 ViewerOpenGL::~ViewerOpenGL()
 {
 #if GLU_VERSION_1_2
@@ -303,7 +302,7 @@ void ViewerOpenGL::getOrientation( float *orientation )
     }
 }
 
-int ViewerOpenGL::getRenderMode() 
+Viewer::RenderMode ViewerOpenGL::getRenderMode() 
 {
   return d_selectMode ? RENDER_MODE_PICK : RENDER_MODE_DRAW; 
 }

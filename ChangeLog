@@ -1,3 +1,8 @@
+2000-03-11  Braden McDaniel  <braden@endoframe.com>
+
+        * Named the render mode enumerant in Viewer;
+          Viewer::getRenderMode() now returns RenderMode. Static type
+          checking is cool.
 
 2000-03-10  Chris Morley  <cmorley@vermontel.net>
 

@@ -45,13 +45,16 @@ public:
   enum { MAX_LIGHTS = 8 };
 
   ViewerOpenGL(VrmlScene *);
+  ViewerOpenGL(ViewerOpenGL const &);
   virtual ~ViewerOpenGL();
-
+  
+  ViewerOpenGL & operator=(ViewerOpenGL const &);
+  
   // Queries
   virtual void getPosition( float *x, float *y, float *z );
   virtual void getOrientation( float *orientation );
 
-  virtual int getRenderMode();
+  virtual RenderMode getRenderMode();
   virtual double getFrameRate();
 
   //
