@@ -20,7 +20,6 @@
 
 #include "VrmlNodeTimeSensor.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 #include "VrmlScene.h"
 
@@ -84,15 +83,11 @@ VrmlNodeTimeSensor::~VrmlNodeTimeSensor()
   if (d_scene) d_scene->removeTimeSensor(this);
 }
 
-bool VrmlNodeTimeSensor::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+VrmlNode *VrmlNodeTimeSensor::cloneMe() const
+{
+  return new VrmlNodeTimeSensor(*this);
 }
+
 
 VrmlNodeTimeSensor* VrmlNodeTimeSensor::toTimeSensor() const
 {

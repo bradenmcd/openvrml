@@ -86,8 +86,6 @@ libopenvrml_la_SOURCES = \
 	VrmlField.cpp \
         VrmlNamespace.cpp \
 	VrmlNodeType.cpp \
-        Route.cpp \
-        VrmlNodeVisitor.cpp \
 	VrmlNode.cpp \
 	VrmlNodeProto.cpp \
 	VrmlNodeAnchor.cpp \
@@ -96,7 +94,6 @@ libopenvrml_la_SOURCES = \
 	VrmlNodeBackground.cpp \
 	VrmlNodeBillboard.cpp \
 	VrmlNodeBox.cpp \
-        VrmlNodeChild.cpp \
 	VrmlNodeCollision.cpp \
 	VrmlNodeColor.cpp \
 	VrmlNodeColorInt.cpp \
@@ -164,7 +161,6 @@ OpenVRMLinclude_HEADERS = \
 	Doc.h \
 	Image.h \
         MathUtils.h \
-        Route.h \
 	ScriptObject.h \
 	System.h \
 	Viewer.h \
@@ -256,7 +252,6 @@ OpenVRMLinclude_HEADERS = \
 	VrmlNodeTransform.h \
 	VrmlNodeViewpoint.h \
 	VrmlNodeVisibilitySensor.h \
-        VrmlNodeVisitor.h \
 	VrmlNodeWorldInfo.h \
 	VrmlRenderContext.h \
         VrmlScene.h \

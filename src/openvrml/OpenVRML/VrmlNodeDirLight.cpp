@@ -20,7 +20,6 @@
 
 #include "VrmlNodeDirLight.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 #include "Viewer.h"
 
@@ -63,15 +62,12 @@ VrmlNodeDirLight::~VrmlNodeDirLight()
 {
 }
 
-bool VrmlNodeDirLight::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeDirLight::cloneMe() const
+{
+  return new VrmlNodeDirLight(*this);
 }
+
 
 ostream& VrmlNodeDirLight::printFields(ostream& os, int indent)
 {

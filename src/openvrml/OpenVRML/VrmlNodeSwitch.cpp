@@ -20,7 +20,6 @@
 
 #include "VrmlNodeSwitch.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "Viewer.h"
 #include "VrmlBSphere.h"
 
@@ -66,26 +65,23 @@ VrmlNodeSwitch::~VrmlNodeSwitch()
 {
 }
 
-bool VrmlNodeSwitch::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeSwitch::cloneMe() const
+{
+  return new VrmlNodeSwitch(*this);
 }
 
-void VrmlNodeSwitch::resetVisitedFlag() {
-    if (this->visited) {
-        this->visited = false;
-        for (size_t i = 0; i < this->d_choice.getLength(); ++i) {
-            if (this->d_choice[i]) {
-                this->d_choice[i]->resetVisitedFlag();
-            }
+void VrmlNodeSwitch::cloneChildren(VrmlNamespace * ns) {
+    for (size_t i = 0; i < this->d_choice.getLength(); ++i) {
+        if (! this->d_choice[i]) {
+            continue;
         }
+        VrmlNode * const newKid = this->d_choice[i]->clone(ns)->reference();
+        this->d_choice[i]->dereference();
+        this->d_choice[i] = newKid;
     }
 }
+
 
 bool VrmlNodeSwitch::isModified() const
 {
@@ -131,6 +127,16 @@ void VrmlNodeSwitch::addToScene( VrmlScene *s, const char *rel )
   for (int i = 0; i<n; ++i)
     d_choice[i]->addToScene(s, rel);
 }
+
+void VrmlNodeSwitch::copyRoutes( VrmlNamespace *ns ) const
+{
+  VrmlNode::copyRoutes(ns);
+  
+  int n = d_choice.getLength();
+  for (int i = 0; i<n; ++i)
+    d_choice[i]->copyRoutes(ns);
+}
+
 
 ostream& VrmlNodeSwitch::printFields(ostream& os, int indent)
 {
@@ -199,42 +205,4 @@ VrmlNodeSwitch::recalcBSphere()
       d_bsphere.extend(*ci_bv);
   }
   this->setBVolumeDirty(false);
-}
-
-/**
- * @brief Get the nodes that may be chosen.
- *
- * @return choice
- */
-const VrmlMFNode & VrmlNodeSwitch::getChoice() const {
-    return this->d_choice;
-}
-
-/**
- * @brief Set the nodes that may be chosen.
- *
- * @param choice
- */
-void VrmlNodeSwitch::setChoice(const VrmlMFNode & choice) {
-    this->d_choice = choice;
-    this->setBVolumeDirty(true);
-}
-
-/**
- * @brief Get the index of the chosen node.
- *
- * @return whichChoice
- */
-const VrmlSFInt32 & VrmlNodeSwitch::getWhichChoice() const {
-    return this->d_whichChoice;
-}
-
-/**
- * @brief Set the index of the chosen node.
- *
- * @param whichChoice
- */
-void VrmlNodeSwitch::setWhichChoice(const VrmlSFInt32 & whichChoice) {
-    this->d_whichChoice = whichChoice;
-    this->setBVolumeDirty(true);
 }

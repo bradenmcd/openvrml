@@ -20,7 +20,6 @@
 
 #include "VrmlNodeCylinder.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "Viewer.h"
 
 
@@ -73,15 +72,12 @@ VrmlNodeCylinder::~VrmlNodeCylinder()
   // need access to viewer to remove d_viewerObject...
 }
 
-bool VrmlNodeCylinder::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeCylinder::cloneMe() const
+{
+  return new VrmlNodeCylinder(*this);
 }
+
 
 ostream& VrmlNodeCylinder::printFields(ostream& os, int indent)
 {

@@ -36,8 +36,8 @@ public:
   VrmlNodeDirLight(VrmlScene *);
   virtual ~VrmlNodeDirLight();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  
+  virtual VrmlNode *cloneMe() const;
+
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual void render(Viewer *, VrmlRenderContext rc);

@@ -23,7 +23,6 @@
 
 #include "VrmlNodeAnchor.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 
 #include "doc2.hpp"
@@ -78,15 +77,11 @@ VrmlNodeAnchor::~VrmlNodeAnchor()
 {
 }
 
-bool VrmlNodeAnchor::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+VrmlNode *VrmlNodeAnchor::cloneMe() const
+{
+  return new VrmlNodeAnchor(*this);
 }
+
 
 VrmlNodeAnchor* VrmlNodeAnchor::toAnchor() const
 { return (VrmlNodeAnchor*)this; }

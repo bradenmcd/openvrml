@@ -38,8 +38,8 @@ public:
   VrmlNodeFontStyle(VrmlScene *);
   virtual ~VrmlNodeFontStyle();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  
+  virtual VrmlNode *cloneMe() const;
+
   virtual VrmlNodeFontStyle* toFontStyle() const;
 
   virtual ostream& printFields(ostream& os, int indent);

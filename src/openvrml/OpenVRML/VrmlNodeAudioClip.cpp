@@ -20,7 +20,6 @@
 
 #include "VrmlNodeAudioClip.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "VrmlScene.h"
 #include "MathUtils.h"
 #include "Audio.h"
@@ -107,14 +106,9 @@ VrmlNodeAudioClip::~VrmlNodeAudioClip()
   if (d_scene) d_scene->removeAudioClip(this);
 }
 
-bool VrmlNodeAudioClip::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+VrmlNode *VrmlNodeAudioClip::cloneMe() const
+{
+  return new VrmlNodeAudioClip( *this);
 }
 
 void VrmlNodeAudioClip::addToScene(VrmlScene *s, const char *rel)

@@ -38,21 +38,20 @@ public:
   VrmlNodeCollision(VrmlScene *);
   virtual ~VrmlNodeCollision();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  virtual void resetVisitedFlag();
-  
+  virtual VrmlNode *cloneMe() const;
+  virtual void cloneChildren(VrmlNamespace *);
+
   virtual bool isModified() const;
   virtual void clearFlags();	// Clear childrens flags too.
 
   virtual void addToScene( VrmlScene *s, const char *rel );
 
+  virtual void copyRoutes(VrmlNamespace *ns) const;
+
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
-  
-  const VrmlSFNode & getProxy() const;
-  void setProxy(const VrmlSFNode & proxy);
 
 private:
 

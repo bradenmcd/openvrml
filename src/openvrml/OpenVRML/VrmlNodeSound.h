@@ -37,16 +37,18 @@ public:
   static VrmlNodeType *defineType(VrmlNodeType *t = 0);
   virtual VrmlNodeType & nodeType() const;
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  virtual void resetVisitedFlag();
-  
   VrmlNodeSound( VrmlScene *scene = 0 );
   virtual ~VrmlNodeSound();
+
+  virtual VrmlNode *cloneMe() const;
+  virtual void cloneChildren(VrmlNamespace*);
 
   virtual void updateModified(VrmlNodePath& path);
   virtual void clearFlags();
 
   virtual void addToScene(VrmlScene *s, const char *);
+
+  virtual void copyRoutes(VrmlNamespace *ns) const;
 
   virtual void render(Viewer *, VrmlRenderContext rc);
 
@@ -56,9 +58,6 @@ public:
 
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
-  
-  const VrmlSFNode & getSource() const;
-  void setSource(const VrmlSFNode & source);
 
 private:
 

@@ -20,7 +20,6 @@
 
 #include "VrmlNodeLOD.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 #include "Viewer.h"
 
@@ -66,24 +65,20 @@ VrmlNodeLOD::~VrmlNodeLOD()
 {
 }
 
-bool VrmlNodeLOD::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeLOD::cloneMe() const
+{
+  return new VrmlNodeLOD(*this);
 }
 
-void VrmlNodeLOD::resetVisitedFlag() {
-    if (this->visited) {
-        this->visited = false;
-        for (size_t i = 0; i < this->d_level.getLength(); ++i) {
-            if (this->d_level[i]) {
-                this->d_level[i]->resetVisitedFlag();
-            }
+void VrmlNodeLOD::cloneChildren(VrmlNamespace * ns) {
+    for (size_t i = 0; i < this->d_level.getLength(); ++i) {
+        if (! this->d_level[i]) {
+            continue;
         }
+        VrmlNode * const newKid = this->d_level[i]->clone(ns)->reference();
+        this->d_level[i]->dereference();
+        this->d_level[i] = newKid;
     }
 }
 
@@ -132,6 +127,16 @@ void VrmlNodeLOD::addToScene( VrmlScene *s, const char *rel )
   for (int i = 0; i<n; ++i)
     d_level[i]->addToScene(s, rel);
 }
+
+void VrmlNodeLOD::copyRoutes( VrmlNamespace *ns ) const
+{
+  VrmlNode::copyRoutes(ns);
+  
+  int n = d_level.getLength();
+  for (int i = 0; i<n; ++i)
+    d_level[i]->copyRoutes(ns);
+}
+
 
 ostream& VrmlNodeLOD::printFields(ostream& os, int indent)
 {
@@ -247,23 +252,4 @@ VrmlNodeLOD::recalcBSphere()
 
   }
   this->setBVolumeDirty(false);
-}
-
-/**
- * @brief Get the detail levels.
- *
- * @return level
- */
-const VrmlMFNode & VrmlNodeLOD::getLevel() const {
-    return this->d_level;
-}
-
-/**
- * @brief Set the detail levels.
- *
- * @param level
- */
-void VrmlNodeLOD::setLevel(const VrmlMFNode & level) {
-    this->d_level = level;
-    this->setBVolumeDirty(true);
 }

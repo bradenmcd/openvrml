@@ -26,7 +26,6 @@
 #include "VrmlNodeInline.h"
 #include "VrmlNamespace.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "doc2.hpp"
 #include "MathUtils.h"
 #include "VrmlScene.h"
@@ -77,15 +76,12 @@ VrmlNodeInline::~VrmlNodeInline()
   delete d_namespace;
 }
 
-bool VrmlNodeInline::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeInline::cloneMe() const
+{
+  return new VrmlNodeInline(*this);
 }
+
 
 VrmlNodeInline* VrmlNodeInline::toInline() const
 { return (VrmlNodeInline*) this; }

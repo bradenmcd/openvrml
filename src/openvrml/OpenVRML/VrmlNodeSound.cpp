@@ -20,7 +20,6 @@
 
 #include "VrmlNodeSound.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 #include "VrmlScene.h"
 
@@ -86,24 +85,18 @@ VrmlNodeSound::~VrmlNodeSound()
 {
 }
 
-bool VrmlNodeSound::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeSound::cloneMe() const
+{
+  return new VrmlNodeSound(*this);
 }
 
-void VrmlNodeSound::resetVisitedFlag() {
-    if (this->visited) {
-        this->visited = false;
-        if (this->d_source.get()) {
-            this->d_source.get()->resetVisitedFlag();
-        }
-    }
+void VrmlNodeSound::cloneChildren(VrmlNamespace *ns)
+{
+  if (d_source.get())
+    d_source.set(d_source.get()->clone(ns));
 }
+
 
 VrmlNodeSound* VrmlNodeSound::toSound() const
 { return (VrmlNodeSound*) this; }
@@ -127,6 +120,13 @@ void VrmlNodeSound::addToScene(VrmlScene *s, const char *relUrl)
   d_scene = s;
   if (d_source.get()) d_source.get()->addToScene(s, relUrl);
 }
+
+void VrmlNodeSound::copyRoutes(VrmlNamespace *ns) const
+{
+  VrmlNode::copyRoutes(ns);
+  if (d_source.get()) d_source.get()->copyRoutes(ns);
+}
+
 
 ostream& VrmlNodeSound::printFields(ostream& os, int indent)
 {
@@ -199,20 +199,3 @@ void VrmlNodeSound::setField(const char *fieldName,
     VrmlNodeChild::setField(fieldName, fieldValue);
 }
 
-/**
- * @brief Get the sound source associated with this Sound.
- *
- * @return source
- */
-const VrmlSFNode & VrmlNodeSound::getSource() const {
-    return this->d_source;
-}
-
-/**
- * @brief Set the sound source associated with this Sound.
- *
- * @param source
- */
-void VrmlNodeSound::setSource(const VrmlSFNode & source) {
-    this->d_source = source;
-}

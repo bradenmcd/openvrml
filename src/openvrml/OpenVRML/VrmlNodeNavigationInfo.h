@@ -38,8 +38,8 @@ public:
   VrmlNodeNavigationInfo(VrmlScene *scene);
   virtual ~VrmlNodeNavigationInfo();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  
+  virtual VrmlNode *cloneMe() const;
+
   virtual VrmlNodeNavigationInfo* toNavigationInfo() const;
 
   // Bindable nodes must notify the scene of their existence.

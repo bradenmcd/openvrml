@@ -24,6 +24,9 @@
 #include "VrmlNode.h"
 class VrmlNodeScene;
 
+/**
+ * Base class for all nodes that may be children of a Group node. 
+ */
 class VrmlNodeChild : public VrmlNode {
 
 public:
@@ -31,12 +34,11 @@ public:
   // Define the fields of all built in child nodes
   static VrmlNodeType *defineType(VrmlNodeType *t);
 
-  virtual const VrmlNodeChild * toChild() const;
-  virtual VrmlNodeChild * toChild();
+  VrmlNodeChild(VrmlScene *);
+
+  virtual VrmlNodeChild* toChild() const;
 
 protected:
-  VrmlNodeChild(VrmlScene *);
-  VrmlNodeChild(const VrmlNodeChild & node);
 
 };
 

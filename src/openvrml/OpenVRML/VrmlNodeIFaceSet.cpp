@@ -20,7 +20,6 @@
 
 #include "VrmlNodeIFaceSet.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "VrmlNodeColor.h"
 #include "VrmlNodeCoordinate.h"
 #include "VrmlNodeNormal.h"
@@ -81,33 +80,24 @@ VrmlNodeIFaceSet::~VrmlNodeIFaceSet()
 {
 }
 
-bool VrmlNodeIFaceSet::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeIFaceSet::cloneMe() const
+{
+  return new VrmlNodeIFaceSet(*this);
 }
 
-void VrmlNodeIFaceSet::resetVisitedFlag() {
-    if (this->visited) {
-        this->visited = false;
-        if (this->d_color.get()) {
-            this->d_color.get()->resetVisitedFlag();
-        }
-        if (this->d_coord.get()) {
-            this->d_coord.get()->resetVisitedFlag();
-        }
-        if (this->d_normal.get()) {
-            this->d_normal.get()->resetVisitedFlag();
-        }
-        if (this->d_texCoord.get()) {
-            this->d_texCoord.get()->resetVisitedFlag();
-        }
-    }
+void VrmlNodeIFaceSet::cloneChildren(VrmlNamespace* ns)
+{
+  if (d_color.get())
+    d_color.set(d_color.get()->clone(ns));
+  if (d_coord.get())
+    d_coord.set(d_coord.get()->clone(ns));
+  if (d_normal.get())
+    d_normal.set(d_normal.get()->clone(ns));
+  if (d_texCoord.get())
+    d_texCoord.set(d_texCoord.get()->clone(ns));
 }
+
 
 bool VrmlNodeIFaceSet::isModified() const
 {
@@ -147,6 +137,16 @@ void VrmlNodeIFaceSet::addToScene( VrmlScene *s, const char *rel )
   if (d_normal.get()) d_normal.get()->addToScene(s, rel);
   if (d_texCoord.get()) d_texCoord.get()->addToScene(s, rel);
 }
+
+void VrmlNodeIFaceSet::copyRoutes( VrmlNamespace *ns ) const
+{
+  VrmlNode::copyRoutes(ns);
+  if (d_color.get()) d_color.get()->copyRoutes(ns);
+  if (d_coord.get()) d_coord.get()->copyRoutes(ns);
+  if (d_normal.get()) d_normal.get()->copyRoutes(ns);
+  if (d_texCoord.get()) d_texCoord.get()->copyRoutes(ns);
+}
+
 
 ostream& VrmlNodeIFaceSet::printFields(ostream& os, int indent)
 {
@@ -289,8 +289,14 @@ void VrmlNodeIFaceSet::setField(const char *fieldName,
 }
 
 
+VrmlNode* VrmlNodeIFaceSet::getNormal()
+{   return d_normal.get(); }
+
 const VrmlMFInt32 & VrmlNodeIFaceSet::getNormalIndex() const
 {   return d_normalIndex; }
+
+VrmlNode* VrmlNodeIFaceSet::getTexCoord()
+{   return d_texCoord.get(); }
 
 const VrmlMFInt32 & VrmlNodeIFaceSet::getTexCoordIndex() const
 {   return d_texCoordIndex; }
@@ -331,42 +337,4 @@ const VrmlBVolume* VrmlNodeIFaceSet::getBVolume() const
   if (this->isBVolumeDirty())
     ((VrmlNodeIFaceSet*)this)->recalcBSphere();
   return &d_bsphere; // hmmm, const?
-}
-
-/**
- * @brief Get the Normal node associated with this IndexedFaceSet.
- *
- * @return normal
- */
-const VrmlSFNode & VrmlNodeIFaceSet::getNormal() const {
-    return this->d_normal;
-}
-
-/**
- * @brief Set the Normal node associated with this IndexedFaceSet.
- *
- * @param normal
- */
-void VrmlNodeIFaceSet::setNormal(const VrmlSFNode & normal) {
-    this->d_normal = normal;
-}
-
-/**
- * @brief Get the TextureCoordinate node associated with this
- *        IndexedFaceSet.
- *
- * @return the SFNode value of texCoord
- */
-const VrmlSFNode & VrmlNodeIFaceSet::getTexCoord() const {
-    return this->d_texCoord;
-}
-
-/**
- * @brief Set the TextureCoordinate node associated with this
- *        IndexedFaceSet.
- *
- * @param textCoord
- */
-void VrmlNodeIFaceSet::setTexCoord(const VrmlSFNode & texCoord) {
-    this->d_texCoord = texCoord;
 }

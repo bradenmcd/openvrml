@@ -39,14 +39,16 @@ public:
   VrmlNodeLOD(VrmlScene *);
   virtual ~VrmlNodeLOD();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  virtual void resetVisitedFlag();
-  
+  virtual VrmlNode *cloneMe() const;
+  void cloneChildren(VrmlNamespace *);
+
   virtual bool isModified() const;
   virtual void updateModified(VrmlNodePath& path);
   virtual void clearFlags();
 
   virtual void addToScene( VrmlScene *s, const char *relUrl );
+
+  virtual void copyRoutes(VrmlNamespace *ns) const;
 
   virtual ostream& printFields(ostream& os, int indent);
 
@@ -56,8 +58,7 @@ public:
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   virtual VrmlNodeLOD* toLOD() const;
-  const VrmlMFNode & getLevel() const;
-  void setLevel(const VrmlMFNode & level);
+  VrmlMFNode *getLevel()  { return &d_level;}
   virtual const VrmlMFFloat& getRange() const;
   virtual const VrmlSFVec3f& getCenter() const;
 

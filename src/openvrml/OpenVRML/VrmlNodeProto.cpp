@@ -30,8 +30,6 @@
  */
 #include "VrmlNodeProto.h"
 #include "VrmlNamespace.h"
-#include "VrmlNodeVisitor.h"
-#include "Route.h"
 #include "VrmlMFNode.h"
 #include "VrmlBSphere.h"
 
@@ -84,6 +82,7 @@ VrmlNodeProto::VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene) :
   d_nodeType(nodeDef->reference()),
   d_instantiated(false),
   d_scope(0),
+  d_nodes(0),
   d_viewerObject(0)
 {
   this->setBVolumeDirty(true); // lazy calc of bvolume
@@ -94,6 +93,7 @@ VrmlNodeProto::VrmlNodeProto(const VrmlNodeProto &n) :
   d_nodeType(n.nodeType().reference()),
   d_instantiated(false),
   d_scope(0),
+  d_nodes(0),
   d_viewerObject(0)
 {
   // Copy fields.
@@ -133,31 +133,20 @@ VrmlNodeProto::~VrmlNodeProto()
       delete ed;
     }
   
+  delete d_nodes;
   delete d_scope;
   d_nodeType->dereference();
 }
 
 
-bool VrmlNodeProto::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+// Note that the copy constructor doesn't copy the implementation
+// nodes, so they will need to be instantiated.
+
+VrmlNode *VrmlNodeProto::cloneMe() const
+{
+  return new VrmlNodeProto(*this);
 }
 
-void VrmlNodeProto::resetVisitedFlag() {
-    if (this->visited) {
-        this->visited = false;
-        for (size_t i = 0; i < this->implNodes.getLength(); ++i) {
-            if (this->implNodes[i]) {
-                this->implNodes[i]->resetVisitedFlag();
-            }
-        }
-    }
-}
 
 VrmlNodeProto* VrmlNodeProto::toProto() const
 { return (VrmlNodeProto*) this; }
@@ -173,14 +162,31 @@ void VrmlNodeProto::instantiate()
   //theSystem->debug("%s::%s instantiate\n", d_nodeType->getName(),
   //name());
 
-  if (this->implNodes.getLength() == 0)
+  if (! d_nodes)
     {
+      VrmlMFNode *protoNodes = d_nodeType->getImplementationNodes();
+      int nNodes = protoNodes ? protoNodes->getLength() : 0;
+      int i;
+
       d_scope = new VrmlNamespace();
 
+      // Clear all flags - encountering a set flag during cloning
+      // indicates a USEd node, which should be referenced rather
+      // than cloned.
+      for (i=0; i<nNodes; ++i)
+	(*protoNodes)[i]->clearFlags();
+
       // Clone nodes
-      this->implNodes =
-              d_scope->cloneNodes(this->d_nodeType->getImplementationNodes());
-      
+      // Those squeamish about broken encapsulations shouldn't look...
+      d_nodes = new VrmlMFNode(nNodes);
+//      VrmlNode **clone = d_nodes->get();
+      for (i=0; i<nNodes; ++i)
+	(*this->d_nodes)[i] = (*protoNodes)[i]->clone(d_scope)->reference();
+
+      // Copy internal (to the PROTO implementation) ROUTEs.
+      for (i=0; i<nNodes; ++i)
+	(*protoNodes)[i]->copyRoutes( d_scope );
+
       // Collect eventIns coming from outside the PROTO.
       // A list of eventIns along with their maps to local
       // nodes/eventIns is constructed for each instance.
@@ -273,12 +279,12 @@ void VrmlNodeProto::addToScene(VrmlScene *s, const char *relUrl)
   //	   name(), d_nodes ? d_nodes->size() : 0);
 
   // ... and add the implementation nodes to the scene.
-  if (this->implNodes.getLength() > 0)
+  if (d_nodes)
     {
       const char *rel = d_nodeType->url();
-      int j, n = this->implNodes.getLength();
+      int j, n = d_nodes->getLength();
       for (j=0; j<n; ++j)
-	this->implNodes[j]->addToScene(s, rel ? rel : relUrl);
+	(*d_nodes)[j]->addToScene(s, rel ? rel : relUrl);
     }
 }
 
@@ -293,14 +299,25 @@ void VrmlNodeProto::accumulateTransform( VrmlNode *n )
     }
 
   // ... and process the implementation nodes.
-  if (this->implNodes.getLength() > 0)
+  if (d_nodes)
     {
-      int i, j = this->implNodes.getLength();
+      int i, j = d_nodes->getLength();
       for (i=0; i<j; ++i)
-	this->implNodes[i]->accumulateTransform(n);
+	(*d_nodes)[i]->accumulateTransform(n);
     }
 }
 
+
+int VrmlNodeProto::size()
+{   return d_nodes ? d_nodes->getLength() : 0;  }
+
+
+VrmlNode *VrmlNodeProto::child(int index)
+{
+  if (d_nodes && index >= 0 && index < (int) d_nodes->getLength())
+    return (*d_nodes)[index];
+  return 0;
+}
 
 // Print the node type, instance vars
 
@@ -315,9 +332,9 @@ ostream& VrmlNodeProto::printFields(ostream& os, int )
 
 VrmlNode *VrmlNodeProto::firstNode() const 
 {
-    return (this->implNodes.getLength() > 0)
-            ? this->implNodes[0]
-            : d_nodeType->firstNode();
+  return ((d_nodes && d_nodes->getLength())
+	  ? (*d_nodes)[0]
+	  : d_nodeType->firstNode());
 }
 
 
@@ -466,14 +483,14 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
   if (d_viewerObject)
     viewer->insertReference(d_viewerObject);
 
-  else if (this->implNodes.getLength() > 0)
+  else if (d_nodes)
     {
       d_viewerObject = viewer->beginObject( name() );
 
       // render the nodes with the new values
-      int n = this->implNodes.getLength();
+      int n = d_nodes->getLength();
       for (int j = 0; j<n; ++j)
-	this->implNodes[j]->render(viewer, rc);
+	(*d_nodes)[j]->render(viewer, rc);
 
       viewer->endObject();
     }
@@ -575,10 +592,6 @@ VrmlNodePositionInt* VrmlNodeProto::toPositionInt() const
 
 VrmlNodeScalarInt* VrmlNodeProto::toScalarInt() const    
 { return firstNode() ? firstNode()->toScalarInt() : 0; }
-
-const VrmlMFNode & VrmlNodeProto::getImplNodes() const {
-    return this->implNodes;
-}
 
 const VrmlBVolume*
 VrmlNodeProto::getBVolume() const

@@ -20,7 +20,6 @@
 
 #include "VrmlNodeText.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "VrmlNodeFontStyle.h"
 #include "MathUtils.h"
 #include "Viewer.h"
@@ -67,23 +66,16 @@ VrmlNodeText::~VrmlNodeText()
 {
 }
 
-bool VrmlNodeText::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeText::cloneMe() const
+{
+  return new VrmlNodeText(*this);
 }
 
-void VrmlNodeText::resetVisitedFlag() {
-    if (this->visited) {
-        this->visited = false;
-        if (this->d_fontStyle.get()) {
-            this->d_fontStyle.get()->resetVisitedFlag();
-        }
-    }
+void VrmlNodeText::cloneChildren(VrmlNamespace *ns)
+{
+  if (d_fontStyle.get())
+    d_fontStyle.set(d_fontStyle.get()->clone(ns));
 }
 
 bool VrmlNodeText::isModified() const
@@ -111,6 +103,12 @@ void VrmlNodeText::addToScene( VrmlScene *s, const char *relUrl )
 {
   d_scene = s;
   if (d_fontStyle.get()) d_fontStyle.get()->addToScene(s, relUrl);
+}
+
+void VrmlNodeText::copyRoutes( VrmlNamespace *ns ) const
+{
+  VrmlNode::copyRoutes(ns);
+  if (d_fontStyle.get()) d_fontStyle.get()->copyRoutes(ns);
 }
 
 ostream& VrmlNodeText::printFields(ostream& os, int indent)
@@ -180,22 +178,4 @@ void VrmlNodeText::setField(const char *fieldName,
   else if TRY_FIELD(maxExtent, SFFloat)
   else
     VrmlNodeGeometry::setField(fieldName, fieldValue);
-}
-
-/**
- * @brief Get the FontStyle associated with this Text node.
- *
- * @return fontStyle
- */
-const VrmlSFNode & VrmlNodeText::getFontStyle() const {
-    return this->d_fontStyle;
-}
-
-/**
- * @brief Set the FontStyle associated with this Text node.
- *
- * @param fontStyle
- */
-void VrmlNodeText::setFontStyle(const VrmlSFNode & fontStyle) {
-    this->d_fontStyle = fontStyle;
 }

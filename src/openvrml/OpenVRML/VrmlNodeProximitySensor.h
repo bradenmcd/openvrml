@@ -40,8 +40,8 @@ public:
   VrmlNodeProximitySensor( VrmlScene *scene = 0);
   virtual ~VrmlNodeProximitySensor();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  
+  virtual VrmlNode *cloneMe() const;
+
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual void render(Viewer *, VrmlRenderContext rc);

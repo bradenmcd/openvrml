@@ -22,7 +22,6 @@
 
 #include "VrmlNodeScript.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "VrmlSFTime.h"
 #include "VrmlSFNode.h"
 #include "VrmlMFNode.h"
@@ -85,18 +84,25 @@ VrmlNodeScript::VrmlNodeScript( VrmlScene *scene ) :
   if (d_scene) d_scene->addScript(this);
 }
 
-VrmlNodeScript::VrmlNodeScript(const VrmlNodeScript & node):
-        VrmlNodeChild(node), d_directOutput(node.d_directOutput),
-        d_mustEvaluate(node.d_mustEvaluate), d_url(node.d_url), d_script(0),
-        d_eventIns(0), d_eventOuts(0), d_fields(0), d_eventsReceived(0) {
+VrmlNodeScript::VrmlNodeScript( const VrmlNodeScript &n ) :
+  VrmlNodeChild(0),
+  d_directOutput(n.d_directOutput),
+  d_mustEvaluate(n.d_mustEvaluate),
+  d_url(n.d_url),
+  d_script(0),		// Force creation of a distinct script object
+  d_eventIns(0),
+  d_eventOuts(0),
+  d_fields(0),  
+  d_eventsReceived(0)
+{
   // add eventIn/eventOut/fields from source Script
   FieldList::const_iterator i;
 
-  for (i = node.d_eventIns.begin(); i != node.d_eventIns.end(); ++i)
+  for (i = n.d_eventIns.begin(); i != n.d_eventIns.end(); ++i)
     addEventIn( (*i)->name, (*i)->type );
-  for (i = node.d_eventOuts.begin(); i != node.d_eventOuts.end(); ++i)
+  for (i = n.d_eventOuts.begin(); i != n.d_eventOuts.end(); ++i)
     addEventOut( (*i)->name, (*i)->type );
-  for (i = node.d_fields.begin(); i != node.d_fields.end(); ++i)
+  for (i = n.d_fields.begin(); i != n.d_fields.end(); ++i)
     addField(  (*i)->name, (*i)->type, (*i)->value );
 }
 
@@ -135,36 +141,47 @@ VrmlNodeScript::~VrmlNodeScript()
     }
 }
 
-bool VrmlNodeScript::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeScript::cloneMe() const
+{
+  return new VrmlNodeScript(*this);
 }
 
-void VrmlNodeScript::resetVisitedFlag() {
-    if (this->visited) {
-        this->visited = false;
-        for (FieldList::const_iterator itr = this->d_fields.begin();
-                itr != this->d_fields.end(); ++itr) {
-            assert((*itr)->value);
+//
+// Any SFNode or MFNode fields need to be cloned as well.
+//
+
+void VrmlNodeScript::cloneChildren(VrmlNamespace * ns) {
+    for (FieldList::iterator itr = this->d_fields.begin();
+            itr != this->d_fields.end(); ++itr) {
+        if ((*itr)->value) {
             if ((*itr)->type == VrmlField::SFNODE) {
                 assert(dynamic_cast<VrmlSFNode *>((*itr)->value));
-                static_cast<VrmlSFNode *>((*itr)->value)
-                        ->get()->resetVisitedFlag();
+                const VrmlSFNode * const sfn =
+                        static_cast<VrmlSFNode *>((*itr)->value);
+                if (sfn->get()) {
+                    (*itr)->value = new VrmlSFNode(sfn->get()->clone(ns));
+                    delete sfn;
+                }
             } else if ((*itr)->type == VrmlField::MFNODE) {
                 assert(dynamic_cast<VrmlMFNode *>((*itr)->value));
-                VrmlMFNode & mfnode(static_cast<VrmlMFNode &>(*(*itr)->value));
-                for (size_t i = 0; i < mfnode.getLength(); ++i) {
-                    mfnode[i]->resetVisitedFlag();
+                VrmlMFNode * const mfn =
+                        static_cast<VrmlMFNode *>((*itr)->value);
+                for (size_t index = 0;
+                        index < static_cast<VrmlMFNode *>((*itr)->value)->getLength();
+                        ++index) {
+                    if ((*mfn)[index]) {
+                        VrmlNode * const tmp = (*mfn)[index];
+                        (*mfn)[index] = tmp->clone(ns);
+                        tmp->dereference();
+                    }
                 }
             }
         }
     }
 }
+
+
 
 VrmlNodeScript* VrmlNodeScript::toScript() const
 { return (VrmlNodeScript*) this; }

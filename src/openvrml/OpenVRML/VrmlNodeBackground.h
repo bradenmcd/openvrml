@@ -47,8 +47,9 @@ public:
   VrmlNodeBackground(VrmlScene *);
   virtual ~VrmlNodeBackground();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  
+  // Copy the node.
+  virtual VrmlNode *cloneMe() const;
+
   virtual VrmlNodeBackground* toBackground() const;
 
   virtual void addToScene( VrmlScene *s, const char *relativeUrl );

@@ -43,9 +43,9 @@ public:
   VrmlNodeGroup(VrmlScene *s = 0);
   virtual ~VrmlNodeGroup();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  virtual void resetVisitedFlag();
-  
+  virtual VrmlNode *cloneMe() const;
+  virtual void cloneChildren(VrmlNamespace *);
+
   virtual VrmlNodeGroup* toGroup() const;
 
   virtual bool isModified() const;
@@ -53,6 +53,8 @@ public:
   virtual void clearFlags();
 
   virtual void addToScene( VrmlScene *s, const char *relativeUrl );
+
+  virtual void copyRoutes(VrmlNamespace *ns) const;
 
   virtual ostream& printFields(ostream& os, int indent);
 
@@ -63,8 +65,6 @@ public:
 
   void activate( double timeStamp, bool isOver, bool isActive, double *p );
 
-  const VrmlMFNode & getChildren() const;
-  void setChildren(const VrmlMFNode & children);
   void addChildren( const VrmlMFNode &children );
   void removeChildren( const VrmlMFNode &children );
   void removeChildren();

@@ -36,8 +36,8 @@ public:
   VrmlNodeSphere(VrmlScene *);
   virtual ~VrmlNodeSphere();
 
-  virtual bool accept(VrmlNodeVisitor & visitor);
-  
+  virtual VrmlNode *cloneMe() const;
+
   virtual ostream& printFields(ostream& os, int indent);
 
   virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);

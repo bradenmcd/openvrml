@@ -21,7 +21,6 @@
 #include "VrmlNodeBox.h"
 
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 #include "Viewer.h"
 #include "VrmlBSphere.h"
@@ -68,15 +67,11 @@ VrmlNodeBox::~VrmlNodeBox()
 {
 }
 
-bool VrmlNodeBox::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+VrmlNode *VrmlNodeBox::cloneMe() const
+{
+  return new VrmlNodeBox(*this);
 }
+
 
 ostream& VrmlNodeBox::printFields(ostream& os, int )
 {

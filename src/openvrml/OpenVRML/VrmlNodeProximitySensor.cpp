@@ -24,7 +24,6 @@
 
 #include "VrmlNodeProximitySensor.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "MathUtils.h"
 #include "System.h"
 #include "Viewer.h"
@@ -87,15 +86,11 @@ VrmlNodeProximitySensor::~VrmlNodeProximitySensor()
 {
 }
 
-bool VrmlNodeProximitySensor::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+VrmlNode *VrmlNodeProximitySensor::cloneMe() const
+{
+  return new VrmlNodeProximitySensor(*this);
 }
+
 
 ostream& VrmlNodeProximitySensor::printFields(ostream& os, int indent)
 {

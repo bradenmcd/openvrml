@@ -20,7 +20,6 @@
 
 #include "VrmlNodeSphere.h"
 #include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
 #include "Viewer.h"
 
 #include "VrmlBSphere.h"
@@ -65,15 +64,11 @@ VrmlNodeSphere::~VrmlNodeSphere()
 {
 }
 
-bool VrmlNodeSphere::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+VrmlNode *VrmlNodeSphere::cloneMe() const
+{
+  return new VrmlNodeSphere(*this);
 }
+
 
 ostream& VrmlNodeSphere::printFields(ostream& os, int )
 {

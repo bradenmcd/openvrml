@@ -19,7 +19,6 @@
 // 
 
 #include "VrmlNodeColorInt.h"
-#include "VrmlNodeVisitor.h"
 #include "VrmlNodeType.h"
 
 #include <math.h>
@@ -71,15 +70,12 @@ VrmlNodeColorInt::~VrmlNodeColorInt()
 {
 }
 
-bool VrmlNodeColorInt::accept(VrmlNodeVisitor & visitor) {
-    if (!this->visited) {
-        this->visited = true;
-        visitor.visit(*this);
-        return true;
-    }
-    
-    return false;
+
+VrmlNode *VrmlNodeColorInt::cloneMe() const
+{
+  return new VrmlNodeColorInt(*this);
 }
+
 
 ostream& VrmlNodeColorInt::printFields(ostream& os, int indent)
 {
