@@ -4,6 +4,9 @@
           src/openvrml/OpenVRML/VrmlMatrix.h: Const-correctness
           improvements and exception specifications for VrmlMatrix.
 
+        * src/openvrml/OpenVRML/node.cpp: Fixed field value type
+          agreement test in Node::addRoute.
+
 2002-12-02  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/node.h: Added OPENVRML_SCOPE to some API

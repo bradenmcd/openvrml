@@ -1378,7 +1378,7 @@ void Node::addRoute(const std::string & fromEventOut,
                                    toEventIn);
     }
 
-    if (fromInterfaceType == toInterfaceType) {
+    if (fromInterfaceType != toInterfaceType) {
         throw FieldValueTypeMismatch();
     }
 
