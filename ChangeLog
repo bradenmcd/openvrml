@@ -1,3 +1,11 @@
+2003-11-04  Braden McDaniel  <braden@endoframe.com>
+
+	Added some more tests.
+
+	* test/Makefile.am
+	* test/browser-create_vrml_from_stream.cpp
+	* test/parse-anchor.cpp
+
 2003-11-03  Braden McDaniel  <braden@endoframe.com>
 
 	* openvrml.spec.in:  Removed lookat-bin from lookat package.
