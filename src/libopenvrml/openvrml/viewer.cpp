@@ -185,7 +185,7 @@ viewer::~viewer() {}
  */
 
 /**
- * @fn viewer::object_t viewer::insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, size_t * whc, unsigned char ** pixels)
+ * @fn viewer::object_t viewer::insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, size_t * whc, const unsigned char ** pixels)
  *
  * @brief Insert a background into a display list.
  *
@@ -439,19 +439,6 @@ viewer::~viewer() {}
  * @brief Indicate that a node should be sensitive to the pointing device.
  *
  * @param object    a node.
- */
-
-/**
- * @fn void viewer::scale_texture(size_t w, size_t h, size_t newW, size_t newH, size_t nc, unsigned char * pixels)
- *
- * @brief Scale a texture.
- *
- * @param w         current width.
- * @param h         current height,
- * @param newW      desired width.
- * @param newH      desired height.
- * @param nc        number of components.
- * @param pixels    pixel data.
  */
 
 /**

@@ -7050,7 +7050,7 @@ const char * img::url() const
  */
 
 /**
- * @fn size_t img::pixels() const
+ * @fn const unsigned char * img::pixels() const
  *
  * @brief Pixel data.
  *
@@ -7065,13 +7065,14 @@ const char * img::url() const
  * @return the pixel data for a frame of the currently loaded image; or 0 if
  *         @p frame is not valid.
  */
-unsigned char * img::pixels(const size_t frame) const
+const unsigned char * img::pixels(const size_t frame) const
 {
   return (frame < this->nframes_)
       ? this->frame_[frame]
       : 0;
 }
 
+# if 0
 /**
  * @fn void img::resize(size_t w, size_t h)
  *
@@ -7083,6 +7084,7 @@ unsigned char * img::pixels(const size_t frame) const
  * @param w new width.
  * @param h new height.
  */
+# endif
 
 } // namespace openvrml
 

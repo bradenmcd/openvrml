@@ -2183,32 +2183,6 @@ namespace {
                 using std::endl;
                 cerr << "Error: couldn't read Background texture from URL "
                      << mfstring(urls.begin(), urls.end()) << endl;
-            } else if (tex[thisIndex].pixels() && tex[thisIndex].nc()) {
-                //
-                // The texture needs to be scaled.
-                //
-
-                // Ensure the image dimensions are powers of two
-                static const size_t size[] = {
-                    2, 4, 8, 16, 32, 64, 128, 256, 512, 1024
-                };
-                static const size_t sizes = sizeof size / sizeof (size_t);
-                size_t w = tex[thisIndex].w();
-                size_t h = tex[thisIndex].h();
-                size_t i, j;
-                for (i = 0; i < sizes; ++i) { if (w < size[i]) { break; } }
-                for (j = 0; j < sizes; ++j) { if (h < size[j]) { break; } }
-
-                if (i > 0 && j > 0) {
-                    // Always scale images down in size and reuse the same
-                    // pixel memory. This can cause some ugliness...
-                    if (w != size[i - 1] || h != size[j - 1]) {
-                        viewer.scale_texture(w, h, size[i - 1], size[j - 1],
-                                             tex[thisIndex].nc(),
-                                             tex[thisIndex].pixels());
-                        tex[thisIndex].resize(size[i - 1], size[j - 1]);
-                    }
-                }
             }
         }
 
@@ -2275,7 +2249,7 @@ void background_class::render(openvrml::viewer & viewer) throw ()
             }
 
             size_t i, whc[18];    // Width, height, and nComponents for 6 tex
-            unsigned char *pixels[6];
+            const unsigned char * pixels[6];
             int nPix = 0;
 
             for (i = 0; i < 6; ++i) {
@@ -7363,36 +7337,13 @@ void image_texture_node::render(openvrml::viewer & viewer,
     if (this->texObject && this->image) {
         viewer.insert_texture_reference(this->texObject, this->image->nc());
     } else {
-        unsigned char *pix;
-
-        if (this->image && (pix = this->image->pixels())) {
-            // Ensure the image dimensions are powers of two
-            const size_t sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-            const size_t nSizes = sizeof(sizes) / sizeof(int);
-            const size_t w = this->image->w();
-            const size_t h = this->image->h();
-            size_t i, j;
-            for (i = 0; i < nSizes; ++i) { if (w < sizes[i]) { break; } }
-            for (j = 0; j < nSizes; ++j) { if (h < sizes[j]) { break; } }
-
-            if (i > 0 && j > 0) {
-                // Always scale images down in size and reuse the same pixel
-                // memory. This can cause some ugliness...
-                if (w != sizes[i - 1] || h != sizes[j - 1]) {
-                    viewer.scale_texture(w, h, sizes[i - 1], sizes[j - 1],
-                                        this->image->nc(), pix);
-                    this->image->resize(sizes[i - 1], sizes[j - 1]);
-                }
-
-                this->texObject = viewer.insert_texture(this->image->w(),
-                                                        this->image->h(),
-                                                        this->image->nc(),
-                                                        this->repeatS.value,
-                                                        this->repeatT.value,
-                                                        pix,
-                                                        true);
-            }
-        }
+        this->texObject = viewer.insert_texture(this->image->w(),
+                                                this->image->h(),
+                                                this->image->nc(),
+                                                this->repeatS.value,
+                                                this->repeatT.value,
+                                                this->image->pixels(),
+                                                true);
     }
 
     this->node::modified(false);
@@ -9407,43 +9358,24 @@ void movie_texture_node::render(openvrml::viewer & viewer,
 {
     if (!this->image || this->frame < 0) { return; }
 
-    unsigned char * pix = this->image->pixels(this->frame);
-
     if (this->frame != this->lastFrame && this->texObject) {
         viewer.remove_texture_object(this->texObject);
         this->texObject = 0;
     }
 
-    if (!pix) {
+    if (!this->image->pixels(this->frame)) {
         this->frame = -1;
     } else if (this->texObject) {
         viewer.insert_texture_reference(this->texObject, this->image->nc());
     } else {
-        // Ensure image dimensions are powers of 2 (move to NodeTexture...)
-        const size_t sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-        const size_t nSizes = sizeof(sizes) / sizeof(int);
-        const size_t w = this->image->w();
-        const size_t h = this->image->h();
-        size_t i, j;
-        for (i = 0; i < nSizes; ++i) { if (w < sizes[i]) { break; } }
-        for (j = 0; j < nSizes; ++j) { if (h < sizes[j]) { break; } }
-
-        if (i > 0 && j > 0) {
-            // Always scale images down in size and reuse the same pixel memory.
-            if (w != sizes[i - 1] || h != sizes[j - 1]) {
-                viewer.scale_texture(w, h, sizes[i - 1], sizes[j - 1],
-                                     this->image->nc(), pix);
-                this->image->resize(sizes[i - 1], sizes[j - 1]);
-            }
-
-            this->texObject = viewer.insert_texture(this->image->w(),
-                                                    this->image->h(),
-                                                    this->image->nc(),
-                                                    this->repeatS.value,
-                                                    this->repeatT.value,
-                                                    pix,
-                                                    !this->active.value);
-        }
+        this->texObject =
+            viewer.insert_texture(this->image->w(),
+                                  this->image->h(),
+                                  this->image->nc(),
+                                  this->repeatS.value,
+                                  this->repeatT.value,
+                                  this->image->pixels(this->frame),
+                                  !this->active.value);
     }
 
     this->lastFrame = this->frame;
@@ -10784,42 +10716,13 @@ void pixel_texture_node::render(openvrml::viewer & viewer,
             viewer.insert_texture_reference(this->texObject,
                                             this->image.comp());
         } else {
-            // Ensure the image dimensions are powers of two
-            static const size_t sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-            static const size_t nSizes = sizeof sizes / sizeof(int);
-            const size_t w = this->image.x();
-            const size_t h = this->image.y();
-            size_t i, j;
-            for (i = 0; i < nSizes; ++i) { if (w < sizes[i]) { break; } }
-            for (j = 0; j < nSizes; ++j) { if (h < sizes[j]) { break; } }
-
-            if (i > 0 && j > 0) {
-                // Always scale images down in size and reuse the same pixel
-                // memory.
-                if (w != sizes[i - 1] || h != sizes[j - 1]) {
-                    using std::vector;
-                    using std::copy;
-
-                    const size_t numBytes =
-                        this->image.x() * this->image.y() * this->image.comp();
-                    vector<unsigned char> pixels(numBytes);
-                    copy(this->image.array(), this->image.array() + numBytes,
-                         pixels.begin());
-
-                    viewer.scale_texture(w, h, sizes[i - 1], sizes[j - 1],
-                                         this->image.comp(), &pixels[0]);
-                    this->image.set(sizes[i - 1], sizes[j - 1],
-                                    this->image.comp(), &pixels[0]);
-                }
-
-                this->texObject = viewer.insert_texture(this->image.x(),
-                                                        this->image.y(),
-                                                        this->image.comp(),
-                                                        this->repeatS.value,
-                                                        this->repeatT.value,
-                                                        this->image.array(),
-                                                        true);
-            }
+            this->texObject = viewer.insert_texture(this->image.x(),
+                                                    this->image.y(),
+                                                    this->image.comp(),
+                                                    this->repeatS.value,
+                                                    this->repeatT.value,
+                                                    this->image.array(),
+                                                    true);
         }
     }
     this->node::modified(false);

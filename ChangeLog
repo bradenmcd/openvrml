@@ -1,5 +1,18 @@
 2003-11-02  Braden McDaniel  <braden@endoframe.com>
 
+	Removed viewer::scale_texture.  Instead, do any texture
+	rescaling in the implementation of viewer::insert_texture.
+
+	* src/libopenvrml/openvrml/img.cpp
+	* src/libopenvrml/openvrml/img.h
+	* src/libopenvrml/openvrml/viewer.cpp
+	* src/libopenvrml/openvrml/viewer.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+
+2003-11-02  Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac:  Don't optionally generate Makefiles--that
 	screws up make.
 

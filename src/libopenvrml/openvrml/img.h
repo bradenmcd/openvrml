@@ -53,10 +53,11 @@ namespace openvrml {
         size_t h() const;
         size_t nc() const;
         size_t nframes() const;
-        unsigned char * pixels() const;
-        unsigned char * pixels(size_t frame) const;
-
+        const unsigned char * pixels() const;
+        const unsigned char * pixels(size_t frame) const;
+# if 0
         void resize(size_t w, size_t h);
+# endif
     };
 
     inline size_t img::w() const
@@ -79,16 +80,18 @@ namespace openvrml {
         return this->nframes_;
     }
 
-    inline unsigned char * img::pixels() const
+    inline const unsigned char * img::pixels() const
     {
         return this->pixels_;
     }
 
+# if 0
     inline void img::resize(const size_t w, const size_t h)
     {
         this->w_ = w;
         this->h_ = h;
     }
+# endif
 }
 
 # endif // OPENVRML_IMG_H

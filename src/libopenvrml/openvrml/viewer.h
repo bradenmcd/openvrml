@@ -75,7 +75,7 @@ namespace openvrml {
                           const std::vector<float> & sky_angle,
                           const std::vector<color> & sky_color,
                           size_t * whc = 0,
-                          unsigned char ** pixels = 0) = 0;
+                          const unsigned char ** pixels = 0) = 0;
 
         virtual object_t insert_box(const vec3f & size) = 0;
         virtual object_t insert_cone(float height, float radius, bool bottom,
@@ -158,11 +158,6 @@ namespace openvrml {
                                        bool geometry_color) = 0;
 
         virtual void set_sensitive(node * object) = 0;
-
-        virtual void scale_texture(size_t w, size_t h,
-                                   size_t newW, size_t newH,
-                                   size_t nc,
-                                   unsigned char * pixels) = 0;
 
         virtual texture_object_t insert_texture(size_t w, size_t h, size_t nc,
                                                 bool repeat_s,
