@@ -742,14 +742,6 @@ abstract_child_node::~abstract_child_node() throw ()
  */
 
 /**
- * @var viewer::object_t abstract_geometry_node::viewerObject
- *
- * @brief Handle for the renderer.
- *
- * @todo Move this to node?
- */
-
-/**
  * @brief Construct.
  *
  * @param type  the node_type for the node.
