@@ -1,5 +1,11 @@
 2004-03-01 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Makefile.am:  Changed "doc" make target to "html".  This
+	is consistent with the target automake generates.  Currently,
+	HTML documentation is all we generate.
+
+2004-03-01 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(browser::create_vrml_from_stream):  Treat any ANTLRException as
 	invalid_vrml.
