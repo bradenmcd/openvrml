@@ -1,3 +1,8 @@
+2002-06-06  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/script.cpp: Fixed segfault introduced
+          with JS_AddRoot cleanup.
+
 2002-06-05  Braden McDaniel  <braden@endoframe.com>
 
         * Doxygen love for VrmlScene.
@@ -25,9 +30,9 @@
         * src/openvrml/OpenVRML/Doc.cpp, src/openvrml/OpenVRML/doc2.hpp:
           std:: correctness fixes.
 
-        * VrmlScene.cpp: Removed OPENVRML_SCOPE from ProtoNode,
-          ProtoNodeClass; these classes are no longer part of the public
-          API.
+        * src/openvrml/OpenVRML/VrmlScene.cpp: Removed OPENVRML_SCOPE
+          from ProtoNode, ProtoNodeClass; these classes are no longer
+          part of the public API.
 
 2002-06-04  Braden McDaniel  <braden@endoframe.com>
 

@@ -5389,7 +5389,7 @@ namespace {
                     //
                     try {
                         for (size_t i = length; i < newArray.size(); ++i) {
-                            if (!JS_NewDoubleValue(cx, 0.0, &mfdata->array[i])) {
+                            if (!JS_NewDoubleValue(cx, 0.0, &newArray[i])) {
                                 throw std::bad_alloc();
                             }
                         }
@@ -6324,8 +6324,8 @@ namespace {
 
         JSBool MFString::setLength(JSContext * const cx, JSObject * const obj,
                                    const jsval id, jsval * const vp) throw () {
-            MFData * const mfdata = static_cast<MFData *>
-                                            (JS_GetPrivate(cx, obj));
+            MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
             if (!JSVAL_IS_INT(*vp) || JSVAL_TO_INT(*vp) < 0) {
@@ -6352,7 +6352,7 @@ namespace {
                     for (size_t i = length; i < newArray.size(); ++i) {
                         JSString * jsstring = JS_NewStringCopyZ(cx, "");
                         if (!jsstring) { throw std::bad_alloc(); }
-                        mfdata->array[i] = STRING_TO_JSVAL(jsstring);
+                        newArray[i] = STRING_TO_JSVAL(jsstring);
                     }
                 } catch (std::bad_alloc &) {
                     RemoveRoots(cx, newArray);
