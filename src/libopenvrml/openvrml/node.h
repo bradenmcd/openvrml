@@ -75,7 +75,6 @@ namespace openvrml {
 
     class unsupported_interface : public std::runtime_error {
     public:
-        explicit unsupported_interface(const std::string & message) throw ();
         explicit unsupported_interface(const node_interface & interface)
             throw ();
         unsupported_interface(const node_type & type,

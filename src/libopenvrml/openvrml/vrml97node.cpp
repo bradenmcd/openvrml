@@ -1396,7 +1396,7 @@ appearance_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
                         &appearance_node::texture_transform_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -1741,7 +1741,7 @@ audio_clip_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfbool_emitter>(
                         &audio_clip_node::is_active_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -2349,7 +2349,7 @@ background_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfbool_emitter>(
                         &background_node::is_bound_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -3165,7 +3165,7 @@ billboard_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<sfvec3f>(
                         &billboard_node::bbox_size_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -3383,7 +3383,7 @@ box_class::create_type(const std::string & id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfvec3f>(&box_node::size)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -3607,7 +3607,7 @@ collision_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sftime_emitter>(
                         &collision_node::collide_time_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -3742,7 +3742,7 @@ color_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<exposedfield<mfcolor> >(
                         &color_node::color_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -3897,7 +3897,7 @@ color_interpolator_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfcolor_emitter>(
                         &color_interpolator_node::value_changed_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -4143,7 +4143,7 @@ cone_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<sfbool>(
                         &cone_node::bottom)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -4285,7 +4285,7 @@ coordinate_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<exposedfield<mfvec3f> >(
                         &coordinate_node::point_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -4441,7 +4441,7 @@ coordinate_interpolator_class::create_type(
                     new node_type_t::event_emitter_ptr<mfvec3f_emitter>(
                         &coordinate_interpolator_node::value_changed_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -4690,7 +4690,7 @@ cylinder_class::create_type(const std::string & id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(&cylinder_node::top)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -4958,7 +4958,7 @@ cylinder_sensor_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfvec3f_emitter>(
                         &cylinder_sensor_node::track_point_changed_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -5361,7 +5361,7 @@ directional_light_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
                         &directional_light_node::on_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -5627,7 +5627,7 @@ elevation_grid_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<sffloat>(
                         &elevation_grid_node::z_spacing_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -6082,7 +6082,7 @@ extrusion_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<mfvec3f>(
                         &extrusion_node::spine_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -6707,7 +6707,7 @@ fog_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfbool_emitter>(
                         &fog_node::is_bound_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -6989,7 +6989,7 @@ font_style_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<sfbool>(
                         &font_style_node::topToBottom)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -7292,7 +7292,7 @@ group_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<sfvec3f>(
                         &group_node::bbox_size_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -7826,7 +7826,7 @@ image_texture_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<sfbool>(
                         &image_texture_node::repeat_t_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -8246,7 +8246,7 @@ indexed_face_set_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<mfint32>(
                         &indexed_face_set_node::tex_coord_index_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -8722,7 +8722,7 @@ indexed_line_set_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<mfint32>(
                         &indexed_line_set_node::coord_index_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -8883,7 +8883,7 @@ inline_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<sfvec3f>(
                         &inline_node::bbox_size_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -9113,7 +9113,7 @@ lod_class::create_type(const std::string & id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<mffloat>(&lod_node::range_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -9471,7 +9471,7 @@ material_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
                         &material_node::transparency_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -9776,7 +9776,7 @@ movie_texture_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfbool_emitter>(
                         &movie_texture_node::is_active_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -10346,7 +10346,7 @@ navigation_info_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfbool_emitter>(
                         &navigation_info_node::is_bound_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -10649,7 +10649,7 @@ normal_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<exposedfield<mfvec3f> >(
                         &normal_node::vector_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -10803,7 +10803,7 @@ normal_interpolator_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<mfvec3f_emitter>(
                         &normal_interpolator_node::value_changed_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -11082,7 +11082,7 @@ create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfrotation_emitter>(
                         &orientation_interpolator_node::value_changed_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -11339,7 +11339,7 @@ pixel_texture_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<sfbool>(
                         &pixel_texture_node::repeat_t_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -11577,7 +11577,7 @@ plane_sensor_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfvec3f_emitter>(
                         &plane_sensor_node::translation_changed_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -11987,7 +11987,7 @@ point_light_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
                         &point_light_node::radius_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -12180,7 +12180,7 @@ point_set_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
                         &point_set_node::coord_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -12439,7 +12439,7 @@ position_interpolator_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfvec3f_emitter>(
                         &position_interpolator_node::value_changed_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -12726,7 +12726,7 @@ proximity_sensor_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sftime_emitter>(
                         &proximity_sensor_node::exit_time_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -13044,7 +13044,7 @@ scalar_interpolator_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sffloat_emitter>(
                         &scalar_interpolator_node::value_changed_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -13262,7 +13262,7 @@ shape_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
                         &shape_node::geometry_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -13631,7 +13631,7 @@ sound_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<sfbool>(
                         &sound_node::spatialize_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -13805,7 +13805,7 @@ sphere_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<sffloat>(
                         &sphere_node::radius)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -14008,7 +14008,7 @@ sphere_sensor_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfvec3f_emitter>(
                         &sphere_sensor_node::track_point_changed_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -14464,7 +14464,7 @@ spot_light_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
                         &spot_light_node::radius_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -14684,7 +14684,7 @@ switch_class::create_type(const std::string & id,
                     switch_node::which_choice_exposedfield>(
                         &switch_node::which_choice_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -15082,7 +15082,7 @@ text_class::create_type(const std::string & id,
                     text_node::max_extent_exposedfield>(
                         &text_node::max_extent_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -16757,7 +16757,7 @@ texture_coordinate_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<exposedfield<mfvec2f> >(
                         &texture_coordinate_node::point_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -16922,7 +16922,7 @@ texture_transform_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<exposedfield<sfvec2f> >(
                         &texture_transform_node::translation_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -17169,7 +17169,7 @@ time_sensor_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sftime_emitter>(
                         &time_sensor_node::time_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -17759,7 +17759,7 @@ touch_sensor_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sftime_emitter>(
                         &touch_sensor_node::touch_time_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -18130,7 +18130,7 @@ transform_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<sfvec3f>(
                         &transform_node::bbox_size_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -18863,7 +18863,7 @@ viewpoint_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfbool_emitter>(
                         &viewpoint_node::is_bound_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -19419,7 +19419,7 @@ visibility_sensor_class::create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<sfbool_emitter>(
                         &visibility_sensor_node::is_active_emitter_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -19654,7 +19654,7 @@ world_info_class::create_type(const std::string & id,
                     new node_type_t::field_ptr<sfstring>(
                         &world_info_node::title)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;

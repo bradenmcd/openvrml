@@ -54,16 +54,6 @@ namespace openvrml {
 /**
  * @brief Construct.
  *
- * @param message   An informative error message.
- */
-unsupported_interface::unsupported_interface(const std::string & message)
-    throw ():
-    std::runtime_error(message)
-{}
-
-/**
- * @brief Construct.
- *
  * @param interface a node_interface.
  */
 unsupported_interface::unsupported_interface(const node_interface & interface)
@@ -541,6 +531,8 @@ namespace {
 }
 
 /**
+ * @ingroup nodes
+ *
  * @brief Find an interface matching @p id.
  *
  * If no interface is found with an interface identifier that is an exact match

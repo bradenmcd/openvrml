@@ -1,3 +1,13 @@
+2004-07-19 Braden McDaniel  <braden@endoframe.com>
+
+	Removed unsupported_interface constructor that takes only a
+	string.
+
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
 2004-07-18 Braden McDaniel  <braden@endoframe.com>
 
 	delete_route should throw unsupported_interface.

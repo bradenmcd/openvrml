@@ -1247,7 +1247,7 @@ const field_value & script_node::do_field(const std::string & id) const
             != this->field_value_map_.end()) {
         return *itr->second;
     }
-    throw unsupported_interface("Script node has no field \"" + id + "\".");
+    throw unsupported_interface(this->type, node_interface::field_id, id);
 }
 
 /**
@@ -1277,7 +1277,7 @@ event_listener & script_node::do_event_listener(const std::string & id)
             return *pos->second;
         }
     }
-    throw unsupported_interface(this->type, id);
+    throw unsupported_interface(this->type, node_interface::eventin_id, id);
 }
 
 /**
@@ -1305,7 +1305,9 @@ event_emitter & script_node::do_event_emitter(const std::string & id)
         } else if ((pos = this->eventout_map_.find(id + "_changed")) != end) {
             result = &pos->second->emitter();
         } else {
-            throw unsupported_interface(this->type, id);
+            throw unsupported_interface(this->type,
+                                        node_interface::eventout_id,
+                                        id);
         }
     }
     assert(result);
