@@ -6567,6 +6567,11 @@ namespace {
         next_start_code(m);
         switch (data = show_bits32(m)) {
 
+        case 0:
+          // Then there are no frames left, return
+          return 0;
+          break;
+
         case SEQ_END_CODE:		/* Return last frame if available. */
     #if DEBUG
           fprintf(stderr,"SEQ_END_CODE\n");
