@@ -52,7 +52,7 @@ public:
 
 private:
 
-  const char ** d_v;
+  char * * d_v;
   size_t d_allocated;
   size_t d_size;
 

@@ -2543,7 +2543,7 @@ ostream& VrmlMFRotation::print(ostream& os) const
 #include "VrmlMFString.h"
 
 VrmlMFString::VrmlMFString(size_t n, char const * const * v)
-  : d_v(n ? new const char *[n] : 0), d_allocated(n), d_size(n)
+  : d_v(n ? new char *[n] : 0), d_allocated(n), d_size(n)
 {
     if (v) {
         for (size_t i(0); i < n; ++i, ++v) {
@@ -2562,7 +2562,7 @@ VrmlMFString::VrmlMFString(size_t n, char const * const * v)
 
 
 VrmlMFString::VrmlMFString(VrmlMFString const & rhs)
-  : d_v(new const char *[rhs.d_size]), d_allocated(rhs.d_size), d_size(rhs.d_size)
+  : d_v(new char *[rhs.d_size]), d_allocated(rhs.d_size), d_size(rhs.d_size)
 {
     for (size_t i(0); i < rhs.d_size; ++i) {
         if (rhs.d_v[i]) {
@@ -2595,7 +2595,7 @@ void VrmlMFString::set(size_t n, char const * const v[])
         delete [] d_v;
         d_v = 0;
         d_allocated = d_size = 0;
-        d_v = new const char *[n];
+        d_v = new char *[n];
         d_allocated = n;
     }
     d_size = n;

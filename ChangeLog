@@ -1,3 +1,16 @@
+2001-01-10  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed something gcc shouldn't have allowed me to compile in
+          PixelTexture rescaling. (I was trying to allocate an an array
+          on the stack with a size that wasn't a const-expression.)
+
+        * Reverted VrmlMFString's member to "char * *" from
+          "const char * *". Visual C++ apparently has problems deleting
+          const objects. Not sure what the standard has to say about
+          this. After some reflection, this change is probably the Right
+          Thing anyway. Stylistically, at the very least, deleting a
+          const object would seem to be Bad.
+
 2001-01-03  Braden McDaniel  <braden@endoframe.com>
 
         * Removed single-value constructor from VrmlMF*. It is
