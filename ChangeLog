@@ -8,6 +8,10 @@
 
         * NEWS:  Updates for 0.13.0 release.
 
+        * src/openvrml/OpenVRML/Makefile.am,
+          src/openvrml-gl/OpenVRML/GL/Makefile.am:  Updated libtool
+          library version numbers.
+
 2002-12-19  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,
