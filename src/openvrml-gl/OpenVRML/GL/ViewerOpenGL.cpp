@@ -260,7 +260,6 @@ ViewerOpenGL::ViewerOpenGL(Browser & browser):
   d_orientation[2] = 0;
   d_orientation[3] = 0;
 
-  d_reportFPS = false;
   d_renderTime = 1.0;
   d_renderTime1 = 1.0;
 
@@ -2914,22 +2913,6 @@ void ViewerOpenGL::redraw()
 
   this->browser.render(*this);
 
-  if (d_reportFPS)
-    {
-      if (d_background[0]+d_background[1]+d_background[2] > 2.0)
-        glColor3f(0.0, 0.0, 0.0);
-      else
-        glColor3f(1.0, 1.0, 1.0);
-
-      // Report average of last 2 frame times (can't report this
-      // frame time because we want to count swapBuffers time).
-      int fper = (int) (1.0 / (0.5 * (d_renderTime + d_renderTime1)));
-      char buf[30];
-      sprintf(buf, "%d f/s", fper);
-
-      text2( 5, 5, 20.0, buf );
-    }
-
   wsSwapBuffers();
 
   d_renderTime1 = d_renderTime;
@@ -3152,11 +3135,6 @@ void ViewerOpenGL::handleKey(int key)
 
     case KEY_PAGE_UP:
       this->browser.prevViewpoint(); wsPostRedraw(); break;
-
-    case '/':                        // Frames/second
-      d_reportFPS = ! d_reportFPS;
-      wsPostRedraw();
-      break;
 
     case 'b':
       d_blend = ! d_blend;
@@ -3483,54 +3461,6 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     // Everything is handled except down clicks where nothing was selected
     // and up clicks where nothing was active.
     return this->d_activeSensitive || wasActive;
-}
-
-// Text rendering
-
-/* From smooth.c by Nate Robins, 1997 in the glut dist */
-
-/* text: general purpose text routine.  draws a string according to
- * format in a stroke font at x, y after scaling it by the scale
- * specified (scale is in window-space (lower-left origin) pixels).
- *
- * x      - position in x (in window-space)
- * y      - position in y (in window-space)
- * scale  - scale in pixels
- * text   - text string to render
- */
-
-void ViewerOpenGL::text2( int x, int y, float scale, char* text )
-{
-# ifdef OPENVRML_HAVE_GLUT
-  GLfloat font_scale = scale / (119.05 + 33.33); // ???
-
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix();
-  glLoadIdentity();
-  gluOrtho2D(0, d_winWidth, 0, d_winHeight);
-
-  glMatrixMode(GL_MODELVIEW);
-  this->modelviewMatrixStack.push();
-  glLoadIdentity();
-
-  glPushAttrib(GL_ENABLE_BIT);
-  glDisable(GL_LIGHTING);
-  glDisable(GL_TEXTURE_2D);
-  glDisable(GL_DEPTH_TEST);
-  glTranslatef(x, y, 0.0);
-
-  glScalef(font_scale, font_scale, font_scale);
-
-  for(char *p = text; *p; ++p)
-    glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
-
-  glPopAttrib();
-
-  this->modelviewMatrixStack.pop();
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
-  glMatrixMode(GL_MODELVIEW);
-# endif
 }
 
 void ViewerOpenGL::drawBSphere(const BSphere & bs,

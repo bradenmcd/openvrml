@@ -1,3 +1,12 @@
+2002-12-14  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Removed text2
+          method.  We no longer depend on glut for text rendering.  As a
+          side effect, we don't have a means of reporting the frames-
+          per-second in the renderer; but that's code that needs to be
+          refactored anyway.
+
 2002-12-13  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Viewer.h:  Tab elimination.

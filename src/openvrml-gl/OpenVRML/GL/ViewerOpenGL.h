@@ -153,7 +153,6 @@ namespace OpenVRML {
             bool d_drawBSpheres;
             bool d_cull;
 
-            bool d_reportFPS;
             double d_renderTime;
             double d_renderTime1;
 
@@ -170,9 +169,6 @@ namespace OpenVRML {
             // Geometry insertion setup & cleanup methods
             void beginGeometry();
             void endGeometry();
-
-            // Text rendering
-            void text2(int x, int y, float scale, char *text);
 
             // User interaction
             void step(float, float, float);
