@@ -9,6 +9,9 @@
         * src/openvrml/OpenVRML/browser.cpp: Fixed (?) Scene::loadURI;
           Anchor nodes should work now.
 
+        * src/openvrml/OpenVRML/browser.cpp: Added code that should make
+          createFileURL work on Win32.
+
 2002-08-19  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * Continue upating conformance test results.

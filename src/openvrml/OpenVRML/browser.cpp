@@ -1918,8 +1918,14 @@ namespace {
         
         string result = "file://";
         
+# ifdef _WIN32
+        char buffer[_MAX_PATH];
+        const char * resolvedPath =
+                _fullpath(buffer, uri.getPath().c_str(), _MAX_PATH);
+# else
         char buffer[PATH_MAX];
         const char * resolvedPath = realpath(uri.getPath().c_str(), buffer);
+# endif
         if (!resolvedPath) {
             //
             // XXX Failed; need to check errno to see what we should throw.
