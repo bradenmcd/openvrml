@@ -3318,33 +3318,13 @@ void ViewerOpenGL::text3(int *justify, float size, int n, const char * const *s)
 # endif
 }
 
-
-static GLfloat green[] = {0.25f, 1.0f, 0.25f, 1.0f};
-static GLfloat red[] = {1.0f, 0.5f, 0.5f, 1.0f};
-static GLfloat grey[] = {0.5f, 0.5f, 0.5f, 1.0f};
-
-
-// argh: see <URL:http://www.debian.org/Bugs/db/44/44489-b.html> for
-// an explanation. quick version: mesa doesn't work right with newver
-// c++ compilers (c++ has recently become more strict about
-// enums). should this go into configure.in? probably, since it might
-// occur outside this file. the problem should go away with the next
-// version of mesa.. -cks
-//
-#ifdef MESA
-#if (GLU_VERSION_1_1 || GLU_VERSION_1_2)
-#define MESA_GLU_ENUM_FIX (GLenum)
-#else
-#define MESA_GLU_ENUM_FIX
-#endif
-#else
-#define MESA_GLU_ENUM_FIX
-#endif
-
-
 void ViewerOpenGL::drawBSphere(const BSphere & bs,
                                const BVolume::Intersection intersection)
 {
+    static const GLfloat green[] = { 0.25f, 1.0f, 0.25f, 1.0f };
+    static const GLfloat red[] = { 1.0f, 0.5f, 0.5f, 1.0f };
+    static const GLfloat grey[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+
     if (!this->d_drawBSpheres || bs.isMAX() || bs.getRadius() == -1.0) {
         return;
     }
@@ -3362,7 +3342,7 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs,
     case BVolume::outside:
         //glDisable(GL_LIGHTING);
         //glEnable(GL_LIGHTING);
-        gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
+        gluQuadricDrawStyle(sph, GLU_LINE);
         //gluQuadricDrawStyle(sph, GLU_POINT);
         glColor3f(0.5, 0.5, 0.5);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
@@ -3371,9 +3351,9 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs,
     
     case BVolume::partial:
         //glEnable(GL_LIGHTING);
-        gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
+        gluQuadricNormals(sph, GLU_SMOOTH);
         //gluQuadricDrawStyle(sph, GLU_FILL);
-        gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
+        gluQuadricDrawStyle(sph, GLU_LINE);
         glColor3f(0.25, 1.0, 0.25);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
         gluSphere(sph, bs.getRadius(), 8, 8);
@@ -3381,9 +3361,9 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs,
     
     case BVolume::inside:
         //glEnable(GL_LIGHTING);
-        gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
+        gluQuadricNormals(sph, GLU_SMOOTH);
         //gluQuadricDrawStyle(sph, GLU_FILL);
-        gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
+        gluQuadricDrawStyle(sph, GLU_LINE);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, red);
         glColor3f(1.0, 0.5, 0.5);
         gluSphere(sph, bs.getRadius(), 8, 8);
@@ -3391,8 +3371,8 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs,
 
     default:
         //glEnable(GL_LIGHTING);
-        gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
-        gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
+        gluQuadricNormals(sph, GLU_SMOOTH);
+        gluQuadricDrawStyle(sph, GLU_LINE);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
         glColor3f(0.5, 0.5, 0.5);
         gluSphere(sph, bs.getRadius(), 8, 8);

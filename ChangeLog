@@ -12,6 +12,9 @@
           src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Made intersection
           enumeration in BVolume a named type.
 
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Removed
+          workaround for old bug in Mesa.
+
 2002-09-27  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * ide-projects/Windows/VisualC6/winconfig.h: In MSVC project
