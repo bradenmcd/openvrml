@@ -47,7 +47,7 @@ AC_PATH_PROG([FREETYPE_CONFIG], [freetype-config])
 
 PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
 
-OV_CHECK_GLUT
+AX_CHECK_GLUT
 
 #
 # gzipped file support
