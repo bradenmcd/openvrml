@@ -1405,7 +1405,7 @@ namespace {
         double sina2 = sqrt(quat[0] * quat[0]
                           + quat[1] * quat[1]
                           + quat[2] * quat[2]);
-        const double angle = 2.0 * atan2(sina2, quat[3]);
+        const double angle = 2.0 * atan2(sina2, double(quat[3]));
 
         if (sina2 >= 1e-8) {
 	    sina2 = 1.0 / sina2;
