@@ -1,0 +1,96 @@
+Name:           @PACKAGE@
+Version:        @VERSION@
+Release:        1
+Summary:        VRML support library. 
+Copyright:      LGPL
+Group:          System Environment/Libraries
+Packager:       The OpenVRML Development Team <openvrml-develop@sourceforge.net>
+Source:         http://download.sourceforge.net/openvrml/%{name}-%{version}.tar.gz
+URL:            http://www.openvrml.org
+Prefix:         /usr
+BuildRoot:      /var/tmp/%{name}-%{version}-root
+
+%description 
+OpenVRML is a VRML support library, including a runtime and facilities for
+reading and writing VRML models.
+
+
+%package devel
+Summary:        Headers and static library for developing C++ programs with OpenVRML
+Group:          Development/Libraries
+Requires:	%{name}
+%description devel
+Headers and static library that programmers will need to develop C++ programs
+using OpenVRML
+
+%package gl
+Summary:        OpenGL renderer for OpenVRML
+Group:          System Environment/Libraries
+Requires:       %{name}
+%description gl
+OpenGL renderer for OpenVRML.
+
+%package gl-devel
+Summary:        OpenVRML OpenGL renderer headers and static library.
+Group:          Development/Libraries
+Requires:       %{name}-gl
+%description gl-devel
+Headers and static library that programmers will need to develop C++ programs
+using the OpenVRML OpenGL renderer.
+
+%package -n lookat
+Summary:        VRML viewer
+Group:          Applications/Multimedia
+Requires:       %{name}-gl
+%description
+GLUT-based VRML viewer.
+
+
+%prep
+%setup
+
+
+%build
+CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./configure  $ARCH_FLAGS \
+--prefix=%{prefix}
+make
+
+
+%install
+if [ -d $RPM_BUILD_ROOT ]; then rm -f $RPM_BUILD_ROOT; fi
+make prefix=$RPM_BUILD_ROOT%{prefix} install
+
+
+%files 
+%doc AUTHORS COPYING ChangeLog NEWS NODES README README.SOUND TODO
+%{prefix}/lib/libvrml97.so.*
+%{prefix}/share/aclocal/vrml97.m4
+
+%files devel
+%{prefix}/include/vrml97.h
+%{prefix}/include/vrml97
+%{prefix}/lib/libvrml97.la
+%{prefix}/lib/libvrml97.a
+%{prefix}/lib/libvrml97.so
+
+%files gl
+%{prefix}/lib/libvrml97gl.so.*
+%{prefix}/share/aclocal/vrml97gl.m4
+
+%files gl-devel
+%{prefix}/include/vrml97gl.h
+%{prefix}/include/vrml97gl
+%{prefix}/lib/libvrml97gl.la
+%{prefix}/lib/libvrml97gl.a
+%{prefix}/lib/libvrml97gl.so
+
+%files lookat
+%{prefix}/bin/lookat
+
+
+%changelog
+* 24 October, 2000  Braden McDaniel  <braden@endoframe.com>
+- Received initial spec file from Clayton Cottingham <drfrog@smartt.com>.
+
+* 23 November, 2000  Braden McDaniel  <braden@endoframe.com>
+- Gave much love. Checked into CVS. Still not guaranteed to work, though.
