@@ -34,6 +34,7 @@ PROTO Highlighter [
   field SFInt32 testInt32 500
   field SFFloat testFloat 0.5
   field SFString testString "test string"
+  field SFBool testBool FALSE 
 ]
 {
    Script {
@@ -41,6 +42,10 @@ PROTO Highlighter [
       eventOut SFColor color IS color
       field SFColor activeColor IS activeColor
       field SFColor inactiveColor IS inactiveColor
+      field SFInt32 testInt32 IS testInt32
+      field SFFloat testFloat IS testFloat
+      field SFString testString IS testString
+      field SFBool testBool IS testBool
       url ["TestJSAI.class"]
    }
 }
