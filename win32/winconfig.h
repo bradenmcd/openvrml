@@ -7,9 +7,10 @@
   winconfig.h
 */
 
-#define LIBVRML97_MAJOR_VERSION	0
-#define LIBVRML97_MINOR_VERSION	8
-#define LIBVRML97_MICRO_VERSION	2
+#define OPENVRML_MAJOR_VERSION	0
+#define OPENVRML_MINOR_VERSION	9
+#define OPENVRML_MICRO_VERSION	0
+
 
 
 // Disable warning messages about truncation from const double to float
@@ -40,6 +41,8 @@ static const char COLON = ':';
 #ifndef M_1_PI
 #define M_1_PI          0.31830988618379067154  /* 1/pi */
 #endif
+
+#define HAVE_JAVASCRIPT 1
 
 #undef LIBVRML_VERSION
 #undef HAVE_LIBJPEG
