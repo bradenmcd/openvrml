@@ -126,7 +126,6 @@ namespace openvrml {
             int beginx, beginy;
 
             quatf rotation;
-            bool rotation_changed;
 
             bool rotating, scaling, translating;
             bool draw_bounding_spheres;

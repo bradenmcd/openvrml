@@ -534,12 +534,6 @@ void viewer::modelview_matrix_stack::pop()
  */
 
 /**
- * @var bool viewer::rotation_changed
- *
- * @brief Indicate the rotation has changed.
- */
-
-/**
  * @var bool viewer::rotating
  *
  * @brief Whether the viewer is in the process of rotating.
@@ -723,7 +717,6 @@ viewer::viewer(openvrml::browser & b):
     select_mode(false),
     select_z(0.0),
     rotation(trackball(0.0, 0.0, 0.0, 0.0)),
-    rotation_changed(false),
     rotating(false),
     scaling(false),
     translating(false),
@@ -945,7 +938,6 @@ void viewer::reset_user_navigation()
 {
     this->browser.active_viewpoint().user_view_transform(mat4f());
     this->rotation = quatf(trackball(0.0, 0.0, 0.0, 0.0));
-    this->rotation_changed = true;
     this->post_redraw();
 }
 
@@ -3725,7 +3717,6 @@ void viewer::rotate(const openvrml::rotation & rot) throw ()
     vec3f d = rotationMatrix * rot.axis();
     quatf q(openvrml::rotation(d, rot.angle()));
     this->rotation = q * this->rotation;
-    this->rotation_changed = true;
 
     post_redraw();
 }
