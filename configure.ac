@@ -1,5 +1,5 @@
 AC_PREREQ([2.53])
-AC_INIT([OpenVRML], [0.13.0], [openvrml-develop@lists.sourceforge.net])
+AC_INIT([OpenVRML], [0.13.99], [openvrml-develop@lists.sourceforge.net])
 AM_INIT_AUTOMAKE([$PACKAGE_TARNAME], [$PACKAGE_VERSION])
 
 AM_CONFIG_HEADER([config.h])

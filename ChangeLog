@@ -3,6 +3,9 @@
         * m4/gl.m4:  Only use $x_includes and $x_libraries if those
           variables have been set.
 
+        * README, configure.ac, doc/Doxyfile:  Updated version number to
+          0.13.99 (pre-release).
+
 2002-12-20  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * ide-projects/Makefile.am: add config.h 
