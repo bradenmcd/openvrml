@@ -1,3 +1,9 @@
+2001-11-05  Thomas Flynn <tflynn@users.sourceforge.net>
+
+	* Implement 6 more methods in ScriptJDK.cpp
+
+	* Attempt to conform to coding standard for line length.
+
 2001-11-01  Braden McDaniel  <braden@endoframe.com>
 
         * Some minor improvements to VrmlNodePtr.
