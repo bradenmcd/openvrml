@@ -61,23 +61,16 @@ protected:
 
 class VrmlNodeLight : public VrmlNodeChild {
 public:
-    // Define the fields of light nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static VrmlNodeType * defineType(VrmlNodeType * = 0);
 
     VrmlNodeLight(VrmlScene *);
-    virtual ~VrmlNodeLight();
 
     virtual VrmlNodeType & nodeType() const;
-
-    virtual VrmlNodeLight* toLight() const;
-
-    virtual ostream& printFields(ostream& os, int indent);
-
+    virtual const VrmlField * getField(const char * fieldName) const;
+    virtual void setField(const char * fieldName, const VrmlField & fieldValue);
     virtual void renderScoped(Viewer *);
-
-    virtual const VrmlField *getField(const char *fieldName) const;
-    virtual void setField(const char *fieldName,
-			  const VrmlField &fieldValue);
+    virtual ostream& printFields(ostream& os, int indent);
+    virtual VrmlNodeLight* toLight() const;
 
     virtual float getAmbientIntensity() const { return d_ambientIntensity.get(); } //LarryD Mar 04/99
     virtual float getIntensity() const { return d_intensity.get(); } //LarryD Mar 04/99

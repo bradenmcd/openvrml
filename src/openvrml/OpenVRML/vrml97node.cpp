@@ -160,6 +160,125 @@ void VrmlNodeGeometry::render(Viewer * viewer, VrmlRenderContext context)
     }
 }
 
+/**
+ * @class VrmlNodeLight
+ *
+ * @brief Base class for all light nodes.
+ */
+
+/**
+ * @brief Define the built-in light node fields.
+ *
+ * @param nodeType the type object to use
+ *
+ * @return the defined type object
+ */
+VrmlNodeType * VrmlNodeLight::defineType(VrmlNodeType * nodeType) {
+    VrmlNodeChild::defineType(nodeType);
+    nodeType->addExposedField("ambientIntensity", VrmlField::SFFLOAT);
+    nodeType->addExposedField("color", VrmlField::SFCOLOR);
+    nodeType->addExposedField("intensity", VrmlField::SFFLOAT);
+    nodeType->addExposedField("on", VrmlField::SFBOOL);
+
+    return nodeType;
+}
+
+/**
+ * @brief Constructor.
+ *
+ * @param scene the VrmlScene to which this node belongs.
+ */
+VrmlNodeLight::VrmlNodeLight(VrmlScene * scene): VrmlNodeChild(scene),
+        d_ambientIntensity(0.0), d_color(1.0, 1.0, 1.0), d_intensity(1.0),
+        d_on(true) {}
+
+/**
+ * @brief Get the type object for this node.
+ * 
+ * @return the type object
+ */
+VrmlNodeType & VrmlNodeLight::nodeType() const {
+    return *defineType(0);
+}
+
+/**
+ * @brief Downcast to a light node.
+ *
+ * @return a pointer to this object.
+ */
+VrmlNodeLight* VrmlNodeLight::toLight() const
+{ return (VrmlNodeLight*) this; }
+
+/**
+ * @brief Render this node as scoped.
+ *
+ * The default version of this method does nothing.
+ *
+ * @param viewer a renderer.
+ */
+void VrmlNodeLight::renderScoped(Viewer * viewer) {}
+
+/**
+ * @brief Print the fields for this node.
+ *
+ * @param os a standard output stream
+ * @param indent the number of spaces per indent level
+ */
+ostream& VrmlNodeLight::printFields(ostream& os, int indent)
+{
+  if (! FPZERO(d_ambientIntensity.get()))
+    PRINT_FIELD(ambientIntensity);
+  if (! FPEQUAL(d_color.getR(), 1.0) ||
+      ! FPEQUAL(d_color.getG(), 1.0) ||
+      ! FPEQUAL(d_color.getB(), 1.0) )
+    PRINT_FIELD(color);
+  if (! FPEQUAL(d_intensity.get(), 1.0))
+    PRINT_FIELD(intensity);
+  if (! d_on.get() ) PRINT_FIELD(on);
+
+  return os;
+}
+
+/**
+ * @brief Get the value of a field or eventOut.
+ *
+ * @param fieldName the name of a field or eventOut
+ *
+ * @return a pointer to a VrmlField value, or a zero pointer if the node has
+ *      no field or eventOut with the given name
+ */
+const VrmlField *VrmlNodeLight::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "ambientIntensity" ) == 0 )
+    return &d_ambientIntensity;
+  else if ( strcmp( fieldName, "color" ) == 0 )
+    return &d_color;
+  else if ( strcmp( fieldName, "intensity" ) == 0 )
+    return &d_intensity;
+  else if ( strcmp( fieldName, "on" ) == 0 )
+    return &d_on;
+
+  return VrmlNode::getField( fieldName );
+}
+
+/**
+ * @brief Set the value of one of the node fields.
+ *
+ * @param fieldName the name of the field to set.
+ * @param fieldValue the new value
+ */
+void VrmlNodeLight::setField(const char *fieldName,
+			     const VrmlField &fieldValue)
+{
+  if TRY_FIELD(ambientIntensity, SFFloat)
+  else if TRY_FIELD(color, SFColor)
+  else if TRY_FIELD(intensity, SFFloat)
+  else if TRY_FIELD(on, SFBool)
+  else 
+    VrmlNode::setField(fieldName, fieldValue);
+}
+
 
 static VrmlNode * createAnchor(VrmlScene * scene) {
     return new VrmlNodeAnchor(scene);
@@ -4810,94 +4929,6 @@ void VrmlNodeInline::load(const char *relativeUrl)
     }
 }
 
-// Define the built in VrmlNodeType:: "Light" fields
-
-VrmlNodeType *VrmlNodeLight::defineType(VrmlNodeType *t)
-{
-  VrmlNodeChild::defineType(t);	// Parent class
-  t->addExposedField("ambientIntensity", VrmlField::SFFLOAT);
-  t->addExposedField("color", VrmlField::SFCOLOR);
-  t->addExposedField("intensity", VrmlField::SFFLOAT);
-  t->addExposedField("on", VrmlField::SFBOOL);
-
-  return t;
-}
-
-
-VrmlNodeType & VrmlNodeLight::nodeType() const
-{
-    return *defineType(0);
-}
-
-
-VrmlNodeLight::VrmlNodeLight(VrmlScene *scene) :
-  VrmlNodeChild(scene),
-  d_ambientIntensity(0.0),
-  d_color(1.0, 1.0, 1.0),
-  d_intensity(1.0),
-  d_on(true)
-{
-}
-
-VrmlNodeLight::~VrmlNodeLight()
-{
-}
-
-
-VrmlNodeLight* VrmlNodeLight::toLight() const
-{ return (VrmlNodeLight*) this; }
-
-
-void VrmlNodeLight::renderScoped(Viewer *)
-{
-}
-
-
-ostream& VrmlNodeLight::printFields(ostream& os, int indent)
-{
-  if (! FPZERO(d_ambientIntensity.get()))
-    PRINT_FIELD(ambientIntensity);
-  if (! FPEQUAL(d_color.getR(), 1.0) ||
-      ! FPEQUAL(d_color.getG(), 1.0) ||
-      ! FPEQUAL(d_color.getB(), 1.0) )
-    PRINT_FIELD(color);
-  if (! FPEQUAL(d_intensity.get(), 1.0))
-    PRINT_FIELD(intensity);
-  if (! d_on.get() ) PRINT_FIELD(on);
-
-  return os;
-}
-
-// Get the value of a field or eventOut.
-
-const VrmlField *VrmlNodeLight::getField(const char *fieldName) const
-{
-  // exposedFields
-  if ( strcmp( fieldName, "ambientIntensity" ) == 0 )
-    return &d_ambientIntensity;
-  else if ( strcmp( fieldName, "color" ) == 0 )
-    return &d_color;
-  else if ( strcmp( fieldName, "intensity" ) == 0 )
-    return &d_intensity;
-  else if ( strcmp( fieldName, "on" ) == 0 )
-    return &d_on;
-
-  return VrmlNode::getField( fieldName );
-}
-
-
-// Set the value of one of the node fields.
-
-void VrmlNodeLight::setField(const char *fieldName,
-			     const VrmlField &fieldValue)
-{
-  if TRY_FIELD(ambientIntensity, SFFloat)
-  else if TRY_FIELD(color, SFColor)
-  else if TRY_FIELD(intensity, SFFloat)
-  else if TRY_FIELD(on, SFBool)
-  else 
-    VrmlNode::setField(fieldName, fieldValue);
-}
 
 // Return a new VrmlNodeLOD
 static VrmlNode * createLOD(VrmlScene * scene) {

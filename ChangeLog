@@ -2,6 +2,7 @@
 
         * Added Doxygen comments for VrmlNodeChild.
         * Added Doxygen comments for VrmlNodeGeometry.
+        * Added Doxygen comments for VrmlNodeLight.
 
 2001-04-25  Braden McDaniel <braden@endoframe.com>
 
