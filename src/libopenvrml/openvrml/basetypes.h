@@ -28,7 +28,6 @@
 #   include <cstddef>
 #   include <algorithm>
 #   include <iosfwd>
-#   include <limits>
 #   include <vector>
 #   include <sys/types.h>
 #   include <openvrml/common.h>
@@ -171,16 +170,24 @@ namespace openvrml {
 
     inline vec2f::vec2f(const float (&vec)[2]) throw ()
     {
-        assert(vec[0] != std::numeric_limits<float>::quiet_NaN());
-        assert(vec[1] != std::numeric_limits<float>::quiet_NaN());
+        //
+        // Ensure elements of vec are not NaN.
+        //
+        assert(vec[0] == vec[0]);
+        assert(vec[1] == vec[1]);
+
         this->vec[0] = vec[0];
         this->vec[1] = vec[1];
     }
 
     inline vec2f::vec2f(const float x, const float y) throw ()
     {
-        assert(x != std::numeric_limits<float>::quiet_NaN());
-        assert(y != std::numeric_limits<float>::quiet_NaN());
+        //
+        // Ensure x and y are not NaN.
+        //
+        assert(x == x);
+        assert(y == y);
+
         this->vec[0] = x;
         this->vec[1] = y;
     }
@@ -267,13 +274,21 @@ namespace openvrml {
 
     inline void vec2f::x(const float value) throw ()
     {
-        assert(value != std::numeric_limits<float>::quiet_NaN());
+        //
+        // Ensure value is not NaN.
+        //
+        assert(value == value);
+
         this->vec[0] = value;
     }
 
     inline void vec2f::y(const float value) throw ()
     {
-        assert(value != std::numeric_limits<float>::quiet_NaN());
+        //
+        // Ensure value is not NaN.
+        //
+        assert(value == value);
+
         this->vec[1] = value;
     }
 
@@ -342,9 +357,13 @@ namespace openvrml {
 
     inline vec3f::vec3f(const float (&vec)[3]) throw ()
     {
-        assert(vec[0] != std::numeric_limits<float>::quiet_NaN());
-        assert(vec[1] != std::numeric_limits<float>::quiet_NaN());
-        assert(vec[2] != std::numeric_limits<float>::quiet_NaN());
+        //
+        // Ensure the elements of vec are not NaN.
+        //
+        assert(vec[0] == vec[0]);
+        assert(vec[1] == vec[1]);
+        assert(vec[2] == vec[2]);
+
         this->vec[0] = vec[0];
         this->vec[1] = vec[1];
         this->vec[2] = vec[2];
@@ -352,9 +371,13 @@ namespace openvrml {
 
     inline vec3f::vec3f(const float x, const float y, const float z) throw ()
     {
-        assert(x != std::numeric_limits<float>::quiet_NaN());
-        assert(y != std::numeric_limits<float>::quiet_NaN());
-        assert(z != std::numeric_limits<float>::quiet_NaN());
+        //
+        // Ensure x, y, and z are not NaN.
+        //
+        assert(x == x);
+        assert(y == y);
+        assert(z == z);
+
         this->vec[0] = x;
         this->vec[1] = y;
         this->vec[2] = z;
@@ -476,19 +499,31 @@ namespace openvrml {
 
     inline void vec3f::x(const float value) throw ()
     {
-        assert(value != std::numeric_limits<float>::quiet_NaN());
+        //
+        // Ensure value is not NaN.
+        //
+        assert(value == value);
+
         this->vec[0] = value;
     }
 
     inline void vec3f::y(const float value) throw ()
     {
-        assert(value != std::numeric_limits<float>::quiet_NaN());
+        //
+        // Ensure value is not NaN.
+        //
+        assert(value == value);
+
         this->vec[1] = value;
     }
 
     inline void vec3f::z(const float value) throw ()
     {
-        assert(value != std::numeric_limits<float>::quiet_NaN());
+        //
+        // Ensure value is not NaN.
+        //
+        assert(value == value);
+
         this->vec[2] = value;
     }
 

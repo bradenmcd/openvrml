@@ -1,5 +1,11 @@
 2004-01-24 Braden McDaniel  <braden@endoframe.com>
 
+	Correctly check for NaN.
+
+	* src/libopenvrml/openvrml/basetypes.h
+
+2004-01-24 Braden McDaniel  <braden@endoframe.com>
+
 	Prevent "nan" as a component of vec2f, vec3f.  A side effect of
 	this is that the non-const operator[] for these types must be
 	removed.
