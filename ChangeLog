@@ -1,5 +1,11 @@
 2004-12-03 Braden McDaniel  <braden@endoframe.com>
 
+	* openvrml.spec.in:  Use %makeinstall macro; install COPYING
+	(GPL) with lookat documentation rather than COPYING.LESSER
+	(LGPL).
+
+2004-12-03 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/Makefile.am:  Remove generated documentation as part of
 	maintainer-clean.
 

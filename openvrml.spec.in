@@ -85,8 +85,7 @@ VRML browser plug-in for Mozilla-based browsers.
 make %{?_smp_mflags}
 
 %install
-if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
-make install DESTDIR=$RPM_BUILD_ROOT
+%makeinstall
 rm $RPM_BUILD_ROOT%{_libdir}/mozilla/plugins/openvrml.la
 
 %clean
@@ -119,7 +118,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/openvrml-gl.pc
 
 %files -n lookat
-%doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
+%doc AUTHORS COPYING ChangeLog NEWS README THANKS
 %{_bindir}/lookat
 %{_datadir}/pixmaps/lookat.xpm
 
@@ -131,6 +130,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Dec 03 2004  Braden McDaniel  <braden@endoframe.com>
+- Use %makeinstall macro.
+- Install COPYING (GPL) with lookat documentation rather than COPYING.LESSER
+  (LGPL).
+
 * Tue Nov 30 2004  Braden McDaniel  <braden@endoframe.com>
 - Added dejagnu >= 1.4 as a build prerequisite.
 
