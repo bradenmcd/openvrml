@@ -312,7 +312,7 @@ namespace {
     DoExtension(FILE *fd, int label)
     {
 	    static char	buf[256];
-	    char		*str;
+	    const char * str;
 
 	    switch (label) {
 	    case 0x01:		/* Plain Text Extension */
@@ -1003,8 +1003,7 @@ namespace {
      * Here's the routine that will replace the standard error_exit method:
      */
 
-    METHODDEF(void)
-    my_error_exit (j_common_ptr cinfo)
+    void my_error_exit(j_common_ptr cinfo)
     {
       /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
       my_error_ptr myerr = (my_error_ptr) cinfo->err;
@@ -6997,7 +6996,7 @@ const char *Image::url() { return d_url ? d_url->url() : 0; }
 
 static ImageFileType imageFileType(const char *url, FILE *)
 {
-  char *suffix = strrchr(url, '.');
+  const char * suffix = strrchr(url, '.');
   if (suffix) ++suffix;
 
   if (strcmp(suffix,"gif") == 0 ||

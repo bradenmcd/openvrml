@@ -13,6 +13,15 @@
           going away for 0.14, it's not worth spending a lot of time
           ensuring it's correct.
 
+        * src/openvrml/OpenVRML/Image.cpp: const-correctness fix in
+          imageFileType.
+
+        * src/openvrml/OpenVRML/Image.cpp: Don't use METHODDEF macro
+          for my_error_exit (libjpeg error handler).  The macro just
+          expands to make the function "static", which is deprecated
+          (and unnecessary since the function is in an anonymous
+          namespace).
+
 2002-06-17  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.12.1.
