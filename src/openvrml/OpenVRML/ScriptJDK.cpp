@@ -133,9 +133,9 @@ ScriptJDK::ScriptJDK(ScriptNode & scriptNode, const char * className,
 
 #ifndef _WIN32
     appendedClassPath << PATH_SEPARATOR
-                      << OPENVRML_PKGDATADIR_ << "/java/script.jar" 
+                      << OPENVRML_PKGDATADIR_ << "/java/script.jar"; 
 #endif
-		      << ends;
+	appendedClassPath << ends;
 
     options[0].optionString = appendedClassPath.str();
     options[1].optionString = "-verbose:class";

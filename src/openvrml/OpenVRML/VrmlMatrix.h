@@ -70,6 +70,9 @@ namespace OpenVRML {
         void     setTranslate(const float t[3]);
         void     setTranslate(const SFVec3f & t);
 
+        // Returns a reference to 4x4 array
+        const float (&get() const)[4][4] { return matrix; }
+
         // Multiplies matrix by given matrix on right or left
         const VrmlMatrix  multRight(const VrmlMatrix &m);	
         const VrmlMatrix  multLeft(const VrmlMatrix &m);	

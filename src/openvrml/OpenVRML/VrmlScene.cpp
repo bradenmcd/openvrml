@@ -852,7 +852,7 @@ void VrmlScene::render(Viewer *viewer)
   {
    VrmlMatrix IM,NMAT;
    vp->inverseTransform(IM);   // put back nested viewpoint. skb
-   viewer->MatrixMultiply(&IM[0]);
+   viewer->MatrixMultiply(IM.get());
    vp->getInverseMatrix(MV);
    viewer->getUserNavigation(NMAT);
    MV = MV.multLeft(NMAT);

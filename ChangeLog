@@ -1,3 +1,13 @@
+2002-02-25  S. K. Bose  <bose@pavan.barc.ernet.in>
+ 
+        * Put back "const float (&get() const)[4][4]" in
+          VrmlMatrix as VC++6.0 gives error by using operator[].
+
+        * Put static_cast in assisgnWithSelfRefCheck method in 
+          script.cpp
+
+        * Fix to handle null CLASSPATH env. variable in ScriptJDK.cpp
+
 2002-02-21  Braden McDaniel  <braden@endoframe.com>
 
         * VrmlMatrix: contructor that takes float args doesn't need to

@@ -1258,14 +1258,14 @@ void NodeBillboard::render(Viewer *viewer, VrmlRenderContext rc)
       d_xformObject = viewer->beginObject(this->getId().c_str());
 
 //      viewer->setBillboardTransform( d_axisOfRotation.get() );
-      viewer->MatrixMultiply(&LM[0]);
+      viewer->MatrixMultiply(LM.get());
 
       // Render children
       NodeGroup::render(viewer, rc);
 
 //      viewer->unsetBillboardTransform( d_axisOfRotation.get() );
 	  LM = LM.affine_inverse();
-      viewer->MatrixMultiply(&LM[0]);
+      viewer->MatrixMultiply(LM.get());
 
       viewer->endObject();
     }
@@ -9435,7 +9435,7 @@ void NodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
 //               d_translation.get());
       VrmlMatrix M;
       this->getMatrix(M);
-      viewer->MatrixMultiply(&M[0]);
+      viewer->MatrixMultiply(M.get());
       // Render children
       NodeGroup::renderNoCull(viewer, rc);
 
@@ -9446,7 +9446,7 @@ void NodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
 //                 d_scaleOrientation.get(),
 //                 d_translation.get());
       M = M.affine_inverse();
-      viewer->MatrixMultiply(&M[0]);
+      viewer->MatrixMultiply(M.get());
       viewer->endObject();
     }
 

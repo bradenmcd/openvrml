@@ -346,7 +346,7 @@ void ScriptNode::assignWithSelfRefCheck(const SFNode & inval,
     // *decremented* it to accommodate creating a cycle between
     // refcounted objects.
     //
-    if (oldNode && oldNode.countPtr->first == this) {
+    if (oldNode && (static_cast <ScriptNode *>(oldNode.countPtr->first) == this)) {
         ++oldNode.countPtr->second;
     }
 
@@ -362,7 +362,7 @@ void ScriptNode::assignWithSelfRefCheck(const SFNode & inval,
     // refcount from ever dropping to zero.
     //
     const NodePtr & newNode = static_cast<SFNode &>(retval).get();
-    if (newNode.countPtr->first == this) {
+    if (static_cast <ScriptNode *>(newNode.countPtr->first) == this) {
         --(newNode.countPtr->second);
     }
 }
@@ -372,7 +372,7 @@ void ScriptNode::assignWithSelfRefCheck(const MFNode & inval,
     size_t i;
     for (i = 0; i < retval.getLength(); ++i) {
         const NodePtr & oldNode = retval.getElement(i);
-        if (oldNode && (oldNode.countPtr->first == this)) {
+        if (oldNode && (static_cast <ScriptNode *>(oldNode.countPtr->first) == this)) {
             ++oldNode.countPtr->second;
         }
     }
@@ -381,7 +381,7 @@ void ScriptNode::assignWithSelfRefCheck(const MFNode & inval,
 
     for (i = 0; i < retval.getLength(); ++i) {
         const NodePtr & newNode = retval.getElement(i);
-        if (newNode && (newNode.countPtr->first == this)) {
+        if (newNode && (static_cast <ScriptNode *>(newNode.countPtr->first) == this)) {
             --(newNode.countPtr->second);
         }
     }
