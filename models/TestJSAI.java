@@ -19,6 +19,8 @@ import vrml.node.*;
  *   ConstSFFloat
  *   ConstSFImage
  *   ConstSFInt32
+ *   ConstSFNode
+ *   ConstSFRotation
  *   ConstSFString
  *   ConstSFTime
  *   Event
@@ -26,11 +28,16 @@ import vrml.node.*;
  *   SFBool
  *   SFColor
  *   SFFloat
+ *   SFImage
  *   SFInt32
+ *   SFRotation
  *   SFString
  *   SFTime
  *
  * Partially tested classes with list of tested methods.
+ *
+ * BaseNode
+ *   getBrowser
  *
  * Browser
  *   getCurrentFrameRate
@@ -41,16 +48,22 @@ import vrml.node.*;
  *   setDescription
  *   toString
  *
+ * Node
+ *   toString
+ *
  * Script
  *   getBrowser
  *   getEventOut
  *   getField
  *
- * Methods known not to be not working
+ *
+ * Methods known to be not working
+ *
+ * BaseNode
+ *   getType (not implemented yet)
  *
  *
  * Classes not tested
- *   BaseNode
  *   ConstMFFloat
  *   ConstMFInt32
  *   ConstMFNode
@@ -58,8 +71,6 @@ import vrml.node.*;
  *   ConstMFTime
  *   ConstMFVec2f
  *   ConstMFVec3f
- *   ConstSFNode
- *   ConstSFRotation
  *   ConstSFVec2f
  *   ConstSFVec3f
  *   MFFloat
@@ -70,10 +81,7 @@ import vrml.node.*;
  *   MFTime
  *   MFVec2f
  *   MFVec3f
- *   Node
- *   SFImage
  *   SFNode
- *   SFRotation
  *   SFVec2f
  *   SFVec3f
  */
@@ -195,6 +203,19 @@ class TestJSAI extends Script {
     byte[] testPixels = new byte[2];
     testConstSFImage.getPixels(testPixels);
     System.out.println("testConstSFImage = " + testConstSFImage);
+    SFImage testSFImage1 = new SFImage();
+    System.out.println("width = " + testSFImage1.getWidth());
+    System.out.println("height = " + testSFImage1.getHeight());
+    System.out.println("components = " + testSFImage1.getComponents());
+    testPixels = new byte[2];
+    testSFImage1.getPixels(testPixels);
+    testSFImage1.setValue(1, 1, 1, byteArray1);
+    System.out.println("testSFImage (after first set) = " + testSFImage1);
+    testSFImage1.setValue(testConstSFImage);
+    System.out.println("testSFImage (after second set) = " + testSFImage1);
+    SFImage testSFImage2 = new SFImage(1, 1, 1, byteArray1);
+    testSFImage1.setValue(testSFImage2);
+    System.out.println("testSFImage (after third set) = " + testSFImage1);
 
 
     /* Test ConstSFInt32/SFInt32 methods */
@@ -215,11 +236,39 @@ class TestJSAI extends Script {
     testInt32.setValue(testConstSFInt32);
 
     /* Test ConstSFNode/SFNode methods */
-    /*   System.out.println("Test ConstSFNode/SFNode");
-         SFNode testSFNode = (SFNode) getField("testViewpoint");*/
+    System.out.println("Test ConstSFNode/SFNode");
+    SFNode testSFNode1 = (SFNode) getField("testTransform");
+    BaseNode testBaseNode = testSFNode1.getValue();
+    System.out.println("BaseNode type = " + testBaseNode.getType());
+    Node testNode = (Node)testBaseNode;
+    System.out.println("Node = " + testNode);
+    Browser testBrowser = testBaseNode.getBrowser();
+    ConstSFNode testConstSFNode1 = new ConstSFNode(testBaseNode);
+    BaseNode testBaseNode2 = testConstSFNode1.getValue();
+    System.out.println("testConstSFNode1 = " + testConstSFNode1);
+
+    SFNode testSFNode2 = (SFNode) getField("testTouchSensor");
 
     /* Test ConstSFRotation/SFRotation methods */
     System.out.println("Test ConstSFRotation/SFRotation");
+    ConstSFRotation testConstSFRotation =
+      new ConstSFRotation(1.0f, 0.0f, 0.0f, 1.0f);
+    float[] testRot = new float[4];
+    testConstSFRotation.getValue(testRot);
+    System.out.println("testConstSFRotation = " + testConstSFRotation);
+    SFRotation testSFRotation1 = new SFRotation();
+    SFRotation testSFRotation2 = new SFRotation(0.0f, 1.0f, 0.0f, 3.0f);
+    testRot = new float[4];
+    testSFRotation1.getValue(testRot);
+    testSFRotation1.setValue(0.0f, 0.0f, 1.0f, 3.0f);
+    System.out.println("testSFRotation1 (after first set) = " + 
+                       testSFRotation1);
+    testSFRotation1.setValue(testConstSFRotation);
+    System.out.println("testSFRotation1 (after second set) = " +
+                       testSFRotation1);
+    testSFRotation1.setValue(testSFRotation2);
+    System.out.println("testSFRotation1 (after third set) = " + 
+                       testSFRotation1);
 
     /* Test ConstSFString/SFString methods */
     System.out.println("Test ConstSFString/SFString");
