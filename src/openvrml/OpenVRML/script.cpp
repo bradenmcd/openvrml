@@ -3525,7 +3525,7 @@ JSBool SFRotation::initObject(JSContext * const cx,
                         return JS_FALSE;
                     }
                     sfdata = static_cast<SFData *>
-                                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+                                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[1])));
                     assert(sfdata);
                     assert(dynamic_cast<OpenVRML::SFVec3f *>
                                 (&sfdata->getFieldValue()));
@@ -3534,11 +3534,12 @@ JSBool SFRotation::initObject(JSContext * const cx,
                                 (sfdata->getFieldValue()));
 
                     OpenVRML::SFVec3f axisVec(argVec1.cross(argVec2));
+                    axisVec = axisVec.normalize();
                     x = axisVec.getX();
                     y = axisVec.getY();
                     z = axisVec.getZ();
-                    angle = acos(argVec1.dot(argVec2) /
-                            (argVec1.length() * argVec2.length()));
+                    angle = acos(argVec1.dot(argVec2)
+                            / (argVec1.length() * argVec2.length()));
 
                 } else if (JSVAL_IS_NUMBER(argv[1])) {
                     if (!JS_ValueToNumber(cx, argv[1], &angle)) {

@@ -10,6 +10,9 @@
           src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  libopenvrml-gl
           no longer depends on glut.
 
+        * src/openvrml/OpenVRML/script.cpp:  Fixed bug in JavaScript
+          SFRotation constructor that takes two vectors.
+
 2002-11-19  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/MathUtils.cpp,
