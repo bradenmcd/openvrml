@@ -11,14 +11,6 @@
 
 #ifndef VRMLNODETYPE_H
 #define VRMLNODETYPE_H
-/**************************************************
- * VRML 2.0 Parser
- * Copyright (C) 1996 Silicon Graphics, Inc.
- *
- * Author(s)    : Gavin Bell
- *                Daniel Woods (first port)
- **************************************************
- */
 
 //
 // The VrmlNodeType class is responsible for storing information about node

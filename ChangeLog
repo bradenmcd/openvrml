@@ -1,3 +1,10 @@
+2000-09-21  Chris Morley  <cmorley@vermontel.net>
+
+	* Applied (the gist of) patches submitted by Bose, tflynn, and
+	Jean-Daniel Fekete for VrmlNamespace invalid memory access,
+	mpeg playback speed fix, and Cygwin support, respectively.
+	
+
 2000-09-09  Christopher St. John <cstjohn@acm.org>
 
 	* vrml97parser.g fixed the intValue production. It was not
