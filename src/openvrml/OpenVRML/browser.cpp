@@ -4604,7 +4604,7 @@ namespace {
         size_t i;
         for (i = 0; i < nodes.getLength(); ++i) {
             const NodePtr & node = nodes.getElement(i);
-            if (node) { this->visit(*node); }
+            if (node) { node->accept(*this); }
         }
         
         for (i = 0; i < nodes.getLength(); ++i) {

@@ -17,6 +17,9 @@
         * src/openvrml/OpenVRML/script.cpp: Work around auto_ptr brain
           damage on gcc 2.96.
 
+        * src/openvrml/OpenVRML/browser.cpp: Fixed InitVisitor to set
+          the visited flag on root nodes.
+
 2002-08-22  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/ScriptJDK.cpp: Fixes to work with the
