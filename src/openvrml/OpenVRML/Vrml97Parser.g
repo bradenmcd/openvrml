@@ -1269,7 +1269,7 @@ returns [OpenVRML::FieldValuePtr fv]
     ;
 
 nonNodeFieldValue[OpenVRML::FieldValue::Type ft]
-returns [OpenVRML::FieldValuePtr fv]
+returns [OpenVRML::FieldValuePtr fv = OpenVRML::FieldValuePtr(0)]
 options { defaultErrorHandler=false; }
 {
     using OpenVRML::FieldValue;
@@ -1338,17 +1338,21 @@ options { defaultErrorHandler=false; }
     : colorValue[c] { scv.reset(new SFColor(c[0], c[1], c[2])); }
     ;
 
-mfColorValue returns [OpenVRML::FieldValuePtr mcv]
+mfColorValue
+returns [OpenVRML::FieldValuePtr mcv = OpenVRML::FieldValuePtr(new MFColor)]
 options { defaultErrorHandler=false; }
 {
     float c[3];
+    MFColor & mfcolor = static_cast<MFColor &>(*mcv);
 }
-    : colorValue[c] { mcv.reset(new MFColor(1, c)); }
-    | LBRACKET { std::vector<float> colorVector; }
-        (colorValue[c] { colorVector.push_back(c[0]);
-                         colorVector.push_back(c[1]);
-                         colorVector.push_back(c[2]); })* RBRACKET
-        { mcv.reset(new MFColor(colorVector.size() / 3L, &colorVector[0])); }
+    : colorValue[c] {
+    	    mfcolor.setLength(1);
+            mfcolor.setElement(0, c);
+        }
+    | LBRACKET (colorValue[c] {
+            mfcolor.setLength(mfcolor.getLength() + 1);
+            mfcolor.setElement(mfcolor.getLength() - 1, c);
+        })* RBRACKET
     ;
 
 colorValue[float c[3]]
@@ -1508,15 +1512,20 @@ sfRotationValue returns [OpenVRML::FieldValuePtr srv]
     : rotationValue[r] { srv.reset(new SFRotation(r)); }
     ;
 
-mfRotationValue returns [OpenVRML::FieldValuePtr mrv]
-    { float r[4]; }
-    : rotationValue[r] { mrv.reset(new MFRotation(1, r)); }
-    | LBRACKET { std::vector<float> floatVector; }
-        (rotationValue[r] { floatVector.push_back(r[0]);
-                            floatVector.push_back(r[1]);
-                            floatVector.push_back(r[2]);
-                            floatVector.push_back(r[3]); })* RBRACKET
-        { mrv.reset(new MFRotation(floatVector.size() / 4L, &floatVector[0])); }
+mfRotationValue
+returns [OpenVRML::FieldValuePtr mrv = OpenVRML::FieldValuePtr(new MFRotation)]
+{
+    float r[4];
+    MFRotation & mfrotation = static_cast<MFRotation &>(*mrv);
+}
+    : rotationValue[r] {
+            mfrotation.setLength(1);
+            mfrotation.setElement(0, r);
+        }
+    | LBRACKET (rotationValue[r] {
+            mfrotation.setLength(mfrotation.getLength() + 1);
+            mfrotation.setElement(mfrotation.getLength() - 1, r);
+        })* RBRACKET
     ;
 
 //
@@ -1604,14 +1613,21 @@ options { defaultErrorHandler=false; }
     : vec2fValue[v] { svv.reset(new SFVec2f(v[0], v[1])); }
     ;
 
-mfVec2fValue returns [OpenVRML::FieldValuePtr mvv]
+mfVec2fValue
+returns [OpenVRML::FieldValuePtr mvv = OpenVRML::FieldValuePtr(new MFVec2f)]
 options { defaultErrorHandler=false; }
-    { float v[2]; }
-    : vec2fValue[v] { mvv.reset(new MFVec2f(1, v)); }
-    | LBRACKET { std::vector<float> floatVector; }
-        (vec2fValue[v] { floatVector.push_back(v[0]);
-                         floatVector.push_back(v[1]); })* RBRACKET
-        { mvv.reset(new MFVec2f(floatVector.size() / 2L, &floatVector[0])); }
+{
+    float v[2];
+    MFVec2f & mfvec2f = static_cast<MFVec2f &>(*mvv);
+}
+    : vec2fValue[v] {
+            mfvec2f.setLength(1);
+            mfvec2f.setElement(0, v);
+        }
+    | LBRACKET (vec2fValue[v] {
+            mfvec2f.setLength(mfvec2f.getLength() + 1);
+            mfvec2f.setElement(mfvec2f.getLength() - 1, v);
+        })* RBRACKET
     ;
 
 vec2fValue[float v[2]]
@@ -1631,17 +1647,21 @@ options { defaultErrorHandler=false; }
     : vec3fValue[v] { svv.reset(new SFVec3f(v[0], v[1], v[2])); }
     ;
 
-mfVec3fValue returns [OpenVRML::FieldValuePtr mvv]
+mfVec3fValue
+returns [OpenVRML::FieldValuePtr mvv = OpenVRML::FieldValuePtr(new MFVec3f)]
 options { defaultErrorHandler=false; }
 {
     float v[3];
+    MFVec3f & mfvec3f = static_cast<MFVec3f &>(*mvv);
 }
-    : vec3fValue[v] { mvv.reset(new MFVec3f(1, v)); }
-    | LBRACKET { std::vector<float> floatVector; }
-        (vec3fValue[v] { floatVector.push_back(v[0]);
-                         floatVector.push_back(v[1]);
-                         floatVector.push_back(v[2]); })* RBRACKET
-        { mvv.reset(new MFVec3f(floatVector.size() / 3L, &floatVector[0])); }
+    : vec3fValue[v] {
+            mfvec3f.setLength(1);
+            mfvec3f.setElement(0, v);
+        }
+    | LBRACKET (vec3fValue[v] {
+            mfvec3f.setLength(mfvec3f.getLength() + 1);
+            mfvec3f.setElement(mfvec3f.getLength() - 1, v);
+        })* RBRACKET
     ;
 
 vec3fValue[float v[3]]

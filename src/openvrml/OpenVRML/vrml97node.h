@@ -475,14 +475,6 @@ namespace OpenVRML {
 
             // render backgrounds once per scene, not via the render() method
             void renderBindable(Viewer *);
-
-            size_t nGroundAngles() { return this->groundAngle.getLength(); }
-            const float * getGroundAngle() { return this->groundAngle.get(); }
-            const float * getGroundColor() { return this->groundColor.get(); }
-
-            size_t nSkyAngles() { return this->skyAngle.getLength(); }
-            const float * getSkyAngle() { return this->skyAngle.get(); }
-            const float * getSkyColor() { return this->skyColor.get(); }
         
         private:
             virtual void initializeImpl(double timestamp) throw ();
@@ -1510,7 +1502,12 @@ namespace OpenVRML {
 
             virtual NavigationInfo * toNavigationInfo() const;
 
-            const float * getAvatarSize() { return this->avatarSize.get(); }
+            const float * getAvatarSize()
+            {
+                return this->avatarSize.getLength() > 0
+                        ? &this->avatarSize.getElement(0)
+                        : 0;
+            }
             bool getHeadlightOn() { return this->headlight.get(); }
             float getSpeed() { return this->speed.get(); }
             float getVisibilityLimit() { return this->visibilityLimit.get(); }

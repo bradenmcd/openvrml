@@ -47,11 +47,6 @@ std::ostream & operator<<(std::ostream & out, const FieldValue & fieldValue) {
     return fieldValue.print(out);
 }
 
-namespace {
-    std::ostream & mffprint(std::ostream &, float const * c, int n, int eltsize);
-    std::ostream & mfdprint(std::ostream &, double const * c, int n, int eltsize);
-}
-
 /**
  * @class FieldValue
  *
@@ -405,7 +400,7 @@ SFColor::SFColor() throw () {
  *
  * @param rgb a 3-element array
  */
-SFColor::SFColor(const float rgb[3]) throw () {
+SFColor::SFColor(ConstArrayReference rgb) throw () {
     this->d_rgb[0] = rgb[0];
     this->d_rgb[1] = rgb[1];
     this->d_rgb[2] = rgb[2];
@@ -525,7 +520,7 @@ SFColor::ConstArrayReference SFColor::get() const throw () {
  *
  * @param rgb a 3-element vector comprising a RGB value
  */
-void SFColor::set(const float * rgb) throw () {
+void SFColor::set(ConstArrayReference rgb) throw () {
     this->d_rgb[0] = rgb[0];
     this->d_rgb[1] = rgb[1];
     this->d_rgb[2] = rgb[2];
@@ -543,7 +538,7 @@ void SFColor::set(const float * rgb) throw () {
  * @param hsv a 3-element array comprising an HSV value
  * @retval rgb a 3-element array comprising an RGB value
  */
-void SFColor::HSVtoRGB(const float * hsv, float * rgb) throw ()
+void SFColor::HSVtoRGB(ConstArrayReference hsv, ArrayReference rgb) throw ()
 {
     float h = hsv[0];
     if (hsv[1] == 0.0) {
@@ -579,7 +574,8 @@ void SFColor::HSVtoRGB(const float * hsv, float * rgb) throw ()
  * @param rgb a 3-element array comprising an RGB value
  * @retval hsv a 3-element array comprising an HSV value
  */
-void SFColor::RGBtoHSV(const float * rgb, float * hsv) throw () {
+void SFColor::RGBtoHSV(ConstArrayReference rgb, ArrayReference hsv) throw ()
+{
     const float maxrgb = *std::max_element(rgb, rgb + 3);
     const float minrgb = *std::min_element(rgb, rgb + 3);
     
@@ -624,7 +620,7 @@ void SFColor::setHSV(float h, float s, float v) throw () {
  *
  * @retval hsv a 3-element array comprising the HSV value.
  */
-void SFColor::getHSV(float hsv[3]) const throw () {
+void SFColor::getHSV(ArrayReference hsv) const throw () {
     RGBtoHSV(this->d_rgb, hsv);
 }
 
@@ -1101,7 +1097,7 @@ SFRotation::SFRotation() throw () {
  * @pre The first three elements of the argument array constitute a
  *      normalized vector.
  */
-SFRotation::SFRotation(const float rot[4]) throw () {
+SFRotation::SFRotation(ConstArrayReference rot) throw () {
     using OpenVRML_::fpequal;
     using OpenVRML_::length;
     
@@ -1320,7 +1316,8 @@ SFRotation::ConstArrayReference SFRotation::get() const throw () {
  * @pre The first three elements of <var>rot</var> constitute a normalized
  *      vector.
  */
-void SFRotation::set(const float * rot) throw () {
+void SFRotation::set(ConstArrayReference rot) throw ()
+{
     using OpenVRML_::fpequal;
     using OpenVRML_::length;
     
@@ -1668,7 +1665,7 @@ SFVec2f::SFVec2f() throw () { this->d_x[0] = this->d_x[1] = 0; }
  *
  * @param vec a 2-element array
  */
-SFVec2f::SFVec2f(const float vec[2]) throw () {
+SFVec2f::SFVec2f(ConstArrayReference vec) throw () {
     this->d_x[0] = vec[0];
     this->d_x[1] = vec[1];
 }
@@ -1789,7 +1786,8 @@ SFVec2f::ConstArrayReference SFVec2f::get() const throw () {
  *
  * @param vec a 2-element array.
  */
-void SFVec2f::set(const float * vec) throw () {
+void SFVec2f::set(ConstArrayReference vec) throw ()
+{
     this->d_x[0] = vec[0];
     this->d_x[1] = vec[1];
 }
@@ -1920,7 +1918,8 @@ SFVec3f::SFVec3f() throw () {}
  *
  * @param vec a 3-element array
  */
-SFVec3f::SFVec3f(const float * vec) throw () {
+SFVec3f::SFVec3f(ConstArrayReference vec) throw ()
+{
     std::copy(vec, vec + 3, this->d_x);
 }
 
@@ -2063,7 +2062,8 @@ SFVec3f::ConstArrayReference SFVec3f::get() const throw () {
  *
  * @param vec   a 3-element array
  */
-void SFVec3f::set(const float * vec) throw () {
+void SFVec3f::set(ConstArrayReference vec) throw ()
+{
     this->d_x[0] = vec[0];
     this->d_x[1] = vec[1];
     this->d_x[2] = vec[2];
@@ -2195,6 +2195,352 @@ const SFVec3f SFVec3f::subtract(const SFVec3f & vec) const throw () {
 }
 
 
+namespace {
+    
+    template <typename ElementType, size_t ArraySize>
+    class array_vector {
+        ElementType (*data_)[ArraySize];
+        size_t size_;
+        size_t capacity_;
+
+    public:
+        typedef ElementType value_type[ArraySize];
+        typedef value_type & reference;
+        typedef const value_type & const_reference;
+        typedef ElementType (*iterator)[ArraySize];
+        typedef const ElementType (*const_iterator)[ArraySize];
+        typedef std::reverse_iterator<iterator> reverse_iterator;
+        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+        typedef size_t size_type;
+        typedef ptrdiff_t difference_type;
+
+        explicit array_vector(size_type size = 0):
+            data_(new ElementType[size][ArraySize]),
+            size_(size),
+            capacity_(size)
+        {}
+
+        array_vector(size_type size, const_reference value):
+            data_(new ElementType[size][ArraySize]),
+            size_(size),
+            capacity_(size)
+        {
+            for (iterator i(this->begin()); i != this->end(); ++i) {
+                std::copy(value, value + ArraySize, *i);
+            }
+        }
+
+        array_vector(const_iterator begin, const_iterator end):
+            data_(new ElementType[end - begin][ArraySize]),
+            size_(end - begin),
+            capacity_(end - begin)
+        {
+            for (iterator i(begin), j(this->begin()); i != end; ++i, ++j) {
+                std::copy(*i, *i + ArraySize, *j);
+            }
+        }
+
+        array_vector(const array_vector & av):
+            data_(new ElementType[av.size_][ArraySize]),
+            size_(av.size_),
+            capacity_(av.capacity_)
+        {
+            for (iterator i(av.begin()), j(this->begin()); i != av.end(); ++i, ++j) {
+                std::copy(*i, *i + ArraySize, *j);
+            }
+        }
+
+        ~array_vector()
+        {
+            delete [] this->data_;
+        }
+
+        size_t size() const
+        {
+            return this->size_;
+        }
+
+        bool empty() const
+        {
+            return this->size_ == 0;
+        }
+
+        size_t max_size() const
+        {
+            return size_type(-1) / sizeof(ElementType[ArraySize]);
+        }
+
+        size_t capacity() const
+        {
+            return this->capacity_;
+        }
+
+        void reserve(size_type capacity)
+        {
+            if (this->capacity_ < capacity) {
+                value_type * data = new value_type[capacity];
+                for (iterator i(this->begin()), j(data); i != this->end();
+                        ++i, ++j) {
+                    std::copy(*i, *i + ArraySize, *j);
+                }
+                delete [] this->data_;
+                this->data_ = data;
+                this->capacity_ = capacity;
+            }
+        }
+
+        array_vector & operator=(const array_vector & av)
+        {
+            array_vector<ElementType, ArraySize> temp(av);
+            this->swap(temp);
+            return *this;
+        }
+
+        void assign(size_t size, const_reference value)
+        {
+            if (this->capacity_ < size) {
+                delete [] this->data_;
+                this->data = new value_type[size];
+                this->capacity = size;
+            }
+            for (iterator i(begin), j(this->begin()); i != end; ++i, ++j) {
+                std::copy(*i, *i + ArraySize, *j);
+            }
+            this->size_ = size;
+        }
+
+        void assign(const_iterator begin, const_iterator end)
+        {
+            if (this->capacity_ < end - begin) {
+                delete [] this->data_;
+                this->data = new value_type[end - begin];
+                this->capacity = end - begin;
+            }
+            for (iterator i(begin), j(this->begin()); i != end; ++i, ++j) {
+                std::copy(*i, *i + ArraySize, *j);
+            }
+            this->size_ = end - begin;
+        }
+
+        void swap(array_vector & av) throw ()
+        {
+            std::swap(this->data_, av.data_);
+            std::swap(this->size_, av.size_);
+            std::swap(this->capacity_, av.capacity_);
+        }
+
+        const_reference at(size_type index) const
+        {
+            if (!(index < this->size_)) { throw std::out_of_range(); }
+            return this->data_[index];
+        }
+
+        reference at(size_type index)
+        {
+            if (!(index < this->size_)) { throw std::out_of_range(); }
+            return this->data_[index];
+        }
+
+        const_reference operator[](size_type index) const
+        {
+            return this->data_[index];
+        }
+
+        reference operator[](size_type index)
+        {
+            return this->data_[index];
+        }
+
+        const_reference front() const
+        {
+            return this->data_[0];
+        }
+
+        reference front()
+        {
+            return this->data_[0];
+        }
+
+        const_reference back() const
+        {
+            return this->data_[this->size_ - 1];
+        }
+
+        reference back()
+        {
+            return this->data_[this->size_ - 1];
+        }
+
+        const_iterator begin() const
+        {
+            return this->data_;
+        }
+
+        iterator begin()
+        {
+            return this->data_;
+        }
+
+        const_iterator end() const
+        {
+            return this->data_ + this->size_;
+        }
+
+        iterator end()
+        {
+            return this->data_ + this->size_;
+        }
+
+        const_reverse_iterator rbegin() const
+        {
+            return std::reverse_iterator(this->end());
+        }
+
+        reverse_iterator rbegin()
+        {
+            return std::const_reverse_iterator(this->end());
+        }
+
+        const_reverse_iterator rend() const
+        {
+            return std::reverse_iterator(this->begin());
+        }
+
+        reverse_iterator rend()
+        {
+            return std::const_reverse_iterator(this->end());
+        }
+
+        iterator insert(iterator pos, const_reference value)
+        {
+            size_type n = pos - this->begin();
+            this->insert(pos, 1, value);
+            return this->begin() + n;
+        }
+        
+        void insert(iterator pos, size_t num, const_reference value)
+        {
+            if (this->capacity_ < this->size_ + num) {
+                value_type * data = new value_type[this->size_ + num];
+                iterator i(this->begin()), j(data);
+                for (; i != pos; i++, j++) {
+                    std::copy(*i, *i + ArraySize, *j);
+                }
+                std::copy(value, value + ArraySize, *j);
+                ++j;
+                for (; i != this->end(); ++i, ++j) {
+                    std::copy(*i, *i + ArraySize, *j);
+                }
+                delete [] this->data_;
+                this->data_ = data;
+                this->capacity_ = this->size_ + num;
+            } else {
+                iterator i;
+                for (i = this->end() - num - 1; i >= pos; --i) {
+                    std::copy(*i, *i + ArraySize, *(i + num));
+                }
+                for (i = pos; i < pos + num; ++i) {
+                    std::copy(value, value + ArraySize, *i);
+                }
+            }
+            ++this->size_;
+        }
+        
+        void insert(iterator pos, const_iterator begin, const_iterator end)
+        {
+            const ptrdiff_t num = end - begin;
+            if (this->capacity_ < this->size_ + num) {
+                value_type * data = new value_type[this->size_ + num];
+                iterator i(this->begin()), j(data);
+                for (; i != pos; i++, j++) {
+                    std::copy(*i, *i + ArraySize, *j);
+                }
+                for (i = begin; i != end; i++, j++) {
+                    std::copy(*i, *i + ArraySize, *j);
+                }
+                for (i = this->begin() + num; i != this->end(); ++i, ++j) {
+                    std::copy(*i, *i + ArraySize, *j);
+                }
+                delete [] this->data_;
+                this->data_ = data;
+                this->capacity_ = this->size_ + num;
+            } else {
+                iterator i;
+                for (i = this->end() - num - 1; i >= pos; --i) {
+                    std::copy(*i, *i + ArraySize, *(i + num));
+                }
+                for (i = pos; i < pos + num; ++i) {
+                    std::copy(value, value + ArraySize, *i);
+                }
+            }
+            ++this->size_;
+        }
+
+        void push_back(const_reference value)
+        {
+            if (this->size_ == this->capacity_) {
+                value_type * data = new value_type[this->capacity_ * 2];
+                for (iterator i(this->begin()), j(data); i != this->end();
+                        ++i, ++j) {
+                    std::copy(*i, *i + ArraySize, *j);
+                }
+                delete [] this->data_;
+                this->data_ = data;
+                this->capacity_ *= 2;
+            }
+            std::copy(value, value + ArraySize, this->data_[this->size_]);
+            ++this->size_;
+        }
+
+        void pop_back()
+        {
+            --this->size_;
+        }
+
+        iterator erase(iterator pos)
+        {
+            if (pos + 1 != this->end()) {
+                for (iterator i(pos + 1), j(pos); i != this->end(); ++i, ++i) {
+                    std::copy(*i, *i + ArraySize, *j);
+                }
+            }
+            --this->size_;
+            return pos;
+        }
+
+        iterator erase(iterator begin, iterator end)
+        {
+            for (iterator i(end), j(begin); i != this->end(); ++i, ++j) {
+                std::copy(*i, *i + ArraySize, *j);
+            }
+            this->size_ -= end - begin;
+            return begin;
+        }
+
+        void resize(size_type size)
+        {
+            ElementType value[ArraySize] = {};
+            this->resize(size, value);
+        }
+
+        void resize(size_type size, const_reference value)
+        {
+            if (size < this->size_) {
+                this->erase(this->begin() + size, this->end());
+            } else {
+                this->insert(this->end(), size - this->size_, value);
+            }
+        }
+
+        void clear()
+        {
+            this->erase(this->begin(), this->end());
+        }
+    };
+}
+
+typedef array_vector<float, 3> ColorVec;
+
 /**
  * @class MFColor
  *
@@ -2202,144 +2548,74 @@ const SFVec3f SFVec3f::subtract(const SFVec3f & vec) const throw () {
  */
 
 /**
- * @internal
+ * @var void * MFColor::data
  *
- * @brief Helper class to handle ref-counting of the data.
- */
-class MFColor::FData {
-public:
-    /**
-     * @brief The number of objects using this data.
-     */
-    size_t d_refs;
-    
-    /**
-     * @brief The size (in floats) of @a d_v.
-     */
-    size_t d_n;
-    
-    /**
-     * @brief The data vector.
-     */
-    float * d_v;
-
-    /**
-     * @brief Constructor.
-     *
-     * @param n size of the float array to allocate.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    FData(size_t n=0) throw (std::bad_alloc):
-            d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
-    
-    /**
-     * @brief Destructor.
-     */
-    ~FData() throw () { delete [] d_v; }
-
-    /**
-     * @brief Increment the reference count.
-     *
-     * @return a pointer to the FData object.
-     */
-    FData * ref() throw () { ++d_refs; return this; }
-    
-    /**
-     * @brief Decrement the reference count.
-     */
-    void deref() throw () { if (--d_refs == 0) delete this; }
-};
-
-/**
- * @var MFColor::FData * MFColor::d_data
- *
- * @brief Reference-counted data.
+ * @brief Internal representation.
  */
 
 /**
  * @brief Construct from a float array.
  *
- * @param length the number of RGB triplets in the array
- * @param colors a float array comprising RGB triplets
+ * @param length    the number of RGB triplets in the array
+ * @param values    a pointer to an array of 3-element arrays comprising color
+ *                  values to initialize the MFColor.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-MFColor::MFColor(size_t length, float const * colors) throw (std::bad_alloc):
-        d_data(new FData(length * 3)) {
-    if (colors) {
-        std::copy(colors, colors + (length * 3), this->d_data->d_v);
+MFColor::MFColor(size_t length, SFColor::ConstArrayPointer values)
+    throw (std::bad_alloc):
+    data(new ColorVec(length))
+{
+    if (values) {
+        for (size_t i(0); i < length; ++i) { this->setElement(i, values[i]); }
     }
 }
 
 /**
  * @brief Copy constructor.
  *
- * @param mfcolor the object to copy
+ * @param mfcolor   the object to copy.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
 MFColor::MFColor(const MFColor & mfcolor) throw (std::bad_alloc):
-        d_data(mfcolor.d_data->ref()) {}
+    data(new ColorVec(*static_cast<const ColorVec *>(mfcolor.data)))
+{}
 
 /**
  * @brief Destructor.
  */
-MFColor::~MFColor() throw () { d_data->deref(); }
+MFColor::~MFColor() throw ()
+{
+    delete static_cast<ColorVec *>(this->data);
+}
 
 /**
  * @brief Assignment operator.
  *
- * @param rhs value to assign to this object
+ * @param mfcolor value to assign to this object
  *
  * @return a reference to this object
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-MFColor & MFColor::operator=(const MFColor & rhs) throw (std::bad_alloc) {
-    if (this != &rhs) {
-        this->d_data->deref();
-        this->d_data = rhs.d_data->ref();
-    }
+MFColor & MFColor::operator=(const MFColor & mfcolor) throw (std::bad_alloc)
+{
+    MFColor temp(mfcolor);
+    static_cast<ColorVec *>(temp.data)
+        ->swap(*static_cast<ColorVec *>(this->data));
     return *this;
-}
-
-/**
- * @brief Get value.
- *
- * @return a pointer to an array comprising RGB triplets
- */
-const float * MFColor::get() const throw () { return this->d_data->d_v; }
-
-/**
- * @brief Set value.
- *
- * Copies the contents of a <code>float</code> array.
- *
- * @param length the number of RGB triplets in the array
- * @param colors an array comprising RGB triplets
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void MFColor::set(size_t length, const float * colors) throw (std::bad_alloc) {
-    length *= 3;
-    this->d_data->deref();
-    this->d_data = new FData(length);
-    if (colors) {
-        std::copy(colors, colors + (length), this->d_data->d_v);
-    } else {
-        this->setLength(length);
-    }
 }
 
 /**
  * @brief Get element.
  *
- * @return a pointer to a 3-element array comprising an RGB triplet
+ * @return a 3-element array comprising an RGB triplet
  */
-const float * MFColor::getElement(size_t index) const throw () {
+SFColor::ConstArrayReference MFColor::getElement(size_t index) const throw ()
+{
     assert(index < this->getLength());
-    return (this->d_data->d_v + (index * 3L));
+    return (*static_cast<const ColorVec *>(this->data))[index];
 }
 
 /**
@@ -2348,9 +2624,11 @@ const float * MFColor::getElement(size_t index) const throw () {
  * @param index the index of the element to set
  * @param value a 3-element float array comprising the new color value
  */
-void MFColor::setElement(size_t index, const float * value) throw () {
+void MFColor::setElement(size_t index, SFColor::ConstArrayReference value)
+    throw ()
+{
     assert(index < this->getLength());
-    std::copy(value, value + 3, this->d_data->d_v + (index * 3));
+    std::copy(value, value + 3, (*static_cast<ColorVec *>(this->data))[index]);
 }
 
 /**
@@ -2358,8 +2636,9 @@ void MFColor::setElement(size_t index, const float * value) throw () {
  *
  * @return the number of color values (RGB triplets)
  */
-size_t MFColor::getLength() const throw () {
-    return (this->d_data->d_n / 3L);
+size_t MFColor::getLength() const throw ()
+{
+    return static_cast<ColorVec *>(this->data)->size();
 }
 
 /**
@@ -2373,19 +2652,9 @@ size_t MFColor::getLength() const throw () {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFColor::setLength(size_t length) throw (std::bad_alloc) {
-    length *= 3;
-    FData * const newData = new FData(length);
-    if (length > this->d_data->d_n) {
-        std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
-                  newData->d_v);
-        std::fill(newData->d_v + this->d_data->d_n, newData->d_v + length,
-                  0.0f);
-    } else {
-        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
-    }
-    this->d_data->deref();
-    this->d_data = newData;
+void MFColor::setLength(size_t length) throw (std::bad_alloc)
+{
+    static_cast<ColorVec *>(this->data)->resize(length);
 }
 
 /**
@@ -2396,16 +2665,12 @@ void MFColor::setLength(size_t length) throw (std::bad_alloc) {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFColor::insertElement(const size_t index, const float * value)
-        throw (std::bad_alloc) {
-    using std::copy;
-    FData * const newData = new FData(this->d_data->d_n + 3);
-    copy(this->d_data->d_v, this->d_data->d_v + (3 * index), newData->d_v);
-    copy(value, value + 3, newData->d_v + (3 * index));
-    copy(this->d_data->d_v + (3 * index), this->d_data->d_v + this->d_data->d_n,
-         newData->d_v + (3 * (index + 1)));
-    this->d_data->deref();
-    this->d_data = newData;
+void MFColor::insertElement(const size_t index,
+                            SFColor::ConstArrayReference value)
+    throw (std::bad_alloc)
+{
+    ColorVec & data = *static_cast<ColorVec *>(this->data);
+    data.insert(data.begin() + index, value);
 }
 
 /**
@@ -2416,13 +2681,10 @@ void MFColor::insertElement(const size_t index, const float * value)
  * @todo Right now this fails silently if @p index is out of range. We should
  *      either fail with an assertion or throw std::out_of_range.
  */
-void MFColor::removeElement(size_t index) throw () {
-    if (3 * index < this->d_data->d_n) {
-        std::copy(this->d_data->d_v + (3 * (index + 1)),
-                  this->d_data->d_v + this->d_data->d_n,
-                  this->d_data->d_v + (3 * index));
-        this->d_data->d_n -= 3;
-    }	
+void MFColor::removeElement(size_t index) throw ()
+{
+    ColorVec & data = *static_cast<ColorVec *>(this->data);
+    data.erase(data.begin() + index);
 }
 
 /**
@@ -2432,7 +2694,8 @@ void MFColor::removeElement(size_t index) throw () {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFColor::clone() const throw (std::bad_alloc) {
+FieldValue * MFColor::clone() const throw (std::bad_alloc)
+{
     return new MFColor(*this);
 }
 
@@ -2445,7 +2708,8 @@ FieldValue * MFColor::clone() const throw (std::bad_alloc) {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 FieldValue & MFColor::assign(const FieldValue & value)
-        throw (std::bad_cast, std::bad_alloc) {
+        throw (std::bad_cast, std::bad_alloc)
+{
     return (*this = dynamic_cast<const MFColor &>(value));
 }
 
@@ -2454,7 +2718,10 @@ FieldValue & MFColor::assign(const FieldValue & value)
  *
  * @return @c FieldValue::mfcolor.
  */
-FieldValue::Type MFColor::type() const throw () { return mfcolor; }
+FieldValue::Type MFColor::type() const throw ()
+{
+    return FieldValue::mfcolor;
+}
 
 /**
  * @brief Print to an output stream.
@@ -2463,8 +2730,15 @@ FieldValue::Type MFColor::type() const throw () { return mfcolor; }
  *
  * @return @p out.
  */
-std::ostream & MFColor::print(std::ostream & out) const {
-    return mffprint(out, get(), getLength(), 3L);
+std::ostream & MFColor::print(std::ostream & out) const
+{
+    const ColorVec & data = *static_cast<ColorVec *>(this->data);
+    out << '[';
+    for (ColorVec::const_iterator i(data.begin()); i != data.end() - 1; ++i) {
+        out << (*i)[0] << ' ' << (*i)[1] << ' ' << (*i)[2] << ", ";
+    }
+    return out << data.back()[0] << ' ' << data.back()[1] << ' '
+               << data.back()[2] << ']';
 }
 
 
@@ -2475,123 +2749,34 @@ std::ostream & MFColor::print(std::ostream & out) const {
  */
 
 /**
- * @internal
- *
- * @brief Reference counted float data.
- */
-class MFFloat::FData {
-public:
-    /**
-     * @brief The number of MF* objects using this data.
-     */
-    size_t d_refs;
-    
-    /**
-     * @brief The size (in floats) of @a d_v.
-     */
-    size_t d_n;
-    
-    /**
-     * @brief The data vector.
-     */
-    float * d_v;
-    
-    /**
-     * @brief Constructor.
-     *
-     * @param n size of the float array to allocate.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    FData(size_t n = 0) throw (std::bad_alloc):
-            d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
-    
-    /**
-     * @brief Destructor.
-     */
-    ~FData() throw () { delete [] d_v; }
-
-    /**
-     * @brief Increment the reference count.
-     *
-     * @return a pointer to the FData object.
-     */
-    FData * ref() throw () { ++d_refs; return this; }
-    
-    /**
-     * @brief Decrement the reference count.
-     */
-    void deref() throw () { if (--d_refs == 0) delete this; }
-};
-
-/**
  * @brief Construct from a float array.
  *
  * @param length the number of floats in the array
- * @param numbers a pointer to a float array
+ * @param values a pointer to a float array
  */
-MFFloat::MFFloat(size_t length, float const * numbers) throw (std::bad_alloc):
-        d_data(new FData(length)) {
-    if (numbers) {
-        std::copy(numbers, numbers + length, this->d_data->d_v);
+MFFloat::MFFloat(size_t length, const float * values) throw (std::bad_alloc):
+    data(length)
+{
+    if (values) {
+        std::copy(values, values + length, this->data.begin());
     }
 }
-
-/**
- * @brief Copy constructor.
- *
- * @param mfFloat the object to copy
- */
-MFFloat::MFFloat(const MFFloat & mfFloat) throw (std::bad_alloc):
-        d_data(mfFloat.d_data->ref()) {}
 
 /**
  * @brief Destructor.
  */
-MFFloat::~MFFloat() throw () { d_data->deref(); }
-
-/**
- * @brief Assignment operator.
- *
- * @param mfFloat the object to copy
- */
-MFFloat & MFFloat::operator=(const MFFloat & mfFloat) throw (std::bad_alloc) {
-    if (this != &mfFloat) {
-        this->d_data->deref();
-        this->d_data = mfFloat.d_data->ref();
-    }
-    return *this;
-}
-
-/**
- * @brief Get value.
- *
- * @return a pointer to a float array
- */
-const float * MFFloat::get() const throw () { return this->d_data->d_v; }
-
-/**
- * @brief Set value.
- *
- * @param length the number of float values
- * @param numbers a pointer to a float array
- */
-void MFFloat::set(size_t length, const float * numbers) throw (std::bad_alloc) {
-    this->d_data->deref();
-    this->d_data = new FData(length);
-    if (numbers) {
-        std::copy(numbers, numbers + length, this->d_data->d_v);
-    }
-}
+MFFloat::~MFFloat() throw ()
+{}
 
 /**
  * @brief Get element.
  *
  * @param index
  */
-float MFFloat::getElement(size_t index) const throw () {
+const float & MFFloat::getElement(size_t index) const throw ()
+{
     assert(index < this->getLength());
-    return this->d_data->d_v[index];
+    return this->data[index];
 }
 
 /**
@@ -2600,9 +2785,10 @@ float MFFloat::getElement(size_t index) const throw () {
  * @param index
  * @param value
  */
-void MFFloat::setElement(size_t index, float value) throw () {
+void MFFloat::setElement(const size_t index, const float value) throw ()
+{
     assert(index < this->getLength());
-    this->d_data->d_v[index] = value;
+    this->data[index] = value;
 }
 
 /**
@@ -2610,8 +2796,9 @@ void MFFloat::setElement(size_t index, float value) throw () {
  *
  * @return the number of float values
  */
-size_t MFFloat::getLength() const throw () {
-    return this->d_data->d_n;
+size_t MFFloat::getLength() const throw ()
+{
+    return this->data.size();
 }
 
 /**
@@ -2622,19 +2809,12 @@ size_t MFFloat::getLength() const throw () {
  * than the current length, the array is truncated.
  *
  * @param length new length
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFFloat::setLength(size_t length) throw (std::bad_alloc) {
-    FData * const newData = new FData(length);
-    if (length > this->d_data->d_n) {
-        std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
-                  newData->d_v);
-        std::fill(newData->d_v + this->d_data->d_n, newData->d_v + length,
-                  0.0f);
-    } else {
-        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
-    }
-    this->d_data->deref();
-    this->d_data = newData;
+void MFFloat::setLength(const size_t length) throw (std::bad_alloc)
+{
+    this->data.resize(length);
 }
 
 /**
@@ -2645,16 +2825,10 @@ void MFFloat::setLength(size_t length) throw (std::bad_alloc) {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFFloat::insertElement(size_t index, float value) throw (std::bad_alloc) {
-  FData* newData;
-
-  newData = new FData(d_data->d_n + 1);
-  memcpy(newData->d_v, d_data->d_v, index * sizeof(float));
-  newData->d_v[index] = value;
-  memcpy(newData->d_v + (index + 1), d_data->d_v + index, 
-	 (d_data->d_n - index) * sizeof(float));
-  d_data->deref();
-  d_data = newData;
+void MFFloat::insertElement(const size_t index, const float value)
+    throw (std::bad_alloc)
+{
+    this->data.insert(this->data.begin() + index, value);
 }
 
 /**
@@ -2665,13 +2839,9 @@ void MFFloat::insertElement(size_t index, float value) throw (std::bad_alloc) {
  * @todo Right now this fails silently if @p index is out of range. We should
  *      either fail with an assertion or throw std::out_of_range.
  */
-void MFFloat::removeElement(size_t index) throw () {
-  if (index < d_data->d_n)
-  {
-    d_data->d_n--;
-    memcpy(d_data->d_v + index, d_data->d_v + (index + 1), 
-	   (d_data->d_n - index) * sizeof(float));
-  }	
+void MFFloat::removeElement(size_t index) throw ()
+{
+    this->data.erase(this->data.begin() + index);
 }
 
 /**
@@ -2681,7 +2851,8 @@ void MFFloat::removeElement(size_t index) throw () {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFFloat::clone() const throw (std::bad_alloc) {
+FieldValue * MFFloat::clone() const throw (std::bad_alloc)
+{
     return new MFFloat(*this);
 }
 
@@ -2694,7 +2865,8 @@ FieldValue * MFFloat::clone() const throw (std::bad_alloc) {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 FieldValue & MFFloat::assign(const FieldValue & value)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     return (*this = dynamic_cast<const MFFloat &>(value));
 }
 
@@ -2703,7 +2875,10 @@ FieldValue & MFFloat::assign(const FieldValue & value)
  *
  * @return the type identifer for the class.
  */
-FieldValue::Type MFFloat::type() const throw () { return mffloat; }
+FieldValue::Type MFFloat::type() const throw ()
+{
+    return FieldValue::mffloat;
+}
 
 /**
  * @brief Print to an output stream.
@@ -2712,8 +2887,14 @@ FieldValue::Type MFFloat::type() const throw () { return mffloat; }
  *
  * @return @p out.
  */
-std::ostream & MFFloat::print(std::ostream & out) const {
-    return mffprint(out, get(), getLength(), 1);
+std::ostream & MFFloat::print(std::ostream & out) const
+{
+    out << '[';
+    for (std::vector<float>::const_iterator i(this->data.begin());
+            i != this->data.end() - 1; ++i) {
+        out << *i << ", ";
+    }
+    return out << this->data.back() << ']';
 }
 
 
@@ -2724,127 +2905,35 @@ std::ostream & MFFloat::print(std::ostream & out) const {
  */
 
 /**
- * @internal
- *
- * @brief Helper class to handle ref-counting of the data.
- */
-class MFInt32::IData {
-public:
-    /**
-     * @brief The number of objects using this data.
-     */
-    size_t d_refs;
-    
-    /**
-     * @brief The size (in longs) of @a d_v.
-     */
-    size_t d_n;
-    
-    /**
-     * @brief The data vector.
-     */
-    long * d_v;
-
-    /**
-     * @brief Constructor.
-     *
-     * @param n size of the long array to allocate.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    IData(size_t n = 0) throw (std::bad_alloc):
-            d_refs(1), d_n(n), d_v(n > 0 ? new long[n] : 0) {}
-    
-    /**
-     * @brief Destructor.
-     */
-    ~IData() throw () { delete [] d_v; }
-
-
-    /**
-     * @brief Increment the reference count.
-     *
-     * @return a pointer to the IData object.
-     */
-    IData * ref() throw () { ++d_refs; return this; }
-    
-    /**
-     * @brief Decrement the reference count.
-     */
-    void deref() throw () { if (--d_refs == 0) delete this; }
-};
-
-/**
  * @brief Construct from a long array.
  *
- * @param length the number of integer values
- * @param numbers a pointer to a long array
+ * @param length    the number of integer values
+ * @param values    a pointer to a long array
  */
-MFInt32::MFInt32(size_t length, const long * numbers) throw (std::bad_alloc):
-        d_data(new IData(length)) {
-    if (numbers) {
-        std::copy(numbers, numbers + length, this->d_data->d_v);
+MFInt32::MFInt32(const size_t length, const long * const values)
+    throw (std::bad_alloc):
+    data(length)
+{
+    if (values) {
+        std::copy(values, values + length, this->data.begin());
     }
 }
-
-/**
- * @brief Copy constructor.
- *
- * @param mfInt32 the object to copy
- */
-MFInt32::MFInt32(const MFInt32 & mfInt32) throw (std::bad_alloc):
-        d_data(mfInt32.d_data->ref()) {}
 
 /**
  * @brief Destructor.
  */
-MFInt32::~MFInt32() throw () { this->d_data->deref(); }
-
-/**
- * @brief Assignment operator.
- *
- * @param mfInt32 the object to copy into this one
- *
- * @return a reference to this object
- */
-MFInt32 & MFInt32::operator=(const MFInt32 & mfInt32) throw (std::bad_alloc) {
-  if (this != &mfInt32) {
-    d_data->deref();
-    d_data = mfInt32.d_data->ref();
-  }
-  return *this;
-}
-
-/**
- * @brief Get value.
- *
- * @return a pointer to the long array comprising the integer values owned by
- *         this object
- */
-const long * MFInt32::get() const throw () { return this->d_data->d_v; }
-
-/**
- * @brief Set value.
- *
- * @param length the number of integer values
- * @param numbers a pointer to a long array
- */
-void MFInt32::set(size_t length, const long * numbers) throw (std::bad_alloc) {
-    d_data->deref();
-    d_data = new IData(length);
-    if (numbers) {
-        std::copy(numbers, numbers + length, this->d_data->d_v);
-    }
-}
+MFInt32::~MFInt32() throw ()
+{}
 
 /**
  * @brief Get element.
  *
  * @param index
  */
-long MFInt32::getElement(size_t index) const throw () {
+const long & MFInt32::getElement(const size_t index) const throw ()
+{
     assert(index < this->getLength());
-    return this->d_data->d_v[index];
+    return this->data[index];
 }
 
 /**
@@ -2853,9 +2942,10 @@ long MFInt32::getElement(size_t index) const throw () {
  * @param index
  * @param value
  */
-void MFInt32::setElement(size_t index, long value) throw () {
+void MFInt32::setElement(const size_t index, const long value) throw ()
+{
     assert(index < this->getLength());
-    this->d_data->d_v[index] = value;
+    this->data[index] = value;
 }
 
 /**
@@ -2863,7 +2953,10 @@ void MFInt32::setElement(size_t index, long value) throw () {
  *
  * @return the number of integer values
  */
-size_t MFInt32::getLength() const throw () { return this->d_data->d_n; }
+size_t MFInt32::getLength() const throw ()
+{
+    return this->data.size();
+}
 
 /**
  * @brief Set the length.
@@ -2873,18 +2966,12 @@ size_t MFInt32::getLength() const throw () { return this->d_data->d_n; }
  * than the current length, the array is truncated.
  *
  * @param length new length
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFInt32::setLength(size_t length) throw (std::bad_alloc) {
-    IData * const newData = new IData(length);
-    if (length > this->d_data->d_n) {
-        std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
-                  newData->d_v);
-        std::fill(newData->d_v + this->d_data->d_n, newData->d_v + length, 0L);
-    } else {
-        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
-    }
-    this->d_data->deref();
-    this->d_data = newData;
+void MFInt32::setLength(size_t length) throw (std::bad_alloc)
+{
+    this->data.resize(length);
 }
 
 /**
@@ -2895,16 +2982,10 @@ void MFInt32::setLength(size_t length) throw (std::bad_alloc) {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFInt32::insertElement(size_t index, long value) throw (std::bad_alloc) {
-  IData* newData;
-
-  newData = new IData(d_data->d_n + 1);
-  memcpy(newData->d_v, d_data->d_v, index * sizeof(long));
-  newData->d_v[index] = value;
-  memcpy(newData->d_v + (index + 1), d_data->d_v + index, 
-	 (d_data->d_n - index) * sizeof(long));
-  d_data->deref();
-  d_data = newData;
+void MFInt32::insertElement(const size_t index, const long value)
+    throw (std::bad_alloc)
+{
+    this->data.insert(this->data.begin() + index, value);
 }
 
 /**
@@ -2915,13 +2996,9 @@ void MFInt32::insertElement(size_t index, long value) throw (std::bad_alloc) {
  * @todo Right now this fails silently if @p index is out of range. We should
  *      either fail with an assertion or throw std::out_of_range.
  */
-void MFInt32::removeElement(size_t index) throw () {
-  if (index < d_data->d_n)
-  {
-    (d_data->d_n)--;
-    memcpy(d_data->d_v + index, d_data->d_v + (index + 1), 
-	   (d_data->d_n - index) * sizeof(int));
-  }
+void MFInt32::removeElement(size_t index) throw ()
+{
+    this->data.erase(this->data.begin() + index);
 }
 
 /**
@@ -2931,7 +3008,8 @@ void MFInt32::removeElement(size_t index) throw () {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFInt32::clone() const throw (std::bad_alloc) {
+FieldValue * MFInt32::clone() const throw (std::bad_alloc)
+{
     return new MFInt32(*this);
 }
 
@@ -2944,7 +3022,8 @@ FieldValue * MFInt32::clone() const throw (std::bad_alloc) {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 FieldValue & MFInt32::assign(const FieldValue & value)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     return (*this = dynamic_cast<const MFInt32 &>(value));
 }
 
@@ -2953,7 +3032,10 @@ FieldValue & MFInt32::assign(const FieldValue & value)
  *
  * @return @c FieldValue::mfint32.
  */
-FieldValue::Type MFInt32::type() const throw () { return mfint32; }
+FieldValue::Type MFInt32::type() const throw ()
+{
+    return FieldValue::mfint32;
+}
 
 /**
  * @brief Print to an output stream.
@@ -2963,21 +3045,12 @@ FieldValue::Type MFInt32::type() const throw () { return mfint32; }
  * @return @p out.
  */
 std::ostream & MFInt32::print(std::ostream & out) const {
-    size_t n = this->getLength();
-    const long * c = get();
-
-    if (n == 1) {
-        out << *c;
-    } else {
-        out << '[';
-        for (size_t i = 0; i < n; ++i, ++c) {
-            out << *c;
-            out << ((i < n-1) ? ", " : " ");
-        }
-        out << ']';
+    out << '[';
+    for (std::vector<long>::const_iterator i(this->data.begin());
+            i != this->data.end() - 1; ++i) {
+        out << *i << ", ";
     }
-
-    return out;
+    return out << this->data.back() << ']';
 }
 
 
@@ -2985,9 +3058,6 @@ std::ostream & MFInt32::print(std::ostream & out) const {
  * @class MFNode
  *
  * @brief Encapsulates a MFNode.
- *
- * Since individual nodes are refcounted, no attempt is made to refcount
- * MFNode.
  */
 
 /**
@@ -3190,6 +3260,7 @@ std::ostream & MFNode::print(std::ostream & out) const {
     return out;
 }
 
+typedef array_vector<float, 4> RotationVec;
 
 /**
  * @class MFRotation
@@ -3198,66 +3269,24 @@ std::ostream & MFNode::print(std::ostream & out) const {
  */
 
 /**
- * @internal
+ * @var void * MFRotation::data
  *
- * @brief Reference counted float data.
+ * @brief Internal representation.
  */
-class MFRotation::FData { // reference counted float data
-public:
-    /**
-     * @brief The number of MF* objects using this data.
-     */
-    size_t d_refs;
-    
-    /**
-     * @brief The size (in floats) of @a d_v.
-     */
-    size_t d_n;
-    
-    /**
-     * @brief The data vector.
-     */
-    float * d_v;
-    
-    /**
-     * @brief Constructor.
-     *
-     * @param n size of the float array to allocate.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    FData(size_t n = 0) throw (std::bad_alloc):
-            d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
-    
-    /**
-     * @brief Destructor.
-     */
-    ~FData() throw () { delete [] d_v; }
-
-    /**
-     * @brief Increment the reference count.
-     *
-     * @return a pointer to the FData object.
-     */
-    FData * ref() throw () { ++d_refs; return this; }
-    
-    /**
-     * @brief Decrement the reference count.
-     */
-    void deref() throw () { if (--d_refs == 0) delete this; }
-};
 
 /**
  * @brief Construct from an array of rotation values.
  *
- * @param length the number of rotation values in the passed array
- * @param rotations a pointer to an array of rotation values
+ * @param length    the number of rotation values in the passed array.
+ * @param values    a pointer to an array of 4-element arrays comprising
+ *                  rotation values to initialize the MFRotation.
  */
-MFRotation::MFRotation(size_t length, const float * rotations)
-        throw (std::bad_alloc):
-        d_data(new FData(length * 4)) {
-    if (rotations) {
-        std::copy(rotations, rotations + (length * 4), this->d_data->d_v);
+MFRotation::MFRotation(size_t length, SFRotation::ConstArrayPointer values)
+    throw (std::bad_alloc):
+    data(new RotationVec(length))
+{
+    if (values) {
+        for (size_t i(0); i < length; ++i) { this->setElement(i, values[i]); }
     }
 }
 
@@ -3267,12 +3296,16 @@ MFRotation::MFRotation(size_t length, const float * rotations)
  * @param mfrotation the object to copy
  */
 MFRotation::MFRotation(const MFRotation & mfrotation) throw (std::bad_alloc):
-        d_data(mfrotation.d_data->ref()) {}
+    data(new RotationVec(*static_cast<const RotationVec *>(mfrotation.data)))
+{}
 
 /**
  * @brief Destructor.
  */
-MFRotation::~MFRotation() throw () { this->d_data->deref(); }
+MFRotation::~MFRotation() throw ()
+{
+    delete static_cast<RotationVec *>(this->data);
+}
 
 /**
  * @brief Assignment operator.
@@ -3280,34 +3313,12 @@ MFRotation::~MFRotation() throw () { this->d_data->deref(); }
  * @param mfrotation the object to copy into this one
  */
 MFRotation & MFRotation::operator=(const MFRotation & mfrotation)
-        throw (std::bad_alloc) {
-    if (this != &mfrotation) {
-        this->d_data->deref();
-        this->d_data = mfrotation.d_data->ref();
-    }
+    throw (std::bad_alloc)
+{
+    MFRotation temp(mfrotation);
+    static_cast<RotationVec *>(temp.data)
+        ->swap(*static_cast<RotationVec *>(this->data));
     return *this;
-}
-
-/**
- * @brief Get the rotations.
- *
- * @return a pointer to an array of rotation values
- */
-const float * MFRotation::get() const throw () { return this->d_data->d_v; }
-
-/**
- * @brief Set the rotation values.
- *
- * @param length the number of rotation values in the passed array
- * @param rotations a pointer to an array of rotation values
- */
-void MFRotation::set(size_t length, const float * rotations)
-        throw (std::bad_alloc) {
-    this->d_data->deref();
-    this->d_data = new FData(length * 4);
-    if (rotations) {
-        std::copy(rotations, rotations + (length * 4), this->d_data->d_v);
-    }
 }
 
 /**
@@ -3315,9 +3326,11 @@ void MFRotation::set(size_t length, const float * rotations)
  *
  * @param index
  */
-const float * MFRotation::getElement(size_t index) const throw () {
-    assert(index * 4 < this->d_data->d_n);
-    return this->d_data->d_v + (index * 4);
+SFRotation::ConstArrayReference MFRotation::getElement(size_t index) const
+    throw ()
+{
+    assert(index < this->getLength());
+    return (*static_cast<const RotationVec *>(this->data))[index];
 }
 
 /**
@@ -3326,9 +3339,12 @@ const float * MFRotation::getElement(size_t index) const throw () {
  * @param index
  * @param value
  */
-void MFRotation::setElement(size_t index, const float * value) throw () {
-    assert(index * 4 < this->d_data->d_n);
-    std::copy(value, value + 4, this->d_data->d_v + (index * 4));
+void MFRotation::setElement(size_t index, SFRotation::ConstArrayReference value)
+    throw ()
+{
+    assert(index < this->getLength());
+    std::copy(value, value + 4,
+              (*static_cast<RotationVec *>(this->data))[index]);
 }
 
 /**
@@ -3336,8 +3352,9 @@ void MFRotation::setElement(size_t index, const float * value) throw () {
  *
  * @return the number of rotation values
  */
-size_t MFRotation::getLength() const throw () {
-    return (this->d_data->d_n / 4);
+size_t MFRotation::getLength() const throw ()
+{
+    return static_cast<RotationVec *>(this->data)->size();
 }
 
 /**
@@ -3349,23 +3366,9 @@ size_t MFRotation::getLength() const throw () {
  *
  * @param length the new length
  */
-void MFRotation::setLength(size_t length) throw (std::bad_alloc) {
-    length *= 4;
-    FData * const newData = new FData(length);
-    if (length > this->d_data->d_n) {
-        std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
-                  newData->d_v);
-        for (size_t i = this->d_data->d_n; i < length; i += 4) {
-            newData->d_v[i] = 0.0f;
-            newData->d_v[i + 1] = 0.0f;
-            newData->d_v[i + 2] = 1.0f;
-            newData->d_v[i + 3] = 0.0f;
-        }
-    } else {
-        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
-    }
-    this->d_data->deref();
-    this->d_data = newData;
+void MFRotation::setLength(size_t length) throw (std::bad_alloc)
+{
+    static_cast<RotationVec *>(this->data)->resize(length);
 }
 
 /**
@@ -3376,18 +3379,12 @@ void MFRotation::setLength(size_t length) throw (std::bad_alloc) {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFRotation::insertElement(size_t index, const float * value)
-        throw (std::bad_alloc) {
-  FData* newData;
-
-  newData = new FData(d_data->d_n + 4);
-  memcpy(newData->d_v, d_data->d_v, 4 * index * sizeof(float));
-  memcpy(newData->d_v + 4 * index, value, 4 * sizeof(float));
-  memcpy(newData->d_v + 4 * (index + 1), d_data->d_v + 4 * index, 
-	 (d_data->d_n - 4 * index) * sizeof(float));
-  d_data->deref();
-  d_data = newData;
-  d_data->d_n++;
+void MFRotation::insertElement(size_t index,
+                               SFRotation::ConstArrayReference value)
+        throw (std::bad_alloc)
+{
+    RotationVec & data = *static_cast<RotationVec *>(this->data);
+    data.insert(data.begin() + index, value);
 }
 
 /**
@@ -3398,13 +3395,10 @@ void MFRotation::insertElement(size_t index, const float * value)
  * @todo Right now this fails silently if @p index is out of range. We should
  *      either fail with an assertion or throw std::out_of_range.
  */
-void MFRotation::removeElement(const size_t index) throw () {
-  if (4 * index < d_data->d_n)
-  {
-    d_data->d_n -= 4;
-    memcpy(d_data->d_v + 4 * index, d_data->d_v + 4 * (index + 1),
-	   (d_data->d_n - 4 * index) * sizeof(float));
-  }
+void MFRotation::removeElement(const size_t index) throw ()
+{
+    RotationVec & data = *static_cast<RotationVec *>(this->data);
+    data.erase(data.begin() + index);
 }
 
 /**
@@ -3414,7 +3408,8 @@ void MFRotation::removeElement(const size_t index) throw () {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFRotation::clone() const throw (std::bad_alloc) {
+FieldValue * MFRotation::clone() const throw (std::bad_alloc)
+{
     return new MFRotation(*this);
 }
 
@@ -3427,7 +3422,8 @@ FieldValue * MFRotation::clone() const throw (std::bad_alloc) {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 FieldValue & MFRotation::assign(const FieldValue & value)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     return (*this = dynamic_cast<const MFRotation &>(value));
 }
 
@@ -3436,7 +3432,10 @@ FieldValue & MFRotation::assign(const FieldValue & value)
  *
  * @return @c FieldValue::mfrotation.
  */
-FieldValue::Type MFRotation::type() const throw () { return mfrotation; }
+FieldValue::Type MFRotation::type() const throw ()
+{
+    return FieldValue::mfrotation;
+}
 
 /**
  * @brief Print to an output stream.
@@ -3445,8 +3444,15 @@ FieldValue::Type MFRotation::type() const throw () { return mfrotation; }
  *
  * @return @p out.
  */
-std::ostream & MFRotation::print(std::ostream & out) const {
-    return mffprint(out, get(), getLength(), 4);
+std::ostream & MFRotation::print(std::ostream & out) const
+{
+    const RotationVec & data = *static_cast<RotationVec *>(this->data);
+    out << '[';
+    for (RotationVec::const_iterator i(data.begin()); i != data.end() - 1; ++i) {
+        out << (*i)[0] << ' ' << (*i)[1] << ' ' << (*i)[2] << ", ";
+    }
+    return out << data.back()[0] << ' ' << data.back()[1] << ' '
+               << data.back()[2] << ']';
 }
 
 
@@ -3622,137 +3628,37 @@ std::ostream & MFString::print(std::ostream & os) const {
  */
 
 /**
- * @internal
+ * @brief Construct from an array of time values.
  *
- * @brief Reference-counted double data.
- */
-class MFTime::DData {
-public:
-    /**
-     * @brief The number of MFTime objects using this data.
-     */
-    size_t refs;
-    
-    /**
-     * @brief The size (in longs) of @a data.
-     */
-    size_t size;
-    
-    /**
-     * @brief The data vector.
-     */
-    double * const data;
-
-    DData(size_t = 0) throw (std::bad_alloc);
-    ~DData() throw ();
-
-    DData * ref() throw ();
-    void deref() throw ();
-
-private:
-    // Not copyable.
-    DData(const DData &);
-    DData & operator=(const DData &);
-};
-
-/**
- * @brief Constructor.
- *
- * @param size  size of the double array to allocate.
+ * @param length    the number of time values in the passed array.
+ * @param values    a pointer to an array of time values.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-MFTime::DData::DData(size_t size) throw (std::bad_alloc):
-        refs(1), size(size), data(size > 0 ? new double[size] : 0) {}
+MFTime::MFTime(const size_t length, const double * const values)
+    throw (std::bad_alloc):
+    data(length)
+{
+    if (values) {
+        std::copy(values, values + length, this->data.begin());
+    }
+}
 
 /**
  * @brief Destructor.
  */
-MFTime::DData::~DData() throw () { delete [] data; }
-
-/**
- * @brief Increment the reference count.
- *
- * @return a pointer to the DData object.
- */
-MFTime::DData * MFTime::DData::ref() throw () {
-    ++refs;
-    return this;
-}
-
-/**
- * @brief Decrement the reference count.
- */
-void MFTime::DData::deref() throw () { if (--refs == 0) { delete this; } }
-
-/**
- * @brief Construct from an array of time values.
- *
- * @param length the number of time values in the passed array
- * @param times a pointer to an array of time values
- */
-MFTime::MFTime(size_t length, const double * times) throw (std::bad_alloc):
-        d_data(new DData(length)) {
-    if (times) { std::copy(times, times + length, this->d_data->data); }
-}
-
-/**
- * @brief Copy constructor.
- *
- * @param mftime the object to copy
- */
-MFTime::MFTime(const MFTime & mftime) throw (std::bad_alloc):
-        d_data(mftime.d_data->ref()) {}
-
-/**
- * @brief Destructor.
- */
-MFTime::~MFTime() throw () { this->d_data->deref(); }
-
-/**
- * @brief Assignment operator.
- *
- * @param mftime the object to copy into this one
- */
-MFTime & MFTime::operator=(const MFTime & mftime) throw (std::bad_alloc) {
-    if (this != &mftime) {
-        d_data->deref();
-        d_data = mftime.d_data->ref();
-    }
-    return *this;
-}
-
-/**
- * @brief Get value.
- *
- * @return a pointer to a double array
- */
-const double * MFTime::get() const throw () {
-    return this->d_data->data;
-}
-
-/**
- * @brief Set value.
- *
- * @param length the number of time values
- * @param times a pointer to a double array
- */
-void MFTime::set(size_t length, const double * times) throw (std::bad_alloc) {
-    this->d_data->deref();
-    this->d_data = new DData(length);
-    if (times) {
-        std::copy(times, times + length, this->d_data->data);
-    }
-}
+MFTime::~MFTime() throw ()
+{}
 
 /**
  * @brief Get element.
  *
  * @param index
  */
-double MFTime::getElement(size_t index) const throw () {
+const double & MFTime::getElement(const size_t index) const throw ()
+{
     assert(index < this->getLength());
-    return this->d_data->data[index];
+    return this->data[index];
 }
 
 /**
@@ -3761,9 +3667,10 @@ double MFTime::getElement(size_t index) const throw () {
  * @param index
  * @param value
  */
-void MFTime::setElement(size_t index, double value) throw () {
+void MFTime::setElement(const size_t index, const double value) throw ()
+{
     assert(index < this->getLength());
-    this->d_data->data[index] = value;
+    this->data[index] = value;
 }
 
 /**
@@ -3771,7 +3678,10 @@ void MFTime::setElement(size_t index, double value) throw () {
  *
  * @return the number of float values
  */
-size_t MFTime::getLength() const throw () { return d_data->size; }
+size_t MFTime::getLength() const throw ()
+{
+    return this->data.size();
+}
 
 /**
  * @brief Set the length.
@@ -3782,19 +3692,9 @@ size_t MFTime::getLength() const throw () { return d_data->size; }
  *
  * @param length new length
  */
-void MFTime::setLength(size_t length) throw (std::bad_alloc) {
-    DData * const newData = new DData(length);
-    if (length > this->d_data->size) {
-        std::copy(this->d_data->data, this->d_data->data + this->d_data->size,
-                  newData->data);
-        std::fill(newData->data + this->d_data->size, newData->data + length,
-                  0.0f);
-    } else {
-        std::copy(this->d_data->data, this->d_data->data + length,
-                  newData->data);
-    }
-    this->d_data->deref();
-    this->d_data = newData;
+void MFTime::setLength(const size_t length) throw (std::bad_alloc)
+{
+    this->data.resize(length);
 }
 
 /**
@@ -3805,16 +3705,10 @@ void MFTime::setLength(size_t length) throw (std::bad_alloc) {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFTime::insertElement(size_t index, double value) throw (std::bad_alloc) {
-  DData* newData;
-
-  newData = new DData(d_data->size + 1);
-  memcpy(newData->data, d_data->data, index * sizeof(double));
-  newData->data[index] = value;
-  memcpy(newData->data + (index + 1), d_data->data + index, 
-	 (d_data->size - index) * sizeof(double));
-  d_data->deref();
-  d_data = newData;
+void MFTime::insertElement(const size_t index, const double value)
+    throw (std::bad_alloc)
+{
+    this->data.insert(this->data.begin() + index, value);
 }
 
 /**
@@ -3825,13 +3719,9 @@ void MFTime::insertElement(size_t index, double value) throw (std::bad_alloc) {
  * @todo Right now this fails silently if @p index is out of range. We should
  *      either fail with an assertion or throw std::out_of_range.
  */
-void MFTime::removeElement(size_t index) throw () {
-  if (index < d_data->size)
-  {
-    d_data->size--;
-    memcpy(d_data->data + index, d_data->data + (index + 1), 
-	   (d_data->size - index) * sizeof(double));
-  }
+void MFTime::removeElement(const size_t index) throw ()
+{
+    this->data.erase(this->data.begin() + index);
 }
 
 /**
@@ -3841,7 +3731,8 @@ void MFTime::removeElement(size_t index) throw () {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFTime::clone() const throw (std::bad_alloc) {
+FieldValue * MFTime::clone() const throw (std::bad_alloc)
+{
     return new MFTime(*this);
 }
 
@@ -3854,7 +3745,8 @@ FieldValue * MFTime::clone() const throw (std::bad_alloc) {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 FieldValue & MFTime::assign(const FieldValue & value)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     return (*this = dynamic_cast<const MFTime &>(value));
 }
 
@@ -3863,7 +3755,10 @@ FieldValue & MFTime::assign(const FieldValue & value)
  *
  * @return @c FieldValue::mftime.
  */
-FieldValue::Type MFTime::type() const throw () { return mftime; }
+FieldValue::Type MFTime::type() const throw ()
+{
+    return FieldValue::mftime;
+}
 
 /**
  * @brief Print to an output stream.
@@ -3872,10 +3767,18 @@ FieldValue::Type MFTime::type() const throw () { return mftime; }
  *
  * @return @p out.
  */
-std::ostream & MFTime::print(std::ostream & out) const {
-    return mfdprint(out, get(), getLength(), 1);
+std::ostream & MFTime::print(std::ostream & out) const
+{
+    out << '[';
+    for (std::vector<double>::const_iterator i(this->data.begin());
+            i != this->data.end() - 1; ++i) {
+        out << *i << ", ";
+    }
+    return out << this->data.back() << ']';
 }
 
+
+typedef array_vector<float, 2> Vec2fVec;
 
 /**
  * @class MFVec2f
@@ -3884,110 +3787,53 @@ std::ostream & MFTime::print(std::ostream & out) const {
  */
 
 /**
- * @internal
- *
- * @brief Reference counted float data.
- */
-class MFVec2f::FData {
-public:
-    /**
-     * @brief The number of MF* objects using this data.
-     */
-    size_t d_refs;
-    
-    /**
-     * @brief The size (in floats) of @a d_v.
-     */
-    size_t d_n;
-    
-    /**
-     * @brief The data vector.
-     */
-    float * d_v;
-    
-    /**
-     * @brief Constructor.
-     *
-     * @param n size of the float array to allocate.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    FData(size_t n = 0) throw (std::bad_alloc):
-            d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
-    
-    /**
-     * @brief Destructor.
-     */
-    ~FData() throw () { delete [] d_v; }
-
-    /**
-     * @brief Increment the reference count.
-     *
-     * @return a pointer to the FData object.
-     */
-    FData * ref() throw () { ++d_refs; return this; }
-    
-    /**
-     * @brief Decrement the reference count.
-     */
-    void deref() throw () { if (--d_refs == 0) delete this; }
-};
-
-/**
  * @brief Construct from an array of vector values.
  *
  * @param length the number of vector values in the passed array
- * @param vecs a pointer to an array of vector values
+ * @param values    a pointer to an array of 2-element arrays comprising vector
+ *                  values to initialize the MFVec2f.
  */
-MFVec2f::MFVec2f(size_t length, const float * vecs) throw (std::bad_alloc):
-        d_data(new FData(length * 2)) {
-    if (vecs) { std::copy(vecs, vecs + (length * 2), this->d_data->d_v); }
+MFVec2f::MFVec2f(size_t length, SFVec2f::ConstArrayPointer values)
+    throw (std::bad_alloc):
+    data(new Vec2fVec(length))
+{
+    if (values) {
+        for (size_t i(0); i < length; ++i) { this->setElement(i, values[i]); }
+    }
 }
 
 /**
  * @brief Copy constructor.
  *
  * @param mfvec2f the object to copy
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 MFVec2f::MFVec2f(const MFVec2f & mfvec2f) throw (std::bad_alloc):
-        d_data(mfvec2f.d_data->ref()) {}
+    data(new Vec2fVec(*static_cast<const Vec2fVec *>(mfvec2f.data)))
+{}
 
 /**
  * @brief Destructor.
  */
-MFVec2f::~MFVec2f() throw () { this->d_data->deref(); }
+MFVec2f::~MFVec2f() throw ()
+{
+    delete static_cast<Vec2fVec *>(this->data);
+}
 
 /**
  * @brief Assignment operator.
  *
  * @param mfvec2f the object to copy into this one
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-MFVec2f & MFVec2f::operator=(const MFVec2f & mfvec2f) throw (std::bad_alloc) {
-    if (this != &mfvec2f) {
-        this->d_data->deref();
-        this->d_data = mfvec2f.d_data->ref();
-    }
+MFVec2f & MFVec2f::operator=(const MFVec2f & mfvec2f) throw (std::bad_alloc)
+{
+    MFVec2f temp(mfvec2f);
+    static_cast<Vec2fVec *>(temp.data)
+        ->swap(*static_cast<Vec2fVec *>(this->data));
     return *this;
-}
-
-/**
- * @brief Get the vector values.
- *
- * @return a pointer to an array of 2-D vector values
- */
-const float * MFVec2f::get() const throw () { return this->d_data->d_v; }
-
-/**
- * @brief Set the vector values.
- *
- * @param length the number of vector values in the passed array
- * @param vecs a pointer to an array of 2-D vector values
- */
-void MFVec2f::set(size_t length, const float * vecs) throw (std::bad_alloc) {
-    length *= 2;
-    this->d_data->deref();
-    this->d_data = new FData(length);
-    if (vecs) { std::copy(vecs, vecs + length, this->d_data->d_v); }
 }
 
 /**
@@ -3995,9 +3841,10 @@ void MFVec2f::set(size_t length, const float * vecs) throw (std::bad_alloc) {
  *
  * @param index
  */
-const float * MFVec2f::getElement(size_t index) const throw () {
-    assert((index * 2) < this->d_data->d_n);
-    return (this->d_data->d_v + (index * 2));
+SFVec2f::ConstArrayReference MFVec2f::getElement(size_t index) const throw ()
+{
+    assert(index < this->getLength());
+    return (*static_cast<const Vec2fVec *>(this->data))[index];
 }
 
 /**
@@ -4006,9 +3853,11 @@ const float * MFVec2f::getElement(size_t index) const throw () {
  * @param index
  * @param value
  */
-void MFVec2f::setElement(size_t index, const float * value) throw () {
-    assert((index * 2) < this->d_data->d_n);
-    std::copy(value, value + 2, this->d_data->d_v + (index * 2));
+void MFVec2f::setElement(size_t index, SFVec2f::ConstArrayReference value)
+    throw ()
+{
+    assert(index < this->getLength());
+    std::copy(value, value + 2, (*static_cast<Vec2fVec *>(this->data))[index]);
 }
 
 /**
@@ -4016,7 +3865,10 @@ void MFVec2f::setElement(size_t index, const float * value) throw () {
  *
  * @return the number of vector values
  */
-size_t MFVec2f::getLength() const throw () { return (this->d_data->d_n / 2); }
+size_t MFVec2f::getLength() const throw ()
+{
+    return static_cast<const Vec2fVec *>(this->data)->size();
+}
 
 /**
  * @brief Set the length.
@@ -4026,20 +3878,11 @@ size_t MFVec2f::getLength() const throw () { return (this->d_data->d_n / 2); }
  * new values are initialized to the default vector (0, 0).
  *
  * @param length the new length
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void MFVec2f::setLength(size_t length) throw (std::bad_alloc) {
-    length *= 2;
-    FData * const newData = new FData(length);
-    if (length > this->d_data->d_n) {
-        std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
-                  newData->d_v);
-        std::fill(newData->d_v + this->d_data->d_n, newData->d_v + length,
-                  0.0f);
-    } else {
-        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
-    }
-    this->d_data->deref();
-    this->d_data = newData;
+    static_cast<Vec2fVec *>(this->data)->resize(length);
 }
 
 /**
@@ -4050,18 +3893,11 @@ void MFVec2f::setLength(size_t length) throw (std::bad_alloc) {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFVec2f::insertElement(size_t index, const float * data)
-        throw (std::bad_alloc) {
-  FData* newData;
-
-  newData = new FData(d_data->d_n + 2);
-  memcpy(newData->d_v, d_data->d_v, 2 * index * sizeof(float));
-  memcpy(newData->d_v + 2 * index, data, 2 * sizeof(float));
-  memcpy(newData->d_v + 2 * (index + 1), d_data->d_v + 2 * index, 
-	 (d_data->d_n - 2 * index) * sizeof(float));
-  d_data->deref();
-  d_data = newData;
-  d_data->d_n++;
+void MFVec2f::insertElement(size_t index, SFVec2f::ConstArrayReference value)
+    throw (std::bad_alloc)
+{
+    Vec2fVec & data = *static_cast<Vec2fVec *>(this->data);
+    data.insert(data.begin() + index, value);
 }
 
 /**
@@ -4072,13 +3908,10 @@ void MFVec2f::insertElement(size_t index, const float * data)
  * @todo Right now this fails silently if @p index is out of range. We should
  *      either fail with an assertion or throw std::out_of_range.
  */
-void MFVec2f::removeElement(size_t index) throw () {
-  if (2 * index < d_data->d_n)
-  {
-    d_data->d_n -= 2;
-    memcpy(d_data->d_v + 2 * index, d_data->d_v + 2 * (index + 1), 
-	   (d_data->d_n - 2 * index) * sizeof(float));
-  }
+void MFVec2f::removeElement(size_t index) throw ()
+{
+    Vec2fVec & data = *static_cast<Vec2fVec *>(this->data);
+    data.erase(data.begin() + index);
 }
 
 /**
@@ -4088,7 +3921,8 @@ void MFVec2f::removeElement(size_t index) throw () {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFVec2f::clone() const throw (std::bad_alloc) {
+FieldValue * MFVec2f::clone() const throw (std::bad_alloc)
+{
     return new MFVec2f(*this);
 }
 
@@ -4101,7 +3935,8 @@ FieldValue * MFVec2f::clone() const throw (std::bad_alloc) {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 FieldValue & MFVec2f::assign(const FieldValue & value)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     return (*this = dynamic_cast<const MFVec2f &>(value));
 }
 
@@ -4110,7 +3945,10 @@ FieldValue & MFVec2f::assign(const FieldValue & value)
  *
  * @return @c FieldValue::mfvec2f.
  */
-FieldValue::Type MFVec2f::type() const throw () { return mfvec2f; }
+FieldValue::Type MFVec2f::type() const throw ()
+{
+    return FieldValue::mfvec2f;
+}
 
 /**
  * @brief Print to an output stream.
@@ -4120,9 +3958,16 @@ FieldValue::Type MFVec2f::type() const throw () { return mfvec2f; }
  * @return @p out.
  */
 std::ostream & MFVec2f::print(std::ostream & out) const {
-    return mffprint(out, get(), getLength(), 2);
+    const Vec2fVec & data = *static_cast<Vec2fVec *>(this->data);
+    out << '[';
+    for (Vec2fVec::const_iterator i(data.begin()); i != data.end() - 1; ++i) {
+        out << (*i)[0] << ' ' << (*i)[1] << ", ";
+    }
+    return out << data.back()[0] << ' ' << data.back()[1] << ']';
 }
 
+
+typedef array_vector<float, 3> Vec3fVec;
 
 /**
  * @class MFVec3f
@@ -4131,110 +3976,53 @@ std::ostream & MFVec2f::print(std::ostream & out) const {
  */
 
 /**
- * @internal
- *
- * @brief Reference counted float data.
- */
-class MFVec3f::FData {
-public:
-    /**
-     * @brief The number of MF* objects using this data.
-     */
-    size_t d_refs;
-    
-    /**
-     * @brief The size (in floats) of @a d_v.
-     */
-    size_t d_n;
-    
-    /**
-     * @brief The data vector.
-     */
-    float * d_v;
-    
-    /**
-     * @brief Constructor.
-     *
-     * @param n size of the float array to allocate.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    FData(size_t n = 0) throw (std::bad_alloc):
-            d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
-    
-    /**
-     * @brief Destructor.
-     */
-    ~FData() throw () { delete [] d_v; }
-
-    /**
-     * @brief Increment the reference count.
-     *
-     * @return a pointer to the FData object.
-     */
-    FData * ref() throw () { ++d_refs; return this; }
-    
-    /**
-     * @brief Decrement the reference count.
-     */
-    void deref() throw () { if (--d_refs == 0) delete this; }
-};
-
-/**
  * @brief Construct from an array of vector values.
  *
- * @param length the number of vector values in the passed array
- * @param vecs a pointer to an array of vector values
+ * @param length    the number of vector values in the passed array
+ * @param values    a pointer to an array of 3-element arrays comprising color
+ *                  values to initialize the MFColor.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-MFVec3f::MFVec3f(size_t length, const float * vecs) throw (std::bad_alloc):
-        d_data(new FData(length * 3)) {
-    if (vecs) { std::copy(vecs, vecs + (length * 3), this->d_data->d_v); }
+MFVec3f::MFVec3f(size_t length, SFVec3f::ConstArrayPointer values)
+    throw (std::bad_alloc):
+    data(new Vec3fVec(length))
+{
+    if (values) {
+        for (size_t i(0); i < length; ++i) { this->setElement(i, values[i]); }
+    }
 }
 
 /**
  * @brief Copy constructor.
  *
  * @param mfvec3f the object to copy
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 MFVec3f::MFVec3f(const MFVec3f & mfvec3f) throw (std::bad_alloc):
-        d_data(mfvec3f.d_data->ref()) {}
+    data(new Vec3fVec(*static_cast<const Vec3fVec *>(mfvec3f.data)))
+{}
 
 /**
  * @brief Destructor.
  */
-MFVec3f::~MFVec3f() throw () { this->d_data->deref(); }
+MFVec3f::~MFVec3f() throw ()
+{
+    delete static_cast<Vec3fVec *>(this->data);
+}
 
 /**
  * @brief Assignment operator.
  *
  * @param mfvec3f the object to copy into this one
  */
-MFVec3f & MFVec3f::operator=(const MFVec3f & mfvec3f) throw (std::bad_alloc) {
-    if (this != &mfvec3f) {
-        this->d_data->deref();
-        this->d_data = mfvec3f.d_data->ref();
-    }
+MFVec3f & MFVec3f::operator=(const MFVec3f & mfvec3f) throw (std::bad_alloc)
+{
+    MFVec3f temp(mfvec3f);
+    static_cast<Vec3fVec *>(temp.data)
+        ->swap(*static_cast<Vec3fVec *>(this->data));
     return *this;
-}
-
-/**
- * @brief Get the vector values.
- *
- * @return a pointer to an array of 3-D vector values
- */
-const float * MFVec3f::get() const throw () { return this->d_data->d_v; }
-
-/**
- * @brief Set the vector values.
- *
- * @param length the number of vector values in the passed array
- * @param vecs a pointer to an array of 3-D vector values
- */
-void MFVec3f::set(size_t length, const float * vecs) throw (std::bad_alloc) {
-    length *= 3;
-    this->d_data->deref();
-    this->d_data = new FData(length);
-    if (vecs) { std::copy(vecs, vecs + length, this->d_data->d_v); }
 }
 
 /**
@@ -4242,9 +4030,10 @@ void MFVec3f::set(size_t length, const float * vecs) throw (std::bad_alloc) {
  *
  * @param index
  */
-const float * MFVec3f::getElement(size_t index) const throw () {
-    assert((index * 3) < this->d_data->d_n);
-    return (this->d_data->d_v + (index * 3));
+SFVec3f::ConstArrayReference MFVec3f::getElement(size_t index) const throw ()
+{
+    assert(index < this->getLength());
+    return (*static_cast<const Vec3fVec *>(this->data))[index];
 }
 
 /**
@@ -4253,9 +4042,11 @@ const float * MFVec3f::getElement(size_t index) const throw () {
  * @param index
  * @param value
  */
-void MFVec3f::setElement(size_t index, const float * value) throw () {
-    assert((index * 3) < this->d_data->d_n);
-    std::copy(value, value + 3, this->d_data->d_v + (index * 3));
+void MFVec3f::setElement(size_t index, SFVec3f::ConstArrayReference value)
+    throw ()
+{
+    assert(index < this->getLength());
+    std::copy(value, value + 3, (*static_cast<Vec3fVec *>(this->data))[index]);
 }
 
 /**
@@ -4263,7 +4054,10 @@ void MFVec3f::setElement(size_t index, const float * value) throw () {
  *
  * @return the number of vector values
  */
-size_t MFVec3f::getLength() const throw () { return (this->d_data->d_n / 3); }
+size_t MFVec3f::getLength() const throw ()
+{
+    return static_cast<const Vec3fVec *>(this->data)->size();
+}
 
 /**
  * @brief Set the length.
@@ -4273,20 +4067,11 @@ size_t MFVec3f::getLength() const throw () { return (this->d_data->d_n / 3); }
  * new values are initialized to the default vector (0, 0, 0).
  *
  * @param length the new length
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void MFVec3f::setLength(size_t length) throw (std::bad_alloc) {
-    length *= 3;
-    FData * const newData = new FData(length);
-    if (length > this->d_data->d_n) {
-        std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
-                  newData->d_v);
-        std::fill(newData->d_v + this->d_data->d_n, newData->d_v + length,
-                  0.0f);
-    } else {
-        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
-    }
-    this->d_data->deref();
-    this->d_data = newData;
+    static_cast<Vec3fVec *>(this->data)->resize(length);
 }
 
 /**
@@ -4297,18 +4082,11 @@ void MFVec3f::setLength(size_t length) throw (std::bad_alloc) {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFVec3f::insertElement(size_t index, const float * value)
-        throw (std::bad_alloc) {
-  FData* newData;
-
-  newData = new FData(d_data->d_n + 3);
-  memcpy(newData->d_v, d_data->d_v, 3 * index * sizeof(float));
-  memcpy(newData->d_v + 3 * index, value, 3 * sizeof(float));
-  memcpy(newData->d_v + 3 * (index + 1), d_data->d_v + 3 * index,
-	 (d_data->d_n - 3 * index) * sizeof(float));
-  d_data->deref();
-  d_data = newData;
-  d_data->d_n++;
+void MFVec3f::insertElement(size_t index, SFVec3f::ConstArrayReference value)
+    throw (std::bad_alloc)
+{
+    Vec3fVec & data = *static_cast<Vec3fVec *>(this->data);
+    data.insert(data.begin() + index, value);
 }
 
 /**
@@ -4319,13 +4097,10 @@ void MFVec3f::insertElement(size_t index, const float * value)
  * @todo Right now this fails silently if @p index is out of range. We should
  *      either fail with an assertion or throw std::out_of_range.
  */
-void MFVec3f::removeElement(size_t index) throw () {
-  if (3 * index < d_data->d_n)
-  {
-    d_data->d_n -= 3;
-    memcpy(d_data->d_v + 3 * index, d_data->d_v + 3 * (index + 1),
-	   (d_data->d_n - 3 * index) * sizeof(float));
-  }
+void MFVec3f::removeElement(size_t index) throw ()
+{
+    Vec2fVec & data = *static_cast<Vec2fVec *>(this->data);
+    data.erase(data.begin() + index);
 }
 
 /**
@@ -4335,7 +4110,8 @@ void MFVec3f::removeElement(size_t index) throw () {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFVec3f::clone() const throw (std::bad_alloc) {
+FieldValue * MFVec3f::clone() const throw (std::bad_alloc)
+{
     return new MFVec3f(*this);
 }
 
@@ -4348,7 +4124,8 @@ FieldValue * MFVec3f::clone() const throw (std::bad_alloc) {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 FieldValue & MFVec3f::assign(const FieldValue & value)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     return (*this = dynamic_cast<const MFVec3f &>(value));
 }
 
@@ -4357,7 +4134,10 @@ FieldValue & MFVec3f::assign(const FieldValue & value)
  *
  * @return @c FieldValue::mfvec3f.
  */
-FieldValue::Type MFVec3f::type() const throw () { return mfvec3f; }
+FieldValue::Type MFVec3f::type() const throw ()
+{
+    return FieldValue::mfvec3f;
+}
 
 /**
  * @brief Print to an output stream.
@@ -4366,59 +4146,15 @@ FieldValue::Type MFVec3f::type() const throw () { return mfvec3f; }
  *
  * @return @p out.
  */
-std::ostream & MFVec3f::print(std::ostream & out) const {
-    return mffprint(out, get(), getLength(), 3);
-}
-
-// Generic MF float and double print functions
-
-namespace {
-    
-    std::ostream & mffprint(std::ostream& os,
-                            float const * c, int n, int eltsize) {
-        int e;
-        
-        if (n == 1) {
-            for (e=0; e<eltsize; ++e) {
-                os << c[e] << ((e < eltsize-1) ? " " : "");
-            }
-        } else {
-            os << '[';
-            for (int i=0; i<n; ++i, c+=eltsize) {
-                for (e=0; e<eltsize; ++e) {
-                    os << c[e] << ((e < eltsize-1) ? " " : "");
-                }
-            
-	    os << ((i < n-1) ? ", " : " ");
-	    }
-            os << ']';
-        }
-        
-        return os;
+std::ostream & MFVec3f::print(std::ostream & out) const
+{
+    const Vec3fVec & data = *static_cast<Vec3fVec *>(this->data);
+    out << '[';
+    for (Vec3fVec::const_iterator i(data.begin()); i != data.end() - 1; ++i) {
+        out << (*i)[0] << ' ' << (*i)[1] << ' ' << (*i)[2] << ", ";
     }
-    
-    std::ostream & mfdprint(std::ostream & os,
-                            double const * c, int n, int eltsize) {
-        int e;
-        
-        if (n == 1) {
-            for (e=0; e<eltsize; ++e) {
-                os << c[e] << ((e < eltsize-1) ? " " : "");
-            }
-        } else {
-            os << '[';
-            for (int i=0; i<n; ++i, c+=eltsize) {
-                for (e=0; e<eltsize; ++e) {
-                    os << c[e] << ((e < eltsize-1) ? " " : "");
-                }
-            
-	    os << ((i < n-1) ? ", " : " ");
-	    }
-            os << ']';
-        }
-        
-        return os;
-    }
+    return out << data.back()[0] << ' ' << data.back()[1] << ' '
+               << data.back()[2] << ']';
 }
 
 } // namespace OpenVRML

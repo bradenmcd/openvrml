@@ -6,6 +6,14 @@
           to the local file system. (The reference must still parse as
           a URI, so DOS-style file system references won't work.)
 
+        * src/openvrml/OpenVRML/Vrml97Parser.g,
+          src/openvrml/OpenVRML/Vrml97Parser.cpp,
+          src/openvrml/OpenVRML/field.h,
+          src/openvrml/OpenVRML/field.cpp,
+          src/openvrml/OpenVRML/vrml97node.h,
+          src/openvrml/OpenVRML/vrml97node.cpp: Modified implementation
+          of the MF* types not to use a refcounted internal object.
+
 2002-08-16  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/doc2.cpp,

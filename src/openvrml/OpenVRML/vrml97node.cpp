@@ -196,7 +196,8 @@ namespace {
                 throw (UnsupportedInterface, std::bad_alloc) {
             const NodeInterface interface(NodeInterface::eventIn, type, id);
             this->interfaces.add(interface);
-            const EventInHandlerMap::value_type value(id, eventInHandlerPtr);
+            const typename EventInHandlerMap::value_type
+                    value(id, eventInHandlerPtr);
             const bool succeeded = this->eventInHandlerMap.insert(value).second;
             assert(succeeded);
         }
@@ -209,7 +210,7 @@ namespace {
                 throw (UnsupportedInterface, std::bad_alloc) {
             const NodeInterface interface(NodeInterface::eventOut, type, id);
             this->interfaces.add(interface);
-            const FieldValueMap::value_type value(id, eventOutPtrPtr);
+            const typename FieldValueMap::value_type value(id, eventOutPtrPtr);
             const bool succeeded = this->eventOutValueMap.insert(value).second;
             assert(succeeded);
         }
@@ -226,19 +227,19 @@ namespace {
 
             bool succeeded;
             {
-                const EventInHandlerMap::value_type value("set_" + id,
-                                                          eventInHandlerPtr);
+                const typename EventInHandlerMap::value_type
+                        value("set_" + id, eventInHandlerPtr);
                 succeeded = this->eventInHandlerMap.insert(value).second;
                 assert(succeeded);
             }
             {
-                const FieldValueMap::value_type value(id, fieldPtrPtr);
+                const typename FieldValueMap::value_type value(id, fieldPtrPtr);
                 succeeded = this->fieldValueMap.insert(value).second;
                 assert(succeeded);
             }
             {
-                const FieldValueMap::value_type value(id + "_changed",
-                                                      fieldPtrPtr);
+                const typename FieldValueMap::value_type
+                        value(id + "_changed", fieldPtrPtr);
                 succeeded = this->eventOutValueMap.insert(value).second;
                 assert(succeeded);
             }
@@ -252,7 +253,7 @@ namespace {
                 throw (UnsupportedInterface, std::bad_alloc) {
             const NodeInterface interface(NodeInterface::field, type, id);
             this->interfaces.add(interface);
-            const FieldValueMap::value_type value(id, nodeFieldPtrPtr);
+            const typename FieldValueMap::value_type value(id, nodeFieldPtrPtr);
             const bool succeeded = this->fieldValueMap.insert(value).second;
             assert(succeeded);
         }
@@ -317,7 +318,7 @@ namespace {
                                   const std::string & id,
                                   const FieldValue & newVal) const
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)  {
-            FieldValueMap::iterator itr = this->fieldValueMap.find(id);
+            typename FieldValueMap::iterator itr = this->fieldValueMap.find(id);
             if (itr == this->fieldValueMap.end()) {
                 throw UnsupportedInterface(node.nodeType.id
                                             + " node has no field " + id);
@@ -330,7 +331,7 @@ namespace {
                 getFieldValueImpl(const NodeT & node,
                                   const std::string & id) const
                 throw (UnsupportedInterface) {
-            const FieldValueMap::const_iterator itr =
+            const typename FieldValueMap::const_iterator itr =
                     this->fieldValueMap.find(id);
             if (itr == this->fieldValueMap.end()) {
                 throw UnsupportedInterface(node.nodeType.id
@@ -346,7 +347,7 @@ namespace {
                                     const FieldValue & value,
                                     const double timestamp) const
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
-            EventInHandlerMap::const_iterator
+            typename EventInHandlerMap::const_iterator
                     itr(this->eventInHandlerMap.find(id));
             if (itr == this->eventInHandlerMap.end()) {
                 itr = this->eventInHandlerMap.find("set_" + id);
@@ -363,7 +364,8 @@ namespace {
                 getEventOutValueImpl(const NodeT & node,
                                      const std::string & id) const
                 throw (UnsupportedInterface) {
-            FieldValueMap::const_iterator itr(this->eventOutValueMap.find(id));
+            typename FieldValueMap::const_iterator
+                    itr(this->eventOutValueMap.find(id));
             if (itr == this->eventOutValueMap.end()) {
                 itr = this->eventOutValueMap.find(id + "_changed");
             }
@@ -1917,11 +1919,19 @@ void Background::renderBindable(Viewer * const viewer) {
 
         this->viewerObject =
                 viewer->insertBackground(this->groundAngle.getLength(),
-                                         this->groundAngle.get(),
-                                         this->groundColor.get(),
+                                         (this->groundAngle.getLength() > 0)
+                                            ? &this->groundAngle.getElement(0)
+                                            : 0,
+                                         (this->groundColor.getLength() > 0)
+                                            ? this->groundColor.getElement(0)
+                                            : 0,
                                          this->skyAngle.getLength(),
-                                         this->skyAngle.get(),
-                                         this->skyColor.get(),
+                                         (this->skyAngle.getLength() > 0)
+                                            ? &this->skyAngle.getElement(0)
+                                            : 0,
+                                         (this->skyColor.getLength() > 0)
+                                            ? this->skyColor.getElement(0)
+                                            : 0,
                                          whc,
                                          (nPix > 0) ? pixels : 0);
 
@@ -2893,8 +2903,8 @@ void ColorInterpolator::processSet_fraction(const FieldValue & sffloat,
         for (int i = 0; i < n; ++i) {
             if (this->key.getElement(i) <= f
                     && f <= this->key.getElement(i + 1)) {
-                const float * rgb1 = this->keyValue.getElement(i);
-                const float * rgb2 = this->keyValue.getElement(i + 1);
+                const float (&rgb1)[3] = this->keyValue.getElement(i);
+                const float (&rgb2)[3] = this->keyValue.getElement(i + 1);
 
                 f = (f - this->key.getElement(i))
                     / (this->key.getElement(i + 1) - this->key.getElement(i));
@@ -3304,29 +3314,33 @@ void CoordinateInterpolator::processSet_fraction(const FieldValue & sffloat,
     size_t n = this->key.getLength() - 1;
 
     if (f < this->key.getElement(0)) {
-        this->value.set(nCoords, this->keyValue.getElement(0));
+        this->value = MFVec3f(nCoords, &this->keyValue.getElement(0));
     } else if (f > this->key.getElement(n)) {
-        this->value.set(nCoords, this->keyValue.getElement(n * nCoords));
+        this->value = MFVec3f(nCoords, &this->keyValue.getElement(n * nCoords));
     } else {
         // Reserve enough space for the new value
-        this->value.set(nCoords, 0);
+        this->value.setLength(nCoords);
 
         for (size_t i = 0; i < n; ++i) {
             if (this->key.getElement(i) <= f
                     && f <= this->key.getElement(i + 1)) {
-                const float * v1 = this->keyValue.getElement(i * nCoords);
-                const float * v2 = this->keyValue.getElement((i + 1) * nCoords);
+                SFVec3f::ConstArrayPointer v1 =
+                        &this->keyValue.getElement(i * nCoords);
+                SFVec3f::ConstArrayPointer v2 =
+                        &this->keyValue.getElement((i + 1) * nCoords);
 
                 f = (f - this->key.getElement(i))
                     / (this->key.getElement(i + 1) - this->key.getElement(i));
 
                 for (size_t j = 0; j < nCoords; ++j) {
-                    const float vec[3] = { v1[0] + f * (v2[0] - v1[0]),
-                                           v1[1] + f * (v2[1] - v1[1]),
-                                           v1[2] + f * (v2[2] - v1[2]) };
+                    const float vec[3] = {
+                        (*v1)[0] + f * ((*v2)[0] - (*v1)[0]),
+                        (*v1)[1] + f * ((*v2)[1] - (*v1)[1]),
+                        (*v1)[2] + f * ((*v2)[2] - (*v1)[2])
+                    };
                     this->value.setElement(j, vec);
-                    v1 += 3;
-                    v2 += 3;
+                    ++v1;
+                    ++v2;
                 }
                 break;
             }
@@ -4242,7 +4256,7 @@ Viewer::Object ElevationGrid::insertGeometry(Viewer * const viewer,
         obj = viewer->insertElevationGrid(optMask,
                                           this->xDimension.get(),
                                           this->zDimension.get(),
-                                          this->height.get(),
+                                          &this->height.getElement(0),
                                           this->xSpacing.get(),
                                           this->zSpacing.get(),
                                           tc,
@@ -4465,14 +4479,23 @@ const NodeTypePtr
 }
 
 namespace {
-    const float extrusionDefaultCrossSection_[] =
-            { 1.0, 1.0, 1.0, -1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0 };
-    const float extrusionDefaultScale_[] =
-            { 1.0, 1.0 };
-    const float extrusionDefaultSpine_[] =
-            { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 };
-    const float extrusionDefaultRotation_[] =
-            { 0.0, 0.0, 1.0, 0.0 };
+    const float extrusionDefaultCrossSection_[][2] = {
+        { 1.0, 1.0 },
+        { 1.0, -1.0 },
+        { -1.0, -1.0 },
+        { -1.0, 1.0 },
+        { 1.0, 1.0 }
+    };
+    const float extrusionDefaultScale_[][2] = {
+        { 1.0, 1.0 }
+    };
+    const float extrusionDefaultSpine_[][3] = {
+        { 0.0, 0.0, 0.0 },
+        { 0.0, 1.0, 0.0 }
+    };
+    const float extrusionDefaultRotation_[][4] = {
+        { 0.0, 0.0, 1.0, 0.0 }
+    };
 }
 
 /**
@@ -4522,13 +4545,13 @@ Viewer::Object Extrusion::insertGeometry(Viewer * const viewer,
 
         obj = viewer->insertExtrusion(optMask,
                                       this->orientation.getLength(),
-                                      this->orientation.get(),
+                                      &this->orientation.getElement(0)[0],
                                       this->scale.getLength(),
-                                      this->scale.get(),
+                                      &this->scale.getElement(0)[0],
                                       this->crossSection.getLength(),
-                                      this->crossSection.get(),
+                                      &this->crossSection.getElement(0)[0],
                                       this->spine.getLength(),
-                                      this->spine.get());
+                                      &this->spine.getElement(0)[0]);
     }
 
     return obj;
@@ -5935,7 +5958,7 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer * const viewer,
             tc = &texcoord.getElement(0)[0];
             ntc = texcoord.getLength();
             ntci = this->texCoordIndex.getLength();
-            if (ntci) { tci = this->texCoordIndex.get(); }
+            if (ntci) { tci = &this->texCoordIndex.getElement(0); }
         }
 
         // check #tc is consistent with #coords/max texCoordIndex...
@@ -5955,7 +5978,7 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer * const viewer,
 
             color = &c.getElement(0)[0];
             nci = this->colorIndex.getLength();
-            if (nci) { ci = this->colorIndex.get(); }
+            if (nci) { ci = &this->colorIndex.getElement(0); }
         }
 
         // check #normals is consistent with normalPerVtx, normalIndex...
@@ -5963,7 +5986,7 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer * const viewer,
             const MFVec3f & n = this->normal.get()->toNormal()->getVector();
             normal = &n.getElement(0)[0];
             nni = this->normalIndex.getLength();
-            if (nni) { ni = this->normalIndex.get(); }
+            if (nni) { ni = &this->normalIndex.getElement(0); }
         }
 
         unsigned int optMask = 0;
@@ -5986,7 +6009,7 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer * const viewer,
         obj = viewer->insertShell(optMask,
                                   nvert, &coord.getElement(0)[0],
                                   this->coordIndex.getLength(),
-                                  this->coordIndex.get(),
+                                  &this->coordIndex.getElement(0),
                                   tc, ntci, tci,
                                   normal, nni, ni,
                                   color, nci, ci);
@@ -6013,7 +6036,7 @@ void IndexedFaceSet::recalcBSphere() {
     if (coordinateNode) {
         const MFVec3f & coord = coordinateNode->getPoint();
         this->bsphere.reset();
-        this->bsphere.enclose(coord.get(), coord.getLength());
+        this->bsphere.enclose(&coord.getElement(0)[0], coord.getLength());
     }
     this->setBVolumeDirty(false);
 }
@@ -6227,13 +6250,17 @@ Viewer::Object IndexedLineSet::insertGeometry(Viewer * viewer,
             const MFColor & c = this->color.get()->toColor()->getColor();
             color = & c.getElement(0)[0];
             nci = this->colorIndex.getLength();
-            if (nci) { ci = this->colorIndex.get(); }
+            if (nci) { ci = &this->colorIndex.getElement(0); }
         }
 
         obj =  viewer->insertLineSet(nvert,
-                                     &coord.getElement(0)[0],
+                                     (coord.getLength() > 0)
+                                        ? &coord.getElement(0)[0]
+                                        : 0,
                                      this->coordIndex.getLength(),
-                                     this->coordIndex.get(),
+                                     (this->coordIndex.getLength() > 0)
+                                        ? &this->coordIndex.getElement(0)
+                                        : 0,
                                      this->colorPerVertex.get(),
                                      color,
                                      nci, ci);
@@ -7800,18 +7827,20 @@ void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
     int n = this->key.getLength() - 1;
 
     if (f < this->key.getElement(0)) {
-        this->value.set(nNormals, this->keyValue.getElement(0));
+        this->value = MFVec3f(nNormals, &this->keyValue.getElement(0));
     } else if (f > this->key.getElement(n)) {
-        this->value.set(nNormals, this->keyValue.getElement(n * nNormals));
+        this->value = MFVec3f(nNormals, &this->keyValue.getElement(n * nNormals));
     } else {
         // Reserve enough space for the new value
-        this->value.set(nNormals, 0);
+        this->value.setLength(nNormals);
 
         for (int i = 0; i < n; ++i) {
             if (this->key.getElement(i) <= f
                     && f <= this->key.getElement(i + 1)) {
-                const float * v1 = this->keyValue.getElement(i * nNormals);
-                const float * v2 = this->keyValue.getElement((i + 1) * nNormals);
+                SFVec3f::ConstArrayPointer v1 =
+                        &this->keyValue.getElement(i * nNormals);
+                SFVec3f::ConstArrayPointer v2 =
+                        &this->keyValue.getElement((i + 1) * nNormals);
 
                 f = (f - this->key.getElement(i))
                     / (this->key.getElement(i + 1) - this->key.getElement(i));
@@ -7820,7 +7849,9 @@ void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
                 // Contributed by S. K. Bose. (bose@garuda.barc.ernet.in)
                 for (int j = 0; j < nNormals; ++j) {
                     float alpha, beta;
-                    float dotval = v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+                    float dotval = (*v1)[0] * (*v2)[0]
+                                    + (*v1)[1] * (*v2)[1]
+                                    + (*v1)[2] * (*v2)[2];
                     if ((dotval+1.0) > fptolerance) { // Vectors are not opposite
                         if ((1.0-dotval) > fptolerance) { // Vectors are not coincide
                             float omega = acos(dotval);
@@ -7836,13 +7867,13 @@ void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
                         alpha = 1.0 -f;
                         beta = f;
                     }
-                    const float vec[3] = { alpha * v1[0] + beta * v2[0],
-                                           alpha * v1[1] + beta * v2[1],
-                                           alpha * v1[2] + beta * v2[2] };
+                    const float vec[3] = { alpha * (*v1)[0] + beta * (*v2)[0],
+                                           alpha * (*v1)[1] + beta * (*v2)[1],
+                                           alpha * (*v1)[2] + beta * (*v2)[2] };
                     this->value.setElement(j, vec);
 
-                    v1 += 3;
-                    v2 += 3;
+                    ++v1;
+                    ++v2;
                 }
 
                 break;
@@ -8006,17 +8037,17 @@ void OrientationInterpolator::processSet_fraction(const FieldValue & sffloat,
 
     int n = this->key.getLength() - 1;
     if (f < this->key.getElement(0)) {
-        const float * v0 = this->keyValue.getElement(0);
-        this->value.set(v0);
+        this->value.set(this->keyValue.getElement(0));
     } else if (f > this->key.getElement(n)) {
-        const float * vn = this->keyValue.getElement(n);
-        this->value.set(vn);
+        this->value.set(this->keyValue.getElement(n));
     } else {
         for (int i=0; i<n; ++i) {
             if (this->key.getElement(i) <= f
                     && f <= this->key.getElement(i + 1)) {
-                const float * v1 = this->keyValue.getElement(i);
-                const float * v2 = this->keyValue.getElement(i + 1);
+                SFRotation::ConstArrayReference v1 =
+                        this->keyValue.getElement(i);
+                SFRotation::ConstArrayReference v2 =
+                        this->keyValue.getElement(i + 1);
 
                 // Interpolation factor
                 f = (f - this->key.getElement(i))
@@ -8961,13 +8992,17 @@ Viewer::Object PointSet::insertGeometry(Viewer * const viewer,
         const float * color = 0;
         if (this->color.get()) {
             const MFColor & c = this->color.get()->toColor()->getColor();
-            color = &c.getElement(0)[0];
+            color = (c.getLength() > 0)
+                  ? &c.getElement(0)[0]
+                  : 0;
         }
 
         const MFVec3f & coord = this->coord.get()->toCoordinate()->getPoint();
 
         obj = viewer->insertPointSet(coord.getLength(),
-                                     &coord.getElement(0)[0],
+                                     (coord.getLength() > 0)
+                                        ? &coord.getElement(0)[0]
+                                        : 0,
                                      color);
     }
 
