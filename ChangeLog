@@ -1,7 +1,13 @@
+
 2000-03-10  Chris Morley  <cmorley@vermontel.net>
 
 	* Add a Viewpoints menu on the right mouse button.
 	Navigation is so broken right now.
+
+	* Define VrmlNodeNavigationInfo::getField.
+	
+	* Make createVrmlFromUrl a little more robust
+	(don't crash if no valid vrml nodes are read).
 
 2000-03-09  Chris Morley  <cmorley@vermontel.net>
 
