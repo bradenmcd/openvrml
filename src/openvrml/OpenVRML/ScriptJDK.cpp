@@ -85,10 +85,16 @@ ScriptJDK::ScriptJDK(ScriptNode & scriptNode, const char * className,
     ostrstream appendedClassPath;
 
     appendedClassPath << "-Djava.class.path=." 
-		      << PATH_SEPARATOR << classDir
-      		      << PATH_SEPARATOR << classPath 
+		      << PATH_SEPARATOR << classDir;
+
+    // Only append CLASSPATH if non-null
+    if (classPath != 0)
+    {
+      appendedClassPath << PATH_SEPARATOR << classPath;
+    }
+
 #ifndef _WIN32
-		      << PATH_SEPARATOR
+    appendedClassPath << PATH_SEPARATOR
                       << OPENVRML_PKGDATADIR_ << "/java/script.jar" 
 #endif
 		      << ends;
@@ -1386,9 +1392,19 @@ JNIEXPORT jstring JNICALL Java_vrml_field_SFVec3f_toString
 JNIEXPORT void JNICALL Java_vrml_field_ConstMFColor_CreateObject__I_3F
   (JNIEnv *env, jobject obj, jint size, jfloatArray jarr)
 {
-  jfloat *pjf = env->GetFloatArrayElements(jarr, NULL);
-  MFColor* pMFColor = new MFColor(size / 3, (const float *) pjf);
-  env->ReleaseFloatArrayElements(jarr, pjf, JNI_ABORT);
+  MFColor* pMFColor;
+
+  if (size > 0)
+  {
+    jfloat *pjf = env->GetFloatArrayElements(jarr, NULL);
+    pMFColor = new MFColor(size / 3, (const float *) pjf);
+    env->ReleaseFloatArrayElements(jarr, pjf, JNI_ABORT);
+  }
+  else
+  {
+    pMFColor = new MFColor();
+  }
+
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFColor);
 }
@@ -1396,6 +1412,15 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFColor_CreateObject__I_3F
 JNIEXPORT void JNICALL Java_vrml_field_ConstMFColor_CreateObject___3_3F
   (JNIEnv *env, jobject obj, jobjectArray jarr)
 {
+  jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+
+  if (jarr == 0)
+  {
+    MFColor* pMFColor = new MFColor();
+    env->SetIntField(obj, fid, (int) pMFColor);
+    return;
+  }
+    
   jsize nRows = env->GetArrayLength(jarr);
   float* theArray = new float[nRows * 3];
   float* p = theArray;
@@ -1412,7 +1437,6 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFColor_CreateObject___3_3F
   }
   
   MFColor* pMFColor = new MFColor(nRows, theArray);
-  jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFColor);
   delete[] theArray;
 }
@@ -2620,22 +2644,17 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFString_CreateObject
   if (size > 0)
   {
     std::string* pStringArray = new std::string[size];
-    int i;
 
-    for (i = 0; i < size; i++)
+    for (int i = 0; i < size; i++)
     {
       jstring el = (jstring) env->GetObjectArrayElement(jarr, i);
-      pStringArray[i] = std::string(env->GetStringUTFChars(el, 0));
+      const char* temp = env->GetStringUTFChars(el, 0);
+      pStringArray[i] = std::string(temp);
+      env->ReleaseStringUTFChars(el, temp);
     }
 
     pMFString = new MFString(size, pStringArray);
 
-    for (i = 0; i < size; i++) 
-    {
-      jstring el = (jstring) env->GetObjectArrayElement(jarr, i);
-      if (el)
-	env->ReleaseStringUTFChars(el, pStringArray[i].c_str());
-    }
     delete[] pStringArray;
   }
   else
