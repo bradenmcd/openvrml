@@ -52,7 +52,9 @@ AX_CHECK_GLUT
 #
 # gzipped file support
 #
-AC_ARG_ENABLE([gzip], [  --disable-gzip          disable support for gzipped worlds])
+AC_ARG_ENABLE([gzip],
+              [AC_HELP_STRING([--disable-gzip],
+                              [disable support for gzipped worlds])])
 if test "X$enable_gzip" = "Xno"; then
   Z_LIBS=""
 else
@@ -66,7 +68,9 @@ AC_SUBST([Z_LIBS])
 #
 # ImageTexture node support
 #
-AC_ARG_ENABLE([imagetexture-node], [  --disable-imagetexture-node  disable ImageTexture node support])
+AC_ARG_ENABLE([imagetexture-node],
+              [AC_HELP_STRING([--disable-imagetexture-node],
+                              [disable ImageTexture node support])])
 if test "X$enable_imagetexture_node" = "Xno"; then
   PNG_LIBS=""
   JPEG_LIBS=""
@@ -82,7 +86,9 @@ AC_SUBST([JPEG_LIBS])
 #
 # Text node support
 #
-AC_ARG_ENABLE([text-node], [  --disable-text-node     disable Text node support])
+AC_ARG_ENABLE([text-node],
+              [AC_HELP_STRING([--disable-text-node],
+                              [disable Text node support])])
 if test "X$enable_text_node" = "Xno"; then
   FONTCONFIG_CFLAGS=""
   FONTCONFIG_LIBS=""
@@ -108,7 +114,9 @@ AC_SUBST([FREETYPE_LIBS])
 #
 # Script node JavaScript support
 #
-AC_ARG_ENABLE([script-node-javascript], [  --disable-script-node-javascript  disable Script node JavaScript support])
+AC_ARG_ENABLE([script-node-javascript],
+              [AC_HELP_STRING([--disable-script-node-javascript],
+                              [disable Script node JavaScript support])])
 if test "X$enable_script_node_javascript" = "Xno"; then
   JS_CFLAGS=""
   JS_LIBS=""
@@ -128,7 +136,9 @@ AC_SUBST([JS_LIBS])
 #
 # Script node Java support
 #
-AC_ARG_ENABLE([script-node-java], [  --enable-script-node-java  enable Script node Java support])
+AC_ARG_ENABLE([script-node-java],
+              [AC_HELP_STRING([--enable-script-node-java],
+                              [enable Script node Java support])])
 if test "X$enable_script_node_java" != "Xyes"; then
   JNI_CFLAGS=""
   JNI_LIBS=""
@@ -146,7 +156,9 @@ AM_CONDITIONAL([ENABLE_SCRIPT_NODE_JAVA],
 #
 # build GL renderer
 #
-AC_ARG_ENABLE([gl-renderer], [  --disable-gl-renderer   do not build GL renderer])
+AC_ARG_ENABLE([gl-renderer],
+              [AC_HELP_STRING([--disable-gl-renderer],
+                              [do not build GL renderer])])
 if test "X$enable_gl_renderer" != "Xno"; then
   if test "X$no_gl" = "Xyes"; then
     AC_MSG_ERROR([OpenGL/Mesa is required for the GL renderer])
@@ -158,7 +170,8 @@ AM_CONDITIONAL([ENABLE_GL_RENDERER],
 #
 # build lookat
 #
-AC_ARG_ENABLE([lookat], [  --disable-lookat        do not build lookat])
+AC_ARG_ENABLE([lookat],
+              [AC_HELP_STRING([--disable-lookat], [do not build lookat])])
 if test "X$enable_lookat" != "Xno"; then
   if test "X$no_glut" = "Xyes"; then
     AC_MSG_ERROR([glut is required for lookat])

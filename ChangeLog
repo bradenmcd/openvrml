@@ -1,3 +1,7 @@
+2003-03-26  Braden McDaniel  <braden@endoframe.com>
+
+        * configure.ac:  Use AC_HELP_STRING for help strings.
+
 2003-03-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,
