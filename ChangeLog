@@ -1,3 +1,7 @@
+2002-08-24  Thomas Flynn  <tflynn@users.sf.net>
+
+        * Finish updating conformance test results.
+
 2002-08-24  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp,
