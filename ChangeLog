@@ -1,3 +1,11 @@
+2004-11-27 Braden McDaniel  <braden@endoframe.com>
+
+	Updated package version to 0.15.99.
+
+	* configure.ac
+	* doc/Doxyfile
+	* mozilla-plugin/configure.ac
+
 2004-11-26 Braden McDaniel  <braden@endoframe.com>
 
 	Updated version number for 0.15.0 release.
