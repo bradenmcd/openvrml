@@ -64,7 +64,7 @@ namespace {
  */
 
 /**
- * Destructor.
+ * @brief Destructor. (Virtualized for abstract base class.)
  */
 VrmlField::~VrmlField() {}
 
@@ -1236,7 +1236,7 @@ VrmlSFString::VrmlSFString(const char *s)
 { if (s) { d_s = new char[strlen(s)+1]; strcpy(d_s,s); } else d_s = 0; }
 
 /**
- * Copy constructor.
+ * @brief Copy constructor.
  * @param sfs the VrmlSFString to copy
  */
 VrmlSFString::VrmlSFString(const VrmlSFString &sfs)
@@ -1246,12 +1246,12 @@ VrmlSFString::VrmlSFString(const VrmlSFString &sfs)
 }
 
 /**
- * Destructor.
+ * @brief Destructor.
  */
 VrmlSFString::~VrmlSFString() { if (d_s) delete [] d_s; }
 
 /**
- * Get value.
+ * @brief Get value.
  * @return a C-style string
  */
 const char * VrmlSFString::get() const {
@@ -1259,7 +1259,7 @@ const char * VrmlSFString::get() const {
 }
 
 /**
- * Set value.
+ * @brief Set value.
  * @param s a C-style string
  */
 void VrmlSFString::set(const char *s)
@@ -1270,7 +1270,7 @@ void VrmlSFString::set(const char *s)
 }
 
 /**
- * Assignment.
+ * @brief Assignment.
  * @param rhs value to assign to this object
  */
 VrmlSFString& VrmlSFString::operator=(const VrmlSFString& rhs)
@@ -1286,12 +1286,12 @@ VrmlField::VrmlFieldType VrmlSFString::fieldType() const { return SFSTRING; }
 
 /**
  * @class VrmlSFTime
- * Encapsulates an SFTime value.
+ * @brief Encapsulates an SFTime value.
  */
 #include "VrmlSFTime.h"
 
 /**
- * Constructor
+ * @brief Constructor
  * @param value initial value
  */
 VrmlSFTime::VrmlSFTime(double value) : d_value(value) {}
@@ -1306,7 +1306,7 @@ VrmlField * VrmlSFTime::clone() const {
 VrmlField::VrmlFieldType VrmlSFTime::fieldType() const { return SFTIME; }
 
 /**
- * Get value.
+ * @brief Get value.
  * @return the value.
  */
 double VrmlSFTime::get() const {
@@ -1314,7 +1314,7 @@ double VrmlSFTime::get() const {
 }
 
 /**
- * Set value.
+ * @brief Set value.
  * @param value the new value
  */
 void VrmlSFTime::set(double value) {
@@ -1324,19 +1324,19 @@ void VrmlSFTime::set(double value) {
 
 /**
  * @class VrmlSFVec2f
- * Encapsulates a SFVec2f value.
+ * @brief Encapsulates a SFVec2f value.
  */
 #include "VrmlSFVec2f.h"
 
 /**
- * Construct a VrmlSFVec2f with the default values, (0, 0).
+ * @brief Construct a VrmlSFVec2f with the default values, (0, 0).
  */
 VrmlSFVec2f::VrmlSFVec2f() {
     this->d_x[0] = this->d_x[1] = 0;
 }
         
 /**
- * Construct a VrmlSFVec2f.
+ * @brief Construct a VrmlSFVec2f.
  * @param vec a 2-element array
  */
 VrmlSFVec2f::VrmlSFVec2f(const float vec[2]) {
@@ -1345,7 +1345,7 @@ VrmlSFVec2f::VrmlSFVec2f(const float vec[2]) {
 }
         
 /**
- * Construct a VrmlSFVec2f.
+ * @brief Construct a VrmlSFVec2f.
  * @param x the <var>x</var>-component
  * @param y the <var>y</var>-component
  */
@@ -1355,7 +1355,7 @@ VrmlSFVec2f::VrmlSFVec2f(float x, float y) {
 }
 
 /**
- * Array element dereference operator (const version).
+ * @brief Array element dereference operator (const version).
  * @param index a value from 0 - 1. 0 corresponds to the
  *              <var>x</var>-component, and 1 corresponds to the
  *              <var>y</var>-component.
@@ -1366,7 +1366,7 @@ float VrmlSFVec2f::operator[](size_t index) const {
 }
 
 /**
- * Array element dereference operator (non-const version).
+ * @brief Array element dereference operator (non-const version).
  * @param index a value from 0 - 1. 0 corresponds to the
  *              <var>x</var>-component, and 1 corresponds to the
  *              <var>y</var>-component.
@@ -1384,7 +1384,7 @@ VrmlField * VrmlSFVec2f::clone() const {
 }
 
 /**
- * Get the field type.
+ * @brief Get the field type.
  * @return the VrmlFieldType enumerant corresponding to this field type
  */
 VrmlField::VrmlFieldType VrmlSFVec2f::fieldType() const {
@@ -1392,35 +1392,35 @@ VrmlField::VrmlFieldType VrmlSFVec2f::fieldType() const {
 }
 
 /**
- * Get the x component.
+ * @brief Get the x component.
  */
 float VrmlSFVec2f::getX() const {
     return this->d_x[0];
 }
     
 /**
- * Set the x component.
+ * @brief Set the x component.
  */
 void VrmlSFVec2f::setX(float value) {
     this->d_x[0] = value;
 }
 
 /**
- * Get the y component.
+ * @brief Get the y component.
  */
 float VrmlSFVec2f::getY() const {
     return this->d_x[1];
 }
         
 /**
- * Set the y component.
+ * @brief Set the y component.
  */
 void VrmlSFVec2f::setY(float value) {
     this->d_x[1] = value;
 }
 
 /**
- * Get the value of this vector.
+ * @brief Get the value of this vector.
  * @returns a pointer to a 2-element array.
  */
 const float * VrmlSFVec2f::get() const {
@@ -1428,7 +1428,7 @@ const float * VrmlSFVec2f::get() const {
 }
 
 /**
- * Set the value of this vector.
+ * @brief Set the value of this vector.
  * @param vec a 2-element array.
  */
 void VrmlSFVec2f::set(const float vec[2]) {
@@ -1437,7 +1437,7 @@ void VrmlSFVec2f::set(const float vec[2]) {
 }
 
 /**
- * Add two vectors.
+ * @brief Add two vectors.
  * @param vec the vector to add to this one.
  * @return a VrmlSFVec2f with a value that is the passed SFVec2f added,
  *         componentwise, to this object.
@@ -1450,7 +1450,7 @@ const VrmlSFVec2f VrmlSFVec2f::add(const VrmlSFVec2f & vec) const {
 }
 
 /**
- * Divide this vector by a scalar.
+ * @brief Divide this vector by a scalar.
  * @param number a scalar value.
  * @return a VrmlSFVec2f with a value that is the object divided by the
  *         passed numeric value.
@@ -1463,7 +1463,7 @@ const VrmlSFVec2f VrmlSFVec2f::divide(float number) const {
 }
 
 /**
- * Dot product.
+ * @brief Dot product.
  * @param vec
  * @return the dot product of this vector and vec.
  */
@@ -1472,7 +1472,7 @@ double VrmlSFVec2f::dot(const VrmlSFVec2f & vec) const {
 }
 
 /**
- * Geometric length.
+ * @brief Geometric length.
  * @return the length of this vector.
  */
 double VrmlSFVec2f::length() const
@@ -1481,7 +1481,7 @@ double VrmlSFVec2f::length() const
 }
 
 /**
- * Multiply by a scalar.
+ * @brief Multiply by a scalar.
  * @param number a scalar value
  * @return a VrmlSFVec2f with a value that is the object multiplied by the
  *         passed numeric value.
@@ -1494,7 +1494,7 @@ const VrmlSFVec2f VrmlSFVec2f::multiply(float number) const {
 }
 
 /**
- * Negate.
+ * @brief Negate.
  * @return a VrmlSFVec2f that the result of negating this vector.
  */
 const VrmlSFVec2f VrmlSFVec2f::negate() const {
@@ -1505,7 +1505,7 @@ const VrmlSFVec2f VrmlSFVec2f::negate() const {
 }
 
 /**
- * Normalize.
+ * @brief Normalize.
  * @return a VrmlSFVec2f that is this vector normalized.
  */
 const VrmlSFVec2f VrmlSFVec2f::normalize() const {
@@ -1520,7 +1520,7 @@ const VrmlSFVec2f VrmlSFVec2f::normalize() const {
 }
 
 /**
- * Take the difference of two vectors.
+ * @brief Take the difference of two vectors.
  * @param vec the vector to subtract from this one
  * @return a VrmlSFVec2f that is the difference between this vector and vec
  */
@@ -1534,17 +1534,17 @@ const VrmlSFVec2f VrmlSFVec2f::subtract(const VrmlSFVec2f & vec) const {
 
 /**
  * @class VrmlSFVec3f
- * Encapsulates a SFVec3f value.
+ * @brief Encapsulates a SFVec3f value.
  */
 #include "VrmlSFVec3f.h"
 
 /**
- * Construct a VrmlSFVec3f with the default value, (0, 0, 0).
+ * @brief Construct a VrmlSFVec3f with the default value, (0, 0, 0).
  */
 VrmlSFVec3f::VrmlSFVec3f() {}
 
 /**
- * Construct a VrmlSFVec3f.
+ * @brief Construct a VrmlSFVec3f.
  * @param vec a 3-element array
  */
 VrmlSFVec3f::VrmlSFVec3f(const float vec[3]) {
@@ -1552,7 +1552,7 @@ VrmlSFVec3f::VrmlSFVec3f(const float vec[3]) {
 }
 
 /**
- * Construct a VrmlSFVec3f.
+ * @brief Construct a VrmlSFVec3f.
  * @param x the <var>x</var>-component
  * @param y the <var>y</var>-component
  * @param z the <var>z</var>-component
@@ -1561,7 +1561,7 @@ VrmlSFVec3f::VrmlSFVec3f(float x, float y, float z)
 { d_x[0] = x; d_x[1] = y; d_x[2] = z; }
 
 /**
- * Array element dereference operator (const version).
+ * @brief Array element dereference operator (const version).
  * @param index a value from 0 - 2. 0 corresponds to the
  *              <var>x</var>-component, 1 corresponds to the
  *              <var>y</var>-component, and 2 corresponds to the
@@ -1573,7 +1573,7 @@ float VrmlSFVec3f::operator[](size_t index) const {
 }
 
 /**
- * Array element dereference operator (non-const version).
+ * @brief Array element dereference operator (non-const version).
  * @param index a value from 0 - 2. 0 corresponds to the
  *              <var>x</var>-component, 1 corresponds to the
  *              <var>y</var>-component, and 2 corresponds to the
@@ -1593,7 +1593,7 @@ VrmlField *VrmlSFVec3f::clone() const
 VrmlField::VrmlFieldType VrmlSFVec3f::fieldType() const { return SFVEC3F; }
 
 /**
- * Get the <var>x</var>-component
+ * @brief Get the <var>x</var>-component
  * @return the <var>x</var>-component of this vector
  */
 float VrmlSFVec3f::getX() const {
@@ -1601,7 +1601,7 @@ float VrmlSFVec3f::getX() const {
 }
 
 /**
- * Set the <var>x</var>-component
+ * @brief Set the <var>x</var>-component
  * @param value
  */
 void VrmlSFVec3f::setX(float value) {
@@ -1609,7 +1609,7 @@ void VrmlSFVec3f::setX(float value) {
 }
 
 /**
- * Get the <var>y</var>-component
+ * @brief Get the <var>y</var>-component
  * @return the <var>y</var>-component of this vector
  */
 float VrmlSFVec3f::getY() const {
@@ -1617,7 +1617,7 @@ float VrmlSFVec3f::getY() const {
 }
 
 /**
- * Set the <var>y</var>-component
+ * @brief Set the <var>y</var>-component
  * @param value
  */
 void VrmlSFVec3f::setY(float value) {
@@ -1625,7 +1625,7 @@ void VrmlSFVec3f::setY(float value) {
 }
 
 /**
- * Get the <var>z</var>-component
+ * @brief Get the <var>z</var>-component
  * @return the <var>z</var>-component of this vector
  */
 float VrmlSFVec3f::getZ() const {
@@ -1633,7 +1633,7 @@ float VrmlSFVec3f::getZ() const {
 }
 
 /**
- * Set the <var>z</var>-component
+ * @brief Set the <var>z</var>-component
  * @param value
  */
 void VrmlSFVec3f::setZ(float value) {
@@ -1641,7 +1641,7 @@ void VrmlSFVec3f::setZ(float value) {
 }
 
 /**
- * Get the vector value.
+ * @brief Get the vector value.
  * @return a pointer to a 3-element array
  */
 const float * VrmlSFVec3f::get() const {
@@ -1649,7 +1649,7 @@ const float * VrmlSFVec3f::get() const {
 }
 
 /**
- * Set the vector value.
+ * @brief Set the vector value.
  * @param vec a 3-element array
  */
 void VrmlSFVec3f::set(const float vec[3]) {
@@ -1659,7 +1659,7 @@ void VrmlSFVec3f::set(const float vec[3]) {
 }
 
 /**
- * Add this vector and vec component-wise.
+ * @brief Add this vector and vec component-wise.
  * @param vec
  */
 const VrmlSFVec3f VrmlSFVec3f::add(const VrmlSFVec3f & vec) const {
@@ -1671,7 +1671,7 @@ const VrmlSFVec3f VrmlSFVec3f::add(const VrmlSFVec3f & vec) const {
 }
 
 /**
- * Get the cross product of this vector and vec.
+ * @brief Get the cross product of this vector and vec.
  * @param vec
  */
 const VrmlSFVec3f VrmlSFVec3f::cross(const VrmlSFVec3f & vec) const {
@@ -1683,7 +1683,7 @@ const VrmlSFVec3f VrmlSFVec3f::cross(const VrmlSFVec3f & vec) const {
 }
 
 /**
- * Get the result of dividing this vector by number.
+ * @brief Get the result of dividing this vector by number.
  * @param number
  */
 const VrmlSFVec3f VrmlSFVec3f::divide(float number) const {
@@ -1695,7 +1695,7 @@ const VrmlSFVec3f VrmlSFVec3f::divide(float number) const {
 }
 
 /**
- * Get the dot product of this vector and vec.
+ * @brief Get the dot product of this vector and vec.
  * @param vec
  */
 double VrmlSFVec3f::dot(const VrmlSFVec3f & vec) const {
@@ -1704,7 +1704,8 @@ double VrmlSFVec3f::dot(const VrmlSFVec3f & vec) const {
 }
 
 /**
- * Get the length of this vector.
+ * @brief Get the length of this vector.
+ * @return the geometric length of the vector.
  */
 double VrmlSFVec3f::length() const {
     const double len = sqrt((d_x[0] * d_x[0])
@@ -1714,8 +1715,9 @@ double VrmlSFVec3f::length() const {
 }
 
 /**
- * Get the product of this vector by number.
+ * Multiply by a scalar.
  * @param number
+ * @return the product
  */
 const VrmlSFVec3f VrmlSFVec3f::multiply(float number) const {
     VrmlSFVec3f result(*this);
@@ -1726,7 +1728,8 @@ const VrmlSFVec3f VrmlSFVec3f::multiply(float number) const {
 }
 
 /**
- * Return this vector negated.
+ * @brief Negate.
+ * @return the negatation of this vector
  */
 const VrmlSFVec3f VrmlSFVec3f::negate() const {
     VrmlSFVec3f result(*this);
@@ -1737,7 +1740,8 @@ const VrmlSFVec3f VrmlSFVec3f::negate() const {
 }
 
 /**
- * Get this vector normalized.
+ * Normalize.
+ * @return a copy of this vector normalized
  */
 const VrmlSFVec3f VrmlSFVec3f::normalize() const {
     const double len = this->length();
@@ -1752,8 +1756,9 @@ const VrmlSFVec3f VrmlSFVec3f::normalize() const {
 }
 
 /**
- * Get the result of subtracting vec from this vector.
+ * @brief Subtract.
  * @param vec
+ * @return the difference between this vector and vec
  */
 const VrmlSFVec3f VrmlSFVec3f::subtract(const VrmlSFVec3f & vec) const {
     VrmlSFVec3f result(*this);
@@ -1831,7 +1836,7 @@ VrmlMFColor& VrmlMFColor::operator=(const VrmlMFColor& rhs)
 }
 
 /**
- * Get value.
+ * @brief Get value.
  * @return a pointer to an array comprising RGB triplets
  */
 const float * VrmlMFColor::get() const {
@@ -1847,10 +1852,11 @@ const float * VrmlMFColor::get() const {
  * @param colors an array comprising RGB triplets
  */
 void VrmlMFColor::set(size_t length, const float * colors) {
+    length *= 3;
     this->d_data->deref();
-    this->d_data = new FData(length * 3);
+    this->d_data = new FData(length);
     if (colors) {
-        std::copy(colors, colors + (length * 3), this->d_data->d_v);
+        std::copy(colors, colors + (length), this->d_data->d_v);
     } else {
         this->setLength(length);
     }
@@ -1874,12 +1880,12 @@ size_t VrmlMFColor::getLength() const {
  * @param length new length
  */
 void VrmlMFColor::setLength(size_t length) {
-    const size_t numFloats = length * 3;
-    FData * const newData = new FData(numFloats);
-    if (numFloats > this->d_data->d_n) {
+    length *= 3;
+    FData * const newData = new FData(length);
+    if (length > this->d_data->d_n) {
         std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
                   newData->d_v);
-        std::fill(newData->d_v + this->d_data->d_n, newData->d_v + numFloats,
+        std::fill(newData->d_v + this->d_data->d_n, newData->d_v + length,
                   0.0f);
     } else {
         std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
@@ -1888,6 +1894,10 @@ void VrmlMFColor::setLength(size_t length) {
     this->d_data = newData;
 }
 
+/**
+ * @brief Array element dereference operator.
+ * @return a pointer to a 3-element array comprising an RGB triplet
+ */
 const float * VrmlMFColor::operator[](size_t index) const {
     return (this->d_data->d_v + (index * 3));
 }
@@ -1903,35 +1913,120 @@ VrmlField::VrmlFieldType VrmlMFColor::fieldType() const { return MFCOLOR; }
  */
 #include "VrmlMFFloat.h"
 
-VrmlMFFloat::VrmlMFFloat() : d_data(new FData(0)) 
-{}
+class VrmlMFFloat::FData {			// reference counted float data
+public:
+  FData(int n=0) : d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
+  ~FData() { delete [] d_v; }
 
+  FData *ref() { ++d_refs; return this; }
+  void deref() { if (--d_refs == 0) delete this; }
+
+  int d_refs;			// number of MF* objects using this data
+  int d_n;			// size (in floats) of d_v
+  float *d_v;			// data vector
+};
+
+/**
+ * @brief Constructor.
+ * @param value
+ */
 VrmlMFFloat::VrmlMFFloat(float value) : d_data(new FData(1)) 
 { d_data->d_v[0] = value; }
 
-VrmlMFFloat::VrmlMFFloat(size_t n, float const * v) : d_data(new FData(n))
-{
-  if (v) memcpy(d_data->d_v, v, n*sizeof(float));
+/**
+ * @brief Construct from a float array.
+ * @param length the number of floats in the array
+ * @param numbers a pointer to a float array
+ */
+VrmlMFFloat::VrmlMFFloat(size_t length, float const * numbers):
+        d_data(new FData(length)) {
+    if (numbers) {
+        std::copy(numbers, numbers + length, this->d_data->d_v);
+    }
 }
 
-VrmlMFFloat::VrmlMFFloat(const VrmlMFFloat &src) : d_data(src.d_data->ref()) {}
+/**
+ * @brief Copy constructor.
+ * @param mfFloat the object to copy
+ */
+VrmlMFFloat::VrmlMFFloat(const VrmlMFFloat & mfFloat):
+        d_data(mfFloat.d_data->ref()) {}
 
+/**
+ * @brief Destructor.
+ */
 VrmlMFFloat::~VrmlMFFloat() { d_data->deref(); }
 
-void VrmlMFFloat::set(size_t n, const float * v)
-{
-  d_data->deref();
-  d_data = new FData(n);
-  if (v) memcpy(d_data->d_v, v, n*sizeof(float));
+/**
+ * @brief Assignment operator.
+ * @param mfFloat the object to copy
+ */
+VrmlMFFloat& VrmlMFFloat::operator=(const VrmlMFFloat & mfFloat) {
+    if (this != &mfFloat) {
+        this->d_data->deref();
+        this->d_data = mfFloat.d_data->ref();
+    }
+    return *this;
 }
 
-VrmlMFFloat& VrmlMFFloat::operator=(const VrmlMFFloat& rhs)
-{
-  if (this != &rhs) {
-    d_data->deref();
-    d_data = rhs.d_data->ref();
-  }
-  return *this;
+/**
+ * @brief Array element dereference operator.
+ * @param index
+ */
+const float VrmlMFFloat::operator[](size_t index) const {
+    return this->d_data->d_v[index];
+}
+
+/**
+ * @brief Get value.
+ * @return a pointer to a float array
+ */
+const float * VrmlMFFloat::get() const {
+    return this->d_data->d_v;
+}
+
+/**
+ * @brief Set value.
+ * @param length the number of float values
+ * @param numbers a pointer to a float array
+ */
+void VrmlMFFloat::set(size_t length, const float * numbers) {
+    this->d_data->deref();
+    this->d_data = new FData(length);
+    if (numbers) {
+        std::copy(numbers, numbers + length, this->d_data->d_v);
+    }
+}
+
+/**
+ * @brief Get the length.
+ * @return the number of float values
+ */
+size_t VrmlMFFloat::getLength() const {
+    return this->d_data->d_n;
+}
+
+/**
+ * @brief Set the length.
+ *
+ * If the new length is greater than the current length, the additional values
+ * are initialized to the default (0.0). If the new length is less
+ * than the current length, the array is truncated.
+ *
+ * @param length new length
+ */
+void VrmlMFFloat::setLength(size_t length) {
+    FData * const newData = new FData(length);
+    if (length > this->d_data->d_n) {
+        std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
+                  newData->d_v);
+        std::fill(newData->d_v + this->d_data->d_n, newData->d_v + length,
+                  0.0f);
+    } else {
+        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
+    }
+    this->d_data->deref();
+    this->d_data = newData;
 }
 
 VrmlField *VrmlMFFloat::clone() const	{ return new VrmlMFFloat(*this); }
