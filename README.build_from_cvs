@@ -1,0 +1,27 @@
+1. Execute the script bootstrap.sh:
+
+  $ ./bootstrap.sh
+
+Note: You may need to make the script executable before you can do this:
+
+  $ chmod a+x bootstrap.sh
+
+2. Make a directory to store the build files, and change to that directory
+(recommended, but not required):
+
+  $ mkdir build
+  $ cd build
+
+3. Execute the configure script that was created when you ran the
+bootstrap script:
+
+  $ ../configure
+
+4. Build it:
+
+  $ make
+
+
+Prior to installation (refer to the file INSTALL), the lookat program (a
+glut-based VRML viewer) will be in the lookat/src directory. You can run
+it from that location to view the models in lookat/wrl.
