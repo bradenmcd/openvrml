@@ -36,12 +36,13 @@
 #   define SYSTEM_DEBUG
 # endif
 
+using namespace OpenVRML;
 
 // A default System object
 static System defaultSystem;
 
 // The global System object
-System *theSystem = &defaultSystem;
+System * OpenVRML::theSystem = &defaultSystem;
 
 
 // Should make these iostream objects...
@@ -181,7 +182,7 @@ bool System::loadUrl(char *url, int np, char **parameters )
 
 // This won't work under windows or if netscape isn't running...
 
-bool System::loadUrl(const std::string & url, const VrmlMFString & parameters)
+bool System::loadUrl(const std::string & url, const MFString & parameters)
 {
   return false;
 }

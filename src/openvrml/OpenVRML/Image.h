@@ -24,46 +24,44 @@
 # include <stddef.h>
 # include "common.h"
 
-class Doc;
-class Doc2;
-class VrmlMFString;
+namespace OpenVRML {
 
-/**
- * The Image class is a format-independent API for loading textures.
- */
-class OPENVRML_SCOPE Image {
+    class Doc;
+    class Doc2;
+    class MFString;
 
-public:
+    /**
+     * The Image class is a format-independent API for loading textures.
+     */
+    class OPENVRML_SCOPE Image {
+        Doc * d_url;
+        int d_w, d_h, d_nc, d_nFrames;
+        unsigned char *d_pixels;
+        unsigned char **d_frame;
 
-  Image(const char *url = 0, Doc *relative = 0);
-  ~Image();
+    public:
+        Image(const char *url = 0, Doc *relative = 0);
+        ~Image();
 
-  bool setURL(const char *url, Doc *relative = 0);
-  bool setURL(const char *url, Doc2 *relative = 0);
+        bool setURL(const char *url, Doc *relative = 0);
+        bool setURL(const char *url, Doc2 *relative = 0);
 
-  bool tryURLs(size_t nUrls, char const * const * urls, Doc *relative = 0);
-  bool tryURLs(size_t nUrls, char const * const * urls, Doc2 *relative = 0);
-  bool tryURLs(const VrmlMFString & urls, Doc * relative = 0);
-  bool tryURLs(const VrmlMFString & urls, Doc2 * relative = 0);
+        bool tryURLs(size_t nUrls, char const * const * urls, Doc *relative = 0);
+        bool tryURLs(size_t nUrls, char const * const * urls, Doc2 *relative = 0);
+        bool tryURLs(const MFString & urls, Doc * relative = 0);
+        bool tryURLs(const MFString & urls, Doc2 * relative = 0);
 
-  const char *url();
+        const char *url();
 
-  int w()			{ return d_w; }
-  int h()			{ return d_h; }
-  int nc()			{ return d_nc; }
-  int nFrames()			{ return d_nFrames; }
-  unsigned char *pixels()	{ return d_pixels; }
-  unsigned char *pixels(int frame);
+        int w()			{ return d_w; }
+        int h()			{ return d_h; }
+        int nc()			{ return d_nc; }
+        int nFrames()			{ return d_nFrames; }
+        unsigned char *pixels()	{ return d_pixels; }
+        unsigned char *pixels(int frame);
 
-  void setSize(int w, int h)	{ d_w = w; d_h = h; }
-
-protected:
-
-  Doc * d_url;
-  int d_w, d_h, d_nc, d_nFrames;
-  unsigned char *d_pixels;
-  unsigned char **d_frame;
-
-};
+        void setSize(int w, int h)	{ d_w = w; d_h = h; }
+    };
+}
 
 #endif

@@ -25,17 +25,19 @@
 #   include "common.h"
 #   include "VrmlNodePtr.h"
 
-class OPENVRML_SCOPE Route {
+namespace OpenVRML {
 
-public:
-    const std::string fromEventOut;
-    const VrmlNodePtr toNode;
-    const std::string toEventIn;
-    
-    Route(const std::string & fromEventOut, const VrmlNodePtr & toNode,
-          const std::string & toEventIn);
-    Route(const Route&);
+    class OPENVRML_SCOPE Route {
+    public:
+        const std::string fromEventOut;
+        const NodePtr toNode;
+        const std::string toEventIn;
 
-};
+        Route(const std::string & fromEventOut, const NodePtr & toNode,
+              const std::string & toEventIn);
+        Route(const Route&);
+
+    };
+}
 
 # endif

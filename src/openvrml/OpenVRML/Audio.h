@@ -21,87 +21,78 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
-//
-//  Audio document class
-//
 #include <stdio.h>
 #include <math.h>
 #include <string>
 #include "common.h"
 
-class Doc;
-class VrmlMFString;
+namespace OpenVRML {
 
-OPENVRML_SCOPE enum AudioEncoding
-{
-    AUDIO_LINEAR,
-    AUDIO_ULAW
-};
+    class Doc;
+    class MFString;
 
+    OPENVRML_SCOPE enum AudioEncoding { AUDIO_LINEAR, AUDIO_ULAW };
 
-class OPENVRML_SCOPE  Audio
-{
-  public:
-    Audio (const std::string & url, Doc *relative = 0);
-    ~Audio ();
+    class OPENVRML_SCOPE Audio {
+        Doc *           _doc;
 
-    bool setURL(const std::string & url, Doc * relative = 0);
-    bool tryURLs(const VrmlMFString & urls, Doc * relative = 0);
+        AudioEncoding   _encoding;
+        int             _channels;
+        int             _bits_per_sample;
+        int             _samples_per_sec;
 
-    const char *url() const;
+        // Samples are stored in aligned blocks.  Sometimes, the
+        // block will be larger than the sample itself.  Usually,
+        // however, an 8-bit sample will be in a 1-byte block and
+        // a 16-bit sample will be in a 2-byte block.
+        int             _sample_blocksize;
 
-    AudioEncoding encoding() const        { return _encoding; }
-    int channels() const                  { return _channels; }
-    int bitsPerSample() const             { return _bits_per_sample; }
-    int samplesPerSec() const             { return _samples_per_sec; }
-    int sampleBlockSize() const           { return _sample_blocksize; }
-    int numSamples() const                { return _num_samples; }
+        int             _num_samples;
+        unsigned char * _samples;
 
-    int numBytes() const         { return _num_samples * _sample_blocksize; }
-    const unsigned char *samples() const  { return _samples; }
+    public:
+        Audio (const std::string & url, Doc *relative = 0);
+        ~Audio ();
 
-    double duration() const  {
-        if (_samples_per_sec > 0)
-            return (double)_num_samples/(double)_samples_per_sec;
-        else
-            return 0;
-    }
+        bool setURL(const std::string & url, Doc * relative = 0);
+        bool tryURLs(const MFString & urls, Doc * relative = 0);
 
-    // Get the sample index given a floating point time index
-    // If the time index is greater than the duration, the sample
-    // index is wrapped back to the beginning of the sample.
-    // From: Alex Funk <Alexander.Funk@nord-com.net>
-    // Avoid int overflow when multiplying time_index by samples_per_sec
-    // Modified to use fmod() by Kumaran Santhanam.
-    int getByteIndex(double time_index) const  {
-      if (_num_samples > 0 && _samples_per_sec > 0)
-	return _sample_blocksize *
-	  (int)(fmod(time_index, duration()) * (double)_samples_per_sec);
-      else
-	return -1;
-    }
+        const char *url() const;
 
+        AudioEncoding encoding() const        { return _encoding; }
+        int channels() const                  { return _channels; }
+        int bitsPerSample() const             { return _bits_per_sample; }
+        int samplesPerSec() const             { return _samples_per_sec; }
+        int sampleBlockSize() const           { return _sample_blocksize; }
+        int numSamples() const                { return _num_samples; }
 
-  private:
-    Doc *           _doc;
+        int numBytes() const         { return _num_samples * _sample_blocksize; }
+        const unsigned char *samples() const  { return _samples; }
 
-    AudioEncoding   _encoding;
-    int             _channels;
-    int             _bits_per_sample;
-    int             _samples_per_sec;
+        double duration() const  {
+            if (_samples_per_sec > 0)
+                return (double)_num_samples/(double)_samples_per_sec;
+            else
+                return 0;
+        }
 
-    // Samples are stored in aligned blocks.  Sometimes, the
-    // block will be larger than the sample itself.  Usually,
-    // however, an 8-bit sample will be in a 1-byte block and
-    // a 16-bit sample will be in a 2-byte block.
-    int             _sample_blocksize;
+        // Get the sample index given a floating point time index
+        // If the time index is greater than the duration, the sample
+        // index is wrapped back to the beginning of the sample.
+        // From: Alex Funk <Alexander.Funk@nord-com.net>
+        // Avoid int overflow when multiplying time_index by samples_per_sec
+        // Modified to use fmod() by Kumaran Santhanam.
+        int getByteIndex(double time_index) const  {
+          if (_num_samples > 0 && _samples_per_sec > 0)
+	    return _sample_blocksize *
+	      (int)(fmod(time_index, duration()) * (double)_samples_per_sec);
+          else
+	    return -1;
+        }
 
-    int             _num_samples;
-    unsigned char * _samples;
-
-
-    bool wavread (FILE *fp);
-};
-
+    private:
+        bool wavread (FILE *fp);
+    };
+}
 
 #endif // AUDIO_H

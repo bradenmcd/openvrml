@@ -6804,6 +6804,8 @@ namespace {
     }
 }
 
+using namespace OpenVRML;
+
 typedef enum {
   ImageFile_UNKNOWN,
 
@@ -6964,7 +6966,7 @@ bool Image::tryURLs(size_t nUrls, char const * const * urls, Doc2 * relative)
     return i < nUrls;
 }
 
-bool Image::tryURLs(const VrmlMFString & urls, Doc * relative) {
+bool Image::tryURLs(const MFString & urls, Doc * relative) {
     size_t i(0);
     for (; i < urls.getLength(); ++i) {
         if ((urls.getElement(i).length() > 0)
@@ -6976,7 +6978,7 @@ bool Image::tryURLs(const VrmlMFString & urls, Doc * relative) {
     return (i < urls.getLength());
 }
 
-bool Image::tryURLs(const VrmlMFString & urls, Doc2 * relative) {
+bool Image::tryURLs(const MFString & urls, Doc2 * relative) {
     size_t i(0);
     for (; i < urls.getLength(); ++i) {
         if ((urls.getElement(i).length() > 0)

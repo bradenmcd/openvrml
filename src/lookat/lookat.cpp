@@ -42,6 +42,9 @@
 
 #include "ViewerGlut.h"
 
+using OpenVRML::VrmlScene;
+using OpenVRML::Doc2;
+
 static void worldChangedCB(int);
 static void buildViewpointMenu();
 
@@ -117,7 +120,7 @@ main(int argc, char **argv)
 
   if (! inputUrl) inputUrl = inputName;
 
-  vrmlScene = new VrmlScene( inputUrl, inputName );
+  vrmlScene = new VrmlScene(inputUrl, inputName);
 
   if (outputName)
     {

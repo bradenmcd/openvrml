@@ -19,10 +19,11 @@
 // 
 
 # include "Route.h"
-# include <string.h>
+
+using namespace OpenVRML;
 
 Route::Route(const std::string & fromEventOut,
-             const VrmlNodePtr & toNode, const std::string & toEventIn):
+             const NodePtr & toNode, const std::string & toEventIn):
         fromEventOut(fromEventOut), toNode(toNode), 
 	toEventIn(toEventIn) {}
 

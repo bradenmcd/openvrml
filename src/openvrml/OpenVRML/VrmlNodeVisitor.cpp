@@ -18,22 +18,24 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
+# include "VrmlNodeVisitor.h"
+
+using namespace OpenVRML;
+
 /**
- * @class VrmlNodeVisitor
+ * @class OpenVRML::NodeVisitor
  *
  * @brief An interface to be implemented by visitors for nodes in a
  *        scene graph.
  */
 
-# include "VrmlNodeVisitor.h"
-
 /**
  * @brief Destructor.
  */
-VrmlNodeVisitor::~VrmlNodeVisitor() {}
+NodeVisitor::~NodeVisitor() {}
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeAnchor & node)
+ * @fn void NodeVisitor::visit(NodeAnchor & node)
  *
  * @brief Visit an Anchor node.
  *
@@ -41,7 +43,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeAppearance & node)
+ * @fn void NodeVisitor::visit(NodeAppearance & node)
  *
  * @brief Visit an Appearance node.
  *
@@ -49,7 +51,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeAudioClip & node)
+ * @fn void NodeVisitor::visit(NodeAudioClip & node)
  *
  * @brief Visit an AudioClip node.
  *
@@ -57,7 +59,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeBackground & node)
+ * @fn void NodeVisitor::visit(NodeBackground & node)
  *
  * @brief Visit a Background node.
  *
@@ -65,7 +67,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeBillboard & node)
+ * @fn void NodeVisitor::visit(NodeBillboard & node)
  *
  * @brief Visit a Billboard node.
  *
@@ -73,7 +75,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeBox & node)
+ * @fn void NodeVisitor::visit(NodeBox & node)
  *
  * @brief Visit a Box node.
  *
@@ -81,7 +83,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeCollision & node)
+ * @fn void NodeVisitor::visit(NodeCollision & node)
  *
  * @brief Visit a Collision node.
  *
@@ -89,7 +91,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeColor & node)
+ * @fn void NodeVisitor::visit(NodeColor & node)
  *
  * @brief Visit a Color node.
  *
@@ -97,7 +99,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeColorInt & node)
+ * @fn void NodeVisitor::visit(NodeColorInt & node)
  *
  * @brief Visit a ColorInterpolator node.
  *
@@ -105,7 +107,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeCone & node)
+ * @fn void NodeVisitor::visit(NodeCone & node)
  *
  * @brief Visit a Cone node.
  *
@@ -113,7 +115,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeCoordinate & node)
+ * @fn void NodeVisitor::visit(NodeCoordinate & node)
  *
  * @brief Visit a Coordinate node.
  *
@@ -121,7 +123,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeCoordinateInt & node)
+ * @fn void NodeVisitor::visit(NodeCoordinateInt & node)
  *
  * @brief Visit a CoordinateInterpolator node.
  *
@@ -129,7 +131,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeCylinder & node)
+ * @fn void NodeVisitor::visit(NodeCylinder & node)
  *
  * @brief Visit a Cylinder node.
  *
@@ -137,7 +139,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeCylinderSensor & node)
+ * @fn void NodeVisitor::visit(NodeCylinderSensor & node)
  *
  * @brief Visit a CylinderSensor node.
  *
@@ -145,7 +147,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeDirLight & node)
+ * @fn void NodeVisitor::visit(NodeDirLight & node)
  *
  * @brief Visit a DirectionalLight node.
  *
@@ -153,7 +155,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeElevationGrid & node)
+ * @fn void NodeVisitor::visit(NodeElevationGrid & node)
  *
  * @brief Visit an ElevationGrid node.
  *
@@ -161,7 +163,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeExtrusion & node)
+ * @fn void NodeVisitor::visit(NodeExtrusion & node)
  *
  * @brief Visit an Extrusion node.
  *
@@ -169,7 +171,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeFog & node)
+ * @fn void NodeVisitor::visit(NodeFog & node)
  *
  * @brief Visit a Fog node.
  *
@@ -177,7 +179,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeFontStyle & node)
+ * @fn void NodeVisitor::visit(NodeFontStyle & node)
  *
  * @brief Visit a FontStyle node.
  *
@@ -185,7 +187,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeGroup & node)
+ * @fn void NodeVisitor::visit(NodeGroup & node)
  *
  * @brief Visit a Group node.
  *
@@ -193,7 +195,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeIFaceSet & node)
+ * @fn void NodeVisitor::visit(NodeIFaceSet & node)
  *
  * @brief Visit an IndexedFaceSet node.
  *
@@ -201,7 +203,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeILineSet & node)
+ * @fn void NodeVisitor::visit(NodeILineSet & node)
  *
  * @brief Visit an IndexedLineSet node.
  *
@@ -209,7 +211,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeImageTexture & node)
+ * @fn void NodeVisitor::visit(NodeImageTexture & node)
  *
  * @brief Visit an ImageTexture node.
  *
@@ -217,7 +219,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeInline & node)
+ * @fn void NodeVisitor::visit(NodeInline & node)
  *
  * @brief Visit an Inline node.
  *
@@ -225,7 +227,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeLOD & node)
+ * @fn void NodeVisitor::visit(NodeLOD & node)
  *
  * @brief Visit a LOD node.
  *
@@ -233,7 +235,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeMaterial & node)
+ * @fn void NodeVisitor::visit(NodeMaterial & node)
  *
  * @brief Visit a Material node.
  *
@@ -241,7 +243,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeMovieTexture & node)
+ * @fn void NodeVisitor::visit(NodeMovieTexture & node)
  *
  * @brief Visit a MovieTexture node.
  *
@@ -249,7 +251,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeNavigationInfo & node)
+ * @fn void NodeVisitor::visit(NodeNavigationInfo & node)
  *
  * @brief Visit a NavigationInfo node.
  *
@@ -257,7 +259,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeNormal & node)
+ * @fn void NodeVisitor::visit(NodeNormal & node)
  *
  * @brief Visit a Normal node.
  *
@@ -265,7 +267,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeNormalInt & node)
+ * @fn void NodeVisitor::visit(NodeNormalInt & node)
  *
  * @brief Visit a NormalInterpolator node.
  *
@@ -273,7 +275,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeOrientationInt & node)
+ * @fn void NodeVisitor::visit(NodeOrientationInt & node)
  *
  * @brief Visit an OrientationInterpolator node.
  *
@@ -281,7 +283,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodePixelTexture & node)
+ * @fn void NodeVisitor::visit(NodePixelTexture & node)
  *
  * @brief Visit a PixelTexture node.
  *
@@ -289,7 +291,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodePlaneSensor & node)
+ * @fn void NodeVisitor::visit(NodePlaneSensor & node)
  *
  * @brief Visit a PlaneSensor node.
  *
@@ -297,7 +299,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodePointLight & node)
+ * @fn void NodeVisitor::visit(NodePointLight & node)
  *
  * @brief Visit a PointLight node.
  *
@@ -305,7 +307,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodePointSet & node)
+ * @fn void NodeVisitor::visit(NodePointSet & node)
  *
  * @brief Visit a PointSet node.
  *
@@ -313,7 +315,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodePositionInt & node)
+ * @fn void NodeVisitor::visit(NodePositionInt & node)
  *
  * @brief Visit a PositionInterpolator node.
  *
@@ -321,7 +323,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeProto & node)
+ * @fn void NodeVisitor::visit(NodeProto & node)
  *
  * @brief Visit a PROTO instantiation node.
  *
@@ -329,7 +331,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeProximitySensor & node)
+ * @fn void NodeVisitor::visit(NodeProximitySensor & node)
  *
  * @brief Visit a ProximitySensor node.
  *
@@ -337,7 +339,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeScalarInt & node)
+ * @fn void NodeVisitor::visit(NodeScalarInt & node)
  *
  * @brief Visit a ScalarInterpolator node.
  *
@@ -345,7 +347,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeScript & node)
+ * @fn void NodeVisitor::visit(ScriptNode & node)
  *
  * @brief Visit a Script node.
  *
@@ -353,7 +355,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeShape & node)
+ * @fn void NodeVisitor::visit(NodeShape & node)
  *
  * @brief Visit a Shape node.
  *
@@ -361,7 +363,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeSound & node)
+ * @fn void NodeVisitor::visit(NodeSound & node)
  *
  * @brief Visit a Sound node.
  *
@@ -369,7 +371,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeSphere & node)
+ * @fn void NodeVisitor::visit(NodeSphere & node)
  *
  * @brief Visit a Sphere node.
  *
@@ -377,7 +379,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeSphereSensor & node)
+ * @fn void NodeVisitor::visit(NodeSphereSensor & node)
  *
  * @brief Visit a SphereSensor node.
  *
@@ -385,7 +387,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeSpotLight & node)
+ * @fn void NodeVisitor::visit(NodeSpotLight & node)
  *
  * @brief Visit a SpotLight node.
  *
@@ -393,7 +395,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeSwitch & node)
+ * @fn void NodeVisitor::visit(NodeSwitch & node)
  *
  * @brief Visit a Switch node.
  *
@@ -401,7 +403,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeText & node)
+ * @fn void NodeVisitor::visit(NodeText & node)
  *
  * @brief Visit a Text node.
  *
@@ -409,7 +411,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeTextureCoordinate & node)
+ * @fn void NodeVisitor::visit(NodeTextureCoordinate & node)
  *
  * @brief Visit a TextureCoordinate node.
  *
@@ -417,7 +419,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeTextureTransform & node)
+ * @fn void NodeVisitor::visit(NodeTextureTransform & node)
  *
  * @brief Visit a TextureTransform node.
  *
@@ -425,7 +427,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeTimeSensor & node)
+ * @fn void NodeVisitor::visit(NodeTimeSensor & node)
  *
  * @brief Visit a TimeSensor node.
  *
@@ -433,7 +435,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeTouchSensor & node)
+ * @fn void NodeVisitor::visit(NodeTouchSensor & node)
  *
  * @brief Visit a TouchSensor node.
  *
@@ -441,7 +443,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeTransform & node)
+ * @fn void NodeVisitor::visit(NodeTransform & node)
  *
  * @brief Visit a Transform node.
  *
@@ -449,7 +451,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeViewpoint & node)
+ * @fn void NodeVisitor::visit(NodeViewpoint & node)
  *
  * @brief Visit a Viewpoint node.
  *
@@ -457,7 +459,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeVisibilitySensor & node)
+ * @fn void NodeVisitor::visit(NodeVisibilitySensor & node)
  *
  * @brief Visit a VisibilitySensor node.
  *
@@ -465,7 +467,7 @@ VrmlNodeVisitor::~VrmlNodeVisitor() {}
  */
 
 /**
- * @fn void VrmlNodeVisitor::visit(VrmlNodeWorldInfo & node)
+ * @fn void NodeVisitor::visit(NodeWorldInfo & node)
  *
  * @brief Visit a WorldInfo node.
  *

@@ -25,58 +25,61 @@
 #   include <assert.h>
 #   include "common.h"
 
-class NodeType;
+namespace OpenVRML {
 
-class OPENVRML_SCOPE NodeTypePtr {
-    NodeType * nodeType;
-    size_t * count;
+    class NodeType;
 
-public:
-    explicit NodeTypePtr(NodeType * nodeType = 0);
-    NodeTypePtr(const NodeTypePtr & nodeTypePtr);
-    ~NodeTypePtr();
-    
-    operator bool() const;
-    
-    NodeTypePtr & operator=(const NodeTypePtr & nodeTypePtr);
-    
-    bool operator==(const NodeTypePtr & nodeTypePtr) const;
-    
-    NodeType & operator*() const;
-    NodeType * operator->() const;
-    NodeType * get() const;
-    
-    void reset(NodeType * nodeType = 0);
+    class OPENVRML_SCOPE NodeTypePtr {
+        NodeType * nodeType;
+        size_t * count;
 
-private:
-    void dispose();
-};
+    public:
+        explicit NodeTypePtr(NodeType * nodeType = 0);
+        NodeTypePtr(const NodeTypePtr & nodeTypePtr);
+        ~NodeTypePtr();
 
-inline NodeTypePtr::~NodeTypePtr() {
-    this->dispose();
-}
+        operator bool() const;
 
-inline NodeTypePtr::operator bool() const {
-    return this->nodeType;
-}
+        NodeTypePtr & operator=(const NodeTypePtr & nodeTypePtr);
 
-inline bool NodeTypePtr::operator==(const NodeTypePtr & nodeTypePtr) const {
-    return (this->nodeType == nodeTypePtr.nodeType);
-}
+        bool operator==(const NodeTypePtr & nodeTypePtr) const;
 
-inline NodeType & NodeTypePtr::operator*() const {
-    assert(this->nodeType);
-    return *this->nodeType;
-}
+        NodeType & operator*() const;
+        NodeType * operator->() const;
+        NodeType * get() const;
 
-inline NodeType * NodeTypePtr::operator->() const {
-    assert(this->nodeType);
-    return this->nodeType;
-}
+        void reset(NodeType * nodeType = 0);
 
-inline NodeType * NodeTypePtr::get() const {
-    assert(this->nodeType);
-    return this->nodeType;
+    private:
+        void dispose();
+    };
+
+    inline NodeTypePtr::~NodeTypePtr() {
+        this->dispose();
+    }
+
+    inline NodeTypePtr::operator bool() const {
+        return this->nodeType;
+    }
+
+    inline bool NodeTypePtr::operator==(const NodeTypePtr & nodeTypePtr) const {
+        return (this->nodeType == nodeTypePtr.nodeType);
+    }
+
+    inline NodeType & NodeTypePtr::operator*() const {
+        assert(this->nodeType);
+        return *this->nodeType;
+    }
+
+    inline NodeType * NodeTypePtr::operator->() const {
+        assert(this->nodeType);
+        return this->nodeType;
+    }
+
+    inline NodeType * NodeTypePtr::get() const {
+        assert(this->nodeType);
+        return this->nodeType;
+    }
 }
 
 # endif

@@ -24,84 +24,89 @@
 #   include <assert.h>
 #   include "common.h"
 
-class VrmlNode;
+namespace OpenVRML {
+    class Node;
+}
 
 #   ifdef OPENVRML_HAVE_SGI_HASH_MAP
 #     include <hash_map>
 template <>
-    struct hash<VrmlNode *> {
-        size_t operator()(VrmlNode * ptr) const {
+    struct hash<OpenVRML::Node *> {
+        size_t operator()(OpenVRML::Node * ptr) const {
             return reinterpret_cast<size_t>(ptr);
         }
     };
 
-typedef hash_map<VrmlNode *, size_t> CountMap;
+typedef hash_map<OpenVRML::Node *, size_t> CountMap;
 #   else
 #     include <map>
-typedef std::map<VrmlNode *, size_t> CountMap;
+typedef std::map<OpenVRML::Node *, size_t> CountMap;
 #   endif
 
-class OPENVRML_SCOPE VrmlNodePtr {
+namespace OpenVRML {
 
-    friend class VrmlNodeScript;
+    class OPENVRML_SCOPE NodePtr {
 
-    CountMap::value_type * countPtr; // MSVC6 doesn't like std::map<>::pointer
+        friend class ScriptNode;
 
-public:
-    explicit VrmlNodePtr(VrmlNode * node = 0);
-    VrmlNodePtr(const VrmlNodePtr & nodePtr);
-    ~VrmlNodePtr();
+        CountMap::value_type * countPtr; // MSVC6 doesn't like std::map<>::pointer
 
-    operator bool() const;
+    public:
+        explicit NodePtr(Node * node = 0);
+        NodePtr(const NodePtr & nodePtr);
+        ~NodePtr();
 
-    VrmlNodePtr & operator=(const VrmlNodePtr & nodePtr);
+        operator bool() const;
 
-    bool operator==(const VrmlNodePtr & nodePtr) const;
+        NodePtr & operator=(const NodePtr & nodePtr);
 
-    VrmlNode & operator*() const;
-    VrmlNode * operator->() const;
-    VrmlNode * get() const;
+        bool operator==(const NodePtr & nodePtr) const;
 
-    void reset(VrmlNode * node = 0);
-    void swap(VrmlNodePtr & nodePtr) throw ();
+        Node & operator*() const;
+        Node * operator->() const;
+        Node * get() const;
 
-private:
-    void dispose() throw ();
-    void share(CountMap::value_type * countPtr) throw ();
-};
+        void reset(Node * node = 0);
+        void swap(NodePtr & nodePtr) throw ();
+
+    private:
+        void dispose() throw ();
+        void share(CountMap::value_type * countPtr) throw ();
+    };
 
 
-inline VrmlNodePtr::~VrmlNodePtr() { this->dispose(); }
+    inline NodePtr::~NodePtr() { this->dispose(); }
 
-inline VrmlNodePtr::operator bool() const { return this->countPtr; }
+    inline NodePtr::operator bool() const { return this->countPtr; }
 
-inline VrmlNodePtr & VrmlNodePtr::operator=(const VrmlNodePtr & nodePtr) {
-    this->share(nodePtr.countPtr);
-    return *this;
-}
+    inline NodePtr & NodePtr::operator=(const NodePtr & nodePtr) {
+        this->share(nodePtr.countPtr);
+        return *this;
+    }
 
-inline VrmlNode & VrmlNodePtr::operator*() const {
-    assert(this->countPtr);
-    assert(this->countPtr->first);
-    return *this->countPtr->first;
-}
+    inline Node & NodePtr::operator*() const {
+        assert(this->countPtr);
+        assert(this->countPtr->first);
+        return *this->countPtr->first;
+    }
 
-inline VrmlNode * VrmlNodePtr::operator->() const {
-    assert(this->countPtr);
-    assert(this->countPtr->first);
-    return this->countPtr->first;
-}
+    inline Node * NodePtr::operator->() const {
+        assert(this->countPtr);
+        assert(this->countPtr->first);
+        return this->countPtr->first;
+    }
 
-inline VrmlNode * VrmlNodePtr::get() const {
-    return this->countPtr ? this->countPtr->first : 0;
-}
+    inline Node * NodePtr::get() const {
+        return this->countPtr ? this->countPtr->first : 0;
+    }
 
-inline void VrmlNodePtr::swap(VrmlNodePtr & nodePtr) throw () {
-    std::swap(this->countPtr, nodePtr.countPtr);
-}
+    inline void NodePtr::swap(NodePtr & nodePtr) throw () {
+        std::swap(this->countPtr, nodePtr.countPtr);
+    }
 
-inline bool VrmlNodePtr::operator==(const VrmlNodePtr & nodePtr) const {
-    return (this->countPtr == nodePtr.countPtr);
+    inline bool NodePtr::operator==(const NodePtr & nodePtr) const {
+        return (this->countPtr == nodePtr.countPtr);
+    }
 }
 
 # endif

@@ -25,42 +25,43 @@
 #include "VrmlBVolume.h"
 #include "VrmlMatrix.h"
 
-class OPENVRML_SCOPE VrmlBSphere : public VrmlBVolume {
-    float c[3];
-    float r;
+namespace OpenVRML {
 
-public:
-    VrmlBSphere();
-    VrmlBSphere(const VrmlBSphere & rhs);
-    virtual ~VrmlBSphere();
+    class OPENVRML_SCOPE VrmlBSphere : public VrmlBVolume {
+        float c[3];
+        float r;
 
-    void reset();
+    public:
+        VrmlBSphere();
+        VrmlBSphere(const VrmlBSphere & rhs);
+        virtual ~VrmlBSphere();
 
-    virtual int isectFrustum(const VrmlFrustum & f) const;
+        void reset();
 
-    virtual void extend(const VrmlBVolume & b);
-    virtual void extend(const float p[3]) ;
-    virtual void extend(const VrmlAABox & b);
-    virtual void extend(const VrmlBSphere & b);
-    virtual void enclose(const float* p, int n);
+        virtual int isectFrustum(const VrmlFrustum & f) const;
 
-    virtual bool isMAX() const;
-    virtual void setMAX();
+        virtual void extend(const VrmlBVolume & b);
+        virtual void extend(const float p[3]) ;
+        virtual void extend(const VrmlAABox & b);
+        virtual void extend(const VrmlBSphere & b);
+        virtual void enclose(const float* p, int n);
 
-    virtual void orthoTransform(const VrmlMatrix & M);
-    virtual void transform(const VrmlMatrix & M);
+        virtual bool isMAX() const;
+        virtual void setMAX();
 
-    const float* getCenter() const;
-    void setCenter(const VrmlSFVec3f & c);
-    void setCenter(float x, float y, float z);
-    void setCenter(const float ac[3]);
+        virtual void orthoTransform(const VrmlMatrix & M);
+        virtual void transform(const VrmlMatrix & M);
 
-    float getRadius() const;
-    void setRadius(float r);
+        const float* getCenter() const;
+        void setCenter(const SFVec3f & c);
+        void setCenter(float x, float y, float z);
+        void setCenter(const float ac[3]);
 
-    virtual ostream & dump(ostream & ostr) const;
-};
+        float getRadius() const;
+        void setRadius(float r);
 
-
+        virtual ostream & dump(ostream & ostr) const;
+    };
+}
 
 #endif // VRMLBSPHERE_H

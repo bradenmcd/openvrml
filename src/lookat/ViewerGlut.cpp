@@ -31,6 +31,9 @@
 
 #include "ViewerGlut.h"
 
+using namespace OpenVRML;
+using namespace OpenVRML::GL;
+
 /**
  * @class ViewerGlut
  *

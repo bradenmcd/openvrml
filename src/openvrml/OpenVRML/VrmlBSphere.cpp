@@ -28,10 +28,11 @@
 #include "MathUtils.h"
 #include "field.h"
 
+using namespace OpenVRML;
 using namespace OpenVRML_;
 
 /**
- * @class VrmlBSphere
+ * @class OpenVRML::VrmlBSphere
  *
  * @brief A bounding sphere.
  *
@@ -410,8 +411,8 @@ VrmlBSphere::getCenter() const
   return c;
 }
 
-void
-VrmlBSphere::setCenter(const VrmlSFVec3f& center)
+void 
+VrmlBSphere::setCenter(const SFVec3f & center)
 {
   const float * const centerVec = center.get();
   std::copy(centerVec, centerVec + 3, this->c);

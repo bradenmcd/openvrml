@@ -28,8 +28,10 @@
 
 #include <stdio.h>
 
+using namespace OpenVRML;
+
 /**
- * @class NodeType
+ * @class OpenVRML::NodeType
  *
  * @brief The NodeType class is responsible for storing information
  *      about node or prototype types.
@@ -45,7 +47,7 @@
  * @param creator a factory function for creating nodes of this type.
  */
 NodeType::NodeType(const std::string & id,
-                   const VrmlNodePtr (*creator)(VrmlScene *const)):
+                   const NodePtr (*creator)(VrmlScene *const)):
         id(id), d_namespace(0), d_url(0), d_relative(0), d_creator(creator),
         d_fieldsInitialized(false) {}
 
@@ -91,18 +93,18 @@ NodeType::~NodeType()
  * @brief Create a new instance of a node of this type.
  *
  * Built in nodes have a creator function specified, while instances of
- * PROTOs are constructed by VrmlNodeProto.
+ * PROTOs are constructed by NodeProto.
  *
  * @param scene the VrmlScene to which this new node will belong
  *
- * @return a new VrmlNode
+ * @return a new Node
  */
-const VrmlNodePtr NodeType::newNode(VrmlScene * scene) const
+const NodePtr NodeType::newNode(VrmlScene * scene) const
 {
   if (d_creator)
     return (*d_creator)( scene );
 
-  return VrmlNodePtr(new VrmlNodeProto(*this, scene));
+  return NodePtr(new ProtoNode(*this, scene));
 }
 
 /**
@@ -154,7 +156,7 @@ namespace {
     // Helper method to add a field or event.
     //
     void add(NodeType::FieldList & recs, const std::string & id,
-             VrmlField::VrmlFieldType type) {
+             FieldValue::FieldType type) {
         NodeType::ProtoField * const protoField =
                 new NodeType::ProtoField;
         protoField->name = id;
@@ -171,7 +173,7 @@ namespace {
  * @param type
  */
 void NodeType::addEventIn(const std::string & id,
-                              VrmlField::VrmlFieldType type) {
+                          FieldValue::FieldType type) {
     add(d_eventIns, id, type);
 }
 
@@ -182,7 +184,7 @@ void NodeType::addEventIn(const std::string & id,
  * @param type
  */
 void NodeType::addEventOut(const std::string & id,
-                               VrmlField::VrmlFieldType type) {
+                           FieldValue::FieldType type) {
     add(d_eventOuts, id, type);
 }
 
@@ -194,8 +196,8 @@ void NodeType::addEventOut(const std::string & id,
  * @param defaultValue
  */
 void NodeType::addField(const std::string & id,
-                            const VrmlField::VrmlFieldType type,
-                            const VrmlField * defaultValue) {
+                        const FieldValue::FieldType type,
+                        const FieldValue * defaultValue) {
     add(d_fields, id, type);
     if (defaultValue) {
         this->setFieldDefault(id, defaultValue);
@@ -210,8 +212,8 @@ void NodeType::addField(const std::string & id,
  * @param defaultValue
  */
 void NodeType::addExposedField(const std::string & id,
-                                   const VrmlField::VrmlFieldType type,
-                                   const VrmlField * const defaultValue) {
+                               const FieldValue::FieldType type,
+                               const FieldValue * const defaultValue) {
     add(d_fields, id, type);
     if (defaultValue) {
         this->setFieldDefault(id, defaultValue);
@@ -228,7 +230,7 @@ void NodeType::addExposedField(const std::string & id,
  * @param defaultValue default value
  */
 void NodeType::setFieldDefault(const std::string & fname,
-                                   const VrmlField * defaultValue) {
+                               const FieldValue * defaultValue) {
     for (FieldList::const_iterator i(d_fields.begin()); i != d_fields.end();
             ++i) {
         if (fname == (*i)->name) {
@@ -291,7 +293,7 @@ void NodeType::fetchImplementation() const {
  *
  * @return the implementation nodes
  */
-const VrmlMFNode & NodeType::getImplementationNodes() const {
+const MFNode & NodeType::getImplementationNodes() const {
   if ((this->implNodes.getLength() == 0) && d_url)
     fetchImplementation();
 
@@ -313,7 +315,7 @@ const VrmlMFNode & NodeType::getImplementationNodes() const {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      const VrmlNodePtr & n = (*j)->node;
+	      const NodePtr & n = (*j)->node;
 	      if (n->getId().empty())
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
@@ -333,7 +335,7 @@ const VrmlMFNode & NodeType::getImplementationNodes() const {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      const VrmlNodePtr & n = (*j)->node;
+	      const NodePtr & n = (*j)->node;
 	      if (n->getId().empty())
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
@@ -347,7 +349,7 @@ const VrmlMFNode & NodeType::getImplementationNodes() const {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      const VrmlNodePtr & n = (*j)->node;
+	      const NodePtr & n = (*j)->node;
 	      if (n->getId().empty())
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
@@ -367,15 +369,15 @@ const VrmlMFNode & NodeType::getImplementationNodes() const {
  * @brief Get the first node in the implementation.
  *
  * This will NOT fetch the implementation of an EXTERNPROTO.
- * This method is used in VrmlNodeProto to check the type of
+ * This method is used in NodeProto to check the type of
  * SFNode fields in toXXX() node downcasts. Type checking
  * of EXTERNPROTOs is deferred until the implementation is
  * actually downloaded. (not actually done yet...)
  */
-const VrmlNodePtr NodeType::firstNode() const {
+const NodePtr NodeType::firstNode() const {
     return (this->implNodes.getLength() > 0)
             ? this->implNodes.getElement(0)
-            : VrmlNodePtr(0);
+            : NodePtr(0);
 }
 
 /**
@@ -383,10 +385,10 @@ const VrmlNodePtr NodeType::firstNode() const {
  *
  * @param id the name of an eventIn to check for
  *
- * @return the VrmlFieldType of the eventIn if it exists, or
- *      VrmlField::NO_FIELD otherwise.
+ * @return the FieldType of the eventIn if it exists, or
+ *      FieldValue::NO_FIELD otherwise.
  */
-VrmlField::VrmlFieldType NodeType::hasEventIn(const std::string & id)
+FieldValue::FieldType NodeType::hasEventIn(const std::string & id)
         const {
     return has(this->d_eventIns, id);
 }
@@ -396,10 +398,10 @@ VrmlField::VrmlFieldType NodeType::hasEventIn(const std::string & id)
  *
  * @param id the name of an eventOut to check for
  *
- * @return the VrmlFieldType of the eventOut if it exists, or
- *      VrmlField::NO_FIELD otherwise
+ * @return the FieldType of the eventOut if it exists, or
+ *      FieldValue::NO_FIELD otherwise
  */
-VrmlField::VrmlFieldType NodeType::hasEventOut(const std::string & id)
+FieldValue::FieldType NodeType::hasEventOut(const std::string & id)
         const {
     return has(this->d_eventOuts, id);
 }
@@ -409,10 +411,10 @@ VrmlField::VrmlFieldType NodeType::hasEventOut(const std::string & id)
  *
  * @param id the name of an field to check for
  *
- * @return the VrmlFieldType of the field if it exists, or
- *      VrmlField::NO_FIELD otherwise.
+ * @return the FieldType of the field if it exists, or
+ *      FieldValue::NO_FIELD otherwise.
  */
-VrmlField::VrmlFieldType NodeType::hasField(const std::string & id) const {
+FieldValue::FieldType NodeType::hasField(const std::string & id) const {
     return has(this->d_fields, id);
 }
 
@@ -421,25 +423,25 @@ VrmlField::VrmlFieldType NodeType::hasField(const std::string & id) const {
  *
  * @param id the name of an exposedField to check for
  *
- * @return the VrmlFieldType of the exposedField if it exists, or
- *      VrmlField::NO_FIELD otherwise.
+ * @return the FieldType of the exposedField if it exists, or
+ *      FieldValue::NO_FIELD otherwise.
  */
-VrmlField::VrmlFieldType NodeType::hasExposedField(const std::string & id)
+FieldValue::FieldType NodeType::hasExposedField(const std::string & id)
         const {
     // Must have field "name", eventIn "set_name", and eventOut
     // "name_changed", all with same type:
-    VrmlField::VrmlFieldType type;
+    FieldValue::FieldType type;
 
-    if ((type = this->has(this->d_fields, id)) == VrmlField::NO_FIELD) {
-        return VrmlField::NO_FIELD;
+    if ((type = this->has(this->d_fields, id)) == FieldValue::NO_FIELD) {
+        return FieldValue::NO_FIELD;
     }
 
     if (type != this->has(this->d_eventIns, "set_" + id)) {
-        return VrmlField::NO_FIELD;
+        return FieldValue::NO_FIELD;
     }
 
     if (type != this->has(this->d_eventOuts, id + "_changed")) {
-        return VrmlField::NO_FIELD;
+        return FieldValue::NO_FIELD;
     }
 
     return type;
@@ -453,39 +455,39 @@ VrmlField::VrmlFieldType NodeType::hasExposedField(const std::string & id)
  *
  * @param id the name of an interface to check for
  *
- * @return the VrmlFieldType of the interface if it exists, or
- *      VrmlField::NO_FIELD otherwise.
+ * @return the FieldType of the interface if it exists, or
+ *      FieldValue::NO_FIELD otherwise.
  */
-VrmlField::VrmlFieldType NodeType::hasInterface(const std::string & id)
+FieldValue::FieldType NodeType::hasInterface(const std::string & id)
         const {
-    VrmlField::VrmlFieldType fieldType = VrmlField::NO_FIELD;
+    FieldValue::FieldType fieldType = FieldValue::NO_FIELD;
     
-    if ((fieldType = this->hasField(id)) != VrmlField::NO_FIELD) {
+    if ((fieldType = this->hasField(id)) != FieldValue::NO_FIELD) {
         return fieldType;
     }
     
-    if ((fieldType = this->hasEventIn(id)) != VrmlField::NO_FIELD) {
+    if ((fieldType = this->hasEventIn(id)) != FieldValue::NO_FIELD) {
         return fieldType;
     }
     
-    if ((fieldType = this->hasEventOut(id)) != VrmlField::NO_FIELD) {
+    if ((fieldType = this->hasEventOut(id)) != FieldValue::NO_FIELD) {
         return fieldType;
     }
     
     return fieldType;
 }
 
-VrmlField::VrmlFieldType NodeType::has(const FieldList & recs,
+FieldValue::FieldType NodeType::has(const FieldList & recs,
                                            const std::string & id) const {
     for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
         if ((*i)->name == id) {
             return (*i)->type;
         }
     }
-    return VrmlField::NO_FIELD;
+    return FieldValue::NO_FIELD;
 }
 
-const VrmlField * NodeType::fieldDefault(const std::string & fname) const {
+const FieldValue * NodeType::fieldDefault(const std::string & fname) const {
     for (FieldList::const_iterator i(d_fields.begin()); i != d_fields.end();
             ++i) {
         if ((*i)->name == fname) {
@@ -503,25 +505,23 @@ const VrmlField * NodeType::fieldDefault(const std::string & fname) const {
  * @param relative the resource to which the URIs in the first parameter
  *      are relative.
  */
-void NodeType::setUrl(const VrmlMFString & url, const Doc2 * relative) {
+void NodeType::setUrl(const MFString & url, const Doc2 * relative) {
     assert(this->implNodes.getLength() == 0);
     
     delete this->d_url;
-    this->d_url = new VrmlMFString(url);
+    this->d_url = new MFString(url);
     
     delete this->d_relative;
     this->d_relative = relative ? new Doc2(relative) : 0;
 }
 
-void NodeType::addNode(VrmlNode & node) {
+void NodeType::addNode(Node & node) {
     // add node to list of implementation nodes
     this->implNodes.addNode(node);
 }
 
-void NodeType::addIS(const std::string & isFieldName,
-			 VrmlNode & implNode,
-			 const std::string & implFieldName)
-{
+void NodeType::addIS(const std::string & isFieldName, Node & implNode,
+                     const std::string & implFieldName) {
   FieldList::iterator i;
 
   // Fields
@@ -578,7 +578,7 @@ const NodeType::ISMap * NodeType::getFieldISMap(
 }
 
 /**
- * @struct NodeType::NodeFieldRec
+ * @struct OpenVRML::NodeType::NodeFieldRec
  *
  * @brief A pointer to a node and the name of an interface of that node.
  *
@@ -596,7 +596,7 @@ const NodeType::ISMap * NodeType::getFieldISMap(
  */
 
 /**
- * @struct NodeType::ProtoField
+ * @struct OpenVRML::NodeType::ProtoField
  *
  * @brief A field in a <code>PROTO</code>.
  */

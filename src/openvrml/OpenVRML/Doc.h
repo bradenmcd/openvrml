@@ -29,66 +29,62 @@
 #include <string>
 #include "common.h"
 
-class Doc2;
 typedef void * gzFile;
 
-class OPENVRML_SCOPE  Doc {
+namespace OpenVRML {
 
-public:
+    class Doc2;
 
-  explicit Doc(const std::string & url = std::string(),
-               const Doc * relative = 0);
-  Doc(const std::string & url, const Doc2 * relative);
-  Doc(Doc const *);
-  Doc(Doc2 const *);
-  ~Doc();
-
-  void seturl(char const * url, Doc const * relative = 0);
-  void seturl(char const * url, Doc2 const * relative = 0);
-
-  const char *url() const;          // "http://www.foo.com/dir/file.xyz#Viewpoint"
-  const char *urlBase() const;      // "file" or ""
-  const char *urlExt() const;       // "xyz" or ""
-  const char *urlPath() const;      // "http://www.foo.com/dir/" or ""
-  const char *urlProtocol() const;  // "http"
-  const char *urlModifier() const;  // "#Viewpoint" or ""
-
-  const char *localName();    // "/tmp/file.xyz" or NULL
-  const char *localPath();    // "/tmp/" or NULL
-
-
-  FILE *fopen(const char *mode);
-  void fclose();
-
-  // For (optionally) compressed files
-  gzFile gzopen(const char *mode);
-  void gzclose();
-
-  ostream &outputStream();
-
-protected:
-
-  static const char *stripProtocol(const char *url);
-  static bool isAbsolute(const char *url);
-  bool filename( char *fn, int nfn );
+    class OPENVRML_SCOPE  Doc {
+        static const char *stripProtocol(const char *url);
+        static bool isAbsolute(const char *url);
+        bool filename( char *fn, int nfn );
 #ifdef macintosh
-  char* convertCommonToMacPath( char *fn, int nfn );
+        char* convertCommonToMacPath( char *fn, int nfn );
 #endif
+        char *d_url;
+        ostream *d_ostream;
+        FILE *d_fp;
+        gzFile d_gz;
+        char *d_tmpfile; // Local copy of http: files
 
-  char *d_url;
-  ostream *d_ostream;
-  FILE *d_fp;
-  gzFile d_gz;
-  char *d_tmpfile;		// Local copy of http: files
-  
-private:
-    //
-    // Non-copyable; copy ctor and operator= are declared private and not
-    // defined.
-    //
-    Doc(Doc const &);
-    Doc & operator=(Doc const &);
+    public:
+        explicit Doc(const std::string & url = std::string(),
+                     const Doc * relative = 0);
+        Doc(const std::string & url, const Doc2 * relative);
+        Doc(Doc const *);
+        Doc(Doc2 const *);
+        ~Doc();
 
-};
+        void seturl(char const * url, Doc const * relative = 0);
+        void seturl(char const * url, Doc2 const * relative = 0);
+
+        const char *url() const;          // "http://www.foo.com/dir/file.xyz#Viewpoint"
+        const char *urlBase() const;      // "file" or ""
+        const char *urlExt() const;       // "xyz" or ""
+        const char *urlPath() const;      // "http://www.foo.com/dir/" or ""
+        const char *urlProtocol() const;  // "http"
+        const char *urlModifier() const;  // "#Viewpoint" or ""
+
+        const char *localName();    // "/tmp/file.xyz" or NULL
+        const char *localPath();    // "/tmp/" or NULL
+
+
+        FILE *fopen(const char *mode);
+        void fclose();
+
+        // For (optionally) compressed files
+        gzFile gzopen(const char *mode);
+        void gzclose();
+
+        ostream &outputStream();
+
+    private:
+        // Non-copyable.
+        Doc(Doc const &);
+        Doc & operator=(Doc const &);
+
+    };
+}
 
 #endif

@@ -33,223 +33,232 @@
 #include "System.h"		// error
 #include "VrmlRenderContext.h"
 
-class Route;
-class Viewer;
-class VrmlNamespace;
-class NodeType;
-class VrmlField;
-class VrmlScene;
-class VrmlNodeVisitor;
-class VrmlBVolume;
-class VrmlNodeAnchor;
-class VrmlNodeAppearance;
-class VrmlNodeAudioClip;
-class VrmlNodeBackground;
-class VrmlNodeBillboard;
-class VrmlNodeBox;
-class VrmlNodeChild;
-class VrmlNodeCollision;
-class VrmlNodeColor;
-class VrmlNodeCone;
-class VrmlNodeCoordinate;
-class VrmlNodeCylinder;
-class VrmlNodeDirLight;
-class VrmlNodeElevationGrid;
-class VrmlNodeExtrusion;
-class VrmlNodeFog;
-class VrmlNodeFontStyle;
-class VrmlNodeGeometry;
-class VrmlNodeGroup;
-class VrmlNodeIFaceSet;
-class VrmlNodeInline;
-class VrmlNodeLight;
-class VrmlNodeMaterial;
-class VrmlNodeMovieTexture;
-class VrmlNodeNavigationInfo;
-class VrmlNodeNormal;
-class VrmlNodePlaneSensor;
-class VrmlNodePointLight;
-class VrmlNodeScript;
-class VrmlNodeShape;
-class VrmlNodeSphere;
-class VrmlNodeSphereSensor;
-class VrmlNodeCylinderSensor;
-class VrmlNodeSound;
-class VrmlNodeSpotLight;
-class VrmlNodeSwitch;
-class VrmlNodeTexture;
-class VrmlNodeTextureCoordinate;
-class VrmlNodeTextureTransform;
-class VrmlNodeTimeSensor;
-class VrmlNodeTouchSensor;
-class VrmlNodeTransform;
-class VrmlNodeViewpoint;
-class VrmlNodeImageTexture;
-class VrmlNodePixelTexture;
-class VrmlNodeLOD;
-class VrmlNodeScalarInt;
-class VrmlNodeOrientationInt;
-class VrmlNodePositionInt;
-class VrmlNodeProto;
-class VrmlMatrix;
+namespace OpenVRML {
+    class Node;
+}
 
-class OPENVRML_SCOPE VrmlNode {
+ostream & operator<<(ostream & os, const OpenVRML::Node & f);
 
-    friend ostream & operator<<(ostream & os, const VrmlNode & f);
+namespace OpenVRML {
 
-    std::string id;
+    class Route;
+    class Viewer;
+    class VrmlNamespace;
+    class NodeType;
+    class FieldValue;
+    class VrmlScene;
+    class NodeVisitor;
+    class VrmlBVolume;
+    class ScriptNode;
+    class ProtoNode;
+    class NodeAnchor;
+    class NodeAppearance;
+    class NodeAudioClip;
+    class NodeBackground;
+    class NodeBillboard;
+    class NodeBox;
+    class NodeChild;
+    class NodeCollision;
+    class NodeColor;
+    class NodeCone;
+    class NodeCoordinate;
+    class NodeCylinder;
+    class NodeDirLight;
+    class NodeElevationGrid;
+    class NodeExtrusion;
+    class NodeFog;
+    class NodeFontStyle;
+    class NodeGeometry;
+    class NodeGroup;
+    class NodeIFaceSet;
+    class NodeInline;
+    class NodeLight;
+    class NodeMaterial;
+    class NodeMovieTexture;
+    class NodeNavigationInfo;
+    class NodeNormal;
+    class NodePlaneSensor;
+    class NodePointLight;
+    class NodePointSet;
+    class NodeShape;
+    class NodeSphere;
+    class NodeSphereSensor;
+    class NodeCylinderSensor;
+    class NodeSound;
+    class NodeSpotLight;
+    class NodeSwitch;
+    class NodeTexture;
+    class NodeTextureCoordinate;
+    class NodeTextureTransform;
+    class NodeTimeSensor;
+    class NodeTouchSensor;
+    class NodeTransform;
+    class NodeViewpoint;
+    class NodeImageTexture;
+    class NodePixelTexture;
+    class NodeLOD;
+    class NodeScalarInt;
+    class NodeOrientationInt;
+    class NodePositionInt;
+    class VrmlMatrix;
 
-public:
-    const NodeType & type;
-    typedef std::list<Route *> RouteList;
+    class OPENVRML_SCOPE Node {
+        friend ostream & ::operator<<(ostream & os, const Node & f);
 
-    virtual ~VrmlNode() = 0;
+        std::string id;
 
-    const std::string & getId() const;
-    void setId(const std::string & nodeId, VrmlNamespace * ns = 0);
+    public:
+        const NodeType & type;
+        typedef std::list<Route *> RouteList;
 
-    virtual bool accept(VrmlNodeVisitor & visitor) = 0;
-    virtual void resetVisitedFlag();
-    virtual const VrmlField * getField(const std::string & fieldId) const;
-    virtual void setField(const std::string & fieldId,
-                          const VrmlField & fieldValue);
-    virtual void eventIn(double timeStamp,
-		         const std::string & eventName,
-		         const VrmlField & fieldValue);
-    virtual const VrmlMFNode getChildren() const;
-    virtual void addToScene(VrmlScene *, const std::string & relativeUrl);
+        virtual ~Node() = 0;
 
-    virtual VrmlNodeAnchor * toAnchor() const;
-    virtual VrmlNodeAppearance * toAppearance() const;
-    virtual VrmlNodeAudioClip * toAudioClip() const;
-    virtual VrmlNodeBackground * toBackground() const;
-    virtual VrmlNodeBillboard * toBillboard() const;
-    virtual VrmlNodeBox * toBox() const;
-    virtual VrmlNodeChild * toChild() const;
-    virtual VrmlNodeCollision * toCollision() const;
-    virtual VrmlNodeColor * toColor() const;
-    virtual VrmlNodeCone * toCone() const;
-    virtual VrmlNodeCoordinate * toCoordinate() const;
-    virtual VrmlNodeCylinder * toCylinder() const;
-    virtual VrmlNodeDirLight * toDirLight() const;
-    virtual VrmlNodeElevationGrid * toElevationGrid() const;
-    virtual VrmlNodeExtrusion * toExtrusion() const;
-    virtual VrmlNodeFog * toFog() const;
-    virtual VrmlNodeFontStyle * toFontStyle() const;
-    virtual VrmlNodeGeometry * toGeometry() const;
-    virtual VrmlNodeGroup * toGroup() const;
-    virtual VrmlNodeIFaceSet * toIFaceSet() const;
-    virtual VrmlNodeImageTexture * toImageTexture() const;
-    virtual VrmlNodePixelTexture * toPixelTexture() const;
-    virtual VrmlNodeInline * toInline() const;
-    virtual VrmlNodeLOD * toLOD() const;
-    virtual VrmlNodeLight * toLight() const;
-    virtual VrmlNodeMaterial * toMaterial() const;
-    virtual VrmlNodeMovieTexture * toMovieTexture() const;
-    virtual VrmlNodeNavigationInfo * toNavigationInfo() const;
-    virtual VrmlNodeNormal * toNormal() const;
-    virtual VrmlNodeOrientationInt * toOrientationInt() const;
-    virtual VrmlNodePlaneSensor * toPlaneSensor() const;
-    virtual VrmlNodePositionInt * toPositionInt() const;
-    virtual VrmlNodeSphereSensor * toSphereSensor() const;
-    virtual VrmlNodeCylinderSensor * toCylinderSensor() const;
-    virtual VrmlNodePointLight * toPointLight() const;
-    virtual VrmlNodeScalarInt * toScalarInt() const;
-    virtual VrmlNodeScript * toScript() const;
-    virtual VrmlNodeShape * toShape() const;
-    virtual VrmlNodeSphere * toSphere() const;
-    virtual VrmlNodeSound * toSound() const;
-    virtual VrmlNodeSpotLight * toSpotLight() const;
-    virtual VrmlNodeSwitch * toSwitch() const;
-    virtual VrmlNodeTexture * toTexture() const;
-    virtual VrmlNodeTextureCoordinate * toTextureCoordinate() const;
-    virtual VrmlNodeTextureTransform * toTextureTransform() const;
-    virtual VrmlNodeTimeSensor * toTimeSensor() const;
-    virtual VrmlNodeTouchSensor * toTouchSensor() const;
-    virtual VrmlNodeTransform * toTransform() const;
-    virtual VrmlNodeViewpoint * toViewpoint() const;
+        const std::string & getId() const;
+        void setId(const std::string & nodeId, VrmlNamespace * ns = 0);
 
-    // Write self
-    ostream& print(ostream& os, int indent) const;
-    virtual ostream& printFields(ostream& os, int indent);
-    static ostream& printField(ostream&, int, const char*, const VrmlField&);
+        virtual bool accept(NodeVisitor & visitor) = 0;
+        virtual void resetVisitedFlag();
+        virtual const FieldValue * getField(const std::string & fieldId) const;
+        virtual void setField(const std::string & fieldId,
+                              const FieldValue & fieldValue);
+        virtual void eventIn(double timeStamp,
+		             const std::string & eventName,
+		             const FieldValue & fieldValue);
+        virtual const MFNode getChildren() const;
+        virtual void addToScene(VrmlScene *, const std::string & relativeUrl);
 
-    // Indicate that the node state has changed, need to re-render
-    void setModified();
-    void clearModified() { d_modified = false; }
-    virtual bool isModified() const;
-    typedef std::list< VrmlNode* > VrmlNodePath; // duplicate from VrmlScene. argh.
+        virtual ScriptNode * toScript() const;
+        virtual NodeAnchor * toAnchor() const;
+        virtual NodeAppearance * toAppearance() const;
+        virtual NodeAudioClip * toAudioClip() const;
+        virtual NodeBackground * toBackground() const;
+        virtual NodeBillboard * toBillboard() const;
+        virtual NodeBox * toBox() const;
+        virtual NodeChild * toChild() const;
+        virtual NodeCollision * toCollision() const;
+        virtual NodeColor * toColor() const;
+        virtual NodeCone * toCone() const;
+        virtual NodeCoordinate * toCoordinate() const;
+        virtual NodeCylinder * toCylinder() const;
+        virtual NodeCylinderSensor * toCylinderSensor() const;
+        virtual NodeDirLight * toDirLight() const;
+        virtual NodeElevationGrid * toElevationGrid() const;
+        virtual NodeExtrusion * toExtrusion() const;
+        virtual NodeFog * toFog() const;
+        virtual NodeFontStyle * toFontStyle() const;
+        virtual NodeGeometry * toGeometry() const;
+        virtual NodeGroup * toGroup() const;
+        virtual NodeIFaceSet * toIFaceSet() const;
+        virtual NodeImageTexture * toImageTexture() const;
+        virtual NodeInline * toInline() const;
+        virtual NodeLOD * toLOD() const;
+        virtual NodeLight * toLight() const;
+        virtual NodeMaterial * toMaterial() const;
+        virtual NodeMovieTexture * toMovieTexture() const;
+        virtual NodeNavigationInfo * toNavigationInfo() const;
+        virtual NodeNormal * toNormal() const;
+        virtual NodeOrientationInt * toOrientationInt() const;
+        virtual NodePixelTexture * toPixelTexture() const;
+        virtual NodePlaneSensor * toPlaneSensor() const;
+        virtual NodePointLight * toPointLight() const;
+        virtual NodePointSet * toPointSet() const;
+        virtual NodePositionInt * toPositionInt() const;
+        virtual NodeScalarInt * toScalarInt() const;
+        virtual NodeShape * toShape() const;
+        virtual NodeSound * toSound() const;
+        virtual NodeSphere * toSphere() const;
+        virtual NodeSphereSensor * toSphereSensor() const;
+        virtual NodeSpotLight * toSpotLight() const;
+        virtual NodeSwitch * toSwitch() const;
+        virtual NodeTexture * toTexture() const;
+        virtual NodeTextureCoordinate * toTextureCoordinate() const;
+        virtual NodeTextureTransform * toTextureTransform() const;
+        virtual NodeTimeSensor * toTimeSensor() const;
+        virtual NodeTouchSensor * toTouchSensor() const;
+        virtual NodeTransform * toTransform() const;
+        virtual NodeViewpoint * toViewpoint() const;
 
+        // Write self
+        ostream& print(ostream& os, int indent) const;
+        virtual ostream& printFields(ostream& os, int indent);
+        static ostream& printField(ostream&, int, const char*, const FieldValue &);
 
-    static void markPathModified(VrmlNodePath& path, bool mod, int flags = 0x003);
-
-    // do the work of updatemodified. move this to be protected
-    //
-    virtual void updateModified(VrmlNodePath& path, int flags = 0x003);
-
-    void updateModified(int flags = 0x003);
-
-    virtual const VrmlBVolume* getBVolume() const;
-
-    virtual void setBVolume(const VrmlBVolume& v);
-
-    virtual void setBVolumeDirty(bool f);
-
-    virtual bool isBVolumeDirty() const;
+        // Indicate that the node state has changed, need to re-render
+        void setModified();
+        void clearModified() { d_modified = false; }
+        virtual bool isModified() const;
+        typedef std::list< Node* > NodePath; // duplicate from VrmlScene. argh.
 
 
-    // A generic flag (typically used to find USEd nodes).
-    void setFlag() { d_flag = true; }
-    virtual void clearFlags();	// Clear childrens flags too.
-    bool isFlagSet() { return d_flag; }
+        static void markPathModified(NodePath& path, bool mod, int flags = 0x003);
 
-    // Add a ROUTE from a field in this node
-    void addRoute(const std::string & fromEventOut, const VrmlNodePtr & toNode, const std::string & toEventIn);
+        // do the work of updatemodified. move this to be protected
+        //
+        virtual void updateModified(NodePath& path, int flags = 0x003);
 
-    // Delete a ROUTE from a field in this node
-    void deleteRoute(const std::string & fromEventOut, const VrmlNodePtr & toNode, const std::string & toEventIn);
+        void updateModified(int flags = 0x003);
 
-    RouteList getRoutes();
+        virtual const VrmlBVolume* getBVolume() const;
 
-    const VrmlField * getEventOut(const std::string & fieldName) const;
+        virtual void setBVolume(const VrmlBVolume& v);
 
+        virtual void setBVolumeDirty(bool f);
 
-    virtual void render(Viewer *, VrmlRenderContext rc);
+        virtual bool isBVolumeDirty() const;
 
 
-    virtual void accumulateTransform(VrmlNode*);
+        // A generic flag (typically used to find USEd nodes).
+        void setFlag() { d_flag = true; }
+        virtual void clearFlags();	// Clear childrens flags too.
+        bool isFlagSet() { return d_flag; }
 
-    virtual VrmlNode* getParentTransform();
+        // Add a ROUTE from a field in this node
+        void addRoute(const std::string & fromEventOut, const NodePtr & toNode, const std::string & toEventIn);
 
-    virtual void inverseTransform(Viewer *);
+        // Delete a ROUTE from a field in this node
+        void deleteRoute(const std::string & fromEventOut, const NodePtr & toNode, const std::string & toEventIn);
 
-    virtual void inverseTransform(VrmlMatrix &);
+        RouteList getRoutes();
 
-    VrmlScene *scene() { return d_scene; }
+        const FieldValue * getEventOut(const std::string & fieldName) const;
 
-protected:
-    VrmlNode(const NodeType & nodeType, VrmlScene * scene);
-    VrmlNode(const VrmlNode &);
 
-    enum { INDENT_INCREMENT = 4 };
+        virtual void render(Viewer *, VrmlRenderContext rc);
 
-    // Send a named event from this node.
-    void eventOut(double timeStamp, const std::string & eventName,
-		  const VrmlField & fieldValue);
 
-    // Scene this node belongs to
-    VrmlScene *d_scene;
+        virtual void accumulateTransform(Node*);
 
-    // True if a field changed since last render
-    bool d_modified;
-    bool d_flag;
-    bool d_bvol_dirty;
-    bool visited;
+        virtual Node* getParentTransform();
 
-    // Routes from this node (clean this up, add RouteList ...)
-    RouteList d_routes;
-};
+        virtual void inverseTransform(Viewer *);
 
+        virtual void inverseTransform(VrmlMatrix &);
+
+        VrmlScene *scene() { return d_scene; }
+
+    protected:
+        Node(const NodeType & nodeType, VrmlScene * scene);
+        Node(const Node &);
+
+        enum { INDENT_INCREMENT = 4 };
+
+        // Send a named event from this node.
+        void eventOut(double timeStamp, const std::string & eventName,
+		      const FieldValue & fieldValue);
+
+        // Scene this node belongs to
+        VrmlScene *d_scene;
+
+        // True if a field changed since last render
+        bool d_modified;
+        bool d_flag;
+        bool d_bvol_dirty;
+        bool visited;
+
+        // Routes from this node (clean this up, add RouteList ...)
+        RouteList d_routes;
+    };
+}
 
 // Ugly macro used in printFields
 #define PRINT_FIELD(_f) printField(os,indent+INDENT_INCREMENT,#_f,d_##_f)
@@ -259,7 +268,7 @@ protected:
 #define TRY_FIELD(_f,_t) \
 (fieldId == #_f) {\
     if ( fieldValue.to##_t() )\
-      d_##_f = (Vrml##_t &)fieldValue;\
+      d_##_f = (_t &)fieldValue;\
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s).\n",\
 	    fieldValue.fieldTypeName(), #_f, this->type.getId().c_str(), #_t);\
@@ -268,11 +277,11 @@ protected:
 // For SFNode fields. Allow un-fetched EXTERNPROTOs to succeed...
 #define TRY_SFNODE_FIELD(_f,_n) \
 (fieldId == #_f) { \
-    VrmlSFNode *x=(VrmlSFNode*)&fieldValue; \
+    SFNode *x=(SFNode*)&fieldValue; \
     if (fieldValue.toSFNode() \
             && (!x->get() || x->get()->to##_n() \
-                || dynamic_cast<VrmlNodeProto *>(x->get().get()))) \
-        d_##_f = (VrmlSFNode &)fieldValue; \
+                || dynamic_cast<ProtoNode *>(x->get().get()))) \
+        d_##_f = (SFNode &)fieldValue; \
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s).\n",\
 	    fieldValue.fieldTypeName(), #_f, this->type.getId().c_str(), #_n);\
@@ -280,11 +289,11 @@ protected:
 
 #define TRY_SFNODE_FIELD2(_f,_n1,_n2) \
 (fieldId == #_f) { \
-    VrmlSFNode *x=(VrmlSFNode*)&fieldValue; \
+    SFNode *x=(SFNode*)&fieldValue; \
     if (fieldValue.toSFNode() && \
 	((!x->get()) || x->get()->to##_n1() || x->get()->to##_n2() || \
-	 dynamic_cast<VrmlNodeProto *>(x->get().get()))) \
-      d_##_f = (VrmlSFNode &)fieldValue; \
+	 dynamic_cast<ProtoNode *>(x->get().get()))) \
+      d_##_f = (SFNode &)fieldValue; \
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s or %s).\n",\
 	    fieldValue.fieldTypeName(), #_f, this->type.getId().c_str(), #_n1, #_n2);\

@@ -24,10 +24,13 @@ header "post_include_hpp" {
 # include "VrmlNodePtr.h"
 # define ANTLR_LBRACE {
 # define ANTLR_RBRACE }
-class VrmlNamespace;
-class VrmlNodeScript;
-class NodeType;
-class Doc2;
+
+namespace OpenVRML {
+    class VrmlNamespace;
+    class ScriptNode;
+    class NodeType;
+    class Doc2;
+}
 
 namespace ANTLR_LBRACE
     class Vrml97Scanner : public antlr::TokenStream {
@@ -120,6 +123,7 @@ header "post_include_cpp" {
 # include "VrmlNodeScript.h"
 # include "private.h"
 
+using namespace OpenVRML;
 using namespace OpenVRML_;
 
 namespace {
@@ -587,13 +591,15 @@ options {
         };
 }
 
-vrmlScene[VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc]
+vrmlScene[OpenVRML::MFNode & mfNode, OpenVRML::VrmlNamespace & vrmlNamespace,
+          const OpenVRML::Doc2 * doc]
     :   (statement[mfNode, vrmlNamespace, doc])*
     ;
 
-statement[VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc]
+statement[OpenVRML::MFNode & mfNode, OpenVRML::VrmlNamespace & vrmlNamespace,
+          const OpenVRML::Doc2 * doc]
         {
-            VrmlNodePtr node;
+            OpenVRML::NodePtr node;
         }
     :   node=nodeStatement[vrmlNamespace, doc]
         {
@@ -604,8 +610,9 @@ statement[VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc]
     |   routeStatement[vrmlNamespace]
     ;
 
-nodeStatement[VrmlNamespace & vrmlNamespace, Doc2 const * doc] 
-returns [VrmlNodePtr n]
+nodeStatement[OpenVRML::VrmlNamespace & vrmlNamespace,
+              const OpenVRML::Doc2 * doc] 
+returns [OpenVRML::NodePtr n]
 options {
     defaultErrorHandler=false;
 }
@@ -620,14 +627,17 @@ options {
     |   n=node[vrmlNamespace, doc, std::string()]
     ;
 
-protoStatement[VrmlNamespace & vrmlNamespace, Doc2 const * doc]
+protoStatement[OpenVRML::VrmlNamespace & vrmlNamespace,
+               const OpenVRML::Doc2 * doc]
     :   externproto[vrmlNamespace, doc]
     |   proto[vrmlNamespace, doc]
     ;
 
-proto[VrmlNamespace & vrmlNamespace, Doc2 const * doc]
+proto[OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc]
     :   KEYWORD_PROTO id:ID
         {
+            using OpenVRML::NodeTypePtr;
+            
             NodeTypePtr nodeType(new NodeType(id->getText()));
             nodeType->setScope(vrmlNamespace);
         }
@@ -639,15 +649,17 @@ proto[VrmlNamespace & vrmlNamespace, Doc2 const * doc]
         }
     ;
 
-protoInterfaceDeclaration[VrmlNamespace & vrmlNamespace, Doc2 const * doc,
-                          NodeType & nodeType]
+protoInterfaceDeclaration[OpenVRML::VrmlNamespace & vrmlNamespace,
+                          const OpenVRML::Doc2 * doc,
+                          OpenVRML::NodeType & nodeType]
         {
+            using OpenVRML::FieldValue;
             NodeInterfaceType it = INVALID_NODE_INTERFACE_TYPE;
-            VrmlField::VrmlFieldType ft = VrmlField::NO_FIELD;
+            FieldValue::FieldType ft = FieldValue::NO_FIELD;
         }
     :   it=eventInterfaceType ft=fieldType id0:ID
         {
-            if (nodeType.hasInterface(id0->getText()) != VrmlField::NO_FIELD) {
+            if (nodeType.hasInterface(id0->getText()) != FieldValue::NO_FIELD) {
                 throw antlr::SemanticException("Interface \"" + id0->getText()
                         + "\" already declared for " + nodeType.getId()
                         + " node type.");
@@ -668,13 +680,13 @@ protoInterfaceDeclaration[VrmlNamespace & vrmlNamespace, Doc2 const * doc,
         }
     |   it=fieldInterfaceType ft=fieldType id1:ID
         {
-            VrmlField * fv = 0;
+            FieldValue * fv = 0;
         }
         fv=fieldValue[vrmlNamespace, doc, ft]
         {
-            const std::auto_ptr<VrmlField> autofv(fv);
+            const std::auto_ptr<FieldValue> autofv(fv);
             
-            if (nodeType.hasInterface(id1->getText()) != VrmlField::NO_FIELD) {
+            if (nodeType.hasInterface(id1->getText()) != FieldValue::NO_FIELD) {
                 throw antlr::SemanticException("Interface \"" + id1->getText()
                         + "\" already declared for " + nodeType.getId()
                         + " node type.");
@@ -705,9 +717,9 @@ fieldInterfaceType returns [Vrml97Parser::NodeInterfaceType it = INVALID_NODE_IN
     |   KEYWORD_EXPOSEDFIELD { it = EXPOSEDFIELD; }
     ;
 
-protoBody[Doc2 const * doc, NodeType & nodeType]
+protoBody[const OpenVRML::Doc2 * doc, OpenVRML::NodeType & nodeType]
         {
-            VrmlNodePtr n;
+            OpenVRML::NodePtr n;
         }
     :   (protoStatement[*nodeType.getScope(), doc])* n=protoNodeStatement[doc, nodeType]
         {
@@ -717,9 +729,9 @@ protoBody[Doc2 const * doc, NodeType & nodeType]
         (protoBodyStatement[doc, nodeType])*
     ;
 
-protoBodyStatement[Doc2 const * doc, NodeType & nodeType]
+protoBodyStatement[const OpenVRML::Doc2 * doc, OpenVRML::NodeType & nodeType]
         {
-            VrmlNodePtr n;
+            OpenVRML::NodePtr n;
         }
     :   n=protoNodeStatement[doc, nodeType]
         {
@@ -730,8 +742,9 @@ protoBodyStatement[Doc2 const * doc, NodeType & nodeType]
     |   routeStatement[*nodeType.getScope()]
     ;
 
-protoNodeStatement[Doc2 const * doc, NodeType & protoNodeType]
-returns [VrmlNodePtr n]
+protoNodeStatement[const OpenVRML::Doc2 * doc,
+                   OpenVRML::NodeType & protoNodeType]
+returns [OpenVRML::NodePtr n]
 options {
     defaultErrorHandler=false;
 }
@@ -746,14 +759,16 @@ options {
     |   n=protoNode[doc, protoNodeType, std::string()]
     ;
 
-externproto[VrmlNamespace & vrmlNamespace, Doc2 const * doc]
+externproto[OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc]
     :   KEYWORD_EXTERNPROTO id:ID
         {
+            using OpenVRML::NodeTypePtr;
+            
             NodeTypePtr nodeType(new NodeType(id->getText()));
         }
         LBRACKET (externInterfaceDeclaration[*nodeType])* RBRACKET
         {
-            VrmlMFString * urlList = 0;
+            OpenVRML::MFString * urlList = 0;
         }
         urlList=externprotoUrlList
         {
@@ -763,10 +778,10 @@ externproto[VrmlNamespace & vrmlNamespace, Doc2 const * doc]
         }
     ;
 
-externInterfaceDeclaration[NodeType & nodeType]
+externInterfaceDeclaration[OpenVRML::NodeType & nodeType]
         {
             NodeInterfaceType it(INVALID_NODE_INTERFACE_TYPE);
-            VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
+            OpenVRML::FieldValue::FieldType ft = OpenVRML::FieldValue::NO_FIELD;
         }
     :   it=interfaceType ft=fieldType id:ID
         {
@@ -793,18 +808,19 @@ externInterfaceDeclaration[NodeType & nodeType]
         }
     ;
 
-interfaceType returns [Vrml97Parser::NodeInterfaceType it = INVALID_NODE_INTERFACE_TYPE]
+interfaceType
+returns [Vrml97Parser::NodeInterfaceType it = INVALID_NODE_INTERFACE_TYPE]
     : it=eventInterfaceType
     | it=fieldInterfaceType
     ;
 
-externprotoUrlList returns [VrmlMFString * msv = 0]
+externprotoUrlList returns [OpenVRML::MFString * msv = 0]
         {
             std::string s;
         }
     :   s=stringValue
         {
-            msv = new VrmlMFString(1, &s);
+            msv = new OpenVRML::MFString(1, &s);
         }
     |   LBRACKET
         {
@@ -817,7 +833,7 @@ externprotoUrlList returns [VrmlMFString * msv = 0]
             }
         )* RBRACKET
         {
-            msv = new VrmlMFString(stringVector.size(), &stringVector[0]);
+            msv = new OpenVRML::MFString(stringVector.size(), &stringVector[0]);
         }
     ;
 
@@ -832,69 +848,82 @@ externprotoUrlList returns [VrmlMFString * msv = 0]
 // when the time comes.
 // -- Braden McDaniel <braden@endoframe.com>, 6 Apr, 2000
 //
-routeStatement[VrmlNamespace const & vrmlNamespace]
+routeStatement[const OpenVRML::VrmlNamespace & vrmlNamespace]
     :   KEYWORD_ROUTE fromNodeId:ID PERIOD fromInterfaceId:ID
         KEYWORD_TO toNodeId:ID PERIOD toInterfaceId:ID
         {
-            VrmlNode * const fromNode =
+            using OpenVRML::FieldValue;
+            using OpenVRML::Node;
+            using OpenVRML::NodePtr;
+            using OpenVRML::ScriptNode;
+            
+            Node * const fromNode =
                     vrmlNamespace.findNode(fromNodeId->getText());
             if (!fromNode) {
                 throw antlr::SemanticException("Node \"" + fromNodeId->getText()
                         + "\" has not been defined in this scope.");
             }
             
-            VrmlField::VrmlFieldType fromInterfaceType = VrmlField::NO_FIELD;
+            FieldValue::FieldType fromInterfaceType = FieldValue::NO_FIELD;
             
-            if (((fromInterfaceType = fromNode->type.hasEventOut(fromInterfaceId->getText())) == VrmlField::NO_FIELD)
-                && ((fromInterfaceType = fromNode->type.hasExposedField(fromInterfaceId->getText())) == VrmlField::NO_FIELD)) {
+            if (((fromInterfaceType = fromNode->type.hasEventOut(fromInterfaceId->getText())) == FieldValue::NO_FIELD)
+                && ((fromInterfaceType = fromNode->type.hasExposedField(fromInterfaceId->getText())) == FieldValue::NO_FIELD)) {
                 
-                VrmlNodeScript * fromScriptNode = 0;
+                ScriptNode * fromScriptNode = 0;
                 if ((fromScriptNode = fromNode->toScript())) {
                     fromInterfaceType = fromScriptNode->hasEventOut(fromInterfaceId->getText());
                 }
                 
-                if (fromInterfaceType == VrmlField::NO_FIELD) {
+                if (fromInterfaceType == FieldValue::NO_FIELD) {
                     throw antlr::SemanticException(fromNode->type.getId() + " has no eventOut or exposedField \"" + fromInterfaceId->getText() + "\".");
                 }
             }
             
-            VrmlNode * const toNode =
+            Node * const toNode =
                     vrmlNamespace.findNode(toNodeId->getText());
             if (!toNode) {
                 throw antlr::SemanticException("Node \"" + toNodeId->getText()
                         + "\" has not been defined in this scope.");
             }
             
-            VrmlField::VrmlFieldType toInterfaceType = VrmlField::NO_FIELD;
+            FieldValue::FieldType toInterfaceType = FieldValue::NO_FIELD;
             
-            if (   ((toInterfaceType = toNode->type.hasEventIn(toInterfaceId->getText())) == VrmlField::NO_FIELD)
-                && ((toInterfaceType = toNode->type.hasExposedField(toInterfaceId->getText())) == VrmlField::NO_FIELD)) {
+            if (((toInterfaceType = toNode->type.hasEventIn(toInterfaceId->getText())) == FieldValue::NO_FIELD)
+                && ((toInterfaceType = toNode->type.hasExposedField(toInterfaceId->getText())) == FieldValue::NO_FIELD)) {
                 
-                VrmlNodeScript * toScriptNode = 0;
+                ScriptNode * toScriptNode = 0;
                 if ((toScriptNode = toNode->toScript())) {
                     toInterfaceType = toScriptNode->hasEventIn(toInterfaceId->getText());
                 }
                 
-                if (toInterfaceType == VrmlField::NO_FIELD) {
-                    throw antlr::SemanticException(toNode->type.getId() + " has no eventIn or exposedField \"" + toInterfaceId->getText() + "\".");
+                if (toInterfaceType == FieldValue::NO_FIELD) {
+                    throw antlr::SemanticException(toNode->type.getId()
+                                        + " has no eventIn or exposedField \""
+                                        + toInterfaceId->getText() + "\".");
                 }
             }
             
             if (fromInterfaceType != toInterfaceType) {
-                throw antlr::SemanticException("Routed interface types must match.");
+                throw antlr::SemanticException("Routed interface types must "
+                                                "match.");
             }
             
-            fromNode->addRoute(fromInterfaceId->getText(), VrmlNodePtr(toNode), toInterfaceId->getText());
+            fromNode->addRoute(fromInterfaceId->getText(),
+                               NodePtr(toNode), toInterfaceId->getText());
         }
     ;
 
-node[VrmlNamespace & vrmlNamespace, const Doc2 * doc,
+node[OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc,
      const std::string & nodeId]
-returns [VrmlNodePtr n]
+returns [OpenVRML::NodePtr n]
 options {
     defaultErrorHandler = false;
 }
         {
+            using OpenVRML::NodeTypePtr;
+            using OpenVRML::NodePtr;
+            using OpenVRML::ScriptNode;
+            
             NodeTypePtr nodeType(0);
         }
     :
@@ -904,13 +933,13 @@ options {
             nodeType = vrmlNamespace.findType("Script");
             assert(nodeType);
             
-            n = VrmlNodePtr(nodeType->newNode());
+            n = NodePtr(nodeType->newNode());
             
             if (nodeId.length() > 0) {
                 n->setId(nodeId, &vrmlNamespace);
             }
             
-            VrmlNodeScript * const scriptNode = n->toScript();
+            ScriptNode * const scriptNode = n->toScript();
             assert(scriptNode);
         }
         LBRACE (
@@ -926,7 +955,7 @@ options {
                         + nodeTypeId->getText() + "\".");
             }
             
-            n = VrmlNodePtr(nodeType->newNode());
+            n = NodePtr(nodeType->newNode());
             
             if (nodeId.length() > 0) {
                 n->setId(nodeId, &vrmlNamespace);
@@ -935,22 +964,24 @@ options {
         LBRACE (nodeBodyElement[vrmlNamespace, doc, *n])* RBRACE
     ;
 
-nodeBodyElement[VrmlNamespace & vrmlNamespace, Doc2 const * doc,
-                VrmlNode & node]
+nodeBodyElement[OpenVRML::VrmlNamespace & vrmlNamespace,
+                const OpenVRML::Doc2 * doc, OpenVRML::Node & node]
         {
-            VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
+            using OpenVRML::FieldValue;
+            
+            FieldValue::FieldType ft(FieldValue::NO_FIELD);
         }
     :   id:ID
         {
-            if (   ((ft = node.type.hasField(id->getText())) == VrmlField::NO_FIELD)
-                && ((ft = node.type.hasExposedField(id->getText())) == VrmlField::NO_FIELD)) {
+            if (   ((ft = node.type.hasField(id->getText())) == FieldValue::NO_FIELD)
+                && ((ft = node.type.hasExposedField(id->getText())) == FieldValue::NO_FIELD)) {
                 
                 throw antlr::SemanticException(node.type.getId()
                         + " node has no field or exposedField \""
                         + id->getText() + "\"");
             }
             
-            VrmlField * fv = 0;
+            FieldValue * fv = 0;
         }
         fv=fieldValue[vrmlNamespace, doc, ft]
         {
@@ -962,17 +993,19 @@ nodeBodyElement[VrmlNamespace & vrmlNamespace, Doc2 const * doc,
     |   protoStatement[vrmlNamespace, doc]
     ;
 
-scriptInterfaceDeclaration[VrmlNamespace & vrmlNamespace,
-                           const Doc2 * doc,
-                           VrmlNodeScript & node]
+scriptInterfaceDeclaration[OpenVRML::VrmlNamespace & vrmlNamespace,
+                           const OpenVRML::Doc2 * doc,
+                           OpenVRML::ScriptNode & node]
         {
+            using OpenVRML::FieldValue;
+            
             NodeInterfaceType it(INVALID_NODE_INTERFACE_TYPE);
-            VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
+            FieldValue::FieldType ft(FieldValue::NO_FIELD);
         }
     :   it=eventInterfaceType ft=fieldType id:ID
         {
-            if (   (node.hasInterface(id->getText()) != VrmlField::NO_FIELD)
-                || (node.type.hasInterface(id->getText()) != VrmlField::NO_FIELD)) {
+            if (   (node.hasInterface(id->getText()) != FieldValue::NO_FIELD)
+                || (node.type.hasInterface(id->getText()) != FieldValue::NO_FIELD)) {
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
@@ -991,21 +1024,23 @@ scriptInterfaceDeclaration[VrmlNamespace & vrmlNamespace,
     |   scriptFieldInterfaceDeclaration[vrmlNamespace, doc, node]
     ;
 
-scriptFieldInterfaceDeclaration[VrmlNamespace & vrmlNamespace,
-                                const Doc2 * doc,
-                                VrmlNodeScript & node]
+scriptFieldInterfaceDeclaration[OpenVRML::VrmlNamespace & vrmlNamespace,
+                                const OpenVRML::Doc2 * doc,
+                                OpenVRML::ScriptNode & node]
         {
-            VrmlField::VrmlFieldType ft = VrmlField::NO_FIELD;
-            VrmlField * fv = 0;
+            using OpenVRML::FieldValue;
+            
+            FieldValue::FieldType ft = FieldValue::NO_FIELD;
+            FieldValue * fv = 0;
         }
     :   KEYWORD_FIELD ft=fieldType id:ID fv=fieldValue[vrmlNamespace, doc, ft]
         {
             assert(fv);
             
-            const std::auto_ptr<VrmlField> autofv(fv);
+            const std::auto_ptr<FieldValue> autofv(fv);
             
-            if (   (node.hasInterface(id->getText()) != VrmlField::NO_FIELD)
-                || (node.type.hasInterface(id->getText()) != VrmlField::NO_FIELD)) {
+            if (   (node.hasInterface(id->getText()) != FieldValue::NO_FIELD)
+                || (node.type.hasInterface(id->getText()) != FieldValue::NO_FIELD)) {
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
@@ -1014,13 +1049,17 @@ scriptFieldInterfaceDeclaration[VrmlNamespace & vrmlNamespace,
         }
     ;
 
-protoNode[const Doc2 * doc, NodeType & protoNodeType,
+protoNode[const OpenVRML::Doc2 * doc, OpenVRML::NodeType & protoNodeType,
           const std::string & nodeId]
-returns [VrmlNodePtr n]
+returns [OpenVRML::NodePtr n]
 options {
     defaultErrorHandler=false;
 }
         {
+            using OpenVRML::NodeTypePtr;
+            using OpenVRML::NodePtr;
+            using OpenVRML::ScriptNode;
+            
             NodeTypePtr nodeType(0);
         }
     : 
@@ -1037,7 +1076,7 @@ options {
                 n->setId(nodeId, protoNodeType.getScope());
             }
             
-            VrmlNodeScript * const scriptNode = n->toScript();
+            ScriptNode * const scriptNode = n->toScript();
             assert(scriptNode);
         }
         LBRACE (
@@ -1047,12 +1086,14 @@ options {
 
     | 	  nodeTypeId:ID
         {
-            nodeType = protoNodeType.getScope()->findType(nodeTypeId->getText());
+            nodeType = protoNodeType.getScope()
+                        ->findType(nodeTypeId->getText());
             if (!nodeType) {
-                throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
+                throw antlr::SemanticException("Unknown node type \""
+                                            + nodeTypeId->getText() + "\".");
             }
             
-            n = VrmlNodePtr(nodeType->newNode());
+            n = NodePtr(nodeType->newNode());
             
             if (!nodeId.empty()) {
                 assert(protoNodeType.getScope());
@@ -1062,27 +1103,29 @@ options {
         LBRACE (protoNodeBodyElement[doc, protoNodeType, *n])* RBRACE
     ;
 
-protoNodeBodyElement[Doc2 const * doc,
-                     NodeType & protoNodeType,
-                     VrmlNode & node]
+protoNodeBodyElement[const OpenVRML::Doc2 * doc,
+                     OpenVRML::NodeType & protoNodeType,
+                     OpenVRML::Node & node]
         {
-            VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
+            using OpenVRML::FieldValue;
+            
+            FieldValue::FieldType ft(FieldValue::NO_FIELD);
         }
-    :   { node.type.hasEventIn(LT(1)->getText()) != VrmlField::NO_FIELD ||
-	  node.type.hasEventOut(LT(1)->getText()) != VrmlField::NO_FIELD }?
+    :   { node.type.hasEventIn(LT(1)->getText()) != FieldValue::NO_FIELD ||
+	  node.type.hasEventOut(LT(1)->getText()) != FieldValue::NO_FIELD }?
       eventId:ID isStatement[protoNodeType, node, eventId->getText()]
 
     | id:ID 
         {
-            if (   ((ft = node.type.hasField(id->getText())) == VrmlField::NO_FIELD)
-                && ((ft = node.type.hasExposedField(id->getText())) == VrmlField::NO_FIELD)) {
+            if (   ((ft = node.type.hasField(id->getText())) == FieldValue::NO_FIELD)
+                && ((ft = node.type.hasExposedField(id->getText())) == FieldValue::NO_FIELD)) {
                 
                 throw antlr::SemanticException(node.type.getId()
                         + " node has no field or exposedField \""
                         + id->getText() + "\".");
             }
             
-            VrmlField * fv = 0;
+            FieldValue * fv = 0;
         }
         (
             (
@@ -1105,8 +1148,7 @@ protoNodeBodyElement[Doc2 const * doc,
 // implementation of NodeType.
 // -- Braden McDaniel <braden@endoframe.com>, 8 Apr, 2000
 //
-isStatement[NodeType & protoNodeType,
-            VrmlNode & node,
+isStatement[OpenVRML::NodeType & protoNodeType, OpenVRML::Node & node,
             std::string const & nodeInterfaceId]
     :   KEYWORD_IS id:ID
         {
@@ -1126,15 +1168,19 @@ isStatement[NodeType & protoNodeType,
         }
     ;
 
-protoScriptInterfaceDeclaration[Doc2 const * doc, NodeType & protoNodeType, VrmlNodeScript & node]
+protoScriptInterfaceDeclaration[const OpenVRML::Doc2 * doc,
+                                OpenVRML::NodeType & protoNodeType,
+                                OpenVRML::ScriptNode & node]
         {
+            using OpenVRML::FieldValue;
+            
             NodeInterfaceType it(INVALID_NODE_INTERFACE_TYPE);
-            VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
+            FieldValue::FieldType ft(FieldValue::NO_FIELD);
         }
     :   it=eventInterfaceType ft=fieldType id:ID
         {
-            if (   (node.hasInterface(id->getText()) != VrmlField::NO_FIELD)
-                || (node.type.hasInterface(id->getText()) != VrmlField::NO_FIELD)) {
+            if ((node.hasInterface(id->getText()) != FieldValue::NO_FIELD)
+                || (node.type.hasInterface(id->getText()) != FieldValue::NO_FIELD)) {
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
@@ -1154,15 +1200,19 @@ protoScriptInterfaceDeclaration[Doc2 const * doc, NodeType & protoNodeType, Vrml
     |   protoScriptFieldInterfaceDeclaration[doc, protoNodeType, node]
     ;
 
-protoScriptFieldInterfaceDeclaration[Doc2 const * doc, NodeType & protoNodeType, VrmlNodeScript & node]
+protoScriptFieldInterfaceDeclaration[const OpenVRML::Doc2 * doc,
+                                     OpenVRML::NodeType & protoNodeType,
+                                     OpenVRML::ScriptNode & node]
         {
-            VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
-            VrmlField * fv = 0;
+            using OpenVRML::FieldValue;
+            
+            FieldValue::FieldType ft(FieldValue::NO_FIELD);
+            FieldValue * fv = 0;
         }
     :   KEYWORD_FIELD ft=fieldType id:ID
         {
-            if (   (node.hasInterface(id->getText()) != VrmlField::NO_FIELD)
-                || (node.type.hasInterface(id->getText()) != VrmlField::NO_FIELD)) {
+            if ((node.hasInterface(id->getText()) != FieldValue::NO_FIELD)
+                || (node.type.hasInterface(id->getText()) != FieldValue::NO_FIELD)) {
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
@@ -1185,38 +1235,52 @@ protoScriptFieldInterfaceDeclaration[Doc2 const * doc, NodeType & protoNodeType,
         )
     ;
 
-fieldType returns [VrmlField::VrmlFieldType ft = VrmlField::NO_FIELD]
-    :   FIELDTYPE_MFCOLOR { ft = VrmlField::MFCOLOR; }
-    |   FIELDTYPE_MFFLOAT { ft = VrmlField::MFFLOAT; }
-    |   FIELDTYPE_MFINT32 { ft = VrmlField::MFINT32; }
-    |   FIELDTYPE_MFNODE { ft = VrmlField::MFNODE; }
-    |   FIELDTYPE_MFROTATION { ft = VrmlField::MFROTATION; }
-    |   FIELDTYPE_MFSTRING { ft = VrmlField::MFSTRING; }
-    |   FIELDTYPE_MFTIME { ft = VrmlField::MFTIME; }
-    |   FIELDTYPE_MFVEC2F { ft = VrmlField::MFVEC2F; }
-    |   FIELDTYPE_MFVEC3F { ft = VrmlField::MFVEC3F; }
-    |   FIELDTYPE_SFBOOL { ft = VrmlField::SFBOOL; }
-    |   FIELDTYPE_SFCOLOR { ft = VrmlField::SFCOLOR; }
-    |   FIELDTYPE_SFFLOAT { ft = VrmlField::SFFLOAT; }
-    |   FIELDTYPE_SFIMAGE { ft = VrmlField::SFIMAGE; }
-    |   FIELDTYPE_SFINT32 { ft = VrmlField::SFINT32; }
-    |   FIELDTYPE_SFNODE { ft = VrmlField::SFNODE; }
-    |   FIELDTYPE_SFROTATION { ft = VrmlField::SFROTATION; }
-    |   FIELDTYPE_SFSTRING { ft = VrmlField::SFSTRING; }
-    |   FIELDTYPE_SFTIME { ft = VrmlField::SFTIME; }
-    |   FIELDTYPE_SFVEC2F { ft = VrmlField::SFVEC2F; }
-    |   FIELDTYPE_SFVEC3F { ft = VrmlField::SFVEC3F; }
+fieldType
+returns [OpenVRML::FieldValue::FieldType ft = OpenVRML::FieldValue::NO_FIELD]
+        {
+            using OpenVRML::FieldValue;
+        }
+    :   FIELDTYPE_MFCOLOR { ft = FieldValue::MFCOLOR; }
+    |   FIELDTYPE_MFFLOAT { ft = FieldValue::MFFLOAT; }
+    |   FIELDTYPE_MFINT32 { ft = FieldValue::MFINT32; }
+    |   FIELDTYPE_MFNODE { ft = FieldValue::MFNODE; }
+    |   FIELDTYPE_MFROTATION { ft = FieldValue::MFROTATION; }
+    |   FIELDTYPE_MFSTRING { ft = FieldValue::MFSTRING; }
+    |   FIELDTYPE_MFTIME { ft = FieldValue::MFTIME; }
+    |   FIELDTYPE_MFVEC2F { ft = FieldValue::MFVEC2F; }
+    |   FIELDTYPE_MFVEC3F { ft = FieldValue::MFVEC3F; }
+    |   FIELDTYPE_SFBOOL { ft = FieldValue::SFBOOL; }
+    |   FIELDTYPE_SFCOLOR { ft = FieldValue::SFCOLOR; }
+    |   FIELDTYPE_SFFLOAT { ft = FieldValue::SFFLOAT; }
+    |   FIELDTYPE_SFIMAGE { ft = FieldValue::SFIMAGE; }
+    |   FIELDTYPE_SFINT32 { ft = FieldValue::SFINT32; }
+    |   FIELDTYPE_SFNODE { ft = FieldValue::SFNODE; }
+    |   FIELDTYPE_SFROTATION { ft = FieldValue::SFROTATION; }
+    |   FIELDTYPE_SFSTRING { ft = FieldValue::SFSTRING; }
+    |   FIELDTYPE_SFTIME { ft = FieldValue::SFTIME; }
+    |   FIELDTYPE_SFVEC2F { ft = FieldValue::SFVEC2F; }
+    |   FIELDTYPE_SFVEC3F { ft = FieldValue::SFVEC3F; }
     ;
 
-fieldValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlField::VrmlFieldType ft] returns [VrmlField * fv = 0]
-    :   {    (ft == VrmlField::SFNODE)
-          || (ft == VrmlField::MFNODE) }? fv=nodeFieldValue[vrmlNamespace, doc, ft]
+fieldValue[OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc,
+           OpenVRML::FieldValue::FieldType ft]
+returns [OpenVRML::FieldValue * fv = 0]
+        {
+            using OpenVRML::FieldValue;
+        }
+    :   {    (ft == FieldValue::SFNODE)
+          || (ft == FieldValue::MFNODE) }? fv=nodeFieldValue[vrmlNamespace, doc, ft]
     |   fv=nonNodeFieldValue[ft]
     ;
 
-protoFieldValue[Doc2 const * doc, NodeType & protoNodeType, VrmlField::VrmlFieldType ft] returns [VrmlField * fv = 0]
-    :   {    (ft == VrmlField::SFNODE)
-          || (ft == VrmlField::MFNODE) }? fv=protoNodeFieldValue[doc, protoNodeType, ft]
+protoFieldValue[const OpenVRML::Doc2 * doc, OpenVRML::NodeType & protoNodeType,
+                OpenVRML::FieldValue::FieldType ft]
+returns [OpenVRML::FieldValue * fv = 0]
+        {
+            using OpenVRML::FieldValue;
+        }
+    :   {    (ft == FieldValue::SFNODE)
+          || (ft == FieldValue::MFNODE) }? fv=protoNodeFieldValue[doc, protoNodeType, ft]
         {
             assert(fv);
         }
@@ -1226,40 +1290,53 @@ protoFieldValue[Doc2 const * doc, NodeType & protoNodeType, VrmlField::VrmlField
         }
     ;
 
-nonNodeFieldValue[VrmlField::VrmlFieldType ft] returns [VrmlField * fv = 0]
-    :   { ft == VrmlField::SFBOOL }? fv=sfBoolValue
-    |   { ft == VrmlField::SFCOLOR }? fv=sfColorValue
-    |   { ft == VrmlField::SFFLOAT }? fv=sfFloatValue
-    |   { ft == VrmlField::SFIMAGE }? fv=sfImageValue
-    |   { ft == VrmlField::SFINT32 }? fv=sfInt32Value
-    |   { ft == VrmlField::SFROTATION }? fv=sfRotationValue
-    |   { ft == VrmlField::SFSTRING }? fv=sfStringValue
-    |   { ft == VrmlField::SFTIME }? fv=sfTimeValue
-    |   { ft == VrmlField::SFVEC2F }? fv=sfVec2fValue
-    |   { ft == VrmlField::SFVEC3F }? fv=sfVec3fValue
-    |   { ft == VrmlField::MFCOLOR }? fv=mfColorValue
-    |   { ft == VrmlField::MFFLOAT }? fv=mfFloatValue
-    |   { ft == VrmlField::MFINT32 }? fv=mfInt32Value
-    |   { ft == VrmlField::MFROTATION }? fv=mfRotationValue
-    |   { ft == VrmlField::MFSTRING }? fv=mfStringValue
-    |   { ft == VrmlField::MFTIME }? fv=mfTimeValue
-    |   { ft == VrmlField::MFVEC2F }? fv=mfVec2fValue
+nonNodeFieldValue[OpenVRML::FieldValue::FieldType ft]
+returns [OpenVRML::FieldValue * fv = 0]
+        {
+            using OpenVRML::FieldValue;
+        }
+    :   { ft == FieldValue::SFBOOL }? fv=sfBoolValue
+    |   { ft == FieldValue::SFCOLOR }? fv=sfColorValue
+    |   { ft == FieldValue::SFFLOAT }? fv=sfFloatValue
+    |   { ft == FieldValue::SFIMAGE }? fv=sfImageValue
+    |   { ft == FieldValue::SFINT32 }? fv=sfInt32Value
+    |   { ft == FieldValue::SFROTATION }? fv=sfRotationValue
+    |   { ft == FieldValue::SFSTRING }? fv=sfStringValue
+    |   { ft == FieldValue::SFTIME }? fv=sfTimeValue
+    |   { ft == FieldValue::SFVEC2F }? fv=sfVec2fValue
+    |   { ft == FieldValue::SFVEC3F }? fv=sfVec3fValue
+    |   { ft == FieldValue::MFCOLOR }? fv=mfColorValue
+    |   { ft == FieldValue::MFFLOAT }? fv=mfFloatValue
+    |   { ft == FieldValue::MFINT32 }? fv=mfInt32Value
+    |   { ft == FieldValue::MFROTATION }? fv=mfRotationValue
+    |   { ft == FieldValue::MFSTRING }? fv=mfStringValue
+    |   { ft == FieldValue::MFTIME }? fv=mfTimeValue
+    |   { ft == FieldValue::MFVEC2F }? fv=mfVec2fValue
     |   fv=mfVec3fValue
     ;
 
-nodeFieldValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlField::VrmlFieldType ft] returns [VrmlField * fv = 0]
+nodeFieldValue[OpenVRML::VrmlNamespace & vrmlNamespace,
+               const OpenVRML::Doc2 * doc, OpenVRML::FieldValue::FieldType ft]
+returns [OpenVRML::FieldValue * fv = 0]
 options {
     defaultErrorHandler=false;
 }
-    :   { ft == VrmlField::SFNODE }? fv=sfNodeValue[vrmlNamespace, doc]
+        {
+            using OpenVRML::FieldValue;
+        }
+    :   { ft == FieldValue::SFNODE }? fv=sfNodeValue[vrmlNamespace, doc]
     |   fv=mfNodeValue[vrmlNamespace, doc]
     ;
 
-protoNodeFieldValue[Doc2 const * doc, NodeType & protoNodeType, VrmlField::VrmlFieldType ft] returns [VrmlField * fv = 0]
+protoNodeFieldValue[const OpenVRML::Doc2 * doc,
+                    OpenVRML::NodeType & protoNodeType,
+                    OpenVRML::FieldValue::FieldType ft]
+returns [OpenVRML::FieldValue * fv = 0]
 options {
     defaultErrorHandler=false;
 }
-    :   { ft == VrmlField::SFNODE }? fv=protoSfNodeValue[doc, protoNodeType]
+    :   { ft == OpenVRML::FieldValue::SFNODE }?
+            fv=protoSfNodeValue[doc, protoNodeType]
         {
             assert(fv);
         }
@@ -1269,11 +1346,11 @@ options {
         }
     ;
 
-sfBoolValue returns [VrmlSFBool * sbv = new VrmlSFBool()]
+sfBoolValue returns [OpenVRML::SFBool * sbv = new OpenVRML::SFBool()]
         {
             bool val(false);
         }
-    :   val=boolValue { *sbv = VrmlSFBool(val); }
+    :   val=boolValue { *sbv = OpenVRML::SFBool(val); }
     ;
 
 boolValue returns [bool val]
@@ -1284,23 +1361,23 @@ boolValue returns [bool val]
     |   KEYWORD_FALSE { val = false; }
     ;
 
-sfColorValue returns [VrmlSFColor * scv = new VrmlSFColor()]
+sfColorValue returns [OpenVRML::SFColor * scv = new OpenVRML::SFColor()]
         {
             float c[3];
         }
     :   colorValue[c]
         {
-            *scv = VrmlSFColor(c[0], c[1], c[2]);
+            *scv = OpenVRML::SFColor(c[0], c[1], c[2]);
         }
     ;
 
-mfColorValue returns [VrmlMFColor * mcv = new VrmlMFColor()]
+mfColorValue returns [OpenVRML::MFColor * mcv = new OpenVRML::MFColor()]
         {
             float c[3];
         }
     :   colorValue[c]
         {
-            *mcv = VrmlMFColor(1, c);
+            *mcv = OpenVRML::MFColor(1, c);
         }
     |   LBRACKET
         {
@@ -1315,7 +1392,7 @@ mfColorValue returns [VrmlMFColor * mcv = new VrmlMFColor()]
             }
         )* RBRACKET
         {
-            *mcv = VrmlMFColor(colorVector.size() / 3L, &colorVector[0]);
+            *mcv = OpenVRML::MFColor(colorVector.size() / 3L, &colorVector[0]);
         }
     ;
 
@@ -1339,23 +1416,23 @@ colorComponent returns [float val = 0.0f]
     :   val=floatValue
     ;
 
-sfFloatValue returns [VrmlSFFloat * sfv = new VrmlSFFloat(0.0f)]
+sfFloatValue returns [OpenVRML::SFFloat * sfv = new OpenVRML::SFFloat(0.0f)]
         {
             float f(0.0f);
         }
     :   f=floatValue
         {
-            *sfv = VrmlSFFloat(f);
+            *sfv = OpenVRML::SFFloat(f);
         }
     ;
 
-mfFloatValue returns [VrmlMFFloat * mfv = new VrmlMFFloat()]
+mfFloatValue returns [OpenVRML::MFFloat * mfv = new OpenVRML::MFFloat()]
         {
             float f(0.0f);
         }
     :   f=floatValue
         {
-            *mfv = VrmlMFFloat(1, &f);
+            *mfv = OpenVRML::MFFloat(1, &f);
         }
     |   LBRACKET
         {
@@ -1368,7 +1445,7 @@ mfFloatValue returns [VrmlMFFloat * mfv = new VrmlMFFloat()]
             }
         )* RBRACKET
         {
-            *mfv = VrmlMFFloat(floatVector.size(), &floatVector[0]);
+            *mfv = OpenVRML::MFFloat(floatVector.size(), &floatVector[0]);
         }
     ;
 
@@ -1377,7 +1454,7 @@ floatValue returns [float val = 0.0f]
     |   f1:INTEGER  { val = atof(f1->getText().c_str()); }
     ;
 
-sfImageValue returns [VrmlSFImage * siv = new VrmlSFImage()]
+sfImageValue returns [OpenVRML::SFImage * siv = new OpenVRML::SFImage()]
         {
             unsigned long w(0L), h(0L), com(0L), pixel(0L);
         }
@@ -1409,27 +1486,27 @@ sfImageValue returns [VrmlSFImage * siv = new VrmlSFImage()]
             if (pixelVector.size() != (w * h * com)) {
                 throw antlr::SemanticException("Wrong number of pixel values for SFImage.");
             }
-            *siv = VrmlSFImage(w, h, com, &pixelVector[0]); // hmmmm...
+            *siv = OpenVRML::SFImage(w, h, com, &pixelVector[0]); // hmmmm...
         }
     ;
 
-sfInt32Value returns [VrmlSFInt32 * siv = new VrmlSFInt32(0L)]
+sfInt32Value returns [OpenVRML::SFInt32 * siv = new OpenVRML::SFInt32(0L)]
         {
             long i(0L);
         }
     :   i=intValue
         {
-            *siv = VrmlSFInt32(i);
+            *siv = SFInt32(i);
         }
     ;
 
-mfInt32Value returns [VrmlMFInt32 * miv = new VrmlMFInt32()]
+mfInt32Value returns [OpenVRML::MFInt32 * miv = new OpenVRML::MFInt32()]
         {
             long i(0L);
         }
     :   i=intValue
         {
-            *miv = VrmlMFInt32(1, &i);
+            *miv = OpenVRML::MFInt32(1, &i);
         }
     |   LBRACKET
         {
@@ -1442,7 +1519,7 @@ mfInt32Value returns [VrmlMFInt32 * miv = new VrmlMFInt32()]
             }
         )* RBRACKET
         {
-            *miv = VrmlMFInt32(longVector.size(), &longVector[0]);
+            *miv = OpenVRML::MFInt32(longVector.size(), &longVector[0]);
         }
     ;
 
@@ -1451,90 +1528,65 @@ intValue returns [long val = 0]
     |  	i1:HEX_INTEGER { val = strtol(i1->getText().c_str(), 0, 16); }
     ;
 
-sfNodeValue[VrmlNamespace & vrmlNamespace,
-            Doc2 const * doc]
-returns [VrmlSFNode * snv = new VrmlSFNode()]
+sfNodeValue[OpenVRML::VrmlNamespace & vrmlNamespace,
+            const OpenVRML::Doc2 * doc]
+returns [OpenVRML::SFNode * snv = new OpenVRML::SFNode()]
         {
-            VrmlNodePtr n;
+            OpenVRML::NodePtr n;
         }
     :   n=nodeStatement[vrmlNamespace, doc]
         {
-            *snv = VrmlSFNode(n);
+            *snv = OpenVRML::SFNode(n);
         }
     |   KEYWORD_NULL
     ;
 
-protoSfNodeValue[Doc2 const * doc,
-                 NodeType & protoNodeType]
-returns [VrmlSFNode * snv = new VrmlSFNode()]
+protoSfNodeValue[const OpenVRML::Doc2 * doc,
+                 OpenVRML::NodeType & protoNodeType]
+returns [OpenVRML::SFNode * snv = new OpenVRML::SFNode()]
         {
-            VrmlNodePtr n;
+            OpenVRML::NodePtr n;
         }
     :   n=protoNodeStatement[doc, protoNodeType]
         {
-            *snv = VrmlSFNode(n);
+            *snv = OpenVRML::SFNode(n);
         }
     |   KEYWORD_NULL
     ;
 
-mfNodeValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc] returns [VrmlMFNode * mnv = new VrmlMFNode()]
+mfNodeValue[OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc]
+returns [OpenVRML::MFNode * mnv = new OpenVRML::MFNode()]
         {
-            VrmlNodePtr n;
+            OpenVRML::NodePtr n;
         }
-    :   n=nodeStatement[vrmlNamespace, doc]
-        {
-            *mnv = VrmlMFNode(1, &n);
-        }
-        
-    |   LBRACKET
-        (
-            n=nodeStatement[vrmlNamespace, doc]
-            {
-                mnv->addNode(*n);
-            }
-        )* RBRACKET
+    : n=nodeStatement[vrmlNamespace, doc] { *mnv = OpenVRML::MFNode(1, &n); }
+    | LBRACKET (n=nodeStatement[vrmlNamespace, doc] { mnv->addNode(*n); })*
+        RBRACKET
     ;
 
-protoMfNodeValue[Doc2 const * doc, NodeType & protoNodeType] returns [VrmlMFNode * mnv = new VrmlMFNode()]
+protoMfNodeValue[const OpenVRML::Doc2 * doc, OpenVRML::NodeType & protoNodeType]
+returns [OpenVRML::MFNode * mnv = new OpenVRML::MFNode()]
         {
-            VrmlNodePtr n;
+            OpenVRML::NodePtr n;
         }
-    :   n=protoNodeStatement[doc, protoNodeType]
-        {
-            *mnv = VrmlMFNode(1, &n);
-        }
-        
-    |   LBRACKET
-        (
-            n=protoNodeStatement[doc, protoNodeType]
-            {
-                mnv->addNode(*n);
-            }
-        )* RBRACKET
+    : n=protoNodeStatement[doc, protoNodeType]
+        { *mnv = OpenVRML::MFNode(1, &n); }
+    | LBRACKET
+        (n=protoNodeStatement[doc, protoNodeType] { mnv->addNode(*n); })*
+        RBRACKET
     ;
 
-sfRotationValue returns [VrmlSFRotation * srv = new VrmlSFRotation()]
-        {
-            float r[4];
-        }
-    :   rotationValue[r]
-        {
-            *srv = VrmlSFRotation(r);
-        }
+sfRotationValue
+returns [OpenVRML::SFRotation * srv = new OpenVRML::SFRotation()]
+    { float r[4]; }
+    : rotationValue[r] { *srv = OpenVRML::SFRotation(r); }
     ;
 
-mfRotationValue returns [VrmlMFRotation * mrv = new VrmlMFRotation()]
-        {
-            float r[4];
-        }
-    :   rotationValue[r]
-        {
-            *mrv = VrmlMFRotation(1, r);
-        }
-    |   LBRACKET
-        {
-            std::vector<float> floatVector;
-        }
+mfRotationValue
+returns [OpenVRML::MFRotation * mrv = new OpenVRML::MFRotation()]
+    { float r[4]; }
+    : rotationValue[r] { *mrv = OpenVRML::MFRotation(1, r); }
+    | LBRACKET { std::vector<float> floatVector; }
         (
             rotationValue[r]
             {
@@ -1544,19 +1596,15 @@ mfRotationValue returns [VrmlMFRotation * mrv = new VrmlMFRotation()]
                 floatVector.push_back(r[3]);
             }
         )* RBRACKET
-        {
-            *mrv = VrmlMFRotation(floatVector.size() / 4L, &floatVector[0]);
-        }
+        { *mrv = OpenVRML::MFRotation(floatVector.size() / 4L, &floatVector[0]); }
     ;
 
 //
 // Issue a warning here if the vector isn't normalized.
 //
 rotationValue[float r[4]]
-        {
-            float x(0.0f), y(0.0f), z(0.0f), rot(0.0f);
-        }
-    :   x=floatValue y=floatValue z=floatValue rot=floatValue
+    { float x(0.0f), y(0.0f), z(0.0f), rot(0.0f); }
+    : x=floatValue y=floatValue z=floatValue rot=floatValue
         {
             r[0] = x;
             r[1] = y;
@@ -1575,37 +1623,17 @@ rotationValue[float r[4]]
         }
     ;
 
-sfStringValue returns [VrmlSFString * ssv = new VrmlSFString()]
-        {
-            std::string s;
-        }
-    :   s=stringValue
-        {
-            *ssv = VrmlSFString(s);
-        }
+sfStringValue returns [OpenVRML::SFString * ssv = new OpenVRML::SFString()]
+    { std::string s; }
+    : s=stringValue { *ssv = OpenVRML::SFString(s); }
     ;
 
-mfStringValue returns [VrmlMFString * msv = new VrmlMFString()]
-        {
-            std::string s;
-        }
-    :   s=stringValue
-        {
-            *msv = VrmlMFString(1, &s);
-        }
-    |   LBRACKET
-        {
-            std::vector<std::string> stringVector;
-        }
-        (
-            s=stringValue
-            {
-                stringVector.push_back(s);
-            }
-        )* RBRACKET
-        {
-            *msv = VrmlMFString(stringVector.size(), &stringVector[0]);
-        }
+mfStringValue returns [OpenVRML::MFString * msv = new OpenVRML::MFString()]
+    { std::string s; }
+    : s=stringValue { *msv = OpenVRML::MFString(1, &s); }
+    | LBRACKET { std::vector<std::string> stringVector; }
+        (s=stringValue { stringVector.push_back(s); })* RBRACKET
+        { *msv = OpenVRML::MFString(stringVector.size(), &stringVector[0]); }
     ;
 
 stringValue returns [std::string str]
@@ -1621,37 +1649,17 @@ stringValue returns [std::string str]
         }
     ;
 
-sfTimeValue returns [VrmlSFTime * stv = new VrmlSFTime(0.0)]
-        {
-            double t(0.0);
-        }
-    :   t=doubleValue
-        {
-            *stv = VrmlSFTime(t);
-        }
+sfTimeValue returns [OpenVRML::SFTime * stv = new OpenVRML::SFTime(0.0)]
+    { double t(0.0); }
+    : t=doubleValue { *stv = OpenVRML::SFTime(t); }
     ;
 
-mfTimeValue returns [VrmlMFTime * mtv = new VrmlMFTime()]
-        {
-            double t(0.0);
-        }
-    :   t=doubleValue
-        {
-            *mtv = VrmlMFTime(1, &t);
-        }
-    |   LBRACKET
-        {
-            std::vector<double> doubleVector;
-        }
-        (
-            t=doubleValue
-            {
-                doubleVector.push_back(t);
-            }
-        )* RBRACKET
-        {
-            *mtv = VrmlMFTime(doubleVector.size(), &doubleVector[0]);
-        }
+mfTimeValue returns [OpenVRML::MFTime * mtv = new OpenVRML::MFTime()]
+    { double t(0.0); }
+    : t=doubleValue { *mtv = MFTime(1, &t); }
+    | LBRACKET { std::vector<double> doubleVector; }
+        (t=doubleValue { doubleVector.push_back(t); })* RBRACKET
+        { *mtv = OpenVRML::MFTime(doubleVector.size(), &doubleVector[0]); }
     ;
 
 doubleValue returns [double val = 0.0]
@@ -1659,28 +1667,15 @@ doubleValue returns [double val = 0.0]
     |   d1:INTEGER  { val = atof(d1->getText().c_str()); }
     ;
 
-sfVec2fValue returns [VrmlSFVec2f * svv = new VrmlSFVec2f()]
-        {
-            float v[2];
-        }
-    :   vec2fValue[v]
-        {
-            *svv = VrmlSFVec2f(v[0], v[1]);
-        }
+sfVec2fValue returns [OpenVRML::SFVec2f * svv = new OpenVRML::SFVec2f()]
+    { float v[2]; }
+    : vec2fValue[v] { *svv = OpenVRML::SFVec2f(v[0], v[1]); }
     ;
 
-mfVec2fValue returns [VrmlMFVec2f * mvv = new VrmlMFVec2f()]
-        {
-            float v[2];
-        }
-    :   vec2fValue[v]
-        {
-            *mvv = VrmlMFVec2f(1, v);
-        }
-    |   LBRACKET
-        {
-            std::vector<float> floatVector;
-        }
+mfVec2fValue returns [OpenVRML::MFVec2f * mvv = new OpenVRML::MFVec2f()]
+    { float v[2]; }
+    : vec2fValue[v] { *mvv = OpenVRML::MFVec2f(1, v); }
+    | LBRACKET { std::vector<float> floatVector; }
         (
             vec2fValue[v]
             {
@@ -1689,7 +1684,7 @@ mfVec2fValue returns [VrmlMFVec2f * mvv = new VrmlMFVec2f()]
             }
         )* RBRACKET
         {
-            *mvv = VrmlMFVec2f(floatVector.size() / 2L, &floatVector[0]);
+            *mvv = OpenVRML::MFVec2f(floatVector.size() / 2L, &floatVector[0]);
         }
     ;
 
@@ -1704,23 +1699,23 @@ vec2fValue[float v[2]]
         }
     ;
 
-sfVec3fValue returns [VrmlSFVec3f * svv = new VrmlSFVec3f()]
+sfVec3fValue returns [OpenVRML::SFVec3f * svv = new OpenVRML::SFVec3f()]
         {
             float v[3];
         }
     :   vec3fValue[v]
         {
-            *svv = VrmlSFVec3f(v[0], v[1], v[2]);
+            *svv = OpenVRML::SFVec3f(v[0], v[1], v[2]);
         }
     ;
 
-mfVec3fValue returns [VrmlMFVec3f * mvv = new VrmlMFVec3f()]
+mfVec3fValue returns [OpenVRML::MFVec3f * mvv = new OpenVRML::MFVec3f()]
         {
             float v[3];
         }
     :   vec3fValue[v]
         {
-            *mvv = VrmlMFVec3f(1, v);
+            *mvv = OpenVRML::MFVec3f(1, v);
         }
     |   LBRACKET
         {
@@ -1735,7 +1730,7 @@ mfVec3fValue returns [VrmlMFVec3f * mvv = new VrmlMFVec3f()]
             }
         )* RBRACKET
         {
-            *mvv = VrmlMFVec3f(floatVector.size() / 3L, &floatVector[0]);
+            *mvv = OpenVRML::MFVec3f(floatVector.size() / 3L, &floatVector[0]);
         }
     ;
 

@@ -35,33 +35,36 @@
 
 #include "field.h"
 
-class VrmlNodeScript;
-class VrmlScene;
+namespace OpenVRML {
 
-class ScriptJDK : public Script {
-    // Shared by all JDK Script objects
-    static JavaVM * d_jvm;
-    static JNIEnv * d_env;
+    class ScriptNode;
+    class VrmlScene;
 
-    jclass d_class;
-    jobject d_object;
-    jmethodID d_processEventsID, d_processEventID, d_eventsProcessedID;
-    
-public:
-    ScriptJDK(VrmlNodeScript & scriptNode,
-              const char * className, const char * classDir);
-    virtual ~ScriptJDK();
+    class ScriptJDK : public Script {
+        // Shared by all JDK Script objects
+        static JavaVM * d_jvm;
+        static JNIEnv * d_env;
 
-    virtual void initialize(double timestamp);
-    virtual void processEvent(const std::string & id, const VrmlField & value,
-                              double timestamp);
-    virtual void eventsProcessed(double timestamp);
-    virtual void shutdown(double timestamp);
+        jclass d_class;
+        jobject d_object;
+        jmethodID d_processEventsID, d_processEventID, d_eventsProcessedID;
 
-private:
-    void activate(double timeStamp, const std::string & fname,
-                  size_t argc, const VrmlField * const argv[]);
-};
+    public:
+        ScriptJDK(ScriptNode & scriptNode,
+                  const char * className, const char * classDir);
+        virtual ~ScriptJDK();
+
+        virtual void initialize(double timestamp);
+        virtual void processEvent(const std::string & id,
+                                  const FieldValue & value, double timestamp);
+        virtual void eventsProcessed(double timestamp);
+        virtual void shutdown(double timestamp);
+
+    private:
+        void activate(double timeStamp, const std::string & fname,
+                      size_t argc, const FieldValue * const argv[]);
+    };
+}
 
 #endif // OPENVRML_HAVE_JNI
 #endif // _SCRIPTJDK_

@@ -26,47 +26,50 @@
 #include "field.h"
 #include "nodetypeptr.h"
 
-class OPENVRML_SCOPE VrmlNamespace {
-    static std::list<NodeTypePtr> builtInList;
-    static int s_nNamespaces;
+namespace OpenVRML {
 
-    // Defined node types (PROTOs) for this namespace
-    std::list<NodeTypePtr> d_typeList;
+    class OPENVRML_SCOPE VrmlNamespace {
+        static std::list<NodeTypePtr> builtInList;
+        static int s_nNamespaces;
 
-    // Defined node names for this namespace
-    std::list<VrmlNode *> d_nameList;
+        // Defined node types (PROTOs) for this namespace
+        std::list<NodeTypePtr> d_typeList;
 
-    // Parent namespace
-    VrmlNamespace *d_parent;
+        // Defined node names for this namespace
+        std::list<Node *> d_nameList;
 
-public:
-    VrmlNamespace(VrmlNamespace * parent = 0);
-    ~VrmlNamespace();
+        // Parent namespace
+        VrmlNamespace *d_parent;
 
-    void addNodeType(const NodeTypePtr & nodeType);
+    public:
+        VrmlNamespace(VrmlNamespace * parent = 0);
+        ~VrmlNamespace();
 
-    // DEFd nodes add node names to the namespace.
-    // Node names are only defined in the current name space. They
-    // are not available outside of the PROTO they are defined in,
-    // nor are they available inside of nested PROTOs.
+        void addNodeType(const NodeTypePtr & nodeType);
 
-    void addNodeName(VrmlNode & namedNode);
-    void removeNodeName(VrmlNode & namedNode);
+        // DEFd nodes add node names to the namespace.
+        // Node names are only defined in the current name space. They
+        // are not available outside of the PROTO they are defined in,
+        // nor are they available inside of nested PROTOs.
 
-    const NodeTypePtr findType(const std::string & name) const;
-    const NodeTypePtr findPROTO(const std::string & name) const;
+        void addNodeName(Node & namedNode);
+        void removeNodeName(Node & namedNode);
 
-    // Return the first node type in scope (default EXTERNPROTO implementation)
-    const NodeTypePtr firstType() const;
+        const NodeTypePtr findType(const std::string & name) const;
+        const NodeTypePtr findPROTO(const std::string & name) const;
 
-    // Find a node by name.
-    VrmlNode * findNode(const std::string & name) const;
+        // Return the first node type in scope (default EXTERNPROTO implementation)
+        const NodeTypePtr firstType() const;
 
-    const VrmlMFNode cloneNodes(const VrmlMFNode & mfnode);
+        // Find a node by name.
+        Node * findNode(const std::string & name) const;
 
-private:
-    void addBuiltIn(const NodeTypePtr & nodeType);
-    void defineBuiltIns();
-};
+        const MFNode cloneNodes(const MFNode & mfnode);
+
+    private:
+        void addBuiltIn(const NodeTypePtr & nodeType);
+        void defineBuiltIns();
+    };
+}
 
 #endif

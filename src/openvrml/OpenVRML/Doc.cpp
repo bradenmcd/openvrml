@@ -42,6 +42,8 @@
 #include "doc2.hpp"
 #include "System.h"
 
+using namespace OpenVRML;
+
 Doc::Doc(const std::string & url, Doc const * relative): d_url(0), d_ostream(0),
         d_fp(0), d_gz(0), d_tmpfile(0) {
     if (url.length() > 0) {

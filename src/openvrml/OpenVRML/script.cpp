@@ -20,8 +20,10 @@
 
 # include "script.h"
 
+using namespace OpenVRML;
+
 /**
- * @class Script
+ * @class OpenVRML::Script
  *
  * @brief Abstract class implemented by scripting language bindings.
  *
@@ -30,18 +32,18 @@
  */
 
 /**
- * @var VrmlNodeScript & Script::scriptNode
+ * @var ScriptNode & Script::scriptNode
  *
- * @brief a reference to the VrmlNodeScript that uses this Script object.
+ * @brief a reference to the ScriptNode that uses this Script object.
  */
 
 /**
  * @brief Constructor.
  *
- * @param scriptNode    a reference to the VrmlNodeScript that uses this Script
+ * @param scriptNode    a reference to the ScriptNode that uses this Script
  *      object.
  */
-Script::Script(VrmlNodeScript & scriptNode): scriptNode(scriptNode) {}
+Script::Script(ScriptNode & scriptNode): scriptNode(scriptNode) {}
 
 /**
  * @brief Destructor.
@@ -56,7 +58,7 @@ Script::~Script() {}
 
 /**
  * @fn void Script::processEvent(const std::string & id,
- *                               const VrmlField & value, double timestamp)
+ *                               const FieldValue & value, double timestamp)
  *
  * @brief Process an event.
  */

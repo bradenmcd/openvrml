@@ -28,37 +28,30 @@
 #   include <string>
 #   include "common.h"
 
-class VrmlMFString;
+namespace OpenVRML {
 
-class OPENVRML_SCOPE System {
+    class MFString;
 
-public:
+    class OPENVRML_SCOPE System {
+    public:
+        virtual double time();
+        virtual void error(const char *, ...);
+        virtual void warn(const char *, ...);
+        virtual void inform(const char *, ...);
+        virtual void debug(const char *, ...);
+#   ifdef macintosh
+        virtual bool loadUrl(char *url, int np, char **parameters );
+#   else
+        virtual bool loadUrl(const std::string & url,
+                             const MFString & parameters);
+#   endif
+        virtual int connectSocket( const char *host, int port );
+        virtual const char *httpHost(const char *url, int *port);
+        virtual const char *httpFetch( const char *url );
+        virtual void removeFile( const char *fn );
+    };
 
-  virtual double time();
-
-  virtual void error(const char *, ...);
-
-  virtual void warn(const char *, ...);
-
-  virtual void inform(const char *, ...);
-
-  virtual void debug(const char *, ...);
-
-#ifdef macintosh
-  virtual bool loadUrl(char *url, int np, char **parameters );
-#else
-  virtual bool loadUrl(const std::string & url, const VrmlMFString & parameters);
-#endif
-
-  virtual int connectSocket( const char *host, int port );
-
-  virtual const char *httpHost(const char *url, int *port);
-  virtual const char *httpFetch( const char *url );
-
-  virtual void removeFile( const char *fn );
-
-};
-
-extern OPENVRML_SCOPE System *theSystem;
+    extern OPENVRML_SCOPE System * theSystem;
+}
 
 #endif // SYSTEM_H

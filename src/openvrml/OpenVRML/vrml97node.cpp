@@ -37,10 +37,11 @@
 # include "private.h"
 # include "MathUtils.h"
 
+using namespace OpenVRML;
 using namespace OpenVRML_;
 
 /**
- * @class VrmlNodeChild
+ * @class OpenVRML::NodeChild
  *
  * @brief Base class for all nodes that may be children of a Group node.
  */
@@ -50,25 +51,24 @@ using namespace OpenVRML_;
  *
  * @param scene the VrmlScene to which this node belongs
  */
-VrmlNodeChild::VrmlNodeChild(const NodeType & type,
-                             VrmlScene * const scene):
-        VrmlNode(type, scene) {}
+NodeChild::NodeChild(const NodeType & type, VrmlScene * const scene):
+        Node(type, scene) {}
 
 /**
  * @brief Copy constructor.
  */
-VrmlNodeChild::VrmlNodeChild(const VrmlNodeChild & node): VrmlNode(node) {}
+NodeChild::NodeChild(const NodeChild & node): Node(node) {}
 
 /**
  * @brief Downcast method.
  */
-VrmlNodeChild * VrmlNodeChild::toChild() const {
-    return const_cast<VrmlNodeChild *>(this);
+NodeChild * NodeChild::toChild() const {
+    return const_cast<NodeChild *>(this);
 }
 
 
 /**
- * @class VrmlNodeGeometry
+ * @class OpenVRML::NodeGeometry
  *
  * @brief Base class for all geometry nodes.
  */
@@ -78,14 +78,13 @@ VrmlNodeChild * VrmlNodeChild::toChild() const {
  *
  * @param scene the VrmlScene to which this node belongs
  */
-VrmlNodeGeometry::VrmlNodeGeometry(const NodeType & type,
-                                   VrmlScene * const scene):
-        VrmlNode(type, scene), d_viewerObject(0) {}
+NodeGeometry::NodeGeometry(const NodeType & type, VrmlScene * const scene):
+        Node(type, scene), d_viewerObject(0) {}
 
 /**
  * @brief Destructor.
  */
-VrmlNodeGeometry::~VrmlNodeGeometry()
+NodeGeometry::~NodeGeometry()
 {
   /* Need access to viewer to delete viewerObject...*/
 }
@@ -95,16 +94,16 @@ VrmlNodeGeometry::~VrmlNodeGeometry()
  *
  * @return a pointer to this object
  */
-VrmlNodeGeometry * VrmlNodeGeometry::toGeometry() const {
-    return const_cast<VrmlNodeGeometry *>(this);
+NodeGeometry * NodeGeometry::toGeometry() const {
+    return const_cast<NodeGeometry *>(this);
 }
 
 /**
  * @brief Get the Color node associated with this geometry.
  *
- * @return a VrmlNodeColor
+ * @return a NodeColor
  */
-VrmlNodeColor *VrmlNodeGeometry::color() { return 0; }
+NodeColor *NodeGeometry::color() { return 0; }
 
 /**
  * @brief Render this node.
@@ -114,7 +113,7 @@ VrmlNodeColor *VrmlNodeGeometry::color() { return 0; }
  * @param viewer a renderer
  * @param context the renderer context
  */
-void VrmlNodeGeometry::render(Viewer * viewer, VrmlRenderContext context) 
+void NodeGeometry::render(Viewer * viewer, VrmlRenderContext context) 
 {
   if ( d_viewerObject && isModified() )
     {
@@ -132,7 +131,7 @@ void VrmlNodeGeometry::render(Viewer * viewer, VrmlRenderContext context)
 }
 
 /**
- * @class VrmlNodeLight
+ * @class OpenVRML::NodeLight
  *
  * @brief Base class for all light nodes.
  */
@@ -142,23 +141,22 @@ void VrmlNodeGeometry::render(Viewer * viewer, VrmlRenderContext context)
  *
  * @param scene the VrmlScene to which this node belongs.
  */
-VrmlNodeLight::VrmlNodeLight(const NodeType & type,
-                             VrmlScene * const scene):
-        VrmlNodeChild(type, scene), d_ambientIntensity(0.0),
+NodeLight::NodeLight(const NodeType & type, VrmlScene * const scene):
+        NodeChild(type, scene), d_ambientIntensity(0.0),
         d_color(1.0, 1.0, 1.0), d_intensity(1.0), d_on(true) {}
 
 /**
  * @brief Destructor.
  */
-VrmlNodeLight::~VrmlNodeLight() {}
+NodeLight::~NodeLight() {}
 
 /**
  * @brief Downcast to a light node.
  *
  * @return a pointer to this object.
  */
-VrmlNodeLight* VrmlNodeLight::toLight() const
-{ return (VrmlNodeLight*) this; }
+NodeLight* NodeLight::toLight() const
+{ return (NodeLight*) this; }
 
 /**
  * @brief Render this node as scoped.
@@ -167,7 +165,7 @@ VrmlNodeLight* VrmlNodeLight::toLight() const
  *
  * @param viewer a renderer.
  */
-void VrmlNodeLight::renderScoped(Viewer * viewer) {}
+void NodeLight::renderScoped(Viewer * viewer) {}
 
 /**
  * @brief Print the fields for this node.
@@ -175,7 +173,7 @@ void VrmlNodeLight::renderScoped(Viewer * viewer) {}
  * @param os a standard output stream
  * @param indent the number of spaces per indent level
  */
-ostream& VrmlNodeLight::printFields(ostream& os, int indent)
+ostream& NodeLight::printFields(ostream& os, int indent)
 {
   if (! fpzero(d_ambientIntensity.get()))
     PRINT_FIELD(ambientIntensity);
@@ -195,10 +193,10 @@ ostream& VrmlNodeLight::printFields(ostream& os, int indent)
  *
  * @param fieldName the name of a field or eventOut
  *
- * @return a pointer to a VrmlField value, or a zero pointer if the node has
+ * @return a pointer to a FieldValue value, or a zero pointer if the node has
  *      no field or eventOut with the given name
  */
-const VrmlField * VrmlNodeLight::getField(const std::string & fieldId) const {
+const FieldValue * NodeLight::getField(const std::string & fieldId) const {
     // exposedFields
     if (fieldId == "ambientIntensity") {
         return &d_ambientIntensity;
@@ -210,7 +208,7 @@ const VrmlField * VrmlNodeLight::getField(const std::string & fieldId) const {
         return &d_on;
     }
 
-    return VrmlNode::getField(fieldId);
+    return Node::getField(fieldId);
 }
 
 /**
@@ -219,51 +217,51 @@ const VrmlField * VrmlNodeLight::getField(const std::string & fieldId) const {
  * @param fieldName the name of the field to set.
  * @param fieldValue the new value
  */
-void VrmlNodeLight::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue) {
+void NodeLight::setField(const std::string & fieldId,
+                         const FieldValue & fieldValue) {
   if TRY_FIELD(ambientIntensity, SFFloat)
   else if TRY_FIELD(color, SFColor)
   else if TRY_FIELD(intensity, SFFloat)
   else if TRY_FIELD(on, SFBool)
   else 
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 }
 
 
 namespace {
-    const VrmlNodePtr createAnchor(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeAnchor(scene));
+    const NodePtr createAnchor(VrmlScene * const scene) {
+        return NodePtr(new NodeAnchor(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Anchor" fields.
  */
-const NodeTypePtr VrmlNodeAnchor::defineType() {
+const NodeTypePtr NodeAnchor::defineType() {
     static NodeTypePtr st(0);
     if (st) {
         return st;
     }
     
     st.reset(new NodeType("Anchor", createAnchor));
-    st->addEventIn("addChildren", VrmlField::MFNODE);
-    st->addEventIn("removeChildren", VrmlField::MFNODE);
-    st->addExposedField("children", VrmlField::MFNODE);
-    st->addField("bboxCenter", VrmlField::SFVEC3F);
-    st->addField("bboxSize", VrmlField::SFVEC3F);
-    st->addExposedField("description", VrmlField::SFSTRING);
-    st->addExposedField("parameter", VrmlField::MFSTRING);
-    st->addExposedField("url", VrmlField::MFSTRING);
+    st->addEventIn("addChildren", FieldValue::MFNODE);
+    st->addEventIn("removeChildren", FieldValue::MFNODE);
+    st->addExposedField("children", FieldValue::MFNODE);
+    st->addField("bboxCenter", FieldValue::SFVEC3F);
+    st->addField("bboxSize", FieldValue::SFVEC3F);
+    st->addExposedField("description", FieldValue::SFSTRING);
+    st->addExposedField("parameter", FieldValue::MFSTRING);
+    st->addExposedField("url", FieldValue::MFSTRING);
 
     return st;
 }
 
-VrmlNodeAnchor::VrmlNodeAnchor(VrmlScene * const scene):
-        VrmlNodeGroup(*defineType(), scene) {
+NodeAnchor::NodeAnchor(VrmlScene * const scene):
+        NodeGroup(*defineType(), scene) {
     this->setBVolumeDirty(true);
 }
 
-VrmlNodeAnchor::VrmlNodeAnchor(const VrmlNodeAnchor &n) : VrmlNodeGroup(n)
+NodeAnchor::NodeAnchor(const NodeAnchor &n) : NodeGroup(n)
 {
   d_description = n.d_description;
   d_parameter = n.d_parameter;
@@ -271,11 +269,11 @@ VrmlNodeAnchor::VrmlNodeAnchor(const VrmlNodeAnchor &n) : VrmlNodeGroup(n)
   this->setBVolumeDirty(true);
 }
 
-VrmlNodeAnchor::~VrmlNodeAnchor()
+NodeAnchor::~NodeAnchor()
 {
 }
 
-bool VrmlNodeAnchor::accept(VrmlNodeVisitor & visitor) {
+bool NodeAnchor::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -285,13 +283,13 @@ bool VrmlNodeAnchor::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeAnchor* VrmlNodeAnchor::toAnchor() const
-{ return (VrmlNodeAnchor*)this; }
+NodeAnchor* NodeAnchor::toAnchor() const
+{ return (NodeAnchor*)this; }
 
 
-ostream& VrmlNodeAnchor::printFields(ostream& os, int indent)
+ostream& NodeAnchor::printFields(ostream& os, int indent)
 {
-  VrmlNodeGroup::printFields(os, indent);
+  NodeGroup::printFields(os, indent);
   if (d_description.get().length() > 0) PRINT_FIELD(description);
   if (d_parameter.getLength() > 0) PRINT_FIELD(parameter);
   if (d_url.getLength() > 0) PRINT_FIELD(url);
@@ -300,12 +298,12 @@ ostream& VrmlNodeAnchor::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeAnchor::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeAnchor::render(Viewer *viewer, VrmlRenderContext rc)
 {
   viewer->setSensitive( this );
 
   // Render children
-  VrmlNodeGroup::render(viewer, rc);
+  NodeGroup::render(viewer, rc);
 
   viewer->setSensitive( 0 );
 }
@@ -313,7 +311,7 @@ void VrmlNodeAnchor::render(Viewer *viewer, VrmlRenderContext rc)
 
 // Handle a click by loading the url
 
-void VrmlNodeAnchor::activate()
+void NodeAnchor::activate()
 {
     if (d_scene && d_url.getLength() > 0) {
         Doc2*  tmp_url = new Doc2();
@@ -325,7 +323,7 @@ void VrmlNodeAnchor::activate()
             tmp_url_array[i] = tmp_url->url();
         }
 
-        VrmlMFString urls(d_url.getLength(), tmp_url_array);
+        MFString urls(d_url.getLength(), tmp_url_array);
         if (!d_scene->loadUrl(urls, d_parameter)) {
             assert(this->d_url.getLength() > 0);
             theSystem->warn("Couldn't load URL %s\n", d_url.getElement(0).c_str());
@@ -339,7 +337,7 @@ void VrmlNodeAnchor::activate()
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeAnchor::getField(const std::string & fieldId) const {
+const FieldValue * NodeAnchor::getField(const std::string & fieldId) const {
     // exposedFields
     if (fieldId == "description") {
         return &d_description;
@@ -349,41 +347,41 @@ const VrmlField * VrmlNodeAnchor::getField(const std::string & fieldId) const {
         return &d_url;
     }
 
-    return VrmlNodeGroup::getField(fieldId); // Parent class
+    return NodeGroup::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 // Need to delete current values ...
 
-void VrmlNodeAnchor::setField(const std::string & fieldId,
-                  const VrmlField & fieldValue)
+void NodeAnchor::setField(const std::string & fieldId,
+                  const FieldValue & fieldValue)
 {
   if TRY_FIELD(description, SFString)
   else if TRY_FIELD(parameter, MFString)
   else if TRY_FIELD(url, MFString)
   else
-    VrmlNodeGroup::setField(fieldId, fieldValue);
+    NodeGroup::setField(fieldId, fieldValue);
   this->setBVolumeDirty(true);
 }
 
 const VrmlBVolume*
-VrmlNodeAnchor::getBVolume() const
+NodeAnchor::getBVolume() const
 {
-  const VrmlBVolume* bv = VrmlNodeGroup::getBVolume();
+  const VrmlBVolume* bv = NodeGroup::getBVolume();
   return bv;
 }
 
 
 namespace {
-    const VrmlNodePtr createAppearance(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeAppearance(scene));
+    const NodePtr createAppearance(VrmlScene * const scene) {
+        return NodePtr(new NodeAppearance(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Appearance" fields.
  */
-const NodeTypePtr VrmlNodeAppearance::defineType() {
+const NodeTypePtr NodeAppearance::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -391,21 +389,21 @@ const NodeTypePtr VrmlNodeAppearance::defineType() {
     }
     
     st.reset(new NodeType("Appearance", createAppearance));
-    st->addExposedField("material", VrmlField::SFNODE);
-    st->addExposedField("texture", VrmlField::SFNODE);
-    st->addExposedField("textureTransform", VrmlField::SFNODE);
+    st->addExposedField("material", FieldValue::SFNODE);
+    st->addExposedField("texture", FieldValue::SFNODE);
+    st->addExposedField("textureTransform", FieldValue::SFNODE);
 
     return st;
 }
 
-VrmlNodeAppearance::VrmlNodeAppearance(VrmlScene * const scene):
-        VrmlNode(*defineType(), scene) {}
+NodeAppearance::NodeAppearance(VrmlScene * const scene):
+        Node(*defineType(), scene) {}
 
-VrmlNodeAppearance::~VrmlNodeAppearance()
+NodeAppearance::~NodeAppearance()
 {
 }
 
-bool VrmlNodeAppearance::accept(VrmlNodeVisitor & visitor) {
+bool NodeAppearance::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -415,7 +413,7 @@ bool VrmlNodeAppearance::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodeAppearance::resetVisitedFlag() {
+void NodeAppearance::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         if (this->d_material.get()) {
@@ -430,13 +428,13 @@ void VrmlNodeAppearance::resetVisitedFlag() {
     }
 }
 
-VrmlNodeAppearance* VrmlNodeAppearance::toAppearance() const
+NodeAppearance* NodeAppearance::toAppearance() const
 {
-  return (VrmlNodeAppearance*) this;
+  return (NodeAppearance*) this;
 }
 
 
-bool VrmlNodeAppearance::isModified() const
+bool NodeAppearance::isModified() const
 {
   return ( d_modified ||
        (d_material.get() && d_material.get()->isModified()) ||
@@ -445,7 +443,7 @@ bool VrmlNodeAppearance::isModified() const
         d_textureTransform.get()->isModified()) );
 }
 
-void VrmlNodeAppearance::updateModified(VrmlNodePath& path)
+void NodeAppearance::updateModified(NodePath& path)
 {
   if (this->isModified()) markPathModified(path, true);
   path.push_front(this);
@@ -455,16 +453,15 @@ void VrmlNodeAppearance::updateModified(VrmlNodePath& path)
   path.pop_front();
 }
 
-void VrmlNodeAppearance::clearFlags()
+void NodeAppearance::clearFlags()
 {
-  VrmlNode::clearFlags();
+  Node::clearFlags();
   if (d_material.get()) d_material.get()->clearFlags();
   if (d_texture.get()) d_texture.get()->clearFlags();
   if (d_textureTransform.get()) d_textureTransform.get()->clearFlags();
 }
 
-void VrmlNodeAppearance::addToScene(VrmlScene * scene,
-                                    const std::string & rel) {
+void NodeAppearance::addToScene(VrmlScene * scene, const std::string & rel) {
     this->d_scene = scene;
     if (d_material.get()) d_material.get()->addToScene(scene, rel);
     if (d_texture.get()) d_texture.get()->addToScene(scene, rel);
@@ -473,7 +470,7 @@ void VrmlNodeAppearance::addToScene(VrmlScene * scene,
     }
 }
 
-ostream& VrmlNodeAppearance::printFields(ostream& os, int indent)
+ostream& NodeAppearance::printFields(ostream& os, int indent)
 {
   if (d_material.get()) PRINT_FIELD(material);
   if (d_texture.get()) PRINT_FIELD(texture);
@@ -483,10 +480,10 @@ ostream& VrmlNodeAppearance::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeAppearance::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeAppearance::render(Viewer *viewer, VrmlRenderContext rc)
 {
-  VrmlNodeMaterial *m = d_material.get() ? d_material.get()->toMaterial() : 0;
-  VrmlNodeTexture *t = d_texture.get() ? d_texture.get()->toTexture() : 0;
+  NodeMaterial *m = d_material.get() ? d_material.get()->toMaterial() : 0;
+  NodeTexture *t = d_texture.get() ? d_texture.get()->toTexture() : 0;
 
   if (m)
     {
@@ -530,8 +527,7 @@ void VrmlNodeAppearance::render(Viewer *viewer, VrmlRenderContext rc)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeAppearance::getField(const std::string & fieldId)
-        const {
+const FieldValue * NodeAppearance::getField(const std::string & fieldId) const {
     // exposedFields
     if (fieldId == "material") {
         return &d_material;
@@ -541,19 +537,19 @@ const VrmlField * VrmlNodeAppearance::getField(const std::string & fieldId)
         return &d_textureTransform;
     }
 
-    return VrmlNode::getField(fieldId); // Parent class
+    return Node::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeAppearance::setField(const std::string & fieldId,
-                  const VrmlField & fieldValue)
+void NodeAppearance::setField(const std::string & fieldId,
+                              const FieldValue & fieldValue)
 {
   if TRY_SFNODE_FIELD(material, Material)
   else if TRY_SFNODE_FIELD(texture, Texture)
   else if TRY_SFNODE_FIELD(textureTransform, TextureTransform)
   else
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 }
 
 /**
@@ -562,7 +558,7 @@ void VrmlNodeAppearance::setField(const std::string & fieldId,
  * @returns an SFNode object containing the Material node associated with
  *          this Appearance.
  */
-const VrmlSFNode & VrmlNodeAppearance::getMaterial() const {
+const SFNode & NodeAppearance::getMaterial() const {
     return this->d_material;
 }
 
@@ -571,7 +567,7 @@ const VrmlSFNode & VrmlNodeAppearance::getMaterial() const {
  *
  * @param material an SFNode object containing a Material node
  */
-void VrmlNodeAppearance::setMaterial(const VrmlSFNode & material) {
+void NodeAppearance::setMaterial(const SFNode & material) {
     assert(!material.get() || material.get()->toMaterial());
     this->d_material = material;
 }
@@ -582,7 +578,7 @@ void VrmlNodeAppearance::setMaterial(const VrmlSFNode & material) {
  * @return an SFNode object containing the texture node associated with
  *         this Appearance.
  */
-const VrmlSFNode & VrmlNodeAppearance::getTexture() const {
+const SFNode & NodeAppearance::getTexture() const {
     return this->d_texture;
 }
 
@@ -591,7 +587,7 @@ const VrmlSFNode & VrmlNodeAppearance::getTexture() const {
  *
  * @param texture an SFNode object containing a texture node.
  */
-void VrmlNodeAppearance::setTexture(const VrmlSFNode & texture) {
+void NodeAppearance::setTexture(const SFNode & texture) {
     assert(!texture.get() || texture.get()->toTexture());
     this->d_texture = texture;
 }
@@ -602,7 +598,7 @@ void VrmlNodeAppearance::setTexture(const VrmlSFNode & texture) {
  * @return an SFNode object containing the TextureTransform node
  *         associated with this Appearance.
  */
-const VrmlSFNode & VrmlNodeAppearance::getTextureTransform() const {
+const SFNode & NodeAppearance::getTextureTransform() const {
     return this->d_textureTransform;
 }
 
@@ -612,7 +608,7 @@ const VrmlSFNode & VrmlNodeAppearance::getTextureTransform() const {
  * @param textureTransform an SFNode object containing a
  *                         TextureTransform node.
  */
-void VrmlNodeAppearance::setTextureTransform(const VrmlSFNode & textureTransform) {
+void NodeAppearance::setTextureTransform(const SFNode & textureTransform) {
     assert(!textureTransform.get()
             || textureTransform.get()->toTextureTransform());
     this->d_textureTransform = textureTransform;
@@ -620,15 +616,15 @@ void VrmlNodeAppearance::setTextureTransform(const VrmlSFNode & textureTransform
 
 
 namespace {
-    const VrmlNodePtr createAudioClip(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeAudioClip(scene));
+    const NodePtr createAudioClip(VrmlScene * const scene) {
+        return NodePtr(new NodeAudioClip(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "AudioClip" fields.
  */
-const NodeTypePtr VrmlNodeAudioClip::defineType() {
+const NodeTypePtr NodeAudioClip::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -636,21 +632,21 @@ const NodeTypePtr VrmlNodeAudioClip::defineType() {
     }
     
     st.reset(new NodeType("AudioClip", createAudioClip));
-    st->addExposedField("description", VrmlField::SFSTRING);
-    st->addExposedField("loop", VrmlField::SFBOOL);
-    st->addExposedField("pitch", VrmlField::SFFLOAT);
-    st->addExposedField("startTime", VrmlField::SFTIME);
-    st->addExposedField("stopTime", VrmlField::SFTIME);
-    st->addExposedField("url", VrmlField::MFSTRING);
+    st->addExposedField("description", FieldValue::SFSTRING);
+    st->addExposedField("loop", FieldValue::SFBOOL);
+    st->addExposedField("pitch", FieldValue::SFFLOAT);
+    st->addExposedField("startTime", FieldValue::SFTIME);
+    st->addExposedField("stopTime", FieldValue::SFTIME);
+    st->addExposedField("url", FieldValue::MFSTRING);
 
-    st->addEventOut("duration_changed", VrmlField::SFTIME);
-    st->addEventOut("isActive", VrmlField::SFBOOL);
+    st->addEventOut("duration_changed", FieldValue::SFTIME);
+    st->addEventOut("isActive", FieldValue::SFBOOL);
 
     return st;
 }
 
-VrmlNodeAudioClip::VrmlNodeAudioClip(VrmlScene * const scene):
-        VrmlNode(*defineType(), scene), d_pitch(1.0), d_isActive(false),
+NodeAudioClip::NodeAudioClip(VrmlScene * const scene):
+        Node(*defineType(), scene), d_pitch(1.0), d_isActive(false),
         d_audio(0), d_url_modified(false), _audio_index(0),
         _audio_intensity(1.0), _audio_fd(-1) {
     if (this->d_scene) {
@@ -661,8 +657,8 @@ VrmlNodeAudioClip::VrmlNodeAudioClip(VrmlScene * const scene):
 /**
  * Define copy constructor so clones don't share d_audio (for now, anyway...).
  */
-VrmlNodeAudioClip::VrmlNodeAudioClip(const VrmlNodeAudioClip &n) :
-  VrmlNode(n),
+NodeAudioClip::NodeAudioClip(const NodeAudioClip &n) :
+  Node(n),
   d_description(n.d_description),
   d_loop(n.d_loop),
   d_pitch(n.d_pitch),
@@ -683,7 +679,7 @@ VrmlNodeAudioClip::VrmlNodeAudioClip(const VrmlNodeAudioClip &n) :
 }
 
 
-VrmlNodeAudioClip::~VrmlNodeAudioClip()
+NodeAudioClip::~NodeAudioClip()
 {
     delete this->d_audio;
     if (this->d_scene) {
@@ -691,7 +687,7 @@ VrmlNodeAudioClip::~VrmlNodeAudioClip()
     }
 }
 
-bool VrmlNodeAudioClip::accept(VrmlNodeVisitor & visitor) {
+bool NodeAudioClip::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -701,18 +697,18 @@ bool VrmlNodeAudioClip::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodeAudioClip::addToScene(VrmlScene * scene, const std::string & rel) {
+void NodeAudioClip::addToScene(VrmlScene * scene, const std::string & rel) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
         this->d_scene->addAudioClip(*this);
     }
     this->d_relativeUrl.set(rel);
 }
 
-VrmlNodeAudioClip* VrmlNodeAudioClip::toAudioClip() const
-{ return (VrmlNodeAudioClip*)this; }
+NodeAudioClip* NodeAudioClip::toAudioClip() const
+{ return (NodeAudioClip*)this; }
 
 
-ostream& VrmlNodeAudioClip::printFields(ostream& os, int indent)
+ostream& NodeAudioClip::printFields(ostream& os, int indent)
 {
   if (d_description.get().length() > 0) PRINT_FIELD(description);
   if (d_loop.get()) PRINT_FIELD(loop);
@@ -724,7 +720,7 @@ ostream& VrmlNodeAudioClip::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeAudioClip::update (VrmlSFTime &inTime)
+void NodeAudioClip::update (SFTime &inTime)
 {
     // If the URL has been modified, update the audio object
     if (d_url_modified)
@@ -817,7 +813,7 @@ void VrmlNodeAudioClip::update (VrmlSFTime &inTime)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeAudioClip::getField(const std::string & fieldId)
+const FieldValue * NodeAudioClip::getField(const std::string & fieldId)
         const {
     // exposedFields
     if (fieldId == "description") {
@@ -841,14 +837,14 @@ const VrmlField * VrmlNodeAudioClip::getField(const std::string & fieldId)
         return &d_isActive;
     }
 
-    return VrmlNode::getField(fieldId); // Parent class
+    return Node::getField(fieldId); // Parent class
 }
 
 
 // Set the value of one of the node fields.
 
-void VrmlNodeAudioClip::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue) {
+void NodeAudioClip::setField(const std::string & fieldId,
+                             const FieldValue & fieldValue) {
     if TRY_FIELD(description, SFString)
     else if TRY_FIELD(loop, SFBool)
     else if TRY_FIELD(pitch, SFFloat)
@@ -856,7 +852,7 @@ void VrmlNodeAudioClip::setField(const std::string & fieldId,
     else if TRY_FIELD(stopTime, SFTime)
     else if TRY_FIELD(url, MFString)
     else
-      VrmlNode::setField(fieldId, fieldValue);
+      Node::setField(fieldId, fieldValue);
 
     if (fieldId == "url") {
         d_url_modified = true;
@@ -867,15 +863,15 @@ void VrmlNodeAudioClip::setField(const std::string & fieldId,
 
 namespace {
     //  Background factory.
-    const VrmlNodePtr createBackground(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeBackground(scene));
+    const NodePtr createBackground(VrmlScene * const scene) {
+        return NodePtr(new NodeBackground(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Background" fields.
  */
-const NodeTypePtr VrmlNodeBackground::defineType() {
+const NodeTypePtr NodeBackground::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -883,41 +879,41 @@ const NodeTypePtr VrmlNodeBackground::defineType() {
     }
     
     st.reset(new NodeType("Background", createBackground));
-    st->addEventIn("set_bind", VrmlField::SFBOOL);
+    st->addEventIn("set_bind", FieldValue::SFBOOL);
 
-    st->addExposedField("groundAngle", VrmlField::MFFLOAT);
-    st->addExposedField("groundColor", VrmlField::MFCOLOR);
+    st->addExposedField("groundAngle", FieldValue::MFFLOAT);
+    st->addExposedField("groundColor", FieldValue::MFCOLOR);
 
-    st->addExposedField("backUrl", VrmlField::MFSTRING);
-    st->addExposedField("bottomUrl", VrmlField::MFSTRING);
-    st->addExposedField("frontUrl", VrmlField::MFSTRING);
-    st->addExposedField("leftUrl", VrmlField::MFSTRING);
-    st->addExposedField("rightUrl", VrmlField::MFSTRING);
-    st->addExposedField("topUrl", VrmlField::MFSTRING);
+    st->addExposedField("backUrl", FieldValue::MFSTRING);
+    st->addExposedField("bottomUrl", FieldValue::MFSTRING);
+    st->addExposedField("frontUrl", FieldValue::MFSTRING);
+    st->addExposedField("leftUrl", FieldValue::MFSTRING);
+    st->addExposedField("rightUrl", FieldValue::MFSTRING);
+    st->addExposedField("topUrl", FieldValue::MFSTRING);
 
-    st->addExposedField("skyAngle", VrmlField::MFFLOAT);
-    st->addExposedField("skyColor", VrmlField::MFCOLOR);
+    st->addExposedField("skyAngle", FieldValue::MFFLOAT);
+    st->addExposedField("skyColor", FieldValue::MFCOLOR);
 
-    st->addEventOut("isBound", VrmlField::SFBOOL);
+    st->addEventOut("isBound", FieldValue::SFBOOL);
 
     return st;
 }
 
-VrmlNodeBackground::VrmlNodeBackground(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_isBound(false),
+NodeBackground::NodeBackground(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_isBound(false),
         d_viewerObject(0) {
     for (size_t i = 0; i < 6; ++i) { d_texPtr[i] = 0; }
     if (this->d_scene) { this->d_scene->addBackground(*this); }
 }
 
-VrmlNodeBackground::~VrmlNodeBackground() {
+NodeBackground::~NodeBackground() {
     if (this->d_scene) {
         this->d_scene->removeBackground(*this);
     }
     // remove d_viewerObject...
 }
 
-bool VrmlNodeBackground::accept(VrmlNodeVisitor & visitor) {
+bool NodeBackground::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -927,10 +923,10 @@ bool VrmlNodeBackground::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeBackground* VrmlNodeBackground::toBackground() const
-{ return (VrmlNodeBackground*) this; }
+NodeBackground* NodeBackground::toBackground() const
+{ return (NodeBackground*) this; }
 
-void VrmlNodeBackground::addToScene(VrmlScene * scene,
+void NodeBackground::addToScene(VrmlScene * scene,
                                     const std::string & rel) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
         this->d_scene->addBackground(*this);
@@ -939,7 +935,7 @@ void VrmlNodeBackground::addToScene(VrmlScene * scene,
 }
 
 
-ostream& VrmlNodeBackground::printFields(ostream& os, int indent)
+ostream& NodeBackground::printFields(ostream& os, int indent)
 {
   if (d_groundAngle.getLength()) PRINT_FIELD(groundAngle);
   if (d_groundColor.getLength()) PRINT_FIELD(groundColor);
@@ -958,7 +954,7 @@ ostream& VrmlNodeBackground::printFields(ostream& os, int indent)
 
 // Load and scale textures as needed.
 
-static Image * getTexture(const VrmlMFString & urls, Doc2 * relative,
+static Image * getTexture(const MFString & urls, Doc2 * relative,
                           Image * tex, int thisIndex, Viewer *viewer) {
   // Check whether the url has already been loaded
   int n = urls.getLength();
@@ -1021,7 +1017,7 @@ static Image * getTexture(const VrmlMFString & urls, Doc2 * relative,
 // Backgrounds are rendered once per scene at the beginning, not
 // when they are traversed by the standard render() method.
 
-void VrmlNodeBackground::renderBindable(Viewer *viewer)
+void NodeBackground::renderBindable(Viewer *viewer)
 {
   // Background isn't selectable, so don't waste the time.
   if (viewer->getRenderMode() == Viewer::RENDER_MODE_PICK)
@@ -1081,14 +1077,13 @@ void VrmlNodeBackground::renderBindable(Viewer *viewer)
 
 // Note that this method is not maintaining isBound.
 
-void VrmlNodeBackground::eventIn(double timeStamp,
-                                 const std::string & eventName,
-                                 const VrmlField & fieldValue) {
+void NodeBackground::eventIn(double timeStamp, const std::string & eventName,
+                             const FieldValue & fieldValue) {
   if (eventName == "set_bind")
     {
-      VrmlNodeBackground *current = d_scene->bindableBackgroundTop();
-      const VrmlSFBool * const b =
-                dynamic_cast<const VrmlSFBool *>(&fieldValue);
+      NodeBackground *current = d_scene->bindableBackgroundTop();
+      const SFBool * const b =
+                dynamic_cast<const SFBool *>(&fieldValue);
       if (! b)
     {
       cerr << "Error: invalid value for Background::set_bind eventIn "
@@ -1102,9 +1097,9 @@ void VrmlNodeBackground::eventIn(double timeStamp,
       if (this != current)
         {
           if (current)
-        current->eventOut( timeStamp, "isBound", VrmlSFBool(false));
+        current->eventOut( timeStamp, "isBound", SFBool(false));
           d_scene->bindablePush( this );
-          eventOut( timeStamp, "isBound", VrmlSFBool(true) );
+          eventOut( timeStamp, "isBound", SFBool(true) );
         }
     }
       else            // set_bind FALSE
@@ -1112,17 +1107,17 @@ void VrmlNodeBackground::eventIn(double timeStamp,
       d_scene->bindableRemove( this );
       if (this == current)
         {
-          eventOut( timeStamp, "isBound", VrmlSFBool(false));
+          eventOut( timeStamp, "isBound", SFBool(false));
           current = d_scene->bindableBackgroundTop();
           if (current)
-        current->eventOut( timeStamp, "isBound", VrmlSFBool(true) );
+        current->eventOut( timeStamp, "isBound", SFBool(true) );
         }
     }
     }
 
   else
     {
-      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+      Node::eventIn(timeStamp, eventName, fieldValue);
     }
 }
 
@@ -1131,7 +1126,7 @@ void VrmlNodeBackground::eventIn(double timeStamp,
 // don't rely on it's value to be valid. This hoses
 // the const-ness of the method, of course :(
 
-const VrmlField * VrmlNodeBackground::getField(const std::string & fieldId)
+const FieldValue * NodeBackground::getField(const std::string & fieldId)
         const {
     // exposedFields
     if (fieldId == "groundAngle") {
@@ -1158,18 +1153,18 @@ const VrmlField * VrmlNodeBackground::getField(const std::string & fieldId)
 
     // eventOuts
     else if (fieldId == "isBound") {
-        VrmlSFBool* isBound = (VrmlSFBool*) &(this->d_isBound);
+        SFBool* isBound = (SFBool*) &(this->d_isBound);
         isBound->set( d_scene->bindableBackgroundTop() == this );
         return isBound;
     }
 
-    return VrmlNodeChild::getField(fieldId); // Parent class
+    return NodeChild::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeBackground::setField(const std::string & fieldId,
-                  const VrmlField & fieldValue) {
+void NodeBackground::setField(const std::string & fieldId,
+                              const FieldValue & fieldValue) {
   if TRY_FIELD(groundAngle, MFFloat)
   else if TRY_FIELD(groundColor, MFColor)
   else if TRY_FIELD(backUrl, MFString)
@@ -1181,20 +1176,20 @@ void VrmlNodeBackground::setField(const std::string & fieldId,
   else if TRY_FIELD(skyAngle, MFFloat)
   else if TRY_FIELD(skyColor, MFColor)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 
 namespace {
-    const VrmlNodePtr createBillboard(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeBillboard(scene));
+    const NodePtr createBillboard(VrmlScene * const scene) {
+        return NodePtr(new NodeBillboard(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Billboard" fields.
  */
-const NodeTypePtr VrmlNodeBillboard::defineType() {
+const NodeTypePtr NodeBillboard::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -1202,26 +1197,26 @@ const NodeTypePtr VrmlNodeBillboard::defineType() {
     }
     
     st.reset(new NodeType("Billboard", createBillboard));
-    st->addEventIn("addChildren", VrmlField::MFNODE);
-    st->addEventIn("removeChildren", VrmlField::MFNODE);
-    st->addExposedField("children", VrmlField::MFNODE);
-    st->addField("bboxCenter", VrmlField::SFVEC3F);
-    st->addField("bboxSize", VrmlField::SFVEC3F);
-    st->addExposedField("axisOfRotation", VrmlField::SFVEC3F);
+    st->addEventIn("addChildren", FieldValue::MFNODE);
+    st->addEventIn("removeChildren", FieldValue::MFNODE);
+    st->addExposedField("children", FieldValue::MFNODE);
+    st->addField("bboxCenter", FieldValue::SFVEC3F);
+    st->addField("bboxSize", FieldValue::SFVEC3F);
+    st->addExposedField("axisOfRotation", FieldValue::SFVEC3F);
 
     return st;
 }
 
-VrmlNodeBillboard::VrmlNodeBillboard(VrmlScene * const scene):
-        VrmlNodeGroup(*defineType(), scene), d_axisOfRotation(0.0, 1.0, 0.0),
+NodeBillboard::NodeBillboard(VrmlScene * const scene):
+        NodeGroup(*defineType(), scene), d_axisOfRotation(0.0, 1.0, 0.0),
 	d_xformObject(0) {}
 
-VrmlNodeBillboard::~VrmlNodeBillboard()
+NodeBillboard::~NodeBillboard()
 {
   // delete d_xformObject...
 }
 
-bool VrmlNodeBillboard::accept(VrmlNodeVisitor & visitor) {
+bool NodeBillboard::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -1231,19 +1226,19 @@ bool VrmlNodeBillboard::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeBillboard::printFields(ostream& os, int indent)
+ostream& NodeBillboard::printFields(ostream& os, int indent)
 {
   if (!fpzero(d_axisOfRotation.getX()) ||
       !fpzero(d_axisOfRotation.getY()) ||
       !fpzero(d_axisOfRotation.getZ()) )
     PRINT_FIELD(axisOfRotation);
 
-  VrmlNodeGroup::printFields(os, indent);
+  NodeGroup::printFields(os, indent);
   return os;
 }
 
 
-void VrmlNodeBillboard::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeBillboard::render(Viewer *viewer, VrmlRenderContext rc)
 {
   VrmlMatrix LM;
   VrmlMatrix new_LM = rc.getMatrix();
@@ -1269,7 +1264,7 @@ void VrmlNodeBillboard::render(Viewer *viewer, VrmlRenderContext rc)
       viewer->MatrixMultiply(LM.get());
 
       // Render children
-      VrmlNodeGroup::render(viewer, rc);
+      NodeGroup::render(viewer, rc);
 
 //      viewer->unsetBillboardTransform( d_axisOfRotation.get() );
 	  LM = LM.affine_inverse();
@@ -1284,7 +1279,7 @@ void VrmlNodeBillboard::render(Viewer *viewer, VrmlRenderContext rc)
 // Cache a pointer to (one of the) parent transforms for proper
 // rendering of bindables.
 
-void VrmlNodeBillboard::accumulateTransform(VrmlNode * parent) {
+void NodeBillboard::accumulateTransform(Node * parent) {
     d_parentTransform = parent;
     for (size_t i = 0; i < this->d_children.getLength(); ++i) {
         if (this->d_children.getElement(i)) {
@@ -1293,11 +1288,11 @@ void VrmlNodeBillboard::accumulateTransform(VrmlNode * parent) {
     }
 }
 
-VrmlNode* VrmlNodeBillboard::getParentTransform() { return d_parentTransform; }
+Node* NodeBillboard::getParentTransform() { return d_parentTransform; }
 
-void VrmlNodeBillboard::inverseTransform(Viewer *viewer)
+void NodeBillboard::inverseTransform(Viewer *viewer)
 {
-  VrmlNode *parentTransform = getParentTransform();
+  Node *parentTransform = getParentTransform();
   if (parentTransform)
     parentTransform->inverseTransform(viewer);
 
@@ -1308,33 +1303,33 @@ void VrmlNodeBillboard::inverseTransform(Viewer *viewer)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeBillboard::getField(const std::string & fieldId)
+const FieldValue * NodeBillboard::getField(const std::string & fieldId)
         const {
     // exposedFields
     if (fieldId == "axisOfRotation") {
         return &d_axisOfRotation;
     }
 
-    return VrmlNodeGroup::getField(fieldId);
+    return NodeGroup::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeBillboard::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue) {
+void NodeBillboard::setField(const std::string & fieldId,
+                             const FieldValue & fieldValue) {
   if TRY_FIELD(axisOfRotation, SFVec3f)
   else
-    VrmlNodeGroup::setField(fieldId, fieldValue);
+    NodeGroup::setField(fieldId, fieldValue);
 }
 
-VrmlNodeBillboard * VrmlNodeBillboard::toBillboard() const {
-    return const_cast<VrmlNodeBillboard *>(this);
+NodeBillboard * NodeBillboard::toBillboard() const {
+    return const_cast<NodeBillboard *>(this);
 }
 
-void VrmlNodeBillboard::inverseTransform(VrmlMatrix & m)
+void NodeBillboard::inverseTransform(VrmlMatrix & m)
 {
 // It is calling program's responsibility to pass m as an unit matrix. skb
-  VrmlNode *parentTransform = getParentTransform();
+  Node *parentTransform = getParentTransform();
   if (parentTransform)
     parentTransform->inverseTransform(m);
 }        
@@ -1347,15 +1342,15 @@ void VrmlNodeBillboard::inverseTransform(VrmlMatrix & m)
  * @param MV is input ModelView transformation matrix
  */
 
-void VrmlNodeBillboard::billboard_to_matrix(const VrmlNodeBillboard* t_arg,
+void NodeBillboard::billboard_to_matrix(const NodeBillboard* t_arg,
 											const VrmlMatrix & L_MV, VrmlMatrix& M)
 {
-  VrmlNodeBillboard* t = (VrmlNodeBillboard*)t_arg; // argh.
+  NodeBillboard* t = (NodeBillboard*)t_arg; // argh.
   VrmlMatrix MV = L_MV.affine_inverse();
 
 // Viewer position in local coordinate system
-  VrmlSFVec3f VP(MV[3][0], MV[3][1], MV[3][2]);
-  VrmlSFVec3f NVP = VP.normalize();
+  SFVec3f VP(MV[3][0], MV[3][1], MV[3][2]);
+  SFVec3f NVP = VP.normalize();
 
 // Viewer-alignment
   if((t_arg->d_axisOfRotation[0] == 0) &&
@@ -1364,12 +1359,12 @@ void VrmlNodeBillboard::billboard_to_matrix(const VrmlNodeBillboard* t_arg,
   {
 
 // Viewer's up vector
-	  VrmlSFVec3f Y(MV[1][0],MV[1][1],MV[1][2]);
-	  VrmlSFVec3f NY = Y.normalize();
+	  SFVec3f Y(MV[1][0],MV[1][1],MV[1][2]);
+	  SFVec3f NY = Y.normalize();
 
 // get x-vector from the cross product of Viewer's
 // up vector and billboard-to-viewer vector.
-      VrmlSFVec3f X = NY.cross(NVP);
+      SFVec3f X = NY.cross(NVP);
       M[0][0] = X[0]; M[0][1] = X[1]; M[0][2] = X[2]; M[0][3] = 0.0;
       M[1][0] = NY[0]; M[1][1] = NY[1]; M[1][2] = NY[2]; M[1][3] = 0.0;
       M[2][0] = NVP[0]; M[2][1] = NVP[1]; M[2][2] = NVP[2]; M[2][3] = 0.0,
@@ -1379,14 +1374,14 @@ void VrmlNodeBillboard::billboard_to_matrix(const VrmlNodeBillboard* t_arg,
   else
   {
 // axis of rotation will be the y-axis vector
-	  VrmlSFVec3f Y(t_arg->d_axisOfRotation[0],t_arg->d_axisOfRotation[1],
+	  SFVec3f Y(t_arg->d_axisOfRotation[0],t_arg->d_axisOfRotation[1],
 		            t_arg->d_axisOfRotation[2]);
 
 // Plane defined by the axisOfRotation and billboard-to-viewer vector
-	  VrmlSFVec3f X = Y.cross(VP).normalize();
+	  SFVec3f X = Y.cross(VP).normalize();
 
 // Get Z axis vector from cross product of X and Y
-	  VrmlSFVec3f Z = X.cross(Y);
+	  SFVec3f Z = X.cross(Y);
 
 // Transform Z axis vector of current coordinate system to new coordinate system.
      float nz[3];
@@ -1396,22 +1391,22 @@ void VrmlNodeBillboard::billboard_to_matrix(const VrmlNodeBillboard* t_arg,
 // has to be rotated around the Y axis to new coordinate system.
      float angle = acos(nz[2]);
      if(nz[0] > 0) angle = -angle;
-	 VrmlSFRotation Rot(Y,angle);
+	 SFRotation Rot(Y,angle);
      M.setRotate(Rot);
   }
 }
 
 namespace {
-    // Make a VrmlNodeBox
-    const VrmlNodePtr createBox(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeBox(scene));
+    // Make a NodeBox
+    const NodePtr createBox(VrmlScene * const scene) {
+        return NodePtr(new NodeBox(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Box" fields.
  */
-const NodeTypePtr VrmlNodeBox::defineType() {
+const NodeTypePtr NodeBox::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -1419,21 +1414,21 @@ const NodeTypePtr VrmlNodeBox::defineType() {
     }
     
     st.reset(new NodeType("Box", createBox));
-    st->addField("size", VrmlField::SFVEC3F);
+    st->addField("size", FieldValue::SFVEC3F);
 
     return st;
 }
 
-VrmlNodeBox::VrmlNodeBox(VrmlScene * const scene):
-        VrmlNodeGeometry(*defineType(), scene), d_size(2.0, 2.0, 2.0) {
+NodeBox::NodeBox(VrmlScene * const scene):
+        NodeGeometry(*defineType(), scene), d_size(2.0, 2.0, 2.0) {
     this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
-VrmlNodeBox::~VrmlNodeBox()
+NodeBox::~NodeBox()
 {
 }
 
-bool VrmlNodeBox::accept(VrmlNodeVisitor & visitor) {
+bool NodeBox::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -1443,7 +1438,7 @@ bool VrmlNodeBox::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeBox::printFields(ostream& os, int )
+ostream& NodeBox::printFields(ostream& os, int )
 {
   if (!fpequal(d_size.getX(), 2.0)
           || !fpequal(d_size.getY(), 2.0)
@@ -1452,51 +1447,51 @@ ostream& VrmlNodeBox::printFields(ostream& os, int )
   return os;
 }
 
-Viewer::Object VrmlNodeBox::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
+Viewer::Object NodeBox::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   return viewer->insertBox(d_size.getX(), d_size.getY(), d_size.getZ());
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeBox::setField(const std::string & fieldId,
-               const VrmlField & fieldValue)
+void NodeBox::setField(const std::string & fieldId,
+               const FieldValue & fieldValue)
 {
   if TRY_FIELD(size, SFVec3f)
   else
-    VrmlNodeGeometry::setField(fieldId, fieldValue);
+    NodeGeometry::setField(fieldId, fieldValue);
   setBVolumeDirty(true);
 }
 
-VrmlNodeBox* VrmlNodeBox::toBox() const //LarryD Mar 08/99
-{ return (VrmlNodeBox*) this; }
+NodeBox* NodeBox::toBox() const //LarryD Mar 08/99
+{ return (NodeBox*) this; }
 
-const VrmlSFVec3f& VrmlNodeBox::getSize() const   // LarryD Mar 08/99
+const SFVec3f& NodeBox::getSize() const   // LarryD Mar 08/99
 {  return d_size; }
 
 const VrmlBVolume*
-VrmlNodeBox::getBVolume() const
+NodeBox::getBVolume() const
 {
   if (this->isBVolumeDirty()) {
     float corner[3] = { d_size.getX()/2.0f, d_size.getY()/2.0f, d_size.getZ()/2.0f };
     float r = Vlength(corner);
-    ((VrmlNodeBox*)this)->d_bsphere.setRadius(r);
-    ((VrmlNodeBox*)this)->setBVolumeDirty(false); // logical const
+    ((NodeBox*)this)->d_bsphere.setRadius(r);
+    ((NodeBox*)this)->setBVolumeDirty(false); // logical const
   }
   return &d_bsphere;
 }
 
 
 namespace {
-    const VrmlNodePtr createCollision(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeCollision(scene));
+    const NodePtr createCollision(VrmlScene * const scene) {
+        return NodePtr(new NodeCollision(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Collision" fields.
  */
-const NodeTypePtr VrmlNodeCollision::defineType() {
+const NodeTypePtr NodeCollision::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -1504,26 +1499,26 @@ const NodeTypePtr VrmlNodeCollision::defineType() {
     }
     
     st.reset(new NodeType("Collision", createCollision));
-    st->addEventIn("addChildren", VrmlField::MFNODE);
-    st->addEventIn("removeChildren", VrmlField::MFNODE);
-    st->addExposedField("children", VrmlField::MFNODE);
-    st->addField("bboxCenter", VrmlField::SFVEC3F);
-    st->addField("bboxSize", VrmlField::SFVEC3F);
-    st->addExposedField("collide", VrmlField::SFBOOL);
-    st->addField("proxy", VrmlField::SFNODE);
-    st->addEventOut("collideTime", VrmlField::SFTIME);
+    st->addEventIn("addChildren", FieldValue::MFNODE);
+    st->addEventIn("removeChildren", FieldValue::MFNODE);
+    st->addExposedField("children", FieldValue::MFNODE);
+    st->addField("bboxCenter", FieldValue::SFVEC3F);
+    st->addField("bboxSize", FieldValue::SFVEC3F);
+    st->addExposedField("collide", FieldValue::SFBOOL);
+    st->addField("proxy", FieldValue::SFNODE);
+    st->addEventOut("collideTime", FieldValue::SFTIME);
 
     return st;
 }
 
-VrmlNodeCollision::VrmlNodeCollision(VrmlScene * const scene):
-        VrmlNodeGroup(*defineType(), scene), d_collide(true) {}
+NodeCollision::NodeCollision(VrmlScene * const scene):
+        NodeGroup(*defineType(), scene), d_collide(true) {}
 
-VrmlNodeCollision::~VrmlNodeCollision()
+NodeCollision::~NodeCollision()
 {
 }
 
-bool VrmlNodeCollision::accept(VrmlNodeVisitor & visitor) {
+bool NodeCollision::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -1533,7 +1528,7 @@ bool VrmlNodeCollision::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodeCollision::resetVisitedFlag() {
+void NodeCollision::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (size_t i = 0; i < this->d_children.getLength(); ++i) {
@@ -1547,45 +1542,45 @@ void VrmlNodeCollision::resetVisitedFlag() {
     }
 }
 
-const VrmlMFNode VrmlNodeCollision::getChildren() const {
-    VrmlMFNode children(this->d_children);
+const MFNode NodeCollision::getChildren() const {
+    MFNode children(this->d_children);
     children.setLength(children.getLength() + 1);
     children.setElement(children.getLength() - 1, this->d_proxy.get());
     return children;
 }
 
-bool VrmlNodeCollision::isModified() const
+bool NodeCollision::isModified() const
 {
   return ( (d_proxy.get() && d_proxy.get()->isModified()) ||
-       VrmlNodeGroup::isModified() );
+       NodeGroup::isModified() );
 }
 
-void VrmlNodeCollision::clearFlags()
+void NodeCollision::clearFlags()
 {
-  VrmlNodeGroup::clearFlags();
+  NodeGroup::clearFlags();
   if (d_proxy.get()) d_proxy.get()->clearFlags();
 }
 
 
-void VrmlNodeCollision::addToScene(VrmlScene * scene, const std::string & rel) {
-    VrmlNodeGroup::addToScene(scene, rel);
+void NodeCollision::addToScene(VrmlScene * scene, const std::string & rel) {
+    NodeGroup::addToScene(scene, rel);
     if (this->d_proxy.get()) {
         this->d_proxy.get()->addToScene(scene, rel);
     }
 }
 
-ostream& VrmlNodeCollision::printFields(ostream& os, int indent)
+ostream& NodeCollision::printFields(ostream& os, int indent)
 {
   if (! d_collide.get()) PRINT_FIELD(collide);
   if (d_proxy.get()) PRINT_FIELD(proxy);
 
-  VrmlNodeGroup::printFields(os, indent);
+  NodeGroup::printFields(os, indent);
   return os;
 }
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeCollision::getField(const std::string & fieldId) const
+const FieldValue * NodeCollision::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "collide")
@@ -1595,19 +1590,19 @@ const VrmlField * VrmlNodeCollision::getField(const std::string & fieldId) const
   else if (fieldId == "collideTime")
     return &d_collideTime;
 
-  return VrmlNodeGroup::getField(fieldId);
+  return NodeGroup::getField(fieldId);
 }
 
 
 // Set the value of one of the node fields.
 
-void VrmlNodeCollision::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue)
+void NodeCollision::setField(const std::string & fieldId,
+                 const FieldValue & fieldValue)
 {
   if TRY_FIELD(collide, SFBool)
   else if TRY_SFNODE_FIELD(proxy, Child)
   else
-    VrmlNodeGroup::setField(fieldId, fieldValue);
+    NodeGroup::setField(fieldId, fieldValue);
 }
 
 /**
@@ -1615,7 +1610,7 @@ void VrmlNodeCollision::setField(const std::string & fieldId,
  *
  * @return proxy
  */
-const VrmlSFNode & VrmlNodeCollision::getProxy() const {
+const SFNode & NodeCollision::getProxy() const {
     return this->d_proxy;
 }
 
@@ -1624,25 +1619,25 @@ const VrmlSFNode & VrmlNodeCollision::getProxy() const {
  *
  * @param proxy
  */
-void VrmlNodeCollision::setProxy(const VrmlSFNode & proxy) {
+void NodeCollision::setProxy(const SFNode & proxy) {
     this->d_proxy = proxy;
 }
 
-VrmlNodeCollision * VrmlNodeCollision::toCollision() const {
-    return const_cast<VrmlNodeCollision *>(this);
+NodeCollision * NodeCollision::toCollision() const {
+    return const_cast<NodeCollision *>(this);
 }
 
 
 namespace {
-    const VrmlNodePtr createColor(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeColor(scene));
+    const NodePtr createColor(VrmlScene * const scene) {
+        return NodePtr(new NodeColor(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Color" fields.
  */
-const NodeTypePtr VrmlNodeColor::defineType() {
+const NodeTypePtr NodeColor::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -1650,19 +1645,19 @@ const NodeTypePtr VrmlNodeColor::defineType() {
     }
 
     st.reset(new NodeType("Color", createColor));
-    st->addExposedField("color", VrmlField::MFCOLOR);
+    st->addExposedField("color", FieldValue::MFCOLOR);
 
     return st;
 }
 
-VrmlNodeColor::VrmlNodeColor(VrmlScene * const scene):
-        VrmlNode(*defineType(), scene) {}
+NodeColor::NodeColor(VrmlScene * const scene):
+        Node(*defineType(), scene) {}
 
-VrmlNodeColor::~VrmlNodeColor()
+NodeColor::~NodeColor()
 {
 }
 
-bool VrmlNodeColor::accept(VrmlNodeVisitor & visitor) {
+bool NodeColor::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -1672,11 +1667,11 @@ bool VrmlNodeColor::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeColor* VrmlNodeColor::toColor() const
-{ return (VrmlNodeColor*) this; }
+NodeColor* NodeColor::toColor() const
+{ return (NodeColor*) this; }
 
 
-ostream& VrmlNodeColor::printFields(ostream& os, int indent)
+ostream& NodeColor::printFields(ostream& os, int indent)
 {
   if (d_color.getLength() > 0) PRINT_FIELD(color);
 
@@ -1686,36 +1681,36 @@ ostream& VrmlNodeColor::printFields(ostream& os, int indent)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeColor::getField(const std::string & fieldId) const
+const FieldValue * NodeColor::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "color")
     return &d_color;
-  return VrmlNode::getField(fieldId);
+  return Node::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeColor::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue)
+void NodeColor::setField(const std::string & fieldId,
+                         const FieldValue & fieldValue)
 {
   if TRY_FIELD(color, MFColor)
   else
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 }
 
 
 namespace {
     // ColorInterpolator factory.
-    const VrmlNodePtr createColorInt(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeColorInt(scene));
+    const NodePtr createColorInt(VrmlScene * const scene) {
+        return NodePtr(new NodeColorInt(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "ColorInterpolator" fields.
  */
-const NodeTypePtr VrmlNodeColorInt::defineType() {
+const NodeTypePtr NodeColorInt::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -1723,22 +1718,22 @@ const NodeTypePtr VrmlNodeColorInt::defineType() {
     }
 
     st.reset(new NodeType("ColorInterpolator", createColorInt));
-    st->addEventIn("set_fraction", VrmlField::SFFLOAT);
-    st->addExposedField("key", VrmlField::MFFLOAT);
-    st->addExposedField("keyValue", VrmlField::MFCOLOR);
-    st->addEventOut("value_changed", VrmlField::SFCOLOR);
+    st->addEventIn("set_fraction", FieldValue::SFFLOAT);
+    st->addExposedField("key", FieldValue::MFFLOAT);
+    st->addExposedField("keyValue", FieldValue::MFCOLOR);
+    st->addEventOut("value_changed", FieldValue::SFCOLOR);
 
     return st;
 }
 
-VrmlNodeColorInt::VrmlNodeColorInt(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene) {}
+NodeColorInt::NodeColorInt(VrmlScene * const scene):
+        NodeChild(*defineType(), scene) {}
 
-VrmlNodeColorInt::~VrmlNodeColorInt()
+NodeColorInt::~NodeColorInt()
 {
 }
 
-bool VrmlNodeColorInt::accept(VrmlNodeVisitor & visitor) {
+bool NodeColorInt::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -1748,7 +1743,7 @@ bool VrmlNodeColorInt::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeColorInt::printFields(ostream& os, int indent)
+ostream& NodeColorInt::printFields(ostream& os, int indent)
 {
   if (d_key.getLength() > 0) PRINT_FIELD(key);
   if (d_keyValue.getLength() > 0) PRINT_FIELD(keyValue);
@@ -1757,18 +1752,18 @@ ostream& VrmlNodeColorInt::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeColorInt::eventIn(double timeStamp, const std::string & eventName,
-                               const VrmlField & fieldValue) {
+void NodeColorInt::eventIn(double timeStamp, const std::string & eventName,
+                           const FieldValue & fieldValue) {
   if (eventName == "set_fraction")
     {
-      if (!dynamic_cast<const VrmlSFFloat *>(&fieldValue))
+      if (!dynamic_cast<const SFFloat *>(&fieldValue))
     {
       theSystem->error
         ("Invalid type for %s eventIn %s (expected SFFloat).\n",
          this->type.getId().c_str(), eventName.c_str());
       return;
     }
-      float f = static_cast<const VrmlSFFloat &>(fieldValue).get();
+      float f = static_cast<const SFFloat &>(fieldValue).get();
 
       int n = d_key.getLength() - 1;
       if (f < d_key.getElement(0))
@@ -1786,8 +1781,8 @@ void VrmlNodeColorInt::eventIn(double timeStamp, const std::string & eventName,
 
         f = (f - d_key.getElement(i)) / (d_key.getElement(i + 1) - d_key.getElement(i));
         float hsv1[3], hsv2[3];
-        VrmlSFColor::RGBtoHSV(rgb1, hsv1);
-        VrmlSFColor::RGBtoHSV(rgb2, hsv2);
+        SFColor::RGBtoHSV(rgb1, hsv1);
+        SFColor::RGBtoHSV(rgb2, hsv2);
 
         // Interpolate angles via the shortest direction
         if (fabs(hsv2[0] - hsv1[0]) > 180.0)
@@ -1801,7 +1796,7 @@ void VrmlNodeColorInt::eventIn(double timeStamp, const std::string & eventName,
         if (hsv[0] >= 360.0) hsv[0] -= 360.0;
         else if (hsv[0] < 0.0) hsv[0] += 360.0;
         float rgb[3];
-        VrmlSFColor::HSVtoRGB(hsv, rgb);
+        SFColor::HSVtoRGB(hsv, rgb);
         d_value.set(rgb);
         break;
           }
@@ -1814,7 +1809,7 @@ void VrmlNodeColorInt::eventIn(double timeStamp, const std::string & eventName,
   // Check exposedFields
   else
     {
-      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+      Node::eventIn(timeStamp, eventName, fieldValue);
 
       // This node is not renderable, so don't re-render on changes to it.
       clearModified();
@@ -1824,7 +1819,7 @@ void VrmlNodeColorInt::eventIn(double timeStamp, const std::string & eventName,
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeColorInt::getField(const std::string & fieldId) const
+const FieldValue * NodeColorInt::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "key")
@@ -1836,56 +1831,56 @@ const VrmlField * VrmlNodeColorInt::getField(const std::string & fieldId) const
   else if (fieldId == "value")
     return &d_value;
 
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 
 // Set the value of one of the node fields.
 
-void VrmlNodeColorInt::setField(const std::string & fieldId,
-                const VrmlField & fieldValue)
+void NodeColorInt::setField(const std::string & fieldId,
+                const FieldValue & fieldValue)
 {
   if TRY_FIELD(key, MFFloat)
   else if TRY_FIELD(keyValue, MFColor)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 
 namespace {
-    //  Return a new VrmlNodeCone
-    const VrmlNodePtr createCone(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeCone(scene));
+    //  Return a new NodeCone
+    const NodePtr createCone(VrmlScene * const scene) {
+        return NodePtr(new NodeCone(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Cone" fields.
  */
-const NodeTypePtr VrmlNodeCone::defineType() {
+const NodeTypePtr NodeCone::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
         return st; // Only define type once.
     }
     st.reset(new NodeType("Cone", createCone));
-    st->addField("bottom", VrmlField::SFBOOL);
-    st->addField("bottomRadius", VrmlField::SFFLOAT);
-    st->addField("height", VrmlField::SFFLOAT);
-    st->addField("side", VrmlField::SFBOOL);
+    st->addField("bottom", FieldValue::SFBOOL);
+    st->addField("bottomRadius", FieldValue::SFFLOAT);
+    st->addField("height", FieldValue::SFFLOAT);
+    st->addField("side", FieldValue::SFBOOL);
 
     return st;
 }
 
-VrmlNodeCone::VrmlNodeCone(VrmlScene * const scene):
-        VrmlNodeGeometry(*defineType(), scene), d_bottom(true),
+NodeCone::NodeCone(VrmlScene * const scene):
+        NodeGeometry(*defineType(), scene), d_bottom(true),
         d_bottomRadius(1.0), d_height(2.0), d_side(true) {}
 
-VrmlNodeCone::~VrmlNodeCone()
+NodeCone::~NodeCone()
 {
 }
 
-bool VrmlNodeCone::accept(VrmlNodeVisitor & visitor) {
+bool NodeCone::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -1895,7 +1890,7 @@ bool VrmlNodeCone::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeCone::printFields(ostream& os, int indent)
+ostream& NodeCone::printFields(ostream& os, int indent)
 {
   if (! d_bottom.get()) PRINT_FIELD(bottom);
   if (d_bottomRadius.get() != 1.0) PRINT_FIELD(bottomRadius);
@@ -1905,7 +1900,7 @@ ostream& VrmlNodeCone::printFields(ostream& os, int indent)
   return os;
 }
 
-Viewer::Object VrmlNodeCone::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
+Viewer::Object NodeCone::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   return viewer->insertCone(d_height.get(),
                 d_bottomRadius.get(),
@@ -1915,31 +1910,31 @@ Viewer::Object VrmlNodeCone::insertGeometry(Viewer *viewer, VrmlRenderContext rc
 
 // Set the value of one of the node fields.
 
-void VrmlNodeCone::setField(const std::string & fieldId,
-                const VrmlField & fieldValue)
+void NodeCone::setField(const std::string & fieldId,
+                        const FieldValue & fieldValue)
 {
   if TRY_FIELD(bottom, SFBool)
   else if TRY_FIELD(bottomRadius, SFFloat)
   else if TRY_FIELD(height, SFFloat)
   else if TRY_FIELD(side, SFBool)
   else
-    VrmlNodeGeometry::setField(fieldId, fieldValue);
+    NodeGeometry::setField(fieldId, fieldValue);
 }
 
-VrmlNodeCone* VrmlNodeCone::toCone() const //LarryD Mar 08/99
-{ return (VrmlNodeCone*) this; }
+NodeCone* NodeCone::toCone() const //LarryD Mar 08/99
+{ return (NodeCone*) this; }
 
 
 namespace {
-    const VrmlNodePtr createCoordinate(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeCoordinate(scene));
+    const NodePtr createCoordinate(VrmlScene * const scene) {
+        return NodePtr(new NodeCoordinate(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Coordinate" fields.
  */
-const NodeTypePtr VrmlNodeCoordinate::defineType() {
+const NodeTypePtr NodeCoordinate::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -1947,19 +1942,19 @@ const NodeTypePtr VrmlNodeCoordinate::defineType() {
     }
     
     st.reset(new NodeType("Coordinate", createCoordinate));
-    st->addExposedField("point", VrmlField::MFVEC3F);
+    st->addExposedField("point", FieldValue::MFVEC3F);
 
     return st;
 }
 
-VrmlNodeCoordinate::VrmlNodeCoordinate(VrmlScene * const scene):
-        VrmlNode(*defineType(), scene) {}
+NodeCoordinate::NodeCoordinate(VrmlScene * const scene):
+        Node(*defineType(), scene) {}
 
-VrmlNodeCoordinate::~VrmlNodeCoordinate()
+NodeCoordinate::~NodeCoordinate()
 {
 }
 
-bool VrmlNodeCoordinate::accept(VrmlNodeVisitor & visitor) {
+bool NodeCoordinate::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -1969,11 +1964,11 @@ bool VrmlNodeCoordinate::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeCoordinate* VrmlNodeCoordinate::toCoordinate() const
-{ return (VrmlNodeCoordinate*)this; }
+NodeCoordinate* NodeCoordinate::toCoordinate() const
+{ return (NodeCoordinate*)this; }
 
 
-ostream& VrmlNodeCoordinate::printFields(ostream& os, int indent)
+ostream& NodeCoordinate::printFields(ostream& os, int indent)
 {
   if (d_point.getLength() > 0) PRINT_FIELD(point);
 
@@ -1982,37 +1977,37 @@ ostream& VrmlNodeCoordinate::printFields(ostream& os, int indent)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeCoordinate::getField(const std::string & fieldId) const
+const FieldValue * NodeCoordinate::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "point")
     return &d_point;
 
-  return VrmlNode::getField(fieldId);
+  return Node::getField(fieldId);
 }
 
 
 // Set the value of one of the node fields.
 
-void VrmlNodeCoordinate::setField(const std::string & fieldId,
-                  const VrmlField & fieldValue)
+void NodeCoordinate::setField(const std::string & fieldId,
+                  const FieldValue & fieldValue)
 {
   if TRY_FIELD(point, MFVec3f)
   else
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 }
 
 
 namespace {
     // CoordinateInt factory.
-    const VrmlNodePtr createCoordinateInt(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeCoordinateInt(scene));
+    const NodePtr createCoordinateInt(VrmlScene * const scene) {
+        return NodePtr(new NodeCoordinateInt(scene));
     }
 }
 
 // Define the built in NodeType:: "CoordinateInterpolator" fields
 
-const NodeTypePtr VrmlNodeCoordinateInt::defineType() {
+const NodeTypePtr NodeCoordinateInt::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -2021,22 +2016,22 @@ const NodeTypePtr VrmlNodeCoordinateInt::defineType() {
     
     st.reset(new NodeType("CoordinateInterpolator",
                               createCoordinateInt));
-    st->addEventIn("set_fraction", VrmlField::SFFLOAT);
-    st->addExposedField("key", VrmlField::MFFLOAT);
-    st->addExposedField("keyValue", VrmlField::MFVEC3F);
-    st->addEventOut("value_changed", VrmlField::MFVEC3F);
+    st->addEventIn("set_fraction", FieldValue::SFFLOAT);
+    st->addExposedField("key", FieldValue::MFFLOAT);
+    st->addExposedField("keyValue", FieldValue::MFVEC3F);
+    st->addEventOut("value_changed", FieldValue::MFVEC3F);
 
     return st;
 }
 
-VrmlNodeCoordinateInt::VrmlNodeCoordinateInt(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene) {}
+NodeCoordinateInt::NodeCoordinateInt(VrmlScene * const scene):
+        NodeChild(*defineType(), scene) {}
 
-VrmlNodeCoordinateInt::~VrmlNodeCoordinateInt()
+NodeCoordinateInt::~NodeCoordinateInt()
 {
 }
 
-bool VrmlNodeCoordinateInt::accept(VrmlNodeVisitor & visitor) {
+bool NodeCoordinateInt::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -2046,7 +2041,7 @@ bool VrmlNodeCoordinateInt::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeCoordinateInt::printFields(ostream& os, int indent)
+ostream& NodeCoordinateInt::printFields(ostream& os, int indent)
 {
   if (d_key.getLength() > 0) PRINT_FIELD(key);
   if (d_keyValue.getLength() > 0) PRINT_FIELD(keyValue);
@@ -2054,19 +2049,18 @@ ostream& VrmlNodeCoordinateInt::printFields(ostream& os, int indent)
   return os;
 }
 
-void VrmlNodeCoordinateInt::eventIn(double timeStamp,
-                                    const std::string & eventName,
-                                    const VrmlField & fieldValue) {
+void NodeCoordinateInt::eventIn(double timeStamp, const std::string & eventName,
+                                const FieldValue & fieldValue) {
   if (eventName == "set_fraction")
     {
-      if (!dynamic_cast<const VrmlSFFloat *>(&fieldValue))
+      if (!dynamic_cast<const SFFloat *>(&fieldValue))
     {
       theSystem->error
         ("Invalid type for %s eventIn %s (expected SFFloat).\n",
          this->type.getId().c_str(), eventName.c_str());
       return;
     }
-      float f = static_cast<const VrmlSFFloat &>(fieldValue).get();
+      float f = static_cast<const SFFloat &>(fieldValue).get();
 
       size_t nCoords = d_keyValue.getLength() / d_key.getLength();
       size_t n = d_key.getLength() - 1;
@@ -2113,7 +2107,7 @@ void VrmlNodeCoordinateInt::eventIn(double timeStamp,
   // Check exposedFields
   else
     {
-      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+      Node::eventIn(timeStamp, eventName, fieldValue);
 
       // This node is not renderable, so don't re-render on changes to it.
       clearModified();
@@ -2123,7 +2117,7 @@ void VrmlNodeCoordinateInt::eventIn(double timeStamp,
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeCoordinateInt::getField(const std::string & fieldId) const
+const FieldValue * NodeCoordinateInt::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "key")
@@ -2135,33 +2129,33 @@ const VrmlField * VrmlNodeCoordinateInt::getField(const std::string & fieldId) c
   else if (fieldId == "value")
     return &d_value;
 
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 
 // Set the value of one of the node fields.
 
-void VrmlNodeCoordinateInt::setField(const std::string & fieldId,
-                     const VrmlField & fieldValue)
+void NodeCoordinateInt::setField(const std::string & fieldId,
+                     const FieldValue & fieldValue)
 {
   if TRY_FIELD(key, MFFloat)
   else if TRY_FIELD(keyValue, MFVec3f)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 
 namespace {
-    //  Return a new VrmlNodeCylinder
-    const VrmlNodePtr createCylinder(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeCylinder(scene));
+    //  Return a new NodeCylinder
+    const NodePtr createCylinder(VrmlScene * const scene) {
+        return NodePtr(new NodeCylinder(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Cylinder" fields.
  */
-const NodeTypePtr VrmlNodeCylinder::defineType() {
+const NodeTypePtr NodeCylinder::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -2169,25 +2163,25 @@ const NodeTypePtr VrmlNodeCylinder::defineType() {
     }
 
     st.reset(new NodeType("Cylinder", createCylinder));
-    st->addField("bottom", VrmlField::SFBOOL);
-    st->addField("height", VrmlField::SFFLOAT);
-    st->addField("radius", VrmlField::SFFLOAT);
-    st->addField("side", VrmlField::SFBOOL);
-    st->addField("top", VrmlField::SFBOOL);
+    st->addField("bottom", FieldValue::SFBOOL);
+    st->addField("height", FieldValue::SFFLOAT);
+    st->addField("radius", FieldValue::SFFLOAT);
+    st->addField("side", FieldValue::SFBOOL);
+    st->addField("top", FieldValue::SFBOOL);
 
     return st;
 }
 
-VrmlNodeCylinder::VrmlNodeCylinder(VrmlScene * const scene):
-        VrmlNodeGeometry(*defineType(), scene), d_bottom(true), d_height(2.0),
+NodeCylinder::NodeCylinder(VrmlScene * const scene):
+        NodeGeometry(*defineType(), scene), d_bottom(true), d_height(2.0),
         d_radius(1.0), d_side(true), d_top(true) {}
 
-VrmlNodeCylinder::~VrmlNodeCylinder()
+NodeCylinder::~NodeCylinder()
 {
   // need access to viewer to remove d_viewerObject...
 }
 
-bool VrmlNodeCylinder::accept(VrmlNodeVisitor & visitor) {
+bool NodeCylinder::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -2197,7 +2191,7 @@ bool VrmlNodeCylinder::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeCylinder::printFields(ostream& os, int indent)
+ostream& NodeCylinder::printFields(ostream& os, int indent)
 {
   if (! d_bottom.get()) PRINT_FIELD(bottom);
   if (! d_side.get()) PRINT_FIELD(side);
@@ -2209,7 +2203,8 @@ ostream& VrmlNodeCylinder::printFields(ostream& os, int indent)
 }
 
 
-Viewer::Object VrmlNodeCylinder::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
+Viewer::Object NodeCylinder::insertGeometry(Viewer * viewer,
+                                            VrmlRenderContext rc)
 {
   return viewer->insertCylinder(d_height.get(),
                 d_radius.get(),
@@ -2220,8 +2215,8 @@ Viewer::Object VrmlNodeCylinder::insertGeometry(Viewer *viewer, VrmlRenderContex
 
 // Set the value of one of the node fields.
 
-void VrmlNodeCylinder::setField(const std::string & fieldId,
-                const VrmlField & fieldValue)
+void NodeCylinder::setField(const std::string & fieldId,
+                            const FieldValue & fieldValue)
 {
   if TRY_FIELD(bottom, SFBool)
   else if TRY_FIELD(height, SFFloat)
@@ -2229,24 +2224,24 @@ void VrmlNodeCylinder::setField(const std::string & fieldId,
   else if TRY_FIELD(side, SFBool)
   else if TRY_FIELD(top, SFBool)
   else
-    VrmlNodeGeometry::setField(fieldId, fieldValue);
+    NodeGeometry::setField(fieldId, fieldValue);
 }
 
-VrmlNodeCylinder* VrmlNodeCylinder::toCylinder() const //LarryD Mar 08/99
-{ return (VrmlNodeCylinder*) this; }
+NodeCylinder* NodeCylinder::toCylinder() const //LarryD Mar 08/99
+{ return (NodeCylinder*) this; }
 
 
 namespace {
     // CylinderSensor factory. 
-    const VrmlNodePtr createCylinderSensor(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeCylinderSensor(scene));
+    const NodePtr createCylinderSensor(VrmlScene * const scene) {
+        return NodePtr(new NodeCylinderSensor(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "CylinderSensor" fields.
  */
-const NodeTypePtr VrmlNodeCylinderSensor::defineType() {
+const NodeTypePtr NodeCylinderSensor::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -2254,32 +2249,32 @@ const NodeTypePtr VrmlNodeCylinderSensor::defineType() {
     }
 
     st.reset(new NodeType("CylinderSensor", createCylinderSensor));
-    st->addExposedField("autoOffset", VrmlField::SFBOOL);
-    st->addExposedField("diskAngle", VrmlField::SFFLOAT);
-    st->addExposedField("enabled", VrmlField::SFBOOL);
-    st->addExposedField("maxAngle", VrmlField::SFFLOAT);
-    st->addExposedField("minAngle", VrmlField::SFFLOAT);
-    st->addExposedField("offset", VrmlField::SFFLOAT);
-    st->addEventOut("isActive", VrmlField::SFBOOL);
-    st->addEventOut("rotation_changed", VrmlField::SFROTATION);
-    st->addEventOut("trackPoint_changed", VrmlField::SFVEC3F);
+    st->addExposedField("autoOffset", FieldValue::SFBOOL);
+    st->addExposedField("diskAngle", FieldValue::SFFLOAT);
+    st->addExposedField("enabled", FieldValue::SFBOOL);
+    st->addExposedField("maxAngle", FieldValue::SFFLOAT);
+    st->addExposedField("minAngle", FieldValue::SFFLOAT);
+    st->addExposedField("offset", FieldValue::SFFLOAT);
+    st->addEventOut("isActive", FieldValue::SFBOOL);
+    st->addEventOut("rotation_changed", FieldValue::SFROTATION);
+    st->addEventOut("trackPoint_changed", FieldValue::SFVEC3F);
 
     return st;
 }
 
-VrmlNodeCylinderSensor::VrmlNodeCylinderSensor(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_autoOffset(true),
+NodeCylinderSensor::NodeCylinderSensor(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_autoOffset(true),
         d_diskAngle(0.262), d_enabled(true), d_maxAngle(-1.0), d_minAngle(0.0),
         d_offset(0.0), d_isActive(false) {
     this->setModified();
 }
 
 
-VrmlNodeCylinderSensor::~VrmlNodeCylinderSensor()
+NodeCylinderSensor::~NodeCylinderSensor()
 {
 }
 
-bool VrmlNodeCylinderSensor::accept(VrmlNodeVisitor & visitor) {
+bool NodeCylinderSensor::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -2289,12 +2284,12 @@ bool VrmlNodeCylinderSensor::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeCylinderSensor* VrmlNodeCylinderSensor::toCylinderSensor() const    // mgiger 6/16/00
+NodeCylinderSensor* NodeCylinderSensor::toCylinderSensor() const    // mgiger 6/16/00
 {
-    return (VrmlNodeCylinderSensor*) this;
+    return (NodeCylinderSensor*) this;
 }
 
-ostream& VrmlNodeCylinderSensor::printFields(ostream& os, int indent)
+ostream& NodeCylinderSensor::printFields(ostream& os, int indent)
 {
   if (! d_autoOffset.get()) PRINT_FIELD(autoOffset);
   if (!fpequal(d_diskAngle.get(), 0.262)) PRINT_FIELD(diskAngle);
@@ -2306,7 +2301,7 @@ ostream& VrmlNodeCylinderSensor::printFields(ostream& os, int indent)
   return os;
 }
 
-const VrmlField * VrmlNodeCylinderSensor::getField(const std::string & fieldId) const
+const FieldValue * NodeCylinderSensor::getField(const std::string & fieldId) const
 {
   if (fieldId == "autoOffset")
     return &d_autoOffset;
@@ -2329,13 +2324,13 @@ const VrmlField * VrmlNodeCylinderSensor::getField(const std::string & fieldId) 
   else if (fieldId == "trackPoint")
     return &d_trackPoint;
   
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeCylinderSensor::setField(const std::string & fieldId,
-                      const VrmlField & fieldValue)
+void NodeCylinderSensor::setField(const std::string & fieldId,
+                                  const FieldValue & fieldValue)
 {
   if TRY_FIELD(autoOffset, SFBool)
   else if TRY_FIELD(diskAngle, SFFloat)
@@ -2344,18 +2339,18 @@ void VrmlNodeCylinderSensor::setField(const std::string & fieldId,
   else if TRY_FIELD(minAngle, SFFloat)
   else if TRY_FIELD(offset, SFFloat)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 // Store the ModelView matrix which is calculated at the time of rendering
 // in render-context. This matrix will be in use at the time of activation
 
-void VrmlNodeCylinderSensor::render(Viewer* v, VrmlRenderContext rc)
+void NodeCylinderSensor::render(Viewer* v, VrmlRenderContext rc)
 {
 	setMVMatrix(rc.getMatrix());
 }
 
-void VrmlNodeCylinderSensor::activate( double timeStamp,
+void NodeCylinderSensor::activate( double timeStamp,
                     bool isActive,
                     double *p )
 {
@@ -2366,7 +2361,7 @@ void VrmlNodeCylinderSensor::activate( double timeStamp,
  *
  * @param return modelview matrix in VrmlMatrix format. 
 */
-const VrmlMatrix & VrmlNodeCylinderSensor::getMVMatrix() const
+const VrmlMatrix & NodeCylinderSensor::getMVMatrix() const
 {
 return this->M;
 }
@@ -2375,22 +2370,22 @@ return this->M;
  * Sets the modelview matrix (M). 
  * @param M_in a modelview matrix in VrmlMatrix format. 
 */
-void VrmlNodeCylinderSensor::setMVMatrix(const VrmlMatrix & M_in)
+void NodeCylinderSensor::setMVMatrix(const VrmlMatrix & M_in)
 {
 this->M = M_in;
 }
 
 namespace {
-    // Return a new VrmlNodeDirLight
-    const VrmlNodePtr createDirLight(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeDirLight(scene));
+    // Return a new NodeDirLight
+    const NodePtr createDirLight(VrmlScene * const scene) {
+        return NodePtr(new NodeDirLight(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "DirLight" fields.
  */
-const NodeTypePtr VrmlNodeDirLight::defineType() {
+const NodeTypePtr NodeDirLight::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -2398,23 +2393,23 @@ const NodeTypePtr VrmlNodeDirLight::defineType() {
     }
     
     st.reset(new NodeType("DirectionalLight", createDirLight));
-    st->addExposedField("ambientIntensity", VrmlField::SFFLOAT);
-    st->addExposedField("color", VrmlField::SFCOLOR);
-    st->addExposedField("intensity", VrmlField::SFFLOAT);
-    st->addExposedField("on", VrmlField::SFBOOL);
-    st->addExposedField("direction", VrmlField::SFVEC3F);
+    st->addExposedField("ambientIntensity", FieldValue::SFFLOAT);
+    st->addExposedField("color", FieldValue::SFCOLOR);
+    st->addExposedField("intensity", FieldValue::SFFLOAT);
+    st->addExposedField("on", FieldValue::SFBOOL);
+    st->addExposedField("direction", FieldValue::SFVEC3F);
 
     return st;
 }
 
-VrmlNodeDirLight::VrmlNodeDirLight(VrmlScene * const scene):
-        VrmlNodeLight(*defineType(), scene), d_direction(0.0, 0.0, -1.0) {}
+NodeDirLight::NodeDirLight(VrmlScene * const scene):
+        NodeLight(*defineType(), scene), d_direction(0.0, 0.0, -1.0) {}
 
-VrmlNodeDirLight::~VrmlNodeDirLight()
+NodeDirLight::~NodeDirLight()
 {
 }
 
-bool VrmlNodeDirLight::accept(VrmlNodeVisitor & visitor) {
+bool NodeDirLight::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -2424,9 +2419,9 @@ bool VrmlNodeDirLight::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeDirLight::printFields(ostream& os, int indent)
+ostream& NodeDirLight::printFields(ostream& os, int indent)
 {
-  VrmlNodeLight::printFields(os, indent);
+  NodeLight::printFields(os, indent);
   if (! fpzero(d_direction.getX()) ||
       ! fpzero(d_direction.getY()) ||
       ! fpequal(d_direction.getZ(), -1.0) )
@@ -2437,7 +2432,7 @@ ostream& VrmlNodeDirLight::printFields(ostream& os, int indent)
 
 // This should be called before rendering any sibling nodes.
 
-void VrmlNodeDirLight::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeDirLight::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if ( d_on.get() )
     viewer->insertDirLight( d_ambientIntensity.get(),
@@ -2449,40 +2444,40 @@ void VrmlNodeDirLight::render(Viewer *viewer, VrmlRenderContext rc)
 
 // Get the value of one of the exposedFields
 
-const VrmlField * VrmlNodeDirLight::getField(const std::string & fieldId) const
+const FieldValue * NodeDirLight::getField(const std::string & fieldId) const
 {
   if (fieldId == "direction")
     return &d_direction;
-  return VrmlNodeLight::getField(fieldId);
+  return NodeLight::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeDirLight::setField(const std::string & fieldId,
-                const VrmlField & fieldValue)
+void NodeDirLight::setField(const std::string & fieldId,
+                const FieldValue & fieldValue)
 {
   if TRY_FIELD(direction, SFVec3f)
   else 
-    VrmlNodeLight::setField(fieldId, fieldValue);
+    NodeLight::setField(fieldId, fieldValue);
 }
 
-const VrmlSFVec3f& VrmlNodeDirLight::getDirection() const   // LarryD Mar 04/99
+const SFVec3f& NodeDirLight::getDirection() const   // LarryD Mar 04/99
 {  return d_direction; }
 
-VrmlNodeDirLight *VrmlNodeDirLight::toDirLight() const // LarryD Mar 04/99
-{ return (VrmlNodeDirLight*) this; }
+NodeDirLight *NodeDirLight::toDirLight() const // LarryD Mar 04/99
+{ return (NodeDirLight*) this; }
 
 
 namespace {
-    const VrmlNodePtr createElevationGrid(VrmlScene * const scene) {
-      return VrmlNodePtr(new VrmlNodeElevationGrid(scene));
+    const NodePtr createElevationGrid(VrmlScene * const scene) {
+      return NodePtr(new NodeElevationGrid(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "ElevationGrid" fields.
  */
-const NodeTypePtr VrmlNodeElevationGrid::defineType() {
+const NodeTypePtr NodeElevationGrid::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -2490,34 +2485,34 @@ const NodeTypePtr VrmlNodeElevationGrid::defineType() {
     }
     
     st.reset(new NodeType("ElevationGrid", createElevationGrid));
-    st->addEventIn("set_height", VrmlField::MFFLOAT);
-    st->addExposedField("color", VrmlField::SFNODE);
-    st->addExposedField("normal", VrmlField::SFNODE);
-    st->addExposedField("texCoord", VrmlField::SFNODE);
-    st->addField("ccw", VrmlField::SFBOOL);
-    st->addField("colorPerVertex", VrmlField::SFBOOL);
-    st->addField("creaseAngle", VrmlField::SFFLOAT);
-    st->addField("height", VrmlField::MFFLOAT);
-    st->addField("normalPerVertex", VrmlField::SFBOOL);
-    st->addField("solid", VrmlField::SFBOOL);
-    st->addField("xDimension", VrmlField::SFINT32);
-    st->addField("xSpacing", VrmlField::SFFLOAT);
-    st->addField("zDimension", VrmlField::SFINT32);
-    st->addField("zSpacing", VrmlField::SFFLOAT);
+    st->addEventIn("set_height", FieldValue::MFFLOAT);
+    st->addExposedField("color", FieldValue::SFNODE);
+    st->addExposedField("normal", FieldValue::SFNODE);
+    st->addExposedField("texCoord", FieldValue::SFNODE);
+    st->addField("ccw", FieldValue::SFBOOL);
+    st->addField("colorPerVertex", FieldValue::SFBOOL);
+    st->addField("creaseAngle", FieldValue::SFFLOAT);
+    st->addField("height", FieldValue::MFFLOAT);
+    st->addField("normalPerVertex", FieldValue::SFBOOL);
+    st->addField("solid", FieldValue::SFBOOL);
+    st->addField("xDimension", FieldValue::SFINT32);
+    st->addField("xSpacing", FieldValue::SFFLOAT);
+    st->addField("zDimension", FieldValue::SFINT32);
+    st->addField("zSpacing", FieldValue::SFFLOAT);
 
     return st;
 }
 
-VrmlNodeElevationGrid::VrmlNodeElevationGrid(VrmlScene * const scene):
-        VrmlNodeGeometry(*defineType(), scene), d_ccw(true),
+NodeElevationGrid::NodeElevationGrid(VrmlScene * const scene):
+        NodeGeometry(*defineType(), scene), d_ccw(true),
         d_colorPerVertex(true), d_normalPerVertex(true), d_solid(true),
         d_xDimension(0), d_xSpacing(1.0f), d_zDimension(0), d_zSpacing(1.0f) {}
 
-VrmlNodeElevationGrid::~VrmlNodeElevationGrid()
+NodeElevationGrid::~NodeElevationGrid()
 {
 }
 
-bool VrmlNodeElevationGrid::accept(VrmlNodeVisitor & visitor) {
+bool NodeElevationGrid::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -2527,7 +2522,7 @@ bool VrmlNodeElevationGrid::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodeElevationGrid::resetVisitedFlag() {
+void NodeElevationGrid::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         if (this->d_color.get()) {
@@ -2542,13 +2537,13 @@ void VrmlNodeElevationGrid::resetVisitedFlag() {
     }
 }
 
-const VrmlMFNode VrmlNodeElevationGrid::getChildren() const {
-    VrmlNodePtr children[] = { this->d_color.get(), this->d_normal.get(),
+const MFNode NodeElevationGrid::getChildren() const {
+    NodePtr children[] = { this->d_color.get(), this->d_normal.get(),
                                this->d_texCoord.get() };
-    return VrmlMFNode(3, children);
+    return MFNode(3, children);
 }
 
-bool VrmlNodeElevationGrid::isModified() const
+bool NodeElevationGrid::isModified() const
 {
   return ( d_modified ||
        (d_color.get() && d_color.get()->isModified()) ||
@@ -2556,7 +2551,7 @@ bool VrmlNodeElevationGrid::isModified() const
        (d_texCoord.get() && d_texCoord.get()->isModified()) );
 }
 
-void VrmlNodeElevationGrid::updateModified(VrmlNodePath& path)
+void NodeElevationGrid::updateModified(NodePath& path)
 {
   if (this->isModified()) markPathModified(path, true);
   path.push_front(this);
@@ -2567,15 +2562,15 @@ void VrmlNodeElevationGrid::updateModified(VrmlNodePath& path)
 }
 
 
-void VrmlNodeElevationGrid::clearFlags()
+void NodeElevationGrid::clearFlags()
 {
-  VrmlNode::clearFlags();
+  Node::clearFlags();
   if (d_color.get()) d_color.get()->clearFlags();
   if (d_normal.get()) d_normal.get()->clearFlags();
   if (d_texCoord.get()) d_texCoord.get()->clearFlags();
 }
 
-void VrmlNodeElevationGrid::addToScene(VrmlScene * scene,
+void NodeElevationGrid::addToScene(VrmlScene * scene,
                                        const std::string & rel) {
     this->d_scene = scene;
     if (this->d_color.get()) {
@@ -2589,7 +2584,7 @@ void VrmlNodeElevationGrid::addToScene(VrmlScene * scene,
     }
 }
 
-ostream& VrmlNodeElevationGrid::printFields(ostream& os, int indent)
+ostream& NodeElevationGrid::printFields(ostream& os, int indent)
 {
   if (d_color.get()) PRINT_FIELD(color);
   if (d_normal.get()) PRINT_FIELD(normal);
@@ -2611,7 +2606,7 @@ ostream& VrmlNodeElevationGrid::printFields(ostream& os, int indent)
   return os;
 }
 
-Viewer::Object VrmlNodeElevationGrid::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
+Viewer::Object NodeElevationGrid::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
 
@@ -2621,20 +2616,20 @@ Viewer::Object VrmlNodeElevationGrid::insertGeometry(Viewer *viewer, VrmlRenderC
 
       if (d_texCoord.get())
     {
-      VrmlMFVec2f &texcoord =
+      MFVec2f &texcoord =
         d_texCoord.get()->toTextureCoordinate()->coordinate();
       tc = &texcoord.getElement(0)[0];
     }
 
       if (d_normal.get())
     {
-      VrmlMFVec3f &n = d_normal.get()->toNormal()->normal();
+      MFVec3f &n = d_normal.get()->toNormal()->normal();
       normals = &n.getElement(0)[0];
     }
 
       if (d_color.get())
     {
-      VrmlMFColor &c = d_color.get()->toColor()->color();
+      MFColor &c = d_color.get()->toColor()->color();
       colors = &c.getElement(0)[0];
     }
 
@@ -2665,7 +2660,7 @@ Viewer::Object VrmlNodeElevationGrid::insertGeometry(Viewer *viewer, VrmlRenderC
 
 // Get the value of one of the exposedFields or eventOuts.
 
-const VrmlField * VrmlNodeElevationGrid::getField(const std::string & fieldId) const
+const FieldValue * NodeElevationGrid::getField(const std::string & fieldId) const
 {
   if (fieldId == "color")
     return &d_color;
@@ -2673,13 +2668,13 @@ const VrmlField * VrmlNodeElevationGrid::getField(const std::string & fieldId) c
     return &d_normal;
   else if (fieldId == "texCoord")
     return &d_texCoord;
-  return VrmlNodeGeometry::getField(fieldId);
+  return NodeGeometry::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeElevationGrid::setField(const std::string & fieldId,
-                     const VrmlField & fieldValue)
+void NodeElevationGrid::setField(const std::string & fieldId,
+                     const FieldValue & fieldValue)
 {
   if TRY_SFNODE_FIELD(color, Color)
   else if TRY_SFNODE_FIELD(normal, Normal)
@@ -2695,12 +2690,12 @@ void VrmlNodeElevationGrid::setField(const std::string & fieldId,
   else if TRY_FIELD(zDimension, SFInt32)
   else if TRY_FIELD(zSpacing, SFFloat)
   else
-    VrmlNodeGeometry::setField(fieldId, fieldValue);
+    NodeGeometry::setField(fieldId, fieldValue);
 }
 
 // LarryD Mar 09/99
-VrmlNodeElevationGrid* VrmlNodeElevationGrid::toElevationGrid() const 
-{ return (VrmlNodeElevationGrid*) this; }
+NodeElevationGrid* NodeElevationGrid::toElevationGrid() const 
+{ return (NodeElevationGrid*) this; }
 
 /**
  * @brief Get the Color node.
@@ -2708,7 +2703,7 @@ VrmlNodeElevationGrid* VrmlNodeElevationGrid::toElevationGrid() const
  * @return an SFNode object containing the Color node associated with
  *         this ElevationGrid.
  */
-const VrmlSFNode & VrmlNodeElevationGrid::getColor() const {
+const SFNode & NodeElevationGrid::getColor() const {
     return this->d_color;
 }
 
@@ -2717,7 +2712,7 @@ const VrmlSFNode & VrmlNodeElevationGrid::getColor() const {
  *
  * @param color an SFNode value containing a Color node.
  */
-void VrmlNodeElevationGrid::setColor(const VrmlSFNode & color) {
+void NodeElevationGrid::setColor(const SFNode & color) {
     assert(!color.get() || color.get()->toColor());
     this->d_color = color;
 }
@@ -2728,7 +2723,7 @@ void VrmlNodeElevationGrid::setColor(const VrmlSFNode & color) {
  * @return an SFNode object containing the Normal node associated with
  *         this ElevationGrid.
  */
-const VrmlSFNode & VrmlNodeElevationGrid::getNormal() const {
+const SFNode & NodeElevationGrid::getNormal() const {
     return this->d_normal;
 }
 
@@ -2737,7 +2732,7 @@ const VrmlSFNode & VrmlNodeElevationGrid::getNormal() const {
  *
  * @param normal an SFNode value containing a Normal node.
  */
-void VrmlNodeElevationGrid::setNormal(const VrmlSFNode & normal) {
+void NodeElevationGrid::setNormal(const SFNode & normal) {
     assert(!normal.get() || normal.get()->toNormal());
     this->d_normal = normal;
 }
@@ -2748,7 +2743,7 @@ void VrmlNodeElevationGrid::setNormal(const VrmlSFNode & normal) {
  * @return an SFNode object containing the TextureCoordinate node
  *         associated with this ElevationGrid.
  */
-const VrmlSFNode & VrmlNodeElevationGrid::getTexCoord() const {
+const SFNode & NodeElevationGrid::getTexCoord() const {
     return this->d_texCoord;
 }
 
@@ -2757,7 +2752,7 @@ const VrmlSFNode & VrmlNodeElevationGrid::getTexCoord() const {
  *
  * @param texCoord an SFNode value containing a TextureCoordinate node.
  */
-void VrmlNodeElevationGrid::setTexCoord(const VrmlSFNode & texCoord) {
+void NodeElevationGrid::setTexCoord(const SFNode & texCoord) {
     assert(!texCoord.get() || texCoord.get()->toTextureCoordinate());
     this->d_texCoord = texCoord;
 }
@@ -2767,7 +2762,7 @@ void VrmlNodeElevationGrid::setTexCoord(const VrmlSFNode & texCoord) {
  *
  * @return an SFBool object.
  */
-const VrmlSFBool & VrmlNodeElevationGrid::getCcw() const {
+const SFBool & NodeElevationGrid::getCcw() const {
     return this->d_ccw;
 }
 
@@ -2776,7 +2771,7 @@ const VrmlSFBool & VrmlNodeElevationGrid::getCcw() const {
  *
  * @param ccw an SFBool object.
  */
-void VrmlNodeElevationGrid::setCcw(const VrmlSFBool & ccw) {
+void NodeElevationGrid::setCcw(const SFBool & ccw) {
     this->d_ccw = ccw;
 }
 
@@ -2785,7 +2780,7 @@ void VrmlNodeElevationGrid::setCcw(const VrmlSFBool & ccw) {
  *
  * @return an SFBool object.
  */
-const VrmlSFBool & VrmlNodeElevationGrid::getColorPerVertex() const {
+const SFBool & NodeElevationGrid::getColorPerVertex() const {
     return this->d_colorPerVertex;
 }
 
@@ -2794,7 +2789,7 @@ const VrmlSFBool & VrmlNodeElevationGrid::getColorPerVertex() const {
  *
  * @param colorPerVertex an SFBool object.
  */
-void VrmlNodeElevationGrid::setColorPerVertex(const VrmlSFBool & colorPerVertex)
+void NodeElevationGrid::setColorPerVertex(const SFBool & colorPerVertex)
 {
     this->d_colorPerVertex = colorPerVertex;
 }
@@ -2804,7 +2799,7 @@ void VrmlNodeElevationGrid::setColorPerVertex(const VrmlSFBool & colorPerVertex)
  *
  * @return the crease angle.
  */
-const VrmlSFFloat & VrmlNodeElevationGrid::getCreaseAngle() const {
+const SFFloat & NodeElevationGrid::getCreaseAngle() const {
     return this->d_creaseAngle;
 }
 
@@ -2813,7 +2808,7 @@ const VrmlSFFloat & VrmlNodeElevationGrid::getCreaseAngle() const {
  *
  * @param creaseAngle
  */
-void VrmlNodeElevationGrid::setCreaseAngle(const VrmlSFFloat & creaseAngle) {
+void NodeElevationGrid::setCreaseAngle(const SFFloat & creaseAngle) {
     this->d_creaseAngle = creaseAngle;
 }
 
@@ -2822,7 +2817,7 @@ void VrmlNodeElevationGrid::setCreaseAngle(const VrmlSFFloat & creaseAngle) {
  *
  * @return the height field
  */
-const VrmlMFFloat & VrmlNodeElevationGrid::getHeight() const {
+const MFFloat & NodeElevationGrid::getHeight() const {
     return this->d_height;
 }
 
@@ -2831,7 +2826,7 @@ const VrmlMFFloat & VrmlNodeElevationGrid::getHeight() const {
  *
  * @param height a height field
  */
-void VrmlNodeElevationGrid::setHeight(const VrmlMFFloat & height) {
+void NodeElevationGrid::setHeight(const MFFloat & height) {
     this->d_height = height;
 }
 
@@ -2840,7 +2835,7 @@ void VrmlNodeElevationGrid::setHeight(const VrmlMFFloat & height) {
  *
  * @return an SFBool object.
  */
-const VrmlSFBool & VrmlNodeElevationGrid::getNormalPerVertex() const {
+const SFBool & NodeElevationGrid::getNormalPerVertex() const {
     return this->d_normalPerVertex;
 }
 
@@ -2849,7 +2844,7 @@ const VrmlSFBool & VrmlNodeElevationGrid::getNormalPerVertex() const {
  *
  * @param normalPerVertex an SFBool object.
  */
-void VrmlNodeElevationGrid::setNormalPerVertex(const VrmlSFBool &
+void NodeElevationGrid::setNormalPerVertex(const SFBool &
                                                             normalPerVertex) {
     this->d_normalPerVertex = normalPerVertex;
 }
@@ -2859,7 +2854,7 @@ void VrmlNodeElevationGrid::setNormalPerVertex(const VrmlSFBool &
  *
  * @return an SFBool object.
  */
-const VrmlSFBool & VrmlNodeElevationGrid::getSolid() const {
+const SFBool & NodeElevationGrid::getSolid() const {
     return this->d_solid;
 }
 
@@ -2868,7 +2863,7 @@ const VrmlSFBool & VrmlNodeElevationGrid::getSolid() const {
  *
  * @param solid
  */
-void VrmlNodeElevationGrid::setSolid(const VrmlSFBool & solid) {
+void NodeElevationGrid::setSolid(const SFBool & solid) {
     this->d_solid = solid;
 }
 
@@ -2877,7 +2872,7 @@ void VrmlNodeElevationGrid::setSolid(const VrmlSFBool & solid) {
  *
  * @return the xDimension
  */
-const VrmlSFInt32 & VrmlNodeElevationGrid::getXDimension() const {
+const SFInt32 & NodeElevationGrid::getXDimension() const {
     return this->d_xDimension;
 }
 
@@ -2886,7 +2881,7 @@ const VrmlSFInt32 & VrmlNodeElevationGrid::getXDimension() const {
  *
  * @param xDimension
  */
-void VrmlNodeElevationGrid::setXDimension(const VrmlSFInt32 & xDimension) {
+void NodeElevationGrid::setXDimension(const SFInt32 & xDimension) {
     this->d_xDimension = xDimension;
 }
 
@@ -2896,7 +2891,7 @@ void VrmlNodeElevationGrid::setXDimension(const VrmlSFInt32 & xDimension) {
  *
  * @return the xSpacing
  */
-const VrmlSFFloat & VrmlNodeElevationGrid::getXSpacing() const {
+const SFFloat & NodeElevationGrid::getXSpacing() const {
     return this->d_xSpacing;
 }
 
@@ -2906,7 +2901,7 @@ const VrmlSFFloat & VrmlNodeElevationGrid::getXSpacing() const {
  *
  * @param xSpacing
  */
-void VrmlNodeElevationGrid::setXSpacing(const VrmlSFFloat & xSpacing) {
+void NodeElevationGrid::setXSpacing(const SFFloat & xSpacing) {
     this->d_xSpacing = xSpacing;
 }
 
@@ -2915,7 +2910,7 @@ void VrmlNodeElevationGrid::setXSpacing(const VrmlSFFloat & xSpacing) {
  *
  * @return the zDimension
  */
-const VrmlSFInt32 & VrmlNodeElevationGrid::getZDimension() const {
+const SFInt32 & NodeElevationGrid::getZDimension() const {
     return this->d_zDimension;
 }
 
@@ -2924,7 +2919,7 @@ const VrmlSFInt32 & VrmlNodeElevationGrid::getZDimension() const {
  *
  * @param zDimension
  */
-void VrmlNodeElevationGrid::setZDimension(const VrmlSFInt32 & zDimension) {
+void NodeElevationGrid::setZDimension(const SFInt32 & zDimension) {
     this->d_zDimension = zDimension;
 }
 
@@ -2934,7 +2929,7 @@ void VrmlNodeElevationGrid::setZDimension(const VrmlSFInt32 & zDimension) {
  *
  * @return the zSpacing
  */
-const VrmlSFFloat & VrmlNodeElevationGrid::getZSpacing() const {
+const SFFloat & NodeElevationGrid::getZSpacing() const {
     return this->d_zSpacing;
 }
 
@@ -2944,21 +2939,21 @@ const VrmlSFFloat & VrmlNodeElevationGrid::getZSpacing() const {
  *
  * @param zSpacing
  */
-void VrmlNodeElevationGrid::setZSpacing(const VrmlSFFloat & zSpacing) {
+void NodeElevationGrid::setZSpacing(const SFFloat & zSpacing) {
     this->d_zSpacing = zSpacing;
 }
 
 
 namespace {
-    const VrmlNodePtr createExtrusion(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeExtrusion(scene));
+    const NodePtr createExtrusion(VrmlScene * const scene) {
+        return NodePtr(new NodeExtrusion(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Extrusion" fields.
  */
-const NodeTypePtr VrmlNodeExtrusion::defineType() {
+const NodeTypePtr NodeExtrusion::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -2966,21 +2961,21 @@ const NodeTypePtr VrmlNodeExtrusion::defineType() {
     }
 
     st.reset(new NodeType("Extrusion", createExtrusion));
-    st->addEventIn("set_crossSection", VrmlField::MFVEC2F);
-    st->addEventIn("set_orientation", VrmlField::MFROTATION);
-    st->addEventIn("set_scale", VrmlField::MFVEC2F);
-    st->addEventIn("set_spine", VrmlField::MFVEC3F);
+    st->addEventIn("set_crossSection", FieldValue::MFVEC2F);
+    st->addEventIn("set_orientation", FieldValue::MFROTATION);
+    st->addEventIn("set_scale", FieldValue::MFVEC2F);
+    st->addEventIn("set_spine", FieldValue::MFVEC3F);
 
-    st->addField("beginCap", VrmlField::SFBOOL);
-    st->addField("ccw", VrmlField::SFBOOL);
-    st->addField("convex", VrmlField::SFBOOL);
-    st->addField("creaseAngle", VrmlField::SFFLOAT);
-    st->addField("crossSection", VrmlField::MFVEC2F);
-    st->addField("endCap", VrmlField::SFBOOL);
-    st->addField("orientation", VrmlField::MFROTATION);
-    st->addField("scale", VrmlField::MFVEC2F);
-    st->addField("solid", VrmlField::SFBOOL);
-    st->addField("spine", VrmlField::MFVEC3F);
+    st->addField("beginCap", FieldValue::SFBOOL);
+    st->addField("ccw", FieldValue::SFBOOL);
+    st->addField("convex", FieldValue::SFBOOL);
+    st->addField("creaseAngle", FieldValue::SFFLOAT);
+    st->addField("crossSection", FieldValue::MFVEC2F);
+    st->addField("endCap", FieldValue::SFBOOL);
+    st->addField("orientation", FieldValue::MFROTATION);
+    st->addField("scale", FieldValue::MFVEC2F);
+    st->addField("solid", FieldValue::SFBOOL);
+    st->addField("spine", FieldValue::MFVEC3F);
 
     return st;
 }
@@ -2994,16 +2989,16 @@ namespace {
             { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 };
 }
 
-VrmlNodeExtrusion::VrmlNodeExtrusion(VrmlScene * const scene):
-        VrmlNodeGeometry(*defineType(), scene), d_beginCap(true), d_ccw(true),
+NodeExtrusion::NodeExtrusion(VrmlScene * const scene):
+        NodeGeometry(*defineType(), scene), d_beginCap(true), d_ccw(true),
         d_convex(true), d_creaseAngle(0),
         d_crossSection(5, extrusionDefaultCrossSection_),
         d_endCap(true), d_orientation(1), d_scale(1, extrusionDefaultScale_),
         d_solid(true), d_spine(2, extrusionDefaultSpine_) {}
 
-VrmlNodeExtrusion::~VrmlNodeExtrusion() {}
+NodeExtrusion::~NodeExtrusion() {}
 
-bool VrmlNodeExtrusion::accept(VrmlNodeVisitor & visitor) {
+bool NodeExtrusion::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -3013,7 +3008,7 @@ bool VrmlNodeExtrusion::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeExtrusion::printFields(ostream& os, int indent)
+ostream& NodeExtrusion::printFields(ostream& os, int indent)
 {
   if (! d_beginCap.get()) PRINT_FIELD(beginCap);
   if (! d_endCap.get()) PRINT_FIELD(endCap);
@@ -3031,7 +3026,7 @@ ostream& VrmlNodeExtrusion::printFields(ostream& os, int indent)
 }
 
 
-Viewer::Object VrmlNodeExtrusion::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
+Viewer::Object NodeExtrusion::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
   if ( d_crossSection.getLength() > 0 &&
@@ -3061,8 +3056,8 @@ Viewer::Object VrmlNodeExtrusion::insertGeometry(Viewer *viewer, VrmlRenderConte
 
 // Set the value of one of the node fields.
 
-void VrmlNodeExtrusion::setField(const std::string & fieldId,
-                                 const VrmlField & fieldValue)
+void NodeExtrusion::setField(const std::string & fieldId,
+                                 const FieldValue & fieldValue)
 {
   if TRY_FIELD(beginCap, SFBool)
   else if TRY_FIELD(ccw, SFBool)
@@ -3075,26 +3070,26 @@ void VrmlNodeExtrusion::setField(const std::string & fieldId,
   else if TRY_FIELD(solid, SFBool)
   else if TRY_FIELD(spine, MFVec3f)
   else
-    VrmlNodeGeometry::setField(fieldId, fieldValue);
+    NodeGeometry::setField(fieldId, fieldValue);
 }
 
-VrmlNodeExtrusion* VrmlNodeExtrusion::toExtrusion() const
-{ return (VrmlNodeExtrusion*) this; }
+NodeExtrusion* NodeExtrusion::toExtrusion() const
+{ return (NodeExtrusion*) this; }
 
 
 namespace {
     //  Fog factory.
     //  Since Fog is a bindable child node, the first one created needs
     //  to notify its containing scene.
-    const VrmlNodePtr createFog(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeFog(scene));
+    const NodePtr createFog(VrmlScene * const scene) {
+        return NodePtr(new NodeFog(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Fog" fields.
  */
-const NodeTypePtr VrmlNodeFog::defineType() {
+const NodeTypePtr NodeFog::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -3102,31 +3097,31 @@ const NodeTypePtr VrmlNodeFog::defineType() {
     }
 
     st.reset(new NodeType("Fog", createFog));
-    st->addEventIn("set_bind", VrmlField::SFBOOL);
-    st->addExposedField("color", VrmlField::SFCOLOR);
-    st->addExposedField("fogType", VrmlField::SFSTRING);
-    st->addExposedField("visibilityRange", VrmlField::SFFLOAT);
-    st->addEventOut("isBound", VrmlField::SFBOOL);
+    st->addEventIn("set_bind", FieldValue::SFBOOL);
+    st->addExposedField("color", FieldValue::SFCOLOR);
+    st->addExposedField("fogType", FieldValue::SFSTRING);
+    st->addExposedField("visibilityRange", FieldValue::SFFLOAT);
+    st->addEventOut("isBound", FieldValue::SFBOOL);
 
     return st;
 }
 
-VrmlNodeFog::VrmlNodeFog(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_color(1.0, 1.0, 1.0),
+NodeFog::NodeFog(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_color(1.0, 1.0, 1.0),
         d_fogType("LINEAR"), d_visibilityRange(0.0), d_isBound(false) {
     if (this->d_scene) {
         this->d_scene->addFog(*this);
     }
 }
 
-VrmlNodeFog::~VrmlNodeFog()
+NodeFog::~NodeFog()
 {
     if (this->d_scene) {
         this->d_scene->removeFog(*this);
     }
 }
 
-bool VrmlNodeFog::accept(VrmlNodeVisitor & visitor) {
+bool NodeFog::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -3136,18 +3131,18 @@ bool VrmlNodeFog::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeFog* VrmlNodeFog::toFog() const
-{ return (VrmlNodeFog*) this; }
+NodeFog* NodeFog::toFog() const
+{ return (NodeFog*) this; }
 
 
-void VrmlNodeFog::addToScene(VrmlScene * scene, const std::string &) {
+void NodeFog::addToScene(VrmlScene * scene, const std::string &) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
         this->d_scene->addFog(*this);
     }
 }
 
 
-ostream& VrmlNodeFog::printFields(ostream& os, int indent)
+ostream& NodeFog::printFields(ostream& os, int indent)
 {
   if (d_color.getR() != 1.0 ||
       d_color.getG() != 1.0 ||
@@ -3163,13 +3158,13 @@ ostream& VrmlNodeFog::printFields(ostream& os, int indent)
 
 // Note that this method is not maintaining isBound.
 
-void VrmlNodeFog::eventIn(double timeStamp, const std::string & eventName,
-                          const VrmlField & fieldValue) {
+void NodeFog::eventIn(double timeStamp, const std::string & eventName,
+                          const FieldValue & fieldValue) {
   if (eventName == "set_bind")
     {
-      VrmlNodeFog *current = d_scene->bindableFogTop();
-      const VrmlSFBool * const b =
-                dynamic_cast<const VrmlSFBool *>(&fieldValue);
+      NodeFog *current = d_scene->bindableFogTop();
+      const SFBool * const b =
+                dynamic_cast<const SFBool *>(&fieldValue);
       
       if (! b)
     {
@@ -3183,9 +3178,9 @@ void VrmlNodeFog::eventIn(double timeStamp, const std::string & eventName,
       if (this != current)
         {
           if (current)
-        current->eventOut( timeStamp, "isBound", VrmlSFBool(false));
+        current->eventOut( timeStamp, "isBound", SFBool(false));
           d_scene->bindablePush( this );
-          eventOut( timeStamp, "isBound", VrmlSFBool(true) );
+          eventOut( timeStamp, "isBound", SFBool(true) );
         }
     }
       else            // set_bind FALSE
@@ -3193,17 +3188,17 @@ void VrmlNodeFog::eventIn(double timeStamp, const std::string & eventName,
       d_scene->bindableRemove( this );
       if (this == current)
         {
-          eventOut( timeStamp, "isBound", VrmlSFBool(false));
+          eventOut( timeStamp, "isBound", SFBool(false));
           current = d_scene->bindableFogTop();
           if (current)
-        current->eventOut( timeStamp, "isBound", VrmlSFBool(true) );
+        current->eventOut( timeStamp, "isBound", SFBool(true) );
         }
     }
     }
 
   else
     {
-      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+      Node::eventIn(timeStamp, eventName, fieldValue);
     }
 }
 
@@ -3212,7 +3207,7 @@ void VrmlNodeFog::eventIn(double timeStamp, const std::string & eventName,
 // don't rely on it's value to be valid. This hoses
 // the const-ness of the method, of course :(
 
-const VrmlField * VrmlNodeFog::getField(const std::string & fieldId) const
+const FieldValue * NodeFog::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "color")
@@ -3225,37 +3220,37 @@ const VrmlField * VrmlNodeFog::getField(const std::string & fieldId) const
   // eventOuts
   else if (fieldId == "isBound")
     {
-      VrmlSFBool* isBound = (VrmlSFBool*) &(this->d_isBound);
+      SFBool* isBound = (SFBool*) &(this->d_isBound);
       isBound->set( d_scene->bindableFogTop() == this );
       return isBound;
     }
 
-  return VrmlNodeChild::getField(fieldId); // Parent class
+  return NodeChild::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeFog::setField(const std::string & fieldId,
-               const VrmlField & fieldValue)
+void NodeFog::setField(const std::string & fieldId,
+               const FieldValue & fieldValue)
 {
   if TRY_FIELD(color, SFColor)
   else if TRY_FIELD(fogType, SFString)
   else if TRY_FIELD(visibilityRange, SFFloat)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 
 namespace {
-    const VrmlNodePtr createFontStyle(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeFontStyle(scene));
+    const NodePtr createFontStyle(VrmlScene * const scene) {
+        return NodePtr(new NodeFontStyle(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "FontStyle" fields.
  */
-const NodeTypePtr VrmlNodeFontStyle::defineType() {
+const NodeTypePtr NodeFontStyle::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -3263,15 +3258,15 @@ const NodeTypePtr VrmlNodeFontStyle::defineType() {
     }
 
     st.reset(new NodeType("FontStyle", createFontStyle));
-    st->addField("family", VrmlField::MFSTRING);
-    st->addField("horizontal", VrmlField::SFBOOL);
-    st->addField("justify", VrmlField::MFSTRING);
-    st->addField("language", VrmlField::SFSTRING);
-    st->addField("leftToRight", VrmlField::SFBOOL);
-    st->addField("size", VrmlField::SFFLOAT);
-    st->addField("spacing", VrmlField::SFFLOAT);
-    st->addField("style", VrmlField::SFSTRING);
-    st->addField("topToBottom", VrmlField::SFBOOL);
+    st->addField("family", FieldValue::MFSTRING);
+    st->addField("horizontal", FieldValue::SFBOOL);
+    st->addField("justify", FieldValue::MFSTRING);
+    st->addField("language", FieldValue::SFSTRING);
+    st->addField("leftToRight", FieldValue::SFBOOL);
+    st->addField("size", FieldValue::SFFLOAT);
+    st->addField("spacing", FieldValue::SFFLOAT);
+    st->addField("style", FieldValue::SFSTRING);
+    st->addField("topToBottom", FieldValue::SFBOOL);
 
     return st;
 }
@@ -3281,17 +3276,17 @@ namespace {
     const std::string fontStyleInitJustify_[] = { "BEGIN" };
 }
 
-VrmlNodeFontStyle::VrmlNodeFontStyle(VrmlScene * const scene):
-        VrmlNode(*defineType(), scene), d_family(1, fontStyleInitFamily_),
+NodeFontStyle::NodeFontStyle(VrmlScene * const scene):
+        Node(*defineType(), scene), d_family(1, fontStyleInitFamily_),
         d_horizontal(true), d_justify(1, fontStyleInitJustify_),
         d_leftToRight(true), d_size(1.0), d_spacing(1.0), d_style("PLAIN"),
         d_topToBottom(true) {}
 
-VrmlNodeFontStyle::~VrmlNodeFontStyle()
+NodeFontStyle::~NodeFontStyle()
 {
 }
 
-bool VrmlNodeFontStyle::accept(VrmlNodeVisitor & visitor) {
+bool NodeFontStyle::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -3301,11 +3296,11 @@ bool VrmlNodeFontStyle::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeFontStyle* VrmlNodeFontStyle::toFontStyle() const
-{ return (VrmlNodeFontStyle*) this; }
+NodeFontStyle* NodeFontStyle::toFontStyle() const
+{ return (NodeFontStyle*) this; }
 
 
-ostream& VrmlNodeFontStyle::printFields(ostream& os, int indent)
+ostream& NodeFontStyle::printFields(ostream& os, int indent)
 {
   if (d_family.getLength() > 1
         || (d_family.getLength() == 1 && d_family.getElement(0) != "SERIF"))
@@ -3329,8 +3324,8 @@ ostream& VrmlNodeFontStyle::printFields(ostream& os, int indent)
 
 // Set the value of one of the node fields.
 
-void VrmlNodeFontStyle::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue)
+void NodeFontStyle::setField(const std::string & fieldId,
+                 const FieldValue & fieldValue)
 {
   if TRY_FIELD(family, MFString)
   else if TRY_FIELD(horizontal, SFBool)
@@ -3342,21 +3337,21 @@ void VrmlNodeFontStyle::setField(const std::string & fieldId,
   else if TRY_FIELD(style, SFString)        
   else if TRY_FIELD(topToBottom, SFBool)
   else
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 }
 
 
 namespace {
-    // Return a new VrmlNodeGroup
-    const VrmlNodePtr createGroup(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeGroup(scene));
+    // Return a new NodeGroup
+    const NodePtr createGroup(VrmlScene * const scene) {
+        return NodePtr(new NodeGroup(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Group" fields.
  */
-const NodeTypePtr VrmlNodeGroup::defineType() {
+const NodeTypePtr NodeGroup::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -3364,34 +3359,34 @@ const NodeTypePtr VrmlNodeGroup::defineType() {
     }
     
     st.reset(new NodeType("Group", createGroup));
-    st->addEventIn("addChildren", VrmlField::MFNODE);
-    st->addEventIn("removeChildren", VrmlField::MFNODE);
-    st->addExposedField("children", VrmlField::MFNODE);
-    st->addField("bboxCenter", VrmlField::SFVEC3F);
-    st->addField("bboxSize", VrmlField::SFVEC3F);
+    st->addEventIn("addChildren", FieldValue::MFNODE);
+    st->addEventIn("removeChildren", FieldValue::MFNODE);
+    st->addExposedField("children", FieldValue::MFNODE);
+    st->addField("bboxCenter", FieldValue::SFVEC3F);
+    st->addField("bboxSize", FieldValue::SFVEC3F);
 
     return st;
 }
 
-VrmlNodeGroup::VrmlNodeGroup(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_bboxSize(-1.0, -1.0, -1.0),
+NodeGroup::NodeGroup(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_bboxSize(-1.0, -1.0, -1.0),
         d_parentTransform(0), d_viewerObject(0) {
     this->setBVolumeDirty(true);
 }
 
-VrmlNodeGroup::VrmlNodeGroup(const NodeType & type,
+NodeGroup::NodeGroup(const NodeType & type,
                              VrmlScene * const scene):
-        VrmlNodeChild(type, scene), d_bboxSize(-1.0, -1.0, -1.0),
+        NodeChild(type, scene), d_bboxSize(-1.0, -1.0, -1.0),
         d_parentTransform(0), d_viewerObject(0) {
     this->setBVolumeDirty(true);
 }
 
-VrmlNodeGroup::~VrmlNodeGroup()
+NodeGroup::~NodeGroup()
 {
   // delete d_viewerObject...
 }
 
-bool VrmlNodeGroup::accept(VrmlNodeVisitor & visitor) {
+bool NodeGroup::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -3401,7 +3396,7 @@ bool VrmlNodeGroup::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodeGroup::resetVisitedFlag() {
+void NodeGroup::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (size_t i = 0; i < this->d_children.getLength(); ++i) {
@@ -3412,11 +3407,11 @@ void VrmlNodeGroup::resetVisitedFlag() {
     }
 }
 
-VrmlNodeGroup* VrmlNodeGroup::toGroup() const
-{ return (VrmlNodeGroup*) this; }
+NodeGroup* NodeGroup::toGroup() const
+{ return (NodeGroup*) this; }
 
 
-bool VrmlNodeGroup::isModified() const
+bool NodeGroup::isModified() const
 {
   if (d_modified) return true;
   
@@ -3431,7 +3426,7 @@ bool VrmlNodeGroup::isModified() const
 
 
 void
-VrmlNodeGroup::updateModified(VrmlNodePath& path, int flags)
+NodeGroup::updateModified(NodePath& path, int flags)
 {
   // if the mark_modifed short circuit doesn't
   // pan out, we should be a little smarter here...
@@ -3446,16 +3441,16 @@ VrmlNodeGroup::updateModified(VrmlNodePath& path, int flags)
 
 
 
-void VrmlNodeGroup::clearFlags()
+void NodeGroup::clearFlags()
 {
-  VrmlNode::clearFlags();
+  Node::clearFlags();
   int n = d_children.getLength();
   for (int i=0; i<n; ++i)
     d_children.getElement(i)->clearFlags();
 }
 
 
-void VrmlNodeGroup::addToScene(VrmlScene * scene,
+void NodeGroup::addToScene(VrmlScene * scene,
                                const std::string & relativeUrl) {
     this->d_scene = scene;
 
@@ -3472,11 +3467,11 @@ void VrmlNodeGroup::addToScene(VrmlScene * scene,
 }
 
 
-VrmlNode* VrmlNodeGroup::getParentTransform() { return d_parentTransform; }
+Node* NodeGroup::getParentTransform() { return d_parentTransform; }
 
 
 
-ostream& VrmlNodeGroup::printFields(ostream& os, int indent)
+ostream& NodeGroup::printFields(ostream& os, int indent)
 {
   if (d_bboxCenter.getX() != 0.0 ||
       d_bboxCenter.getZ() != 0.0 ||
@@ -3495,7 +3490,7 @@ ostream& VrmlNodeGroup::printFields(ostream& os, int indent)
 
 // Render each of the children
 
-void VrmlNodeGroup::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeGroup::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if (rc.getCullFlag() != VrmlBVolume::BV_INSIDE) {
 
@@ -3520,7 +3515,7 @@ void VrmlNodeGroup::render(Viewer *viewer, VrmlRenderContext rc)
 // because children will already have done the culling, we don't need
 // to repeat it here.
 //
-void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
+void NodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
 {
   if ( d_viewerObject && isModified() )
     {
@@ -3542,7 +3537,7 @@ void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
       // TouchSensors, any others? ...)
       for (i = 0; i<n; ++i)
     {
-      const VrmlNodePtr & kid = d_children.getElement(i);
+      const NodePtr & kid = d_children.getElement(i);
 
       if ( kid->toLight() && ! (kid->toPointLight() || kid->toSpotLight()) )
         kid->render(viewer, rc);
@@ -3558,7 +3553,7 @@ void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
 
       // Do the rest of the children (except the scene-level lights)
       for (i = 0; i<n; ++i) {
-        const VrmlNodePtr & child = this->d_children.getElement(i);
+        const NodePtr & child = this->d_children.getElement(i);
     if (! (child->toLight() ||
 //           child->toPlaneSensor() ||
 //           child->toCylinderSensor() ||
@@ -3583,7 +3578,7 @@ void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
 // Cache a pointer to (one of the) parent transforms for proper
 // rendering of bindables.
 
-void VrmlNodeGroup::accumulateTransform(VrmlNode * parent) {
+void NodeGroup::accumulateTransform(Node * parent) {
     d_parentTransform = parent;
     for (size_t i = 0; i < this->d_children.getLength(); ++i) {
         if (this->d_children.getElement(i)) {
@@ -3595,7 +3590,7 @@ void VrmlNodeGroup::accumulateTransform(VrmlNode * parent) {
 
 // Pass on to enabled touchsensor child.
 
-void VrmlNodeGroup::activate( double time,
+void NodeGroup::activate( double time,
                   bool isOver, bool isActive,
                   double *p )
 {
@@ -3603,7 +3598,7 @@ void VrmlNodeGroup::activate( double time,
 
   for (i = 0; i<n; ++i)
     {
-      const VrmlNodePtr & kid = d_children.getElement(i);
+      const NodePtr & kid = d_children.getElement(i);
 
       if ( kid->toTouchSensor() && kid->toTouchSensor()->isEnabled() )
     {
@@ -3634,7 +3629,7 @@ void VrmlNodeGroup::activate( double time,
  *
  * @return the Group's children
  */
-const VrmlMFNode VrmlNodeGroup::getChildren() const {
+const MFNode NodeGroup::getChildren() const {
     return this->d_children;
 }
 
@@ -3646,14 +3641,14 @@ const VrmlMFNode VrmlNodeGroup::getChildren() const {
  * @todo We should throw an exception if any of the nodes in
  *       <var>children</var> are not child nodes.
  */
-void VrmlNodeGroup::setChildren(const VrmlMFNode & children) {
+void NodeGroup::setChildren(const MFNode & children) {
     const size_t currentLength = this->d_children.getLength();
     
     for (size_t i = 0; i < children.getLength(); ++i) {
-        VrmlNodeProto * p = 0;
-        const VrmlNodePtr & child = children.getElement(i);
+        ProtoNode * p = 0;
+        const NodePtr & child = children.getElement(i);
         if (child && (child->toChild()
-                || ((p = dynamic_cast<VrmlNodeProto *>(child.get()))
+                || ((p = dynamic_cast<ProtoNode *>(child.get()))
                     && p->getImplNodes().getLength() == 0))) {
             child->addToScene(d_scene, d_relative.get());
             child->accumulateTransform(d_parentTransform);
@@ -3682,16 +3677,16 @@ void VrmlNodeGroup::setChildren(const VrmlMFNode & children) {
  *
  * @param children a MFNode containing the nodes to add to this Group
  */
-void VrmlNodeGroup::addChildren(const VrmlMFNode & children) {
+void NodeGroup::addChildren(const MFNode & children) {
     size_t nNow = d_children.getLength();
     size_t n = children.getLength();
     
     for (size_t i = 0; i < n; ++i) {
-        const VrmlNodePtr & child = children.getElement(i);
-        VrmlNodeProto *p = 0;
+        const NodePtr & child = children.getElement(i);
+        ProtoNode * p = 0;
         
         if (child && (child->toChild()
-                || ((p = dynamic_cast<VrmlNodeProto *>(child.get()))
+                || ((p = dynamic_cast<ProtoNode *>(child.get()))
                     && p->getImplNodes().getLength() == 0))) {
             d_children.addNode(*child);
             child->addToScene( d_scene, d_relative.get() );
@@ -3710,7 +3705,7 @@ void VrmlNodeGroup::addChildren(const VrmlMFNode & children) {
     }
 }
 
-void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )
+void NodeGroup::removeChildren( const MFNode &children )
 {
     const size_t oldLength = d_children.getLength();
     
@@ -3728,10 +3723,10 @@ void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )
 }
 
 /**
- * @todo Remove this method in favor of passing an empty VrmlMFNode to
+ * @todo Remove this method in favor of passing an empty MFNode to
  *       setChildren()?
  */
-void VrmlNodeGroup::removeChildren() {
+void NodeGroup::removeChildren() {
     for (size_t i = this->d_children.getLength(); i > 0; --i) {
         if (this->d_children.getElement(i - 1)) {
             d_children.removeNode(*d_children.getElement(i - 1));
@@ -3743,62 +3738,62 @@ void VrmlNodeGroup::removeChildren() {
 }
 
 
-void VrmlNodeGroup::eventIn(double timeStamp, const std::string & eventName,
-                            const VrmlField & fieldValue) {
+void NodeGroup::eventIn(double timeStamp, const std::string & eventName,
+                            const FieldValue & fieldValue) {
   if (eventName == "addChildren")
     {
-      if (dynamic_cast<const VrmlMFNode *>(&fieldValue))      // check that fieldValue is MFNode
-    addChildren(static_cast<const VrmlMFNode &>(fieldValue));
+      if (dynamic_cast<const MFNode *>(&fieldValue))      // check that fieldValue is MFNode
+    addChildren(static_cast<const MFNode &>(fieldValue));
       else
-    theSystem->error("VrmlNodeGroup.%s %s eventIn invalid field type.\n",
+    theSystem->error("NodeGroup.%s %s eventIn invalid field type.\n",
                  this->getId().c_str(), eventName.c_str());
     }
 
   else if (eventName == "removeChildren")
     {
-      if (dynamic_cast<const VrmlMFNode *>(&fieldValue))      // check that fieldValue is MFNode
-    removeChildren(static_cast<const VrmlMFNode &>(fieldValue));
+      if (dynamic_cast<const MFNode *>(&fieldValue))      // check that fieldValue is MFNode
+    removeChildren(static_cast<const MFNode &>(fieldValue));
       else
-    theSystem->error("VrmlNodeGroup.%s %s eventIn invalid field type.\n",
+    theSystem->error("NodeGroup.%s %s eventIn invalid field type.\n",
                  this->getId().c_str(), eventName.c_str());
     }
 
   else
     {
-      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+      Node::eventIn(timeStamp, eventName, fieldValue);
     }
 }
 
 // Get the value of one of the exposedFields or eventOuts.
 
-const VrmlField * VrmlNodeGroup::getField(const std::string & fieldId) const
+const FieldValue * NodeGroup::getField(const std::string & fieldId) const
 {
   if (fieldId == "children")
     return &d_children;
 
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
-void VrmlNodeGroup::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue)
+void NodeGroup::setField(const std::string & fieldId,
+                 const FieldValue & fieldValue)
 {
   if TRY_FIELD(bboxCenter, SFVec3f)
   else if TRY_FIELD(bboxSize, SFVec3f)
   else if TRY_FIELD(children, MFNode)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
   this->setBVolumeDirty(true); // overly conservative?
 }
 
-const VrmlBVolume* VrmlNodeGroup::getBVolume() const
+const VrmlBVolume* NodeGroup::getBVolume() const
 {
   if (this->isBVolumeDirty())
-    ((VrmlNodeGroup*)this)->recalcBSphere();
+    ((NodeGroup*)this)->recalcBSphere();
   return &d_bsphere;
 }
 
-void VrmlNodeGroup::recalcBSphere() {
+void NodeGroup::recalcBSphere() {
     d_bsphere.reset();
     for (size_t i = 0; i< d_children.getLength(); ++i) {
         if (this->d_children.getElement(i)) {
@@ -3813,15 +3808,15 @@ void VrmlNodeGroup::recalcBSphere() {
 
 
 namespace {
-    const VrmlNodePtr createIFaceSet(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeIFaceSet(scene));
+    const NodePtr createIFaceSet(VrmlScene * const scene) {
+        return NodePtr(new NodeIFaceSet(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "IndexedFaceSet" fields.
  */
-const NodeTypePtr VrmlNodeIFaceSet::defineType() {
+const NodeTypePtr NodeIFaceSet::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -3829,39 +3824,39 @@ const NodeTypePtr VrmlNodeIFaceSet::defineType() {
     }
     
     st.reset(new NodeType("IndexedFaceSet", createIFaceSet));
-    st->addEventIn("set_colorIndex", VrmlField::MFINT32);
-    st->addEventIn("set_coordIndex", VrmlField::MFINT32);
-    st->addExposedField("color", VrmlField::SFNODE);
-    st->addExposedField("coord", VrmlField::SFNODE);
-    st->addField("colorIndex", VrmlField::MFINT32);
-    st->addField("colorPerVertex", VrmlField::SFBOOL);
-    st->addField("coordIndex", VrmlField::MFINT32);
-    st->addEventIn("set_normalIndex", VrmlField::MFINT32);
-    st->addEventIn("set_texCoordIndex", VrmlField::MFINT32);
-    st->addExposedField("normal", VrmlField::SFNODE);
-    st->addExposedField("texCoord", VrmlField::SFNODE);
-    st->addField("ccw", VrmlField::SFBOOL);
-    st->addField("convex", VrmlField::SFBOOL);
-    st->addField("creaseAngle", VrmlField::SFFLOAT);
-    st->addField("normalIndex", VrmlField::MFINT32);
-    st->addField("normalPerVertex", VrmlField::SFBOOL);
-    st->addField("solid", VrmlField::SFBOOL);
-    st->addField("texCoordIndex", VrmlField::MFINT32);
+    st->addEventIn("set_colorIndex", FieldValue::MFINT32);
+    st->addEventIn("set_coordIndex", FieldValue::MFINT32);
+    st->addExposedField("color", FieldValue::SFNODE);
+    st->addExposedField("coord", FieldValue::SFNODE);
+    st->addField("colorIndex", FieldValue::MFINT32);
+    st->addField("colorPerVertex", FieldValue::SFBOOL);
+    st->addField("coordIndex", FieldValue::MFINT32);
+    st->addEventIn("set_normalIndex", FieldValue::MFINT32);
+    st->addEventIn("set_texCoordIndex", FieldValue::MFINT32);
+    st->addExposedField("normal", FieldValue::SFNODE);
+    st->addExposedField("texCoord", FieldValue::SFNODE);
+    st->addField("ccw", FieldValue::SFBOOL);
+    st->addField("convex", FieldValue::SFBOOL);
+    st->addField("creaseAngle", FieldValue::SFFLOAT);
+    st->addField("normalIndex", FieldValue::MFINT32);
+    st->addField("normalPerVertex", FieldValue::SFBOOL);
+    st->addField("solid", FieldValue::SFBOOL);
+    st->addField("texCoordIndex", FieldValue::MFINT32);
 
     return st;
 }
 
-VrmlNodeIFaceSet::VrmlNodeIFaceSet(VrmlScene * const scene):
-        VrmlNodeIndexedSet(*defineType(), scene), d_ccw(true), d_convex(true),
+NodeIFaceSet::NodeIFaceSet(VrmlScene * const scene):
+        NodeIndexedSet(*defineType(), scene), d_ccw(true), d_convex(true),
         d_creaseAngle(0.0), d_normalPerVertex(true), d_solid(true) {
     this->setBVolumeDirty(true);
 }
 
-VrmlNodeIFaceSet::~VrmlNodeIFaceSet()
+NodeIFaceSet::~NodeIFaceSet()
 {
 }
 
-bool VrmlNodeIFaceSet::accept(VrmlNodeVisitor & visitor) {
+bool NodeIFaceSet::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -3871,7 +3866,7 @@ bool VrmlNodeIFaceSet::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodeIFaceSet::resetVisitedFlag() {
+void NodeIFaceSet::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         if (this->d_color.get()) {
@@ -3889,13 +3884,13 @@ void VrmlNodeIFaceSet::resetVisitedFlag() {
     }
 }
 
-const VrmlMFNode VrmlNodeIFaceSet::getChildren() const {
-    VrmlNodePtr children[] = { this->d_color.get(), this->d_coord.get(),
+const MFNode NodeIFaceSet::getChildren() const {
+    NodePtr children[] = { this->d_color.get(), this->d_coord.get(),
                                this->d_normal.get(), this->d_texCoord.get() };
-    return VrmlMFNode(4, children);
+    return MFNode(4, children);
 }
 
-bool VrmlNodeIFaceSet::isModified() const
+bool NodeIFaceSet::isModified() const
 {
   return ( d_modified ||
        (d_color.get() && d_color.get()->isModified()) ||
@@ -3904,7 +3899,7 @@ bool VrmlNodeIFaceSet::isModified() const
        (d_texCoord.get() && d_texCoord.get()->isModified()) );
 }
 
-void VrmlNodeIFaceSet::updateModified(VrmlNodePath& path, int flags)
+void NodeIFaceSet::updateModified(NodePath& path, int flags)
 {
   if (this->isModified()) markPathModified(path, true, flags);
   path.push_front(this);
@@ -3915,16 +3910,16 @@ void VrmlNodeIFaceSet::updateModified(VrmlNodePath& path, int flags)
   path.pop_front();
 }
 
-void VrmlNodeIFaceSet::clearFlags()
+void NodeIFaceSet::clearFlags()
 {
-  VrmlNode::clearFlags();
+  Node::clearFlags();
   if (d_color.get()) d_color.get()->clearFlags();
   if (d_coord.get()) d_coord.get()->clearFlags();
   if (d_normal.get()) d_normal.get()->clearFlags();
   if (d_texCoord.get()) d_texCoord.get()->clearFlags();
 }
 
-void VrmlNodeIFaceSet::addToScene(VrmlScene * scene, const std::string & rel) {
+void NodeIFaceSet::addToScene(VrmlScene * scene, const std::string & rel) {
     this->d_scene = scene;
     if (this->d_color.get()) {
         d_color.get()->addToScene(scene, rel);
@@ -3940,7 +3935,7 @@ void VrmlNodeIFaceSet::addToScene(VrmlScene * scene, const std::string & rel) {
     }
 }
 
-ostream& VrmlNodeIFaceSet::printFields(ostream& os, int indent)
+ostream& NodeIFaceSet::printFields(ostream& os, int indent)
 {
   if (! d_ccw.get()) PRINT_FIELD(ccw);
   if (! d_convex.get()) PRINT_FIELD(convex);
@@ -3953,7 +3948,7 @@ ostream& VrmlNodeIFaceSet::printFields(ostream& os, int indent)
   if (d_texCoord.get()) PRINT_FIELD(texCoord);
   if (d_texCoordIndex.getLength() > 0) PRINT_FIELD(texCoordIndex);
 
-  VrmlNodeIndexedSet::printFields(os, indent);
+  NodeIndexedSet::printFields(os, indent);
 
   return os;
 }
@@ -3961,7 +3956,7 @@ ostream& VrmlNodeIFaceSet::printFields(ostream& os, int indent)
 
 // TO DO: stripify, crease angle, generate normals ...
 
-Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
+Viewer::Object NodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
 
@@ -3972,7 +3967,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 
   if (d_coord.get() && d_coordIndex.getLength() > 0)
     {
-      VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
+      MFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
       int nvert = coord.getLength();
       const float *tc = 0, *color = 0, *normal = 0;
       int ntc = 0;
@@ -3983,7 +3978,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
       // Get texture coordinates and texCoordIndex
       if (d_texCoord.get())
     {
-      VrmlMFVec2f &texcoord =
+      MFVec2f &texcoord =
         d_texCoord.get()->toTextureCoordinate()->coordinate();
       tc = &texcoord.getElement(0)[0];
       ntc = texcoord.getLength();
@@ -4003,7 +3998,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
       // check #colors is consistent with colorPerVtx, colorIndex...
       if (d_color.get())
     {
-      VrmlMFColor &c = d_color.get()->toColor()->color();
+      MFColor &c = d_color.get()->toColor()->color();
       color = &c.getElement(0)[0];
       nci = d_colorIndex.getLength();
       if (nci) ci = d_colorIndex.get();
@@ -4012,7 +4007,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
       // check #normals is consistent with normalPerVtx, normalIndex...
       if (d_normal.get())
     {
-      VrmlMFVec3f &n = d_normal.get()->toNormal()->normal();
+      MFVec3f &n = d_normal.get()->toNormal()->normal();
       normal = &n.getElement(0)[0];
       nni = d_normalIndex.getLength();
       if (nni) ni = d_normalIndex.get();
@@ -4043,7 +4038,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 
 // Get the value of one of the exposedFields
 
-const VrmlField * VrmlNodeIFaceSet::getField(const std::string & fieldId) const
+const FieldValue * NodeIFaceSet::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "normal")
@@ -4051,13 +4046,13 @@ const VrmlField * VrmlNodeIFaceSet::getField(const std::string & fieldId) const
   else if (fieldId == "texCoord")
     return &d_texCoord;
   
-  return VrmlNodeIndexedSet::getField(fieldId); // Parent class
+  return NodeIndexedSet::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeIFaceSet::setField(const std::string & fieldId,
-                const VrmlField & fieldValue)
+void NodeIFaceSet::setField(const std::string & fieldId,
+                const FieldValue & fieldValue)
 {
   if TRY_FIELD(ccw, SFBool)
   else if TRY_FIELD(convex, SFBool)
@@ -4070,7 +4065,7 @@ void VrmlNodeIFaceSet::setField(const std::string & fieldId,
   else if TRY_SFNODE_FIELD(texCoord, TextureCoordinate)
   else if TRY_FIELD(texCoordIndex, MFInt32)
   else
-    VrmlNodeIndexedSet::setField(fieldId, fieldValue);
+    NodeIndexedSet::setField(fieldId, fieldValue);
 
   // overly conservative: changing the creaseAngle doesn't really
   // change the bvolume, but the TRY_FIELD macro makes it hard to
@@ -4081,18 +4076,18 @@ void VrmlNodeIFaceSet::setField(const std::string & fieldId,
 }
 
 
-const VrmlMFInt32 & VrmlNodeIFaceSet::getNormalIndex() const
+const MFInt32 & NodeIFaceSet::getNormalIndex() const
 {   return d_normalIndex; }
 
-const VrmlMFInt32 & VrmlNodeIFaceSet::getTexCoordIndex() const
+const MFInt32 & NodeIFaceSet::getTexCoordIndex() const
 {   return d_texCoordIndex; }
 
-VrmlNodeIFaceSet* VrmlNodeIFaceSet::toIFaceSet() const
-{ return (VrmlNodeIFaceSet*) this; }
+NodeIFaceSet* NodeIFaceSet::toIFaceSet() const
+{ return (NodeIFaceSet*) this; }
 
 
 
-void VrmlNodeIFaceSet::recalcBSphere()
+void NodeIFaceSet::recalcBSphere()
 {
   // take the bvolume of all the points. technically, we should figure
   // out just which points are used by the index and just use those,
@@ -4100,7 +4095,7 @@ void VrmlNodeIFaceSet::recalcBSphere()
   // then we don't have to update the bvolume when the index
   // changes). motto: always do it the simple way first...
   //
-  VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
+  MFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
   const float* p = coord.get();
   int n = coord.getLength();
   d_bsphere.reset();
@@ -4109,10 +4104,10 @@ void VrmlNodeIFaceSet::recalcBSphere()
 }
 
 
-const VrmlBVolume* VrmlNodeIFaceSet::getBVolume() const
+const VrmlBVolume* NodeIFaceSet::getBVolume() const
 {
   if (this->isBVolumeDirty())
-    ((VrmlNodeIFaceSet*)this)->recalcBSphere();
+    ((NodeIFaceSet*)this)->recalcBSphere();
   return &d_bsphere; // hmmm, const?
 }
 
@@ -4121,7 +4116,7 @@ const VrmlBVolume* VrmlNodeIFaceSet::getBVolume() const
  *
  * @return normal
  */
-const VrmlSFNode & VrmlNodeIFaceSet::getNormal() const {
+const SFNode & NodeIFaceSet::getNormal() const {
     return this->d_normal;
 }
 
@@ -4130,7 +4125,7 @@ const VrmlSFNode & VrmlNodeIFaceSet::getNormal() const {
  *
  * @param normal
  */
-void VrmlNodeIFaceSet::setNormal(const VrmlSFNode & normal) {
+void NodeIFaceSet::setNormal(const SFNode & normal) {
     this->d_normal = normal;
 }
 
@@ -4140,7 +4135,7 @@ void VrmlNodeIFaceSet::setNormal(const VrmlSFNode & normal) {
  *
  * @return the SFNode value of texCoord
  */
-const VrmlSFNode & VrmlNodeIFaceSet::getTexCoord() const {
+const SFNode & NodeIFaceSet::getTexCoord() const {
     return this->d_texCoord;
 }
 
@@ -4150,21 +4145,21 @@ const VrmlSFNode & VrmlNodeIFaceSet::getTexCoord() const {
  *
  * @param textCoord
  */
-void VrmlNodeIFaceSet::setTexCoord(const VrmlSFNode & texCoord) {
+void NodeIFaceSet::setTexCoord(const SFNode & texCoord) {
     this->d_texCoord = texCoord;
 }
 
 
 namespace {
-    const VrmlNodePtr createILineSet(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeILineSet(scene));
+    const NodePtr createILineSet(VrmlScene * const scene) {
+        return NodePtr(new NodeILineSet(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "IndexedLineSet" fields.
  */
-const NodeTypePtr VrmlNodeILineSet::defineType() {
+const NodeTypePtr NodeILineSet::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -4172,25 +4167,25 @@ const NodeTypePtr VrmlNodeILineSet::defineType() {
     }
 
     st.reset(new NodeType("IndexedLineSet", createILineSet));
-    st->addEventIn("set_colorIndex", VrmlField::MFINT32);
-    st->addEventIn("set_coordIndex", VrmlField::MFINT32);
-    st->addExposedField("color", VrmlField::SFNODE);
-    st->addExposedField("coord", VrmlField::SFNODE);
-    st->addField("colorIndex", VrmlField::MFINT32);
-    st->addField("colorPerVertex", VrmlField::SFBOOL);
-    st->addField("coordIndex", VrmlField::MFINT32);
+    st->addEventIn("set_colorIndex", FieldValue::MFINT32);
+    st->addEventIn("set_coordIndex", FieldValue::MFINT32);
+    st->addExposedField("color", FieldValue::SFNODE);
+    st->addExposedField("coord", FieldValue::SFNODE);
+    st->addField("colorIndex", FieldValue::MFINT32);
+    st->addField("colorPerVertex", FieldValue::SFBOOL);
+    st->addField("coordIndex", FieldValue::MFINT32);
 
     return st;
 }
 
-VrmlNodeILineSet::VrmlNodeILineSet(VrmlScene *const scene):
-        VrmlNodeIndexedSet(*defineType(), scene) {}
+NodeILineSet::NodeILineSet(VrmlScene *const scene):
+        NodeIndexedSet(*defineType(), scene) {}
 
-VrmlNodeILineSet::~VrmlNodeILineSet()
+NodeILineSet::~NodeILineSet()
 {
 }
 
-bool VrmlNodeILineSet::accept(VrmlNodeVisitor & visitor) {
+bool NodeILineSet::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -4200,7 +4195,7 @@ bool VrmlNodeILineSet::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodeILineSet::resetVisitedFlag() {
+void NodeILineSet::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         if (this->d_color.get()) {
@@ -4214,12 +4209,12 @@ void VrmlNodeILineSet::resetVisitedFlag() {
 
 // TO DO colors
 
-Viewer::Object VrmlNodeILineSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
+Viewer::Object NodeILineSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
   if (d_coord.get() && d_coordIndex.getLength() > 0)
     {
-      VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
+      MFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
       int nvert = coord.getLength();
       const float * color = 0;
       int nci = 0; const long * ci = 0;
@@ -4227,7 +4222,7 @@ Viewer::Object VrmlNodeILineSet::insertGeometry(Viewer *viewer, VrmlRenderContex
       // check #colors is consistent with colorPerVtx, colorIndex...
       if (d_color.get())
     {
-      VrmlMFColor &c = d_color.get()->toColor()->color();
+      MFColor &c = d_color.get()->toColor()->color();
       color = &c.getElement(0)[0];
       nci = d_colorIndex.getLength();
       if (nci) ci = d_colorIndex.get();
@@ -4251,21 +4246,21 @@ Viewer::Object VrmlNodeILineSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 
 
 namespace {
-    const VrmlNodePtr createImageTexture(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeImageTexture(scene));
+    const NodePtr createImageTexture(VrmlScene * const scene) {
+        return NodePtr(new NodeImageTexture(scene));
     }
 }
 
-const VrmlMFString& VrmlNodeImageTexture::getUrl() const 
+const MFString& NodeImageTexture::getUrl() const 
 {   return d_url; }
 
-VrmlNodeImageTexture* VrmlNodeImageTexture::toImageTexture() const
-{ return (VrmlNodeImageTexture*) this; }
+NodeImageTexture* NodeImageTexture::toImageTexture() const
+{ return (NodeImageTexture*) this; }
 
 /**
  * Define the built in NodeType:: "ImageTexture" fields.
  */
-const NodeTypePtr VrmlNodeImageTexture::defineType() {
+const NodeTypePtr NodeImageTexture::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -4273,24 +4268,24 @@ const NodeTypePtr VrmlNodeImageTexture::defineType() {
     }
 
     st.reset(new NodeType("ImageTexture", createImageTexture));
-    st->addExposedField("url", VrmlField::MFSTRING);
-    st->addField("repeatS", VrmlField::SFBOOL);
-    st->addField("repeatT", VrmlField::SFBOOL);
+    st->addExposedField("url", FieldValue::MFSTRING);
+    st->addField("repeatS", FieldValue::SFBOOL);
+    st->addField("repeatT", FieldValue::SFBOOL);
 
     return st;
 }
 
-VrmlNodeImageTexture::VrmlNodeImageTexture(VrmlScene * const scene) :
-        VrmlNodeTexture(*defineType(), scene), d_repeatS(true), d_repeatT(true),
+NodeImageTexture::NodeImageTexture(VrmlScene * const scene) :
+        NodeTexture(*defineType(), scene), d_repeatS(true), d_repeatT(true),
         d_image(0), d_texObject(0) {}
 
-VrmlNodeImageTexture::~VrmlNodeImageTexture()
+NodeImageTexture::~NodeImageTexture()
 {
   delete d_image;
   // delete d_texObject...
 }
 
-bool VrmlNodeImageTexture::accept(VrmlNodeVisitor & visitor) {
+bool NodeImageTexture::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -4300,7 +4295,7 @@ bool VrmlNodeImageTexture::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeImageTexture::printFields(ostream& os, int indent)
+ostream& NodeImageTexture::printFields(ostream& os, int indent)
 {
   if (d_url.getLength() > 0) PRINT_FIELD(url);
   if (! d_repeatS.get()) PRINT_FIELD(repeatS);
@@ -4309,7 +4304,7 @@ ostream& VrmlNodeImageTexture::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeImageTexture::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeImageTexture::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if ( isModified() )
     {
@@ -4388,27 +4383,27 @@ void VrmlNodeImageTexture::render(Viewer *viewer, VrmlRenderContext rc)
 }
 
 
-size_t VrmlNodeImageTexture::nComponents()
+size_t NodeImageTexture::nComponents()
 {
   return d_image ? d_image->nc() : 0;
 }
 
-size_t VrmlNodeImageTexture::width()
+size_t NodeImageTexture::width()
 {
   return d_image ? d_image->w() : 0;
 }
 
-size_t VrmlNodeImageTexture::height()
+size_t NodeImageTexture::height()
 {
   return d_image ? d_image->h() : 0;
 }
 
-size_t VrmlNodeImageTexture::nFrames()
+size_t NodeImageTexture::nFrames()
 {
   return 0;
 }
 
-const unsigned char * VrmlNodeImageTexture::pixels()
+const unsigned char * NodeImageTexture::pixels()
 {
   return d_image ? d_image->pixels() : 0;
 }
@@ -4416,19 +4411,19 @@ const unsigned char * VrmlNodeImageTexture::pixels()
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeImageTexture::getField(const std::string & fieldId) const
+const FieldValue * NodeImageTexture::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "url")
     return &d_url;
   
-  return VrmlNode::getField(fieldId); // Parent class
+  return Node::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeImageTexture::setField(const std::string & fieldId,
-                    const VrmlField & fieldValue) {
+void NodeImageTexture::setField(const std::string & fieldId,
+                    const FieldValue & fieldValue) {
   if (fieldId == "url")
     {
       delete d_image;
@@ -4439,40 +4434,40 @@ void VrmlNodeImageTexture::setField(const std::string & fieldId,
   else if TRY_FIELD(repeatS, SFBool)
   else if TRY_FIELD(repeatT, SFBool)
   else
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 }
 
-bool VrmlNodeImageTexture::getRepeatS() const
+bool NodeImageTexture::getRepeatS() const
 {
     return d_repeatS.get();
 }
 
-bool VrmlNodeImageTexture::getRepeatT() const
+bool NodeImageTexture::getRepeatT() const
 {
     return d_repeatT.get();
 }
 
-VrmlNodeIndexedSet::VrmlNodeIndexedSet(const NodeType & type,
+NodeIndexedSet::NodeIndexedSet(const NodeType & type,
                                        VrmlScene * const scene):
-        VrmlNodeGeometry(type, scene), d_colorPerVertex(true) {}
+        NodeGeometry(type, scene), d_colorPerVertex(true) {}
 
-VrmlNodeIndexedSet::~VrmlNodeIndexedSet()
+NodeIndexedSet::~NodeIndexedSet()
 {
 }
 
-const VrmlMFNode VrmlNodeIndexedSet::getChildren() const {
-    VrmlNodePtr children[] = { this->d_color.get(), this->d_coord.get() };
-    return VrmlMFNode(2, children);
+const MFNode NodeIndexedSet::getChildren() const {
+    NodePtr children[] = { this->d_color.get(), this->d_coord.get() };
+    return MFNode(2, children);
 }
 
-bool VrmlNodeIndexedSet::isModified() const
+bool NodeIndexedSet::isModified() const
 {
   return ( d_modified ||
        (d_color.get() && d_color.get()->isModified()) ||
        (d_coord.get() && d_coord.get()->isModified()) );
 }
 
-void VrmlNodeIndexedSet::updateModified(VrmlNodePath& path)
+void NodeIndexedSet::updateModified(NodePath& path)
 {
   if (this->isModified()) markPathModified(path, true);
   path.push_front(this);
@@ -4481,14 +4476,14 @@ void VrmlNodeIndexedSet::updateModified(VrmlNodePath& path)
   path.pop_front();
 }
 
-void VrmlNodeIndexedSet::clearFlags()
+void NodeIndexedSet::clearFlags()
 {
-  VrmlNode::clearFlags();
+  Node::clearFlags();
   if (d_color.get()) d_color.get()->clearFlags();
   if (d_coord.get()) d_coord.get()->clearFlags();
 }
 
-void VrmlNodeIndexedSet::addToScene(VrmlScene * scene,
+void NodeIndexedSet::addToScene(VrmlScene * scene,
                                     const std::string & rel) {
     this->d_scene = scene;
     if (this->d_color.get()) {
@@ -4499,7 +4494,7 @@ void VrmlNodeIndexedSet::addToScene(VrmlScene * scene,
     }
 }
 
-ostream& VrmlNodeIndexedSet::printFields(ostream& os, int indent)
+ostream& NodeIndexedSet::printFields(ostream& os, int indent)
 {
   if (d_color.get()) PRINT_FIELD(color);
   if (d_colorIndex.getLength() > 0) PRINT_FIELD(colorIndex);
@@ -4509,20 +4504,20 @@ ostream& VrmlNodeIndexedSet::printFields(ostream& os, int indent)
   return os;
 }
 
-VrmlNodeColor *VrmlNodeIndexedSet::color()
+NodeColor *NodeIndexedSet::color()
 {
   return d_color.get() ? d_color.get()->toColor() : 0;
 }
 
-const VrmlMFInt32 & VrmlNodeIndexedSet::getCoordIndex() const
+const MFInt32 & NodeIndexedSet::getCoordIndex() const
 {   return d_coordIndex; }
 
-const VrmlMFInt32 & VrmlNodeIndexedSet::getColorIndex() const   // LarryD Feb 18/99
+const MFInt32 & NodeIndexedSet::getColorIndex() const   // LarryD Feb 18/99
 {   return d_colorIndex; }
 
 // Get the value of one of the exposedFields
 
-const VrmlField * VrmlNodeIndexedSet::getField(const std::string & fieldId) const
+const FieldValue * NodeIndexedSet::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "color")
@@ -4530,13 +4525,13 @@ const VrmlField * VrmlNodeIndexedSet::getField(const std::string & fieldId) cons
   else if (fieldId == "coord")
     return &d_coord;
   
-  return VrmlNodeGeometry::getField(fieldId); // Parent class
+  return NodeGeometry::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeIndexedSet::setField(const std::string & fieldId,
-                  const VrmlField & fieldValue)
+void NodeIndexedSet::setField(const std::string & fieldId,
+                  const FieldValue & fieldValue)
 {
   if TRY_SFNODE_FIELD(color, Color)
   else if TRY_FIELD(colorIndex, MFInt32)
@@ -4544,7 +4539,7 @@ void VrmlNodeIndexedSet::setField(const std::string & fieldId,
   else if TRY_SFNODE_FIELD(coord, Coordinate)
   else if TRY_FIELD(coordIndex, MFInt32)
   else
-    VrmlNodeGeometry::setField(fieldId, fieldValue);
+    NodeGeometry::setField(fieldId, fieldValue);
 }
 
 /**
@@ -4552,7 +4547,7 @@ void VrmlNodeIndexedSet::setField(const std::string & fieldId,
  *
  * @return color
  */
-const VrmlSFNode & VrmlNodeIndexedSet::getColor() const {
+const SFNode & NodeIndexedSet::getColor() const {
     return this->d_color;
 }
 
@@ -4561,7 +4556,7 @@ const VrmlSFNode & VrmlNodeIndexedSet::getColor() const {
  *
  * @param color
  */
-void VrmlNodeIndexedSet::setColor(const VrmlSFNode & color) {
+void NodeIndexedSet::setColor(const SFNode & color) {
     this->d_color = color;
 }
 
@@ -4570,7 +4565,7 @@ void VrmlNodeIndexedSet::setColor(const VrmlSFNode & color) {
  *
  * @return coord
  */
-const VrmlSFNode & VrmlNodeIndexedSet::getCoord() const {
+const SFNode & NodeIndexedSet::getCoord() const {
     return this->d_coord;
 }
 
@@ -4579,21 +4574,21 @@ const VrmlSFNode & VrmlNodeIndexedSet::getCoord() const {
  *
  * @param coord
  */
-void VrmlNodeIndexedSet::setCoord(const VrmlSFNode & coord) {
+void NodeIndexedSet::setCoord(const SFNode & coord) {
     this->d_coord = coord;
 }
 
 
 namespace {
-    const VrmlNodePtr createInline(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeInline(scene));
+    const NodePtr createInline(VrmlScene * const scene) {
+        return NodePtr(new NodeInline(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Inline" fields.
  */
-const NodeTypePtr VrmlNodeInline::defineType() {
+const NodeTypePtr NodeInline::defineType() {
     static NodeTypePtr st(0);
     if (st) {
         return st;
@@ -4603,25 +4598,25 @@ const NodeTypePtr VrmlNodeInline::defineType() {
     // Having Inline a subclass of Group is not right since
     // Groups have an exposedField "children" and eventIns
     // addChildren/deleteChildren that Inlines don't support...
-    st->addField("bboxCenter", VrmlField::SFVEC3F);
-    st->addField("bboxSize", VrmlField::SFVEC3F);
-    st->addExposedField("url", VrmlField::MFSTRING);
+    st->addField("bboxCenter", FieldValue::SFVEC3F);
+    st->addField("bboxSize", FieldValue::SFVEC3F);
+    st->addExposedField("url", FieldValue::MFSTRING);
 
     return st;
 }
 
-VrmlNodeInline::VrmlNodeInline(VrmlScene * const scene):
-        VrmlNodeGroup(*defineType(), scene), d_namespace(0),
+NodeInline::NodeInline(VrmlScene * const scene):
+        NodeGroup(*defineType(), scene), d_namespace(0),
         d_hasLoaded(false) {
     this->setBVolumeDirty(true);
 }
 
-VrmlNodeInline::~VrmlNodeInline()
+NodeInline::~NodeInline()
 {
   delete d_namespace;
 }
 
-bool VrmlNodeInline::accept(VrmlNodeVisitor & visitor) {
+bool NodeInline::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -4631,21 +4626,21 @@ bool VrmlNodeInline::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeInline* VrmlNodeInline::toInline() const
-{ return (VrmlNodeInline*) this; }
+NodeInline* NodeInline::toInline() const
+{ return (NodeInline*) this; }
 
 
 // Inlines are loaded during addToScene traversal
 
-void VrmlNodeInline::addToScene(VrmlScene * scene,
+void NodeInline::addToScene(VrmlScene * scene,
                                 const std::string & relativeUrl) {
     this->d_scene = scene;
     this->load(relativeUrl);
-    VrmlNodeGroup::addToScene(scene, relativeUrl);
+    NodeGroup::addToScene(scene, relativeUrl);
 }
 
 
-ostream& VrmlNodeInline::printFields(ostream& os, int indent)
+ostream& NodeInline::printFields(ostream& os, int indent)
 {
   if ( !fpzero(d_bboxCenter.getX()) ||
        !fpzero(d_bboxCenter.getY()) ||
@@ -4664,27 +4659,27 @@ ostream& VrmlNodeInline::printFields(ostream& os, int indent)
 
 // Set the value of one of the exposed fields.
 
-const VrmlField * VrmlNodeInline::getField(const std::string & fieldId) const
+const FieldValue * NodeInline::getField(const std::string & fieldId) const
 {
   if (fieldId == "url")
     return &d_url;
 
-  return VrmlNodeGroup::getField(fieldId);
+  return NodeGroup::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeInline::setField(const std::string & fieldId,
-                  const VrmlField & fieldValue)
+void NodeInline::setField(const std::string & fieldId,
+                  const FieldValue & fieldValue)
 {
   if TRY_FIELD(url, MFString)
   else
-    VrmlNodeGroup::setField(fieldId, fieldValue);
+    NodeGroup::setField(fieldId, fieldValue);
 }
 
 //  Load the children from the URL
 
-void VrmlNodeInline::load(const std::string & relativeUrl)
+void NodeInline::load(const std::string & relativeUrl)
 {
   // Already loaded? Need to check whether Url has been modified...
   if (this->d_hasLoaded) {
@@ -4697,7 +4692,7 @@ void VrmlNodeInline::load(const std::string & relativeUrl)
   if (d_url.getLength() > 0)
     {
       VrmlNamespace *ns = new VrmlNamespace();
-      VrmlMFNode *kids = 0;
+      MFNode *kids = 0;
       Doc2 url;
       int i, n = d_url.getLength();
       for (i=0; i<n; ++i)
@@ -4739,16 +4734,16 @@ void VrmlNodeInline::load(const std::string & relativeUrl)
 
 
 namespace {
-    // Return a new VrmlNodeLOD
-    const VrmlNodePtr createLOD(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeLOD(scene));
+    // Return a new NodeLOD
+    const NodePtr createLOD(VrmlScene * const scene) {
+        return NodePtr(new NodeLOD(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "LOD" fields.
  */
-const NodeTypePtr VrmlNodeLOD::defineType() {
+const NodeTypePtr NodeLOD::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -4756,23 +4751,23 @@ const NodeTypePtr VrmlNodeLOD::defineType() {
     }
     
     st.reset(new NodeType("LOD", createLOD));
-    st->addExposedField("level", VrmlField::MFNODE);
-    st->addField("center", VrmlField::SFVEC3F);
-    st->addField("range", VrmlField::MFFLOAT);
+    st->addExposedField("level", FieldValue::MFNODE);
+    st->addField("center", FieldValue::SFVEC3F);
+    st->addField("range", FieldValue::MFFLOAT);
 
     return st;
 }
 
-VrmlNodeLOD::VrmlNodeLOD(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene) {
+NodeLOD::NodeLOD(VrmlScene * const scene):
+        NodeChild(*defineType(), scene) {
     this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
-VrmlNodeLOD::~VrmlNodeLOD()
+NodeLOD::~NodeLOD()
 {
 }
 
-bool VrmlNodeLOD::accept(VrmlNodeVisitor & visitor) {
+bool NodeLOD::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -4782,7 +4777,7 @@ bool VrmlNodeLOD::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodeLOD::resetVisitedFlag() {
+void NodeLOD::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (size_t i = 0; i < this->d_level.getLength(); ++i) {
@@ -4793,11 +4788,11 @@ void VrmlNodeLOD::resetVisitedFlag() {
     }
 }
 
-const VrmlMFNode VrmlNodeLOD::getChildren() const {
+const MFNode NodeLOD::getChildren() const {
     return this->d_level;
 }
 
-bool VrmlNodeLOD::isModified() const
+bool NodeLOD::isModified() const
 {
   if (d_modified) return true;
   
@@ -4815,7 +4810,7 @@ bool VrmlNodeLOD::isModified() const
 // selected? to be safe: check them all. this potentially means some
 // extra work, but it's a lot easier to reason about.
 //
-void VrmlNodeLOD::updateModified(VrmlNodePath& path)
+void NodeLOD::updateModified(NodePath& path)
 {
   if (this->isModified()) markPathModified(path, true);
   path.push_front(this);
@@ -4825,22 +4820,22 @@ void VrmlNodeLOD::updateModified(VrmlNodePath& path)
   path.pop_front();
 }
 
-void VrmlNodeLOD::clearFlags()
+void NodeLOD::clearFlags()
 {
-  VrmlNode::clearFlags();
+  Node::clearFlags();
   int n = d_level.getLength();
   for (int i = 0; i<n; ++i)
     d_level.getElement(i)->clearFlags();
 }
 
-void VrmlNodeLOD::addToScene(VrmlScene * scene, const std::string & rel) {
+void NodeLOD::addToScene(VrmlScene * scene, const std::string & rel) {
     this->d_scene = scene;
     for (size_t i = 0; i < this->d_level.getLength(); ++i) {
         this->d_level.getElement(i)->addToScene(scene, rel);
     }
 }
 
-ostream& VrmlNodeLOD::printFields(ostream& os, int indent)
+ostream& NodeLOD::printFields(ostream& os, int indent)
 {
   if (d_level.getLength() > 0) PRINT_FIELD(level);
   if (! fpzero(d_center.getX()) ||
@@ -4856,7 +4851,7 @@ ostream& VrmlNodeLOD::printFields(ostream& os, int indent)
 
 // Render one of the children
 
-void VrmlNodeLOD::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeLOD::render(Viewer *viewer, VrmlRenderContext rc)
 {
   clearModified();
   if (d_level.getLength() <= 0) return;
@@ -4891,46 +4886,46 @@ void VrmlNodeLOD::render(Viewer *viewer, VrmlRenderContext rc)
 }
 
 // Get the value of one of the node fields.
-const VrmlField * VrmlNodeLOD::getField(const std::string & fieldId) const
+const FieldValue * NodeLOD::getField(const std::string & fieldId) const
 {
   if (fieldId == "level")
     return &d_level;
 
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
-void VrmlNodeLOD::setField(const std::string & fieldId,
-               const VrmlField & fieldValue)
+void NodeLOD::setField(const std::string & fieldId,
+               const FieldValue & fieldValue)
 {
   if TRY_FIELD(level, MFNode)
   else if TRY_FIELD(center, SFVec3f)
   else if TRY_FIELD(range, MFFloat)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
   setBVolumeDirty(true); // lazy calc of bvolume
 }
 
-VrmlNodeLOD* VrmlNodeLOD::toLOD() const 
-{ return (VrmlNodeLOD*) this; }
+NodeLOD* NodeLOD::toLOD() const 
+{ return (NodeLOD*) this; }
 
-const VrmlMFFloat& VrmlNodeLOD::getRange() const  
+const MFFloat& NodeLOD::getRange() const  
 {   return d_range; }
 
-const VrmlSFVec3f& VrmlNodeLOD::getCenter() const   
+const SFVec3f& NodeLOD::getCenter() const   
 {  return d_center; }
 
 
-const VrmlBVolume* VrmlNodeLOD::getBVolume() const
+const VrmlBVolume* NodeLOD::getBVolume() const
 {
   if (this->isBVolumeDirty())
-    ((VrmlNodeLOD*)this)->recalcBSphere();
+    ((NodeLOD*)this)->recalcBSphere();
   return &d_bsphere;
 }
 
 
 void
-VrmlNodeLOD::recalcBSphere()
+NodeLOD::recalcBSphere()
 {
   d_bsphere.reset();
   
@@ -4959,7 +4954,7 @@ VrmlNodeLOD::recalcBSphere()
  *
  * @return level
  */
-const VrmlMFNode & VrmlNodeLOD::getLevel() const {
+const MFNode & NodeLOD::getLevel() const {
     return this->d_level;
 }
 
@@ -4968,22 +4963,22 @@ const VrmlMFNode & VrmlNodeLOD::getLevel() const {
  *
  * @param level
  */
-void VrmlNodeLOD::setLevel(const VrmlMFNode & level) {
+void NodeLOD::setLevel(const MFNode & level) {
     this->d_level = level;
     this->setBVolumeDirty(true);
 }
 
 
 namespace {
-    const VrmlNodePtr createMaterial(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeMaterial(scene));
+    const NodePtr createMaterial(VrmlScene * const scene) {
+        return NodePtr(new NodeMaterial(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Material" fields.
  */
-const NodeTypePtr VrmlNodeMaterial::defineType() {
+const NodeTypePtr NodeMaterial::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -4991,26 +4986,26 @@ const NodeTypePtr VrmlNodeMaterial::defineType() {
     }
     
     st.reset(new NodeType("Material", createMaterial));
-    st->addExposedField("ambientIntensity", VrmlField::SFFLOAT);
-    st->addExposedField("diffuseColor", VrmlField::SFCOLOR);
-    st->addExposedField("emissiveColor", VrmlField::SFCOLOR);
-    st->addExposedField("shininess", VrmlField::SFFLOAT);
-    st->addExposedField("specularColor", VrmlField::SFCOLOR);
-    st->addExposedField("transparency", VrmlField::SFFLOAT);
+    st->addExposedField("ambientIntensity", FieldValue::SFFLOAT);
+    st->addExposedField("diffuseColor", FieldValue::SFCOLOR);
+    st->addExposedField("emissiveColor", FieldValue::SFCOLOR);
+    st->addExposedField("shininess", FieldValue::SFFLOAT);
+    st->addExposedField("specularColor", FieldValue::SFCOLOR);
+    st->addExposedField("transparency", FieldValue::SFFLOAT);
 
     return st;
 }
 
-VrmlNodeMaterial::VrmlNodeMaterial(VrmlScene * const scene):
-        VrmlNode(*defineType(), scene), d_ambientIntensity(0.2),
+NodeMaterial::NodeMaterial(VrmlScene * const scene):
+        Node(*defineType(), scene), d_ambientIntensity(0.2),
         d_diffuseColor(0.8, 0.8, 0.8), d_emissiveColor(0.0, 0.0, 0.0),
         d_shininess(0.2), d_specularColor(0.0, 0.0, 0.0), d_transparency(0.0) {}
 
-VrmlNodeMaterial::~VrmlNodeMaterial()
+NodeMaterial::~NodeMaterial()
 {
 }
 
-bool VrmlNodeMaterial::accept(VrmlNodeVisitor & visitor) {
+bool NodeMaterial::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -5020,11 +5015,11 @@ bool VrmlNodeMaterial::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeMaterial* VrmlNodeMaterial::toMaterial() const
-{ return (VrmlNodeMaterial*) this; }
+NodeMaterial* NodeMaterial::toMaterial() const
+{ return (NodeMaterial*) this; }
 
 
-ostream& VrmlNodeMaterial::printFields(ostream& os, int indent)
+ostream& NodeMaterial::printFields(ostream& os, int indent)
 {
   if (! fpequal(d_ambientIntensity.get(), 0.2))
     PRINT_FIELD(ambientIntensity);
@@ -5053,9 +5048,9 @@ ostream& VrmlNodeMaterial::printFields(ostream& os, int indent)
   return os;
 }
 
-// This currently isn't used - see VrmlNodeAppearance.cpp.
+// This currently isn't used - see NodeAppearance.cpp.
 
-void VrmlNodeMaterial::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeMaterial::render(Viewer *viewer, VrmlRenderContext rc)
 {
   viewer->setMaterial(d_ambientIntensity.get(),
               d_diffuseColor.get(),
@@ -5069,7 +5064,7 @@ void VrmlNodeMaterial::render(Viewer *viewer, VrmlRenderContext rc)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeMaterial::getField(const std::string & fieldId) const
+const FieldValue * NodeMaterial::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "ambientIntensity")
@@ -5085,13 +5080,13 @@ const VrmlField * VrmlNodeMaterial::getField(const std::string & fieldId) const
   else if (fieldId == "transparency")
     return &d_transparency;
   
-  return VrmlNode::getField(fieldId); // Parent class
+  return Node::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeMaterial::setField(const std::string & fieldId,
-                const VrmlField & fieldValue)
+void NodeMaterial::setField(const std::string & fieldId,
+                const FieldValue & fieldValue)
 {
   if TRY_FIELD(ambientIntensity, SFFloat)
   else if TRY_FIELD(diffuseColor, SFColor)
@@ -5100,20 +5095,20 @@ void VrmlNodeMaterial::setField(const std::string & fieldId,
   else if TRY_FIELD(specularColor, SFColor)
   else if TRY_FIELD(transparency, SFFloat)
   else
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 }
 
 
 namespace {
-    const VrmlNodePtr createMovieTexture(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeMovieTexture(scene));
+    const NodePtr createMovieTexture(VrmlScene * const scene) {
+        return NodePtr(new NodeMovieTexture(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "MovieTexture" fields.
  */
-const NodeTypePtr VrmlNodeMovieTexture::defineType() {
+const NodeTypePtr NodeMovieTexture::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -5121,21 +5116,21 @@ const NodeTypePtr VrmlNodeMovieTexture::defineType() {
     }
     
     st.reset(new NodeType("MovieTexture", createMovieTexture));
-    st->addExposedField("loop", VrmlField::SFBOOL);
-    st->addExposedField("speed", VrmlField::SFFLOAT);
-    st->addExposedField("startTime", VrmlField::SFTIME);
-    st->addExposedField("stopTime", VrmlField::SFTIME);
-    st->addExposedField("url", VrmlField::MFSTRING);
-    st->addField("repeatS", VrmlField::SFBOOL);
-    st->addField("repeatT", VrmlField::SFBOOL);
-    st->addEventOut("duration_changed", VrmlField::SFTIME);
-    st->addEventOut("isActive", VrmlField::SFBOOL);
+    st->addExposedField("loop", FieldValue::SFBOOL);
+    st->addExposedField("speed", FieldValue::SFFLOAT);
+    st->addExposedField("startTime", FieldValue::SFTIME);
+    st->addExposedField("stopTime", FieldValue::SFTIME);
+    st->addExposedField("url", FieldValue::MFSTRING);
+    st->addField("repeatS", FieldValue::SFBOOL);
+    st->addField("repeatT", FieldValue::SFBOOL);
+    st->addEventOut("duration_changed", FieldValue::SFTIME);
+    st->addEventOut("isActive", FieldValue::SFBOOL);
 
     return st;
 }
 
-VrmlNodeMovieTexture::VrmlNodeMovieTexture(VrmlScene * const scene) :
-        VrmlNodeTexture(*defineType(), scene), d_loop(false), d_speed(1.0),
+NodeMovieTexture::NodeMovieTexture(VrmlScene * const scene) :
+        NodeTexture(*defineType(), scene), d_loop(false), d_speed(1.0),
         d_repeatS(true), d_repeatT(true), d_image(0), d_frame(0),
         d_lastFrame(-1), d_lastFrameTime(-1.0), d_texObject(0) {
     if (this->d_scene) {
@@ -5143,14 +5138,14 @@ VrmlNodeMovieTexture::VrmlNodeMovieTexture(VrmlScene * const scene) :
     }
 }
 
-VrmlNodeMovieTexture::~VrmlNodeMovieTexture() {
+NodeMovieTexture::~NodeMovieTexture() {
     if (this->d_scene) {
         this->d_scene->removeMovie(*this);
     }
     delete this->d_image;
 }
 
-bool VrmlNodeMovieTexture::accept(VrmlNodeVisitor & visitor) {
+bool NodeMovieTexture::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -5160,20 +5155,20 @@ bool VrmlNodeMovieTexture::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeMovieTexture* VrmlNodeMovieTexture::toMovieTexture() const
-{ return (VrmlNodeMovieTexture*) this; }
+NodeMovieTexture* NodeMovieTexture::toMovieTexture() const
+{ return (NodeMovieTexture*) this; }
 
 
-void VrmlNodeMovieTexture::addToScene(VrmlScene * scene,
+void NodeMovieTexture::addToScene(VrmlScene * scene,
                                       const std::string & rel) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
         this->d_scene->addMovie(*this);
     }
-    VrmlNodeTexture::addToScene(scene, rel);
+    NodeTexture::addToScene(scene, rel);
 }
 
 
-ostream& VrmlNodeMovieTexture::printFields(ostream& os, int indent)
+ostream& NodeMovieTexture::printFields(ostream& os, int indent)
 {
   if (d_loop.get()) PRINT_FIELD(loop);
   if (!fpequal(d_speed.get(), 1.0)) PRINT_FIELD(speed);
@@ -5186,7 +5181,7 @@ ostream& VrmlNodeMovieTexture::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeMovieTexture::update( VrmlSFTime &timeNow )
+void NodeMovieTexture::update( SFTime &timeNow )
 {
   if ( isModified() )
     {
@@ -5225,7 +5220,7 @@ void VrmlNodeMovieTexture::update( VrmlSFTime &timeNow )
 
 
       int nFrames = d_image->nFrames();
-      d_duration = VrmlSFTime((nFrames >= 0) ? double(nFrames) : double(-1));
+      d_duration = SFTime((nFrames >= 0) ? double(nFrames) : double(-1));
       eventOut( timeNow.get(), "duration_changed", d_duration );
       d_frame = (d_speed.get() >= 0) ? 0 : nFrames-1;
 
@@ -5288,9 +5283,9 @@ void VrmlNodeMovieTexture::update( VrmlSFTime &timeNow )
 
 // Ignore set_speed when active.
 
-void VrmlNodeMovieTexture::eventIn(double timeStamp,
+void NodeMovieTexture::eventIn(double timeStamp,
                                    const std::string & eventName,
-                                   const VrmlField & fieldValue) {
+                                   const FieldValue & fieldValue) {
     static const char * eventInPrefix = "set_";
     std::string basicEventName;
     if (std::equal(eventInPrefix, eventInPrefix + 4, eventName.begin())) {
@@ -5308,14 +5303,14 @@ void VrmlNodeMovieTexture::eventIn(double timeStamp,
         }
     } else {
         // Let the generic code handle the rest.
-        VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+        Node::eventIn(timeStamp, eventName, fieldValue);
     }
 }
 
 
 // Render a frame if there is one available.
 
-void VrmlNodeMovieTexture::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeMovieTexture::render(Viewer *viewer, VrmlRenderContext rc)
 {
   //theSystem->debug("MovieTexture.%s::render frame %d\n", name(), d_frame);
 
@@ -5339,7 +5334,7 @@ void VrmlNodeMovieTexture::render(Viewer *viewer, VrmlRenderContext rc)
     }
   else
     {
-      // Ensure image dimensions are powers of 2 (move to VrmlNodeTexture...)
+      // Ensure image dimensions are powers of 2 (move to NodeTexture...)
       int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
       int nSizes = sizeof(sizes) / sizeof(int);
       int w = d_image->w();
@@ -5375,27 +5370,27 @@ void VrmlNodeMovieTexture::render(Viewer *viewer, VrmlRenderContext rc)
 }
 
 
-size_t VrmlNodeMovieTexture::nComponents()
+size_t NodeMovieTexture::nComponents()
 {
   return d_image ? d_image->nc() : 0;
 }
 
-size_t VrmlNodeMovieTexture::width()
+size_t NodeMovieTexture::width()
 {
   return d_image ? d_image->w() : 0;
 }
 
-size_t VrmlNodeMovieTexture::height()
+size_t NodeMovieTexture::height()
 {
   return d_image ? d_image->h() : 0;
 }
 
-size_t VrmlNodeMovieTexture::nFrames()
+size_t NodeMovieTexture::nFrames()
 {
   return d_image ? d_image->nFrames() : 0;
 }
 
-const unsigned char * VrmlNodeMovieTexture::pixels()
+const unsigned char * NodeMovieTexture::pixels()
 {
   return d_image ? d_image->pixels() : 0;
 }
@@ -5404,7 +5399,7 @@ const unsigned char * VrmlNodeMovieTexture::pixels()
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeMovieTexture::getField(const std::string & fieldId) const
+const FieldValue * NodeMovieTexture::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "loop")
@@ -5424,13 +5419,13 @@ const VrmlField * VrmlNodeMovieTexture::getField(const std::string & fieldId) co
   else if (fieldId == "isActive")
     return &d_isActive;
   
-  return VrmlNode::getField(fieldId); // Parent class
+  return Node::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeMovieTexture::setField(const std::string & fieldId,
-                    const VrmlField & fieldValue)
+void NodeMovieTexture::setField(const std::string & fieldId,
+                    const FieldValue & fieldValue)
 {
   if TRY_FIELD(loop, SFBool)
   else if TRY_FIELD(speed, SFFloat)
@@ -5440,7 +5435,7 @@ void VrmlNodeMovieTexture::setField(const std::string & fieldId,
   else if TRY_FIELD(repeatS, SFBool)
   else if TRY_FIELD(repeatT, SFBool)
   else
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 }
 
 
@@ -5448,15 +5443,15 @@ namespace {
     //  NavigationInfo factory.
     //  Since NavInfo is a bindable child node, the first one created needs
     //  to notify its containing scene.
-    const VrmlNodePtr createNavigationInfo(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeNavigationInfo(scene));
+    const NodePtr createNavigationInfo(VrmlScene * const scene) {
+        return NodePtr(new NodeNavigationInfo(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "NavigationInfo" fields.
  */
-const NodeTypePtr VrmlNodeNavigationInfo::defineType() {
+const NodeTypePtr NodeNavigationInfo::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -5464,35 +5459,35 @@ const NodeTypePtr VrmlNodeNavigationInfo::defineType() {
     }
     
     st.reset(new NodeType("NavigationInfo", createNavigationInfo));
-    st->addEventIn("set_bind", VrmlField::SFBOOL);
-    st->addExposedField("avatarSize", VrmlField::MFFLOAT);
-    st->addExposedField("headlight", VrmlField::SFBOOL);
-    st->addExposedField("speed", VrmlField::SFFLOAT);
-    st->addExposedField("type", VrmlField::MFSTRING);
-    st->addExposedField("visibilityLimit", VrmlField::SFFLOAT);
-    st->addEventOut("isBound", VrmlField::SFBOOL);
+    st->addEventIn("set_bind", FieldValue::SFBOOL);
+    st->addExposedField("avatarSize", FieldValue::MFFLOAT);
+    st->addExposedField("headlight", FieldValue::SFBOOL);
+    st->addExposedField("speed", FieldValue::SFFLOAT);
+    st->addExposedField("type", FieldValue::MFSTRING);
+    st->addExposedField("visibilityLimit", FieldValue::SFFLOAT);
+    st->addEventOut("isBound", FieldValue::SFBOOL);
 
     return st;
 }
 
-VrmlNodeNavigationInfo::VrmlNodeNavigationInfo(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_headlight(true), d_speed( 1.0 ),
+NodeNavigationInfo::NodeNavigationInfo(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_headlight(true), d_speed( 1.0 ),
         d_visibilityLimit(0.0), d_isBound(false) {
   float avatarSize[] = { 0.25, 1.6, 0.75 };
   const std::string type[] = { "WALK", "ANY" };
 
   d_avatarSize.set(3, avatarSize);
-  d_type = VrmlMFString(2, type);
+  d_type = MFString(2, type);
   if (d_scene) d_scene->addNavigationInfo(*this);
 }
 
-VrmlNodeNavigationInfo::~VrmlNodeNavigationInfo() {
+NodeNavigationInfo::~NodeNavigationInfo() {
     if (this->d_scene) {
         this->d_scene->removeNavigationInfo(*this);
     }
 }
 
-bool VrmlNodeNavigationInfo::accept(VrmlNodeVisitor & visitor) {
+bool NodeNavigationInfo::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -5502,11 +5497,11 @@ bool VrmlNodeNavigationInfo::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeNavigationInfo* VrmlNodeNavigationInfo::toNavigationInfo() const
-{ return (VrmlNodeNavigationInfo*) this; }
+NodeNavigationInfo* NodeNavigationInfo::toNavigationInfo() const
+{ return (NodeNavigationInfo*) this; }
 
 
-void VrmlNodeNavigationInfo::addToScene(VrmlScene * scene,
+void NodeNavigationInfo::addToScene(VrmlScene * scene,
                                         const std::string &) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
         this->d_scene->addNavigationInfo(*this);
@@ -5514,7 +5509,7 @@ void VrmlNodeNavigationInfo::addToScene(VrmlScene * scene,
 }
 
 
-ostream& VrmlNodeNavigationInfo::printFields(ostream& os, int indent)
+ostream& NodeNavigationInfo::printFields(ostream& os, int indent)
 {
   if (d_avatarSize.getLength() != 3 ||
       ! fpequal(d_avatarSize.getElement(0), 0.25) ||
@@ -5536,14 +5531,14 @@ ostream& VrmlNodeNavigationInfo::printFields(ostream& os, int indent)
 // I can't find a good way to ensure that the isBound
 // var of the current node gets updated at the right time...
 
-void VrmlNodeNavigationInfo::eventIn(double timeStamp,
+void NodeNavigationInfo::eventIn(double timeStamp,
                                      const std::string & eventName,
-                                     const VrmlField & fieldValue) {
+                                     const FieldValue & fieldValue) {
   if (eventName == "set_bind")
     {
-      VrmlNodeNavigationInfo *current = d_scene->bindableNavigationInfoTop();
-      const VrmlSFBool * const b =
-                dynamic_cast<const VrmlSFBool *>(&fieldValue);
+      NodeNavigationInfo *current = d_scene->bindableNavigationInfoTop();
+      const SFBool * const b =
+                dynamic_cast<const SFBool *>(&fieldValue);
       if (! b)
     {
       cerr << "Error: invalid value for NavigationInfo::set_bind eventIn "
@@ -5556,9 +5551,9 @@ void VrmlNodeNavigationInfo::eventIn(double timeStamp,
       if (this != current)
         {
           if (current)
-        current->eventOut( timeStamp, "isBound", VrmlSFBool(false));
+        current->eventOut( timeStamp, "isBound", SFBool(false));
           d_scene->bindablePush( this );
-          eventOut( timeStamp, "isBound", VrmlSFBool(true) );
+          eventOut( timeStamp, "isBound", SFBool(true) );
         }
     }
       else            // set_bind FALSE
@@ -5566,17 +5561,17 @@ void VrmlNodeNavigationInfo::eventIn(double timeStamp,
       d_scene->bindableRemove( this );
       if (this == current)
         {
-          eventOut( timeStamp, "isBound", VrmlSFBool(false));
+          eventOut( timeStamp, "isBound", SFBool(false));
           current = d_scene->bindableNavigationInfoTop();
           if (current)
-        current->eventOut( timeStamp, "isBound", VrmlSFBool(true) );
+        current->eventOut( timeStamp, "isBound", SFBool(true) );
         }
     }
     }
 
   else
     {
-      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+      Node::eventIn(timeStamp, eventName, fieldValue);
     }
 }
 
@@ -5585,7 +5580,7 @@ void VrmlNodeNavigationInfo::eventIn(double timeStamp,
 // don't rely on it's value to be valid. This hoses
 // the const-ness of the method, of course :(
 
-const VrmlField * VrmlNodeNavigationInfo::getField(const std::string & fieldId) const
+const FieldValue * NodeNavigationInfo::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "avatarSize")
@@ -5602,19 +5597,19 @@ const VrmlField * VrmlNodeNavigationInfo::getField(const std::string & fieldId) 
   // eventOuts
   else if (fieldId == "isBound")
     {
-      VrmlSFBool* isBound = (VrmlSFBool*) &(this->d_isBound);
+      SFBool* isBound = (SFBool*) &(this->d_isBound);
       isBound->set( d_scene->bindableNavigationInfoTop() == this );
       return isBound;
     }
 
-  return VrmlNodeChild::getField(fieldId); // Parent class
+  return NodeChild::getField(fieldId); // Parent class
 }
 
 
 // Set the value of one of the node fields.
 
-void VrmlNodeNavigationInfo::setField(const std::string & fieldId,
-                      const VrmlField & fieldValue)
+void NodeNavigationInfo::setField(const std::string & fieldId,
+                      const FieldValue & fieldValue)
 {
   if TRY_FIELD(avatarSize, MFFloat)
   else if TRY_FIELD(headlight, SFBool)
@@ -5622,20 +5617,20 @@ void VrmlNodeNavigationInfo::setField(const std::string & fieldId,
   else if TRY_FIELD(type, MFString)
   else if TRY_FIELD(visibilityLimit, SFFloat)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 
 namespace {
-    const VrmlNodePtr createNormal(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeNormal(scene));
+    const NodePtr createNormal(VrmlScene * const scene) {
+        return NodePtr(new NodeNormal(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Normal" fields.
  */
-const NodeTypePtr VrmlNodeNormal::defineType() {
+const NodeTypePtr NodeNormal::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -5643,19 +5638,19 @@ const NodeTypePtr VrmlNodeNormal::defineType() {
     }
     
     st.reset(new NodeType("Normal", createNormal));
-    st->addExposedField("vector", VrmlField::MFVEC3F);
+    st->addExposedField("vector", FieldValue::MFVEC3F);
 
     return st;
 }
 
-VrmlNodeNormal::VrmlNodeNormal(VrmlScene * const scene):
-        VrmlNode(*defineType(), scene) {}
+NodeNormal::NodeNormal(VrmlScene * const scene):
+        Node(*defineType(), scene) {}
 
-VrmlNodeNormal::~VrmlNodeNormal()
+NodeNormal::~NodeNormal()
 {
 }
 
-bool VrmlNodeNormal::accept(VrmlNodeVisitor & visitor) {
+bool NodeNormal::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -5665,11 +5660,11 @@ bool VrmlNodeNormal::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeNormal* VrmlNodeNormal::toNormal() const
-{ return (VrmlNodeNormal*) this; }
+NodeNormal* NodeNormal::toNormal() const
+{ return (NodeNormal*) this; }
 
 
-ostream& VrmlNodeNormal::printFields(ostream& os, int indent)
+ostream& NodeNormal::printFields(ostream& os, int indent)
 {
   if (d_vector.getLength() > 0) PRINT_FIELD(vector);
   return os;
@@ -5678,37 +5673,37 @@ ostream& VrmlNodeNormal::printFields(ostream& os, int indent)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeNormal::getField(const std::string & fieldId) const
+const FieldValue * NodeNormal::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "vector")
     return &d_vector;
 
-  return VrmlNode::getField(fieldId);
+  return Node::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeNormal::setField(const std::string & fieldId,
-                  const VrmlField & fieldValue)
+void NodeNormal::setField(const std::string & fieldId,
+                  const FieldValue & fieldValue)
 {
   if TRY_FIELD(vector, MFVec3f)
   else
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 }
 
 
 namespace {
     // NormalInt factory.
-    const VrmlNodePtr createNormalInt(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeNormalInt(scene));
+    const NodePtr createNormalInt(VrmlScene * const scene) {
+        return NodePtr(new NodeNormalInt(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "NormalInterpolator" fields.
  */
-const NodeTypePtr VrmlNodeNormalInt::defineType() {
+const NodeTypePtr NodeNormalInt::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -5716,22 +5711,22 @@ const NodeTypePtr VrmlNodeNormalInt::defineType() {
     }
 
     st.reset(new NodeType("NormalInterpolator", createNormalInt));
-    st->addEventIn("set_fraction", VrmlField::SFFLOAT);
-    st->addExposedField("key", VrmlField::MFFLOAT);
-    st->addExposedField("keyValue", VrmlField::MFVEC3F);
-    st->addEventOut("value_changed", VrmlField::MFVEC3F);
+    st->addEventIn("set_fraction", FieldValue::SFFLOAT);
+    st->addExposedField("key", FieldValue::MFFLOAT);
+    st->addExposedField("keyValue", FieldValue::MFVEC3F);
+    st->addEventOut("value_changed", FieldValue::MFVEC3F);
 
     return st;
 }
 
-VrmlNodeNormalInt::VrmlNodeNormalInt(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene) {}
+NodeNormalInt::NodeNormalInt(VrmlScene * const scene):
+        NodeChild(*defineType(), scene) {}
 
-VrmlNodeNormalInt::~VrmlNodeNormalInt()
+NodeNormalInt::~NodeNormalInt()
 {
 }
 
-bool VrmlNodeNormalInt::accept(VrmlNodeVisitor & visitor) {
+bool NodeNormalInt::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -5741,7 +5736,7 @@ bool VrmlNodeNormalInt::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeNormalInt::printFields(ostream& os, int indent)
+ostream& NodeNormalInt::printFields(ostream& os, int indent)
 {
   if (d_key.getLength() > 0) PRINT_FIELD(key);
   if (d_keyValue.getLength() > 0) PRINT_FIELD(keyValue);
@@ -5750,18 +5745,18 @@ ostream& VrmlNodeNormalInt::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeNormalInt::eventIn(double timeStamp, const std::string & eventName,
-                                const VrmlField & fieldValue) {
+void NodeNormalInt::eventIn(double timeStamp, const std::string & eventName,
+                                const FieldValue & fieldValue) {
   if (eventName == "set_fraction")
     {
-      if (!dynamic_cast<const VrmlSFFloat *>(&fieldValue))
+      if (!dynamic_cast<const SFFloat *>(&fieldValue))
     {
       theSystem->error
         ("Invalid type for %s eventIn %s (expected SFFloat).\n",
              this->type.getId().c_str(), eventName.c_str());
       return;
     }
-      float f = static_cast<const VrmlSFFloat &>(fieldValue).get();
+      float f = static_cast<const SFFloat &>(fieldValue).get();
 
       int nNormals = d_keyValue.getLength() / d_key.getLength();
       int n = d_key.getLength() - 1;
@@ -5834,7 +5829,7 @@ void VrmlNodeNormalInt::eventIn(double timeStamp, const std::string & eventName,
   // Check exposedFields
   else
     {
-      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+      Node::eventIn(timeStamp, eventName, fieldValue);
 
       // This node is not renderable, so don't re-render on changes to it.
       clearModified();
@@ -5843,7 +5838,7 @@ void VrmlNodeNormalInt::eventIn(double timeStamp, const std::string & eventName,
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeNormalInt::getField(const std::string & fieldId) const
+const FieldValue * NodeNormalInt::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "key")
@@ -5855,33 +5850,33 @@ const VrmlField * VrmlNodeNormalInt::getField(const std::string & fieldId) const
   else if (fieldId == "value")
     return &d_value;
 
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 
 // Set the value of one of the node fields.
 
-void VrmlNodeNormalInt::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue)
+void NodeNormalInt::setField(const std::string & fieldId,
+                 const FieldValue & fieldValue)
 {
   if TRY_FIELD(key, MFFloat)
   else if TRY_FIELD(keyValue, MFVec3f)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 
 namespace {
     // OrientationInt factory.
-    const VrmlNodePtr createOrientationInt(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeOrientationInt(scene));
+    const NodePtr createOrientationInt(VrmlScene * const scene) {
+        return NodePtr(new NodeOrientationInt(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "OrientationInt" fields.
  */
-const NodeTypePtr VrmlNodeOrientationInt::defineType() {
+const NodeTypePtr NodeOrientationInt::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -5889,22 +5884,22 @@ const NodeTypePtr VrmlNodeOrientationInt::defineType() {
     }
     
     st.reset(new NodeType("OrientationInterpolator", createOrientationInt));
-    st->addEventIn("set_fraction", VrmlField::SFFLOAT);
-    st->addExposedField("key", VrmlField::MFFLOAT);
-    st->addExposedField("keyValue", VrmlField::MFROTATION);
-    st->addEventOut("value_changed", VrmlField::SFROTATION);
+    st->addEventIn("set_fraction", FieldValue::SFFLOAT);
+    st->addExposedField("key", FieldValue::MFFLOAT);
+    st->addExposedField("keyValue", FieldValue::MFROTATION);
+    st->addEventOut("value_changed", FieldValue::SFROTATION);
 
     return st;
 }
 
-VrmlNodeOrientationInt::VrmlNodeOrientationInt(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene) {}
+NodeOrientationInt::NodeOrientationInt(VrmlScene * const scene):
+        NodeChild(*defineType(), scene) {}
 
-VrmlNodeOrientationInt::~VrmlNodeOrientationInt()
+NodeOrientationInt::~NodeOrientationInt()
 {
 }
 
-bool VrmlNodeOrientationInt::accept(VrmlNodeVisitor & visitor) {
+bool NodeOrientationInt::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -5914,7 +5909,7 @@ bool VrmlNodeOrientationInt::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeOrientationInt::printFields(ostream& os, int indent)
+ostream& NodeOrientationInt::printFields(ostream& os, int indent)
 {
   if (d_key.getLength() > 0) PRINT_FIELD(key);
   if (d_keyValue.getLength() > 0) PRINT_FIELD(keyValue);
@@ -5923,19 +5918,19 @@ ostream& VrmlNodeOrientationInt::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeOrientationInt::eventIn(double timeStamp,
+void NodeOrientationInt::eventIn(double timeStamp,
                                      const std::string & eventName,
-                                     const VrmlField & fieldValue) {
+                                     const FieldValue & fieldValue) {
   if (eventName == "set_fraction")
     {
-      if (!dynamic_cast<const VrmlSFFloat *>(&fieldValue))
+      if (!dynamic_cast<const SFFloat *>(&fieldValue))
     {
       theSystem->error(
                 "Invalid type for %s eventIn %s (expected SFFloat).\n",
                 this->type.getId().c_str(), eventName.c_str());
       return;
     }
-      float f = static_cast<const VrmlSFFloat &>(fieldValue).get();
+      float f = static_cast<const SFFloat &>(fieldValue).get();
 
       //printf("OI.set_fraction %g ", f);
 
@@ -6007,7 +6002,7 @@ void VrmlNodeOrientationInt::eventIn(double timeStamp,
   // Check exposedFields
   else
     {
-      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+      Node::eventIn(timeStamp, eventName, fieldValue);
 
       // This node is not renderable, so don't re-render on changes to it.
       clearModified();
@@ -6017,7 +6012,7 @@ void VrmlNodeOrientationInt::eventIn(double timeStamp,
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeOrientationInt::getField(const std::string & fieldId) const
+const FieldValue * NodeOrientationInt::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "key")
@@ -6029,44 +6024,44 @@ const VrmlField * VrmlNodeOrientationInt::getField(const std::string & fieldId) 
   else if (fieldId == "value")
     return &d_value;
 
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 
 // Set the value of one of the node fields.
 
-void VrmlNodeOrientationInt::setField(const std::string & fieldId,
-                      const VrmlField & fieldValue)
+void NodeOrientationInt::setField(const std::string & fieldId,
+                      const FieldValue & fieldValue)
 {
   if TRY_FIELD(key, MFFloat)
   else if TRY_FIELD(keyValue, MFRotation)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
-VrmlNodeOrientationInt* VrmlNodeOrientationInt::toOrientationInt() const 
-{ return (VrmlNodeOrientationInt*) this; }
+NodeOrientationInt* NodeOrientationInt::toOrientationInt() const 
+{ return (NodeOrientationInt*) this; }
 
-const VrmlMFFloat& VrmlNodeOrientationInt::getKey() const  
+const MFFloat& NodeOrientationInt::getKey() const  
 {   return d_key; }
 
-const VrmlMFRotation& VrmlNodeOrientationInt::getKeyValue() const  
+const MFRotation& NodeOrientationInt::getKeyValue() const  
 { return d_keyValue; }
 
 
 namespace {
-    const VrmlNodePtr createPixelTexture(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodePixelTexture(scene));
+    const NodePtr createPixelTexture(VrmlScene * const scene) {
+        return NodePtr(new NodePixelTexture(scene));
     }
 }
 
-VrmlNodePixelTexture* VrmlNodePixelTexture::toPixelTexture() const
-{ return (VrmlNodePixelTexture*) this; }
+NodePixelTexture* NodePixelTexture::toPixelTexture() const
+{ return (NodePixelTexture*) this; }
 
 /**
  * Define the built in NodeType:: "PixelTexture" fields.
  */
-const NodeTypePtr VrmlNodePixelTexture::defineType() {
+const NodeTypePtr NodePixelTexture::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -6074,23 +6069,23 @@ const NodeTypePtr VrmlNodePixelTexture::defineType() {
     }
     
     st.reset(new NodeType("PixelTexture", createPixelTexture));
-    st->addExposedField("image", VrmlField::SFIMAGE);
-    st->addField("repeatS", VrmlField::SFBOOL);
-    st->addField("repeatT", VrmlField::SFBOOL);
+    st->addExposedField("image", FieldValue::SFIMAGE);
+    st->addField("repeatS", FieldValue::SFBOOL);
+    st->addField("repeatT", FieldValue::SFBOOL);
     
     return st;
 }
 
-VrmlNodePixelTexture::VrmlNodePixelTexture(VrmlScene * const scene):
-        VrmlNodeTexture(*defineType(), scene), d_repeatS(true), d_repeatT(true),
+NodePixelTexture::NodePixelTexture(VrmlScene * const scene):
+        NodeTexture(*defineType(), scene), d_repeatS(true), d_repeatT(true),
         d_texObject(0) {}
 
-VrmlNodePixelTexture::~VrmlNodePixelTexture()
+NodePixelTexture::~NodePixelTexture()
 {
   // viewer->removeTextureObject( d_texObject ); ...
 }
 
-bool VrmlNodePixelTexture::accept(VrmlNodeVisitor & visitor) {
+bool NodePixelTexture::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -6100,7 +6095,7 @@ bool VrmlNodePixelTexture::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodePixelTexture::printFields(ostream& os, int indent)
+ostream& NodePixelTexture::printFields(ostream& os, int indent)
 {
   if (! d_repeatS.get()) PRINT_FIELD(repeatS);
   if (! d_repeatT.get()) PRINT_FIELD(repeatT);
@@ -6113,7 +6108,7 @@ ostream& VrmlNodePixelTexture::printFields(ostream& os, int indent)
 }
 
       
-void VrmlNodePixelTexture::render(Viewer *viewer, VrmlRenderContext rc) {
+void NodePixelTexture::render(Viewer *viewer, VrmlRenderContext rc) {
     if (isModified()) {
         if (d_texObject) {
             viewer->removeTextureObject(d_texObject);
@@ -6178,27 +6173,27 @@ void VrmlNodePixelTexture::render(Viewer *viewer, VrmlRenderContext rc) {
 }
 
 
-size_t VrmlNodePixelTexture::nComponents()
+size_t NodePixelTexture::nComponents()
 {
   return d_image.getComponents();
 }
 
-size_t VrmlNodePixelTexture::width()
+size_t NodePixelTexture::width()
 {
   return d_image.getWidth();
 }
 
-size_t VrmlNodePixelTexture::height()
+size_t NodePixelTexture::height()
 {
   return d_image.getHeight();
 }
 
-size_t VrmlNodePixelTexture::nFrames()
+size_t NodePixelTexture::nFrames()
 {
   return 0;
 }
 
-const unsigned char * VrmlNodePixelTexture::pixels()
+const unsigned char * NodePixelTexture::pixels()
 {
   return d_image.getPixels();
 }
@@ -6206,25 +6201,25 @@ const unsigned char * VrmlNodePixelTexture::pixels()
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodePixelTexture::getField(const std::string & fieldId) const
+const FieldValue * NodePixelTexture::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "image")
     return &d_image;
   
-  return VrmlNode::getField(fieldId); // Parent class
+  return Node::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodePixelTexture::setField(const std::string & fieldId,
-                    const VrmlField & fieldValue)
+void NodePixelTexture::setField(const std::string & fieldId,
+                    const FieldValue & fieldValue)
 {
   if TRY_FIELD(image, SFImage)
   else if TRY_FIELD(repeatS, SFBool)
   else if TRY_FIELD(repeatT, SFBool)
   else
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 
   //if ( strcmp(fieldName, "image") == 0 )
   //{
@@ -6244,30 +6239,30 @@ void VrmlNodePixelTexture::setField(const std::string & fieldId,
   //}
 }
 
-const VrmlSFImage & VrmlNodePixelTexture::getImage() const {
+const SFImage & NodePixelTexture::getImage() const {
     return this->d_image;
 }
 
-const VrmlSFBool & VrmlNodePixelTexture::getRepeatS() const {
+const SFBool & NodePixelTexture::getRepeatS() const {
     return this->d_repeatS;
 }
 
-const VrmlSFBool & VrmlNodePixelTexture::getRepeatT() const {
+const SFBool & NodePixelTexture::getRepeatT() const {
     return this->d_repeatT;
 }
 
 
 namespace {
     // PlaneSensor factory. 
-    const VrmlNodePtr createPlaneSensor(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodePlaneSensor(scene));
+    const NodePtr createPlaneSensor(VrmlScene * const scene) {
+        return NodePtr(new NodePlaneSensor(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "PlaneSensor" fields.
  */
-const NodeTypePtr VrmlNodePlaneSensor::defineType() {
+const NodeTypePtr NodePlaneSensor::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -6275,20 +6270,20 @@ const NodeTypePtr VrmlNodePlaneSensor::defineType() {
     }
     
     st.reset(new NodeType("PlaneSensor", createPlaneSensor));
-    st->addExposedField("autoOffset", VrmlField::SFBOOL);
-    st->addExposedField("enabled", VrmlField::SFBOOL);
-    st->addExposedField("maxPosition", VrmlField::SFVEC2F);
-    st->addExposedField("minPosition", VrmlField::SFVEC2F);
-    st->addExposedField("offset", VrmlField::SFVEC3F);
-    st->addEventOut("isActive", VrmlField::SFBOOL);
-    st->addEventOut("translation_changed", VrmlField::SFVEC3F);
-    st->addEventOut("trackPoint_changed", VrmlField::SFVEC3F);
+    st->addExposedField("autoOffset", FieldValue::SFBOOL);
+    st->addExposedField("enabled", FieldValue::SFBOOL);
+    st->addExposedField("maxPosition", FieldValue::SFVEC2F);
+    st->addExposedField("minPosition", FieldValue::SFVEC2F);
+    st->addExposedField("offset", FieldValue::SFVEC3F);
+    st->addEventOut("isActive", FieldValue::SFBOOL);
+    st->addEventOut("translation_changed", FieldValue::SFVEC3F);
+    st->addEventOut("trackPoint_changed", FieldValue::SFVEC3F);
 
     return st;
 }
 
-VrmlNodePlaneSensor::VrmlNodePlaneSensor(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_autoOffset(true),
+NodePlaneSensor::NodePlaneSensor(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_autoOffset(true),
         d_enabled(true), d_maxPosition(-1.0, -1.0), d_isActive(false),
         d_minPosition(0.0,0.0), d_offset(0.0,0.0,0.0), 
         d_parentTransform(0) {
@@ -6297,11 +6292,11 @@ VrmlNodePlaneSensor::VrmlNodePlaneSensor(VrmlScene * const scene):
 
 // need copy constructor for d_parentTransform ...
 
-VrmlNodePlaneSensor::~VrmlNodePlaneSensor()
+NodePlaneSensor::~NodePlaneSensor()
 {
 }
 
-bool VrmlNodePlaneSensor::accept(VrmlNodeVisitor & visitor) {
+bool NodePlaneSensor::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -6311,11 +6306,11 @@ bool VrmlNodePlaneSensor::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodePlaneSensor* VrmlNodePlaneSensor::toPlaneSensor() const
-{ return (VrmlNodePlaneSensor*) this; }
+NodePlaneSensor* NodePlaneSensor::toPlaneSensor() const
+{ return (NodePlaneSensor*) this; }
 
 
-ostream& VrmlNodePlaneSensor::printFields(ostream& os, int indent)
+ostream& NodePlaneSensor::printFields(ostream& os, int indent)
 {
   if (! d_autoOffset.get()) PRINT_FIELD(autoOffset);
   if (! d_enabled.get())    PRINT_FIELD(enabled);
@@ -6337,17 +6332,17 @@ ostream& VrmlNodePlaneSensor::printFields(ostream& os, int indent)
 // Cache a pointer to (one of the) parent transforms for converting
 // hits into local coords.
 
-void VrmlNodePlaneSensor::accumulateTransform( VrmlNode *parent )
+void NodePlaneSensor::accumulateTransform( Node *parent )
 {
   d_parentTransform = parent;
 }
 
-VrmlNode* VrmlNodePlaneSensor::getParentTransform() { return d_parentTransform; }
+Node* NodePlaneSensor::getParentTransform() { return d_parentTransform; }
 
 // Store the ModelView matrix which is calculated at the time of rendering
 // in render-context. This matrix will be in use at the time of activation
 
-void VrmlNodePlaneSensor::render(Viewer* v, VrmlRenderContext rc)
+void NodePlaneSensor::render(Viewer* v, VrmlRenderContext rc)
 {
 	setMVMatrix(rc.getMatrix());
 }
@@ -6357,7 +6352,7 @@ void VrmlNodePlaneSensor::render(Viewer* v, VrmlRenderContext rc)
 // sensor...
 
 
-void VrmlNodePlaneSensor::activate( double timeStamp,
+void NodePlaneSensor::activate( double timeStamp,
                     bool isActive,
                     double *p )
 {
@@ -6428,7 +6423,7 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodePlaneSensor::getField(const std::string & fieldId) const
+const FieldValue * NodePlaneSensor::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "autoOffset")
@@ -6450,13 +6445,13 @@ const VrmlField * VrmlNodePlaneSensor::getField(const std::string & fieldId) con
   else if (fieldId == "trackPoint")
     return &d_trackPoint;
   
-  return VrmlNodeChild::getField(fieldId); // Parent class
+  return NodeChild::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodePlaneSensor::setField(const std::string & fieldId,
-                   const VrmlField & fieldValue)
+void NodePlaneSensor::setField(const std::string & fieldId,
+                   const FieldValue & fieldValue)
 {
   if TRY_FIELD(autoOffset, SFBool)
   else if TRY_FIELD(enabled, SFBool)
@@ -6464,7 +6459,7 @@ void VrmlNodePlaneSensor::setField(const std::string & fieldId,
   else if TRY_FIELD(minPosition, SFVec2f)
   else if TRY_FIELD(offset, SFVec3f)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 
@@ -6473,7 +6468,7 @@ void VrmlNodePlaneSensor::setField(const std::string & fieldId,
  *
  * @param return modelview matrix in VrmlMatrix format. 
 */
-const VrmlMatrix & VrmlNodePlaneSensor::getMVMatrix() const
+const VrmlMatrix & NodePlaneSensor::getMVMatrix() const
 {
 return this->M;
 }
@@ -6482,23 +6477,23 @@ return this->M;
  * Sets the modelview matrix (M). 
  * @param M_in a modelview matrix in VrmlMatrix format. 
 */
-void VrmlNodePlaneSensor::setMVMatrix(const VrmlMatrix & M_in)
+void NodePlaneSensor::setMVMatrix(const VrmlMatrix & M_in)
 {
 this->M = M_in;
 }
 
 
 namespace {
-    // Return a new VrmlNodePointLight
-    const VrmlNodePtr createPointLight(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodePointLight(scene));
+    // Return a new NodePointLight
+    const NodePtr createPointLight(VrmlScene * const scene) {
+        return NodePtr(new NodePointLight(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "PointLight" fields.
  */
-const NodeTypePtr VrmlNodePointLight::defineType() {
+const NodeTypePtr NodePointLight::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -6506,32 +6501,32 @@ const NodeTypePtr VrmlNodePointLight::defineType() {
     }
     
     st.reset(new NodeType("PointLight", createPointLight));
-    st->addExposedField("ambientIntensity", VrmlField::SFFLOAT);
-    st->addExposedField("color", VrmlField::SFCOLOR);
-    st->addExposedField("intensity", VrmlField::SFFLOAT);
-    st->addExposedField("on", VrmlField::SFBOOL);
-    st->addExposedField("attenuation", VrmlField::SFVEC3F);
-    st->addExposedField("location", VrmlField::SFVEC3F);
-    st->addExposedField("radius", VrmlField::SFFLOAT);
+    st->addExposedField("ambientIntensity", FieldValue::SFFLOAT);
+    st->addExposedField("color", FieldValue::SFCOLOR);
+    st->addExposedField("intensity", FieldValue::SFFLOAT);
+    st->addExposedField("on", FieldValue::SFBOOL);
+    st->addExposedField("attenuation", FieldValue::SFVEC3F);
+    st->addExposedField("location", FieldValue::SFVEC3F);
+    st->addExposedField("radius", FieldValue::SFFLOAT);
 
     return st;
 }
 
-VrmlNodePointLight::VrmlNodePointLight(VrmlScene * const scene):
-        VrmlNodeLight(*defineType(), scene), d_attenuation(1.0, 0.0, 0.0),
+NodePointLight::NodePointLight(VrmlScene * const scene):
+        NodeLight(*defineType(), scene), d_attenuation(1.0, 0.0, 0.0),
         d_location(0.0, 0.0, 0.0), d_radius(100) {
     if (this->d_scene) {
         this->d_scene->addScopedLight(*this);
     }
 }
 
-VrmlNodePointLight::~VrmlNodePointLight() {
+NodePointLight::~NodePointLight() {
     if (this->d_scene) {
         this->d_scene->removeScopedLight(*this);
     }
 }
 
-bool VrmlNodePointLight::accept(VrmlNodeVisitor & visitor) {
+bool NodePointLight::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -6541,19 +6536,19 @@ bool VrmlNodePointLight::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodePointLight* VrmlNodePointLight::toPointLight() const
-{ return (VrmlNodePointLight*) this; }
+NodePointLight* NodePointLight::toPointLight() const
+{ return (NodePointLight*) this; }
 
-void VrmlNodePointLight::addToScene(VrmlScene * scene, const std::string &) {
+void NodePointLight::addToScene(VrmlScene * scene, const std::string &) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
         this->d_scene->addScopedLight(*this);
     }
 }
 
 
-ostream& VrmlNodePointLight::printFields(ostream& os, int indent)
+ostream& NodePointLight::printFields(ostream& os, int indent)
 {
-  VrmlNodeLight::printFields(os, indent);
+  NodeLight::printFields(os, indent);
   if (! fpequal(d_attenuation.getX(), 1.0) ||
       ! fpzero(d_attenuation.getY()) ||
       ! fpzero(d_attenuation.getZ()) )
@@ -6575,7 +6570,7 @@ ostream& VrmlNodePointLight::printFields(ostream& os, int indent)
 // parents and apply them before rendering. This is not easy with
 // DEF/USEd nodes...
 
-void VrmlNodePointLight::renderScoped(Viewer *viewer)
+void NodePointLight::renderScoped(Viewer *viewer)
 {
   if ( d_on.get() && d_radius.get() > 0.0 )
     viewer->insertPointLight( d_ambientIntensity.get(),
@@ -6590,7 +6585,7 @@ void VrmlNodePointLight::renderScoped(Viewer *viewer)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodePointLight::getField(const std::string & fieldId) const
+const FieldValue * NodePointLight::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "attenuation")
@@ -6600,38 +6595,38 @@ const VrmlField * VrmlNodePointLight::getField(const std::string & fieldId) cons
   else if (fieldId == "radius")
     return &d_radius;
 
-  return VrmlNodeLight::getField(fieldId);
+  return NodeLight::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodePointLight::setField(const std::string & fieldId,
-                  const VrmlField & fieldValue)
+void NodePointLight::setField(const std::string & fieldId,
+                  const FieldValue & fieldValue)
 {
   if TRY_FIELD(attenuation, SFVec3f)
   else if TRY_FIELD(location, SFVec3f)
   else if TRY_FIELD(radius, SFFloat)
   else
-    VrmlNodeLight::setField(fieldId, fieldValue);
+    NodeLight::setField(fieldId, fieldValue);
 }
 
-const VrmlSFVec3f& VrmlNodePointLight::getAttenuation() const   // LarryD Mar 04/99
+const SFVec3f& NodePointLight::getAttenuation() const   // LarryD Mar 04/99
 {  return d_attenuation; }
 
-const VrmlSFVec3f& VrmlNodePointLight::getLocation() const   // LarryD Mar 04/99
+const SFVec3f& NodePointLight::getLocation() const   // LarryD Mar 04/99
 {  return d_location; }
 
 
 namespace {
-    const VrmlNodePtr createPointSet(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodePointSet(scene));
+    const NodePtr createPointSet(VrmlScene * const scene) {
+        return NodePtr(new NodePointSet(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "PointSet" fields.
  */
-const NodeTypePtr VrmlNodePointSet::defineType() {
+const NodeTypePtr NodePointSet::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -6639,22 +6634,22 @@ const NodeTypePtr VrmlNodePointSet::defineType() {
     }
     
     st.reset(new NodeType("PointSet", createPointSet));
-    st->addExposedField("color", VrmlField::SFNODE);
-    st->addExposedField("coord", VrmlField::SFNODE);
+    st->addExposedField("color", FieldValue::SFNODE);
+    st->addExposedField("coord", FieldValue::SFNODE);
 
     return st;
 }
 
-VrmlNodePointSet::VrmlNodePointSet(VrmlScene * const scene):
-        VrmlNodeGeometry(*defineType(), scene) {
+NodePointSet::NodePointSet(VrmlScene * const scene):
+        NodeGeometry(*defineType(), scene) {
     this->setBVolumeDirty(true);
 }
 
-VrmlNodePointSet::~VrmlNodePointSet()
+NodePointSet::~NodePointSet()
 {
 }
 
-bool VrmlNodePointSet::accept(VrmlNodeVisitor & visitor) {
+bool NodePointSet::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -6664,7 +6659,11 @@ bool VrmlNodePointSet::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodePointSet::resetVisitedFlag() {
+NodePointSet * NodePointSet::toPointSet() const {
+    return const_cast<NodePointSet *>(this);
+}
+
+void NodePointSet::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         if (this->d_color.get()) {
@@ -6676,19 +6675,19 @@ void VrmlNodePointSet::resetVisitedFlag() {
     }
 }
 
-const VrmlMFNode VrmlNodePointSet::getChildren() const {
-    VrmlNodePtr children[] = { this->d_color.get(), this->d_coord.get() };
-    return VrmlMFNode(2, children);
+const MFNode NodePointSet::getChildren() const {
+    NodePtr children[] = { this->d_color.get(), this->d_coord.get() };
+    return MFNode(2, children);
 }
 
-bool VrmlNodePointSet::isModified() const
+bool NodePointSet::isModified() const
 {
   return ( d_modified ||
        (d_color.get() && d_color.get()->isModified()) ||
        (d_coord.get() && d_coord.get()->isModified()) );
 }
 
-void VrmlNodePointSet::updateModified(VrmlNodePath& path)
+void NodePointSet::updateModified(NodePath& path)
 {
   if (this->isModified()) markPathModified(path, true);
   path.push_front(this);
@@ -6699,14 +6698,14 @@ void VrmlNodePointSet::updateModified(VrmlNodePath& path)
 
 
 
-void VrmlNodePointSet::clearFlags()
+void NodePointSet::clearFlags()
 {
-  VrmlNode::clearFlags();
+  Node::clearFlags();
   if (d_color.get()) d_color.get()->clearFlags();
   if (d_coord.get()) d_coord.get()->clearFlags();
 }
 
-void VrmlNodePointSet::addToScene(VrmlScene * scene, const std::string & rel) {
+void NodePointSet::addToScene(VrmlScene * scene, const std::string & rel) {
     this->d_scene = scene;
     if (this->d_color.get()) {
         this->d_color.get()->addToScene(scene, rel);
@@ -6716,7 +6715,7 @@ void VrmlNodePointSet::addToScene(VrmlScene * scene, const std::string & rel) {
     }
 }
 
-ostream& VrmlNodePointSet::printFields(ostream& os, int indent)
+ostream& NodePointSet::printFields(ostream& os, int indent)
 {
   if (d_color.get()) PRINT_FIELD(color);
   if (d_coord.get()) PRINT_FIELD(coord);
@@ -6725,7 +6724,7 @@ ostream& VrmlNodePointSet::printFields(ostream& os, int indent)
 }
 
 
-Viewer::Object VrmlNodePointSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
+Viewer::Object NodePointSet::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   Viewer::Object obj = 0;
 
@@ -6739,11 +6738,11 @@ Viewer::Object VrmlNodePointSet::insertGeometry(Viewer *viewer, VrmlRenderContex
       const float * color = 0;
       if ( d_color.get() )
     {
-      VrmlMFColor &c = d_color.get()->toColor()->color();
+      MFColor &c = d_color.get()->toColor()->color();
       color = &c.getElement(0)[0];
     }
 
-      VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
+      MFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
 
       obj = viewer->insertPointSet(coord.getLength(), &coord.getElement(0)[0], color);
     }
@@ -6756,7 +6755,7 @@ Viewer::Object VrmlNodePointSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodePointSet::getField(const std::string & fieldId) const
+const FieldValue * NodePointSet::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "color")
@@ -6764,25 +6763,25 @@ const VrmlField * VrmlNodePointSet::getField(const std::string & fieldId) const
   else if (fieldId == "coord")
     return &d_coord;
 
-  return VrmlNodeGeometry::getField(fieldId);
+  return NodeGeometry::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodePointSet::setField(const std::string & fieldId,
-                const VrmlField & fieldValue)
+void NodePointSet::setField(const std::string & fieldId,
+                const FieldValue & fieldValue)
 {
   if TRY_SFNODE_FIELD(color, Color)
   else if TRY_SFNODE_FIELD(coord, Coordinate)
   else
-    VrmlNodeGeometry::setField(fieldId, fieldValue);
+    NodeGeometry::setField(fieldId, fieldValue);
   this->setBVolumeDirty(true);
 }
 
-void VrmlNodePointSet::recalcBSphere()
+void NodePointSet::recalcBSphere()
 {
   d_bsphere.reset();
-  VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
+  MFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
   int nvert = coord.getLength();
   for(int i=0; i<nvert; i++) {
     const float * vi = coord.getElement(i); // vi[3]
@@ -6792,10 +6791,10 @@ void VrmlNodePointSet::recalcBSphere()
 }
 
 
-const VrmlBVolume* VrmlNodePointSet::getBVolume() const
+const VrmlBVolume* NodePointSet::getBVolume() const
 {
   if (this->isBVolumeDirty())
-    ((VrmlNodePointSet*)this)->recalcBSphere();
+    ((NodePointSet*)this)->recalcBSphere();
   return &d_bsphere;
 }
 
@@ -6804,7 +6803,7 @@ const VrmlBVolume* VrmlNodePointSet::getBVolume() const
  *
  * @return color
  */
-const VrmlSFNode & VrmlNodePointSet::getColor() const {
+const SFNode & NodePointSet::getColor() const {
     return this->d_color;
 }
 
@@ -6813,7 +6812,7 @@ const VrmlSFNode & VrmlNodePointSet::getColor() const {
  *
  * @param color
  */
-void VrmlNodePointSet::setColor(const VrmlSFNode & color) {
+void NodePointSet::setColor(const SFNode & color) {
     this->d_color = color;
 }
 
@@ -6822,7 +6821,7 @@ void VrmlNodePointSet::setColor(const VrmlSFNode & color) {
  *
  * @return coord
  */
-const VrmlSFNode & VrmlNodePointSet::getCoord() const {
+const SFNode & NodePointSet::getCoord() const {
     return this->d_coord;
 }
 
@@ -6831,22 +6830,22 @@ const VrmlSFNode & VrmlNodePointSet::getCoord() const {
  *
  * @param coord
  */
-void VrmlNodePointSet::setCoord(const VrmlSFNode & coord) {
+void NodePointSet::setCoord(const SFNode & coord) {
     this->d_coord = coord;
 }
 
 
 namespace {
     // PositionInt factory.
-    const VrmlNodePtr createPositionInt(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodePositionInt(scene));
+    const NodePtr createPositionInt(VrmlScene * const scene) {
+        return NodePtr(new NodePositionInt(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "PositionInt" fields.
  */
-const NodeTypePtr VrmlNodePositionInt::defineType() {
+const NodeTypePtr NodePositionInt::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -6854,22 +6853,22 @@ const NodeTypePtr VrmlNodePositionInt::defineType() {
     }
 
     st.reset(new NodeType("PositionInterpolator", createPositionInt));
-    st->addEventIn("set_fraction", VrmlField::SFFLOAT);
-    st->addExposedField("key", VrmlField::MFFLOAT);
-    st->addExposedField("keyValue", VrmlField::MFVEC3F);
-    st->addEventOut("value_changed", VrmlField::SFVEC3F);
+    st->addEventIn("set_fraction", FieldValue::SFFLOAT);
+    st->addExposedField("key", FieldValue::MFFLOAT);
+    st->addExposedField("keyValue", FieldValue::MFVEC3F);
+    st->addEventOut("value_changed", FieldValue::SFVEC3F);
 
     return st;
 }
 
-VrmlNodePositionInt::VrmlNodePositionInt(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene) {}
+NodePositionInt::NodePositionInt(VrmlScene * const scene):
+        NodeChild(*defineType(), scene) {}
 
-VrmlNodePositionInt::~VrmlNodePositionInt()
+NodePositionInt::~NodePositionInt()
 {
 }
 
-bool VrmlNodePositionInt::accept(VrmlNodeVisitor & visitor) {
+bool NodePositionInt::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -6879,7 +6878,7 @@ bool VrmlNodePositionInt::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodePositionInt::printFields(ostream& os, int indent)
+ostream& NodePositionInt::printFields(ostream& os, int indent)
 {
   if (d_key.getLength() > 0) PRINT_FIELD(key);
   if (d_keyValue.getLength() > 0) PRINT_FIELD(keyValue);
@@ -6887,19 +6886,19 @@ ostream& VrmlNodePositionInt::printFields(ostream& os, int indent)
   return os;
 }
 
-void VrmlNodePositionInt::eventIn(double timeStamp,
+void NodePositionInt::eventIn(double timeStamp,
                                   const std::string & eventName,
-                                  const VrmlField & fieldValue) {
+                                  const FieldValue & fieldValue) {
   if (eventName == "set_fraction")
     {
-      if (!dynamic_cast<const VrmlSFFloat *>(&fieldValue))
+      if (!dynamic_cast<const SFFloat *>(&fieldValue))
     {
       theSystem->error(
                   "Invalid type for %s eventIn %s (expected SFFloat).\n",
                   this->type.getId().c_str(), eventName.c_str());
       return;
     }
-      float f = static_cast<const VrmlSFFloat &>(fieldValue).get();
+      float f = static_cast<const SFFloat &>(fieldValue).get();
 
       int n = d_key.getLength() - 1;
       if (f < d_key.getElement(0))
@@ -6931,7 +6930,7 @@ void VrmlNodePositionInt::eventIn(double timeStamp,
   // Check exposedFields
   else
     {
-      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+      Node::eventIn(timeStamp, eventName, fieldValue);
 
       // This node is not renderable, so don't re-render on changes to it.
       clearModified();
@@ -6941,7 +6940,7 @@ void VrmlNodePositionInt::eventIn(double timeStamp,
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodePositionInt::getField(const std::string & fieldId) const
+const FieldValue * NodePositionInt::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "key")
@@ -6953,41 +6952,41 @@ const VrmlField * VrmlNodePositionInt::getField(const std::string & fieldId) con
   else if (fieldId == "value")
     return &d_value;
 
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodePositionInt::setField(const std::string & fieldId,
-                   const VrmlField & fieldValue)
+void NodePositionInt::setField(const std::string & fieldId,
+                   const FieldValue & fieldValue)
 {
   if TRY_FIELD(key, MFFloat)
   else if TRY_FIELD(keyValue, MFVec3f)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
-VrmlNodePositionInt* VrmlNodePositionInt::toPositionInt() const 
-{ return (VrmlNodePositionInt*) this; }
+NodePositionInt* NodePositionInt::toPositionInt() const 
+{ return (NodePositionInt*) this; }
 
-const VrmlMFFloat& VrmlNodePositionInt::getKey() const  
+const MFFloat& NodePositionInt::getKey() const  
 {   return d_key; }
 
-const VrmlMFVec3f& VrmlNodePositionInt::getKeyValue() const  
+const MFVec3f& NodePositionInt::getKeyValue() const  
 { return d_keyValue; }
 
 
 namespace {
     // ProximitySensor factory. 
-    const VrmlNodePtr createProximitySensor(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeProximitySensor(scene));
+    const NodePtr createProximitySensor(VrmlScene * const scene) {
+        return NodePtr(new NodeProximitySensor(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "ProximitySensor" fields.
  */
-const NodeTypePtr VrmlNodeProximitySensor::defineType() {
+const NodeTypePtr NodeProximitySensor::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -6995,30 +6994,30 @@ const NodeTypePtr VrmlNodeProximitySensor::defineType() {
     }
 
     st.reset(new NodeType("ProximitySensor", createProximitySensor));
-    st->addExposedField("center", VrmlField::SFVEC3F);
-    st->addExposedField("enabled", VrmlField::SFBOOL);
-    st->addExposedField("size", VrmlField::SFVEC3F);
-    st->addEventOut("enterTime", VrmlField::SFTIME);
-    st->addEventOut("exitTime", VrmlField::SFTIME);
-    st->addEventOut("isActive", VrmlField::SFBOOL);
-    st->addEventOut("orientation_changed", VrmlField::SFROTATION);
-    st->addEventOut("position_changed", VrmlField::SFVEC3F);
+    st->addExposedField("center", FieldValue::SFVEC3F);
+    st->addExposedField("enabled", FieldValue::SFBOOL);
+    st->addExposedField("size", FieldValue::SFVEC3F);
+    st->addEventOut("enterTime", FieldValue::SFTIME);
+    st->addEventOut("exitTime", FieldValue::SFTIME);
+    st->addEventOut("isActive", FieldValue::SFBOOL);
+    st->addEventOut("orientation_changed", FieldValue::SFROTATION);
+    st->addEventOut("position_changed", FieldValue::SFVEC3F);
 
     return st;
 }
 
-VrmlNodeProximitySensor::VrmlNodeProximitySensor(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_center(0.0, 0.0, 0.0),
+NodeProximitySensor::NodeProximitySensor(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_center(0.0, 0.0, 0.0),
         d_enabled(true), d_size(0.0, 0.0, 0.0), d_isActive(false),
         d_position(0.0, 0.0, 0.0), d_enterTime(0.0), d_exitTime(0.0) {
     this->setModified();
 }
 
-VrmlNodeProximitySensor::~VrmlNodeProximitySensor()
+NodeProximitySensor::~NodeProximitySensor()
 {
 }
 
-bool VrmlNodeProximitySensor::accept(VrmlNodeVisitor & visitor) {
+bool NodeProximitySensor::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -7028,7 +7027,7 @@ bool VrmlNodeProximitySensor::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeProximitySensor::printFields(ostream& os, int indent)
+ostream& NodeProximitySensor::printFields(ostream& os, int indent)
 {
   if (! fpzero(d_center.getX()) ||
       ! fpzero(d_center.getY()) ||
@@ -7051,7 +7050,7 @@ ostream& VrmlNodeProximitySensor::printFields(ostream& os, int indent)
 //
 // This is in a render() method since the it needs the viewer position
 // with respect to the local coordinate system.
-// Could do this with VrmlNode::inverseTransform(double [4][4]) now...
+// Could do this with Node::inverseTransform(double [4][4]) now...
 //
 // The positions and times are not interpolated to report the exact
 // place and time of entries and exits from the sensor regions as
@@ -7062,7 +7061,7 @@ ostream& VrmlNodeProximitySensor::printFields(ostream& os, int indent)
 // coordinate system and it could be transformed all the way down the
 // scenegraph, but that sounds painful.
 
-void VrmlNodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if (d_enabled.get() &&
       d_size.getX() > 0.0 &&
@@ -7070,7 +7069,7 @@ void VrmlNodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
       d_size.getZ() > 0.0 &&
       viewer->getRenderMode() == Viewer::RENDER_MODE_DRAW)
     {
-      VrmlSFTime timeNow( theSystem->time() );
+      SFTime timeNow( theSystem->time() );
       float x, y, z;
 
       // Is viewer inside the box?
@@ -7136,7 +7135,7 @@ void VrmlNodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
 }
 
 
-const VrmlField * VrmlNodeProximitySensor::getField(const std::string & fieldId) const
+const FieldValue * NodeProximitySensor::getField(const std::string & fieldId) const
 {
   if (fieldId == "center")
     return &d_center;
@@ -7157,33 +7156,33 @@ const VrmlField * VrmlNodeProximitySensor::getField(const std::string & fieldId)
   else if (fieldId == "exitTime")
     return &d_exitTime;
   
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeProximitySensor::setField(const std::string & fieldId,
-                       const VrmlField & fieldValue)
+void NodeProximitySensor::setField(const std::string & fieldId,
+                       const FieldValue & fieldValue)
 {
   if TRY_FIELD(center, SFVec3f)
   else if TRY_FIELD(enabled, SFBool)
   else if TRY_FIELD(size, SFVec3f)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 
 namespace {
     // ScalarInt factory.
-    const VrmlNodePtr createScalarInt(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeScalarInt(scene));
+    const NodePtr createScalarInt(VrmlScene * const scene) {
+        return NodePtr(new NodeScalarInt(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "ScalarInterpolator" fields.
  */
-const NodeTypePtr VrmlNodeScalarInt::defineType() {
+const NodeTypePtr NodeScalarInt::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -7191,22 +7190,22 @@ const NodeTypePtr VrmlNodeScalarInt::defineType() {
     }
     
     st.reset(new NodeType("ScalarInterpolator", createScalarInt));
-    st->addEventIn("set_fraction", VrmlField::SFFLOAT);
-    st->addExposedField("key", VrmlField::MFFLOAT);
-    st->addExposedField("keyValue", VrmlField::MFFLOAT);
-    st->addEventOut("value_changed", VrmlField::SFFLOAT);
+    st->addEventIn("set_fraction", FieldValue::SFFLOAT);
+    st->addExposedField("key", FieldValue::MFFLOAT);
+    st->addExposedField("keyValue", FieldValue::MFFLOAT);
+    st->addEventOut("value_changed", FieldValue::SFFLOAT);
 
     return st;
 }
 
-VrmlNodeScalarInt::VrmlNodeScalarInt(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene) {}
+NodeScalarInt::NodeScalarInt(VrmlScene * const scene):
+        NodeChild(*defineType(), scene) {}
 
-VrmlNodeScalarInt::~VrmlNodeScalarInt()
+NodeScalarInt::~NodeScalarInt()
 {
 }
 
-bool VrmlNodeScalarInt::accept(VrmlNodeVisitor & visitor) {
+bool NodeScalarInt::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -7216,7 +7215,7 @@ bool VrmlNodeScalarInt::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeScalarInt::printFields(ostream& os, int indent)
+ostream& NodeScalarInt::printFields(ostream& os, int indent)
 {
   if (d_key.getLength() > 0) PRINT_FIELD(key);
   if (d_keyValue.getLength() > 0) PRINT_FIELD(keyValue);
@@ -7224,18 +7223,18 @@ ostream& VrmlNodeScalarInt::printFields(ostream& os, int indent)
   return os;
 }
 
-void VrmlNodeScalarInt::eventIn(double timeStamp, const std::string & eventName,
-                                const VrmlField & fieldValue) {
+void NodeScalarInt::eventIn(double timeStamp, const std::string & eventName,
+                                const FieldValue & fieldValue) {
   if (eventName == "set_fraction")
     {
-      if (!dynamic_cast<const VrmlSFFloat *>(&fieldValue))
+      if (!dynamic_cast<const SFFloat *>(&fieldValue))
     {
       theSystem->error(
                 "Invalid type for %s eventIn %s (expected SFFloat).\n",
                 this->type.getId().c_str(), eventName.c_str());
       return;
     }
-      float f = static_cast<const VrmlSFFloat &>(fieldValue).get();
+      float f = static_cast<const SFFloat &>(fieldValue).get();
 
       int n = d_key.getLength() - 1;
       if (f < d_key.getElement(0))
@@ -7263,7 +7262,7 @@ void VrmlNodeScalarInt::eventIn(double timeStamp, const std::string & eventName,
   // Check exposedFields
   else
     {
-      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+      Node::eventIn(timeStamp, eventName, fieldValue);
 
       // This node is not renderable, so don't re-render on changes to it.
       clearModified();
@@ -7273,7 +7272,7 @@ void VrmlNodeScalarInt::eventIn(double timeStamp, const std::string & eventName,
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeScalarInt::getField(const std::string & fieldId) const
+const FieldValue * NodeScalarInt::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "key")
@@ -7285,40 +7284,40 @@ const VrmlField * VrmlNodeScalarInt::getField(const std::string & fieldId) const
   else if (fieldId == "value")
     return &d_value;
 
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeScalarInt::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue)
+void NodeScalarInt::setField(const std::string & fieldId,
+                 const FieldValue & fieldValue)
 {
   if TRY_FIELD(key, MFFloat)
   else if TRY_FIELD(keyValue, MFFloat)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
-VrmlNodeScalarInt* VrmlNodeScalarInt::toScalarInt() const
-{ return (VrmlNodeScalarInt*) this; }
+NodeScalarInt* NodeScalarInt::toScalarInt() const
+{ return (NodeScalarInt*) this; }
 
-const VrmlMFFloat& VrmlNodeScalarInt::getKey() const 
+const MFFloat& NodeScalarInt::getKey() const 
 {   return d_key; }
 
-const VrmlMFFloat& VrmlNodeScalarInt::getKeyValue() const 
+const MFFloat& NodeScalarInt::getKeyValue() const 
 { return d_keyValue; }
 
 
 namespace {
-    const VrmlNodePtr createShape(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeShape(scene));
+    const NodePtr createShape(VrmlScene * const scene) {
+        return NodePtr(new NodeShape(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Shape" fields.
  */
-const NodeTypePtr VrmlNodeShape::defineType() {
+const NodeTypePtr NodeShape::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -7326,21 +7325,21 @@ const NodeTypePtr VrmlNodeShape::defineType() {
     }
     
     st.reset(new NodeType("Shape", createShape));
-    st->addExposedField("appearance", VrmlField::SFNODE);
-    st->addExposedField("geometry", VrmlField::SFNODE);
+    st->addExposedField("appearance", FieldValue::SFNODE);
+    st->addExposedField("geometry", FieldValue::SFNODE);
 
     return st;
 }
 
-VrmlNodeShape::VrmlNodeShape(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_viewerObject(0) {}
+NodeShape::NodeShape(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_viewerObject(0) {}
 
-VrmlNodeShape::~VrmlNodeShape()
+NodeShape::~NodeShape()
 {
   // need viewer to free d_viewerObject ...
 }
 
-bool VrmlNodeShape::accept(VrmlNodeVisitor & visitor) {
+bool NodeShape::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -7350,13 +7349,13 @@ bool VrmlNodeShape::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-const VrmlMFNode VrmlNodeShape::getChildren() const {
-    VrmlNodePtr children[] = { this->d_appearance.get(),
+const MFNode NodeShape::getChildren() const {
+    NodePtr children[] = { this->d_appearance.get(),
                                this->d_geometry.get() };
-    return VrmlMFNode(2, children);
+    return MFNode(2, children);
 }
 
-void VrmlNodeShape::resetVisitedFlag() {
+void NodeShape::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         if (this->d_appearance.get()) {
@@ -7368,14 +7367,14 @@ void VrmlNodeShape::resetVisitedFlag() {
     }
 }
 
-bool VrmlNodeShape::isModified() const
+bool NodeShape::isModified() const
 {
   return ( d_modified ||
        (d_geometry.get() && d_geometry.get()->isModified()) ||
        (d_appearance.get() && d_appearance.get()->isModified()) );
 }
 
-void VrmlNodeShape::updateModified(VrmlNodePath& path, int flags)
+void NodeShape::updateModified(NodePath& path, int flags)
 {
   if (this->isModified()) markPathModified(path, true, flags);
   path.push_front(this);
@@ -7384,14 +7383,14 @@ void VrmlNodeShape::updateModified(VrmlNodePath& path, int flags)
   path.pop_front();
 }
 
-void VrmlNodeShape::clearFlags()
+void NodeShape::clearFlags()
 {
-  VrmlNode::clearFlags();
+  Node::clearFlags();
   if (d_appearance.get()) d_appearance.get()->clearFlags();
   if (d_geometry.get()) d_geometry.get()->clearFlags();
 }
 
-void VrmlNodeShape::addToScene(VrmlScene * scene, const std::string & relUrl) {
+void NodeShape::addToScene(VrmlScene * scene, const std::string & relUrl) {
     this->d_scene = scene;
     if (this->d_appearance.get()) {
         this->d_appearance.get()->addToScene(scene, relUrl);
@@ -7401,7 +7400,7 @@ void VrmlNodeShape::addToScene(VrmlScene * scene, const std::string & relUrl) {
     }
 }
 
-ostream& VrmlNodeShape::printFields(ostream& os, int indent)
+ostream& NodeShape::printFields(ostream& os, int indent)
 {
   if (d_appearance.get()) PRINT_FIELD(appearance);
   if (d_geometry.get()) PRINT_FIELD(geometry);
@@ -7409,11 +7408,11 @@ ostream& VrmlNodeShape::printFields(ostream& os, int indent)
   return os;
 }
 
-VrmlNodeShape*    VrmlNodeShape::toShape() const
-{ return (VrmlNodeShape*) this; }
+NodeShape*    NodeShape::toShape() const
+{ return (NodeShape*) this; }
 
 
-void VrmlNodeShape::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeShape::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if ( d_viewerObject && isModified() )
     {
@@ -7421,7 +7420,7 @@ void VrmlNodeShape::render(Viewer *viewer, VrmlRenderContext rc)
       d_viewerObject = 0;
     }
 
-  VrmlNodeGeometry *g = d_geometry.get() ? d_geometry.get()->toGeometry() : 0;
+  NodeGeometry *g = d_geometry.get() ? d_geometry.get()->toGeometry() : 0;
 
   if (d_viewerObject)
     viewer->insertReference(d_viewerObject);
@@ -7439,7 +7438,7 @@ void VrmlNodeShape::render(Viewer *viewer, VrmlRenderContext rc)
       if (! picking && d_appearance.get() &&
           d_appearance.get()->toAppearance() )
         {
-          VrmlNodeAppearance *a = d_appearance.get()->toAppearance();
+          NodeAppearance *a = d_appearance.get()->toAppearance();
           a->render(viewer, rc);
 
           if (a->getTexture().get() && a->getTexture().get()->toTexture())
@@ -7468,7 +7467,7 @@ void VrmlNodeShape::render(Viewer *viewer, VrmlRenderContext rc)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeShape::getField(const std::string & fieldId) const
+const FieldValue * NodeShape::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "appearance")
@@ -7476,36 +7475,36 @@ const VrmlField * VrmlNodeShape::getField(const std::string & fieldId) const
   else if (fieldId == "geometry")
     return &d_geometry;
   
-  return VrmlNodeChild::getField(fieldId); // Parent class
+  return NodeChild::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeShape::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue)
+void NodeShape::setField(const std::string & fieldId,
+                 const FieldValue & fieldValue)
 {
   if TRY_SFNODE_FIELD(appearance, Appearance)
   else if TRY_SFNODE_FIELD(geometry, Geometry)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
   this->setBVolumeDirty(true); // case out: just if geom set!
 }
 
 
 // just pass off to the geometry's getbvolume() method
 //
-const VrmlBVolume* VrmlNodeShape::getBVolume() const
+const VrmlBVolume* NodeShape::getBVolume() const
 {
-  //cout << "VrmlNodeShape::getBVolume() {" << endl;
+  //cout << "NodeShape::getBVolume() {" << endl;
   const VrmlBVolume* r = (VrmlBVolume*)0;
-  const VrmlNodePtr & geom = d_geometry.get();
+  const NodePtr & geom = d_geometry.get();
   if (geom) {
     r = geom->getBVolume();
   }
   //cout << "}:" << r << ":";
   //if (r) r->dump(cout);
   //cout << endl;
-  ((VrmlNodeShape*)this)->setBVolumeDirty(false);
+  ((NodeShape*)this)->setBVolumeDirty(false);
   return r;
 }
 
@@ -7514,7 +7513,7 @@ const VrmlBVolume* VrmlNodeShape::getBVolume() const
  *
  * @return appearance
  */
-const VrmlSFNode & VrmlNodeShape::getAppearance() const {
+const SFNode & NodeShape::getAppearance() const {
     return this->d_appearance;
 }
 
@@ -7523,7 +7522,7 @@ const VrmlSFNode & VrmlNodeShape::getAppearance() const {
  *
  * @param appearance
  */
-void VrmlNodeShape::setAppearance(const VrmlSFNode & appearance) {
+void NodeShape::setAppearance(const SFNode & appearance) {
     assert(!appearance.get() || appearance.get()->toAppearance());
     this->d_appearance = appearance;
 }
@@ -7533,7 +7532,7 @@ void VrmlNodeShape::setAppearance(const VrmlSFNode & appearance) {
  *
  * @return geometry
  */
-const VrmlSFNode & VrmlNodeShape::getGeometry() const {
+const SFNode & NodeShape::getGeometry() const {
     return this->d_geometry;
 }
 
@@ -7542,7 +7541,7 @@ const VrmlSFNode & VrmlNodeShape::getGeometry() const {
  *
  * @param geometry
  */
-void VrmlNodeShape::setGeometry(const VrmlSFNode & geometry) {
+void NodeShape::setGeometry(const SFNode & geometry) {
     assert(!geometry.get() || geometry.get()->toGeometry());
     this->d_geometry = geometry;
 }
@@ -7550,15 +7549,15 @@ void VrmlNodeShape::setGeometry(const VrmlSFNode & geometry) {
 
 namespace {
     // Sound factory. Add each Sound to the scene for fast access.
-    const VrmlNodePtr createSound(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeSound(scene));
+    const NodePtr createSound(VrmlScene * const scene) {
+        return NodePtr(new NodeSound(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Sound" fields.
  */
-const NodeTypePtr VrmlNodeSound::defineType() {
+const NodeTypePtr NodeSound::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -7566,31 +7565,31 @@ const NodeTypePtr VrmlNodeSound::defineType() {
     }
     
     st.reset(new NodeType("Sound", createSound));
-    st->addExposedField("direction", VrmlField::SFVEC3F);
-    st->addExposedField("intensity", VrmlField::SFFLOAT);
-    st->addExposedField("location", VrmlField::SFVEC3F);
-    st->addExposedField("maxBack", VrmlField::SFFLOAT);
-    st->addExposedField("maxFront", VrmlField::SFFLOAT);
-    st->addExposedField("minBack", VrmlField::SFFLOAT);
-    st->addExposedField("minFront", VrmlField::SFFLOAT);
-    st->addExposedField("priority", VrmlField::SFFLOAT);
-    st->addExposedField("source", VrmlField::SFNODE);
-    st->addField("spatialize", VrmlField::SFBOOL);
+    st->addExposedField("direction", FieldValue::SFVEC3F);
+    st->addExposedField("intensity", FieldValue::SFFLOAT);
+    st->addExposedField("location", FieldValue::SFVEC3F);
+    st->addExposedField("maxBack", FieldValue::SFFLOAT);
+    st->addExposedField("maxFront", FieldValue::SFFLOAT);
+    st->addExposedField("minBack", FieldValue::SFFLOAT);
+    st->addExposedField("minFront", FieldValue::SFFLOAT);
+    st->addExposedField("priority", FieldValue::SFFLOAT);
+    st->addExposedField("source", FieldValue::SFNODE);
+    st->addField("spatialize", FieldValue::SFBOOL);
 
     return st;
 }
 
-VrmlNodeSound::VrmlNodeSound(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_direction(0, 0, 1),
+NodeSound::NodeSound(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_direction(0, 0, 1),
         d_intensity(1), d_maxBack(10), d_maxFront(10), d_minBack(1),
         d_minFront(1), d_spatialize(true) {}
 
 
-VrmlNodeSound::~VrmlNodeSound()
+NodeSound::~NodeSound()
 {
 }
 
-bool VrmlNodeSound::accept(VrmlNodeVisitor & visitor) {
+bool NodeSound::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -7600,7 +7599,7 @@ bool VrmlNodeSound::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodeSound::resetVisitedFlag() {
+void NodeSound::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         if (this->d_source.get()) {
@@ -7609,14 +7608,14 @@ void VrmlNodeSound::resetVisitedFlag() {
     }
 }
 
-const VrmlMFNode VrmlNodeSound::getChildren() const {
-    return VrmlMFNode(1, &this->d_source.get());
+const MFNode NodeSound::getChildren() const {
+    return MFNode(1, &this->d_source.get());
 }
 
-VrmlNodeSound* VrmlNodeSound::toSound() const
-{ return (VrmlNodeSound*) this; }
+NodeSound* NodeSound::toSound() const
+{ return (NodeSound*) this; }
 
-void VrmlNodeSound::updateModified(VrmlNodePath& path)
+void NodeSound::updateModified(NodePath& path)
 {
   if (this->isModified()) markPathModified(path, true);
   path.push_front(this);
@@ -7624,20 +7623,20 @@ void VrmlNodeSound::updateModified(VrmlNodePath& path)
   path.pop_front();
 }
 
-void VrmlNodeSound::clearFlags()
+void NodeSound::clearFlags()
 {
-  VrmlNode::clearFlags();
+  Node::clearFlags();
   if (d_source.get()) d_source.get()->clearFlags();
 }
 
-void VrmlNodeSound::addToScene(VrmlScene * scene, const std::string & relUrl) {
+void NodeSound::addToScene(VrmlScene * scene, const std::string & relUrl) {
     this->d_scene = scene;
     if (this->d_source.get()) {
         this->d_source.get()->addToScene(scene, relUrl);
     }
 }
 
-ostream& VrmlNodeSound::printFields(ostream& os, int indent)
+ostream& NodeSound::printFields(ostream& os, int indent)
 {
   if (! fpzero(d_direction.getX()) ||
       ! fpzero(d_direction.getY()) ||
@@ -7650,7 +7649,7 @@ ostream& VrmlNodeSound::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeSound::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeSound::render(Viewer *viewer, VrmlRenderContext rc)
 {
     // If this clip has been modified, update the internal data
     if (d_source.get() && d_source.get()->isModified())
@@ -7659,7 +7658,7 @@ void VrmlNodeSound::render(Viewer *viewer, VrmlRenderContext rc)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeSound::getField(const std::string & fieldId) const {
+const FieldValue * NodeSound::getField(const std::string & fieldId) const {
   // exposedFields
   if (fieldId == "direction")
     return &d_direction;
@@ -7682,7 +7681,7 @@ const VrmlField * VrmlNodeSound::getField(const std::string & fieldId) const {
   else if (fieldId == "spatialize")
     return &d_spatialize;
   
-  return VrmlNodeChild::getField(fieldId); // Parent class
+  return NodeChild::getField(fieldId); // Parent class
 }
 
 
@@ -7690,8 +7689,8 @@ const VrmlField * VrmlNodeSound::getField(const std::string & fieldId) const {
 // Set the value of one of the node fields/events.
 // setField is public so the parser can access it.
 
-void VrmlNodeSound::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue)
+void NodeSound::setField(const std::string & fieldId,
+                 const FieldValue & fieldValue)
 {
   if TRY_FIELD(direction, SFVec3f)
   else if TRY_FIELD(intensity, SFFloat)
@@ -7704,7 +7703,7 @@ void VrmlNodeSound::setField(const std::string & fieldId,
   else if TRY_SFNODE_FIELD2(source, AudioClip, MovieTexture)
   else if TRY_FIELD(spatialize, SFBool)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 /**
@@ -7712,7 +7711,7 @@ void VrmlNodeSound::setField(const std::string & fieldId,
  *
  * @return source
  */
-const VrmlSFNode & VrmlNodeSound::getSource() const {
+const SFNode & NodeSound::getSource() const {
     return this->d_source;
 }
 
@@ -7721,21 +7720,21 @@ const VrmlSFNode & VrmlNodeSound::getSource() const {
  *
  * @param source
  */
-void VrmlNodeSound::setSource(const VrmlSFNode & source) {
+void NodeSound::setSource(const SFNode & source) {
     this->d_source = source;
 }
 
 
 namespace {
-    const VrmlNodePtr createSphere(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeSphere(scene));
+    const NodePtr createSphere(VrmlScene * const scene) {
+        return NodePtr(new NodeSphere(scene));
     }
 }    
 
 /**
  * Define the built in NodeType:: "Sphere" fields.
  */
-const NodeTypePtr VrmlNodeSphere::defineType() {
+const NodeTypePtr NodeSphere::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -7743,21 +7742,21 @@ const NodeTypePtr VrmlNodeSphere::defineType() {
     }
 
     st.reset(new NodeType("Sphere", createSphere));
-    st->addField("radius", VrmlField::SFFLOAT);
+    st->addField("radius", FieldValue::SFFLOAT);
 
     return st;
 }
 
-VrmlNodeSphere::VrmlNodeSphere(VrmlScene * const scene):
-        VrmlNodeGeometry(*defineType(), scene), d_radius(1.0) {
+NodeSphere::NodeSphere(VrmlScene * const scene):
+        NodeGeometry(*defineType(), scene), d_radius(1.0) {
     this->setBVolumeDirty(true); // lazy calc of bvolumes
 }
 
-VrmlNodeSphere::~VrmlNodeSphere()
+NodeSphere::~NodeSphere()
 {
 }
 
-bool VrmlNodeSphere::accept(VrmlNodeVisitor & visitor) {
+bool NodeSphere::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -7767,45 +7766,45 @@ bool VrmlNodeSphere::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeSphere::printFields(ostream& os, int )
+ostream& NodeSphere::printFields(ostream& os, int )
 {
   if (d_radius.get() != 1.0)
     os << "radius " << d_radius;
   return os;
 }
 
-Viewer::Object VrmlNodeSphere::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
+Viewer::Object NodeSphere::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   return viewer->insertSphere(d_radius.get());
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeSphere::setField(const std::string & fieldId,
-                  const VrmlField & fieldValue)
+void NodeSphere::setField(const std::string & fieldId,
+                  const FieldValue & fieldValue)
 {
   if TRY_FIELD(radius, SFFloat)
   else
-    VrmlNodeGeometry::setField(fieldId, fieldValue);
+    NodeGeometry::setField(fieldId, fieldValue);
   setBVolumeDirty(true);
 }
 
-VrmlNodeSphere* VrmlNodeSphere::toSphere() const //LarryD Mar 08/99
-{ return (VrmlNodeSphere*) this; }
+NodeSphere* NodeSphere::toSphere() const //LarryD Mar 08/99
+{ return (NodeSphere*) this; }
 
 
 const VrmlBVolume*
-VrmlNodeSphere::getBVolume() const
+NodeSphere::getBVolume() const
 {
-  //cout << "VrmlNodeSphere::getBVolume()" << endl;
+  //cout << "NodeSphere::getBVolume()" << endl;
   //static VrmlBSphere* sphere_sphere = new VrmlBSphere();
   if (this->isBVolumeDirty()) {
-    ((VrmlNodeSphere*)this)->d_bsphere.setRadius(d_radius.get());
-    ((VrmlNode*)this)->setBVolumeDirty(false); // logical const
-    //cout << "VrmlNodeSphere::getBVolume():recalc:";
+    ((NodeSphere*)this)->d_bsphere.setRadius(d_radius.get());
+    ((Node*)this)->setBVolumeDirty(false); // logical const
+    //cout << "NodeSphere::getBVolume():recalc:";
   }
   //else 
-  //cout << "VrmlNodeSphere::getBVolume():clean :";
+  //cout << "NodeSphere::getBVolume():clean :";
   //b_bsphere->dump(cout) << endl;
   return &d_bsphere;
 }
@@ -7813,15 +7812,15 @@ VrmlNodeSphere::getBVolume() const
 
 namespace {
     // SphereSensor factory. 
-    const VrmlNodePtr createSphereSensor(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeSphereSensor(scene));
+    const NodePtr createSphereSensor(VrmlScene * const scene) {
+        return NodePtr(new NodeSphereSensor(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "SphereSensor" fields.
  */
-const NodeTypePtr VrmlNodeSphereSensor::defineType() {
+const NodeTypePtr NodeSphereSensor::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -7829,28 +7828,28 @@ const NodeTypePtr VrmlNodeSphereSensor::defineType() {
     }
     
     st.reset(new NodeType("SphereSensor", createSphereSensor));
-    st->addExposedField("autoOffset", VrmlField::SFBOOL);
-    st->addExposedField("enabled", VrmlField::SFBOOL);
-    st->addExposedField("offset", VrmlField::SFROTATION);
-    st->addEventOut("isActive", VrmlField::SFBOOL);
-    st->addEventOut("rotation_changed", VrmlField::SFROTATION);
-    st->addEventOut("trackPoint_changed", VrmlField::SFVEC3F);
+    st->addExposedField("autoOffset", FieldValue::SFBOOL);
+    st->addExposedField("enabled", FieldValue::SFBOOL);
+    st->addExposedField("offset", FieldValue::SFROTATION);
+    st->addEventOut("isActive", FieldValue::SFBOOL);
+    st->addEventOut("rotation_changed", FieldValue::SFROTATION);
+    st->addEventOut("trackPoint_changed", FieldValue::SFVEC3F);
 
     return st;
 }
 
-VrmlNodeSphereSensor::VrmlNodeSphereSensor(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_autoOffset(true),
+NodeSphereSensor::NodeSphereSensor(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_autoOffset(true),
         d_enabled(true), d_offset(0,1,0,0), d_isActive(false) {
     this->setModified();
 }
 
 
-VrmlNodeSphereSensor::~VrmlNodeSphereSensor()
+NodeSphereSensor::~NodeSphereSensor()
 {
 }
 
-bool VrmlNodeSphereSensor::accept(VrmlNodeVisitor & visitor) {
+bool NodeSphereSensor::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -7860,12 +7859,12 @@ bool VrmlNodeSphereSensor::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeSphereSensor* VrmlNodeSphereSensor::toSphereSensor() const    // mgiger 6/16/00
+NodeSphereSensor* NodeSphereSensor::toSphereSensor() const    // mgiger 6/16/00
 {
-    return (VrmlNodeSphereSensor*) this;
+    return (NodeSphereSensor*) this;
 }
 
-ostream& VrmlNodeSphereSensor::printFields(ostream& os, int indent)
+ostream& NodeSphereSensor::printFields(ostream& os, int indent)
 {
   if (! d_autoOffset.get()) PRINT_FIELD(autoOffset);
   if (! d_enabled.get())    PRINT_FIELD(enabled);
@@ -7879,7 +7878,7 @@ ostream& VrmlNodeSphereSensor::printFields(ostream& os, int indent)
   return os;
 }
 
-const VrmlField * VrmlNodeSphereSensor::getField(const std::string & fieldId) const
+const FieldValue * NodeSphereSensor::getField(const std::string & fieldId) const
 {
   if (fieldId == "autoOffset")
     return &d_autoOffset;
@@ -7896,30 +7895,30 @@ const VrmlField * VrmlNodeSphereSensor::getField(const std::string & fieldId) co
   else if (fieldId == "trackPoint")
     return &d_trackPoint;
   
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeSphereSensor::setField(const std::string & fieldId,
-                   const VrmlField & fieldValue)
+void NodeSphereSensor::setField(const std::string & fieldId,
+                   const FieldValue & fieldValue)
 {
   if TRY_FIELD(autoOffset, SFBool)
   else if TRY_FIELD(enabled, SFBool)
   else if TRY_FIELD(offset, SFRotation)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 // Store the ModelView matrix which is calculated at the time of rendering
 // in render-context. This matrix will be in use at the time of activation
 
-void VrmlNodeSphereSensor::render(Viewer* v, VrmlRenderContext rc)
+void NodeSphereSensor::render(Viewer* v, VrmlRenderContext rc)
 {
 	setMVMatrix(rc.getMatrix());
 }
 
-void VrmlNodeSphereSensor::activate( double timeStamp,
+void NodeSphereSensor::activate( double timeStamp,
                     bool isActive,
                     double *p )
 {
@@ -7969,18 +7968,18 @@ void VrmlNodeSphereSensor::activate( double timeStamp,
         float V2[3] = { p[0], p[1], p[2] };
                 float tempv[3];
         Vdiff(tempv, V2, d_centerPoint.get());
-                VrmlSFVec3f dir1(tempv);
+                SFVec3f dir1(tempv);
         double dist = dir1.length();                // get the length of the pre-normalized vector
         dir1 = dir1.normalize();
         Vdiff(tempv, d_activationPoint.get(), d_centerPoint.get());
-                VrmlSFVec3f dir2(tempv);
+                SFVec3f dir2(tempv);
         dir2 = dir2.normalize();
         
         Vcross(tempv, dir1.get(), dir2.get());
-                VrmlSFVec3f cx(tempv);
+                SFVec3f cx(tempv);
         cx = cx.normalize();     
 
-        VrmlSFRotation newRot(cx, dist * acos(dir1.dot(dir2)));
+        SFRotation newRot(cx, dist * acos(dir1.dot(dir2)));
         if ( d_autoOffset.get() )
             newRot = newRot.multiply(d_offset);
         d_rotation = newRot;
@@ -7994,7 +7993,7 @@ void VrmlNodeSphereSensor::activate( double timeStamp,
  *
  * @param return modelview matrix in VrmlMatrix format. 
 */
-const VrmlMatrix & VrmlNodeSphereSensor::getMVMatrix() const
+const VrmlMatrix & NodeSphereSensor::getMVMatrix() const
 {
 return this->M;
 }
@@ -8003,22 +8002,22 @@ return this->M;
  * Sets the modelview matrix (M). 
  * @param M_in a modelview matrix in VrmlMatrix format. 
 */
-void VrmlNodeSphereSensor::setMVMatrix(const VrmlMatrix & M_in)
+void NodeSphereSensor::setMVMatrix(const VrmlMatrix & M_in)
 {
 this->M = M_in;
 }
 
 namespace {
-    // Return a new VrmlNodeSpotLight
-    const VrmlNodePtr createSpotLight(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeSpotLight(scene));
+    // Return a new NodeSpotLight
+    const NodePtr createSpotLight(VrmlScene * const scene) {
+        return NodePtr(new NodeSpotLight(scene));
     }
 }
     
 /**
  * Define the built in NodeType:: "SpotLight" fields.
  */
-const NodeTypePtr VrmlNodeSpotLight::defineType() {
+const NodeTypePtr NodeSpotLight::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -8026,22 +8025,22 @@ const NodeTypePtr VrmlNodeSpotLight::defineType() {
     }
     
     st.reset(new NodeType("SpotLight", createSpotLight));
-    st->addExposedField("ambientIntensity", VrmlField::SFFLOAT);
-    st->addExposedField("color", VrmlField::SFCOLOR);
-    st->addExposedField("intensity", VrmlField::SFFLOAT);
-    st->addExposedField("on", VrmlField::SFBOOL);
-    st->addExposedField("attenuation", VrmlField::SFVEC3F);
-    st->addExposedField("beamWidth", VrmlField::SFFLOAT);
-    st->addExposedField("cutOffAngle", VrmlField::SFFLOAT);
-    st->addExposedField("direction", VrmlField::SFVEC3F);
-    st->addExposedField("location", VrmlField::SFVEC3F);
-    st->addExposedField("radius", VrmlField::SFFLOAT);
+    st->addExposedField("ambientIntensity", FieldValue::SFFLOAT);
+    st->addExposedField("color", FieldValue::SFCOLOR);
+    st->addExposedField("intensity", FieldValue::SFFLOAT);
+    st->addExposedField("on", FieldValue::SFBOOL);
+    st->addExposedField("attenuation", FieldValue::SFVEC3F);
+    st->addExposedField("beamWidth", FieldValue::SFFLOAT);
+    st->addExposedField("cutOffAngle", FieldValue::SFFLOAT);
+    st->addExposedField("direction", FieldValue::SFVEC3F);
+    st->addExposedField("location", FieldValue::SFVEC3F);
+    st->addExposedField("radius", FieldValue::SFFLOAT);
 
     return st;
 }
 
-VrmlNodeSpotLight::VrmlNodeSpotLight(VrmlScene * const scene):
-        VrmlNodeLight(*defineType(), scene), d_attenuation(1.0, 0.0, 0.0),
+NodeSpotLight::NodeSpotLight(VrmlScene * const scene):
+        NodeLight(*defineType(), scene), d_attenuation(1.0, 0.0, 0.0),
         d_beamWidth(1.570796), d_cutOffAngle(0.785398),
         d_direction(0.0, 0.0, -1.0), d_location(0.0, 0.0, 0.0), d_radius(100) {
     if (this->d_scene) {
@@ -8049,13 +8048,13 @@ VrmlNodeSpotLight::VrmlNodeSpotLight(VrmlScene * const scene):
     }
 }
 
-VrmlNodeSpotLight::~VrmlNodeSpotLight() {
+NodeSpotLight::~NodeSpotLight() {
     if (this->d_scene) {
         this->d_scene->removeScopedLight(*this);
     }
 }
 
-bool VrmlNodeSpotLight::accept(VrmlNodeVisitor & visitor) {
+bool NodeSpotLight::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -8065,20 +8064,20 @@ bool VrmlNodeSpotLight::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeSpotLight* VrmlNodeSpotLight::toSpotLight() const
-{ return (VrmlNodeSpotLight*) this; }
+NodeSpotLight* NodeSpotLight::toSpotLight() const
+{ return (NodeSpotLight*) this; }
 
 
-void VrmlNodeSpotLight::addToScene(VrmlScene * scene, const std::string &) {
+void NodeSpotLight::addToScene(VrmlScene * scene, const std::string &) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
         this->d_scene->addScopedLight(*this);
     }
 }
 
 
-ostream& VrmlNodeSpotLight::printFields(ostream& os, int indent)
+ostream& NodeSpotLight::printFields(ostream& os, int indent)
 {
-  VrmlNodeLight::printFields(os, indent);
+  NodeLight::printFields(os, indent);
   if (! fpequal(d_attenuation.getX(), 1.0) ||
       ! fpzero(d_attenuation.getY()) ||
       ! fpzero(d_attenuation.getZ()) )
@@ -8111,7 +8110,7 @@ ostream& VrmlNodeSpotLight::printFields(ostream& os, int indent)
 // Somehow it needs to figure out the accumulated xforms of its
 // parents and apply them before rendering. This is not easy with
 // DEF/USEd nodes...
-void VrmlNodeSpotLight::renderScoped(Viewer *viewer)
+void NodeSpotLight::renderScoped(Viewer *viewer)
 {
   if ( d_on.get() && d_radius.get() > 0.0 )
     viewer->insertSpotLight( d_ambientIntensity.get(),
@@ -8128,7 +8127,7 @@ void VrmlNodeSpotLight::renderScoped(Viewer *viewer)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeSpotLight::getField(const std::string & fieldId) const
+const FieldValue * NodeSpotLight::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "attenuation")
@@ -8144,13 +8143,13 @@ const VrmlField * VrmlNodeSpotLight::getField(const std::string & fieldId) const
   else if (fieldId == "radius")
     return &d_radius;
 
-  return VrmlNodeLight::getField(fieldId);
+  return NodeLight::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeSpotLight::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue)
+void NodeSpotLight::setField(const std::string & fieldId,
+                 const FieldValue & fieldValue)
 {
   if TRY_FIELD(attenuation, SFVec3f)
   else if TRY_FIELD(beamWidth, SFFloat)
@@ -8159,30 +8158,30 @@ void VrmlNodeSpotLight::setField(const std::string & fieldId,
   else if TRY_FIELD(location, SFVec3f)
   else if TRY_FIELD(radius, SFFloat)
   else 
-    VrmlNodeLight::setField(fieldId, fieldValue);
+    NodeLight::setField(fieldId, fieldValue);
 }
 
-const VrmlSFVec3f& VrmlNodeSpotLight::getAttenuation() const   // LarryD Mar 04/99
+const SFVec3f& NodeSpotLight::getAttenuation() const   // LarryD Mar 04/99
 {  return d_attenuation; }
 
-const VrmlSFVec3f& VrmlNodeSpotLight::getDirection() const   // LarryD Mar 04/99
+const SFVec3f& NodeSpotLight::getDirection() const   // LarryD Mar 04/99
 {  return d_direction; }
 
-const VrmlSFVec3f& VrmlNodeSpotLight::getLocation() const   // LarryD Mar 04/99
+const SFVec3f& NodeSpotLight::getLocation() const   // LarryD Mar 04/99
 {  return d_location; }
 
 
 namespace {
-    // Return a new VrmlNodeSwitch
-    const VrmlNodePtr createSwitch(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeSwitch(scene));
+    // Return a new NodeSwitch
+    const NodePtr createSwitch(VrmlScene * const scene) {
+        return NodePtr(new NodeSwitch(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Switch" fields.
  */
-const NodeTypePtr VrmlNodeSwitch::defineType() {
+const NodeTypePtr NodeSwitch::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -8190,22 +8189,22 @@ const NodeTypePtr VrmlNodeSwitch::defineType() {
     }
     
     st.reset(new NodeType("Switch", createSwitch));
-    st->addExposedField("choice", VrmlField::MFNODE);
-    st->addExposedField("whichChoice", VrmlField::SFINT32);
+    st->addExposedField("choice", FieldValue::MFNODE);
+    st->addExposedField("whichChoice", FieldValue::SFINT32);
 
     return st;
 }
 
-VrmlNodeSwitch::VrmlNodeSwitch(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_whichChoice(-1) {
+NodeSwitch::NodeSwitch(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_whichChoice(-1) {
     this->setBVolumeDirty(true);
 }
 
-VrmlNodeSwitch::~VrmlNodeSwitch()
+NodeSwitch::~NodeSwitch()
 {
 }
 
-bool VrmlNodeSwitch::accept(VrmlNodeVisitor & visitor) {
+bool NodeSwitch::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -8215,7 +8214,7 @@ bool VrmlNodeSwitch::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodeSwitch::resetVisitedFlag() {
+void NodeSwitch::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (size_t i = 0; i < this->d_choice.getLength(); ++i) {
@@ -8226,11 +8225,11 @@ void VrmlNodeSwitch::resetVisitedFlag() {
     }
 }
 
-const VrmlMFNode VrmlNodeSwitch::getChildren() const {
+const MFNode NodeSwitch::getChildren() const {
     return this->d_choice;
 }
 
-bool VrmlNodeSwitch::isModified() const
+bool NodeSwitch::isModified() const
 {
   if (d_modified) return true;
 
@@ -8245,7 +8244,7 @@ bool VrmlNodeSwitch::isModified() const
 // all. note that the original isModified() just tested the current
 // one. keep that in mind, and change it back when confirmed safe.
 //
-void VrmlNodeSwitch::updateModified(VrmlNodePath& path)
+void NodeSwitch::updateModified(NodePath& path)
 {
   if (this->isModified()) markPathModified(path, true);
   path.push_front(this);
@@ -8256,23 +8255,23 @@ void VrmlNodeSwitch::updateModified(VrmlNodePath& path)
 }
 
 
-void VrmlNodeSwitch::clearFlags()
+void NodeSwitch::clearFlags()
 {
-  VrmlNode::clearFlags();
+  Node::clearFlags();
   
   int n = d_choice.getLength();
   for (int i = 0; i<n; ++i)
     d_choice.getElement(i)->clearFlags();
 }
 
-void VrmlNodeSwitch::addToScene(VrmlScene * scene, const std::string & rel) {
+void NodeSwitch::addToScene(VrmlScene * scene, const std::string & rel) {
     this->d_scene = scene;
     for (size_t i = 0; i < d_choice.getLength(); ++i) {
         this->d_choice.getElement(i)->addToScene(scene, rel);
     }
 }
 
-ostream& VrmlNodeSwitch::printFields(ostream& os, int indent)
+ostream& NodeSwitch::printFields(ostream& os, int indent)
 {
   if (d_choice.getLength() > 0) PRINT_FIELD(choice);
   if (d_whichChoice.get() != -1) PRINT_FIELD(whichChoice);
@@ -8282,7 +8281,7 @@ ostream& VrmlNodeSwitch::printFields(ostream& os, int indent)
 
 // Render the selected child
 
-void VrmlNodeSwitch::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeSwitch::render(Viewer *viewer, VrmlRenderContext rc)
 {
   int w = d_whichChoice.get();
 
@@ -8294,43 +8293,43 @@ void VrmlNodeSwitch::render(Viewer *viewer, VrmlRenderContext rc)
 
 
 // Get the value of one of the node fields.
-const VrmlField * VrmlNodeSwitch::getField(const std::string & fieldId) const
+const FieldValue * NodeSwitch::getField(const std::string & fieldId) const
 {
   if (fieldId == "choice")
     return &d_choice;
   else if (fieldId == "whichChoice")
     return &d_whichChoice;
 
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
-void VrmlNodeSwitch::setField(const std::string & fieldId,
-                  const VrmlField & fieldValue)
+void NodeSwitch::setField(const std::string & fieldId,
+                  const FieldValue & fieldValue)
 {
   if TRY_FIELD(choice, MFNode)
   else if TRY_FIELD(whichChoice, SFInt32)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
   this->setBVolumeDirty(true);
 }
 
-VrmlNodeSwitch* VrmlNodeSwitch::toSwitch() const //LarryD
-{ return (VrmlNodeSwitch*) this; }
+NodeSwitch* NodeSwitch::toSwitch() const //LarryD
+{ return (NodeSwitch*) this; }
 
 
-const VrmlBVolume* VrmlNodeSwitch::getBVolume() const
+const VrmlBVolume* NodeSwitch::getBVolume() const
 {
-  //cout << "VrmlNodeGroup[" << this << "]::getBVolume()" << endl;
+  //cout << "NodeGroup[" << this << "]::getBVolume()" << endl;
   if (this->isBVolumeDirty())
-    ((VrmlNodeSwitch*)this)->recalcBSphere();
+    ((NodeSwitch*)this)->recalcBSphere();
   return &d_bsphere;
 }
 
 void
-VrmlNodeSwitch::recalcBSphere()
+NodeSwitch::recalcBSphere()
 {
-  //cout << "VrmlNodeSwitch[" << this << "]::recalcBSphere()" << endl;
+  //cout << "NodeSwitch[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
   int w = d_whichChoice.get();
   if (w >= 0 && w < (int) d_choice.getLength()) {
@@ -8346,7 +8345,7 @@ VrmlNodeSwitch::recalcBSphere()
  *
  * @return choice
  */
-const VrmlMFNode & VrmlNodeSwitch::getChoice() const {
+const MFNode & NodeSwitch::getChoice() const {
     return this->d_choice;
 }
 
@@ -8355,7 +8354,7 @@ const VrmlMFNode & VrmlNodeSwitch::getChoice() const {
  *
  * @param choice
  */
-void VrmlNodeSwitch::setChoice(const VrmlMFNode & choice) {
+void NodeSwitch::setChoice(const MFNode & choice) {
     this->d_choice = choice;
     this->setBVolumeDirty(true);
 }
@@ -8365,7 +8364,7 @@ void VrmlNodeSwitch::setChoice(const VrmlMFNode & choice) {
  *
  * @return whichChoice
  */
-const VrmlSFInt32 & VrmlNodeSwitch::getWhichChoice() const {
+const SFInt32 & NodeSwitch::getWhichChoice() const {
     return this->d_whichChoice;
 }
 
@@ -8374,23 +8373,23 @@ const VrmlSFInt32 & VrmlNodeSwitch::getWhichChoice() const {
  *
  * @param whichChoice
  */
-void VrmlNodeSwitch::setWhichChoice(const VrmlSFInt32 & whichChoice) {
+void NodeSwitch::setWhichChoice(const SFInt32 & whichChoice) {
     this->d_whichChoice = whichChoice;
     this->setBVolumeDirty(true);
 }
 
 
 namespace {
-    // Make a VrmlNodeText
-    const VrmlNodePtr createText(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeText(scene));
+    // Make a NodeText
+    const NodePtr createText(VrmlScene * const scene) {
+        return NodePtr(new NodeText(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Text" fields.
  */
-const NodeTypePtr VrmlNodeText::defineType() {
+const NodeTypePtr NodeText::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -8398,22 +8397,22 @@ const NodeTypePtr VrmlNodeText::defineType() {
     }
     
     st.reset(new NodeType("Text", createText));
-    st->addExposedField("string", VrmlField::MFSTRING);
-    st->addExposedField("fontStyle", VrmlField::SFNODE);
-    st->addExposedField("length", VrmlField::MFFLOAT);
-    st->addExposedField("maxExtent", VrmlField::SFFLOAT);
+    st->addExposedField("string", FieldValue::MFSTRING);
+    st->addExposedField("fontStyle", FieldValue::SFNODE);
+    st->addExposedField("length", FieldValue::MFFLOAT);
+    st->addExposedField("maxExtent", FieldValue::SFFLOAT);
 
     return st;
 }
 
-VrmlNodeText::VrmlNodeText(VrmlScene * const scene):
-        VrmlNodeGeometry(*defineType(), scene) {}
+NodeText::NodeText(VrmlScene * const scene):
+        NodeGeometry(*defineType(), scene) {}
 
-VrmlNodeText::~VrmlNodeText()
+NodeText::~NodeText()
 {
 }
 
-bool VrmlNodeText::accept(VrmlNodeVisitor & visitor) {
+bool NodeText::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -8423,7 +8422,7 @@ bool VrmlNodeText::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodeText::resetVisitedFlag() {
+void NodeText::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         if (this->d_fontStyle.get()) {
@@ -8432,17 +8431,17 @@ void VrmlNodeText::resetVisitedFlag() {
     }
 }
 
-const VrmlMFNode VrmlNodeText::getChildren() const {
-    return VrmlMFNode(1, &this->d_fontStyle.get());
+const MFNode NodeText::getChildren() const {
+    return MFNode(1, &this->d_fontStyle.get());
 }
 
-bool VrmlNodeText::isModified() const
+bool NodeText::isModified() const
 {
-  return (VrmlNode::isModified() ||
+  return (Node::isModified() ||
       (d_fontStyle.get() && d_fontStyle.get()->isModified()));
 }
 
-void VrmlNodeText::updateModified(VrmlNodePath& path)
+void NodeText::updateModified(NodePath& path)
 {
   if (this->isModified()) markPathModified(path, true);
   path.push_front(this);
@@ -8451,20 +8450,20 @@ void VrmlNodeText::updateModified(VrmlNodePath& path)
 }
 
 
-void VrmlNodeText::clearFlags()
+void NodeText::clearFlags()
 {
-  VrmlNode::clearFlags();
+  Node::clearFlags();
   if (d_fontStyle.get()) d_fontStyle.get()->clearFlags();
 }
 
-void VrmlNodeText::addToScene(VrmlScene * scene, const std::string & relUrl) {
+void NodeText::addToScene(VrmlScene * scene, const std::string & relUrl) {
     this->d_scene = scene;
     if (this->d_fontStyle.get()) {
         this->d_fontStyle.get()->addToScene(scene, relUrl);
     }
 }
 
-ostream& VrmlNodeText::printFields(ostream& os, int indent)
+ostream& NodeText::printFields(ostream& os, int indent)
 {
   if (d_string.getLength() > 0) PRINT_FIELD(string);
   if (d_fontStyle.get()) PRINT_FIELD(fontStyle);
@@ -8474,7 +8473,7 @@ ostream& VrmlNodeText::printFields(ostream& os, int indent)
 }
 
 
-Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
+Viewer::Object NodeText::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
     char * * strs = new char *[this->d_string.getLength()];
     size_t i;
@@ -8489,13 +8488,13 @@ Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer, VrmlRenderContext rc
     
     int justify[2] = { 1, 1 };
     float size = 1.0;
-    VrmlNodeFontStyle *f = 0;
+    NodeFontStyle *f = 0;
     if (d_fontStyle.get()) {
         f = d_fontStyle.get()->toFontStyle();
     }
 
     if (f) {
-        const VrmlMFString & j = f->justify();
+        const MFString & j = f->justify();
 
         for (size_t i=0; i < j.getLength(); ++i) {
             if (j.getElement(i) == "END") {
@@ -8518,7 +8517,7 @@ Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer, VrmlRenderContext rc
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeText::getField(const std::string & fieldId) const
+const FieldValue * NodeText::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "string")
@@ -8528,20 +8527,20 @@ const VrmlField * VrmlNodeText::getField(const std::string & fieldId) const
   else if (fieldId == "length")
     return &d_maxExtent;
   
-  return VrmlNodeGeometry::getField(fieldId); // Parent class
+  return NodeGeometry::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeText::setField(const std::string & fieldId,
-                const VrmlField & fieldValue)
+void NodeText::setField(const std::string & fieldId,
+                const FieldValue & fieldValue)
 {
   if TRY_FIELD(string, MFString)
   else if TRY_SFNODE_FIELD(fontStyle, FontStyle)
   else if TRY_FIELD(length, MFFloat)
   else if TRY_FIELD(maxExtent, SFFloat)
   else
-    VrmlNodeGeometry::setField(fieldId, fieldValue);
+    NodeGeometry::setField(fieldId, fieldValue);
 }
 
 /**
@@ -8549,7 +8548,7 @@ void VrmlNodeText::setField(const std::string & fieldId,
  *
  * @return fontStyle
  */
-const VrmlSFNode & VrmlNodeText::getFontStyle() const {
+const SFNode & NodeText::getFontStyle() const {
     return this->d_fontStyle;
 }
 
@@ -8558,21 +8557,21 @@ const VrmlSFNode & VrmlNodeText::getFontStyle() const {
  *
  * @param fontStyle
  */
-void VrmlNodeText::setFontStyle(const VrmlSFNode & fontStyle) {
+void NodeText::setFontStyle(const SFNode & fontStyle) {
     this->d_fontStyle = fontStyle;
 }
 
 
 namespace {
-    const VrmlNodePtr createTextureCoordinate(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeTextureCoordinate(scene));
+    const NodePtr createTextureCoordinate(VrmlScene * const scene) {
+        return NodePtr(new NodeTextureCoordinate(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "TextureCoordinate" fields.
  */
-const NodeTypePtr VrmlNodeTextureCoordinate::defineType() {
+const NodeTypePtr NodeTextureCoordinate::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -8580,19 +8579,19 @@ const NodeTypePtr VrmlNodeTextureCoordinate::defineType() {
     }
 
     st.reset(new NodeType("TextureCoordinate", createTextureCoordinate));
-    st->addExposedField("point", VrmlField::MFVEC2F);
+    st->addExposedField("point", FieldValue::MFVEC2F);
 
     return st;
 }
 
-VrmlNodeTextureCoordinate::VrmlNodeTextureCoordinate(VrmlScene * const scene):
-        VrmlNode(*defineType(), scene) {}
+NodeTextureCoordinate::NodeTextureCoordinate(VrmlScene * const scene):
+        Node(*defineType(), scene) {}
 
-VrmlNodeTextureCoordinate::~VrmlNodeTextureCoordinate()
+NodeTextureCoordinate::~NodeTextureCoordinate()
 {
 }
 
-bool VrmlNodeTextureCoordinate::accept(VrmlNodeVisitor & visitor) {
+bool NodeTextureCoordinate::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -8602,11 +8601,11 @@ bool VrmlNodeTextureCoordinate::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeTextureCoordinate* VrmlNodeTextureCoordinate::toTextureCoordinate() const
-{ return (VrmlNodeTextureCoordinate*) this; }
+NodeTextureCoordinate* NodeTextureCoordinate::toTextureCoordinate() const
+{ return (NodeTextureCoordinate*) this; }
 
 
-ostream& VrmlNodeTextureCoordinate::printFields(ostream& os, int indent)
+ostream& NodeTextureCoordinate::printFields(ostream& os, int indent)
 {
   if (d_point.getLength() > 0) PRINT_FIELD(point);
   return os;
@@ -8614,35 +8613,35 @@ ostream& VrmlNodeTextureCoordinate::printFields(ostream& os, int indent)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeTextureCoordinate::getField(const std::string & fieldId) const
+const FieldValue * NodeTextureCoordinate::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "point")
     return &d_point;
-  return VrmlNode::getField(fieldId); // Parent class
+  return Node::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeTextureCoordinate::setField(const std::string & fieldId,
-                     const VrmlField & fieldValue)
+void NodeTextureCoordinate::setField(const std::string & fieldId,
+                     const FieldValue & fieldValue)
 {
   if TRY_FIELD(point, MFVec2f)
   else
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 }
 
 
 namespace {
-    const VrmlNodePtr createTextureTransform(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeTextureTransform(scene)); 
+    const NodePtr createTextureTransform(VrmlScene * const scene) {
+        return NodePtr(new NodeTextureTransform(scene)); 
     }
 }
 
 /**
  * Define the built in NodeType:: "TextureTransform" fields.
  */
-const NodeTypePtr VrmlNodeTextureTransform::defineType() {
+const NodeTypePtr NodeTextureTransform::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -8650,23 +8649,23 @@ const NodeTypePtr VrmlNodeTextureTransform::defineType() {
     }
     
     st.reset(new NodeType("TextureTransform", createTextureTransform));
-    st->addExposedField("center", VrmlField::SFVEC2F);
-    st->addExposedField("rotation", VrmlField::SFFLOAT);
-    st->addExposedField("scale", VrmlField::SFVEC2F);
-    st->addExposedField("translation", VrmlField::SFVEC2F);
+    st->addExposedField("center", FieldValue::SFVEC2F);
+    st->addExposedField("rotation", FieldValue::SFFLOAT);
+    st->addExposedField("scale", FieldValue::SFVEC2F);
+    st->addExposedField("translation", FieldValue::SFVEC2F);
 
     return st;
 }
 
-VrmlNodeTextureTransform::VrmlNodeTextureTransform(VrmlScene * const scene):
-        VrmlNode(*defineType(), scene), d_center(0.0, 0.0), d_rotation(0.0),
+NodeTextureTransform::NodeTextureTransform(VrmlScene * const scene):
+        Node(*defineType(), scene), d_center(0.0, 0.0), d_rotation(0.0),
         d_scale(1.0, 1.0), d_translation(0.0, 0.0) {}
 
-VrmlNodeTextureTransform::~VrmlNodeTextureTransform()
+NodeTextureTransform::~NodeTextureTransform()
 {
 }
 
-bool VrmlNodeTextureTransform::accept(VrmlNodeVisitor & visitor) {
+bool NodeTextureTransform::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -8676,11 +8675,11 @@ bool VrmlNodeTextureTransform::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeTextureTransform* VrmlNodeTextureTransform::toTextureTransform() const 
-{ return (VrmlNodeTextureTransform*) this; }
+NodeTextureTransform* NodeTextureTransform::toTextureTransform() const 
+{ return (NodeTextureTransform*) this; }
 
 
-ostream& VrmlNodeTextureTransform::printFields(ostream& os, int indent)
+ostream& NodeTextureTransform::printFields(ostream& os, int indent)
 {
   if (! fpzero(d_center.getX()) ||
       ! fpzero(d_center.getY()))
@@ -8700,7 +8699,7 @@ ostream& VrmlNodeTextureTransform::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeTextureTransform::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeTextureTransform::render(Viewer *viewer, VrmlRenderContext rc)
 {
   viewer->setTextureTransform( d_center.get(),
                    d_rotation.get(),
@@ -8711,7 +8710,7 @@ void VrmlNodeTextureTransform::render(Viewer *viewer, VrmlRenderContext rc)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeTextureTransform::getField(const std::string & fieldId) const
+const FieldValue * NodeTextureTransform::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "center")
@@ -8723,50 +8722,50 @@ const VrmlField * VrmlNodeTextureTransform::getField(const std::string & fieldId
   else if (fieldId == "translation")
     return &d_translation;
   
-  return VrmlNode::getField(fieldId); // Parent class
+  return Node::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeTextureTransform::setField(const std::string & fieldId,
-                    const VrmlField & fieldValue)
+void NodeTextureTransform::setField(const std::string & fieldId,
+                    const FieldValue & fieldValue)
 {
   if TRY_FIELD(center, SFVec2f)
   else if TRY_FIELD(rotation, SFFloat)
   else if TRY_FIELD(scale, SFVec2f)
   else if TRY_FIELD(translation, SFVec2f)
   else
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 }
 
-const VrmlSFVec2f & VrmlNodeTextureTransform::getCenter() const {
+const SFVec2f & NodeTextureTransform::getCenter() const {
     return this->d_center;
 }
 
-const VrmlSFFloat & VrmlNodeTextureTransform::getRotation() const {
+const SFFloat & NodeTextureTransform::getRotation() const {
     return this->d_rotation;
 }
 
-const VrmlSFVec2f & VrmlNodeTextureTransform::getScale() const {
+const SFVec2f & NodeTextureTransform::getScale() const {
     return this->d_scale;
 }
 
-const VrmlSFVec2f & VrmlNodeTextureTransform::getTranslation() const {
+const SFVec2f & NodeTextureTransform::getTranslation() const {
     return this->d_translation;
 }
 
 
 namespace {
     // TimeSensor factory. Add each TimeSensor to the scene for fast access.
-    const VrmlNodePtr createTimeSensor(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeTimeSensor(scene));
+    const NodePtr createTimeSensor(VrmlScene * const scene) {
+        return NodePtr(new NodeTimeSensor(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "TimeSensor" fields.
  */
-const NodeTypePtr VrmlNodeTimeSensor::defineType() {
+const NodeTypePtr NodeTimeSensor::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -8774,21 +8773,21 @@ const NodeTypePtr VrmlNodeTimeSensor::defineType() {
     }
     
     st.reset(new NodeType("TimeSensor", createTimeSensor));
-    st->addExposedField("cycleInterval", VrmlField::SFTIME);
-    st->addExposedField("enabled", VrmlField::SFBOOL);
-    st->addExposedField("loop", VrmlField::SFBOOL);
-    st->addExposedField("startTime", VrmlField::SFTIME);
-    st->addExposedField("stopTime", VrmlField::SFTIME);
-    st->addEventOut("cycleTime", VrmlField::SFTIME);
-    st->addEventOut("fraction_changed", VrmlField::SFFLOAT);
-    st->addEventOut("isActive", VrmlField::SFBOOL);
-    st->addEventOut("time", VrmlField::SFTIME);
+    st->addExposedField("cycleInterval", FieldValue::SFTIME);
+    st->addExposedField("enabled", FieldValue::SFBOOL);
+    st->addExposedField("loop", FieldValue::SFBOOL);
+    st->addExposedField("startTime", FieldValue::SFTIME);
+    st->addExposedField("stopTime", FieldValue::SFTIME);
+    st->addEventOut("cycleTime", FieldValue::SFTIME);
+    st->addEventOut("fraction_changed", FieldValue::SFFLOAT);
+    st->addEventOut("isActive", FieldValue::SFBOOL);
+    st->addEventOut("time", FieldValue::SFTIME);
 
     return st;
 }
 
-VrmlNodeTimeSensor::VrmlNodeTimeSensor(VrmlScene * const scene) :
-        VrmlNodeChild(*defineType(), scene), d_cycleInterval(1.0),
+NodeTimeSensor::NodeTimeSensor(VrmlScene * const scene) :
+        NodeChild(*defineType(), scene), d_cycleInterval(1.0),
         d_enabled(true), d_loop(false), d_startTime(0.0), d_stopTime(0.0),
         d_isActive(false), d_lastTime(-1.0) {
     if (this->d_scene) {
@@ -8796,13 +8795,13 @@ VrmlNodeTimeSensor::VrmlNodeTimeSensor(VrmlScene * const scene) :
     }
 }
 
-VrmlNodeTimeSensor::~VrmlNodeTimeSensor() {
+NodeTimeSensor::~NodeTimeSensor() {
     if (this->d_scene) {
         this->d_scene->removeTimeSensor(*this);
     }
 }
 
-bool VrmlNodeTimeSensor::accept(VrmlNodeVisitor & visitor) {
+bool NodeTimeSensor::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -8812,19 +8811,19 @@ bool VrmlNodeTimeSensor::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeTimeSensor* VrmlNodeTimeSensor::toTimeSensor() const
+NodeTimeSensor* NodeTimeSensor::toTimeSensor() const
 {
-  return (VrmlNodeTimeSensor*) this;
+  return (NodeTimeSensor*) this;
 }
 
-void VrmlNodeTimeSensor::addToScene(VrmlScene * scene, const std::string &) {
+void NodeTimeSensor::addToScene(VrmlScene * scene, const std::string &) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
         this->d_scene->addTimeSensor(*this);
     }
 }
 
 
-ostream& VrmlNodeTimeSensor::printFields(ostream& os, int indent)
+ostream& NodeTimeSensor::printFields(ostream& os, int indent)
 {
   if (! fpequal(d_cycleInterval.get(), 1.0))
     PRINT_FIELD(cycleInterval);
@@ -8845,11 +8844,11 @@ ostream& VrmlNodeTimeSensor::printFields(ostream& os, int indent)
 // Should ensure continuous events are delivered before discrete ones
 // (such as cycleTime, isActive).
 
-void VrmlNodeTimeSensor::update( VrmlSFTime &inTime )
+void NodeTimeSensor::update( SFTime &inTime )
 {
-  VrmlSFTime timeNow( inTime );
+  SFTime timeNow( inTime );
 
-  //printf("VrmlNodeTimeSensor %s ::update( enabled %d, active %d, loop %d )\n",
+  //printf("NodeTimeSensor %s ::update( enabled %d, active %d, loop %d )\n",
   //name(), d_enabled.get(), d_isActive.get(), d_loop.get() );
 
   if (d_enabled.get())
@@ -8880,7 +8879,7 @@ void VrmlNodeTimeSensor::update( VrmlSFTime &inTime )
       eventOut( timeNow.get(), "isActive", d_isActive );
 
       eventOut( timeNow.get(), "time", timeNow );
-      eventOut( timeNow.get(), "fraction_changed", VrmlSFFloat(0.0) );
+      eventOut( timeNow.get(), "fraction_changed", SFFloat(0.0) );
       eventOut( timeNow.get(), "cycleTime", timeNow );
 
     }
@@ -8901,7 +8900,7 @@ void VrmlNodeTimeSensor::update( VrmlSFTime &inTime )
 
           // Must respect stopTime/cycleInterval exactly
           if (d_startTime.get() + cycleInt < d_stopTime.get())
-        timeNow = VrmlSFTime(d_startTime.get() + cycleInt);
+        timeNow = SFTime(d_startTime.get() + cycleInt);
           else
         timeNow = d_stopTime;
 
@@ -8914,7 +8913,7 @@ void VrmlNodeTimeSensor::update( VrmlSFTime &inTime )
         f = 0.0;
 
       // Fraction of cycle message
-      VrmlSFFloat fraction_changed( fpzero(f) ? 1.0 : (f / cycleInt) );
+      SFFloat fraction_changed( fpzero(f) ? 1.0 : (f / cycleInt) );
       eventOut( timeNow.get(), "fraction_changed", fraction_changed );
 
       // Current time message
@@ -8944,9 +8943,9 @@ void VrmlNodeTimeSensor::update( VrmlSFTime &inTime )
 // Ignore set_cycleInterval & set_startTime when active, deactivate
 // if set_enabled FALSE is received when active.
 
-void VrmlNodeTimeSensor::eventIn(double timeStamp,
+void NodeTimeSensor::eventIn(double timeStamp,
                                  const std::string & eventName,
-                                 const VrmlField & fieldValue) {
+                                 const FieldValue & fieldValue) {
     static const char * eventInPrefix = "set_";
     std::string basicEventName;
     if (std::equal(eventInPrefix, eventInPrefix + 4, eventName.begin())) {
@@ -8971,7 +8970,7 @@ void VrmlNodeTimeSensor::eventIn(double timeStamp,
             d_isActive.set(false);
 
             // Send relevant eventOuts (continuous ones first)
-            VrmlSFTime timeNow(timeStamp);
+            SFTime timeNow(timeStamp);
             eventOut(timeStamp, "time", timeNow);
             
         double f;
@@ -8983,7 +8982,7 @@ void VrmlNodeTimeSensor::eventIn(double timeStamp,
             }
 
         // Fraction of cycle message
-        VrmlSFFloat fraction_changed(fpzero(f) ? 1.0 : (f / cycleInt));
+        SFFloat fraction_changed(fpzero(f) ? 1.0 : (f / cycleInt));
             
         eventOut(timeStamp, "fraction_changed", fraction_changed);
         eventOut(timeStamp, "isActive", d_isActive);
@@ -8992,7 +8991,7 @@ void VrmlNodeTimeSensor::eventIn(double timeStamp,
         eventOut(timeStamp, "enabled_changed", fieldValue);
     } else {
         // Let the generic code handle the rest.
-        VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+        Node::eventIn(timeStamp, eventName, fieldValue);
     }
 
     // TimeSensors shouldn't generate redraws.
@@ -9001,7 +9000,7 @@ void VrmlNodeTimeSensor::eventIn(double timeStamp,
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeTimeSensor::getField(const std::string & fieldId) const
+const FieldValue * NodeTimeSensor::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "cycleInterval")
@@ -9027,13 +9026,13 @@ const VrmlField * VrmlNodeTimeSensor::getField(const std::string & fieldId) cons
     return &d_time;
 #endif
 
-  return VrmlNodeChild::getField(fieldId); // Parent class
+  return NodeChild::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeTimeSensor::setField(const std::string & fieldId,
-                  const VrmlField & fieldValue)
+void NodeTimeSensor::setField(const std::string & fieldId,
+                  const FieldValue & fieldValue)
 {
   if TRY_FIELD(cycleInterval, SFTime)
   else if TRY_FIELD(enabled, SFBool)
@@ -9041,13 +9040,13 @@ void VrmlNodeTimeSensor::setField(const std::string & fieldId,
   else if TRY_FIELD(startTime, SFTime)
   else if TRY_FIELD(stopTime, SFTime)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 
-const VrmlBVolume* VrmlNodeTimeSensor::getBVolume() const
+const VrmlBVolume* NodeTimeSensor::getBVolume() const
 {
-  //cout << "VrmlNodeTimeSensor::getBVolume():unset" << endl;
+  //cout << "NodeTimeSensor::getBVolume():unset" << endl;
   static VrmlBSphere* inf_bsphere = (VrmlBSphere*)0;
   if (!inf_bsphere) {
     inf_bsphere = new VrmlBSphere();
@@ -9058,15 +9057,15 @@ const VrmlBVolume* VrmlNodeTimeSensor::getBVolume() const
 
 namespace {
     // TouchSensor factory. 
-    const VrmlNodePtr createTouchSensor(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeTouchSensor(scene));
+    const NodePtr createTouchSensor(VrmlScene * const scene) {
+        return NodePtr(new NodeTouchSensor(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "TouchSensor" fields.
  */
-const NodeTypePtr VrmlNodeTouchSensor::defineType() {
+const NodeTypePtr NodeTouchSensor::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -9074,28 +9073,28 @@ const NodeTypePtr VrmlNodeTouchSensor::defineType() {
     }
     
     st.reset(new NodeType("TouchSensor", createTouchSensor));
-    st->addExposedField("enabled", VrmlField::SFBOOL);
-    st->addEventOut("hitNormal_changed", VrmlField::SFVEC3F);
-    st->addEventOut("hitPoint_changed", VrmlField::SFVEC3F);
-    st->addEventOut("hitTexCoord_changed", VrmlField::SFVEC2F);
-    st->addEventOut("isActive", VrmlField::SFBOOL);
-    st->addEventOut("isOver", VrmlField::SFBOOL);
-    st->addEventOut("touchTime", VrmlField::SFTIME);
+    st->addExposedField("enabled", FieldValue::SFBOOL);
+    st->addEventOut("hitNormal_changed", FieldValue::SFVEC3F);
+    st->addEventOut("hitPoint_changed", FieldValue::SFVEC3F);
+    st->addEventOut("hitTexCoord_changed", FieldValue::SFVEC2F);
+    st->addEventOut("isActive", FieldValue::SFBOOL);
+    st->addEventOut("isOver", FieldValue::SFBOOL);
+    st->addEventOut("touchTime", FieldValue::SFTIME);
 
     return st;
 }
 
-VrmlNodeTouchSensor::VrmlNodeTouchSensor(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_enabled(true), d_isActive(false),
+NodeTouchSensor::NodeTouchSensor(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_enabled(true), d_isActive(false),
         d_isOver(false), d_touchTime(0.0) {
     this->setModified();
 }
 
-VrmlNodeTouchSensor::~VrmlNodeTouchSensor()
+NodeTouchSensor::~NodeTouchSensor()
 {
 }
 
-bool VrmlNodeTouchSensor::accept(VrmlNodeVisitor & visitor) {
+bool NodeTouchSensor::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -9105,12 +9104,12 @@ bool VrmlNodeTouchSensor::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeTouchSensor* VrmlNodeTouchSensor::toTouchSensor() const
-{ return (VrmlNodeTouchSensor*) this; }
+NodeTouchSensor* NodeTouchSensor::toTouchSensor() const
+{ return (NodeTouchSensor*) this; }
 
 
 
-ostream& VrmlNodeTouchSensor::printFields(ostream& os, int indent)
+ostream& NodeTouchSensor::printFields(ostream& os, int indent)
 {
   if (! d_enabled.get())
     PRINT_FIELD(enabled);
@@ -9119,7 +9118,7 @@ ostream& VrmlNodeTouchSensor::printFields(ostream& os, int indent)
 
 // Doesn't compute the xxx_changed eventOuts yet...
 
-void VrmlNodeTouchSensor::activate( double timeStamp,
+void NodeTouchSensor::activate( double timeStamp,
                     bool isOver, bool isActive,
                     double * )
 {
@@ -9149,7 +9148,7 @@ void VrmlNodeTouchSensor::activate( double timeStamp,
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeTouchSensor::getField(const std::string & fieldId)
+const FieldValue * NodeTouchSensor::getField(const std::string & fieldId)
         const {
   // exposedFields
   if (fieldId == "enabled")
@@ -9169,26 +9168,26 @@ const VrmlField * VrmlNodeTouchSensor::getField(const std::string & fieldId)
   else if (fieldId == "touchTime")
     return &d_touchTime;
 
-  return VrmlNodeChild::getField(fieldId); // Parent class
+  return NodeChild::getField(fieldId); // Parent class
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeTouchSensor::setField(const std::string & fieldId,
-                   const VrmlField & fieldValue)
+void NodeTouchSensor::setField(const std::string & fieldId,
+                   const FieldValue & fieldValue)
 {
   if TRY_FIELD(enabled, SFBool)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 
 /**
- * @class VrmlNodeTransform
+ * @class OpenVRML::NodeTransform
  */
 
 /**
- * @var VrmlNodeTransform::M
+ * @var NodeTransform::M
  *
  * Cached copy (in VrmlMatrix format) of this node's transformation.
  * Currently this is used only by the culling code, but eventually
@@ -9197,24 +9196,24 @@ void VrmlNodeTouchSensor::setField(const std::string & fieldId,
  */
 
 /**
- * @var VrmlNodeTransform::M_dirty
+ * @var NodeTransform::M_dirty
  *
  * If true, we need to recalculate M. Is this the same as
- * VrmlNode::d_modified? No, since it's entirely a core-side issue,
+ * Node::d_modified? No, since it's entirely a core-side issue,
  * and has nothing to do with the viewer being out of date wrt the
  * core scene graph.
  */
 
 namespace {
-    const VrmlNodePtr createTransform(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeTransform(scene));
+    const NodePtr createTransform(VrmlScene * const scene) {
+        return NodePtr(new NodeTransform(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Transform" fields.
  */
-const NodeTypePtr VrmlNodeTransform::defineType() {
+const NodeTypePtr NodeTransform::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -9222,22 +9221,22 @@ const NodeTypePtr VrmlNodeTransform::defineType() {
     }
     
     st.reset(new NodeType("Transform", createTransform));
-    st->addEventIn("addChildren", VrmlField::MFNODE);
-    st->addEventIn("removeChildren", VrmlField::MFNODE);
-    st->addExposedField("children", VrmlField::MFNODE);
-    st->addField("bboxCenter", VrmlField::SFVEC3F);
-    st->addField("bboxSize", VrmlField::SFVEC3F);
-    st->addExposedField("center", VrmlField::SFVEC3F);
-    st->addExposedField("rotation", VrmlField::SFROTATION);
-    st->addExposedField("scale", VrmlField::SFVEC3F);
-    st->addExposedField("scaleOrientation", VrmlField::SFROTATION);
-    st->addExposedField("translation", VrmlField::SFVEC3F);
+    st->addEventIn("addChildren", FieldValue::MFNODE);
+    st->addEventIn("removeChildren", FieldValue::MFNODE);
+    st->addExposedField("children", FieldValue::MFNODE);
+    st->addField("bboxCenter", FieldValue::SFVEC3F);
+    st->addField("bboxSize", FieldValue::SFVEC3F);
+    st->addExposedField("center", FieldValue::SFVEC3F);
+    st->addExposedField("rotation", FieldValue::SFROTATION);
+    st->addExposedField("scale", FieldValue::SFVEC3F);
+    st->addExposedField("scaleOrientation", FieldValue::SFROTATION);
+    st->addExposedField("translation", FieldValue::SFVEC3F);
 
     return st;
 }
 
-VrmlNodeTransform::VrmlNodeTransform(VrmlScene * const scene):
-        VrmlNodeGroup(*defineType(), scene), d_center(0.0, 0.0, 0.0),
+NodeTransform::NodeTransform(VrmlScene * const scene):
+        NodeGroup(*defineType(), scene), d_center(0.0, 0.0, 0.0),
         d_rotation(0.0, 0.0, 1.0, 0.0), d_scale(1.0, 1.0, 1.0),
         d_scaleOrientation(0.0, 0.0, 1.0, 0.0), d_translation(0.0, 0.0, 0.0),
         d_xformObject(0) {
@@ -9246,12 +9245,12 @@ VrmlNodeTransform::VrmlNodeTransform(VrmlScene * const scene):
     this->setBVolumeDirty(true);
 }
 
-VrmlNodeTransform::~VrmlNodeTransform()
+NodeTransform::~NodeTransform()
 {
   // delete d_xformObject...
 }
 
-bool VrmlNodeTransform::accept(VrmlNodeVisitor & visitor) {
+bool NodeTransform::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -9261,7 +9260,7 @@ bool VrmlNodeTransform::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-void VrmlNodeTransform::resetVisitedFlag() {
+void NodeTransform::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (size_t i = 0; i < this->d_children.getLength(); ++i) {
@@ -9272,25 +9271,25 @@ void VrmlNodeTransform::resetVisitedFlag() {
     }
 }
 
-VrmlNodeTransform* VrmlNodeTransform::toTransform() const //LarryD Feb24/99
-{ return (VrmlNodeTransform*) this; }
+NodeTransform* NodeTransform::toTransform() const //LarryD Feb24/99
+{ return (NodeTransform*) this; }
 
-const VrmlSFVec3f& VrmlNodeTransform::getCenter() const   // LarryD Feb 18/99
+const SFVec3f& NodeTransform::getCenter() const   // LarryD Feb 18/99
 {  return d_center; }
 
-const VrmlSFRotation& VrmlNodeTransform::getRotation() const  //LarryD Feb 24/99
+const SFRotation& NodeTransform::getRotation() const  //LarryD Feb 24/99
 { return d_rotation; }
 
-const VrmlSFVec3f& VrmlNodeTransform::getScale() const //LarryD Feb 24/99
+const SFVec3f& NodeTransform::getScale() const //LarryD Feb 24/99
 { return d_scale ;}
 
-const VrmlSFRotation& VrmlNodeTransform::getScaleOrientation() const //LarryD Feb 24/99
+const SFRotation& NodeTransform::getScaleOrientation() const //LarryD Feb 24/99
 { return d_scaleOrientation; }
 
-const VrmlSFVec3f& VrmlNodeTransform::getTranslation() const  //LarryD Feb 24/99
+const SFVec3f& NodeTransform::getTranslation() const  //LarryD Feb 24/99
 { return d_translation; }
 
-ostream& VrmlNodeTransform::printFields(ostream& os, int indent)
+ostream& NodeTransform::printFields(ostream& os, int indent)
 {
   if (! fpzero(d_center.getX()) ||
       ! fpzero(d_center.getY()) ||
@@ -9315,14 +9314,14 @@ ostream& VrmlNodeTransform::printFields(ostream& os, int indent)
       ! fpzero(d_translation.getZ()))
     PRINT_FIELD(translation);
 
-  VrmlNodeGroup::printFields(os, indent);
+  NodeGroup::printFields(os, indent);
   return os;
 }
 
 
-void VrmlNodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
 {
-  //cout << "VrmlNodeTransform::render()" << endl;
+  //cout << "NodeTransform::render()" << endl;
   
   if (rc.getCullFlag() != VrmlBVolume::BV_INSIDE) {
 
@@ -9373,7 +9372,7 @@ void VrmlNodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
       this->getMatrix(M);
       viewer->MatrixMultiply(M.get());
       // Render children
-      VrmlNodeGroup::renderNoCull(viewer, rc);
+      NodeGroup::renderNoCull(viewer, rc);
 
       // Reverse transforms (for immediate mode/no matrix stack renderer)
 //      viewer->unsetTransform(d_center.get(),
@@ -9392,7 +9391,7 @@ void VrmlNodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeTransform::getField(const std::string & fieldId) const
+const FieldValue * NodeTransform::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "center")
@@ -9406,13 +9405,13 @@ const VrmlField * VrmlNodeTransform::getField(const std::string & fieldId) const
   else if (fieldId == "translation")
     return &d_translation;
 
-  return VrmlNodeGroup::getField(fieldId);
+  return NodeGroup::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeTransform::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue)
+void NodeTransform::setField(const std::string & fieldId,
+                 const FieldValue & fieldValue)
 {
   if TRY_FIELD(center, SFVec3f)
   else if TRY_FIELD(rotation, SFRotation)
@@ -9420,7 +9419,7 @@ void VrmlNodeTransform::setField(const std::string & fieldId,
   else if TRY_FIELD(scaleOrientation, SFRotation)
   else if TRY_FIELD(translation, SFVec3f)
   else
-    VrmlNodeGroup::setField(fieldId, fieldValue);
+    NodeGroup::setField(fieldId, fieldValue);
   this->setBVolumeDirty(true);
   M_dirty = true; // d_modified? see M_dirty comments in .h
 }
@@ -9429,7 +9428,7 @@ void VrmlNodeTransform::setField(const std::string & fieldId,
 // Cache a pointer to (one of the) parent transforms for proper
 // rendering of bindables.
 
-void VrmlNodeTransform::accumulateTransform(VrmlNode * parent) {
+void NodeTransform::accumulateTransform(Node * parent) {
     d_parentTransform = parent;
     for (size_t i = 0; i < this->d_children.getLength(); ++i) {
         if (this->d_children.getElement(i)) {
@@ -9439,19 +9438,19 @@ void VrmlNodeTransform::accumulateTransform(VrmlNode * parent) {
 }
 
 
-void VrmlNodeTransform::inverseTransform(Viewer *viewer)
+void NodeTransform::inverseTransform(Viewer *viewer)
 {
    viewer->unsetTransform(d_center.get(),
                              d_rotation.get(),
                              d_scale.get(),
                              d_scaleOrientation.get(),
                              d_translation.get());
-  VrmlNode *parentTransform = getParentTransform();
+  Node *parentTransform = getParentTransform();
   if (parentTransform)
     parentTransform->inverseTransform(viewer);
 } 
 
-void VrmlNodeTransform::inverseTransform(VrmlMatrix & m)
+void NodeTransform::inverseTransform(VrmlMatrix & m)
 {
 // It is calling program's responsibility to pass m as an unit matrix. skb
   VrmlMatrix M;
@@ -9459,18 +9458,18 @@ void VrmlNodeTransform::inverseTransform(VrmlMatrix & m)
   this->getMatrix(M);
   M = M.affine_inverse();
   m = m.multLeft(M);
-  VrmlNode *parentTransform = getParentTransform();
+  Node *parentTransform = getParentTransform();
   if (parentTransform)
     parentTransform->inverseTransform(m);
 }        
 
 
 const VrmlBVolume*
-VrmlNodeTransform::getBVolume() const
+NodeTransform::getBVolume() const
 {
-  //cout << "VrmlNodeTransform[" << this << "]::getBVolume() {" << endl;
+  //cout << "NodeTransform[" << this << "]::getBVolume() {" << endl;
   if (this->isBVolumeDirty())
-    ((VrmlNodeTransform*)this)->recalcBSphere();
+    ((NodeTransform*)this)->recalcBSphere();
   //cout << "}:";
   //d_bsphere.dump(cout) << endl;
   return &d_bsphere;
@@ -9479,9 +9478,9 @@ VrmlNodeTransform::getBVolume() const
 
 
 void
-VrmlNodeTransform::recalcBSphere()
+NodeTransform::recalcBSphere()
 {
-  //cout << "VrmlNodeTransform[" << this << "]::recalcBSphere()" << endl;
+  //cout << "NodeTransform[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
   for (size_t i=0; i<d_children.getLength(); ++i) {
     const VrmlBVolume* ci_bv = d_children.getElement(i)->getBVolume();
@@ -9500,13 +9499,13 @@ VrmlNodeTransform::recalcBSphere()
 
 #if 0
 void
-VrmlNodeTransform::recalcBSphere()
+NodeTransform::recalcBSphere()
 {
-  cout << "VrmlNodeTransform[" << this << "]::recalcBSphere()" << endl;
+  cout << "NodeTransform[" << this << "]::recalcBSphere()" << endl;
   synch_cached_matrix();
   d_bsphere.reset();
   for (int i = 0; i<d_children.size(); ++i) {
-    VrmlNode* ci = d_children[i];
+    Node* ci = d_children[i];
     const VrmlBVolume* ci_bv = ci->getBVolume();
     if (ci_bv) { // shouldn't happen...
       VrmlBSphere* bs = (VrmlBSphere*)ci_bv;
@@ -9527,7 +9526,7 @@ VrmlNodeTransform::recalcBSphere()
  * fields, but only if M_dirty is true. Think logical const.
  */
 void
-VrmlNodeTransform::synch_cached_matrix()
+NodeTransform::synch_cached_matrix()
 {
   if (M_dirty) {
     M.setTransform(d_translation,d_rotation,d_scale,d_scaleOrientation,d_center);
@@ -9542,24 +9541,24 @@ VrmlNodeTransform::synch_cached_matrix()
  * @return a copy of the cached transformation matrix
  */
 void
-VrmlNodeTransform::getMatrix(VrmlMatrix & M_out) const
+NodeTransform::getMatrix(VrmlMatrix & M_out) const
 {
-  ((VrmlNodeTransform*)this)->synch_cached_matrix();
+  ((NodeTransform*)this)->synch_cached_matrix();
   M_out = M;
 }
 
 
 namespace {
     //  Viewpoint factory.
-    const VrmlNodePtr createViewpoint(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeViewpoint(scene));
+    const NodePtr createViewpoint(VrmlScene * const scene) {
+        return NodePtr(new NodeViewpoint(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "Viewpoint" fields.
  */
-const NodeTypePtr VrmlNodeViewpoint::defineType() {
+const NodeTypePtr NodeViewpoint::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -9567,22 +9566,22 @@ const NodeTypePtr VrmlNodeViewpoint::defineType() {
     }
     st.reset(new NodeType("Viewpoint", createViewpoint));
 
-    st->addEventIn("set_bind", VrmlField::SFBOOL);
-    st->addExposedField("fieldOfView", VrmlField::SFFLOAT);
-    st->addExposedField("jump", VrmlField::SFBOOL);
-    st->addExposedField("orientation", VrmlField::SFROTATION);
-    st->addExposedField("position", VrmlField::SFVEC3F);
-    st->addField("description", VrmlField::SFSTRING);
-    st->addEventOut("bindTime", VrmlField::SFTIME);
-    st->addEventOut("isBound", VrmlField::SFBOOL);
+    st->addEventIn("set_bind", FieldValue::SFBOOL);
+    st->addExposedField("fieldOfView", FieldValue::SFFLOAT);
+    st->addExposedField("jump", FieldValue::SFBOOL);
+    st->addExposedField("orientation", FieldValue::SFROTATION);
+    st->addExposedField("position", FieldValue::SFVEC3F);
+    st->addField("description", FieldValue::SFSTRING);
+    st->addEventOut("bindTime", FieldValue::SFTIME);
+    st->addEventOut("isBound", FieldValue::SFBOOL);
 
     return st;
 }
 
 static const float DEFAULT_FIELD_OF_VIEW = 0.785398;
 
-VrmlNodeViewpoint::VrmlNodeViewpoint(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene),
+NodeViewpoint::NodeViewpoint(VrmlScene * const scene):
+        NodeChild(*defineType(), scene),
         d_fieldOfView(DEFAULT_FIELD_OF_VIEW), d_jump(true),
         d_orientation(0.0, 0.0, 1.0, 0.0), d_position(0.0, 0.0, 10.0),
         d_isBound(false), d_bindTime(0), d_parentTransform(0) {
@@ -9593,13 +9592,13 @@ VrmlNodeViewpoint::VrmlNodeViewpoint(VrmlScene * const scene):
 
 // need copy constructor for d_parentTransform ...
 
-VrmlNodeViewpoint::~VrmlNodeViewpoint() {
+NodeViewpoint::~NodeViewpoint() {
     if (this->d_scene) {
         this->d_scene->removeViewpoint(*this);
     }
 }
 
-bool VrmlNodeViewpoint::accept(VrmlNodeVisitor & visitor) {
+bool NodeViewpoint::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -9609,17 +9608,17 @@ bool VrmlNodeViewpoint::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-VrmlNodeViewpoint* VrmlNodeViewpoint::toViewpoint() const
-{ return (VrmlNodeViewpoint*) this; }
+NodeViewpoint* NodeViewpoint::toViewpoint() const
+{ return (NodeViewpoint*) this; }
 
-void VrmlNodeViewpoint::addToScene(VrmlScene * scene, const std::string &) {
+void NodeViewpoint::addToScene(VrmlScene * scene, const std::string &) {
     if (this->d_scene != scene && (this->d_scene = scene)) {
         this->d_scene->addViewpoint(*this);
     }
 }
 
 
-ostream& VrmlNodeViewpoint::printFields(ostream& os, int indent)
+ostream& NodeViewpoint::printFields(ostream& os, int indent)
 {
   if (! fpequal( d_fieldOfView.get(), DEFAULT_FIELD_OF_VIEW))
     PRINT_FIELD(fieldOfView);
@@ -9641,22 +9640,22 @@ ostream& VrmlNodeViewpoint::printFields(ostream& os, int indent)
 // Cache a pointer to (one of the) parent transforms for proper
 // rendering of bindables.
 
-void VrmlNodeViewpoint::accumulateTransform( VrmlNode *parent )
+void NodeViewpoint::accumulateTransform( Node *parent )
 {
   d_parentTransform = parent;
 }
 
-VrmlNode* VrmlNodeViewpoint::getParentTransform() { return d_parentTransform; }
+Node* NodeViewpoint::getParentTransform() { return d_parentTransform; }
 
 // Note that this method is not maintaining isBound.
 
-void VrmlNodeViewpoint::eventIn(double timeStamp, const std::string & eventName,
-                                const VrmlField & fieldValue) {
+void NodeViewpoint::eventIn(double timeStamp, const std::string & eventName,
+                                const FieldValue & fieldValue) {
   if (eventName == "set_bind")
     {
-      VrmlNodeViewpoint *current = d_scene->bindableViewpointTop();
-      const VrmlSFBool * const b =
-                dynamic_cast<const VrmlSFBool *>(&fieldValue);
+      NodeViewpoint *current = d_scene->bindableViewpointTop();
+      const SFBool * const b =
+                dynamic_cast<const SFBool *>(&fieldValue);
       
       if (! b)
     {
@@ -9670,9 +9669,9 @@ void VrmlNodeViewpoint::eventIn(double timeStamp, const std::string & eventName,
       if (this != current)
         {
           if (current)
-        current->eventOut( timeStamp, "isBound", VrmlSFBool(false));
+        current->eventOut( timeStamp, "isBound", SFBool(false));
           d_scene->bindablePush( this );
-          eventOut( timeStamp, "isBound", VrmlSFBool(true) );
+          eventOut( timeStamp, "isBound", SFBool(true) );
           const std::string & n = this->getId();
           const std::string & d = d_description.get();
           if (n.length() > 0 && d.length() > 0)
@@ -9688,10 +9687,10 @@ void VrmlNodeViewpoint::eventIn(double timeStamp, const std::string & eventName,
       d_scene->bindableRemove( this );
       if (this == current)
         {
-          eventOut( timeStamp, "isBound", VrmlSFBool(false));
+          eventOut( timeStamp, "isBound", SFBool(false));
           current = d_scene->bindableViewpointTop();
           if (current)
-        current->eventOut( timeStamp, "isBound", VrmlSFBool(true) );
+        current->eventOut( timeStamp, "isBound", SFBool(true) );
         }
     }
 
@@ -9701,7 +9700,7 @@ void VrmlNodeViewpoint::eventIn(double timeStamp, const std::string & eventName,
 
   else
     {
-      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+      Node::eventIn(timeStamp, eventName, fieldValue);
     }
 }
 
@@ -9711,7 +9710,7 @@ void VrmlNodeViewpoint::eventIn(double timeStamp, const std::string & eventName,
 // don't rely on it's value to be valid. This hoses
 // the const-ness of the method, of course :(
 
-const VrmlField * VrmlNodeViewpoint::getField(const std::string & fieldId) const
+const FieldValue * NodeViewpoint::getField(const std::string & fieldId) const
 {
   // exposedFields
   if (fieldId == "fieldOfView")
@@ -9728,18 +9727,18 @@ const VrmlField * VrmlNodeViewpoint::getField(const std::string & fieldId) const
     return &d_bindTime;  
   else if (fieldId == "isBound")
     {
-      VrmlSFBool* isBound = (VrmlSFBool*) &(this->d_isBound);
+      SFBool* isBound = (SFBool*) &(this->d_isBound);
       isBound->set( d_scene->bindableViewpointTop() == this );
       return isBound;
     }
 
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 // Set the value of one of the node fields.
 
-void VrmlNodeViewpoint::setField(const std::string & fieldId,
-                 const VrmlField & fieldValue)
+void NodeViewpoint::setField(const std::string & fieldId,
+                 const FieldValue & fieldValue)
 {
   if TRY_FIELD(fieldOfView, SFFloat)
   else if TRY_FIELD(jump, SFBool)
@@ -9747,7 +9746,7 @@ void VrmlNodeViewpoint::setField(const std::string & fieldId,
   else if TRY_FIELD(position, SFVec3f)
   else if TRY_FIELD(description, SFString)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 
@@ -9760,7 +9759,7 @@ void VrmlNodeViewpoint::setField(const std::string & fieldId,
  * @param IM inverse of the position/orientation transform
  *
  */
-void VrmlNodeViewpoint::getInverseMatrix(VrmlMatrix & M) const
+void NodeViewpoint::getInverseMatrix(VrmlMatrix & M) const
 {
   VrmlMatrix tmp;
   float rot_aa[4];
@@ -9782,15 +9781,15 @@ void VrmlNodeViewpoint::getInverseMatrix(VrmlMatrix & M) const
 /**
  * @todo Implement me!
  */
-void VrmlNodeViewpoint::getFrustum(VrmlFrustum& frust) const
+void NodeViewpoint::getFrustum(VrmlFrustum& frust) const
 {
     // XXX Implement me!;
 }
 
 
-const VrmlBVolume* VrmlNodeViewpoint::getBVolume() const
+const VrmlBVolume* NodeViewpoint::getBVolume() const
 {
-  //cout << "VrmlNodeViewpoint::getBVolume():unset" << endl;
+  //cout << "NodeViewpoint::getBVolume():unset" << endl;
   static VrmlBSphere* inf_bsphere = (VrmlBSphere*)0;
   if (!inf_bsphere) {
     inf_bsphere = new VrmlBSphere();
@@ -9798,34 +9797,34 @@ const VrmlBVolume* VrmlNodeViewpoint::getBVolume() const
   return inf_bsphere;
 }
 
-const VrmlSFFloat & VrmlNodeViewpoint::getFieldOfView() const {
+const SFFloat & NodeViewpoint::getFieldOfView() const {
     return this->d_fieldOfView;
 }
 
-const VrmlSFRotation & VrmlNodeViewpoint::getOrientation() const {
+const SFRotation & NodeViewpoint::getOrientation() const {
     return this->d_orientation;
 }
 
-const VrmlSFVec3f & VrmlNodeViewpoint::getPosition() const {
+const SFVec3f & NodeViewpoint::getPosition() const {
     return this->d_position;
 }
 
-const VrmlSFString & VrmlNodeViewpoint::getDescription() const {
+const SFString & NodeViewpoint::getDescription() const {
     return this->d_description;
 }
 
 
 namespace {
     // VisibilitySensor factory. 
-    const VrmlNodePtr createVisibilitySensor(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeVisibilitySensor(scene));
+    const NodePtr createVisibilitySensor(VrmlScene * const scene) {
+        return NodePtr(new NodeVisibilitySensor(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "VisibilitySensor" fields.
  */
-const NodeTypePtr VrmlNodeVisibilitySensor::defineType() {
+const NodeTypePtr NodeVisibilitySensor::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -9833,28 +9832,28 @@ const NodeTypePtr VrmlNodeVisibilitySensor::defineType() {
     }
     
     st.reset(new NodeType("VisibilitySensor", createVisibilitySensor));
-    st->addExposedField("center", VrmlField::SFVEC3F);
-    st->addExposedField("enabled", VrmlField::SFBOOL);
-    st->addExposedField("size", VrmlField::SFVEC3F);
-    st->addEventOut("enterTime", VrmlField::SFTIME);
-    st->addEventOut("exitTime", VrmlField::SFTIME);
-    st->addEventOut("isActive", VrmlField::SFBOOL);
+    st->addExposedField("center", FieldValue::SFVEC3F);
+    st->addExposedField("enabled", FieldValue::SFBOOL);
+    st->addExposedField("size", FieldValue::SFVEC3F);
+    st->addEventOut("enterTime", FieldValue::SFTIME);
+    st->addEventOut("exitTime", FieldValue::SFTIME);
+    st->addEventOut("isActive", FieldValue::SFBOOL);
 
     return st;
 }
 
-VrmlNodeVisibilitySensor::VrmlNodeVisibilitySensor(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_center(0.0, 0.0, 0.0),
+NodeVisibilitySensor::NodeVisibilitySensor(VrmlScene * const scene):
+        NodeChild(*defineType(), scene), d_center(0.0, 0.0, 0.0),
         d_enabled(true), d_size(0.0, 0.0, 0.0), d_isActive(false),
         d_enterTime(0.0), d_exitTime(0.0) {
     this->setModified();
 }
 
-VrmlNodeVisibilitySensor::~VrmlNodeVisibilitySensor()
+NodeVisibilitySensor::~NodeVisibilitySensor()
 {
 }
 
-bool VrmlNodeVisibilitySensor::accept(VrmlNodeVisitor & visitor) {
+bool NodeVisibilitySensor::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -9864,7 +9863,7 @@ bool VrmlNodeVisibilitySensor::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeVisibilitySensor::printFields(ostream& os, int indent)
+ostream& NodeVisibilitySensor::printFields(ostream& os, int indent)
 {
   if (! fpzero(d_center.getX()) ||
       ! fpzero(d_center.getY()) ||
@@ -9888,12 +9887,12 @@ ostream& VrmlNodeVisibilitySensor::printFields(ostream& os, int indent)
 // scene graph. Move to update() when xforms are accumulated in Groups...
 //
 
-void VrmlNodeVisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc)
+void NodeVisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc)
 {
 
   if (d_enabled.get())
     {
-      VrmlSFTime timeNow( theSystem->time() );
+      SFTime timeNow( theSystem->time() );
       float xyz[2][3];
 
       // hack: enclose box in a sphere...
@@ -9919,7 +9918,7 @@ void VrmlNodeVisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc)
       bool inside = xyz[0][2] < 0.0; // && z > - scene->visLimit()
       if (inside)
     {
-      VrmlNodeNavigationInfo *ni = d_scene->bindableNavigationInfoTop();
+      NodeNavigationInfo *ni = d_scene->bindableNavigationInfoTop();
       if (ni &&
           ! fpzero(ni->visibilityLimit()) &&
           xyz[0][2] < - ni->visibilityLimit())
@@ -9964,7 +9963,7 @@ void VrmlNodeVisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc)
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeVisibilitySensor::getField(const std::string & fieldId)
+const FieldValue * NodeVisibilitySensor::getField(const std::string & fieldId)
         const {
   // exposedFields
   if (fieldId == "center")
@@ -9982,34 +9981,34 @@ const VrmlField * VrmlNodeVisibilitySensor::getField(const std::string & fieldId
   else if (fieldId == "exitTime")
     return &d_exitTime;  
 
-  return VrmlNodeChild::getField(fieldId);
+  return NodeChild::getField(fieldId);
 }
 
 
 // Set the value of one of the node fields.
 
-void VrmlNodeVisibilitySensor::setField(const std::string & fieldId,
-                    const VrmlField & fieldValue)
+void NodeVisibilitySensor::setField(const std::string & fieldId,
+                    const FieldValue & fieldValue)
 {
   if TRY_FIELD(center, SFVec3f)
   else if TRY_FIELD(enabled, SFBool)
   else if TRY_FIELD(size, SFVec3f)
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    NodeChild::setField(fieldId, fieldValue);
 }
 
 
 namespace {
     //  WorldInfo factory.
-    const VrmlNodePtr createWorldInfo(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeWorldInfo(scene));
+    const NodePtr createWorldInfo(VrmlScene * const scene) {
+        return NodePtr(new NodeWorldInfo(scene));
     }
 }
 
 /**
  * Define the built in NodeType:: "WorldInfo" fields.
  */
-const NodeTypePtr VrmlNodeWorldInfo::defineType() {
+const NodeTypePtr NodeWorldInfo::defineType() {
     static NodeTypePtr st(0);
 
     if (st) {
@@ -10017,20 +10016,20 @@ const NodeTypePtr VrmlNodeWorldInfo::defineType() {
     }
     
     st.reset(new NodeType("WorldInfo", createWorldInfo));
-    st->addField("info", VrmlField::MFSTRING);
-    st->addField("title", VrmlField::SFSTRING);
+    st->addField("info", FieldValue::MFSTRING);
+    st->addField("title", FieldValue::SFSTRING);
 
     return st;
 }
 
-VrmlNodeWorldInfo::VrmlNodeWorldInfo(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene) {}
+NodeWorldInfo::NodeWorldInfo(VrmlScene * const scene):
+        NodeChild(*defineType(), scene) {}
 
-VrmlNodeWorldInfo::~VrmlNodeWorldInfo()
+NodeWorldInfo::~NodeWorldInfo()
 {
 }
 
-bool VrmlNodeWorldInfo::accept(VrmlNodeVisitor & visitor) {
+bool NodeWorldInfo::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -10040,7 +10039,7 @@ bool VrmlNodeWorldInfo::accept(VrmlNodeVisitor & visitor) {
     return false;
 }
 
-ostream& VrmlNodeWorldInfo::printFields(ostream& os, int indent)
+ostream& NodeWorldInfo::printFields(ostream& os, int indent)
 {
   if (d_title.get().length() > 0) PRINT_FIELD(title);
   if (d_info.getLength() > 0) PRINT_FIELD(info);
@@ -10050,21 +10049,21 @@ ostream& VrmlNodeWorldInfo::printFields(ostream& os, int indent)
 
 // Set the value of one of the node fields.
 
-void VrmlNodeWorldInfo::setField(const std::string & fieldId,
-                                 const VrmlField & fieldValue)
+void NodeWorldInfo::setField(const std::string & fieldId,
+                             const FieldValue & fieldValue)
 {
   if TRY_FIELD(info, MFString)
   else if TRY_FIELD(title, SFString)
   else
-    VrmlNode::setField(fieldId, fieldValue);
+    Node::setField(fieldId, fieldValue);
 }
 
-VrmlNodeTexture::VrmlNodeTexture(const NodeType & type,
+NodeTexture::NodeTexture(const NodeType & type,
                                  VrmlScene * const scene):
-        VrmlNode(type, scene) {}
+        Node(type, scene) {}
 
-VrmlNodeTexture::~VrmlNodeTexture() {}
+NodeTexture::~NodeTexture() {}
 
-VrmlNodeTexture* VrmlNodeTexture::toTexture() const
-{ return (VrmlNodeTexture*) this; }
+NodeTexture* NodeTexture::toTexture() const
+{ return (NodeTexture*) this; }
 

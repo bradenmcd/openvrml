@@ -26,12 +26,12 @@
 /**
  * GLUT version of OpenGL class for display of VRML models.
  */
-class ViewerGlut : public ViewerOpenGL {
+class ViewerGlut : public OpenVRML::GL::ViewerOpenGL {
     int d_window;
     bool d_timerPending;
 
 public:
-    ViewerGlut(VrmlScene & scene);
+    ViewerGlut(OpenVRML::VrmlScene & scene);
     virtual ~ViewerGlut();
 
     // Public so glut callbacks can access

@@ -111,6 +111,7 @@ static AudioFileType audioFileType(const std::string & url, FILE *) {
     }
 }
 
+using namespace OpenVRML;
 
 /*=========================================================================
 | PUBLIC METHODS
@@ -242,7 +243,7 @@ bool Audio::setURL(const std::string & url, Doc *relative)
 | Rev     Date      Who         Description
 | 0.8     11Nov98   kumaran     Created
  ========================================================================*/
-bool Audio::tryURLs(const VrmlMFString & urls, Doc * relative) {
+bool Audio::tryURLs(const MFString & urls, Doc * relative) {
     for (size_t i = 0; i < urls.getLength(); ++i) {
         if (this->setURL(urls.getElement(i), relative)) {
             return true;

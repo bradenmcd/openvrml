@@ -38,10 +38,11 @@
 #include "VrmlBSphere.h"
 #include "VrmlAABox.h"
 
+using namespace OpenVRML;
 using namespace OpenVRML_;
 
 /**
- * @class Viewer
+ * @class OpenVRML::Viewer
  *
  * Map the scene graph to the underlying graphics library.
  */

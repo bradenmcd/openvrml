@@ -18,19 +18,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-/**
- * @class VrmlMatrix
- * Some parts are taken from MathUtils (thanks to Chris Morley)
- * but format is not same.
- * A class for all matrix operations
- * Plase Notes: Matrices are stored in row-major order
- */
-
- 
 #include "field.h"
 #include "VrmlMatrix.h"
 # include "private.h"
 
+using namespace OpenVRML;
 using namespace OpenVRML_;
 
 /**
@@ -56,11 +48,20 @@ using namespace OpenVRML_;
     (matrix[3][3] == 1.0))
 
 /**
- * Construct VrmlMatrix with given 16 elements in row-major order
+ * @class OpenVRML::VrmlMatrix
+ *
+ * @brief A class for all matrix operations.
+ *
+ * Matrices are stored in row-major order. Some parts are taken from MathUtils
+ * (thanks to Chris Morley) but format is not same.
+ */
+
+/**
+ * @brief Construct VrmlMatrix with given 16 elements in row-major order.
+ *
  * @param aXX are 16 elements in row-major order
  *
  */
-
 VrmlMatrix::VrmlMatrix(float a11, float a12, float a13, float a14,
                        float a21, float a22, float a23, float a24, 
                        float a31, float a32, float a33, float a34, 
@@ -179,11 +180,11 @@ VrmlMatrix::setRotate(const float axisAngle[4])
 
 /**
  * @brief Sets matrix to rotate by given rotation Graphics Gems p466
- * @param axisAngle is the VrmlSFRotation object. This should be in normalized form
+ * @param axisAngle is the SFRotation object. This should be in normalized form
  */
 
 void
-VrmlMatrix::setRotate(const VrmlSFRotation &axisAngle)
+VrmlMatrix::setRotate(const SFRotation &axisAngle)
 {
    float aa_norm[4];
 
@@ -236,13 +237,12 @@ VrmlMatrix::setScale(const float s[3])
 }
 
 /**
- * @brief Sets matrix to scale by given VrmlSFVec3f object
+ * @brief Sets matrix to scale by given SFVec3f object
  * @param s is a given vector object
  *
  */
-
 void
-VrmlMatrix::setScale(const VrmlSFVec3f &s)
+VrmlMatrix::setScale(const SFVec3f &s)
 {
   makeIdentity();
   for (int i=0; i<3; ++i)
@@ -276,12 +276,12 @@ VrmlMatrix::setTranslate(const float t[3])
 }
 
 /**
- * @brief Sets matrix to translate by given VrmlSFVec3f object
+ * @brief Sets matrix to translate by given SFVec3f object
  * @param t is a given vector object
  *
  */
 void
-VrmlMatrix::setTranslate(const VrmlSFVec3f &t)
+VrmlMatrix::setTranslate(const SFVec3f &t)
 {
     setTranslate(t.get());
 }
@@ -422,15 +422,14 @@ VrmlMatrix::multMatrixVec(const float src[3], float dst[3]) const
     dst[1] = y/w;
     dst[2] = z/w;
 }
+
 /**
  * @brief Postmultiplies matrix by given column vector on right 
- * @param in src is given VrmlSFVec3f object
- * @param out dst is output of result VrmlSFVec3f object
+ * @param in src is given SFVec3f object
+ * @param out dst is output of result SFVec3f object
  */
-
-
 void
-VrmlMatrix::multMatrixVec(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const
+VrmlMatrix::multMatrixVec(const SFVec3f &src, SFVec3f &dst) const
 {
     float   sv[3],dv[3];
     sv[0] = src[0];
@@ -468,12 +467,11 @@ VrmlMatrix::multVecMatrix(const float src[3], float dst[3]) const
 
 /**
  * @brief Premultiplies matrix by given row vector on left 
- * @param in src is given VrmlSFVec3f object
- * @param out dst is output of result VrmlSFVec3f object
+ * @param in src is given SFVec3f object
+ * @param out dst is output of result SFVec3f object
  */
-
 void
-VrmlMatrix::multVecMatrix(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const
+VrmlMatrix::multVecMatrix(const SFVec3f &src, SFVec3f &dst) const
 {
     float   sv[3],dv[3];
     sv[0] = src[0];
@@ -630,8 +628,7 @@ const float
  * @param m2 is given VrmlMatrix object
  */
 
-bool
-operator ==(const VrmlMatrix &m1, const VrmlMatrix &m2)
+bool ::operator==(const VrmlMatrix &m1, const VrmlMatrix &m2)
 {
     return (
             m1.matrix[0][0] == m2.matrix[0][0] &&
@@ -664,11 +661,11 @@ operator ==(const VrmlMatrix &m1, const VrmlMatrix &m2)
  * specified in VrmlNodeTransform node
  */
 void
-VrmlMatrix::setTransform(const VrmlSFVec3f & translation,
-                         const VrmlSFRotation & rotation,
-                         const VrmlSFVec3f & scale,
-                         const VrmlSFRotation & scaleOrientation,
-                         const VrmlSFVec3f & center)
+VrmlMatrix::setTransform(const SFVec3f & translation,
+                         const SFRotation & rotation,
+                         const SFVec3f & scale,
+                         const SFRotation & scaleOrientation,
+                         const SFVec3f & center)
 {
     VrmlMatrix temp;
 	makeIdentity();

@@ -36,8 +36,10 @@
 #   include <typeinfo>
 # endif
 
+using namespace OpenVRML;
+
 /**
- * @class VrmlNamespace
+ * @class OpenVRML::VrmlNamespace
  *
  * @brief The VrmlNamespace class keeps track of defined nodes and
  *      prototypes.
@@ -77,60 +79,60 @@ void VrmlNamespace::addBuiltIn(const NodeTypePtr & nodeType) {
 
 void VrmlNamespace::defineBuiltIns()
 {
-  addBuiltIn( VrmlNodeAnchor::defineType() );
-  addBuiltIn( VrmlNodeAppearance::defineType() );
-  addBuiltIn( VrmlNodeAudioClip::defineType() );
-  addBuiltIn( VrmlNodeBackground::defineType() );
-  addBuiltIn( VrmlNodeBillboard::defineType() );
-  addBuiltIn( VrmlNodeBox::defineType() );
-  addBuiltIn( VrmlNodeCollision::defineType() );
-  addBuiltIn( VrmlNodeColor::defineType() );
-  addBuiltIn( VrmlNodeColorInt::defineType() );
-  addBuiltIn( VrmlNodeCone::defineType() );
-  addBuiltIn( VrmlNodeCoordinate::defineType() );
-  addBuiltIn( VrmlNodeCoordinateInt::defineType() );
-  addBuiltIn( VrmlNodeCylinder::defineType() );
-  addBuiltIn( VrmlNodeCylinderSensor::defineType() );
-  addBuiltIn( VrmlNodeDirLight::defineType() );
-  addBuiltIn( VrmlNodeElevationGrid::defineType() );
-  addBuiltIn( VrmlNodeExtrusion::defineType() );
-  addBuiltIn( VrmlNodeFog::defineType() );
-  addBuiltIn( VrmlNodeFontStyle::defineType() );
-  addBuiltIn( VrmlNodeGroup::defineType() );
-  addBuiltIn( VrmlNodeIFaceSet::defineType() );
-  addBuiltIn( VrmlNodeILineSet::defineType() );
-  addBuiltIn( VrmlNodeImageTexture::defineType() );
-  addBuiltIn( VrmlNodeInline::defineType() );
-  addBuiltIn( VrmlNodeLOD::defineType() );
-  addBuiltIn( VrmlNodeMaterial::defineType() );
-  addBuiltIn( VrmlNodeMovieTexture::defineType() );
-  addBuiltIn( VrmlNodeNavigationInfo::defineType() );
-  addBuiltIn( VrmlNodeNormal::defineType() );
-  addBuiltIn( VrmlNodeNormalInt::defineType() );
-  addBuiltIn( VrmlNodeOrientationInt::defineType() );
-  addBuiltIn( VrmlNodePixelTexture::defineType() );
-  addBuiltIn( VrmlNodePlaneSensor::defineType() );
-  addBuiltIn( VrmlNodePointLight::defineType() );
-  addBuiltIn( VrmlNodePointSet::defineType() );
-  addBuiltIn( VrmlNodePositionInt::defineType() );
-  addBuiltIn( VrmlNodeProximitySensor::defineType() );
-  addBuiltIn( VrmlNodeScalarInt::defineType() );
-  addBuiltIn( VrmlNodeScript::defineType() );
-  addBuiltIn( VrmlNodeShape::defineType() );
-  addBuiltIn( VrmlNodeSound::defineType() );
-  addBuiltIn( VrmlNodeSphere::defineType() );
-  addBuiltIn( VrmlNodeSphereSensor::defineType() );
-  addBuiltIn( VrmlNodeSpotLight::defineType() );
-  addBuiltIn( VrmlNodeSwitch::defineType() );
-  addBuiltIn( VrmlNodeText::defineType() );
-  addBuiltIn( VrmlNodeTextureCoordinate::defineType() );
-  addBuiltIn( VrmlNodeTextureTransform::defineType() );
-  addBuiltIn( VrmlNodeTimeSensor::defineType() );
-  addBuiltIn( VrmlNodeTouchSensor::defineType() );
-  addBuiltIn( VrmlNodeTransform::defineType() );
-  addBuiltIn( VrmlNodeViewpoint::defineType() );
-  addBuiltIn( VrmlNodeVisibilitySensor::defineType() );
-  addBuiltIn( VrmlNodeWorldInfo::defineType() );
+  addBuiltIn( NodeAnchor::defineType() );
+  addBuiltIn( NodeAppearance::defineType() );
+  addBuiltIn( NodeAudioClip::defineType() );
+  addBuiltIn( NodeBackground::defineType() );
+  addBuiltIn( NodeBillboard::defineType() );
+  addBuiltIn( NodeBox::defineType() );
+  addBuiltIn( NodeCollision::defineType() );
+  addBuiltIn( NodeColor::defineType() );
+  addBuiltIn( NodeColorInt::defineType() );
+  addBuiltIn( NodeCone::defineType() );
+  addBuiltIn( NodeCoordinate::defineType() );
+  addBuiltIn( NodeCoordinateInt::defineType() );
+  addBuiltIn( NodeCylinder::defineType() );
+  addBuiltIn( NodeCylinderSensor::defineType() );
+  addBuiltIn( NodeDirLight::defineType() );
+  addBuiltIn( NodeElevationGrid::defineType() );
+  addBuiltIn( NodeExtrusion::defineType() );
+  addBuiltIn( NodeFog::defineType() );
+  addBuiltIn( NodeFontStyle::defineType() );
+  addBuiltIn( NodeGroup::defineType() );
+  addBuiltIn( NodeIFaceSet::defineType() );
+  addBuiltIn( NodeILineSet::defineType() );
+  addBuiltIn( NodeImageTexture::defineType() );
+  addBuiltIn( NodeInline::defineType() );
+  addBuiltIn( NodeLOD::defineType() );
+  addBuiltIn( NodeMaterial::defineType() );
+  addBuiltIn( NodeMovieTexture::defineType() );
+  addBuiltIn( NodeNavigationInfo::defineType() );
+  addBuiltIn( NodeNormal::defineType() );
+  addBuiltIn( NodeNormalInt::defineType() );
+  addBuiltIn( NodeOrientationInt::defineType() );
+  addBuiltIn( NodePixelTexture::defineType() );
+  addBuiltIn( NodePlaneSensor::defineType() );
+  addBuiltIn( NodePointLight::defineType() );
+  addBuiltIn( NodePointSet::defineType() );
+  addBuiltIn( NodePositionInt::defineType() );
+  addBuiltIn( NodeProximitySensor::defineType() );
+  addBuiltIn( NodeScalarInt::defineType() );
+  addBuiltIn(ScriptNode::defineType());
+  addBuiltIn( NodeShape::defineType() );
+  addBuiltIn( NodeSound::defineType() );
+  addBuiltIn( NodeSphere::defineType() );
+  addBuiltIn( NodeSphereSensor::defineType() );
+  addBuiltIn( NodeSpotLight::defineType() );
+  addBuiltIn( NodeSwitch::defineType() );
+  addBuiltIn( NodeText::defineType() );
+  addBuiltIn( NodeTextureCoordinate::defineType() );
+  addBuiltIn( NodeTextureTransform::defineType() );
+  addBuiltIn( NodeTimeSensor::defineType() );
+  addBuiltIn( NodeTouchSensor::defineType() );
+  addBuiltIn( NodeTransform::defineType() );
+  addBuiltIn( NodeViewpoint::defineType() );
+  addBuiltIn( NodeVisibilitySensor::defineType() );
+  addBuiltIn( NodeWorldInfo::defineType() );
 }
 
 
@@ -200,7 +202,7 @@ const NodeTypePtr VrmlNamespace::firstType() const {
     return NodeTypePtr(0);
 }
 
-void VrmlNamespace::addNodeName(VrmlNode & namedNode) {
+void VrmlNamespace::addNodeName(Node & namedNode) {
   // We could remove any existing node with this name, but
   // since we are just pushing this one onto the front of
   // the list, the other name won't be found. If we do
@@ -209,8 +211,8 @@ void VrmlNamespace::addNodeName(VrmlNode & namedNode) {
   d_nameList.push_front(&namedNode);
 }
 
-void VrmlNamespace::removeNodeName(VrmlNode & namedNode) {
-    for (std::list<VrmlNode *>::iterator i(this->d_nameList.begin());
+void VrmlNamespace::removeNodeName(Node & namedNode) {
+    for (std::list<Node *>::iterator i(this->d_nameList.begin());
             i != this->d_nameList.end(); ++i) {
         if (*i == &namedNode) {
             this->d_nameList.erase(i);
@@ -220,8 +222,8 @@ void VrmlNamespace::removeNodeName(VrmlNode & namedNode) {
 }
 
 
-VrmlNode * VrmlNamespace::findNode(const std::string & nodeId) const {
-    for (std::list<VrmlNode *>::const_iterator nodeItr(d_nameList.begin());
+Node * VrmlNamespace::findNode(const std::string & nodeId) const {
+    for (std::list<Node *>::const_iterator nodeItr(d_nameList.begin());
             nodeItr != d_nameList.end(); ++nodeItr) {
         if (nodeId == (*nodeItr)->getId()) {
             return *nodeItr;
@@ -232,14 +234,14 @@ VrmlNode * VrmlNamespace::findNode(const std::string & nodeId) const {
 
 namespace {
     
-    class NodeCloneVisitor : public VrmlNodeVisitor {
+    class NodeCloneVisitor : public NodeVisitor {
     public:
         NodeCloneVisitor(VrmlNamespace & ns): ns(ns) {}
         
         virtual ~NodeCloneVisitor() {}
         
-        const VrmlMFNode clone(const VrmlMFNode & mfnode) {
-            VrmlMFNode clonedNodes(this->visitChildren(mfnode));
+        const MFNode clone(const MFNode & mfnode) {
+            MFNode clonedNodes(this->visitChildren(mfnode));
             assert(this->rootNodeStack.size() == 0);
             
             for (size_t i = 0; i < mfnode.getLength(); ++i) {
@@ -249,15 +251,15 @@ namespace {
             return clonedNodes;
         }
         
-        virtual void visit(VrmlNodeAnchor & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeAnchor(node));
+        virtual void visit(NodeAnchor & node) {
+            const NodePtr clonedNode(new NodeAnchor(node));
             this->rootNodeStack.push(clonedNode);
             clonedNode->toAnchor()
                     ->setChildren(this->visitChildren(node.getChildren()));
         }
         
-        virtual void visit(VrmlNodeAppearance & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeAppearance(node));
+        virtual void visit(NodeAppearance & node) {
+            const NodePtr clonedNode(new NodeAppearance(node));
             this->rootNodeStack.push(clonedNode);
             
             if (node.getMaterial().get()) {
@@ -265,7 +267,7 @@ namespace {
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toMaterial());
                 clonedNode->toAppearance()
-                        ->setMaterial(VrmlSFNode(this->rootNodeStack.top()));
+                        ->setMaterial(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
@@ -274,7 +276,7 @@ namespace {
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toTexture());
                 clonedNode->toAppearance()
-                        ->setTexture(VrmlSFNode(this->rootNodeStack.top()));
+                        ->setTexture(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
@@ -283,32 +285,32 @@ namespace {
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toTextureTransform());
                 clonedNode->toAppearance()
-                        ->setTextureTransform(VrmlSFNode(this->rootNodeStack.top()));
+                        ->setTextureTransform(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
         }
         
-        virtual void visit(VrmlNodeAudioClip & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeAudioClip(node)));
+        virtual void visit(NodeAudioClip & node) {
+            this->rootNodeStack.push(NodePtr(new NodeAudioClip(node)));
         }
         
-        virtual void visit(VrmlNodeBackground & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeBackground(node)));
+        virtual void visit(NodeBackground & node) {
+            this->rootNodeStack.push(NodePtr(new NodeBackground(node)));
         }
         
-        virtual void visit(VrmlNodeBillboard & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeBillboard(node));
+        virtual void visit(NodeBillboard & node) {
+            const NodePtr clonedNode(new NodeBillboard(node));
             this->rootNodeStack.push(clonedNode);
             clonedNode->toBillboard()
                     ->setChildren(this->visitChildren(node.getChildren()));
         }
         
-        virtual void visit(VrmlNodeBox & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeBox(node)));
+        virtual void visit(NodeBox & node) {
+            this->rootNodeStack.push(NodePtr(new NodeBox(node)));
         }
         
-        virtual void visit(VrmlNodeCollision & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeCollision(node));
+        virtual void visit(NodeCollision & node) {
+            const NodePtr clonedNode(new NodeCollision(node));
             this->rootNodeStack.push(clonedNode);
             clonedNode->toCollision()
                     ->setChildren(this->visitChildren(node.getChildren()));
@@ -317,45 +319,45 @@ namespace {
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toChild());
                 clonedNode->toCollision()
-                        ->setProxy(VrmlSFNode(this->rootNodeStack.top()));
+                        ->setProxy(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
         }
         
-        virtual void visit(VrmlNodeColor & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeColor(node)));
+        virtual void visit(NodeColor & node) {
+            this->rootNodeStack.push(NodePtr(new NodeColor(node)));
         }
         
-        virtual void visit(VrmlNodeColorInt & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeColorInt(node)));
+        virtual void visit(NodeColorInt & node) {
+            this->rootNodeStack.push(NodePtr(new NodeColorInt(node)));
         }
         
-        virtual void visit(VrmlNodeCone & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeCone(node)));
+        virtual void visit(NodeCone & node) {
+            this->rootNodeStack.push(NodePtr(new NodeCone(node)));
         }
         
-        virtual void visit(VrmlNodeCoordinate & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeCoordinate(node)));
+        virtual void visit(NodeCoordinate & node) {
+            this->rootNodeStack.push(NodePtr(new NodeCoordinate(node)));
         }
         
-        virtual void visit(VrmlNodeCoordinateInt & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeCoordinateInt(node)));
+        virtual void visit(NodeCoordinateInt & node) {
+            this->rootNodeStack.push(NodePtr(new NodeCoordinateInt(node)));
         }
         
-        virtual void visit(VrmlNodeCylinder & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeCylinder(node)));
+        virtual void visit(NodeCylinder & node) {
+            this->rootNodeStack.push(NodePtr(new NodeCylinder(node)));
         }
         
-        virtual void visit(VrmlNodeCylinderSensor & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeCylinderSensor(node)));
+        virtual void visit(NodeCylinderSensor & node) {
+            this->rootNodeStack.push(NodePtr(new NodeCylinderSensor(node)));
         }
         
-        virtual void visit(VrmlNodeDirLight & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeDirLight(node)));
+        virtual void visit(NodeDirLight & node) {
+            this->rootNodeStack.push(NodePtr(new NodeDirLight(node)));
         }
         
-        virtual void visit(VrmlNodeElevationGrid & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeElevationGrid(node));
+        virtual void visit(NodeElevationGrid & node) {
+            const NodePtr clonedNode(new NodeElevationGrid(node));
             this->rootNodeStack.push(clonedNode);
             
             if (node.getColor().get()) {
@@ -363,7 +365,7 @@ namespace {
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toColor());
                 clonedNode->toElevationGrid()
-                        ->setColor(VrmlSFNode(this->rootNodeStack.top()));
+                        ->setColor(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
@@ -372,7 +374,7 @@ namespace {
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toNormal());
                 clonedNode->toElevationGrid()
-                        ->setNormal(VrmlSFNode(this->rootNodeStack.top()));
+                        ->setNormal(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
@@ -381,40 +383,40 @@ namespace {
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toTextureCoordinate());
                 clonedNode->toElevationGrid()
-                        ->setTexCoord(VrmlSFNode(this->rootNodeStack.top()));
+                        ->setTexCoord(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
         }
         
-        virtual void visit(VrmlNodeExtrusion & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeExtrusion(node)));
+        virtual void visit(NodeExtrusion & node) {
+            this->rootNodeStack.push(NodePtr(new NodeExtrusion(node)));
         }
         
-        virtual void visit(VrmlNodeFog & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeFog(node)));
+        virtual void visit(NodeFog & node) {
+            this->rootNodeStack.push(NodePtr(new NodeFog(node)));
         }
         
-        virtual void visit(VrmlNodeFontStyle & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeFontStyle(node)));
+        virtual void visit(NodeFontStyle & node) {
+            this->rootNodeStack.push(NodePtr(new NodeFontStyle(node)));
         }
         
-        virtual void visit(VrmlNodeGroup & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeGroup(node));
+        virtual void visit(NodeGroup & node) {
+            const NodePtr clonedNode(new NodeGroup(node));
             this->rootNodeStack.push(clonedNode);
-            static_cast<VrmlNodeGroup *>(clonedNode.get())
+            static_cast<NodeGroup *>(clonedNode.get())
                     ->setChildren(this->visitChildren(node.getChildren()));
         }
         
-        virtual void visit(VrmlNodeIFaceSet & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeIFaceSet(node));
+        virtual void visit(NodeIFaceSet & node) {
+            const NodePtr clonedNode(new NodeIFaceSet(node));
             this->rootNodeStack.push(clonedNode);
             
             if (node.getColor().get()) {
                 this->visitNode(*node.getColor().get());
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toColor());
-                static_cast<VrmlNodeIFaceSet *>(clonedNode.get())
-                        ->setColor(VrmlSFNode(this->rootNodeStack.top()));
+                static_cast<NodeIFaceSet *>(clonedNode.get())
+                        ->setColor(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
@@ -422,8 +424,8 @@ namespace {
                 this->visitNode(*node.getCoord().get());
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toCoordinate());
-                static_cast<VrmlNodeIFaceSet *>(clonedNode.get())
-                        ->setCoord(VrmlSFNode(this->rootNodeStack.top()));
+                static_cast<NodeIFaceSet *>(clonedNode.get())
+                        ->setCoord(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
@@ -431,8 +433,8 @@ namespace {
                 this->visitNode(*node.getNormal().get());
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toNormal());
-                static_cast<VrmlNodeIFaceSet *>(clonedNode.get())
-                        ->setNormal(VrmlSFNode(this->rootNodeStack.top()));
+                static_cast<NodeIFaceSet *>(clonedNode.get())
+                        ->setNormal(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
@@ -440,22 +442,22 @@ namespace {
                 this->visitNode(*node.getTexCoord().get());
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toTextureCoordinate());
-                static_cast<VrmlNodeIFaceSet *>(clonedNode.get())
-                        ->setTexCoord(VrmlSFNode(this->rootNodeStack.top()));
+                static_cast<NodeIFaceSet *>(clonedNode.get())
+                        ->setTexCoord(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
         }
         
-        virtual void visit(VrmlNodeILineSet & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeILineSet(node));
+        virtual void visit(NodeILineSet & node) {
+            const NodePtr clonedNode(new NodeILineSet(node));
             this->rootNodeStack.push(clonedNode);
             
             if (node.getColor().get()) {
                 this->visitNode(*node.getColor().get());
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toColor());
-                static_cast<VrmlNodeILineSet *>(clonedNode.get())
-                        ->setColor(VrmlSFNode(this->rootNodeStack.top()));
+                static_cast<NodeILineSet *>(clonedNode.get())
+                        ->setColor(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
@@ -463,73 +465,73 @@ namespace {
                 this->visitNode(*node.getCoord().get());
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toCoordinate());
-                static_cast<VrmlNodeILineSet *>(clonedNode.get())
-                        ->setCoord(VrmlSFNode(this->rootNodeStack.top()));
+                static_cast<NodeILineSet *>(clonedNode.get())
+                        ->setCoord(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
         }
         
-        virtual void visit(VrmlNodeImageTexture & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeImageTexture(node)));
+        virtual void visit(NodeImageTexture & node) {
+            this->rootNodeStack.push(NodePtr(new NodeImageTexture(node)));
         }
         
-        virtual void visit(VrmlNodeInline & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeInline(node)));
+        virtual void visit(NodeInline & node) {
+            this->rootNodeStack.push(NodePtr(new NodeInline(node)));
         }
         
-        virtual void visit(VrmlNodeLOD & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeLOD(node));
+        virtual void visit(NodeLOD & node) {
+            const NodePtr clonedNode(new NodeLOD(node));
             this->rootNodeStack.push(clonedNode);
-            static_cast<VrmlNodeLOD *>(clonedNode.get())
+            static_cast<NodeLOD *>(clonedNode.get())
                     ->setLevel(this->visitChildren(node.getLevel()));
         }
         
-        virtual void visit(VrmlNodeMaterial & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeMaterial(node)));
+        virtual void visit(NodeMaterial & node) {
+            this->rootNodeStack.push(NodePtr(new NodeMaterial(node)));
         }
         
-        virtual void visit(VrmlNodeMovieTexture & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeMovieTexture(node)));
+        virtual void visit(NodeMovieTexture & node) {
+            this->rootNodeStack.push(NodePtr(new NodeMovieTexture(node)));
         }
         
-        virtual void visit(VrmlNodeNavigationInfo & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeNavigationInfo(node)));
+        virtual void visit(NodeNavigationInfo & node) {
+            this->rootNodeStack.push(NodePtr(new NodeNavigationInfo(node)));
         }
         
-        virtual void visit(VrmlNodeNormal & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeNormal(node)));
+        virtual void visit(NodeNormal & node) {
+            this->rootNodeStack.push(NodePtr(new NodeNormal(node)));
         }
         
-        virtual void visit(VrmlNodeNormalInt & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeNormalInt(node)));
+        virtual void visit(NodeNormalInt & node) {
+            this->rootNodeStack.push(NodePtr(new NodeNormalInt(node)));
         }
         
-        virtual void visit(VrmlNodeOrientationInt & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeOrientationInt(node)));
+        virtual void visit(NodeOrientationInt & node) {
+            this->rootNodeStack.push(NodePtr(new NodeOrientationInt(node)));
         }
         
-        virtual void visit(VrmlNodePixelTexture & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodePixelTexture(node)));
+        virtual void visit(NodePixelTexture & node) {
+            this->rootNodeStack.push(NodePtr(new NodePixelTexture(node)));
         }
         
-        virtual void visit(VrmlNodePlaneSensor & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodePlaneSensor(node)));
+        virtual void visit(NodePlaneSensor & node) {
+            this->rootNodeStack.push(NodePtr(new NodePlaneSensor(node)));
         }
         
-        virtual void visit(VrmlNodePointLight & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodePointLight(node)));
+        virtual void visit(NodePointLight & node) {
+            this->rootNodeStack.push(NodePtr(new NodePointLight(node)));
         }
         
-        virtual void visit(VrmlNodePointSet & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodePointSet(node));
+        virtual void visit(NodePointSet & node) {
+            const NodePtr clonedNode(new NodePointSet(node));
             this->rootNodeStack.push(clonedNode);
             
             if (node.getColor().get()) {
                 this->visitNode(*node.getColor().get());
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toColor());
-                static_cast<VrmlNodePointSet *>(clonedNode.get())
-                        ->setColor(VrmlSFNode(this->rootNodeStack.top()));
+                static_cast<NodePointSet *>(clonedNode.get())
+                        ->setColor(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
@@ -537,66 +539,66 @@ namespace {
                 this->visitNode(*node.getCoord().get());
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toCoordinate());
-                static_cast<VrmlNodePointSet *>(clonedNode.get())
-                        ->setCoord(VrmlSFNode(this->rootNodeStack.top()));
+                clonedNode.get()->toPointSet()
+                        ->setCoord(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
         }
         
-        virtual void visit(VrmlNodePositionInt & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodePositionInt(node)));
+        virtual void visit(NodePositionInt & node) {
+            this->rootNodeStack.push(NodePtr(new NodePositionInt(node)));
         }
         
-        virtual void visit(VrmlNodeProto & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeProto(node));
+        virtual void visit(ProtoNode & node) {
+            const NodePtr clonedNode(new ProtoNode(node));
             clonedNode->addToScene(node.scene(),
                                    clonedNode->type.getActualUrl());
             this->rootNodeStack.push(clonedNode);
         }
         
-        virtual void visit(VrmlNodeProximitySensor & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeProximitySensor(node)));
+        virtual void visit(NodeProximitySensor & node) {
+            this->rootNodeStack.push(NodePtr(new NodeProximitySensor(node)));
         }
         
-        virtual void visit(VrmlNodeScalarInt & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeScalarInt(node)));
+        virtual void visit(NodeScalarInt & node) {
+            this->rootNodeStack.push(NodePtr(new NodeScalarInt(node)));
         }
         
-        virtual void visit(VrmlNodeScript & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeScript(node));
+        virtual void visit(ScriptNode & node) {
+            const NodePtr clonedNode(new ScriptNode(node));
             this->rootNodeStack.push(clonedNode);
-            for (VrmlNodeScript::FieldList::const_iterator 
+            for (ScriptNode::FieldList::const_iterator 
                     i = node.fields().begin(),
-                    j = static_cast<VrmlNodeScript *>(clonedNode.get())
+                    j = static_cast<ScriptNode *>(clonedNode.get())
                             ->fields().begin();
                     i != node.fields().end(); ++i, ++j) {
                 assert((*i)->value);
-                if ((*i)->type == VrmlField::SFNODE) {
-                    assert(dynamic_cast<VrmlSFNode *>((*i)->value));
-                    if (static_cast<VrmlSFNode *>((*i)->value)->get()) {
-                        visitNode(*static_cast<VrmlSFNode *>((*i)->value)->get());
-                        static_cast<VrmlSFNode *>((*j)->value)
+                if ((*i)->type == FieldValue::SFNODE) {
+                    assert(dynamic_cast<SFNode *>((*i)->value));
+                    if (static_cast<SFNode *>((*i)->value)->get()) {
+                        visitNode(*static_cast<SFNode *>((*i)->value)->get());
+                        static_cast<SFNode *>((*j)->value)
                                 ->set(this->rootNodeStack.top());
                         this->rootNodeStack.pop();
                     }
-                } else if ((*i)->type == VrmlField::MFNODE) {
-                    assert(dynamic_cast<VrmlMFNode *>((*i)->value));
-                    static_cast<VrmlMFNode &>(*(*j)->value) =
-                        visitChildren(static_cast<VrmlMFNode &>(*(*i)->value));
+                } else if ((*i)->type == FieldValue::MFNODE) {
+                    assert(dynamic_cast<MFNode *>((*i)->value));
+                    static_cast<MFNode &>(*(*j)->value) =
+                        visitChildren(static_cast<MFNode &>(*(*i)->value));
                 }
             }
         }
         
-        virtual void visit(VrmlNodeShape & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeShape(node));
+        virtual void visit(NodeShape & node) {
+            const NodePtr clonedNode(new NodeShape(node));
             this->rootNodeStack.push(clonedNode);
             
             if (node.getAppearance().get()) {
                 this->visitNode(*node.getAppearance().get());
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toAppearance());
-                static_cast<VrmlNodeShape *>(clonedNode.get())
-                        ->setAppearance(VrmlSFNode(this->rootNodeStack.top()));
+                static_cast<NodeShape *>(clonedNode.get())
+                        ->setAppearance(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
             
@@ -604,8 +606,8 @@ namespace {
                 this->visitNode(*node.getGeometry().get());
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toGeometry());
-                static_cast<VrmlNodeShape *>(clonedNode.get())
-                        ->setGeometry(VrmlSFNode(this->rootNodeStack.top()));
+                static_cast<NodeShape *>(clonedNode.get())
+                        ->setGeometry(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
         }
@@ -614,86 +616,86 @@ namespace {
          * @todo The assertion here will fail if a MovieTexture node is used
          *       as a sound source.
          */
-        virtual void visit(VrmlNodeSound & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeSound(node));
+        virtual void visit(NodeSound & node) {
+            const NodePtr clonedNode(new NodeSound(node));
             this->rootNodeStack.push(clonedNode);
             
             if (node.getSource().get()) {
                 this->visitNode(*node.getSource().get());
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toAudioClip());
-                static_cast<VrmlNodeSound *>(clonedNode.get())
-                        ->setSource(VrmlSFNode(this->rootNodeStack.top()));
+                static_cast<NodeSound *>(clonedNode.get())
+                        ->setSource(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
         }
         
-        virtual void visit(VrmlNodeSphere & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeSphere(node)));
+        virtual void visit(NodeSphere & node) {
+            this->rootNodeStack.push(NodePtr(new NodeSphere(node)));
         }
         
-        virtual void visit(VrmlNodeSphereSensor & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeSphereSensor(node)));
+        virtual void visit(NodeSphereSensor & node) {
+            this->rootNodeStack.push(NodePtr(new NodeSphereSensor(node)));
         }
         
-        virtual void visit(VrmlNodeSpotLight & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeSpotLight(node)));
+        virtual void visit(NodeSpotLight & node) {
+            this->rootNodeStack.push(NodePtr(new NodeSpotLight(node)));
         }
         
-        virtual void visit(VrmlNodeSwitch & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeSwitch(node));
+        virtual void visit(NodeSwitch & node) {
+            const NodePtr clonedNode(new NodeSwitch(node));
             this->rootNodeStack.push(clonedNode);
-            static_cast<VrmlNodeSwitch *>(clonedNode.get())
+            static_cast<NodeSwitch *>(clonedNode.get())
                     ->setChoice(this->visitChildren(node.getChoice()));
         }
         
-        virtual void visit(VrmlNodeText & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeText(node));
+        virtual void visit(NodeText & node) {
+            const NodePtr clonedNode(new NodeText(node));
             this->rootNodeStack.push(clonedNode);
             
             if (node.getFontStyle().get()) {
                 this->visitNode(*node.getFontStyle().get());
                 assert(this->rootNodeStack.top());
                 assert(this->rootNodeStack.top()->toFontStyle());
-                static_cast<VrmlNodeText *>(clonedNode.get())
-                        ->setFontStyle(VrmlSFNode(this->rootNodeStack.top()));
+                static_cast<NodeText *>(clonedNode.get())
+                        ->setFontStyle(SFNode(this->rootNodeStack.top()));
                 this->rootNodeStack.pop();
             }
         }
         
-        virtual void visit(VrmlNodeTextureCoordinate & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeTextureCoordinate(node)));
+        virtual void visit(NodeTextureCoordinate & node) {
+            this->rootNodeStack.push(NodePtr(new NodeTextureCoordinate(node)));
         }
         
-        virtual void visit(VrmlNodeTextureTransform & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeTextureTransform(node)));
+        virtual void visit(NodeTextureTransform & node) {
+            this->rootNodeStack.push(NodePtr(new NodeTextureTransform(node)));
         }
         
-        virtual void visit(VrmlNodeTimeSensor & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeTimeSensor(node)));
+        virtual void visit(NodeTimeSensor & node) {
+            this->rootNodeStack.push(NodePtr(new NodeTimeSensor(node)));
         }
         
-        virtual void visit(VrmlNodeTouchSensor & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeTouchSensor(node)));
+        virtual void visit(NodeTouchSensor & node) {
+            this->rootNodeStack.push(NodePtr(new NodeTouchSensor(node)));
         }
         
-        virtual void visit(VrmlNodeTransform & node) {
-            const VrmlNodePtr clonedNode(new VrmlNodeTransform(node));
+        virtual void visit(NodeTransform & node) {
+            const NodePtr clonedNode(new NodeTransform(node));
             this->rootNodeStack.push(clonedNode);
-            static_cast<VrmlNodeTransform *>(clonedNode.get())
+            static_cast<NodeTransform *>(clonedNode.get())
                     ->setChildren(this->visitChildren(node.getChildren()));
         }
         
-        virtual void visit(VrmlNodeViewpoint & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeViewpoint(node)));
+        virtual void visit(NodeViewpoint & node) {
+            this->rootNodeStack.push(NodePtr(new NodeViewpoint(node)));
         }
         
-        virtual void visit(VrmlNodeVisibilitySensor & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeVisibilitySensor(node)));
+        virtual void visit(NodeVisibilitySensor & node) {
+            this->rootNodeStack.push(NodePtr(new NodeVisibilitySensor(node)));
         }
         
-        virtual void visit(VrmlNodeWorldInfo & node) {
-            this->rootNodeStack.push(VrmlNodePtr(new VrmlNodeWorldInfo(node)));
+        virtual void visit(NodeWorldInfo & node) {
+            this->rootNodeStack.push(NodePtr(new NodeWorldInfo(node)));
         }
         
     private:
@@ -703,8 +705,8 @@ namespace {
         NodeCloneVisitor(const NodeCloneVisitor &);
         NodeCloneVisitor & operator=(const NodeCloneVisitor &);
         
-        const VrmlMFNode visitChildren(const VrmlMFNode & children) {
-            VrmlMFNode clonedChildren(children.getLength());
+        const MFNode visitChildren(const MFNode & children) {
+            MFNode clonedChildren(children.getLength());
             for (size_t i = 0; i < clonedChildren.getLength(); ++i) {
                 if (children.getElement(i)) {
                     this->visitNode(*children.getElement(i));
@@ -716,7 +718,7 @@ namespace {
             return clonedChildren;
         }
         
-        void visitNode(VrmlNode & node) {
+        void visitNode(Node & node) {
             if (node.accept(*this)) {
                 assert(this->rootNodeStack.size() > 0);
                 assert(typeid(node) == typeid(*this->rootNodeStack.top()));
@@ -728,21 +730,21 @@ namespace {
             } else {
                 assert(this->ns.findNode(node.getId()));
                 this->rootNodeStack
-                        .push(VrmlNodePtr(this->ns.findNode(node.getId())));
+                        .push(NodePtr(this->ns.findNode(node.getId())));
             }
         }
         
         VrmlNamespace & ns;
-        std::stack<VrmlNodePtr> rootNodeStack;
+        std::stack<NodePtr> rootNodeStack;
     };
     
-    class NodeRouteCopyVisitor : public VrmlNodeVisitor {
+    class NodeRouteCopyVisitor : public NodeVisitor {
     public:
         NodeRouteCopyVisitor(VrmlNamespace & ns): ns(ns) {}
         
         virtual ~NodeRouteCopyVisitor() {}
         
-        void copyRoutes(const VrmlMFNode & mfnode) {
+        void copyRoutes(const MFNode & mfnode) {
             this->visitChildren(mfnode);
             
             for (size_t i = 0; i < mfnode.getLength(); ++i) {
@@ -750,12 +752,12 @@ namespace {
             }
         }
         
-        virtual void visit(VrmlNodeAnchor & node) {
+        virtual void visit(NodeAnchor & node) {
             this->copyRoutesFromNode(node);
             this->visitChildren(node.getChildren());
         }
         
-        virtual void visit(VrmlNodeAppearance & node) {
+        virtual void visit(NodeAppearance & node) {
             this->copyRoutesFromNode(node);
             if (node.getMaterial().get()) {
                 node.getMaterial().get()->accept(*this);
@@ -768,61 +770,61 @@ namespace {
             }
         }
         
-        virtual void visit(VrmlNodeAudioClip & node) {
+        virtual void visit(NodeAudioClip & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeBackground & node) {
+        virtual void visit(NodeBackground & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeBillboard & node) {
-            this->copyRoutesFromNode(node);
-            this->visitChildren(node.getChildren());
-        }
-        
-        virtual void visit(VrmlNodeBox & node) {
-            this->copyRoutesFromNode(node);
-        }
-        
-        virtual void visit(VrmlNodeCollision & node) {
+        virtual void visit(NodeBillboard & node) {
             this->copyRoutesFromNode(node);
             this->visitChildren(node.getChildren());
         }
         
-        virtual void visit(VrmlNodeColor & node) {
+        virtual void visit(NodeBox & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeColorInt & node) {
+        virtual void visit(NodeCollision & node) {
+            this->copyRoutesFromNode(node);
+            this->visitChildren(node.getChildren());
+        }
+        
+        virtual void visit(NodeColor & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeCone & node) {
+        virtual void visit(NodeColorInt & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeCoordinate & node) {
+        virtual void visit(NodeCone & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeCoordinateInt & node) {
+        virtual void visit(NodeCoordinate & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeCylinder & node) {
+        virtual void visit(NodeCoordinateInt & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeCylinderSensor & node) {
+        virtual void visit(NodeCylinder & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeDirLight & node) {
+        virtual void visit(NodeCylinderSensor & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeElevationGrid & node) {
+        virtual void visit(NodeDirLight & node) {
+            this->copyRoutesFromNode(node);
+        }
+        
+        virtual void visit(NodeElevationGrid & node) {
             this->copyRoutesFromNode(node);
             if (node.getColor().get()) {
                 node.getColor().get()->accept(*this);
@@ -835,24 +837,24 @@ namespace {
             }
         }
         
-        virtual void visit(VrmlNodeExtrusion & node) {
+        virtual void visit(NodeExtrusion & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeFog & node) {
+        virtual void visit(NodeFog & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeFontStyle & node) {
+        virtual void visit(NodeFontStyle & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeGroup & node) {
+        virtual void visit(NodeGroup & node) {
             this->copyRoutesFromNode(node);
             this->visitChildren(node.getChildren());
         }
         
-        virtual void visit(VrmlNodeIFaceSet & node) {
+        virtual void visit(NodeIFaceSet & node) {
             this->copyRoutesFromNode(node);
             if (node.getColor().get()) {
                 node.getColor().get()->accept(*this);
@@ -868,7 +870,7 @@ namespace {
             }
         }
         
-        virtual void visit(VrmlNodeILineSet & node) {
+        virtual void visit(NodeILineSet & node) {
             this->copyRoutesFromNode(node);
             if (node.getColor().get()) {
                 node.getColor().get()->accept(*this);
@@ -878,56 +880,56 @@ namespace {
             }
         }
         
-        virtual void visit(VrmlNodeImageTexture & node) {
+        virtual void visit(NodeImageTexture & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeInline & node) {
+        virtual void visit(NodeInline & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeLOD & node) {
+        virtual void visit(NodeLOD & node) {
             this->copyRoutesFromNode(node);
             this->visitChildren(node.getLevel());
         }
         
-        virtual void visit(VrmlNodeMaterial & node) {
+        virtual void visit(NodeMaterial & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeMovieTexture & node) {
+        virtual void visit(NodeMovieTexture & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeNavigationInfo & node) {
+        virtual void visit(NodeNavigationInfo & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeNormal & node) {
+        virtual void visit(NodeNormal & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeNormalInt & node) {
+        virtual void visit(NodeNormalInt & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeOrientationInt & node) {
+        virtual void visit(NodeOrientationInt & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodePixelTexture & node) {
+        virtual void visit(NodePixelTexture & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodePlaneSensor & node) {
+        virtual void visit(NodePlaneSensor & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodePointLight & node) {
+        virtual void visit(NodePointLight & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodePointSet & node) {
+        virtual void visit(NodePointSet & node) {
             this->copyRoutesFromNode(node);
             if (node.getColor().get()) {
                 node.getColor().get()->accept(*this);
@@ -937,44 +939,44 @@ namespace {
             }
        }
         
-        virtual void visit(VrmlNodePositionInt & node) {
+        virtual void visit(NodePositionInt & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeProto & node) {
+        virtual void visit(ProtoNode & node) {
             this->copyRoutesFromNode(node);
             //
             // What about the fields of a PROTO'd node?
             //
         }
         
-        virtual void visit(VrmlNodeProximitySensor & node) {
+        virtual void visit(NodeProximitySensor & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeScalarInt & node) {
+        virtual void visit(NodeScalarInt & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeScript & node) {
+        virtual void visit(ScriptNode & node) {
             this->copyRoutesFromNode(node);
-            for (VrmlNodeScript::FieldList::const_iterator
+            for (ScriptNode::FieldList::const_iterator
                     i = node.fields().begin(); i != node.fields().end(); ++i) {
                 assert((*i)->value);
-                if ((*i)->type == VrmlField::SFNODE) {
-                    assert(dynamic_cast<VrmlSFNode *>((*i)->value));
-                    if (static_cast<VrmlSFNode *>((*i)->value)->get()) {
-                        static_cast<VrmlSFNode *>((*i)->value)->get()
+                if ((*i)->type == FieldValue::SFNODE) {
+                    assert(dynamic_cast<SFNode *>((*i)->value));
+                    if (static_cast<SFNode *>((*i)->value)->get()) {
+                        static_cast<SFNode *>((*i)->value)->get()
                                 ->accept(*this);
                     }
-                } else if ((*i)->type == VrmlField::MFNODE) {
-                    assert(dynamic_cast<VrmlMFNode *>((*i)->value));
-                    this->visitChildren(static_cast<VrmlMFNode &>(*(*i)->value));
+                } else if ((*i)->type == FieldValue::MFNODE) {
+                    assert(dynamic_cast<MFNode *>((*i)->value));
+                    this->visitChildren(static_cast<MFNode &>(*(*i)->value));
                 }
             }
         }
         
-        virtual void visit(VrmlNodeShape & node) {
+        virtual void visit(NodeShape & node) {
             this->copyRoutesFromNode(node);
             if (node.getAppearance().get()) {
                 node.getAppearance().get()->accept(*this);
@@ -984,67 +986,67 @@ namespace {
             }
         }
         
-        virtual void visit(VrmlNodeSound & node) {
+        virtual void visit(NodeSound & node) {
             this->copyRoutesFromNode(node);
             if (node.getSource().get()) {
                 node.getSource().get()->accept(*this);
             }
         }
         
-        virtual void visit(VrmlNodeSphere & node) {
+        virtual void visit(NodeSphere & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeSphereSensor & node) {
+        virtual void visit(NodeSphereSensor & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeSpotLight & node) {
+        virtual void visit(NodeSpotLight & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeSwitch & node) {
+        virtual void visit(NodeSwitch & node) {
             this->copyRoutesFromNode(node);
             this->visitChildren(node.getChoice());
         }
         
-        virtual void visit(VrmlNodeText & node) {
+        virtual void visit(NodeText & node) {
             this->copyRoutesFromNode(node);
             if (node.getFontStyle().get()) {
                 node.getFontStyle().get()->accept(*this);
             }
         }
         
-        virtual void visit(VrmlNodeTextureCoordinate & node) {
+        virtual void visit(NodeTextureCoordinate & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeTextureTransform & node) {
+        virtual void visit(NodeTextureTransform & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeTimeSensor & node) {
+        virtual void visit(NodeTimeSensor & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeTouchSensor & node) {
+        virtual void visit(NodeTouchSensor & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeTransform & node) {
+        virtual void visit(NodeTransform & node) {
             this->copyRoutesFromNode(node);
             this->visitChildren(node.getChildren());
         }
         
-        virtual void visit(VrmlNodeViewpoint & node) {
+        virtual void visit(NodeViewpoint & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeVisibilitySensor & node) {
+        virtual void visit(NodeVisibilitySensor & node) {
             this->copyRoutesFromNode(node);
         }
         
-        virtual void visit(VrmlNodeWorldInfo & node) {
+        virtual void visit(NodeWorldInfo & node) {
             this->copyRoutesFromNode(node);
         }
         
@@ -1055,28 +1057,28 @@ namespace {
         NodeRouteCopyVisitor(const NodeRouteCopyVisitor &);
         NodeRouteCopyVisitor & operator=(const NodeRouteCopyVisitor &);
         
-        void copyRoutesFromNode(VrmlNode & node) {
+        void copyRoutesFromNode(Node & node) {
             const std::string & fromNodeId = node.getId();
             if (!fromNodeId.empty()) {
-                VrmlNode * fromNode = this->ns.findNode(fromNodeId);
+                Node * fromNode = this->ns.findNode(fromNodeId);
                 assert(fromNode);
 		
-		VrmlNode::RouteList routes = node.getRoutes();
+		Node::RouteList routes = node.getRoutes();
 
-		VrmlNode::RouteList::iterator i;
+		Node::RouteList::iterator i;
 		
 		for (i = routes.begin(); i != routes.end(); ++i)
 		{
 		  const std::string& toNodeId = (*i)->toNode->getId();
 		  assert(this->ns.findNode(toNodeId));
 		  fromNode->addRoute((*i)->fromEventOut,
-				     VrmlNodePtr(this->ns.findNode(toNodeId)),
+				     NodePtr(this->ns.findNode(toNodeId)),
 				     (*i)->toEventIn);
 		}
             }
         }
         
-        void visitChildren(const VrmlMFNode & children) {
+        void visitChildren(const MFNode & children) {
             for (size_t i = 0; i < children.getLength(); ++i) {
                 if (children.getElement(i)) {
                     children.getElement(i)->accept(*this);
@@ -1088,9 +1090,9 @@ namespace {
     };
 }
 
-const VrmlMFNode VrmlNamespace::cloneNodes(const VrmlMFNode & mfnode) {
+const MFNode VrmlNamespace::cloneNodes(const MFNode & mfnode) {
     
-    VrmlMFNode clonedNodes(NodeCloneVisitor(*this).clone(mfnode));
+    MFNode clonedNodes(NodeCloneVisitor(*this).clone(mfnode));
     NodeRouteCopyVisitor(*this).copyRoutes(mfnode);
     
     return clonedNodes;

@@ -18,12 +18,16 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-/**
- * @class VrmlNodePtr
- * A reference-counted smart pointer for <code>VrmlNode</code>s.
- */
 # include "VrmlNodePtr.h"
 # include "VrmlNode.h"
+
+using namespace OpenVRML;
+
+/**
+ * @class OpenVRML::NodePtr
+ *
+ * @brief A reference-counted smart pointer for <code>Node</code>s.
+ */
 
 namespace {
     CountMap countMap;
@@ -32,9 +36,9 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param node a pointer to a VrmlNode
+ * @param node a pointer to a Node
  */
-VrmlNodePtr::VrmlNodePtr(VrmlNode * node): countPtr(0) {
+NodePtr::NodePtr(Node * node): countPtr(0) {
     if (node) {
         CountMap::iterator pos = countMap.find(node);
         if (pos == countMap.end()) {
@@ -54,7 +58,7 @@ VrmlNodePtr::VrmlNodePtr(VrmlNode * node): countPtr(0) {
  *
  * @param nodePtr
  */
-VrmlNodePtr::VrmlNodePtr(const VrmlNodePtr & nodePtr):
+NodePtr::NodePtr(const NodePtr & nodePtr):
         countPtr(nodePtr.countPtr) {
     if (this->countPtr) {
         ++this->countPtr->second;
@@ -62,11 +66,11 @@ VrmlNodePtr::VrmlNodePtr(const VrmlNodePtr & nodePtr):
 }
 
 /**
- * @brief Reset the VrmlNodePtr to point to a different VrmlNode.
+ * @brief Reset the NodePtr to point to a different Node.
  *
  * @param node
  */
-void VrmlNodePtr::reset(VrmlNode * node) {
+void NodePtr::reset(Node * node) {
     if (this->countPtr && this->countPtr->first == node) {
         return;
     }
@@ -80,7 +84,7 @@ void VrmlNodePtr::reset(VrmlNode * node) {
     }
 }
 
-void VrmlNodePtr::dispose() throw () {
+void NodePtr::dispose() throw () {
     if (this->countPtr) {
         --this->countPtr->second;
         if (this->countPtr->second == 0) {
@@ -91,7 +95,7 @@ void VrmlNodePtr::dispose() throw () {
     }
 }
 
-void VrmlNodePtr::share(CountMap::value_type * countPtr) throw () {
+void NodePtr::share(CountMap::value_type * countPtr) throw () {
     if (this->countPtr != countPtr) {
         ++countPtr->second;
         this->dispose();
@@ -100,19 +104,19 @@ void VrmlNodePtr::share(CountMap::value_type * countPtr) throw () {
 }
 
 /**
- * @fn VrmlNodePtr::~VrmlNodePtr()
+ * @fn NodePtr::~NodePtr()
  *
  * @brief Destructor.
  */
 
 /**
- * @fn VrmlNodePtr::operator bool() const
+ * @fn NodePtr::operator bool() const
  *
  * @brief Automatic conversion to bool.
  */
 
 /**
- * @fn VrmlNodePtr & VrmlNodePtr::operator=(const VrmlNodePtr &)
+ * @fn NodePtr & NodePtr::operator=(const NodePtr &)
  *
  * @brief Assignment operator.
  *
@@ -120,32 +124,32 @@ void VrmlNodePtr::share(CountMap::value_type * countPtr) throw () {
  */
 
 /**
- * @fn VrmlNode & VrmlNodePtr::operator*() const
+ * @fn Node & NodePtr::operator*() const
  *
  * @brief Dereference operator.
  *
- * @return a reference to the underlying VrmlNode.
+ * @return a reference to the underlying Node.
  */
 
 /**
- * @fn VrmlNode * VrmlNodePtr::operator->() const
+ * @fn Node * NodePtr::operator->() const
  *
- * @brief Access a method of the VrmlNode.
+ * @brief Access a method of the Node.
  */
 
 /**
- * @fn VrmlNode * VrmlNodePtr::get() const
+ * @fn Node * NodePtr::get() const
  *
- * @brief Get a raw pointer to the VrmlNode.
+ * @brief Get a raw pointer to the Node.
  *
- * @return a raw pointer to the underlying VrmlNode.
+ * @return a raw pointer to the underlying Node.
  */
 
 /**
- * @fn bool VrmlNodePtr::operator==(const VrmlNodePtr & nodePtr) const
+ * @fn bool NodePtr::operator==(const NodePtr & nodePtr) const
  *
- * @brief Compare two VrmlNodePtrs.
+ * @brief Compare two NodePtrs.
  *
- * @return true if both VrmlNodePtrs point to the same VrmlNode; false
+ * @return true if both NodePtrs point to the same Node; false
  *         otherwise.
  */

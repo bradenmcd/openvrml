@@ -50,6 +50,15 @@
 # include "OpenGLEvent.h"
 # include "private.h"
 
+/**
+ * @class OpenVRML::GL::ViewerOpenGL
+ *
+ * @brief Abstract class for display of VRML models using OpenGL/Mesa.
+ *
+ * A window-system specific subclass needs to redefine the pure
+ * virtual methods.
+ */
+
 // Put geometry into display lists.
 // If geometry is not in display lists, performance will suffer,
 // especially for non-convex geometries. You probably shouldn't
@@ -63,29 +72,30 @@
 
 #define USE_TEXTURE_DISPLAY_LISTS 1
 
-using namespace OpenVRML::GL_;
+using namespace OpenVRML;
+using namespace OpenVRML::GL;
+using namespace OpenVRML_::GL_;
 
-static void
-matrix_to_glmatrix(double M[4][4], float GLM[16])
-{
-  GLM[0]  = M[0][0];
-  GLM[1]  = M[1][0];
-  GLM[2]  = M[2][0];
-  GLM[3]  = M[3][0];
-  GLM[4]  = M[0][1];
-  GLM[5]  = M[1][1];
-  GLM[6]  = M[2][1];
-  GLM[7]  = M[3][1];
-  GLM[8]  = M[0][2];
-  GLM[9]  = M[1][2];
-  GLM[10] = M[2][2];
-  GLM[11] = M[3][2];
-  GLM[12] = M[0][3];
-  GLM[13] = M[1][3];
-  GLM[14] = M[2][3];
-  GLM[15] = M[3][3];
+namespace {
+    void matrix_to_glmatrix(double M[4][4], float GLM[16]) {
+        GLM[0]  = M[0][0];
+        GLM[1]  = M[1][0];
+        GLM[2]  = M[2][0];
+        GLM[3]  = M[3][0];
+        GLM[4]  = M[0][1];
+        GLM[5]  = M[1][1];
+        GLM[6]  = M[2][1];
+        GLM[7]  = M[3][1];
+        GLM[8]  = M[0][2];
+        GLM[9]  = M[1][2];
+        GLM[10] = M[2][2];
+        GLM[11] = M[3][2];
+        GLM[12] = M[0][3];
+        GLM[13] = M[1][3];
+        GLM[14] = M[2][3];
+        GLM[15] = M[3][3];
+    }
 }
-
 
 //  Construct a viewer for the specified scene. I'm not happy with the
 //  mutual dependencies between VrmlScene/VrmlNodes and Viewers...
@@ -2151,15 +2161,16 @@ Viewer::Object ViewerOpenGL::insertPointLight(float ambient,
 }
 
 // same comments as for PointLight apply here...
-Viewer::Object ViewerOpenGL::insertSpotLight( float ambient,
-					      const float attenuation[],
-					      float beamWidth,
-					      const float rgb[],
-					      float cutOffAngle,
-					      const float direction[],
-					      float intensity,
-					      const float location[],
-					      float radius )
+OpenVRML::Viewer::Object
+        OpenVRML::GL::ViewerOpenGL::insertSpotLight(float ambient,
+                                                    const float attenuation[],
+                                                    float beamWidth,
+                                                    const float rgb[],
+                                                    float cutOffAngle,
+                                                    const float direction[],
+                                                    float intensity,
+                                                    const float location[],
+                                                    float radius)
 {
   float amb[4] = { ambient * rgb[0],
 		   ambient * rgb[1],
@@ -2917,7 +2928,7 @@ void ViewerOpenGL::step( float x, float y, float z )
   double dist = d[0] * d[0] + d[1] * d[1] + d[2] * d[2];
   if (dist < 1.0e-25 )return;
   dist = sqrt(dist);
-  VrmlNodeNavigationInfo *nav = this->scene.bindableNavigationInfoTop();
+  NodeNavigationInfo * nav = this->scene.bindableNavigationInfoTop();
   float speed = 1.0;
   if (nav) speed = nav->speed();
   dist = speed / dist;
@@ -2936,7 +2947,7 @@ void ViewerOpenGL::zoom( float z )
   glGetIntegerv (GL_VIEWPORT, viewport);
   glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
   glGetDoublev (GL_PROJECTION_MATRIX, projection);
-  VrmlNodeNavigationInfo *nav = this->scene.bindableNavigationInfoTop();
+  NodeNavigationInfo * nav = this->scene.bindableNavigationInfoTop();
   float x_c = d_winWidth/2;
   float y_c = d_winHeight/2;
   float visibilityLimit=0.0;

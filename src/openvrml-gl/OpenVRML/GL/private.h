@@ -19,7 +19,7 @@
 // 
 
 namespace {
-    namespace OpenVRML {
+    namespace OpenVRML_ {
         namespace GL_ {
 
             const double PI     = 3.14159265358979323846;

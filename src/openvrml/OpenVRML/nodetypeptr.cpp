@@ -18,8 +18,13 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
+# include "nodetypeptr.h"
+# include "nodetype.h"
+
+using namespace OpenVRML;
+
 /**
- * @class NodeTypePtr
+ * @class OpenVRML::NodeTypePtr
  *
  * @brief NodeTypePtr is a reference-counting smart pointer for NodeTypes.
  *
@@ -29,9 +34,6 @@
  *
  * @see http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
-
-# include "nodetypeptr.h"
-# include "nodetype.h"
 
 /**
  * @brief Constructor.

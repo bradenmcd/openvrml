@@ -98,6 +98,8 @@ namespace {
     }
 }
 
+using namespace OpenVRML;
+
 Doc2::Doc2(const std::string & url, const Doc2 * relative)
   : url_(0), tmpfile_(0), istm_(0), ostm_(0)
 {

@@ -20,8 +20,10 @@
 
 #include "VrmlBVolume.h"
 
+using namespace OpenVRML;
+
 /**
- * @class VrmlBVolume
+ * @class OpenVRML::VrmlBVolume
  *
  * @brief A bounding volume.
  *

@@ -29,89 +29,93 @@
 #include "common.h"
 #include "vrml97node.h"
 
-class Doc;
-class Script;
-class VrmlScene;
+namespace OpenVRML {
 
-class OPENVRML_SCOPE VrmlNodeScript : public VrmlNodeChild {
-public:
-    // Per-script field type
-    struct ScriptField {
-        std::string name;
-        VrmlField * value;
-        VrmlField::VrmlFieldType type;
-        bool modified;
+    class Doc;
+    class Script;
+    class VrmlScene;
+
+    class OPENVRML_SCOPE ScriptNode : public NodeChild {
+    public:
+        // Per-script field type
+        struct ScriptField {
+            std::string name;
+            FieldValue * value;
+            FieldValue::FieldType type;
+            bool modified;
+        };
+
+        typedef std::list<ScriptField *> FieldList;
+
+    private:
+        // Fields
+        SFBool d_directOutput;
+        SFBool d_mustEvaluate;
+        MFString d_url;
+
+        SFString d_relativeUrl;
+
+        // The script language-dependent part
+        Script * script;
+
+        // Fields and events defined for this Script
+        FieldList d_eventIns;
+        FieldList d_eventOuts;
+        FieldList d_fields;
+
+        int d_eventsReceived;
+
+    public:
+        // Define the fields of Script nodes
+        static const NodeTypePtr
+                defineType(NodeTypePtr nodeType = NodeTypePtr(0));
+
+        ScriptNode(VrmlScene * scene = 0);
+        ScriptNode(const ScriptNode &);
+        virtual ~ScriptNode();
+
+        void initialize(double timeStamp);
+        void update(const SFTime & now);
+        void shutdown(double timeStamp);
+        void addEventIn(const std::string & name, FieldValue::FieldType type);
+        void addEventOut(const std::string & name, FieldValue::FieldType type);
+        void addField(const std::string & name, FieldValue::FieldType type,
+		      const FieldValue * defaultVal = 0);
+        FieldValue::FieldType hasEventIn(const std::string & id) const;
+        FieldValue::FieldType hasEventOut(const std::string & id) const;
+        FieldValue::FieldType hasField(const std::string & id) const;
+        FieldValue::FieldType hasInterface(const std::string & id) const;
+        void setEventIn(const std::string &, const FieldValue &);
+        void setEventOut(const std::string &, const FieldValue &);
+        FieldList & eventIns();
+        FieldList & eventOuts() { return d_eventOuts; }
+        FieldList & fields() { return d_fields; }
+        VrmlScene * browser() { return d_scene; }
+
+        virtual bool accept(NodeVisitor & visitor);
+        virtual void resetVisitedFlag();
+        virtual const FieldValue * getField(const std::string & fieldId) const;
+        virtual void setField(const std::string & fieldId,
+                              const FieldValue & fieldValue);
+        virtual void eventIn(double timeStamp, const std::string & eventName,
+		             const FieldValue & fieldValue);
+        virtual const MFNode getChildren() const;
+        virtual void addToScene(VrmlScene * scene,
+                                const std::string & relativeUrl);
+
+        virtual ScriptNode * toScript() const;
+
+        virtual ostream& printFields(ostream& os, int indent);
+
+    private:
+        Script * createScript();
+
+        // Generic field/event test/value methods
+        FieldValue::FieldType has(const FieldList &, const std::string &) const;
+        FieldValue * get(const FieldList &, const std::string &) const;
+        void set(const FieldList &, const std::string &, const FieldValue &);
     };
-    
-    typedef std::list<ScriptField *> FieldList;
-
-private:
-    // Fields
-    VrmlSFBool d_directOutput;
-    VrmlSFBool d_mustEvaluate;
-    VrmlMFString d_url;
-
-    VrmlSFString d_relativeUrl;
-
-    // The script language-dependent part
-    Script * script;
-
-    // Fields and events defined for this Script
-    FieldList d_eventIns;
-    FieldList d_eventOuts;
-    FieldList d_fields;
-
-    int d_eventsReceived;
-
-public:
-    // Define the fields of Script nodes
-    static const NodeTypePtr defineType(NodeTypePtr nodeType = NodeTypePtr(0));
-
-    VrmlNodeScript(VrmlScene * scene = 0);
-    VrmlNodeScript(const VrmlNodeScript &);
-    virtual ~VrmlNodeScript();
-
-    void initialize(double timeStamp);
-    void update(const VrmlSFTime & now);
-    void shutdown(double timeStamp);
-    void addEventIn(const std::string & name, VrmlField::VrmlFieldType type);
-    void addEventOut(const std::string & name, VrmlField::VrmlFieldType type);
-    void addField(const std::string & name, VrmlField::VrmlFieldType type,
-		  const VrmlField * defaultVal = 0);
-    VrmlField::VrmlFieldType hasEventIn(const std::string & id) const;
-    VrmlField::VrmlFieldType hasEventOut(const std::string & id) const;
-    VrmlField::VrmlFieldType hasField(const std::string & id) const;
-    VrmlField::VrmlFieldType hasInterface(const std::string & id) const;
-    void setEventIn(const std::string &, const VrmlField &);
-    void setEventOut(const std::string &, const VrmlField &);
-    FieldList & eventIns();
-    FieldList & eventOuts() { return d_eventOuts; }
-    FieldList & fields() { return d_fields; }
-    VrmlScene * browser() { return d_scene; }
-
-    virtual bool accept(VrmlNodeVisitor & visitor);
-    virtual void resetVisitedFlag();
-    virtual const VrmlField * getField(const std::string & fieldId) const;
-    virtual void setField(const std::string & fieldId,
-                          const VrmlField & fieldValue);
-    virtual void eventIn(double timeStamp,
-		         const std::string & eventName,
-		         const VrmlField & fieldValue);
-    virtual const VrmlMFNode getChildren() const;
-    virtual void addToScene(VrmlScene * scene, const std::string& relativeUrl);
-
-    virtual VrmlNodeScript* toScript() const;
-
-    virtual ostream& printFields(ostream& os, int indent);
-
-private:
-    Script * createScript();
-
-    // Generic field/event test/value methods
-    VrmlField::VrmlFieldType has(const FieldList &, const std::string &) const;
-    VrmlField * get(const FieldList &, const std::string &) const;
-    void set(const FieldList &, const std::string &, const VrmlField &);
-};
+}
 
 #endif
 

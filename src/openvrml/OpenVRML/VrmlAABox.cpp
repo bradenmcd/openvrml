@@ -23,8 +23,10 @@
 #include "VrmlFrustum.h"
 #include "VrmlAABox.h"
 
+using namespace OpenVRML;
+
 /**
- * @class VrmlAABox
+ * @class OpenVRML::VrmlAABox
  *
  * @brief An axis-aligned bounding box.
  *

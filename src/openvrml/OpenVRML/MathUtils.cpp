@@ -22,22 +22,23 @@
 #include "private.h"
 #include <string.h>		// memcpy
 
+using namespace OpenVRML;
 using namespace OpenVRML_;
 
-double Vlength( float V[3] )
+double OpenVRML::Vlength(float V[3])
 {
   double vlen = sqrt(V[0]*V[0]+V[1]*V[1]+V[2]*V[2]);
   return (fpzero(vlen) ? 0.0 : vlen);
 }
 
-void Vdiff( float V[3], const float A[3], const float B[3] )
+void OpenVRML::Vdiff(float V[3], const float A[3], const float B[3])
 {
   V[0] = A[0] - B[0];
   V[1] = A[1] - B[1];
   V[2] = A[2] - B[2];
 }
 
-void Vcross( float V[3], const float A[3], const float B[3] )
+void OpenVRML::Vcross(float V[3], const float A[3], const float B[3])
 {
   float x,y,z;			// Use temps so V can be A or B
   x = A[1]*B[2] - A[2]*B[1];
@@ -48,7 +49,7 @@ void Vcross( float V[3], const float A[3], const float B[3] )
   V[2] = z;
 }
 
-void Vnorm( float V[3] )
+void OpenVRML::Vnorm(float V[3])
 {
   float vlen = (float) sqrt(V[0]*V[0]+V[1]*V[1]+V[2]*V[2]);
   if (! fpzero(vlen))
@@ -63,7 +64,7 @@ void Vnorm( float V[3] )
 // Note that these matrices are stored in natural (C) order (the transpose
 // of the OpenGL matrix). Could change this someday...
 
-void Midentity( double M[4][4] )
+void OpenVRML::Midentity(double M[4][4])
 {
   for (int i=0; i<4; ++i)
     for (int j=0; j<4; ++j)
@@ -72,7 +73,7 @@ void Midentity( double M[4][4] )
 
 // Convert from axis/angle to transformation matrix GG p466
 
-void Mrotation( double M[4][4], const float axisAngle[4] )
+void OpenVRML::Mrotation(double M[4][4], const float axisAngle[4])
 {
   float aa_norm[4];
   aa_norm[0] = axisAngle[0];
@@ -104,7 +105,7 @@ void Mrotation( double M[4][4], const float axisAngle[4] )
   M[3][3] = 1.0;
 }
 
-void Mscale( double M[4][4], const float scale[3] )
+void OpenVRML::Mscale(double M[4][4], const float scale[3])
 {
   Midentity(M);
   for (int i=0; i<3; ++i)
@@ -121,7 +122,7 @@ void Mscale( double M[4][4], const float scale[3] )
 // that's the caller's reponsibility
 //
 //
-void MM(double M[4][4], const double A[4][4], const double B[4][4])
+void OpenVRML::MM(double M[4][4], const double A[4][4], const double B[4][4])
 {
   // someday we should unroll this, or at least use a couple of
   // registers for the loop indicies.
@@ -132,7 +133,7 @@ void MM(double M[4][4], const double A[4][4], const double B[4][4])
 }
 
 
-void MM( double M[4][4], const double N[4][4] )
+void OpenVRML::MM(double M[4][4], const double N[4][4])
 {
   double m[4][4];
 
@@ -144,7 +145,7 @@ void MM( double M[4][4], const double N[4][4] )
 }
 
 
-void VM( float V[3], const double M[4][4], const float A[3] )
+void OpenVRML::VM(float V[3], const double M[4][4], const float A[3])
 {
   float v[3] = { A[0], A[1], A[2] }; // Allow for V/A aliasing
   for (int i=0; i<3; ++i)
@@ -152,7 +153,7 @@ void VM( float V[3], const double M[4][4], const float A[3] )
 }
 
 
-void Mtranslation(double M[4][4], const float t[3])
+void OpenVRML::Mtranslation(double M[4][4], const float t[3])
 {
   Midentity(M);
   M[0][3] = t[0];
@@ -161,7 +162,7 @@ void Mtranslation(double M[4][4], const float t[3])
 }
 
 
-ostream& Mdump(ostream& o, const double M[4][4])
+ostream& OpenVRML::Mdump(ostream& o, const double M[4][4])
 {
   for(int i=0; i<4; i++) {
     for(int j=0; j<4; j++) {
@@ -174,13 +175,13 @@ ostream& Mdump(ostream& o, const double M[4][4])
 }
 
 
-void Mcopy(double M_new[4][4], const double M_orig[4][4])
+void OpenVRML::Mcopy(double M_new[4][4], const double M_orig[4][4])
 {
   memcpy(M_new, M_orig, sizeof(double[4][4]));
 }
 
 
-void axis_aligned_bbox(float M[4][4], float *min, float *max)
+void OpenVRML::axis_aligned_bbox(float M[4][4], float *min, float *max)
 {
 // Algorithm is taken from "Transforming Axis aligned Bounding Boxes"
 // by Jim Arvo "Graphics Gems Academic Press 1990"
@@ -211,7 +212,7 @@ void axis_aligned_bbox(float M[4][4], float *min, float *max)
 	 max[0] = newbox[4]; max[1] = newbox[5]; max[2] = newbox[6];
 }
 
-bool InvertMatrix3x3of4x4(float In[16],float Out[9])
+bool OpenVRML::InvertMatrix3x3of4x4(float In[16],float Out[9])
 {
 	float *Inp = &In[0];
 	float mat[] = {Inp[0], Inp[1], Inp[2],
@@ -241,7 +242,7 @@ bool InvertMatrix3x3of4x4(float In[16],float Out[9])
  * Build a quaternion rotation , given a rotation matrix.
  */
  
-void build_quaternion(float m[4][4], float quat[4])
+void OpenVRML::build_quaternion(float m[4][4], float quat[4])
 {
   float  diagonal, s, q[4];
   int    i, j, k;
@@ -282,7 +283,7 @@ void build_quaternion(float m[4][4], float quat[4])
  *  Given quaternion, compute axis and angle.
  */
 
-void quat_to_axis(float q[4], float axisAngle[4])
+void OpenVRML::quat_to_axis(float q[4], float axisAngle[4])
 {
   float val = acos(q[3]);
   if (fpzero(val))

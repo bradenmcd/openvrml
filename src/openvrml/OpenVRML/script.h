@@ -25,27 +25,31 @@
 #   include <string>
 #   include "common.h"
 
-class VrmlField;
-class VrmlNodeScript;
+namespace OpenVRML {
 
-class OPENVRML_SCOPE Script {
-public:
-    virtual ~Script() = 0;
-    virtual void initialize(double timestamp) = 0;
-    virtual void processEvent(const std::string & id, const VrmlField & value,
-                              double timestamp) = 0;
-    virtual void eventsProcessed(double timestamp) = 0;
-    virtual void shutdown(double timestamp) = 0;
+    class FieldValue;
+    class ScriptNode;
 
-protected:
-    VrmlNodeScript & scriptNode;
+    class OPENVRML_SCOPE Script {
+    public:
+        virtual ~Script() = 0;
+        virtual void initialize(double timestamp) = 0;
+        virtual void processEvent(const std::string & id,
+                                  const FieldValue & value,
+                                  double timestamp) = 0;
+        virtual void eventsProcessed(double timestamp) = 0;
+        virtual void shutdown(double timestamp) = 0;
 
-    Script(VrmlNodeScript & scriptNode);
+    protected:
+        ScriptNode & scriptNode;
 
-private:
-    // non-copyable
-    Script(const Script &);
-    Script & operator=(const Script &);
-};
+        Script(ScriptNode & scriptNode);
 
-#endif
+    private:
+        // non-copyable
+        Script(const Script &);
+        Script & operator=(const Script &);
+    };
+}
+
+# endif

@@ -24,27 +24,30 @@
 #include <iostream.h>
 #include "common.h"
 
-class VrmlFrustum;
-class VrmlAABox;
-class VrmlBSphere;
-class VrmlMatrix;
+namespace OpenVRML {
 
-class VrmlBVolume {
-public:
-    enum { BV_INSIDE = 1, BV_OUTSIDE = -1, BV_PARTIAL = 0 };
+    class VrmlFrustum;
+    class VrmlAABox;
+    class VrmlBSphere;
+    class VrmlMatrix;
 
-    virtual ~VrmlBVolume() = 0;
-    virtual bool isMAX() const = 0;
-    virtual void setMAX() = 0;
-    virtual int isectFrustum(const VrmlFrustum & f) const = 0;
-    virtual void extend(const VrmlBVolume & b) =0;
-    virtual void extend(const float p[3]) = 0;
-    virtual void extend(const VrmlAABox & b) = 0;
-    virtual void extend(const VrmlBSphere & b) = 0;
-    virtual void enclose(const float* p, int n) = 0;
-    virtual void orthoTransform(const VrmlMatrix & M) = 0;
-    virtual void transform(const VrmlMatrix & M) = 0;
-    virtual ostream & dump(ostream & ostr) const = 0;
-};
+    class VrmlBVolume {
+    public:
+        enum { BV_INSIDE = 1, BV_OUTSIDE = -1, BV_PARTIAL = 0 };
+
+        virtual ~VrmlBVolume() = 0;
+        virtual bool isMAX() const = 0;
+        virtual void setMAX() = 0;
+        virtual int isectFrustum(const VrmlFrustum & f) const = 0;
+        virtual void extend(const VrmlBVolume & b) =0;
+        virtual void extend(const float p[3]) = 0;
+        virtual void extend(const VrmlAABox & b) = 0;
+        virtual void extend(const VrmlBSphere & b) = 0;
+        virtual void enclose(const float* p, int n) = 0;
+        virtual void orthoTransform(const VrmlMatrix & M) = 0;
+        virtual void transform(const VrmlMatrix & M) = 0;
+        virtual ostream & dump(ostream & ostr) const = 0;
+    };
+}
 
 #endif // VRMLBVOLUME_H

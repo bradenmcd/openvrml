@@ -62,6 +62,7 @@
 #define PATH_SEPARATOR ":"
 #endif
 
+using namespace OpenVRML;
 
 // Static members
 JavaVM *ScriptJDK::d_jvm = 0;
@@ -69,7 +70,7 @@ JNIEnv *ScriptJDK::d_env = 0;
 
 // Construct from classname. Assumes className.class exists in classDir
 
-ScriptJDK::ScriptJDK(VrmlNodeScript & scriptNode, const char * className,
+ScriptJDK::ScriptJDK(ScriptNode & scriptNode, const char * className,
 		     const char * classDir):
         Script(scriptNode), d_class(0), d_object(0), d_processEventsID(0),
         d_processEventID(0), d_eventsProcessedID(0) {
@@ -162,9 +163,9 @@ static jfieldID getFid(JNIEnv *env, jobject obj, char *membername, char *sig)
   return clazz == 0 ? NULL : env->GetFieldID(clazz, membername, sig);
 }
 
-static VrmlField* getVrmlField(JNIEnv *env, jobject obj)
+static FieldValue* getFieldValue(JNIEnv *env, jobject obj)
 {
-  VrmlField* fieldPtr;
+  FieldValue* fieldPtr;
   jfieldID fid;
 
   fid = getFid(env, obj, "isEventOut", "Z");
@@ -173,14 +174,14 @@ static VrmlField* getVrmlField(JNIEnv *env, jobject obj)
 
   if (eventOut)
   {
-    VrmlNodeScript::ScriptField* pScriptField =
-      (VrmlNodeScript::ScriptField*) env->GetIntField(obj, fid);
-    fieldPtr = (VrmlField*)pScriptField->value;
+    ScriptNode::ScriptField* pScriptField =
+      (ScriptNode::ScriptField*) env->GetIntField(obj, fid);
+    fieldPtr = (FieldValue*)pScriptField->value;
     pScriptField->modified = true;
   }
   else
   {
-    fieldPtr = (VrmlField*) env->GetIntField(obj, fid);
+    fieldPtr = (FieldValue*) env->GetIntField(obj, fid);
   }
 
   return fieldPtr;
@@ -189,7 +190,7 @@ static VrmlField* getVrmlField(JNIEnv *env, jobject obj)
 static jstring fieldToString(JNIEnv *env, jobject obj)
 {
   ostrstream os;
-  VrmlField* pField = getVrmlField(env, obj);
+  FieldValue* pField = getFieldValue(env, obj);
   pField->print(os);
   os << ends;
   char* szString = os.str();
@@ -200,31 +201,30 @@ static jstring fieldToString(JNIEnv *env, jobject obj)
 
 void ScriptJDK::initialize(const double timestamp)
 {
-  const VrmlSFTime arg(timestamp);
-  const VrmlField * argv[] = { &arg };
+  const SFTime arg(timestamp);
+  const FieldValue * argv[] = { &arg };
   this->activate(timestamp, "initialize", 1, argv);
 }
 
-void ScriptJDK::processEvent(const std::string & id,
-                             const VrmlField & value,
+void ScriptJDK::processEvent(const std::string & id, const FieldValue & value,
                              const double timestamp)
 {
-  const VrmlSFTime timestampArg(timestamp);
-  const VrmlField * argv[] = { &value, &timestampArg };
+  const SFTime timestampArg(timestamp);
+  const FieldValue * argv[] = { &value, &timestampArg };
   this->activate(timestamp, id, 2, argv);
 }
 
 void ScriptJDK::eventsProcessed(const double timestamp)
 {
-  const VrmlSFTime arg(timestamp);
-  const VrmlField * argv[] = { &arg };
+  const SFTime arg(timestamp);
+  const FieldValue * argv[] = { &arg };
   this->activate(timestamp, "eventsProcessed", 1, argv);
 }
 
 void ScriptJDK::shutdown(const double timestamp)
 {
-  const VrmlSFTime arg(timestamp);
-  const VrmlField * argv[] = { &arg };
+  const SFTime arg(timestamp);
+  const FieldValue * argv[] = { &arg };
   this->activate(timestamp, "shutdown", 1, argv);
 }
 
@@ -233,7 +233,7 @@ void ScriptJDK::shutdown(const double timestamp)
 void ScriptJDK::activate( double timeStamp,
 			  const std::string & fname,
 			  size_t argc,
-			  const VrmlField * const argv[] )
+			  const FieldValue * const argv[] )
 {
   if (argc == 2 && d_processEventID != 0)
   {
@@ -275,52 +275,52 @@ void ScriptJDK::activate( double timeStamp,
 
 extern "C" {
 
-static VrmlField* newField(VrmlField::VrmlFieldType fieldtype)
+static FieldValue* newField(FieldValue::FieldType fieldtype)
 {
   switch (fieldtype)
   {
-    case VrmlField::NO_FIELD:
+    case FieldValue::NO_FIELD:
       return NULL;
-    case VrmlField::SFBOOL:
-      return new VrmlSFBool;
-    case VrmlField::SFCOLOR:
-      return new VrmlSFColor;
-    case VrmlField::SFFLOAT:
-      return new VrmlSFFloat;
-    case VrmlField::SFIMAGE:
-      return new VrmlSFImage;
-    case VrmlField::SFINT32:
-      return new VrmlSFInt32;
-    case VrmlField::SFNODE:
-      return new VrmlSFNode;
-    case VrmlField::SFROTATION:
-      return new VrmlSFRotation;
-    case VrmlField::SFSTRING:
-      return new VrmlSFString;
-    case VrmlField::SFTIME:
-      return new VrmlSFTime;
-    case VrmlField::SFVEC2F:
-      return new VrmlSFVec2f;
-    case VrmlField::SFVEC3F:
-      return new VrmlSFVec3f;
-    case VrmlField::MFCOLOR:
-      return new VrmlMFColor;
-    case VrmlField::MFFLOAT:
-      return new VrmlMFFloat;
-    case VrmlField::MFINT32:
-      return new VrmlMFInt32;
-    case VrmlField::MFNODE:
-      return new VrmlMFNode;
-    case VrmlField::MFROTATION:
-      return new VrmlMFRotation;
-    case VrmlField::MFSTRING:
-      return new VrmlMFString;
-    case VrmlField::MFTIME:
-      return new VrmlMFTime;
-    case VrmlField::MFVEC2F:
-      return new VrmlMFVec2f;
-    case VrmlField::MFVEC3F:
-      return new VrmlMFVec3f;
+    case FieldValue::SFBOOL:
+      return new SFBool;
+    case FieldValue::SFCOLOR:
+      return new SFColor;
+    case FieldValue::SFFLOAT:
+      return new SFFloat;
+    case FieldValue::SFIMAGE:
+      return new SFImage;
+    case FieldValue::SFINT32:
+      return new SFInt32;
+    case FieldValue::SFNODE:
+      return new SFNode;
+    case FieldValue::SFROTATION:
+      return new SFRotation;
+    case FieldValue::SFSTRING:
+      return new SFString;
+    case FieldValue::SFTIME:
+      return new SFTime;
+    case FieldValue::SFVEC2F:
+      return new SFVec2f;
+    case FieldValue::SFVEC3F:
+      return new SFVec3f;
+    case FieldValue::MFCOLOR:
+      return new MFColor;
+    case FieldValue::MFFLOAT:
+      return new MFFloat;
+    case FieldValue::MFINT32:
+      return new MFInt32;
+    case FieldValue::MFNODE:
+      return new MFNode;
+    case FieldValue::MFROTATION:
+      return new MFRotation;
+    case FieldValue::MFSTRING:
+      return new MFString;
+    case FieldValue::MFTIME:
+      return new MFTime;
+    case FieldValue::MFVEC2F:
+      return new MFVec2f;
+    case FieldValue::MFVEC3F:
+      return new MFVec3f;
     default:
       return NULL;
   }
@@ -332,13 +332,13 @@ JNIEXPORT jobject JNICALL Java_vrml_Field_clone
   jfieldID fid;
   jobject jCloneField;
   jclass clazz;
-  VrmlField* pField;
-  VrmlField* pCloneField;
+  FieldValue* pField;
+  FieldValue* pCloneField;
   char clazzName[256];
   const char *szFieldType;
   
   fid = getFid(env, obj, "FieldPtr", "I");
-  pField = (VrmlField*) env->GetIntField(obj, fid);
+  pField = (FieldValue*) env->GetIntField(obj, fid);
   szFieldType = pField->fieldTypeName();
   sprintf(clazzName, "vrml/field/%s", szFieldType);
   clazz = env->FindClass(clazzName);
@@ -366,7 +366,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFBool_CreateObject
   (JNIEnv *env, jobject obj, jboolean value)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFBool* pSFBool = new VrmlSFBool(value ? true : false);
+  SFBool* pSFBool = new SFBool(value ? true : false);
   env->SetIntField(obj, fid, (int) pSFBool);
 }
 
@@ -374,7 +374,7 @@ JNIEXPORT jboolean JNICALL Java_vrml_field_ConstSFBool_getValue
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFBool* pSFBool = (VrmlSFBool*) env->GetIntField(obj, fid);
+  SFBool* pSFBool = (SFBool*) env->GetIntField(obj, fid);
   return (jboolean) pSFBool->get();
 }
 
@@ -403,7 +403,7 @@ JNIEXPORT jboolean JNICALL Java_vrml_field_SFBool_getValue
 JNIEXPORT void JNICALL Java_vrml_field_SFBool_setValue__Z
   (JNIEnv *env, jobject obj, jboolean value)
 {
-  VrmlSFBool* pSFBool = (VrmlSFBool*)getVrmlField(env, obj);
+  SFBool* pSFBool = (SFBool*)getFieldValue(env, obj);
   pSFBool->set(value ? true : false);
 }
 
@@ -412,8 +412,8 @@ Java_vrml_field_SFBool_setValue__Lvrml_field_ConstSFBool_2
   (JNIEnv *env, jobject obj, jobject value)
 {
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFBool* pNewSFBool = (VrmlSFBool*) env->GetIntField(value, fid);
-  VrmlSFBool* pSFBool = (VrmlSFBool*)getVrmlField(env, obj);
+  SFBool* pNewSFBool = (SFBool*) env->GetIntField(value, fid);
+  SFBool* pSFBool = (SFBool*)getFieldValue(env, obj);
   pSFBool->set(pNewSFBool->get());
 }
 
@@ -438,7 +438,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFColor_CreateObject
   (JNIEnv *env, jobject obj, jfloat r, jfloat g, jfloat b)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFColor* pSFColor = new VrmlSFColor(r, g, b);
+  SFColor* pSFColor = new SFColor(r, g, b);
   env->SetIntField(obj, fid, (int) pSFColor);
 }
 
@@ -446,7 +446,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFColor_getValue
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFColor* pSFColor = (VrmlSFColor*) env->GetIntField(obj, fid);
+  SFColor* pSFColor = (SFColor*) env->GetIntField(obj, fid);
   env->SetFloatArrayRegion(jarr, 0, 3, (jfloat*) pSFColor->get()) ;
 }
 
@@ -454,7 +454,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_ConstSFColor_getRed
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFColor* pSFColor = (VrmlSFColor*) env->GetIntField(obj, fid);
+  SFColor* pSFColor = (SFColor*) env->GetIntField(obj, fid);
   return (jfloat) pSFColor->getR();
 }
 
@@ -462,7 +462,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_ConstSFColor_getGreen
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFColor* pSFColor = (VrmlSFColor*) env->GetIntField(obj, fid);
+  SFColor* pSFColor = (SFColor*) env->GetIntField(obj, fid);
   return (jfloat) pSFColor->getG();
 }
 
@@ -470,7 +470,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_ConstSFColor_getBlue
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFColor* pSFColor = (VrmlSFColor*) env->GetIntField(obj, fid);
+  SFColor* pSFColor = (SFColor*) env->GetIntField(obj, fid);
   return (jfloat) pSFColor->getB();
 }
 
@@ -517,7 +517,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_SFColor_getBlue
 JNIEXPORT void JNICALL Java_vrml_field_SFColor_setValue___3F
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
-  VrmlSFColor* pSFColor = (VrmlSFColor*)getVrmlField(env, obj);
+  SFColor* pSFColor = (SFColor*)getFieldValue(env, obj);
   jfloat *pjf = env->GetFloatArrayElements(jarr, NULL); 
   pSFColor->set((float*) pjf);
   env->ReleaseFloatArrayElements(jarr, pjf, JNI_ABORT);
@@ -527,7 +527,7 @@ JNIEXPORT void JNICALL Java_vrml_field_SFColor_setValue__FFF
   (JNIEnv *env, jobject obj, jfloat r, jfloat g, jfloat b)
 {
   const float rgb[3] = { r, g, b };
-  VrmlSFColor* pSFColor = (VrmlSFColor*)getVrmlField(env, obj);
+  SFColor* pSFColor = (SFColor*)getFieldValue(env, obj);
   pSFColor->set(rgb);
 }
 
@@ -536,8 +536,8 @@ Java_vrml_field_SFColor_setValue__Lvrml_field_ConstSFColor_2
   (JNIEnv *env, jobject obj, jobject value)
 {
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFColor* pNewSFColor = (VrmlSFColor*) env->GetIntField(value, fid);
-  VrmlSFColor* pSFColor = (VrmlSFColor*)getVrmlField(env, obj);
+  SFColor* pNewSFColor = (SFColor*) env->GetIntField(value, fid);
+  SFColor* pSFColor = (SFColor*)getFieldValue(env, obj);
   pSFColor->set(pNewSFColor->get());
 }
 
@@ -563,7 +563,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFFloat_CreateObject
   (JNIEnv *env, jobject obj, jfloat value)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFFloat* pSFFloat = new VrmlSFFloat((float) value);
+  SFFloat* pSFFloat = new SFFloat((float) value);
   env->SetIntField(obj, fid, (int) pSFFloat);
 }
 
@@ -571,7 +571,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_ConstSFFloat_getValue
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFFloat* pSFFloat = (VrmlSFFloat*) env->GetIntField(obj, fid);
+  SFFloat* pSFFloat = (SFFloat*) env->GetIntField(obj, fid);
   return (jfloat) pSFFloat->get();
 }
 
@@ -600,7 +600,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_SFFloat_getValue
 JNIEXPORT void JNICALL Java_vrml_field_SFFloat_setValue__F
   (JNIEnv *env, jobject obj, jfloat f)
 {
-  VrmlSFFloat* pSFFloat = (VrmlSFFloat*)getVrmlField(env, obj);
+  SFFloat* pSFFloat = (SFFloat*)getFieldValue(env, obj);
   pSFFloat->set((float) f);
 }
 
@@ -608,9 +608,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_SFFloat_setValue__Lvrml_field_ConstSFFloat_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlSFFloat* pSFFloat = (VrmlSFFloat*)getVrmlField(env, obj);
+  SFFloat* pSFFloat = (SFFloat*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFFloat* pNewSFFloat = (VrmlSFFloat*) env->GetIntField(value, fid);
+  SFFloat* pNewSFFloat = (SFFloat*) env->GetIntField(value, fid);
   pSFFloat->set(pNewSFFloat->get());
 }
 
@@ -636,10 +636,10 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFImage_CreateObject
   (JNIEnv *env, jobject obj, jint width, jint height, 
    jint components, jbyteArray pixels)
 {
-  VrmlSFImage* pConstSFImage;
+  SFImage* pConstSFImage;
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   jbyte *pjb = env->GetByteArrayElements(pixels, NULL); 
-  pConstSFImage = new VrmlSFImage((int) width, (int) height, 
+  pConstSFImage = new SFImage((int) width, (int) height, 
                                   (int) components, (unsigned char *) pjb);
   env->ReleaseByteArrayElements(pixels, pjb, JNI_ABORT);
   env->SetIntField(obj, fid, (int) pConstSFImage);
@@ -649,7 +649,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstSFImage_getWidth
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFImage* pConstSFImage = (VrmlSFImage*) env->GetIntField(obj, fid);
+  SFImage* pConstSFImage = (SFImage*) env->GetIntField(obj, fid);
   return (jint) pConstSFImage->getWidth();
 }
 
@@ -657,7 +657,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstSFImage_getHeight
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFImage* pConstSFImage = (VrmlSFImage*) env->GetIntField(obj, fid);
+  SFImage* pConstSFImage = (SFImage*) env->GetIntField(obj, fid);
   return (jint) pConstSFImage->getHeight();
 }
 
@@ -665,7 +665,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstSFImage_getComponents
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFImage* pConstSFImage = (VrmlSFImage*) env->GetIntField(obj, fid);
+  SFImage* pConstSFImage = (SFImage*) env->GetIntField(obj, fid);
   return (jint) pConstSFImage->getComponents();
 }
 
@@ -673,7 +673,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFImage_getPixels
   (JNIEnv *env, jobject obj, jbyteArray pixels)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFImage* pSFImage = (VrmlSFImage*) env->GetIntField(obj, fid);
+  SFImage* pSFImage = (SFImage*) env->GetIntField(obj, fid);
   env->SetByteArrayRegion(pixels, 0, 
                           pSFImage->getWidth() * pSFImage->getHeight(),
                           (jbyte*) pSFImage->getPixels());
@@ -725,7 +725,7 @@ JNIEXPORT void JNICALL Java_vrml_field_SFImage_setValue__III_3B
   (JNIEnv *env, jobject obj, jint width, jint height, 
    jint components, jbyteArray pixels)
 {
-  VrmlSFImage* pSFImage = (VrmlSFImage*)getVrmlField(env, obj);
+  SFImage* pSFImage = (SFImage*)getFieldValue(env, obj);
   jbyte *pjb = env->GetByteArrayElements(pixels, NULL); 
   pSFImage->set((int) width, (int) height, (int) components, 
                 (unsigned char *) pjb);
@@ -737,9 +737,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_SFImage_setValue__Lvrml_field_ConstSFImage_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlSFImage* pSFImage = (VrmlSFImage*)getVrmlField(env, obj);
+  SFImage* pSFImage = (SFImage*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFImage* pNewSFImage = (VrmlSFImage*) env->GetIntField(value, fid);
+  SFImage* pNewSFImage = (SFImage*) env->GetIntField(value, fid);
   *pSFImage = *pNewSFImage;
 }
 
@@ -765,7 +765,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFInt32_CreateObject
   (JNIEnv *env, jobject obj, jint value)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFInt32* pSFInt32 = new VrmlSFInt32((int) value);
+  SFInt32* pSFInt32 = new SFInt32((int) value);
   env->SetIntField(obj, fid, (int) pSFInt32);
 }
 
@@ -773,7 +773,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstSFInt32_getValue
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFInt32* pSFInt32 = (VrmlSFInt32*) env->GetIntField(obj, fid);
+  SFInt32* pSFInt32 = (SFInt32*) env->GetIntField(obj, fid);
   return (int) pSFInt32->get();
 }
 
@@ -802,7 +802,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_SFInt32_getValue
 JNIEXPORT void JNICALL Java_vrml_field_SFInt32_setValue__I
   (JNIEnv *env, jobject obj, jint value)
 {
-  VrmlSFInt32* pSFInt32 = (VrmlSFInt32*)getVrmlField(env, obj);  
+  SFInt32* pSFInt32 = (SFInt32*)getFieldValue(env, obj);  
   pSFInt32->set((int) value);
 }
 
@@ -810,9 +810,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_SFInt32_setValue__Lvrml_field_ConstSFInt32_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlSFInt32* pSFInt32 = (VrmlSFInt32*)getVrmlField(env, obj);
+  SFInt32* pSFInt32 = (SFInt32*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFInt32* pNewSFInt32 = (VrmlSFInt32*) env->GetIntField(value, fid);
+  SFInt32* pNewSFInt32 = (SFInt32*) env->GetIntField(value, fid);
   pSFInt32->set(pNewSFInt32->get());
 }
 
@@ -838,8 +838,8 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFNode_CreateObject
   (JNIEnv *env, jobject obj, jobject value)
 {
   jfieldID fid = getFid(env, value, "NodePtr", "I");
-  VrmlNode* pBaseNode = (VrmlNode*) env->GetIntField(value, fid);
-  VrmlSFNode* pSFNode = new VrmlSFNode(VrmlNodePtr(pBaseNode));
+  Node* pBaseNode = (Node*) env->GetIntField(value, fid);
+  SFNode* pSFNode = new SFNode(NodePtr(pBaseNode));
   fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pSFNode);
 }
@@ -847,7 +847,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFNode_CreateObject
 JNIEXPORT jobject JNICALL Java_vrml_field_ConstSFNode_getValue
   (JNIEnv *env, jobject obj)
 {
-  VrmlSFNode* pSFNode = (VrmlSFNode*) getVrmlField(env, obj);
+  SFNode* pSFNode = (SFNode*) getFieldValue(env, obj);
   jclass clazz = env->FindClass("vrml/node/Node");
   jobject jNode = env->AllocObject(clazz);
   jfieldID fid = env->GetFieldID(clazz, "NodePtr", "I");
@@ -880,19 +880,19 @@ JNIEXPORT jobject JNICALL Java_vrml_field_SFNode_getValue
 JNIEXPORT void JNICALL Java_vrml_field_SFNode_setValue__Lvrml_BaseNode_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlSFNode* pSFNode = (VrmlSFNode*)getVrmlField(env, obj);
+  SFNode* pSFNode = (SFNode*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "NodePtr", "I");
-  VrmlNode* pNode = (VrmlNode*)env->GetIntField(value, fid);
-  pSFNode->set(VrmlNodePtr(pNode));
+  Node* pNode = (Node*)env->GetIntField(value, fid);
+  pSFNode->set(NodePtr(pNode));
 }
 
 JNIEXPORT void JNICALL 
 Java_vrml_field_SFNode_setValue__Lvrml_field_ConstSFNode_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlSFNode* pSFNode = (VrmlSFNode*)getVrmlField(env, obj);
+  SFNode* pSFNode = (SFNode*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFNode* pNewSFNode = (VrmlSFNode*) env->GetIntField(value, fid);
+  SFNode* pNewSFNode = (SFNode*) env->GetIntField(value, fid);
   *pSFNode = *pNewSFNode;
 }
 
@@ -916,7 +916,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFRotation_CreateObject
   (JNIEnv *env, jobject obj, jfloat axisX, jfloat axisY, 
    jfloat axisZ, jfloat angle)
 {
-  VrmlSFRotation* pSFRotation = new VrmlSFRotation(axisX, axisY, 
+  SFRotation* pSFRotation = new SFRotation(axisX, axisY, 
                                                    axisZ, angle);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pSFRotation);
@@ -926,7 +926,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFRotation_getValue
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFRotation* pSFRotation = (VrmlSFRotation*) env->GetIntField(obj, fid);
+  SFRotation* pSFRotation = (SFRotation*) env->GetIntField(obj, fid);
   env->SetFloatArrayRegion(jarr, 0, 4, (jfloat*) pSFRotation->get());
 }
 
@@ -957,7 +957,7 @@ JNIEXPORT void JNICALL Java_vrml_field_SFRotation_getValue
 JNIEXPORT void JNICALL Java_vrml_field_SFRotation_setValue___3F
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
-  VrmlSFRotation* pSFRotation = (VrmlSFRotation*)getVrmlField(env, obj);
+  SFRotation* pSFRotation = (SFRotation*)getFieldValue(env, obj);
   jfloat *pjf = env->GetFloatArrayElements(jarr, NULL); 
   pSFRotation->set(pjf);
   env->ReleaseFloatArrayElements(jarr, pjf, JNI_ABORT);
@@ -967,7 +967,7 @@ JNIEXPORT void JNICALL Java_vrml_field_SFRotation_setValue__FFFF
   (JNIEnv *env, jobject obj, jfloat axisX, jfloat axisY, 
    jfloat axisZ, jfloat angle)
 {
-  VrmlSFRotation* pSFRotation = (VrmlSFRotation*)getVrmlField(env, obj);
+  SFRotation* pSFRotation = (SFRotation*)getFieldValue(env, obj);
   const float rotation[] = { axisX, axisY, axisZ, angle };
   pSFRotation->set(rotation);
 }
@@ -976,10 +976,10 @@ JNIEXPORT void JNICALL
 Java_vrml_field_SFRotation_setValue__Lvrml_field_ConstSFRotation_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlSFRotation* pSFRotation = (VrmlSFRotation*)getVrmlField(env, obj);
+  SFRotation* pSFRotation = (SFRotation*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFRotation* pNewSFRotation = 
-    (VrmlSFRotation*) env->GetIntField(value, fid);
+  SFRotation* pNewSFRotation = 
+    (SFRotation*) env->GetIntField(value, fid);
   pSFRotation->set(pNewSFRotation->get());
 }
 
@@ -1006,7 +1006,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFString_CreateObject
   (JNIEnv *env, jobject obj, jstring jstr)
 {
   const char *str = env->GetStringUTFChars(jstr, 0);
-  VrmlSFString* pSFString = new VrmlSFString(str);
+  SFString* pSFString = new SFString(str);
   env->ReleaseStringUTFChars(jstr, str);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pSFString);
@@ -1016,7 +1016,7 @@ JNIEXPORT jstring JNICALL Java_vrml_field_ConstSFString_getValue
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFString* pSFString = (VrmlSFString*) env->GetIntField(obj, fid);
+  SFString* pSFString = (SFString*) env->GetIntField(obj, fid);
   return env->NewStringUTF((pSFString->get()).c_str());
 }
 
@@ -1045,7 +1045,7 @@ JNIEXPORT jstring JNICALL Java_vrml_field_SFString_getValue
 JNIEXPORT void JNICALL Java_vrml_field_SFString_setValue__Ljava_lang_String_2
   (JNIEnv *env, jobject obj, jstring jstr)
 {
-  VrmlSFString* pSFString = (VrmlSFString*)getVrmlField(env, obj);
+  SFString* pSFString = (SFString*)getFieldValue(env, obj);
   const char *str = env->GetStringUTFChars(jstr, 0);
   pSFString->set(str);
   env->ReleaseStringUTFChars(jstr, str);
@@ -1055,9 +1055,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_SFString_setValue__Lvrml_field_ConstSFString_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlSFString* pSFString = (VrmlSFString*)getVrmlField(env, obj);
+  SFString* pSFString = (SFString*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFString* pNewSFString = (VrmlSFString*) env->GetIntField(value, fid);
+  SFString* pNewSFString = (SFString*) env->GetIntField(value, fid);
   pSFString->set(pNewSFString->get());
 }
 
@@ -1082,7 +1082,7 @@ JNIEXPORT jstring JNICALL Java_vrml_field_SFString_toString
 JNIEXPORT void JNICALL Java_vrml_field_ConstSFTime_CreateObject
   (JNIEnv *env, jobject obj, jdouble time)
 {
-  VrmlSFTime* pSFTime = new VrmlSFTime(time);
+  SFTime* pSFTime = new SFTime(time);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pSFTime);
 }
@@ -1092,7 +1092,7 @@ JNIEXPORT jdouble JNICALL Java_vrml_field_ConstSFTime_getValue
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFTime* pSFTime = (VrmlSFTime*) env->GetIntField(obj, fid);
+  SFTime* pSFTime = (SFTime*) env->GetIntField(obj, fid);
   return (jdouble) pSFTime->get();
 }
 
@@ -1122,7 +1122,7 @@ JNIEXPORT jdouble JNICALL Java_vrml_field_SFTime_getValue
 JNIEXPORT void JNICALL Java_vrml_field_SFTime_setValue__D
   (JNIEnv *env, jobject obj, jdouble time)
 {
-  VrmlSFTime* pSFTime = (VrmlSFTime*)getVrmlField(env, obj);
+  SFTime* pSFTime = (SFTime*)getFieldValue(env, obj);
   pSFTime->set((double) time);
 }
 
@@ -1131,9 +1131,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_SFTime_setValue__Lvrml_field_ConstSFTime_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlSFTime* pSFTime = (VrmlSFTime*)getVrmlField(env, obj);
+  SFTime* pSFTime = (SFTime*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFTime* pNewSFTime = (VrmlSFTime*) env->GetIntField(value, fid);
+  SFTime* pNewSFTime = (SFTime*) env->GetIntField(value, fid);
   pSFTime->set(pNewSFTime->get());
 }
 
@@ -1157,7 +1157,7 @@ JNIEXPORT jstring JNICALL Java_vrml_field_SFTime_toString
 JNIEXPORT void JNICALL Java_vrml_field_ConstSFVec2f_CreateObject
   (JNIEnv *env, jobject obj, jfloat x, jfloat y)
 {
-  VrmlSFVec2f* pSFVec2f = new VrmlSFVec2f(x, y);
+  SFVec2f* pSFVec2f = new SFVec2f(x, y);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pSFVec2f);
 }
@@ -1166,7 +1166,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFVec2f_getValue
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFVec2f* pSFVec2f = (VrmlSFVec2f*) env->GetIntField(obj, fid);
+  SFVec2f* pSFVec2f = (SFVec2f*) env->GetIntField(obj, fid);
   env->SetFloatArrayRegion(jarr, 0, 2, (jfloat*) pSFVec2f->get());
 }
 
@@ -1174,7 +1174,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_ConstSFVec2f_getX
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFVec2f* pSFVec2f = (VrmlSFVec2f*) env->GetIntField(obj, fid);
+  SFVec2f* pSFVec2f = (SFVec2f*) env->GetIntField(obj, fid);
   return (jfloat) pSFVec2f->getX();
 }
 
@@ -1182,7 +1182,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_ConstSFVec2f_getY
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFVec2f* pSFVec2f = (VrmlSFVec2f*) env->GetIntField(obj, fid);
+  SFVec2f* pSFVec2f = (SFVec2f*) env->GetIntField(obj, fid);
   return (jfloat) pSFVec2f->getY();
 }
 
@@ -1223,7 +1223,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_SFVec2f_getY
 JNIEXPORT void JNICALL Java_vrml_field_SFVec2f_setValue___3F
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
-  VrmlSFVec2f* pSFVec2f = (VrmlSFVec2f*)getVrmlField(env, obj);
+  SFVec2f* pSFVec2f = (SFVec2f*)getFieldValue(env, obj);
   jfloat *pjf = env->GetFloatArrayElements(jarr, NULL); 
   pSFVec2f->set(pjf);
   env->ReleaseFloatArrayElements(jarr, pjf, JNI_ABORT);
@@ -1232,7 +1232,7 @@ JNIEXPORT void JNICALL Java_vrml_field_SFVec2f_setValue___3F
 JNIEXPORT void JNICALL Java_vrml_field_SFVec2f_setValue__FF
   (JNIEnv *env, jobject obj, jfloat x, jfloat y)
 {
-  VrmlSFVec2f* pSFVec2f = (VrmlSFVec2f*)getVrmlField(env, obj);
+  SFVec2f* pSFVec2f = (SFVec2f*)getFieldValue(env, obj);
   const float vec2f[] = { x, y };
   pSFVec2f->set(vec2f);
 }
@@ -1241,9 +1241,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_SFVec2f_setValue__Lvrml_field_ConstSFVec2f_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlSFVec2f* pSFVec2f = (VrmlSFVec2f*)getVrmlField(env, obj);
+  SFVec2f* pSFVec2f = (SFVec2f*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFVec2f* pNewSFVec2f = (VrmlSFVec2f*) env->GetIntField(value, fid);
+  SFVec2f* pNewSFVec2f = (SFVec2f*) env->GetIntField(value, fid);
   pSFVec2f->set(pNewSFVec2f->get());
 }
 
@@ -1268,7 +1268,7 @@ JNIEXPORT jstring JNICALL Java_vrml_field_SFVec2f_toString
 JNIEXPORT void JNICALL Java_vrml_field_ConstSFVec3f_CreateObject
   (JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat z)
 {
-  VrmlSFVec3f* pSFVec3f = new VrmlSFVec3f(x, y, z);
+  SFVec3f* pSFVec3f = new SFVec3f(x, y, z);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pSFVec3f);
 }
@@ -1277,7 +1277,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstSFVec3f_getValue
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFVec3f* pSFVec3f = (VrmlSFVec3f*) env->GetIntField(obj, fid);
+  SFVec3f* pSFVec3f = (SFVec3f*) env->GetIntField(obj, fid);
   env->SetFloatArrayRegion(jarr, 0, 3, (jfloat*) pSFVec3f->get());
 }
 
@@ -1285,7 +1285,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_ConstSFVec3f_getX
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFVec3f* pSFVec3f = (VrmlSFVec3f*) env->GetIntField(obj, fid);
+  SFVec3f* pSFVec3f = (SFVec3f*) env->GetIntField(obj, fid);
   return (jfloat) pSFVec3f->getX();
 }
 
@@ -1293,7 +1293,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_ConstSFVec3f_getY
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFVec3f* pSFVec3f = (VrmlSFVec3f*) env->GetIntField(obj, fid);
+  SFVec3f* pSFVec3f = (SFVec3f*) env->GetIntField(obj, fid);
   return (jfloat) pSFVec3f->getY();
 }
 
@@ -1301,7 +1301,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_ConstSFVec3f_getZ
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlSFVec3f* pSFVec3f = (VrmlSFVec3f*) env->GetIntField(obj, fid);
+  SFVec3f* pSFVec3f = (SFVec3f*) env->GetIntField(obj, fid);
   return (jfloat) pSFVec3f->getZ();
 }
 
@@ -1348,7 +1348,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_SFVec3f_getZ
 JNIEXPORT void JNICALL Java_vrml_field_SFVec3f_setValue___3F
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
-  VrmlSFVec3f* pSFVec3f = (VrmlSFVec3f*)getVrmlField(env, obj);
+  SFVec3f* pSFVec3f = (SFVec3f*)getFieldValue(env, obj);
   jfloat *pjf = env->GetFloatArrayElements(jarr, NULL); 
   pSFVec3f->set(pjf);
   env->ReleaseFloatArrayElements(jarr, pjf, JNI_ABORT);
@@ -1357,7 +1357,7 @@ JNIEXPORT void JNICALL Java_vrml_field_SFVec3f_setValue___3F
 JNIEXPORT void JNICALL Java_vrml_field_SFVec3f_setValue__FFF
   (JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat z)
 {
-  VrmlSFVec3f* pSFVec3f = (VrmlSFVec3f*)getVrmlField(env, obj);
+  SFVec3f* pSFVec3f = (SFVec3f*)getFieldValue(env, obj);
   const float vec3f[] = { x, y, z };
   pSFVec3f->set(vec3f);
 }
@@ -1366,9 +1366,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_SFVec3f_setValue__Lvrml_field_ConstSFVec3f_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlSFVec3f* pSFVec3f = (VrmlSFVec3f*)getVrmlField(env, obj);
+  SFVec3f* pSFVec3f = (SFVec3f*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFVec3f* pNewSFVec3f = (VrmlSFVec3f*) env->GetIntField(value, fid);
+  SFVec3f* pNewSFVec3f = (SFVec3f*) env->GetIntField(value, fid);
   pSFVec3f->set(pNewSFVec3f->get());
 }
 
@@ -1398,7 +1398,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFColor_CreateObject__I_3F
   (JNIEnv *env, jobject obj, jint size, jfloatArray jarr)
 {
   jfloat *pjf = env->GetFloatArrayElements(jarr, NULL);
-  VrmlMFColor* pMFColor = new VrmlMFColor(size / 3, (const float *) pjf);
+  MFColor* pMFColor = new MFColor(size / 3, (const float *) pjf);
   env->ReleaseFloatArrayElements(jarr, pjf, JNI_ABORT);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFColor);
@@ -1422,7 +1422,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFColor_CreateObject___3_3F
     env->ReleaseFloatArrayElements(el, pjf, JNI_ABORT);
   }
   
-  VrmlMFColor* pMFColor = new VrmlMFColor(nRows, theArray);
+  MFColor* pMFColor = new MFColor(nRows, theArray);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFColor);
   delete[] theArray;
@@ -1432,7 +1432,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstMFColor_getSize
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFColor* pMFColor = (VrmlMFColor*) env->GetIntField(obj, fid);
+  MFColor* pMFColor = (MFColor*) env->GetIntField(obj, fid);
   return (jint) pMFColor->getLength();
 }
 
@@ -1440,7 +1440,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFColor_getValue___3_3F
   (JNIEnv *env, jobject obj, jobjectArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFColor* pMFColor = (VrmlMFColor*) env->GetIntField(obj, fid);
+  MFColor* pMFColor = (MFColor*) env->GetIntField(obj, fid);
   
   int nRows = pMFColor->getLength();
   jfloat* p = (jfloat*) pMFColor->get();
@@ -1457,7 +1457,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFColor_getValue___3F
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFColor* pMFColor = (VrmlMFColor*) env->GetIntField(obj, fid);
+  MFColor* pMFColor = (MFColor*) env->GetIntField(obj, fid);
   jsize nElements = env->GetArrayLength(jarr);
   env->SetFloatArrayRegion(jarr, 0, nElements, (jfloat*) pMFColor->get());
 }
@@ -1466,7 +1466,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFColor_get1Value__I_3F
   (JNIEnv *env, jobject obj, jint element, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFColor* pMFColor = (VrmlMFColor*) env->GetIntField(obj, fid);
+  MFColor* pMFColor = (MFColor*) env->GetIntField(obj, fid);
   env->SetFloatArrayRegion(jarr, 0, 3, 
                            (jfloat*) pMFColor->getElement(element));
 }
@@ -1476,10 +1476,10 @@ Java_vrml_field_ConstMFColor_get1Value__ILvrml_field_SFColor_2
   (JNIEnv *env, jobject obj, jint element, jobject sfcolor)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFColor* pMFColor = (VrmlMFColor*) env->GetIntField(obj, fid);
+  MFColor* pMFColor = (MFColor*) env->GetIntField(obj, fid);
   const float* value = pMFColor->getElement(element);
   fid = getFid(env, sfcolor, "FieldPtr", "I");
-  VrmlSFColor* pSFColor = (VrmlSFColor*) env->GetIntField(sfcolor, fid);
+  SFColor* pSFColor = (SFColor*) env->GetIntField(sfcolor, fid);
   pSFColor->set(value);
 }
 
@@ -1515,7 +1515,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFColor_clear
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFColor* pMFColor = (VrmlMFColor*) env->GetIntField(obj, fid);
+  MFColor* pMFColor = (MFColor*) env->GetIntField(obj, fid);
   pMFColor->set(0, NULL);
 }
 
@@ -1523,7 +1523,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFColor_delete
   (JNIEnv *env, jobject obj, jint index)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFColor* pMFColor = (VrmlMFColor*) env->GetIntField(obj, fid);
+  MFColor* pMFColor = (MFColor*) env->GetIntField(obj, fid);
   pMFColor->removeElement(index);
 }
 
@@ -1571,7 +1571,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFColor_setValue___3_3F
     env->ReleaseFloatArrayElements(el, pjf, JNI_ABORT);
   }
 
-  VrmlMFColor* pMFColor = (VrmlMFColor*)getVrmlField(env, obj);
+  MFColor* pMFColor = (MFColor*)getFieldValue(env, obj);
   pMFColor->set(nRows, theArray);
   delete[] theArray;
 }
@@ -1579,7 +1579,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFColor_setValue___3_3F
 JNIEXPORT void JNICALL Java_vrml_field_MFColor_setValue___3F
   (JNIEnv *env, jobject obj, jfloatArray value)
 {
-  VrmlMFColor* pMFColor = (VrmlMFColor*)getVrmlField(env, obj);
+  MFColor* pMFColor = (MFColor*)getFieldValue(env, obj);
   jfloat *pjf = env->GetFloatArrayElements(value, NULL); 
   jsize nels = env->GetArrayLength(value);
   pMFColor->set(nels / 3, (float*) pjf);
@@ -1589,7 +1589,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFColor_setValue___3F
 JNIEXPORT void JNICALL Java_vrml_field_MFColor_setValue__I_3F
   (JNIEnv *env, jobject obj, jint size, jfloatArray value)
 {
-  VrmlMFColor* pMFColor = (VrmlMFColor*)getVrmlField(env, obj);
+  MFColor* pMFColor = (MFColor*)getFieldValue(env, obj);
   jfloat *pjf = env->GetFloatArrayElements(value, NULL); 
   pMFColor->set(size / 3, (float*) pjf);
   env->ReleaseFloatArrayElements(value, pjf, JNI_ABORT);
@@ -1599,9 +1599,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFColor_setValue__Lvrml_field_MFColor_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlMFColor* pMFColor = (VrmlMFColor*)getVrmlField(env, obj);
+  MFColor* pMFColor = (MFColor*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlMFColor* pNewMFColor = (VrmlMFColor*) env->GetIntField(value, fid);
+  MFColor* pNewMFColor = (MFColor*) env->GetIntField(value, fid);
   pMFColor->set(pNewMFColor->getLength(), pNewMFColor->get());
 }
 
@@ -1616,9 +1616,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFColor_set1Value__ILvrml_field_ConstSFColor_2
   (JNIEnv *env, jobject obj, jint index, jobject sfcolor)
 {
-  VrmlMFColor* pMFColor = (VrmlMFColor*)getVrmlField(env, obj);
+  MFColor* pMFColor = (MFColor*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfcolor, "FieldPtr", "I");
-  VrmlSFColor* pSFColor = (VrmlSFColor*) env->GetIntField(sfcolor, fid);
+  SFColor* pSFColor = (SFColor*) env->GetIntField(sfcolor, fid);
   memcpy((void*) pMFColor->getElement(index), pSFColor->get(), 
          3 * sizeof(float));
 }
@@ -1635,7 +1635,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFColor_set1Value__IFFF
   (JNIEnv *env, jobject obj, jint index, jfloat red, jfloat green, 
    jfloat blue)
 {
-  VrmlMFColor* pMFColor = (VrmlMFColor*)getVrmlField(env, obj);
+  MFColor* pMFColor = (MFColor*)getFieldValue(env, obj);
   float *p = (float*) pMFColor->getElement(index);
   p[0] = red;
   p[1] = green;
@@ -1646,9 +1646,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFColor_addValue__Lvrml_field_ConstSFColor_2
   (JNIEnv *env, jobject obj, jobject sfcolor)
 {
-  VrmlMFColor* pMFColor = (VrmlMFColor*)getVrmlField(env, obj);
+  MFColor* pMFColor = (MFColor*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfcolor, "FieldPtr", "I");
-  VrmlSFColor* pSFColor = (VrmlSFColor*) env->GetIntField(sfcolor, fid);
+  SFColor* pSFColor = (SFColor*) env->GetIntField(sfcolor, fid);
   pMFColor->insertElement(pMFColor->getLength(), pSFColor->get());
 }
 
@@ -1663,7 +1663,7 @@ Java_vrml_field_MFColor_addValue__Lvrml_field_SFColor_2
 JNIEXPORT void JNICALL Java_vrml_field_MFColor_addValue__FFF
   (JNIEnv *env, jobject obj, jfloat red, jfloat green, jfloat blue)
 {
-  VrmlMFColor* pMFColor = (VrmlMFColor*)getVrmlField(env, obj);
+  MFColor* pMFColor = (MFColor*)getFieldValue(env, obj);
   float newData[3];
   newData[0] = red;
   newData[1] = green;
@@ -1675,9 +1675,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFColor_insertValue__ILvrml_field_ConstSFColor_2
   (JNIEnv *env, jobject obj, jint index, jobject sfcolor)
 {
-  VrmlMFColor* pMFColor = (VrmlMFColor*)getVrmlField(env, obj);
+  MFColor* pMFColor = (MFColor*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfcolor, "FieldPtr", "I");
-  VrmlSFColor* pSFColor = (VrmlSFColor*) env->GetIntField(sfcolor, fid);
+  SFColor* pSFColor = (SFColor*) env->GetIntField(sfcolor, fid);
   pMFColor->insertElement(index, pSFColor->get());
 }
 
@@ -1693,7 +1693,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFColor_insertValue__IFFF
   (JNIEnv *env, jobject obj, jint index, jfloat red, jfloat green, 
    jfloat blue)
 {
-  VrmlMFColor* pMFColor = (VrmlMFColor*)getVrmlField(env, obj);
+  MFColor* pMFColor = (MFColor*)getFieldValue(env, obj);
   float newData[3];
   newData[0] = red;
   newData[1] = green;
@@ -1715,7 +1715,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFFloat_CreateObject
   (JNIEnv *env, jobject obj, jint size, jfloatArray value)
 {
   jfloat *pjf = env->GetFloatArrayElements(value, NULL);
-  VrmlMFFloat* pMFFloat = new VrmlMFFloat(size, (const float *) pjf);
+  MFFloat* pMFFloat = new MFFloat(size, (const float *) pjf);
   env->ReleaseFloatArrayElements(value, pjf, JNI_ABORT);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFFloat);
@@ -1725,7 +1725,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstMFFloat_getSize
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*) env->GetIntField(obj, fid);
+  MFFloat* pMFFloat = (MFFloat*) env->GetIntField(obj, fid);
   return (jint) pMFFloat->getLength();
 }
 
@@ -1733,7 +1733,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFFloat_getValue
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*) env->GetIntField(obj, fid);
+  MFFloat* pMFFloat = (MFFloat*) env->GetIntField(obj, fid);
   env->SetFloatArrayRegion(jarr, 0, pMFFloat->getLength(), 
                            (jfloat*) pMFFloat->get());
 }
@@ -1742,7 +1742,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_ConstMFFloat_get1Value
   (JNIEnv *env, jobject obj, jint index)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*) env->GetIntField(obj, fid);
+  MFFloat* pMFFloat = (MFFloat*) env->GetIntField(obj, fid);
   return (jfloat) pMFFloat->getElement(index);
 }
 
@@ -1771,7 +1771,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFFloat_clear
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*) env->GetIntField(obj, fid);
+  MFFloat* pMFFloat = (MFFloat*) env->GetIntField(obj, fid);
   pMFFloat->set(0, NULL);
 }
 
@@ -1779,7 +1779,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFFloat_delete
   (JNIEnv *env, jobject obj, jint index)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*) env->GetIntField(obj, fid);
+  MFFloat* pMFFloat = (MFFloat*) env->GetIntField(obj, fid);
   pMFFloat->removeElement(index);
 }
 
@@ -1798,7 +1798,7 @@ JNIEXPORT jfloat JNICALL Java_vrml_field_MFFloat_get1Value
 JNIEXPORT void JNICALL Java_vrml_field_MFFloat_setValue___3F
   (JNIEnv *env, jobject obj, jfloatArray value)
 {
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*)getVrmlField(env, obj);
+  MFFloat* pMFFloat = (MFFloat*)getFieldValue(env, obj);
   jfloat *pjf = env->GetFloatArrayElements(value, NULL); 
   jsize nels = env->GetArrayLength(value);
   pMFFloat->set(nels, (float*) pjf);
@@ -1808,7 +1808,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFFloat_setValue___3F
 JNIEXPORT void JNICALL Java_vrml_field_MFFloat_setValue__I_3F
   (JNIEnv *env, jobject obj, jint size, jfloatArray value)
 {
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*)getVrmlField(env, obj);
+  MFFloat* pMFFloat = (MFFloat*)getFieldValue(env, obj);
   jfloat *pjf = env->GetFloatArrayElements(value, NULL); 
   pMFFloat->set(size, (float*) pjf);
   env->ReleaseFloatArrayElements(value, pjf, JNI_ABORT);
@@ -1817,9 +1817,9 @@ JNIEXPORT void JNICALL Java_vrml_field_MFFloat_setValue__I_3F
 JNIEXPORT void JNICALL Java_vrml_field_MFFloat_setValue__Lvrml_field_MFFloat_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*)getVrmlField(env, obj);
+  MFFloat* pMFFloat = (MFFloat*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlMFFloat* pNewMFFloat = (VrmlMFFloat*) env->GetIntField(value, fid);
+  MFFloat* pNewMFFloat = (MFFloat*) env->GetIntField(value, fid);
   pMFFloat->set(pNewMFFloat->getLength(), pNewMFFloat->get());
 }
 
@@ -1833,9 +1833,9 @@ Java_vrml_field_MFFloat_setValue__Lvrml_field_ConstMFFloat_2
 JNIEXPORT void JNICALL Java_vrml_field_MFFloat_set1Value__IF
   (JNIEnv *env, jobject obj, jint index, jfloat value)
 {
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*)getVrmlField(env, obj);
+  MFFloat* pMFFloat = (MFFloat*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  pMFFloat = (VrmlMFFloat*) env->GetIntField(obj, fid);
+  pMFFloat = (MFFloat*) env->GetIntField(obj, fid);
   pMFFloat->setElement(index, value);
 }
 
@@ -1843,9 +1843,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFFloat_set1Value__ILvrml_field_ConstSFFloat_2
   (JNIEnv *env, jobject obj, jint index, jobject sffloat)
 {
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*)getVrmlField(env, obj);
+  MFFloat* pMFFloat = (MFFloat*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sffloat, "FieldPtr", "I");
-  VrmlSFFloat* pSFFloat = (VrmlSFFloat*) env->GetIntField(sffloat, fid);
+  SFFloat* pSFFloat = (SFFloat*) env->GetIntField(sffloat, fid);
   pMFFloat->setElement(index, pSFFloat->get());
 }
 
@@ -1860,7 +1860,7 @@ Java_vrml_field_MFFloat_set1Value__ILvrml_field_SFFloat_2
 JNIEXPORT void JNICALL Java_vrml_field_MFFloat_addValue__F
   (JNIEnv *env, jobject obj, jfloat value)
 {
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*)getVrmlField(env, obj);
+  MFFloat* pMFFloat = (MFFloat*)getFieldValue(env, obj);
   pMFFloat->insertElement(pMFFloat->getLength(), (float) value);
 }
 
@@ -1868,9 +1868,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFFloat_addValue__Lvrml_field_ConstSFFloat_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*)getVrmlField(env, obj);
+  MFFloat* pMFFloat = (MFFloat*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFFloat* pSFFloat = (VrmlSFFloat*) env->GetIntField(value, fid);
+  SFFloat* pSFFloat = (SFFloat*) env->GetIntField(value, fid);
   pMFFloat->insertElement(pMFFloat->getLength(), pSFFloat->get());
 }
 
@@ -1885,7 +1885,7 @@ Java_vrml_field_MFFloat_addValue__Lvrml_field_SFFloat_2
 JNIEXPORT void JNICALL Java_vrml_field_MFFloat_insertValue__IF
   (JNIEnv *env, jobject obj, jint index, jfloat value)
 {
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*)getVrmlField(env, obj);
+  MFFloat* pMFFloat = (MFFloat*)getFieldValue(env, obj);
   pMFFloat->insertElement(index, (float) value);
 }
 
@@ -1893,9 +1893,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFFloat_insertValue__ILvrml_field_ConstSFFloat_2
   (JNIEnv *env, jobject obj, jint index, jobject value)
 {
-  VrmlMFFloat* pMFFloat = (VrmlMFFloat*)getVrmlField(env, obj);
+  MFFloat* pMFFloat = (MFFloat*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFFloat* pSFFloat = (VrmlSFFloat*) env->GetIntField(value, fid);
+  SFFloat* pSFFloat = (SFFloat*) env->GetIntField(value, fid);
   pMFFloat->insertElement(index, pSFFloat->get());
 }
 
@@ -1921,7 +1921,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFInt32_CreateObject
   (JNIEnv *env, jobject obj, jint size, jlongArray value)
 {
   jlong *pjl = env->GetLongArrayElements(value, NULL);
-  VrmlMFInt32* pMFInt32 = new VrmlMFInt32(size, (const long *) pjl);
+  MFInt32* pMFInt32 = new MFInt32(size, (const long *) pjl);
   env->ReleaseLongArrayElements(value, pjl, JNI_ABORT);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFInt32);
@@ -1931,7 +1931,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstMFInt32_getSize
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*) env->GetIntField(obj, fid);
+  MFInt32* pMFInt32 = (MFInt32*) env->GetIntField(obj, fid);
   return (jint) pMFInt32->getLength();
 }
 
@@ -1939,7 +1939,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFInt32_getValue
   (JNIEnv *env, jobject obj, jlongArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*) env->GetIntField(obj, fid);
+  MFInt32* pMFInt32 = (MFInt32*) env->GetIntField(obj, fid);
   env->SetLongArrayRegion(jarr, 0, pMFInt32->getLength(),
                           (jlong*) pMFInt32->get()) ;
 }
@@ -1948,7 +1948,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstMFInt32_get1Value
   (JNIEnv *env, jobject obj, jint index)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*) env->GetIntField(obj, fid);
+  MFInt32* pMFInt32 = (MFInt32*) env->GetIntField(obj, fid);
   return (jint) pMFInt32->getElement(index);
 }
 
@@ -1978,7 +1978,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFInt32_clear
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*) env->GetIntField(obj, fid);
+  MFInt32* pMFInt32 = (MFInt32*) env->GetIntField(obj, fid);
   pMFInt32->set(0, NULL);
 }
 
@@ -1986,7 +1986,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFInt32_delete
   (JNIEnv *env, jobject obj, jint n)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*) env->GetIntField(obj, fid);
+  MFInt32* pMFInt32 = (MFInt32*) env->GetIntField(obj, fid);
   pMFInt32->removeElement(n);
 }
 
@@ -2006,7 +2006,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFInt32_setValue___3I
   (JNIEnv *env, jobject obj, jlongArray value)
 {
   jlong *pjl = env->GetLongArrayElements(value, NULL); 
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*)getVrmlField(env, obj);
+  MFInt32* pMFInt32 = (MFInt32*)getFieldValue(env, obj);
   int size = (int) env->GetArrayLength(value); 
   pMFInt32->set(size, (const long*) pjl);
   env->ReleaseLongArrayElements(value, pjl, JNI_ABORT);
@@ -2016,7 +2016,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFInt32_setValue__I_3I
   (JNIEnv *env, jobject obj, jint size, jlongArray value)
 {
   jlong *pjl = env->GetLongArrayElements(value, NULL); 
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*)getVrmlField(env, obj);
+  MFInt32* pMFInt32 = (MFInt32*)getFieldValue(env, obj);
   pMFInt32->set(size, (const long*) pjl);
   env->ReleaseLongArrayElements(value, pjl, JNI_ABORT);
 }
@@ -2025,9 +2025,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFInt32_setValue__Lvrml_field_MFInt32_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*)getVrmlField(env, obj);
+  MFInt32* pMFInt32 = (MFInt32*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlMFInt32* pNewMFInt32 = (VrmlMFInt32*) env->GetIntField(value, fid);
+  MFInt32* pNewMFInt32 = (MFInt32*) env->GetIntField(value, fid);
   pMFInt32->set(pNewMFInt32->getLength(), pNewMFInt32->get());
 }
 
@@ -2041,7 +2041,7 @@ Java_vrml_field_MFInt32_setValue__Lvrml_field_ConstMFInt32_2
 JNIEXPORT void JNICALL Java_vrml_field_MFInt32_set1Value__II
   (JNIEnv *env, jobject obj, jint index, jint value)
 {
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*)getVrmlField(env, obj);
+  MFInt32* pMFInt32 = (MFInt32*)getFieldValue(env, obj);
   pMFInt32->setElement(index, value);
 }
 
@@ -2049,9 +2049,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFInt32_set1Value__ILvrml_field_ConstSFInt32_2
   (JNIEnv *env, jobject obj, jint index, jobject sfint)
 {
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*)getVrmlField(env, obj);
+  MFInt32* pMFInt32 = (MFInt32*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfint, "FieldPtr", "I");
-  VrmlSFInt32* pSFInt32 = (VrmlSFInt32*) env->GetIntField(sfint, fid);
+  SFInt32* pSFInt32 = (SFInt32*) env->GetIntField(sfint, fid);
   pMFInt32->setElement(index, pSFInt32->get());
 }
 
@@ -2066,7 +2066,7 @@ Java_vrml_field_MFInt32_set1Value__ILvrml_field_SFInt32_2
 JNIEXPORT void JNICALL Java_vrml_field_MFInt32_addValue__I
   (JNIEnv *env, jobject obj, jint value)
 {
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*)getVrmlField(env, obj);
+  MFInt32* pMFInt32 = (MFInt32*)getFieldValue(env, obj);
   pMFInt32->insertElement(pMFInt32->getLength(), (int) value);
 }
 
@@ -2074,9 +2074,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFInt32_addValue__Lvrml_field_ConstSFInt32_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*)getVrmlField(env, obj);
+  MFInt32* pMFInt32 = (MFInt32*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFInt32* pSFInt32 = (VrmlSFInt32*) env->GetIntField(value, fid);
+  SFInt32* pSFInt32 = (SFInt32*) env->GetIntField(value, fid);
   pMFInt32->insertElement(pMFInt32->getLength(), pSFInt32->get());
 }
 
@@ -2091,7 +2091,7 @@ Java_vrml_field_MFInt32_addValue__Lvrml_field_SFInt32_2
 JNIEXPORT void JNICALL Java_vrml_field_MFInt32_insertValue__II
   (JNIEnv *env, jobject obj, jint index, jfloat value)
 {
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*)getVrmlField(env, obj);
+  MFInt32* pMFInt32 = (MFInt32*)getFieldValue(env, obj);
   pMFInt32->insertElement(index, (int)value);
 }
 
@@ -2099,9 +2099,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFInt32_insertValue__ILvrml_field_ConstSFInt32_2
   (JNIEnv *env, jobject obj, jint index, jobject value)
 {
-  VrmlMFInt32* pMFInt32 = (VrmlMFInt32*)getVrmlField(env, obj);
+  MFInt32* pMFInt32 = (MFInt32*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlSFInt32* pSFInt32 = (VrmlSFInt32*) env->GetIntField(value, fid);
+  SFInt32* pSFInt32 = (SFInt32*) env->GetIntField(value, fid);
   pMFInt32->insertElement(index, pSFInt32->get());
 }
 
@@ -2126,29 +2126,29 @@ JNIEXPORT jstring JNICALL Java_vrml_field_MFInt32_toString
 JNIEXPORT void JNICALL Java_vrml_field_ConstMFNode_CreateObject
   (JNIEnv *env, jobject obj, jint size, jobjectArray jarr)
 {
-  VrmlMFNode* pMFNode;
+  MFNode* pMFNode;
   jfieldID fid;
   jobject jNode;
-  VrmlNode* pNode;
+  Node* pNode;
   
   if (size > 0)
   {
-    VrmlNodePtr* pNodePtrArray = new VrmlNodePtr[size];
+    NodePtr* pNodePtrArray = new NodePtr[size];
 
     for (int i = 0; i < size; i++)
     {
       jNode = env->GetObjectArrayElement(jarr, i);
       fid = getFid(env, jNode, "NodePtr", "I");
-      pNode = (VrmlNode*) env->GetIntField(jNode, fid);
-      pNodePtrArray[i] = VrmlNodePtr(pNode);
+      pNode = (Node*) env->GetIntField(jNode, fid);
+      pNodePtrArray[i] = NodePtr(pNode);
     }
 
-    pMFNode = new VrmlMFNode(size, pNodePtrArray);
+    pMFNode = new MFNode(size, pNodePtrArray);
     delete[] pNodePtrArray;
   }
   else
   {
-    pMFNode = new VrmlMFNode();
+    pMFNode = new MFNode();
   }
 
   fid = getFid(env, obj, "FieldPtr", "I");
@@ -2159,14 +2159,14 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstMFNode_getSize
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFNode* pMFNode = (VrmlMFNode*) env->GetIntField(obj, fid);
+  MFNode* pMFNode = (MFNode*) env->GetIntField(obj, fid);
   return (jint) pMFNode->getLength();
 }
 
 JNIEXPORT void JNICALL Java_vrml_field_ConstMFNode_getValue
   (JNIEnv *env, jobject obj, jobjectArray basenode)
 {
-  VrmlMFNode* pMFNode = (VrmlMFNode*) getVrmlField(env, obj);
+  MFNode* pMFNode = (MFNode*) getFieldValue(env, obj);
   int arraySize = pMFNode->getLength();
   jclass clazz = env->FindClass("vrml/node/Node");
   jobject jNode;
@@ -2183,7 +2183,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFNode_getValue
 JNIEXPORT jobject JNICALL Java_vrml_field_ConstMFNode_get1Value
   (JNIEnv *env, jobject obj, jint index)
 {
-  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
+  MFNode* pMFNode = (MFNode*)getFieldValue(env, obj);
   jclass clazz = env->FindClass("vrml/node/Node");
   jobject jNode = env->AllocObject(clazz);
   jfieldID fid = env->GetFieldID(clazz, "NodePtr", "I");
@@ -2217,7 +2217,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFNode_clear
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFNode* pMFNode = (VrmlMFNode*) env->GetIntField(obj, fid);
+  MFNode* pMFNode = (MFNode*) env->GetIntField(obj, fid);
   pMFNode->clear();
 }
 
@@ -2225,7 +2225,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFNode_delete
   (JNIEnv *env, jobject obj, jint index)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFNode* pMFNode = (VrmlMFNode*) env->GetIntField(obj, fid);
+  MFNode* pMFNode = (MFNode*) env->GetIntField(obj, fid);
   pMFNode->removeElement(index);
 }
 
@@ -2250,8 +2250,8 @@ JNIEXPORT void JNICALL Java_vrml_field_MFNode_setValue__I_3Lvrml_BaseNode_2
 JNIEXPORT void JNICALL Java_vrml_field_MFNode_setValue__Lvrml_field_MFNode_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
-  VrmlMFNode* pNewMFNode = (VrmlMFNode*) getVrmlField(env, value);
+  MFNode* pMFNode = (MFNode*)getFieldValue(env, obj);
+  MFNode* pNewMFNode = (MFNode*) getFieldValue(env, value);
   *pMFNode = *pNewMFNode;
 }
 
@@ -2265,18 +2265,18 @@ Java_vrml_field_MFNode_setValue__Lvrml_field_ConstMFNode_2
 JNIEXPORT void JNICALL Java_vrml_field_MFNode_set1Value__ILvrml_BaseNode_2
   (JNIEnv *env, jobject obj, jint pos, jobject value)
 {
-  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
+  MFNode* pMFNode = (MFNode*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "NodePtr", "I");
-  VrmlNode* pNewNode = (VrmlNode*) env->GetIntField(value, fid);
-  pMFNode->setElement(pos, VrmlNodePtr(pNewNode)); 
+  Node* pNewNode = (Node*) env->GetIntField(value, fid);
+  pMFNode->setElement(pos, NodePtr(pNewNode)); 
 }
 
 JNIEXPORT void JNICALL 
 Java_vrml_field_MFNode_set1Value__ILvrml_field_ConstSFNode_2
   (JNIEnv *env, jobject obj, jint index, jobject sfnode)
 {
-  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
-  VrmlSFNode* pSFNode = (VrmlSFNode*)getVrmlField(env, sfnode);
+  MFNode* pMFNode = (MFNode*)getFieldValue(env, obj);
+  SFNode* pSFNode = (SFNode*)getFieldValue(env, sfnode);
   pMFNode->setElement(index, pSFNode->get()); 
 }
 
@@ -2290,9 +2290,9 @@ Java_vrml_field_MFNode_set1Value__ILvrml_field_SFNode_2
 JNIEXPORT void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_BaseNode_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
+  MFNode* pMFNode = (MFNode*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "NodePtr", "I");
-  VrmlNode* pNewNode = (VrmlNode*) env->GetIntField(value, fid);
+  Node* pNewNode = (Node*) env->GetIntField(value, fid);
   pMFNode->addNode(*pNewNode); 
 }
 
@@ -2300,8 +2300,8 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFNode_addValue__Lvrml_field_ConstSFNode_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
-  VrmlSFNode* pSFNode = (VrmlSFNode*)getVrmlField(env, value);
+  MFNode* pMFNode = (MFNode*)getFieldValue(env, obj);
+  SFNode* pSFNode = (SFNode*)getFieldValue(env, value);
   pMFNode->addNode(*(pSFNode->get().get())); 
 }
 
@@ -2314,18 +2314,18 @@ JNIEXPORT void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_field_SFNode_2
 JNIEXPORT void JNICALL Java_vrml_field_MFNode_insertValue__ILvrml_BaseNode_2
   (JNIEnv *env, jobject obj, jint index, jobject value)
 {
-  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
+  MFNode* pMFNode = (MFNode*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "NodePtr", "I");
-  VrmlNode* pNewNode = (VrmlNode*) env->GetIntField(value, fid);
-  pMFNode->insertElement(index, VrmlNodePtr(pNewNode)); 
+  Node* pNewNode = (Node*) env->GetIntField(value, fid);
+  pMFNode->insertElement(index, NodePtr(pNewNode)); 
 }
 
 JNIEXPORT void JNICALL 
 Java_vrml_field_MFNode_insertValue__ILvrml_field_ConstSFNode_2
   (JNIEnv *env, jobject obj, jint index, jobject value)
 {
-  VrmlMFNode* pMFNode = (VrmlMFNode*)getVrmlField(env, obj);
-  VrmlSFNode* pSFNode = (VrmlSFNode*)getVrmlField(env, value);
+  MFNode* pMFNode = (MFNode*)getFieldValue(env, obj);
+  SFNode* pSFNode = (SFNode*)getFieldValue(env, value);
   pMFNode->insertElement(index, pSFNode->get()); 
 }
 
@@ -2365,7 +2365,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFRotation_CreateObject___3_3F
     env->ReleaseFloatArrayElements(el, pjf, JNI_ABORT);
   }
   
-  VrmlMFRotation* pMFRotation = new VrmlMFRotation(nRows, theArray);
+  MFRotation* pMFRotation = new MFRotation(nRows, theArray);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFRotation);
   delete[] theArray;
@@ -2375,8 +2375,8 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFRotation_CreateObject__I_3F
   (JNIEnv *env, jobject obj, jint size, jfloatArray jarr)
 {
   jfloat *pjf = env->GetFloatArrayElements(jarr, NULL);
-  VrmlMFRotation* pMFRotation =
-    new VrmlMFRotation(size / 4, (const float *) pjf);
+  MFRotation* pMFRotation =
+    new MFRotation(size / 4, (const float *) pjf);
   env->ReleaseFloatArrayElements(jarr, pjf, JNI_ABORT);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFRotation);
@@ -2386,7 +2386,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstMFRotation_getSize
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*) env->GetIntField(obj, fid);
+  MFRotation* pMFRotation = (MFRotation*) env->GetIntField(obj, fid);
   return (jint) pMFRotation->getLength();
 }
 
@@ -2394,7 +2394,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFRotation_getValue___3_3F
   (JNIEnv *env, jobject obj, jobjectArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*) env->GetIntField(obj, fid);
+  MFRotation* pMFRotation = (MFRotation*) env->GetIntField(obj, fid);
   
   int nRows = pMFRotation->getLength();
   jfloat* p = (jfloat*) pMFRotation->get();
@@ -2410,7 +2410,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFRotation_getValue___3F
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*) env->GetIntField(obj, fid);
+  MFRotation* pMFRotation = (MFRotation*) env->GetIntField(obj, fid);
   jsize nElements = env->GetArrayLength(jarr);
   env->SetFloatArrayRegion(jarr, 0, nElements, (jfloat*) pMFRotation->get());
 }
@@ -2419,7 +2419,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFRotation_get1Value__I_3F
   (JNIEnv *env, jobject obj, jint element, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*) env->GetIntField(obj, fid);
+  MFRotation* pMFRotation = (MFRotation*) env->GetIntField(obj, fid);
   env->SetFloatArrayRegion(jarr, 0, 4, 
 			   (jfloat*) pMFRotation->getElement(element));
 }
@@ -2429,11 +2429,11 @@ Java_vrml_field_ConstMFRotation_get1Value__ILvrml_field_SFRotation_2
   (JNIEnv *env, jobject obj, jint element, jobject sfrotation)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*) env->GetIntField(obj, fid);
+  MFRotation* pMFRotation = (MFRotation*) env->GetIntField(obj, fid);
   const float* value = pMFRotation->getElement(element);
   fid = getFid(env, sfrotation, "FieldPtr", "I");
-  VrmlSFRotation* pSFRotation = 
-    (VrmlSFRotation*) env->GetIntField(sfrotation, fid);
+  SFRotation* pSFRotation = 
+    (SFRotation*) env->GetIntField(sfrotation, fid);
   pSFRotation->set(value);
 }
 
@@ -2470,7 +2470,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFRotation_clear
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*) env->GetIntField(obj, fid);
+  MFRotation* pMFRotation = (MFRotation*) env->GetIntField(obj, fid);
   pMFRotation->set(0, NULL);
 }
 
@@ -2478,7 +2478,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFRotation_delete
   (JNIEnv *env, jobject obj, jint index)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*) env->GetIntField(obj, fid);
+  MFRotation* pMFRotation = (MFRotation*) env->GetIntField(obj, fid);
   pMFRotation->removeElement(index);
 }
 
@@ -2526,7 +2526,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFRotation_setValue___3_3F
     env->ReleaseFloatArrayElements(el, pjf, JNI_ABORT);
   }
 
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*)getVrmlField(env, obj);
+  MFRotation* pMFRotation = (MFRotation*)getFieldValue(env, obj);
   pMFRotation->set(nRows, theArray);
   delete[] theArray;
 }
@@ -2534,7 +2534,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFRotation_setValue___3_3F
 JNIEXPORT void JNICALL Java_vrml_field_MFRotation_setValue___3F
   (JNIEnv *env, jobject obj, jfloatArray value)
 {
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*)getVrmlField(env, obj);
+  MFRotation* pMFRotation = (MFRotation*)getFieldValue(env, obj);
   jfloat *pjf = env->GetFloatArrayElements(value, NULL); 
   jsize nels = env->GetArrayLength(value);
   pMFRotation->set(nels / 4, (float*) pjf);
@@ -2544,7 +2544,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFRotation_setValue___3F
 JNIEXPORT void JNICALL Java_vrml_field_MFRotation_setValue__I_3F
   (JNIEnv *env, jobject obj, jint size, jfloatArray value)
 {
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*)getVrmlField(env, obj);
+  MFRotation* pMFRotation = (MFRotation*)getFieldValue(env, obj);
   jfloat *pjf = env->GetFloatArrayElements(value, NULL); 
   pMFRotation->set(size / 4, (float*) pjf);
   env->ReleaseFloatArrayElements(value, pjf, JNI_ABORT);
@@ -2554,10 +2554,10 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFRotation_setValue__Lvrml_field_MFRotation_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*)getVrmlField(env, obj);
+  MFRotation* pMFRotation = (MFRotation*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlMFRotation* pNewMFRotation =
-    (VrmlMFRotation*) env->GetIntField(value, fid);
+  MFRotation* pNewMFRotation =
+    (MFRotation*) env->GetIntField(value, fid);
   pMFRotation->set(pNewMFRotation->getLength(), pNewMFRotation->get());
 }
 
@@ -2573,10 +2573,10 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFRotation_set1Value__ILvrml_field_ConstSFRotation_2
   (JNIEnv *env, jobject obj, jint index, jobject sfrotation)
 {
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*)getVrmlField(env, obj);
+  MFRotation* pMFRotation = (MFRotation*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfrotation, "FieldPtr", "I");
-  VrmlSFRotation* pSFRotation = 
-    (VrmlSFRotation*) env->GetIntField(sfrotation, fid);
+  SFRotation* pSFRotation = 
+    (SFRotation*) env->GetIntField(sfrotation, fid);
   memcpy((void*) pMFRotation->getElement(index), pSFRotation->get(),
          4 * sizeof(float));
 }
@@ -2593,7 +2593,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFRotation_set1Value__IFFFF
   (JNIEnv *env, jobject obj, jint index, jfloat axisX, jfloat axisY, 
    jfloat axisZ, jfloat angle)
 {
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*)getVrmlField(env, obj);
+  MFRotation* pMFRotation = (MFRotation*)getFieldValue(env, obj);
   float *p = (float*) pMFRotation->getElement(index);
   p[0] = axisX;
   p[1] = axisY;
@@ -2605,10 +2605,10 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFRotation_addValue__Lvrml_field_ConstSFRotation_2
   (JNIEnv *env, jobject obj, jobject sfrotation)
 {
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*)getVrmlField(env, obj);
+  MFRotation* pMFRotation = (MFRotation*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfrotation, "FieldPtr", "I");
-  VrmlSFRotation* pSFRotation = 
-    (VrmlSFRotation*) env->GetIntField(sfrotation, fid);
+  SFRotation* pSFRotation = 
+    (SFRotation*) env->GetIntField(sfrotation, fid);
   pMFRotation->insertElement(pMFRotation->getLength(), pSFRotation->get());
 }
 
@@ -2624,7 +2624,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFRotation_addValue__FFFF
   (JNIEnv *env, jobject obj, jfloat axisX, jfloat axisY, 
    jfloat axisZ, jfloat angle)
 {
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*)getVrmlField(env, obj);
+  MFRotation* pMFRotation = (MFRotation*)getFieldValue(env, obj);
   float newData[4];
   newData[0] = axisX;
   newData[1] = axisY;
@@ -2637,10 +2637,10 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFRotation_insertValue__ILvrml_field_ConstSFRotation_2
   (JNIEnv *env, jobject obj, jint index, jobject sfrotation)
 {
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*)getVrmlField(env, obj);
+  MFRotation* pMFRotation = (MFRotation*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfrotation, "FieldPtr", "I");
-  VrmlSFRotation* pSFRotation = 
-    (VrmlSFRotation*) env->GetIntField(sfrotation, fid);
+  SFRotation* pSFRotation = 
+    (SFRotation*) env->GetIntField(sfrotation, fid);
   pMFRotation->insertElement(index, pSFRotation->get());
 }
 
@@ -2656,7 +2656,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFRotation_insertValue__IFFFF
   (JNIEnv *env, jobject obj, jint index, jfloat axisX, jfloat axisY, 
    jfloat axisZ, jfloat angle)
 {
-  VrmlMFRotation* pMFRotation = (VrmlMFRotation*)getVrmlField(env, obj);
+  MFRotation* pMFRotation = (MFRotation*)getFieldValue(env, obj);
   float newData[4];
   newData[0] = axisX;
   newData[1] = axisY;
@@ -2678,7 +2678,7 @@ JNIEXPORT jstring JNICALL Java_vrml_field_MFRotation_toString
 JNIEXPORT void JNICALL Java_vrml_field_ConstMFString_CreateObject
   (JNIEnv *env, jobject obj, jint size, jobjectArray jarr)
 {
-  VrmlMFString* pMFString;
+  MFString* pMFString;
   
   if (size > 0)
   {
@@ -2691,7 +2691,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFString_CreateObject
       pStringArray[i] = std::string(env->GetStringUTFChars(el, 0));
     }
 
-    pMFString = new VrmlMFString(size, pStringArray);
+    pMFString = new MFString(size, pStringArray);
 
     for (i = 0; i < size; i++) 
     {
@@ -2703,7 +2703,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFString_CreateObject
   }
   else
   {
-    pMFString = new VrmlMFString();
+    pMFString = new MFString();
   }
 
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
@@ -2714,7 +2714,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstMFString_getSize
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFString* pMFString = (VrmlMFString*) env->GetIntField(obj, fid);
+  MFString* pMFString = (MFString*) env->GetIntField(obj, fid);
   return (jint) pMFString->getLength();
 }
 
@@ -2722,7 +2722,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFString_getValue
   (JNIEnv *env, jobject obj, jobjectArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFString* pMFString = (VrmlMFString*) env->GetIntField(obj, fid);
+  MFString* pMFString = (MFString*) env->GetIntField(obj, fid);
   for (int i = 0; i < pMFString->getLength(); i++)
   {
     jstring jstr;
@@ -2739,7 +2739,7 @@ JNIEXPORT jstring JNICALL Java_vrml_field_ConstMFString_get1Value
   (JNIEnv *env, jobject obj, jint index)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFString* pMFString = (VrmlMFString*) env->GetIntField(obj, fid);
+  MFString* pMFString = (MFString*) env->GetIntField(obj, fid);
   jstring jstr = env->NewStringUTF((pMFString->getElement(index)).c_str()); 
   return jstr;
 }
@@ -2770,7 +2770,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFString_clear
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFString* pMFString = (VrmlMFString*) env->GetIntField(obj, fid);
+  MFString* pMFString = (MFString*) env->GetIntField(obj, fid);
   pMFString->setLength(0);
 }
 
@@ -2778,7 +2778,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFString_delete
   (JNIEnv *env, jobject obj, jint index)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFString* pMFString = (VrmlMFString*) env->GetIntField(obj, fid);
+  MFString* pMFString = (MFString*) env->GetIntField(obj, fid);
   pMFString->removeElement(index);
 }
 
@@ -2798,7 +2798,7 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFString_setValue__I_3Ljava_lang_String_2
   (JNIEnv *env, jobject obj, jint size, jobjectArray jarr)
 {
-  VrmlMFString* pMFString = (VrmlMFString*)getVrmlField(env, obj);
+  MFString* pMFString = (MFString*)getFieldValue(env, obj);
 
   jsize entries = env->GetArrayLength(jarr);
   pMFString->setLength(entries);
@@ -2817,9 +2817,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFString_setValue__Lvrml_field_MFString_2
   (JNIEnv *env, jobject obj, jobject value)
 { 
-  VrmlMFString* pMFString = (VrmlMFString*)getVrmlField(env, obj);
+  MFString* pMFString = (MFString*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlMFString* pNewMFString = (VrmlMFString*) env->GetIntField(value, fid);
+  MFString* pNewMFString = (MFString*) env->GetIntField(value, fid);
 
   short newStringLength = pNewMFString->getLength();
   pMFString->setLength(newStringLength);
@@ -2841,7 +2841,7 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFString_set1Value__ILjava_lang_String_2
   (JNIEnv *env, jobject obj, jint index, jstring value)
 {
-  VrmlMFString* pMFString = (VrmlMFString*)getVrmlField(env, obj);
+  MFString* pMFString = (MFString*)getFieldValue(env, obj);
   pMFString->setElement(index, 
 			value ? env->GetStringUTFChars(value, 0) : NULL);
 }
@@ -2850,9 +2850,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFString_set1Value__ILvrml_field_ConstSFString_2
   (JNIEnv *env, jobject obj, jint index, jobject sfstring)
 {
-  VrmlMFString* pMFString = (VrmlMFString*)getVrmlField(env, obj);
+  MFString* pMFString = (MFString*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfstring, "FieldPtr", "I");
-  VrmlSFString* pSFString = (VrmlSFString*) env->GetIntField(sfstring, fid);
+  SFString* pSFString = (SFString*) env->GetIntField(sfstring, fid);
   pMFString->setElement(index, pSFString->get());
 }
 
@@ -2868,7 +2868,7 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFString_addValue__Ljava_lang_String_2
   (JNIEnv *env, jobject obj, jstring value)
 {
-  VrmlMFString* pMFString = (VrmlMFString*)getVrmlField(env, obj);
+  MFString* pMFString = (MFString*)getFieldValue(env, obj);
   pMFString->insertElement(pMFString->getLength(), 
                            value ? env->GetStringUTFChars(value, 0) : NULL);
 }
@@ -2877,9 +2877,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFString_addValue__Lvrml_field_ConstSFString_2
   (JNIEnv *env, jobject obj, jobject sfstring)
 {
-  VrmlMFString* pMFString = (VrmlMFString*)getVrmlField(env, obj);
+  MFString* pMFString = (MFString*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfstring, "FieldPtr", "I");
-  VrmlSFString* pSFString = (VrmlSFString*) env->GetIntField(sfstring, fid);
+  SFString* pSFString = (SFString*) env->GetIntField(sfstring, fid);
   pMFString->insertElement(pMFString->getLength(), 
                            (pSFString->get()).c_str());
 }
@@ -2896,7 +2896,7 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFString_insertValue__ILjava_lang_String_2
   (JNIEnv *env, jobject obj, jint index, jstring value)
 {
-  VrmlMFString* pMFString = (VrmlMFString*)getVrmlField(env, obj);
+  MFString* pMFString = (MFString*)getFieldValue(env, obj);
   pMFString->insertElement(index, 
                            value ? env->GetStringUTFChars(value, 0) : NULL);
 }
@@ -2905,9 +2905,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFString_insertValue__ILvrml_field_ConstSFString_2
   (JNIEnv *env, jobject obj, jint index, jobject sfstring)
 {
-  VrmlMFString* pMFString = (VrmlMFString*)getVrmlField(env, obj);
+  MFString* pMFString = (MFString*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfstring, "FieldPtr", "I");
-  VrmlSFString* pSFString = (VrmlSFString*) env->GetIntField(sfstring, fid);
+  SFString* pSFString = (SFString*) env->GetIntField(sfstring, fid);
   pMFString->insertElement(index, (pSFString->get()).c_str());
 }
 
@@ -2933,7 +2933,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFTime_CreateObject
   (JNIEnv *env, jobject obj, jint size, jdoubleArray value)
 {
   jdouble *pjd = env->GetDoubleArrayElements(value, NULL);
-  VrmlMFTime* pMFTime = new VrmlMFTime(size, (const double *) pjd);
+  MFTime* pMFTime = new MFTime(size, (const double *) pjd);
   env->ReleaseDoubleArrayElements(value, pjd, JNI_ABORT);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFTime);
@@ -2943,7 +2943,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstMFTime_getSize
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFTime* pMFTime = (VrmlMFTime*) env->GetIntField(obj, fid);
+  MFTime* pMFTime = (MFTime*) env->GetIntField(obj, fid);
   return (jint) pMFTime->getLength();
 }
 
@@ -2951,7 +2951,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFTime_getValue
   (JNIEnv *env, jobject obj, jdoubleArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFTime* pMFTime = (VrmlMFTime*) env->GetIntField(obj, fid);
+  MFTime* pMFTime = (MFTime*) env->GetIntField(obj, fid);
   env->SetDoubleArrayRegion(jarr, 0, pMFTime->getLength(), 
                             (jdouble*) pMFTime->get());
 }
@@ -2960,7 +2960,7 @@ JNIEXPORT jdouble JNICALL Java_vrml_field_ConstMFTime_get1Value
   (JNIEnv *env, jobject obj, jint index)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFTime* pMFTime = (VrmlMFTime*) env->GetIntField(obj, fid);
+  MFTime* pMFTime = (MFTime*) env->GetIntField(obj, fid);
   return (jdouble) pMFTime->getElement(index);
 }
 
@@ -2990,7 +2990,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFTime_clear
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFTime* pMFTime = (VrmlMFTime*) env->GetIntField(obj, fid);
+  MFTime* pMFTime = (MFTime*) env->GetIntField(obj, fid);
   pMFTime->set(0, NULL);
 }
 
@@ -2998,7 +2998,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFTime_delete
   (JNIEnv *env, jobject obj, jint index)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFTime* pMFTime = (VrmlMFTime*) env->GetIntField(obj, fid);
+  MFTime* pMFTime = (MFTime*) env->GetIntField(obj, fid);
   pMFTime->removeElement(index);
 }
 
@@ -3017,7 +3017,7 @@ JNIEXPORT jdouble JNICALL Java_vrml_field_MFTime_get1Value
 JNIEXPORT void JNICALL Java_vrml_field_MFTime_setValue__I_3D
   (JNIEnv *env, jobject obj, jint size, jdoubleArray value)
 {
-  VrmlMFTime* pMFTime = (VrmlMFTime*)getVrmlField(env, obj);
+  MFTime* pMFTime = (MFTime*)getFieldValue(env, obj);
   jdouble *pjd = env->GetDoubleArrayElements(value, NULL); 
   pMFTime->set(size, (const double*) pjd);
   env->ReleaseDoubleArrayElements(value, pjd, JNI_ABORT);
@@ -3027,9 +3027,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFTime_setValue__Lvrml_field_MFTime_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlMFTime* pMFTime = (VrmlMFTime*)getVrmlField(env, obj);
+  MFTime* pMFTime = (MFTime*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlMFTime* pNewMFTime = (VrmlMFTime*) env->GetIntField(value, fid);
+  MFTime* pNewMFTime = (MFTime*) env->GetIntField(value, fid);
   pMFTime->set(pNewMFTime->getLength(), pNewMFTime->get());
 }
 
@@ -3043,7 +3043,7 @@ Java_vrml_field_MFTime_setValue__Lvrml_field_ConstMFTime_2
 JNIEXPORT void JNICALL Java_vrml_field_MFTime_set1Value__ID
   (JNIEnv *env, jobject obj, jint index, jdouble value)
 {
-  VrmlMFTime* pMFTime = (VrmlMFTime*)getVrmlField(env, obj);
+  MFTime* pMFTime = (MFTime*)getFieldValue(env, obj);
   pMFTime->setElement(index, value);
 }
 
@@ -3051,9 +3051,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFTime_set1Value__ILvrml_field_ConstSFTime_2
   (JNIEnv *env, jobject obj, jint index, jobject sftime)
 {
-  VrmlMFTime* pMFTime = (VrmlMFTime*)getVrmlField(env, obj);
+  MFTime* pMFTime = (MFTime*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sftime, "FieldPtr", "I");
-  VrmlSFTime* pSFTime = (VrmlSFTime*) env->GetIntField(sftime, fid);
+  SFTime* pSFTime = (SFTime*) env->GetIntField(sftime, fid);
   pMFTime->setElement(index, pSFTime->get());
 }
 
@@ -3068,7 +3068,7 @@ Java_vrml_field_MFTime_set1Value__ILvrml_field_SFTime_2
 JNIEXPORT void JNICALL Java_vrml_field_MFTime_addValue__D
   (JNIEnv *env, jobject obj, jdouble value)
 {
-  VrmlMFTime* pMFTime = (VrmlMFTime*)getVrmlField(env, obj);
+  MFTime* pMFTime = (MFTime*)getFieldValue(env, obj);
   pMFTime->insertElement(pMFTime->getLength(), (double) value);
 }
 
@@ -3076,9 +3076,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFTime_addValue__Lvrml_field_ConstSFTime_2
   (JNIEnv *env, jobject obj, jobject sftime)
 {
-  VrmlMFTime* pMFTime = (VrmlMFTime*)getVrmlField(env, obj);
+  MFTime* pMFTime = (MFTime*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sftime, "FieldPtr", "I");
-  VrmlSFTime* pSFTime = (VrmlSFTime*) env->GetIntField(sftime, fid);
+  SFTime* pSFTime = (SFTime*) env->GetIntField(sftime, fid);
   pMFTime->insertElement(pMFTime->getLength(), pSFTime->get());
 }
 
@@ -3093,7 +3093,7 @@ Java_vrml_field_MFTime_addValue__Lvrml_field_SFTime_2
 JNIEXPORT void JNICALL Java_vrml_field_MFTime_insertValue__ID
   (JNIEnv *env, jobject obj, jint index, jdouble value)
 {
-  VrmlMFTime* pMFTime = (VrmlMFTime*)getVrmlField(env, obj);
+  MFTime* pMFTime = (MFTime*)getFieldValue(env, obj);
   pMFTime->insertElement(index, value);
 }
 
@@ -3101,9 +3101,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFTime_insertValue__ILvrml_field_ConstSFTime_2
   (JNIEnv *env, jobject obj, jint index, jobject sftime)
 {
-  VrmlMFTime* pMFTime = (VrmlMFTime*)getVrmlField(env, obj);
+  MFTime* pMFTime = (MFTime*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sftime, "FieldPtr", "I");
-  VrmlSFTime* pSFTime = (VrmlSFTime*) env->GetIntField(sftime, fid);
+  SFTime* pSFTime = (SFTime*) env->GetIntField(sftime, fid);
   pMFTime->setElement(index, pSFTime->get());
 }
 
@@ -3143,7 +3143,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFVec2f_CreateObject___3_3F
     env->ReleaseFloatArrayElements(el, pjf, JNI_ABORT);
   }
   
-  VrmlMFRotation* pMFRotation = new VrmlMFRotation(nRows, theArray);
+  MFRotation* pMFRotation = new MFRotation(nRows, theArray);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFRotation);
   delete[] theArray;
@@ -3153,7 +3153,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFVec2f_CreateObject__I_3F
   (JNIEnv *env, jobject obj, jint size, jfloatArray jarr)
 {
   jfloat *pjf = env->GetFloatArrayElements(jarr, NULL);
-  VrmlMFVec2f* pMFVec2f = new VrmlMFVec2f(size / 2, (const float *) pjf);
+  MFVec2f* pMFVec2f = new MFVec2f(size / 2, (const float *) pjf);
   env->ReleaseFloatArrayElements(jarr, pjf, JNI_ABORT);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFVec2f);
@@ -3163,7 +3163,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstMFVec2f_getSize
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*) env->GetIntField(obj, fid);
+  MFVec2f* pMFVec2f = (MFVec2f*) env->GetIntField(obj, fid);
   return (jint) pMFVec2f->getLength();
 }
 
@@ -3171,7 +3171,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFVec2f_getValue___3_3F
   (JNIEnv *env, jobject obj, jobjectArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*) env->GetIntField(obj, fid);
+  MFVec2f* pMFVec2f = (MFVec2f*) env->GetIntField(obj, fid);
   
   int nRows = pMFVec2f->getLength();
   jfloat* p = (jfloat*) pMFVec2f->get();
@@ -3187,7 +3187,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFVec2f_getValue___3F
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*) env->GetIntField(obj, fid);
+  MFVec2f* pMFVec2f = (MFVec2f*) env->GetIntField(obj, fid);
   jsize nElements = env->GetArrayLength(jarr);
   env->SetFloatArrayRegion(jarr, 0, nElements, (jfloat*) pMFVec2f->get());
 }
@@ -3197,7 +3197,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFVec2f_get1Value__I_3F
   (JNIEnv *env, jobject obj, jint element, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*) env->GetIntField(obj, fid);
+  MFVec2f* pMFVec2f = (MFVec2f*) env->GetIntField(obj, fid);
   env->SetFloatArrayRegion(jarr, 0, 2, 
                            (jfloat*) pMFVec2f->getElement(element));
 }
@@ -3207,10 +3207,10 @@ Java_vrml_field_ConstMFVec2f_get1Value__ILvrml_field_SFVec2f_2
   (JNIEnv *env, jobject obj, jint element, jobject sfvec2f)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*) env->GetIntField(obj, fid);
+  MFVec2f* pMFVec2f = (MFVec2f*) env->GetIntField(obj, fid);
   const float* value = pMFVec2f->getElement(element);
   fid = getFid(env, sfvec2f, "FieldPtr", "I");
-  VrmlSFVec2f* pSFVec2f = (VrmlSFVec2f*) env->GetIntField(sfvec2f, fid);
+  SFVec2f* pSFVec2f = (SFVec2f*) env->GetIntField(sfvec2f, fid);
   pSFVec2f->set(value);
 }
 
@@ -3246,7 +3246,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFVec2f_clear
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*) env->GetIntField(obj, fid);
+  MFVec2f* pMFVec2f = (MFVec2f*) env->GetIntField(obj, fid);
   pMFVec2f->set(0, NULL);
 }
 
@@ -3254,7 +3254,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFVec2f_delete
   (JNIEnv *env, jobject obj, jint n)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*) env->GetIntField(obj, fid);
+  MFVec2f* pMFVec2f = (MFVec2f*) env->GetIntField(obj, fid);
   pMFVec2f->removeElement(n);
 }
 
@@ -3302,7 +3302,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFVec2f_setValue___3_3F
     env->ReleaseFloatArrayElements(el, pjf, JNI_ABORT);
   }
   
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*)getVrmlField(env, obj);
+  MFVec2f* pMFVec2f = (MFVec2f*)getFieldValue(env, obj);
   pMFVec2f->set(nRows, theArray);
   delete[] theArray;
 }
@@ -3310,7 +3310,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFVec2f_setValue___3_3F
 JNIEXPORT void JNICALL Java_vrml_field_MFVec2f_setValue__I_3F
   (JNIEnv *env, jobject obj, jint size, jfloatArray value)
 {
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*)getVrmlField(env, obj);
+  MFVec2f* pMFVec2f = (MFVec2f*)getFieldValue(env, obj);
   jfloat *pjf = env->GetFloatArrayElements(value, NULL); 
   pMFVec2f->set(size / 2, (float*) pjf);
   env->ReleaseFloatArrayElements(value, pjf, JNI_ABORT);
@@ -3320,9 +3320,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFVec2f_setValue__Lvrml_field_MFVec2f_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*)getVrmlField(env, obj);
+  MFVec2f* pMFVec2f = (MFVec2f*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlMFVec2f* pNewMFVec2f = (VrmlMFVec2f*) env->GetIntField(value, fid);
+  MFVec2f* pNewMFVec2f = (MFVec2f*) env->GetIntField(value, fid);
   pMFVec2f->set(pNewMFVec2f->getLength(), pNewMFVec2f->get());
 }
 
@@ -3336,7 +3336,7 @@ Java_vrml_field_MFVec2f_setValue__Lvrml_field_ConstMFVec2f_2
 JNIEXPORT void JNICALL Java_vrml_field_MFVec2f_set1Value__IFF
   (JNIEnv *env, jobject obj, jint index, jfloat x, jfloat y)
 {
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*)getVrmlField(env, obj);
+  MFVec2f* pMFVec2f = (MFVec2f*)getFieldValue(env, obj);
   float *p = (float*) pMFVec2f->getElement(index);
   p[0] = x;
   p[1] = y;
@@ -3346,9 +3346,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFVec2f_set1Value__ILvrml_field_ConstSFVec2f_2
   (JNIEnv *env, jobject obj, jint index, jobject sfvec2f)
 {
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*)getVrmlField(env, obj);
+  MFVec2f* pMFVec2f = (MFVec2f*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfvec2f, "FieldPtr", "I");
-  VrmlSFVec2f* pSFVec2f = (VrmlSFVec2f*) env->GetIntField(sfvec2f, fid);
+  SFVec2f* pSFVec2f = (SFVec2f*) env->GetIntField(sfvec2f, fid);
   memcpy((void*) pMFVec2f->getElement(index), pSFVec2f->get(), 
          2 * sizeof(float));
 }
@@ -3364,7 +3364,7 @@ Java_vrml_field_MFVec2f_set1Value__ILvrml_field_SFVec2f_2
 JNIEXPORT void JNICALL Java_vrml_field_MFVec2f_addValue__FF
   (JNIEnv *env, jobject obj, jfloat x, jfloat y)
 {
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*)getVrmlField(env, obj);
+  MFVec2f* pMFVec2f = (MFVec2f*)getFieldValue(env, obj);
   float farr[2];
   farr[0] = x;
   farr[1] = y;
@@ -3375,9 +3375,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFVec2f_addValue__Lvrml_field_ConstSFVec2f_2
   (JNIEnv *env, jobject obj, jobject sfvec2f)
 {
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*)getVrmlField(env, obj);
+  MFVec2f* pMFVec2f = (MFVec2f*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfvec2f, "FieldPtr", "I");
-  VrmlSFVec2f* pSFVec2f = (VrmlSFVec2f*) env->GetIntField(sfvec2f, fid);
+  SFVec2f* pSFVec2f = (SFVec2f*) env->GetIntField(sfvec2f, fid);
   pMFVec2f->insertElement(pMFVec2f->getLength(), pSFVec2f->get());
 }
 
@@ -3392,7 +3392,7 @@ Java_vrml_field_MFVec2f_addValue__Lvrml_field_SFVec2f_2
 JNIEXPORT void JNICALL Java_vrml_field_MFVec2f_insertValue__IFF
   (JNIEnv *env, jobject obj, jint index, jfloat x, jfloat y)
 {
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*)getVrmlField(env, obj);
+  MFVec2f* pMFVec2f = (MFVec2f*)getFieldValue(env, obj);
   float farr[2];
   farr[0] = x;
   farr[1] = y;
@@ -3403,9 +3403,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFVec2f_insertValue__ILvrml_field_ConstSFVec2f_2
   (JNIEnv *env, jobject obj, jint index, jobject sfvec2f)
 {
-  VrmlMFVec2f* pMFVec2f = (VrmlMFVec2f*)getVrmlField(env, obj);
+  MFVec2f* pMFVec2f = (MFVec2f*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfvec2f, "FieldPtr", "I");
-  VrmlSFVec2f* pSFVec2f = (VrmlSFVec2f*) env->GetIntField(sfvec2f, fid);
+  SFVec2f* pSFVec2f = (SFVec2f*) env->GetIntField(sfvec2f, fid);
   pMFVec2f->insertElement(index, pSFVec2f->get());
 }
 
@@ -3445,7 +3445,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFVec3f_CreateObject___3_3F
     env->ReleaseFloatArrayElements(el, pjf, JNI_ABORT);
   }
   
-  VrmlMFRotation* pMFRotation = new VrmlMFRotation(nRows, theArray);
+  MFRotation* pMFRotation = new MFRotation(nRows, theArray);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFRotation);
   delete[] theArray;
@@ -3455,7 +3455,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFVec3f_CreateObject__I_3F
   (JNIEnv *env, jobject obj, jint size, jfloatArray jarr)
 {
   jfloat *pjf = env->GetFloatArrayElements(jarr, NULL);
-  VrmlMFVec3f* pMFVec3f = new VrmlMFVec3f(size / 3, (const float *) pjf);
+  MFVec3f* pMFVec3f = new MFVec3f(size / 3, (const float *) pjf);
   env->ReleaseFloatArrayElements(jarr, pjf, JNI_ABORT);
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
   env->SetIntField(obj, fid, (int) pMFVec3f);
@@ -3465,7 +3465,7 @@ JNIEXPORT jint JNICALL Java_vrml_field_ConstMFVec3f_getSize
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*) env->GetIntField(obj, fid);
+  MFVec3f* pMFVec3f = (MFVec3f*) env->GetIntField(obj, fid);
   return (jint) pMFVec3f->getLength();
 }
 
@@ -3473,7 +3473,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFVec3f_getValue___3_3F
   (JNIEnv *env, jobject obj, jobjectArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*) env->GetIntField(obj, fid);
+  MFVec3f* pMFVec3f = (MFVec3f*) env->GetIntField(obj, fid);
   
   int nRows = pMFVec3f->getLength();
   jfloat* p = (jfloat*) pMFVec3f->get();
@@ -3489,7 +3489,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFVec3f_getValue___3F
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*) env->GetIntField(obj, fid);
+  MFVec3f* pMFVec3f = (MFVec3f*) env->GetIntField(obj, fid);
   jsize nElements = env->GetArrayLength(jarr);
   env->SetFloatArrayRegion(jarr, 0, nElements, (jfloat*) pMFVec3f->get());
 }
@@ -3498,7 +3498,7 @@ JNIEXPORT void JNICALL Java_vrml_field_ConstMFVec3f_get1Value__I_3F
   (JNIEnv *env, jobject obj, jint element, jfloatArray jarr)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*) env->GetIntField(obj, fid);
+  MFVec3f* pMFVec3f = (MFVec3f*) env->GetIntField(obj, fid);
   env->SetFloatArrayRegion(jarr, 0, 3, 
                            (jfloat*) pMFVec3f->getElement(element));
 }
@@ -3508,10 +3508,10 @@ Java_vrml_field_ConstMFVec3f_get1Value__ILvrml_field_SFVec3f_2
   (JNIEnv *env, jobject obj, jint element, jobject sfvec3f)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*) env->GetIntField(obj, fid);
+  MFVec3f* pMFVec3f = (MFVec3f*) env->GetIntField(obj, fid);
   const float* value = pMFVec3f->getElement(element);
   fid = getFid(env, sfvec3f, "FieldPtr", "I");
-  VrmlSFVec3f* pSFVec3f = (VrmlSFVec3f*) env->GetIntField(sfvec3f, fid);
+  SFVec3f* pSFVec3f = (SFVec3f*) env->GetIntField(sfvec3f, fid);
   pSFVec3f->set(value);
 }
 
@@ -3547,7 +3547,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFVec3f_clear
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*) env->GetIntField(obj, fid);
+  MFVec3f* pMFVec3f = (MFVec3f*) env->GetIntField(obj, fid);
   pMFVec3f->set(0, NULL);
 }
 
@@ -3555,7 +3555,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFVec3f_delete
   (JNIEnv *env, jobject obj, jint n)
 {
   jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*) env->GetIntField(obj, fid);
+  MFVec3f* pMFVec3f = (MFVec3f*) env->GetIntField(obj, fid);
   pMFVec3f->removeElement(n);
 }
 
@@ -3603,7 +3603,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFVec3f_setValue___3_3F
     env->ReleaseFloatArrayElements(el, pjf, JNI_ABORT);
   }
   
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*)getVrmlField(env, obj);
+  MFVec3f* pMFVec3f = (MFVec3f*)getFieldValue(env, obj);
   pMFVec3f->set(nRows, theArray);
   delete[] theArray;
 }
@@ -3611,7 +3611,7 @@ JNIEXPORT void JNICALL Java_vrml_field_MFVec3f_setValue___3_3F
 JNIEXPORT void JNICALL Java_vrml_field_MFVec3f_setValue__I_3F
   (JNIEnv *env, jobject obj, jint size, jfloatArray value)
 {
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*)getVrmlField(env, obj);
+  MFVec3f* pMFVec3f = (MFVec3f*)getFieldValue(env, obj);
   jfloat *pjf = env->GetFloatArrayElements(value, NULL); 
   pMFVec3f->set(size / 3, (float*) pjf);
   env->ReleaseFloatArrayElements(value, pjf, JNI_ABORT);
@@ -3621,9 +3621,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFVec3f_setValue__Lvrml_field_MFVec3f_2
   (JNIEnv *env, jobject obj, jobject value)
 {
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*)getVrmlField(env, obj);
+  MFVec3f* pMFVec3f = (MFVec3f*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, value, "FieldPtr", "I");
-  VrmlMFVec3f* pNewMFVec3f = (VrmlMFVec3f*) env->GetIntField(value, fid);
+  MFVec3f* pNewMFVec3f = (MFVec3f*) env->GetIntField(value, fid);
   pMFVec3f->set(pNewMFVec3f->getLength(), pNewMFVec3f->get());
 }
 
@@ -3637,7 +3637,7 @@ Java_vrml_field_MFVec3f_setValue__Lvrml_field_ConstMFVec3f_2
 JNIEXPORT void JNICALL Java_vrml_field_MFVec3f_set1Value__IFFF
   (JNIEnv *env, jobject obj, jint index, jfloat x, jfloat y, jfloat z)
 {
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*)getVrmlField(env, obj);
+  MFVec3f* pMFVec3f = (MFVec3f*)getFieldValue(env, obj);
   float *p = (float*) pMFVec3f->getElement(index);
   p[0] = x;
   p[1] = y;
@@ -3648,9 +3648,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFVec3f_set1Value__ILvrml_field_ConstSFVec3f_2
   (JNIEnv *env, jobject obj, jint index, jobject sfvec3f)
 {
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*)getVrmlField(env, obj);
+  MFVec3f* pMFVec3f = (MFVec3f*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfvec3f, "FieldPtr", "I");
-  VrmlSFVec3f* pSFVec3f = (VrmlSFVec3f*) env->GetIntField(sfvec3f, fid);
+  SFVec3f* pSFVec3f = (SFVec3f*) env->GetIntField(sfvec3f, fid);
   memcpy((void*) pMFVec3f->getElement(index), pSFVec3f->get(),
 	 3 * sizeof(float));
 }
@@ -3666,7 +3666,7 @@ Java_vrml_field_MFVec3f_set1Value__ILvrml_field_SFVec3f_2
 JNIEXPORT void JNICALL Java_vrml_field_MFVec3f_addValue__FFF
   (JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat z)
 {
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*)getVrmlField(env, obj);
+  MFVec3f* pMFVec3f = (MFVec3f*)getFieldValue(env, obj);
   float farr[3];
   farr[0] = x;
   farr[1] = y;
@@ -3678,9 +3678,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFVec3f_addValue__Lvrml_field_ConstSFVec3f_2
   (JNIEnv *env, jobject obj, jobject sfvec3f)
 {
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*)getVrmlField(env, obj);
+  MFVec3f* pMFVec3f = (MFVec3f*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfvec3f, "FieldPtr", "I");
-  VrmlSFVec3f* pSFVec3f = (VrmlSFVec3f*) env->GetIntField(sfvec3f, fid);
+  SFVec3f* pSFVec3f = (SFVec3f*) env->GetIntField(sfvec3f, fid);
   pMFVec3f->insertElement(pMFVec3f->getLength(), pSFVec3f->get());
 }
 
@@ -3695,7 +3695,7 @@ Java_vrml_field_MFVec3f_addValue__Lvrml_field_SFVec3f_2
 JNIEXPORT void JNICALL Java_vrml_field_MFVec3f_insertValue__IFFF
   (JNIEnv *env, jobject obj, jint index, jfloat x, jfloat y, jfloat z)
 {
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*)getVrmlField(env, obj);
+  MFVec3f* pMFVec3f = (MFVec3f*)getFieldValue(env, obj);
   float farr[3];
   farr[0] = x;
   farr[1] = y;
@@ -3707,9 +3707,9 @@ JNIEXPORT void JNICALL
 Java_vrml_field_MFVec3f_insertValue__ILvrml_field_ConstSFVec3f_2
   (JNIEnv *env, jobject obj, jint index, jobject sfvec3f)
 {
-  VrmlMFVec3f* pMFVec3f = (VrmlMFVec3f*)getVrmlField(env, obj);
+  MFVec3f* pMFVec3f = (MFVec3f*)getFieldValue(env, obj);
   jfieldID fid = getFid(env, sfvec3f, "FieldPtr", "I");
-  VrmlSFVec3f* pSFVec3f = (VrmlSFVec3f*) env->GetIntField(sfvec3f, fid);
+  SFVec3f* pSFVec3f = (SFVec3f*) env->GetIntField(sfvec3f, fid);
   pMFVec3f->insertElement(index, pSFVec3f->get());
 }
 
@@ -3735,15 +3735,15 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getField
   (JNIEnv *env, jobject obj, jstring jstrFieldName)
 {
   jfieldID fid;
-  VrmlNodeScript* pScript;
+  ScriptNode* pScript;
   jobject Field;
   jclass clazz;
-  const VrmlField* FieldPtr;
+  const FieldValue* FieldPtr;
   char clazzName[256];
   
   const char *fieldName = env->GetStringUTFChars(jstrFieldName, 0);
   fid = getFid(env, obj, "NodePtr", "I");
-  pScript = (VrmlNodeScript*) env->GetIntField(obj, fid);
+  pScript = (ScriptNode*) env->GetIntField(obj, fid);
   FieldPtr = pScript->getField(fieldName);
   sprintf(clazzName, "vrml/field/%s", FieldPtr->fieldTypeName());
   clazz = env->FindClass(clazzName);
@@ -3757,15 +3757,15 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getField
 JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventOut
   (JNIEnv *env, jobject obj, jstring jstrEventOutName)
 {
-  VrmlField::VrmlFieldType eventOutType;
-  const VrmlNodeScript::ScriptField* fieldPtr;
+  FieldValue::FieldType eventOutType;
+  const ScriptNode::ScriptField* fieldPtr;
   char clazzName[256];
 
   const char *eventOutName = env->GetStringUTFChars(jstrEventOutName , 0);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  VrmlNodeScript* pScript = (VrmlNodeScript*) env->GetIntField(obj, fid);
+  ScriptNode* pScript = (ScriptNode*) env->GetIntField(obj, fid);
   eventOutType = pScript->hasEventOut(eventOutName);
-  sprintf(clazzName, "vrml/field/%s", VrmlField::getFieldName(eventOutType));
+  sprintf(clazzName, "vrml/field/%s", FieldValue::getFieldName(eventOutType));
   
   jclass clazz = env->FindClass(clazzName);
   jobject eventOut = env->AllocObject(clazz);
@@ -3773,9 +3773,9 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventOut
 
   // What you really want to do here is get a pointer to a ScriptField in the
   // FieldList array
-  VrmlNodeScript::FieldList& eventOuts = pScript->eventOuts();
+  ScriptNode::FieldList& eventOuts = pScript->eventOuts();
 
-  for (VrmlNodeScript::FieldList::const_iterator i(eventOuts.begin()); 
+  for (ScriptNode::FieldList::const_iterator i(eventOuts.begin()); 
         i != eventOuts.end(); ++i) {
     if ((*i)->name == eventOutName) {
       fieldPtr = (*i);
@@ -3824,7 +3824,7 @@ JNIEXPORT jobject JNICALL Java_vrml_BaseNode_getBrowser
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  VrmlNode* pNode = (VrmlNode*) env->GetIntField(obj, fid);
+  Node* pNode = (Node*) env->GetIntField(obj, fid);
   jclass clazz = env->FindClass("vrml/Browser");
   jobject jBrowser = env->AllocObject(clazz);
   fid = getFid(env, jBrowser, "BrowserPtr", "I");
@@ -3841,10 +3841,10 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getEventIn
 {
   const char *eventInName = env->GetStringUTFChars(jstrEventInName , 0);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  VrmlNode* pNode = (VrmlNode*) env->GetIntField(obj, fid);
+  Node* pNode = (Node*) env->GetIntField(obj, fid);
   
-  /* Uncomment when getEventIn implementation is added to VrmlNode
-  const VrmlField* field = pNode->getEventIn(eventInName);
+  /* Uncomment when getEventIn implementation is added to Node
+  const FieldValue* field = pNode->getEventIn(eventInName);
 
   if (field == 0)
   {
@@ -3870,8 +3870,8 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getEventOut
 {
   const char *eventOutName = env->GetStringUTFChars(jstrEventOutName , 0);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  VrmlNode* pNode = (VrmlNode*) env->GetIntField(obj, fid);
-  const VrmlField* field = pNode->getEventOut(eventOutName);
+  Node* pNode = (Node*) env->GetIntField(obj, fid);
+  const FieldValue* field = pNode->getEventOut(eventOutName);
 
   if (field == 0)
   {
@@ -3896,8 +3896,8 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getExposedField
   const char *exposedFieldName = 
     env->GetStringUTFChars(jstrExposedFieldName , 0);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  VrmlNode* pNode = (VrmlNode*) env->GetIntField(obj, fid);
-  const VrmlField* field = pNode->getField(exposedFieldName);
+  Node* pNode = (Node*) env->GetIntField(obj, fid);
+  const FieldValue* field = pNode->getField(exposedFieldName);
 
   if (field == 0)
   {
@@ -3921,7 +3921,7 @@ JNIEXPORT jstring JNICALL Java_vrml_node_Node_toString
 {
   ostrstream os;
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  VrmlNode* pNode = (VrmlNode*) env->GetIntField(obj, fid);
+  Node* pNode = (Node*) env->GetIntField(obj, fid);
   pNode->printFields(os, 0);
   os << ends;
   char* szString = os.str();
@@ -3955,7 +3955,7 @@ JNIEXPORT jobject JNICALL Java_vrml_Event_getValue
 {  
   jfieldID fid = getFid(env, obj, "EventPtr", "I");
   VrmlEvent* pEvent = (VrmlEvent*) env->GetIntField(obj, fid);
-  const VrmlField* pField = pEvent->value();
+  const FieldValue* pField = pEvent->value();
   char clazzName[256];
   sprintf(clazzName, "vrml/field/Const%s", pField->fieldTypeName());
   jclass clazz = env->FindClass(clazzName);
@@ -4091,16 +4091,16 @@ JNIEXPORT void JNICALL Java_vrml_Browser_addRoute
   // should not continue
   
   jfieldID fid = getFid(env, fromNode, "NodePtr", "I");
-  VrmlNode* pFromNode = (VrmlNode*) env->GetIntField(fromNode, fid);
+  Node* pFromNode = (Node*) env->GetIntField(fromNode, fid);
   fid = getFid(env, toNode, "NodePtr", "I");
-  VrmlNode* pToNode = (VrmlNode*) env->GetIntField(toNode, fid);
+  Node* pToNode = (Node*) env->GetIntField(toNode, fid);
   const char* str = env->GetStringUTFChars(fromEventOut, 0);
   std::string eventOut(str);
   env->ReleaseStringUTFChars(fromEventOut, str);
   str = env->GetStringUTFChars(toEventIn, 0);
   std::string eventIn(str);
   env->ReleaseStringUTFChars(toEventIn, str);
-  pFromNode->addRoute(eventOut, VrmlNodePtr(pToNode), eventIn);
+  pFromNode->addRoute(eventOut, NodePtr(pToNode), eventIn);
 }
 
 JNIEXPORT void JNICALL Java_vrml_Browser_deleteRoute
@@ -4111,16 +4111,16 @@ JNIEXPORT void JNICALL Java_vrml_Browser_deleteRoute
   // should not continue
 
   jfieldID fid = getFid(env, fromNode, "NodePtr", "I");
-  VrmlNode* pFromNode = (VrmlNode*) env->GetIntField(fromNode, fid);
+  Node* pFromNode = (Node*) env->GetIntField(fromNode, fid);
   fid = getFid(env, toNode, "NodePtr", "I");
-  VrmlNode* pToNode = (VrmlNode*) env->GetIntField(toNode, fid);
+  Node* pToNode = (Node*) env->GetIntField(toNode, fid);
   const char* str = env->GetStringUTFChars(fromEventOut, 0);
   std::string eventOut(str);
   env->ReleaseStringUTFChars(fromEventOut, str);
   str = env->GetStringUTFChars(toEventIn, 0);
   std::string eventIn(str);
   env->ReleaseStringUTFChars(toEventIn, str);
-  pFromNode->deleteRoute(eventOut, VrmlNodePtr(pToNode), eventIn);
+  pFromNode->deleteRoute(eventOut, NodePtr(pToNode), eventIn);
 }
 
 JNIEXPORT void JNICALL Java_vrml_Browser_loadURL
@@ -4145,7 +4145,7 @@ JNIEXPORT void JNICALL Java_vrml_Browser_loadURL
     urlArray[pos] = newString;
     env->ReleaseStringUTFChars(jstr, str);
   }
-  VrmlMFString urls(entries, urlArray);
+  MFString urls(entries, urlArray);
 
   entries = env->GetArrayLength(jParameterArray);
   std::string parameterArray[entries];
@@ -4157,7 +4157,7 @@ JNIEXPORT void JNICALL Java_vrml_Browser_loadURL
     parameterArray[pos] = newString;
     env->ReleaseStringUTFChars(jstr, str);
   }
-  VrmlMFString parameters(entries, parameterArray);
+  MFString parameters(entries, parameterArray);
 
   browser->loadUrl(urls, parameters);
 }

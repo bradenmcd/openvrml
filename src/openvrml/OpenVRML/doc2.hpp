@@ -25,49 +25,52 @@
 # include <string>
 # include "common.h"
 
-class OPENVRML_SCOPE Doc2 {
-    char * url_;
-    char * tmpfile_;            // Local copy of http: files
-    istream * istm_;
-    ostream * ostm_;
+namespace OpenVRML {
 
-public:
-    explicit Doc2(const std::string & url = std::string(),
-                  const Doc2 * relative = 0);
-    Doc2(const Doc2 *);
-    ~Doc2();
+    class OPENVRML_SCOPE Doc2 {
+        char * url_;
+        char * tmpfile_;            // Local copy of http: files
+        istream * istm_;
+        ostream * ostm_;
 
-    void seturl(const char *url, Doc2 const *relative = 0);
+    public:
+        explicit Doc2(const std::string & url = std::string(),
+                      const Doc2 * relative = 0);
+        Doc2(const Doc2 *);
+        ~Doc2();
 
-    char const * url() const;         // "http://www.foo.com/dir/file.xyz#Viewpoint"
-    char const * urlBase() const;     // "file" or ""
-    char const * urlExt() const;      // "xyz" or ""
-    char const * urlPath() const;     // "http://www.foo.com/dir/" or ""
-    char const * urlProtocol() const; // "http"
-    char const * urlModifier() const; // "#Viewpoint" or ""
+        void seturl(const char *url, Doc2 const *relative = 0);
 
-    const char *localName();    // "/tmp/file.xyz" or NULL
-    const char *localPath();    // "/tmp/" or NULL
+        char const * url() const;         // "http://www.foo.com/dir/file.xyz#Viewpoint"
+        char const * urlBase() const;     // "file" or ""
+        char const * urlExt() const;      // "xyz" or ""
+        char const * urlPath() const;     // "http://www.foo.com/dir/" or ""
+        char const * urlProtocol() const; // "http"
+        char const * urlModifier() const; // "#Viewpoint" or ""
 
-    ::istream & inputStream();
-    ::ostream & outputStream();
+        const char *localName();    // "/tmp/file.xyz" or NULL
+        const char *localPath();    // "/tmp/" or NULL
 
-private:
-    //
-    // Non-copyable; copy ctor and operator= are declared private and not
-    // defined.
-    //
-    Doc2(Doc2 const &);
-    Doc2 & operator=(Doc2 const &);
+        ::istream & inputStream();
+        ::ostream & outputStream();
 
-    static char const * stripProtocol(char const * url);
-    static bool isAbsolute(char const * url);
+    private:
+        //
+        // Non-copyable; copy ctor and operator= are declared private and not
+        // defined.
+        //
+        Doc2(Doc2 const &);
+        Doc2 & operator=(Doc2 const &);
 
-    bool filename(char * fn, int nfn);
+        static char const * stripProtocol(char const * url);
+        static bool isAbsolute(char const * url);
 
-# ifdef macintosh
-    char * convertCommonToMacPath(char * fn, int nfn);
-# endif
-};
+        bool filename(char * fn, int nfn);
+
+    # ifdef macintosh
+        char * convertCommonToMacPath(char * fn, int nfn);
+    # endif
+    };
+}
 
 # endif

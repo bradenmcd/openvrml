@@ -15,10 +15,13 @@
 # include "VrmlNodePtr.h"
 # define ANTLR_LBRACE {
 # define ANTLR_RBRACE }
-class VrmlNamespace;
-class VrmlNodeScript;
-class NodeType;
-class Doc2;
+
+namespace OpenVRML {
+    class VrmlNamespace;
+    class ScriptNode;
+    class NodeType;
+    class Doc2;
+}
 
 namespace ANTLR_LBRACE
     class Vrml97Scanner : public antlr::TokenStream {
@@ -95,16 +98,16 @@ namespace ANTLR_LBRACE
         bool        _expectingFieldType;
     };
 
-#line 99 "Vrml97Parser.hpp"
+#line 102 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
  {
-#line 583 "Vrml97Parser.g"
+#line 587 "Vrml97Parser.g"
 
     public:
         enum NodeInterfaceType {
             INVALID_NODE_INTERFACE_TYPE, EVENTIN, EVENTOUT, FIELD, EXPOSEDFIELD
         };
-#line 103 "Vrml97Parser.hpp"
+#line 106 "Vrml97Parser.hpp"
 protected:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf, int k);
 public:
@@ -115,132 +118,146 @@ public:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenStream& lexer);
 	Vrml97Parser(const ANTLR_USE_NAMESPACE(antlr)ParserSharedInputState& state);
 	public: void vrmlScene(
-		VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc
+		OpenVRML::MFNode & mfNode, OpenVRML::VrmlNamespace & vrmlNamespace,
+          const OpenVRML::Doc2 * doc
 	);
 	public: void statement(
-		VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc
+		OpenVRML::MFNode & mfNode, OpenVRML::VrmlNamespace & vrmlNamespace,
+          const OpenVRML::Doc2 * doc
 	);
-	public: VrmlNodePtr  nodeStatement(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc
+	public: OpenVRML::NodePtr  nodeStatement(
+		OpenVRML::VrmlNamespace & vrmlNamespace,
+              const OpenVRML::Doc2 * doc
 	);
 	public: void protoStatement(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc
+		OpenVRML::VrmlNamespace & vrmlNamespace,
+               const OpenVRML::Doc2 * doc
 	);
 	public: void routeStatement(
-		VrmlNamespace const & vrmlNamespace
+		const OpenVRML::VrmlNamespace & vrmlNamespace
 	);
-	public: VrmlNodePtr  node(
-		VrmlNamespace & vrmlNamespace, const Doc2 * doc,
+	public: OpenVRML::NodePtr  node(
+		OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc,
      const std::string & nodeId
 	);
 	public: void externproto(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc
+		OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc
 	);
 	public: void proto(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc
+		OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc
 	);
 	public: void protoInterfaceDeclaration(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc,
-                          NodeType & nodeType
+		OpenVRML::VrmlNamespace & vrmlNamespace,
+                          const OpenVRML::Doc2 * doc,
+                          OpenVRML::NodeType & nodeType
 	);
 	public: void protoBody(
-		Doc2 const * doc, NodeType & nodeType
+		const OpenVRML::Doc2 * doc, OpenVRML::NodeType & nodeType
 	);
 	public: Vrml97Parser::NodeInterfaceType  eventInterfaceType();
-	public: VrmlField::VrmlFieldType  fieldType();
+	public: OpenVRML::FieldValue::FieldType  fieldType();
 	public: Vrml97Parser::NodeInterfaceType  fieldInterfaceType();
-	public: VrmlField *  fieldValue(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlField::VrmlFieldType ft
+	public: OpenVRML::FieldValue *  fieldValue(
+		OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc,
+           OpenVRML::FieldValue::FieldType ft
 	);
-	public: VrmlNodePtr  protoNodeStatement(
-		Doc2 const * doc, NodeType & protoNodeType
+	public: OpenVRML::NodePtr  protoNodeStatement(
+		const OpenVRML::Doc2 * doc,
+                   OpenVRML::NodeType & protoNodeType
 	);
 	public: void protoBodyStatement(
-		Doc2 const * doc, NodeType & nodeType
+		const OpenVRML::Doc2 * doc, OpenVRML::NodeType & nodeType
 	);
-	public: VrmlNodePtr  protoNode(
-		const Doc2 * doc, NodeType & protoNodeType,
+	public: OpenVRML::NodePtr  protoNode(
+		const OpenVRML::Doc2 * doc, OpenVRML::NodeType & protoNodeType,
           const std::string & nodeId
 	);
 	public: void externInterfaceDeclaration(
-		NodeType & nodeType
+		OpenVRML::NodeType & nodeType
 	);
-	public: VrmlMFString *  externprotoUrlList();
+	public: OpenVRML::MFString *  externprotoUrlList();
 	public: Vrml97Parser::NodeInterfaceType  interfaceType();
 	public: std::string  stringValue();
 	public: void nodeBodyElement(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc,
-                VrmlNode & node
+		OpenVRML::VrmlNamespace & vrmlNamespace,
+                const OpenVRML::Doc2 * doc, OpenVRML::Node & node
 	);
 	public: void scriptInterfaceDeclaration(
-		VrmlNamespace & vrmlNamespace,
-                           const Doc2 * doc,
-                           VrmlNodeScript & node
+		OpenVRML::VrmlNamespace & vrmlNamespace,
+                           const OpenVRML::Doc2 * doc,
+                           OpenVRML::ScriptNode & node
 	);
 	public: void scriptFieldInterfaceDeclaration(
-		VrmlNamespace & vrmlNamespace,
-                                const Doc2 * doc,
-                                VrmlNodeScript & node
+		OpenVRML::VrmlNamespace & vrmlNamespace,
+                                const OpenVRML::Doc2 * doc,
+                                OpenVRML::ScriptNode & node
 	);
 	public: void protoNodeBodyElement(
-		Doc2 const * doc,
-                     NodeType & protoNodeType,
-                     VrmlNode & node
+		const OpenVRML::Doc2 * doc,
+                     OpenVRML::NodeType & protoNodeType,
+                     OpenVRML::Node & node
 	);
 	public: void protoScriptInterfaceDeclaration(
-		Doc2 const * doc, NodeType & protoNodeType, VrmlNodeScript & node
+		const OpenVRML::Doc2 * doc,
+                                OpenVRML::NodeType & protoNodeType,
+                                OpenVRML::ScriptNode & node
 	);
 	public: void isStatement(
-		NodeType & protoNodeType,
-            VrmlNode & node,
+		OpenVRML::NodeType & protoNodeType, OpenVRML::Node & node,
             std::string const & nodeInterfaceId
 	);
-	public: VrmlField *  protoFieldValue(
-		Doc2 const * doc, NodeType & protoNodeType, VrmlField::VrmlFieldType ft
+	public: OpenVRML::FieldValue *  protoFieldValue(
+		const OpenVRML::Doc2 * doc, OpenVRML::NodeType & protoNodeType,
+                OpenVRML::FieldValue::FieldType ft
 	);
 	public: void protoScriptFieldInterfaceDeclaration(
-		Doc2 const * doc, NodeType & protoNodeType, VrmlNodeScript & node
+		const OpenVRML::Doc2 * doc,
+                                     OpenVRML::NodeType & protoNodeType,
+                                     OpenVRML::ScriptNode & node
 	);
-	public: VrmlField *  nodeFieldValue(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlField::VrmlFieldType ft
+	public: OpenVRML::FieldValue *  nodeFieldValue(
+		OpenVRML::VrmlNamespace & vrmlNamespace,
+               const OpenVRML::Doc2 * doc, OpenVRML::FieldValue::FieldType ft
 	);
-	public: VrmlField *  nonNodeFieldValue(
-		VrmlField::VrmlFieldType ft
+	public: OpenVRML::FieldValue *  nonNodeFieldValue(
+		OpenVRML::FieldValue::FieldType ft
 	);
-	public: VrmlField *  protoNodeFieldValue(
-		Doc2 const * doc, NodeType & protoNodeType, VrmlField::VrmlFieldType ft
+	public: OpenVRML::FieldValue *  protoNodeFieldValue(
+		const OpenVRML::Doc2 * doc,
+                    OpenVRML::NodeType & protoNodeType,
+                    OpenVRML::FieldValue::FieldType ft
 	);
-	public: VrmlSFBool *  sfBoolValue();
-	public: VrmlSFColor *  sfColorValue();
-	public: VrmlSFFloat *  sfFloatValue();
-	public: VrmlSFImage *  sfImageValue();
-	public: VrmlSFInt32 *  sfInt32Value();
-	public: VrmlSFRotation *  sfRotationValue();
-	public: VrmlSFString *  sfStringValue();
-	public: VrmlSFTime *  sfTimeValue();
-	public: VrmlSFVec2f *  sfVec2fValue();
-	public: VrmlSFVec3f *  sfVec3fValue();
-	public: VrmlMFColor *  mfColorValue();
-	public: VrmlMFFloat *  mfFloatValue();
-	public: VrmlMFInt32 *  mfInt32Value();
-	public: VrmlMFRotation *  mfRotationValue();
-	public: VrmlMFString *  mfStringValue();
-	public: VrmlMFTime *  mfTimeValue();
-	public: VrmlMFVec2f *  mfVec2fValue();
-	public: VrmlMFVec3f *  mfVec3fValue();
-	public: VrmlSFNode *  sfNodeValue(
-		VrmlNamespace & vrmlNamespace,
-            Doc2 const * doc
+	public: OpenVRML::SFBool *  sfBoolValue();
+	public: OpenVRML::SFColor *  sfColorValue();
+	public: OpenVRML::SFFloat *  sfFloatValue();
+	public: OpenVRML::SFImage *  sfImageValue();
+	public: OpenVRML::SFInt32 *  sfInt32Value();
+	public: OpenVRML::SFRotation *  sfRotationValue();
+	public: OpenVRML::SFString *  sfStringValue();
+	public: OpenVRML::SFTime *  sfTimeValue();
+	public: OpenVRML::SFVec2f *  sfVec2fValue();
+	public: OpenVRML::SFVec3f *  sfVec3fValue();
+	public: OpenVRML::MFColor *  mfColorValue();
+	public: OpenVRML::MFFloat *  mfFloatValue();
+	public: OpenVRML::MFInt32 *  mfInt32Value();
+	public: OpenVRML::MFRotation *  mfRotationValue();
+	public: OpenVRML::MFString *  mfStringValue();
+	public: OpenVRML::MFTime *  mfTimeValue();
+	public: OpenVRML::MFVec2f *  mfVec2fValue();
+	public: OpenVRML::MFVec3f *  mfVec3fValue();
+	public: OpenVRML::SFNode *  sfNodeValue(
+		OpenVRML::VrmlNamespace & vrmlNamespace,
+            const OpenVRML::Doc2 * doc
 	);
-	public: VrmlMFNode *  mfNodeValue(
-		VrmlNamespace & vrmlNamespace, Doc2 const * doc
+	public: OpenVRML::MFNode *  mfNodeValue(
+		OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc
 	);
-	public: VrmlSFNode *  protoSfNodeValue(
-		Doc2 const * doc,
-                 NodeType & protoNodeType
+	public: OpenVRML::SFNode *  protoSfNodeValue(
+		const OpenVRML::Doc2 * doc,
+                 OpenVRML::NodeType & protoNodeType
 	);
-	public: VrmlMFNode *  protoMfNodeValue(
-		Doc2 const * doc, NodeType & protoNodeType
+	public: OpenVRML::MFNode *  protoMfNodeValue(
+		const OpenVRML::Doc2 * doc, OpenVRML::NodeType & protoNodeType
 	);
 	public: bool  boolValue();
 	public: void colorValue(
