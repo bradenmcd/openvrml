@@ -1,4 +1,6 @@
 //
+// OpenVRML
+//
 // Copyright (C) 2000  Braden N. McDaniel
 // 
 // This library is free software; you can redistribute it and/or

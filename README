@@ -9,31 +9,87 @@ See the TODO file for a list of things we are planning to implement for future
 releases.
 
 
-What is OpenVRML?
-==================
+About
+=====
 
 OpenVRML is a portable C++ class library for reading and displaying VRML97
 files.  This distribution includes Lookat, a sample viewer program that uses
 GLUT.
 
 
-How can I use it?
-=================
+License terms
+=============
 
-This code is Free Software available under the terms of the Lesser General
-Public License.  Refer to the file COPYING for details.
+This bulk of the code in OpenVRML is Free Software available under the terms
+of the Lesser General Public License (LGPL), version 2.1.  The full text of
+the LGPL can be found in the file COPYING.LIB.
+
+Some code in OpenVRML is used under less restrictive LGPL-compatible
+terms:
+
+OpenVRML uses the Mozilla JavaScript engine, version 1.5, under the Mozilla
+Public License (MPL), version 1.1.  The full text of the MPL can be found in
+the file MPL-1.1.txt.
+
+OpenVRML uses the ANTLR parser generator and C++ support library which are in
+the public domain.
+
+OpenVRML includes GIF reading code by David Koblas:
+  Copyright 1990, David Koblas.
+  Permission to use, copy, modify, and distribute this software
+  and its documentation for any purpose and without fee is hereby
+  granted, provided that the above copyright notice appear in all
+  copies and that both that copyright notice and this permission
+  notice appear in supporting documentation.  This software is
+  provided "as is" without express or implied warranty.
+
+OpenVRML's OpenGL renderer includes code from Silicon Graphics, Inc.:
+  (c) Copyright 1993, 1994, Silicon Graphics, Inc.
+  ALL RIGHTS RESERVED
+  Permission to use, copy, modify, and distribute this software for
+  any purpose and without fee is hereby granted, provided that the above
+  copyright notice appear in all copies and that both the copyright notice
+  and this permission notice appear in supporting documentation, and that
+  the name of Silicon Graphics, Inc. not be used in advertising
+  or publicity pertaining to distribution of the software without specific,
+  written prior permission.
+
+  THE MATERIAL EMBODIED ON THIS SOFTWARE IS PROVIDED TO YOU "AS-IS"
+  AND WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR OTHERWISE,
+  INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY OR
+  FITNESS FOR A PARTICULAR PURPOSE.  IN NO EVENT SHALL SILICON
+  GRAPHICS, INC.  BE LIABLE TO YOU OR ANYONE ELSE FOR ANY DIRECT,
+  SPECIAL, INCIDENTAL, INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY
+  KIND, OR ANY DAMAGES WHATSOEVER, INCLUDING WITHOUT LIMITATION,
+  LOSS OF PROFIT, LOSS OF USE, SAVINGS OR REVENUE, OR THE CLAIMS OF
+  THIRD PARTIES, WHETHER OR NOT SILICON GRAPHICS, INC.  HAS BEEN
+  ADVISED OF THE POSSIBILITY OF SUCH LOSS, HOWEVER CAUSED AND ON
+  ANY THEORY OF LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE
+  POSSESSION, USE OR PERFORMANCE OF THIS SOFTWARE.
+
+  US Government Users Restricted Rights
+  Use, duplication, or disclosure by the Government is subject to
+  restrictions set forth in FAR 52.227.19(c)(2) or subparagraph
+  (c)(1)(ii) of the Rights in Technical Data and Computer Software
+  clause at DFARS 252.227-7013 and/or in similar or successor
+  clauses in the FAR or the DOD or NASA FAR Supplement.
+  Unpublished-- rights reserved under the copyright laws of the
+  United States.  Contractor/manufacturer is Silicon Graphics,
+  Inc., 2011 N.  Shoreline Blvd., Mountain View, CA 94039-7311.
+
+  OpenGL(TM) is a trademark of Silicon Graphics, Inc.
 
 
-What else do I need?
-====================
+Required libraries
+==================
 
 OpenVRML requires zlib, libpng, libjpeg, OpenGL/Mesa, and GLUT to build.  If
 any of these are not already present on your system, first consult your
 operating system vendor for packages tailored to your particular operating
 system/distribution.  Failing that, consult the following URLs:
 
-    zlib:       <http://www.cdrom.com/pub/infozip/zlib/>
-    libpng:     <http://www.cdrom.com/pub/png/pngcode.html>
+    zlib:       <http://www.freesoftware.com/pub/infozip/zlib/zlib.html>
+    libpng:     <http://www.libpng.org/pub/png/libpng.html>
     libjpeg:    <http://www.ijg.org>
     Mesa:       <http://www.mesa3d.org>
     GLUT:       <http://reality.sgi.com/mjk_asd/glut3/>
@@ -51,7 +107,7 @@ Installation
 Refer to the file INSTALL for detailed installation instructions.
 
 
-What VRML97 nodes are supported by OpenVRML?
+Supported nodes
 ======================================================
 
 Details of the implementation status of each node can be found in NODES.  All of
