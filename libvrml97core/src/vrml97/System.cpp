@@ -16,10 +16,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#if defined(_WIN32) && !defined(__CYGWIN__)
 #include <string.h>
-#endif
 
 # ifndef NDEBUG
 #   define SYSTEM_DEBUG
