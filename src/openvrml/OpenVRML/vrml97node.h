@@ -30,7 +30,6 @@
 
 class VrmlNodeChild : public VrmlNode {
 public:
-    // Define the fields of all built in child nodes
     static VrmlNodeType * defineType(VrmlNodeType *);
 
     virtual const VrmlNodeChild * toChild() const;
@@ -39,6 +38,23 @@ public:
 protected:
     VrmlNodeChild(VrmlScene *);
     VrmlNodeChild(const VrmlNodeChild & node);
+};
+
+
+class VrmlNodeGeometry : public VrmlNode {
+public:
+    static VrmlNodeType *defineType(VrmlNodeType *t);
+
+    VrmlNodeGeometry(VrmlScene *);
+    virtual ~VrmlNodeGeometry();
+
+    virtual void render(Viewer *, VrmlRenderContext rc);
+    virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc) = 0;
+    virtual VrmlNodeColor *color();
+    virtual VrmlNodeGeometry* toGeometry() const;
+
+protected:
+    Viewer::Object d_viewerObject; // move to VrmlNode? ...
 };
 
 
@@ -72,28 +88,6 @@ protected:
     VrmlSFColor d_color;
     VrmlSFFloat d_intensity;
     VrmlSFBool d_on;
-};
-
-
-class VrmlNodeGeometry : public VrmlNode {
-public:
-    // Define the fields of all built in geometry nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t);
-
-    VrmlNodeGeometry(VrmlScene *);
-    ~VrmlNodeGeometry();
-
-    virtual VrmlNodeGeometry* toGeometry() const;
-
-    // Specific geometry nodes need only define insertGeometry(), not render().
-    virtual void render(Viewer *, VrmlRenderContext rc);
-
-    virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc) = 0;
-
-    virtual VrmlNodeColor *color();
-
-protected:
-    Viewer::Object d_viewerObject; // move to VrmlNode? ...
 };
 
 

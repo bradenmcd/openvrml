@@ -35,11 +35,11 @@
 /**
  * @class VrmlNodeChild
  *
- * @brief Base class for all nodes that may be children of a group node.
+ * @brief Base class for all nodes that may be children of a Group node.
  */
 
 /**
- * @brief Define the fields of all built in child nodes.
+ * @brief Define the fields of all built-in child nodes.
  * 
  * @param nodeType
  *
@@ -52,7 +52,7 @@ VrmlNodeType * VrmlNodeChild::defineType(VrmlNodeType * nodeType) {
 /**
  * @brief Constructor.
  *
- * @param scene the VrmlScene to which this node belongs.
+ * @param scene the VrmlScene to which this node belongs
  */
 VrmlNodeChild::VrmlNodeChild(VrmlScene * scene): VrmlNode(scene) {}
 
@@ -74,6 +74,83 @@ const VrmlNodeChild * VrmlNodeChild::toChild() const {
 VrmlNodeChild * VrmlNodeChild::toChild() {
     return this;
 }
+
+
+/**
+ * @class VrmlNodeGeometry
+ *
+ * @brief Base class for all geometry nodes.
+ */
+
+/**
+ * @brief Define the fields of all built-in geometry nodes.
+ * 
+ * @param nodeType
+ *
+ * @return the type object
+ */
+VrmlNodeType *VrmlNodeGeometry::defineType(VrmlNodeType *t)
+{
+  return VrmlNode::defineType(t);
+}
+
+/**
+ * @brief Constructor.
+ *
+ * @param scene the VrmlScene to which this node belongs
+ */
+VrmlNodeGeometry::VrmlNodeGeometry(VrmlScene * scene): VrmlNode(scene),
+        d_viewerObject(0) {}
+
+/**
+ * @brief Destructor.
+ */
+VrmlNodeGeometry::~VrmlNodeGeometry()
+{
+  /* Need access to viewer to delete viewerObject...*/
+}
+
+/**
+ * @brief Downcast method.
+ *
+ * @return a pointer to this object
+ */
+VrmlNodeGeometry * VrmlNodeGeometry::toGeometry() const {
+    return this;
+}
+
+/**
+ * @brief Get the Color node associated with this geometry.
+ *
+ * @return a VrmlNodeColor
+ */
+VrmlNodeColor *VrmlNodeGeometry::color() { return 0; }
+
+/**
+ * @brief Render this node.
+ *
+ * Subclasses need only define insertGeometry(), not render().
+ *
+ * @param viewer a renderer
+ * @param context the renderer context
+ */
+void VrmlNodeGeometry::render(Viewer * viewer, VrmlRenderContext context) 
+{
+  if ( d_viewerObject && isModified() )
+    {
+      v->removeObject(d_viewerObject);
+      d_viewerObject = 0;
+    }
+
+  if (d_viewerObject)
+    viewer->insertReference(d_viewerObject);
+  else
+    {
+      d_viewerObject = insertGeometry(viewer, context);
+      clearModified();
+    }
+}
+
 
 static VrmlNode * createAnchor(VrmlScene * scene) {
     return new VrmlNodeAnchor(scene);
@@ -3285,53 +3362,6 @@ void VrmlNodeFontStyle::setField(const char *fieldName,
   else
     VrmlNode::setField(fieldName, fieldValue);
 }
-
-// Define the fields of all built in geometry nodes
-VrmlNodeType *VrmlNodeGeometry::defineType(VrmlNodeType *t)
-{
-  return VrmlNode::defineType(t);
-}
-
-VrmlNodeGeometry::VrmlNodeGeometry(VrmlScene *s) :
-  VrmlNode(s),
-  d_viewerObject(0) 
-{
-}
-
-VrmlNodeGeometry::~VrmlNodeGeometry()
-{
-  /* Need access to viewer to delete viewerObject...*/
-}
-
-
-VrmlNodeGeometry* VrmlNodeGeometry::toGeometry() const
-{ return (VrmlNodeGeometry*) this; }
-
-
-VrmlNodeColor *VrmlNodeGeometry::color() { return 0; }
-
-
-
-// Geometry nodes need only define insertGeometry(), not render().
-
-void VrmlNodeGeometry::render(Viewer *v, VrmlRenderContext rc) 
-{
-  //cout << "VrmlModeGeometry::render()" << endl;
-  if ( d_viewerObject && isModified() )
-    {
-      v->removeObject(d_viewerObject);
-      d_viewerObject = 0;
-    }
-
-  if (d_viewerObject)
-    v->insertReference(d_viewerObject);
-  else
-    {
-      d_viewerObject = insertGeometry(v, rc);
-      clearModified();
-    }
-}
-
 
 // Return a new VrmlNodeGroup
 static VrmlNode * createGroup(VrmlScene * scene) {
