@@ -1,0 +1,7 @@
+LIBRARY HS_REGEX
+
+EXPORTS
+	regfree
+	regerror
+	regexec
+	regcomp

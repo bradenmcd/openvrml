@@ -1,0 +1,54 @@
+<HEAD>
+<TITLE>Notes on the WIN32 port of Henry Spencer REGEX
+</TITLE>
+<HEAD>
+<BODY>
+<H1>Notes on the WIN32 port of Henry Spencer REGEX</H1>
+
+<P>See <a href="winregex.html">winregex.html</a>
+an description of regular expressions and
+why this port was done.
+
+<P>Download <a href="hs_regex.exe">hs_regex.exe</a>
+(187k a self-extracting
+<a href="http://quest.jpl.nasa.gov/Info-ZIP/">info-zip</a>
+archive) to obtain sources, project makefile,
+documentation,
+precompiled binaries and test program with data.
+At runtime of your programs the only required
+file is hs_regex.dll.
+
+<OL><LI>The sources were obtained from the C runtime
+library section of the FreeBSD.
+    <LI>nroff -man | col -bx was run under unix to
+	    convert the manual pages to doc files.
+    <LI>A regex_test.c main program was written.
+	<LI>The microsoft developer studio project was
+	    created with test_hs_regex console mode
+		application as the main project, and
+		hs_regex dynamic link library as subproject.
+		Build settings adjusted so that both main
+		and subproject outputs go to the same directory.
+		The test_hs_regex.exe project source is regex_test.c.
+		The hs_regex.dll project sources are
+		regexec.c, regcomp.c, regfree.c, regerror.c and
+		hs_regex.def.
+    <LI>Slight modification to source files,
+	limited to changing &lt;regex.h&gt; to "regex.h"
+	and adding a definition to utils.h, and inserting
+	the __stdcall declaration so that other windows programs
+	have a chance of invoking the dll.
+	<LI>About a dozen compiler warning are ingored.
+	
+</OL>
+
+<P>
+This file is &copy; Copyright 1997 by 
+<a href="http://people.delphi.com/gjc/">George J. Carrette</a>.
+<P>
+<A href="http://people.delphi.com/gjc/hs_regex.html">http://people.delphi.com/gjc/hs_regex.html</a>
+
+
+
+
+</BODY>
