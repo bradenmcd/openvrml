@@ -26,7 +26,7 @@ AC_CONFIG_FILES([Makefile]
                 [openvrml.spec])
 
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.7 foreign dejagnu])
+AM_INIT_AUTOMAKE([1.7 foreign dejagnu subdir-objects])
 AM_CONFIG_HEADER([config.h])
 
 #
@@ -238,6 +238,8 @@ AM_CONDITIONAL([ENABLE_SHARED], [test "X$enable_shared" != "Xno"])
 AC_SUBST([OPENVRML_PKG_REQUIRES])
 AC_SUBST([OPENVRML_RPATH])
 
+AC_ARG_VAR([XPIDL], [Mozilla XPCOM IDL compiler])
+AC_ARG_VAR([XPIDLFLAGS], [Mozilla XPCOM IDL compiler flags])
 AC_CONFIG_SUBDIRS([mozilla-plugin])
 
 AC_OUTPUT

@@ -4,21 +4,23 @@ EXTRA_DIST = \
         Doxyfile.in \
         doxygen-header \
         doxygen-footer \
-        index.doc \
-        manual
+        index.doc
 
-manual: html
+DISTCLEANFILES = manual/*
 
-html: Doxyfile
-	$(DOXYGEN)
+html: manual/index.html
 
 installdirs-local:
 	$(mkinstalldirs) $(DESTDIR)$(docdir)/manual
 
-install-data-local:
+install-data-local: html installdirs-local
 	$(INSTALL_DATA) $(srcdir)/manual/* $(DESTDIR)$(docdir)/manual
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(docdir)/manual
 
-MAINTAINERCLEANFILES = manual
+manual/index.html: Doxyfile
+	$(DOXYGEN)
+
+dist-hook: manual/index.html
+	cp -R $(srcdir)/manual $(distdir)

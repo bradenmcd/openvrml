@@ -7,6 +7,8 @@ AM_CXXFLAGS = @MOZILLA_PLUGIN_CFLAGS@ @GTKGLEXT_CFLAGS@
 
 idldir = $(datadir)/idl/openvrml-@PACKAGE_VERSION@
 
+mozpluginsdir = $(prefix)/mozilla/plugins
+
 if ENABLE_MOZILLA_PLUGIN
 mozplugins_LTLIBRARIES = openvrml.la
 mozplugins_DATA = openvrml.xpt
@@ -27,7 +29,7 @@ BUILT_SOURCES = openvrml.h
 CLEANFILES = openvrml.h openvrml.xpt
 
 .idl.h:
-	$(XPIDL) -I $(mozidldir) -m header $<
+	$(XPIDL) $(XPIDLFLAGS) @MOZILLA_XPIDLFLAGS@ -m header $<
 
 .idl.xpt:
-	$(XPIDL) -I $(mozidldir) -m typelib $<
+	$(XPIDL) $(XPIDLFLAGS) @MOZILLA_XPIDLFLAGS@ -m typelib $<

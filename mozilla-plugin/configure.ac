@@ -18,16 +18,15 @@ PKG_CHECK_MODULES([MOZILLA_PLUGIN], [mozilla-plugin >= 1.6],
 mozversion=`$PKG_CONFIG --modversion mozilla-plugin`
 mozprefix=`$PKG_CONFIG --variable=prefix mozilla-plugin`
 mozlibdir=`$PKG_CONFIG --variable=libdir mozilla-plugin`
-mozincludedir=`$PKG_CONFIG --variable=includedir mozilla-plugin`
+AC_ARG_VAR([XPIDL], [Mozilla XPCOM IDL compiler])
+AC_ARG_VAR([XPIDLFLAGS], [Mozilla XPCOM IDL compiler flags])
 AC_PATH_PROG([XPIDL], [xpidl], , [${mozlibdir}])
 if test -z "$XPIDL"; then
   AC_MSG_FAILURE([xpidl not found])
 fi
-mozpluginsdir=`echo "$mozlibdir" | sed s,mozilla-[[^/]]*$,mozilla/plugins,`
 mozidldir="$mozprefix/share/idl/mozilla-$mozversion"
-AC_SUBST([mozpluginsdir])
-AC_SUBST([mozincludedir])
-AC_SUBST([mozidldir])
+MOZILLA_XPIDLFLAGS="-I $mozidldir"
+AC_SUBST([MOZILLA_XPIDLFLAGS])
 PKG_CHECK_MODULES([GTKGLEXT], [gtkglext-1.0], , [have_gtkglext=no])
 
 if test "X$enable_mozilla_plugin" != "Xno"; then

@@ -1,5 +1,24 @@
 2004-11-25 Braden McDaniel  <braden@endoframe.com>
 
+	Fixes for distcheck.
+
+	* configure.ac:  Pass subdir-objects argument to
+	AM_INIT_AUTOMAKE; exposed XPIDL and XPIDLFLAGS to the user with
+	AC_ARG_VAR.
+	* doc/Doxyfile.in:  Updated for Doxygen 1.3.9.1;
+	changed SORT_MEMBER_DOCS to NO; changed SHORT_NAMES to YES.
+	* doc/Makefile.am:  Make distcheck happy.
+	* ide-projects/Makefile.am:  Remove lingering reference to regex
+	library.
+	* mozilla-plugin/configure.ac:  Convey flags required for xpidl
+	as MOZILLA_XPIDLFLAGS; exposed XPIDL and XPIDLFLAGS to the user
+	with AC_ARG_VAR.
+	* mozilla-plugin/src/Makefile.am:  Use $(libdir)/mozilla/plugins
+	as the Mozilla plug-in directory, rather than hard coding the
+	value based on mozilla-plugin.pc; invoke xpidl with XPIDLFLAGS.
+
+2004-11-25 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/conformance.doc:  Miscellaneous updates.
 
 2004-11-24 Braden McDaniel  <braden@endoframe.com>
