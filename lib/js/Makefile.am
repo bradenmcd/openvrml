@@ -23,7 +23,7 @@
 #       path where the header files will be installed. Can be empty if no
 #       headers are being installed.
 # 
-# JS_INCLUDE_HEADERS
+# JS_INCLUDE_FILES
 #       the headers that will be installed. Should generally be empty (if
 #       building a convenience library and no js headers need to be installed)
 #       or "jsapi.h jsautocfg.h jscompat.h jslong.h jsotypes.h jsosdep.h 
@@ -78,7 +78,7 @@ resource.h jsopcode.tbl js.msg jsshell.msg
 
 jsincludedir = @JS_INCLUDE_DIR@
 
-include_HEADERS = @JS_INCLUDE_HEADERS@
+include_HEADERS = @JS_INCLUDE_FILES@
 
 EXTRA_HEADERS = jsapi.h jsautocfg.h jscompat.h jslong.h jsotypes.h jsosdep.h \
 jspubtd.h jstypes.h
