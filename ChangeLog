@@ -1,3 +1,8 @@
+2000-10-26  Braden McDaniel  <braden@endoframe.com>
+
+        * Modified ANTLR's config.cpp to define NO_STATIC_CONSTS for gcc 2.96.
+          This fixes <https://sourceforge.net/bugs/?func=detailbug&bug_id=117652&group_id=7151>.
+
 2000-10-24  Braden McDaniel  <braden@endoframe.com>
 
         * Unified typedef for Win32 and non-Win32 for TessCB in

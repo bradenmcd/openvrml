@@ -49,6 +49,12 @@
 #define ANTLR_BEGIN_NAMESPACE(_x_) namespace _x_ {
 #define ANTLR_END_NAMESPACE }
 
+# if defined __GNUC__
+#   if __GNUC__ == 2 && __GNUC_MINOR__ == 96
+#     define NO_STATIC_CONSTS
+#   endif
+# endif
+
 #if defined(_MSC_VER) && !defined(__ICL) // Microsoft Visual C++
 
 // This warning really gets on my nerves.
