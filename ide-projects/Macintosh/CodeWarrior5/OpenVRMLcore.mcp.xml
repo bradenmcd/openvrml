@@ -879,9 +879,9 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>­Sà</VALUE></SETTING>
-                    <SETTING><VALUE>ò¬8</VALUE></SETTING>
-                    <SETTING><VALUE>-P</VALUE></SETTING>
+                    <SETTING><VALUE>	Šô€</VALUE></SETTING>
+                    <SETTING><VALUE>À¶ø</VALUE></SETTING>
+                    <SETTING><VALUE>Õ8</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
@@ -1786,6 +1786,33 @@
                     <FILEKIND>Text</FILEKIND>
                     <FILEFLAGS>Debug</FILEFLAGS>
                 </FILE>
+                <FILE>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
+                    <PATH>:VrmlNodeVisitor.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Text</FILEKIND>
+                    <FILEFLAGS>Debug</FILEFLAGS>
+                </FILE>
+                <FILE>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
+                    <PATH>:Route.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Text</FILEKIND>
+                    <FILEFLAGS>Debug</FILEFLAGS>
+                </FILE>
+                <FILE>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
+                    <PATH>:VrmlNodeChild.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Text</FILEKIND>
+                    <FILEFLAGS>Debug</FILEFLAGS>
+                </FILE>
             </FILELIST>
             <LINKORDER>
                 <FILEREF>
@@ -2404,6 +2431,27 @@
                     <PATH>:Vrml97Parser.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
+                <FILEREF>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
+                    <PATH>:VrmlNodeVisitor.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
+                    <PATH>:Route.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
+                    <PATH>:VrmlNodeChild.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
             </LINKORDER>
         </TARGET>
     </TARGETLIST>
@@ -2414,7 +2462,7 @@
 
     <GROUPLIST>
         <GROUP><NAME>Source</NAME>
-            <GROUP><NAME>libvrml97core</NAME>
+            <GROUP><NAME>openvrmlcore</NAME>
                 <FILEREF>
                     <TARGETNAME>openvrmlcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
@@ -2485,6 +2533,14 @@
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
                     <PATH>:MathUtils.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
+                    <PATH>:Route.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
@@ -2629,6 +2685,14 @@
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
                     <PATH>:VrmlNodeBox.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
+                    <PATH>:VrmlNodeChild.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
@@ -3045,6 +3109,14 @@
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
                     <PATH>:VrmlNodeVisibilitySensor.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
+                    <PATH>:VrmlNodeVisitor.cpp</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
