@@ -13,6 +13,8 @@ import vrml.node.*;
  *
  * Fully tested classes
  *   ConstMFColor
+ *   ConstMFFloat
+ *   ConstMFInt32
  *   ConstMFString
  *   ConstSFBool
  *   ConstSFColor
@@ -23,6 +25,8 @@ import vrml.node.*;
  *   ConstSFRotation
  *   ConstSFString
  *   ConstSFTime
+ *   ConstSFVec2f
+ *   ConstSFVec3f
  *   Event
  *   MFColor
  *   SFBool
@@ -33,6 +37,8 @@ import vrml.node.*;
  *   SFRotation
  *   SFString
  *   SFTime
+ *   SFVec2f
+ *   SFVec3f
  *
  * Partially tested classes with list of tested methods.
  *
@@ -65,15 +71,11 @@ import vrml.node.*;
  *
  *
  * Classes not tested
- *   ConstMFFloat
- *   ConstMFInt32
  *   ConstMFNode
  *   ConstMFRotation
  *   ConstMFTime
  *   ConstMFVec2f
  *   ConstMFVec3f
- *   ConstSFVec2f
- *   ConstSFVec3f
  *   MFFloat
  *   MFInt32
  *   MFNode
@@ -83,8 +85,6 @@ import vrml.node.*;
  *   MFVec2f
  *   MFVec3f
  *   SFNode
- *   SFVec2f
- *   SFVec3f
  */
 class TestJSAI extends Script {
 
@@ -331,9 +331,53 @@ class TestJSAI extends Script {
 
     /* Test ConstSFVec2f/SFVec2f methods */
     System.out.println("Test ConstSFVec2f/SFVec2f");
+    ConstSFVec2f testConstSFVec2f = new ConstSFVec2f(10, 20);
+    float[] sfvec2f = new float[2];
+    testConstSFVec2f.getValue(sfvec2f);
+    System.out.println("testConstSFVec2f.getValue = " + sfvec2f[0] + "," +
+                       sfvec2f[1]);
+    System.out.println("testConstSFVec2f.getX = " + testConstSFVec2f.getX());
+    System.out.println("testConstSFVec2f.getY = " + testConstSFVec2f.getY());
+    System.out.println("testConstSFVec2f = " + testConstSFVec2f);
+    SFVec2f testSFVec2f1 = new SFVec2f();
+    SFVec2f testSFVec2f2 = new SFVec2f(10, 20);
+    float vec2s[] = new float[2];
+    testSFVec2f2.getValue(vec2s);
+    System.out.println("testSFVec2f2.getValue = " + vec2s[0] + "," +
+                       vec2s[1]);
+    System.out.println("testSFVec2f2.getX = " + testSFVec2f2.getX());
+    System.out.println("testSFVec2f2.getY = " + testSFVec2f2.getY());
+    testSFVec2f1.setValue(testSFVec2f2);
+    testSFVec2f2.setValue(testConstSFVec2f);
+    testSFVec2f2.setValue(vec2s);
+    testSFVec2f2.setValue(40, 30);
+    System.out.println("testSFVec2f1 = " + testSFVec2f1);
 
     /* Test ConstSFVec3f/SFVec3f methods */
     System.out.println("Test ConstSFVec3f/SFVec3f");
+    ConstSFVec3f testConstSFVec3f = new ConstSFVec3f(10, 20, 30);
+    float[] sfvec3f = new float[3];
+    testConstSFVec3f.getValue(sfvec3f);
+    System.out.println("testConstSFVec3f.getValue = " + sfvec3f[0] + "," +
+                       sfvec3f[1] + "," + sfvec3f[2]);
+    System.out.println("testConstSFVec3f.getX = " + testConstSFVec3f.getX());
+    System.out.println("testConstSFVec3f.getY = " + testConstSFVec3f.getY());
+    System.out.println("testConstSFVec3f.getZ = " + testConstSFVec3f.getZ());
+    System.out.println("testConstSFVec3f = " + testConstSFVec3f);
+    SFVec3f testSFVec3f1 = new SFVec3f();
+    SFVec3f testSFVec3f2 = new SFVec3f(10, 20, 30);
+    float[] vec3s = new float[3];
+    testSFVec3f2.getValue(vec3s);
+    System.out.println("testSFVec3f2.getValue = " + vec3s[0] + "," +
+                       vec3s[1] + "," + vec3s[2]);
+    System.out.println("testSFVec3f2.getX = " + testSFVec3f2.getX());
+    System.out.println("testSFVec3f2.getY = " + testSFVec3f2.getY());
+    System.out.println("testSFVec3f2.getZ = " + testSFVec3f2.getZ());
+    testSFVec3f1.setValue(testSFVec3f2);
+    testSFVec3f2.setValue(testConstSFVec3f);
+    testSFVec3f2.setValue(vec3s);
+    testSFVec3f2.setValue(40, 30, 20);
+    System.out.println("testSFVec3f1 = " + testSFVec3f1);
 
     /* Test ConstMFColor/MFColor methods */
     System.out.println("Test ConstMFColor/MFColor");
@@ -384,7 +428,7 @@ class TestJSAI extends Script {
     System.out.println("testMFColor3 = " + testMFColor3);
     testMFColor1.setValue(colorArray2);
     System.out.println("testMFColor1 = " + testMFColor1);
-    testMFColor1.setValue(3, colorArray1);
+    testMFColor1.setValue(0, colorArray1);
     System.out.println("testMFColor1 = " + testMFColor1);
     testMFColor2.setValue(testMFColor1);
     System.out.println("testMFColor2 = " + testMFColor2);
@@ -411,9 +455,35 @@ class TestJSAI extends Script {
 
     /* Test ConstMFFloat/MFFloat methods */
     System.out.println("Test ConstMFFloat/MFFloat");
+    float[] floatArray1 = { 3.0f, 4.0f, 5.0f };
+    float[] floatArray2 = { 7.0f, 2.0f };
+    ConstMFFloat testConstMFFloat_1 = new ConstMFFloat(2, floatArray2);
+    ConstMFFloat testConstMFFloat_2 = new ConstMFFloat(floatArray1);
+    if (testConstMFFloat_2.getSize() != 3)
+      System.out.println("ConstMFFloat.getSize failed");
+    float[] floatResult = new float[3];
+    testConstMFFloat_2.getValue(floatResult);
+    System.out.println("testConstMFFloat_2.getValue = " + floatResult[0] +
+                       "," + floatResult[1] + "," + floatResult[2]);
+    System.out.println("testConstMFFloat_2[1] = " +
+                       testConstMFFloat_2.get1Value(1));
+    System.out.println("testConstMFFloat_1 = " + testConstMFFloat_1);
 
     /* Test ConstMFInt32/MFInt32 methods */
     System.out.println("Test ConstMFint32/MFInt32");
+    int[] intArray1 = { 3, 4, 5 };
+    int[] intArray2 = { 7, 2 };
+    ConstMFInt32 testConstMFInt32_1 = new ConstMFInt32(2, intArray2);
+    ConstMFInt32 testConstMFInt32_2 = new ConstMFInt32(intArray1);
+    if (testConstMFInt32_2.getSize() != 3)
+      System.out.println("ConstMFInt32.getSize failed");
+    int[] intResult = new int[3];
+    testConstMFInt32_2.getValue(intResult);
+    System.out.println("testConstMFInt32_2.getValue = " + intResult[0] +
+                       "," + intResult[1] + "," + intResult[2]);
+    System.out.println("testConstMFInt32_2[1] = " +
+                       testConstMFInt32_2.get1Value(1));
+    System.out.println("testConstMFInt32_1 = " + testConstMFInt32_1);
 
     /* Test ConstMFNode/MFNode methods */
     System.out.println("Test ConstMFNode/MFNode");
