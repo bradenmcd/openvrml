@@ -71,7 +71,6 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 %files 
 %doc AUTHORS COPYING COPYING.LIB ChangeLog NEWS README THANKS
-%doc doc/conformance.html
 %{prefix}/lib/libopenvrml.so.*
 %{prefix}/lib/pkgconfig/openvrml.pc
 
@@ -99,6 +98,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 %changelog
 * Sun Jun 30 2002  Braden McDaniel  <braden@endoframe.com>
 - configure --without-doxygen.
+- Removed "doc/conformance.html" from %doc.
 
 * Sat Jun 15 2002  Braden McDaniel  <braden@endoframe.com>
 - Use CPPFLAGS and LDFLAGS for Mozilla 1.0.0 when running configure.
