@@ -1,3 +1,19 @@
+2000-06-27  Braden McDaniel  <braden@endoframe.com>
+
+        * Eliminated dependency on the GL header files from ViewerOpenGL.h.
+	  (Note that ViewerOpenGL still depends on these headers, of course.)
+	
+	* Moved dependency on zlib.h from Doc.h to Doc.cpp.
+	
+	* Changed autoconf macro prefix to 'OV'.
+	
+	* Removed libvrml97js check from AM_PATH_VRML.
+	
+	* Removed dependency on zlib, libpng, libjpeg, and GL from AM_PATH_VRML
+	  and AM_PATH_VRMLGL. The dependencies in the headers has been
+	  eliminated, and since we're using libtool inter-library dependencies
+	  are automatically taken care of.
+
 2000-06-27  Michael Louka <Michael.Louka@hrp.no>
 
   * Updated CodeWarrior files for Mac OS to reflect Braden's changes to
