@@ -12,6 +12,10 @@
 #include <config.h>
 #endif
 
+# if defined(_WIN32) && !defined(__CYGWIN__)
+#include <winconfig.h>
+#endif
+
 #if HAVE_JAVASCRIPT
 # include <stdio.h>
 # include <string.h>
