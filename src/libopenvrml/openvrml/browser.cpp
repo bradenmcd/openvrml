@@ -744,1555 +744,1604 @@ namespace {
             swap(dest, result);
         }
     };
-} // namespace
 
+    /**
+     * @brief Construct.
+     *
+     * @param impl_node             a node in the PROTO implementation.
+     * @param impl_node_interface   an interface of @p impl_node.
+     */
+    proto_node_class::
+    is_target::is_target(node & impl_node,
+                         const std::string & impl_node_interface):
+        impl_node(&impl_node),
+        impl_node_interface(impl_node_interface)
+    {}
 
-namespace openvrml {
+    /**
+     * @brief Construct.
+     *
+     * @param from      event source node.
+     * @param eventout  eventOut of @p from.
+     * @param to        event destination node.
+     * @param eventin   eventIn of @p to.
+     */
+    proto_node_class::route::route(node & from,
+                                   const std::string & eventout,
+                                   node & to,
+                                   const std::string & eventin):
+        from(&from),
+        eventout(eventout),
+        to(&to),
+        eventin(eventin)
+    {}
 
-/**
- * @brief Construct.
- *
- * @param impl_node             a node in the PROTO implementation.
- * @param impl_node_interface   an interface of @p impl_node.
- */
-proto_node_class::
-is_target::is_target(node & impl_node,
-                     const std::string & impl_node_interface):
-    impl_node(&impl_node),
-    impl_node_interface(impl_node_interface)
-{}
-
-/**
- * @brief Construct.
- *
- * @param from      event source node.
- * @param eventout  eventOut of @p from.
- * @param to        event destination node.
- * @param eventin   eventIn of @p to.
- */
-proto_node_class::route::route(node & from,
-                               const std::string & eventout,
-                               node & to,
-                               const std::string & eventin):
-    from(&from),
-    eventout(eventout),
-    to(&to),
-    eventin(eventin)
-{}
-
-/**
- * @brief Construct.
- *
- * @param node_class    the proto_node_class that spawned the proto_node_type.
- * @param id            node_type identifier.
- * @param interfaces    a subset of the interfaces supported by the
- *                      @p node_class.
- *
- * @exception unsupported_interface if an interface in @p interfaces is not
- *                                  supported by the @p node_class.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-proto_node_class::
-proto_node_type::proto_node_type(proto_node_class & node_class,
-                                 const std::string & id,
-                                 const node_interface_set & interfaces)
-    throw (unsupported_interface, std::bad_alloc):
-    node_type(node_class, id)
-{
-    using std::find;
-    using std::invalid_argument;
-    for (node_interface_set::const_iterator interface = interfaces.begin();
-         interface != interfaces.end();
-         ++interface) {
-        node_interface_set::const_iterator pos =
-            find(node_class.interfaces.begin(), node_class.interfaces.end(),
-                 *interface);
-        if (pos == node_class.interfaces.end()) {
-            throw unsupported_interface(*interface);
-        }
-        const bool succeeded = this->interfaces_.insert(*interface).second;
-        assert(succeeded);
-    }
-}
-
-/**
- * @brief Destroy.
- */
-proto_node_class::proto_node_type::~proto_node_type() throw ()
-{}
-
-/**
- * @brief Interfaces.
- *
- * @return the interfaces.
- */
-const node_interface_set &
-proto_node_class::proto_node_type::interfaces() const throw ()
-{
-    return this->interfaces_;
-}
-
-const node_ptr
-proto_node_class::proto_node_type::
-create_node(const scope_ptr & scope,
-            const initial_value_map & initial_values) const
-    throw (std::bad_alloc)
-{
-    return node_ptr(new proto_node(*this, scope, initial_values));
-}
-
-/**
- * @class proto_node::proto_eventin
- *
- * @brief PROTO eventIn handler class template.
- */
-
-/**
- * @typedef proto_node::proto_eventin::listeners
- *
- * @brief Set of event listeners.
- */
-
-/**
- * @var proto_node::proto_eventin::listeners proto_node::proto_eventin::listeners_
- *
- * @brief Set of event listeners to which events are delegated for processing.
- */
-
-/**
- * @typedef proto_node::proto_eventin::field_value_type
- *
- * @brief Field value type.
- */
-
-/**
- * @typedef proto_node::proto_eventin::event_listener_type
- *
- * @brief Type of event listeners to which the instance delegates.
- */
-
-/**
- * @brief Construct.
- *
- * @param node  proto_node.
- */
-template <typename FieldValue>
-proto_node::proto_eventin<FieldValue>::proto_eventin(proto_node & node):
-    field_value_listener<FieldValue>(node)
-{}
-
-/**
- * @brief Destroy.
- */
-template <typename FieldValue>
-proto_node::proto_eventin<FieldValue>::~proto_eventin()
-    throw ()
-{}
-
-/**
- * @brief Process event.
- *
- * @param value     field value.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-template <typename FieldValue>
-void
-proto_node::proto_eventin<FieldValue>::
-process_event(const FieldValue & value, const double timestamp)
-    throw (std::bad_alloc)
-{
-    for (typename listeners::const_iterator listener =
-             this->listeners_.begin();
-         listener != this->listeners_.end();
-         ++listener) {
-        (*listener)->process_event(value, timestamp);
-    }
-}
-
-/**
- * @brief Add a listener to delegate to. Corresponds to an IS statement.
- *
- * @param listener  an event_listener to delegate to.
- *
- * @return @c true if @p listener is added successfully; @c false otherwise (if
- *         it already exists in the list of delegates).
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-template <typename FieldValue>
-bool
-proto_node::proto_eventin<FieldValue>::is(event_listener_type & listener)
-    throw (std::bad_alloc)
-{
-    return this->listeners_.insert(&listener).second;
-}
-
-/**
- * @brief Factory function for proto_eventin<FieldValue> instances.
- *
- * @param type  field_value::type_id.
- * @param node  proto_node.
- *
- * @return a boost::shared_ptr to a proto_eventout<FieldValue> instance.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-boost::shared_ptr<event_listener>
-proto_node::create_eventin(const field_value::type_id type,
-                           proto_node & node)
-    throw (std::bad_alloc)
-{
-    boost::shared_ptr<openvrml::event_listener> result;
-    switch (type) {
-    case field_value::sfbool_id:
-        result.reset(new proto_eventin<sfbool>(node));
-        break;
-    case field_value::sfcolor_id:
-        result.reset(new proto_eventin<sfcolor>(node));
-        break;
-    case field_value::sffloat_id:
-        result.reset(new proto_eventin<sffloat>(node));
-        break;
-    case field_value::sfimage_id:
-        result.reset(new proto_eventin<sfimage>(node));
-        break;
-    case field_value::sfint32_id:
-        result.reset(new proto_eventin<sfint32>(node));
-        break;
-    case field_value::sfnode_id:
-        result.reset(new proto_eventin<sfnode>(node));
-        break;
-    case field_value::sfrotation_id:
-        result.reset(new proto_eventin<sfrotation>(node));
-        break;
-    case field_value::sfstring_id:
-        result.reset(new proto_eventin<sfstring>(node));
-        break;
-    case field_value::sftime_id:
-        result.reset(new proto_eventin<sftime>(node));
-        break;
-    case field_value::sfvec2f_id:
-        result.reset(new proto_eventin<sfvec2f>(node));
-        break;
-    case field_value::sfvec3f_id:
-        result.reset(new proto_eventin<sfvec3f>(node));
-        break;
-    case field_value::mfcolor_id:
-        result.reset(new proto_eventin<mfcolor>(node));
-        break;
-    case field_value::mffloat_id:
-        result.reset(new proto_eventin<mffloat>(node));
-        break;
-    case field_value::mfint32_id:
-        result.reset(new proto_eventin<mfint32>(node));
-        break;
-    case field_value::mfnode_id:
-        result.reset(new proto_eventin<mfnode>(node));
-        break;
-    case field_value::mfrotation_id:
-        result.reset(new proto_eventin<mfrotation>(node));
-        break;
-    case field_value::mfstring_id:
-        result.reset(new proto_eventin<mfstring>(node));
-        break;
-    case field_value::mftime_id:
-        result.reset(new proto_eventin<mftime>(node));
-        break;
-    case field_value::mfvec2f_id:
-        result.reset(new proto_eventin<mfvec2f>(node));
-        break;
-    case field_value::mfvec3f_id:
-        result.reset(new proto_eventin<mfvec3f>(node));
-        break;
-    default:
-        assert(false);
-        break;
-    }
-    assert(result.get());
-    return result;
-}
-
-/**
- * @brief Create an IS mapping between an event_listener in the PROTO
- *        implementation and an event_listener in the PROTO interface.
- *
- * @param field_type        field value type of the concrete listeners.
- * @param impl_eventin      event_listener of a node in the PROTO
- *                          implementation.
- * @param interface_eventin event_listener from the PROTO interface.
- *
- * @return @c true if the IS mapping is established successfully; @c false
- *         otherwise (i.e., if the mapping already exists).
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-bool
-proto_node::eventin_is(const field_value::type_id field_type,
-                       openvrml::event_listener & impl_eventin,
-                       openvrml::event_listener & interface_eventin)
-    throw (std::bad_alloc)
-{
-    using boost::polymorphic_downcast;
-    bool succeeded;
-    switch (field_type) {
-    case field_value::sfbool_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<sfbool> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<sfbool_listener *>(&impl_eventin));
-        break;
-    case field_value::sfcolor_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<sfcolor> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<sfcolor_listener *>(&impl_eventin));
-        break;
-    case field_value::sffloat_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<sffloat> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<sffloat_listener *>(&impl_eventin));
-        break;
-    case field_value::sfimage_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<sfimage> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<sfimage_listener *>(&impl_eventin));
-        break;
-    case field_value::sfint32_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<sfint32> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<sfint32_listener *>(&impl_eventin));
-        break;
-    case field_value::sfnode_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<sfnode> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<sfnode_listener *>(&impl_eventin));
-        break;
-    case field_value::sfrotation_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<sfrotation> *>(
-                &interface_eventin)
-            ->is(*polymorphic_downcast<sfrotation_listener *>(&impl_eventin));
-        break;
-    case field_value::sfstring_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<sfstring> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<sfstring_listener *>(&impl_eventin));
-        break;
-    case field_value::sftime_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<sftime> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<sftime_listener *>(&impl_eventin));
-        break;
-    case field_value::sfvec2f_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<sfvec2f> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<sfvec2f_listener *>(&impl_eventin));
-        break;
-    case field_value::sfvec3f_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<sfvec3f> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<sfvec3f_listener *>(&impl_eventin));
-        break;
-    case field_value::mfcolor_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<mfcolor> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<mfcolor_listener *>(&impl_eventin));
-        break;
-    case field_value::mffloat_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<mffloat> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<mffloat_listener *>(&impl_eventin));
-        break;
-    case field_value::mfint32_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<mfint32> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<mfint32_listener *>(&impl_eventin));
-        break;
-    case field_value::mfnode_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<mfnode> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<mfnode_listener *>(&impl_eventin));
-        break;
-    case field_value::mfrotation_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<mfrotation> *>(
-                &interface_eventin)
-            ->is(*polymorphic_downcast<mfrotation_listener *>(&impl_eventin));
-        break;
-    case field_value::mfstring_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<mfstring> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<mfstring_listener *>(&impl_eventin));
-        break;
-    case field_value::mftime_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<mftime> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<mftime_listener *>(&impl_eventin));
-        break;
-    case field_value::mfvec2f_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<mfvec2f> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<mfvec2f_listener *>(&impl_eventin));
-        break;
-    case field_value::mfvec3f_id:
-        succeeded =
-            polymorphic_downcast<proto_eventin<mfvec3f> *>(&interface_eventin)
-            ->is(*polymorphic_downcast<mfvec3f_listener *>(&impl_eventin));
-        break;
-    default:
-        assert(false);
-        break;
-    }
-    return succeeded;
-}
-
-/**
- * @class proto_node::proto_eventout
- *
- * @brief PROTO eventOut handler class template.
- */
-
-/**
- * @class proto_node::proto_eventout::listener_t
- *
- * @brief Listens for events emitted from nodes in the PROTO implementation
- *        in order to propagate them out of the PROTO instance.
- */
-
-/**
- * @var proto_node::proto_eventout & proto_node::proto_eventout::listener_t::emitter
- *
- * @brief Reference to the outer proto_eventout class.
- *
- * @todo It's annoying that we need to carry this around.  Should investigate
- *       the possibility of promoting all this stuff to proto_eventout and have
- *       proto_eventout privately inherit field_value_listener<FieldValue>.
- */
-
-/**
- * @var proto_node & proto_node::proto_eventout::listener_t::node
- *
- * @brief Reference to the proto_node instance.
- */
-
-/**
- * @var FieldValue proto_node::proto_eventout::listener_t::value
- *
- * @brief The value of the most recently emitted event.
- */
-
-/**
- * @brief Construct.
- *
- * @param emitter       proto_eventout.
- * @param node          proto_node.
- * @param initial_value initial value (used for exposedFields).
- */
-template <typename FieldValue>
-proto_node::proto_eventout<FieldValue>::listener_t::
-listener_t(proto_eventout & emitter,
-           proto_node & node,
-           const FieldValue & initial_value):
-    field_value_listener<FieldValue>(node),
-    emitter(emitter),
-    node(node),
-    value(initial_value)
-{}
-
-/**
- * @brief Destroy.
- */
-template <typename FieldValue>
-proto_node::proto_eventout<FieldValue>::listener_t::~listener_t() throw ()
-{}
-
-/**
- * @brief Process event.
- *
- * @param value     new value.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-template<typename FieldValue>
-void
-proto_node::proto_eventout<FieldValue>::listener_t::
-process_event(const FieldValue & value, const double timestamp)
-    throw (std::bad_alloc)
-{
-    if (timestamp > this->emitter.last_time()) {
-        this->value = value;
-        node::emit_event(this->emitter, timestamp);
-    }
-}
-
-/**
- * @var proto_node::proto_eventout::listener_t proto_node::proto_eventout::listener
- *
- * @brief Listens for events emitted from nodes in the PROTO implementation
- *        in order to propagate them out of the PROTO instance.
- */
-
-/**
- * @typedef proto_node::proto_eventout<FieldValue>::field_value_type
- *
- * @brief Field value type.
- */
-
-/**
- * @typedef proto_node::proto_eventout<FieldValue>::event_emitter_type
- *
- * @brief Event emitter type.
- */
-
-/**
- * @typedef proto_node::proto_eventout<FieldValue>::event_listener_type
- *
- * @brief Event listener type.
- */
-
-/**
- * @brief Construct.
- *
- * @param node          proto_node.
- * @param initial_value initial value.  This is used by
- *                      proto_exposedfield<FieldValue>
- */
-template <typename FieldValue>
-proto_node::proto_eventout<FieldValue>::
-proto_eventout(proto_node & node, const FieldValue & initial_value):
-    field_value_emitter<FieldValue>(this->listener.value),
-    listener(*this, node, initial_value)
-{}
-
-/**
- * @brief Destroy.
- */
-template <typename FieldValue>
-proto_node::proto_eventout<FieldValue>::~proto_eventout() throw ()
-{}
-
-/**
- * @brief Create an IS mapping.
- *
- * @param emitter   the event_emitter from a node in the PROTO implementation.
- *
- * @return @c true if the IS mapping is created successfully; @c false
- *         otherwise (i.e., if it already exists).
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-template <typename FieldValue>
-bool
-proto_node::proto_eventout<FieldValue>::
-is(event_emitter_type & emitter) throw (std::bad_alloc)
-{
-    return emitter.add(this->listener);
-}
-
-/**
- * @brief The timestamp of the most recently emitted event.
- *
- * @return the timestamp of the most recently emitted event.
- */
-template <typename FieldValue>
-double proto_node::proto_eventout<FieldValue>::last_time() const
-{
-    return this->event_emitter::last_time;
-}
-
-/**
- * @brief Factory function for proto_eventout<FieldValue> instances.
- *
- * @param type  field_value::type_id.
- * @param node  proto_node.
- *
- * @return a boost::shared_ptr to a proto_eventout<FieldValue> instance.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-boost::shared_ptr<event_emitter>
-proto_node::create_eventout(const field_value::type_id type, proto_node & node)
-    throw (std::bad_alloc)
-{
-    boost::shared_ptr<openvrml::event_emitter> result;
-    switch (type) {
-    case field_value::sfbool_id:
-        result.reset(new proto_eventout<sfbool>(node));
-        break;
-    case field_value::sfcolor_id:
-        result.reset(new proto_eventout<sfcolor>(node));
-        break;
-    case field_value::sffloat_id:
-        result.reset(new proto_eventout<sffloat>(node));
-        break;
-    case field_value::sfimage_id:
-        result.reset(new proto_eventout<sfimage>(node));
-        break;
-    case field_value::sfint32_id:
-        result.reset(new proto_eventout<sfint32>(node));
-        break;
-    case field_value::sfnode_id:
-        result.reset(new proto_eventout<sfnode>(node));
-        break;
-    case field_value::sfrotation_id:
-        result.reset(new proto_eventout<sfrotation>(node));
-        break;
-    case field_value::sfstring_id:
-        result.reset(new proto_eventout<sfstring>(node));
-        break;
-    case field_value::sftime_id:
-        result.reset(new proto_eventout<sftime>(node));
-        break;
-    case field_value::sfvec2f_id:
-        result.reset(new proto_eventout<sfvec2f>(node));
-        break;
-    case field_value::sfvec3f_id:
-        result.reset(new proto_eventout<sfvec3f>(node));
-        break;
-    case field_value::mfcolor_id:
-        result.reset(new proto_eventout<mfcolor>(node));
-        break;
-    case field_value::mffloat_id:
-        result.reset(new proto_eventout<mffloat>(node));
-        break;
-    case field_value::mfint32_id:
-        result.reset(new proto_eventout<mfint32>(node));
-        break;
-    case field_value::mfnode_id:
-        result.reset(new proto_eventout<mfnode>(node));
-        break;
-    case field_value::mfrotation_id:
-        result.reset(new proto_eventout<mfrotation>(node));
-        break;
-    case field_value::mfstring_id:
-        result.reset(new proto_eventout<mfstring>(node));
-        break;
-    case field_value::mftime_id:
-        result.reset(new proto_eventout<mftime>(node));
-        break;
-    case field_value::mfvec2f_id:
-        result.reset(new proto_eventout<mfvec2f>(node));
-        break;
-    case field_value::mfvec3f_id:
-        result.reset(new proto_eventout<mfvec3f>(node));
-        break;
-    default:
-        assert(false);
-        break;
-    }
-    assert(result.get());
-    return result;
-}
-
-/**
- * @brief Create an IS mapping between an event_emitter in the PROTO
- *        implementation and an event_emitter in the PROTO interface.
- *
- * @param field_type            field value type of the concrete emitters.
- * @param impl_eventout         event_emitter of a node in the PROTO
- *                              implementation.
- * @param interface_eventout    event_emitter from the PROTO interface.
- *
- * @return @c true if the IS mapping is established successfully; @c false
- *         otherwise (i.e., if the mapping already exists).
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-bool
-proto_node::eventout_is(const field_value::type_id field_type,
-                        openvrml::event_emitter & impl_eventout,
-                        openvrml::event_emitter & interface_eventout)
-    throw (std::bad_alloc)
-{
-    using boost::polymorphic_downcast;
-    bool succeeded;
-    switch (field_type) {
-    case field_value::sfbool_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<sfbool> *>(&interface_eventout)
-            ->is(*polymorphic_downcast<sfbool_emitter *>(&impl_eventout));
-        break;
-    case field_value::sfcolor_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<sfcolor> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<sfcolor_emitter *>(&impl_eventout));
-        break;
-    case field_value::sffloat_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<sffloat> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<sffloat_emitter *>(&impl_eventout));
-        break;
-    case field_value::sfimage_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<sfimage> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<sfimage_emitter *>(&impl_eventout));
-        break;
-    case field_value::sfint32_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<sfint32> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<sfint32_emitter *>(&impl_eventout));
-        break;
-    case field_value::sfnode_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<sfnode> *>(&interface_eventout)
-            ->is(*polymorphic_downcast<sfnode_emitter *>(&impl_eventout));
-        break;
-    case field_value::sfrotation_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<sfrotation> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<sfrotation_emitter *>(&impl_eventout));
-        break;
-    case field_value::sfstring_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<sfstring> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<sfstring_emitter *>(&impl_eventout));
-        break;
-    case field_value::sftime_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<sftime> *>(&interface_eventout)
-            ->is(*polymorphic_downcast<sftime_emitter *>(&impl_eventout));
-        break;
-    case field_value::sfvec2f_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<sfvec2f> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<sfvec2f_emitter *>(&impl_eventout));
-        break;
-    case field_value::sfvec3f_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<sfvec3f> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<sfvec3f_emitter *>(&impl_eventout));
-        break;
-    case field_value::mfcolor_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<mfcolor> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<mfcolor_emitter *>(&impl_eventout));
-        break;
-    case field_value::mffloat_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<mffloat> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<mffloat_emitter *>(&impl_eventout));
-        break;
-    case field_value::mfint32_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<mfint32> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<mfint32_emitter *>(&impl_eventout));
-        break;
-    case field_value::mfnode_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<mfnode> *>(&interface_eventout)
-            ->is(*polymorphic_downcast<mfnode_emitter *>(&impl_eventout));
-        break;
-    case field_value::mfrotation_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<mfrotation> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<mfrotation_emitter *>(&impl_eventout));
-        break;
-    case field_value::mfstring_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<mfstring> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<mfstring_emitter *>(&impl_eventout));
-        break;
-    case field_value::mftime_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<mftime> *>(&interface_eventout)
-            ->is(*polymorphic_downcast<mftime_emitter *>(&impl_eventout));
-        break;
-    case field_value::mfvec2f_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<mfvec2f> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<mfvec2f_emitter *>(&impl_eventout));
-        break;
-    case field_value::mfvec3f_id:
-        succeeded =
-            polymorphic_downcast<proto_eventout<mfvec3f> *>(
-                &interface_eventout)
-            ->is(*polymorphic_downcast<mfvec3f_emitter *>(&impl_eventout));
-        break;
-    default:
-        assert(false);
-        break;
-    }
-    return succeeded;
-}
-
-/**
- * @class proto_node::proto_exposedfield
- *
- * @brief PROTO exposedField handler class template.
- */
-
-/**
- * @brief Construct.
- *
- * @param node          proto_node.
- * @param initial_value initial value.
- */
-template <typename FieldValue>
-proto_node::proto_exposedfield<FieldValue>::
-proto_exposedfield(proto_node & node, const FieldValue & initial_value):
-    proto_eventin<FieldValue>(node),
-    proto_eventout<FieldValue>(node, initial_value)
-{}
-
-/**
- * @brief Destroy.
- */
-template <typename FieldValue>
-proto_node::proto_exposedfield<FieldValue>::~proto_exposedfield() throw ()
-{}
-
-/**
- * @brief Process an event.
- *
- * @param value     event value.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-template <typename FieldValue>
-void
-proto_node::proto_exposedfield<FieldValue>::
-process_event(const FieldValue & value, const double timestamp)
-    throw (std::bad_alloc)
-{
-    this->proto_eventin<FieldValue>::process_event(value, timestamp);
-    this->listener.value = value;
-    node::emit_event(*this, timestamp);
-}
-
-/**
- * @brief Factory function for proto_exposedfield<FieldValue> instances.
- *
- * @param type  field_value::type_id.
- * @param node  proto_node.
- *
- * @return a boost::shared_ptr to a proto_exposedfield<FieldValue> instance.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-boost::shared_ptr<event_listener>
-proto_node::create_exposedfield(const field_value & initial_value,
-                                proto_node & node)
-    throw (std::bad_alloc)
-{
-    using boost::polymorphic_downcast;
-    boost::shared_ptr<openvrml::event_listener> result;
-    switch (initial_value.type()) {
-    case field_value::sfbool_id:
-        result.reset(
-            new proto_exposedfield<sfbool>(
-                node,
-                *polymorphic_downcast<const sfbool *>(&initial_value)));
-        break;
-    case field_value::sfcolor_id:
-        result.reset(
-            new proto_exposedfield<sfcolor>(
-                node,
-                *polymorphic_downcast<const sfcolor *>(&initial_value)));
-        break;
-    case field_value::sffloat_id:
-        result.reset(
-            new proto_exposedfield<sffloat>(
-                node,
-                *polymorphic_downcast<const sffloat *>(&initial_value)));
-        break;
-    case field_value::sfimage_id:
-        result.reset(
-            new proto_exposedfield<sfimage>(
-                node,
-                *polymorphic_downcast<const sfimage *>(&initial_value)));
-        break;
-    case field_value::sfint32_id:
-        result.reset(
-            new proto_exposedfield<sfint32>(
-                node,
-                *polymorphic_downcast<const sfint32 *>(&initial_value)));
-        break;
-    case field_value::sfnode_id:
-        result.reset(
-            new proto_exposedfield<sfnode>(
-                node,
-                *polymorphic_downcast<const sfnode *>(&initial_value)));
-        break;
-    case field_value::sfrotation_id:
-        result.reset(
-            new proto_exposedfield<sfrotation>(
-                node,
-                *polymorphic_downcast<const sfrotation *>(&initial_value)));
-        break;
-    case field_value::sfstring_id:
-        result.reset(
-            new proto_exposedfield<sfstring>(
-                node,
-                *polymorphic_downcast<const sfstring *>(&initial_value)));
-        break;
-    case field_value::sftime_id:
-        result.reset(
-            new proto_exposedfield<sftime>(
-                node,
-                *polymorphic_downcast<const sftime *>(&initial_value)));
-        break;
-    case field_value::sfvec2f_id:
-        result.reset(
-            new proto_exposedfield<sfvec2f>(
-                node,
-                *polymorphic_downcast<const sfvec2f *>(&initial_value)));
-        break;
-    case field_value::sfvec3f_id:
-        result.reset(
-            new proto_exposedfield<sfvec3f>(
-                node,
-                *polymorphic_downcast<const sfvec3f *>(&initial_value)));
-        break;
-    case field_value::mfcolor_id:
-        result.reset(
-            new proto_exposedfield<mfcolor>(
-                node,
-                *polymorphic_downcast<const mfcolor *>(&initial_value)));
-        break;
-    case field_value::mffloat_id:
-        result.reset(
-            new proto_exposedfield<mffloat>(
-                node,
-                *polymorphic_downcast<const mffloat *>(&initial_value)));
-        break;
-    case field_value::mfint32_id:
-        result.reset(
-            new proto_exposedfield<mfint32>(
-                node,
-                *polymorphic_downcast<const mfint32 *>(&initial_value)));
-        break;
-    case field_value::mfnode_id:
-        result.reset(
-            new proto_exposedfield<mfnode>(
-                node,
-                *polymorphic_downcast<const mfnode *>(&initial_value)));
-        break;
-    case field_value::mfrotation_id:
-        result.reset(
-            new proto_exposedfield<mfrotation>(
-                node,
-                *polymorphic_downcast<const mfrotation *>(&initial_value)));
-        break;
-    case field_value::mfstring_id:
-        result.reset(
-            new proto_exposedfield<mfstring>(
-                node,
-                *polymorphic_downcast<const mfstring *>(&initial_value)));
-        break;
-    case field_value::mftime_id:
-        result.reset(
-            new proto_exposedfield<mftime>(
-                node,
-                *polymorphic_downcast<const mftime *>(&initial_value)));
-        break;
-    case field_value::mfvec2f_id:
-        result.reset(
-            new proto_exposedfield<mfvec2f>(
-                node,
-                *polymorphic_downcast<const mfvec2f *>(&initial_value)));
-        break;
-    case field_value::mfvec3f_id:
-        result.reset(
-            new proto_exposedfield<mfvec3f>(
-                node,
-                *polymorphic_downcast<const mfvec3f *>(&initial_value)));
-        break;
-    default:
-        assert(false);
-    }
-    assert(result.get());
-    return result;
-}
-
-/**
- * @brief Construct.
- *
- * @param type  node_type.
- * @param scope scope.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-proto_node::proto_node(const node_type & type,
-                       const scope_ptr & scope,
-                       const initial_value_map & initial_values)
-    throw (std::bad_alloc):
-    node(type, scope),
-    proto_scope(scope)
-{
-    proto_node_class & node_class =
-        static_cast<proto_node_class &>(type.node_class);
-
-    this->impl_nodes = proto_impl_cloner(node_class,
-                                         initial_values,
-                                         this->proto_scope).clone();
-
-    //
-    // Establish routes.
-    //
-    typedef proto_node_class::routes_t routes_t;
-    for (routes_t::const_iterator route = node_class.routes.begin();
-         route != node_class.routes.end();
-         ++route) {
-        // XXX
-        // XXX It would be better to store the node_paths along with the
-        // XXX route instead of rebuilding them every time we instantiate
-        // XXX the PROTO.
-        // XXX
-        node_path_t path_to_from;
-        assert(!node_class.impl_nodes.empty());
-        path_getter(*route->from, path_to_from)
-            .get_path_from(node_class.impl_nodes);
-        assert(!path_to_from.empty());
-        node * const from_node = resolve_node_path(path_to_from,
-                                                   this->impl_nodes);
-        assert(from_node);
-
-        node_path_t path_to_to;
-        path_getter(*route->to, path_to_to)
-            .get_path_from(node_class.impl_nodes);
-        node * const to_node = resolve_node_path(path_to_to, this->impl_nodes);
-        assert(to_node);
-
-        try {
-            add_route(*from_node, route->eventout, *to_node, route->eventin);
-        } catch (unsupported_interface & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        } catch (field_value_type_mismatch & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
+    /**
+     * @brief Construct.
+     *
+     * @param node_class    the proto_node_class that spawned the
+     *                      proto_node_type.
+     * @param id            node_type identifier.
+     * @param interfaces    a subset of the interfaces supported by the
+     *                      @p node_class.
+     *
+     * @exception unsupported_interface if an interface in @p interfaces is not
+     *                                  supported by the @p node_class.
+     * @exception std::bad_alloc        if memory allocation fails.
+     */
+    proto_node_class::
+    proto_node_type::proto_node_type(proto_node_class & node_class,
+                                     const std::string & id,
+                                     const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc):
+        node_type(node_class, id)
+    {
+        using std::find;
+        using std::invalid_argument;
+        for (node_interface_set::const_iterator interface = interfaces.begin();
+             interface != interfaces.end();
+             ++interface) {
+            node_interface_set::const_iterator pos =
+                find(node_class.interfaces.begin(),
+                     node_class.interfaces.end(),
+                     *interface);
+            if (pos == node_class.interfaces.end()) {
+                throw unsupported_interface(*interface);
+            }
+            const bool succeeded = this->interfaces_.insert(*interface).second;
+            assert(succeeded);
         }
     }
 
-    //
-    // Add eventIns, eventOuts, exposedFields.
-    //
-    for (node_interface_set::const_iterator interface =
-             node_class.interfaces.begin();
-         interface != node_class.interfaces.end();
-         ++interface) {
-        using boost::shared_ptr;
-        using boost::dynamic_pointer_cast;
-        using std::pair;
+    /**
+     * @brief Destroy.
+     */
+    proto_node_class::proto_node_type::~proto_node_type() throw ()
+    {}
+
+    /**
+     * @brief Interfaces.
+     *
+     * @return the interfaces.
+     */
+    const node_interface_set &
+    proto_node_class::proto_node_type::interfaces() const throw ()
+    {
+        return this->interfaces_;
+    }
+
+    const node_ptr
+    proto_node_class::proto_node_type::
+    create_node(const scope_ptr & scope,
+                const initial_value_map & initial_values) const
+        throw (std::bad_alloc)
+    {
+        return node_ptr(new proto_node(*this, scope, initial_values));
+    }
+
+    /**
+     * @class proto_node::proto_eventin
+     *
+     * @brief PROTO eventIn handler class template.
+     */
+
+    /**
+     * @typedef proto_node::proto_eventin::listeners
+     *
+     * @brief Set of event listeners.
+     */
+
+    /**
+     * @var proto_node::proto_eventin::listeners proto_node::proto_eventin::listeners_
+     *
+     * @brief Set of event listeners to which events are delegated for
+     *        processing.
+     */
+
+    /**
+     * @typedef proto_node::proto_eventin::field_value_type
+     *
+     * @brief Field value type.
+     */
+
+    /**
+     * @typedef proto_node::proto_eventin::event_listener_type
+     *
+     * @brief Type of event listeners to which the instance delegates.
+     */
+
+    /**
+     * @brief Construct.
+     *
+     * @param node  proto_node.
+     */
+    template <typename FieldValue>
+    proto_node::proto_eventin<FieldValue>::proto_eventin(proto_node & node):
+        field_value_listener<FieldValue>(node)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
+    template <typename FieldValue>
+    proto_node::proto_eventin<FieldValue>::~proto_eventin()
+        throw ()
+    {}
+
+    /**
+     * @brief Process event.
+     *
+     * @param value     field value.
+     * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    template <typename FieldValue>
+    void
+    proto_node::proto_eventin<FieldValue>::
+    process_event(const FieldValue & value, const double timestamp)
+        throw (std::bad_alloc)
+    {
+        for (typename listeners::const_iterator listener =
+                 this->listeners_.begin();
+             listener != this->listeners_.end();
+             ++listener) {
+            (*listener)->process_event(value, timestamp);
+        }
+    }
+
+    /**
+     * @brief Add a listener to delegate to. Corresponds to an IS statement.
+     *
+     * @param listener  an event_listener to delegate to.
+     *
+     * @return @c true if @p listener is added successfully; @c false
+     *         otherwise (if it already exists in the list of delegates).
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    template <typename FieldValue>
+    bool
+    proto_node::proto_eventin<FieldValue>::is(event_listener_type & listener)
+        throw (std::bad_alloc)
+    {
+        return this->listeners_.insert(&listener).second;
+    }
+
+    /**
+     * @brief Factory function for proto_eventin<FieldValue> instances.
+     *
+     * @param type  field_value::type_id.
+     * @param node  proto_node.
+     *
+     * @return a boost::shared_ptr to a proto_eventout<FieldValue> instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    boost::shared_ptr<event_listener>
+    proto_node::create_eventin(const field_value::type_id type,
+                               proto_node & node)
+        throw (std::bad_alloc)
+    {
+        boost::shared_ptr<openvrml::event_listener> result;
+        switch (type) {
+        case field_value::sfbool_id:
+            result.reset(new proto_eventin<sfbool>(node));
+            break;
+        case field_value::sfcolor_id:
+            result.reset(new proto_eventin<sfcolor>(node));
+            break;
+        case field_value::sffloat_id:
+            result.reset(new proto_eventin<sffloat>(node));
+            break;
+        case field_value::sfimage_id:
+            result.reset(new proto_eventin<sfimage>(node));
+            break;
+        case field_value::sfint32_id:
+            result.reset(new proto_eventin<sfint32>(node));
+            break;
+        case field_value::sfnode_id:
+            result.reset(new proto_eventin<sfnode>(node));
+            break;
+        case field_value::sfrotation_id:
+            result.reset(new proto_eventin<sfrotation>(node));
+            break;
+        case field_value::sfstring_id:
+            result.reset(new proto_eventin<sfstring>(node));
+            break;
+        case field_value::sftime_id:
+            result.reset(new proto_eventin<sftime>(node));
+            break;
+        case field_value::sfvec2f_id:
+            result.reset(new proto_eventin<sfvec2f>(node));
+            break;
+        case field_value::sfvec3f_id:
+            result.reset(new proto_eventin<sfvec3f>(node));
+            break;
+        case field_value::mfcolor_id:
+            result.reset(new proto_eventin<mfcolor>(node));
+            break;
+        case field_value::mffloat_id:
+            result.reset(new proto_eventin<mffloat>(node));
+            break;
+        case field_value::mfint32_id:
+            result.reset(new proto_eventin<mfint32>(node));
+            break;
+        case field_value::mfnode_id:
+            result.reset(new proto_eventin<mfnode>(node));
+            break;
+        case field_value::mfrotation_id:
+            result.reset(new proto_eventin<mfrotation>(node));
+            break;
+        case field_value::mfstring_id:
+            result.reset(new proto_eventin<mfstring>(node));
+            break;
+        case field_value::mftime_id:
+            result.reset(new proto_eventin<mftime>(node));
+            break;
+        case field_value::mfvec2f_id:
+            result.reset(new proto_eventin<mfvec2f>(node));
+            break;
+        case field_value::mfvec3f_id:
+            result.reset(new proto_eventin<mfvec3f>(node));
+            break;
+        default:
+            assert(false);
+            break;
+        }
+        assert(result.get());
+        return result;
+    }
+
+    /**
+     * @brief Create an IS mapping between an event_listener in the PROTO
+     *        implementation and an event_listener in the PROTO interface.
+     *
+     * @param field_type        field value type of the concrete listeners.
+     * @param impl_eventin      event_listener of a node in the PROTO
+     *                          implementation.
+     * @param interface_eventin event_listener from the PROTO interface.
+     *
+     * @return @c true if the IS mapping is established successfully; @c false
+     *         otherwise (i.e., if the mapping already exists).
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    bool
+    proto_node::eventin_is(const field_value::type_id field_type,
+                           openvrml::event_listener & impl_eventin,
+                           openvrml::event_listener & interface_eventin)
+        throw (std::bad_alloc)
+    {
+        using boost::polymorphic_downcast;
         bool succeeded;
-        shared_ptr<openvrml::event_listener> interface_eventin;
-        shared_ptr<openvrml::event_emitter> interface_eventout;
-        typedef proto_node_class::is_map_t is_map_t;
-        pair<is_map_t::iterator, is_map_t::iterator> is_range;
-        initial_value_map::const_iterator initial_value;
-        switch (interface->type) {
-        case node_interface::eventin_id:
-            interface_eventin = create_eventin(interface->field_type, *this);
-            is_range = node_class.is_map.equal_range(interface->id);
-            for (is_map_t::const_iterator is_mapping = is_range.first;
-                 is_mapping != is_range.second;
-                 ++is_mapping) {
-                assert(is_mapping->second.impl_node);
-                node_path_t path_to_impl_node;
-                path_getter(*is_mapping->second.impl_node, path_to_impl_node)
-                    .get_path_from(node_class.impl_nodes);
-                node * impl_node = resolve_node_path(path_to_impl_node,
-                                                     this->impl_nodes);
-                assert(impl_node);
-                const std::string & impl_node_interface =
-                    is_mapping->second.impl_node_interface;
-                try {
-                    openvrml::event_listener & impl_eventin =
-                        impl_node->event_listener(impl_node_interface);
-                    succeeded = eventin_is(interface->field_type,
-                                           impl_eventin,
-                                           *interface_eventin);
-                    assert(succeeded);
-                } catch (unsupported_interface & ex) {
-                    OPENVRML_PRINT_EXCEPTION_(ex);
-                }
-            }
-            succeeded = this->eventin_map
-                .insert(make_pair(interface->id, interface_eventin)).second;
-            assert(succeeded);
+        switch (field_type) {
+        case field_value::sfbool_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<sfbool> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfbool_listener *>(&impl_eventin));
             break;
-        case node_interface::eventout_id:
-            interface_eventout = create_eventout(interface->field_type, *this);
-            is_range = node_class.is_map.equal_range(interface->id);
-            for (is_map_t::const_iterator is_mapping = is_range.first;
-                 is_mapping != is_range.second;
-                 ++is_mapping) {
-                assert(is_mapping->second.impl_node);
-                node_path_t path_to_impl_node;
-                path_getter(*is_mapping->second.impl_node, path_to_impl_node)
-                    .get_path_from(node_class.impl_nodes);
-                node * impl_node = resolve_node_path(path_to_impl_node,
-                                                     this->impl_nodes);
-                assert(impl_node);
-                const std::string & impl_node_interface =
-                    is_mapping->second.impl_node_interface;
-                try {
-                    openvrml::event_emitter & impl_eventout =
-                        impl_node->event_emitter(impl_node_interface);
-                    succeeded = eventout_is(interface->field_type,
-                                            impl_eventout,
-                                            *interface_eventout);
-                    assert(succeeded);
-                } catch (unsupported_interface & ex) {
-                    OPENVRML_PRINT_EXCEPTION_(ex);
-                }
-            }
-            succeeded = this->eventout_map
-                .insert(make_pair(interface->id, interface_eventout)).second;
-            assert(succeeded);
+        case field_value::sfcolor_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<sfcolor> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfcolor_listener *>(&impl_eventin));
             break;
-        case node_interface::exposedfield_id:
-            initial_value = initial_values.find(interface->id);
-            if (initial_value == initial_values.end()) {
-                initial_value =
-                    node_class.default_value_map.find(interface->id);
-                assert(initial_value != node_class.default_value_map.end());
-            }
-            interface_eventin = create_exposedfield(*initial_value->second,
-                                                    *this);
-            interface_eventout =
-                dynamic_pointer_cast<openvrml::event_emitter>(
-                    interface_eventin);
-            is_range = node_class.is_map.equal_range(interface->id);
-            for (is_map_t::const_iterator is_mapping = is_range.first;
-                 is_mapping != is_range.second;
-                 ++is_mapping) {
-                assert(is_mapping->second.impl_node);
-                node_path_t path_to_impl_node;
-                path_getter(*is_mapping->second.impl_node, path_to_impl_node)
-                    .get_path_from(node_class.impl_nodes);
-                node * impl_node = resolve_node_path(path_to_impl_node,
-                                                     this->impl_nodes);
-                assert(impl_node);
-                const std::string & impl_node_interface =
-                    is_mapping->second.impl_node_interface;
-                try {
-                    openvrml::event_listener & impl_eventin =
-                        impl_node->event_listener(impl_node_interface);
-                    succeeded = eventin_is(interface->field_type,
-                                           impl_eventin,
-                                           *interface_eventin);
-                    assert(succeeded);
-                    openvrml::event_emitter & impl_eventout =
-                        impl_node->event_emitter(impl_node_interface);
-                    succeeded = eventout_is(interface->field_type,
-                                            impl_eventout,
-                                            *interface_eventout);
-                    assert(succeeded);
-                } catch (unsupported_interface & ex) {
-                    OPENVRML_PRINT_EXCEPTION_(ex);
-                }
-            }
-            succeeded = this->eventin_map
-                .insert(make_pair("set_" + interface->id,
-                                  interface_eventin)).second;
-            assert(succeeded);
-            succeeded = this->eventout_map
-                .insert(make_pair(interface->id + "_changed",
-                                  interface_eventout)).second;
-            assert(succeeded);
+        case field_value::sffloat_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<sffloat> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sffloat_listener *>(&impl_eventin));
             break;
-        case node_interface::field_id:
+        case field_value::sfimage_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<sfimage> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfimage_listener *>(&impl_eventin));
+            break;
+        case field_value::sfint32_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<sfint32> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfint32_listener *>(&impl_eventin));
+            break;
+        case field_value::sfnode_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<sfnode> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfnode_listener *>(&impl_eventin));
+            break;
+        case field_value::sfrotation_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<sfrotation> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfrotation_listener *>(
+                         &impl_eventin));
+            break;
+        case field_value::sfstring_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<sfstring> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfstring_listener *>(
+                         &impl_eventin));
+            break;
+        case field_value::sftime_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<sftime> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sftime_listener *>(&impl_eventin));
+            break;
+        case field_value::sfvec2f_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<sfvec2f> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfvec2f_listener *>(&impl_eventin));
+            break;
+        case field_value::sfvec3f_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<sfvec3f> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfvec3f_listener *>(&impl_eventin));
+            break;
+        case field_value::mfcolor_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<mfcolor> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfcolor_listener *>(&impl_eventin));
+            break;
+        case field_value::mffloat_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<mffloat> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mffloat_listener *>(
+                         &impl_eventin));
+            break;
+        case field_value::mfint32_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<mfint32> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfint32_listener *>(&impl_eventin));
+            break;
+        case field_value::mfnode_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<mfnode> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfnode_listener *>(&impl_eventin));
+            break;
+        case field_value::mfrotation_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<mfrotation> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfrotation_listener *>(
+                         &impl_eventin));
+            break;
+        case field_value::mfstring_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<mfstring> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfstring_listener *>(
+                         &impl_eventin));
+            break;
+        case field_value::mftime_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<mftime> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mftime_listener *>(&impl_eventin));
+            break;
+        case field_value::mfvec2f_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<mfvec2f> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfvec2f_listener *>(&impl_eventin));
+            break;
+        case field_value::mfvec3f_id:
+            succeeded =
+                polymorphic_downcast<proto_eventin<mfvec3f> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfvec3f_listener *>(&impl_eventin));
+            break;
+        default:
+            assert(false);
+            break;
+        }
+        return succeeded;
+    }
+
+    /**
+     * @class proto_node::proto_eventout
+     *
+     * @brief PROTO eventOut handler class template.
+     */
+
+    /**
+     * @class proto_node::proto_eventout::listener_t
+     *
+     * @brief Listens for events emitted from nodes in the PROTO implementation
+     *        in order to propagate them out of the PROTO instance.
+     */
+
+    /**
+     * @var proto_node::proto_eventout & proto_node::proto_eventout::listener_t::emitter
+     *
+     * @brief Reference to the outer proto_eventout class.
+     *
+     * @todo It's annoying that we need to carry this around.  Should
+     *       investigate the possibility of promoting all this stuff to
+     *       proto_eventout and have proto_eventout privately inherit
+     *       field_value_listener<FieldValue>.
+     */
+
+    /**
+     * @var proto_node & proto_node::proto_eventout::listener_t::node
+     *
+     * @brief Reference to the proto_node instance.
+     */
+
+    /**
+     * @var FieldValue proto_node::proto_eventout::listener_t::value
+     *
+     * @brief The value of the most recently emitted event.
+     */
+
+    /**
+     * @brief Construct.
+     *
+     * @param emitter       proto_eventout.
+     * @param node          proto_node.
+     * @param initial_value initial value (used for exposedFields).
+     */
+    template <typename FieldValue>
+    proto_node::proto_eventout<FieldValue>::listener_t::
+    listener_t(proto_eventout & emitter,
+               proto_node & node,
+               const FieldValue & initial_value):
+        field_value_listener<FieldValue>(node),
+        emitter(emitter),
+        node(node),
+        value(initial_value)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
+    template <typename FieldValue>
+    proto_node::proto_eventout<FieldValue>::listener_t::~listener_t() throw ()
+    {}
+
+    /**
+     * @brief Process event.
+     *
+     * @param value     new value.
+     * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    template<typename FieldValue>
+    void
+    proto_node::proto_eventout<FieldValue>::listener_t::
+    process_event(const FieldValue & value, const double timestamp)
+        throw (std::bad_alloc)
+    {
+        if (timestamp > this->emitter.last_time()) {
+            this->value = value;
+            node::emit_event(this->emitter, timestamp);
+        }
+    }
+
+    /**
+     * @var proto_node::proto_eventout::listener_t proto_node::proto_eventout::listener
+     *
+     * @brief Listens for events emitted from nodes in the PROTO implementation
+     *        in order to propagate them out of the PROTO instance.
+     */
+
+    /**
+     * @typedef proto_node::proto_eventout<FieldValue>::field_value_type
+     *
+     * @brief Field value type.
+     */
+
+    /**
+     * @typedef proto_node::proto_eventout<FieldValue>::event_emitter_type
+     *
+     * @brief Event emitter type.
+     */
+
+    /**
+     * @typedef proto_node::proto_eventout<FieldValue>::event_listener_type
+     *
+     * @brief Event listener type.
+     */
+
+    /**
+     * @brief Construct.
+     *
+     * @param node          proto_node.
+     * @param initial_value initial value.  This is used by
+     *                      proto_exposedfield<FieldValue>
+     */
+    template <typename FieldValue>
+    proto_node::proto_eventout<FieldValue>::
+    proto_eventout(proto_node & node, const FieldValue & initial_value):
+        field_value_emitter<FieldValue>(this->listener.value),
+        listener(*this, node, initial_value)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
+    template <typename FieldValue>
+    proto_node::proto_eventout<FieldValue>::~proto_eventout() throw ()
+    {}
+
+    /**
+     * @brief Create an IS mapping.
+     *
+     * @param emitter   the event_emitter from a node in the PROTO
+     *                  implementation.
+     *
+     * @return @c true if the IS mapping is created successfully; @c false
+     *         otherwise (i.e., if it already exists).
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    template <typename FieldValue>
+    bool
+    proto_node::proto_eventout<FieldValue>::
+    is(event_emitter_type & emitter) throw (std::bad_alloc)
+    {
+        return emitter.add(this->listener);
+    }
+
+    /**
+     * @brief The timestamp of the most recently emitted event.
+     *
+     * @return the timestamp of the most recently emitted event.
+     */
+    template <typename FieldValue>
+    double proto_node::proto_eventout<FieldValue>::last_time() const
+    {
+        return this->event_emitter::last_time;
+    }
+
+    /**
+     * @brief Factory function for proto_eventout<FieldValue> instances.
+     *
+     * @param type  field_value::type_id.
+     * @param node  proto_node.
+     *
+     * @return a boost::shared_ptr to a proto_eventout<FieldValue> instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    boost::shared_ptr<event_emitter>
+    proto_node::create_eventout(const field_value::type_id type,
+                                proto_node & node)
+        throw (std::bad_alloc)
+    {
+        boost::shared_ptr<openvrml::event_emitter> result;
+        switch (type) {
+        case field_value::sfbool_id:
+            result.reset(new proto_eventout<sfbool>(node));
+            break;
+        case field_value::sfcolor_id:
+            result.reset(new proto_eventout<sfcolor>(node));
+            break;
+        case field_value::sffloat_id:
+            result.reset(new proto_eventout<sffloat>(node));
+            break;
+        case field_value::sfimage_id:
+            result.reset(new proto_eventout<sfimage>(node));
+            break;
+        case field_value::sfint32_id:
+            result.reset(new proto_eventout<sfint32>(node));
+            break;
+        case field_value::sfnode_id:
+            result.reset(new proto_eventout<sfnode>(node));
+            break;
+        case field_value::sfrotation_id:
+            result.reset(new proto_eventout<sfrotation>(node));
+            break;
+        case field_value::sfstring_id:
+            result.reset(new proto_eventout<sfstring>(node));
+            break;
+        case field_value::sftime_id:
+            result.reset(new proto_eventout<sftime>(node));
+            break;
+        case field_value::sfvec2f_id:
+            result.reset(new proto_eventout<sfvec2f>(node));
+            break;
+        case field_value::sfvec3f_id:
+            result.reset(new proto_eventout<sfvec3f>(node));
+            break;
+        case field_value::mfcolor_id:
+            result.reset(new proto_eventout<mfcolor>(node));
+            break;
+        case field_value::mffloat_id:
+            result.reset(new proto_eventout<mffloat>(node));
+            break;
+        case field_value::mfint32_id:
+            result.reset(new proto_eventout<mfint32>(node));
+            break;
+        case field_value::mfnode_id:
+            result.reset(new proto_eventout<mfnode>(node));
+            break;
+        case field_value::mfrotation_id:
+            result.reset(new proto_eventout<mfrotation>(node));
+            break;
+        case field_value::mfstring_id:
+            result.reset(new proto_eventout<mfstring>(node));
+            break;
+        case field_value::mftime_id:
+            result.reset(new proto_eventout<mftime>(node));
+            break;
+        case field_value::mfvec2f_id:
+            result.reset(new proto_eventout<mfvec2f>(node));
+            break;
+        case field_value::mfvec3f_id:
+            result.reset(new proto_eventout<mfvec3f>(node));
+            break;
+        default:
+            assert(false);
+            break;
+        }
+        assert(result.get());
+        return result;
+    }
+
+    /**
+     * @brief Create an IS mapping between an event_emitter in the PROTO
+     *        implementation and an event_emitter in the PROTO interface.
+     *
+     * @param field_type            field value type of the concrete emitters.
+     * @param impl_eventout         event_emitter of a node in the PROTO
+     *                              implementation.
+     * @param interface_eventout    event_emitter from the PROTO interface.
+     *
+     * @return @c true if the IS mapping is established successfully; @c false
+     *         otherwise (i.e., if the mapping already exists).
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    bool
+    proto_node::eventout_is(const field_value::type_id field_type,
+                            openvrml::event_emitter & impl_eventout,
+                            openvrml::event_emitter & interface_eventout)
+        throw (std::bad_alloc)
+    {
+        using boost::polymorphic_downcast;
+        bool succeeded;
+        switch (field_type) {
+        case field_value::sfbool_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<sfbool> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfbool_emitter *>(&impl_eventout));
+            break;
+        case field_value::sfcolor_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<sfcolor> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfcolor_emitter *>(&impl_eventout));
+            break;
+        case field_value::sffloat_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<sffloat> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sffloat_emitter *>(&impl_eventout));
+            break;
+        case field_value::sfimage_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<sfimage> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfimage_emitter *>(&impl_eventout));
+            break;
+        case field_value::sfint32_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<sfint32> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfint32_emitter *>(&impl_eventout));
+            break;
+        case field_value::sfnode_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<sfnode> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfnode_emitter *>(&impl_eventout));
+            break;
+        case field_value::sfrotation_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<sfrotation> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfrotation_emitter *>(
+                         &impl_eventout));
+            break;
+        case field_value::sfstring_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<sfstring> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfstring_emitter *>(
+                         &impl_eventout));
+            break;
+        case field_value::sftime_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<sftime> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sftime_emitter *>(
+                         &impl_eventout));
+            break;
+        case field_value::sfvec2f_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<sfvec2f> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfvec2f_emitter *>(&impl_eventout));
+            break;
+        case field_value::sfvec3f_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<sfvec3f> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfvec3f_emitter *>(&impl_eventout));
+            break;
+        case field_value::mfcolor_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<mfcolor> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfcolor_emitter *>(&impl_eventout));
+            break;
+        case field_value::mffloat_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<mffloat> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mffloat_emitter *>(&impl_eventout));
+            break;
+        case field_value::mfint32_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<mfint32> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfint32_emitter *>(&impl_eventout));
+            break;
+        case field_value::mfnode_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<mfnode> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfnode_emitter *>(&impl_eventout));
+            break;
+        case field_value::mfrotation_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<mfrotation> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfrotation_emitter *>(
+                         &impl_eventout));
+            break;
+        case field_value::mfstring_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<mfstring> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfstring_emitter *>(
+                         &impl_eventout));
+            break;
+        case field_value::mftime_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<mftime> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mftime_emitter *>(&impl_eventout));
+            break;
+        case field_value::mfvec2f_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<mfvec2f> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfvec2f_emitter *>(&impl_eventout));
+            break;
+        case field_value::mfvec3f_id:
+            succeeded =
+                polymorphic_downcast<proto_eventout<mfvec3f> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfvec3f_emitter *>(&impl_eventout));
+            break;
+        default:
+            assert(false);
+            break;
+        }
+        return succeeded;
+    }
+
+    /**
+     * @class proto_node::proto_exposedfield
+     *
+     * @brief PROTO exposedField handler class template.
+     */
+
+    /**
+     * @brief Construct.
+     *
+     * @param node          proto_node.
+     * @param initial_value initial value.
+     */
+    template <typename FieldValue>
+    proto_node::proto_exposedfield<FieldValue>::
+    proto_exposedfield(proto_node & node, const FieldValue & initial_value):
+        proto_eventin<FieldValue>(node),
+        proto_eventout<FieldValue>(node, initial_value)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
+    template <typename FieldValue>
+    proto_node::proto_exposedfield<FieldValue>::~proto_exposedfield() throw ()
+    {}
+
+    /**
+     * @brief Process an event.
+     *
+     * @param value     event value.
+     * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    template <typename FieldValue>
+    void
+    proto_node::proto_exposedfield<FieldValue>::
+    process_event(const FieldValue & value, const double timestamp)
+        throw (std::bad_alloc)
+    {
+        this->proto_eventin<FieldValue>::process_event(value, timestamp);
+        this->listener.value = value;
+        node::emit_event(*this, timestamp);
+    }
+
+    /**
+     * @brief Factory function for proto_exposedfield<FieldValue> instances.
+     *
+     * @param type  field_value::type_id.
+     * @param node  proto_node.
+     *
+     * @return a boost::shared_ptr to a proto_exposedfield<FieldValue>
+     *         instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    boost::shared_ptr<event_listener>
+    proto_node::create_exposedfield(const field_value & initial_value,
+                                    proto_node & node)
+        throw (std::bad_alloc)
+    {
+        using boost::polymorphic_downcast;
+        boost::shared_ptr<openvrml::event_listener> result;
+        switch (initial_value.type()) {
+        case field_value::sfbool_id:
+            result.reset(
+                new proto_exposedfield<sfbool>(
+                    node,
+                    *polymorphic_downcast<const sfbool *>(&initial_value)));
+            break;
+        case field_value::sfcolor_id:
+            result.reset(
+                new proto_exposedfield<sfcolor>(
+                    node,
+                    *polymorphic_downcast<const sfcolor *>(&initial_value)));
+            break;
+        case field_value::sffloat_id:
+            result.reset(
+                new proto_exposedfield<sffloat>(
+                    node,
+                    *polymorphic_downcast<const sffloat *>(&initial_value)));
+            break;
+        case field_value::sfimage_id:
+            result.reset(
+                new proto_exposedfield<sfimage>(
+                    node,
+                    *polymorphic_downcast<const sfimage *>(&initial_value)));
+            break;
+        case field_value::sfint32_id:
+            result.reset(
+                new proto_exposedfield<sfint32>(
+                    node,
+                    *polymorphic_downcast<const sfint32 *>(&initial_value)));
+            break;
+        case field_value::sfnode_id:
+            result.reset(
+                new proto_exposedfield<sfnode>(
+                    node,
+                    *polymorphic_downcast<const sfnode *>(&initial_value)));
+            break;
+        case field_value::sfrotation_id:
+            result.reset(
+                new proto_exposedfield<sfrotation>(
+                    node,
+                    *polymorphic_downcast<const sfrotation *>(
+                        &initial_value)));
+            break;
+        case field_value::sfstring_id:
+            result.reset(
+                new proto_exposedfield<sfstring>(
+                    node,
+                    *polymorphic_downcast<const sfstring *>(&initial_value)));
+            break;
+        case field_value::sftime_id:
+            result.reset(
+                new proto_exposedfield<sftime>(
+                    node,
+                    *polymorphic_downcast<const sftime *>(&initial_value)));
+            break;
+        case field_value::sfvec2f_id:
+            result.reset(
+                new proto_exposedfield<sfvec2f>(
+                    node,
+                    *polymorphic_downcast<const sfvec2f *>(&initial_value)));
+            break;
+        case field_value::sfvec3f_id:
+            result.reset(
+                new proto_exposedfield<sfvec3f>(
+                    node,
+                    *polymorphic_downcast<const sfvec3f *>(&initial_value)));
+            break;
+        case field_value::mfcolor_id:
+            result.reset(
+                new proto_exposedfield<mfcolor>(
+                    node,
+                    *polymorphic_downcast<const mfcolor *>(&initial_value)));
+            break;
+        case field_value::mffloat_id:
+            result.reset(
+                new proto_exposedfield<mffloat>(
+                    node,
+                    *polymorphic_downcast<const mffloat *>(&initial_value)));
+            break;
+        case field_value::mfint32_id:
+            result.reset(
+                new proto_exposedfield<mfint32>(
+                    node,
+                    *polymorphic_downcast<const mfint32 *>(&initial_value)));
+            break;
+        case field_value::mfnode_id:
+            result.reset(
+                new proto_exposedfield<mfnode>(
+                    node,
+                    *polymorphic_downcast<const mfnode *>(&initial_value)));
+            break;
+        case field_value::mfrotation_id:
+            result.reset(
+                new proto_exposedfield<mfrotation>(
+                    node,
+                    *polymorphic_downcast<const mfrotation *>(
+                        &initial_value)));
+            break;
+        case field_value::mfstring_id:
+            result.reset(
+                new proto_exposedfield<mfstring>(
+                    node,
+                    *polymorphic_downcast<const mfstring *>(&initial_value)));
+            break;
+        case field_value::mftime_id:
+            result.reset(
+                new proto_exposedfield<mftime>(
+                    node,
+                    *polymorphic_downcast<const mftime *>(&initial_value)));
+            break;
+        case field_value::mfvec2f_id:
+            result.reset(
+                new proto_exposedfield<mfvec2f>(
+                    node,
+                    *polymorphic_downcast<const mfvec2f *>(&initial_value)));
+            break;
+        case field_value::mfvec3f_id:
+            result.reset(
+                new proto_exposedfield<mfvec3f>(
+                    node,
+                    *polymorphic_downcast<const mfvec3f *>(&initial_value)));
             break;
         default:
             assert(false);
         }
+        assert(result.get());
+        return result;
     }
-}
 
-/**
- * @brief Destroy.
- */
-proto_node::~proto_node() throw ()
-{}
+    /**
+     * @brief Construct.
+     *
+     * @param type  node_type.
+     * @param scope scope.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    proto_node::proto_node(const node_type & type,
+                           const scope_ptr & scope,
+                           const initial_value_map & initial_values)
+        throw (std::bad_alloc):
+        node(type, scope),
+        proto_scope(scope)
+    {
+        proto_node_class & node_class =
+            static_cast<proto_node_class &>(type.node_class);
 
-/**
- * @brief Initialize.
- *
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void proto_node::do_initialize(const double timestamp) throw (std::bad_alloc)
-{
-    using std::vector;
-    for (vector<node_ptr>::const_iterator node = this->impl_nodes.begin();
-         node != impl_nodes.end();
-         ++node) {
-        (*node)->initialize(*this->scene(), timestamp);
-    }
-}
-
-/**
- * @brief Field accessor implementation.
- *
- * @param id    field identifier.
- *
- * @exception unsupported_interface if the node has no field @p id.
- *
- * @todo Make this function handle exposedFields.
- */
-const field_value & proto_node::do_field(const std::string & id) const
-    throw (unsupported_interface)
-{
-    //
-    // First, we need to find the implementation node that the field is
-    // IS'd to.  For the accessor, we don't care if there's more than one.
-    //
-    proto_node_class & node_class =
-        static_cast<proto_node_class &>(this->type.node_class);
-    proto_node_class::is_map_t::iterator is_mapping =
-        node_class.is_map.find(id);
-    if (is_mapping != node_class.is_map.end()) {
-        //
-        // Get the path to the implementation node.
-        //
-        assert(is_mapping->second.impl_node);
-        assert(!is_mapping->second.impl_node_interface.empty());
-        node_path_t path;
-        path_getter(*is_mapping->second.impl_node, path)
-            .get_path_from(node_class.impl_nodes);
+        this->impl_nodes = proto_impl_cloner(node_class,
+                                             initial_values,
+                                             this->proto_scope).clone();
 
         //
-        // Resolve the path against this instance's implementation nodes.
+        // Establish routes.
         //
-        node * const impl_node = resolve_node_path(path, this->impl_nodes);
+        typedef proto_node_class::routes_t routes_t;
+        for (routes_t::const_iterator route = node_class.routes.begin();
+             route != node_class.routes.end();
+             ++route) {
+            // XXX
+            // XXX It would be better to store the node_paths along with the
+            // XXX route instead of rebuilding them every time we instantiate
+            // XXX the PROTO.
+            // XXX
+            node_path_t path_to_from;
+            assert(!node_class.impl_nodes.empty());
+            path_getter(*route->from, path_to_from)
+                .get_path_from(node_class.impl_nodes);
+            assert(!path_to_from.empty());
+            node * const from_node = resolve_node_path(path_to_from,
+                                                       this->impl_nodes);
+            assert(from_node);
 
-        //
-        // Set the field value for the implementation node.
-        //
-        return impl_node->field(is_mapping->second.impl_node_interface);
-    } else {
-        //
-        // If there are no IS mappings for the field, then return the
-        // default value.
-        //
-        proto_node_class::default_value_map_t::iterator default_value =
-            node_class.default_value_map.find(id);
-        if (default_value == node_class.default_value_map.end()) {
-            throw unsupported_interface(this->type, id);
+            node_path_t path_to_to;
+            path_getter(*route->to, path_to_to)
+                .get_path_from(node_class.impl_nodes);
+            node * const to_node = resolve_node_path(path_to_to,
+                                                     this->impl_nodes);
+            assert(to_node);
+
+            try {
+                add_route(*from_node, route->eventout,
+                          *to_node, route->eventin);
+            } catch (unsupported_interface & ex) {
+                OPENVRML_PRINT_EXCEPTION_(ex);
+            } catch (field_value_type_mismatch & ex) {
+                OPENVRML_PRINT_EXCEPTION_(ex);
+            }
         }
-        return *default_value->second;
+
+        //
+        // Add eventIns, eventOuts, exposedFields.
+        //
+        for (node_interface_set::const_iterator interface =
+                 node_class.interfaces.begin();
+             interface != node_class.interfaces.end();
+             ++interface) {
+            using boost::shared_ptr;
+            using boost::dynamic_pointer_cast;
+            using std::pair;
+            bool succeeded;
+            shared_ptr<openvrml::event_listener> interface_eventin;
+            shared_ptr<openvrml::event_emitter> interface_eventout;
+            typedef proto_node_class::is_map_t is_map_t;
+            pair<is_map_t::iterator, is_map_t::iterator> is_range;
+            initial_value_map::const_iterator initial_value;
+            switch (interface->type) {
+            case node_interface::eventin_id:
+                interface_eventin = create_eventin(interface->field_type,
+                                                   *this);
+                is_range = node_class.is_map.equal_range(interface->id);
+                for (is_map_t::const_iterator is_mapping = is_range.first;
+                     is_mapping != is_range.second;
+                     ++is_mapping) {
+                    assert(is_mapping->second.impl_node);
+                    node_path_t path_to_impl_node;
+                    path_getter(*is_mapping->second.impl_node,
+                                path_to_impl_node)
+                        .get_path_from(node_class.impl_nodes);
+                    node * impl_node = resolve_node_path(path_to_impl_node,
+                                                         this->impl_nodes);
+                    assert(impl_node);
+                    const std::string & impl_node_interface =
+                        is_mapping->second.impl_node_interface;
+                    try {
+                        openvrml::event_listener & impl_eventin =
+                            impl_node->event_listener(impl_node_interface);
+                        succeeded = eventin_is(interface->field_type,
+                                               impl_eventin,
+                                               *interface_eventin);
+                        assert(succeeded);
+                    } catch (unsupported_interface & ex) {
+                        OPENVRML_PRINT_EXCEPTION_(ex);
+                    }
+                }
+                succeeded = this->eventin_map
+                    .insert(make_pair(interface->id, interface_eventin))
+                    .second;
+                assert(succeeded);
+                break;
+            case node_interface::eventout_id:
+                interface_eventout = create_eventout(interface->field_type,
+                                                     *this);
+                is_range = node_class.is_map.equal_range(interface->id);
+                for (is_map_t::const_iterator is_mapping = is_range.first;
+                     is_mapping != is_range.second;
+                     ++is_mapping) {
+                    assert(is_mapping->second.impl_node);
+                    node_path_t path_to_impl_node;
+                    path_getter(*is_mapping->second.impl_node,
+                                path_to_impl_node)
+                        .get_path_from(node_class.impl_nodes);
+                    node * impl_node = resolve_node_path(path_to_impl_node,
+                                                         this->impl_nodes);
+                    assert(impl_node);
+                    const std::string & impl_node_interface =
+                        is_mapping->second.impl_node_interface;
+                    try {
+                        openvrml::event_emitter & impl_eventout =
+                            impl_node->event_emitter(impl_node_interface);
+                        succeeded = eventout_is(interface->field_type,
+                                                impl_eventout,
+                                                *interface_eventout);
+                        assert(succeeded);
+                    } catch (unsupported_interface & ex) {
+                        OPENVRML_PRINT_EXCEPTION_(ex);
+                    }
+                }
+                succeeded = this->eventout_map
+                    .insert(make_pair(interface->id, interface_eventout))
+                    .second;
+                assert(succeeded);
+                break;
+            case node_interface::exposedfield_id:
+                initial_value = initial_values.find(interface->id);
+                if (initial_value == initial_values.end()) {
+                    initial_value =
+                        node_class.default_value_map.find(interface->id);
+                    assert(initial_value
+                           != node_class.default_value_map.end());
+                }
+                interface_eventin = create_exposedfield(*initial_value->second,
+                                                        *this);
+                interface_eventout =
+                    dynamic_pointer_cast<openvrml::event_emitter>(
+                        interface_eventin);
+                is_range = node_class.is_map.equal_range(interface->id);
+                for (is_map_t::const_iterator is_mapping = is_range.first;
+                     is_mapping != is_range.second;
+                     ++is_mapping) {
+                    assert(is_mapping->second.impl_node);
+                    node_path_t path_to_impl_node;
+                    path_getter(*is_mapping->second.impl_node,
+                                path_to_impl_node)
+                        .get_path_from(node_class.impl_nodes);
+                    node * impl_node = resolve_node_path(path_to_impl_node,
+                                                         this->impl_nodes);
+                    assert(impl_node);
+                    const std::string & impl_node_interface =
+                        is_mapping->second.impl_node_interface;
+                    try {
+                        openvrml::event_listener & impl_eventin =
+                            impl_node->event_listener(impl_node_interface);
+                        succeeded = eventin_is(interface->field_type,
+                                               impl_eventin,
+                                               *interface_eventin);
+                        assert(succeeded);
+                        openvrml::event_emitter & impl_eventout =
+                            impl_node->event_emitter(impl_node_interface);
+                        succeeded = eventout_is(interface->field_type,
+                                                impl_eventout,
+                                                *interface_eventout);
+                        assert(succeeded);
+                    } catch (unsupported_interface & ex) {
+                        OPENVRML_PRINT_EXCEPTION_(ex);
+                    }
+                }
+                succeeded = this->eventin_map
+                    .insert(make_pair("set_" + interface->id,
+                                      interface_eventin)).second;
+                assert(succeeded);
+                succeeded = this->eventout_map
+                    .insert(make_pair(interface->id + "_changed",
+                                      interface_eventout)).second;
+                assert(succeeded);
+                break;
+            case node_interface::field_id:
+                break;
+            default:
+                assert(false);
+            }
+        }
     }
-}
 
-/**
- * @brief event_listener accessor implementation.
- *
- * @param id    eventIn identifier.
- *
- * @return the event_listener for the eventIn @p id.
- *
- * @exception unsupported_interface if the node has no eventIn @p id.
- */
-event_listener &
-proto_node::do_event_listener(const std::string & id)
-    throw (unsupported_interface)
-{
-    eventin_map_t::iterator pos = this->eventin_map.find(id);
-    if (pos == this->eventin_map.end()) {
-        throw unsupported_interface(this->type,
-                                    node_interface::eventin_id,
-                                    id);
+    /**
+     * @brief Destroy.
+     */
+    proto_node::~proto_node() throw ()
+    {}
+
+    /**
+     * @brief Initialize.
+     *
+     * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    void proto_node::do_initialize(const double timestamp)
+        throw (std::bad_alloc)
+    {
+        using std::vector;
+        for (vector<node_ptr>::const_iterator node = this->impl_nodes.begin();
+             node != impl_nodes.end();
+             ++node) {
+            (*node)->initialize(*this->scene(), timestamp);
+        }
     }
-    return *pos->second;
-}
 
-/**
- * @brief event_emitter accessor implementation.
- *
- * @param id    eventOut identifier.
- *
- * @return the event_emitter for the eventOut @p id.
- *
- * @exception unsupported_interface if the node has no eventOut @p id.
- */
-event_emitter & proto_node::do_event_emitter(const std::string & id)
-    throw (unsupported_interface)
-{
-    eventout_map_t::iterator pos = this->eventout_map.find(id);
-    if (pos == this->eventout_map.end()) {
-        throw unsupported_interface(this->type,
-                                    node_interface::eventout_id,
-                                    id);
+    /**
+     * @brief Field accessor implementation.
+     *
+     * @param id    field identifier.
+     *
+     * @exception unsupported_interface if the node has no field @p id.
+     *
+     * @todo Make this function handle exposedFields.
+     */
+    const field_value & proto_node::do_field(const std::string & id) const
+        throw (unsupported_interface)
+    {
+        //
+        // First, we need to find the implementation node that the field is
+        // IS'd to.  For the accessor, we don't care if there's more than one.
+        //
+        proto_node_class & node_class =
+            static_cast<proto_node_class &>(this->type.node_class);
+        proto_node_class::is_map_t::iterator is_mapping =
+            node_class.is_map.find(id);
+        if (is_mapping != node_class.is_map.end()) {
+            //
+            // Get the path to the implementation node.
+            //
+            assert(is_mapping->second.impl_node);
+            assert(!is_mapping->second.impl_node_interface.empty());
+            node_path_t path;
+            path_getter(*is_mapping->second.impl_node, path)
+                .get_path_from(node_class.impl_nodes);
+
+            //
+            // Resolve the path against this instance's implementation nodes.
+            //
+            node * const impl_node = resolve_node_path(path, this->impl_nodes);
+
+            //
+            // Set the field value for the implementation node.
+            //
+            return impl_node->field(is_mapping->second.impl_node_interface);
+        } else {
+            //
+            // If there are no IS mappings for the field, then return the
+            // default value.
+            //
+            proto_node_class::default_value_map_t::iterator default_value =
+                node_class.default_value_map.find(id);
+            if (default_value == node_class.default_value_map.end()) {
+                throw unsupported_interface(this->type, id);
+            }
+            return *default_value->second;
+        }
     }
-    return *pos->second;
-}
 
-/**
- * @brief Initialize.
- *
- * @param timestamp the current time.
- */
-void proto_node::do_shutdown(const double timestamp) throw ()
-{
-    using std::vector;
-    for (vector<node_ptr>::const_iterator node = this->impl_nodes.begin();
-         node != impl_nodes.end();
-         ++node) {
-        (*node)->shutdown(timestamp);
+    /**
+     * @brief event_listener accessor implementation.
+     *
+     * @param id    eventIn identifier.
+     *
+     * @return the event_listener for the eventIn @p id.
+     *
+     * @exception unsupported_interface if the node has no eventIn @p id.
+     */
+    event_listener &
+    proto_node::do_event_listener(const std::string & id)
+        throw (unsupported_interface)
+    {
+        eventin_map_t::iterator pos = this->eventin_map.find(id);
+        if (pos == this->eventin_map.end()) {
+            throw unsupported_interface(this->type,
+                                        node_interface::eventin_id,
+                                        id);
+        }
+        return *pos->second;
     }
-}
 
-/**
- * @brief Cast to a script_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a script_node, or 0 otherwise.
- */
-script_node * proto_node::to_script() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<script_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief event_emitter accessor implementation.
+     *
+     * @param id    eventOut identifier.
+     *
+     * @return the event_emitter for the eventOut @p id.
+     *
+     * @exception unsupported_interface if the node has no eventOut @p id.
+     */
+    event_emitter & proto_node::do_event_emitter(const std::string & id)
+        throw (unsupported_interface)
+    {
+        eventout_map_t::iterator pos = this->eventout_map.find(id);
+        if (pos == this->eventout_map.end()) {
+            throw unsupported_interface(this->type,
+                                        node_interface::eventout_id,
+                                        id);
+        }
+        return *pos->second;
+    }
 
-/**
- * @brief Cast to an appearance_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      an appearance_node, or 0 otherwise.
- */
-appearance_node * proto_node::to_appearance() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<appearance_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Initialize.
+     *
+     * @param timestamp the current time.
+     */
+    void proto_node::do_shutdown(const double timestamp) throw ()
+    {
+        using std::vector;
+        for (vector<node_ptr>::const_iterator node = this->impl_nodes.begin();
+             node != impl_nodes.end();
+             ++node) {
+            (*node)->shutdown(timestamp);
+        }
+    }
 
-/**
- * @brief Cast to a child_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a child_node, or 0 otherwise.
- */
-child_node * proto_node::to_child() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<child_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a script_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a script_node, or 0 otherwise.
+     */
+    script_node * proto_node::to_script() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<script_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a color_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a color_node, or 0 otherwise.
- */
-color_node * proto_node::to_color() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<color_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to an appearance_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is an appearance_node, or 0 otherwise.
+     */
+    appearance_node * proto_node::to_appearance() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<appearance_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a coordinate_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a coordinate_node, or 0 otherwise.
- */
-coordinate_node * proto_node::to_coordinate() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<coordinate_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a child_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a child_node, or 0 otherwise.
+     */
+    child_node * proto_node::to_child() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<child_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a font_style_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a font_style_node, or 0 otherwise.
- */
-font_style_node * proto_node::to_font_style() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<font_style_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a color_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a color_node, or 0 otherwise.
+     */
+    color_node * proto_node::to_color() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<color_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a geometry_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a geometry_node, or 0 otherwise.
- */
-geometry_node * proto_node::to_geometry() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<geometry_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a coordinate_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a coordinate_node, or 0 otherwise.
+     */
+    coordinate_node * proto_node::to_coordinate() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<coordinate_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a grouping_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a geometry_node, or 0 otherwise.
- */
-grouping_node * proto_node::to_grouping() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<grouping_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a font_style_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a font_style_node, or 0 otherwise.
+     */
+    font_style_node * proto_node::to_font_style() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<font_style_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a material_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a material_node, or 0 otherwise.
- */
-material_node * proto_node::to_material() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<material_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a geometry_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a geometry_node, or 0 otherwise.
+     */
+    geometry_node * proto_node::to_geometry() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<geometry_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a normal_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a normal_node, or 0 otherwise.
- */
-normal_node * proto_node::to_normal() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<normal_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a grouping_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a geometry_node, or 0 otherwise.
+     */
+    grouping_node * proto_node::to_grouping() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<grouping_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a sound_source_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a sound_source_node, or 0 otherwise.
- */
-sound_source_node * proto_node::to_sound_source() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<sound_source_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a material_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a material_node, or 0 otherwise.
+     */
+    material_node * proto_node::to_material() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<material_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a texture_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a texture_node, or 0 otherwise.
- */
-texture_node * proto_node::to_texture() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<texture_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a normal_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a normal_node, or 0 otherwise.
+     */
+    normal_node * proto_node::to_normal() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<normal_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a texture_coordinate_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a texture_coordinate_node, or 0 otherwise.
- */
-texture_coordinate_node * proto_node::to_texture_coordinate() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<texture_coordinate_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a sound_source_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a sound_source_node, or 0 otherwise.
+     */
+    sound_source_node * proto_node::to_sound_source() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<sound_source_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a texture_transform_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a texture_transform_node, or 0 otherwise.
- */
-texture_transform_node * proto_node::to_texture_transform() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<texture_transform_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a texture_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a texture_node, or 0 otherwise.
+     */
+    texture_node * proto_node::to_texture() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<texture_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a transform_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a transform_node, or 0 otherwise.
- */
-transform_node * proto_node::to_transform() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<transform_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a texture_coordinate_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a texture_coordinate_node, or 0 otherwise.
+     */
+    texture_coordinate_node * proto_node::to_texture_coordinate() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<texture_coordinate_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Cast to a viewpoint_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a viewpoint_node, or 0 otherwise.
- */
-viewpoint_node * proto_node::to_viewpoint() throw ()
-{
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<viewpoint_node *>(this->impl_nodes[0].get());
-}
+    /**
+     * @brief Cast to a texture_transform_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a texture_transform_node, or 0 otherwise.
+     */
+    texture_transform_node * proto_node::to_texture_transform() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<texture_transform_node *>(this->impl_nodes[0].get());
+    }
 
-/**
- * @brief Construct.
- *
- * @param browser
- * @param interfaces
- * @param default_value_map
- * @param impl_nodes
- * @param is_map
- * @param routes
- */
-proto_node_class::
-proto_node_class(openvrml::browser & browser,
-                 const node_interface_set & interfaces,
-                 const default_value_map_t & default_value_map,
-                 const std::vector<node_ptr> & impl_nodes,
-                 const is_map_t & is_map,
-                 const routes_t & routes):
-    node_class(browser),
-    interfaces(interfaces),
-    default_value_map(default_value_map),
-    impl_nodes(impl_nodes),
-    routes(routes),
-    is_map(is_map)
-{}
+    /**
+     * @brief Cast to a transform_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a transform_node, or 0 otherwise.
+     */
+    transform_node * proto_node::to_transform() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<transform_node *>(this->impl_nodes[0].get());
+    }
 
-proto_node_class::~proto_node_class() throw ()
-{}
+    /**
+     * @brief Cast to a viewpoint_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a viewpoint_node, or 0 otherwise.
+     */
+    viewpoint_node * proto_node::to_viewpoint() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<viewpoint_node *>(this->impl_nodes[0].get());
+    }
 
-const node_type_ptr
-proto_node_class::create_type(const std::string & id,
-                              const node_interface_set & interfaces)
-    throw (unsupported_interface, std::bad_alloc)
-{
-    return node_type_ptr(new proto_node_type(*this, id, interfaces));
-}
+    /**
+     * @brief Construct.
+     *
+     * @param browser
+     * @param interfaces
+     * @param default_value_map
+     * @param impl_nodes
+     * @param is_map
+     * @param routes
+     */
+    proto_node_class::
+    proto_node_class(openvrml::browser & browser,
+                     const node_interface_set & interfaces,
+                     const default_value_map_t & default_value_map,
+                     const std::vector<node_ptr> & impl_nodes,
+                     const is_map_t & is_map,
+                     const routes_t & routes):
+        node_class(browser),
+        interfaces(interfaces),
+        default_value_map(default_value_map),
+        impl_nodes(impl_nodes),
+        routes(routes),
+        is_map(is_map)
+    {}
 
-} // namespace openvrml
+    proto_node_class::~proto_node_class() throw ()
+    {}
+
+    const node_type_ptr
+    proto_node_class::create_type(const std::string & id,
+                                  const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc)
+    {
+        return node_type_ptr(new proto_node_type(*this, id, interfaces));
+    }
+
+} // namespace
 
 //
 // Including a .cpp file is strange, but it's exactly what we want to do here.

@@ -1,3 +1,8 @@
+2004-09-16 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp:  Moved proto_node,
+	proto_node_class member definitions to unnamed namespace.
+
 2004-08-30 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp:  Moved proto_node,
