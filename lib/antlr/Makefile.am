@@ -1,3 +1,16 @@
+LIBRARY_VERSION = 0:0:0
+#                 | | |
+#          +------+ | +---+
+#          |        |     |
+#       current:revision:age
+#          |        |     |
+#          |        |     +- Increment if interfaces have been added
+#          |        |        Set to zero if interfaces have been removed or
+#          |        |        changed
+#          |        +- Increment if source code has changed
+#          |           Set to zero if current is incremented
+#          +- Increment if interfaces have been added, removed or changed
+
 if DEBUG
 else
 DEBUG_CPPFLAGS = -DNDEBUG
@@ -8,7 +21,7 @@ AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
 lib_LTLIBRARIES = @INSTALL_LIBANTLR@
 noinst_LTLIBRARIES = @NOINSTALL_LIBANTLR@
 EXTRA_LTLIBRARIES = libantlr.la
-libantlr_la_LDFLAGS = @LIBANTLR_RPATH_FLAG@ -version-info @ANTLR_LIBRARY_VERSION@
+libantlr_la_LDFLAGS = @LIBANTLR_RPATH_FLAG@ -version-info $LIBRARY_VERSION
 
 libantlr_la_SOURCES = \
 	ANTLRException.cpp \

@@ -10,10 +10,6 @@
 # NOINST_LIBJS
 #       should be "libjs.la" if building a helper library; empty otherwise.
 # 
-# JS_LIBRARY_VERSION
-#       libtool version number. This variable MUST NOT BE EMPTY, though its
-#       value doesn't matter when building a helper library.
-# 
 # JS_RPATH_LDFLAG
 #       For a convenience library, this MUST BE EMPTY. For an installed library
 #       it MUST be "-rpath {libdir}", where {libdir} is the directory in which
@@ -34,6 +30,19 @@
 # true *unless you will be prelinking libjs against another library*. Note that
 # currently, fdlibm is NOT installed *even if this variable is false*.
 #
+
+LIBRARY_VERSION = 0:0:0
+#                 | | |
+#          +------+ | +---+
+#          |        |     |
+#       current:revision:age
+#          |        |     |
+#          |        |     +- Increment if interfaces have been added
+#          |        |        Set to zero if interfaces have been removed or
+#          |        |        changed
+#          |        +- Increment if source code has changed
+#          |           Set to zero if current is incremented
+#          +- Increment if interfaces have been added, removed or changed
 
 SUBDIRS = fdlibm
 
@@ -111,7 +120,7 @@ libjs_la_LIBADD = fdlibm/libfdm.la
 
 endif
 
-libjs_la_LDFLAGS = @RPATH_LDFLAG@ -version-info @JS_LIBRARY_VERSION@
+libjs_la_LDFLAGS = @RPATH_LDFLAG@ -version-info $JS_LIBRARY_VERSION
 
 EXTRA_DIST = jsmath.c
 
