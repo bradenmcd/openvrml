@@ -1,5 +1,10 @@
 2000-06-27  Michael Louka <Michael.Louka@hrp.no>
 
+  * Updated CodeWarrior files for Mac OS to reflect Braden's changes to
+    the handling of the JavaScript library.
+
+2000-06-27  Michael Louka <Michael.Louka@hrp.no>
+
   * Rewrote VrmlNodeAnchor::activate() so that relative URLs to non-VRML
     data are handled correctly.
     
