@@ -1,5 +1,6 @@
 #!/bin/sh
 
+libtoolize --automake
 aclocal -I /usr/local/share/aclocal -I ./macros
 automake --add-missing
 autoreconf
