@@ -2092,7 +2092,8 @@ namespace {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (SFColor::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (SFColor::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::sffloat:
                 {
@@ -2117,21 +2118,24 @@ namespace {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (SFImage::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (SFImage::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::sfnode:
                 if (!JSVAL_IS_OBJECT(v)) {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (SFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (SFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::sfrotation:
                 if (!JSVAL_IS_OBJECT(v)) {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (SFRotation::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (SFRotation::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::sfstring:
                 {
@@ -2164,77 +2168,88 @@ namespace {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (SFVec2f::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (SFVec2f::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::sfvec3f:
                 if (!JSVAL_IS_OBJECT(v)) {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (SFVec3f::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (SFVec3f::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::mfcolor:
                 if (!JSVAL_IS_OBJECT(v)) {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (MFColor::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (MFColor::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::mffloat:
                 if (!JSVAL_IS_OBJECT(v)) {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (MFFloat::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (MFFloat::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::mfint32:
                 if (!JSVAL_IS_OBJECT(v)) {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (MFInt32::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (MFInt32::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::mfnode:
                 if (!JSVAL_IS_OBJECT(v)) {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (MFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (MFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::mfrotation:
                 if (!JSVAL_IS_OBJECT(v)) {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (MFRotation::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (MFRotation::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::mfstring:
                 if (!JSVAL_IS_OBJECT(v)) {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (MFString::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (MFString::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::mftime:
                 if (!JSVAL_IS_OBJECT(v)) {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (MFTime::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (MFTime::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::mfvec2f:
                 if (!JSVAL_IS_OBJECT(v)) {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (MFVec2f::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (MFVec2f::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             case FieldValue::mfvec3f:
                 if (!JSVAL_IS_OBJECT(v)) {
                     throw BadConversion("Object expected.");
                 }
                 return auto_ptr<FieldValue>
-                        (MFVec3f::createFromJSObject(cx, JSVAL_TO_OBJECT(v)));
+                        (MFVec3f::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                            .release());
 
             default:
                 assert(false);
@@ -3345,7 +3360,9 @@ namespace {
             std::auto_ptr<FieldValue> fieldValue;
             if ((expectType = nodePtr->nodeType.hasEventIn(eventInId))) {
                 try {
-                    fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
+                    fieldValue
+                        .reset(createFieldValueFromJsval(cx, *vp, expectType)
+                                .release());
                 } catch (BadConversion & ex) {
                     std::cout << ex.what() << std::endl;
                     return JS_FALSE;
@@ -3365,7 +3382,9 @@ namespace {
                                     eventInId);
             } else if ((expectType = nodePtr->nodeType.hasField(eventInId))) {
                 try {
-                    fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
+                    fieldValue
+                        .reset(createFieldValueFromJsval(cx, *vp, expectType)
+                                .release());
                 } catch (BadConversion & ex) {
                     std::cout << ex.what() << std::endl;
                     return JS_FALSE;
