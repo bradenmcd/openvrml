@@ -1,4 +1,9 @@
-2003-10-10  Braden McDaniel  <braden@endoframe.com>
+2003-10-11  Braden McDaniel  <braden@endoframe.com>
+
+	* doc/doxygen-header:  Removed unsightly filename extensions
+	from URIs.
+
+2003-10-11  Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp
 	(elevation_grid_node::insert_geometry):  Fixed errors accessing
