@@ -2,7 +2,8 @@
 
 	* ViewerOpenGL.cpp Fixed a problem with the check for non -1
 	terminated coord indicies in insertShellConvex(), and (partially)
-	fixed a problem with normal generation in insertCone().
+	fixed a problem with normal generation in insertCone(), ref
+	bug#112324
 
 2000-08-02  Christopher St. John <cstjohn@acm.org>
 
