@@ -104,20 +104,34 @@ namespace {
         }
     }
 
-    class GLCapabilities {
+    class gl_capabilities {
     public:
-        GLint maxModelviewStackDepth;
+        GLint max_modelview_stack_depth;
 
-        GLCapabilities();
+        static const gl_capabilities * instance() throw (std::bad_alloc);
+
+    private:
+        static const gl_capabilities * instance_;
+
+        gl_capabilities();
     };
 
-    GLCapabilities::GLCapabilities()
+    const gl_capabilities * gl_capabilities::instance_(0);
+
+    const gl_capabilities * gl_capabilities::instance()
+        throw (std::bad_alloc)
     {
-        glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH,
-                      &this->maxModelviewStackDepth);
+        if (!gl_capabilities::instance_) {
+            gl_capabilities::instance_ = new gl_capabilities;
+        }
+        return gl_capabilities::instance_;
     }
 
-    const GLCapabilities glCapabilities;
+    gl_capabilities::gl_capabilities()
+    {
+        glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH,
+                      &this->max_modelview_stack_depth);
+    }
 }
 
 namespace openvrml {
@@ -315,7 +329,9 @@ void viewer::modelview_matrix_stack::push()
     glGetIntegerv(GL_MATRIX_MODE, &matrixMode);
 # endif
     assert(matrixMode == GL_MODELVIEW);
-    if (this->size == size_t(glCapabilities.maxModelviewStackDepth - 1)) {
+    if (this->size
+        == size_t(gl_capabilities::instance()->max_modelview_stack_depth - 1))
+    {
         mat4f mat;
         glGetFloatv(GL_MODELVIEW_MATRIX, &mat[0][0]);
         this->spillover.push(mat);

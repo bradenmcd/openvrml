@@ -73,8 +73,8 @@ GLUT-based VRML viewer.
 
 
 %build
-./configure $ARCH_FLAGS --prefix=%{prefix} CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
-make
+./configure --prefix=%{prefix} CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
+make %{?_smp_mflags}
 
 
 %install
@@ -114,6 +114,10 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Sun Nov 16 2003  Braden McDaniel  <braden@endoframe.com>
+- Removed unused ARCH_FLAGS variable from "configure" invocation.
+- Added _smp_mflags macro to invocation of make.
+
 * Fri Nov 07 2003  Braden McDaniel  <braden@endoframe.com>
 - Added "BuildRequires: libgcj-devel >= 3.3" and analogous Requires. Script
   node Java support is now included in the build, and older versions of libgcj
@@ -162,7 +166,8 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 * Thu Dec 05 2002  Braden McDaniel  <braden@endoframe.com>
 - Added minimum versions to BuildRequires dependencies.
 - configure --without-ftflibs.
-- Require Mozilla 1.2.1; removed obsolete CPPFLAGS and LDFLAGS when configuring.
+- Require Mozilla 1.2.1; removed obsolete CPPFLAGS and LDFLAGS when
+  configuring.
 
 * Sun Jun 30 2002  Braden McDaniel  <braden@endoframe.com>
 - configure --without-doxygen.

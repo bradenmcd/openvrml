@@ -134,18 +134,15 @@ depends on.
      Disable support for JavaScript in the Script node.  By default,
      OpenVRML uses the Mozilla JavaScript library to execute JavaScript.
 
- --enable-script-node-java
-     Enable support for Java in the Script node using the Java
-     Development Kit.  OpenVRML does not include Script node Java
-     support by default.
-
- --disable-api-docs
-     Do not build the API documentation.  By default, OpenVRML uses
-     doxygen to build API documentation.
+ --disable-script-node-java
+     Disable support for Java in the Script node.  "configure" searches
+     for a Java Native Interface (JNI) implementation, which may be
+     provided either by a Java Development Kit or the GNU Compiler for
+     Java (gcj).  If using
 
  --disable-gl-renderer
      Do not build the GL renderer.  OpenVRML's GL renderer depends on
-     OpenGL/Mesa and GLUT.
+     OpenGL/Mesa.
 
  --disable-lookat
      Do not build lookat.  lookat depends on GLUT.
@@ -159,11 +156,6 @@ depends on.
 
  --with-apple-opengl-framework
      Use Apple's OpenGL framework on Mac OS X.
-
- --with-jdk=JDKHOME
-     By default the configure script uses the standard include and
-     library paths when testing for the JDK.  Use this argument to
-     tell the configure script to use a JDK in a specific directory.
 
 
 Significant preprocessor symbols

@@ -1,3 +1,28 @@
+2003-11-17  Braden McDaniel  <braden@endoframe.com>
+
+	Merged changes from 0.14.3.
+
+	* NEWS:  Updates for 0.14.3 release.
+	* README
+	* configure.ac:  Added checks for Mac OS X Rez tool.
+	* openvrml.spec.in:  Removed unused ARCH_FLAGS variable from
+	"configure" invocation.  Added _smp_mflags macro to invocation
+	of make.
+	* m4/ax_check_glut.m4:  Added "-lobjc" to GLUT_LIBS when using
+	Apple's OpenGL framework.
+	* src/libopenvrml/openvrml/Makefile.am:  Incremented library
+	version.
+	* src/libopenvrml-gl/openvrml/gl/Makefile.am:  Incremented
+	library version.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  Made
+	gl_capabilities a singleton.  This circumvents the problem of the
+	class instance being initialized during static initialization.
+	Calls to glGetIntegerv are not valid without a valid GL context.
+	* src/lookat/Makefile.am:  Apply Rez tool on Mac OS X.
+	* src/lookat/ViewerGlut.cpp:  Corrected include for GLUT
+	header.
+	* src/lookat/lookat.cpp:  Corrected include for GLUT header.
+
 2003-11-11  Braden McDaniel  <braden@endoframe.com>
 
 	Cruft removal.
