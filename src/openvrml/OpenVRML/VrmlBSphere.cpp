@@ -30,6 +30,29 @@
 
 using namespace OpenVRML_;
 
+/**
+ * @class VrmlBSphere
+ *
+ * @brief A bounding sphere.
+ *
+ * Bounding spheres are very fast to intersect test, but they are fairly loose.
+ * If asked to choose just one bounding volume, four out of five graphics
+ * professionals surveyed chose the bounding sphere for their patients who
+ * chewed bounding volumes.
+ */
+
+/**
+ * @var VrmlBSphere::c
+ *
+ * @brief The center of the sphere.
+ */
+
+/**
+ * @var VrmlBSphere::r
+ *
+ * @brief The radius of the sphere.
+ */
+
 VrmlBSphere::VrmlBSphere()
 {
   reset();

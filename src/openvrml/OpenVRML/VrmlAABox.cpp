@@ -23,6 +23,15 @@
 #include "VrmlFrustum.h"
 #include "VrmlAABox.h"
 
+/**
+ * @class VrmlAABox
+ *
+ * @brief An axis-aligned bounding box.
+ *
+ * This class is currently just a placeholder.
+ */
+
+VrmlAABox::~VrmlAABox() {}
 
 VrmlBSphere*
 VrmlAABox::toBSphere() const
@@ -93,12 +102,12 @@ VrmlAABox::isMAX() const
 }
 
 void
-VrmlAABox::orthoTransform(const double M[4][4]) 
+VrmlAABox::orthoTransform(const VrmlMatrix & M) 
 {
 }
 
 void
-VrmlAABox::transform(const double M[4][4])
+VrmlAABox::transform(const VrmlMatrix & M)
 {
 }
 

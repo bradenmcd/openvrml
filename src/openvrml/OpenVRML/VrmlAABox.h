@@ -24,35 +24,22 @@
 #include "common.h"
 #include "VrmlBVolume.h"
 
-/**
- * An axis-aligned bounding box.
- * <p>
- * You might have noticed that this class is currently just a
- * placeholder.
- *
- */
 class OPENVRML_SCOPE VrmlAABox : public VrmlBVolume {
-
- public:
-
-  VrmlBSphere* toBSphere() const;
-  VrmlAABox* toAABox() const;
-
-  int isectFrustum(const VrmlFrustum& f) const;
-
-  void extend(const VrmlBVolume& b);
-  void extend(const float p[3]);
-  void extend(const VrmlAABox& b);
-  void extend(const VrmlBSphere& b);
-  void enclose(const float* p, int n);
-
-  bool isMAX() const;
-  void setMAX();
-
-  void orthoTransform(const double M[4][4]);
-  void transform(const double M[4][4]);
-
-  ostream& dump(ostream& ostr) const;
+public:
+    virtual ~VrmlAABox();
+    virtual VrmlBSphere * toBSphere() const;
+    virtual VrmlAABox * toAABox() const;
+    virtual int isectFrustum(const VrmlFrustum & f) const;
+    virtual void extend(const VrmlBVolume & b);
+    virtual void extend(const float p[3]);
+    virtual void extend(const VrmlAABox & b);
+    virtual void extend(const VrmlBSphere & b);
+    virtual void enclose(const float* p, int n);
+    virtual bool isMAX() const;
+    virtual void setMAX();
+    virtual void orthoTransform(const VrmlMatrix & M);
+    virtual void transform(const VrmlMatrix & M);
+    virtual ostream & dump(ostream & ostr) const;
 };
 
 #endif

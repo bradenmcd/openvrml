@@ -24,61 +24,44 @@
 #include "common.h"
 #include "VrmlBVolume.h"
 #include "VrmlMatrix.h"
-/**
- * A bounding sphere. Bounding spheres are very fast to intersect
- * test, but they are fairly loose. If asked to choose just one
- * bounding volume, four out of five graphics professionals surveyed
- * chose the bounding sphere for their patients who chewed bounding
- * volumes.
- */
+
 class OPENVRML_SCOPE VrmlBSphere : public VrmlBVolume {
+    float c[3];
+    float r;
 
- protected:
+public:
+    VrmlBSphere();
+    VrmlBSphere(const VrmlBSphere & rhs);
+    virtual ~VrmlBSphere();
 
-  /**
-   * The center of the sphere.
-   */
-  float c[3];
+    virtual VrmlBSphere * toBSphere() const;
+    virtual VrmlAABox * toAABox() const;
 
-  /**
-   * The radius of the sphere.
-   */
-  float r;
+    void reset();
 
- public:
+    virtual int isectFrustum(const VrmlFrustum & f) const;
 
-  VrmlBSphere();
-  VrmlBSphere(const VrmlBSphere& rhs);
-  virtual ~VrmlBSphere();
+    virtual void extend(const VrmlBVolume & b);
+    virtual void extend(const float p[3]) ;
+    virtual void extend(const VrmlAABox & b);
+    virtual void extend(const VrmlBSphere & b);
+    virtual void enclose(const float* p, int n);
 
-  VrmlBSphere* toBSphere() const;
-  VrmlAABox* toAABox() const;
+    virtual bool isMAX() const;
+    virtual void setMAX();
 
-  void reset();
+    virtual void orthoTransform(const VrmlMatrix & M);
+    virtual void transform(const VrmlMatrix & M);
 
-  int isectFrustum(const VrmlFrustum& f) const;
+    const float* getCenter() const;
+    void setCenter(const VrmlSFVec3f & c);
+    void setCenter(float x, float y, float z);
+    void setCenter(const float ac[3]);
 
-  void extend(const VrmlBVolume& b);
-  void extend(const float p[3]) ;
-  void extend(const VrmlAABox& b);
-  void extend(const VrmlBSphere& b);
-  void enclose(const float* p, int n);
+    float getRadius() const;
+    void setRadius(float r);
 
-  virtual bool isMAX() const;
-  virtual void setMAX();
-
-  virtual void orthoTransform(const VrmlMatrix & M);
-  virtual void transform(const VrmlMatrix & M);
-
-  const float* getCenter() const;
-  void setCenter(const VrmlSFVec3f& c);
-  void setCenter(float x, float y, float z);
-  void setCenter(const float ac[3]);
-
-  float getRadius() const;
-  void setRadius(float r);
-
-  ostream& dump(ostream& ostr) const;
+    virtual ostream & dump(ostream & ostr) const;
 };
 
 
