@@ -5,6 +5,9 @@
 
         * configure.ac, README: Incremented version to 0.12.5.
 
+        * Fixed line endings on Visual C++ project files to be /r/n
+          rather than /n.
+
 2002-08-13  Braden McDaniel  <braden@endoframe.com>
 
         * lib/antlr/config.hpp, src/openvrml/OpenVRML/field.cpp: Fixes
