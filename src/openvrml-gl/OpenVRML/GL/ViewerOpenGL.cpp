@@ -630,7 +630,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
       // Background textures are drawn on a transparent cube
       if (pixels && d_texture && ! d_wireframe)
 	{
-	  float v[6][4][3] = {
+	  float v2[6][4][3] = {
 	    {{1,-1,1}, {-1,-1,1}, {-1,1,1}, {1,1,1}},     // Back
 	    {{-1,-1,1}, {1,-1,1}, {1,-1,-1}, {-1,-1,-1}}, // Bottom
 	    {{-1,-1,-1}, {1,-1,-1}, {1,1,-1}, {-1,1,-1}}, // Front
@@ -638,44 +638,128 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
 	    {{1,-1,-1}, {1,-1,1}, {1,1,1}, {1,1,-1}},     // Right
 	    {{-1,1,-1}, {1,1,-1}, {1,1,1}, {-1,1,1}}};    // Top
 
+          // Tile big textures into 256x256 (or 256xsmaller or smallerx256) pieces 
+
+	  float v3[6][4][3];
+          int number_tiles;
+          int number_vertices;
+          const size_t NUM_SPLITS = 4;
+	  float v[NUM_SPLITS*NUM_SPLITS*6][4][3];
+          float size_x;
+          float size_y;
+          int number_splits_x; 
+          int number_splits_y; 
+          number_splits_x=NUM_SPLITS;
+          number_splits_y=NUM_SPLITS;
+          number_tiles=number_splits_x*number_splits_y;
+          size_x=2.0/(float)number_splits_x;
+          size_y=2.0/(float)number_splits_y;
+          for (int j=0;j<16*6;j++)
+            for (int k=0;k<4;k++)
+              for (int i=0;i<3;i++)
+                 v[j][k][i]=0;
+
+          for (int j=0;j<6;j++)
+            for (int k=0;k<4;k++)
+              for (int i=0;i<3;i++)
+                 v3[j][k][i]=v2[j][k][i]-v2[j][0][i];
+
+          for (int j=0;j<6;j++)
+            for (int i=0;i<3;i++)
+            {
+              v[j*number_tiles][0][i]=v2[j][0][i];
+              for (int k=0;k<4;k++)
+                v[j*number_tiles][k][i]=v[j*number_tiles][0][i]+v3[j][k][i]/number_splits_y;
+            }          
+
+          for (int j=0;j<6;j++)
+          {
+            number_vertices=j*number_tiles+1;
+            for (int k=0;k<number_splits_y;k++)
+            {
+              int num_line;
+              num_line=number_vertices-1;
+              for (int l=1;l<number_splits_x;l++)
+              {
+                for (int i=0;i<3;i++)
+                {
+                  v[number_vertices][0][i]=v[number_vertices-1][0][i]+
+                                           v3[j][1][i]/number_splits_x;
+                  for (int m=0;m<4;m++)
+                    v[number_vertices][m][i]=v[number_vertices][0][i]+
+                                             v3[j][m][i]/number_splits_x;
+                }
+                number_vertices++;
+              }
+              if (k==(number_splits_y-1)) break;
+              for (int i=0;i<3;i++)
+              {
+                v[number_vertices][0][i]=v[num_line][0][i]+
+                                         v3[j][3][i]/number_splits_y;
+                for (int m=0;m<4;m++)
+                  v[number_vertices][m][i]=v[number_vertices][0][i]+
+                                           v3[j][m][i]/number_splits_y;
+              }
+              number_vertices++;                
+            }
+          }
+
 	  glScalef( 0.5, 0.5, 0.5 );
 
 	  glEnable( GL_TEXTURE_2D );
 	  glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 
+          int vertices_number = 0;
 	  int t, lastT = -1;
-	  for (t=0; t<6; ++t, whc+=3) {
-	    // Check for non-zero width,height,coords and pixel data
-	    if (whc[0] && whc[1] && whc[2] && pixels[t])
-	      {
-		// Optimize for the case where the same texture is used
-		if (lastT == -1 || pixels[t] != pixels[lastT])
-		  insertTexture(whc[0], whc[1], whc[2],
-				false, false, pixels[t],
-				false);  // Don't put the textures in dlists
+          for (t=0; t<6; ++t, whc+=3) 
+            for (int j=0;j<number_splits_y;j++)
+              for (int i=0;i<number_splits_x;i++)
+              {
 
-		lastT = t;
-		glBegin( GL_QUADS );
-
-		//glTexCoord2f( 0.0, 1.0 );
-		glTexCoord2f( 0.0, 0.0 );
-		glVertex3fv( v[t][0] );
-
-		//glTexCoord2f( 1.0, 1.0 );
-		glTexCoord2f( 1.0, 0.0 );
-		glVertex3fv( v[t][1] );
-
-		//glTexCoord2f( 1.0, 0.0 );
-		glTexCoord2f( 1.0, 1.0 );
-		glVertex3fv( v[t][2] );
-
-		//glTexCoord2f( 0.0, 0.0 );
-		glTexCoord2f( 0.0, 1.0 );
-		glVertex3fv( v[t][3] );
-
-		glEnd();
-	      }
-	  }
+                // Check for non-zero width,height,coords and pixel data
+                if (whc[0] && whc[1] && whc[2] && pixels[t])
+                {
+                  // Optimize for the case where the same texture is used
+// do not work here....
+//                  if (lastT == -1 || pixels[t] != pixels[lastT])
+                    insertSubTexture(
+                            i*whc[0]/number_splits_x,
+                            j*whc[1]/number_splits_y,
+                            whc[0]/number_splits_x, 
+                            whc[1]/number_splits_y,
+                            whc[0],
+                            whc[1], 
+                            whc[2],
+                            false, false, pixels[t],
+                            false);  // Don't put the textures in dlists
+    
+                //
+                // The commented out code suggests what might be done to
+                // subdivide a texture with sides that are a *multiple* of 2
+                // into textures that have sides that are a *power* of 2.
+                //
+                  lastT = t;
+                  glBegin( GL_QUADS );
+//                  float len_x=1.0/number_splits_x;
+//                  float len_y=1.0/number_splits_y;
+//                  float x0=i*len_x;
+//                  float y0=j*len_y;
+//                  glTexCoord2f( x0, y0 );
+                  glTexCoord2f( 0, 0 );
+                  glVertex3fv( v[vertices_number][0] );
+//                  glTexCoord2f( x0+len_x, y0 );
+                  glTexCoord2f( 1, 0 );
+                  glVertex3fv( v[vertices_number][1] );
+//                  glTexCoord2f( x0+len_x, y0+len_y );
+                  glTexCoord2f( 1, 1 );
+                  glVertex3fv( v[vertices_number][2] );
+//                  glTexCoord2f( x0, y0+len_y );
+                  glTexCoord2f( 0, 1 );
+                  glVertex3fv( v[vertices_number][3] );
+                  glEnd();
+                  vertices_number++;
+                }
+              }
 	  glDisable( GL_TEXTURE_2D );
 	}
 
@@ -2285,7 +2369,6 @@ void ViewerOpenGL::scaleTexture(size_t w, size_t h,
 //
 // Pixels are lower left to upper right by row.
 //
-
 Viewer::TextureObject
 ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
 			    bool repeat_s,
@@ -2327,6 +2410,62 @@ ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
 
   return (TextureObject) glid;
 }
+
+
+//
+// Pixels are lower left to upper right by row.
+//
+
+Viewer::TextureObject
+ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset, 
+                            size_t w, size_t h,
+                            size_t whole_w,size_t whole_h,size_t nc,
+			    bool repeat_s,
+			    bool repeat_t,
+			    const unsigned char *pixels,
+			    bool retainHint)
+{
+
+  GLenum fmt[] = { GL_LUMINANCE,	// single component
+		   GL_LUMINANCE_ALPHA,	// 2 components
+		   GL_RGB,		// 3 components
+		   GL_RGBA		// 4 components
+  };
+
+  GLuint glid = 0;
+
+  if (d_selectMode) return 0;
+
+  // Enable blending if needed
+  if (d_blend && (nc == 2 || nc == 4))
+    glEnable(GL_BLEND);
+
+#if USE_TEXTURE_DISPLAY_LISTS
+  if (retainHint) glGenTextures(1, &glid);
+  glBindTexture( GL_TEXTURE_2D, glid );
+#endif
+
+  // Texturing is enabled in setMaterialMode
+  glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+
+  GLubyte* texturepart=new GLubyte[w*h*nc];
+  for (int i=0;i<h;i++)
+    memcpy(texturepart+i*w*nc,pixels+(i+yoffset)*whole_w*nc+xoffset*nc, w*nc);
+
+  glTexImage2D( GL_TEXTURE_2D, 0, nc, w, h, 0,
+		fmt[nc-1], GL_UNSIGNED_BYTE, texturepart);
+
+  delete [] texturepart;
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+		   repeat_s ? GL_REPEAT : GL_CLAMP );
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+		   repeat_t ? GL_REPEAT : GL_CLAMP );
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+  return (TextureObject) glid;
+}
+
 
 void ViewerOpenGL::insertTextureReference(TextureObject t, int nc)
 {

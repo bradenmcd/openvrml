@@ -689,12 +689,13 @@ void VrmlNodeAudioClip::setField(const char *fieldName,
       setModified();
   }
 }
+
+
 //  Background factory.
 
 static VrmlNode * createBackground(VrmlScene *scene) {
     return new VrmlNodeBackground(scene);
 }
-
 
 // Define the built in VrmlNodeType:: "Background" fields
 
@@ -826,8 +827,8 @@ static Image* getTexture( VrmlMFString &urls,
       else if ( tex[thisIndex].pixels() && tex[thisIndex].nc() )
 	{
 	  // Ensure the image dimensions are powers of two
-	  int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-	  int nSizes = sizeof(sizes) / sizeof(int);
+	  int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
+	  const int nSizes = sizeof(sizes) / sizeof(int);
 	  int w = tex[thisIndex].w();
 	  int h = tex[thisIndex].h();
 	  int i, j;

@@ -188,6 +188,14 @@ public:
 				      const unsigned char *pixels,
 				      bool retainHint = false);
 
+  virtual TextureObject insertSubTexture(size_t xoffset, size_t yoffset, 
+                                         size_t w, size_t h,
+                                         size_t whole_w, size_t whole_h,
+                                         size_t nc, bool repeat_s,
+                                         bool repeat_t,
+			                 const unsigned char *pixels,
+			                 bool retainHint = false);
+
   // Reference/remove a texture object
   virtual void insertTextureReference(TextureObject, int);
   virtual void removeTextureObject(TextureObject);
