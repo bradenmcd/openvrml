@@ -281,9 +281,9 @@ bool VrmlScene::load(const char *url, const char *localCopy)
     // scene if this format is used.
     VrmlSFBool flag(true);
     if (*url == '#') {
-        const VrmlNodePtr & vp(d_namespace
+        const VrmlNodePtr & vp = d_namespace
                                     ? d_namespace->findNode(url+1)
-                                    : VrmlNodePtr(0));
+                                    : VrmlNodePtr(0);
         
         // spec: ignore if named viewpoint not found
         if (vp) {
@@ -318,7 +318,7 @@ bool VrmlScene::load(const char *url, const char *localCopy)
         
         // Look for '#Viewpoint' syntax
         if (sourceUrl->urlModifier()) {
-            const VrmlNodePtr & vp(d_namespace->findNode(sourceUrl->urlModifier() + 1));
+            const VrmlNodePtr & vp = d_namespace->findNode(sourceUrl->urlModifier() + 1);
             double timeNow = theSystem->time();
             if (vp) {
                 vp->eventIn(timeNow, "set_bind", flag);
@@ -736,7 +736,7 @@ bool VrmlScene::update( double timeStamp )
       d_firstEvent = (d_firstEvent+1) % MAXEVENTS;
 
       // Ensure that the node is in the scene graph
-      const VrmlNodePtr & n(e->toNode);
+      const VrmlNodePtr & n = e->toNode;
       if (this != n->scene())
 	{
 	  theSystem->debug("VrmlScene::update: %s::%s is not in the scene graph yet.\n",

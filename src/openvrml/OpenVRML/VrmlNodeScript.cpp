@@ -154,7 +154,7 @@ void VrmlNodeScript::resetVisitedFlag() {
                         ->get()->resetVisitedFlag();
             } else if ((*itr)->type == VrmlField::MFNODE) {
                 assert(dynamic_cast<VrmlMFNode *>((*itr)->value));
-                VrmlMFNode & mfnode(static_cast<VrmlMFNode &>(*(*itr)->value));
+                VrmlMFNode & mfnode = static_cast<VrmlMFNode &>(*(*itr)->value);
                 for (size_t i = 0; i < mfnode.getLength(); ++i) {
                     mfnode.getElement(i)->resetVisitedFlag();
                 }
@@ -529,8 +529,8 @@ void VrmlNodeScript::set(const FieldList & recs, const char * fname,
             //
             const VrmlField::VrmlFieldType fieldType(value.fieldType());
             if (fieldType == VrmlField::SFNODE) {
-                const VrmlNodePtr & oldNode
-                        (static_cast<VrmlSFNode *>((*itr)->value)->get());
+                const VrmlNodePtr & oldNode =
+                        static_cast<VrmlSFNode *>((*itr)->value)->get();
                 //
                 // About to relinquish ownership of a SFNode value. If the
                 // SFNode value is this Script node, then we need to
@@ -554,16 +554,17 @@ void VrmlNodeScript::set(const FieldList & recs, const char * fname,
                 // because the reference it held to itself would prevent the
                 // refcount from ever dropping to zero.
                 //
-                const VrmlNodePtr & newNode
-                        (static_cast<VrmlSFNode *>((*itr)->value)->get());
+                const VrmlNodePtr & newNode =
+                        static_cast<VrmlSFNode *>((*itr)->value)->get();
                 if (newNode && (newNode.countPtr->first == this)) {
                     --(newNode.countPtr->second);
                 }
             } else if (fieldType == VrmlField::MFNODE) {
-                const VrmlMFNode & oldNodes
-                        (static_cast<VrmlMFNode &>(*(*itr)->value));
-                for (size_t i = 0; i < oldNodes.getLength(); ++i) {
-                    const VrmlNodePtr & node(oldNodes.getElement(i));
+				size_t i;
+                const VrmlMFNode & oldNodes =
+                        static_cast<VrmlMFNode &>(*(*itr)->value);
+                for (i = 0; i < oldNodes.getLength(); ++i) {
+                    const VrmlNodePtr & node = oldNodes.getElement(i);
                     if (node && (node.countPtr->first == this)) {
                         ++(node.countPtr->second);
                     }
@@ -572,10 +573,10 @@ void VrmlNodeScript::set(const FieldList & recs, const char * fname,
                 delete (*itr)->value;
                 (*itr)->value = value.clone();
                 
-                const VrmlMFNode & newNodes
-                        (static_cast<VrmlMFNode &>(*(*itr)->value));
-                for (size_t i = 0; i < newNodes.getLength(); ++i) {
-                    const VrmlNodePtr & node(newNodes.getElement(i));
+                const VrmlMFNode & newNodes =
+                        static_cast<VrmlMFNode &>(*(*itr)->value);
+                for (i = 0; i < newNodes.getLength(); ++i) {
+                    const VrmlNodePtr & node = newNodes.getElement(i);
                     if (node && (node.countPtr->first == this)) {
                         --(node.countPtr->second);
                     }

@@ -26,6 +26,10 @@
 #include <config.h>
 #endif
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#include <winconfig.h>
+#endif
+
 #include "Image.h"
 #include "Doc.h"
 #include "System.h"

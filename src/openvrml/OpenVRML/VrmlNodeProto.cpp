@@ -240,7 +240,7 @@ void VrmlNodeProto::instantiate()
 	      ismap = &(*ev)->thisIS;
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
-		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->name()));
+		  const VrmlNodePtr  & n = d_scope->findNode((*j)->node->name());
 		  if (n)
 		    n->addRoute((*j)->fieldName,
 				r->toNode(), r->toEventIn() );
@@ -267,7 +267,7 @@ void VrmlNodeProto::instantiate()
 	    {
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
-		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->name()));
+		  const VrmlNodePtr & n = d_scope->findNode((*j)->node->name());
 #ifdef VRML_NODE_PROTO_DEBUG
 		  cerr << " on " << n->name() << "::" << (*j)->fieldName << endl;
 #endif
@@ -353,7 +353,7 @@ VrmlNodeAppearance* VrmlNodeProto::toAppearance() const
 VrmlNodeAudioClip* VrmlNodeProto::toAudioClip() const
 { return firstNode() ? firstNode()->toAudioClip() : 0; }
 
-VrmlNodeChild* VrmlNodeProto::toChild() const
+const VrmlNodeChild* VrmlNodeProto::toChild() const
 { return firstNode() ? firstNode()->toChild() : 0; }
 
 VrmlNodeBackground* VrmlNodeProto::toBackground() const
@@ -371,7 +371,7 @@ VrmlNodeFog* VrmlNodeProto::toFog() const
 VrmlNodeFontStyle* VrmlNodeProto::toFontStyle() const
 { return firstNode() ? firstNode()->toFontStyle() : 0; }
 
-VrmlNodeGeometry* VrmlNodeProto::toGeometry() const
+const VrmlNodeGeometry* VrmlNodeProto::toGeometry() const
 { return firstNode() ? firstNode()->toGeometry() : 0; }
 
 VrmlNodeGroup* VrmlNodeProto::toGroup() const

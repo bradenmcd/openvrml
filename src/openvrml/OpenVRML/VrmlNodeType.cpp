@@ -342,7 +342,7 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      const VrmlNodePtr & n((*j)->node);
+	      const VrmlNodePtr & n = (*j)->node;
 	      if (strcmp(n->name(),"") == 0)
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
@@ -362,7 +362,7 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      const VrmlNodePtr & n((*j)->node);
+	      const VrmlNodePtr & n = (*j)->node;
 	      if (strcmp(n->name(),"") == 0)
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
@@ -376,7 +376,7 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      const VrmlNodePtr & n((*j)->node);
+	      const VrmlNodePtr & n = (*j)->node;
 	      if (strcmp(n->name(),"") == 0)
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);

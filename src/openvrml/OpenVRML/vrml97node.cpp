@@ -18,6 +18,9 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#include <winconfig.h>
+#endif
 
 # include <errno.h>
 # include "vrml97node.h"
@@ -3691,7 +3694,7 @@ void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
       // TouchSensors, any others? ...)
       for (i = 0; i<n; ++i)
 	{
-	  const VrmlNodePtr & kid(d_children.getElement(i));
+	  const VrmlNodePtr & kid = d_children.getElement(i);
 
 	  if ( kid->toLight() && ! (kid->toPointLight() || kid->toSpotLight()) )
 	    kid->render(viewer, rc);
@@ -3707,7 +3710,7 @@ void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
 
       // Do the rest of the children (except the scene-level lights)
       for (i = 0; i<n; ++i) {
-        const VrmlNodePtr & child(this->d_children.getElement(i));
+        const VrmlNodePtr & child = this->d_children.getElement(i);
 	if (! (child->toLight() ||
 	       child->toPlaneSensor() ||
 	       child->toCylinderSensor() ||
@@ -3752,7 +3755,7 @@ void VrmlNodeGroup::activate( double time,
 
   for (i = 0; i<n; ++i)
     {
-      const VrmlNodePtr & kid(d_children.getElement(i));
+      const VrmlNodePtr & kid = d_children.getElement(i);
 
       if ( kid->toTouchSensor() && kid->toTouchSensor()->isEnabled() )
 	{
@@ -3800,7 +3803,7 @@ void VrmlNodeGroup::setChildren(const VrmlMFNode & children) {
     
     for (size_t i = 0; i < children.getLength(); ++i) {
         VrmlNodeProto * p = 0;
-        const VrmlNodePtr & child(children.getElement(i));
+        const VrmlNodePtr & child = children.getElement(i);
         if (child && (child->toChild() ||
 	        ((p = child->toProto()) != 0 && p->getImplNodes().getLength() == 0))) {
 	    child->addToScene(d_scene, d_relative.get());
@@ -3835,7 +3838,7 @@ void VrmlNodeGroup::addChildren(const VrmlMFNode & children) {
     size_t n = children.getLength();
     
     for (size_t i = 0; i < n; ++i) {
-        const VrmlNodePtr & child(children.getElement(i));
+        const VrmlNodePtr & child = children.getElement(i);
         VrmlNodeProto *p = 0;
         
         if (child && (child->toChild() ||
@@ -7811,7 +7814,7 @@ const VrmlBVolume* VrmlNodeShape::getBVolume() const
 {
   //cout << "VrmlNodeShape::getBVolume() {" << endl;
   const VrmlBVolume* r = (VrmlBVolume*)0;
-  const VrmlNodePtr & geom(d_geometry.get());
+  const VrmlNodePtr & geom = d_geometry.get();
   if (geom) {
     r = geom->getBVolume();
   }

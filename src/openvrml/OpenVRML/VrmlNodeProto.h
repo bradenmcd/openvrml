@@ -54,12 +54,12 @@ public:
   virtual VrmlNodeAppearance*	toAppearance() const;
   virtual VrmlNodeAudioClip*	toAudioClip() const;
   virtual VrmlNodeBackground*	toBackground() const;
-  virtual VrmlNodeChild*	toChild() const;
+  virtual const VrmlNodeChild*	toChild() const;
   virtual VrmlNodeColor*	toColor() const;
   virtual VrmlNodeCoordinate*	toCoordinate() const;
   virtual VrmlNodeFog*		toFog() const;
   virtual VrmlNodeFontStyle*	toFontStyle() const;
-  virtual VrmlNodeGeometry*	toGeometry() const;
+  virtual const VrmlNodeGeometry*	toGeometry() const;
   virtual VrmlNodeGroup*	toGroup() const;
   virtual VrmlNodeInline*	toInline() const;
   virtual VrmlNodeLight*	toLight() const;
