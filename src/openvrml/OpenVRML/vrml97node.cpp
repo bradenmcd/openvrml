@@ -11991,8 +11991,8 @@ namespace {
             OPENVRML_PRINT_EXCEPTION_(ex);
             return FT_Err_Out_Of_Memory;
         }
-        c.contours.back().getElement(0)[0] = to->x * c.scale;
-        c.contours.back().getElement(0)[1] = to->y * c.scale;
+        const float vertex[2] = { to->x * c.scale, to->y * c.scale };
+        c.contours.back().setElement(0, vertex);
         return 0;
     }
 
@@ -12297,8 +12297,12 @@ void Text::updateGeometry() throw (std::bad_alloc)
         if (length > 0.0) {
             const float currentLength = lineGeometry.xMax - lineGeometry.xMin;
             for (size_t i = 0; i < lineGeometry.coord.getLength(); ++i) {
-                float (&vertex)[2] = lineGeometry.coord.getElement(i);
-                vertex[0] = vertex[0] / currentLength * length;
+                const float (&vertex)[2] = lineGeometry.coord.getElement(i);
+                const float scaledVertex[2] = {
+                    vertex[0] / currentLength * length,
+                    vertex[1]
+                };
+                lineGeometry.coord.setElement(i, scaledVertex);
             }
         }
         
@@ -12362,8 +12366,13 @@ void Text::updateGeometry() throw (std::bad_alloc)
         const float currentMaxExtent = geometryXMax - geometryXMin;
         if (currentMaxExtent > maxExtent) {
             for (size_t i = 0; i < newGeometry.coord.getLength(); ++i) {
-                float (&vertex)[3] = newGeometry.coord.getElement(i);
-                vertex[0] = vertex[0] / currentMaxExtent * maxExtent;
+                const float (&vertex)[3] = newGeometry.coord.getElement(i);
+                const float scaledVertex[3] = {
+                    vertex[0] / currentMaxExtent * maxExtent,
+                    vertex[1],
+                    vertex[2]
+                };
+                newGeometry.coord.setElement(i, scaledVertex);
             }
         }
     }
@@ -12395,9 +12404,11 @@ void Text::updateGeometry() throw (std::bad_alloc)
         }
     }
     for (size_t i = 0; i < newGeometry.coord.getLength(); ++i) {
-        float (&vertex)[3] = newGeometry.coord.getElement(i);
-        vertex[0] += xOffset;
-        vertex[1] += yOffset;
+        const float (&vertex)[3] = newGeometry.coord.getElement(i);
+        const float adjustedVertex[3] = { vertex[0] += xOffset,
+                                          vertex[1] += yOffset,
+                                          vertex[2] };
+        newGeometry.coord.setElement(i, adjustedVertex);
     }
     
     //

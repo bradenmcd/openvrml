@@ -3,6 +3,8 @@
         * doc/doxygen-footer, doc/doxygen-header, doc/openvrml.css:
           Documentation enhancements.
 
+        * src/openvrml/OpenVRML/vrml97node.cpp:  const fixes.
+
 2002-12-14  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
