@@ -17,6 +17,8 @@
 # include "ViewerGlut.h"
 
 static void worldChangedCB(int);
+static void buildViewpointMenu();
+
 VrmlScene *vrmlScene = 0;
 ViewerGlut   *viewer = 0;
 
@@ -118,6 +120,62 @@ static void worldChangedCB(int reason)
 	  const char *title = urlDoc->urlBase();
 	  if (title && *title) glutSetWindowTitle(title);
 	}
+      buildViewpointMenu();
       break;
     }
+}
+
+
+static void lookatViewpointMenu(int item) {
+  if ( item == 0 )
+    viewer->resetUserNavigation(); // ...
+  else
+    vrmlScene->setViewpoint(item-1);
+}
+
+
+static void buildViewpointMenu() {
+  static bool builtMenu  = false;
+  static int  topmenu     = 0;
+  static int  vpmenu     = 0;
+  int numberOfViewpoints = 0;
+  
+  if (builtMenu == true)
+    {
+      glutDestroyMenu(vpmenu);
+    }
+  else
+    {
+      topmenu = glutCreateMenu(0);
+    }
+
+  vpmenu = glutCreateMenu(lookatViewpointMenu);
+  //glutAddMenuEntry( "Reset", 0 );
+  
+  numberOfViewpoints = vrmlScene->nViewpoints();
+   
+  if (numberOfViewpoints > 0 )
+    {
+      for (int i = 0; i < numberOfViewpoints; i++) {
+	const char *name, *description;
+	vrmlScene->getViewpoint(i, &name, &description);
+	if ( name && *name )
+	  glutAddMenuEntry(name, i+1);
+	else if ( description && *description )
+	  glutAddMenuEntry(description, i+1);
+	else
+	  {
+	    char buf[25];
+	    sprintf(buf,"Viewpoint %d", i+1);
+	    glutAddMenuEntry(buf, i+1);
+	  }
+      }
+    }
+
+  //glutAttachMenuName(GLUT_RIGHT_BUTTON, "Viewpoints");
+  glutSetMenu(topmenu);
+  glutAddSubMenu("Viewpoints", vpmenu);
+  glutAttachMenu(GLUT_RIGHT_BUTTON);
+
+  builtMenu = true;
 }

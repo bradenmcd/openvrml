@@ -1,3 +1,8 @@
+2000-03-10  Chris Morley  <cmorley@vermontel.net>
+
+	* Add a Viewpoints menu on the right mouse button.
+	Navigation is so broken right now.
+
 2000-03-09  Chris Morley  <cmorley@vermontel.net>
 
 	* Ensure that lighting is turned back on when rendering Appearance nodes,
