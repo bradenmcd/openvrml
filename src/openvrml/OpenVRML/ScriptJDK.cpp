@@ -2439,7 +2439,9 @@ JNIEXPORT jstring JNICALL Java_vrml_field_ConstMFString_get1Value
 JNIEXPORT void JNICALL Java_vrml_field_MFString_clear
   (JNIEnv *env, jobject obj)
 {
-  cout << "TODO: Implement Java_vrml_field_MFString_clear" << endl;
+  jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+  VrmlMFString* pMFString = (VrmlMFString*) env->GetIntField(obj, fid);
+  pMFString->setLength(0);
 }
 
 JNIEXPORT void JNICALL Java_vrml_field_MFString_delete
@@ -3352,9 +3354,11 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getExposedField
 JNIEXPORT jstring JNICALL Java_vrml_Event_getName
   (JNIEnv *env, jobject obj)
 {
-  cout << "TODO: Implement Java_vrml_Event_getName" << endl;
-
-  return env->NewStringUTF("isActive");
+  jfieldID fid;
+  VrmlEvent* pEvent;
+  fid = getFid(env, obj, "EventPtr", "I");
+  pEvent = (VrmlEvent*) env->GetIntField(obj, fid);
+  return env->NewStringUTF(pEvent->name());
 }
 
 JNIEXPORT jdouble JNICALL Java_vrml_Event_getTimeStamp
