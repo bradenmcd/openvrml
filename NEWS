@@ -1,3 +1,17 @@
+Changes new in version 0.10.2, 18 December, 2004
+================================================
+
+- This is an internal release for the purpose of creating a usable
+  baseline for integrating the Orbisnap changes.
+
+- Build scripts were updated to be usable by modern autotools.
+
+- Various fixes to compile with modern gcc.
+
+- SpiderMonkey was removed from the distribution.  This release depends
+  on Mozilla for JavaScript support.
+
+
 Changes new in version 0.10.1, 31 January, 2001
 ===============================================
 

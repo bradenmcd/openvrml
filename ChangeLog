@@ -1,5 +1,13 @@
 2004-12-18  Braden McDaniel  <braden@endoframe.com>
 
+	Updated version, NEWS for 0.10.2 (internal) release.
+
+	* NEWS
+	* README
+	* configure.in
+
+2004-12-18  Braden McDaniel  <braden@endoframe.com>
+
 	SpiderMonkey is no longer distributed with OpenVRML; removed
 	references to MPL-1.1.txt.
 
