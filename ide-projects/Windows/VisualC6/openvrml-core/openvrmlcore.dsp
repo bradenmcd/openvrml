@@ -127,10 +127,6 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\fieldvalueptr.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\src\openvrml\OpenVRML\font.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\Image.h
 # End Source File
 # Begin Source File
@@ -247,11 +243,6 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\fieldvalueptr.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\src\openvrml\OpenVRML\font.cpp
-# ADD CPP /I "..\\" /D "HAVE_CONFIG_H"
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\Image.cpp
 
 !IF  "$(CFG)" == "openvrmlcore - Win32 Release"
@@ -314,11 +305,11 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\ScriptJDK.cpp
 
 !IF  "$(CFG)" == "openvrmlcore - Win32 Release"
 
-# ADD CPP /I "..\\" /D "HAVE_CONFIG_H"
+# ADD CPP /I "..\\" /I "..\..\..\..\java" /D "HAVE_CONFIG_H"
 
 !ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
 
-# ADD CPP /w /W0 /I "..\\" /D "HAVE_CONFIG_H"
+# ADD CPP /w /W0 /I "..\\" /I "..\..\..\..\java" /D "HAVE_CONFIG_H"
 
 !ENDIF 
 

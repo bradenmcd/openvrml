@@ -128,10 +128,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\fieldvalueptr.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\openvrml\OpenVRML\font.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\src\openvrml\OpenVRML\Image.h
 # End Source File
 # Begin Source File
@@ -283,11 +279,11 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\doc2.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# ADD CPP /w /W0 /D "__STDC__" /D "XP_PC"
+# ADD CPP /w /W0 /D "__STDC__" /D "XP_PC" /D "HAVE_CONFIG_H"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0 /I ".\\" /D "DLL_EXPORT" /D "__STDC__" /D "XP_PC"
+# ADD CPP /w /W0 /I ".\\" /D "DLL_EXPORT" /D "__STDC__" /D "XP_PC" /D "HAVE_CONFIG_H"
 
 !ENDIF 
 
@@ -335,21 +331,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\fieldvalueptr.cpp
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
 # ADD CPP /w /W0 /D "DLL_EXPORT"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\openvrml\OpenVRML\font.cpp
-
-!IF  "$(CFG)" == "openvrml - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-
-!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
-
-# ADD CPP /w /W0 /I ".\\" /D "HAVE_CONFIG_H"
 
 !ENDIF 
 
@@ -513,12 +494,12 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\ScriptJDK.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# ADD CPP /w /W0 /D "HAVE_CONFIG_H"
+# ADD CPP /w /W0 /I "..\..\..\java" /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0 /I ".\\" /D "DLL_EXPORT" /D "HAVE_CONFIG_H"
+# ADD CPP /w /W0 /I ".\\" /I "..\..\..\java" /D "DLL_EXPORT" /D "HAVE_CONFIG_H"
 # SUBTRACT CPP /YX
 
 !ENDIF 
