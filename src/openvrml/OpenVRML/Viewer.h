@@ -37,7 +37,7 @@ class VrmlAABox;
  * Map the scene graph to the underlying graphics library.
  *
  */
-OPENVRML_SCOPE class Viewer {
+class OPENVRML_SCOPE Viewer {
 
 protected:
   // Explicitly instantiate a subclass object

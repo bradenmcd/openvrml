@@ -98,7 +98,7 @@ class VrmlNode;
 ostream& operator<<(ostream& os, const VrmlNode& f);
 
 
-OPENVRML_SCOPE class VrmlNode {
+class OPENVRML_SCOPE VrmlNode {
   friend ostream& operator<<(ostream& os, const VrmlNode& f);
 
 public:

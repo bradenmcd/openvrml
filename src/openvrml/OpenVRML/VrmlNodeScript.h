@@ -33,7 +33,7 @@ class Doc;
 class ScriptObject;
 class VrmlScene;
 
-OPENVRML_SCOPE class VrmlNodeScript : public VrmlNodeChild {
+class OPENVRML_SCOPE VrmlNodeScript : public VrmlNodeChild {
 
 public:
 

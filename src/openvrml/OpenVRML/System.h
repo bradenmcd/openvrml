@@ -27,7 +27,7 @@
 #   include <stddef.h>
 #   include "common.h"
 
-OPENVRML_SCOPE class System {
+class OPENVRML_SCOPE System {
 
 public:
 
@@ -56,6 +56,6 @@ public:
 
 };
 
-extern System *theSystem;
+extern OPENVRML_SCOPE System *theSystem;
 
 #endif // SYSTEM_H

@@ -31,7 +31,7 @@ class VrmlMFString;
 /**
  * The Image class is a format-independent API for loading textures.
  */
-OPENVRML_SCOPE class Image {
+class OPENVRML_SCOPE Image {
 
 public:
 

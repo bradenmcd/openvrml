@@ -33,7 +33,7 @@ class VrmlSFVec3f;
  * chose the bounding sphere for their patients who chewed bounding
  * volumes.
  */
-OPENVRML_SCOPE class VrmlBSphere : public VrmlBVolume {
+class OPENVRML_SCOPE VrmlBSphere : public VrmlBVolume {
 
  protected:
 

@@ -31,7 +31,7 @@
 class VrmlNode;
 class VrmlNodeType;
 
-OPENVRML_SCOPE class VrmlNamespace {
+class OPENVRML_SCOPE VrmlNamespace {
 public:
 
   VrmlNamespace( VrmlNamespace *parent = 0 );

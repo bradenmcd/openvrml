@@ -24,7 +24,7 @@
 # include <iostream.h>
 # include "common.h"
 
-OPENVRML_SCOPE class Doc2 {
+class OPENVRML_SCOPE Doc2 {
     public:
         
         Doc2(const char *url = 0, Doc2 const *relative = 0);

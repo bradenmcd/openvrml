@@ -24,7 +24,7 @@
 #   include "common.h"
 #   include "VrmlNodePtr.h"
 
-OPENVRML_SCOPE class Route {
+class OPENVRML_SCOPE Route {
 public:
   Route(const char * fromEventOut, const VrmlNodePtr & toNode,
         const char * toEventIn);

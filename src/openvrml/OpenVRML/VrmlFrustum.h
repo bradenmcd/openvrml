@@ -35,7 +35,7 @@
  * @see VrmlNode::render
  * @see Viewer
  */
-OPENVRML_SCOPE class VrmlFrustum {
+class OPENVRML_SCOPE VrmlFrustum {
 
  public:
 

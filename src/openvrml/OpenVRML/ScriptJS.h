@@ -29,7 +29,7 @@ class VrmlScene;
 
 typedef long jsval;
 
-OPENVRML_SCOPE class ScriptJS: public ScriptObject {
+class OPENVRML_SCOPE ScriptJS: public ScriptObject {
     static struct JSRuntime * rt;
     static size_t nInstances;
 

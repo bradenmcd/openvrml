@@ -37,7 +37,7 @@ OPENVRML_SCOPE enum AudioEncoding
 };
 
 
-OPENVRML_SCOPE class Audio
+class OPENVRML_SCOPE  Audio
 {
   public:
     Audio (const char *url = 0, Doc *relative = 0);

@@ -25,7 +25,7 @@
 #include "field.h"
 #include "VrmlField.h"
 
-OPENVRML_SCOPE class VrmlEvent {
+class OPENVRML_SCOPE VrmlEvent {
 
 public:
 

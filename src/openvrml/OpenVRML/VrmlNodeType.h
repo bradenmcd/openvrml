@@ -30,7 +30,7 @@ class Doc2;
 class VrmlNamespace;
 class VrmlScene;
 
-OPENVRML_SCOPE class VrmlNodeType {
+class OPENVRML_SCOPE VrmlNodeType {
 public:
     struct NodeFieldRec {
         VrmlNodePtr node;

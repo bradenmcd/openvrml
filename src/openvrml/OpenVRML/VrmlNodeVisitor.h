@@ -79,7 +79,7 @@ class VrmlNodeViewpoint;
 class VrmlNodeVisibilitySensor;
 class VrmlNodeWorldInfo;
 
-OPENVRML_SCOPE class VrmlNodeVisitor {
+class OPENVRML_SCOPE VrmlNodeVisitor {
 public:
     virtual ~VrmlNodeVisitor() = 0;
     

@@ -31,7 +31,7 @@
 class Doc2;
 typedef void * gzFile;
 
-OPENVRML_SCOPE class Doc {
+class OPENVRML_SCOPE  Doc {
 
 public:
 

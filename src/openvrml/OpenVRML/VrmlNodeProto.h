@@ -31,7 +31,7 @@
 #include "Viewer.h"
 #include "field.h"
 
-OPENVRML_SCOPE class VrmlNodeProto : public VrmlNode {
+class OPENVRML_SCOPE VrmlNodeProto : public VrmlNode {
 
 public:
 

@@ -28,7 +28,7 @@ class VrmlField;
 class VrmlMFString;
 class VrmlNodeScript;
 
-OPENVRML_SCOPE class ScriptObject {
+class OPENVRML_SCOPE ScriptObject {
 public:
     static ScriptObject * create(VrmlNodeScript & scriptNode,
                                  const VrmlMFString & url);

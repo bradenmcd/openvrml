@@ -31,7 +31,7 @@
  * placeholder.
  *
  */
-OPENVRML_SCOPE class VrmlAABox : public VrmlBVolume {
+class OPENVRML_SCOPE VrmlAABox : public VrmlBVolume {
 
  public:
 

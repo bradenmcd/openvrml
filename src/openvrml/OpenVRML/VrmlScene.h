@@ -40,7 +40,7 @@ class Viewer;
 class VrmlNamespace;
 class VrmlNodeType;
 
-OPENVRML_SCOPE class VrmlScene {
+class OPENVRML_SCOPE VrmlScene {
 
 public:
 
@@ -299,7 +299,7 @@ protected:
   BindStack d_viewpointStack;		// Viewpoint stack
 
   // An event has a value and a destination, and is associated with a time
-  struct Event{
+   struct OPENVRML_SCOPE  Event{
     double timeStamp;
     VrmlField *value;
     VrmlNodePtr toNode;

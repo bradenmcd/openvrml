@@ -58,7 +58,7 @@
  * @see VrmlNode::render
  * @see VrmlScene::render
  */
-OPENVRML_SCOPE class VrmlRenderContext {
+class OPENVRML_SCOPE VrmlRenderContext {
 
  public:
 

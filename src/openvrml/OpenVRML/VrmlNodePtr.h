@@ -22,6 +22,7 @@
 #   define OPENVRML_NODEPTR_H
 
 #   include "common.h"
+# include <assert.h>
 
 class VrmlNode;
 
@@ -40,7 +41,7 @@ typedef hash_map<VrmlNode *, size_t> CountMap;
 typedef std::map<VrmlNode *, size_t> CountMap;
 #   endif
 
-OPENVRML_SCOPE class VrmlNodePtr {
+class OPENVRML_SCOPE VrmlNodePtr {
 
     friend class VrmlNodeScript;
 
