@@ -1,322 +1,523 @@
-#
-# The contents of this file are subject to the Netscape Public
-# License Version 1.1 (the "License"); you may not use this file
-# except in compliance with the License. You may obtain a copy of
-# the License at http://www.mozilla.org/NPL/
-#
-# Software distributed under the License is distributed on an "AS
-# IS" basis, WITHOUT WARRANTY OF ANY KIND, either express oqr
-# implied. See the License for the specific language governing
-# rights and limitations under the License.
-#
-# The Original Code is Mozilla Communicator client code, released
-# March 31, 1998.
-#
-# The Initial Developer of the Original Code is Netscape
-# Communications Corporation.  Portions created by Netscape are
-# Copyright (C) 1998 Netscape Communications Corporation. All
-# Rights Reserved.
-#
-# Contributor(s): 
-#
-# Alternatively, the contents of this file may be used under the
-# terms of the GNU Public License (the "GPL"), in which case the
-# provisions of the GPL are applicable instead of those above.
-# If you wish to allow use of your version of this file only
-# under the terms of the GPL and not to allow others to use your
-# version of this file under the NPL, indicate your decision by
-# deleting the provisions above and replace them with the notice
-# and other provisions required by the GPL.  If you do not delete
-# the provisions above, a recipient may use your version of this
-# file under either the NPL or the GPL.
-#
+# Makefile.in generated automatically by automake 1.4 from Makefile.am
 
-DEPTH		= ../..
-topsrcdir	= @top_srcdir@
-srcdir		= @srcdir@
-VPATH		= @srcdir@
+# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
 
-include $(DEPTH)/config/autoconf.mk
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
 
-MODULE		= js
-LIBRARY_NAME	= mozjs
 
-DIRS		= $(OJIDIR) fdlibm xpconnect
+SHELL = @SHELL@
 
-CSRCS		= \
-		jsapi.c \
-		jsarena.c \
-		jsarray.c \
-		jsatom.c \
-		jsbool.c \
-		jscntxt.c \
-		jsdate.c \
-		jsdbgapi.c \
-		jsdtoa.c \
-		jsemit.c \
-		jsexn.c \
-		jsfun.c \
-		jsgc.c \
-		jshash.c \
-		jsinterp.c \
-		jslock.c \
-		jslog2.c \
-		jslong.c \
-		jsmath.c \
-		jsnum.c \
-		jsobj.c \
-		jsopcode.c \
-		jsparse.c \
-		jsprf.c \
-		jsregexp.c \
-		jsscan.c \
-		jsscope.c \
-		jsscript.c \
-		jsstr.c \
-		jsutil.c \
-		jsxdrapi.c \
-		prmjtime.c \
-		$(NULL)
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
 
-EXPORTS		= \
-		js.msg \
-		jsapi.h \
-		jsarray.h \
-		jsarena.h \
-		jsatom.h \
-		jsbit.h \
-		jsbool.h \
-		jsclist.h \
-		jscntxt.h \
-		jscompat.h \
-		jsconfig.h \
-		jsdate.h \
-		jsdbgapi.h \
-		jsemit.h \
-		jsfun.h \
-		jsgc.h \
-		jshash.h \
-		jsinterp.h \
-		jslock.h \
-		jslong.h \
-		jsmath.h \
-		jsnum.h \
-		jsobj.h \
-		jsopcode.tbl \
-		jsopcode.h \
-		jsosdep.h \
-		jsotypes.h \
-		jsparse.h \
-		jsprf.h \
-		jsprvtd.h \
-		jspubtd.h \
-		jsregexp.h \
-		jsscan.h \
-		jsscope.h \
-		jsscript.h \
-		jsstr.h \
-		jstypes.h \
-		jsutil.h \
-		jsxdrapi.h \
-		jsstddef.h \
-		$(NULL)
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
 
-EXPORTS		:= $(addprefix $(srcdir)/, $(EXPORTS))
+DESTDIR =
 
-FDLIBM_LIBRARY	= fdlibm/libfdm.a
-JSMATH_PRELINK	= jsmathtemp.o
-JS_SAFE_ARENA	= 1
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
 
-ifdef MOZ_OJI
-OJIDIR		= liveconnect
-endif
+top_builddir = ..
 
-DASH_R		= -r
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
 
-include $(topsrcdir)/config/config.mk
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
 
-ifeq ($(OS_ARCH),OS2)
-ifndef XCFLAGS
-OS2_IMPLIB	= 1
-LIBRARY		= js$(MOZ_BITS)$(VERSION_NUMBER).$(LIB_SUFFIX)
-DEF_FILE	= jsos2$(VERSION_NUMBER).def
-EXTRA_LIBS	= $(NSPR_LIBS) $(LIBNSJAVA)
-else
-EXTRA_LIBS	= $(NSPR_LIBS) $(LIBNSJAVA) libjs.lib
-endif
-OS_CFLAGS	+= -tm-
-endif
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+AS = @AS@
+CC = @CC@
+CPP = @CPP@
+DLLTOOL = @DLLTOOL@
+JS_LIBRARY_VERSION = @JS_LIBRARY_VERSION@
+LIBTOOL = @LIBTOOL@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+NSPR_CFLAGS = @NSPR_CFLAGS@
+NSPR_LIBS = @NSPR_LIBS@
+OBJDUMP = @OBJDUMP@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+VERSION = @VERSION@
 
-EXTRA_DSO_LDOPTS += $(MOZ_COMPONENT_NSPR_LIBS)
+SUBDIRS = fdlibm
 
-# When using gcc the assembly is inlined in the C-file (see jslock.c)
-ifdef NS_USE_NATIVE
-ASFILES		= $(notdir $(wildcard $(srcdir)/*_$(OS_ARCH).s))
-endif
+UNIX_DEFS = -DXP_UNIX
+FREEBSD_DEFS = -DFREEBSD
+AIX_DEFS = -DAIX -DAIXV3
+AIX_4_3_DEFS = $(AIX_DEFS) -DAIX4_3
 
-ifndef BUILD_OPT
-MOCHAFILE	= 1
-endif
+AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(UNIX_DEFS)
 
-ifndef NSBUILDROOT
-JSJAVA_STUBHEADERS = \
-		-I$(topsrcdir)/sun-java/include/_gen \
-		-I$(topsrcdir)/sun-java/netscape/javascript/_jri \
-		-I$(topsrcdir)/sun-java/netscape/security/_jri
-else
-JSJAVA_STUBHEADERS = -I$(JRI_GEN_DIR) -I$(JDK_GEN_DIR)
-endif
+AM_CFLAGS = -Wall -Wno-format
+INCLUDES = -I.
+libvrml97js_la_LDFLAGS = -version-info @VRML97JS_LIBRARY_VERSION@
 
-JSJAVA_CFLAGS	= \
-		-I$(topsrcdir)/sun-java/md-include \
-		-I$(topsrcdir)/sun-java/include \
-		$(JSJAVA_STUBHEADERS)
+noinst_PROGRAMS = jscpucfg
+jscpucfg_SOURCES = jscpucfg.c
 
-include $(topsrcdir)/config/rules.mk
+lib_LTLIBRARIES = libvrml97js.la
+libvrml97js_la_SOURCES =  	jsapi.c	 	jsarena.c 	jsarray.c 	jsatom.c 	jsbool.c 	jscntxt.c 	jsdate.c 	jsdbgapi.c 	jsdtoa.c 	jsemit.c 	jsexn.c 	jsfun.c 	jsgc.c 	jshash.c 	jsinterp.c 	jslock.c 	jslog2.c 	jslong.c 	jsnum.c 	jsobj.c 	jsopcode.c 	jsparse.c 	jsprf.c 	jsregexp.c 	jsscan.c 	jsscope.c 	jsscript.c 	jsstr.c 	jsutil.c 	jsxdrapi.c 	prmjtime.c
 
-DEFINES		+= -DEXPORT_JS_API
 
-INCLUDES	+= -I$(srcdir)
+noinst_HEADERS =  	jsarena.h 	jsarray.h 	jsatom.h 	jsbool.h 	jsbit.h 	jsclist.h 	jsconfig.h 	jscntxt.h 	jscpucfg.h 	jsdate.h 	jsdbgapi.h 	jsdtoa.h 	jsemit.h 	jsexn.h 	jsfun.h 	jsgc.h 	jshash.h 	jsinterp.h 	jslibmath.h 	jslock.h 	jsmath.h 	jsnum.h 	jsobj.h 	jsopcode.h 	jsosdep.h 	jsparse.h 	jsprvtd.h         jsprf.h 	jsregexp.h 	jsscan.h 	jsscope.h 	jsscript.h 	jsstddef.h 	jsstr.h         jsutil.h 	jsxdrapi.h 	prmjtime.h 	resource.h 	jsopcode.tbl 	js.msg 	jsshell.msg
 
-GARBAGE		+= $(JSMATH_PRELINK) jscpucfg.o jsautocfg.h jsautocfg.tmp jscpucfg
 
-TARGETS		+= jscpucfg
+jsincludedir = $(includedir)/vrml97js
 
-ifdef JS_SAFE_ARENA
-DEFINES		+= -DJS_USE_SAFE_ARENA
-endif
+jsinclude_HEADERS =  	jsapi.h 	jsautocfg.h 	jscompat.h 	jslong.h 	jsotypes.h 	jsosdep.h 	jspubtd.h 	jstypes.h
 
-ifdef JS_THREADSAFE
-DEFINES		+= -DJS_THREADSAFE
-endif
 
-ifdef JS_NO_THIN_LOCKS
-DEFINES		+= -DJS_USE_ONLY_NSPR_LOCKS
-endif
+BUILT_SOURCES = jsautocfg.h
 
-ifdef JS_VERSION
-DEFINES		+= -DJS_VERSION=$(JS_VERSION)
-endif
+EXTRA_DIST = jsmath.c
 
-ifneq ($(findstring -L,$(NSPR_LIBS)),)
-NSPR_STATIC_PATH = $(subst -L,,$(findstring -L,$(NSPR_LIBS)))
-else
-NSPR_STATIC_PATH = $(DIST)/lib
-endif
+libvrml97js_la_LIBADD = jsmathprelinked.lo
 
-LDFLAGS		= $(pathsubst -l%,$(NSPR_STATIC_PATH)/%.a,$(NSPR_LIBS))
+CLEANFILES = jsmath.o jsmath.lo
+DISTCLEANFILES = jsautocfg.h
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_CLEAN_FILES = 
+LTLIBRARIES =  $(lib_LTLIBRARIES)
 
-ifneq ($(OS_ARCH),BeOS)
-LDFLAGS		+= -lm
-endif
 
-ifeq ($(OS_ARCH),FreeBSD)
-LDFLAGS		+= -pthread
-endif
-ifeq ($(OS_ARCH),IRIX)
-ifneq ($(basename $(OS_RELEASE)),5)
-LDFLAGS		+= -n32
-DASH_R		+= -n32
-endif
-endif
-ifeq ($(OS_ARCH),Linux)
-LDFLAGS		+= -ldl
-endif
-ifeq ($(OS_ARCH),OSF1)
-LDFLAGS		+= -lc_r
-endif
-ifeq ($(OS_ARCH),SunOS)
-ifeq ($(CPU_ARCH),sparc)
+DEFS = @DEFS@ -I. -I$(srcdir) 
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+libvrml97js_la_DEPENDENCIES =  jsmathprelinked.lo
+libvrml97js_la_OBJECTS =  jsapi.lo jsarena.lo jsarray.lo jsatom.lo \
+jsbool.lo jscntxt.lo jsdate.lo jsdbgapi.lo jsdtoa.lo jsemit.lo jsexn.lo \
+jsfun.lo jsgc.lo jshash.lo jsinterp.lo jslock.lo jslog2.lo jslong.lo \
+jsnum.lo jsobj.lo jsopcode.lo jsparse.lo jsprf.lo jsregexp.lo jsscan.lo \
+jsscope.lo jsscript.lo jsstr.lo jsutil.lo jsxdrapi.lo prmjtime.lo
+PROGRAMS =  $(noinst_PROGRAMS)
 
-ifndef JS_NO_ULTRA
-ULTRA_OPTIONS	:= -xarch=v8plus,-DULTRA_SPARC
-ULTRA_OPTIONSCC	:= -DULTRA_SPARC
-else
-ULTRA_OPTIONS	:= -xarch=v8
-ULTRA_OPTIONSCC	:=
-endif
+jscpucfg_OBJECTS =  jscpucfg.o
+jscpucfg_LDADD = $(LDADD)
+jscpucfg_DEPENDENCIES = 
+jscpucfg_LDFLAGS = 
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(jsinclude_HEADERS) $(noinst_HEADERS)
 
-ifeq ($(shell uname -m),sun4u)
-ASFLAGS		+= -Wa,$(ULTRA_OPTIONS),-P,-L,-D_ASM,-D__STDC__=0 $(ULTRA_OPTIONSCC)
-else
-ASFLAGS		+= -Wa,-xarch=v8,-P,-L,-D_ASM,-D__STDC__=0
-endif
+DIST_COMMON =  Makefile.am Makefile.in
 
-endif
-ifeq ($(OS_RELEASE),4.1)
-LDFLAGS		+= -ldl -lnsl
-else
-LDFLAGS		+= -lposix4 -ldl -lnsl -lsocket
-endif
-endif
 
-ifeq ($(OS_ARCH),QNX)
-ifneq ($(OS_TARGET),NTO)
-# Don't use wildcard here, because we only want this resolved at link time.
-OBJS		+= fdlibm/*.o
-endif
-endif
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-# special rule for jsmath.o since we want to incrementally link
-# against fdlibm to pull in only what is needed
-jsmath.o: $(FDLIBM_LIBRARY) $(JSMATH_PRELINK)
-ifeq ($(OS_ARCH),QNX)
-ifneq ($(OS_TARGET),NTO)
-	@cp $(JSMATH_PRELINK) $@
-else
-	$(LD) $(DASH_R) -o $@ $(JSMATH_PRELINK) $(FDLIBM_LIBRARY)
-endif
-else
-	$(LD) $(DASH_R) -o $@ $(JSMATH_PRELINK) $(FDLIBM_LIBRARY)
-endif
+TAR = gtar
+GZIP_ENV = --best
+DEP_FILES =  .deps/jsapi.P .deps/jsarena.P .deps/jsarray.P \
+.deps/jsatom.P .deps/jsbool.P .deps/jscntxt.P .deps/jscpucfg.P \
+.deps/jsdate.P .deps/jsdbgapi.P .deps/jsdtoa.P .deps/jsemit.P \
+.deps/jsexn.P .deps/jsfun.P .deps/jsgc.P .deps/jshash.P \
+.deps/jsinterp.P .deps/jslock.P .deps/jslog2.P .deps/jslong.P \
+.deps/jsnum.P .deps/jsobj.P .deps/jsopcode.P .deps/jsparse.P \
+.deps/jsprf.P .deps/jsregexp.P .deps/jsscan.P .deps/jsscope.P \
+.deps/jsscript.P .deps/jsstr.P .deps/jsutil.P .deps/jsxdrapi.P \
+.deps/prmjtime.P
+SOURCES = $(libvrml97js_la_SOURCES) $(jscpucfg_SOURCES)
+OBJECTS = $(libvrml97js_la_OBJECTS) $(jscpucfg_OBJECTS)
 
-$(JSMATH_PRELINK): jsmath.c
-ifneq (,$(filter OS2 WINNT,$(OS_ARCH)))
-	$(CC) -Fo$@ -c $(CFLAGS) $<
-else
-	$(CC) -o $@ -c $(COMPILE_CFLAGS) $<
-endif
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .lo .o .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/Makefile
 
-# An AIX Optimization bug causes PR_dtoa() & JS_dtoa to produce wrong result.
-# This suppresses optimization for this single compilation unit.
-ifeq ($(OS_ARCH),AIX)
-jsdtoa.o: jsdtoa.c
-	$(CC) -o $@ -c $(filter-out -O, $(COMPILE_CFLAGS)) $<
-endif
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-$(FDLIBM_LIBRARY):
-	@$(CONTINUE_ON_ERROR) \
-	$(MAKE) -C $(@D) $(@F); \
-	$(EXIT_ON_ERROR)
 
-jsopcode.h jsopcode.c: jsopcode.tbl
+mostlyclean-libLTLIBRARIES:
+
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
+
+distclean-libLTLIBRARIES:
+
+maintainer-clean-libLTLIBRARIES:
+
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(libdir)
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p; \
+	  else :; fi; \
+	done
+
+uninstall-libLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
+	done
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+libvrml97js.la: $(libvrml97js_la_OBJECTS) $(libvrml97js_la_DEPENDENCIES)
+	$(LINK) -rpath $(libdir) $(libvrml97js_la_LDFLAGS) $(libvrml97js_la_OBJECTS) $(libvrml97js_la_LIBADD) $(LIBS)
+
+mostlyclean-noinstPROGRAMS:
+
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+
+distclean-noinstPROGRAMS:
+
+maintainer-clean-noinstPROGRAMS:
+
+jscpucfg: $(jscpucfg_OBJECTS) $(jscpucfg_DEPENDENCIES)
+	@rm -f jscpucfg
+	$(LINK) $(jscpucfg_LDFLAGS) $(jscpucfg_OBJECTS) $(jscpucfg_LDADD) $(LIBS)
+
+install-jsincludeHEADERS: $(jsinclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(jsincludedir)
+	@list='$(jsinclude_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d= ; else d="$(srcdir)/"; fi; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(jsincludedir)/$$p"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(jsincludedir)/$$p; \
+	done
+
+uninstall-jsincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	list='$(jsinclude_HEADERS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(jsincludedir)/$$p; \
+	done
+
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+
+@SET_MAKE@
+
+all-recursive install-data-recursive install-exec-recursive \
+installdirs-recursive install-recursive uninstall-recursive  \
+check-recursive installcheck-recursive info-recursive dvi-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
+
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	dot_seen=no; \
+	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
+	  rev="$$subdir $$rev"; \
+	  test "$$subdir" = "." && dot_seen=yes; \
+	done; \
+	test "$$dot_seen" = "no" && rev=". $$rev"; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
+	done
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+   if test "$$subdir" = .; then :; else \
+	    test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
+   fi; \
+	done; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = src
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu src/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+	for subdir in $(SUBDIRS); do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d $(distdir)/$$subdir \
+	    || mkdir $(distdir)/$$subdir \
+	    || exit 1; \
+	    chmod 777 $(distdir)/$$subdir; \
+	    (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir=../$(top_distdir) distdir=../$(distdir)/$$subdir distdir) \
+	      || exit 1; \
+	  fi; \
+	done
+
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+	-rm -rf .deps
+
+maintainer-clean-depend:
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
+info-am:
+info: info-recursive
+dvi-am:
+dvi: dvi-recursive
+check-am: all-am
+check: check-recursive
+installcheck-am:
+installcheck: installcheck-recursive
+install-exec-am: install-libLTLIBRARIES
+install-exec: install-exec-recursive
+
+install-data-am: install-jsincludeHEADERS
+install-data: install-data-recursive
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-recursive
+uninstall-am: uninstall-libLTLIBRARIES uninstall-jsincludeHEADERS
+uninstall: uninstall-recursive
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(HEADERS)
+all-redirect: all-recursive
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs: installdirs-recursive
+installdirs-am:
+	$(mkinstalldirs)  $(DESTDIR)$(libdir) $(DESTDIR)$(jsincludedir)
+
+
+mostlyclean-generic:
+
+clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
+
+maintainer-clean-generic:
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean-am:  mostlyclean-libLTLIBRARIES mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-noinstPROGRAMS \
+		mostlyclean-tags mostlyclean-depend mostlyclean-generic
+
+mostlyclean: mostlyclean-recursive
+
+clean-am:  clean-libLTLIBRARIES clean-compile clean-libtool \
+		clean-noinstPROGRAMS clean-tags clean-depend \
+		clean-generic mostlyclean-am
+
+clean: clean-recursive
+
+distclean-am:  distclean-libLTLIBRARIES distclean-compile \
+		distclean-libtool distclean-noinstPROGRAMS \
+		distclean-tags distclean-depend distclean-generic \
+		clean-am
+	-rm -f libtool
+
+distclean: distclean-recursive
+
+maintainer-clean-am:  maintainer-clean-libLTLIBRARIES \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-noinstPROGRAMS maintainer-clean-tags \
+		maintainer-clean-depend maintainer-clean-generic \
+		distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-recursive
+
+.PHONY: mostlyclean-libLTLIBRARIES distclean-libLTLIBRARIES \
+clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
+uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
+distclean-compile clean-compile maintainer-clean-compile \
+mostlyclean-libtool distclean-libtool clean-libtool \
+maintainer-clean-libtool mostlyclean-noinstPROGRAMS \
+distclean-noinstPROGRAMS clean-noinstPROGRAMS \
+maintainer-clean-noinstPROGRAMS uninstall-jsincludeHEADERS \
+install-jsincludeHEADERS install-data-recursive \
+uninstall-data-recursive install-exec-recursive \
+uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
+all-recursive check-recursive installcheck-recursive info-recursive \
+dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
+maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
+distclean-tags clean-tags maintainer-clean-tags distdir \
+mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info-am info dvi-am dvi check check-am \
+installcheck-am installcheck install-exec-am install-exec \
+install-data-am install-data install-am install uninstall-am uninstall \
+all-redirect all-am all installdirs-am installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
+
+
+@DEBUG_TRUE@  DEBUG_CPPFLAGS = -DDEBUG
+@DEBUG_FALSE@  DEBUG_CPPFLAGS = -DNDEBUG
+
+@FREEBSD_TRUE@  AM_CPPFLAGS = $(AM_CPPFLAGS) $(FREEBSD_DEFS)
+@AIX_TRUE@  AM_CPPFLAGS = $(AM_CPPFLAGS) $(AIX_DEFS)
+@AIX4_3_TRUE@  AM_CPPFLAGS = $(AM_CPPFLAGS) $(AIX_4_3_DEFS)
 
 jsautocfg.h: jscpucfg
-	@rm -f $@ jsautocfg.tmp
-	./jscpucfg > jsautocfg.tmp
-	mv jsautocfg.tmp $@
+	./jscpucfg > jsautocfg.h
 
-# jscpucfg is a strange target
-# Needs to be built with the host compiler but needs to include
-# the mdcpucfg for the target so it needs the appropriate target defines
-ifdef HOST_NSPR_MDCPUCFG
-HOST_CC := $(HOST_CC) -DMDCPUCFG=$(TARGET_NSPR_MDCPUCFG)
-endif
+jsmath.o jsmath.lo: jsmath.c
+	$(LTCOMPILE) -c $<
 
-ifeq ($(OS_ARCH),QNX)
-ifneq ($(OS_TARGET),NTO)
-# QNX's compiler apparently can't build a binary directly from a source file.
-jscpucfg.o: jscpucfg.c
-	$(HOST_CC) $(HOST_CFLAGS) -c $(DEFINES) $(NSPR_CFLAGS) -o $@ $<
+jsmathprelinked.lo: jsmath.lo jsmath.o
+	$(LINK) $(reload_flag) $< ./fdlibm/libfdm.la
 
-jscpucfg: jscpucfg.o
-	$(HOST_CC) $(HOST_CFLAGS) $(DEFINES) -o $@ $<
-endif
-else
-jscpucfg: jscpucfg.c
-	$(HOST_CC) $(HOST_CFLAGS) $(DEFINES) $(NSPR_CFLAGS) -o $@ $<
-endif
-
-export:: jsautocfg.h
-	$(INSTALL) -m 444 $< $(PUBLIC)
-
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

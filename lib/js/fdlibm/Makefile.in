@@ -1,122 +1,398 @@
-#
-# The contents of this file are subject to the Netscape Public
-# License Version 1.1 (the "License"); you may not use this file
-# except in compliance with the License. You may obtain a copy of
-# the License at http://www.mozilla.org/NPL/
-#
-# Software distributed under the License is distributed on an "AS
-# IS" basis, WITHOUT WARRANTY OF ANY KIND, either express oqr
-# implied. See the License for the specific language governing
-# rights and limitations under the License.
-#
-# The Original Code is Mozilla Communicator client code, released
-# March 31, 1998.
-#
-# The Initial Developer of the Original Code is Netscape Communications
-# Corporation.  Portions created by Netscape are
-# Copyright (C) 1998 Netscape Communications Corporation. All
-# Rights Reserved.
-#
-# Contributor(s): 
-#
-# Alternatively, the contents of this file may be used under the
-# terms of the GNU Public License (the "GPL"), in which case the
-# provisions of the GPL are applicable instead of those above.
-# If you wish to allow use of your version of this file only
-# under the terms of the GPL and not to allow others to use your
-# version of this file under the NPL, indicate your decision by
-# deleting the provisions above and replace them with the notice
-# and other provisions required by the GPL.  If you do not delete
-# the provisions above, a recipient may use your version of this
-# file under either the NPL or the GPL.
-#
+# Makefile.in generated automatically by automake 1.4 from Makefile.am
 
-DEPTH		= ../../..
-topsrcdir	= @top_srcdir@
-srcdir		= @srcdir@
-VPATH		= @srcdir@
+# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
 
-include $(DEPTH)/config/autoconf.mk
-
-MODULE		= js
-LIBRARY_NAME	= fdm
-
-CSRCS		= \
-		e_acos.c \
-		e_asin.c \
-		e_atan2.c \
-		e_exp.c \
-		e_fmod.c \
-		e_log.c \
-		e_pow.c \
-		e_rem_pio2.c \
-		s_scalbn.c \
-		e_sqrt.c \
-		k_cos.c \
-		k_sin.c \
-		k_rem_pio2.c \
-		k_tan.c \
-		s_atan.c \
-		s_ceil.c \
-		s_copysign.c \
-		s_cos.c \
-		s_fabs.c \
-		s_finite.c \
-		s_floor.c \
-		s_isnan.c \
-		s_lib_version.c \
-		s_sin.c \
-		s_tan.c \
-		w_acos.c \
-		w_asin.c \
-		w_atan2.c \
-		w_exp.c \
-		w_fmod.c \
-		w_log.c \
-		w_pow.c \
-		w_sqrt.c \
-		$(NULL)
-
-EXPORTS		= fdlibm.h
-
-# we need to force a static lib for the linking that js/src/Makefile.in wants
-# to do, and we don't really need a shared library ever, so:
-override NO_SHARED_LIB=1
-override NO_STATIC_LIB=
-
-include $(topsrcdir)/config/rules.mk
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
 
 #
-# Default IEEE libm
+# There are two options in making libm at fdlibm compile time:
+#       _IEEE_LIBM      --- IEEE libm; smaller, and somewhat faster
+#       _MULTI_LIBM     --- Support multi-standard at runtime by 
+#                           imposing wrapper functions defined in 
+#                           fdlibm.h:
+#                               _IEEE_MODE      -- IEEE
+#                               _XOPEN_MODE     -- X/OPEN
+#                               _POSIX_MODE     -- POSIX/ANSI
+#                               _SVID3_MODE     -- SVID
 #
-CFLAGS		+= -D_IEEE_LIBM -DGCC_OPT_BUG
+# Here is how to set up CFLAGS to create the desired libm at 
+# compile time:
+#
+#       CFLAGS = -D_IEEE_LIBM           ... IEEE libm (recommended)
+#       CFLAGS = -D_SVID3_MODE  ... Multi-standard supported
+#                                           libm with SVID as the 
+#                                           default standard
+#       CFLAGS = -D_XOPEN_MODE  ... Multi-standard supported
+#                                           libm with XOPEN as the 
+#                                           default standard
+#       CFLAGS = -D_POSIX_MODE  ... Multi-standard supported
+#                                           libm with POSIX as the 
+#                                           default standard
+#       CFLAGS =                        ... Multi-standard supported
+#                                           libm with IEEE as the 
+#                                           default standard
+# 
+# NOTE: if scalb's second arguement is an int, then one must
+# define _SCALB_INT in CFLAGS. The default prototype of scalb
+# is double scalb(double, double)
+#
 
-ifeq ($(OS_ARCH),Linux)
-LDFLAGS		+= -ldl
-endif
 
-ifeq ($(OS_ARCH),OSF1)
-LDFLAGS		+= -lc_r
-endif
+SHELL = @SHELL@
 
-ifeq ($(OS_ARCH),SunOS)
-LDFLAGS		+= -lposix4 -ldl -lnsl -lsocket
-ifeq ($(CPU_ARCH),sparc)
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
 
-ifndef JS_NO_ULTRA
-ULTRA_OPTIONS	:= -xarch=v8plus,-DULTRA_SPARC
-ULTRA_OPTIONSCC	:= -DULTRA_SPARC
-else
-ULTRA_OPTIONS	:= -xarch=v8
-ULTRA_OPTIONSCC	:=
-endif
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
 
-ifeq ($(shell uname -m),sun4u)
-ASFLAGS		+= -Wa,$(ULTRA_OPTIONS),-P,-L,-D_ASM,-D__STDC__=0 $(ULTRA_OPTIONSCC)
-else
-ASFLAGS		+= -Wa,-xarch=v8,-P,-L,-D_ASM,-D__STDC__=0
-endif
+DESTDIR =
 
-endif
-endif
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
 
+top_builddir = ../..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+AS = @AS@
+CC = @CC@
+CPP = @CPP@
+DLLTOOL = @DLLTOOL@
+JS_LIBRARY_VERSION = @JS_LIBRARY_VERSION@
+LIBTOOL = @LIBTOOL@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+NSPR_CFLAGS = @NSPR_CFLAGS@
+NSPR_LIBS = @NSPR_LIBS@
+OBJDUMP = @OBJDUMP@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+VERSION = @VERSION@
+@DEBUG_TRUE@DEBUG_CPPFLAGS = -DDEBUG
+@DEBUG_FALSE@DEBUG_CPPFLAGS = -DNDEBUG
+
+AM_CPPFLAGS = $(DEBUG_CPPFLAGS) -D_IEEE_LIBM
+AM_CFLAGS = -Wall -Wno-format
+
+noinst_LTLIBRARIES = libfdm.la
+
+libfdm_la_SOURCES =  	k_standard.c k_rem_pio2.c 	k_cos.c k_sin.c k_tan.c 	e_acos.c e_acosh.c e_asin.c e_atan2.c 	e_atanh.c e_cosh.c e_exp.c e_fmod.c 	e_gamma.c e_gamma_r.c e_hypot.c e_j0.c 	e_j1.c e_jn.c e_lgamma.c e_lgamma_r.c 	e_log.c e_log10.c e_pow.c e_rem_pio2.c e_remainder.c 	e_scalb.c e_sinh.c e_sqrt.c 	w_acos.c w_acosh.c w_asin.c w_atan2.c 	w_atanh.c w_cosh.c w_exp.c w_fmod.c 	w_gamma.c w_gamma_r.c w_hypot.c w_j0.c 	w_j1.c w_jn.c w_lgamma.c w_lgamma_r.c 	w_log.c w_log10.c w_pow.c w_remainder.c 	w_scalb.c w_sinh.c w_sqrt.c 	s_asinh.c s_atan.c s_cbrt.c s_ceil.c s_copysign.c 	s_cos.c s_erf.c s_expm1.c s_fabs.c s_finite.c s_floor.c 	s_frexp.c s_ilogb.c s_isnan.c s_ldexp.c s_lib_version.c 	s_log1p.c s_logb.c s_matherr.c s_modf.c s_nextafter.c 	s_rint.c s_scalbn.c s_signgam.c s_significand.c s_sin.c 	s_tan.c s_tanh.c
+
+
+noinst_HEADERS = fdlibm.h
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_CLEAN_FILES = 
+LTLIBRARIES =  $(noinst_LTLIBRARIES)
+
+
+DEFS = @DEFS@ -I. -I$(srcdir) 
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+libfdm_la_LDFLAGS = 
+libfdm_la_LIBADD = 
+libfdm_la_OBJECTS =  k_standard.lo k_rem_pio2.lo k_cos.lo k_sin.lo \
+k_tan.lo e_acos.lo e_acosh.lo e_asin.lo e_atan2.lo e_atanh.lo e_cosh.lo \
+e_exp.lo e_fmod.lo e_gamma.lo e_gamma_r.lo e_hypot.lo e_j0.lo e_j1.lo \
+e_jn.lo e_lgamma.lo e_lgamma_r.lo e_log.lo e_log10.lo e_pow.lo \
+e_rem_pio2.lo e_remainder.lo e_scalb.lo e_sinh.lo e_sqrt.lo w_acos.lo \
+w_acosh.lo w_asin.lo w_atan2.lo w_atanh.lo w_cosh.lo w_exp.lo w_fmod.lo \
+w_gamma.lo w_gamma_r.lo w_hypot.lo w_j0.lo w_j1.lo w_jn.lo w_lgamma.lo \
+w_lgamma_r.lo w_log.lo w_log10.lo w_pow.lo w_remainder.lo w_scalb.lo \
+w_sinh.lo w_sqrt.lo s_asinh.lo s_atan.lo s_cbrt.lo s_ceil.lo \
+s_copysign.lo s_cos.lo s_erf.lo s_expm1.lo s_fabs.lo s_finite.lo \
+s_floor.lo s_frexp.lo s_ilogb.lo s_isnan.lo s_ldexp.lo s_lib_version.lo \
+s_log1p.lo s_logb.lo s_matherr.lo s_modf.lo s_nextafter.lo s_rint.lo \
+s_scalbn.lo s_signgam.lo s_significand.lo s_sin.lo s_tan.lo s_tanh.lo
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(noinst_HEADERS)
+
+DIST_COMMON =  Makefile.am Makefile.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = gtar
+GZIP_ENV = --best
+DEP_FILES =  .deps/e_acos.P .deps/e_acosh.P .deps/e_asin.P \
+.deps/e_atan2.P .deps/e_atanh.P .deps/e_cosh.P .deps/e_exp.P \
+.deps/e_fmod.P .deps/e_gamma.P .deps/e_gamma_r.P .deps/e_hypot.P \
+.deps/e_j0.P .deps/e_j1.P .deps/e_jn.P .deps/e_lgamma.P \
+.deps/e_lgamma_r.P .deps/e_log.P .deps/e_log10.P .deps/e_pow.P \
+.deps/e_rem_pio2.P .deps/e_remainder.P .deps/e_scalb.P .deps/e_sinh.P \
+.deps/e_sqrt.P .deps/k_cos.P .deps/k_rem_pio2.P .deps/k_sin.P \
+.deps/k_standard.P .deps/k_tan.P .deps/s_asinh.P .deps/s_atan.P \
+.deps/s_cbrt.P .deps/s_ceil.P .deps/s_copysign.P .deps/s_cos.P \
+.deps/s_erf.P .deps/s_expm1.P .deps/s_fabs.P .deps/s_finite.P \
+.deps/s_floor.P .deps/s_frexp.P .deps/s_ilogb.P .deps/s_isnan.P \
+.deps/s_ldexp.P .deps/s_lib_version.P .deps/s_log1p.P .deps/s_logb.P \
+.deps/s_matherr.P .deps/s_modf.P .deps/s_nextafter.P .deps/s_rint.P \
+.deps/s_scalbn.P .deps/s_signgam.P .deps/s_significand.P .deps/s_sin.P \
+.deps/s_tan.P .deps/s_tanh.P .deps/w_acos.P .deps/w_acosh.P \
+.deps/w_asin.P .deps/w_atan2.P .deps/w_atanh.P .deps/w_cosh.P \
+.deps/w_exp.P .deps/w_fmod.P .deps/w_gamma.P .deps/w_gamma_r.P \
+.deps/w_hypot.P .deps/w_j0.P .deps/w_j1.P .deps/w_jn.P .deps/w_lgamma.P \
+.deps/w_lgamma_r.P .deps/w_log.P .deps/w_log10.P .deps/w_pow.P \
+.deps/w_remainder.P .deps/w_scalb.P .deps/w_sinh.P .deps/w_sqrt.P
+SOURCES = $(libfdm_la_SOURCES)
+OBJECTS = $(libfdm_la_OBJECTS)
+
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .lo .o .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/fdlibm/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-noinstLTLIBRARIES:
+
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+
+distclean-noinstLTLIBRARIES:
+
+maintainer-clean-noinstLTLIBRARIES:
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+libfdm.la: $(libfdm_la_OBJECTS) $(libfdm_la_DEPENDENCIES)
+	$(LINK)  $(libfdm_la_LDFLAGS) $(libfdm_la_OBJECTS) $(libfdm_la_LIBADD) $(LIBS)
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = src/fdlibm
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu src/fdlibm/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+	-rm -rf .deps
+
+maintainer-clean-depend:
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
+info-am:
+info: info-am
+dvi-am:
+dvi: dvi-am
+check-am: all-am
+check: check-am
+installcheck-am:
+installcheck: installcheck-am
+install-exec-am:
+install-exec: install-exec-am
+
+install-data-am:
+install-data: install-data-am
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-am
+uninstall-am:
+uninstall: uninstall-am
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-redirect: all-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs:
+
+
+mostlyclean-generic:
+
+clean-generic:
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+mostlyclean-am:  mostlyclean-noinstLTLIBRARIES mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
+		mostlyclean-generic
+
+mostlyclean: mostlyclean-am
+
+clean-am:  clean-noinstLTLIBRARIES clean-compile clean-libtool \
+		clean-tags clean-depend clean-generic mostlyclean-am
+
+clean: clean-am
+
+distclean-am:  distclean-noinstLTLIBRARIES distclean-compile \
+		distclean-libtool distclean-tags distclean-depend \
+		distclean-generic clean-am
+	-rm -f libtool
+
+distclean: distclean-am
+
+maintainer-clean-am:  maintainer-clean-noinstLTLIBRARIES \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-tags maintainer-clean-depend \
+		maintainer-clean-generic distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-am
+
+.PHONY: mostlyclean-noinstLTLIBRARIES distclean-noinstLTLIBRARIES \
+clean-noinstLTLIBRARIES maintainer-clean-noinstLTLIBRARIES \
+mostlyclean-compile distclean-compile clean-compile \
+maintainer-clean-compile mostlyclean-libtool distclean-libtool \
+clean-libtool maintainer-clean-libtool tags mostlyclean-tags \
+distclean-tags clean-tags maintainer-clean-tags distdir \
+mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info-am info dvi-am dvi check check-am \
+installcheck-am installcheck install-exec-am install-exec \
+install-data-am install-data install-am install uninstall-am uninstall \
+all-redirect all-am all installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
+
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:
