@@ -15,6 +15,9 @@
           src/openvrml/OpenVRML/vrml97node.h:  Changed Node::render to
           take a Viewer & instead of a Viewer *.
 
+        * src/openvrml/OpenVRML/browser.cpp:  Added doc-comments for
+          constants pi and friends.
+
 2002-12-14  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,

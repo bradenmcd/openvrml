@@ -340,6 +340,30 @@ namespace OpenVRML {
 namespace OpenVRML {
 
 /**
+ * @var const double pi
+ *
+ * @brief pi
+ */
+
+/**
+ * @var const double pi_2
+ *
+ * @brief pi/2
+ */
+
+/**
+ * @var const double pi_4
+ *
+ * @brief pi/4
+ */
+
+/**
+ * @var const double inv_pi
+ *
+ * @brief 1/pi
+ */
+
+/**
  * @class InvalidVrml
  *
  * @brief Exception thrown when the parser fails due to errors in the VRML
