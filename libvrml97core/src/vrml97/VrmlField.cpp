@@ -914,7 +914,10 @@ double VrmlSFVec3f::dot(const VrmlSFVec3f & vec) const {
 }
 
 double VrmlSFVec3f::length() const {
-    return sqrt(d_x[0] * d_x[0] + d_x[1] * d_x[1] + d_x[2] * d_x[2]);
+    const double len = sqrt((d_x[0] * d_x[0])
+                          + (d_x[1] * d_x[1])
+                          + (d_x[2] * d_x[2]));
+    return FPZERO(len) ? 0.0 : len;
 }
 
 const VrmlSFVec3f VrmlSFVec3f::multiply(float number) const {
