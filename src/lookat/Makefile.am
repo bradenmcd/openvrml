@@ -1,13 +1,4 @@
-#
-# Add any debug flags
-#
-if DEBUG
-else
-  DEBUG_CPPFLAGS = -DNDEBUG
-endif
-
 INCLUDES = -I$(top_srcdir)/src/openvrml -I$(top_srcdir)/src/openvrml-gl
-AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
 AM_CXXFLAGS = $(X_CFLAGS) $(JAVA_CFLAGS)
 
 bin_PROGRAMS = lookat

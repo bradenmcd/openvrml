@@ -3,6 +3,9 @@
         * src/openvrml/OpenVRML/script.cpp: Fixed segfault introduced
           with JS_AddRoot cleanup.
 
+        * Removed --disable-debug option from configure. Add -DNDEBUG to
+          CPPFLAGS instead.
+
 2002-06-05  Braden McDaniel  <braden@endoframe.com>
 
         * Doxygen love for VrmlScene.

@@ -11,16 +11,7 @@ LIBRARY_VERSION = 1:0:0
 #          |           Set to zero if current is incremented
 #          +- Increment if interfaces have been added, removed or changed
 
-#
-# Add any debug flags
-#
-if DEBUG
-else
-  DEBUG_CPPFLAGS = -DNDEBUG
-endif
-
 INCLUDES = -I$(top_srcdir)/src/openvrml
-AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
 AM_CXXFLAGS = $(X_CFLAGS)
 
 lib_LTLIBRARIES = libopenvrml-gl.la

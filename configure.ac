@@ -160,17 +160,6 @@ if test "X$with_doxygen" = "Xyes"; then
 fi
 AM_CONDITIONAL([WITH_DOXYGEN], [test "X$with_doxygen" = "Xyes"])
 
-#
-# Modulate debug mode
-#
-AC_ARG_ENABLE(debug, [  --disable-debug         Turn off debugging],
-              [case "${enableval}" in
-                 yes) debug=true ;;
-                 no)  debug=false ;;
-                 *)   AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
-               esac], [debug=true])
-AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
-
 AC_OUTPUT([Makefile \
 doc/Makefile \
 doc/Doxyfile \

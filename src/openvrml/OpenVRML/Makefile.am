@@ -11,18 +11,9 @@ LIBRARY_VERSION = 1:2:0
 #          |           Set to zero if current is incremented
 #          +- Increment if interfaces have been added, removed or changed
 
-#
-# Add any debug flags
-#
-if DEBUG
-else
-  DEBUG_CPPFLAGS = -DNDEBUG
-endif
-
 INCLUDES = -I$(top_srcdir)/lib -I$(top_builddir)/java
-AM_CPPFLAGS = $(DEBUG_CPPFLAGS) -DOPENVRML_PACKAGE_NAME_=\"$(PACKAGE_NAME)\" \
--DOPENVRML_PACKAGE_VERSION_=\"$(PACKAGE_VERSION)\" \
--DOPENVRML_LIBDIR_=\"$(libdir)\" -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\"
+AM_CPPFLAGS = -DOPENVRML_LIBDIR_=\"$(libdir)\" \
+-DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\"
 AM_CXXFLAGS = $(JNI_CFLAGS) $(JS_CFLAGS)
 
 lib_LTLIBRARIES = libopenvrml.la 

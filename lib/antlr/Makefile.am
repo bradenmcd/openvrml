@@ -1,11 +1,3 @@
-if DEBUG
-DEBUG_CPPFLAGS =
-else
-DEBUG_CPPFLAGS = -DNDEBUG
-endif
-
-AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
-
 noinst_LTLIBRARIES = libantlr.la
 libantlr_la_LDFLAGS = -avoid-version
 
