@@ -29,6 +29,8 @@
           src/openvrml/OpenVRML/vrml97node.h:  Removed unused
           Node::d_flag and related methods.
 
+        * src/openvrml/OpenVRML/node.cpp:  Added doc-comments.
+
 2002-12-14  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,

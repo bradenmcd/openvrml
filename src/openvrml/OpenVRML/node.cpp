@@ -1704,6 +1704,14 @@ std::ostream & Node::print(std::ostream & out, const size_t indent) const {
     return out << " }";
 }
 
+/**
+ * @brief Stream output.
+ *
+ * @param out   output stream.
+ * @param node  a Node.
+ *
+ * @return @p out.
+ */
 std::ostream & operator<<(std::ostream & out, const Node & node) {
     return node.print(out, 0);
 }
