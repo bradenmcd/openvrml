@@ -381,11 +381,11 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\ScriptObject.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# ADD CPP /w /W0 /D "XP_PC"
+# ADD CPP /w /W0
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0 /I ".\\" /D "XP_PC" /D "DLL_EXPORT"
+# ADD CPP /w /W0 /I ".\\" /D "DLL_EXPORT"
 
 !ENDIF 
 
@@ -592,11 +592,11 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlNodeScript.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# ADD CPP /w /W0
+# ADD CPP /w /W0 /D "XP_PC"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0 /I "." /I ".\\" /D "DLL_EXPORT"
+# ADD CPP /w /W0 /I "." /I ".\\" /D "DLL_EXPORT" /D "XP_PC"
 
 !ENDIF 
 

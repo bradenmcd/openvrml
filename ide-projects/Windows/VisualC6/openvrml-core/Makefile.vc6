@@ -327,21 +327,8 @@ $(BINOUTDIR)\Route.obj : $(SOURCE)\Route.cpp $(SOURCE)\Route.h $(SOURCE)\common.
 	                    	$(CPP) $(CFLAGS) $(SOURCE)\Route.cpp
 
 $(BINOUTDIR)\ScriptObject.obj : $(SOURCE)\ScriptObject.cpp $(SOURCE)\ScriptObject.h\
-                            $(SOURCE)\Doc.h $(SOURCE)\doc2.hpp \
-							$(SOURCE)\field.h	$(SOURCE)\common.h \
-							$(SOURCE)\VrmlNode.h $(SOURCE)\vrml97Node.h \
-							$(SOURCE)\VrmlNodeScript.h \
-                            $(SOURCE)\VrmlNamespace.h\
-							$(SOURCE)\VrmlNodeType.h\
-							$(SOURCE)\VrmlNodeScript.h\
-							$(SOURCE)\VrmlScene.h\
-							..\winconfig.h
-							$(CPP) $(CFLAGS)\
-!IF "$(WITH_JAVASCRIPT)" == "YES"
-							/I $(MOZILLALIB_DIR)\
-!ENDIF
-							/I $(ZLIB_DIR) /I ..\ \
-						      /D XP_PC $(SOURCE)\ScriptObject.cpp
+	             		$(SOURCE)\common.h
+					$(CPP) $(CFLAGS) $(SOURCE)\ScriptObject.cpp
 
 
 $(BINOUTDIR)\ScriptJDK.obj : $(SOURCE)\ScriptJDK.cpp $(SOURCE)\ScriptJDK.h\
@@ -482,16 +469,25 @@ $(BINOUTDIR)\VrmlNodePtr.obj: $(SOURCE)\VrmlNodePtr.cpp\
 								$(SOURCE)\common.h
 								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodePtr.cpp
 
-
 $(BINOUTDIR)\VrmlNodeScript.obj: $(SOURCE)\VrmlNodeScript.cpp\
-									$(SOURCE)\ScriptObject.h\
-									$(SOURCE)\VrmlNodeVisitor.h\
-									$(SOURCE)\vrml97node.h\
-									$(SOURCE)\VrmlNodeScript.h\
-									$(SOURCE)\VrmlNodeType.h\
-									$(SOURCE)\VrmlScene.h\
-									$(SOURCE)\common.h
-									$(CPP) $(CFLAGS) $(SOURCE)\VrmlNodeScript.cpp
+					   $(SOURCE)\VrmlNodeScript.h\
+                                 $(SOURCE)\doc2.hpp \
+	                           $(SOURCE)\common.h \
+					   $(SOURCE)\VrmlNode.h \
+					   $(SOURCE)\VrmlNodeScript.h \
+                                 $(SOURCE)\VrmlNamespace.h\
+					   $(SOURCE)\VrmlNodeType.h\
+					   $(SOURCE)\ScriptObject.h\
+					   $(SOURCE)\VrmlScene.h\
+					   ..\winconfig.h
+					   $(CPP) $(CFLAGS)\
+!IF "$(WITH_JAVASCRIPT)" == "YES"
+					   /I $(MOZILLALIB_DIR)\
+!ENDIF
+					    /I $(ZLIB_DIR) /I ..\ \
+					    /D XP_PC $(SOURCE)\VrmlNodeScript.cpp
+
+
 
 $(BINOUTDIR)\VrmlNodeType.obj : $(SOURCE)\VrmlNodeType.cpp\
 								$(SOURCE)\Doc2.hpp\

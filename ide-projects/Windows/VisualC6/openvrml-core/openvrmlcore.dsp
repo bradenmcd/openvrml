@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
-# ADD LINK32 ..\tplib\antlr\debug\libantlr.lib js32.lib  libpng.lib libjpeg.lib zlib.lib wsock32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Debug\openvrmlcore.dll"
+# ADD LINK32 ..\tplib\antlr\debug\libantlr.lib js32.lib libpng.lib libjpeg.lib zlib.lib wsock32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Debug\openvrmlcore.dll"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
@@ -334,11 +334,9 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\ScriptObject.cpp
 
 !IF  "$(CFG)" == "openvrmlcore - Win32 Release"
 
-# ADD CPP /D "XP_PC"
-
 !ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
 
-# ADD CPP /w /W0 /D "XP_PC"
+# ADD CPP /w /W0
 
 !ENDIF 
 
@@ -509,9 +507,11 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\VrmlNodeScript.cpp
 
 !IF  "$(CFG)" == "openvrmlcore - Win32 Release"
 
+# ADD CPP /D "XP_PC"
+
 !ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
 
-# ADD CPP /w /W0 /I "."
+# ADD CPP /w /W0 /I "." /D "XP_PC"
 
 !ENDIF 
 

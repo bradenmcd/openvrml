@@ -403,22 +403,8 @@ $(BINOUTDIR)\Route.obj : $(CORESOURCE)\Route.cpp $(CORESOURCE)\Route.h $(CORESOU
 	                    	$(CPP) $(CFLAGS) $(CORESOURCE)\Route.cpp
 
 $(BINOUTDIR)\ScriptObject.obj : $(CORESOURCE)\ScriptObject.cpp $(CORESOURCE)\ScriptObject.h\
-                            $(CORESOURCE)\Doc.h $(CORESOURCE)\doc2.hpp \
-							$(CORESOURCE)\field.h	$(CORESOURCE)\common.h \
-							$(CORESOURCE)\VrmlNode.h $(CORESOURCE)\vrml97Node.h \
-							$(CORESOURCE)\VrmlNodeScript.h \
-                            $(CORESOURCE)\VrmlNamespace.h\
-							$(CORESOURCE)\VrmlNodeType.h\
-							$(CORESOURCE)\VrmlNodeScript.h\
-							$(CORESOURCE)\VrmlScene.h\
-							.\winconfig.h
-							$(CPP) $(CFLAGS)\
-!IF "$(WITH_JAVASCRIPT)" == "YES"
-							/I $(MOZILLALIB_DIR)\
-!ENDIF
-							/I $(ZLIB_DIR) /I .\ \
-						      /D XP_PC $(CORESOURCE)\ScriptObject.cpp
-
+	             		$(CORESOURCE)\common.h
+					$(CPP) $(CFLAGS) $(CORESOURCE)\ScriptObject.cpp
 
 $(BINOUTDIR)\ScriptJDK.obj : $(CORESOURCE)\ScriptJDK.cpp $(CORESOURCE)\ScriptJDK.h\
 								$(CORESOURCE)\Doc.h\
@@ -560,14 +546,23 @@ $(BINOUTDIR)\VrmlNodePtr.obj: $(CORESOURCE)\VrmlNodePtr.cpp\
 
 
 $(BINOUTDIR)\VrmlNodeScript.obj: $(CORESOURCE)\VrmlNodeScript.cpp\
-									$(CORESOURCE)\ScriptObject.h\
-									$(CORESOURCE)\VrmlNodeVisitor.h\
-									$(CORESOURCE)\vrml97node.h\
-									$(CORESOURCE)\VrmlNodeScript.h\
-									$(CORESOURCE)\VrmlNodeType.h\
-									$(CORESOURCE)\VrmlScene.h\
-									$(CORESOURCE)\common.h
-									$(CPP) $(CFLAGS) $(CORESOURCE)\VrmlNodeScript.cpp
+					   $(CORESOURCE)\VrmlNodeScript.h\
+                                 $(CORESOURCE)\doc2.hpp \
+	                           $(CORESOURCE)\common.h \
+					   $(CORESOURCE)\VrmlNode.h \
+					   $(CORESOURCE)\VrmlNodeScript.h \
+                                 $(CORESOURCE)\VrmlNamespace.h\
+					   $(CORESOURCE)\VrmlNodeType.h\
+					   $(CORESOURCE)\ScriptObject.h\
+					   $(CORESOURCE)\VrmlScene.h\
+					   .\winconfig.h
+					   $(CPP) $(CFLAGS)\
+!IF "$(WITH_JAVASCRIPT)" == "YES"
+					   /I $(MOZILLALIB_DIR)\
+!ENDIF
+					    /I $(ZLIB_DIR) /I .\ \
+					    /D XP_PC $(CORESOURCE)\VrmlNodeScript.cpp
+
 
 $(BINOUTDIR)\VrmlNodeType.obj : $(CORESOURCE)\VrmlNodeType.cpp\
 								$(CORESOURCE)\Doc2.hpp\
