@@ -1,0 +1,19 @@
+Installation using MSVC++5
+
+MSVC++5 Projects (*.dsp) and workspace files (*.dsw) are included for libvrml97core, libvrml97gl.
+Workspace file for libvrml97core is kept in libvrml97\libvrml97core\win32 and for
+libvrml97gl is kept in libvrml97\libvrml97gl\win32.
+
+For building libvrml97core and libvrml97gl library, you need to set include directories
+GLUT, PNG, Zlib and JPEG library by Tools->Options->Directories in MSVC++5.
+
+For building libvrml97core you have to perform Custom Build Step for lexer.lpp and parser.ypp
+by Project->Settings->libvrml97core->Source File in MSVC++5. Replace c:\bison with the location
+of "bison" (bison is yacc for windows) directory. Replace c:\flex with the location of "flex"
+(flex is lex for windows) directory. Otherwise you edit the file libvrml97core.dsp in 
+libvrml97\libvrml97core\win32 and do the same. 
+
+For building javascript dll library (javascript32.lib and javascript32.dll),workspace file 
+javascript.dsw is given in libvrml97\libvrml97core\win32\javascript directory.
+
+
