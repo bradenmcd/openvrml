@@ -4,6 +4,10 @@
           src/openvrml/OpenVRML/vrml97node.h:  Bound node stacks should
           not have owning pointers.
 
+        * src/openvrml/OpenVRML/browser.cpp:  Fixed relative URI
+          resolution bug where '?' and '#' separator characters were
+          omitted.
+
 2003-02-07  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/System.cpp,

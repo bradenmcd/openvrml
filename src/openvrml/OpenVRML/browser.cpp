@@ -77,12 +77,12 @@ namespace OpenVRML {
         class NodeFieldCloneVisitor : public NodeVisitor {
             const ScopePtr & toScope;
             std::stack<NodePtr> rootNodeStack;
-        
+
         public:
             explicit NodeFieldCloneVisitor(const ScopePtr & toScope)
                 throw (std::bad_alloc);
             virtual ~NodeFieldCloneVisitor() throw ();
-            
+
             const SFNode clone(const SFNode & sfnode);
             const MFNode clone(const MFNode & mfnode);
 
@@ -93,7 +93,7 @@ namespace OpenVRML {
             NodeFieldCloneVisitor(const NodeFieldCloneVisitor &);
             NodeFieldCloneVisitor & operator=(const NodeFieldCloneVisitor &);
         };
-        
+
         class ProtoImplCloneVisitor : public NodeVisitor {
             std::stack<NodePtr> rootNodeStack;
 
@@ -253,7 +253,7 @@ namespace OpenVRML {
             virtual const NodeInterfaceSet & getInterfaces() const throw ();
             virtual const NodePtr createNode(const ScopePtr & scope) const
                 throw (std::bad_alloc);
-            
+
             void addInterface(const NodeInterface & interface)
                 throw (std::invalid_argument, std::bad_alloc);
         };
@@ -292,7 +292,7 @@ namespace OpenVRML {
                                              const NodeInterfaceSet &)
             throw (UnsupportedInterface, std::bad_alloc);
     };
-    
+
     class Vrml97RootScope : public Scope {
     public:
         Vrml97RootScope(const Browser & browser,
@@ -696,12 +696,12 @@ void Browser::replaceWorld(const MFNode & nodes) {}
 
 namespace {
     typedef std::map<std::string, NodeClassPtr> NodeClassMap;
-    
+
     struct InitNodeClass : std::unary_function<void, NodeClassMap::value_type> {
         explicit InitNodeClass(const double time):
             time(time)
         {}
-        
+
         void operator()(const NodeClassMap::value_type & value) const
         {
             assert(value.second);
@@ -744,13 +744,13 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     assert(this->d_navigationInfos.empty());
     assert(this->d_viewpoints.empty());
     this->nodeClassMap.clear();
-    
+
     //
     // Create the new Scene.
     //
     this->initNodeClassMap();
     this->scene = new Scene(*this, uri);
-    
+
     this->scene->initialize(now);
     std::for_each(this->nodeClassMap.begin(), this->nodeClassMap.end(),
                   InitNodeClass(now));
@@ -1132,7 +1132,7 @@ bool Browser::headlightOn() {
 }
 
 namespace {
-    
+
     struct RenderNodeClass :
             std::unary_function<void, NodeClassMap::value_type> {
         explicit RenderNodeClass(Viewer & viewer):
@@ -1192,7 +1192,7 @@ void Browser::render(Viewer & viewer) {
     // sets the viewpoint transformation
     //
     viewer.setViewpoint(position, orientation, field, avatarSize, visibilityLimit);
-    
+
     std::for_each(this->nodeClassMap.begin(), this->nodeClassMap.end(),
                   RenderNodeClass(viewer));
 
@@ -1755,7 +1755,7 @@ void Browser::updateFlags()
 
 
 namespace {
-    
+
     class URI {
         std::string str;
         enum { nmatch = 11 };
@@ -1775,7 +1775,7 @@ namespace {
         const std::string getPath() const throw (std::bad_alloc);
         const std::string getQuery() const throw (std::bad_alloc);
         const std::string getFragment() const throw (std::bad_alloc);
-        
+
         const URI resolveAgainst(const URI & absoluteURI) const
                 throw (std::bad_alloc);
     };
@@ -1882,11 +1882,11 @@ namespace {
     const URI createFileURL(const URI & uri) throw ()
     {
         assert(uri.getScheme().empty());
-        
+
         using std::string;
-        
+
         string result = "file://";
-        
+
 # ifdef _WIN32
         //
         // _fullpath returns a string starting with the drive letter; for the
@@ -1916,15 +1916,15 @@ namespace {
             return result;
         }
 # endif
-        
+
         result += resolvedPath;
-        
+
         string query = uri.getQuery();
         if (!query.empty()) { result += '?' + query; }
-        
+
         string fragment = uri.getFragment();
         if (!fragment.empty()) { result += '#' + fragment; }
-        
+
         return result;
     }
 }
@@ -1969,7 +1969,7 @@ Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
                 //
                 absoluteURI = testURI.resolveAgainst(URI(parent->getURI()));
             }
-            
+
             Doc2 doc(absoluteURI);
             std::istream & in = doc.inputStream();
             if (!in) { throw UnreachableURI(); }
@@ -2729,7 +2729,7 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
     //
     ProtoImplCloneVisitor(node, *this).clone();
     RouteCopyVisitor(node, *this).copyRoutes();
-    
+
     //
     // Finally, we initialize the implementation using the PROTO's default
     // field values.
@@ -3161,7 +3161,7 @@ void ProtoNode::addIS(Node & implNode,
     if (protoInterface == protoInterfaces.end()) {
         throw UnsupportedInterface(this->nodeType, protoInterfaceId);
     }
-    
+
     //
     // Make sure the interface types agree.
     //
@@ -3170,7 +3170,7 @@ void ProtoNode::addIS(Node & implNode,
         throw NodeInterfaceTypeMismatch(implNodeInterface->type,
                                         protoInterface->type);
     }
-    
+
     //
     // Make sure the field value types agree.
     //
@@ -3217,12 +3217,12 @@ void ProtoNode::update(const double currentTime) {
 void ProtoNode::do_initialize(const double timestamp) throw ()
 {
     assert(this->getScene());
-    
+
     for (size_t i = 0; i < this->implNodes.getLength(); ++i) {
         assert(this->implNodes.getElement(i));
         this->implNodes.getElement(i)->initialize(*this->getScene(), timestamp);
     }
-    
+
     this->getScene()->browser.addProto(*this);
 }
 
@@ -3235,7 +3235,7 @@ void ProtoNode::do_setField(const std::string & id,
     for (ISMap::iterator itr(rangeItrs.first); itr != rangeItrs.second; ++itr) {
         itr->second.node.setField(itr->second.interfaceId, value);
     }
-    
+
     if (rangeItrs.second == rangeItrs.first) {
         //
         // The field hasn't been IS'd to anything.  If it's an exposedField,
@@ -3737,17 +3737,17 @@ const NodeTypePtr
 namespace {
     class AddInterfaceToSet_ : std::unary_function<NodeInterface, void> {
         NodeInterfaceSet & nodeInterfaceSet;
-        
+
     public:
         AddInterfaceToSet_(NodeInterfaceSet & nodeInterfaceSet):
                 nodeInterfaceSet(nodeInterfaceSet) {}
-        
+
         void operator()(const NodeInterface & nodeInterface) const
                 throw (std::invalid_argument, std::bad_alloc) {
             this->nodeInterfaceSet.add(nodeInterface);
         }
     };
-    
+
     /**
      * @internal
      */
@@ -3774,7 +3774,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         Scope(uri) {
     const Browser::NodeClassMap & nodeClassMap = browser.nodeClassMap;
     Browser::NodeClassMap::const_iterator pos;
-    
+
     //
     // Anchor node
     //
@@ -3793,7 +3793,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     pos = nodeClassMap.find("urn:X-openvrml:node:Anchor");
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("Anchor", anchorInterfaceSet));
-    
+
     //
     // Appearance node
     //
@@ -3809,7 +3809,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("Appearance",
                                               appearanceInterfaceSet));
-    
+
     //
     // AudioClip node
     //
@@ -3830,7 +3830,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("AudioClip",
                                               audioClipInterfaceSet));
-    
+
     //
     // Background node
     //
@@ -3855,7 +3855,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("Background",
                                               backgroundInterfaceSet));
-    
+
     //
     // Billboard node
     //
@@ -3874,7 +3874,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("Billboard",
                                               billboardInterfaceSet));
-    
+
     //
     // Box node
     //
@@ -3885,7 +3885,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     pos = nodeClassMap.find("urn:X-openvrml:node:Box");
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("Box", boxInterfaceSet));
-    
+
     //
     // Collision node
     //
@@ -3905,7 +3905,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("Collision",
                                               collisionInterfaceSet));
-    
+
     //
     // Color node
     //
@@ -3916,7 +3916,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     pos = nodeClassMap.find("urn:X-openvrml:node:Color");
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("Color", colorInterfaceSet));
-    
+
     //
     // ColorInterpolator node
     //
@@ -3933,7 +3933,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("ColorInterpolator",
                                               colorInterpolatorInterfaceSet));
-    
+
     //
     // Cone node
     //
@@ -3948,7 +3948,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     pos = nodeClassMap.find("urn:X-openvrml:node:Cone");
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("Cone", coneInterfaceSet));
-    
+
     //
     // Coordinate node
     //
@@ -3961,7 +3961,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("Coordinate",
                                               coordinateInterfaceSet));
-    
+
     //
     // CoordinateInterpolator node
     //
@@ -3978,7 +3978,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("CoordinateInterpolator",
                                               coordinateInterpolatorInterfaceSet));
-    
+
     //
     // Cylinder node
     //
@@ -3995,7 +3995,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("Cylinder",
                                               cylinderInterfaceSet));
-    
+
     //
     // CylinderSensor node
     //
@@ -4017,7 +4017,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("CylinderSensor",
                                               cylinderSensorInterfaceSet));
-    
+
     //
     // DirectionalLight node
     //
@@ -4035,7 +4035,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("DirectionalLight",
                                               directionalLightInterfaceSet));
-    
+
     //
     // ElevationGrid node
     //
@@ -4062,7 +4062,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     assert(pos != nodeClassMap.end());
     this->addNodeType(pos->second->createType("ElevationGrid",
                                               elevationGridInterfaceSet));
-    
+
     //
     // Extrusion node
     //
@@ -4090,7 +4090,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("Extrusion",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // Fog node
     //
@@ -4108,7 +4108,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         assert(pos != nodeClassMap.end());
         this->addNodeType(pos->second->createType("Fog", nodeInterfaceSet));
     }
-    
+
     //
     // FontStyle node
     //
@@ -4131,7 +4131,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("FontStyle",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // Group node
     //
@@ -4150,7 +4150,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("Group",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // ImageTexture node
     //
@@ -4167,7 +4167,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("ImageTexture",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // IndexedFaceSet node
     //
@@ -4199,7 +4199,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("IndexedFaceSet",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // IndexedLineSet node
     //
@@ -4220,7 +4220,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("IndexedLineSet",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // Inline node
     //
@@ -4236,7 +4236,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         assert(pos != nodeClassMap.end());
         this->addNodeType(pos->second->createType("Inline", nodeInterfaceSet));
     }
-    
+
     //
     // LOD node
     //
@@ -4252,7 +4252,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         assert(pos != nodeClassMap.end());
         this->addNodeType(pos->second->createType("LOD", nodeInterfaceSet));
     }
-    
+
     //
     // Material node
     //
@@ -4272,7 +4272,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("Material",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // MovieTexture node
     //
@@ -4295,7 +4295,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("MovieTexture",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // NavigationInfo node
     //
@@ -4316,7 +4316,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("NavigationInfo",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // Normal node
     //
@@ -4330,7 +4330,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("Normal",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // NormalInterpolator node
     //
@@ -4348,7 +4348,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("NormalInterpolator",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // OrientationInterpolator node
     //
@@ -4366,7 +4366,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("OrientationInterpolator",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // PixelTexture node
     //
@@ -4383,7 +4383,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("PixelTexture",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // PlaneSensor node
     //
@@ -4405,7 +4405,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("PlaneSensor",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // PointLight node
     //
@@ -4426,7 +4426,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("PointLight",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // PointSet node
     //
@@ -4442,7 +4442,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("PointSet",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // PositionInterpolator node
     //
@@ -4460,7 +4460,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("PositionInterpolator",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // ProximitySensor node
     //
@@ -4482,7 +4482,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("ProximitySensor",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // ScalarInterpolator node
     //
@@ -4500,7 +4500,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("ScalarInterpolator",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // Shape node
     //
@@ -4515,7 +4515,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         assert(pos != nodeClassMap.end());
         this->addNodeType(pos->second->createType("Shape", nodeInterfaceSet));
     }
-    
+
     //
     // Sound node
     //
@@ -4538,7 +4538,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         assert(pos != nodeClassMap.end());
         this->addNodeType(pos->second->createType("Sound", nodeInterfaceSet));
     }
-    
+
     //
     // Sphere node
     //
@@ -4551,7 +4551,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         assert(pos != nodeClassMap.end());
         this->addNodeType(pos->second->createType("Sphere", nodeInterfaceSet));
     }
-    
+
     //
     // SphereSensor node
     //
@@ -4571,7 +4571,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("SphereSensor",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // SpotLight node
     //
@@ -4595,7 +4595,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("SpotLight",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // Switch node
     //
@@ -4610,7 +4610,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         assert(pos != nodeClassMap.end());
         this->addNodeType(pos->second->createType("Switch", nodeInterfaceSet));
     }
-    
+
     //
     // Text node
     //
@@ -4627,7 +4627,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         assert(pos != nodeClassMap.end());
         this->addNodeType(pos->second->createType("Text", nodeInterfaceSet));
     }
-    
+
     //
     // TextureCoordinate node
     //
@@ -4641,7 +4641,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("TextureCoordinate",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // TextureTransform node
     //
@@ -4659,7 +4659,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("TextureTransform",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // TimeSensor node
     //
@@ -4682,7 +4682,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("TimeSensor",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // TouchSensor node
     //
@@ -4703,7 +4703,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("TouchSensor",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // Transform node
     //
@@ -4727,7 +4727,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("Transform",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // Viewpoint node
     //
@@ -4749,7 +4749,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("Viewpoint",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // VisibilitySensor node
     //
@@ -4769,7 +4769,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         this->addNodeType(pos->second->createType("VisibilitySensor",
                                                   nodeInterfaceSet));
     }
-    
+
     //
     // WorldInfo node
     //
@@ -4801,7 +4801,7 @@ namespace {
     //                      ||  +- authority
     //                      |+- "//" authority
     //                      +- scheme-specific-part
-    
+
     class URIRegex {
         regex_t regex;
 
@@ -4947,8 +4947,8 @@ namespace {
         //
         // Remove any ".." segments along with the segment that precedes them.
         //
-        const std::list<string>::iterator begin(pathSegments.begin());
-        std::list<string>::iterator pos;
+        const list<string>::iterator begin(pathSegments.begin());
+        list<string>::iterator pos;
         for (pos = begin; pos != pathSegments.end(); ++pos) {
             if (pos != begin && *pos == "..") {
                 --(pos = pathSegments.erase(pos));
@@ -4970,12 +4970,16 @@ namespace {
         if (*(this->getPath().end() - 1) == '/') { path += '/'; }
 
         result += path;
-        result += this->getQuery();
-        result += this->getFragment();
+
+        const string query = this->getQuery();
+        if (!query.empty()) { result += '?' + query; }
+
+        const string fragment = this->getFragment();
+        if (!fragment.empty()) { result += '#' + fragment; }
 
         return result;
     }
-    
+
 } // namespace
 
 } // namespace OpenVRML
