@@ -1,4 +1,4 @@
-OpenVRML library version 0.11.2, 18 October, 2001
+OpenVRML library version 0.12.0
 Copyright (C) 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
 Copyright (C) 2000, 2001 Braden McDaniel <braden@endoframe.com>
 Portions Copyright SGI and others
@@ -122,20 +122,16 @@ Optional features
    
    --with-libpng
    --with-libpng=yes
-      Look in the default library and include paths for libpng.  This is
-      the default.
-   
-   --with-libpng=PREFIX
-      If libpng is not installed in the default library and include 
-      paths on your system, pass the prefix under which it is installed
-      as PREFIX.
+      Attempt to locate and build using libpng.  This is the default.
    
    --without-libpng
    --with-libpng=no
       Build without PNG support.
    
-   Other build systems should define HAVE_LIBPNG when building OpenVRML
-   with PNG support.
+   Note that you may need to add arguments to the CPPFLAGS and LDFLAGS
+   variables if you have libpng installed in a nonstandard location.
+   Other build systems should define OPENVRML_HAVE_LIBPNG when building
+   OpenVRML with PNG support.
 
  * JPEG image support
    
@@ -148,47 +144,66 @@ Optional features
    
    --with-libjpeg
    --with-libjpeg=yes
-      Look in the default library and include paths for libjpeg.  This
-      is the default.
-   
-   --with-libjpeg=PREFIX
-      If libjpeg is not installed in the default library and include 
-      paths on your system, pass the prefix under which it is installed
-      as PREFIX.
+      Attempt to locate and build using libjpeg.  This is the default.
    
    --without-libjpeg
    --with-libjpeg=no
       Build without JPEG support.
    
-   Other build systems should define HAVE_LIBJPEG when building OpenVRML
-   with JPEG support.
+   Note that you may need to add arguments to the CPPFLAGS and LDFLAGS
+   variables if you have libjpg installed in a nonstandard location.
+   Other build systems should define OPENVRML_HAVE_LIBJPEG when building
+   OpenVRML with JPEG support.
 
  * JavaScript support
    
-   SpiderMonkey (libmozjs) is required for JavaScript support in
-   OpenVRML.  If SpiderMonkey is not already installed on your system,
-   you can find it at <http://www.mozilla.org/js/spidermonkey/>.  The
-   GNU build includes configuration options to either allow the build to
-   locate libmozjs on your system, or build without JavaScript support
-   (if you don't have SpiderMonkey or don't want JavaScript support).
-   These arguments can be passed to `configure':
+   SpiderMonkey (the Mozilla JavaScript engine) is required for
+   JavaScript support in OpenVRML.  If SpiderMonkey is not already
+   installed on your system, you can find it at
+   <http://www.mozilla.org/js/spidermonkey/>.  The GNU build includes
+   configuration options to allow the build either to locate
+   SpiderMonkey on your system, or build without JavaScript support (if
+   you don't have SpiderMonkey or don't want JavaScript support). These
+   arguments can be passed to `configure':
    
-   --with-mozjs
-   --with-mozjs=yes
-      Look in the default library and include paths for libmozjs.  This
-      is the default.
+   --with-spidermonkey
+   --with-spidermonkey=yes
+      Attempt to locate and build using SpiderMonkey.  This is the
+      default.
    
-   --with-mozjs=PREFIX
-      If libmozjs is not installed in the default library and include 
-      paths on your system, pass the prefix under which it is installed
-      as PREFIX.
-   
-   --without-mozjs
-   --with-mozjs=no
+   --without-spidermonkey
+   --with-spidermonkey=no
       Build without JavaScript support.
    
-   Other build systems should define HAVE_MOZJS when building
-   OpenVRML with JavaScript support.
+   Note that you may need to add arguments to the CPPFLAGS and LDFLAGS
+   variables if you have SpiderMonkey installed in a nonstandard
+   location.  Other build systems should define
+   OPENVRML_HAVE_SPIDERMONKEY when building OpenVRML with JavaScript
+   support.
+
+ * Java support
+   
+   OpenVRML uses the Java Development Kit to provide Java support.
+   These libraries and headers are provided by the Java Development Kit.
+   If the JDK is not already installed on your system, you can find it
+   at <http://java.sun.com/j2se/>.  The GNU build includes configuration
+   options to allow the build either to locate the JDK on your system,
+   or build without Java support (if you don't have the JDK or don't
+   want Java support). These arguments can be passed to `configure':
+   
+   --with-jdk
+   --with-jdk=yes
+      Attempt to locate and build using the Java Development Kit.  This
+      is the default.
+   
+   --without-jdk
+   --with-jdk=no
+      Build without Java support.
+   
+   configure will use the JAVA_HOME variable to attempt to locate the
+   JDK.  If this variable is not set, you may need to add arguments to
+   the CPPFLAGS and LDFLAGS variables.  Other build systems should
+   define OPENVRML_HAVE_JNI when building OpenVRML with Java support.
 
 
 Installation

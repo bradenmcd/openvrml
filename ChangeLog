@@ -1,3 +1,7 @@
+2002-01-20  Braden McDaniel  <braden@endoframe.com>
+
+        * Updated documentation for configure options in README.
+
 2002-01-14  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Implement CylinderSensor's activation method.
