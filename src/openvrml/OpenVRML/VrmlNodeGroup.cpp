@@ -408,19 +408,19 @@ void VrmlNodeGroup::addChildren(const VrmlMFNode & children) {
 
 void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )
 {
-  int nNow = d_children.getLength();
-  int n = children.getLength();
-
-  for (int i=0; i<n; ++i)
-    d_children.removeNode(children[i]);
-
-  if (nNow != (int) d_children.getLength())
-    {
-      //??eventOut( d_scene->timeNow(), "children_changed", d_children );
-      setModified();
-      this->setBVolumeDirty(true);
+    const size_t oldLength = d_children.getLength();
+    
+    for (size_t i = 0; i < children.getLength(); ++i) {
+        if (children[i]) {
+            this->d_children.removeNode(children[i]);
+        }
     }
-
+    
+    if (oldLength != this->d_children.getLength()) {
+        //??eventOut( d_scene->timeNow(), "children_changed", d_children );
+        setModified();
+        this->setBVolumeDirty(true);
+    }
 }
 
 /**
@@ -430,7 +430,7 @@ void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )
 void VrmlNodeGroup::removeChildren() {
     for (size_t i = this->d_children.getLength(); i > 0; --i) {
         if (this->d_children[i - 1]) {
-            d_children.removeNode(*d_children[i - 1]);
+            d_children.removeNode(d_children[i - 1]);
         }
     }
     
