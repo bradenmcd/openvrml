@@ -88,8 +88,25 @@ class VrmlNode {
 
 public:
 
-  // Define the fields of all built in VrmlNodeTypes
+  /**
+   * Given a VrmlNodeType, add in the fields, exposedFields, eventIns
+   * and eventOuts defined by the particular node implementation.
+   * There's a great big method in VrmlNamespace that just calls
+   * defineType for every built in node. Nodes that inherit from other
+   * nodes (eg VrmlNodeIFaceSet) must call their parent classe's
+   * defineType, it doesn't happen automatically. The defineType for
+   * VrmlNode doesn't actually do anything, since there (currently)
+   * aren't any base events to be defined. It's just here for the sake
+   * of symmetry (and makes a nice place to park a comment)
+   *
+   * @param t to get the predefined cached type, pass a null,
+   *          otherwise the fields and events will be added to the
+   *          passed in vrmlnodetype object
+   *
+   * @see VrmlNamesspace::defineBuiltins()
+   */
   static VrmlNodeType *defineType(VrmlNodeType *t);
+
   virtual VrmlNodeType & nodeType() const = 0;
 
   // VrmlNodes are reference counted, optionally named objects
