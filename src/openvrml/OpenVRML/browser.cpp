@@ -81,17 +81,39 @@ namespace OpenVRML {
     class ProtoNode : public Node {
         friend class ProtoNodeClass;
         friend class Vrml97Parser;
+        friend class NodeVisitor;
 
-        class NodeCloneVisitor : public NodeVisitor {
+        class NodeFieldCloneVisitor : public NodeVisitor {
+            const ScopePtr & toScope;
+            std::stack<NodePtr> rootNodeStack;
+        
+        public:
+            explicit NodeFieldCloneVisitor(const ScopePtr & toScope)
+                throw (std::bad_alloc);
+            virtual ~NodeFieldCloneVisitor() throw ();
+            
+            const SFNode clone(const SFNode & sfnode);
+            const MFNode clone(const MFNode & mfnode);
+
+            virtual void visit(Node & node);
+
+        private:
+            // Not copyable.
+            NodeFieldCloneVisitor(const NodeFieldCloneVisitor &);
+            NodeFieldCloneVisitor & operator=(const NodeFieldCloneVisitor &);
+        };
+        
+        class ProtoImplCloneVisitor : public NodeVisitor {
             std::stack<NodePtr> rootNodeStack;
 
             const ProtoNode & fromProtoNode;
             ProtoNode & toProtoNode;
 
         public:
-            NodeCloneVisitor(const ProtoNode & fromProtoNode,
-                             ProtoNode & toProtoNode);
-            virtual ~NodeCloneVisitor();
+            ProtoImplCloneVisitor(const ProtoNode & fromProtoNode,
+                                  ProtoNode & toProtoNode)
+                throw (std::bad_alloc);
+            virtual ~ProtoImplCloneVisitor() throw ();
 
             void clone();
 
@@ -99,11 +121,11 @@ namespace OpenVRML {
 
         private:
             // Not copyable.
-            NodeCloneVisitor(const NodeCloneVisitor &);
-            NodeCloneVisitor & operator=(const NodeCloneVisitor &);
+            ProtoImplCloneVisitor(const ProtoImplCloneVisitor &);
+            ProtoImplCloneVisitor & operator=(const ProtoImplCloneVisitor &);
         };
 
-        friend class NodeCloneVisitor;
+        friend class ProtoImplCloneVisitor;
 
         class RouteCopyVisitor : public NodeVisitor {
             const ProtoNode & fromProtoNode;
@@ -111,8 +133,8 @@ namespace OpenVRML {
 
         public:
             RouteCopyVisitor(const ProtoNode & fromProtoNode,
-                             ProtoNode & toProtoNode);
-            virtual ~RouteCopyVisitor() {}
+                             ProtoNode & toProtoNode) throw ();
+            virtual ~RouteCopyVisitor() throw ();
 
             void copyRoutes();
 
@@ -2144,6 +2166,7 @@ void Scene::loadURI(const MFString & uri, const MFString & parameter)
     }
 }
 
+
 /**
  * @internal
  *
@@ -2171,14 +2194,23 @@ void Scene::loadURI(const MFString & uri, const MFString & parameter)
 /**
  * @internal
  *
- * @class ProtoNode::NodeCloneVisitor
+ * @class ProtoNode::NodeFieldCloneVisitor
  *
- * @brief A NodeVisitor that makes a deep copy of the node tree for creating
- *      a new prototype node instance.
+ * @brief A NodeVisitor that makes a deep copy of an SFNode or MFNode field
+ *      value.
+ *
+ * SFNode and MFNode default field values must be cloned in order to be
+ * propagated to a new PROTO instance.
  */
 
 /**
- * @var std::stack<NodePtr> ProtoNode::NodeCloneVisitor::rootNodeStack
+ * @var const ScopePtr & ProtoNode::NodeFieldCloneVisitor::toScope
+ *
+ * @brief The Scope to which the clones should belong.
+ */
+
+/**
+ * @var std::stack<NodePtr> ProtoNode::NodeFieldCloneVisitor::rootNodeStack
  *
  * @brief A stack for node clones.
  *
@@ -2188,58 +2220,82 @@ void Scene::loadURI(const MFString & uri, const MFString & parameter)
  */
 
 /**
- * @var const ProtoNode & ProtoNode::NodeCloneVisitor::fromProtoNode
- *
- * @brief A reference to the "source" node.
- */
-
-/**
- * @var const ProtoNode & ProtoNode::NodeCloneVisitor::toProtoNode
- *
- * @brief A reference to the "destination" node.
- */
-
-/**
  * @brief Constructor.
  *
  * @param fromNode  a reference to the "source" node.
  * @param toNode    a reference to the "destination" node.
  */
-ProtoNode::NodeCloneVisitor::NodeCloneVisitor(const ProtoNode & fromProtoNode,
-                                              ProtoNode & toProtoNode):
-        fromProtoNode(fromProtoNode), toProtoNode(toProtoNode) {}
+ProtoNode::NodeFieldCloneVisitor::NodeFieldCloneVisitor(
+        const ScopePtr & toScope)
+    throw (std::bad_alloc):
+    toScope(toScope)
+{}
 
 /**
  * @brief Destructor.
  */
-ProtoNode::NodeCloneVisitor::~NodeCloneVisitor() {}
+ProtoNode::NodeFieldCloneVisitor::~NodeFieldCloneVisitor() throw ()
+{}
 
 /**
- * @brief Clone the nodes.
+ * @brief Clone an SFNode field value.
+ *
+ * @param sfnode    the SFNode to clone.
+ *
+ * @return the clone.
  */
-void ProtoNode::NodeCloneVisitor::clone() {
-    assert(this->fromProtoNode.implNodes.getElement(0));
-    this->toProtoNode.implNodes.setLength(this->fromProtoNode.implNodes.getLength());
+const SFNode ProtoNode::NodeFieldCloneVisitor::clone(const SFNode & sfnode)
+{
+    SFNode result;
+    if (sfnode.get()) {
+        Node & node = *sfnode.get();
+        if (!node.accept(*this)) {
+            assert(this->toScope->findNode(node.getId()));
+            this->rootNodeStack
+                    .push(NodePtr(this->toScope->findNode(node.getId())));
+        }
+        assert(this->rootNodeStack.top());
+        result.set(this->rootNodeStack.top());
+        this->rootNodeStack.pop();
+        assert(this->rootNodeStack.empty());
+
+        sfnode.get()->resetVisitedFlag();
+    }
+    return result;
+}
+
+/**
+ * @brief Clone an MFNode field value.
+ *
+ * @param mfnode    the MFNode to clone.
+ *
+ * @return the clones.
+ */
+const MFNode ProtoNode::NodeFieldCloneVisitor::clone(const MFNode & mfnode)
+{
+    MFNode result(mfnode.getLength());
     size_t i;
-    for (i = 0; i < this->toProtoNode.implNodes.getLength(); ++i) {
-        if (this->fromProtoNode.implNodes.getElement(i)) {
-            Node & childNode = *this->fromProtoNode.implNodes.getElement(i);
-            if (!childNode.accept(*this)) {
-                assert(this->toProtoNode.getScope()->findNode(childNode.getId()));
+    for (i = 0; i < result.getLength(); ++i) {
+        if (mfnode.getElement(i)) {
+            Node & node = *mfnode.getElement(i);
+            if (!node.accept(*this)) {
+                assert(this->toScope->findNode(node.getId()));
                 this->rootNodeStack
-                        .push(NodePtr(this->toProtoNode.getScope()->findNode(childNode.getId())));
+                        .push(NodePtr(this->toScope->findNode(node.getId())));
             }
             assert(this->rootNodeStack.top());
-            this->toProtoNode.implNodes.setElement(i, this->rootNodeStack.top());
+            result.setElement(i, this->rootNodeStack.top());
             this->rootNodeStack.pop();
         }
     }
-    assert(this->rootNodeStack.size() == 0);
+    assert(this->rootNodeStack.empty());
 
-    for (i = 0; i < this->fromProtoNode.implNodes.getLength(); ++i) {
-        assert(this->fromProtoNode.implNodes.getElement(i));
-        this->fromProtoNode.implNodes.getElement(i)->resetVisitedFlag();
+    for (i = 0; i < mfnode.getLength(); ++i) {
+        if (mfnode.getElement(i)) {
+            mfnode.getElement(i)->resetVisitedFlag();
+        }
     }
+    return result;
 }
 
 namespace {
@@ -2249,10 +2305,15 @@ namespace {
                          std::stack<NodePtr> & rootNodeStack,
                          Scope & scope,
                          Node & fromNode, Node & toNode):
-                visitor(&visitor), rootNodeStack(&rootNodeStack), scope(&scope),
-                fromNode(&fromNode), toNode(&toNode) {}
+            visitor(&visitor),
+            rootNodeStack(&rootNodeStack),
+            scope(&scope),
+            fromNode(&fromNode),
+            toNode(&toNode)
+        {}
 
-        void operator()(const NodeInterface & interface) const {
+        void operator()(const NodeInterface & interface) const
+        {
             if (interface.type == NodeInterface::field
                     || interface.type == NodeInterface::exposedField) {
                 if (interface.fieldType == FieldValue::sfnode) {
@@ -2307,11 +2368,121 @@ namespace {
 }
 
 /**
- * @brief Visit a node.
+ * @brief Visit a Node.
  *
  * @param node  a Node.
  */
-void ProtoNode::NodeCloneVisitor::visit(Node & node) {
+void ProtoNode::NodeFieldCloneVisitor::visit(Node & node)
+{
+    //
+    // Create a new node of the same type.
+    //
+    const NodePtr newNode(node.nodeType.createNode(this->toScope));
+    this->rootNodeStack.push(newNode);
+
+    //
+    // If the node has a name, give it to the new node.
+    //
+    if (!node.getId().empty()) { newNode->setId(node.getId()); }
+
+    //
+    // Copy the field values.
+    //
+    const NodeInterfaceSet & interfaces = node.nodeType.getInterfaces();
+    std::for_each(interfaces.begin(), interfaces.end(),
+                  CloneFieldValue_(*this, this->rootNodeStack, *this->toScope,
+                                   node, *newNode));
+}
+
+
+/**
+ * @internal
+ *
+ * @class ProtoNode::ProtoImplCloneVisitor
+ *
+ * @brief A NodeVisitor that makes a deep copy of the PROTO implementation.
+ *
+ * The PROTO implementation nodes must be cloned when creating a new instance.
+ */
+
+/**
+ * @var std::stack<NodePtr> ProtoNode::ProtoImplCloneVisitor::rootNodeStack
+ *
+ * @brief A stack for node clones.
+ *
+ * As the NodeVisitor traverses the node tree, it pushes the newly-created
+ * cloned node onto the stack. The node at the top of the stack is then the
+ * result of cloning any given subtree in the source node tree.
+ */
+
+/**
+ * @var const ProtoNode & ProtoNode::ProtoImplCloneVisitor::fromProtoNode
+ *
+ * @brief A reference to the "source" node.
+ */
+
+/**
+ * @var const ProtoNode & ProtoNode::ProtoImplCloneVisitor::toProtoNode
+ *
+ * @brief A reference to the "destination" node.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param fromNode  a reference to the "source" node.
+ * @param toNode    a reference to the "destination" node.
+ */
+ProtoNode::ProtoImplCloneVisitor::ProtoImplCloneVisitor(
+        const ProtoNode & fromProtoNode,
+        ProtoNode & toProtoNode)
+    throw (std::bad_alloc):
+    fromProtoNode(fromProtoNode),
+    toProtoNode(toProtoNode)
+{}
+
+/**
+ * @brief Destructor.
+ */
+ProtoNode::ProtoImplCloneVisitor::~ProtoImplCloneVisitor() throw ()
+{}
+
+/**
+ * @brief Clone the nodes.
+ */
+void ProtoNode::ProtoImplCloneVisitor::clone()
+{
+    assert(this->fromProtoNode.implNodes.getElement(0));
+    this->toProtoNode.implNodes.setLength(this->fromProtoNode.implNodes.getLength());
+    size_t i;
+    for (i = 0; i < this->toProtoNode.implNodes.getLength(); ++i) {
+        if (this->fromProtoNode.implNodes.getElement(i)) {
+            Node & childNode = *this->fromProtoNode.implNodes.getElement(i);
+            if (!childNode.accept(*this)) {
+                assert(this->toProtoNode.getScope()->findNode(childNode.getId()));
+                this->rootNodeStack
+                        .push(NodePtr(this->toProtoNode.getScope()->findNode(childNode.getId())));
+            }
+            assert(this->rootNodeStack.top());
+            this->toProtoNode.implNodes.setElement(i, this->rootNodeStack.top());
+            this->rootNodeStack.pop();
+        }
+    }
+    assert(this->rootNodeStack.empty());
+
+    for (i = 0; i < this->fromProtoNode.implNodes.getLength(); ++i) {
+        assert(this->fromProtoNode.implNodes.getElement(i));
+        this->fromProtoNode.implNodes.getElement(i)->resetVisitedFlag();
+    }
+}
+
+/**
+ * @brief Visit a Node.
+ *
+ * @param node  a Node.
+ */
+void ProtoNode::ProtoImplCloneVisitor::visit(Node & node)
+{
     //
     // Create a new node of the same type.
     //
@@ -2362,8 +2533,17 @@ void ProtoNode::NodeCloneVisitor::visit(Node & node) {
  * @param toProtoNode   a reference to the "destination" node.
  */
 ProtoNode::RouteCopyVisitor::RouteCopyVisitor(const ProtoNode & fromProtoNode,
-                                              ProtoNode & toProtoNode):
-        fromProtoNode(fromProtoNode), toProtoNode(toProtoNode) {}
+                                              ProtoNode & toProtoNode)
+    throw ():
+    fromProtoNode(fromProtoNode),
+    toProtoNode(toProtoNode)
+{}
+
+/**
+ * @brief Destructor.
+ */
+ProtoNode::RouteCopyVisitor::~RouteCopyVisitor() throw ()
+{}
 
 /**
  * @brief Copy the ROUTEs.
@@ -2520,15 +2700,8 @@ namespace {
  * @param nodeType  the NodeType associated with the node.
  */
 ProtoNode::ProtoNode(const NodeType & nodeType):
-        Node(nodeType, ScopePtr(0)) {
-    //
-    // For each exposedField and eventOut in the prototype interface, add
-    // a value to the eventOutValueMap.
-    //
-//    const NodeInterfaceSet & interfaces(this->nodeType.getInterfaces());
-//    std::for_each(interfaces.begin(), interfaces.end(),
-//                  AddEventOutValue_(this->eventOutValueMap));
-}
+    Node(nodeType, ScopePtr(0))
+{}
 
 /**
  * @brief Construct a prototype instance.
@@ -2540,7 +2713,8 @@ ProtoNode::ProtoNode(const NodeType & nodeType):
 ProtoNode::ProtoNode(const NodeType & nodeType,
                      const ScopePtr & scope,
                      const ProtoNode & node):
-        Node(nodeType, scope) {
+    Node(nodeType, scope)
+{
     assert(node.implNodes.getLength() > 0);
     assert(node.implNodes.getElement(0));
 
@@ -2560,8 +2734,41 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
     // node instances. Second, we traverse the node tree again cloning the
     // routes.
     //
-    NodeCloneVisitor(node, *this).clone();
+    ProtoImplCloneVisitor(node, *this).clone();
     RouteCopyVisitor(node, *this).copyRoutes();
+    
+    //
+    // Finally, we initialize the implementation using the PROTO's default
+    // field values.
+    //
+    typedef ProtoNodeClass::DefaultValueMap DefaultValueMap;
+    DefaultValueMap & defaultValueMap =
+            static_cast<ProtoNodeClass &>(nodeType.nodeClass).defaultValueMap;
+    const ScopePtr & protoScope = this->implNodes.getElement(0)->getScope();
+    NodeFieldCloneVisitor nodeFieldCloneVisitor(protoScope);
+    for (DefaultValueMap::const_iterator i(defaultValueMap.begin());
+            i != defaultValueMap.end(); ++i) {
+        //
+        // Node field values need to be cloned; everything else we can just
+        // copy.
+        //
+        FieldValuePtr fieldValue;
+        const FieldValue::Type type = i->second->type();
+        if (type == FieldValue::sfnode) {
+            const SFNode & node = static_cast<const SFNode &>(*i->second);
+            fieldValue.reset(new SFNode(nodeFieldCloneVisitor.clone(node)));
+        } else if (type == FieldValue::mfnode) {
+            const MFNode & nodes = static_cast<const MFNode &>(*i->second);
+            fieldValue.reset(new MFNode(nodeFieldCloneVisitor.clone(nodes)));
+        } else {
+            fieldValue = i->second;
+        }
+        const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
+                this->isMap.equal_range(i->first);
+        for (ISMap::iterator j(rangeItrs.first); j != rangeItrs.second; ++j) {
+            j->second.node.setField(j->second.interfaceId, *fieldValue);
+        }
+    }
 }
 
 /**
@@ -2967,27 +3174,43 @@ const FieldValue & ProtoNode::getFieldImpl(const std::string & id) const
         throw (UnsupportedInterface) {
     //
     // This is a little wierd: what should getField mean for a PROTO-based
-    // node? Here, we just pick the first node in the IS-map and call getField
-    // on it.
+    // node? We pick the first node in the IS-map and call getField on it.
     //
     const ISMap::const_iterator pos = this->isMap.find(id);
     if (pos == this->isMap.end()) {
         //
         // The field may exist for the node, but not be IS'd to anything.
-        // What to do? If we saved the initial value of the field to return
-        // here, we'd end up carrying it around for the life of the PROTO
-        // instance. So just return a reference to the default value for
-        // the field.
         //
-        ProtoNodeClass & nodeClass =
-                static_cast<ProtoNodeClass &>(this->nodeType.nodeClass);
-        const ProtoNodeClass::DefaultValueMap::const_iterator pos =
-                nodeClass.defaultValueMap.find(id);
-        if (pos == nodeClass.defaultValueMap.end()) {
-            throw UnsupportedInterface(this->nodeType.id
+        // There are two possibilities...
+        //
+        if (this->nodeType.hasExposedField(id)) {
+            //
+            // If the field is really an exposedField then we need to grab the
+            // value from the eventOutValueMap.
+            //
+            const EventOutValueMap::const_iterator pos =
+                    this->eventOutValueMap.find(id + "_changed");
+            assert(pos != this->eventOutValueMap.end());
+            assert(pos->second.value);
+            return *pos->second.value;
+        } else {
+            //
+            // Otherwise, if we are dealing with a non-exposed field... Well,
+            // "otherwise" isn't so clear. If we saved the initial value of the
+            // field to return here, we'd end up carrying it around for the
+            // life of the PROTO instance. So, just return a reference to the
+            // default value for the field.
+            //
+            ProtoNodeClass & nodeClass =
+                    static_cast<ProtoNodeClass &>(this->nodeType.nodeClass);
+            const ProtoNodeClass::DefaultValueMap::const_iterator pos =
+                    nodeClass.defaultValueMap.find(id);
+            if (pos == nodeClass.defaultValueMap.end()) {
+                throw UnsupportedInterface(this->nodeType.id
                                        + " node has no field \"" + id + "\".");
+            }
+            return *pos->second;
         }
-        return *pos->second;
     }
     return pos->second.node.getField(pos->second.interfaceId);
 }
@@ -4657,7 +4880,6 @@ namespace {
 
         return result;
     }
-    
     
 } // namespace
 

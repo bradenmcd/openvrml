@@ -8,6 +8,11 @@
           recursive, so it no longer needs to be used with a
           NodeVisitor.
 
+        * src/openvrml/OpenVRML/browser.cpp: Set default [exposed]field
+          values for PROTO instances. We still need some additional
+          magic to handle field values that aren't IS'd to anything in
+          the implementation.
+
 2002-08-31  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/nodeptr.cpp: Fixed bug in NodePtr::reset
