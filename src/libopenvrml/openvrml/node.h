@@ -73,7 +73,7 @@ namespace openvrml {
 
     class node_type;
 
-    class unsupported_interface : public std::runtime_error {
+    class unsupported_interface : public std::logic_error {
     public:
         explicit unsupported_interface(const node_interface & interface)
             throw ();
@@ -229,7 +229,7 @@ namespace openvrml {
     };
 
 
-    class field_value_type_mismatch : public std::runtime_error {
+    class field_value_type_mismatch : public std::logic_error {
     public:
         field_value_type_mismatch();
         virtual ~field_value_type_mismatch() throw ();

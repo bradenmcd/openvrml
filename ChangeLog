@@ -1,5 +1,13 @@
 2004-07-19 Braden McDaniel  <braden@endoframe.com>
 
+	Changed unsupported_interface and field_value_type_mismatch to
+	inherit std::logic_error instead of std::runtime_error.
+
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+
+2004-07-19 Braden McDaniel  <braden@endoframe.com>
+
 	Removed unsupported_interface constructor that takes only a
 	string.
 

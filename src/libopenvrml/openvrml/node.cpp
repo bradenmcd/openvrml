@@ -58,8 +58,8 @@ namespace openvrml {
  */
 unsupported_interface::unsupported_interface(const node_interface & interface)
     throw ():
-    std::runtime_error("Unsupported interface \""
-                       + boost::lexical_cast<std::string>(interface) + "\".")
+    std::logic_error("Unsupported interface \""
+                     + boost::lexical_cast<std::string>(interface) + "\".")
 {}
 
 /**
@@ -71,7 +71,7 @@ unsupported_interface::unsupported_interface(const node_interface & interface)
 unsupported_interface::unsupported_interface(const node_type & type,
                                              const std::string & interface_id)
     throw ():
-    std::runtime_error(type.id + " has no interface \"" + interface_id + '"')
+    std::logic_error(type.id + " has no interface \"" + interface_id + '"')
 {}
 
 /**
@@ -86,9 +86,9 @@ unsupported_interface::unsupported_interface(
     const node_interface::type_id interface_type,
     const std::string & interface_id)
     throw ():
-    std::runtime_error(type.id + " has no "
-                       + boost::lexical_cast<std::string>(interface_type)
-                       + " \"" + interface_id + '"')
+    std::logic_error(type.id + " has no "
+                     + boost::lexical_cast<std::string>(interface_type)
+                     + " \"" + interface_id + '"')
 {}
 
 /**
@@ -743,7 +743,7 @@ node_type::~node_type() throw ()
  * @brief Constructor.
  */
 field_value_type_mismatch::field_value_type_mismatch():
-    std::runtime_error("Field value types do not match.")
+    std::logic_error("Field value types do not match.")
 {}
 
 /**
