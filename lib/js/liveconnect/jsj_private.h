@@ -30,6 +30,17 @@
  * and other provisions required by the GPL.  If you do not delete
  * the provisions above, a recipient may use your version of this
  * file under either the NPL or the GPL.
+ *
+ * This Original Code has been modified by IBM Corporation.
+ * Modifications made by IBM described herein are
+ * Copyright (c) International Business Machines
+ * Corporation, 2000
+ *
+ * Modifications to Mozilla code or documentation
+ * identified per MPL Section 3.3
+ *
+ * Date             Modified by     Description of modification
+ * 04/20/2000       IBM Corp.      OS/2 VisualAge build.
  */
 
 /*
@@ -51,7 +62,8 @@
 #   include "jshash.h"
 
 #ifdef XP_MAC
-#include "macstdlibextras.h"  /* for strdup() */
+/* #include "macstdlibextras.h"  *//* for strdup() */
+extern char* strdup(const char* str);
 #endif
 
 #include "jsj_hash.h"        /* Hash tables */
@@ -72,6 +84,15 @@
 #    if defined(JS_THREADSAFE) && !defined(JSJ_INHIBIT_THREADSAFE)
 #        define JSJ_THREADSAFE
 #    endif
+#endif
+
+/*
+ * This file doesn't include prtypes.h, which defines PR_BEGIN_EXTERN_C,
+ * and I certainly don't want to pull it in to such a high level include
+ * file, so I'll just do what prtypes.h does. edburns
+ */
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /*************************** Type Declarations ******************************/
@@ -313,6 +334,7 @@ extern jmethodID njJSException_JSException_wrap;/*netscape.javascipt.JSException
 extern jmethodID njJSObject_JSObject;          /* netscape.javascript.JSObject constructor */
 extern jmethodID njJSUtil_getStackTrace;       /* netscape.javascript.JSUtil.getStackTrace() */
 extern jfieldID njJSObject_internal;           /* netscape.javascript.JSObject.internal */
+extern jfieldID njJSObject_long_internal;      /* netscape.javascript.JSObject.long_internal */
 extern jfieldID njJSException_lineno;          /* netscape.javascript.JSException.lineno */
 extern jfieldID njJSException_tokenIndex;      /* netscape.javascript.JSException.tokenIndex */
 extern jfieldID njJSException_source;          /* netscape.javascript.JSException.source */
@@ -579,10 +601,10 @@ jsj_LogError(const char *error_msg);
 extern const JSErrorFormatString * 
 jsj_GetErrorMessage(void *userRef, const char *locale, const uintN errorNumber);
 
-JS_DLL_CALLBACK JSJHashNumber
+JSJHashNumber JS_DLL_CALLBACK
 jsj_HashJavaObject(const void *key, void* env);
 
-JS_DLL_CALLBACK intN
+intN JS_DLL_CALLBACK
 jsj_JavaObjectComparator(const void *v1, const void *v2, void *arg);
 
 extern JSJavaThreadState *
@@ -632,5 +654,10 @@ enum JSJErrNum {
     JSJ_Err_Limit
 #undef MSGDEF
 };
+
+#ifdef __cplusplus
+} 
+// end extern "C"
+#endif
 
 #endif   /* _JSJAVA_PVT_H */

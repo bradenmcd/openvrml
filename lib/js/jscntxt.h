@@ -67,6 +67,7 @@ struct JSRuntime {
     JSArenaPool         gcArenaPool;
     JSArenaPool         gcFlagsPool;
     JSHashTable         *gcRootsHash;
+    JSHashTable         *gcLocksHash;
     JSGCThing           *gcFreeList;
     jsword              gcDisabled;
     uint32              gcBytes;
@@ -133,6 +134,9 @@ struct JSRuntime {
     /* XXX must come after JSCLists or MSVC alignment bug bites empty lists */
     JSPropertyCache     propertyCache;
 
+    /* Client opaque pointer */
+    void                *data;
+
 #ifdef JS_THREADSAFE
     /* These combine to interlock the GC and new requests. */
     PRLock              *gcLock;
@@ -149,6 +153,9 @@ struct JSRuntime {
 
     /* Used to synchronize down/up state change; uses rtLock. */
     PRCondVar           *stateChange;
+
+    /* Used to serialize cycle checks when setting __proto__ or __parent__. */
+    PRLock              *setSlotLock;
 #endif
 };
 
@@ -225,14 +232,17 @@ struct JSContext {
 #ifdef JS_THREADSAFE
     jsword              thread;
     jsrefcount          requestDepth;
-    JSPackedBool        destroying;
 #endif
 
-    /* Exception state (NB: throwing is packed with destroying above). */
+    /* Exception state. */
     JSPackedBool        throwing;           /* is there a pending exception? */
     jsval               exception;          /* most-recently-thrown exceptin */
 
+    /* Per-context options. */
     uint32              options;            /* see jsapi.h for JSOPTION_* */
+
+    /* Delay JS_SetVersion scanner effects until they're needed. */
+    JSVersion           scannerVersion;
 };
 
 /* Slightly more readable macros, also to hide bitset implementation detail. */
@@ -240,7 +250,7 @@ struct JSContext {
 #define JS_HAS_WERROR_OPTION(cx)    ((cx)->options & JSOPTION_WERROR)
 
 extern JSContext *
-js_NewContext(JSRuntime *rt, size_t stacksize);
+js_NewContext(JSRuntime *rt, size_t stackChunkSize);
 
 extern void
 js_DestroyContext(JSContext *cx, JSGCMode gcmode);

@@ -94,6 +94,7 @@ char   js_setter_str[]            = "setter";
 char   js_set_str[]               = "set";
 char   js_toSource_str[]          = "toSource";
 char   js_toString_str[]          = "toString";
+char   js_toLocaleString_str[]    = "toLocaleString";
 char   js_valueOf_str[]           = "valueOf";
 
 #define HASH_OBJECT(o)  ((JSHashNumber)(o) >> JSVAL_TAGBITS)
@@ -322,12 +323,16 @@ JS_STATIC_DLL_CALLBACK(intN)
 js_atom_sweeper(JSHashEntry *he, intN i, void *arg)
 {
     JSAtom *atom;
+    uintN gcflags;
 
     atom = (JSAtom *)he;
     if (atom->flags & ATOM_MARK) {
-	atom->flags &= ~ATOM_MARK;
-	return HT_ENUMERATE_NEXT;
+        atom->flags &= ~ATOM_MARK;
+        return HT_ENUMERATE_NEXT;
     }
+    gcflags = (uintN)arg;
+    if (gcflags & GC_KEEP_ATOMS)
+        return HT_ENUMERATE_NEXT;
     JS_ASSERT((atom->flags & ATOM_PINNED) == 0);
     atom->entry.key = NULL;
     atom->flags = 0;
@@ -335,9 +340,9 @@ js_atom_sweeper(JSHashEntry *he, intN i, void *arg)
 }
 
 void
-js_SweepAtomState(JSAtomState *state)
+js_SweepAtomState(JSAtomState *state, uintN gcflags)
 {
-    JS_HashTableEnumerateEntries(state->table, js_atom_sweeper, NULL);
+    JS_HashTableEnumerateEntries(state->table, js_atom_sweeper, (void*)gcflags);
 }
 
 JS_STATIC_DLL_CALLBACK(intN)
@@ -365,7 +370,7 @@ js_AtomizeHashedKey(JSContext *cx, jsval key, JSHashNumber keyHash, uintN flags)
     JSAtom *atom;
 
     state = &cx->runtime->atomState;
-    JS_LOCK(&state->lock,cx);
+    JS_LOCK(&state->lock, cx);
     table = state->table;
     hep = JS_HashTableRawLookup(table, keyHash, (void *)key);
     if ((he = *hep) == NULL) {
@@ -439,7 +444,7 @@ js_AtomizeDouble(JSContext *cx, jsdouble d, uintN flags)
     keyHash = HASH_DOUBLE(dp);
     key = DOUBLE_TO_JSVAL(dp);
     state = &cx->runtime->atomState;
-    JS_LOCK(&state->lock,cx);
+    JS_LOCK(&state->lock, cx);
     table = state->table;
     hep = JS_HashTableRawLookup(table, keyHash, (void *)key);
     if ((he = *hep) == NULL) {
@@ -449,7 +454,7 @@ js_AtomizeDouble(JSContext *cx, jsdouble d, uintN flags)
 	JS_UNLOCK(&state->lock,cx);
 	if (!js_NewDoubleValue(cx, d, &key))
 	    return NULL;
-	JS_LOCK(&state->lock,cx);
+	JS_LOCK(&state->lock, cx);
 #ifdef JS_THREADSAFE
 	if (state->tablegen != gen) {
 	    hep = JS_HashTableRawLookup(table, keyHash, (void *)key);
@@ -487,7 +492,7 @@ js_AtomizeString(JSContext *cx, JSString *str, uintN flags)
     keyHash = js_HashString(str);
     key = STRING_TO_JSVAL(str);
     state = &cx->runtime->atomState;
-    JS_LOCK(&state->lock,cx);
+    JS_LOCK(&state->lock, cx);
     table = state->table;
     hep = JS_HashTableRawLookup(table, keyHash, (void *)key);
     if ((he = *hep) == NULL) {
@@ -495,16 +500,14 @@ js_AtomizeString(JSContext *cx, JSString *str, uintN flags)
 #ifdef JS_THREADSAFE
 	    uint32 gen = state->tablegen;
 #endif
-	    JS_UNLOCK(&state->lock,cx);
-	    if (flags & ATOM_NOCOPY) {
-		str = js_NewString(cx, str->chars, str->length, 0);
-	    } else {
-		str = js_NewStringCopyN(cx, str->chars, str->length, 0);
-	    }
+	    JS_UNLOCK(&state->lock, cx);
+            str = (flags & ATOM_NOCOPY)
+                  ? js_NewString(cx, str->chars, str->length, 0)
+                  : js_NewStringCopyN(cx, str->chars, str->length, 0);
 	    if (!str)
 		return NULL;
 	    key = STRING_TO_JSVAL(str);
-	    JS_LOCK(&state->lock,cx);
+	    JS_LOCK(&state->lock, cx);
 #ifdef JS_THREADSAFE
 	    if (state->tablegen != gen) {
 		hep = JS_HashTableRawLookup(table, keyHash, (void *)key);
@@ -540,14 +543,32 @@ js_Atomize(JSContext *cx, const char *bytes, size_t length, uintN flags)
     JSAtom *atom;
     char buf[2 * ALIGNMENT(JSString)];
 
+    /*
+     * Avoiding the malloc in js_InflateString on shorter strings saves us
+     * over 20,000 malloc calls on mozilla browser startup. This compares to
+     * only 131 calls where the string is longer than a 31 char (net) buffer.
+     * The vast majority of atomized strings are already in the hashtable. So
+     * js_AtomizeString rarely has to copy the temp string we make.
+     */
+#define ATOMIZE_BUF_MAX 32
+    jschar inflated[ATOMIZE_BUF_MAX];
+
+    if (length < ATOMIZE_BUF_MAX) {
+        js_InflateStringToBuffer(inflated, bytes, length);
+        chars = inflated;
+    } else {
+        chars = js_InflateString(cx, bytes, length);
+        if (!chars)
+	    return NULL;
+        flags |= ATOM_NOCOPY;
+    }
+
     str = ALIGN(buf, JSString);
-    chars = js_InflateString(cx, bytes, length);
-    if (!chars)
-	return NULL;
+
     str->chars = chars;
     str->length = length;
-    atom = js_AtomizeString(cx, str, ATOM_TMPSTR | ATOM_NOCOPY | flags);
-    if (!atom || ATOM_TO_STRING(atom)->chars != chars)
+    atom = js_AtomizeString(cx, str, ATOM_TMPSTR | flags);
+    if (chars != inflated && (!atom || ATOM_TO_STRING(atom)->chars != chars))
 	JS_free(cx, chars);
     return atom;
 }

@@ -18,7 +18,7 @@
  * Copyright (C) 1998 Netscape Communications Corporation. All
  * Rights Reserved.
  *
- * Contributor(s): 
+ * Contributor(s):
  *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU Public License (the "GPL"), in which case the
@@ -162,7 +162,7 @@ static struct keyword {
 #elif defined(RESERVE_ECMA_KEYWORDS)
     {"debugger",       TOK_RESERVED,            JSOP_NOP,   JSVERSION_1_3},
 #endif
-    {0,0,0,0}
+    {0,                TOK_EOF,                 JSOP_NOP,   JSVERSION_DEFAULT}
 };
 
 JSBool
@@ -215,6 +215,12 @@ js_NewBufferTokenStream(JSContext *cx, const jschar *base, size_t length)
 {
     size_t nb;
     JSTokenStream *ts;
+
+    if (cx->scannerVersion != cx->version) {
+        if (!js_InitScanner(cx))
+            return NULL;
+        cx->scannerVersion = cx->version;
+    }
 
     nb = sizeof(JSTokenStream) + JS_LINE_LIMIT * sizeof(jschar);
     JS_ARENA_ALLOCATE(ts, &cx->tempPool, nb);
@@ -317,9 +323,11 @@ GetChar(JSTokenStream *ts)
 		        return EOF;
 		    }
 	        }
-                if (ts->listener)
-                    (*ts->listener)(ts->filename, ts->lineno, ts->userbuf.ptr, len,
-                                    &ts->listenerTSData, ts->listenerData);
+                if (ts->listener) {
+                    ts->listener(ts->filename, ts->lineno, ts->userbuf.ptr, len,
+                                 &ts->listenerTSData, ts->listenerData);
+                }
+
 	        /*
 	         * Any one of \n, \r, or \r\n ends a line (longest match wins).
                  * Also allow the Unicode line and paragraph separators.
@@ -337,7 +345,7 @@ GetChar(JSTokenStream *ts)
 			        nl++;
 		            break;
 		        }
-                        if ((*nl == LINE_SEPARATOR) || (*nl == PARA_SEPARATOR))
+                        if (*nl == LINE_SEPARATOR || *nl == PARA_SEPARATOR)
 		            break;
                     }
                 }
@@ -362,19 +370,20 @@ GetChar(JSTokenStream *ts)
 		    if (*nl == '\r') {
 		        if (ts->linebuf.base[len-1] == '\r') {
                             /*
-                             * Does the line segment end in \r?  We must check for
-                             * a \n at the front of the next segment before storing
-                             * a \n into linebuf.  This case only matters when we're
-                             * reading from a file.
+                             * Does the line segment end in \r?  We must check
+                             * for a \n at the front of the next segment before
+                             * storing a \n into linebuf.  This case matters
+                             * only when we're reading from a file.
                              */
 			    if (nl + 1 == ts->userbuf.limit && ts->file) {
 			        len--;
 			        ts->flags |= TSF_CRFLAG; /* clear NLFLAG? */
                                 if (len == 0) {
                                     /*
-                                     * This can happen when a segment ends in \r\r.
-                                     * Start over.  ptr == limit in this case, so
-                                     * we'll fall into buffer-filling code.
+                                     * This can happen when a segment ends in
+                                     * \r\r.  Start over.  ptr == limit in this
+                                     * case, so we'll fall into buffer-filling
+                                     * code.
                                      */
                                     return GetChar(ts);
                                 }
@@ -389,8 +398,7 @@ GetChar(JSTokenStream *ts)
 			    JS_ASSERT(ts->linebuf.base[len] == '\n');
 			    ts->linebuf.base[len-1] = '\n';
 		        }
-		    } else if ((*nl == LINE_SEPARATOR) ||
-                               (*nl == PARA_SEPARATOR)) {
+		    } else if (*nl == LINE_SEPARATOR || *nl == PARA_SEPARATOR) {
                         ts->linebuf.base[len-1] = '\n';
 		    }
 	        }
@@ -399,7 +407,7 @@ GetChar(JSTokenStream *ts)
 	        ts->linebuf.limit = ts->linebuf.base + len;
 	        ts->linebuf.ptr = ts->linebuf.base;
 
-	        /* Update position of linebuf within physical line in userbuf. */
+	        /* Update position of linebuf within physical userbuf line. */
 	        if (!(ts->flags & TSF_NLFLAG))
 		    ts->linepos += ts->linelen;
 	        else
@@ -665,8 +673,8 @@ AddToTokenBuf(JSContext *cx, JSTokenBuf *tb, jschar c)
 * escape sequence - returning it's value if so.
 * Otherwise, non-destructively return the original '\'.
 */
-static int32 
-getUnicodeEscape(JSTokenStream *ts)
+static int32
+GetUnicodeEscape(JSTokenStream *ts)
 {
     jschar cp[5];
     int32 c;
@@ -730,26 +738,28 @@ retry:
 
     if (c == EOF)
 	RETURN(TOK_EOF);
+    if (c != '-')
+        ts->flags |= TSF_DIRTYLINE;
 
     hadUnicodeEscape = JS_FALSE;
     if (JS_ISIDENT_START(c) ||
-        ((c == '\\') &&
-            (c = getUnicodeEscape(ts), 
-            hadUnicodeEscape = JS_ISIDENT_START(c)))) {
+        (c == '\\' &&
+         (c = GetUnicodeEscape(ts),
+          hadUnicodeEscape = JS_ISIDENT_START(c)))) {
 	INIT_TOKENBUF(&ts->tokenbuf);
         for (;;) {
 	    if (!AddToTokenBuf(cx, &ts->tokenbuf, (jschar)c))
 		RETURN(TOK_ERROR);
 	    c = GetChar(ts);
             if (c == '\\') {
-                c = getUnicodeEscape(ts);
-                if (JS_ISIDENT(c))
-                    hadUnicodeEscape = JS_TRUE;
-                else
+                c = GetUnicodeEscape(ts);
+                if (!JS_ISIDENT(c))
+                    break;
+                hadUnicodeEscape = JS_TRUE;
+            } else {
+                if (!JS_ISIDENT(c))
                     break;
             }
-            else
-                if (!JS_ISIDENT(c)) break;
         }
 	UngetChar(ts, c);
 	FINISH_TOKENBUF(&ts->tokenbuf);
@@ -760,16 +770,13 @@ retry:
 			       0);
 	if (!atom)
 	    RETURN(TOK_ERROR);
-        if (hadUnicodeEscape) /* Can never be a keyword, then. */
-            atom->kwindex = -1;
-        else
-	    if (atom->kwindex >= 0) {
-	        struct keyword *kw;
+        if (!hadUnicodeEscape && atom->kwindex >= 0) {
+            struct keyword *kw;
 
-	        kw = &keywords[atom->kwindex];
-	        tp->t_op = (JSOp) kw->op;
-	        RETURN(kw->tokentype);
-	    }
+            kw = &keywords[atom->kwindex];
+            tp->t_op = (JSOp) kw->op;
+            RETURN(kw->tokentype);
+        }
 	tp->t_op = JSOP_NAME;
 	tp->t_atom = atom;
 	RETURN(TOK_NAME);
@@ -949,7 +956,11 @@ retry:
     }
 
     switch (c) {
-      case '\n': c = TOK_EOL; break;
+      case '\n': 
+        ts->flags &= ~TSF_DIRTYLINE; 
+        c = TOK_EOL; 
+        break;
+
       case ';': c = TOK_SEMI; break;
       case '.': c = TOK_DOT; break;
       case '[': c = TOK_LB; break;
@@ -1133,8 +1144,10 @@ skipline:
 				     ts->tokenbuf.base,
 				     TOKEN_LENGTH(&ts->tokenbuf),
 				     flags);
-	    if (!obj)
-		RETURN(TOK_ERROR);
+            if (!obj) {
+                js_ReportUncaughtException(cx);
+                RETURN(TOK_ERROR);
+            }
 	    atom = js_AtomizeObject(cx, obj, 0);
 	    if (!atom)
 		RETURN(TOK_ERROR);
@@ -1159,20 +1172,31 @@ skipline:
 	break;
 
       case '+':
-      case '-':
 	if (MatchChar(ts, '=')) {
-	    tp->t_op = (c == '+') ? JSOP_ADD : JSOP_SUB;
+	    tp->t_op = JSOP_ADD;
 	    c = TOK_ASSIGN;
 	} else if (MatchChar(ts, c)) {
-	    c = (c == '+') ? TOK_INC : TOK_DEC;
-	} else if (c == '-') {
-	    tp->t_op = JSOP_NEG;
-	    c = TOK_MINUS;
+	    c = TOK_INC;
 	} else {
 	    tp->t_op = JSOP_POS;
 	    c = TOK_PLUS;
 	}
 	break;
+
+      case '-':
+        if (MatchChar(ts, '=')) {
+            tp->t_op = JSOP_SUB;
+            c = TOK_ASSIGN;
+        } else if (MatchChar(ts, c)) {
+            if ((PeekChar(ts) == '>') && !(ts->flags & TSF_DIRTYLINE))
+                goto skipline;
+            c = TOK_DEC;
+        } else {
+            tp->t_op = JSOP_NEG;
+            c = TOK_MINUS;
+        }
+        ts->flags |= TSF_DIRTYLINE;
+        break;
 
 #if JS_HAS_SHARP_VARS
       case '#':

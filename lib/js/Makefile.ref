@@ -87,6 +87,10 @@ DEFINES += -DPERLCONNECT -D_GNU_SOURCE
 PERLCFLAGS := $(shell perl -MExtUtils::Embed -e ccopts)
 PERLLDFLAGS := $(shell perl -MExtUtils::Embed -e ldopts)
 
+# perl erroneously reports compiler flag -rdynamic (interpreted by ld
+# as -r) when it really meant -export-dynamic.
+PERLLDFLAGS := $(subst -rdynamic,-export-dynamic,$(PERLLDFLAGS))
+
 CFLAGS += $(PERLCFLAGS)
 LDFLAGS += $(PERLLDFLAGS)
 endif
@@ -100,12 +104,16 @@ endif
 
 #
 # Line editing support.
+# Define JS_READLINE or JS_EDITLINE to enable line editing in the
+# js command-line interpreter.
 #
 ifdef JS_READLINE
+# For those platforms with the readline library installed.
 DEFINES += -DEDITLINE
 PROG_LIBS += -lreadline
 else
 ifdef JS_EDITLINE
+# Use the editline library, built locally.
 PREDIRS += editline
 DEFINES += -DEDITLINE
 PROG_LIBS += -Leditline/$(OBJDIR) -ledit

@@ -47,14 +47,6 @@
 
 #include "jstypes.h"
 
-char* strdup(const char *str)
-{
-    char* dup = (char*) malloc(1 + strlen(str));
-    if (dup != NULL)
-	    strcpy(dup, str);
-    return dup;
-}
-
 #if defined(LIVECONNECT)
 
 #include "JavaSession.h"
@@ -66,6 +58,8 @@ jint JNICALL JNI_GetDefaultJavaVMInitArgs(void* args)
 	if (args != NULL) {
 		JDK1_1InitArgs* initArgs = (JDK1_1InitArgs*)args;
 		memset(initArgs, 0, sizeof(JDK1_1InitArgs));
+		initArgs->version = 0x00010001;
+		initArgs->classpath = ".";
 		return 0;
 	}
 	return -1;
@@ -109,6 +103,19 @@ jint JNICALL JNI_CreateJavaVM(JavaVM** outVM, JNIEnv ** outEnv, void* args)
 			theSession = new JavaSession();
 		if (theSession == NULL)
 			throw(OSStatusException(memFullErr));
+		
+		// set up the classpath if any.
+		JDK1_1InitArgs* initArgs = (JDK1_1InitArgs*)args;
+		char* classpath = initArgs->classpath;
+		char* colon = ::strchr(classpath, ':');
+		while (colon != NULL) {
+			char* element = classpath;
+			*colon = '\0';
+			theSession->addClassPath(element);
+			*colon = ':';
+			classpath = colon + 1;
+			colon = ::strchr(classpath, ':');
+		}
 		
 		// Make sure that the JavaSession is torn down at the end of execution.
 		// If the user chooses "Quit" from the file menu, this guarantees

@@ -113,6 +113,7 @@ JS_BEGIN_EXTERN_C
 #define JSPROP_EXPORTED         0x08    /* property is exported from object */
 #define JSPROP_GETTER           0x10    /* property holds getter function */
 #define JSPROP_SETTER           0x20    /* property holds setter function */
+#define JSPROP_SHARED           0x40    /* don't copy proto-property on set */
 #define JSPROP_INDEX            0x80    /* name is actually (jsint) index */
 
 /* Function flags, set in JSFunctionSpec and passed to JS_NewFunction etc. */
@@ -334,6 +335,12 @@ JS_DestroyRuntime(JSRuntime *rt);
 extern JS_PUBLIC_API(void)
 JS_ShutDown(void);
 
+JS_PUBLIC_API(void *)
+JS_GetRuntimePrivate(JSRuntime *rt);
+
+JS_PUBLIC_API(void)
+JS_SetRuntimePrivate(JSRuntime *rt, void *data);
+
 #ifdef JS_THREADSAFE
 
 extern JS_PUBLIC_API(void)
@@ -361,7 +368,7 @@ extern JS_PUBLIC_API(void)
 JS_Unlock(JSRuntime *rt);
 
 extern JS_PUBLIC_API(JSContext *)
-JS_NewContext(JSRuntime *rt, size_t stacksize);
+JS_NewContext(JSRuntime *rt, size_t stackChunkSize);
 
 extern JS_PUBLIC_API(void)
 JS_DestroyContext(JSContext *cx);
@@ -449,6 +456,22 @@ JS_NewDoubleValue(JSContext *cx, jsdouble d, jsval *rval);
 extern JS_PUBLIC_API(JSBool)
 JS_NewNumberValue(JSContext *cx, jsdouble d, jsval *rval);
 
+/*
+ * A JS GC root is a pointer to a JSObject *, JSString *, or jsdouble * that
+ * itself points into the GC heap (more recently, we support this extension:
+ * a root may be a pointer to a jsval v for which JSVAL_IS_GCTHING(v) is true).
+ *
+ * Therefore, you never pass JSObject *obj to JS_AddRoot(cx, obj).  You always
+ * call JS_AddRoot(cx, &obj), passing obj by reference.  And later, before obj
+ * or the structure it is embedded within goes out of scope or is freed, you
+ * must call JS_RemoveRoot(cx, &obj).
+ *
+ * Also, use JS_AddNamedRoot(cx, &structPtr->memberObj, "structPtr->memberObj")
+ * in preference to JS_AddRoot(cx, &structPtr->memberObj), in order to identify
+ * roots by their source callsites.  This way, you can find the callsite while
+ * debugging if you should fail to do JS_RemoveRoot(cx, &structPtr->memberObj)
+ * before freeing structPtr's memory.
+ */
 extern JS_PUBLIC_API(JSBool)
 JS_AddRoot(JSContext *cx, void *rp);
 
@@ -482,6 +505,9 @@ JS_MaybeGC(JSContext *cx);
 
 extern JS_PUBLIC_API(JSGCCallback)
 JS_SetGCCallback(JSContext *cx, JSGCCallback cb);
+
+extern JS_PUBLIC_API(JSGCCallback)
+JS_SetGCCallbackRT(JSRuntime *rt, JSGCCallback cb);
 
 /************************************************************************/
 
@@ -542,7 +568,12 @@ struct JSObjectOps {
     JSNative            construct;
     JSXDRObjectOp       xdrObject;
     JSHasInstanceOp     hasInstance;
-    jsword              spare[2];
+    JSSetObjectSlotOp   setProto;
+    JSSetObjectSlotOp   setParent;
+    jsword              spare1;
+    jsword              spare2;
+    jsword              spare3;
+    jsword              spare4;
 };
 
 /*
@@ -934,6 +965,22 @@ JS_CompileFileHandleForPrincipals(JSContext *cx, JSObject *obj,
                                   const char *filename, FILE *fh,
                                   JSPrincipals *principals);
 
+/*
+ * NB: you must use JS_NewScriptObject and root a pointer to its return value
+ * in order to keep a JSScript and its atoms safe from garbage collection after
+ * creating the script via JS_Compile* and before a JS_ExecuteScript* call.
+ * E.g., and without error checks:
+ *
+ *    JSScript *script = JS_CompileFile(cx, global, filename);
+ *    JSObject *scrobj = JS_NewScriptObject(cx, script);
+ *    JS_AddNamedRoot(cx, &scrobj, "scrobj");
+ *    do {
+ *        jsval result;
+ *        JS_ExecuteScript(cx, global, script, &result);
+ *        JS_GC();
+ *    } while (!JSVAL_IS_BOOLEAN(result) || JSVAL_TO_BOOLEAN(result));
+ *    JS_RemoveRoot(cx, &scrobj);
+ */
 extern JS_PUBLIC_API(JSObject *)
 JS_NewScriptObject(JSContext *cx, JSScript *script);
 
@@ -1046,6 +1093,12 @@ JS_IsConstructing(JSContext *cx);
 
 /*
  * Strings.
+ *
+ * NB: JS_NewString takes ownership of bytes on success, avoiding a copy; but
+ * on error (signified by null return), it leaves bytes owned by the caller.
+ * So the caller must free bytes in the error case, if it has no use for them.
+ * In contrast, all the JS_New*StringCopy* functions do not take ownership of
+ * the character memory passed to them -- they copy it.
  */
 extern JS_PUBLIC_API(JSString *)
 JS_NewString(JSContext *cx, char *bytes, size_t length);

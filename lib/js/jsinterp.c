@@ -104,10 +104,40 @@ js_FlushPropertyCacheByProp(JSContext *cx, JSProperty *prop)
     cache->empty = empty;
 }
 
+void
+js_FlushPropertyCacheNotFounds(JSContext *cx)
+{
+    JSPropertyCache *cache;
+    JSBool empty;
+    JSPropertyCacheEntry *end, *pce, entry;
+    JSProperty *pce_prop;
+
+    cache = &cx->runtime->propertyCache;
+    if (cache->empty)
+        return;
+
+    empty = JS_TRUE;
+    end = &cache->table[PROPERTY_CACHE_SIZE];
+    for (pce = &cache->table[0]; pce < end; pce++) {
+        PCE_LOAD(cache, pce, entry);
+        pce_prop = PCE_PROPERTY(entry);
+        if (pce_prop) {
+            if (!PROP_FOUND(pce_prop)) {
+                PCE_OBJECT(entry) = NULL;
+                PCE_PROPERTY(entry) = NULL;
+                PCE_STORE(cache, pce, entry);
+            } else {
+                empty = JS_FALSE;
+            }
+        }
+    }
+    cache->empty = empty;
+}
+
 /*
  * Class for for/in loop property iterator objects.
  */
-#define JSSLOT_ITER_STATE    (JSSLOT_START)
+#define JSSLOT_ITER_STATE   (JSSLOT_START)
 
 static void
 prop_iterator_finalize(JSContext *cx, JSObject *obj)
@@ -331,7 +361,7 @@ js_GetArgument(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     fun = (JSFunction *) JS_GetPrivate(cx, obj);
     for (fp = cx->fp; fp; fp = fp->down) {
         /* Find most recent non-native function frame. */
-        if (fp->fun && !fp->fun->call) {
+        if (fp->fun && !fp->fun->native) {
             if (fp->fun == fun) {
                 JS_ASSERT((uintN)JSVAL_TO_INT(id) < fp->fun->nargs);
                 *vp = fp->argv[JSVAL_TO_INT(id)];
@@ -352,7 +382,7 @@ js_SetArgument(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     fun = (JSFunction *) JS_GetPrivate(cx, obj);
     for (fp = cx->fp; fp; fp = fp->down) {
         /* Find most recent non-native function frame. */
-        if (fp->fun && !fp->fun->call) {
+        if (fp->fun && !fp->fun->native) {
             if (fp->fun == fun) {
                 JS_ASSERT((uintN)JSVAL_TO_INT(id) < fp->fun->nargs);
                 fp->argv[JSVAL_TO_INT(id)] = *vp;
@@ -374,7 +404,7 @@ js_GetLocalVariable(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     fun = (JSFunction *) JS_GetPrivate(cx, obj);
     for (fp = cx->fp; fp; fp = fp->down) {
         /* Find most recent non-native function frame. */
-        if (fp->fun && !fp->fun->call) {
+        if (fp->fun && !fp->fun->native) {
             if (fp->fun == fun) {
                 slot = JSVAL_TO_INT(id);
                 JS_ASSERT((uintN)slot < fp->fun->nvars);
@@ -398,7 +428,7 @@ js_SetLocalVariable(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
     fun = (JSFunction *) JS_GetPrivate(cx, obj);
     for (fp = cx->fp; fp; fp = fp->down) {
         /* Find most recent non-native function frame. */
-        if (fp->fun && !fp->fun->call) {
+        if (fp->fun && !fp->fun->native) {
             if (fp->fun == fun) {
                 slot = JSVAL_TO_INT(id);
                 JS_ASSERT((uintN)slot < fp->fun->nvars);
@@ -412,6 +442,65 @@ js_SetLocalVariable(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 }
 
 /*
+ * Compute the 'this' parameter and store it in frame as frame.thisp.
+ * Activation objects ("Call" objects not created with "new Call()", i.e.,
+ * "Call" objects that have private data) may not be referred to by 'this',
+ * as dictated by ECMA.
+ *
+ * N.B.: fp->argv must be set, and fp->argv[-2] must be the callee object
+ * reference, usually a function object.  Also, fp->constructing must be
+ * set if we are preparing for a constructor call.
+ */
+static JSBool
+ComputeThis(JSContext *cx, JSObject *thisp, JSStackFrame *fp)
+{
+    JSObject *parent;
+
+    if (thisp &&
+        !(OBJ_GET_CLASS(cx, thisp) == &js_CallClass &&
+          JS_GetPrivate(cx, thisp) != NULL))
+    {
+        /* Some objects (e.g., With) delegate 'this' to another object. */
+        thisp = OBJ_THIS_OBJECT(cx, thisp);
+        if (!thisp)
+            return JS_FALSE;
+
+        /* Default return value for a constructor is the new object. */
+        if (fp->constructing)
+            fp->rval = OBJECT_TO_JSVAL(thisp);
+    } else {
+        /*
+         * ECMA requires "the global object", but in the presence of multiple
+         * top-level objects (windows, frames, or certain layers in the client
+         * object model), we prefer fun's parent.  An example that causes this
+         * code to run:
+         *
+         *   // in window w1
+         *   function f() { return this }
+         *   function g() { return f }
+         *
+         *   // in window w2
+         *   var h = w1.g()
+         *   alert(h() == w1)
+         *
+         * The alert should display "true".
+         */
+        JS_ASSERT(!fp->constructing);
+        parent = OBJ_GET_PARENT(cx, JSVAL_TO_OBJECT(fp->argv[-2]));
+        if (!parent) {
+            thisp = cx->globalObject;
+        } else {
+            /* walk up to find the top-level object */
+            thisp = parent;
+            while ((parent = OBJ_GET_PARENT(cx, thisp)) != NULL)
+                thisp = parent;
+        }
+    }
+    fp->thisp = thisp;
+    return JS_TRUE;
+}
+
+/*
  * Find a function reference and its 'this' object implicit first parameter
  * under argc arguments on cx's stack, and call the function.  Push missing
  * required arguments, allocate declared local variables, and pop everything
@@ -421,7 +510,7 @@ JS_FRIEND_API(JSBool)
 js_Invoke(JSContext *cx, uintN argc, uintN flags)
 {
     JSStackFrame *fp, frame;
-    jsval *sp, *newsp;
+    jsval *sp, *newsp, *limit;
     jsval *vp, v;
     JSObject *funobj, *parent, *thisp;
     JSClass *clasp;
@@ -477,16 +566,16 @@ js_Invoke(JSContext *cx, uintN argc, uintN flags)
             ok = clasp->convert(cx, funobj, JSTYPE_FUNCTION, &v);
             if (!ok)
                 goto out2;
-        }
 
-        if (JSVAL_IS_FUNCTION(cx, v)) {
-            funobj = JSVAL_TO_OBJECT(v);
-            parent = OBJ_GET_PARENT(cx, funobj);
-            fun = (JSFunction *) JS_GetPrivate(cx, funobj);
+            if (JSVAL_IS_FUNCTION(cx, v)) {
+                funobj = JSVAL_TO_OBJECT(v);
+                parent = OBJ_GET_PARENT(cx, funobj);
+                fun = (JSFunction *) JS_GetPrivate(cx, funobj);
 
-            /* Make vp refer to funobj to keep it available as argv[-2]. */
-            *vp = v;
-            goto have_fun;
+                /* Make vp refer to funobj to keep it available as argv[-2]. */
+                *vp = v;
+                goto have_fun;
+            }
         }
         fun = NULL;
         script = NULL;
@@ -500,7 +589,7 @@ js_Invoke(JSContext *cx, uintN argc, uintN flags)
         /* Get private data and set derived locals from it. */
         fun = (JSFunction *) JS_GetPrivate(cx, funobj);
 have_fun:
-        native = fun->call;
+        native = fun->native;
         script = fun->script;
         minargs = fun->nargs + fun->extra;
         nvars = fun->nvars;
@@ -530,55 +619,10 @@ have_fun:
     frame.special = 0;
     frame.dormantNext = NULL;
 
-    /*
-     * Compute the 'this' parameter and store it in frame as frame.thisp.
-     * Activation objects ("Call" objects not created with "new Call", i.e.,
-     * "Call" objects with private data) may not be referred to by 'this'
-     * as dictated by ECMA.
-     */
-    if (thisp &&
-        !(OBJ_GET_CLASS(cx, thisp) == &js_CallClass &&
-          JS_GetPrivate(cx, thisp) != NULL))
-    {
-        /* Some objects (e.g., With) delegate 'this' to another object. */
-        thisp = OBJ_THIS_OBJECT(cx, thisp);
-        if (!thisp) {
-            ok = JS_FALSE;
-            goto out2;
-        }
-
-        /* Default return value for a constructor is the new object. */
-        if (frame.constructing)
-            frame.rval = OBJECT_TO_JSVAL(thisp);
-    } else {
-        /*
-         * ECMA requires "the global object", but in the presence of multiple
-         * top-level objects (windows, frames, or certain layers in the client
-         * object model), we prefer fun's parent.  An example that causes this
-         * code to run:
-         *
-         *   // in window w1
-         *   function f() { return this }
-         *   function g() { return f }
-         *
-         *   // in window w2
-         *   var h = w1.g()
-         *   alert(h() == w1)
-         *
-         * The alert should display "true".
-         */
-        JS_ASSERT(!frame.constructing);
-        if (!parent) {
-            thisp = cx->globalObject;
-        } else {
-            /* walk up to find the top-level object */
-            JSObject *tmp;
-            thisp = parent;
-            while ((tmp = OBJ_GET_PARENT(cx, thisp)) != NULL)
-                thisp = tmp;
-        }
-    }
-    frame.thisp = thisp;
+    /* Compute the 'this' parameter and store it in frame as frame.thisp. */
+    ok = ComputeThis(cx, thisp, &frame);
+    if (!ok)
+        goto out2;
 
     /* From here on, control must flow through label out: to return. */
     cx->fp = &frame;
@@ -593,13 +637,16 @@ have_fun:
     if (nslots) {
         /* All arguments must be contiguous, so we may have to copy actuals. */
         nalloc = nslots;
-        if ((jsuword)(sp + nslots) > cx->stackPool.current->limit)
-            nalloc += argc;
-
-        /* Take advantage of the surplus slots in the caller's frame depth. */
-        surplus = (jsval *)mark - sp;
-        JS_ASSERT(surplus >= 0);
-        nalloc -= surplus;
+        limit = (jsval *) cx->stackPool.current->limit;
+        if (sp + nslots > limit) {
+            /* Hit end of arena: we have to copy argv[-2..(argc+nslots-1)]. */
+            nalloc += 2 + argc;
+        } else {
+            /* Take advantage of surplus slots in the caller's frame depth. */
+            surplus = (jsval *)mark - sp;
+            JS_ASSERT(surplus >= 0);
+            nalloc -= surplus;
+        }
 
         /* Check whether we have enough space in the caller's frame. */
         if (nalloc > 0) {
@@ -612,6 +659,10 @@ have_fun:
 
             /* If we couldn't allocate contiguous args, copy actuals now. */
             if (newsp != mark) {
+                JS_ASSERT(sp + nslots > limit);
+                JS_ASSERT(2 + argc + nslots == (uintN)nalloc);
+                *newsp++ = vp[0];
+                *newsp++ = vp[1];
                 if (argc)
                     memcpy(newsp, frame.argv, argc * sizeof(jsval));
                 frame.argv = newsp;
@@ -662,7 +713,7 @@ have_fun:
         /* If native, use caller varobj and scopeChain for eval. */
         frame.varobj = fp->varobj;
         frame.scopeChain = fp->scopeChain;
-        ok = native(cx, thisp, argc, frame.argv, &frame.rval);
+        ok = native(cx, frame.thisp, argc, frame.argv, &frame.rval);
     } else if (script) {
         if (fun->flags & JSFUN_HEAVYWEIGHT) {
 #if JS_HAS_CALL_OBJECT
@@ -813,16 +864,16 @@ js_Execute(JSContext *cx, JSObject *chain, JSScript *script, JSFunction *fun,
     /*
      * Here we wrap the call to js_Interpret with code to (conditionally)
      * save and restore the old stack frame chain into a chain of 'dormant'
-     * frame chains. Since we are replacing cx->fp we were running into the
-     * problem that if gc was called, then some of the objects associated
-     * with the old frame chain (stored here in the C stack as 'oldfp') were
-     * not rooted and were being collected. This was bad. So, now we
-     * preserve the links to these 'dormant' frame chains in cx before
-     * calling js_Interpret and cleanup afterwards. gc walks these dormant
-     * chains and marks objects in the same way that it marks object in the
-     * primary cx->fp chain.
+     * frame chains.  Since we are replacing cx->fp, we were running into
+     * the problem that if GC was called under this frame, some of the GC
+     * things associated with the old frame chain (available here only in
+     * the C variable 'oldfp') were not rooted and were being collected.
+     *
+     * So, now we preserve the links to these 'dormant' frame chains in cx
+     * before calling js_Interpret and cleanup afterwards.  The GC walks
+     * these dormant chains and marks objects in the same way that it marks
+     * objects in the primary cx->fp chain.
      */
-
     if (oldfp && oldfp != down) {
         JS_ASSERT(!oldfp->dormantNext);
         oldfp->dormantNext = cx->dormantFrameChain;
@@ -958,31 +1009,52 @@ out:
 }
 #endif /* JS_HAS_EXPORT_IMPORT */
 
-static JSBool
-CheckRedeclaration(JSContext *cx, JSObject *obj, JSObject *obj2, jsid id,
-                   JSProperty *prop, uintN attrs)
+JSBool
+js_CheckRedeclaration(JSContext *cx, JSObject *obj, jsid id, uintN attrs,
+                      JSBool *foundp)
 {
-    uintN oldAttrs;
+    JSObject *obj2;
+    JSProperty *prop;
+    JSBool ok;
+    uintN oldAttrs, report;
     JSBool isFunction;
     jsval value;
 
-    if (!OBJ_GET_ATTRIBUTES(cx, obj2, id, prop, &oldAttrs))
+    if (!OBJ_LOOKUP_PROPERTY(cx, obj, id, &obj2, &prop))
         return JS_FALSE;
-    if ((oldAttrs & JSPROP_READONLY) == (attrs & JSPROP_READONLY) &&
-        !JS_HAS_STRICT_OPTION(cx)) {
+    *foundp = (prop != NULL);
+    if (!prop)
         return JS_TRUE;
+    ok = OBJ_GET_ATTRIBUTES(cx, obj2, id, prop, &oldAttrs);
+    OBJ_DROP_PROPERTY(cx, obj2, prop);
+    if (!ok)
+        return JS_FALSE;
+
+    /* If either property is readonly, we have an error. */
+    report = ((oldAttrs | attrs) & JSPROP_READONLY)
+             ? JSREPORT_ERROR
+             : JSREPORT_WARNING | JSREPORT_STRICT;
+
+    if (report != JSREPORT_ERROR) {
+        /*
+         * Allow redeclaration of variables and functions, but insist that the
+         * new value is not a getter or setter -- or if it is, insist that the
+         * property being replaced is not permanent.
+         */
+        if (!(attrs & (JSPROP_GETTER | JSPROP_SETTER)))
+            return JS_TRUE;
+        if (!(oldAttrs & JSPROP_PERMANENT))
+            return JS_TRUE;
+        report = JSREPORT_ERROR;
     }
 
-    isFunction = (attrs & (JSPROP_GETTER | JSPROP_SETTER)) != 0;
+    isFunction = (oldAttrs & (JSPROP_GETTER | JSPROP_SETTER)) != 0;
     if (!isFunction) {
         if (!OBJ_GET_PROPERTY(cx, obj, id, &value))
             return JS_FALSE;
         isFunction = JSVAL_IS_FUNCTION(cx, value);
     }
-    return JS_ReportErrorFlagsAndNumber(cx,
-                                        ((oldAttrs | attrs) & JSPROP_READONLY)
-                                        ? JSREPORT_ERROR
-                                        : JSREPORT_WARNING | JSREPORT_STRICT,
+    return JS_ReportErrorFlagsAndNumber(cx, report,
                                         js_GetErrorMessage, NULL,
                                         JSMSG_REDECLARED_VAR,
                                         isFunction
@@ -999,17 +1071,20 @@ CheckRedeclaration(JSContext *cx, JSObject *obj, JSObject *obj2, jsid id,
 #define MAX_INTERP_LEVEL 30
 #endif
 
+#define MAX_INLINE_CALL_COUNT 1000
+
 JSBool
 js_Interpret(JSContext *cx, jsval *result)
 {
     JSRuntime *rt;
     JSStackFrame *fp;
     JSScript *script;
-    JSVersion newvers, oldvers;
+    uintN inlineCallCount;
     JSObject *obj, *obj2, *proto, *parent;
+    JSVersion currentVersion, originalVersion;
     JSBranchCallback onbranch;
     JSBool ok, cond;
-    ptrdiff_t depth, len;
+    jsint depth, len;
     jsval *sp, *newsp;
     void *mark;
     jsbytecode *pc, *pc2, *endpc;
@@ -1036,8 +1111,7 @@ js_Interpret(JSContext *cx, jsval *result)
     FILE *tracefp;
 #endif
 #if JS_HAS_SWITCH_STATEMENT
-    jsint low, high;
-    uintN off, npairs;
+    jsint low, high, off, npairs;
     JSBool match;
 #endif
 #if JS_HAS_GETTER_SETTER
@@ -1056,20 +1130,18 @@ js_Interpret(JSContext *cx, jsval *result)
     *result = JSVAL_VOID;
     rt = cx->runtime;
 
-    /*
-     * Set registerized frame pointer and derived pointers.
-     */
+    /* Set registerized frame pointer and derived script pointer. */
     fp = cx->fp;
     script = fp->script;
-    obj = fp->scopeChain;
 
-    /*
-     * Optimized Get and SetVersion for proper script language versioning.
-     */
-    newvers = script->version;
-    oldvers = cx->version;
-    if (newvers != oldvers)
-        JS_SetVersion(cx, newvers);
+    /* Count of JS function calls that nest in this C js_Interpret frame. */
+    inlineCallCount = 0;
+
+    /* Optimized Get and SetVersion for proper script language versioning. */
+    currentVersion = script->version;
+    originalVersion = cx->version;
+    if (currentVersion != originalVersion)
+        JS_SetVersion(cx, currentVersion);
 
     /*
      * Prepare to call a user-supplied branch handler, and abort the script
@@ -1092,19 +1164,19 @@ js_Interpret(JSContext *cx, jsval *result)
     /*
      * Allocate operand and pc stack slots for the script's worst-case depth.
      */
-    depth = (ptrdiff_t)script->depth;
+    depth = (jsint) script->depth;
     newsp = js_AllocStack(cx, (uintN)(2 * depth), &mark);
     if (!newsp) {
         ok = JS_FALSE;
-        sp = NULL;
         goto out;
     }
     newsp += depth;
-    fp->sp = sp = newsp;
+    sp = newsp;
+    SAVE_SP(fp);
 
     while (pc < endpc) {
         fp->pc = pc;
-        op = (JSOp)*pc;
+        op = (JSOp) *pc;
       do_op:
         cs = &js_CodeSpec[op];
         len = cs->length;
@@ -1165,6 +1237,10 @@ js_Interpret(JSContext *cx, jsval *result)
           case JSOP_NOP:
             break;
 
+          case JSOP_GROUP:
+            obj = NULL;
+            break;
+
           case JSOP_PUSH:
             PUSH_OPND(JSVAL_VOID);
             break;
@@ -1205,12 +1281,65 @@ js_Interpret(JSContext *cx, jsval *result)
           case JSOP_RETURN:
             CHECK_BRANCH(-1);
             fp->rval = POP();
+            if (inlineCallCount)
+          inline_return:
+            {
+                JSInlineFrame *ifp = (JSInlineFrame *) fp;
+                void *hookData = ifp->hookData;
+
+                if (hookData)
+                    cx->runtime->callHook(cx, fp, JS_FALSE, &ok, hookData);
+#if JS_HAS_ARGS_OBJECT
+                if (fp->argsobj)
+                    ok &= js_PutArgsObject(cx, fp);
+#endif
+
+                /* Store the return value in the caller's operand frame. */
+                vp = fp->argv - 2;
+                *vp = fp->rval;
+
+                /* Restore newsp for sanity-checking assertions about sp. */
+                newsp = ifp->oldsp;
+
+                /* Restore cx->fp and release the inline frame's space. */
+                cx->fp = fp = fp->down;
+                JS_ARENA_RELEASE(&cx->stackPool, ifp->mark);
+
+                /* Restore sp to point just above the return value. */
+                fp->sp = vp + 1;
+                RESTORE_SP(fp);
+
+                /* Restore the calling script's interpreter registers. */
+                script = fp->script;
+                depth = (jsint) script->depth;
+                pc = fp->pc;
+                endpc = script->code + script->length;
+
+                /* Store the generating pc for the return value. */
+                vp[-depth] = (jsval)pc;
+
+                /* Restore version and version control variable. */
+                if (script->version != currentVersion) {
+                    currentVersion = script->version;
+                    JS_SetVersion(cx, currentVersion);
+                }
+
+                /* Set remaining variables for 'goto advance_pc'. */
+                op = (JSOp) *pc;
+                cs = &js_CodeSpec[op];
+                len = cs->length;
+
+                /* Resume execution in the calling frame. */
+                inlineCallCount--;
+                if (ok)
+                    goto advance_pc;
+            }
             goto out;
 
 #if JS_HAS_SWITCH_STATEMENT
           case JSOP_DEFAULT:
             (void) POP();
-            /* fall through */
+            /* FALL THROUGH */
 #endif
           case JSOP_GOTO:
             len = GET_JUMP_OFFSET(pc);
@@ -1252,12 +1381,11 @@ js_Interpret(JSContext *cx, jsval *result)
 #endif
 
           case JSOP_TOOBJECT:
-            rval = POP();
             SAVE_SP(fp);
-            ok = js_ValueToObject(cx, rval, &obj);
+            ok = js_ValueToObject(cx, sp[-1], &obj);
             if (!ok)
                 goto out;
-            PUSH(OBJECT_TO_JSVAL(obj));
+            sp[-1] = OBJECT_TO_JSVAL(obj);
             break;
 
 #define POP_ELEMENT_ID(id) {                                                  \
@@ -1278,7 +1406,7 @@ js_Interpret(JSContext *cx, jsval *result)
 #if JS_HAS_IN_OPERATOR
           case JSOP_IN:
             rval = POP();
-            if (!JSVAL_IS_OBJECT(rval) || rval == JSVAL_NULL) {
+            if (JSVAL_IS_PRIMITIVE(rval)) {
                 JS_ReportErrorNumber(cx, js_GetErrorMessage, NULL,
                                      JSMSG_IN_NOT_OBJECT);
                 ok = JS_FALSE;
@@ -1419,13 +1547,13 @@ js_Interpret(JSContext *cx, jsval *result)
             }
 
           enum_next_property:
-            /* Get the next jsid to be enumerated and store it in rval */
+            /* Get the next jsid to be enumerated and store it in rval. */
             OBJ_ENUMERATE(cx, obj, JSENUMERATE_NEXT, &iter_state, &rval);
             propobj->slots[JSSLOT_ITER_STATE] = iter_state;
 
-            /* No more jsids to iterate in obj ? */
+            /* No more jsids to iterate in obj? */
             if (iter_state == JSVAL_NULL) {
-                /* Enumerate the properties on obj's prototype chain */
+                /* Enumerate the properties on obj's prototype chain. */
                 obj = OBJ_GET_PROTO(cx, obj);
                 if (!obj) {
                     /* End of property list -- terminate loop. */
@@ -1443,19 +1571,16 @@ js_Interpret(JSContext *cx, jsval *result)
                 goto enum_next_property;
             }
 
-            /* Skip deleted and shadowed properties, leave next id in rval. */
-            if (obj != origobj) {
-                /* Have we already enumerated a shadower of this property? */
-                ok = OBJ_LOOKUP_PROPERTY(cx, origobj, rval, &obj2, &prop);
-                if (!ok)
-                    goto out;
-                if (prop) {
-                    OBJ_DROP_PROPERTY(cx, obj2, prop);
+            /* Skip properties not owned by obj, and leave next id in rval. */
+            ok = OBJ_LOOKUP_PROPERTY(cx, origobj, rval, &obj2, &prop);
+            if (!ok)
+                goto out;
+            if (prop) {
+                OBJ_DROP_PROPERTY(cx, obj2, prop);
 
-                    /* Yes, don't enumerate again.  Go to the next property */
-                    if (obj2 != obj)
-                        goto enum_next_property;
-                }
+                /* Yes, don't enumerate again.  Go to the next property. */
+                if (obj2 != obj)
+                    goto enum_next_property;
             }
 
             /* Make sure rval is a string for uniformity and compatibility. */
@@ -1586,7 +1711,7 @@ js_Interpret(JSContext *cx, jsval *result)
             if (sprop) {                                                      \
                 LOCKED_OBJ_SET_SLOT(obj, sprop->slot, rval);                  \
                 SET_ENUMERATE_ATTR(sprop);                                    \
-                GC_POKE(cx, NULL);  /* second arg ignored! */                 \
+                GC_POKE(cx, JSVAL_NULL);  /* second arg ignored! */           \
             }                                                                 \
             JS_UNLOCK_SCOPE(cx, _scope);                                      \
         }                                                                     \
@@ -2012,7 +2137,9 @@ js_Interpret(JSContext *cx, jsval *result)
             /* Get immediate argc and find the constructor function. */
             argc = GET_ARGC(pc);
 
+#if JS_HAS_INITIALIZERS
           do_new:
+#endif
             vp = sp - (2 + argc);
             JS_ASSERT(vp >= newsp);
 
@@ -2288,7 +2415,105 @@ js_Interpret(JSContext *cx, jsval *result)
           case JSOP_CALL:
           case JSOP_EVAL:
             argc = GET_ARGC(pc);
+            vp = sp - (argc + 2);
+            lval = *vp;
             SAVE_SP(fp);
+
+            if (JSVAL_IS_FUNCTION(cx, lval) &&
+                (obj = JSVAL_TO_OBJECT(lval),
+                 fun = (JSFunction *) JS_GetPrivate(cx, obj),
+                 !fun->native &&
+                 fun->flags == 0 &&
+                 argc >= (uintN)(fun->nargs + fun->extra)))
+          /* inline_call: */
+            {
+                uintN nframeslots, nvars;
+                jsval *oldsp;
+                void *newmark;
+                JSInlineFrame *newifp;
+                JSInterpreterHook hook;
+
+                /* Restrict recursion of lightweight functions. */
+                if (inlineCallCount == MAX_INLINE_CALL_COUNT) {
+                    JS_ReportErrorNumber(cx, js_GetErrorMessage, NULL,
+                                         JSMSG_OVER_RECURSED);
+                    return JS_FALSE;
+                }
+
+                /* Compute the number of stack slots needed for fun. */
+                nframeslots = (sizeof(JSInlineFrame) + sizeof(jsval) - 1)
+                              / sizeof(jsval);
+                nvars = fun->nvars;
+                script = fun->script;
+                depth = (jsint) script->depth;
+
+                /* Allocate the frame and space for vars and operands. */
+                oldsp = newsp;
+                newsp = js_AllocStack(cx, nframeslots + nvars + 2 * depth,
+                                      &newmark);
+                if (!newsp) {
+                    ok = JS_FALSE;
+                    goto bad_inline_call;
+                }
+                newifp = (JSInlineFrame *) newsp;
+                newsp += nframeslots;
+
+                /* Initialize the stack frame. */
+                memset(newifp, 0, sizeof(JSInlineFrame));
+                newifp->frame.script = script;
+                newifp->frame.fun = fun;
+                newifp->frame.argc = argc;
+                newifp->frame.argv = vp + 2;
+                newifp->frame.rval = JSVAL_VOID;
+                newifp->frame.nvars = nvars;
+                newifp->frame.vars = newsp;
+                newifp->frame.down = fp;
+                newifp->frame.scopeChain = OBJ_GET_PARENT(cx, obj);
+                newifp->oldsp = oldsp;
+                newifp->mark = newmark;
+
+                /* Compute the 'this' parameter now that argv is set. */
+                ok = ComputeThis(cx, JSVAL_TO_OBJECT(vp[1]), &newifp->frame);
+                if (!ok) {
+                    js_FreeStack(cx, newmark);
+                    goto bad_inline_call;
+                }
+
+                /* Push void to initialize local variables. */
+                sp = newsp;
+                while (nvars--)
+                    PUSH(JSVAL_VOID);
+                sp += depth;
+                newsp = sp;
+                SAVE_SP(&newifp->frame);
+
+                /* Call the debugger hook if present. */
+                hook = cx->runtime->callHook;
+                if (hook) {
+                    newifp->hookData = hook(cx, &newifp->frame, JS_TRUE, 0,
+                                            cx->runtime->callHookData);
+                }
+
+                /* Switch to new version if necessary. */
+                if (script->version != currentVersion) {
+                    currentVersion = script->version;
+                    JS_SetVersion(cx, currentVersion);
+                }
+
+                /* Push the frame and set interpreter registers. */
+                cx->fp = fp = &newifp->frame;
+                pc = script->code;
+                endpc = pc + script->length;
+                inlineCallCount++;
+                continue;
+
+              bad_inline_call:
+                script = fp->script;
+                depth = (jsint) script->depth;
+                newsp = oldsp;
+                goto out;
+            }
+
             ok = js_Invoke(cx, argc, 0);
             RESTORE_SP(fp);
             if (!ok)
@@ -2312,7 +2537,7 @@ js_Interpret(JSContext *cx, jsval *result)
                         PUSH_OPND(JSVAL_VOID);
                         goto advance_pc;
                     }
-                    if (op2 != JSOP_NOP)
+                    if (op2 != JSOP_GROUP)
                         break;
                 }
                 js_ReportIsNotDefined(cx, ATOM_BYTES(atom));
@@ -2413,15 +2638,15 @@ js_Interpret(JSContext *cx, jsval *result)
                     goto out;
             }
 
-            pc2 += 2;
+            pc2 += JUMP_OFFSET_LEN;
             low = GET_JUMP_OFFSET(pc2);
-            pc2 += 2;
+            pc2 += JUMP_OFFSET_LEN;
             high = GET_JUMP_OFFSET(pc2);
 
             i -= low;
             if ((jsuint)i <= (jsuint)(high - low)) {
-                pc2 += 2 + 2 * i;
-                off = GET_JUMP_OFFSET(pc2);
+                pc2 += JUMP_OFFSET_LEN + JUMP_OFFSET_LEN * i;
+                off = (jsint) GET_JUMP_OFFSET(pc2);
                 if (off)
                     len = off;
             }
@@ -2438,9 +2663,9 @@ js_Interpret(JSContext *cx, jsval *result)
                 goto advance_pc;
             }
 
-            pc2 += 2;
-            npairs = GET_ATOM_INDEX(pc2);
-            pc2 += 2;
+            pc2 += JUMP_OFFSET_LEN;
+            npairs = (jsint) GET_ATOM_INDEX(pc2);
+            pc2 += ATOM_INDEX_LEN;
 
 #define SEARCH_PAIRS(MATCH_CODE)                                              \
     while (npairs) {                                                          \
@@ -2448,11 +2673,11 @@ js_Interpret(JSContext *cx, jsval *result)
         rval = ATOM_KEY(atom);                                                \
         MATCH_CODE                                                            \
         if (match) {                                                          \
-            pc2 += 2;                                                         \
+            pc2 += ATOM_INDEX_LEN;                                            \
             len = GET_JUMP_OFFSET(pc2);                                       \
             goto advance_pc;                                                  \
         }                                                                     \
-        pc2 += 4;                                                             \
+        pc2 += ATOM_INDEX_LEN + JUMP_OFFSET_LEN;                              \
         npairs--;                                                             \
     }
             if (JSVAL_IS_STRING(lval)) {
@@ -2615,6 +2840,9 @@ js_Interpret(JSContext *cx, jsval *result)
 
           case JSOP_DEFCONST:
           case JSOP_DEFVAR:
+          {
+            JSBool defined;
+
             atom = GET_ATOM(cx, script, pc);
             obj = fp->varobj;
             attrs = JSPROP_ENUMERATE;
@@ -2625,21 +2853,19 @@ js_Interpret(JSContext *cx, jsval *result)
 
             /* Lookup id in order to check for redeclaration problems. */
             id = (jsid)atom;
-            ok = OBJ_LOOKUP_PROPERTY(cx, obj, id, &obj2, &prop);
+            ok = js_CheckRedeclaration(cx, obj, id, attrs, &defined);
             if (!ok)
                 goto out;
 
             /* Bind a variable only if it's not yet defined. */
-            if (prop) {
-                ok = CheckRedeclaration(cx, obj, obj2, id, prop, attrs);
-                OBJ_DROP_PROPERTY(cx, obj2, prop);
-            } else {
+            if (!defined) {
                 ok = OBJ_DEFINE_PROPERTY(cx, obj, id, JSVAL_VOID, NULL, NULL,
                                          attrs, NULL);
+                if (!ok)
+                    goto out;
             }
-            if (!ok)
-                goto out;
             break;
+          }
 
           case JSOP_DEFFUN:
           {
@@ -2691,15 +2917,9 @@ js_Interpret(JSContext *cx, jsval *result)
              * here at runtime as well as at compile-time, to handle eval
              * as well as multiple HTML script tags.
              */
-            ok = OBJ_LOOKUP_PROPERTY(cx, parent, id, &obj2, &prop);
+            ok = js_CheckRedeclaration(cx, parent, id, attrs, &cond);
             if (!ok)
                 goto out;
-            if (prop) {
-                ok = CheckRedeclaration(cx, parent, obj2, id, prop, attrs);
-                OBJ_DROP_PROPERTY(cx, obj2, prop);
-                if (!ok)
-                    goto out;
-            }
 
             ok = OBJ_DEFINE_PROPERTY(cx, parent, id,
                                      flags ? JSVAL_VOID : OBJECT_TO_JSVAL(obj),
@@ -2920,6 +3140,7 @@ js_Interpret(JSContext *cx, jsval *result)
               default:
                 JS_ASSERT(0);
             }
+
             if (JS_TypeOfValue(cx, rval) != JSTYPE_FUNCTION) {
                 JS_ReportErrorNumber(cx, js_GetErrorMessage, NULL,
                                      JSMSG_BAD_GETTER_OR_SETTER,
@@ -2929,6 +3150,14 @@ js_Interpret(JSContext *cx, jsval *result)
                 ok = JS_FALSE;
                 goto out;
             }
+
+            /*
+             * Getters and setters are just like watchpoints from an access
+             * control point of view.
+             */
+            if (!OBJ_CHECK_ACCESS(cx, obj, id, JSACC_WATCH, &rtmp, &attrs))
+                return JS_FALSE;
+
             if (op == JSOP_GETTER) {
                 getter = (JSPropertyOp) JSVAL_TO_OBJECT(rval);
                 setter = NULL;
@@ -2939,6 +3168,12 @@ js_Interpret(JSContext *cx, jsval *result)
                 attrs = JSPROP_SETTER;
             }
             attrs |= JSPROP_ENUMERATE;
+
+            /* Check for a readonly or permanent property of the same name. */
+            ok = js_CheckRedeclaration(cx, obj, id, attrs, &cond);
+            if (!ok)
+                goto out;
+
             ok = OBJ_DEFINE_PROPERTY(cx, obj, id, JSVAL_VOID, getter, setter,
                                      attrs, NULL);
             if (!ok)
@@ -2957,6 +3192,12 @@ js_Interpret(JSContext *cx, jsval *result)
           case JSOP_ENDINIT:
             if (--fp->sharpDepth == 0)
                 fp->sharpArray = NULL;
+
+            /* Re-set the newborn root to the top of this object tree. */
+            JS_ASSERT(sp - newsp >= 1);
+            lval = sp[-1];
+            JS_ASSERT(JSVAL_IS_OBJECT(lval));
+            cx->newborn[GCX_OBJECT] = JSVAL_TO_GCTHING(lval);
             break;
 
           case JSOP_INITPROP:
@@ -3041,7 +3282,7 @@ js_Interpret(JSContext *cx, jsval *result)
 #endif /* JS_HAS_INITIALIZERS */
 
 #if JS_HAS_EXCEPTIONS
-          /* reset the stack to the given depth */
+          /* Reset the stack to the given depth. */
           case JSOP_SETSP:
             i = (jsint) GET_ATOM_INDEX(pc);
             JS_ASSERT(i >= 0);
@@ -3049,9 +3290,8 @@ js_Interpret(JSContext *cx, jsval *result)
             break;
 
           case JSOP_GOSUB:
+            i = PTRDIFF(pc, script->main, jsbytecode) + len;
             len = GET_JUMP_OFFSET(pc);
-            JS_ASSERT(js_CodeSpec[JSOP_GOSUB].length == 3);
-            i = PTRDIFF(pc, script->main, jsbytecode) + 3;
             PUSH(INT_TO_JSVAL(i));
             break;
 
@@ -3073,6 +3313,27 @@ js_Interpret(JSContext *cx, jsval *result)
             ok = JS_FALSE;
             /* let the code at out try to catch the exception. */
             goto out;
+
+          case JSOP_INITCATCHVAR:
+            /* Pop the property's value into rval. */
+            JS_ASSERT(sp - newsp >= 2);
+            rval = POP();
+
+            /* Get the immediate catch variable name into id. */
+            atom = GET_ATOM(cx, script, pc);
+            id   = (jsid)atom;
+
+            /* Find the object being initialized at top of stack. */
+            lval = sp[-1];
+            JS_ASSERT(JSVAL_IS_OBJECT(lval));
+            obj = JSVAL_TO_OBJECT(lval);
+
+            /* Define obj[id] to contain rval and to be permanent. */
+            ok = OBJ_DEFINE_PROPERTY(cx, obj, id, rval, NULL, NULL,
+                                     JSPROP_PERMANENT, NULL);
+            if (!ok)
+                goto out;
+            break;
 #endif /* JS_HAS_EXCEPTIONS */
 
 #if JS_HAS_INSTANCEOF
@@ -3217,11 +3478,19 @@ no_catch:
 #endif
 
     /*
+     * Check whether control fell off the end of a lightweight function, or an
+     * exception thrown under such a function was not caught by it.  If so, go
+     * to the inline code under JSOP_RETURN.
+     */
+    if (inlineCallCount)
+        goto inline_return;
+
+    /*
      * Restore the previous frame's execution state.
      */
     js_FreeStack(cx, mark);
-    if (newvers != oldvers)
-        JS_SetVersion(cx, oldvers);
+    if (currentVersion != originalVersion)
+        JS_SetVersion(cx, originalVersion);
     cx->interpLevel--;
     return ok;
 }

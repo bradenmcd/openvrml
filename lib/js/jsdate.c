@@ -35,6 +35,16 @@
 /*
  * JS date methods.
  */
+
+/*
+ * "For example, OS/360 devotes 26 bytes of the permanently
+ *  resident date-turnover routine to the proper handling of
+ *  December 31 on leap years (when it is Day 366).  That
+ *  might have been left to the operator."
+ *
+ * Frederick Brooks, 'The Second-System Effect'.
+ */
+
 #include "jsstddef.h"
 #include <math.h>
 #include <stdlib.h>
@@ -398,7 +408,7 @@ MakeDay(jsdouble year, jsdouble month, jsdouble date)
 
     year += floor(month / 12);
 
-    month = fmod(month, 12);
+    month = fmod(month, 12.0);
     if (month < 0)
 	month += 12;
 
