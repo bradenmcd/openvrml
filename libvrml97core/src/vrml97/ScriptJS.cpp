@@ -589,6 +589,8 @@ node_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 	{
 
 	  VrmlField *f = jsvalToVrmlField( cx, *vp, expect );
+	  if ( ! f ) return JS_FALSE;
+
 	  // This should only happen if directOutput is set...
 #ifdef SCRIPTJS_DEBUG
 	  cout << "ScriptJS::node_setProperty sending " << eventIn
