@@ -27,6 +27,7 @@ vrml97include_HEADERS = \
 	VrmlSFBool.h \
         VrmlSFColor.h \
         VrmlSFFloat.h \
+        VrmlSFImage.h \
         VrmlSFInt.h \
         VrmlSFNode.h \
 	VrmlSFRotation.h \
@@ -94,6 +95,7 @@ vrml97include_HEADERS = \
 	VrmlNodeSpotLight.h \
 	VrmlNodeSwitch.h \
 	VrmlNodeText.h \
+	VrmlNodeTexture.h \
 	VrmlNodeTextureCoordinate.h \
 	VrmlNodeTextureTransform.h \
 	VrmlNodeTimeSensor.h \
@@ -108,9 +110,12 @@ noinst_HEADERS = \
 	MathUtils.h \
 	gifread.h \
 	jpgread.h \
-	pngread.h
+	pngread.h \
+	parser.h \
+	sound.h
 
-BUILT_SOURCES = parser.cpp lexer.cpp
+BUILT_SOURCES = lexer.cpp parser.cpp
+EXTRA_DIST = lexer.lpp parser.ypp
 
 LEX_OUTPUT_ROOT=lex.yy
 

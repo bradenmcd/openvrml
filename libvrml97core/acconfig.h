@@ -44,6 +44,9 @@ static const char COLON = ':';
 #endif
 
 #undef LIBVRML_VERSION
+#undef HAVE_LIBJPEG
+#undef HAVE_LIBPNG
+#undef HAVE_ZLIB
 
 @TOP@
 @BOTTOM@

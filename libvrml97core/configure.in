@@ -1,28 +1,12 @@
-dnl			 LibVRML97 - configure.in
+dnl libvrml97core - configure.in
 
 dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(src/vrml97/VrmlNode.cpp)
 
-dnl How version numbering works...
-dnl +1 : ? : +1  == new interface that does not break old one
-dnl +1 : ? : 0   == new interface that breaks old one
-dnl  ? : ? : 0   == no new interfaces, but breaks apps
-dnl  ? :+1 : ?   == just internal changes, nothing breaks but might work better
-LIBVRML_MAJOR_VERSION=0
-LIBVRML_MINOR_VERSION=8
-LIBVRML_MICRO_VERSION=0
-
-AC_DEFINE_UNQUOTED(LIBVRML_MAJOR_VERSION, $LIBVRML_MAJOR_VERSION)
-AC_DEFINE_UNQUOTED(LIBVRML_MINOR_VERSION, $LIBVRML_MINOR_VERSION)
-AC_DEFINE_UNQUOTED(LIBVRML_MICRO_VERSION, $LIBVRML_MICRO_VERSION)
-LIBVRML_VERSION=$LIBVRML_MAJOR_VERSION.$LIBVRML_MINOR_VERSION.$LIBVRML_MICRO_VERSION
-AC_SUBST(LIBVRML_VERSION)
-dnl AC_DEFINE(LIBVRML_VERSION)
-
-dnl For automake.
-PACKAGE=libvrml97
-VERSION=$LIBVRML_VERSION
+PACKAGE=libvrml97core
+VERSION="0.8.0"
+LIBVRML97CORE_SO_VERSION=0:0:0
 
 dnl Initialize automake stuff
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
@@ -34,11 +18,6 @@ AM_MAINTAINER_MODE
 
 dnl Set default language to C (set to C++ later)
 AC_LANG_C
-
-dnl Check for the existance of a bunch of programs in no particular order
-dnl ==================================================================
-dnl AC_PROG_RANLIB
-
 
 dnl Make sure we can compile stuff
 dnl ==================================================================
@@ -244,8 +223,7 @@ fi
 
 AC_SUBST(CFLAGS)
 AC_SUBST(JSCFLAGS)
-dnl AC_SUBST(JPEG_LIBS)
-dnl AC_SUBST(PNG_LIBS)
+AC_SUBST(LIBVRML97CORE_SO_VERSION)
 
 AC_OUTPUT(Makefile \
           m4/Makefile \

@@ -68,6 +68,7 @@ noinst_HEADERS = \
 	jsobj.h \
 	jsopcode.h \
 	jsparse.h \
+        jsprf.h \
 	jsarena.h \
 	jsclist.h \
 	jsdtoa.h \
@@ -79,6 +80,7 @@ noinst_HEADERS = \
 	jsscope.h \
 	jsscript.h \
 	jsstr.h \
+        jsutil.h \
 	jsxdrapi.h \
 	jsdbgapi.h \
 	jsaddr.h \
