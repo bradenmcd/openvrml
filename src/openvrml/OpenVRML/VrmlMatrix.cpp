@@ -433,7 +433,8 @@ namespace {
      *          A is the 3 by 3 upper left submatrix of M,
      *          B is the 1 by 3 lower left submatrix of M.
      * 
-     * It aborts if input matrix is singular and not affine.
+     * It aborts if input matrix is not affine.
+     * It returns without doing any calculations if the input matrix is singular.
      *
      * @param in   3D affine matrix.
      *
@@ -466,7 +467,10 @@ namespace {
 
         // Is the submatrix A singular?
 
-        assert (det*det > PRECISION_LIMIT);
+        if(det*det < PRECISION_LIMIT){ 
+            OPENVRML_PRINT_MESSAGE_("Warning : Matrix is singular");
+            return;
+        }
 
         // Calculate inverse(A) = adj(A) / det(A)
 
@@ -732,7 +736,10 @@ void VrmlMatrix::getTransform(SFVec3f & translation,
     // Check if it is singular.
     //
     assert(!fpzero(matrix[3][3]));
-    assert(!fpzero(det3(0, 1, 2, 0, 1, 2)));
+    if(fpzero(det3(0, 1, 2, 0, 1, 2))){
+       OPENVRML_PRINT_MESSAGE_("Warning : Matrix is singular");
+       return;
+    }
     std::copy(&this->matrix[0][0], &this->matrix[0][0] + 16, &tmp_matrix[0][0]);
     
     //
@@ -824,7 +831,10 @@ void VrmlMatrix::getTransform(SFVec3f & translation,
     // Check if it is singular.
     //
     assert(!fpzero(matrix[3][3]));
-    assert(!fpzero(det3(0, 1, 2, 0, 1, 2)));
+    if(fpzero(det3(0, 1, 2, 0, 1, 2))){
+      OPENVRML_PRINT_MESSAGE_("Warning : Matrix is singular");
+      return;
+    }
     std::copy(&this->matrix[0][0], &this->matrix[0][0] + 16, &tmp_matrix[0][0]);
     
     //

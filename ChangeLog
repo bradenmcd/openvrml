@@ -1,3 +1,10 @@
+2002-08-23  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * VrmlMatrix.cpp: If the matrix is singular then it  
+          prints debug message and returns instead of aborting.
+
+        * private.h: Add macro to print debug messages.
+  
 2002-08-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp,
