@@ -897,10 +897,10 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>°ı </VALUE></SETTING>
-                    <SETTING><VALUE>ZI8</VALUE></SETTING>
+                    <SETTING><VALUE>¢Î‡</VALUE></SETTING>
+                    <SETTING><VALUE>YH8</VALUE></SETTING>
                     <SETTING><VALUE>
-n 0</VALUE></SETTING>
+m»–</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
@@ -1755,15 +1755,6 @@ n 0</VALUE></SETTING>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>:</ACCESSPATH>
-                    <PATH>:LibVRML97.rsrc</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Resource</FILEKIND>
-                    <FILEFLAGS>Debug</FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>:</ACCESSPATH>
                     <PATH>:LibANTLR.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Library</FILEKIND>
@@ -2394,13 +2385,6 @@ n 0</VALUE></SETTING>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>:</ACCESSPATH>
-                    <PATH>:LibVRML97.rsrc</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>:</ACCESSPATH>
                     <PATH>:LibANTLR.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
@@ -2449,14 +2433,6 @@ n 0</VALUE></SETTING>
 
     <GROUPLIST>
         <GROUP><NAME>Source</NAME>
-            <FILEREF>
-                <TARGETNAME>libvrml97core</TARGETNAME>
-                <PATHTYPE>PathRelative</PATHTYPE>
-                <PATHROOT>Project</PATHROOT>
-                <ACCESSPATH>:</ACCESSPATH>
-                <PATH>:LibVRML97.rsrc</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
             <GROUP><NAME>libvrml97core</NAME>
                 <FILEREF>
                     <TARGETNAME>libvrml97core</TARGETNAME>
