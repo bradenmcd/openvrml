@@ -1,6 +1,10 @@
 OpenVRML library
 
-Author:
+Maintainer:
+
+    Braden McDaniel <braden@endoframe.com>
+
+Original Author:
 
     Chris Morley <cmorley@vermontel.net>
 
@@ -12,6 +16,7 @@ Contributors:
     Edward A Carter <ecarter@U.Arizona.EDU>
     Clayton Cottingham <drfrog@smartt.com>
     Larry D'Cunha <lpdcunha@golden.net>
+    Frederic Devernay <fredyd@users.sourceforge.net>
     Jeff Dubrule <igor@pobox.com>
     Anton Eliens <eliens@computer.org>
     Jean-Daniel Fekete <Jean-Daniel.Fekete@emn.fr>
@@ -19,12 +24,11 @@ Contributors:
     Alex Funk <Alexander.Funk@nord-com.net>
     Matt Giger <mgiger@lunarsoft.com>
     Regis Houde <regie@robot.ireq.ca>
-    Gerall Kahla <kahlage@logoncafe.net>
+    Gerall Kahla <kahlage@chromebob.com>
     Delman Lee <delman@sharp.co.uk>
     Joe Longson <jlongson@es.com>
     Michael Louka <michael.louka@hrp.no>
     Henri Manson <hfmanson@users.sourceforge.net>
-    Braden McDaniel <braden@endoframe.com>
     Shelby Moore <support@3Dize.com>
     Ted Nolan <ted@ags.ga.erg.sri.com>
     Luca Regini <lucaregini@libero.it>

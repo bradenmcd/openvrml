@@ -22,6 +22,10 @@
 
         * Move VrmlEvent to an unnamed namespace in ScriptJDK.cpp.
 
+        * AUTHORS: Added Frederic Devernay as a contributor.
+
+        * AUTHORS: Updated Gerall Kahla's e-mail address.
+
 2002-02-19  Braden McDaniel  <braden@endoframe.com>
 
         * VrmlMatrix: use std::copy instead of memcpy.
