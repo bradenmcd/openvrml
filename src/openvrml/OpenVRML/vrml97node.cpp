@@ -1927,20 +1927,19 @@ bool BackgroundClass::hasFirst() const throw ()
 void BackgroundClass::bind(Background & background, const double timestamp)
     throw (std::bad_alloc)
 {
-    const NodePtr node(&background);
-
+    using std::find;
     //
     // If the node is already the active node, do nothing.
     //
-    if (!this->boundNodes.empty() && node == this->boundNodes.back()) {
+    if (!this->boundNodes.empty() && &background == this->boundNodes.back()) {
         return;
     }
 
     //
     // If the node is already on the stack, remove it.
     //
-    const std::vector<NodePtr>::iterator pos =
-            std::find(this->boundNodes.begin(), this->boundNodes.end(), node);
+    const BoundNodes::iterator pos =
+        find(this->boundNodes.begin(), this->boundNodes.end(), &background);
     if (pos != this->boundNodes.end()) { this->boundNodes.erase(pos); }
 
     //
@@ -1956,7 +1955,7 @@ void BackgroundClass::bind(Background & background, const double timestamp)
     //
     // Push the node to the top of the stack, and have it send isBound TRUE.
     //
-    this->boundNodes.push_back(node);
+    this->boundNodes.push_back(&background);
     background.bound.set(true);
     background.emitEvent("isBound", background.bound, timestamp);
 }
@@ -1970,10 +1969,10 @@ void BackgroundClass::bind(Background & background, const double timestamp)
 void BackgroundClass::unbind(Background & background, const double timestamp)
     throw ()
 {
-    const NodePtr node(&background);
+    using std::find;
 
-    const std::vector<NodePtr>::iterator pos =
-            std::find(this->boundNodes.begin(), this->boundNodes.end(), node);
+    const BoundNodes::iterator pos =
+        find(this->boundNodes.begin(), this->boundNodes.end(), &background);
     if (pos != this->boundNodes.end()) {
         background.bound.set(false);
         background.emitEvent("isBound", background.bound, timestamp);
@@ -2310,6 +2309,18 @@ void Background::do_initialize(const double timestamp) throw ()
     BackgroundClass & nodeClass =
             static_cast<BackgroundClass &>(this->nodeType.nodeClass);
     if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
+}
+
+/**
+ * @brief Shut down.
+ *
+ * @param timestamp the current time.
+ */
+void Background::do_shutdown(const double timestamp) throw ()
+{
+    BackgroundClass & nodeClass =
+            static_cast<BackgroundClass &>(this->nodeType.nodeClass);
+    nodeClass.unbind(*this, timestamp);
 }
 
 /**
@@ -5072,20 +5083,20 @@ bool FogClass::hasFirst() const throw ()
  */
 void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
 {
-    const NodePtr node(&fog);
+    using std::find;
 
     //
     // If the node is already the active node, do nothing.
     //
-    if (!this->boundNodes.empty() && node == this->boundNodes.back()) {
+    if (!this->boundNodes.empty() && &fog == this->boundNodes.back()) {
         return;
     }
 
     //
     // If the node is already on the stack, remove it.
     //
-    const std::vector<NodePtr>::iterator pos =
-            std::find(this->boundNodes.begin(), this->boundNodes.end(), node);
+    const BoundNodes::iterator pos =
+        find(this->boundNodes.begin(), this->boundNodes.end(), &fog);
     if (pos != this->boundNodes.end()) { this->boundNodes.erase(pos); }
 
     //
@@ -5100,7 +5111,7 @@ void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
     //
     // Push the node to the top of the stack, and have it send isBound TRUE.
     //
-    this->boundNodes.push_back(node);
+    this->boundNodes.push_back(&fog);
     fog.bound.set(true);
     fog.emitEvent("isBound", fog.bound, timestamp);
 }
@@ -5113,10 +5124,8 @@ void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
  */
 void FogClass::unbind(Fog & fog, const double timestamp) throw ()
 {
-    const NodePtr node(&fog);
-
-    const std::vector<NodePtr>::iterator pos =
-            std::find(this->boundNodes.begin(), this->boundNodes.end(), node);
+    const BoundNodes::iterator pos =
+            std::find(this->boundNodes.begin(), this->boundNodes.end(), &fog);
     if (pos != this->boundNodes.end()) {
         fog.bound.set(false);
         fog.emitEvent("isBound", fog.bound, timestamp);
@@ -5264,6 +5273,17 @@ void Fog::do_initialize(const double timestamp) throw ()
 {
     FogClass & nodeClass = static_cast<FogClass &>(this->nodeType.nodeClass);
     if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
+}
+
+/**
+ * @brief Shut down.
+ *
+ * @param timestamp the current time.
+ */
+void Fog::do_shutdown(const double timestamp) throw ()
+{
+    FogClass & nodeClass = static_cast<FogClass &>(this->nodeType.nodeClass);
+    nodeClass.unbind(*this, timestamp);
 }
 
 /**

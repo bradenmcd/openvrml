@@ -427,8 +427,10 @@ namespace OpenVRML {
         class Background;
 
         class OPENVRML_SCOPE BackgroundClass : public NodeClass {
+            typedef std::vector<Background *> BoundNodes;
+
             Background * first;
-            std::vector<NodePtr> boundNodes;
+            BoundNodes boundNodes;
 
         public:
             explicit BackgroundClass(Browser & browser);
@@ -478,6 +480,7 @@ namespace OpenVRML {
 
         private:
             virtual void do_initialize(double timestamp) throw ();
+            virtual void do_shutdown(double timestamp) throw ();
 
             //
             // eventIn handlers
@@ -1054,8 +1057,10 @@ namespace OpenVRML {
         class Fog;
 
         class OPENVRML_SCOPE FogClass : public NodeClass {
+            typedef std::vector<Fog *> BoundNodes;
+
             Fog * first;
-            std::vector<NodePtr> boundNodes;
+            BoundNodes boundNodes;
 
         public:
             explicit FogClass(Browser & browser);
@@ -1088,6 +1093,7 @@ namespace OpenVRML {
 
         private:
             virtual void do_initialize(double timestamp) throw ();
+            virtual void do_shutdown(double timestamp) throw ();
 
             //
             // eventIn handlers
