@@ -1,3 +1,7 @@
+2000-04-09  Michael Louka <Michael.Louka@hrp.no>
+
+  * Modified System::time() for the Mac OS to provide VRML97 compliancy
+
 2000-04-05  Chris Morley  <cmorley@vermontel.net>
 
 	* Initial support for MPEG files in MovieTexture nodes.
