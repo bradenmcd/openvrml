@@ -492,8 +492,10 @@ const VrmlField * VrmlNodeScript::getField(const std::string & fieldId) const
         return get(d_fields, fieldId);
     }
 
-    // look up event outs? ....
-
+    // look up event outs
+    else if (this->hasEventOut(fieldId)) {
+        return get(d_eventOuts, fieldId);
+    }
 
     return VrmlNodeChild::getField(fieldId);
 }
