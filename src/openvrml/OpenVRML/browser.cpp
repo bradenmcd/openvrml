@@ -2407,8 +2407,15 @@ void ProtoNode::ProtoImplCloneVisitor::visit(Node & node) throw (std::bad_alloc)
     for (ISMap::const_iterator itr(this->fromProtoNode.isMap.begin());
             itr != this->fromProtoNode.isMap.end(); ++itr) {
         if (&itr->second.node == &node) {
-            this->toProtoNode.addIS(*newNode, itr->second.interfaceId,
-                                    itr->first);
+            try {
+                this->toProtoNode.addIS(*newNode, itr->second.interfaceId,
+                                        itr->first);
+            } catch (std::bad_alloc &) {
+                throw;
+            } catch (std::runtime_error & ex) {
+                OPENVRML_PRINT_EXCEPTION_(ex);
+                assert(false);
+            }
         }
     }
 
@@ -3116,10 +3123,9 @@ void ProtoNode::addIS(Node & implNode,
 
     //
     // Add the IS.
-    //    
-    const ISMap::value_type
-            value(protoInterfaceId,
-                  ImplNodeInterface(implNode, implNodeInterfaceId));
+    //
+    const ImplNodeInterface implNodeInterfaceRef(implNode, implNodeInterfaceId);
+    const ISMap::value_type value(protoInterfaceId, implNodeInterfaceRef);
     this->isMap.insert(value);
 
     if (protoInterface->type == NodeInterface::eventOut) {
@@ -3252,9 +3258,12 @@ namespace {
     struct DispatchEvent_ :
             std::unary_function<ProtoNode::ISMap::value_type, void> {
         DispatchEvent_(const FieldValue & value, const double timestamp):
-                value(&value), timestamp(timestamp) {}
+            value(&value),
+            timestamp(timestamp)
+        {}
 
-        void operator()(const ProtoNode::ISMap::value_type & value) const {
+        void operator()(const ProtoNode::ISMap::value_type & value) const
+        {
             value.second.node.processEvent(value.second.interfaceId,
                                            *this->value, this->timestamp);
         }
@@ -3268,12 +3277,12 @@ namespace {
 void ProtoNode::processEventImpl(const std::string & id,
                                  const FieldValue & value,
                                  const double timestamp)
-        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+{
     const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
             this->isMap.equal_range(id);
     if (rangeItrs.first == this->isMap.end()) {
-        throw UnsupportedInterface(this->nodeType.id + " node has no eventIn "
-                                   + id);
+        throw UnsupportedInterface(this->nodeType, NodeInterface::eventIn, id);
     }
     std::for_each(rangeItrs.first, rangeItrs.second,
                   DispatchEvent_(value, timestamp));
