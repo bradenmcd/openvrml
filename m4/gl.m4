@@ -29,13 +29,14 @@
 AC_DEFUN([OV_CHECK_GL],
 [AC_REQUIRE([AC_PATH_X])dnl
 AC_REQUIRE([ACX_PTHREAD])dnl
+GL_CFLAGS="${PTHREAD_CFLAGS}"
 GL_LIBS="${PTHREAD_LIBS} -lm"
 
 #
 # If X is present, use x_includes and x_libraries.
 #
 if test "X${no_x}" != "Xyes"; then
-  GL_CFLAGS="-I${x_includes}"
+  GL_CFLAGS="-I${x_includes} ${GL_CFLAGS}"
   GL_LIBS="-L${x_libraries} ${GL_LIBS}"
 fi
 
