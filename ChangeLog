@@ -4,6 +4,11 @@
           live. Users should supply this in CPPFLAGS when running
           configure.
 
+        * In VrmlNodePtr constructor: assert that the value returned
+          in the insertion result matches the argument VrmlNode *.
+
+        * Clean up VrmlNodePtr::dispose().
+
 2001-10-17  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Fixes for bug #213579. Problem on invariant background under

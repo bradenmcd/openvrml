@@ -38,6 +38,7 @@ VrmlNodePtr::VrmlNodePtr(VrmlNode * node) {
     if (node) {
         std::pair<CountMap::iterator, bool>
                 result(countMap.insert(CountMap::value_type(node, 1)));
+        assert(result.first->first == node);
         this->countPtr = &*result.first;
         if (!result.second) {
             ++this->countPtr->second;
@@ -86,18 +87,22 @@ void VrmlNodePtr::reset(VrmlNode * node) {
     this->dispose();
     std::pair<CountMap::iterator, bool>
             result(countMap.insert(CountMap::value_type(node, 1)));
+    assert(result.first->first == node);
     this->countPtr = &*result.first;
-    if (!result.second) {
+    if (!result.second) { // The node already exists in the table.
         ++this->countPtr->second;
     }
 }
 
 void VrmlNodePtr::dispose() {
-    if (this->countPtr && --this->countPtr->second == 0) {
-        delete this->countPtr->first;
-        countMap.erase(this->countPtr->first);
+    if (this->countPtr) {
+        --this->countPtr->second;
+        if (this->countPtr->second == 0) {
+            delete this->countPtr->first;
+            countMap.erase(this->countPtr->first);
+        }
+        this->countPtr = 0;
     }
-    this->countPtr = 0;
 }
 
 /**
