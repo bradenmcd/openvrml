@@ -6882,11 +6882,11 @@ group_class::create_type(const std::string & id,
  * @param scope the scope to which the node belongs.
  */
 group_node::group_node(const node_type & type,
-             const scope_ptr & scope):
+                       const scope_ptr & scope):
     node(type, scope),
-    abstract_base(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
+    abstract_base(type, scope),
     bboxSize(vec3f(-1.0, -1.0, -1.0)),
     viewerObject(0)
 {
@@ -6911,7 +6911,7 @@ group_node::~group_node() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void group_node::process_addChildren(const field_value & value,
-                                const double timestamp)
+                                     const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
     const mfnode & newChildren = dynamic_cast<const mfnode &>(value);
@@ -6945,7 +6945,7 @@ void group_node::process_addChildren(const field_value & value,
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void group_node::process_removeChildren(const field_value & value,
-                                   const double timestamp)
+                                        const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
     const mfnode & childrenToRemove = dynamic_cast<const mfnode &>(value);
@@ -6979,7 +6979,7 @@ void group_node::process_removeChildren(const field_value & value,
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void group_node::process_set_children(const field_value & value,
-                                 const double timestamp)
+                                      const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
     this->children_ = dynamic_cast<const mfnode &>(value);
@@ -8235,8 +8235,8 @@ inline_class::create_type(const std::string & id,
 inline_node::inline_node(const node_type & type,
                          const scope_ptr & scope):
     node(type, scope),
-    abstract_base(type, scope),
     child_node(type, scope),
+    abstract_base(type, scope),
     grouping_node(type, scope),
     inlineScene(0),
     hasLoaded(false)
@@ -8484,8 +8484,8 @@ lod_class::create_type(const std::string & id,
 lod_node::lod_node(const node_type & type,
                    const scope_ptr & scope):
     node(type, scope),
-    abstract_base(type, scope),
     child_node(type, scope),
+    abstract_base(type, scope),
     grouping_node(type, scope),
     children_(1)
 {
@@ -14216,8 +14216,8 @@ switch_class::create_type(const std::string & id,
 switch_node::switch_node(const node_type & type,
                const scope_ptr & scope):
     node(type, scope),
-    abstract_base(type, scope),
     child_node(type, scope),
+    abstract_base(type, scope),
     grouping_node(type, scope),
     whichChoice(-1),
     children_(1)
@@ -17908,8 +17908,8 @@ namespace {
 viewpoint_node::viewpoint_node(const node_type & type,
                                const scope_ptr & scope):
     node(type, scope),
-    abstract_base(type, scope),
     child_node(type, scope),
+    abstract_base(type, scope),
     openvrml::viewpoint_node(type, scope),
     fieldOfView(DEFAULT_FIELD_OF_VIEW),
     jump(true),

@@ -1,3 +1,10 @@
+2003-10-07  Braden McDaniel  <braden@endoframe.com>
+
+	Quelled some warnings from gcc.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
 2003-09-30  Braden McDaniel  <braden@endoframe.com>
 
 	Replace field_value_ptr, node_class_ptr, node_type_ptr, and

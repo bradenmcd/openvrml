@@ -1104,8 +1104,6 @@ viewer::insert_background(const std::vector<float> & groundAngle,
             number_splits_x = NUM_SPLITS;
             number_splits_y = NUM_SPLITS;
             number_tiles = number_splits_x * number_splits_y;
-            float size_x = float(2.0 / number_splits_x);
-            float size_y = float(2.0 / number_splits_y);
             int i, j, k;
             for (j = 0; j < 16 * 6; j++) {
                 for (k = 0; k < 4; k++) {
@@ -1425,7 +1423,7 @@ viewer::object_t viewer::insert_cone(const float height,
         if (side) {
             float Ny = radius * radius / height;
             glBegin(GL_QUAD_STRIP);
-            for (int i = 0; i < nfacets; ++i) {
+            for (size_t i = 0; i < nfacets; ++i) {
                 glNormal3f(c[i + nfacets][0], Ny, c[i + nfacets][2]);
                 glTexCoord2fv(&tc[i + nfacets][0]);
                 glVertex3fv(&c[i + nfacets][0]);
@@ -1449,7 +1447,7 @@ viewer::object_t viewer::insert_cone(const float height,
 
             float angle = float(0.5 * pi); // First v is at max x
             float aincr = float(2.0 * pi / nfacets);
-            for (int i = 0; i < nfacets; ++i, angle += aincr) {
+            for (size_t i = 0; i < nfacets; ++i, angle += aincr) {
                 glTexCoord2f(GLfloat(0.5 * (1.0 + sin(angle))),
                              GLfloat(1.0 - 0.5 * (1.0 + cos(angle))));
                 glVertex3fv(&c[i + nfacets][0]);
@@ -1495,9 +1493,9 @@ viewer::object_t viewer::insert_cylinder(const float height,
     if (!bottom || !side || !top) { glDisable(GL_CULL_FACE); }
 
     if (bottom || side || top) {
-        const int nfacets = 8;                // Number of polygons for sides
-        const int npts = 2 * nfacets;
-        const int nfaces = nfacets * 5;
+        static const size_t nfacets = 8; // Number of polygons for sides
+        static const size_t npts = 2 * nfacets;
+        static const size_t nfaces = nfacets * 5;
 
         float c[npts][3];                // coordinates
         float tc[npts][3];                // texture coordinates
@@ -1508,7 +1506,7 @@ viewer::object_t viewer::insert_cylinder(const float height,
 
         if (side) {
             glBegin(GL_QUAD_STRIP);
-            for (int i = 0; i < nfacets; ++i) {
+            for (size_t i = 0; i < nfacets; ++i) {
                 glNormal3f(c[i + nfacets][0], 0.0, c[i + nfacets][2]);
                 glTexCoord2fv(&tc[i + nfacets][0]);
                 glVertex3fv(&c[i + nfacets][0]);
