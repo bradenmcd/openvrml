@@ -90,6 +90,9 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Sun Dec 3 2000  Braden McDaniel  <braden@endoframe.com>
+- Removed README.SOUND from %doc
+
 * Sun Nov 26 2000  Braden McDaniel  <braden@endoframe.com>
 - Added conformance.html to %doc.
 - Removed obsolete COPYING.ANTLR from %doc.
