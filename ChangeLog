@@ -1,3 +1,9 @@
+2001-06-12  Braden McDaniel <braden@endoframe.com>
+
+        * Use `std::map<>::value_type *' instead of
+          'std::map<>::pointer' in VrmlNodePtr.h. Removed #ifdef for
+          Win32.
+
 2001-06-15  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Fixed problems for "using-declaration" in ScriptObject.cpp.
