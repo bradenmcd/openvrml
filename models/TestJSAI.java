@@ -29,6 +29,7 @@ import vrml.node.*;
  *   ConstSFVec3f
  *   Event
  *   MFColor
+ *   MFFloat
  *   SFBool
  *   SFColor
  *   SFFloat
@@ -76,7 +77,6 @@ import vrml.node.*;
  *   ConstMFTime
  *   ConstMFVec2f
  *   ConstMFVec3f
- *   MFFloat
  *   MFInt32
  *   MFNode
  *   MFRotation
@@ -468,6 +468,41 @@ class TestJSAI extends Script {
     System.out.println("testConstMFFloat_2[1] = " +
                        testConstMFFloat_2.get1Value(1));
     System.out.println("testConstMFFloat_1 = " + testConstMFFloat_1);
+    MFFloat testMFFloat_1 = new MFFloat(2, floatArray2);
+    MFFloat testMFFloat_2 = new MFFloat(floatArray1);
+    if (testMFFloat_2.getSize() != 3)
+      System.out.println("MFFloat.getSize failed");
+    testMFFloat_2.getValue(floatResult);
+    System.out.println("testMFFloat_2.getValue = " + floatResult[0] +
+                       "," + floatResult[1] + "," + floatResult[2]);
+    System.out.println("testMFFloat_2[1] = " +
+                       testMFFloat_2.get1Value(1));
+    testMFFloat_1.setValue(floatArray1);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.setValue(2, floatArray2);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.setValue(testMFFloat_2);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.setValue(testConstMFFloat_1);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.set1Value(1, testConstSFFloat);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.set1Value(0, testSFFloat);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.set1Value(1, 12.0f);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.addValue(34.0f);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.addValue(testConstSFFloat);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.addValue(testSFFloat);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.insertValue(1, 99.0f);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.insertValue(1, testSFFloat);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.insertValue(1, testConstSFFloat);
+    System.out.println("testMFFloat_1 = " + testMFFloat_1);
 
     /* Test ConstMFInt32/MFInt32 methods */
     System.out.println("Test ConstMFint32/MFInt32");
@@ -484,6 +519,16 @@ class TestJSAI extends Script {
     System.out.println("testConstMFInt32_2[1] = " +
                        testConstMFInt32_2.get1Value(1));
     System.out.println("testConstMFInt32_1 = " + testConstMFInt32_1);
+    MFInt32 testMFInt32_1 = new MFInt32(2, intArray2);
+    MFInt32 testMFInt32_2 = new MFInt32(intArray1);
+    if (testMFInt32_2.getSize() != 3)
+      System.out.println("MFInt32.getSize failed");
+    testMFInt32_2.getValue(intResult);
+    System.out.println("testMFInt32_2.getValue = " + intResult[0] +
+                       "," + intResult[1] + "," + intResult[2]);
+    System.out.println("testMFInt32_2[1] = " +
+                       testMFInt32_2.get1Value(1));
+    System.out.println("testMFInt32_1 = " + testMFInt32_1);
 
     /* Test ConstMFNode/MFNode methods */
     System.out.println("Test ConstMFNode/MFNode");
