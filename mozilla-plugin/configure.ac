@@ -23,6 +23,7 @@ AC_ARG_VAR([XPIDLFLAGS], [Mozilla XPCOM IDL compiler flags])
 AC_PATH_PROG([XPIDL], [xpidl], , [${mozlibdir}])
 mozidldir="$mozprefix/share/idl/mozilla-$mozversion"
 MOZILLA_XPIDLFLAGS="-I $mozidldir"
+AC_SUBST([mozlibdir])
 AC_SUBST([MOZILLA_XPIDLFLAGS])
 PKG_CHECK_MODULES([GTKGLEXT], [gtkglext-1.0], , [have_gtkglext=no])
 

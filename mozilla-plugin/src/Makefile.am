@@ -20,7 +20,11 @@ openvrml_la_SOURCES = openvrml.cpp gtkvrml/vrmlbrowser.cc
 openvrml_la_LIBADD = \
         $(top_builddir)/../src/libopenvrml/libopenvrml.la \
         $(top_builddir)/../src/libopenvrml-gl/libopenvrml-gl.la
-openvrml_la_LDFLAGS = -module -avoid-version @GTKGLEXT_LIBS@
+openvrml_la_LDFLAGS = \
+        -module -avoid-version \
+        -R@mozlibdir@ \
+        @MOZILLA_PLUGIN_LIBS@ \
+        @GTKGLEXT_LIBS@
 
 EXTRA_DIST = $(openvrml_la_SOURCES)
 
