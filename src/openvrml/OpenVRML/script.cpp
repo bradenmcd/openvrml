@@ -25,15 +25,11 @@
 
 # include <math.h>
 # include <assert.h>
-# include <memory>
-# include <vector>
 # include <algorithm>
 # include <iostream>
-# if defined(_WIN32) && !defined(__CYGWIN__)
-#   include <strstrea.h>
-# else
-#   include <strstream.h>
-# endif
+# include <memory>
+# include <strstream>
+# include <vector>
 # include "private.h"
 # include "script.h"
 # include "VrmlNamespace.h"
@@ -226,8 +222,7 @@ namespace {
         case FieldValue::mfvec2f:       return FieldValuePtr(new MFVec2f);
         case FieldValue::mfvec3f:       return FieldValuePtr(new MFVec3f);
         default:
-        	assert(false);
-        	return FieldValuePtr(0);
+            assert(false);
         }
         return FieldValuePtr(0);
     }
@@ -689,9 +684,9 @@ namespace {
             jsval vrmlFieldToJSVal(const OpenVRML::FieldValue &) throw ();
 
         private:
-            bool initVrmlClasses() throw ();
-            bool defineBrowserObject() throw ();
-            bool defineFields() throw ();
+            void initVrmlClasses() throw (std::bad_alloc);
+            void defineBrowserObject() throw (std::bad_alloc);
+            void defineFields() throw (std::bad_alloc);
             void activate(double timeStamp, const std::string & fname,
                           size_t argc, const OpenVRML::FieldValue * const argv[]);
         };
@@ -763,7 +758,6 @@ namespace {
             BadConversion(const std::string & msg): runtime_error(msg) {}
         };
 
-        void initVrmlClasses(JSContext * cx, JSObject * obj);
         JSBool floatsToJSArray(size_t numFloats, const float * floats,
                                JSContext * cx, jsval * rval);
         FieldValue * createFieldValueFromJsval(JSContext * cx, jsval val,
@@ -1386,58 +1380,64 @@ namespace {
 
             JS_SetErrorReporter(cx, ErrorReporter);
 
+            //
             // Define the global objects (builtins, Browser, SF*, MF*) ...
+            //
+            
             JSObject * const globalObj =
                     JS_NewObject(this->cx, &Global::jsclass, 0, 0);
-            if (!globalObj) {
-                throw std::bad_alloc();
-            }
+            if (!globalObj) { throw std::bad_alloc(); }
 
             if (!JS_InitStandardClasses(this->cx, globalObj)) {
                 throw std::bad_alloc();
             }
 
+            //
+            // "print" function; non-standard, but widely used.
+            //
             static JSFunctionSpec globalFunctions[] = {
                 { "print", Global::print, 0 },
                 { 0, 0, 0 }
             };
+            JSBool ok = JS_DefineFunctions(cx, globalObj, globalFunctions);
+            assert(ok);
 
-            JS_DefineFunctions( cx, globalObj, globalFunctions );
-
+            //
             // VRML-like TRUE, FALSE syntax
-            if (! JS_DefineProperty( cx, globalObj, "FALSE",
-			             BOOLEAN_TO_JSVAL(false), 0, 0,
-			             JSPROP_READONLY | JSPROP_PERMANENT ))
-	      theSystem->error("JS_DefineProp FALSE failed\n");
-            if (! JS_DefineProperty( cx, globalObj, "TRUE",
-			             BOOLEAN_TO_JSVAL(true), 0, 0,
-			             JSPROP_READONLY | JSPROP_PERMANENT ))
-	      theSystem->error("JS_DefineProp TRUE failed\n");
-
-            // Browser object
-            if (!this->defineBrowserObject()) {
+            //
+            if (!(JS_DefineProperty(cx, globalObj, "FALSE",
+                                   BOOLEAN_TO_JSVAL(false), 0, 0,
+                                   JSPROP_READONLY | JSPROP_PERMANENT)
+                    && JS_DefineProperty(cx, globalObj, "TRUE",
+                                         BOOLEAN_TO_JSVAL(true), 0, 0,
+                                         JSPROP_READONLY | JSPROP_PERMANENT))) {
                 throw std::bad_alloc();
             }
+
+            //
+            // Browser object.
+            //
+            this->defineBrowserObject();
 
             //
             // Define SF*/MF* classes.
             //
-            if (!initVrmlClasses()) {
-                throw std::bad_alloc();
-            }
+            this->initVrmlClasses();
 
-            // Define field/eventOut vars for this script
-            defineFields();
+            //
+            // Define field/eventOut vars for this script.
+            //
+            this->defineFields();
 
             /* These should indicate source location for diagnostics. */
             char *filename = 0;
             uintN lineno = 0;
 
             jsval rval;
-            if (!JS_EvaluateScript(cx, globalObj,
+            ok = JS_EvaluateScript(cx, globalObj,
                                    source.c_str(), source.length(),
-                                   filename, lineno, &rval))
-	      theSystem->error("JS_EvaluateScript failed\n");
+                                   filename, lineno, &rval);
+            OPENVRML_VERIFY_(ok);
 
             ++nInstances;
         }
@@ -1525,13 +1525,7 @@ namespace {
                 // What should we do at this point if a function call fails?
                 // For now, just print a message for a debug build.
                 //
-# ifndef NDEBUG
-                if (!ok) {
-                    cerr << "Call to " << fname.c_str() << " in Script node "
-                         << this->scriptNode.getId().c_str() << " failed."
-                         << std::endl;
-                }
-# endif
+                OPENVRML_VERIFY_(ok);
 
                 // Free up args
                 for (i = 0; i < argc; ++i) {
@@ -1864,10 +1858,10 @@ namespace {
         //
         // Initialize SF*/MF* types.
         //
-        bool Script::initVrmlClasses() throw () {
+        void Script::initVrmlClasses() throw (std::bad_alloc) {
             JSObject * const globalObj = JS_GetGlobalObject(this->cx);
             assert(globalObj);
-            return (SFColor::initClass(this->cx, globalObj)
+            if (!(SFColor::initClass(this->cx, globalObj)
                     && SFImage::initClass(this->cx, globalObj)
                     && SFNode::initClass(this->cx, globalObj)
                     && SFRotation::initClass(this->cx, globalObj)
@@ -1881,13 +1875,15 @@ namespace {
                     && MFString::initClass(this->cx, globalObj)
                     && MFTime::initClass(this->cx, globalObj)
                     && MFVec2f::initClass(this->cx, globalObj)
-                    && MFVec3f::initClass(this->cx, globalObj));
+                    && MFVec3f::initClass(this->cx, globalObj))) {
+                throw std::bad_alloc();
+            }
         }
 
         //
         // Define the Browser object.
         //
-        bool Script::defineBrowserObject() throw () {
+        void Script::defineBrowserObject() throw (std::bad_alloc) {
 
             JSObject * const globalObj = JS_GetGlobalObject(this->cx);
             assert(globalObj);
@@ -1910,21 +1906,17 @@ namespace {
             JSObject * const browserObj =
                     JS_DefineObject(this->cx, globalObj,
                                     "Browser", &Browser::jsclass, 0, 0);
-            if (!browserObj) {
-                return false;
-            }
+            if (!browserObj) { throw std::bad_alloc(); }
 
             if (!JS_DefineFunctions(this->cx, browserObj, methods)) {
-                return false;
+                throw std::bad_alloc();
             }
-
-            return true;
         }
 
         //
         // Define objects corresponding to fields/eventOuts
         //
-        bool Script::defineFields() throw () {
+        void Script::defineFields() throw (std::bad_alloc) {
             JSObject * const globalObj = JS_GetGlobalObject(this->cx);
             assert(globalObj);
 
@@ -1946,11 +1938,7 @@ namespace {
                                            itr->first.c_str(), val,
                                            0, field_setProperty, // getter, setter
                                            JSPROP_PERMANENT)) {
-# ifndef NDEBUG
-                        std::cerr << "Attempt to define \"" << itr->first.c_str()
-                             << "\" on global object failed." << std::endl;
-# endif
-                        return false;
+                        throw std::bad_alloc();
                     }
                 }
             }
@@ -1974,15 +1962,10 @@ namespace {
                                            itr->first.c_str(), val,
 			                   0, eventOut_setProperty, // getter, setter
 			                   JSPROP_PERMANENT)) {
-# ifndef NDEBUG
-                        std::cerr << "Attempt to define \"" << itr->first.c_str()
-                                  << "\" on global object failed." << std::endl;
-# endif
-                        return false;
+                        throw std::bad_alloc();
                     }
                 }
             }
-            return true;
         }
 
 
@@ -2678,14 +2661,12 @@ namespace {
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
 
-            ostrstream os;
-            os << sfdata->getFieldValue() << '\0';
-            const char * ss = os.str();
+            std::ostrstream out;
+            out << sfdata->getFieldValue() << '\0';
+            const char * ss = out.str();
             JSString * s = JS_NewStringCopyZ(cx, ss);
-            os.rdbuf()->freeze(0);
-            if (!s) {
-                return JS_FALSE;
-            }
+            out.rdbuf()->freeze(false);
+            if (!s) { return JS_FALSE; }
 
             *rval = STRING_TO_JSVAL(s);
             return JS_TRUE;
@@ -5179,8 +5160,8 @@ namespace {
                                             (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
-                ostrstream os;
-                os << "[";
+                std::ostrstream out;
+                out << '[';
                 for (JsvalArray::size_type i = 0; i < mfdata->array.size();
                         ++i) {
                     assert(JSVAL_IS_OBJECT(mfdata->array[i]));
@@ -5189,17 +5170,17 @@ namespace {
                                 (JS_GetPrivate(cx,
                                     JSVAL_TO_OBJECT(mfdata->array[i])));
                     assert(sfdata);
-                    os << sfdata->getFieldValue();
-                    if ((i + 1) < mfdata->array.size()) { os << ", "; }
+                    out << sfdata->getFieldValue();
+                    if ((i + 1) < mfdata->array.size()) { out << ", "; }
                 }
-                os << "]";
+                out << "]";
 
-                JSString * jsstr = JS_NewStringCopyZ(cx, os.str());
+                JSString * jsstr = JS_NewStringCopyZ(cx, out.str());
 
                 //
                 // Return ownership of the buffer to the ostrstream.
                 //
-                os.rdbuf()->freeze(0);
+                out.rdbuf()->freeze(false);
 
                 if (!jsstr) { return JS_FALSE; }
 
@@ -5422,28 +5403,24 @@ namespace {
                                             (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
-                ostrstream os;
-                os << "[";
+                std::ostrstream out;
+                out << "[";
                 for (JsvalArray::size_type i = 0; i < mfdata->array.size();
                         ++i) {
                     assert(JSVAL_IS_DOUBLE(mfdata->array[i]));
-                    os << *JSVAL_TO_DOUBLE(mfdata->array[i]);
-                    if ((i + 1) < mfdata->array.size()) {
-                        os << ", ";
-                    }
+                    out << *JSVAL_TO_DOUBLE(mfdata->array[i]);
+                    if ((i + 1) < mfdata->array.size()) { out << ", "; }
                 }
-                os << "]";
+                out << "]";
 
-                JSString * jsstr = JS_NewStringCopyZ(cx, os.str());
+                JSString * jsstr = JS_NewStringCopyZ(cx, out.str());
 
                 //
                 // Return ownership of the buffer to the ostrstream.
                 //
-                os.rdbuf()->freeze(0);
+                out.rdbuf()->freeze(false);
 
-                if (!jsstr) {
-                    return JS_FALSE;
-                }
+                if (!jsstr) { return JS_FALSE; }
 
                 *rval = STRING_TO_JSVAL(jsstr);
                 return JS_TRUE;
@@ -5767,31 +5744,26 @@ namespace {
             assert(cx);
             assert(obj);
 
-            MFData * const mfdata = static_cast<MFData *>
-                                        (JS_GetPrivate(cx, obj));
+            MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
-            ostrstream os;
-            os << "[";
-            for (JsvalArray::size_type i = 0; i < mfdata->array.size();
-                    ++i) {
-                os << JSVAL_TO_INT(mfdata->array[i]);
-                if ((i + 1) < mfdata->array.size()) {
-                    os << ", ";
-                }
+            std::ostrstream out;
+            out << '[';
+            for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
+                out << JSVAL_TO_INT(mfdata->array[i]);
+                if ((i + 1) < mfdata->array.size()) { out << ", "; }
             }
-            os << "]";
+            out << ']';
 
-            JSString * jsstr = JS_NewStringCopyZ(cx, os.str());
+            JSString * jsstr = JS_NewStringCopyZ(cx, out.str());
 
             //
             // Return ownership of the buffer to the ostrstream.
             //
-            os.rdbuf()->freeze(0);
+            out.rdbuf()->freeze(false);
 
-            if (!jsstr) {
-                return JS_FALSE;
-            }
+            if (!jsstr) { return JS_FALSE; }
 
             *rval = STRING_TO_JSVAL(jsstr);
             return JS_TRUE;
@@ -6049,31 +6021,26 @@ namespace {
                                         (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
-            ostrstream os;
-            os << "[ ";
-            for (JsvalArray::size_type i = 0; i < mfdata->array.size();
-                    ++i) {
+            std::ostrstream out;
+            out << "[ ";
+            for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
                 const SField::SFData * const sfdata =
                     static_cast<SField::SFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
                 assert(sfdata);
-                os << sfdata->getFieldValue();
-                if ((i + 1) < mfdata->array.size()) {
-                    os << ", ";
-                }
+                out << sfdata->getFieldValue();
+                if ((i + 1) < mfdata->array.size()) { out << ", "; }
             }
-            os << " ]";
+            out << " ]";
 
-            JSString * jsstr = JS_NewStringCopyZ(cx, os.str());
+            JSString * jsstr = JS_NewStringCopyZ(cx, out.str());
 
             //
             // Return ownership of the buffer to the ostrstream.
             //
-            os.rdbuf()->freeze(0);
+            out.rdbuf()->freeze(false);
 
-            if (!jsstr) {
-                return JS_FALSE;
-            }
+            if (!jsstr) { return JS_FALSE; }
 
             *rval = STRING_TO_JSVAL(jsstr);
             return JS_TRUE;
@@ -6380,30 +6347,25 @@ namespace {
                                         (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
-            ostrstream os;
-            os << "[";
-            for (JsvalArray::size_type i = 0; i < mfdata->array.size();
-                    ++i) {
+            std::ostrstream out;
+            out << '[';
+            for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
                 assert(JSVAL_IS_STRING(mfdata->array[i]));
-                os << "\""
-                   << JS_GetStringBytes(JSVAL_TO_STRING(mfdata->array[i]))
-                   << "\"";
-                if ((i + 1) < mfdata->array.size()) {
-                    os << ", ";
-                }
+                out << "\""
+                    << JS_GetStringBytes(JSVAL_TO_STRING(mfdata->array[i]))
+                    << "\"";
+                if ((i + 1) < mfdata->array.size()) { out << ", "; }
             }
-            os << "]";
+            out << "]";
 
-            JSString * jsstr = JS_NewStringCopyZ(cx, os.str());
+            JSString * jsstr = JS_NewStringCopyZ(cx, out.str());
 
             //
             // Return ownership of the buffer to the ostrstream.
             //
-            os.rdbuf()->freeze(0);
+            out.rdbuf()->freeze(false);
 
-            if (!jsstr) {
-                return JS_FALSE;
-            }
+            if (!jsstr) { return JS_FALSE; }
 
             *rval = STRING_TO_JSVAL(jsstr);
             return JS_TRUE;
