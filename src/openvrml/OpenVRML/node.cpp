@@ -1124,13 +1124,13 @@ void Node::inverseTransform(Viewer *v)
  * @see accumulateTransform
  * @see getParentTransform
  */
-void Node::inverseTransform(VrmlMatrix & M)
-{
-  Node *parentTransform = getParentTransform();
-  if (parentTransform)
-    parentTransform->inverseTransform(M);
-  else
-    M.makeIdentity();
+void Node::inverseTransform(VrmlMatrix & M) {
+    Node * parentTransform = getParentTransform();
+    if (parentTransform) {
+        parentTransform->inverseTransform(M);
+    } else {
+        M = VrmlMatrix(); // Set to identity.
+    }
 }
 
 /**

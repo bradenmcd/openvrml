@@ -1,3 +1,20 @@
+2002-02-19  Braden McDaniel  <braden@endoframe.com>
+
+        * VrmlMatrix: use std::copy instead of memcpy.
+
+        * VrmlMatrix: improved doc-comments.
+
+        * VrmlMatrix: made construction from 4x4 array explicit.
+
+        * VrmlMatrix: removed automatic conversion to float *.  Use
+          operator[] for this instead.
+
+        * VrmlMatrix: removed assignment operator definitions; just use
+          the compiler-defined operator=.
+
+        * Removed VrmlMatrix::makeIdentity. Just assign to a default
+          VrmlMatrix instead.
+
 2002-02-13  Braden McDaniel  <braden@endoframe.com>
 
         * Updated doc/Makefile.am for Autoconf 2.52; added openvrml.css

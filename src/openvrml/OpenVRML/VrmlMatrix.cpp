@@ -18,8 +18,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#include "field.h"
-#include "VrmlMatrix.h"
+# include "field.h"
+# include "VrmlMatrix.h"
 # include "private.h"
 
 namespace OpenVRML {
@@ -27,37 +27,52 @@ namespace OpenVRML {
 using namespace OpenVRML_;
 
 /**
+ * @class VrmlMatrix
+ *
+ * @brief A class for all matrix operations.
+ *
+ * Matrices are stored in row-major order. Some parts are taken from MathUtils
+ * (thanks to Chris Morley) but format is not same.
+ */
+
+/**
  * @brief Equality comparison operator.
  *
  * All componenents must match exactly.
  *
- * @param m1 is given VrmlMatrix object
- * @param m2 is given VrmlMatrix object
+ * @param lhs   a VrmlMatrix.
+ * @param rhs   a VrmlMatrix.
  */
-bool operator==(const VrmlMatrix &m1,
-                const VrmlMatrix &m2) {
-    return (
-            m1.matrix[0][0] == m2.matrix[0][0] &&
-            m1.matrix[0][1] == m2.matrix[0][1] &&
-            m1.matrix[0][2] == m2.matrix[0][2] &&
-            m1.matrix[0][3] == m2.matrix[0][3] &&
-
-            m1.matrix[1][0] == m2.matrix[1][0] &&
-            m1.matrix[1][1] == m2.matrix[1][1] &&
-            m1.matrix[1][2] == m2.matrix[1][2] &&
-            m1.matrix[1][3] == m2.matrix[1][3] &&
-
-            m1.matrix[2][0] == m2.matrix[2][0] &&
-            m1.matrix[2][1] == m2.matrix[2][1] &&
-            m1.matrix[2][2] == m2.matrix[2][2] &&
-            m1.matrix[2][3] == m2.matrix[2][3] &&
-
-            m1.matrix[3][0] == m2.matrix[3][0] &&
-            m1.matrix[3][1] == m2.matrix[3][1] &&
-            m1.matrix[3][2] == m2.matrix[3][2] &&
-            m1.matrix[3][3] == m2.matrix[3][3]
-           );
+bool operator==(const VrmlMatrix & lhs, const VrmlMatrix & rhs) {
+    return (lhs.matrix[0][0] == rhs.matrix[0][0]
+            && lhs.matrix[0][1] == rhs.matrix[0][1]
+            && lhs.matrix[0][2] == rhs.matrix[0][2]
+            && lhs.matrix[0][3] == rhs.matrix[0][3]
+            
+            && lhs.matrix[1][0] == rhs.matrix[1][0]
+            && lhs.matrix[1][1] == rhs.matrix[1][1]
+            && lhs.matrix[1][2] == rhs.matrix[1][2]
+            && lhs.matrix[1][3] == rhs.matrix[1][3]
+            
+            && lhs.matrix[2][0] == rhs.matrix[2][0]
+            && lhs.matrix[2][1] == rhs.matrix[2][1]
+            && lhs.matrix[2][2] == rhs.matrix[2][2]
+            && lhs.matrix[2][3] == rhs.matrix[2][3]
+            
+            && lhs.matrix[3][0] == rhs.matrix[3][0]
+            && lhs.matrix[3][1] == rhs.matrix[3][1]
+            && lhs.matrix[3][2] == rhs.matrix[3][2]
+            && lhs.matrix[3][3] == rhs.matrix[3][3]);
 }
+
+/**
+ * @fn bool operator!=(const VrmlMatrix & lhs, const VrmlMatrix & rhs)
+ *
+ * @brief Inequality comparison operator.
+ *
+ * @param lhs   a VrmlMatrix.
+ * @param rhs   a VrmlMatrix.
+ */
 
 
 /**
@@ -83,13 +98,31 @@ bool operator==(const VrmlMatrix &m1,
     (matrix[3][3] == 1.0))
 
 /**
- * @class OpenVRML::VrmlMatrix
+ * @brief Default constructor.
  *
- * @brief A class for all matrix operations.
- *
- * Matrices are stored in row-major order. Some parts are taken from MathUtils
- * (thanks to Chris Morley) but format is not same.
+ * Matrix is initialized to the identity matrix.
  */
+VrmlMatrix::VrmlMatrix() {
+    this->matrix[0][0] = 1.0;
+    this->matrix[0][1] = 0.0;
+    this->matrix[0][2] = 0.0;
+    this->matrix[0][3] = 0.0;
+
+    this->matrix[1][0] = 0.0;
+    this->matrix[1][1] = 1.0;
+    this->matrix[1][2] = 0.0;
+    this->matrix[1][3] = 0.0;
+
+    this->matrix[2][0] = 0.0;
+    this->matrix[2][1] = 0.0;
+    this->matrix[2][2] = 1.0;
+    this->matrix[2][3] = 0.0;
+
+    this->matrix[3][0] = 0.0;
+    this->matrix[3][1] = 0.0;
+    this->matrix[3][2] = 0.0;
+    this->matrix[3][3] = 1.0;
+}
 
 /**
  * @brief Construct VrmlMatrix with given 16 elements in row-major order.
@@ -100,50 +133,46 @@ bool operator==(const VrmlMatrix &m1,
 VrmlMatrix::VrmlMatrix(float a11, float a12, float a13, float a14,
                        float a21, float a22, float a23, float a24, 
                        float a31, float a32, float a33, float a34, 
-                       float a41, float a42, float a43, float a44)
-{
-    matrix[0][0] = a11;
-    matrix[0][1] = a12;
-    matrix[0][2] = a13;
-    matrix[0][3] = a14;
+                       float a41, float a42, float a43, float a44) {
+    this->matrix[0][0] = a11;
+    this->matrix[0][1] = a12;
+    this->matrix[0][2] = a13;
+    this->matrix[0][3] = a14;
 
-    matrix[1][0] = a21;
-    matrix[1][1] = a22;
-    matrix[1][2] = a23;
-    matrix[1][3] = a24;
+    this->matrix[1][0] = a21;
+    this->matrix[1][1] = a22;
+    this->matrix[1][2] = a23;
+    this->matrix[1][3] = a24;
 
-    matrix[2][0] = a31;
-    matrix[2][1] = a32;
-    matrix[2][2] = a33;
-    matrix[2][3] = a34;
+    this->matrix[2][0] = a31;
+    this->matrix[2][1] = a32;
+    this->matrix[2][2] = a33;
+    this->matrix[2][3] = a34;
 
-    matrix[3][0] = a41;
-    matrix[3][1] = a42;
-    matrix[3][2] = a43;
-    matrix[3][3] = a44;
+    this->matrix[3][0] = a41;
+    this->matrix[3][1] = a42;
+    this->matrix[3][2] = a43;
+    this->matrix[3][3] = a44;
 }
 
 /**
- * Construct VrmlMatrix with given 4x4 array of elements in row-major order
+ * @brief Construct VrmlMatrix with given 4x4 array of elements in row-major order
+ *
  * @param m is input array
  *
  */
-
-VrmlMatrix::VrmlMatrix(const Matrix m)
-{
-    memcpy(matrix, m, sizeof(float[4][4]));
+VrmlMatrix::VrmlMatrix(const float m[4][4]) {
+    std::copy(m[0], m[0] + 16, this->matrix[0]);
 }
 
 /**
  * @brief Sets value with given 4x4 array of elements in row-major order
+ *
  * @param m is input array
  *
  */
-
-void
-VrmlMatrix::set(const Matrix m)
-{
-    memcpy(matrix, m, sizeof(float[4][4]));
+void VrmlMatrix::set(const float m[4][4]) {
+    std::copy(m[0], m[0] + 16, this->matrix[0]);
 }
 
 /**
@@ -151,66 +180,58 @@ VrmlMatrix::set(const Matrix m)
  *
  * @param rhs is the 4x4 array of elements to copy into this object
  */
-
-VrmlMatrix &
-VrmlMatrix::operator =(const Matrix m)
-{
-    set(m);
-    return *this;
-}
+//VrmlMatrix & VrmlMatrix::operator=(const Matrix m) {
+//    set(m);
+//    return *this;
+//}
 
 /**
  * @brief Assignment operator.
  *
  * @param rhs the VrmlMatrix to copy into this object
  */
-
-VrmlMatrix &
-VrmlMatrix::operator =(const VrmlMatrix &m)
-{
-    memcpy(matrix, m.matrix, sizeof(float[4][4]));
-    return *this;
-}
+//VrmlMatrix & VrmlMatrix::operator=(const VrmlMatrix & m) {
+//    memcpy(matrix, m.matrix, sizeof(float[4][4]));
+//    return *this;
+//}
 
 /**
  * @brief Sets matrix to rotate by given rotation Graphics Gems p466
  * @param axisAngle[X Y Z angle] should be in normalized form
  */
 
-void
-VrmlMatrix::setRotate(const float axisAngle[4])
-{
- // Make sure axis is normalized.
+void VrmlMatrix::setRotate(const float axisAngle[4]) {
+    // Make sure axis is normalized.
 
-   assert(fpequal(length(axisAngle), 1.0));
+    assert(fpequal(length(axisAngle), 1.0));
 
-   float aa_norm[4];
-   aa_norm[0] = axisAngle[0];
-   aa_norm[1] = axisAngle[1];
-   aa_norm[2] = axisAngle[2];
-   aa_norm[3] = axisAngle[3];
+    float aa_norm[4];
+    aa_norm[0] = axisAngle[0];
+    aa_norm[1] = axisAngle[1];
+    aa_norm[2] = axisAngle[2];
+    aa_norm[3] = axisAngle[3];
 
-   double s = sin(aa_norm[3]);
-   double c = cos(aa_norm[3]);
-   double t = 1.0 - c;
-   double x = aa_norm[0];
-   double y = aa_norm[1];
-   double z = aa_norm[2];
+    double s = sin(aa_norm[3]);
+    double c = cos(aa_norm[3]);
+    double t = 1.0 - c;
+    double x = aa_norm[0];
+    double y = aa_norm[1];
+    double z = aa_norm[2];
 
-   matrix[0][0] = t*x*x + c;
-   matrix[1][0] = t*x*y - s*z;
-   matrix[2][0] = t*x*z + s*y;
-   matrix[3][0] = 0.0;
-   matrix[0][1] = t*x*y + s*z;
-   matrix[1][1] = t*y*y + c;
-   matrix[2][1] = t*y*z - s*x;
-   matrix[3][1] = 0.0;
-   matrix[0][2] = t*x*z - s*y;
-   matrix[1][2] = t*y*z + s*x;
-   matrix[2][2] = t*z*z + c;
-   matrix[3][2] = 0.0;
-   matrix[0][3] = matrix[1][3] = matrix[2][3] = 0.0;
-   matrix[3][3] = 1.0;
+    matrix[0][0] = t*x*x + c;
+    matrix[1][0] = t*x*y - s*z;
+    matrix[2][0] = t*x*z + s*y;
+    matrix[3][0] = 0.0;
+    matrix[0][1] = t*x*y + s*z;
+    matrix[1][1] = t*y*y + c;
+    matrix[2][1] = t*y*z - s*x;
+    matrix[3][1] = 0.0;
+    matrix[0][2] = t*x*z - s*y;
+    matrix[1][2] = t*y*z + s*x;
+    matrix[2][2] = t*z*z + c;
+    matrix[3][2] = 0.0;
+    matrix[0][3] = matrix[1][3] = matrix[2][3] = 0.0;
+    matrix[3][3] = 1.0;
 }
 
 /**
@@ -258,30 +279,23 @@ VrmlMatrix::setScale(float s)
 }
 
 /**
- * @brief Sets matrix to scale by given vector in array[X Y Z}
- * @param s is a given vector
+ * @brief Sets matrix to scale by given vector in array[X Y Z]
  *
+ * @param s a vector.
  */
-
-void 
-VrmlMatrix::setScale(const float s[3])
-{
-  makeIdentity();
-  for (int i=0; i<3; ++i)
-    matrix[i][i] = s[i];
+void VrmlMatrix::setScale(const float s[3]) {
+    *this = VrmlMatrix(); // Set to identity.
+    for (size_t i = 0; i < 3; ++i) { this->matrix[i][i] = s[i]; }
 }
 
 /**
  * @brief Sets matrix to scale by given SFVec3f object
- * @param s is a given vector object
  *
+ * @param s a vector
  */
-void
-VrmlMatrix::setScale(const SFVec3f &s)
-{
-  makeIdentity();
-  for (int i=0; i<3; ++i)
-    matrix[i][i] = s[i];
+void VrmlMatrix::setScale(const SFVec3f &s) {
+    *this = VrmlMatrix(); // Set to identity.
+    for (size_t i = 0; i < 3; ++i) { this->matrix[i][i] = s[i]; }
 }
 
 /**
@@ -322,45 +336,28 @@ VrmlMatrix::setTranslate(const SFVec3f &t)
 }
 
 /**
- * @brief Returns copy 4x4 array of elements 
- * @param m is output of 4x4 elements
+ * @brief Returns copy 4x4 array of elements.
+ *
+ * @param m output of 4x4 elements
  *
  */
-
-void
-VrmlMatrix::get(Matrix m) const
-{
-   memcpy(m, matrix, sizeof(float[4][4]));
+void VrmlMatrix::get(float m[4][4]) const {
+    std::copy(this->matrix[0], this->matrix[0] + 16, m[0]);
 }
-
-/**
- * @brief Sets matrix to be identity
- */
-void
-VrmlMatrix::makeIdentity()
-{
-  for (int i=0; i<4; ++i)
-    for (int j=0; j<4; ++j)
-      matrix[i][j] = (i == j) ? 1.0 : 0.0;
-}
-
 
 /**
  * @brief Postmultiplies matrix by given matrix on right 
- * @param m is given VrmlMatrix object
  *
+ * @param m a VrmlMatrix.
  */
-
-const VrmlMatrix 
-VrmlMatrix::multRight(const VrmlMatrix &m)
-{
+const VrmlMatrix VrmlMatrix::multRight(const VrmlMatrix &m) {
     // Trivial cases
     if (IS_IDENTITY(m))
       return *this;
     else if (IS_IDENTITY(matrix))
       return (*this = m);
 	
-    Matrix    tmp;
+    float tmp[4][4];
 
 #define POSTMULT(i,j) (matrix[i][0]*m.matrix[0][j] + \
                        matrix[i][1]*m.matrix[1][j] + \
@@ -386,7 +383,7 @@ VrmlMatrix::multRight(const VrmlMatrix &m)
 
 #undef POSTMULT
 
-    return (VrmlMatrix(tmp));
+    return VrmlMatrix(tmp);
 }
 
 /**
@@ -404,7 +401,7 @@ VrmlMatrix::multLeft(const VrmlMatrix &m)
     else if (IS_IDENTITY(matrix))
         return (*this = m);
 	
-    Matrix    tmp;
+    float tmp[4][4];
 
 #define PREMULT(i,j) (m.matrix[i][0]*matrix[0][j] + \
                       m.matrix[i][1]*matrix[1][j] + \
@@ -606,11 +603,9 @@ void get_affine_inverse(const float in[4][4], float out[4][4]) {
 
 }
 }
-const VrmlMatrix
-VrmlMatrix::affine_inverse() const
-{
-    float in[4][4],out[4][4];
-    memcpy(in, matrix, sizeof(float[4][4]));
+const VrmlMatrix VrmlMatrix::affine_inverse() const {
+    float in[4][4], out[4][4];
+    std::copy(this->matrix[0], this->matrix[0] + 16, in[0]);
     get_affine_inverse(in,out);
     return VrmlMatrix(out);
 }
@@ -667,43 +662,34 @@ VrmlMatrix::print(ostream& o)
   return o;
 }
 
-/*
+/**
+ * @fn float (&VrmlMatrix::operator[](size_t index))[4]
+ *
  * @brief To make it usual matrix (non-const)
  */
 
-float
-( & VrmlMatrix::operator [](int i))[4]
-{
-   assert(i < 4);
-   return matrix[i]; 
-}
-
-/*
+/**
+ * @fn float (&VrmlMatrix::operator[](size_t index) const)[4]
+ *
  * @brief To make it usual matrix (const)
  */
 
-const float
-( & VrmlMatrix::operator [](int i) const)[4]
-{
-   assert(i < 4);
-   return matrix[i]; 
-}
-
 /**
  * @brief Set the matrix from  translation, rotation, scale,
- * scaleOrientation and center
- * @param in translation, rotation, scale, scaleOrientation and center as 
- * specified in VrmlNodeTransform node
+ *      scaleOrientation and center.
+ *
+ * @param translation   the translation.
+ * @param rotation      the rotation.
+ * @param scale         the scale orientation.
+ * @param center        the center.
  */
-void
-VrmlMatrix::setTransform(const SFVec3f & translation,
-                         const SFRotation & rotation,
-                         const SFVec3f & scale,
-                         const SFRotation & scaleOrientation,
-                         const SFVec3f & center)
-{
+void VrmlMatrix::setTransform(const SFVec3f & translation,
+                              const SFRotation & rotation,
+                              const SFVec3f & scale,
+                              const SFRotation & scaleOrientation,
+                              const SFVec3f & center) {
     VrmlMatrix temp;
-	makeIdentity();
+    *this = VrmlMatrix(); // Set to identity.
     if(!((translation[0] == 0.0)
             && (translation[1] == 0.0)
             && (translation[2] == 0.0))) {
@@ -751,220 +737,281 @@ VrmlMatrix::setTransform(const SFVec3f & translation,
     }
 }
 
-/**
- * @brief Build a quaternion rotation , given a rotation matrix.
- * @param in Orthogonal Matrix.
- * @param out quaternion rotation.
- */
-namespace
-{ 
-void build_quaternion(const float m[4][4], float quat[4])
-{
-  float  diagonal, s, q[4];
-  int    i, j, k;
-  int next[3] = {1, 2, 0};
-  diagonal = m[0][0] + m[1][1] + m[2][2];
-  // check the diagonal
-  if (diagonal > 0.0) {
-     s = sqrt (diagonal + 1.0);
-     quat[3] = s / 2.0;
-     s = 0.5 / s;
-     quat[0] = (m[1][2] - m[2][1]) * s;
-     quat[1] = (m[2][0] - m[0][2]) * s;
-     quat[2] = (m[0][1] - m[1][0]) * s;
-   } else {
-// diagonal is negative
-      i = 0;
-      if (m[1][1] > m[0][0]) i = 1;
-      if (m[2][2] > m[i][i]) i = 2;
-      j = next[i];
-      k = next[j];
-      s = sqrt ((m[i][i] - (m[j][j] + m[k][k])) + 1.0);
-      q[i] = s * 0.5;
- 
-      if (s != 0.0) s = 0.5 / s;
-      q[3] = (m[j][k] - m[k][j]) * s;
-      q[j] = (m[i][j] + m[j][i]) * s;
-      q[k] = (m[i][k] + m[k][i]) * s;                  
- 
-      quat[0] = q[0];
-      quat[1] = q[1];
-      quat[2] = q[2];
-      quat[3] = q[3];
-  }
-}
-/**
- * @brief Convert a quaternion to a rotation axis and angle
- * @param in quaternion
- * @param out rotation axis in normalize form and angle.
- */
-void quat_to_axis(const float q[4], float axisAngle[4])
-{
-  float val = acos(q[3]);
-  if (fpzero(val))
-  {
-    axisAngle[0] = 0.0;
-    axisAngle[1] = 1.0;
-    axisAngle[2] = 0.0;
-    axisAngle[3] = 0.0;
-  }
-  else
-  {
-    float sinval = 1/sin(val);
-    axisAngle[0] = q[0]*sinval;
-    axisAngle[1] = q[1]*sinval;
-    axisAngle[2] = q[2]*sinval;
-    axisAngle[3] = 2*val;
-    normalize(axisAngle);
-  }
-}                     
-}     
-/**
- * @brief get translation, rotation and scale from orthogonal
- * transformation matrix. Here any projection or shear information in the
- * matrix is ignored. The caller is responsible for assuring that the 
- * transformation is in fact orthogonal, otherwise the results are 
- * undefined. 
- * Some portions are taken from Graphics Gems 2
- * @param out translation, rotation and scale.
- */
-void
-VrmlMatrix::getTransform(SFVec3f & translation,
-                         SFRotation & rotation,
-                         SFVec3f & scale) const
-{
-   float tmp_matrix[4][4];
-   int i,j;
-// Check if it is singular
-   assert(!fpzero(matrix[3][3]));
-   assert(!fpzero(det3(0, 1, 2, 0, 1, 2)));
-   memcpy(tmp_matrix, matrix, sizeof(float[4][4]));
-// Ignore Perspective 
-   tmp_matrix[0][3] = tmp_matrix[1][3] = tmp_matrix[2][3] = 0.0;
-// Normalize the matrix
-   for (i=0; i<4;i++ )
-     for (j=0; j<4; j++ )
-       tmp_matrix[i][j] /= tmp_matrix[3][3];
-   translation.setX(tmp_matrix[3][0]);
-   translation.setY(tmp_matrix[3][1]);
-   translation.setZ(tmp_matrix[3][2]); 
-   tmp_matrix[3][0] = tmp_matrix[3][1] = tmp_matrix[3][2] = 0.0;
-   SFVec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
-   SFVec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
-   SFVec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
-// Compute X scale factor and normalize first row.
-   scale[0] = row_0.length();
-   row_0 = row_0.normalize();
-// Compute Y scale factor and normalize second row.
-   scale[1] = row_1.length();
-   row_1 = row_1.normalize();
-// Compute Z scale factor and normalize third row.
-   scale[2] = row_2.length();
-   row_2 = row_2.normalize();
-   for (j=0; j<3; j++){
-     tmp_matrix[0][j] = row_0[j];
-     tmp_matrix[1][j] = row_1[j];
-     tmp_matrix[2][j] = row_2[j];
-   }
-// At this point, the matrix (in rows[]) is orthonormal. 
-// That is, each row has length one and are mutually perpendicular.
-// Is it needed to calculate the det of this matrix (1 or -1) for checking 
-// coordinate system flip ? (According to VRML standard, scale > 0.0)
-// Calculate quaternion rotation from this matrix.
-   float quat[4];
-   build_quaternion(tmp_matrix,quat);
-// now convert back to axis/angle
-   float axisAngle[4];
-   quat_to_axis(quat,axisAngle);
-   rotation.set(axisAngle);
+namespace { 
+    /**
+     * @brief Given a rotation matrix, build a quaternion rotation.
+     *
+     * @param m     orthogonal matrix.
+     * @param quat  quaternion rotation.
+     */
+    void build_quaternion(const float m[4][4], float quat[4]) {
+        float  diagonal, s, q[4];
+        int    i, j, k;
+        int next[3] = { 1, 2, 0 };
+        diagonal = m[0][0] + m[1][1] + m[2][2];
+        // check the diagonal
+        if (diagonal > 0.0) {
+            s = sqrt (diagonal + 1.0);
+            quat[3] = s / 2.0;
+            s = 0.5 / s;
+            quat[0] = (m[1][2] - m[2][1]) * s;
+            quat[1] = (m[2][0] - m[0][2]) * s;
+            quat[2] = (m[0][1] - m[1][0]) * s;
+        } else {
+            // diagonal is negative
+            i = 0;
+            if (m[1][1] > m[0][0]) { i = 1; }
+            if (m[2][2] > m[i][i]) { i = 2; }
+            j = next[i];
+            k = next[j];
+            s = sqrt ((m[i][i] - (m[j][j] + m[k][k])) + 1.0);
+            q[i] = s * 0.5;
+
+            if (s != 0.0) { s = 0.5 / s; }
+            q[3] = (m[j][k] - m[k][j]) * s;
+            q[j] = (m[i][j] + m[j][i]) * s;
+            q[k] = (m[i][k] + m[k][i]) * s;                  
+
+            quat[0] = q[0];
+            quat[1] = q[1];
+            quat[2] = q[2];
+            quat[3] = q[3];
+        }
+    }
+    /**
+     * @brief Convert a quaternion to a rotation axis and angle.
+     *
+     * @param q         input quaternion
+     * @param axisAngle output normalized rotation axis and angle.
+     */
+    void quat_to_axis(const float q[4], float axisAngle[4]) {
+        float val = acos(q[3]);
+        if (fpzero(val)) {
+            axisAngle[0] = 0.0;
+            axisAngle[1] = 1.0;
+            axisAngle[2] = 0.0;
+            axisAngle[3] = 0.0;
+        } else {
+            float sinval = 1/sin(val);
+            axisAngle[0] = q[0]*sinval;
+            axisAngle[1] = q[1]*sinval;
+            axisAngle[2] = q[2]*sinval;
+            axisAngle[3] = 2*val;
+            normalize(axisAngle);
+        }
+    }                     
 }
 
 /**
- * @brief get translation, rotation, scale and shear from affine
- * transformation VrmlMatrix. Here any projection information in
- * matrix is ignored. As VRML allows non-uniform scaling, it is safe to
- * call this routine. The caller is responsible for assuring that the 
- * transformation is in fact affine, otherwise the results are 
- * undefined.  
- * Some portions are taken from Graphics Gems 2
- * @param out translation, rotation, scale and shear.
+ * @brief Get the translation, rotation and scale from the orthogonal
+ *        transformation matrix.
+ *
+ * Here any projection or shear information in the matrix is ignored. The
+ * caller is responsible for assuring that the transformation is in fact
+ * orthogonal, otherwise the results are undefined.
+ *
+ * Some portions are taken from Graphics Gems 2.
+ *
+ * @param translation   output translation.
+ * @param rotation      output rotation.
+ * @param scale         output scale.
  */
-void
-VrmlMatrix::getTransform(SFVec3f & translation,
-                         SFRotation & rotation,
-                         SFVec3f & scale,
-                         SFVec3f & shear) const
-{
-   float tmp_matrix[4][4];
-   int i,j;
-// Check if it is singular
-   assert(!fpzero(matrix[3][3]));
-   assert(!fpzero(det3(0, 1, 2, 0, 1, 2)));
-   memcpy(tmp_matrix, matrix, sizeof(float[4][4]));
-// Ignore Perspective 
-   tmp_matrix[0][3] = tmp_matrix[1][3] = tmp_matrix[2][3] = 0.0;
-// Normalize the matrix
-   for (i=0; i<4;i++ )
-     for (j=0; j<4; j++ )
-       tmp_matrix[i][j] /= tmp_matrix[3][3];
-   translation.setX(tmp_matrix[3][0]);
-   translation.setY(tmp_matrix[3][1]);
-   translation.setZ(tmp_matrix[3][2]); 
-   tmp_matrix[3][0] = tmp_matrix[3][1] = tmp_matrix[3][2] = 0.0;
-   SFVec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
-   SFVec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
-   SFVec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
-// Compute X scale factor and normalize first row.
-   scale[0] = row_0.length();
-   row_0 = row_0.normalize();
-// Compute XY shear factor and make 2nd row orthogonal to 1st.
-   float shear_xy = row_0.dot(row_1);
-   row_1[0] = row_1[0] - row_0[0]*shear_xy;
-   row_1[1] = row_1[1] - row_0[1]*shear_xy;
-   row_1[2] = row_1[2] - row_0[2]*shear_xy;
-// Compute Y scale factor and normalize second row.
-   scale[1] = row_1.length();
-   row_1 = row_1.normalize();
-   shear[0] = shear_xy /scale[1];
-// Compute XZ and YZ shears, orthogonalize third row. 
-   float shear_xz = row_0.dot(row_2);
-   row_2[0] = row_2[0] - row_0[0]*shear_xz;
-   row_2[1] = row_2[1] - row_0[1]*shear_xz;
-   row_2[2] = row_2[2] - row_0[2]*shear_xz;
-   float shear_yz = row_1.dot(row_2);
-   row_2[0] = row_2[0] - row_1[0]*shear_yz;
-   row_2[1] = row_2[1] - row_1[1]*shear_yz;
-   row_2[2] = row_2[2] - row_1[2]*shear_yz;
-// Compute Z scale factor and normalize third row.
-   scale[2] = row_2.length();
-   row_2 = row_2.normalize();
-   shear[1] = shear_xz / scale[2];
-   shear[2] = shear_yz / scale[2];
-   for (j=0; j<3; j++){
-     tmp_matrix[0][j] = row_0[j];
-     tmp_matrix[1][j] = row_1[j];
-     tmp_matrix[2][j] = row_2[j];
-   }
-// At this point, the matrix (in rows[]) is orthonormal. 
-// That is, each row has length one and are mutually perpendicular.
-// Is it needed to calculate the det of this matrix (1 or -1) for checking 
-// coordinate system flip ? (According to VRML standard, scale > 0.0)
-// Calculate quaternion rotation from this matrix.
-   float quat[4];
-   build_quaternion(tmp_matrix,quat);
-// now convert back to axis/angle
-   float axisAngle[4];
-   quat_to_axis(quat,axisAngle);
-   rotation.set(axisAngle);
+void VrmlMatrix::getTransform(SFVec3f & translation,
+                              SFRotation & rotation,
+                              SFVec3f & scale) const {
+    float tmp_matrix[4][4];
+    int i, j;
+    
+    //
+    // Check if it is singular.
+    //
+    assert(!fpzero(matrix[3][3]));
+    assert(!fpzero(det3(0, 1, 2, 0, 1, 2)));
+    std::copy(this->matrix[0], this->matrix[0] + 16, tmp_matrix[0]);
+    
+    //
+    // Ignore perspective.
+    //
+    tmp_matrix[0][3] = tmp_matrix[1][3] = tmp_matrix[2][3] = 0.0;
+    
+    //
+    // Normalize the matrix.
+    //
+    for (i = 0; i < 4;i++) {
+        for (j = 0; j < 4; j++) {
+            tmp_matrix[i][j] /= tmp_matrix[3][3];
+        }
+    }
+    translation.setX(tmp_matrix[3][0]);
+    translation.setY(tmp_matrix[3][1]);
+    translation.setZ(tmp_matrix[3][2]); 
+    tmp_matrix[3][0] = tmp_matrix[3][1] = tmp_matrix[3][2] = 0.0;
+    SFVec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
+    SFVec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
+    SFVec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
+    
+    //
+    // Compute X scale factor and normalize first row.
+    //
+    scale[0] = row_0.length();
+    row_0 = row_0.normalize();
+    
+    //
+    // Compute Y scale factor and normalize second row.
+    //
+    scale[1] = row_1.length();
+    row_1 = row_1.normalize();
+    
+    //
+    // Compute Z scale factor and normalize third row.
+    //
+    scale[2] = row_2.length();
+    row_2 = row_2.normalize();
+    for (j = 0; j < 3; j++) {
+        tmp_matrix[0][j] = row_0[j];
+        tmp_matrix[1][j] = row_1[j];
+        tmp_matrix[2][j] = row_2[j];
+    }
+    
+    //
+    // At this point, the matrix (in rows[]) is orthonormal. 
+    // That is, each row has length one and are mutually perpendicular.
+    // Is it needed to calculate the det of this matrix (1 or -1) for checking 
+    // coordinate system flip ? (According to VRML standard, scale > 0.0)
+    // Calculate quaternion rotation from this matrix.
+    //
+    float quat[4];
+    build_quaternion(tmp_matrix,quat);
+    
+    //
+    // now convert back to axis/angle.
+    //
+    float axisAngle[4];
+    quat_to_axis(quat,axisAngle);
+    rotation.set(axisAngle);
 }
 
 /**
- * Returns transpose of matrix
+ * @brief Get the translation, rotation, scale and shear from affine
+ *      transformation matrix.
+ *
+ * Here any projection information in matrix is ignored. As VRML allows
+ * non-uniform scaling, it is safe to call this routine. The caller is
+ * responsible for assuring that the transformation is in fact affine,
+ * otherwise the results are undefined.
+ *
+ * Some portions are taken from Graphics Gems 2.
+ *
+ * @param translation   output translation.
+ * @param rotation      output rotation.
+ * @param scale         output scale.
+ * @param shear         output shear.
  */
+void VrmlMatrix::getTransform(SFVec3f & translation,
+                              SFRotation & rotation,
+                              SFVec3f & scale,
+                              SFVec3f & shear) const {
+    float tmp_matrix[4][4];
+    int i, j;
+    
+    //
+    // Check if it is singular.
+    //
+    assert(!fpzero(matrix[3][3]));
+    assert(!fpzero(det3(0, 1, 2, 0, 1, 2)));
+    std::copy(this->matrix[0], this->matrix[0] + 16, tmp_matrix[0]);
+    
+    //
+    // Ignore perspective.
+    //
+    tmp_matrix[0][3] = tmp_matrix[1][3] = tmp_matrix[2][3] = 0.0;
+    
+    //
+    // Normalize the matrix.
+    //
+    for (i = 0; i < 4; i++) {
+        for (j=0; j < 4; j++) {
+            tmp_matrix[i][j] /= tmp_matrix[3][3];
+        }
+    }
+    translation.setX(tmp_matrix[3][0]);
+    translation.setY(tmp_matrix[3][1]);
+    translation.setZ(tmp_matrix[3][2]); 
+    tmp_matrix[3][0] = tmp_matrix[3][1] = tmp_matrix[3][2] = 0.0;
+    SFVec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
+    SFVec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
+    SFVec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
+    
+    //
+    // Compute X scale factor and normalize first row.
+    //
+    scale[0] = row_0.length();
+    row_0 = row_0.normalize();
+    
+    //
+    // Compute XY shear factor and make 2nd row orthogonal to 1st.
+    //
+    float shear_xy = row_0.dot(row_1);
+    row_1[0] = row_1[0] - row_0[0]*shear_xy;
+    row_1[1] = row_1[1] - row_0[1]*shear_xy;
+    row_1[2] = row_1[2] - row_0[2]*shear_xy;
+    
+    //
+    // Compute Y scale factor and normalize second row.
+    //
+    scale[1] = row_1.length();
+    row_1 = row_1.normalize();
+    shear[0] = shear_xy /scale[1];
+    
+    //
+    // Compute XZ and YZ shears, orthogonalize third row.
+    //
+    float shear_xz = row_0.dot(row_2);
+    row_2[0] = row_2[0] - row_0[0]*shear_xz;
+    row_2[1] = row_2[1] - row_0[1]*shear_xz;
+    row_2[2] = row_2[2] - row_0[2]*shear_xz;
+    float shear_yz = row_1.dot(row_2);
+    row_2[0] = row_2[0] - row_1[0]*shear_yz;
+    row_2[1] = row_2[1] - row_1[1]*shear_yz;
+    row_2[2] = row_2[2] - row_1[2]*shear_yz;
+    
+    //
+    // Compute Z scale factor and normalize third row.
+    //
+    scale[2] = row_2.length();
+    row_2 = row_2.normalize();
+    shear[1] = shear_xz / scale[2];
+    shear[2] = shear_yz / scale[2];
+    for (j = 0; j < 3; j++){
+        tmp_matrix[0][j] = row_0[j];
+        tmp_matrix[1][j] = row_1[j];
+        tmp_matrix[2][j] = row_2[j];
+    }
+    
+    //
+    // At this point, the matrix (in rows[]) is orthonormal. 
+    // That is, each row has length one and are mutually perpendicular.
+    // Is it needed to calculate the det of this matrix (1 or -1) for checking 
+    // coordinate system flip ? (According to VRML standard, scale > 0.0)
+    // Calculate quaternion rotation from this matrix.
+    //
+    float quat[4];
+    build_quaternion(tmp_matrix,quat);
+    
+    //
+    // Now convert back to axis/angle.
+    //
+    float axisAngle[4];
+    quat_to_axis(quat,axisAngle);
+    rotation.set(axisAngle);
+}
 
-const VrmlMatrix
-VrmlMatrix::transpose() const
-{
+/**
+ * @brief Get the transposition of the matrix.
+ *
+ * @return a transposed copy of the matrix.
+ */
+const VrmlMatrix VrmlMatrix::transpose() const {
    return VrmlMatrix(matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0],
                      matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
                      matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
