@@ -2593,10 +2593,28 @@ void ProtoNode::RouteCopyVisitor::visit(Node & node) {
     //
     // Visit the children.
     //
-    const MFNode & children = node.getChildren();
-    for (size_t i = 0; i < children.getLength(); ++i) {
-        if (children.getElement(i)) {
-            children.getElement(i)->accept(*this);
+    const NodeInterfaceSet & interfaces = node.nodeType.getInterfaces();
+    for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
+            interface != interfaces.end(); ++interface) {
+        if (interface->type == NodeInterface::exposedField
+                || interface->type == NodeInterface::field) {
+            if (interface->fieldType == FieldValue::sfnode) {
+                assert(dynamic_cast<const SFNode *>
+                       (&node.getField(interface->id)));
+                const SFNode & sfnode =
+                    static_cast<const SFNode &>(node.getField(interface->id));
+                if (sfnode.get()) { sfnode.get()->accept(*this); }
+            } else if (interface->fieldType == FieldValue::mfnode) {
+                assert(dynamic_cast<const MFNode *>
+                       (&node.getField(interface->id)));
+                const MFNode & mfnode =
+                    static_cast<const MFNode &>(node.getField(interface->id));
+                for (size_t i = 0; i < mfnode.getLength(); ++i) {
+                    if (mfnode.getElement(i)) {
+                        mfnode.getElement(i)->accept(*this);
+                    }
+                }
+            }
         }
     }
 }

@@ -1,3 +1,13 @@
+2002-09-09  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/node.h: Removed Node::getChildren. This
+          method seemed prone to misunderstanding, and thus created more
+          problems than it solved. Since it was just a convenience
+          method, anyone who really needs this functionality can
+          implement it as a nonmember.
+
 2002-09-08  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp: Should now correctly handle

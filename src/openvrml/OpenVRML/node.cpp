@@ -665,7 +665,7 @@ Node::~Node() throw () {
  * @return @c true if the visitor is accepted (the node
  *         <em>has not</em> been visited during this traversal),
  *         @c false otherwise (the node <em>has</em> been
- *         visited during this traversal.
+ *         visited during this traversal).
  */
 bool Node::accept(NodeVisitor & visitor) {
     if (!this->visited) {
@@ -693,10 +693,21 @@ void Node::resetVisitedFlag() {
         //
         // Recursively call this method on any child nodes.
         //
-        const MFNode & children = this->getChildren();
-        for (size_t i = 0; i < children.getLength(); ++i) {
-            if (children.getElement(i)) {
-                children.getElement(i)->resetVisitedFlag();
+        const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
+        for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
+                interface != interfaces.end(); ++interface) {
+            if (interface->fieldType == FieldValue::sfnode) {
+                const SFNode & sfnode =
+                    static_cast<const SFNode &>(this->getField(interface->id));
+                if (sfnode.get()) { sfnode.get()->resetVisitedFlag(); }
+            } else if (interface->fieldType == FieldValue::mfnode) {
+                const MFNode & mfnode =
+                    static_cast<const MFNode &>(this->getField(interface->id));
+                for (size_t i = 0; i < mfnode.getLength(); ++i) {
+                    if (mfnode.getElement(i)) {
+                        mfnode.getElement(i)->resetVisitedFlag();
+                    }
+                }
             }
         }
     }
@@ -1410,49 +1421,6 @@ void Node::inverseTransform(VrmlMatrix & M) {
     } else {
         M = VrmlMatrix(); // Set to identity.
     }
-}
-
-/**
- * @brief Get this node's child nodes as an MFNode.
- *
- * This method is intended to provide generalized access to a node's child
- * nodes. The default implementation returns an empty MFNode. Node
- * implementations that include child nodes should override this method to
- * return an appropriate MFNode.
- *
- * The returned MFNode should include <strong>all</strong> of the node's
- * child nodes, from all of the node's SFNode or MFNode fields. Since fields
- * do not have a defined order, no ordering is defined for the nodes that
- * occur in the returned MFNode. Therefore, traversals that depend on any
- * such ordering should not use this method.
- *
- * @return an MFNode containing any children of this node.
- */
-const MFNode Node::getChildren() const {
-    MFNode children;
-    const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
-    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
-            itr != interfaces.end(); ++itr) {
-        if (itr->type == NodeInterface::exposedField
-                || itr->type == NodeInterface::field) {
-            if (itr->fieldType == FieldValue::sfnode) {
-                assert(dynamic_cast<const SFNode *>(&this->getField(itr->id)));
-                children.setLength(children.getLength() + 1);
-                children.setElement(children.getLength() - 1,
-                        static_cast<const SFNode &>(this->getField(itr->id)).get());
-            } else if (itr->fieldType == FieldValue::mfnode) {
-                assert(dynamic_cast<const MFNode *>(&this->getField(itr->id)));
-                const MFNode & nodes =
-                        static_cast<const MFNode &>(this->getField(itr->id));
-                const size_t oldLength = children.getLength();
-                children.setLength(oldLength + nodes.getLength());
-                for (size_t i = 0; i < nodes.getLength(); ++i) {
-                    children.setElement(oldLength + i, nodes.getElement(i));
-                }
-            }
-        }
-    }
-    return children;
 }
 
 /**

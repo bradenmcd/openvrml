@@ -235,8 +235,6 @@ namespace OpenVRML {
         bool accept(NodeVisitor & visitor);
         void resetVisitedFlag();
         
-        const MFNode getChildren() const;
-
         void addEventOutIS(const std::string & eventOut,
                            PolledEventOutValue * eventOutValue)
                 throw (UnsupportedInterface, std::bad_alloc);
