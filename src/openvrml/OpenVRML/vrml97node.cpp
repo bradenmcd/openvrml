@@ -29,6 +29,7 @@
 # include <algorithm>
 # include <iostream>
 # include <iterator>
+# include <limits>
 # ifdef OPENVRML_ENABLE_TEXT_NODE
 #   include <ft2build.h>
 #   include FT_FREETYPE_H
@@ -12707,7 +12708,9 @@ namespace {
         std::vector<const std::vector<vec2f> *> interiors;
     };
 
-    struct Inside_ : std::binary_function {
+    struct Inside_ : std::binary_function<const std::vector<vec2f> *,
+                                          const std::vector<vec2f> *,
+                                          bool> {
         bool operator()(const std::vector<vec2f> * const lhs,
                         const std::vector<vec2f> * const rhs) const
         {

@@ -1,3 +1,8 @@
+2003-05-05  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/vrml97node.cpp: Include <limits>; fixed
+	  std::binary_function instantiation.
+
 2003-04-06  Braden McDaniel  <braden@endoframe.com>
 
         * Updated to ANTLR 2.7.2.
