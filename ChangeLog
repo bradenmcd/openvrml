@@ -25,6 +25,8 @@
         * src/openvrml/OpenVRML/Makefile.am: Incremented libopenvrml
           library version to 2:2:0.
 
+        * src/openvrml-gl/OpenVRML/GL/Makefile.am: Incremented
+          libopenvrml-gl library version to 3:0:0.
 
 2002-06-19  Braden McDaniel  <braden@endoframe.com>
 
