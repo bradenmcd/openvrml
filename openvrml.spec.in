@@ -75,7 +75,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %files 
-%doc AUTHORS COPYING COPYING.LIB ChangeLog NEWS README THANKS
+%doc AUTHORS COPYING.LIB ChangeLog NEWS README THANKS
 %{prefix}/lib/libopenvrml.so.*
 %{prefix}/lib/pkgconfig/openvrml.pc
 
@@ -101,6 +101,9 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Sun Dec 08 2002  Braden McDaniel  <braden@endoframe.com>
+- Removed COPYING from %doc.
+
 * Thu Dec 05 2002  Braden McDaniel  <braden@endoframe.com>
 - Added minimum versions to BuildRequires dependencies.
 - configure --without-ftflibs.

@@ -17,6 +17,11 @@
         * configure.ac, m4/gl.m4, m4/glut.m4:  Removed --with-gl and
           --with-glut configure options.
 
+        * COPYING, openvrml.spec.in, m4/COPYING:  Moved GPL text to m4
+          directory.  The only thing we have that's GPL'd are the m4
+          macros. And since they're not installed, the GPL doesn't need
+          to be among our installed docs.
+
 2002-12-08  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/vrml97node.cpp: Fix bug in FontStyle
