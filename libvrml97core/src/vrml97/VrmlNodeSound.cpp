@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeSound.cpp
 //    contributed by Kumaran Santhanam
 
@@ -146,3 +145,4 @@ void VrmlNodeSound::setField(const char *fieldName,
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
 }
+
