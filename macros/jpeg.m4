@@ -25,7 +25,7 @@ AC_DEFUN(OV_PATH_JPEG,
     if test "X$with_jpeg" = "Xno"; then
       have_jpeg=no
     else
-      if test -n "with_jpeg"; then
+      if test -n "$with_jpeg"; then
         if test "X$with_jpeg" != "Xyes"; then
           jpeg__Idir="-I${with_jpeg}/include"
           jpeg__Ldir="-L${with_jpeg}/lib"
