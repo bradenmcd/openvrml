@@ -84,7 +84,7 @@ namespace {
         };
     
     template <typename T>
-        size_t const SimpleVector<T>::BUFFER_INCREMENT(64);
+        size_t const SimpleVector<T>::BUFFER_INCREMENT = 64;
     
     template <typename T>
         SimpleVector<T>::SimpleVector()
@@ -1020,7 +1020,13 @@ mfInt32Value returns [VrmlMFInt * miv = new VrmlMFInt()]
     ;
 
 intValue returns [long val = 0]
-    :   i:INTEGER { istrstream(i->getText().c_str()) >> val; }
+    :   i:INTEGER { istrstream(
+# ifdef _WIN32
+                               const_cast<char *>(i->getText().c_str())
+# else
+                               i->getText().c_str()
+# endif
+                               ) >> val; }
     ;
 
 sfNodeValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc] returns [VrmlSFNode * snv = new VrmlSFNode(0)]
