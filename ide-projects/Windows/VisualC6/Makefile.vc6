@@ -595,7 +595,7 @@ $(BINOUTDIR)\VrmlScene.obj :  $(CORESOURCE)\VrmlScene.cpp $(CORESOURCE)\VrmlScen
                               $(CORESOURCE)\nodeclassptr.h\
                               $(CORESOURCE)\common.h
                               $(CPP) $(CFLAGS)  /GR /I $(LIBINCLUDE) /I $(ZLIB_DIR)\
-                              /D PACKAGE_VERSION=\"0.12.4\" $(CORESOURCE)\VrmlScene.cpp
+                              /D PACKAGE_VERSION=\"0.12.5\" $(CORESOURCE)\VrmlScene.cpp
 
 #For OpenVRMLgl source
 

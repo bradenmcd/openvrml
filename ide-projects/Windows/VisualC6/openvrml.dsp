@@ -561,7 +561,7 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlScene.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# ADD CPP /w /W0 /GR /I "..\..\..\lib" /D PACKAGE_VERSION=\"0.12.4\"
+# ADD CPP /w /W0 /GR /I "..\..\..\lib" /D PACKAGE_VERSION=\"0.12.5\"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
