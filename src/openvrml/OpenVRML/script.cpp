@@ -687,7 +687,7 @@ namespace {
 
             OpenVRML::ScriptNode & getScriptNode();
 
-            jsval vrmlFieldToJSVal(const OpenVRML::FieldValue &, bool protect);
+            jsval vrmlFieldToJSVal(const OpenVRML::FieldValue &) throw ();
 
         private:
             bool initVrmlClasses() throw ();
@@ -880,8 +880,8 @@ namespace {
             
             static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
             static JSBool toJsval(const OpenVRML::SFColor & sfcolor,
-                                  bool protect, JSContext * cx, JSObject * obj,
-                                  jsval * rval) throw ();
+                                  JSContext * cx, JSObject * obj, jsval * rval)
+                    throw ();
             static OpenVRML::SFColor * createFromJSObject(JSContext * cx,
                                                           JSObject * obj)
                     throw (BadConversion, std::bad_alloc);
@@ -911,8 +911,7 @@ namespace {
             static JSObject * initClass(JSContext * cx, JSObject * obj)
                     throw ();
             static JSBool toJsval(const OpenVRML::SFImage & sfcolor,
-                                  bool protect, JSContext * cx, JSObject * obj,
-                                  jsval * rval)
+                                  JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
             static OpenVRML::SFImage * createFromJSObject(JSContext * cx,
                                                           JSObject * obj)
@@ -936,7 +935,7 @@ namespace {
         
             static JSObject * initClass(JSContext * cx, JSObject * obj)
                     throw ();
-            static JSBool toJsval(const OpenVRML::SFNode & sfnode, bool protect,
+            static JSBool toJsval(const OpenVRML::SFNode & sfnode,
                                   JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
             static OpenVRML::SFNode * createFromJSObject(JSContext * cx,
@@ -959,8 +958,7 @@ namespace {
             static JSObject * initClass(JSContext * cx, JSObject * obj)
                     throw ();
             static JSBool toJsval(const OpenVRML::SFRotation & sfnode,
-                                  bool protect, JSContext * cx, JSObject * obj,
-                                  jsval * rval)
+                                  JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
             static OpenVRML::SFRotation * createFromJSObject(JSContext * cx,
                                                              JSObject * obj)
@@ -1002,8 +1000,7 @@ namespace {
             static JSObject * initClass(JSContext * cx, JSObject * obj)
                     throw ();
             static JSBool toJsval(const OpenVRML::SFVec2f & sfvec2f,
-                                  bool protect, JSContext * cx, JSObject * obj,
-                                  jsval * rval)
+                                  JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
             static OpenVRML::SFVec2f * createFromJSObject(JSContext * cx,
                                                           JSObject * obj)
@@ -1050,8 +1047,7 @@ namespace {
             static JSObject * initClass(JSContext * cx, JSObject * obj)
                     throw ();
             static JSBool toJsval(const OpenVRML::SFVec3f & sfvec3f,
-                                  bool protect, JSContext * cx, JSObject * obj,
-                                  jsval * rval)
+                                  JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
             static OpenVRML::SFVec3f * createFromJSObject(JSContext * cx,
                                                           JSObject * obj)
@@ -1185,8 +1181,8 @@ namespace {
             static JSClass & sfjsclass;
             
             static JSBool toJsval(const OpenVRML::MFColor & mfcolor,
-                                  bool protect, JSContext * cx, JSObject * obj,
-                                  jsval * rval) throw ();
+                                  JSContext * cx, JSObject * obj, jsval * rval)
+                    throw ();
             static OpenVRML::MFColor * createFromJSObject(JSContext * cx,
                                                           JSObject * obj)
                     throw (BadConversion, std::bad_alloc);
@@ -1197,8 +1193,8 @@ namespace {
             static JSClass jsclass;
             
             static JSBool toJsval(const OpenVRML::MFFloat & mffloat,
-                                  bool protect, JSContext * cx, JSObject * obj,
-                                  jsval * rval) throw ();
+                                  JSContext * cx, JSObject * obj, jsval * rval)
+                    throw ();
             static OpenVRML::MFFloat * createFromJSObject(JSContext * cx,
                                                           JSObject * obj)
                     throw (BadConversion, std::bad_alloc);
@@ -1210,8 +1206,8 @@ namespace {
             
             static JSObject * initClass(JSContext * cx, JSObject * obj);
             static JSBool toJsval(const OpenVRML::MFInt32 & mfint32,
-                                  bool protect, JSContext * cx, JSObject * obj,
-                                  jsval * rval) throw ();
+                                  JSContext * cx, JSObject * obj, jsval * rval)
+                    throw ();
             static OpenVRML::MFInt32 * createFromJSObject(JSContext * cx,
                                                           JSObject * obj)
                     throw (BadConversion, std::bad_alloc);
@@ -1241,7 +1237,7 @@ namespace {
             
             static JSObject * initClass(JSContext * cx, JSObject * obj)
                     throw ();
-            static JSBool toJsval(const OpenVRML::MFNode & mfnode, bool protect,
+            static JSBool toJsval(const OpenVRML::MFNode & mfnode,
                                   JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
             static OpenVRML::MFNode * createFromJSObject(JSContext * cx,
@@ -1270,8 +1266,8 @@ namespace {
             static JSClass & sfjsclass;
             
             static JSBool toJsval(const OpenVRML::MFRotation & mfrotation,
-                                  bool protect, JSContext * cx, JSObject * obj,
-                                  jsval * rval) throw ();
+                                  JSContext * cx, JSObject * obj, jsval * rval)
+                    throw ();
             static OpenVRML::MFRotation * createFromJSObject(JSContext * cx,
                                                              JSObject * obj)
                     throw (BadConversion, std::bad_alloc);
@@ -1284,8 +1280,8 @@ namespace {
             static JSObject * initClass(JSContext * cx, JSObject * obj)
                     throw ();
             static JSBool toJsval(const OpenVRML::MFString & mfstring,
-                                  bool protect, JSContext * cx, JSObject * obj,
-                                  jsval * rval) throw ();
+                                  JSContext * cx, JSObject * obj, jsval * rval)
+                    throw ();
             static OpenVRML::MFString * createFromJSObject(JSContext * cx,
                                                            JSObject * obj)
                     throw (BadConversion, std::bad_alloc);
@@ -1310,7 +1306,7 @@ namespace {
         public:
             static JSClass jsclass;
             
-            static JSBool toJsval(const OpenVRML::MFTime & mftime, bool protect,
+            static JSBool toJsval(const OpenVRML::MFTime & mftime,
                                   JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
             static OpenVRML::MFTime * createFromJSObject(JSContext * cx,
@@ -1324,8 +1320,8 @@ namespace {
             static JSClass & sfjsclass;
             
             static JSBool toJsval(const OpenVRML::MFVec2f & mfvec2f,
-                                  bool protect, JSContext * cx, JSObject * obj,
-                                  jsval * rval) throw ();
+                                  JSContext * cx, JSObject * obj, jsval * rval)
+                    throw ();
             static OpenVRML::MFVec2f * createFromJSObject(JSContext * cx,
                                                           JSObject * obj)
                     throw (BadConversion, std::bad_alloc);
@@ -1337,8 +1333,8 @@ namespace {
             static JSClass & sfjsclass;
             
             static JSBool toJsval(const OpenVRML::MFVec3f & mfvec3f,
-                                  bool protect, JSContext * cx, JSObject * obj,
-                                  jsval * rval) throw ();
+                                  JSContext * cx, JSObject * obj, jsval * rval)
+                    throw ();
             static OpenVRML::MFVec3f * createFromJSObject(JSContext * cx,
                                                           JSObject * obj)
                     throw (BadConversion, std::bad_alloc);
@@ -1493,33 +1489,36 @@ namespace {
             assert(globalObj);
             
             try {
-                if (!JS_LookupProperty(cx, globalObj, fname.c_str(), &fval)) {
+                if (!JS_LookupProperty(this->cx, globalObj,
+                                       fname.c_str(), &fval)) {
                     throw std::bad_alloc();
                 }
 
                 //
-                // The function may not be defined, in which case we should do nothing.
+                // The function may not be defined, in which case we should do
+                // nothing.
                 //
-                if (JSVAL_IS_VOID(fval)) {
-                    return;
-                }
-
-                jsval * const jsargv = new jsval[argc];
+                if (JSVAL_IS_VOID(fval)) { return; }
 
                 d_timeStamp = timeStamp;
                 s_timeStamp = timeStamp;	// this won't work for long...
 
                 // convert FieldValue*'s to (gc-protected) jsvals
+                std::vector<jsval> jsargv(argc);
                 size_t i;
                 for (i = 0; i < argc; ++i) {
-                    jsargv[i] = argv[i] ? vrmlFieldToJSVal(*argv[i], true) : JSVAL_NULL;
+                    assert(argv[i]);
+                    jsargv[i] = vrmlFieldToJSVal(*argv[i]);
+                    if (!JS_AddRoot(this->cx, &jsargv[i])) {
+                        throw std::bad_alloc();
+                    }
                 }
 
-                JSBool ok;
-                ok = JS_CallFunctionValue(cx, globalObj, fval, argc, jsargv, &rval);
+                JSBool ok = JS_CallFunctionValue(this->cx, globalObj,
+                                                 fval, argc, &jsargv[0], &rval);
                 //
-                // What should we do at this point if a function call fails? For now,
-                // just print a message for a debug build.
+                // What should we do at this point if a function call fails?
+                // For now, just print a message for a debug build.
                 //
 # ifndef NDEBUG
                 if (!ok) {
@@ -1530,14 +1529,12 @@ namespace {
 
                 // Free up args
                 for (i = 0; i < argc; ++i) {
+                    assert(jsargv[i] != JSVAL_NULL);
                     if (JSVAL_IS_GCTHING(jsargv[i])) {
-                        ok = JS_RemoveRoot(cx, JSVAL_TO_GCTHING(jsargv[i]));
+                        ok = JS_RemoveRoot(cx, &jsargv[i]);
                         assert(ok);
                     }
                 }
-
-                delete [] jsargv;
-
             } catch (std::exception & ex) {
                 OPENVRML_PRINT_EXCEPTION_(ex);
             } catch (...) {
@@ -1549,160 +1546,223 @@ namespace {
             return this->scriptNode;
         }
 
-        // Convert a FieldValue value to a jsval, optionally protect from gc.
-
-        jsval Script::vrmlFieldToJSVal(const FieldValue & f, const bool protect) {
-
+        /**
+         * @brief Create a jsval from an OpenVRML::FieldValue.
+         */
+        jsval Script::vrmlFieldToJSVal(const FieldValue & fieldValue) throw () {
             jsval rval;
             JSObject * const globalObj = JS_GetGlobalObject(this->cx);
             assert(globalObj);
 
-            switch (f.type()) {
+            switch (fieldValue.type()) {
             case FieldValue::sfbool:
-	        rval = BOOLEAN_TO_JSVAL(static_cast<const SFBool &>(f).get());
+                {
+                    const OpenVRML::SFBool & sfbool =
+                            static_cast<const OpenVRML::SFBool &>(fieldValue);
+	            rval = BOOLEAN_TO_JSVAL(sfbool.get());
+                }
                 break;
 
             case FieldValue::sfcolor:
-                if (!SFColor::toJsval(static_cast<const OpenVRML::SFColor &>(f),
-                                      protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::SFColor & sfcolor =
+                            static_cast<const OpenVRML::SFColor &>(fieldValue);
+                    if (!SFColor::toJsval(sfcolor,
+                                          this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::sffloat:
                 {
-	            jsdouble * const d =
-                            JS_NewDouble(cx, static_cast<const SFFloat &>(f).get());
-	            if (protect) JS_AddRoot( cx, d );
-	            rval = DOUBLE_TO_JSVAL( d );
-                    break;
+	            const OpenVRML::SFFloat & sffloat =
+                            static_cast<const OpenVRML::SFFloat &>(fieldValue);
+                    if (!JS_NewDoubleValue(cx, sffloat.get(), &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
+                break;
 
             case FieldValue::sfimage:
-                if (!SFImage::toJsval(static_cast<const OpenVRML::SFImage &>(f),
-                                      protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::SFImage & sfimage =
+                            static_cast<const OpenVRML::SFImage &>(fieldValue);
+                    if (!SFImage::toJsval(sfimage,
+                                          this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::sfint32:
-	        return INT_TO_JSVAL(static_cast<const SFInt32 &>(f).get());
+                {
+                    const OpenVRML::SFInt32 & sfint32 =
+                            static_cast<const OpenVRML::SFInt32 &>(fieldValue);
+	            rval = INT_TO_JSVAL(sfint32.get());
+                }
+                break;
 
             case FieldValue::sfnode:
-                if (!SFNode::toJsval(static_cast<const OpenVRML::SFNode &>(f),
-                                     protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::SFNode & sfnode =
+                            static_cast<const OpenVRML::SFNode &>(fieldValue);
+                    if (!SFNode::toJsval(sfnode, this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::sfrotation:
-                if (!SFRotation
-                        ::toJsval(static_cast<const OpenVRML::SFRotation &>(f),
-                                  protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::SFRotation & sfrotation =
+                        static_cast<const OpenVRML::SFRotation &>(fieldValue);
+                    if (!SFRotation::toJsval(sfrotation,
+                                             this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::sfstring:
                 {
-	            JSString * s = JS_NewStringCopyZ(cx,
-                            static_cast<const SFString &>(f).get().c_str());
-	            if (protect) JS_AddRoot( cx, s );
-	            rval = STRING_TO_JSVAL(s);
-                    break;
+                    const OpenVRML::SFString & sfstring =
+                            static_cast<const OpenVRML::SFString &>(fieldValue);
+                    rval = STRING_TO_JSVAL(
+                                JS_NewStringCopyZ(cx, sfstring.get().c_str()));
                 }
+                break;
 
             case FieldValue::sftime:
                 {
-	            jsdouble *d = JS_NewDouble(cx,
-                                    static_cast<const SFTime &>(f).get());
-	            if (protect) JS_AddRoot( cx, d );
-	            rval = DOUBLE_TO_JSVAL(d);
-                    break;
+	            const OpenVRML::SFTime & sftime =
+                            static_cast<const OpenVRML::SFTime &>(fieldValue);
+                    if (!JS_NewDoubleValue(cx, sftime.get(), &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
+                break;
 
             case FieldValue::sfvec2f:
-                if (!SFVec2f::toJsval(static_cast<const OpenVRML::SFVec2f &>(f),
-                                      protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::SFVec2f & sfvec2f =
+                            static_cast<const OpenVRML::SFVec2f &>(fieldValue);
+                    if (!SFVec2f::toJsval(sfvec2f,
+                                          this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::sfvec3f:
-                if (!SFVec3f::toJsval(static_cast<const OpenVRML::SFVec3f &>(f),
-                                      protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::SFVec3f & sfvec3f =
+                            static_cast<const OpenVRML::SFVec3f &>(fieldValue);
+                    if (!SFVec3f::toJsval(sfvec3f,
+                                          this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::mfcolor:
-                if (!MFColor::toJsval(static_cast<const OpenVRML::MFColor &>(f),
-                                      protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::MFColor & mfcolor =
+                            static_cast<const OpenVRML::MFColor &>(fieldValue);
+                    if (!MFColor::toJsval(mfcolor,
+                                          this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::mffloat:
-                if (!MFFloat::toJsval(static_cast<const OpenVRML::MFFloat &>(f),
-                                      protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::MFFloat & mffloat =
+                            static_cast<const OpenVRML::MFFloat &>(fieldValue);
+                    if (!MFFloat::toJsval(mffloat,
+                                          this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::mfint32:
-                if (!MFInt32::toJsval(static_cast<const OpenVRML::MFInt32 &>(f),
-                                      protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::MFInt32 & mfint32 =
+                            static_cast<const OpenVRML::MFInt32 &>(fieldValue);
+                    if (!MFInt32::toJsval(mfint32, this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::mfnode:
-                if (!MFNode::toJsval(static_cast<const OpenVRML::MFNode &>(f),
-                                     protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::MFNode & mfnode =
+                            static_cast<const OpenVRML::MFNode &>(fieldValue);
+                    if (!MFNode::toJsval(mfnode, this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::mfrotation:
-                if (!MFRotation
-                        ::toJsval(static_cast<const OpenVRML::MFRotation &>(f),
-                                  protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::MFRotation & mfrotation =
+                        static_cast<const OpenVRML::MFRotation &>(fieldValue);
+                    if (!MFRotation::toJsval(mfrotation,
+                                             this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::mfstring:
-                if (!MFString
-                        ::toJsval(static_cast<const OpenVRML::MFString &>(f),
-                                  protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::MFString & mfstring =
+                            static_cast<const OpenVRML::MFString &>(fieldValue);
+                    if (!MFString::toJsval(mfstring,
+                                           this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::mftime:
-                if (!MFTime::toJsval(static_cast<const OpenVRML::MFTime &>(f),
-                                     protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::MFTime & mftime =
+                            static_cast<const OpenVRML::MFTime &>(fieldValue);
+                    if (!MFTime::toJsval(mftime, this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::mfvec2f:
-                if (!MFVec2f::toJsval(static_cast<const OpenVRML::MFVec2f &>(f),
-                                      protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::MFVec2f & mfvec2f =
+                            static_cast<const OpenVRML::MFVec2f &>(fieldValue);
+                    if (!MFVec2f::toJsval(mfvec2f,
+                                          this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             case FieldValue::mfvec3f:
-                if (!MFVec3f::toJsval(static_cast<const OpenVRML::MFVec3f &>(f),
-                                      protect, this->cx, globalObj, &rval)) {
-                    rval = JSVAL_NULL;
+                {
+                    const OpenVRML::MFVec3f & mfvec3f =
+                            static_cast<const OpenVRML::MFVec3f &>(fieldValue);
+                    if (!MFVec3f::toJsval(mfvec3f,
+                                          this->cx, globalObj, &rval)) {
+                        rval = JSVAL_NULL;
+                    }
                 }
                 break;
 
             default:
                 assert(false);
-                rval = BOOLEAN_TO_JSVAL(false);
             }
 
             return rval;
@@ -1712,7 +1772,8 @@ namespace {
         // Must assign the proper type to eventOuts
 
         JSBool eventOut_setProperty(JSContext * const cx, JSObject * const obj,
-                                    const jsval id, jsval * const val) throw () {
+                                    const jsval id, jsval * const val)
+                throw () {
             JSString * const str = JS_ValueToString(cx, id);
             if (!str) { return JS_FALSE; }
             const char * const eventId = JS_GetStringBytes(str);
@@ -1865,7 +1926,7 @@ namespace {
                 for (; itr != this->scriptNode.getFieldValueMap().end();
                         ++itr) {
                     assert(itr->second);
-                    jsval val = vrmlFieldToJSVal(*itr->second, false);
+                    jsval val = vrmlFieldToJSVal(*itr->second);
                     if (JSVAL_IS_OBJECT(val)) {
                         FieldData * const fieldData =
                                 static_cast<FieldData *>
@@ -1892,7 +1953,7 @@ namespace {
                         itr != this->scriptNode.getEventOutValueMap().end();
                         ++itr) {
                     assert(itr->second.value);
-                    jsval val = vrmlFieldToJSVal(*itr->second.value, false);
+                    jsval val = vrmlFieldToJSVal(*itr->second.value);
                     if (JSVAL_IS_OBJECT(val)) {
                         FieldData * const fieldData =
                                 static_cast<FieldData *>
@@ -1953,36 +2014,28 @@ namespace {
 
         JSBool floatsToJSArray(const size_t numFloats, const float * floats,
                                JSContext * const cx, jsval * const rval) {
-            static const size_t MAX_FIXED = 20;
-            jsval jsfixed[MAX_FIXED];
-            jsval * jsvec = (numFloats > MAX_FIXED)
-                            ? new jsval[numFloats]
-                            : jsfixed;
+            std::vector<jsval> jsvec(numFloats);
 
             size_t i;
             for (i = 0; i < numFloats; ++i) {
-                jsdouble * d = JS_NewDouble(cx, floats[i]);
-                if (d && JS_AddRoot(cx, d)) {
-                    jsvec[i] = DOUBLE_TO_JSVAL(d);
-                } else {
-                    break;
+                if (!JS_NewDoubleValue(cx, floats[i], &jsvec[i])) {
+                    return JS_FALSE;
                 }
+                if (!JS_AddRoot(cx, &jsvec[i])) { return JS_FALSE; }
             }
-
+            
+            JSObject * arr = 0;
             if (i == numFloats) {
-                JSObject * arr = JS_NewArrayObject(cx, numFloats, jsvec);
-                if (arr) {
-                    *rval = OBJECT_TO_JSVAL(arr);
-                }
+                arr = JS_NewArrayObject(cx, numFloats, &jsvec[0]);
+                if (arr) { *rval = OBJECT_TO_JSVAL(arr); }
             }
 
-            for (size_t j = 0; j < i; ++j) {
-                JS_RemoveRoot(cx, JSVAL_TO_GCTHING(jsvec[j]));
-            }
-            if (numFloats > MAX_FIXED) {
-                delete [] jsvec;
-            }
-            return (i == numFloats) ? JS_TRUE : JS_FALSE;
+            for (size_t j = 0; j < i; ++j) { JS_RemoveRoot(cx, &jsvec[j]); }
+            
+            if (!arr) { return JS_FALSE; }
+            
+            *rval = OBJECT_TO_JSVAL(arr);
+            return JS_TRUE;
         }
 
         /**
@@ -2360,7 +2413,7 @@ namespace {
                 } else {
                     // Put the children from g into an MFNode and return in rval.
                     // should store the namespace as well...
-                    if (!MFNode::toJsval(kids, false, cx, obj, rval)) {
+                    if (!MFNode::toJsval(kids, cx, obj, rval)) {
                         return JS_FALSE;
                     }
                 }
@@ -2653,19 +2706,11 @@ namespace {
         }
 
         JSBool SFColor::toJsval(const OpenVRML::SFColor & sfcolor,
-                                const bool protect, JSContext * const cx,
-                                JSObject * const obj, jsval * const rval)
-                throw () {
+                                JSContext * const cx, JSObject * const obj,
+                                jsval * const rval) throw () {
             JSObject * const sfcolorObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-            if (!sfcolorObj) {
-                return JS_FALSE;
-            }
-            if (protect) {
-                if (!JS_AddRoot(cx, sfcolorObj)) {
-                    return JS_FALSE;
-                }
-            }
+            if (!sfcolorObj) { return JS_FALSE; }
 
             const SFData * const sfdata =
                     static_cast<SFData *>(JS_GetPrivate(cx, sfcolorObj));
@@ -2867,23 +2912,15 @@ namespace {
         }
 
         JSBool SFImage::toJsval(const OpenVRML::SFImage & sfimage,
-                                const bool protect, JSContext * const cx,
-                                JSObject * const obj, jsval * const rval)
-                throw () {
+                                JSContext * const cx, JSObject * const obj,
+                                jsval * const rval) throw () {
             //
             // Can't call JS_ConstructObject() here since SFImage's ctor
             // requires 4 arguments.
             //
 	    JSObject * const sfimageObj =
                     JS_NewObject(cx, &jsclass, 0, obj);
-	    if (!sfimageObj) {
-                return JS_FALSE;
-            }
-	    if (protect) {
-                if (!JS_AddRoot(cx, sfimageObj)) {
-                    return JS_FALSE;
-                }
-            }
+	    if (!sfimageObj) { return JS_FALSE; }
 
             try {
                 std::auto_ptr<OpenVRML::SFImage>
@@ -3096,19 +3133,14 @@ namespace {
         }
 
         JSBool SFNode::toJsval(const OpenVRML::SFNode & sfnode,
-                               const bool protect, JSContext * const cx,
-                               JSObject * const obj, jsval * const rval)
-                throw () {
+                               JSContext * const cx, JSObject * const obj,
+                               jsval * const rval) throw () {
             //
             // The SFNode constructor requires one arg (a vrmlstring),
             // so we can't use JS_ConstructObject here.
             //
             JSObject * const sfnodeObj = JS_NewObject(cx, &jsclass, 0, obj);
 	    if (!sfnodeObj) { return JS_FALSE; }
-
-	    if (protect) {
-                if (!JS_AddRoot(cx, sfnodeObj)) { return JS_FALSE; }
-            }
             
             try {
                 std::auto_ptr<OpenVRML::SFNode>
@@ -3240,7 +3272,7 @@ namespace {
                         thisNode.get()->getEventOut(eventOut);
 
                 // convert event out value to jsval...
-                *vp = script->vrmlFieldToJSVal(fieldVal, false);
+                *vp = script->vrmlFieldToJSVal(fieldVal);
 
                 // If JS_FALSE is returned, apparently the parent object is
                 // not searched for the property, so stuff like toString()
@@ -3354,19 +3386,11 @@ namespace {
         }
 
         JSBool SFRotation::toJsval(const OpenVRML::SFRotation & sfrotation,
-                                   const bool protect, JSContext * const cx,
-                                   JSObject * const obj, jsval * const rval)
-                throw () {
+                                   JSContext * const cx, JSObject * const obj,
+                                   jsval * const rval) throw () {
 	    JSObject * const sfrotationObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-	    if (!sfrotationObj) {
-                return JS_FALSE;
-            }
-	    if (protect) {
-                if (!JS_AddRoot(cx, sfrotationObj)) {
-                    return JS_FALSE;
-                }
-            }
+	    if (!sfrotationObj) { return JS_FALSE; }
 
             const SFData * const sfdata =
                 static_cast<SFData *>(JS_GetPrivate(cx, sfrotationObj));
@@ -3941,19 +3965,11 @@ namespace {
         }
 
         JSBool SFVec2f::toJsval(const OpenVRML::SFVec2f & sfvec2f,
-                                const bool protect, JSContext * const cx,
-                                JSObject * const obj, jsval * const rval)
-                throw () {
+                                JSContext * const cx, JSObject * const obj,
+                                jsval * const rval) throw () {
 	    JSObject * const sfvec2fObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-	    if (!sfvec2fObj) {
-                return JS_FALSE;
-            }
-	    if (protect) {
-                if (!JS_AddRoot(cx, sfvec2fObj)) {
-                    return JS_FALSE;
-                }
-            }
+	    if (!sfvec2fObj) { return JS_FALSE; }
 
             const SFData * const sfdata =
                 static_cast<SFData *>(JS_GetPrivate(cx, sfvec2fObj));
@@ -4416,19 +4432,11 @@ namespace {
         }
 
         JSBool SFVec3f::toJsval(const OpenVRML::SFVec3f & sfvec3f,
-                                const bool protect, JSContext * const cx,
-                                JSObject * const obj, jsval * const rval)
-                throw () {
+                                JSContext * const cx, JSObject * const obj,
+                                jsval * const rval) throw () {
 	    JSObject * const sfvec3fObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-	    if (!sfvec3fObj) {
-                return JS_FALSE;
-            }
-	    if (protect) {
-                if (!JS_AddRoot(cx, sfvec3fObj)) {
-                    return JS_FALSE;
-                }
-            }
+	    if (!sfvec3fObj) { return JS_FALSE; }
 
             const SFData * const sfdata =
                 static_cast<SFData *>(JS_GetPrivate(cx, sfvec3fObj));
@@ -5004,22 +5012,16 @@ namespace {
                 
                 try {
                     MFData * const mfdata = new MFData(argc);
-                    if (!JS_SetPrivate(cx, obj, mfdata)) {
-                        return JS_FALSE;
-                    }
-
+                    if (!JS_SetPrivate(cx, obj, mfdata)) { return JS_FALSE; }
 
                     for (uintN i = 0; i < argc; ++i) {
                         if (!JSVAL_IS_OBJECT(argv[i])
-                                || !JS_InstanceOf(cx,
-                                                  JSVAL_TO_OBJECT(argv[i]),
+                                || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[i]),
                                                   &Subclass::sfjsclass, 0)) {
                             return JS_FALSE;
                         }
 
-                        assert(JSVAL_IS_GCTHING(argv[i]));
-                        JSBool ok =
-                                JS_AddRoot(cx, JSVAL_TO_GCTHING(argv[i]));
+                        JSBool ok = JS_AddRoot(cx, &argv[i]);
                         assert(ok);
 
                         mfdata->array[i] = argv[i];
@@ -5058,6 +5060,9 @@ namespace {
                     return JS_FALSE;
                 }
 
+                //
+                // Make sure the index is valid.
+                //
                 if (!JSVAL_IS_INT(id) || JSVAL_TO_INT(id) < 0) {
                     return JS_FALSE;
                 }
@@ -5067,30 +5072,13 @@ namespace {
                 //
                 if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
                     jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
-                    if (!setLength(cx, obj, 0, &newLength)) {
-                        return JS_FALSE;
-                    }
+                    if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
                 }
-
-                //
-                // Protect the new element from garbage collection.
-                //
-                if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(*vp))) {
-                    return JS_FALSE;
-                }
-
-                //
-                // Allow the old element to be garbage collected.
-                //
-                JSBool ok = JS_RemoveRoot(cx,
-                            JSVAL_TO_GCTHING(mfdata->array[JSVAL_TO_INT(id)]));
-                assert(ok);
 
                 //
                 // Put the new element in the array.
                 //
                 mfdata->array[JSVAL_TO_INT(id)] = *vp;
-
                 return JS_TRUE;
             }
 
@@ -5125,15 +5113,11 @@ namespace {
                             JSObject * const element =
                                 JS_ConstructObject(cx, &Subclass::sfjsclass,
                                                    0, 0);
-                            if (!element) {
+                            if (!element) { throw std::bad_alloc(); }
+                            mfdata->array[i] = OBJECT_TO_JSVAL(element);
+                            if (!JS_AddRoot(cx, &mfdata->array[i])) {
                                 throw std::bad_alloc();
                             }
-                            jsval elementVal = OBJECT_TO_JSVAL(element);
-                            if (!JS_AddRoot(cx,
-                                    JSVAL_TO_GCTHING(elementVal))) {
-                                throw std::bad_alloc();
-                            }
-                            mfdata->array[i] = elementVal;
                         }
                     } else if (JSVAL_TO_INT(*vp) < mfdata->array.size()) {
                         //
@@ -5142,8 +5126,7 @@ namespace {
                         //
                         for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
                                 i < mfdata->array.size(); ++i) {
-                            JSBool ok = JS_RemoveRoot(cx,
-                                JSVAL_TO_GCTHING(mfdata->array[i]));
+                            JSBool ok = JS_RemoveRoot(cx, &mfdata->array[i]);
                             assert(ok);
                         }
                         mfdata->array.resize(JSVAL_TO_INT(*vp));
@@ -5214,9 +5197,9 @@ namespace {
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
-                for (JsvalArray::const_iterator i(mfdata->array.begin());
+                for (JsvalArray::iterator i(mfdata->array.begin());
                         i != mfdata->array.end(); ++i) {
-                    JSBool ok = JS_RemoveRoot(cx, JSVAL_TO_GCTHING(*i));
+                    JSBool ok = JS_RemoveRoot(cx, &*i);
                     assert(ok);
                 }
                 delete mfdata;
@@ -5287,26 +5270,22 @@ namespace {
                         //
                         // If the value is an int, convert it to a double.
                         //
-                        jsval doubleVal;
                         if (JSVAL_IS_INT(argv[i])) {
                             if (!JS_NewDoubleValue(cx, JSVAL_TO_INT(argv[i]),
-                                                   &doubleVal)) {
-                                return JS_FALSE;
+                                                   &mfdata->array[i])) {
+                                 throw std::bad_alloc();
                             }
                         } else {
                             assert(JSVAL_IS_DOUBLE(argv[i]));
-                            doubleVal = argv[i];
+                            mfdata->array[i] = argv[i];
                         }
                         
                         //
                         // Protect from garbage collection.
                         //
-                        assert(JSVAL_IS_GCTHING(doubleVal));
-                        JSBool ok =
-                                JS_AddRoot(cx, JSVAL_TO_GCTHING(doubleVal));
-                        assert(ok);
-
-                        mfdata->array[i] = doubleVal;
+                        if (!JS_AddRoot(cx, &mfdata->array[i])) {
+                            throw std::bad_alloc();
+                        }
                     }
 
                 } catch (std::exception & ex) {
@@ -5365,24 +5344,17 @@ namespace {
                 }
 
                 //
-                // Protect the new element from garbage collection.
-                //
-                if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(doubleVal))) {
-                    return JS_FALSE;
-                }
-
-                //
-                // Allow the old element to be garbage collected.
-                //
-                JSBool ok = JS_RemoveRoot(cx,
-                        JSVAL_TO_GCTHING(mfdata->array[JSVAL_TO_INT(id)]));
-                assert(ok);
-
-                //
                 // Put the new element in the array.
                 //
-                mfdata->array[JSVAL_TO_INT(id)] = doubleVal;
-
+                if (JSVAL_IS_INT(*vp)) {
+                    if (!JS_NewDoubleValue(cx, JSVAL_TO_INT(*vp),
+                                           &mfdata->array[JSVAL_TO_INT(id)])) {
+                        return JS_FALSE;
+                    }
+                } else {
+                    assert(JSVAL_IS_DOUBLE(*vp));
+                    mfdata->array[JSVAL_TO_INT(id)] = *vp;
+                }
                 return JS_TRUE;
             }
 
@@ -5410,15 +5382,12 @@ namespace {
                         mfdata->array.resize(JSVAL_TO_INT(*vp));
                         for (JsvalArray::size_type i = oldSize;
                                 i < mfdata->array.size(); ++i) {
-                            jsval doubleVal;
-                            if (!JS_NewDoubleValue(cx, 0.0, &doubleVal)) {
+                            if (!JS_NewDoubleValue(cx, 0.0, &mfdata->array[i])) {
                                 throw std::bad_alloc();
                             }
-                            if (!JS_AddRoot(cx,
-                                    JSVAL_TO_GCTHING(doubleVal))) {
+                            if (!JS_AddRoot(cx, &mfdata->array[i])) {
                                 throw std::bad_alloc();
                             }
-                            mfdata->array[i] = doubleVal;
                         }
                     } else if (JSVAL_TO_INT(*vp) < mfdata->array.size()) {
                         //
@@ -5427,8 +5396,7 @@ namespace {
                         //
                         for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
                                 i < mfdata->array.size(); ++i) {
-                            JSBool ok = JS_RemoveRoot(cx,
-                                JSVAL_TO_GCTHING(mfdata->array[i]));
+                            JSBool ok = JS_RemoveRoot(cx, &mfdata->array[i]);
                             assert(ok);
                         }
                         mfdata->array.resize(JSVAL_TO_INT(*vp));
@@ -5484,9 +5452,9 @@ namespace {
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
-                for (JsvalArray::const_iterator i(mfdata->array.begin());
+                for (JsvalArray::iterator i(mfdata->array.begin());
                         i != mfdata->array.end(); ++i) {
-                    JSBool ok = JS_RemoveRoot(cx, JSVAL_TO_GCTHING(*i));
+                    JSBool ok = JS_RemoveRoot(cx, &*i);
                     assert(ok);
                 }
                 delete mfdata;
@@ -5535,14 +5503,11 @@ namespace {
         }
         
         JSBool MFColor::toJsval(const OpenVRML::MFColor & mfcolor,
-                                const bool protect, JSContext * const cx,
-                                JSObject * const obj, jsval * const rval)
-                throw () {
+                                JSContext * const cx, JSObject * const obj,
+                                jsval * const rval) throw () {
             JSObject * const mfcolorObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-            if (!mfcolorObj) {
-                return JS_FALSE;
-            }
+            if (!mfcolorObj) { return JS_FALSE; }
 
             MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mfcolorObj));
@@ -5551,16 +5516,10 @@ namespace {
 
             for (size_t i = 0; i < mfcolor.getLength(); ++i) {
                 const OpenVRML::SFColor sfcolor(mfcolor.getElement(i));
-                if (!SFColor::toJsval(sfcolor, true, cx, obj,
-                                      &mfdata->array[i])) {
+                if (!SFColor::toJsval(sfcolor, cx, obj, &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-            }
-
-            if (protect) {
-                if (!JS_AddRoot(cx, mfcolorObj)) {
-                    return JS_FALSE;
-                }
+                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
 
             *rval = OBJECT_TO_JSVAL(mfcolorObj);
@@ -5575,18 +5534,15 @@ namespace {
                   JS_ConvertStub, finalize };
         
         JSBool MFFloat::toJsval(const OpenVRML::MFFloat & mffloat,
-                                const bool protect, JSContext * const cx,
-                                JSObject * const obj, jsval * const rval)
-                throw () {
+                                JSContext * const cx, JSObject * const obj,
+                                jsval * const rval) throw () {
             assert(cx);
             assert(obj);
             assert(rval);
             
             JSObject * const mffloatObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-            if (!mffloatObj) {
-                return JS_FALSE;
-            }
+            if (!mffloatObj) { return JS_FALSE; }
 
             MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mffloatObj));
@@ -5598,15 +5554,7 @@ namespace {
                                        &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(mfdata->array[i]))) {
-                    return JS_FALSE;
-                }
-            }
-
-            if (protect) {
-                if (!JS_AddRoot(cx, mffloatObj)) {
-                    return JS_FALSE;
-                }
+                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
 
             *rval = OBJECT_TO_JSVAL(mffloatObj);
@@ -5668,32 +5616,23 @@ namespace {
         }
 
         JSBool MFInt32::toJsval(const OpenVRML::MFInt32 & mfint32,
-                                const bool protect, JSContext * const cx,
-                                JSObject * const obj, jsval * const rval)
-                throw () {
+                                JSContext * const cx, JSObject * const obj,
+                                jsval * const rval) throw () {
             assert(cx);
             assert(obj);
             assert(rval);
             
             JSObject * const mfint32Obj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-            if (!mfint32Obj) {
-                return JS_FALSE;
-            }
+            if (!mfint32Obj) { return JS_FALSE; }
 
-            MFData * const mfdata = static_cast<MFData *>
-                                    (JS_GetPrivate(cx, mfint32Obj));
+            MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, mfint32Obj));
 
             mfdata->array.resize(mfint32.getLength());
 
             for (size_t i = 0; i < mfint32.getLength(); ++i) {
                 mfdata->array[i] = INT_TO_JSVAL(mfint32.getElement(i));
-            }
-
-            if (protect) {
-                if (!JS_AddRoot(cx, mfint32Obj)) {
-                    return JS_FALSE;
-                }
             }
 
             *rval = OBJECT_TO_JSVAL(mfint32Obj);
@@ -5950,32 +5889,23 @@ namespace {
         }
         
         JSBool MFNode::toJsval(const OpenVRML::MFNode & mfnode,
-                               const bool protect, JSContext * const cx,
-                               JSObject * const obj, jsval * const rval)
-                throw () {
+                               JSContext * const cx, JSObject * const obj,
+                               jsval * const rval) throw () {
             JSObject * const mfnodeObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-            if (!mfnodeObj) {
-                return JS_FALSE;
-            }
+            if (!mfnodeObj) { return JS_FALSE; }
 
-            MFData * const mfdata = static_cast<MFData *>
-                                    (JS_GetPrivate(cx, mfnodeObj));
+            MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, mfnodeObj));
 
             mfdata->array.resize(mfnode.getLength());
 
             for (size_t i = 0; i < mfnode.getLength(); ++i) {
                 const OpenVRML::SFNode sfnode(mfnode.getElement(i));
-                if (!SFNode::toJsval(sfnode, true, cx, obj,
-                                     &mfdata->array[i])) {
+                if (!SFNode::toJsval(sfnode, cx, obj, &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-            }
-
-            if (protect) {
-                if (!JS_AddRoot(cx, mfnodeObj)) {
-                    return JS_FALSE;
-                }
+                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
 
             *rval = OBJECT_TO_JSVAL(mfnodeObj);
@@ -6105,17 +6035,14 @@ namespace {
                             i < mfdata->array.size(); ++i) {
                         JSObject * const element =
                             JS_NewObject(cx, &SFNode::jsclass, 0, 0);
-                        if (!element) {
-                            return JS_FALSE;
-                        }
+                        if (!element) { return JS_FALSE; }
                         if (!SFNode::initObject(cx, element, 1, &arg)) {
                             return JS_FALSE;
                         }
-                        jsval elementVal = OBJECT_TO_JSVAL(element);
-                        if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(elementVal))) {
+                        mfdata->array[i] = OBJECT_TO_JSVAL(element);
+                        if (!JS_AddRoot(cx, &mfdata->array[i])) {
                             return JS_FALSE;
                         }
-                        mfdata->array[i] = elementVal;
                     }
                 } else if (JSVAL_TO_INT(*vp) < mfdata->array.size()) {
                     //
@@ -6124,8 +6051,7 @@ namespace {
                     //
                     for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
                             i < mfdata->array.size(); ++i) {
-                        JSBool ok = JS_RemoveRoot(cx,
-                            JSVAL_TO_GCTHING(mfdata->array[i]));
+                        JSBool ok = JS_RemoveRoot(cx, &mfdata->array[i]);
                         assert(ok);
                     }
                     mfdata->array.resize(JSVAL_TO_INT(*vp));
@@ -6191,7 +6117,7 @@ namespace {
             //
             for (JsvalArray::iterator i(mfdata->array.begin());
                     i != mfdata->array.end(); ++i) {
-                JS_RemoveRoot(cx, JSVAL_TO_GCTHING(*i));
+                JS_RemoveRoot(cx, &*i);
             }
             
             delete mfdata;
@@ -6207,32 +6133,24 @@ namespace {
         JSClass & MFRotation::sfjsclass = SFRotation::jsclass;
 
         JSBool MFRotation::toJsval(const OpenVRML::MFRotation & mfrotation,
-                                   const bool protect, JSContext * const cx,
-                                   JSObject * const obj, jsval * const rval)
-                throw () {
+                                   JSContext * const cx, JSObject * const obj,
+                                   jsval * const rval) throw () {
             JSObject * const mfrotationObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-            if (!mfrotationObj) {
-                return JS_FALSE;
-            }
+            if (!mfrotationObj) { return JS_FALSE; }
 
-            MFData * const mfdata = static_cast<MFData *>
-                                    (JS_GetPrivate(cx, mfrotationObj));
+            MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, mfrotationObj));
 
             mfdata->array.resize(mfrotation.getLength());
 
             for (size_t i = 0; i < mfrotation.getLength(); ++i) {
                 const OpenVRML::SFRotation sfrotation(mfrotation.getElement(i));
-                if (!SFRotation::toJsval(sfrotation, true, cx, obj,
+                if (!SFRotation::toJsval(sfrotation, cx, obj,
                                          &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-            }
-
-            if (protect) {
-                if (!JS_AddRoot(cx, mfrotationObj)) {
-                    return JS_FALSE;
-                }
+                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
 
             *rval = OBJECT_TO_JSVAL(mfrotationObj);
@@ -6303,39 +6221,26 @@ namespace {
         }
 
         JSBool MFString::toJsval(const OpenVRML::MFString & mfstring,
-                                 const bool protect, JSContext * const cx,
-                                 JSObject * const obj, jsval * const rval)
-                throw () {
+                                 JSContext * const cx, JSObject * const obj,
+                                 jsval * const rval) throw () {
             assert(cx);
             assert(obj);
             assert(rval);
             JSObject * const mfstringObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-            if (!mfstringObj) {
-                return JS_FALSE;
-            }
+            if (!mfstringObj) { return JS_FALSE; }
 
-            MFData * const mfdata = static_cast<MFData *>
-                                    (JS_GetPrivate(cx, mfstringObj));
+            MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, mfstringObj));
 
             mfdata->array.resize(mfstring.getLength());
 
             for (size_t i = 0; i < mfstring.getLength(); ++i) {
                 JSString * jsstring =
                         JS_NewStringCopyZ(cx, mfstring.getElement(i).c_str());
-                if (!jsstring) {
-                    return JS_FALSE;
-                }
-                if (!JS_AddRoot(cx, jsstring)) {
-                    return JS_FALSE;
-                }
+                if (!jsstring) { return JS_FALSE; }
                 mfdata->array[i] = STRING_TO_JSVAL(jsstring);
-            }
-
-            if (protect) {
-                if (!JS_AddRoot(cx, mfstringObj)) {
-                    return JS_FALSE;
-                }
+                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
 
             *rval = OBJECT_TO_JSVAL(mfstringObj);
@@ -6396,25 +6301,20 @@ namespace {
             assert(obj);
             
             try {
-                MFData * const mfdata =
-                        new MFData(argc);
-                if (!JS_SetPrivate(cx, obj, mfdata)) {
-                    return JS_FALSE;
-                }
+                MFData * const mfdata = new MFData(argc);
+                if (!JS_SetPrivate(cx, obj, mfdata)) { return JS_FALSE; }
 
                 for (uintN i = 0; i < argc; ++i) {
-                    if (!JSVAL_IS_STRING(argv[i])) {
-                        return JS_FALSE;
-                    }
+                    if (!JSVAL_IS_STRING(argv[i])) { return JS_FALSE; }
 
+                    mfdata->array[i] = argv[i];
+                    
                     //
                     // Protect from garbage collection.
                     //
-                    assert(JSVAL_IS_GCTHING(argv[i]));
-                    JSBool ok = JS_AddRoot(cx, JSVAL_TO_GCTHING(argv[i]));
+                    JSBool ok = JS_AddRoot(cx, &mfdata->array[i]);
                     assert(ok);
 
-                    mfdata->array[i] = argv[i];
                 }
 
             } catch (std::exception & ex) {
@@ -6437,13 +6337,12 @@ namespace {
             //
             // Make sure new value is a string.
             //
-            if (!JSVAL_IS_STRING(*vp)) {
-                return JS_FALSE;
-            }
+            if (!JSVAL_IS_STRING(*vp)) { return JS_FALSE; }
 
-            if (!JSVAL_IS_INT(id) || JSVAL_TO_INT(id) < 0) {
-                return JS_FALSE;
-            }
+            //
+            // Make sure the index is valid.
+            //
+            if (!JSVAL_IS_INT(id) || JSVAL_TO_INT(id) < 0) { return JS_FALSE; }
 
             //
             // Grow array if necessary.
@@ -6456,24 +6355,9 @@ namespace {
             }
 
             //
-            // Protect the new element from garbage collection.
-            //
-            if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(*vp))) {
-                return JS_FALSE;
-            }
-
-            //
-            // Allow the old element to be garbage collected.
-            //
-            JSBool ok = JS_RemoveRoot(cx,
-                    JSVAL_TO_GCTHING(mfdata->array[JSVAL_TO_INT(id)]));
-            assert(ok);
-
-            //
             // Put the new element in the array.
             //
             mfdata->array[JSVAL_TO_INT(id)] = *vp;
-
             return JS_TRUE;
         }
 
@@ -6502,10 +6386,10 @@ namespace {
                         if (!jsstring) {
                             throw std::bad_alloc();
                         }
-                        if (!JS_AddRoot(cx, jsstring)) {
+                        mfdata->array[i] = STRING_TO_JSVAL(jsstring);
+                        if (!JS_AddRoot(cx, &mfdata->array[i])) {
                             throw std::bad_alloc();
                         }
-                        mfdata->array[i] = STRING_TO_JSVAL(jsstring);
                     }
                 } else if (JSVAL_TO_INT(*vp) < mfdata->array.size()) {
                     //
@@ -6514,8 +6398,7 @@ namespace {
                     //
                     for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
                             i < mfdata->array.size(); ++i) {
-                        JSBool ok = JS_RemoveRoot(cx,
-                            JSVAL_TO_GCTHING(mfdata->array[i]));
+                        JSBool ok = JS_RemoveRoot(cx, &mfdata->array[i]);
                         assert(ok);
                     }
                     mfdata->array.resize(JSVAL_TO_INT(*vp));
@@ -6572,9 +6455,9 @@ namespace {
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
-            for (JsvalArray::const_iterator i(mfdata->array.begin());
+            for (JsvalArray::iterator i(mfdata->array.begin());
                     i != mfdata->array.end(); ++i) {
-                JSBool ok = JS_RemoveRoot(cx, JSVAL_TO_GCTHING(*i));
+                JSBool ok = JS_RemoveRoot(cx, &*i);
                 assert(ok);
             }
             delete mfdata;
@@ -6588,14 +6471,11 @@ namespace {
                   JS_ConvertStub, finalize };
         
         JSBool MFTime::toJsval(const OpenVRML::MFTime & mftime,
-                               const bool protect, JSContext * const cx,
-                               JSObject * const obj, jsval * const rval)
-                throw () {
+                               JSContext * const cx, JSObject * const obj,
+                               jsval * const rval) throw () {
             JSObject * const mftimeObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-            if (!mftimeObj) {
-                return JS_FALSE;
-            }
+            if (!mftimeObj) { return JS_FALSE; }
 
             MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mftimeObj));
@@ -6607,15 +6487,7 @@ namespace {
                                        &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(mfdata->array[i]))) {
-                    return JS_FALSE;
-                }
-            }
-
-            if (protect) {
-                if (!JS_AddRoot(cx, mftimeObj)) {
-                    return JS_FALSE;
-                }
+                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
 
             *rval = OBJECT_TO_JSVAL(mftimeObj);
@@ -6655,32 +6527,25 @@ namespace {
         JSClass & MFVec2f::sfjsclass = SFVec2f::jsclass;
 
         JSBool MFVec2f::toJsval(const OpenVRML::MFVec2f & mfvec2f,
-                                const bool protect, JSContext * const cx,
-                                JSObject * const obj, jsval * const rval)
-                throw () {
+                                JSContext * const cx, JSObject * const obj,
+                                jsval * const rval) throw () {
             JSObject * const mfvec2fObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
             if (!mfvec2fObj) {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = static_cast<MFData *>
-                                    (JS_GetPrivate(cx, mfvec2fObj));
+            MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, mfvec2fObj));
 
             mfdata->array.resize(mfvec2f.getLength());
 
             for (size_t i = 0; i < mfvec2f.getLength(); ++i) {
                 const OpenVRML::SFVec2f sfvec2f(mfvec2f.getElement(i));
-                if (!SFVec2f::toJsval(sfvec2f, true, cx, obj,
-                                      &mfdata->array[i])) {
+                if (!SFVec2f::toJsval(sfvec2f, cx, obj, &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-            }
-
-            if (protect) {
-                if (!JS_AddRoot(cx, mfvec2fObj)) {
-                    return JS_FALSE;
-                }
+                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
 
             *rval = OBJECT_TO_JSVAL(mfvec2fObj);
@@ -6730,14 +6595,11 @@ namespace {
         JSClass & MFVec3f::sfjsclass = SFVec3f::jsclass;
 
         JSBool MFVec3f::toJsval(const OpenVRML::MFVec3f & mfvec3f,
-                                const bool protect, JSContext * const cx,
-                                JSObject * const obj, jsval * const rval)
-                throw () {
+                                JSContext * const cx, JSObject * const obj,
+                                jsval * const rval) throw () {
             JSObject * const mfvec3fObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-            if (!mfvec3fObj) {
-                return JS_FALSE;
-            }
+            if (!mfvec3fObj) { return JS_FALSE; }
 
             MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mfvec3fObj));
@@ -6746,16 +6608,10 @@ namespace {
 
             for (size_t i = 0; i < mfvec3f.getLength(); ++i) {
                 const OpenVRML::SFVec3f sfvec3f(mfvec3f.getElement(i));
-                if (!SFVec3f::toJsval(sfvec3f, true, cx, obj,
-                                      &mfdata->array[i])) {
+                if (!SFVec3f::toJsval(sfvec3f, cx, obj, &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-            }
-
-            if (protect) {
-                if (!JS_AddRoot(cx, mfvec3fObj)) {
-                    return JS_FALSE;
-                }
+                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
 
             *rval = OBJECT_TO_JSVAL(mfvec3fObj);

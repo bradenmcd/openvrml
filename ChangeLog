@@ -1,4 +1,9 @@
-2002-05-20  Braden McDaniel  <braden@endoframe.com>
+2002-05-25  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/script.cpp: Changed usage of
+          JS_AddRoot/JS_RemoveRoot in the JavaScript binding.
+
+2002-05-22  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,
           src/openvrml/OpenVRML/VrmlMatrix.cpp: Doxygen love.
