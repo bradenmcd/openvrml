@@ -9,6 +9,8 @@
 
         * configure.ac: Don't require X.
 
+        * m4/gl.m4: Nvidia's OpenGL links with pthreads.
+
 2002-06-19  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.12.2.
