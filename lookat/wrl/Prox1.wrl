@@ -1,0 +1,61 @@
+#VRML V2.0 utf8
+Transform {
+   children [
+
+      # Sphere at x=3
+      Transform {
+	 translation 3 0 0
+	 children [
+	    Shape {
+	       geometry Sphere { radius 2 }
+	       appearance Appearance {
+		  material DEF M1 Material { diffuseColor 1 0 0 }
+	       }
+	    }
+
+	    # ProximitySensor around sphere
+	    DEF PS ProximitySensor {
+	       enabled TRUE
+	       size 6 6 12
+	    }
+	   ]
+      }
+
+      # Cone at x=0
+      Shape {
+	 geometry Cone {}
+	 appearance Appearance { material Material { diffuseColor 0 0 1 } }
+      }
+	 
+      # Box at x=-3
+      Transform {               # Third child - a blue box 
+	 translation -3 .2 1
+	 rotation     0 1 1  .9
+	 children [
+	    Shape {
+	       geometry Box {}
+	       appearance Appearance {
+		  material Material { diffuseColor 0 0 1 }  # Blue
+	       }
+	    }
+	   ]
+      }
+
+      DEF CI ColorInterpolator {
+	 key [ 0 0.5 1 ]
+	 keyValue [ 1 0 0, 0 0 1, 1 0 0 ]
+      }
+
+      DEF TS TimeSensor {
+	 enabled FALSE
+	 loop TRUE
+	 cycleInterval 4
+      }
+
+     ] # end of children for world
+}
+
+# Entering box at 0<x<6 starts color cycling of sphere
+ROUTE PS.isActive TO TS.enabled
+ROUTE TS.fraction_changed TO CI.set_fraction
+ROUTE CI.value_changed TO M1.set_diffuseColor
