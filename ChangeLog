@@ -25,6 +25,10 @@
           Fix numerous bugs. Implement Script::toString. Purge usage
           of memcpy. Add addional comments.
 
+        * src/openvrml/OpenVRML/Image.cpp,
+          src/openvrml/OpenVRML/System.cpp: Purge uses of memcpy in
+          favor of std::copy.
+
 2002-10-09  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Doc.cpp: Fixed bug where relative URI
