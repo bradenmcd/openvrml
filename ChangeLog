@@ -1,3 +1,8 @@
+2003-05-09  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/nodeptr.h:  Fixed problem with
+	  assignment to a null NodePtr.
+
 2003-05-06  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.h,
