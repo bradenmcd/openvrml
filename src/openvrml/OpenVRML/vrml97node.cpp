@@ -26,7 +26,6 @@
 # include <errno.h>
 # include "vrml97node.h"
 # include "VrmlNamespace.h"
-# include "nodetype.h"
 # include "VrmlNodeVisitor.h"
 # include "VrmlNodeProto.h"
 # include "Doc.h"

@@ -49,7 +49,6 @@
 #include "System.h"
 #include "VrmlNodeScript.h"
 #include "VrmlNamespace.h"
-#include "nodetype.h"
 #include "VrmlScene.h"
 #include "VrmlEvent.h"
 #include "VrmlNodePtr.h"

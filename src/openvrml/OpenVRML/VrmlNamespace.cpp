@@ -24,9 +24,8 @@
 
 # include <stack>
 # include "VrmlNamespace.h"
-# include "nodetype.h"
 # include "VrmlNodeVisitor.h"
-# include "VrmlNode.h"
+# include "node.h"
 # include "Route.h"
 # include "System.h"
 # include "VrmlNodeScript.h"
@@ -52,12 +51,13 @@ using namespace OpenVRML;
  */
 
 // This should at least be a sorted vector...
-std::list<NodeTypePtr> VrmlNamespace::builtInList;
+std::list<OpenVRML::NodeTypePtr> OpenVRML::VrmlNamespace::builtInList;
 
 // Ref count of namespaces so builtins can be freed
-int VrmlNamespace::s_nNamespaces;
+int OpenVRML::VrmlNamespace::s_nNamespaces;
 
-VrmlNamespace::VrmlNamespace(VrmlNamespace * parent): d_parent(parent) {
+OpenVRML::VrmlNamespace::VrmlNamespace(VrmlNamespace * parent):
+        d_parent(parent) {
     ++s_nNamespaces;
 
     // Initialize typeList with built in nodes
@@ -66,18 +66,18 @@ VrmlNamespace::VrmlNamespace(VrmlNamespace * parent): d_parent(parent) {
     }
 }
 
-VrmlNamespace::~VrmlNamespace() {
+OpenVRML::VrmlNamespace::~VrmlNamespace() {
     // Free builtins
     if ( --s_nNamespaces == 0 ) {
         builtInList.clear();
     }
 }
 
-void VrmlNamespace::addBuiltIn(const NodeTypePtr & nodeType) {
+void OpenVRML::VrmlNamespace::addBuiltIn(const NodeTypePtr & nodeType) {
     builtInList.push_front(nodeType);
 }
 
-void VrmlNamespace::defineBuiltIns()
+void OpenVRML::VrmlNamespace::defineBuiltIns()
 {
   addBuiltIn( NodeAnchor::defineType() );
   addBuiltIn( NodeAppearance::defineType() );
@@ -145,7 +145,7 @@ void VrmlNamespace::defineBuiltIns()
  *
  * @todo Throw std::invalid_argument if the argument type is already defined.
  */
-void VrmlNamespace::addNodeType(const NodeTypePtr & nodeType) {
+void OpenVRML::VrmlNamespace::addNodeType(const NodeTypePtr & nodeType) {
     assert(!this->findType(nodeType->getId()));
     this->d_typeList.push_front(nodeType);
 }
@@ -154,7 +154,8 @@ void VrmlNamespace::addNodeType(const NodeTypePtr & nodeType) {
  * @brief Find a node type, given a type name. Returns NULL if type is
  *      not defined.
  */
-const NodeTypePtr VrmlNamespace::findType(const std::string & name) const {
+const OpenVRML::NodeTypePtr
+        OpenVRML::VrmlNamespace::findType(const std::string & name) const {
     // Look through the PROTO stack:
     NodeTypePtr nt(findPROTO(name));
     if (nt) {
@@ -182,7 +183,8 @@ const NodeTypePtr VrmlNamespace::findType(const std::string & name) const {
 /**
  * @brief Find a nodeType, given a PROTO name.
  */
-const NodeTypePtr VrmlNamespace::findPROTO(const std::string & name) const {
+const OpenVRML::NodeTypePtr
+        OpenVRML::VrmlNamespace::findPROTO(const std::string & name) const {
     for (std::list<NodeTypePtr>::const_iterator i(d_typeList.begin());
           i != d_typeList.end(); ++i) {
         assert(*i);
@@ -194,7 +196,7 @@ const NodeTypePtr VrmlNamespace::findPROTO(const std::string & name) const {
 }
 
 
-const NodeTypePtr VrmlNamespace::firstType() const {
+const OpenVRML::NodeTypePtr OpenVRML::VrmlNamespace::firstType() const {
     // Top of the PROTO stack (should make sure it has an implementation...)
     if (!this->d_typeList.empty()) {
         return d_typeList.front();
@@ -202,7 +204,7 @@ const NodeTypePtr VrmlNamespace::firstType() const {
     return NodeTypePtr(0);
 }
 
-void VrmlNamespace::addNodeName(Node & namedNode) {
+void OpenVRML::VrmlNamespace::addNodeName(Node & namedNode) {
   // We could remove any existing node with this name, but
   // since we are just pushing this one onto the front of
   // the list, the other name won't be found. If we do
@@ -211,7 +213,7 @@ void VrmlNamespace::addNodeName(Node & namedNode) {
   d_nameList.push_front(&namedNode);
 }
 
-void VrmlNamespace::removeNodeName(Node & namedNode) {
+void OpenVRML::VrmlNamespace::removeNodeName(Node & namedNode) {
     for (std::list<Node *>::iterator i(this->d_nameList.begin());
             i != this->d_nameList.end(); ++i) {
         if (*i == &namedNode) {
@@ -222,7 +224,8 @@ void VrmlNamespace::removeNodeName(Node & namedNode) {
 }
 
 
-Node * VrmlNamespace::findNode(const std::string & nodeId) const {
+OpenVRML::Node *
+        OpenVRML::VrmlNamespace::findNode(const std::string & nodeId) const {
     for (std::list<Node *>::const_iterator nodeItr(d_nameList.begin());
             nodeItr != d_nameList.end(); ++nodeItr) {
         if (nodeId == (*nodeItr)->getId()) {
@@ -1090,10 +1093,9 @@ namespace {
     };
 }
 
-const MFNode VrmlNamespace::cloneNodes(const MFNode & mfnode) {
-    
+const OpenVRML::MFNode
+        OpenVRML::VrmlNamespace::cloneNodes(const MFNode & mfnode) {
     MFNode clonedNodes(NodeCloneVisitor(*this).clone(mfnode));
     NodeRouteCopyVisitor(*this).copyRoutes(mfnode);
-    
     return clonedNodes;
 }

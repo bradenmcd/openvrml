@@ -118,8 +118,7 @@ header "post_include_cpp" {
 # include <antlr/CommonToken.hpp>
 # include "doc2.hpp"
 # include "VrmlNamespace.h"
-# include "nodetype.h"
-# include "VrmlNode.h"
+# include "node.h"
 # include "VrmlNodeScript.h"
 # include "private.h"
 

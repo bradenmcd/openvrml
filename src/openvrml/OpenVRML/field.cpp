@@ -27,7 +27,7 @@
 # include <assert.h>
 # include "field.h"
 # include "private.h"
-# include "VrmlNode.h"
+# include "node.h"
 
 using namespace OpenVRML;
 using namespace OpenVRML_;

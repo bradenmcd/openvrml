@@ -6,6 +6,8 @@
         * Consolidated bounding volume classes in `bvolume.h' and
           `bvolume.cpp'.
 
+        * Consolidated Node and NodeType in `node.h' and `node.cpp'.
+
 2001-11-24  Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Fix bug in ScriptJDK initialize call introduced with recent

@@ -19,7 +19,7 @@
 // 
 
 # include "nodetypeptr.h"
-# include "nodetype.h"
+# include "node.h"
 
 using namespace OpenVRML;
 
@@ -40,7 +40,7 @@ using namespace OpenVRML;
  *
  * @param nodeType a pointer to a NodeType constructed with <code>new</code>.
  */
-NodeTypePtr::NodeTypePtr(NodeType * const nodeType): nodeType(nodeType) {
+OpenVRML::NodeTypePtr::NodeTypePtr(NodeType * const nodeType): nodeType(nodeType) {
     try {
         this->count = new size_t(1); // prevent leak if new throws
     } catch (...) {
@@ -54,7 +54,7 @@ NodeTypePtr::NodeTypePtr(NodeType * const nodeType): nodeType(nodeType) {
  *
  * @param nodeTypePtr the NodeTypePtr to copy.
  */
-NodeTypePtr::NodeTypePtr(const NodeTypePtr & nodeTypePtr):
+OpenVRML::NodeTypePtr::NodeTypePtr(const NodeTypePtr & nodeTypePtr):
         nodeType(nodeTypePtr.nodeType) {
     ++*(this->count = nodeTypePtr.count); // never throws
 }
@@ -64,7 +64,8 @@ NodeTypePtr::NodeTypePtr(const NodeTypePtr & nodeTypePtr):
  *
  * @param nodeTypePtr
  */
-NodeTypePtr & NodeTypePtr::operator=(const NodeTypePtr & nodeTypePtr) {
+OpenVRML::NodeTypePtr &
+        OpenVRML::NodeTypePtr::operator=(const NodeTypePtr & nodeTypePtr) {
     if (this->count != nodeTypePtr.count) {
         ++*nodeTypePtr.count;
         this->dispose();
@@ -79,7 +80,7 @@ NodeTypePtr & NodeTypePtr::operator=(const NodeTypePtr & nodeTypePtr) {
  *
  * @param nodeType a pointer to a NodeType constructed with <code>new</code>.
  */
-void NodeTypePtr::reset(NodeType * const nodeType) {
+void OpenVRML::NodeTypePtr::reset(NodeType * const nodeType) {
     if (this->nodeType == nodeType) { return; }
     if (--*this->count == 0) {
         delete this->nodeType;
@@ -96,7 +97,7 @@ void NodeTypePtr::reset(NodeType * const nodeType) {
     this->nodeType = nodeType;
 }
 
-void NodeTypePtr::dispose() {
+void OpenVRML::NodeTypePtr::dispose() {
     if (--*this->count == 0) {
         delete this->nodeType;
         delete this->count;

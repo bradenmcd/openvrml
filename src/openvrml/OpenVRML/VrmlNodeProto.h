@@ -22,8 +22,7 @@
 #define VRMLNODEPROTO_H
 
 #include "common.h"
-#include "VrmlNode.h"
-#include "nodetype.h"
+#include "node.h"
 #include "Viewer.h"
 #include "field.h"
 

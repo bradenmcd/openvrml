@@ -101,7 +101,7 @@ namespace ANTLR_LBRACE
 #line 102 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
  {
-#line 587 "Vrml97Parser.g"
+#line 586 "Vrml97Parser.g"
 
     public:
         enum NodeInterfaceType {

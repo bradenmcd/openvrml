@@ -26,7 +26,7 @@
 #   include "common.h"
 #   include "field.h"
 #   include "nodetypeptr.h"
-#   include "VrmlNode.h"
+#   include "node.h"
 #   include "Viewer.h"
 #   include "Image.h"
 #   include "bvolume.h"

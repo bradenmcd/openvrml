@@ -43,7 +43,6 @@
 #include "System.h"
 #include "MathUtils.h"
 #include "VrmlNamespace.h"
-#include "nodetype.h"
 #include "VrmlRenderContext.h"
 
 #include "Vrml97Parser.cpp"
