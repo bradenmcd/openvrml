@@ -156,6 +156,7 @@ AM_CONDITIONAL([WITH_DOXYGEN], [test "X$with_doxygen" = "Xyes"])
 AC_OUTPUT([Makefile \
 doc/Makefile \
 doc/Doxyfile \
+ide-projects/Makefile \
 m4/Makefile \
 models/Makefile \
 models/audio/Makefile \
