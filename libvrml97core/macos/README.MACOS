@@ -49,16 +49,20 @@ To build LibVRML and Lookat
 
 4) Compile the ImageReader.mcp project in libvrml97core/macos
 
-5) Compile the LibVRML97core.mcp project in libvrml97core/macos
+5) Compile the LibANTLR.mcp project in libvrml97core/macos
 
-6) Compile the LibVRML97.mcp project in libvrml97core/macos
+6) Decode LibVRML97.rsrc.hqx (e.g. using Stuffit Expander) in libvrml97core/macos
+
+7) Compile the LibVRML97core.mcp project in libvrml97core/macos
+
+8) Compile the LibVRML97.mcp project in libvrml97core/macos
            
-7) Compile the Lookat.mcp project in lookat/macos
+9) Compile the Lookat.mcp project in lookat/macos
 
-For steps 3 and 7, you will need to adjust the project access paths so that
+For steps 3 and 9, you will need to adjust the project access paths so that
 CodeWarrior can locate your OpenGL SDK files. If you do not have the JPEG, PNG, Z, and
 InternetConfig files in the default file structure described above then you will need
-to adjust the access paths for those for steps 4 and 5 too.
+to adjust the access paths for those for steps 4 and 7 too.
 
 [If you have problems with the project files then create new ones using the supplied XML
 files instead (using the "Import Project..." command in CodeWarrior's "File" menu).]
@@ -73,10 +77,14 @@ Notes
 
 You will usually need to provide your application's creator code in LibVRML97.prefix
 in order to use InternetConfig to pass non-VRML anchors to your default
-helper application within LibVRML97 (Need a smarter solution here...).
+helper application within LibVRML97 (Need a smarter solution here...). Also in the
+LibVRML97.prefix file, if you do not intend to provide animated cursors in your resource
+file (cursor resource ids 30000-30007) then you should set MAC_ANIMATED_BUSY_CURSOR to 0.
 
 Note that I have included premade parser files in the libvrml97core/macos folder, which
-the supplied LibVRML97core.mcp project uses.
+the supplied LibVRML97core.mcp project uses. If you want to build your own then you need
+to install the ANTLR parser generator software on your Mac and process the file
+vrml97parser.g in libvrml97/vrml97/src.
 
 If you use LibVRML97 to create your own applications then VrmlScene can be
 initialised with either a URL or a filepath but if a filepath is passed then you need
@@ -103,6 +111,3 @@ The source code is available in the OVAL CVS (module: maclookat).
 
 
 Michael louka (Michael.Louka@hrp.no)
-26 January 2000
-
-(Updated: 4 April 2000)

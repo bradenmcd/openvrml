@@ -9,6 +9,7 @@
 #include <list.h>
 #include <strstream.h>
 #include <vector.h>
+#include <cassert>
 
 static const char SLASH = '/';
 static const char COLON = ':';
@@ -31,9 +32,9 @@ static const char COLON = ':';
 #define M_1_PI          0.31830988618379067154  /* 1/pi */
 #endif
 
-#define MAC_CREATOR_CODE            '????'      /* vrVW is MacLookat */
-#define MAC_ANIMATED_BUSY_CURSOR    0           /* 1 assumes curs res 30000-30007 */
-
+#define MAC_CREATOR_CODE            'vrVW'      /* vrVW is MacLookat */
+#define MAC_ANIMATED_BUSY_CURSOR    1           /* 1 assumes curs res 30000-30007 */
+                                                /* (use 0 if no animation is required) */
 #define NDEBUG          0
 
 #define HAVE_LIBJPEG	1
