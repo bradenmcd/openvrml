@@ -141,7 +141,7 @@ public:
     float getR() const;
     float getG() const;
     float getB() const;
-    const float * get() const;
+    const float (&get() const)[3];
     void set(const float rgb[3]);
     void setHSV(float h, float s, float v);
     void getHSV(float hsv[3]) const;
@@ -247,7 +247,7 @@ public:
 
     float operator[](size_t index) const;
     float & operator[](size_t index);
-    const float * get() const;
+    const float (&get() const)[4];
     void set(const float rotation[4]);
     float getX() const;
     void setX(float);
@@ -328,7 +328,7 @@ public:
     void setX(float);
     float getY() const;
     void setY(float);
-    const float * get() const;
+    const float (&get() const)[2];
     void set(const float vec[2]);
     const VrmlSFVec2f add(const VrmlSFVec2f & vec) const;
     const VrmlSFVec2f divide(float number) const;
@@ -363,7 +363,7 @@ public:
     void setY(float);
     float getZ() const;
     void setZ(float);
-    const float * get() const;
+    const float (&get() const)[3];
     void set(const float vec[3]);
     const VrmlSFVec3f add(const VrmlSFVec3f & vec) const;
     const VrmlSFVec3f cross(const VrmlSFVec3f & vec) const;
@@ -393,9 +393,10 @@ public:
 
     VrmlMFColor & operator=(const VrmlMFColor & mfColor);
 
-    const float * operator[](size_t index) const;
     const float * get() const;
     void set(size_t length, const float * colors = 0);
+    const float * getElement(size_t index) const;
+    void setElement(size_t index, const float value[3]);
     size_t getLength() const;
     void setLength(size_t length);
 
@@ -420,9 +421,10 @@ public:
 
     VrmlMFFloat& operator=(const VrmlMFFloat & mfFloat);
 
-    const float operator[](size_t index) const;
     const float * get() const;
     void set(size_t length, const float * numbers);
+    float getElement(size_t index) const;
+    void setElement(size_t index, float value);
     size_t getLength() const;
     void setLength(size_t length);
 
@@ -447,9 +449,10 @@ public:
 
     VrmlMFInt32 & operator=(const VrmlMFInt32 & mfInt32);
 
-    long operator[](size_t) const;
     const long * get() const;
     void set(size_t length, const long * numbers);
+    long getElement(size_t index) const;
+    void setElement(size_t index, long value);
     size_t getLength() const;
     void setLength(size_t length);
 
@@ -504,9 +507,10 @@ public:
 
     VrmlMFRotation & operator=(const VrmlMFRotation & mfrotation);
 
-    const float * operator[](size_t index) const;
     const float * get() const;
     void set(size_t length, const float * rotations);
+    const float * getElement(size_t index) const;
+    void setElement(size_t, const float value[4]);
     size_t getLength() const;
     void setLength(size_t length);
 
@@ -523,18 +527,18 @@ class OPENVRML_SCOPE VrmlMFString : public VrmlField {
     size_t d_allocated;
     size_t d_size;
 public:
-    explicit VrmlMFString(size_t n = 0, char const * const * values = 0);
+    explicit VrmlMFString(size_t n = 0, const char * const * values = 0);
     VrmlMFString(const VrmlMFString&);
 
     virtual ~VrmlMFString();
 
     VrmlMFString& operator=(const VrmlMFString& rhs);
 
-    void set(size_t n, char const * const v[]);
+    void set(size_t n, const char * const v[]);
+    const char * const * get() const;
+    const char * getElement(size_t) const;
+    void setElement(size_t, const char *);
     size_t getLength() const;
-    char const * const * get() const;
-    char const * get(size_t) const;
-    void set(size_t, const char *);
 
     virtual VrmlField *clone() const;
     virtual VrmlFieldType fieldType() const;
@@ -554,10 +558,10 @@ public:
 
     VrmlMFTime & operator=(const VrmlMFTime & mftime);
 
-    double operator[](size_t index) const;
-    double & operator[](size_t index);
     const double * get() const;
     void set(size_t length, const double * times);
+    double getElement(size_t index) const;
+    void setElement(size_t index, double value);
     size_t getLength() const;
     void setLength(size_t length);
 
@@ -580,10 +584,10 @@ public:
 
     VrmlMFVec2f & operator=(const VrmlMFVec2f & mfvec2f);
 
-    const float * operator[](size_t index) const;
-    float * operator[](size_t index);
     const float * get() const;
     void set(size_t length, const float * vecs);
+    const float * getElement(size_t index) const;
+    void setElement(size_t, const float value[2]);
     size_t getLength() const;
     void setLength(size_t length);
 
@@ -605,10 +609,10 @@ public:
 
     VrmlMFVec3f & operator=(const VrmlMFVec3f & mfvec3f);
 
-    const float * operator[](size_t index) const;
-    float * operator[](size_t index);
     const float * get() const;
     void set(size_t length, const float * vecs);
+    const float * getElement(size_t index) const;
+    void setElement(size_t, const float value[3]);
     size_t getLength() const;
     void setLength(size_t length);
 

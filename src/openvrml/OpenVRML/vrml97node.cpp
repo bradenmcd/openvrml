@@ -374,14 +374,14 @@ void VrmlNodeAnchor::activate()
       
       for (size_t i = 0; i < d_url.getLength(); i++) {
         Doc2 relDoc(d_relative.get());
-        tmp_url->seturl( d_url.get(i), &relDoc);
+        tmp_url->seturl(d_url.getElement(i), &relDoc);
         tmp_url_array[i] = new char[ strlen(tmp_url->url()) + 1 ];
         strcpy(tmp_url_array[i], tmp_url->url());
       }
       
       VrmlMFString urls(d_url.getLength(), tmp_url_array);
       if (!d_scene->loadUrl(&urls, &d_parameter)) {
-        theSystem->warn("Couldn't load URL %s\n", d_url.get(0));
+        theSystem->warn("Couldn't load URL %s\n", d_url.getElement(0));
       }
 
       for (size_t j = 0; j < d_url.getLength(); j++)
@@ -1060,8 +1060,8 @@ static Image* getTexture( VrmlMFString &urls,
 
 	  if (currentTex)
 	    for (int i=0; i<n; ++i)
-	      if (strcmp(currentTex, urls.get(i)) == 0 ||
-		  strcmp(currentTex+relPathLen, urls.get(i)) == 0 )
+	      if (strcmp(currentTex, urls.getElement(i)) == 0 ||
+		  strcmp(currentTex+relPathLen, urls.getElement(i)) == 0 )
 		return &tex[index];
 	}
 
@@ -1838,20 +1838,20 @@ void VrmlNodeColorInt::eventIn(double timeStamp,
       float f = static_cast<const VrmlSFFloat &>(fieldValue).get();
 
       int n = d_key.getLength() - 1;
-      if (f < d_key[0])
-	d_value.set(d_keyValue[0]);
-      else if (f > d_key[n])
-	d_value.set(d_keyValue[n]);
+      if (f < d_key.getElement(0))
+	d_value.set(d_keyValue.getElement(0));
+      else if (f > d_key.getElement(n))
+	d_value.set(d_keyValue.getElement(n));
       else
 	{
 	  //  convert to HSV for the interpolation...
 	  for (int i=0; i<n; ++i)
-	    if (d_key[i] <= f && f <= d_key[i+1])
+	    if (d_key.getElement(i) <= f && f <= d_key.getElement(i + 1))
 	      {
-		const float *rgb1 = d_keyValue[i];
-		const float *rgb2 = d_keyValue[i+1];
+		const float *rgb1 = d_keyValue.getElement(i);
+		const float *rgb2 = d_keyValue.getElement(i + 1);
 
-		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
+		f = (f - d_key.getElement(i)) / (d_key.getElement(i + 1) - d_key.getElement(i));
 		float hsv1[3], hsv2[3];
 		VrmlSFColor::RGBtoHSV(rgb1, hsv1);
 		VrmlSFColor::RGBtoHSV(rgb2, hsv2);
@@ -2171,13 +2171,13 @@ void VrmlNodeCoordinateInt::eventIn(double timeStamp,
       size_t nCoords = d_keyValue.getLength() / d_key.getLength();
       size_t n = d_key.getLength() - 1;
 
-      if (f < d_key[0])
+      if (f < d_key.getElement(0))
 	{
-	  d_value.set( nCoords, d_keyValue[0] );
+	  d_value.set(nCoords, d_keyValue.getElement(0));
 	}
-      else if (f > d_key[n])
+      else if (f > d_key.getElement(n))
 	{
-	  d_value.set( nCoords, d_keyValue[n*nCoords] );
+	  d_value.set(nCoords, d_keyValue.getElement(n * nCoords));
 	}
       else
 	{
@@ -2185,18 +2185,19 @@ void VrmlNodeCoordinateInt::eventIn(double timeStamp,
 	  d_value.set( nCoords, 0 );
 
 	  for (int i=0; i<n; ++i)
-	    if (d_key[i] <= f && f <= d_key[i+1])
+	    if (d_key.getElement(i) <= f && f <= d_key.getElement(i + 1))
 	      {
-		const float * v1 = d_keyValue[i*nCoords];
-		const float * v2 = d_keyValue[(i+1)*nCoords];
+		const float * v1 = d_keyValue.getElement(i * nCoords);
+		const float * v2 = d_keyValue.getElement((i + 1) * nCoords);
 
-		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
+		f = (f - d_key.getElement(i)) / (d_key.getElement(i + 1) - d_key.getElement(i));
 
 		for (size_t j = 0; j < nCoords; ++j)
 		  {
-		    this->d_value[j][0] = v1[0] + f * (v2[0] - v1[0]);
-		    this->d_value[j][1] = v1[1] + f * (v2[1] - v1[1]);
-		    this->d_value[j][2] = v1[2] + f * (v2[2] - v1[2]);
+		    const float vec[3] = { v1[0] + f * (v2[0] - v1[0]),
+                                           v1[1] + f * (v2[1] - v1[1]),
+                                           v1[2] + f * (v2[2] - v1[2]) };
+                    this->d_value.setElement(j, vec);
 		    v1 += 3;
 		    v2 += 3;
 		  }
@@ -2735,19 +2736,19 @@ Viewer::Object VrmlNodeElevationGrid::insertGeometry(Viewer *viewer, VrmlRenderC
 	{
 	  VrmlMFVec2f &texcoord =
 	    d_texCoord.get()->toTextureCoordinate()->coordinate();
-	  tc = &texcoord[0][0];
+	  tc = &texcoord.getElement(0)[0];
 	}
 
       if (d_normal.get())
 	{
 	  VrmlMFVec3f &n = d_normal.get()->toNormal()->normal();
-	  normals = &n[0][0];
+	  normals = &n.getElement(0)[0];
 	}
 
       if (d_color.get())
 	{
 	  VrmlMFColor &c = d_color.get()->toColor()->color();
-	  colors = &c[0][0];
+	  colors = &c.getElement(0)[0];
 	}
 
       // insert geometry
@@ -3105,36 +3106,22 @@ VrmlNodeType & VrmlNodeExtrusion::nodeType() const
     return *defineType(0);
 }
 
+namespace {
+    const float extrusionDefaultCrossSection_[] =
+            { 1.0, 1.0, 1.0, -1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0 };
+    const float extrusionDefaultScale_[] =
+            { 1.0, 1.0 };
+    const float extrusionDefaultSpine_[] =
+            { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 };
+}
 
 VrmlNodeExtrusion::VrmlNodeExtrusion(VrmlScene * scene):
         VrmlNodeGeometry(scene), d_beginCap(true), d_ccw(true), d_convex(true),
-        d_creaseAngle(0), d_crossSection(5), d_endCap(true), d_orientation(1),
-        d_scale(1), d_solid(true), d_spine(2) {
-    this->d_crossSection[0][0] = 1.0f;
-    this->d_crossSection[0][1] = 1.0f;
-    this->d_crossSection[1][0] = 1.0f;
-    this->d_crossSection[1][1] = -1.0f;
-    this->d_crossSection[2][0] = -1.0f;
-    this->d_crossSection[2][1] = -1.0f;
-    this->d_crossSection[3][0] = -1.0f;
-    this->d_crossSection[3][1] = 1.0f;
-    this->d_crossSection[4][0] = 1.0f;
-    this->d_crossSection[4][1] = 1.0f;
-    
-    this->d_scale[0][0] = 1.0f;
-    this->d_scale[0][1] = 1.0f;
-    
-    this->d_spine[0][0] = 0.0f;
-    this->d_spine[0][1] = 0.0f;
-    this->d_spine[0][2] = 0.0f;
-    this->d_spine[1][0] = 0.0f;
-    this->d_spine[1][1] = 1.0f;
-    this->d_spine[1][2] = 0.0f;
-}
+        d_creaseAngle(0), d_crossSection(5, extrusionDefaultCrossSection_),
+        d_endCap(true), d_orientation(1), d_scale(1, extrusionDefaultScale_),
+        d_solid(true), d_spine(2, extrusionDefaultSpine_) {}
 
-VrmlNodeExtrusion::~VrmlNodeExtrusion()
-{
-}
+VrmlNodeExtrusion::~VrmlNodeExtrusion() {}
 
 bool VrmlNodeExtrusion::accept(VrmlNodeVisitor & visitor) {
     if (!this->visited) {
@@ -3425,13 +3412,15 @@ VrmlNodeType & VrmlNodeFontStyle::nodeType() const
     return *defineType(0);
 }
 
+namespace {
+    const char * const fontStyleInitFamily_[] = { "SERIF" };
+    const char * const fontStyleInitJustify_[] = { "BEGIN" };
+}
 
 VrmlNodeFontStyle::VrmlNodeFontStyle(VrmlScene *scene): VrmlNode(scene),
-        d_family(1), d_horizontal(true), d_justify(1), d_leftToRight(true),
-        d_size(1.0), d_spacing(1.0), d_style("PLAIN"), d_topToBottom(true) {
-    this->d_family.set(0, "SERIF");
-    this->d_justify.set(0, "BEGIN");
-}
+        d_family(1, fontStyleInitFamily_), d_horizontal(true),
+        d_justify(1, fontStyleInitJustify_), d_leftToRight(true), d_size(1.0),
+        d_spacing(1.0), d_style("PLAIN"), d_topToBottom(true) {}
 
 VrmlNodeFontStyle::~VrmlNodeFontStyle()
 {
@@ -3454,11 +3443,11 @@ VrmlNodeFontStyle* VrmlNodeFontStyle::toFontStyle() const
 ostream& VrmlNodeFontStyle::printFields(ostream& os, int indent)
 {
   if (d_family.getLength() > 1 ||
-      (d_family.getLength() == 1 && strcmp(d_family.get(0),"SERIF")) )
+      (d_family.getLength() == 1 && strcmp(d_family.getElement(0),"SERIF")) )
     PRINT_FIELD(family);
   if (! d_horizontal.get()) PRINT_FIELD(horizontal);
   if (d_justify.getLength() > 1 ||
-      (d_justify.getLength() == 1 && strcmp(d_justify.get(0),"BEGIN")) )
+      (d_justify.getLength() == 1 && strcmp(d_justify.getElement(0),"BEGIN")) )
     PRINT_FIELD(justify);
   if (d_language.get() && strcmp(d_language.get(), ""))
     PRINT_FIELD(language);
@@ -4142,7 +4131,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
 	{
 	  VrmlMFVec2f &texcoord =
 	    d_texCoord.get()->toTextureCoordinate()->coordinate();
-	  tc = &texcoord[0][0];
+	  tc = &texcoord.getElement(0)[0];
 	  ntc = texcoord.getLength();
 	  ntci = d_texCoordIndex.getLength();
 	  if (ntci) tci = d_texCoordIndex.get();
@@ -4161,7 +4150,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
       if (d_color.get())
 	{
 	  VrmlMFColor &c = d_color.get()->toColor()->color();
-	  color = &c[0][0];
+	  color = &c.getElement(0)[0];
 	  nci = d_colorIndex.getLength();
 	  if (nci) ci = d_colorIndex.get();
 	}
@@ -4170,7 +4159,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
       if (d_normal.get())
 	{
 	  VrmlMFVec3f &n = d_normal.get()->toNormal()->normal();
-	  normal = &n[0][0];
+	  normal = &n.getElement(0)[0];
 	  nni = d_normalIndex.getLength();
 	  if (nni) ni = d_normalIndex.get();
 	}
@@ -4183,7 +4172,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
       if (d_normalPerVertex.get()) optMask |= Viewer::MASK_NORMAL_PER_VERTEX;
 
       obj = viewer->insertShell(optMask,
-				nvert, &coord[0][0],
+                                nvert, &coord.getElement(0)[0],
 				d_coordIndex.getLength(), d_coordIndex.get(),
 				tc, ntci, tci,
 				normal, nni, ni,
@@ -4395,13 +4384,13 @@ Viewer::Object VrmlNodeILineSet::insertGeometry(Viewer *viewer, VrmlRenderContex
       if (d_color.get())
 	{
 	  VrmlMFColor &c = d_color.get()->toColor()->color();
-	  color = &c[0][0];
+	  color = &c.getElement(0)[0];
 	  nci = d_colorIndex.getLength();
 	  if (nci) ci = d_colorIndex.get();
 	}
 
       obj =  viewer->insertLineSet(nvert,
-				   &coord[0][0],
+                                   &coord.getElement(0)[0],
 				   d_coordIndex.getLength(),
 				   d_coordIndex.get(),
 				   d_colorPerVertex.get(),
@@ -4514,7 +4503,7 @@ void VrmlNodeImageTexture::render(Viewer *viewer, VrmlRenderContext rc)
       Doc relDoc(relUrl, static_cast<Doc const *>(0));
       d_image = new Image;
       if ( ! d_image->tryURLs( d_url.getLength(), d_url.get(), &relDoc ) )
-	      theSystem->error("Couldn't read ImageTexture from URL %s\n", (char*)d_url.get(0));
+	      theSystem->error("Couldn't read ImageTexture from URL %s\n", (char*)d_url.getElement(0));
     }
 
   // Check texture cache
@@ -4898,15 +4887,15 @@ void VrmlNodeInline::load(const char *relativeUrl)
 	{
 	  Doc2 relDoc(relativeUrl);
 	  theSystem->debug("Trying to read url '%s' (relative %s)\n",
-			   d_url.get(i), d_relative.get() ? d_relative.get() : "<null>");
-	  url.seturl( d_url.get(i), &relDoc );
+			   d_url.getElement(i), d_relative.get() ? d_relative.get() : "<null>");
+	  url.seturl(d_url.getElement(i), &relDoc);
 
 	  kids = VrmlScene::readWrl( &url, ns );
 	  if ( kids )
 	    break;
-	  else if (i < n-1 && strncmp(d_url.get(i),"urn:",4))
+	  else if (i < n-1 && strncmp(d_url.getElement(i),"urn:",4))
 	    theSystem->warn("Couldn't read url '%s': %s\n",
-			    d_url.get(i), strerror( errno));
+			    d_url.getElement(i), strerror( errno));
 	}
 
       if ( kids )
@@ -4922,7 +4911,7 @@ void VrmlNodeInline::load(const char *relativeUrl)
       else
 	{
 	  theSystem->warn("couldn't load Inline %s (relative %s)\n",
-			  d_url.get(0),
+			  d_url.getElement(0),
 			  d_relative.get() ? d_relative.get() : "<null>");
 	  delete ns;
 	}
@@ -5072,7 +5061,7 @@ void VrmlNodeLOD::render(Viewer *viewer, VrmlRenderContext rc)
 
   int i, n = d_range.getLength();
   for (i=0; i<n; ++i)
-    if (d2 < d_range[i] * d_range[i])
+    if (d2 < d_range.getElement(i) * d_range.getElement(i))
       break;
 
   // Should choose an "optimal" level...
@@ -5425,11 +5414,11 @@ void VrmlNodeMovieTexture::update( VrmlSFTime &timeNow )
 	  int i, nUrls = d_url.getLength();
 	  for (i=0; i<nUrls; ++i)
 	    {
-	      int len = strlen(d_url.get(i));
+	      int len = strlen(d_url.getElement(i));
 	      
-	      if ((strcmp(imageUrl, d_url.get(i)) == 0) ||
+	      if ((strcmp(imageUrl, d_url.getElement(i)) == 0) ||
 		  (imageLen > len &&
-		   strcmp(imageUrl+imageLen-len, d_url.get(i)) == 0))
+		   strcmp(imageUrl+imageLen-len, d_url.getElement(i)) == 0))
 		break;
 	    }
 
@@ -5754,15 +5743,15 @@ void VrmlNodeNavigationInfo::addToScene(VrmlScene *s, const char *)
 ostream& VrmlNodeNavigationInfo::printFields(ostream& os, int indent)
 {
   if (d_avatarSize.getLength() != 3 ||
-      ! FPEQUAL(d_avatarSize[0], 0.25) ||
-      ! FPEQUAL(d_avatarSize[1], 1.6) ||
-      ! FPEQUAL(d_avatarSize[2], 0.75) )
+      ! FPEQUAL(d_avatarSize.getElement(0), 0.25) ||
+      ! FPEQUAL(d_avatarSize.getElement(1), 1.6) ||
+      ! FPEQUAL(d_avatarSize.getElement(2), 0.75) )
     PRINT_FIELD(avatarSize);
   if (! d_headlight.get()) PRINT_FIELD(headlight);
   if (! FPEQUAL(d_speed.get(), 1.0)) PRINT_FIELD(speed);
   if (d_type.getLength() != 2 ||
-      strcmp(d_type.get(0), "WALK") != 0 ||
-      strcmp(d_type.get(1), "ANY") != 0 )
+      strcmp(d_type.getElement(0), "WALK") != 0 ||
+      strcmp(d_type.getElement(1), "ANY") != 0 )
     PRINT_FIELD(type);
   if (! FPZERO(d_visibilityLimit.get())) PRINT_FIELD(visibilityLimit);
 
@@ -6026,13 +6015,13 @@ void VrmlNodeNormalInt::eventIn(double timeStamp,
       int nNormals = d_keyValue.getLength() / d_key.getLength();
       int n = d_key.getLength() - 1;
 
-      if (f < d_key[0])
+      if (f < d_key.getElement(0))
 	{
-	  d_value.set( nNormals, d_keyValue[0] );
+          d_value.set(nNormals, d_keyValue.getElement(0));
 	}
-      else if (f > d_key[n])
+      else if (f > d_key.getElement(n))
 	{
-	  d_value.set( nNormals, d_keyValue[n*nNormals] );
+	  d_value.set(nNormals, d_keyValue.getElement(n * nNormals));
 	}
       else
 	{
@@ -6040,12 +6029,12 @@ void VrmlNodeNormalInt::eventIn(double timeStamp,
 	  d_value.set( nNormals, 0 );
 
 	  for (int i=0; i<n; ++i)
-	    if (d_key[i] <= f && f <= d_key[i+1])
+	    if (d_key.getElement(i) <= f && f <= d_key.getElement(i + 1))
 	      {
-		float *v1 = d_keyValue[i*nNormals];
-		float *v2 = d_keyValue[(i+1)*nNormals];
+		const float * v1 = d_keyValue.getElement(i * nNormals);
+		const float * v2 = d_keyValue.getElement((i + 1) * nNormals);
 
-		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
+		f = (f - d_key.getElement(i)) / (d_key.getElement(i + 1) - d_key.getElement(i));
 
 		// Interpolate on the surface of unit sphere.
 		// Contributed by S. K. Bose. (bose@garuda.barc.ernet.in)
@@ -6074,9 +6063,10 @@ void VrmlNodeNormalInt::eventIn(double timeStamp,
 			alpha = 1.0 -f;
 			beta = f;
 		      }
-                    this->d_value[j][0] = alpha * v1[0] + beta * v2[0];
-                    this->d_value[j][1] = alpha * v1[1] + beta * v2[1];
-                    this->d_value[j][2] = alpha * v1[2] + beta * v2[2];
+                    const float vec[3] = { alpha * v1[0] + beta * v2[0],
+                                           alpha * v1[1] + beta * v2[1],
+                                           alpha * v1[2] + beta * v2[2] };
+                    this->d_value.setElement(j, vec);
 
 		    v1 += 3;
 		    v2 += 3;
@@ -6210,28 +6200,28 @@ void VrmlNodeOrientationInt::eventIn(double timeStamp,
       //printf("OI.set_fraction %g ", f);
 
       int n = d_key.getLength() - 1;
-      if (f < d_key[0])
+      if (f < d_key.getElement(0))
 	{
-	  const float * v0 = d_keyValue[0];
+	  const float * v0 = d_keyValue.getElement(0);
 	  //printf(" 0 [%g %g %g %g]\n", v0[0], v0[1], v0[2], v0[3] );
 	  d_value.set(v0);
 	}
-      else if (f > d_key[n])
+      else if (f > d_key.getElement(n))
 	{
-	  const float * vn = d_keyValue[n];
+	  const float * vn = d_keyValue.getElement(n);
 	  //printf(" n [%g %g %g %g]\n", vn[0], vn[1], vn[2], vn[3] );
 	  d_value.set(vn);
 	}
       else
 	{
 	  for (int i=0; i<n; ++i)
-	    if (d_key[i] <= f && f <= d_key[i+1])
+	    if (d_key.getElement(i) <= f && f <= d_key.getElement(i + 1))
 	      {
-		const float * v1 = d_keyValue[i];
-		const float * v2 = d_keyValue[i+1];
+		const float * v1 = d_keyValue.getElement(i);
+		const float * v2 = d_keyValue.getElement(i + 1);
 
 		// Interpolation factor
-		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
+		f = (f - d_key.getElement(i)) / (d_key.getElement(i + 1) - d_key.getElement(i));
 
 		float x, y, z, r1, r2;
 		r1 = v1[3];
@@ -7018,12 +7008,12 @@ Viewer::Object VrmlNodePointSet::insertGeometry(Viewer *viewer, VrmlRenderContex
       if ( d_color.get() )
 	{
 	  VrmlMFColor &c = d_color.get()->toColor()->color();
-	  color = &c[0][0];
+	  color = &c.getElement(0)[0];
 	}
 
       VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
 
-      obj = viewer->insertPointSet(coord.getLength(), &coord[0][0], color);
+      obj = viewer->insertPointSet(coord.getLength(), &coord.getElement(0)[0], color);
     }
 
   if (d_color.get()) d_color.get()->clearModified();
@@ -7064,7 +7054,7 @@ void VrmlNodePointSet::recalcBSphere()
   VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
   int nvert = coord.getLength();
   for(int i=0; i<nvert; i++) {
-    float* vi = coord[i]; // vi[3]
+    const float * vi = coord.getElement(i); // vi[3]
     //cout << vi[0] << "," << vi[1] << "," << vi[2] << ")" << endl;
     d_bsphere.extend(vi);
     //d_bsphere.dump(cout);
@@ -7195,20 +7185,20 @@ void VrmlNodePositionInt::eventIn(double timeStamp,
       float f = static_cast<const VrmlSFFloat &>(fieldValue).get();
 
       int n = d_key.getLength() - 1;
-      if (f < d_key[0])
-	d_value.set(d_keyValue[0]);
-      else if (f > d_key[n])
-	d_value.set(d_keyValue[n]);
+      if (f < d_key.getElement(0))
+	d_value.set(d_keyValue.getElement(0));
+      else if (f > d_key.getElement(n))
+	d_value.set(d_keyValue.getElement(n));
       else
 	{
 	  // should cache the last index used...
 	  for (int i=0; i<n; ++i)
-	    if (d_key[i] <= f && f <= d_key[i+1])
+	    if (d_key.getElement(i) <= f && f <= d_key.getElement(i + 1))
 	      {
-		float *v1 = d_keyValue[i];
-		float *v2 = d_keyValue[i+1];
+                const float * v1 = d_keyValue.getElement(i);
+                const float * v2 = d_keyValue.getElement(i + 1);
 
-		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
+		f = (f - d_key.getElement(i)) / (d_key.getElement(i + 1) - d_key.getElement(i));
                 const float valueVec[3] = { v1[0] + f * (v2[0] - v1[0]),
                                             v1[1] + f * (v2[1] - v1[1]),
                                             v1[2] + f * (v2[2] - v1[2]) };
@@ -7556,19 +7546,19 @@ void VrmlNodeScalarInt::eventIn(double timeStamp,
       float f = static_cast<const VrmlSFFloat &>(fieldValue).get();
 
       int n = d_key.getLength() - 1;
-      if (f < d_key[0])
-	d_value.set( d_keyValue[0] );
-      else if (f > d_key[n])
-	d_value.set( d_keyValue[n] );
+      if (f < d_key.getElement(0))
+	d_value.set(d_keyValue.getElement(0));
+      else if (f > d_key.getElement(n))
+	d_value.set(d_keyValue.getElement(n));
       else
 	{
 	  for (int i=0; i<n; ++i)
-	    if (d_key[i] <= f && f <= d_key[i+1])
+	    if (d_key.getElement(i) <= f && f <= d_key.getElement(i + 1))
 	      {
-		float v1 = d_keyValue[i];
-		float v2 = d_keyValue[i+1];
+		float v1 = d_keyValue.getElement(i);
+		float v2 = d_keyValue.getElement(i + 1);
 
-		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
+		f = (f - d_key.getElement(i)) / (d_key.getElement(i + 1) - d_key.getElement(i));
 		d_value.set( v1 + f * (v2 - v1) );
 		break;
 	      }
@@ -8839,9 +8829,9 @@ Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer, VrmlRenderContext rc
             VrmlMFString & j = f->justify();
             
             for (size_t i=0; i<j.getLength(); ++i) {
-                if (strcmp(j.get(i), "END") == 0) {
+                if (strcmp(j.getElement(i), "END") == 0) {
                     justify[i] = -1;
-                } else if (strcmp(j.get(i), "MIDDLE") == 0) {
+                } else if (strcmp(j.getElement(i), "MIDDLE") == 0) {
                     justify[i] = 0;
                 }
             }

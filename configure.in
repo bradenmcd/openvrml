@@ -23,18 +23,6 @@ AC_SUBST(ANTLR_INCLUDEDIR)
 AM_CONDITIONAL(ANTLR_INSTALL_HFILES, test "apple" = "orange")
 
 dnl
-dnl Variables to build libjs as a convenience library
-dnl
-NOINST_LIBJS="libjs.la"
-AC_SUBST(LIBJS)
-AC_SUBST(NOINST_LIBJS)
-AC_SUBST(JS_RPATH_LDFLAG)
-JS_INCLUDE_DIR="\$(includedir)"
-AC_SUBST(JS_INCLUDE_DIR)
-AM_CONDITIONAL(JS_PRELINK_FDLIBM, test "apple" = "orange")
-AM_CONDITIONAL(JS_INSTALL_HFILES, test "apple" = "orange")
-
-dnl
 dnl Checks for Win32 stuff
 dnl
 AC_CYGWIN
@@ -69,6 +57,7 @@ dnl
 OV_PATH_ZLIB(, AC_MSG_ERROR([zlib not found.]))
 OV_PATH_JPEG(, AC_MSG_WARN([Building without JPEG support.]))
 OV_PATH_PNG(, AC_MSG_WARN([Building without PNG support.]))
+OV_PATH_JAVASCRIPT(, AC_MSG_WARN([Building without JavaScript support.]))
 
 dnl
 dnl Check for X, GL/Mesa, glut
@@ -92,44 +81,6 @@ AC_ARG_ENABLE(debug,
 )
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
-dnl
-dnl Allow JavaScript support to be disabled
-dnl
-AC_ARG_ENABLE(javascript,
-  [  --disable-javascript    Disable JavaScript support],
-  [ enable_javascript=$enableval ],
-  [ enable_javascript=yes ]
-)
-if test "X$enable_javascript" = "Xno"; then
-  AC_DEFINE(OPENVRML_DISABLE_JAVASCRIPT)
-  OPENVRML_LIB_SUBDIRS="antlr"
-else
-  OPENVRML_LIB_SUBDIRS="antlr js"
-  dnl
-  dnl JavaScript doesn't include config.h, so we have to use automake
-  dnl conditionals.
-  dnl
-  case "$target" in
-    *-aix*)
-      aix=true
-      case `uname -r` in
-        *4.3*)
-          aix4_3=true
-          AC_DEFINE(AIX4_3, ,[needed by jsotypes.h])
-          ;;
-      esac
-      ;;
-    *-freebsd*)
-      freebsd=true
-      ;;
-  esac
-  AM_CONDITIONAL(FREEBSD, test x$freebsd = xtrue)
-  AM_CONDITIONAL(AIX, test x$aix = xtrue)
-  AM_CONDITIONAL(AIX4_3, test x$aix4_3 = xtrue)
-fi
-AC_SUBST(OPENVRML_LIB_SUBDIRS)
-AM_CONDITIONAL(DISABLE_JAVASCRIPT, test X$enable_javascript = Xno)
-
 AC_OUTPUT(Makefile \
           doc/Makefile \
           macros/Makefile \
@@ -138,8 +89,6 @@ AC_OUTPUT(Makefile \
           models/textures/Makefile \
           lib/Makefile \
           lib/antlr/Makefile \
-          lib/js/Makefile \
-          lib/js/fdlibm/Makefile \
           src/Makefile \
           src/openvrml/Makefile \
           src/openvrml/OpenVRML/Makefile \

@@ -26,10 +26,6 @@ a whole according to the terms of the LGPL.  The full text of the LGPL
 can be found in the file `COPYING.LIB'.  Code used (and available for
 reuse) under other terms is as follows:
 
- * OpenVRML uses the Mozilla JavaScript engine, version 1.5, under the
-   Mozilla Public License (MPL), version 1.1.  The full text of the MPL
-   can be found in the file `MPL-1.1.txt'.
-
  * OpenVRML uses the ANTLR parser generator and C++ support library
    which are in the public domain.
 
@@ -82,22 +78,24 @@ reuse) under other terms is as follows:
 Required libraries
 ==================
 
-   OpenVRML requires zlib, libpng, libjpeg, OpenGL/Mesa, and GLUT to
-build.  If any of these are not already present on your system, first
-consult your operating system vendor for packages tailored to your
-particular operating system/distribution.  Mac users can find the Apple
-OpenGL SDK here
+   OpenVRML requires zlib, libpng, libjpeg, SpiderMonkey (the
+mozilla.org JavaScript engine) OpenGL/Mesa, and GLUT to build.  If any
+of these are not already present on your system, first consult your
+operating system vendor for packages tailored to your particular
+operating system/distribution.  Mac users can find the Apple OpenGL SDK
+here
      <http://developer.apple.com/opengl/>
 and compiled versions of the remaining dependencies here (courtesy of
 Michael Louka):
      <ftp://openvrml.sourceforge.net/pub/openvrml/macos_required_libs.sit>
 
 Otherwise, consult the following URLs:
-     zlib:     <http://www.info-zip.org/pub/infozip/zlib/>
-     libpng:   <http://www.libpng.org/pub/png/libpng.html>
-     libjpeg:  <http://www.ijg.org>
-     Mesa:     <http://www.mesa3d.org>
-     GLUT:     <http://reality.sgi.com/mjk_asd/glut3/>
+     zlib:          <http://www.info-zip.org/pub/infozip/zlib/>
+     libpng:        <http://www.libpng.org/pub/png/libpng.html>
+     libjpeg:       <http://www.ijg.org>
+     SpiderMonkey:  <http://www.mozilla.org/js/spidermonkey/>
+     Mesa:          <http://www.mesa3d.org>
+     GLUT:          <http://reality.sgi.com/mjk_asd/glut3/>
 
 
    OpenVRML also uses the ANTLR parser generator.  The generated sources

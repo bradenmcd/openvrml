@@ -1,3 +1,16 @@
+2001-06-12  Braden McDaniel <braden@endoframe.com>
+
+        * Used classes and namespaces to organize functions in the
+          JavaScript binding.
+
+        * Changed implementation of JavaScript MF* types so that they
+          nolonger depend on the JavaScript Array class. (This
+          eliminates our dependency on the private JS header.)
+
+        * Moved JavaScript binding implementation to ScriptObject.cpp.
+          (None of the JavaScript binding needs to be part of the public
+          API.)
+
 2001-06-10  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Fixed macros in *.h to support WIN32 DLLs

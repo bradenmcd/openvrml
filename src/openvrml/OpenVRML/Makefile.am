@@ -26,31 +26,13 @@ else
   DEBUG_CPPFLAGS = -DNDEBUG
 endif
 
-if DISABLE_JAVASCRIPT
-else
-#
-# JS doesn't include config.h, so we have to do this here.
-#
-JS_CPPFLAGS = -DXP_UNIX
-JAVASCRIPT_SUPPORT_LIBOBJ = scriptjs-prelinked.lo
-JAVASCRIPT_INCLUDES = -I$(top_builddir)/lib/js
-ScriptJS.o ScriptJS.lo: ScriptJS.cpp ScriptJS.h ScriptObject.h field.h \
-doc2.hpp MathUtils.h System.h VrmlNodeScript.h VrmlNode.h VrmlRenderContext.h \
-VrmlNamespace.h VrmlNodeType.h VrmlScene.h vrml97node.h VrmlBSphere.h \
-VrmlBVolume.h Viewer.h VrmlFrustum.h
-	$(LTCXXCOMPILE) -c $<
-
-$(JAVASCRIPT_SUPPORT_LIBOBJ): ScriptJS.lo $(top_builddir)/lib/js/libjs.la
-	$(CXXLINK) $^
-endif
-
 INCLUDES = -I$(top_srcdir)/lib $(JAVASCRIPT_INCLUDES)
-AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF) $(JS_CPPFLAGS)
-AM_CXXFLAGS = @JPEG_CFLAGS@ @PNG_CFLAGS@ @Z_CFLAGS@
+AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF)
+AM_CXXFLAGS = @JPEG_CFLAGS@ @PNG_CFLAGS@ @Z_CFLAGS@ @JS_CFLAGS@
 
 lib_LTLIBRARIES = libopenvrml.la 
 libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ \
-@PNG_LIBS@ @Z_LIBS@
+@PNG_LIBS@ @Z_LIBS@ @JS_LIBS@
 
 Vrml97Parser.o Vrml97Parser.lo: Vrml97Parser.cpp Vrml97Parser.hpp field.h \
 doc2.hpp VrmlNamespace.h VrmlNodeType.h VrmlNode.h System.h VrmlNodeScript.h \
@@ -67,7 +49,7 @@ VrmlNodeScript.cpp VrmlScene.cpp vrml97node.cpp
 antlr-prelinked.lo: Vrml97Parser.lo $(top_builddir)/lib/antlr/libantlr.la
 	$(CXXLINK) $^
 
-libopenvrml_la_LIBADD = antlr-prelinked.lo $(JAVASCRIPT_SUPPORT_LIBOBJ)
+libopenvrml_la_LIBADD = antlr-prelinked.lo
 
 OpenVRMLincludedir = $(includedir)/OpenVRML
 OpenVRMLinclude_HEADERS = common.h Audio.h Doc.h Image.h MathUtils.h Route.h \
@@ -76,8 +58,7 @@ VrmlEvent.h VrmlFrustum.h field.h VrmlNamespace.h VrmlNodePtr.h VrmlNode.h \
 VrmlNodeScript.h VrmlNodeType.h vrml97node.h VrmlRenderContext.h VrmlScene.h \
 doc2.hpp
 
-noinst_HEADERS = Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp ScriptJS.h \
-sound.h
+noinst_HEADERS = Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp sound.h
 
 EXTRA_DIST = Vrml97TokenTypes.txt Vrml97Parser.cpp Vrml97Parser.hpp \
 Vrml97ParserTokenTypes.txt Vrml97Parser.g ScriptJS.cpp

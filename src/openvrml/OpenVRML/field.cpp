@@ -441,9 +441,9 @@ float VrmlSFColor::getB() const {
 
 /**
  * @brief Get the value.
- * @return a pointer to a 3-element array comprising the RGB value
+ * @return a reference to a 3-element array comprising the RGB value
  */
-const float * VrmlSFColor::get() const {
+const float (&VrmlSFColor::get() const)[3] {
     return this->d_rgb;
 }
 
@@ -1063,9 +1063,9 @@ void VrmlSFRotation::setAngle(float value) {
 
 /**
  * @brief Get the value of this rotation.
- * @return a pointer to a 4-element array.
+ * @return a reference to a 4-element array.
  */
-const float * VrmlSFRotation::get() const {
+const float (&VrmlSFRotation::get() const)[4] {
     return this->d_x;
 }
 
@@ -1454,9 +1454,9 @@ void VrmlSFVec2f::setY(float value) {
 
 /**
  * @brief Get the value of this vector.
- * @returns a pointer to a 2-element array.
+ * @returns a reference to a 2-element array.
  */
-const float * VrmlSFVec2f::get() const {
+const float (&VrmlSFVec2f::get() const)[2] {
     return this->d_x;
 }
 
@@ -1679,9 +1679,9 @@ void VrmlSFVec3f::setZ(float value) {
 
 /**
  * @brief Get the vector value.
- * @return a pointer to a 3-element array
+ * @return a reference to a 3-element array
  */
-const float * VrmlSFVec3f::get() const {
+const float (&VrmlSFVec3f::get() const)[3] {
     return this->d_x;
 }
 
@@ -1890,7 +1890,29 @@ void VrmlMFColor::set(size_t length, const float * colors) {
 }
 
 /**
+ * @brief Get element.
+ *
+ * @return a pointer to a 3-element array comprising an RGB triplet
+ */
+const float * VrmlMFColor::getElement(size_t index) const {
+    assert(index < this->getLength());
+    return (this->d_data->d_v + (index * 3L));
+}
+
+/**
+ * @brief Set element.
+ *
+ * @param index the index of the element to set
+ * @param value a 3-element float array comprising the new color value
+ */
+void VrmlMFColor::setElement(size_t index, const float value[3]) {
+    assert(index < this->getLength());
+    std::copy(value, value + 3, this->d_data->d_v + (index * 3));
+}
+
+/**
  * @brief Get the length.
+ *
  * @return the number of color values (RGB triplets)
  */
 size_t VrmlMFColor::getLength() const {
@@ -1919,15 +1941,6 @@ void VrmlMFColor::setLength(size_t length) {
     }
     this->d_data->deref();
     this->d_data = newData;
-}
-
-/**
- * @brief Array element dereference operator.
- * @return a pointer to a 3-element array comprising an RGB triplet
- */
-const float * VrmlMFColor::operator[](size_t index) const {
-    assert(index < this->getLength());
-    return (this->d_data->d_v + (index * 3L));
 }
 
 VrmlField *VrmlMFColor::clone() const { return new VrmlMFColor(*this); }
@@ -1993,15 +2006,6 @@ VrmlMFFloat& VrmlMFFloat::operator=(const VrmlMFFloat & mfFloat) {
 }
 
 /**
- * @brief Array element dereference operator.
- * @param index
- */
-const float VrmlMFFloat::operator[](size_t index) const {
-    assert(index < this->getLength());
-    return this->d_data->d_v[index];
-}
-
-/**
  * @brief Get value.
  * @return a pointer to a float array
  */
@@ -2011,6 +2015,7 @@ const float * VrmlMFFloat::get() const {
 
 /**
  * @brief Set value.
+ *
  * @param length the number of float values
  * @param numbers a pointer to a float array
  */
@@ -2023,7 +2028,29 @@ void VrmlMFFloat::set(size_t length, const float * numbers) {
 }
 
 /**
+ * @brief Get element.
+ *
+ * @param index
+ */
+float VrmlMFFloat::getElement(size_t index) const {
+    assert(index < this->getLength());
+    return this->d_data->d_v[index];
+}
+
+/**
+ * @brief Set element.
+ *
+ * @param index
+ * @param value
+ */
+void VrmlMFFloat::setElement(size_t index, float value) {
+    assert(index < this->getLength());
+    this->d_data->d_v[index] = value;
+}
+
+/**
  * @brief Get the length.
+ *
  * @return the number of float values
  */
 size_t VrmlMFFloat::getLength() const {
@@ -2118,16 +2145,6 @@ VrmlMFInt32 & VrmlMFInt32::operator=(const VrmlMFInt32 & mfInt32)
 }
 
 /**
- * @brief Array element dereference operator.
- * @param index an array index
- * @return the integer value at the given index
- */
-long VrmlMFInt32::operator[](size_t index) const {
-    assert(index < this->getLength());
-    return this->d_data->d_v[index];
-}
-
-/**
  * @brief Get value.
  * @return a pointer to the long array comprising the integer values owned by
  *         this object
@@ -2147,6 +2164,27 @@ void VrmlMFInt32::set(size_t length, const long * numbers) {
     if (numbers) {
         std::copy(numbers, numbers + length, this->d_data->d_v);
     }
+}
+
+/**
+ * @brief Get element.
+ *
+ * @param index
+ */
+long VrmlMFInt32::getElement(size_t index) const {
+    assert(index < this->getLength());
+    return this->d_data->d_v[index];
+}
+
+/**
+ * @brief Set element.
+ *
+ * @param index
+ * @param value
+ */
+void VrmlMFInt32::setElement(size_t index, long value) {
+    assert(index < this->getLength());
+    this->d_data->d_v[index] = value;
 }
 
 /**
@@ -2487,16 +2525,6 @@ VrmlMFRotation & VrmlMFRotation::operator=(const VrmlMFRotation & mfrotation) {
 }
 
 /**
- * @brief Array element dereference operator.
- *
- * @param index
- */
-const float * VrmlMFRotation::operator[](size_t index) const {
-    assert(index * 4 < this->d_data->d_n);
-    return this->d_data->d_v + (index * 4);
-}
-
-/**
  * @brief Get the rotations.
  *
  * @return a pointer to an array of rotation values
@@ -2517,6 +2545,27 @@ void VrmlMFRotation::set(size_t length, const float * rotations) {
     if (rotations) {
         std::copy(rotations, rotations + (length * 4), this->d_data->d_v);
     }
+}
+
+/**
+ * @brief Get element.
+ *
+ * @param index
+ */
+const float * VrmlMFRotation::getElement(size_t index) const {
+    assert(index * 4 < this->d_data->d_n);
+    return this->d_data->d_v + (index * 4);
+}
+
+/**
+ * @brief Set element.
+ *
+ * @param index
+ * @param value
+ */
+void VrmlMFRotation::setElement(size_t index, const float value[4]) {
+    assert(index * 4 < this->d_data->d_n);
+    std::copy(value, value + 4, this->d_data->d_v + (index * 4));
 }
 
 /**
@@ -2657,12 +2706,12 @@ char const * const * VrmlMFString::get() const {
     return d_v;
 }
 
-char const * VrmlMFString::get(size_t index) const {
+char const * VrmlMFString::getElement(size_t index) const {
     assert(index < this->d_size);
     return this->d_v[index];
 }
 
-void VrmlMFString::set(size_t index, const char * str) {
+void VrmlMFString::setElement(size_t index, const char * str) {
     delete [] this->d_v[index];
     char * const s = new char[strlen(str) + 1];
     strcpy(s, str);
@@ -2771,26 +2820,6 @@ VrmlMFTime & VrmlMFTime::operator=(const VrmlMFTime & mftime) {
 }
 
 /**
- * @brief Array element dereference operator (const version).
- *
- * @param index
- */
-double VrmlMFTime::operator[](size_t index) const {
-    assert(index < d_data->size);
-    return d_data->data[index];
-}
-
-/**
- * @brief Array element dereference operator (non-const version).
- *
- * @param index
- */
-double & VrmlMFTime::operator[](size_t index) {
-    assert(index < d_data->size);
-    return d_data->data[index];
-}
-
-/**
  * @brief Get value.
  *
  * @return a pointer to a double array
@@ -2811,6 +2840,27 @@ void VrmlMFTime::set(size_t length, const double * times) {
     if (times) {
         std::copy(times, times + length, this->d_data->data);
     }
+}
+
+/**
+ * @brief Get element.
+ *
+ * @param index
+ */
+double VrmlMFTime::getElement(size_t index) const {
+    assert(index < this->getLength());
+    return this->d_data->data[index];
+}
+
+/**
+ * @brief Set element.
+ *
+ * @param index
+ * @param value
+ */
+void VrmlMFTime::setElement(size_t index, double value) {
+    assert(index < this->getLength());
+    this->d_data->data[index] = value;
 }
 
 /**
@@ -2918,26 +2968,6 @@ VrmlMFVec2f & VrmlMFVec2f::operator=(const VrmlMFVec2f & mfvec2f) {
 }
 
 /**
- * @brief Array element dereference operator (const version).
- *
- * @param index
- */
-const float * VrmlMFVec2f::operator[](size_t index) const {
-    assert((index * 2) < this->d_data->d_n);
-    return (this->d_data->d_v + (index * 2));
-}
-
-/**
- * @brief Array element dereference operator (non-const version).
- *
- * @param index
- */
-float * VrmlMFVec2f::operator[](size_t index) {
-    assert((index * 2) < this->d_data->d_n);
-    return (this->d_data->d_v + (index * 2));
-}
-
-/**
  * @brief Get the vector values.
  *
  * @return a pointer to an array of 2-D vector values
@@ -2959,6 +2989,27 @@ void VrmlMFVec2f::set(size_t length, const float * vecs) {
     if (vecs) {
         std::copy(vecs, vecs + length, this->d_data->d_v);
     }
+}
+
+/**
+ * @brief Get element.
+ *
+ * @param index
+ */
+const float * VrmlMFVec2f::getElement(size_t index) const {
+    assert((index * 2) < this->d_data->d_n);
+    return (this->d_data->d_v + (index * 2));
+}
+
+/**
+ * @brief Set element.
+ *
+ * @param index
+ * @param value
+ */
+void VrmlMFVec2f::setElement(size_t index, const float value[2]) {
+    assert((index * 2) < this->d_data->d_n);
+    std::copy(value, value + 2, this->d_data->d_v + (index * 2));
 }
 
 /**
@@ -3061,26 +3112,6 @@ VrmlMFVec3f& VrmlMFVec3f::operator=(const VrmlMFVec3f & mfvec3f) {
 }
 
 /**
- * @brief Array element dereference operator (const version).
- *
- * @param index
- */
-const float * VrmlMFVec3f::operator[](size_t index) const {
-    assert((index * 3) < this->d_data->d_n);
-    return (this->d_data->d_v + (index * 3));
-}
-
-/**
- * @brief Array element dereference operator (non-const version).
- *
- * @param index
- */
-float * VrmlMFVec3f::operator[](size_t index) {
-    assert((index * 3) < this->d_data->d_n);
-    return (this->d_data->d_v + (index * 3));
-}
-
-/**
  * @brief Get the vector values.
  *
  * @return a pointer to an array of 3-D vector values
@@ -3102,6 +3133,27 @@ void VrmlMFVec3f::set(size_t length, const float * vecs) {
     if (vecs) {
         std::copy(vecs, vecs + length, this->d_data->d_v);
     }
+}
+
+/**
+ * @brief Get element.
+ *
+ * @param index
+ */
+const float * VrmlMFVec3f::getElement(size_t index) const {
+    assert((index * 3) < this->d_data->d_n);
+    return (this->d_data->d_v + (index * 3));
+}
+
+/**
+ * @brief Set element.
+ *
+ * @param index
+ * @param value
+ */
+void VrmlMFVec3f::setElement(size_t index, const float value[3]) {
+    assert((index * 3) < this->d_data->d_n);
+    std::copy(value, value + 3, this->d_data->d_v + (index * 3));
 }
 
 /**

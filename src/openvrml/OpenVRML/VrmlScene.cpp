@@ -342,13 +342,13 @@ VrmlMFNode * VrmlScene::readWrl(VrmlMFString * urls, Doc2 * relative,
     int n = urls->getLength();
     for (int i = 0; i < n; ++i) {
         //theSystem->debug("Trying to read url '%s'\n", urls->get(i));
-        url.seturl( urls->get(i), relative );
+        url.seturl( urls->getElement(i), relative );
         VrmlMFNode * kids = VrmlScene::readWrl(&url, ns);
         if (kids) {
             return kids;
-        } else if ((i < n - 1) && strncmp(urls->get(i),"urn:",4)) {
+        } else if ((i < n - 1) && strncmp(urls->getElement(i),"urn:",4)) {
             theSystem->warn("Couldn't read url '%s': %s\n",
-                            urls->get(i), strerror( errno));
+                            urls->getElement(i), strerror( errno));
         }
     }
     
@@ -503,8 +503,8 @@ VrmlNodeType * VrmlScene::readPROTO(const VrmlMFString & urls,
     
     for (size_t i(0); i < urls.getLength(); ++i) {
         theSystem->inform("Trying to read EXTERNPROTO from url '%s'\n",
-                          urls.get(i));
-        urlDoc.seturl(urls.get(i), relative);
+                          urls.getElement(i));
+        urlDoc.seturl(urls.getElement(i), relative);
         VrmlMFNode * kids = VrmlScene::readWrl(&urlDoc, protos);
         delete kids;
         
@@ -520,9 +520,9 @@ VrmlNodeType * VrmlScene::readPROTO(const VrmlMFString & urls,
             def->setActualUrl( urlDoc.url() );
             break;
 	} else if ((i < (urls.getLength() - 1))
-                && strncmp(urls.get(i),"urn:",4)) {
+                && strncmp(urls.getElement(i),"urn:",4)) {
             theSystem->warn("Couldn't read EXTERNPROTO url '%s': %s\n",
-                            urls.get(i), strerror( errno));
+                            urls.getElement(i), strerror( errno));
         }
     }
     
