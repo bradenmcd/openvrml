@@ -3119,7 +3119,7 @@ const std::vector<node_ptr> browser::create_vrml_from_stream(std::istream & in)
         Vrml97Scanner scanner(in);
         Vrml97Parser parser(scanner, "");
         parser.vrmlScene(*this, nodes);
-    } catch (antlr::RecognitionException &) {
+    } catch (antlr::ANTLRException &) {
         throw invalid_vrml();
     }
     return nodes;

@@ -1,3 +1,9 @@
+2004-03-01 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(browser::create_vrml_from_stream):  Treat any ANTLRException as
+	invalid_vrml.
+
 2004-02-23 Braden McDaniel  <braden@endoframe.com>
 
 	Removed node::field mutator in favor of initializing the fields
