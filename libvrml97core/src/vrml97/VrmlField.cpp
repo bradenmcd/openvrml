@@ -490,6 +490,13 @@ void VrmlSFVec2f::subtract( VrmlSFVec2f *v )
 VrmlSFVec3f::VrmlSFVec3f(float x, float y, float z)
 { d_x[0] = x; d_x[1] = y; d_x[2] = z; }
 
+VrmlSFVec3f::VrmlSFVec3f(const VrmlSFVec3f& rhs)
+{
+  d_x[0] = rhs.d_x[0];
+  d_x[1] = rhs.d_x[1];
+  d_x[2] = rhs.d_x[2];
+}
+
 ostream& VrmlSFVec3f::print(ostream& os) const
 { return (os << d_x[0] << " " << d_x[1] << " " << d_x[2]); }
 

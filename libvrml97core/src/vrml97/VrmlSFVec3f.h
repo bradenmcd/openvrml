@@ -2,8 +2,8 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-#ifndef VRMLSFVEC3F
-#define VRMLSFVEC3F
+#ifndef  _VRMLSFVEC3F_
+#define  _VRMLSFVEC3F_
 
 #include "VrmlField.h"
 
@@ -12,6 +12,7 @@ class VrmlSFVec3f : public VrmlSField {
 public:
 
   VrmlSFVec3f(float x = 0.0, float y = 0.0, float z = 0.0);
+  VrmlSFVec3f(const VrmlSFVec3f& rhs);
 
   virtual ostream& print(ostream& os) const;
 
@@ -21,9 +22,9 @@ public:
   virtual const VrmlSFVec3f* toSFVec3f() const;
   virtual VrmlSFVec3f* toSFVec3f();
 
-  float x(void)			{ return d_x[0]; }
-  float y(void)			{ return d_x[1]; }
-  float z(void)			{ return d_x[2]; }
+  float x() const		{ return d_x[0]; }
+  float y() const		{ return d_x[1]; }
+  float z() const		{ return d_x[2]; }
 
   float *get()			{ return &d_x[0]; }
 
@@ -48,4 +49,4 @@ private:
 
 };
 
-#endif
+#endif _VRMLSFVEC3F_
