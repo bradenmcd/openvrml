@@ -56,6 +56,8 @@ public:
   const VrmlSFNode & getCoord() const;
   void setCoord(const VrmlSFNode & coord);
   
+  virtual VrmlNodeColor *color();
+
   virtual const VrmlMFInt32 & getCoordIndex() const;
   virtual bool getColorPerVertex(){ return d_colorPerVertex.get(); } // LarryD  Feb18/99
   virtual const VrmlMFInt32 & getColorIndex() const; // LarryD  Feb18/99

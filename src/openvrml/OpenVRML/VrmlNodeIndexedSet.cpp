@@ -97,6 +97,11 @@ ostream& VrmlNodeIndexedSet::printFields(ostream& os, int indent)
   return os;
 }
 
+VrmlNodeColor *VrmlNodeIndexedSet::color()
+{
+  return d_color.get() ? d_color.get()->toColor() : 0;
+}
+
 const VrmlMFInt32 & VrmlNodeIndexedSet::getCoordIndex() const
 {   return d_coordIndex; }
 
