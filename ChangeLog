@@ -1,5 +1,16 @@
 2005-01-10 Braden McDaniel  <braden@endoframe.com>
 
+	Updated package version to 0.15.5.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* mozilla-plugin/configure.ac
+
+2005-01-10 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/Makefile.am:  Incremented library version to
 	5:2:0.
 
