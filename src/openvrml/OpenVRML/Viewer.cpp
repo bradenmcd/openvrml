@@ -40,14 +40,14 @@ using namespace OpenVRML_;
 /**
  * @class OpenVRML::Viewer
  *
- * Map the scene graph to the underlying graphics library.
+ * @brief Map the scene graph to the underlying graphics library.
  */
 
-Viewer::Viewer(VrmlScene & scene): scene(scene) {}
+OpenVRML::Viewer::Viewer(VrmlScene & scene): scene(scene) {}
 
-Viewer::~Viewer() {}
+OpenVRML::Viewer::~Viewer() {}
 
-VrmlScene & Viewer::getScene() {
+OpenVRML::VrmlScene & OpenVRML::Viewer::getScene() {
     return this->scene;
 }
 
@@ -55,8 +55,9 @@ VrmlScene & Viewer::getScene() {
 //  it with scaling (but the world creator could just as easily do that with 
 //  DEF/USE ...).
 
-void Viewer::computeCylinder(double height, double radius, int numFacets,
-			     float c[][3], float tc[][3], int faces[]) {
+void OpenVRML::Viewer::computeCylinder(double height, double radius,
+                                       int numFacets, float c[][3],
+                                       float tc[][3], int faces[]) {
   double angle, x, y;
   int i, polyIndex;
 
@@ -99,17 +100,17 @@ void Viewer::computeCylinder(double height, double radius, int numFacets,
 
 //  Build an extrusion.
 
-void Viewer::computeExtrusion(int nOrientation,
-			      const float *orientation,
-			      int nScale,
-			      const float *scale,
-			      int nCrossSection,
-			      const float *crossSection,
-			      int nSpine,
-			      const float *spine,
-			      float *c,   // OUT: coordinates
-			      float *tc,  // OUT: texture coords
-			      int *faces)     // OUT: face list
+void OpenVRML::Viewer::computeExtrusion(int nOrientation,
+                                        const float *orientation,
+                                        int nScale,
+                                        const float *scale,
+                                        int nCrossSection,
+                                        const float *crossSection,
+                                        int nSpine,
+                                        const float *spine,
+                                        float *c,   // OUT: coordinates
+                                        float *tc,  // OUT: texture coords
+                                        int *faces)     // OUT: face list
 {
   int i, j, ci;
 
@@ -162,8 +163,8 @@ void Viewer::computeExtrusion(int nOrientation,
 	  float orient[4];		// Axis/angle
 	  Vset(orient, V3);
 	  orient[3] = acos(Vdot(V1,V2));
-	  double scp[4][4];	        // xform matrix
-	  Mrotation( scp, orient );
+	  VrmlMatrix scp;	        // xform matrix
+          scp.setRotate(orient);
 	  for (int k=0; k<3; ++k) {
 	    Xscp[k] = scp[0][k];
 	    Yscp[k] = scp[1][k];
@@ -173,9 +174,10 @@ void Viewer::computeExtrusion(int nOrientation,
     }
 
   // Orientation matrix
-  double om[4][4];
-  if (nOrientation == 1 && ! fpzero(orientation[3]) )
-    Mrotation( om, orientation );
+  VrmlMatrix om;
+  if (nOrientation == 1 && ! fpzero(orientation[3])) {
+    om.setRotate(orientation);
+  }
 
   // Compute coordinates, texture coordinates:
   for (i = 0, ci = 0; i < nSpine; ++i, ci+=nCrossSection) {
@@ -260,8 +262,9 @@ void Viewer::computeExtrusion(int nOrientation,
     // Apply orientation
     if (! fpzero(orientation[3]) )
       {
-	if (nOrientation > 1)
-	  Mrotation( om, orientation );
+	if (nOrientation > 1) {
+          om.setRotate(orientation);
+        }
 
 	for (j = 0; j < nCrossSection; ++j) {
 	  float cx, cy, cz;
@@ -308,12 +311,8 @@ void Viewer::computeExtrusion(int nOrientation,
 }
 
 
-void Viewer::computeSphere(double radius,
-			   int numLatLong,
-			   float c[][3],
-			   float tc[][3],
-			   int *faces)
-{
+void OpenVRML::Viewer::computeSphere(double radius, int numLatLong,
+                                     float c[][3], float tc[][3], int *faces) {
   double r, angle, x, y, z;
   int i, j, polyIndex;
 
@@ -358,11 +357,11 @@ void Viewer::computeSphere(double radius,
 // Compute a target and up vector from position/orientation/distance.
 //
 
-void Viewer::computeView(const float position[3],
-			 float orientation[3],
-			 float distance,
-			 float target[3],
-			 float up[3])
+void OpenVRML::Viewer::computeView(const float position[3],
+                                   float orientation[3],
+                                   float distance,
+                                   float target[3],
+                                   float up[3])
 {
   // Graphics Gems, p 466. Convert between axis/angle and rotation matrix
   double len = sqrt( orientation[0]*orientation[0] +
@@ -396,7 +395,7 @@ void Viewer::computeView(const float position[3],
 }
 
 
-void Viewer::setColor(float , float , float , float ) {}
+void OpenVRML::Viewer::setColor(float , float , float , float ) {}
 
 
 
@@ -411,7 +410,7 @@ void Viewer::setColor(float , float , float , float ) {}
  * @param bv the bounding volume to intersect with the view volume
  * @return BVolume::INSIDE, OUTSIDE, or PARTIAL
  */
-int Viewer::isectViewVolume(const BVolume & bv) const {
+int OpenVRML::Viewer::isectViewVolume(const BVolume & bv) const {
     //
     // For normal VRML97 use, this won't need to be overridden, but for
     // systems with non-standard view volumes, this can be changed to
@@ -450,11 +449,10 @@ int Viewer::isectViewVolume(const BVolume & bv) const {
 // for debugging and stuff since it might not be valid in some
 // implementations
 //
-const VrmlFrustum& Viewer::getFrustum() const
-{
+const OpenVRML::VrmlFrustum & OpenVRML::Viewer::getFrustum() const {
   return d_frust;
 }
 
-void Viewer::setFrustum(const VrmlFrustum& afrust) {
+void OpenVRML::Viewer::setFrustum(const VrmlFrustum & afrust) {
   d_frust = afrust; // copy
 }

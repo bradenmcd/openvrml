@@ -83,7 +83,7 @@ using namespace OpenVRML::GL;
 using namespace OpenVRML_::GL_;
 
 namespace {
-    void matrix_to_glmatrix(double M[4][4], float GLM[16]) {
+    void matrix_to_glmatrix(const float M[4][4], float GLM[16]) {
         GLM[0]  = M[0][0];
         GLM[1]  = M[1][0];
         GLM[2]  = M[2][0];
@@ -485,9 +485,7 @@ void ViewerOpenGL::resetUserNavigation()
 
   trackball(d_curquat, 0.0, 0.0, 0.0, 0.0);
   //d_rotationChanged = true;
-  double tmp[4][4];
-  Midentity(tmp);
-  matrix_to_glmatrix(tmp, (float*)d_rotationMatrix);
+  matrix_to_glmatrix(VrmlMatrix().get(), this->d_rotationMatrix[0]);
   wsPostRedraw();
 }
 
@@ -2864,26 +2862,15 @@ void ViewerOpenGL::input( EventInfo *e )
 void
 ViewerOpenGL::rot(float x, float y, float z, float a)
 {
-  double rot_mat[4][4];
-  float rot_vec[4];
-  rot_vec[0] = x;
-  rot_vec[1] = y;
-  rot_vec[2] = z;
-  rot_vec[3] = a*0.01;
-  Mrotation(rot_mat, rot_vec);
+  VrmlMatrix rot_mat;
+  SFRotation rotation(x, y, z, a * 0.01);
+  rot_mat.setRotate(rotation);
 
-  double curr_rot_mat[4][4];
-  int i,j;
-  for(i=0; i<4; i++) // oh good grief.
-    for(j=0; j<4; j++)
-      curr_rot_mat[i][j] = d_rotationMatrix[j][i];
+  VrmlMatrix curr_rot_mat(this->d_rotationMatrix);
+  curr_rot_mat = curr_rot_mat.transpose(); // d_rotationMatrix is column major.
 
-  double new_rot_mat[4][4];
-  MM(new_rot_mat, curr_rot_mat, rot_mat);
-
-  for(i=0; i<4; i++) // oh good grief.
-    for(j=0; j<4; j++)
-      d_rotationMatrix[i][j] = new_rot_mat[j][i];
+  matrix_to_glmatrix(curr_rot_mat.multRight(rot_mat).get(),
+                     this->d_rotationMatrix[0]);
 
   wsPostRedraw();
 }
@@ -2892,13 +2879,13 @@ void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
 {
    trackball(d_lastquat, x1, y1, x2, y2);
    float vx[4];
-   double rot_mat[4][4];
+   VrmlMatrix rot_mat;
    quat_to_axis(d_lastquat,vx);
    if (fpzero(vx[3])) return;
-   glGetDoublev(GL_MODELVIEW_MATRIX, &rot_mat[0][0]);
+   glGetFloatv(GL_MODELVIEW_MATRIX, &rot_mat[0][0]);
    rot_mat[3][0] = rot_mat[3][1] = rot_mat[3][2] = 0.0;
    float d[3],q[4];
-   VM(d, rot_mat, vx);
+   rot_mat.multMatrixVec(vx, d);
    axis_to_quat(d,vx[3],q);
    add_quats(q, d_curquat, d_curquat);
    d_rotationChanged = true;
@@ -2920,7 +2907,7 @@ void ViewerOpenGL::step( float x, float y, float z )
   gluUnProject( 100.*x, 100.*y, z, modelview, projection, viewport,
                 &dx, &dy, &dz);
   dx -= ox; dy -= oy; dz -= oz;
-  double rot_mat[4][4];
+  VrmlMatrix rot_mat;
   for(int i=0; i<4; i++) 
     for(int j=0; j<4; j++)
      rot_mat[i][j] = d_rotationMatrix[i][j];
@@ -2930,7 +2917,7 @@ void ViewerOpenGL::step( float x, float y, float z )
   vx[1] = dy;
   vx[2] = dz;
   float d[3];
-  VM(d, rot_mat, vx);
+  rot_mat.multMatrixVec(vx, d);
   double dist = d[0] * d[0] + d[1] * d[1] + d[2] * d[2];
   if (dist < 1.0e-25 )return;
   dist = sqrt(dist);

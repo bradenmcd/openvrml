@@ -15,7 +15,7 @@ ANTLR_RBRACE
 # include "doc2.hpp"
 # include "VrmlNamespace.h"
 # include "node.h"
-# include "VrmlNodeScript.h"
+# include "script.h"
 # include "private.h"
 
 using namespace OpenVRML;

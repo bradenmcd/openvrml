@@ -5,6 +5,11 @@
         * Fixed some dynamic_casts in the JavaScript binding left over
           from the renaming.
 
+        * Removed matrix operations from `MathUtils.[h,cpp]'.  (Use
+          VrmlMatrix instead.)
+
+        * Moved ScriptNode implementation into `script.[h,cpp]'.
+
 2001-11-24  Braden McDaniel  <braden@endoframe.com>
 
         * Placed libopenvrml members in OpenVRML namespace. Placed

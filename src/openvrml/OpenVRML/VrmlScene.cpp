@@ -27,28 +27,27 @@
 #endif
 
 #include <algorithm>
-#include "VrmlScene.h"
-
 #include <errno.h>
 #include <stdio.h>
-
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__CYGWIN__)
 #include <strstrea.h>
 #else
 #include <strstream.h>
 #endif
-
+#include "VrmlScene.h"
 #include "doc2.hpp"
 #include "Viewer.h"
 #include "System.h"
 #include "MathUtils.h"
 #include "VrmlNamespace.h"
 #include "VrmlRenderContext.h"
+#include "script.h"
 
+//
+// Including a .cpp file is strange, but it's exactly what we want to do here.
+// This usage lets us put the ANTLR parser in an unnamed namespace.
+//
 #include "Vrml97Parser.cpp"
-
-// List of Scripts in the scene
-#include "VrmlNodeScript.h"
 
 // Max time in seconds between updates. Make this user
 // setable to balance performance with cpu usage.
