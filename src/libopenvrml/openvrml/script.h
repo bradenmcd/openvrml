@@ -88,7 +88,8 @@ namespace openvrml {
         friend class script;
 
     public:
-        typedef std::map<std::string, field_value_ptr> field_value_map_t;
+        typedef std::map<std::string, boost::shared_ptr<field_value> >
+            field_value_map_t;
 
         class eventout : boost::noncopyable {
             script_node & node_;

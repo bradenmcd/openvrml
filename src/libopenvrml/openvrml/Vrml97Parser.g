@@ -755,7 +755,7 @@ options { defaultErrorHandler=false; }
 
     node_interface::type_id it;
     field_value::type_id ft;
-    field_value_ptr fv;
+    boost::shared_ptr<field_value> fv;
 }
     :   it=eventInterfaceType ft=fieldType id0:ID {
             const node_interface interface(it, ft, id0->getText());
@@ -1213,7 +1213,7 @@ options { defaultErrorHandler=false; }
     using std::bind2nd;
     using antlr::SemanticException;
     field_value::type_id ft = field_value::invalid_type_id;
-    field_value_ptr fv;
+    boost::shared_ptr<field_value> fv;
 }
     :   id:ID {
             node_interface_set::const_iterator interface =
@@ -1283,18 +1283,19 @@ options { defaultErrorHandler=false; }
                                       node_id]
     ;
 
-scriptFieldInterfaceDeclaration[browser & b,
-                                const boost::shared_ptr<openvrml::scope> & scope,
-                                node_interface_set & interfaces,
-                                initial_value_map & initial_values,
-                                const std::string & script_node_id]
+scriptFieldInterfaceDeclaration[
+    browser & b,
+    const boost::shared_ptr<openvrml::scope> & scope,
+    node_interface_set & interfaces,
+    initial_value_map & initial_values,
+    const std::string & script_node_id]
 options { defaultErrorHandler=false; }
 {
     using std::find_if;
     using antlr::SemanticException;
 
     field_value::type_id ft = field_value::invalid_type_id;
-    field_value_ptr fv;
+    boost::shared_ptr<field_value> fv;
 }
     :   KEYWORD_FIELD ft=fieldType id:ID fv=fieldValue[b,
                                                        scope,
@@ -1408,7 +1409,7 @@ options { defaultErrorHandler=false; }
     using std::string;
     using antlr::SemanticException;
 
-    field_value_ptr fv;
+    boost::shared_ptr<field_value> fv;
 }
     :   interface_id:ID {
             const node_interface_set::const_iterator impl_node_interface =
@@ -1507,7 +1508,7 @@ protoScriptFieldInterfaceDeclaration[
 options { defaultErrorHandler=false; }
 {
     field_value::type_id ft;
-    field_value_ptr fv;
+    boost::shared_ptr<field_value> fv;
     bool succeeded;
 }
     : KEYWORD_FIELD ft=fieldType id:ID {
@@ -1590,11 +1591,8 @@ fieldValue[openvrml::browser & browser,
            const boost::shared_ptr<openvrml::scope> & scope,
            const openvrml::field_value::type_id ft,
            const std::string & node_id]
-returns [openvrml::field_value_ptr fv]
+returns [boost::shared_ptr<field_value> fv]
 options { defaultErrorHandler=false; }
-{
-    using openvrml::field_value;
-}
     : { (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) }?
         fv=nodeFieldValue[browser, scope, ft, node_id]
     | fv=nonNodeFieldValue[ft]
@@ -1607,7 +1605,7 @@ protoFieldValue[openvrml::browser & browser,
                 proto_node_class::routes_t & routes,
                 const field_value::type_id ft,
                 const std::string & script_node_id]
-returns [field_value_ptr fv]
+returns [boost::shared_ptr<field_value> fv]
 options { defaultErrorHandler=false; }
     : { (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) }?
         fv=protoNodeFieldValue[browser,
@@ -1623,11 +1621,8 @@ options { defaultErrorHandler=false; }
     ;
 
 nonNodeFieldValue[openvrml::field_value::type_id ft]
-returns [openvrml::field_value_ptr fv = openvrml::field_value_ptr()]
+returns [boost::shared_ptr<field_value> fv]
 options { defaultErrorHandler=false; }
-{
-    using openvrml::field_value;
-}
     : { ft == field_value::sfbool_id }? fv=sfBoolValue
     | { ft == field_value::sfcolor_id }? fv=sfColorValue
     | { ft == field_value::sffloat_id }? fv=sfFloatValue
@@ -1652,7 +1647,7 @@ nodeFieldValue[openvrml::browser & browser,
                const boost::shared_ptr<openvrml::scope> & scope,
                openvrml::field_value::type_id ft,
                const std::string & script_node_id]
-returns [openvrml::field_value_ptr fv]
+returns [boost::shared_ptr<field_value> fv]
 options { defaultErrorHandler=false; }
 {
     using openvrml::field_value;
@@ -1669,7 +1664,7 @@ protoNodeFieldValue[openvrml::browser & browser,
                     proto_node_class::routes_t & routes,
                     field_value::type_id ft,
                     const std::string & script_node_id]
-returns [field_value_ptr fv]
+returns [boost::shared_ptr<field_value> fv]
 options { defaultErrorHandler=false; }
     :   { ft == field_value::sfnode_id }?
             fv=protoSfNodeValue[browser,
@@ -1685,7 +1680,7 @@ options { defaultErrorHandler=false; }
                             script_node_id]
     ;
 
-sfBoolValue returns [openvrml::field_value_ptr sbv]
+sfBoolValue returns [boost::shared_ptr<field_value> sbv]
 options { defaultErrorHandler=false; }
 {
     bool val(false);
@@ -1699,7 +1694,7 @@ options { defaultErrorHandler=false; }
     | KEYWORD_FALSE { val = false; }
     ;
 
-sfColorValue returns [openvrml::field_value_ptr scv]
+sfColorValue returns [boost::shared_ptr<field_value> scv]
 options { defaultErrorHandler=false; }
 {
     color c;
@@ -1708,8 +1703,8 @@ options { defaultErrorHandler=false; }
     ;
 
 mfColorValue
-returns [openvrml::field_value_ptr mcv =
-            openvrml::field_value_ptr(new mfcolor)]
+returns [boost::shared_ptr<field_value> mcv =
+            boost::shared_ptr<field_value>(new mfcolor)]
 options { defaultErrorHandler=false; }
 {
     color c;
@@ -1747,7 +1742,7 @@ options { defaultErrorHandler=false; }
         }
     ;
 
-sfFloatValue returns [openvrml::field_value_ptr sfv]
+sfFloatValue returns [boost::shared_ptr<field_value> sfv]
 options { defaultErrorHandler=false; }
 {
     float f;
@@ -1756,8 +1751,8 @@ options { defaultErrorHandler=false; }
     ;
 
 mfFloatValue
-returns [openvrml::field_value_ptr mfv =
-            openvrml::field_value_ptr(new mffloat)]
+returns [boost::shared_ptr<field_value> mfv =
+            boost::shared_ptr<field_value>(new mffloat)]
 options { defaultErrorHandler=false; }
 {
     float f;
@@ -1773,7 +1768,7 @@ options { defaultErrorHandler=false; }
     | f1:INTEGER  { std::istringstream(f1->getText()) >> val; }
     ;
 
-sfImageValue returns [openvrml::field_value_ptr siv]
+sfImageValue returns [boost::shared_ptr<field_value> siv]
 options { defaultErrorHandler=false; }
 {
     using antlr::SemanticException;
@@ -1806,7 +1801,7 @@ options { defaultErrorHandler=false; }
         }
     ;
 
-sfInt32Value returns [openvrml::field_value_ptr siv]
+sfInt32Value returns [boost::shared_ptr<field_value> siv]
 options { defaultErrorHandler=false; }
 {
     long i;
@@ -1815,8 +1810,8 @@ options { defaultErrorHandler=false; }
     ;
 
 mfInt32Value
-returns [openvrml::field_value_ptr miv =
-            openvrml::field_value_ptr(new mfint32)]
+returns [boost::shared_ptr<field_value> miv =
+            boost::shared_ptr<field_value>(new mfint32)]
 options { defaultErrorHandler=false; }
 {
     long i;
@@ -1839,7 +1834,7 @@ options { defaultErrorHandler=false; }
 sfNodeValue[openvrml::browser & browser,
             const boost::shared_ptr<openvrml::scope> & scope,
             const std::string & script_node_id]
-returns [openvrml::field_value_ptr snv]
+returns [boost::shared_ptr<field_value> snv]
 options { defaultErrorHandler=false; }
 {
     openvrml::node_ptr n;
@@ -1856,7 +1851,7 @@ protoSfNodeValue[openvrml::browser & browser,
                  proto_node_class::is_map_t & is_map,
                  proto_node_class::routes_t & routes,
                  const std::string & script_node_id]
-returns [field_value_ptr snv]
+returns [boost::shared_ptr<field_value> snv]
 options { defaultErrorHandler=false; }
 {
     node_ptr n;
@@ -1877,7 +1872,7 @@ options { defaultErrorHandler=false; }
 mfNodeValue[openvrml::browser & browser,
             const boost::shared_ptr<openvrml::scope> & scope,
             const std::string & script_node_id]
-returns [openvrml::field_value_ptr mnv = openvrml::field_value_ptr(new mfnode)]
+returns [boost::shared_ptr<field_value> mnv = boost::shared_ptr<field_value>(new mfnode)]
 options { defaultErrorHandler=false; }
 {
     openvrml::node_ptr n;
@@ -1899,7 +1894,7 @@ protoMfNodeValue[openvrml::browser & browser,
                  proto_node_class::is_map_t & is_map,
                  proto_node_class::routes_t & routes,
                  const std::string & script_node_id]
-returns [field_value_ptr mnv = field_value_ptr(new mfnode)]
+returns [boost::shared_ptr<field_value> mnv = boost::shared_ptr<field_value>(new mfnode)]
 options { defaultErrorHandler=false; }
 {
     node_ptr n;
@@ -1925,14 +1920,14 @@ options { defaultErrorHandler=false; }
         )* RBRACKET
     ;
 
-sfRotationValue returns [openvrml::field_value_ptr srv]
+sfRotationValue returns [boost::shared_ptr<field_value> srv]
 options { defaultErrorHandler=false; }
     { rotation r; }
     : rotationValue[r] { srv.reset(new sfrotation(r)); }
     ;
 
 mfRotationValue
-returns [field_value_ptr mrv = field_value_ptr(new mfrotation)]
+returns [boost::shared_ptr<field_value> mrv = boost::shared_ptr<field_value>ge(new mfrotation)]
 options { defaultErrorHandler=false; }
 {
     rotation r;
@@ -1968,15 +1963,15 @@ options { defaultErrorHandler=false; }
         }
     ;
 
-sfStringValue returns [openvrml::field_value_ptr ssv]
+sfStringValue returns [boost::shared_ptr<field_value> ssv]
 options { defaultErrorHandler=false; }
     { std::string s; }
     : s=stringValue { ssv.reset(new sfstring(s)); }
     ;
 
 mfStringValue
-returns [openvrml::field_value_ptr msv =
-         openvrml::field_value_ptr(new mfstring)]
+returns [boost::shared_ptr<field_value> msv =
+         boost::shared_ptr<field_value>(new mfstring)]
 options { defaultErrorHandler=false; }
 {
     std::string s;
@@ -2009,14 +2004,14 @@ options { defaultErrorHandler=false; }
         }
     ;
 
-sfTimeValue returns [openvrml::field_value_ptr stv]
+sfTimeValue returns [boost::shared_ptr<field_value> stv]
 options { defaultErrorHandler=false; }
     { double t(0.0); }
     : t=doubleValue { stv.reset(new sftime(t)); }
     ;
 
 mfTimeValue
-returns [openvrml::field_value_ptr mtv = openvrml::field_value_ptr(new mftime)]
+returns [boost::shared_ptr<field_value> mtv = boost::shared_ptr<field_value>(new mftime)]
 options { defaultErrorHandler=false; }
 {
     double t;
@@ -2032,15 +2027,15 @@ options { defaultErrorHandler=false; }
     | d1:INTEGER { std::istringstream(d1->getText()) >> val; }
     ;
 
-sfVec2fValue returns [openvrml::field_value_ptr svv]
+sfVec2fValue returns [boost::shared_ptr<field_value> svv]
 options { defaultErrorHandler=false; }
     { vec2f v; }
     : vec2fValue[v] { svv.reset(new sfvec2f(v)); }
     ;
 
 mfVec2fValue
-returns [openvrml::field_value_ptr mvv =
-         openvrml::field_value_ptr(new mfvec2f)]
+returns [boost::shared_ptr<field_value> mvv =
+         boost::shared_ptr<field_value>(new mfvec2f)]
 options { defaultErrorHandler=false; }
 {
     vec2f v;
@@ -2059,7 +2054,7 @@ options { defaultErrorHandler=false; }
                                   v.y(y); }
     ;
 
-sfVec3fValue returns [openvrml::field_value_ptr svv]
+sfVec3fValue returns [boost::shared_ptr<field_value> svv]
 options { defaultErrorHandler=false; }
 {
     vec3f v;
@@ -2068,8 +2063,8 @@ options { defaultErrorHandler=false; }
     ;
 
 mfVec3fValue
-returns [openvrml::field_value_ptr mvv =
-         openvrml::field_value_ptr(new mfvec3f)]
+returns [boost::shared_ptr<field_value> mvv =
+         boost::shared_ptr<field_value>(new mfvec3f)]
 options { defaultErrorHandler=false; }
 {
     vec3f v;

@@ -487,7 +487,7 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 
 
 /**
- * @typedef node_interface_set
+ * @typedef std::set<node_interface, node_interface_compare> node_interface_set
  *
  * @ingroup nodes
  *
@@ -890,7 +890,7 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 
 
 /**
- * @typedef node_path
+ * @typedef std::deque<node *> node_path
  *
  * @ingroup nodes
  *

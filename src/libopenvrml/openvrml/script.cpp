@@ -1228,7 +1228,7 @@ script_node::script_node(script_node_class & class_,
         shared_ptr<openvrml::event_listener> listener;
         shared_ptr<eventout> eventout;
         initial_value_map::const_iterator initial_value;
-        pair<string, field_value_ptr> field_value;
+        pair<string, shared_ptr<field_value> > field_value;
         auto_ptr<openvrml::field_value> cloned_field_value;
         bool succeeded;
         switch (interface->type) {
@@ -1253,7 +1253,8 @@ script_node::script_node(script_node_class & class_,
             }
             cloned_field_value = initial_value->second->clone();
             field_value = make_pair(initial_value->first,
-                                    field_value_ptr(cloned_field_value));
+                                    shared_ptr<openvrml::field_value>(
+                                        cloned_field_value));
             //
             // Account for self-references.
             //

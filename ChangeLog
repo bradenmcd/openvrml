@@ -1,5 +1,19 @@
 2005-03-31 Braden McDaniel  <braden@endoframe.com>
 
+	Removed openvrml::field_value_ptr typedef.  Such typedefs do
+	little more than obfuscate the type of the smart pointer.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/field_value.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+
+2005-03-31 Braden McDaniel  <braden@endoframe.com>
+
 	Refactored openvrml::scene::load to use
 	openvrml::scene::get_resource.
 
