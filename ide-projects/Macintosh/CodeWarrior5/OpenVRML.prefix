@@ -1,7 +1,7 @@
 #include <MacHeaders.h>
 
 #define OPENVRML_MAJOR_VERSION	0
-#define OPENVRML_MINOR_VERSION	10
+#define OPENVRML_MINOR_VERSION	11
 #define OPENVRML_MICRO_VERSION	0
 
 #include <fstream.h>
