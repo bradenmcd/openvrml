@@ -77,7 +77,6 @@ VrmlScene::VrmlScene( const char *sceneUrl, const char *localCopy ) :
   d_firstEvent(0),
   d_lastEvent(0)
 {
-  d_nodes.addToScene(this, sceneUrl);
   d_backgrounds = new VrmlNodeList;
   d_backgroundStack = new VrmlNodeList;
   d_fogs = new VrmlNodeList;
@@ -99,9 +98,6 @@ VrmlScene::VrmlScene( const char *sceneUrl, const char *localCopy ) :
 
 VrmlScene::~VrmlScene()
 {
-  d_nodes.addToScene( 0, 0 );
-  d_nodes.removeChildren();
-
   bindableRemoveAll( d_backgroundStack ); 
   delete d_backgroundStack;
   bindableRemoveAll( d_fogStack ); 
@@ -131,6 +127,10 @@ VrmlScene::~VrmlScene()
   delete d_pendingScope;
 
   delete d_namespace;
+}
+
+const VrmlMFNode & VrmlScene::getRootNodes() const throw () {
+    return this->nodes;
 }
 
 // Load a (possibly non-VRML) file...
@@ -204,59 +204,57 @@ void VrmlScene::destroyWorld()
 // Replace nodes
 
 void VrmlScene::replaceWorld(VrmlMFNode & nodes, VrmlNamespace * ns,
-			     Doc2 * url, Doc2 * urlLocal)
-{
-  delete d_namespace;
-  delete d_url;
-  delete d_urlLocal;
-
-  d_namespace = ns;
-  d_url = url;
-  d_urlLocal = urlLocal;
-
-  // Clear bindable stacks.
-  bindableRemoveAll( d_backgroundStack ); 
-  bindableRemoveAll( d_fogStack ); 
-  bindableRemoveAll( d_navigationInfoStack ); 
-  bindableRemoveAll( d_viewpointStack );
-
-  // Get rid of current world: pending events, nodes.
-  flushEvents();
-  d_nodes.removeChildren();
-
-  // Do this to set the relative URL
-  d_nodes.addToScene(this, this->d_url ? this->d_url->url() : 0);
-
-  // Add the nodes to a Group and put the group in the scene.
-  // This will load EXTERNPROTOs and Inlines.
-  d_nodes.addChildren( nodes );
-
-  // Send initial set_binds to bindable nodes
-  double timeNow = theSystem->time();
-  VrmlSFBool flag(true);
-  VrmlNodePtr bindable;
-
-  if (d_backgrounds->size() > 0 &&
-      (bindable = d_backgrounds->front()) != 0)
-    bindable->eventIn(timeNow, "set_bind", flag);
-
-  if (d_fogs->size() > 0 &&
-      (bindable = d_fogs->front()) != 0)
-    bindable->eventIn(timeNow, "set_bind", flag);
-
-  if (d_navigationInfos->size() > 0 &&
-      (bindable = d_navigationInfos->front()) != 0)
-    bindable->eventIn(timeNow, "set_bind", flag);
-
-  if (d_viewpoints->size() > 0 &&
-      (bindable = d_viewpoints->front()) != 0)
-    bindable->eventIn(timeNow, "set_bind", flag);
-
-  // Notify anyone interested that the world has changed
-  doCallbacks( REPLACE_WORLD );
-
-  setModified();
-  d_newView = true;		// Force resetUserNav
+			     Doc2 * url, Doc2 * urlLocal) {
+    delete d_namespace;
+    delete d_url;
+    delete d_urlLocal;
+    
+    d_namespace = ns;
+    d_url = url;
+    d_urlLocal = urlLocal;
+    
+    // Clear bindable stacks.
+    bindableRemoveAll( d_backgroundStack ); 
+    bindableRemoveAll( d_fogStack ); 
+    bindableRemoveAll( d_navigationInfoStack ); 
+    bindableRemoveAll( d_viewpointStack );
+    
+    // Get rid of current world: pending events, nodes.
+    flushEvents();
+    
+    this->nodes = nodes;
+    
+    // Do this to set the relative URL
+    for (size_t i = 0; i < this->nodes.getLength(); ++i) {
+        nodes.getElement(i)->addToScene(this, this->d_url ? this->d_url->url() : 0);
+    }
+    
+    // Send initial set_binds to bindable nodes
+    double timeNow = theSystem->time();
+    VrmlSFBool flag(true);
+    VrmlNodePtr bindable;
+    
+    if (d_backgrounds->size() > 0 &&
+        (bindable = d_backgrounds->front()) != 0)
+      bindable->eventIn(timeNow, "set_bind", flag);
+    
+    if (d_fogs->size() > 0 &&
+        (bindable = d_fogs->front()) != 0)
+      bindable->eventIn(timeNow, "set_bind", flag);
+    
+    if (d_navigationInfos->size() > 0 &&
+        (bindable = d_navigationInfos->front()) != 0)
+      bindable->eventIn(timeNow, "set_bind", flag);
+    
+    if (d_viewpoints->size() > 0 &&
+        (bindable = d_viewpoints->front()) != 0)
+      bindable->eventIn(timeNow, "set_bind", flag);
+    
+    // Notify anyone interested that the world has changed
+    doCallbacks( REPLACE_WORLD );
+    
+    setModified();
+    d_newView = true;		// Force resetUserNav
 }
 
 void VrmlScene::doCallbacks( int reason )
@@ -539,7 +537,7 @@ bool VrmlScene::save(const char *url)
   if (os)
     {
       os << "#VRML V2.0 utf8\n";
-      os << d_nodes;
+      os << this->nodes;
       success = true;
     }
 
@@ -962,8 +960,10 @@ void VrmlScene::render(Viewer *viewer)
       if (x) x->renderScoped( viewer );
     }
 
-  // Render the top level group
-  d_nodes.render( viewer, rc );
+  // Render the nodes
+  for (size_t i = 0; i < this->nodes.getLength(); ++i) {
+      this->nodes.getElement(i)->render(viewer, rc);
+  }
 
   viewer->endObject();
 
@@ -1300,15 +1300,19 @@ void VrmlScene::removeAudioClip( VrmlNodeAudioClip *audio_clip )
 }
 
 
+/**
+ * Propagate the bvolume dirty flag from children to ancestors. The
+ * invariant is that if a node's bounding volume is out of date,
+ * then the bounding volumes of all that nodes's ancestors must be
+ * out of date. However, VrmlNode does not maintain a parent
+ * pointer. So we must do a traversal of the entire scene graph to
+ * do the propagation.
+ *
+ * @see VrmlNode::setBVolumeDirty
+ * @see VrmlNode::isBVolumeDirty
+ */
 void VrmlScene::updateFlags()
 {
-  //cout << "VrmlScene::updateFlags()" << endl;
-  VrmlNode* root = this->getRoot();
-  root->updateModified(0x002);
-}
-
-
-VrmlNode* VrmlScene::getRoot()
-{
-  return &d_nodes;
+//  VrmlNode* root = this->getRoot();
+//  root->updateModified(0x002);
 }

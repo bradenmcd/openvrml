@@ -34,298 +34,262 @@ class VrmlNodeType;
 typedef std::list<VrmlNodePtr> VrmlNodeList;
 
 class OPENVRML_SCOPE VrmlScene {
-
+    VrmlMFNode nodes;
+    
 public:
+    // These are available without a scene object
+    static VrmlMFNode * readWrl(VrmlMFString * url, Doc2 * relative,
+                                VrmlNamespace * ns);
+    static VrmlMFNode * readWrl(Doc2 * url, VrmlNamespace * ns );
+    static const VrmlMFNode readString(char const * vrmlString,
+                                       VrmlNamespace * ns);
 
-  // These are available without a scene object
-  static VrmlMFNode * readWrl(VrmlMFString * url, Doc2 * relative,
-                              VrmlNamespace * ns);
-  static VrmlMFNode * readWrl(Doc2 * url, VrmlNamespace * ns );
-  static const VrmlMFNode readString(char const * vrmlString,
-                                     VrmlNamespace * ns);
+    static VrmlNodeType * readPROTO(const VrmlMFString & url,
+                                    const Doc2 * relative = 0);
 
-//
-// Disabling the LoadCB stuff for now. We probably want to replace this with
-// functions that take an istream instead of a function pointer.
-// -- Braden McDaniel <braden@endoframe.com>, 2 Apr, 2000
-//
-#if 0
-  typedef int (*LoadCB)(char *buf, int bufSize);
-  static VrmlMFNode * readFunction(LoadCB cb, Doc *url, VrmlNamespace *ns);
-#endif
+    VrmlScene(const char * url = 0, const char * localCopy = 0);
+    virtual ~VrmlScene();
+    
+    const VrmlMFNode & getRootNodes() const throw ();
+    
+    // Destroy world (just passes destroy request up to client)
+    void destroyWorld();
 
-  static VrmlNodeType * readPROTO(const VrmlMFString & url,
-                                  const Doc2 * relative = 0);
+    // Replace world with nodes, recording url as the source URL.
+    void replaceWorld(VrmlMFNode & nodes, VrmlNamespace * ns,
+		      Doc2 * url = 0, Doc2 * urlLocal = 0);
 
-  //
-  VrmlScene( const char *url = 0, const char *localCopy = 0);
-  virtual ~VrmlScene();		// Allow overriding of Script API methods
+    // A way to let the app know when a world is loaded, changed, etc.
+    typedef void (* SceneCB)(int reason);
 
-  // Destroy world (just passes destroy request up to client)
-  void destroyWorld();
+    // Valid reasons for scene callback (need more...)
+    enum {
+        DESTROY_WORLD,
+        REPLACE_WORLD
+    };
 
-  // Replace world with nodes, recording url as the source URL.
-  void replaceWorld(VrmlMFNode & nodes, VrmlNamespace * ns,
-		    Doc2 * url=0, Doc2 * urlLocal=0);
+    void addWorldChangedCallback(SceneCB);
 
-  // A way to let the app know when a world is loaded, changed, etc.
-  typedef void (*SceneCB)( int reason );
+    // Load a generic file (possibly non-VRML)
+    bool loadUrl(const VrmlMFString * url, const VrmlMFString * parameters = 0);
 
-  // Valid reasons for scene callback (need more...)
-  enum {
-    DESTROY_WORLD,
-    REPLACE_WORLD
-  };
+    // Load a VRML file
+    bool load(const char *url, const char *localCopy = 0);
 
-  void addWorldChangedCallback( SceneCB );
+    // Load a VRML string
+    bool loadFromString(const char *string);
 
-  // Load a generic file (possibly non-VRML)
-  bool loadUrl(VrmlMFString const * url, VrmlMFString const * parameters = 0 );
+    // Save the scene to a file
+    bool save(const char *url);
 
-  // Load a VRML file
-  bool load(const char *url, const char *localCopy = 0);
+    // URL the current scene was loaded from
+    Doc2 * urlDoc() { return d_url; }
 
-  // Load a VRML string
-  bool loadFromString(const char *string);
+    // Types and node names defined in this scope
+    VrmlNamespace *scope() { return d_namespace; }
 
-#if 0
-  // Load VRML from an application-provided callback function
-  bool loadFromFunction( LoadCB, const char * url = 0 );
-#endif
+    // Queue an event to load URL/nodes (async so it can be called from a node)
+    void queueLoadUrl(VrmlMFString * url, VrmlMFString * parameters);
+    void queueReplaceNodes(VrmlMFNode * nodes, VrmlNamespace * ns);
 
-  // Save the scene to a file
-  bool save(const char *url);
+    void sensitiveEvent(void * object, double timeStamp,
+                        bool isOver, bool isActive, double * point);
 
-  // URL the current scene was loaded from
-  Doc2 * urlDoc() { return d_url; }
+    // Queue an event for a given node
+    void queueEvent(double timeStamp, VrmlField * value,
+		    const VrmlNodePtr & toNode, const char * toEventIn);
 
-  // Types and node names defined in this scope
-  VrmlNamespace *scope() { return d_namespace; }
+    bool eventsPending();
 
-  // Queue an event to load URL/nodes (async so it can be called from a node)
-  void queueLoadUrl( VrmlMFString *url, VrmlMFString *parameters );
-  void queueReplaceNodes( VrmlMFNode *nodes, VrmlNamespace *ns );
+    void flushEvents();
 
-  void sensitiveEvent( void *object, double timeStamp,
-		       bool isOver, bool isActive, double *point );
+    // Script node API support functions. Can be overridden if desired.
+    virtual const char * getName();
+    virtual const char * getVersion();
+    double getFrameRate();
 
-  // Queue an event for a given node
-  void queueEvent(double timeStamp,
-		  VrmlField *value,
-		  const VrmlNodePtr & toNode, const char *toEventIn);
+    // Returns true if scene needs to be re-rendered
+    bool update( double timeStamp = -1.0 );
 
-  bool eventsPending();
+    void render(Viewer *);
 
-  void flushEvents();
+    // Indicate that the scene state has changed, need to re-render
+    void setModified() { d_modified = true; }
+    void clearModified() { d_modified = false; }
+    bool isModified() const { return d_modified; }
 
-  // Script node API support functions. Can be overridden if desired.
-  virtual const char *getName();
-  virtual const char *getVersion();
-  double getFrameRate();
+    // Time until next update needed
+    void setDelta(double d) { if (d < d_deltaTime) d_deltaTime = d; }
+    double getDelta()       { return d_deltaTime; }
 
-  // Returns true if scene needs to be re-rendered
-  bool update( double timeStamp = -1.0 );
+    // Bindable children nodes can be referenced via a list or bindable stacks.
+    // Define for each bindableType:
+    //    addBindableType(bindableType *);
+    //    removeBindableType(bindableType *);
+    //    bindableType *bindableTypeTop();
+    //    void bindablePush(VrmlNodeType *);
+    //    void bindableRemove(VrmlNodeType *);
 
-  void render(Viewer *);
+    // Background
+    void addBackground( VrmlNodeBackground * );
+    void removeBackground( VrmlNodeBackground * );
+    VrmlNodeBackground *bindableBackgroundTop();
+    void bindablePush( VrmlNodeBackground * );
+    void bindableRemove( VrmlNodeBackground * );
 
-  // Indicate that the scene state has changed, need to re-render
-  void setModified() { d_modified = true; }
-  void clearModified() { d_modified = false; }
-  bool isModified() const { return d_modified; }
+    // Fog
+    void addFog( VrmlNodeFog * );
+    void removeFog( VrmlNodeFog * );
+    VrmlNodeFog *bindableFogTop();
+    void bindablePush( VrmlNodeFog * );
+    void bindableRemove( VrmlNodeFog * );
 
-  // Time until next update needed
-  void setDelta(double d) { if (d < d_deltaTime) d_deltaTime = d; }
-  double getDelta()       { return d_deltaTime; }
+    // NavigationInfo
+    void addNavigationInfo( VrmlNodeNavigationInfo * );
+    void removeNavigationInfo( VrmlNodeNavigationInfo * );
+    VrmlNodeNavigationInfo *bindableNavigationInfoTop();
+    void bindablePush( VrmlNodeNavigationInfo * );
+    void bindableRemove( VrmlNodeNavigationInfo * );
 
-  // Bindable children nodes can be referenced via a list or bindable stacks.
-  // Define for each bindableType:
-  //    addBindableType(bindableType *);
-  //    removeBindableType(bindableType *);
-  //    bindableType *bindableTypeTop();
-  //    void bindablePush(VrmlNodeType *);
-  //    void bindableRemove(VrmlNodeType *);
+    // Viewpoint
+    void addViewpoint( VrmlNodeViewpoint * );
+    void removeViewpoint( VrmlNodeViewpoint * );
+    VrmlNodeViewpoint *bindableViewpointTop();
+    void bindablePush( VrmlNodeViewpoint * );
+    void bindableRemove( VrmlNodeViewpoint * );
 
-  // Background
-  void addBackground( VrmlNodeBackground * );
-  void removeBackground( VrmlNodeBackground * );
-  VrmlNodeBackground *bindableBackgroundTop();
-  void bindablePush( VrmlNodeBackground * );
-  void bindableRemove( VrmlNodeBackground * );
+    // Viewpoint navigation
+    void nextViewpoint();
+    void prevViewpoint();  
+    int nViewpoints();
+    void getViewpoint(int, const char **, const char **);
+    void setViewpoint(const char *, const char *);
+    void setViewpoint(int);
 
-  // Fog
-  void addFog( VrmlNodeFog * );
-  void removeFog( VrmlNodeFog * );
-  VrmlNodeFog *bindableFogTop();
-  void bindablePush( VrmlNodeFog * );
-  void bindableRemove( VrmlNodeFog * );
+    // Other (non-bindable) node types that the scene needs access to:
 
-  // NavigationInfo
-  void addNavigationInfo( VrmlNodeNavigationInfo * );
-  void removeNavigationInfo( VrmlNodeNavigationInfo * );
-  VrmlNodeNavigationInfo *bindableNavigationInfoTop();
-  void bindablePush( VrmlNodeNavigationInfo * );
-  void bindableRemove( VrmlNodeNavigationInfo * );
+    // Scene-scoped lights
+    void addScopedLight( VrmlNodeLight * );
+    void removeScopedLight( VrmlNodeLight * );
 
-  // Viewpoint
-  void addViewpoint( VrmlNodeViewpoint * );
-  void removeViewpoint( VrmlNodeViewpoint * );
-  VrmlNodeViewpoint *bindableViewpointTop();
-  void bindablePush( VrmlNodeViewpoint * );
-  void bindableRemove( VrmlNodeViewpoint * );
+    // Scripts
+    void addScript( VrmlNodeScript * );
+    void removeScript( VrmlNodeScript * );
 
-  // Viewpoint navigation
-  void nextViewpoint();
-  void prevViewpoint();  
-  int nViewpoints();
-  void getViewpoint(int, const char **, const char **);
-  void setViewpoint(const char *, const char *);
-  void setViewpoint(int);
+    // TimeSensors
+    void addTimeSensor( VrmlNodeTimeSensor * );
+    void removeTimeSensor( VrmlNodeTimeSensor * );
 
-  // Other (non-bindable) node types that the scene needs access to:
+    // AudioClips
+    void addAudioClip( VrmlNodeAudioClip * );
+    void removeAudioClip( VrmlNodeAudioClip * );
 
-  // Scene-scoped lights
-  void addScopedLight( VrmlNodeLight * );
-  void removeScopedLight( VrmlNodeLight * );
+    // MovieTextures
+    void addMovie( VrmlNodeMovieTexture * );
+    void removeMovie( VrmlNodeMovieTexture * );
 
-  // Scripts
-  void addScript( VrmlNodeScript * );
-  void removeScript( VrmlNodeScript * );
+    /**
+     * True if the bvolume dirty flag has been set on a node in the
+     * scene graph, but has not yet been propegated to that node's
+     * ancestors. Set by VrmlNode::setBVolumeDirty on any node in this
+     * scene graph, cleared by updateFlags()
+     */
+    bool d_flags_need_updating;
 
-  // TimeSensors
-  void addTimeSensor( VrmlNodeTimeSensor * );
-  void removeTimeSensor( VrmlNodeTimeSensor * );
-
-  // AudioClips
-  void addAudioClip( VrmlNodeAudioClip * );
-  void removeAudioClip( VrmlNodeAudioClip * );
-
-  // MovieTextures
-  void addMovie( VrmlNodeMovieTexture * );
-  void removeMovie( VrmlNodeMovieTexture * );
-
-
-  VrmlNode* getRoot();
-
-  /**
-   * True if the bvolume dirty flag has been set on a node in the
-   * scene graph, but has not yet been propegated to that node's
-   * ancestors. Set by VrmlNode::setBVolumeDirty on any node in this
-   * scene graph, cleared by updateFlags()
-   */
-  bool d_flags_need_updating;
-
-  /**
-   * Propegate the bvolume dirty flag from children to ancestors. The
-   * invariant is that if a node's bounding volume is out of date,
-   * then the bounding volumes of all that nodes's ancestors must be
-   * out of date. However, VrmlNode does not maintain a parent
-   * pointer. So we must do a traversal of the entire scene graph to
-   * do the propegation.
-   *
-   * @see VrmlNode::setBVolumeDirty
-   * @see VrmlNode::isBVolumeDirty
-   */
-  void updateFlags();
-
+    void updateFlags();
 
 protected:
+    bool headlightOn();
+    void doCallbacks( int reason );
 
-  bool headlightOn();
-  void doCallbacks( int reason );
+    // Document URL
+    Doc2 * d_url;
+    Doc2 * d_urlLocal;
 
-  // Document URL
-  Doc2 * d_url;
-  Doc2 * d_urlLocal;
+    // Nodes and node types defined in this scope
+    VrmlNamespace *d_namespace;
 
-  // Scene graph
-  VrmlNodeGroup d_nodes;
+    // Need render
+    bool d_modified;
 
-  // Nodes and node types defined in this scope
-  VrmlNamespace *d_namespace;
+    // New viewpoint has been bound
+    bool d_newView;
 
-  // Need render
-  bool d_modified;
+    // Time until next update
+    double d_deltaTime;
 
-  // New viewpoint has been bound
-  bool d_newView;
+    // Allow requests to load urls, nodes to wait until events are processed
+    VrmlMFString *d_pendingUrl;
+    VrmlMFString *d_pendingParameters;
 
-  // Time until next update
-  double d_deltaTime;
+    VrmlMFNode *d_pendingNodes;
+    VrmlNamespace *d_pendingScope;
 
-  // Allow requests to load urls, nodes to wait until events are processed
-  VrmlMFString *d_pendingUrl;
-  VrmlMFString *d_pendingParameters;
+    // Functions to call when world is changed
+    typedef std::list < SceneCB > SceneCBList;
+    SceneCBList d_sceneCallbacks;
 
-  VrmlMFNode *d_pendingNodes;
-  VrmlNamespace *d_pendingScope;
+    // frame rate
+    double d_frameRate;
 
-  // Functions to call when world is changed
-  typedef std::list < SceneCB > SceneCBList;
-  SceneCBList d_sceneCallbacks;
+    // Bindable children nodes (pseudo-stacks - allow random access deletion).
+    typedef VrmlNodeList* BindStack;
 
-  // frame rate
-  double d_frameRate;
+    // Generic bindable children stack operations
+    const VrmlNodePtr bindableTop(BindStack);
+    void bindablePush(BindStack, const VrmlNodePtr &);
+    void bindableRemove(BindStack, const VrmlNodePtr &);
+    void bindableRemoveAll( BindStack );
 
-  // Bindable children nodes (pseudo-stacks - allow random access deletion).
-  typedef VrmlNodeList* BindStack;
+    //   Background
+    VrmlNodeList* d_backgrounds;		// All backgrounds
+    BindStack d_backgroundStack;		// Background stack
 
-  // Generic bindable children stack operations
-  const VrmlNodePtr bindableTop(BindStack);
-  void bindablePush(BindStack, const VrmlNodePtr &);
-  void bindableRemove(BindStack, const VrmlNodePtr &);
-  void bindableRemoveAll( BindStack );
+    //   Fog
+    VrmlNodeList* d_fogs;			// All fog nodes
+    BindStack d_fogStack;			// Fog stack
 
-  //   Background
-  VrmlNodeList* d_backgrounds;		// All backgrounds
-  BindStack d_backgroundStack;		// Background stack
+    //   NavigationInfo
+    VrmlNodeList* d_navigationInfos;	// All navigation info nodes
+    BindStack d_navigationInfoStack;	// Navigation info stack
 
-  //   Fog
-  VrmlNodeList* d_fogs;			// All fog nodes
-  BindStack d_fogStack;			// Fog stack
+    //   Viewpoint
+    VrmlNodeList* d_viewpoints;		// All viewpoint nodes
+    BindStack d_viewpointStack;		// Viewpoint stack
 
-  //   NavigationInfo
-  VrmlNodeList* d_navigationInfos;	// All navigation info nodes
-  BindStack d_navigationInfoStack;	// Navigation info stack
+    // An event has a value and a destination, and is associated with a time
+    struct OPENVRML_SCOPE Event {
+        double timeStamp;
+        VrmlField *value;
+        VrmlNodePtr toNode;
+        const char *toEventIn;
+    };
 
-  //   Viewpoint
-  VrmlNodeList* d_viewpoints;		// All viewpoint nodes
-  BindStack d_viewpointStack;		// Viewpoint stack
+    // For each scene can have a limited number of pending events.
+    // Repeatedly allocating/freeing events is slow (it would be
+    // nice to get rid of the field cloning, too), and if there are
+    // so many events pending, we are probably running too slow to
+    // handle them effectively anyway.
+    // The event queue ought to be sorted by timeStamp...
+    //static const int MAXEVENTS = 400; MSVC++5 doesn't like this.
+    enum { MAXEVENTS = 400 };
+    Event d_eventMem[MAXEVENTS];
+    int d_firstEvent, d_lastEvent;
 
-  // An event has a value and a destination, and is associated with a time
-   struct OPENVRML_SCOPE  Event{
-    double timeStamp;
-    VrmlField *value;
-    VrmlNodePtr toNode;
-    const char *toEventIn;
-  };
+    // Scene-scoped lights (PointLights and SpotLights)
+    VrmlNodeList* d_scopedLights;
 
-  // For each scene can have a limited number of pending events.
-  // Repeatedly allocating/freeing events is slow (it would be
-  // nice to get rid of the field cloning, too), and if there are
-  // so many events pending, we are probably running too slow to
-  // handle them effectively anyway.
-  // The event queue ought to be sorted by timeStamp...
-  //static const int MAXEVENTS = 400; MSVC++5 doesn't like this.
-  enum { MAXEVENTS = 400 };
-  Event d_eventMem[MAXEVENTS];
-  int d_firstEvent, d_lastEvent;
+    // Scripts in this scene
+    VrmlNodeList* d_scripts;
 
-  // Scene-scoped lights (PointLights and SpotLights)
-  VrmlNodeList* d_scopedLights;
+    // Time sensors in this scene
+    VrmlNodeList* d_timers;
 
-  // Scripts in this scene
-  VrmlNodeList* d_scripts;
+    // Audio clips in this scene
+    VrmlNodeList* d_audioClips;
 
-  // Time sensors in this scene
-  VrmlNodeList* d_timers;
-
-  // Audio clips in this scene
-  VrmlNodeList* d_audioClips;
-
-  // Movies in this scene
-  VrmlNodeList* d_movies;
-
+    // Movies in this scene
+    VrmlNodeList* d_movies;
 };
 
 #endif // VRMLSCENE_H
-

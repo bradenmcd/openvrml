@@ -1,4 +1,10 @@
+2001-08-08  Braden McDaniel  <braden@endoframe.com>
+
+        * VrmlScene now stores the root nodes as a VrmlMFNode rather than
+          a Group node.
+
 2001-08-06 Thomas Flynn <tflynn@users.sourceforge.net>
+
 	* Initial checkin for Java in the Script node support.
 	  From patch submitted by Henri Manson.
 
