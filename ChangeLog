@@ -1,3 +1,8 @@
+2002-06-21  Braden McDaniel  <braden@endoframe.com>
+
+        * doc/openvrml.css: Stylesheet fixes for consistency with Web
+          site.
+
 2002-06-20  Braden McDaniel  <braden@endoframe.com>
 
         * m4/gl.m4: AC_REQUIRE([AC_PATH_XTRA]) and add the X CFLAGS and
