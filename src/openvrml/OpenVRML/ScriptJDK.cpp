@@ -47,7 +47,7 @@
 #include "doc2.hpp"
 #include "MathUtils.h"
 #include "System.h"
-#include "VrmlNodeScript.h"
+#include "script.h"
 #include "VrmlNamespace.h"
 #include "VrmlScene.h"
 #include "VrmlEvent.h"
