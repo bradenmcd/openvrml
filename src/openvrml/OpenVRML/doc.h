@@ -22,7 +22,7 @@
 # ifndef OPENVRML_DOC_H
 #   define OPENVRML_DOC_H
 
-#   include <stdio.h>
+#   include <cstdio>
 #   include <iosfwd>
 #   include <string>
 #   include <OpenVRML/common.h>

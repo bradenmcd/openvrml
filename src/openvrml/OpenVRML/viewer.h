@@ -22,7 +22,7 @@
 # ifndef OPENVRML_VIEWER_H
 #   define OPENVRML_VIEWER_H
 
-#   include <stddef.h>
+#   include <cstddef>
 #   include <vector>
 #   include <OpenVRML/bounding_volume.h>
 #   include <OpenVRML/frustum.h>

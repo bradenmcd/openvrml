@@ -25,7 +25,6 @@
 
 # include <algorithm>
 # include <numeric>
-# include <assert.h>
 # include "private.h"
 # include "field.h"
 # include "node.h"

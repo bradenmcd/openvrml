@@ -26,10 +26,12 @@
 #   include <config.h>
 # endif
 
-# include <stdarg.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
+# include <cctype>
+# include <cerrno>
+# include <cstdarg>
+# include <cstdio>
+# include <cstdlib>
+# include <cstring>
 # include <algorithm>
 # include <sstream>
 
@@ -59,8 +61,6 @@ bool system::load_url(const std::string & url, const mfstring & parameters)
 # if defined(_WIN32) && !defined(__CYGWIN__)
 #   include <sys/types.h>
 #   include <winsock2.h>
-#   include <string.h>
-#   include <ctype.h>
 # else
 #   include <sys/types.h>
 #   include <sys/socket.h>
@@ -68,9 +68,7 @@ bool system::load_url(const std::string & url, const mfstring & parameters)
 #   include <arpa/inet.h>
 #   include <unistd.h>
 #   include <netdb.h>
-#   include <string.h>        // memset
-#   include <ctype.h>
-# endif // _WIN32
+# endif
 
 int system::connect_socket(const char * host, int port)
 {
@@ -132,8 +130,6 @@ int system::connect_socket(const char * host, int port)
 #else
 # include <unistd.h>
 #endif
-
-#include <errno.h>
 
 const char * system::http_host(const char * url, int * port)
 {

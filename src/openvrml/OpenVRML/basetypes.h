@@ -23,9 +23,9 @@
 # ifndef OPENVRML_BASETYPES_H
 #   define OPENVRML_BASETYPES_H
 
-#   include <assert.h>
-#   include <math.h>
-#   include <stddef.h>
+#   include <cassert>
+#   include <cmath>
+#   include <cstddef>
 #   include <algorithm>
 #   include <iosfwd>
 #   include <sys/types.h>

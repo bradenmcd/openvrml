@@ -22,7 +22,7 @@
 # ifndef OPENVRML_NODE_PTR_H
 #   define OPENVRML_NODE_PTR_H
 
-#   include <assert.h>
+#   include <cassert>
 #   include <map>
 #   include <memory>
 #   include <OpenVRML/common.h>

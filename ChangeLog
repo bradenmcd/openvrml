@@ -1,5 +1,54 @@
 2003-07-24  Braden McDaniel  <braden@endoframe.com>
 
+	Don't use deprecated C headers.
+
+	* src/openvrml/OpenVRML/ScriptJDK.cpp:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/Vrml97Parser.cpp:  Reflects changes to
+	Vrml97Parser.g.
+	* src/openvrml/OpenVRML/Vrml97Parser.g:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/Vrml97Parser.hpp:  Reflects changes to
+	Vrml97Parser.g.
+	* src/openvrml/OpenVRML/basetypes.cpp:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/basetypes.h:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/browser.h:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/doc.cpp:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/doc.h:  Don't use deprecated C headers.
+	* src/openvrml/OpenVRML/field.cpp:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/field_value_ptr.h:  Don't use deprecated
+	C headers.
+	* src/openvrml/OpenVRML/img.cpp:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/img.h:  Don't use deprecated C headers.
+	* src/openvrml/OpenVRML/node_class_ptr.h:  Don't use deprecated
+	C headers.
+	* src/openvrml/OpenVRML/node_ptr.cpp:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/node_ptr.h:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/node_type_ptr.cpp:  Don't use deprecated
+	C headers.
+	* src/openvrml/OpenVRML/private.h:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/scope_ptr.h:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/script.cpp:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/system.cpp:  Don't use deprecated C
+	headers.
+	* src/openvrml/OpenVRML/viewer.cpp:  Don't use deprecated C
+	headers.
+	* src/openvrml-gl/OpenVRML/GL/viewer.cpp:  Don't use deprecated
+	C headers.
+
+2003-07-24  Braden McDaniel  <braden@endoframe.com>
+
 	Renamed Vrml97Node namespace to vrml97_node.
 
 	* src/openvrml/OpenVRML/browser.cpp:  Renamed Vrml97Node

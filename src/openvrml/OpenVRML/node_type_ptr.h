@@ -22,8 +22,8 @@
 # ifndef OPENVRML_NODETYPEPTR_H
 #   define OPENVRML_NODETYPEPTR_H
 
-#   include <stddef.h>
-#   include <assert.h>
+#   include <cstddef>
+#   include <cassert>
 #   include <memory>
 #   include <OpenVRML/common.h>
 

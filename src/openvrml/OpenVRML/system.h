@@ -22,7 +22,7 @@
 # ifndef OPENVRML_SYSTEM_H
 #   define OPENVRML_SYSTEM_H
 
-#   include <stddef.h>
+#   include <cstddef>
 #   include <string>
 #   include <OpenVRML/common.h>
 

@@ -24,7 +24,6 @@
 #   include <config.h>
 # endif
 
-# include <assert.h>
 # include "private.h"
 # include "script.h"
 # include "scope.h"
@@ -834,7 +833,6 @@ void script_node::do_shutdown(const double timestamp) throw ()
 } // namespace OpenVRML
 
 # if OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
-#   include <math.h>
 #   include <algorithm>
 #   include <iostream>
 #   include <memory>

@@ -38,7 +38,7 @@
 #   include <GL/glu.h>
 # endif
 
-# include <math.h>
+# include <cmath>
 
 # include <OpenVRML/browser.h>
 # include <OpenVRML/vrml97node.h>

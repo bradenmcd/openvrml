@@ -22,7 +22,7 @@
 # ifndef OPENVRML_IMG_H
 #   define OPENVRML_IMG_H
 
-#   include <stddef.h>
+#   include <cstddef>
 #   include <string>
 #   include <vector>
 #   include <OpenVRML/common.h>

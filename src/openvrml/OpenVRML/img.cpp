@@ -27,10 +27,10 @@
 #   include <config.h>
 # endif
 
-# include <stdarg.h>
-# include <stdio.h>
-# include <stdlib.h>		// free()
-# include <string.h>
+# include <cstdarg>
+# include <cstdio>
+# include <cstdlib>		// free()
+# include <cstring>
 # include <algorithm>
 
 # include "private.h"
@@ -982,7 +982,7 @@ namespace {
 // JPEG reader
 //
 # if OPENVRML_ENABLE_IMAGETEXTURE_NODE
-#   include <setjmp.h>
+#   include <csetjmp>
 
 extern "C" {
 #   include <jpeglib.h>

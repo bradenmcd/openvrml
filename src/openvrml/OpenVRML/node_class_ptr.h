@@ -22,8 +22,8 @@
 # ifndef OPENVRML_NODE_CLASS_PTR_H
 #   define OPENVRML_NODE_CLASS_PTR_H
 
-#   include <stddef.h>
-#   include <assert.h>
+#   include <cstddef>
+#   include <cassert>
 #   include <memory>
 #   include <OpenVRML/common.h>
 
