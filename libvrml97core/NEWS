@@ -1,0 +1,274 @@
+
+Changes new in version 0.8.0 March X 1999
+=======================================
+
+- Erik Andersen <andersee@debian.org> has revived the win32 build
+  and fixed a bunch of portability problems. MSVC++5 project and
+  workspace files are again included in the distribution, as well
+  as the generated parser/lexer sources (so you don't need flex
+  and bison to build anymore on most platforms).
+
+- Steve Sycamore <sycamore@inr.net> wrote a netscape plugin.
+
+- Kumaran Santhanam <rhapsody@stanford.edu> has contributed a sound
+  driver (Sound and AudioClip nodes) for Linux/OSS. See README.SOUND.
+
+- Erik Andersen <andersee@debian.org> wrote the gtklookat browser.
+
+- S. K. Bose also worked on the win32 port and ported the javascript
+  support to windows.
+
+- Joe Longson added methods to retrieve scene geometry information
+  from client applications.
+
+- Some bug fixes, including a problem with negative TimeSensor 
+  fraction_changed eventOuts, a crash when writing an error message
+  about invalid node names in ROUTEs, and an empty CoordIndex lexer
+  fix all submitted by Kumaran Santhanam <rhapsody@stanford.edu>, and a 
+  Text/MFString problem found by Anton Eliens <eliens@computer.org>.
+
+- Implemented PlaneSensor (USEd PlaneSensors will not behave correctly
+  yet, though).
+
+- The stubs for Java in Script nodes have been added (using the Sun
+  JDK) but it is not worth enabling yet. Java/JNI hackers are welcome
+  to jump in...
+
+- I fixed DEF name scoping issues and re-did the PROTO/EXTERNPROTO 
+  implementation so it is now robust and spec-conforming and just tried 
+  to keep up with all the stuff being done by everyone else.
+
+- The JavaScript support is more robust, including support for IS'd
+  script fields.
+
+- Lexer couldn't handle leading '+' on numbers.
+
+
+Changes new in version 0.7.9 Nov 4 1998
+=======================================
+
+- Erik Andersen <andersen@inconnect.com> contributed some code for a 
+  GLP'd GTK viewer. It doesn't display anything yet, though, so it is
+  not built by default.
+
+- Gamma setting code for PNG images submitted by Greg Roelofs
+  <newt@pobox.com>.
+
+- Alpha/zlib porting changes submitted by Stuart Anderson 
+  <anderson@metrolink.com>. At least zlib version 1.1.2 should be 
+  used (or you may get undefined symbols gzopen,gzread,gzclose).
+
+- Rewrote the texture handling in the OpenGL code to use OpenGL1.1
+  glBindTexture() rather than putting textures in display lists.
+  Mesa has been using the OpenGL 1.1 API since Mesa-2.0 and I don't
+  know of any commercial OGLs still at 1.0. If this causes a problem
+  let me know. On my system I see about a 15-25% speedup for textured 
+  scenes with Mesa-3.0 (eg, orbit3.wrl). Background node panorama 
+  URLs have also been sped up for some cases independent of the 
+  bindTexture changes.
+
+- IndexedFaceSets respect the "convex FALSE" attribute (subject to
+  the caveats listed below about GLU versions).
+
+- Fixed a problem when reading non-transparent GIFs after one with
+  transparency has been read.
+
+- Fixed a problem with more than 32 nested Transforms (can't use 
+  glPushMatrix/glPopMatrix due to an implementation limit). Unfortunately,
+  this slows down the code a little, at least for now.
+
+- Binding to a viewpoint now flushes the accumulated user navigations.
+  Viewpoints still don't do the jump/interpolation stuff.
+
+- Report the integral average of the last 2 frames in the rendering
+  rate display (toggled via the '/' key) to reduce the flickering.
+
+- Display multiline/sized/justified Text (but you still need to
+  compile with GLUT to render Text nodes, even in the Xt viewer).
+
+- Fixed a compilation problem in ViewerOpenGL if you didn't have GLU1.2.
+
+- Fixed Appearances of IndexedLineSets/PointSets (and I mean it this 
+  time :).
+
+
+Changes new in version 0.7.8
+===============================
+
+- Subclass from System to provide xmlookat with better interface (well, a
+  message box and a Viewpoints menu, anyway).
+
+- Add a load from callback function in VrmlScene to support netscape plugin
+  streams.
+
+- Better redraw event handling in Xt/Motif.
+
+- Support for reading compressed (gzip'd) files (as long as you have PNG/ZLIB).
+
+- Fixed egcs-1.1 problem.
+
+- Fixed rendering of 3 point IndexedFaceSets and appearances of Lines/Points.
+
+- Started support for non-convex geometries - Extrusions only so far and 
+  you will need a version of OpenGL that supports the GLU1.2 API. Note that 
+  Mesa (as of version 3.0 anyway) is at GLU1.1, but you can get 
+  <A HREF="http://www.vermontel.net/~cmorley/mesa/">my updates</A> 
+  to the Mesa 3.0 GLU code to bring the tesselator API up to date.
+
+
+Changes new in version 0.7.7
+===============================
+
+- Remove use of STL stack and its associated portability problems.
+
+- Support for IS'd Script fields.
+
+- Fixes to set_xxx eventIns in Script nodes, MF* eventOuts in javascript.
+
+- Stuart Anderson of Metrolink contributed a FreeBSD makefile.
+
+
+Changes new in version 0.7.6
+===============================
+
+- Read PNG paletted grayscale images properly.
+
+
+Changes new in version 0.7.5
+===============================
+
+- Fixes to material/texture handling. I think all but PNG paletted grayscale
+  images are working properly now.
+
+- Draw frame rate display last so it isn't obscured (duh).
+
+- More Javascript fixes. MF* fields work better, but SFImage properties
+  still can't be set after creation and array property can't be read.
+
+
+Changes new in version 0.7.4
+===============================
+
+- Some navigation improvements: arrow keys can be used to navigate
+  forward, backward, left, right; Page Up/Down cycles through viewpoints,
+  Home key resets view to currently bound viewpoint settings (undoes any
+  user navigation), left mouse rotates about center of the window rather 
+  than the world origin.
+
+- Viewpoints now respect the transforms above them in the scene graph so I
+  could look at Greg Roelofs' (newt@pobox.com) PNG in VRML test page at 
+  http://www.cdrom.com/pub/png/pngvrml.html - thanks, Greg. Greg also
+  pointed out some mistakes in the texturing which will be fixed soon.
+
+- Support for transparency and grayscale GIF textures.
+
+- Fixed the keyboard input problem with xmlookat.
+
+- Xt viewer will try to get less-capable visuals if a double-buffered
+  RGBA with Z-buffer is not available rather than failing.
+
+- Some OpenGL optimization (about 50% speedup for most scenes).
+
+- Started EXTERNPROTOs, simple ones are working.
+
+
+Changes new in version 0.7.3
+===============================
+
+- Added support for "vrmlscript:" (actually just runs javascript).
+
+- S. K. Bose (bose@garuda.barc.ernet.in) fixed NormalInterpolators to
+  interpolate on the surface of the unit sphere.
+
+- OpenGL viewer can now be run in an Xt/Motif/Lesstif widget as an
+  alternative to using the GLUT toolkit. Added xmlookat example. The
+  Xt/Motif version doesn't catch keyboard input yet, and seems slow...
+
+- GLUT version uses timeouts rather than the glut idle function, so
+  lookat's CPU usage is not always 100% anymore.
+
+- Started Text support, but not done yet (to get text, you must compile
+  with -DHAVE_GLUT and link with the glut library, even if you run the
+  Xt/Motif viewer). This holds true for the frame rate display, too.
+
+
+Changes new in version 0.7.2
+===============================
+
+- Javascript browser object API completed, including createVrmlFromString, 
+  createVrmlFromUrl, loadUrl, add/deleteRoute, and replaceWorld.
+
+- Fixed an error caught by egcs in VrmlNodeScript.cpp, added a makefile
+  for RedHat 5.1.
+
+
+Changes new in version 0.7.1
+===============================
+
+- Due to popular demand, '/' (slash) key toggles frames/second display.
+
+- Some performance improvements in the picking code.
+
+
+Changes new in version 0.7
+===============================
+
+- More javascript API.
+
+- Hacked in some basic http support and support for -geometry and
+  -url arguments so lookat can be run under XSwallow.
+
+- Fixed (?) OrientationInterpolator to handle axes pointing in
+  opposite directions.
+
+- Fixed texture coordinates on Spheres.
+
+- Put example files into a separate distribution file, cleaned
+  up makefiles a little more.
+
+- The Windows port has not been updated lately, so beware...
+
+
+Changes new in version 0.7-pre
+==============================
+
+This is a pre-release of 0.7 to make sure there are no build problems
+with the new makefile. When I complete the javascript support, I'll 
+make the real 0.7 release.
+
+- Billboard, Inline, MovieTexture (GIF only so far), Script (preliminary
+  javascript support), TouchSensor, and VisibilitySensor nodes.
+
+- Preliminary javascript: support in Script nodes. No SF*/MF* objects
+  are available yet.
+
+- Fixed TimeSensor start conditions.
+
+- Fixed reversed indexing, generate normals on ElevationGrids.
+
+- Added generation of normals (per face only) and fixed texture coordinates
+  for IndexedFaceSets.
+
+- Fixed Cone normals (again).
+
+- Fixed IndexedFaceSet color/texture problem.
+
+- Removed virtual inline functions to reduce object sizes and speed
+  up compilations.
+
+- Fixed some parser problems including "#viewpoint" URL parsing. 
+  Thanks to Shelby Moore (support@3Dize.com), CTO 3Dize, for comments, 
+  critiques, and suggestions for improving the lexing/parsing and 
+  field/node management code.
+
+- Defined classes for the remaining nodes so the standardNodes.wrl file
+  is no longer necessary. The drag sensors and sound/audioclip classes
+  don't actually do anything, though.
+
+- Fixed problems with avatarSize 0 (thanks to Steve Sycamore for locating
+  this problem).
+
+- Simplified the makefile so porting should be less hazardous.
+
+- Included a subdirectory (wrl) containing some sample files testing
+  the new features.

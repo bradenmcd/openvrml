@@ -1,0 +1,554 @@
+# Makefile.in generated automatically by automake 1.4a from Makefile.am
+
+# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+
+SHELL = @SHELL@
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+DESTDIR =
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = ../..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_STRIP_FLAG =
+transform = @program_transform_name@
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+AS = @AS@
+CC = @CC@
+CPP = @CPP@
+CXX = @CXX@
+DLLTOOL = @DLLTOOL@
+JPEG_LIBS = @JPEG_LIBS@
+JSCFLAGS = @JSCFLAGS@
+LD = @LD@
+LEX = @LEX@
+LIBTOOL = @LIBTOOL@
+LIBVRML_VERSION = @LIBVRML_VERSION@
+LN_S = @LN_S@
+MAINT = @MAINT@
+MAKEINFO = @MAKEINFO@
+NM = @NM@
+PACKAGE = @PACKAGE@
+PNG_LIBS = @PNG_LIBS@
+RANLIB = @RANLIB@
+USE_SYMBOL_UNDERSCORE = @USE_SYMBOL_UNDERSCORE@
+VERSION = @VERSION@
+YACC = @YACC@
+
+SUBDIRS = libjs
+
+CFLAGS = -Wall @CFLAGS@ @JSCFLAGS@
+CXXFLAGS = -Wall @CFLAGS@ @JSCFLAGS@
+LDFLAGS = -O2
+LFLAGS = -Ls
+YFLAGS = -d
+
+vrml97includedir = $(includedir)/vrml97
+
+lib_LTLIBRARIES = libvrml97.la 
+
+libvrml97_la_LIBADD = ./libjs/libjs.la
+
+vrml97include_HEADERS =  	Audio.h 	Doc.h 	Image.h 	System.h 	ScriptObject.h 	ScriptJS.h 	Viewer.h 	VrmlEvent.h         VrmlNamespace.h         VrmlScene.h 	VrmlField.h 	VrmlSFBool.h         VrmlSFColor.h         VrmlSFFloat.h         VrmlSFInt.h         VrmlSFNode.h 	VrmlSFRotation.h         VrmlSFString.h         VrmlSFTime.h         VrmlSFVec2f.h         VrmlSFVec3f.h 	VrmlMFColor.h         VrmlMFFloat.h         VrmlMFInt.h         VrmlMFNode.h         VrmlMFRotation.h 	VrmlMFString.h         VrmlMFVec2f.h         VrmlMFVec3f.h 	VrmlNode.h 	VrmlNodeType.h 	VrmlNodeAnchor.h 	VrmlNodeAppearance.h 	VrmlNodeAudioClip.h 	VrmlNodeBackground.h 	VrmlNodeBillboard.h 	VrmlNodeBox.h 	VrmlNodeChild.h 	VrmlNodeCollision.h 	VrmlNodeColor.h 	VrmlNodeColorInt.h 	VrmlNodeCone.h 	VrmlNodeCoordinate.h 	VrmlNodeCoordinateInt.h 	VrmlNodeCylinder.h 	VrmlNodeCylinderSensor.h 	VrmlNodeDirLight.h 	VrmlNodeElevationGrid.h 	VrmlNodeExtrusion.h 	VrmlNodeFog.h 	VrmlNodeFontStyle.h 	VrmlNodeGeometry.h 	VrmlNodeGroup.h 	VrmlNodeIFaceSet.h 	VrmlNodeILineSet.h 	VrmlNodeImageTexture.h 	VrmlNodeInline.h 	VrmlNodeIndexedSet.h 	VrmlNodeLOD.h 	VrmlNodeLight.h 	VrmlNodeMaterial.h 	VrmlNodeMovieTexture.h 	VrmlNodeNavigationInfo.h 	VrmlNodeNormal.h 	VrmlNodeNormalInt.h 	VrmlNodeOrientationInt.h 	VrmlNodePixelTexture.h 	VrmlNodePlaneSensor.h 	VrmlNodePointLight.h 	VrmlNodePointSet.h 	VrmlNodePositionInt.h 	VrmlNodeProximitySensor.h 	VrmlNodeScalarInt.h 	VrmlNodeScript.h 	VrmlNodeShape.h 	VrmlNodeSound.h 	VrmlNodeSphere.h 	VrmlNodeSphereSensor.h 	VrmlNodeSpotLight.h 	VrmlNodeSwitch.h 	VrmlNodeText.h 	VrmlNodeTextureCoordinate.h 	VrmlNodeTextureTransform.h 	VrmlNodeTimeSensor.h 	VrmlNodeTouchSensor.h 	VrmlNodeTransform.h 	VrmlNodeViewpoint.h 	VrmlNodeVisibilitySensor.h 	VrmlNodeWorldInfo.h 	VrmlNodeProto.h
+
+
+noinst_HEADERS =  	MathUtils.h 	gifread.h 	jpgread.h 	pngread.h
+
+
+libvrml97_la_SOURCES =  	parser.ypp lexer.lpp 	MathUtils.cpp 	gifread.c 	jpgread.cpp 	pngread.c         dummysound.cpp 	VrmlScene.cpp VrmlNodeType.cpp VrmlNamespace.cpp 	Doc.cpp Image.cpp Audio.cpp System.cpp 	ScriptObject.cpp 	ScriptJS.cpp 	Viewer.cpp 	VrmlField.cpp 	VrmlNode.cpp 	VrmlNodeAnchor.cpp 	VrmlNodeAppearance.cpp 	VrmlNodeAudioClip.cpp 	VrmlNodeBackground.cpp 	VrmlNodeBillboard.cpp 	VrmlNodeBox.cpp 	VrmlNodeCollision.cpp 	VrmlNodeColor.cpp 	VrmlNodeColorInt.cpp 	VrmlNodeCone.cpp 	VrmlNodeCoordinate.cpp 	VrmlNodeCoordinateInt.cpp 	VrmlNodeCylinder.cpp 	VrmlNodeCylinderSensor.cpp 	VrmlNodeDirLight.cpp 	VrmlNodeElevationGrid.cpp 	VrmlNodeExtrusion.cpp 	VrmlNodeFog.cpp 	VrmlNodeFontStyle.cpp 	VrmlNodeGeometry.cpp 	VrmlNodeGroup.cpp 	VrmlNodeIFaceSet.cpp 	VrmlNodeILineSet.cpp 	VrmlNodeImageTexture.cpp 	VrmlNodeInline.cpp 	VrmlNodeIndexedSet.cpp 	VrmlNodeLOD.cpp 	VrmlNodeLight.cpp 	VrmlNodeMaterial.cpp 	VrmlNodeMovieTexture.cpp 	VrmlNodeNavigationInfo.cpp 	VrmlNodeNormal.cpp 	VrmlNodeNormalInt.cpp 	VrmlNodeOrientationInt.cpp 	VrmlNodePixelTexture.cpp 	VrmlNodePlaneSensor.cpp 	VrmlNodePointLight.cpp 	VrmlNodePointSet.cpp 	VrmlNodePositionInt.cpp 	VrmlNodeProximitySensor.cpp 	VrmlNodeScalarInt.cpp 	VrmlNodeScript.cpp 	VrmlNodeShape.cpp 	VrmlNodeSound.cpp 	VrmlNodeSphere.cpp 	VrmlNodeSphereSensor.cpp 	VrmlNodeSpotLight.cpp 	VrmlNodeSwitch.cpp 	VrmlNodeText.cpp 	VrmlNodeTextureCoordinate.cpp 	VrmlNodeTextureTransform.cpp 	VrmlNodeTimeSensor.cpp 	VrmlNodeTouchSensor.cpp 	VrmlNodeTransform.cpp 	VrmlNodeViewpoint.cpp 	VrmlNodeVisibilitySensor.cpp 	VrmlNodeWorldInfo.cpp 	VrmlNodeProto.cpp
+
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../../config.h
+CONFIG_CLEAN_FILES = 
+LTLIBRARIES =  $(lib_LTLIBRARIES)
+
+
+DEFS = @DEFS@ -I. -I$(srcdir) -I../..
+CPPFLAGS = @CPPFLAGS@
+LIBS = @LIBS@
+libvrml97_la_LDFLAGS = 
+libvrml97_la_DEPENDENCIES =  ./libjs/libjs.la
+libvrml97_la_OBJECTS =  parser.lo lexer.lo MathUtils.lo gifread.lo \
+jpgread.lo pngread.lo dummysound.lo VrmlScene.lo VrmlNodeType.lo \
+VrmlNamespace.lo Doc.lo Image.lo Audio.lo System.lo ScriptObject.lo \
+ScriptJS.lo Viewer.lo VrmlField.lo VrmlNode.lo VrmlNodeAnchor.lo \
+VrmlNodeAppearance.lo VrmlNodeAudioClip.lo VrmlNodeBackground.lo \
+VrmlNodeBillboard.lo VrmlNodeBox.lo VrmlNodeCollision.lo \
+VrmlNodeColor.lo VrmlNodeColorInt.lo VrmlNodeCone.lo \
+VrmlNodeCoordinate.lo VrmlNodeCoordinateInt.lo VrmlNodeCylinder.lo \
+VrmlNodeCylinderSensor.lo VrmlNodeDirLight.lo VrmlNodeElevationGrid.lo \
+VrmlNodeExtrusion.lo VrmlNodeFog.lo VrmlNodeFontStyle.lo \
+VrmlNodeGeometry.lo VrmlNodeGroup.lo VrmlNodeIFaceSet.lo \
+VrmlNodeILineSet.lo VrmlNodeImageTexture.lo VrmlNodeInline.lo \
+VrmlNodeIndexedSet.lo VrmlNodeLOD.lo VrmlNodeLight.lo \
+VrmlNodeMaterial.lo VrmlNodeMovieTexture.lo VrmlNodeNavigationInfo.lo \
+VrmlNodeNormal.lo VrmlNodeNormalInt.lo VrmlNodeOrientationInt.lo \
+VrmlNodePixelTexture.lo VrmlNodePlaneSensor.lo VrmlNodePointLight.lo \
+VrmlNodePointSet.lo VrmlNodePositionInt.lo VrmlNodeProximitySensor.lo \
+VrmlNodeScalarInt.lo VrmlNodeScript.lo VrmlNodeShape.lo \
+VrmlNodeSound.lo VrmlNodeSphere.lo VrmlNodeSphereSensor.lo \
+VrmlNodeSpotLight.lo VrmlNodeSwitch.lo VrmlNodeText.lo \
+VrmlNodeTextureCoordinate.lo VrmlNodeTextureTransform.lo \
+VrmlNodeTimeSensor.lo VrmlNodeTouchSensor.lo VrmlNodeTransform.lo \
+VrmlNodeViewpoint.lo VrmlNodeVisibilitySensor.lo VrmlNodeWorldInfo.lo \
+VrmlNodeProto.lo
+CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+CXXLD = $(CXX)
+CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
+LEXLIB = @LEXLIB@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(noinst_HEADERS) $(vrml97include_HEADERS)
+
+DIST_COMMON =  Makefile.am Makefile.in lexer.cpp parser.cpp
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = gtar
+GZIP_ENV = --best
+DEP_FILES =  .deps/Audio.P .deps/Doc.P .deps/Image.P .deps/MathUtils.P \
+.deps/ScriptJS.P .deps/ScriptObject.P .deps/System.P .deps/Viewer.P \
+.deps/VrmlField.P .deps/VrmlNamespace.P .deps/VrmlNode.P \
+.deps/VrmlNodeAnchor.P .deps/VrmlNodeAppearance.P \
+.deps/VrmlNodeAudioClip.P .deps/VrmlNodeBackground.P \
+.deps/VrmlNodeBillboard.P .deps/VrmlNodeBox.P .deps/VrmlNodeCollision.P \
+.deps/VrmlNodeColor.P .deps/VrmlNodeColorInt.P .deps/VrmlNodeCone.P \
+.deps/VrmlNodeCoordinate.P .deps/VrmlNodeCoordinateInt.P \
+.deps/VrmlNodeCylinder.P .deps/VrmlNodeCylinderSensor.P \
+.deps/VrmlNodeDirLight.P .deps/VrmlNodeElevationGrid.P \
+.deps/VrmlNodeExtrusion.P .deps/VrmlNodeFog.P .deps/VrmlNodeFontStyle.P \
+.deps/VrmlNodeGeometry.P .deps/VrmlNodeGroup.P .deps/VrmlNodeIFaceSet.P \
+.deps/VrmlNodeILineSet.P .deps/VrmlNodeImageTexture.P \
+.deps/VrmlNodeIndexedSet.P .deps/VrmlNodeInline.P .deps/VrmlNodeLOD.P \
+.deps/VrmlNodeLight.P .deps/VrmlNodeMaterial.P \
+.deps/VrmlNodeMovieTexture.P .deps/VrmlNodeNavigationInfo.P \
+.deps/VrmlNodeNormal.P .deps/VrmlNodeNormalInt.P \
+.deps/VrmlNodeOrientationInt.P .deps/VrmlNodePixelTexture.P \
+.deps/VrmlNodePlaneSensor.P .deps/VrmlNodePointLight.P \
+.deps/VrmlNodePointSet.P .deps/VrmlNodePositionInt.P \
+.deps/VrmlNodeProto.P .deps/VrmlNodeProximitySensor.P \
+.deps/VrmlNodeScalarInt.P .deps/VrmlNodeScript.P .deps/VrmlNodeShape.P \
+.deps/VrmlNodeSound.P .deps/VrmlNodeSphere.P \
+.deps/VrmlNodeSphereSensor.P .deps/VrmlNodeSpotLight.P \
+.deps/VrmlNodeSwitch.P .deps/VrmlNodeText.P \
+.deps/VrmlNodeTextureCoordinate.P .deps/VrmlNodeTextureTransform.P \
+.deps/VrmlNodeTimeSensor.P .deps/VrmlNodeTouchSensor.P \
+.deps/VrmlNodeTransform.P .deps/VrmlNodeType.P \
+.deps/VrmlNodeViewpoint.P .deps/VrmlNodeVisibilitySensor.P \
+.deps/VrmlNodeWorldInfo.P .deps/VrmlScene.P .deps/dummysound.P \
+.deps/gifread.P .deps/jpgread.P .deps/lexer.P .deps/parser.P \
+.deps/pngread.P
+SOURCES = $(libvrml97_la_SOURCES)
+OBJECTS = $(libvrml97_la_OBJECTS)
+
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .cpp .lo .lpp .o .s .ypp
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/vrml97/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-libLTLIBRARIES:
+
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
+
+distclean-libLTLIBRARIES:
+
+maintainer-clean-libLTLIBRARIES:
+
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(libdir)
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p; \
+	  else :; fi; \
+	done
+
+uninstall-libLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
+	done
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+libvrml97.la: $(libvrml97_la_OBJECTS) $(libvrml97_la_DEPENDENCIES)
+	$(CXXLINK) -rpath $(libdir) $(libvrml97_la_LDFLAGS) $(libvrml97_la_OBJECTS) $(libvrml97_la_LIBADD) $(LIBS)
+.cpp.o:
+	$(CXXCOMPILE) -c $<
+.cpp.lo:
+	$(LTCXXCOMPILE) -c $<
+.lpp.cpp:
+	$(LEX) $(AM_LFLAGS) $(LFLAGS) $< && mv $(LEX_OUTPUT_ROOT).c $@
+.ypp.cpp:
+	$(YACC) $(AM_YFLAGS) $(YFLAGS) $< && mv y.tab.c $*.cpp
+	if test -f y.tab.h; then \
+	if cmp -s y.tab.h $*.h; then rm -f y.tab.h; else mv y.tab.h $*.h; fi; \
+	else :; fi
+parser.hpp: parser.cpp
+
+
+install-vrml97includeHEADERS: $(vrml97include_HEADERS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(vrml97includedir)
+	@list='$(vrml97include_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d= ; else d="$(srcdir)/"; fi; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(vrml97includedir)/$$p"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(vrml97includedir)/$$p; \
+	done
+
+uninstall-vrml97includeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	list='$(vrml97include_HEADERS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(vrml97includedir)/$$p; \
+	done
+
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+
+@SET_MAKE@
+
+all-recursive install-data-recursive install-exec-recursive \
+installdirs-recursive install-recursive uninstall-recursive  \
+check-recursive installcheck-recursive info-recursive dvi-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
+
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	dot_seen=no; \
+	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
+	  rev="$$subdir $$rev"; \
+	  test "$$subdir" = "." && dot_seen=yes; \
+	done; \
+	test "$$dot_seen" = "no" && rev=". $$rev"; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
+	done
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+   if test "$$subdir" = .; then :; else \
+	    test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
+   fi; \
+	done; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = src/vrml97
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu src/vrml97/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+	for subdir in $(SUBDIRS); do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d $(distdir)/$$subdir \
+	    || mkdir $(distdir)/$$subdir \
+	    || exit 1; \
+	    chmod 777 $(distdir)/$$subdir; \
+	    (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir=../$(top_distdir) distdir=../$(distdir)/$$subdir distdir) \
+	      || exit 1; \
+	  fi; \
+	done
+
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+	-rm -rf .deps
+
+maintainer-clean-depend:
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
+
+%.o: %.cpp
+	@echo '$(CXXCOMPILE) -c $<'; \
+	$(CXXCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
+
+%.lo: %.cpp
+	@echo '$(LTCXXCOMPILE) -c $<'; \
+	$(LTCXXCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
+info-am:
+info: info-recursive
+dvi-am:
+dvi: dvi-recursive
+check-am: all-am
+check: check-recursive
+installcheck-am:
+installcheck: installcheck-recursive
+install-exec-am: install-libLTLIBRARIES
+install-exec: install-exec-recursive
+
+install-data-am: install-vrml97includeHEADERS
+install-data: install-data-recursive
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-recursive
+uninstall-am: uninstall-libLTLIBRARIES uninstall-vrml97includeHEADERS
+uninstall: uninstall-recursive
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-redirect: all-recursive
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) INSTALL_STRIP_FLAG=-s install
+installdirs: installdirs-recursive
+installdirs-am:
+	$(mkinstalldirs)  $(DESTDIR)$(libdir) $(DESTDIR)$(vrml97includedir)
+
+
+mostlyclean-generic:
+
+clean-generic:
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+	-test -z "lexerlppparserhppparsercpp" || rm -f lexerlpp parserhpp parsercpp
+mostlyclean-am:  mostlyclean-libLTLIBRARIES mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
+		mostlyclean-generic
+
+mostlyclean: mostlyclean-recursive
+
+clean-am:  clean-libLTLIBRARIES clean-compile clean-libtool clean-tags \
+		clean-depend clean-generic mostlyclean-am
+
+clean: clean-recursive
+
+distclean-am:  distclean-libLTLIBRARIES distclean-compile \
+		distclean-libtool distclean-tags distclean-depend \
+		distclean-generic clean-am
+	-rm -f libtool
+
+distclean: distclean-recursive
+
+maintainer-clean-am:  maintainer-clean-libLTLIBRARIES \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-tags maintainer-clean-depend \
+		maintainer-clean-generic distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-recursive
+
+.PHONY: mostlyclean-libLTLIBRARIES distclean-libLTLIBRARIES \
+clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
+uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
+distclean-compile clean-compile maintainer-clean-compile \
+mostlyclean-libtool distclean-libtool clean-libtool \
+maintainer-clean-libtool uninstall-vrml97includeHEADERS \
+install-vrml97includeHEADERS install-data-recursive \
+uninstall-data-recursive install-exec-recursive \
+uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
+all-recursive check-recursive installcheck-recursive info-recursive \
+dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
+maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
+distclean-tags clean-tags maintainer-clean-tags distdir \
+mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info-am info dvi-am dvi check check-am \
+installcheck-am installcheck install-exec-am install-exec \
+install-data-am install-data install-am install uninstall-am uninstall \
+all-redirect all-am all installdirs-am installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
+
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:
