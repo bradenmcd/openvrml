@@ -23,12 +23,33 @@ package vrml.field;
 import vrml.ConstField;
 import vrml.BaseNode;
 
+/**
+ * Represents a read-only VRML SFNode field in Java.
+ */
 public class ConstSFNode extends ConstField
 {
+  /**
+   * Construct a new SFNode field in OpenVRML using the given node.
+   *
+   * @param node VRML Node to create SFNode with.
+   */
   private native void CreateObject(BaseNode node);
 
-  public ConstSFNode(BaseNode node) { CreateObject(node); }
+  /**
+   * Construct a read-only SFNode field.
+   *
+   * @param node VRML Node to create SFNode with
+   */
+  public ConstSFNode(BaseNode node)
+  {
+    CreateObject(node);
+  }
 
+  /**
+   * Get the VRML node stored in this SFNode.
+   *
+   * @return VRML node object
+   */
   public native BaseNode getValue();
 
   public native String toString();

@@ -22,12 +22,33 @@ package vrml.field;
 
 import vrml.ConstField;
 
+/**
+ * Represents a read-only VRML SFString field in Java.
+ */
 public class ConstSFString extends ConstField
 {
+  /**
+   * Construct a new SFString field in OpenVRML using the given string.
+   *
+   * @param value Initial value of SFString
+   */
   private native void CreateObject(String value);
 
-  public ConstSFString(String value) { CreateObject(value); }
+  /**
+   * Construct a read-only SFString field.
+   *
+   * @param value Initial value of SFString
+   */
+  public ConstSFString(String value)
+  {
+    CreateObject(value);
+  }
 
+  /**
+   * Get the value of the SFString field.
+   *
+   * @return Value of SFString
+   */
   public native String getValue();
 
   public native String toString();

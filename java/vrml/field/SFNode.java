@@ -23,17 +23,62 @@ package vrml.field;
 import vrml.Field;
 import vrml.BaseNode;
 
+/**
+ * Represents a VRML SFNode field in Java.
+ */
 public class SFNode extends Field
 {
+  /**
+   * Construct a new SFNode field in OpenVRML using the given node.
+   *
+   * @param node VRML Node to create SFNode with.
+   */
   private native void CreateObject(BaseNode node);
 
-  public SFNode() { CreateObject(null); }
-  public SFNode(BaseNode node) { CreateObject(node); }
+  /**
+   * Construct a default SFNode field.
+   */
+  public SFNode()
+  {
+    CreateObject(null);
+  }
 
+  /**
+   * Construct an SFNode field.
+   *
+   * @param node VRML Node to create SFNode with
+   */
+  public SFNode(BaseNode node)
+  {
+    CreateObject(node);
+  }
+
+  /**
+   * Get the VRML node stored in this SFNode.
+   *
+   * @return VRML node object
+   */
   public native BaseNode getValue();
 
+  /**
+   * Set the VRML node stored in this SFNode.
+   *
+   * @param node VRML node object
+   */
   public native void setValue(BaseNode node);
+
+  /**
+   * Set the VRML node stored in this SFNode.
+   *
+   * @param node Existing ConstSFNode
+   */
   public native void setValue(ConstSFNode node);
+
+  /**
+   * Set the VRML node stored in this SFNode.
+   *
+   * @param node Existing SFNode
+   */
   public native void setValue(SFNode node);
 
   public native String toString();
