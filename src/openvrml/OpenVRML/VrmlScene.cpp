@@ -1380,8 +1380,12 @@ void VrmlScene::bindableRemove(BindStack & stack, const NodePtr & node) {
  * @brief Add a Background node to the list of Background nodes for the scene.
  *
  * @param node  a Background node.
+ *
+ * @pre @p node is not in the list of Background nodes for the scene.
  */
 void VrmlScene::addBackground(Vrml97Node::Background & node) {
+    assert(std::find(this->d_backgrounds.begin(), this->d_backgrounds.end(),
+                     &node) == this->d_backgrounds.end());
     this->d_backgrounds.push_back(&node);
 }
 
@@ -1433,9 +1437,15 @@ void VrmlScene::bindableRemove(Vrml97Node::Background * n) {
 /**
  * @brief Add a Fog node to the list of Fog nodes for the scene.
  *
- * @param n a Fog node.
+ * @param node a Fog node.
+ *
+ * @pre @p node is not in the list of Fog nodes for the scene.
  */
-void VrmlScene::addFog(Vrml97Node::Fog & n) { this->d_fogs.push_back(&n); }
+void VrmlScene::addFog(Vrml97Node::Fog & node) {
+    assert(std::find(this->d_fogs.begin(), this->d_fogs.end(), &node)
+            == this->d_fogs.end());
+    this->d_fogs.push_back(&node);
+}
 
 /**
  * @brief Remove a Fog node from the list of Fog nodes for the scene.
@@ -1485,10 +1495,15 @@ void VrmlScene::bindableRemove(Vrml97Node::Fog * n) {
  * @brief Add a NavigationInfo node to the list of NavigationInfo nodes for the
  *      scene.
  *
- * @param n a NavigationInfo node.
+ * @param node a NavigationInfo node.
+ *
+ * @pre @p node is not in the list of NavigationInfo nodes for the scene.
  */
-void VrmlScene::addNavigationInfo(Vrml97Node::NavigationInfo & n) {
-    this->d_navigationInfos.push_back(&n);
+void VrmlScene::addNavigationInfo(Vrml97Node::NavigationInfo & node) {
+    assert(std::find(this->d_navigationInfos.begin(),
+                     this->d_navigationInfos.end(), &node)
+            == this->d_navigationInfos.end());
+    this->d_navigationInfos.push_back(&node);
 }
 
 /**
@@ -1539,10 +1554,14 @@ void VrmlScene::bindableRemove(Vrml97Node::NavigationInfo * n) {
 /**
  * @brief Add a Viewpoint node to the list of Viewpoint nodes for the scene.
  *
- * @param n a Viewpoint node.
+ * @param node a Viewpoint node.
+ *
+ * @pre @p node is not in the list of Viewpoint nodes for the scene.
  */
-void VrmlScene::addViewpoint(Vrml97Node::Viewpoint & n) {
-    this->d_viewpoints.push_back(&n);
+void VrmlScene::addViewpoint(Vrml97Node::Viewpoint & node) {
+    assert(std::find(this->d_viewpoints.begin(), this->d_viewpoints.end(),
+                     &node) == this->d_viewpoints.end());
+    this->d_viewpoints.push_back(&node);
 }
 
 /**
@@ -1711,8 +1730,12 @@ void VrmlScene::setViewpoint(size_t nvp) {
  * @brief Add a scoped light node to the scene.
  *
  * @param light a light node.
+ *
+ * @pre @p light is not in the list of light nodes for the scene.
  */
 void VrmlScene::addScopedLight(Vrml97Node::AbstractLight & light) {
+    assert(std::find(this->d_scopedLights.begin(), this->d_scopedLights.end(),
+                     &light) == this->d_scopedLights.end());
     this->d_scopedLights.push_back(&light);
 }
 
@@ -1736,8 +1759,12 @@ void VrmlScene::removeScopedLight(Vrml97Node::AbstractLight & light) {
  * @brief Add a MovieTexture node to the scene.
  *
  * @param movie a MovieTexture node.
+ *
+ * @pre @p movie is not in the list of MovieTexture nodes for the scene.
  */
 void VrmlScene::addMovie(Vrml97Node::MovieTexture & movie) {
+    assert(std::find(this->d_movies.begin(), this->d_movies.end(), &movie)
+            == this->d_movies.end());
     this->d_movies.push_back(&movie);
 }
 
@@ -1761,8 +1788,12 @@ void VrmlScene::removeMovie(Vrml97Node::MovieTexture & movie) {
  * @brief Add a Script node to the scene.
  *
  * @param script    a Script node.
+ *
+ * @pre @p script is not in the list of Script nodes for the scene.
  */
 void VrmlScene::addScript(ScriptNode & script) {
+    assert(std::find(this->d_scripts.begin(), this->d_scripts.end(), &script)
+            == this->d_scripts.end());
     this->d_scripts.push_back(&script);
 }
 
@@ -1787,8 +1818,12 @@ void VrmlScene::removeScript(ScriptNode & script) {
  * @brief Add a PROTO instance to the scene.
  *
  * @param node  a PROTO instance.
+ *
+ * @pre @p node is not in the list of prototype instances for the scene.
  */
 void VrmlScene::addProto(ProtoNode & node) {
+    assert(std::find(this->protoNodeList.begin(), this->protoNodeList.end(),
+                     &node) == this->protoNodeList.end());
     this->protoNodeList.push_back(&node);
 }
 
@@ -1813,8 +1848,12 @@ void VrmlScene::removeProto(ProtoNode & node) {
  * @brief Add a TimeSensor node to the scene.
  *
  * @param timer a TimeSensor node.
+ *
+ * @pre @p timer is not in the list of TimeSensor nodes for the scene.
  */
 void VrmlScene::addTimeSensor(Vrml97Node::TimeSensor & timer) {
+    assert(std::find(this->d_timers.begin(), this->d_timers.end(), &timer)
+            == this->d_timers.end());
     this->d_timers.push_back(&timer);
 }
 
@@ -1839,8 +1878,12 @@ void VrmlScene::removeTimeSensor(Vrml97Node::TimeSensor & timer) {
  * @brief Add an AudioClip node to the scene.
  *
  * @param audio_clip    an AudioClip node.
+ *
+ * @pre @p audio_clip is not in the list of AudioClip nodes for the scene.
  */
 void VrmlScene::addAudioClip(Vrml97Node::AudioClip & audio_clip) {
+    assert(std::find(this->d_audioClips.begin(), this->d_audioClips.end(),
+                     &audio_clip) == this->d_audioClips.end());
     this->d_audioClips.push_back(&audio_clip);
 }
 

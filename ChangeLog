@@ -5,6 +5,10 @@
           If the node will be part of a prototype definition, it should
           not be adding itself to the scene.
 
+        * src/openvrml/OpenVRML/VrmlScene.cpp:  For
+          VrmlScene::add[node], made the absence of the node in the
+          scene's node lists a precondition.
+
 2002-07-08  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/VrmlScene.cpp:  In the remove*Node
