@@ -36,37 +36,16 @@
 
 namespace {
 
-    //
-    // Enumeration of the supported toolkits.
-    //
-    enum Toolkit {
-        gtk
-    };
-
-    //
-    // Template specialization is used instead of having a lot of messy
-    // #ifdef's.  Instead, just a few #ifdef's determine what headers are
-    // included (above), and what toolkit gets used.
-    //
-    // To add support for a toolkit (or platform):
-    //
-    //  1. Add an enumerant to the Toolkit enumeration.
-    //  2. Add #ifdef's to set the toolkit variable appropriately.
-    //  3. Specialize the PluginInstance template for the toolkit.
-    //
-    // It should be possible to factor nearly all platform- and toolkit-
-    // specific code into the PluginInstance specialization.  There may be a
-    // few exceptions to this, such as the XEmbed-related logic in
-    // NP_Initialize.
-    //
-    const Toolkit toolkit =
-# if defined MOZ_X11
-        gtk;
-# endif
-
-
-    template <Toolkit ToolkitType>
     class PluginInstance : boost::noncopyable {
+	friend class ScriptablePeer;
+
+        std::string initialURL;
+        GtkWidget * plug;
+        GtkWidget * vrmlBrowser;
+        gint x, y;
+        gint width, height;
+	nsCOMPtr<VrmlBrowser> scriptablePeer;
+
     public:
         explicit PluginInstance(const std::string & initialURL) throw ();
         ~PluginInstance() throw ();
@@ -78,37 +57,15 @@ namespace {
     };
 
     class ScriptablePeer : public nsIClassInfo, public VrmlBrowser {
-	PluginInstance<toolkit> & pluginInstance;
+	PluginInstance & pluginInstance;
 
     public:
-        explicit ScriptablePeer(PluginInstance<toolkit> & pluginInstance);
+        explicit ScriptablePeer(PluginInstance & pluginInstance);
         ~ScriptablePeer();
 
         NS_DECL_ISUPPORTS
         NS_DECL_NSICLASSINFO
         NS_DECL_VRMLBROWSER
-    };
-
-    template <>
-    class PluginInstance<gtk> : boost::noncopyable {
-	friend class ScriptablePeer;
-
-        std::string initialURL;
-        GtkWidget * plug;
-        GtkWidget * vrmlBrowser;
-        gint x, y;
-        gint width, height;
-	nsCOMPtr<VrmlBrowser> scriptablePeer;
-
-    public:
-        explicit PluginInstance(const std::string & initialURL)
-	    throw (std::bad_alloc);
-        ~PluginInstance() throw ();
-
-	nsISupports * GetScriptablePeer() throw ();
-	openvrml::browser & GetBrowser() throw ();
-        void SetWindow(NPWindow & window) throw (std::bad_alloc);
-        void HandleEvent(void * event) throw ();
     };
 } // namespace
 
@@ -361,7 +318,7 @@ NPError NPP_New(const NPMIMEType pluginType,
                 break;
             }
         }
-        instance->pdata = new PluginInstance<toolkit>(url);
+        instance->pdata = new PluginInstance(url);
     } catch (std::bad_alloc &) {
         return NPERR_OUT_OF_MEMORY_ERROR;
     }
@@ -417,7 +374,7 @@ NPError NPP_Destroy(const NPP instance, NPSavedData * * const save)
      *    recreated.
      */
 
-    delete static_cast<PluginInstance<toolkit> *>(instance->pdata);
+    delete static_cast<PluginInstance *>(instance->pdata);
     instance->pdata = 0;
 
     return NPERR_NO_ERROR;
@@ -428,7 +385,7 @@ NPError NPP_SetWindow(const NPP instance, NPWindow * const window)
     if (!instance || !instance->pdata) { return NPERR_INVALID_INSTANCE_ERROR; }
     try {
         assert(window);
-        static_cast<PluginInstance<toolkit> *>(instance->pdata)
+        static_cast<PluginInstance *>(instance->pdata)
             ->SetWindow(*window);
     } catch (std::bad_alloc &) {
         return NPERR_OUT_OF_MEMORY_ERROR;
@@ -453,8 +410,8 @@ NPError NPP_DestroyStream(const NPP instance,
 {
     if (!instance || !instance->pdata) { return NPERR_INVALID_INSTANCE_ERROR; }
 
-    PluginInstance<toolkit> * const pluginInstance =
-        static_cast<PluginInstance<toolkit> *>(instance->pdata);
+    PluginInstance * const pluginInstance =
+        static_cast<PluginInstance *>(instance->pdata);
 
     return NPERR_NO_ERROR;
 }
@@ -480,8 +437,8 @@ namespace {
 int32 NPP_WriteReady(const NPP instance, NPStream * const stream)
 {
     if (instance) {
-        PluginInstance<toolkit> * pluginInstance =
-            static_cast<PluginInstance<toolkit> *>(instance->pdata);
+        PluginInstance * pluginInstance =
+            static_cast<PluginInstance *>(instance->pdata);
     }
 
     return STREAMBUFSIZE;
@@ -495,8 +452,8 @@ int32 NPP_Write(const NPP instance,
                 void * const buffer)
 {
     if (instance) {
-        PluginInstance<toolkit> * pluginInstance =
-            static_cast<PluginInstance<toolkit> *>(instance->pdata);
+        PluginInstance * pluginInstance =
+            static_cast<PluginInstance *>(instance->pdata);
     }
 
     return len; /* The number of bytes accepted */
@@ -514,8 +471,8 @@ void NPP_Print(const NPP instance, NPPrint * const printInfo)
     if (!printInfo) { return; }
 
     if (instance) {
-        PluginInstance<toolkit> * pluginInstance =
-                static_cast<PluginInstance<toolkit> *>(instance->pdata);
+        PluginInstance * pluginInstance =
+                static_cast<PluginInstance *>(instance->pdata);
 
         if (printInfo->mode == NP_FULL) {
             /*
@@ -565,8 +522,8 @@ int16 NPP_HandleEvent(const NPP instance, void * const event)
     assert(instance);
     assert(instance->pdata);
     try {
-        PluginInstance<toolkit> * pluginInstance =
-            static_cast<PluginInstance<toolkit> *>(instance->pdata);
+        PluginInstance * pluginInstance =
+            static_cast<PluginInstance *>(instance->pdata);
     } catch (...) {
         return false;
     }
@@ -594,13 +551,13 @@ NPError NPP_GetValue(const NPP instance,
     static const nsIID scriptableIID = VRMLBROWSER_IID;
     nsISupports * scriptablePeer = 0;
     nsIID * scriptableIID_ptr = 0;
-    PluginInstance<toolkit> * pluginInstance = 0;
+    PluginInstance * pluginInstance = 0;
 
     switch (variable) {
     case NPPVpluginScriptableInstance:
         assert(instance->pdata);
         pluginInstance =
-            static_cast<PluginInstance<toolkit> *>(instance->pdata);
+            static_cast<PluginInstance *>(instance->pdata);
         scriptablePeer = pluginInstance->GetScriptablePeer();
         assert(scriptablePeer);
         //
@@ -822,7 +779,7 @@ void NPN_ForceRedraw(NPP instance)
 
 namespace {
 
-    ScriptablePeer::ScriptablePeer(PluginInstance<toolkit> & pluginInstance):
+    ScriptablePeer::ScriptablePeer(PluginInstance & pluginInstance):
 	pluginInstance(pluginInstance)
     {
         NS_INIT_ISUPPORTS();
@@ -1019,7 +976,7 @@ namespace {
     }
 
 
-    PluginInstance<gtk>::PluginInstance(const std::string & initialURL)
+    PluginInstance::PluginInstance(const std::string & initialURL)
         throw (std::bad_alloc):
         initialURL(initialURL),
         plug(0),
@@ -1031,19 +988,19 @@ namespace {
 	scriptablePeer(new ScriptablePeer(*this))
     {}
 
-    PluginInstance<gtk>::~PluginInstance() throw ()
+    PluginInstance::~PluginInstance() throw ()
     {
         gtk_container_remove(GTK_CONTAINER(this->plug), this->vrmlBrowser);
         gtk_widget_destroy(this->vrmlBrowser);
         gtk_widget_destroy(this->plug);
     }
 
-    nsISupports * PluginInstance<gtk>::GetScriptablePeer() throw ()
+    nsISupports * PluginInstance::GetScriptablePeer() throw ()
     {
 	return this->scriptablePeer;
     }
 
-    openvrml::browser & PluginInstance<gtk>::GetBrowser() throw ()
+    openvrml::browser & PluginInstance::GetBrowser() throw ()
     {
         //
         // This is lame.  gtk_vrml_browser::browser is an implementation
@@ -1056,7 +1013,7 @@ namespace {
             GTK_VRML_BROWSER(this->vrmlBrowser)->browser);
     }
 
-    void PluginInstance<gtk>::SetWindow(NPWindow & window)
+    void PluginInstance::SetWindow(NPWindow & window)
         throw (std::bad_alloc)
     {
         assert(window.window);
@@ -1084,7 +1041,7 @@ namespace {
         }
     }
 
-    void PluginInstance<gtk>::HandleEvent(void * event) throw ()
+    void PluginInstance::HandleEvent(void * event) throw ()
     {}
 
 } // namespace
