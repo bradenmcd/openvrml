@@ -86,7 +86,7 @@ namespace {
         static const int FIELDTYPE_MFVEC2F;
         static const int FIELDTYPE_MFVEC3F;
 
-        Vrml97Scanner(istream &);
+        Vrml97Scanner(std::istream &);
 
         virtual antlr::RefToken nextToken();
         
@@ -99,7 +99,7 @@ namespace {
         void _identifyFieldType(antlr::Token &);
         void _identifyTerminalSymbol(antlr::Token &);
 
-        istream &   _istm;
+        std::istream & _istm;
         size_t      _line;
         size_t      _col;
         int         _c;
@@ -186,7 +186,7 @@ const int Vrml97Scanner::FIELDTYPE_MFTIME       (45);
 const int Vrml97Scanner::FIELDTYPE_MFVEC2F      (46);
 const int Vrml97Scanner::FIELDTYPE_MFVEC3F      (47);
 
-Vrml97Scanner::Vrml97Scanner(::istream & istm)
+Vrml97Scanner::Vrml97Scanner(std::istream & istm)
   : _istm(istm), _line(1), _col(0), _c(' '), _prevChar('\0'), _prevTokenType(0),
     _readTooMuch(false), _expectingFieldType(false)
 {}

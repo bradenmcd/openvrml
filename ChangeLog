@@ -6,6 +6,11 @@
         * src/openvrml/OpenVRML/VrmlMatrix.cpp:  Fixed errors
           dereferencing matrix values.
 
+        * src/openvrml/OpenVRML/Vrml97Parser.g,
+          src/openvrml/OpenVRML/Vrml97Parser.hpp,
+          src/openvrml/OpenVRML/Vrml97Parser.cpp:  Changed Vrml97Scanner
+          to use a std::istream rather than an istream.
+
 2002-06-21  Braden McDaniel  <braden@endoframe.com>
 
         * doc/openvrml.css: Stylesheet fixes for consistency with Web
