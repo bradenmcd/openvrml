@@ -443,7 +443,7 @@ VrmlMFNode * VrmlScene::readString(char const * vrmlString, VrmlNamespace * ns)
         Vrml97Parser parser(scanner);
         
         result = new VrmlMFNode();
-        parser.vrmlScene(*result, *ns);
+        parser.vrmlScene(*result, *ns, 0);
     }
     
     return result;

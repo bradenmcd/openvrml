@@ -159,7 +159,7 @@ options {
         };
 }
 
-vrmlScene[VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc = 0]
+vrmlScene[VrmlMFNode & mfNode, VrmlNamespace & vrmlNamespace, Doc2 const * doc]
     :   (statement[mfNode, vrmlNamespace, doc])*
     ;
 
