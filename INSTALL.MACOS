@@ -83,8 +83,7 @@ helper application within LibVRML97 (Need a smarter solution here...). Also in t
 LibVRML97.prefix file, if you do not intend to provide animated cursors in your resource
 file (cursor resource ids 30000-30007) then you should set MAC_ANIMATED_BUSY_CURSOR to 0.
 
-Note that I have included premade parser files in the libvrml97core/macos folder, which
-the supplied LibVRML97core.mcp project uses. If you want to build your own then you need
+If you want to regenerate the supplied file Vrml97Parser.cpp then you need
 to install the ANTLR parser generator software on your Mac and process the file
 vrml97parser.g in libvrml97/vrml97/src.
 
@@ -107,7 +106,7 @@ MacLookat
 I'm currently working on a Mac-friendly viewer called MacLookat. It uses a modified
 version of GLUT. Go to this URL for details:
 
-      <http://home.telia.no/mlouka/vr/mac/maclookat/>
+      <http://home.enitel.no/mlouka/vr/mac/maclookat/>
       
 The source code is available in the OVAL CVS (module: maclookat).
 

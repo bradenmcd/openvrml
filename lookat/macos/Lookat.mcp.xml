@@ -135,15 +135,6 @@
                         <SETTING><NAME>Recursive</NAME><VALUE>true</VALUE></SETTING>
                         <SETTING><NAME>HostFlags</NAME><VALUE>All</VALUE></SETTING>
                     </SETTING>
-                    <SETTING>
-                        <SETTING><NAME>SearchPath</NAME>
-                            <SETTING><NAME>Path</NAME><VALUE>:::::libjs:macbuild:</VALUE></SETTING>
-                            <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
-                            <SETTING><NAME>PathRoot</NAME><VALUE>Project</VALUE></SETTING>
-                        </SETTING>
-                        <SETTING><NAME>Recursive</NAME><VALUE>true</VALUE></SETTING>
-                        <SETTING><NAME>HostFlags</NAME><VALUE>All</VALUE></SETTING>
-                    </SETTING>
                 </SETTING>
                 <SETTING><NAME>SystemSearchPaths</NAME>
                     <SETTING>
@@ -798,10 +789,9 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>¢Î‡</VALUE></SETTING>
-                    <SETTING><VALUE>YH8</VALUE></SETTING>
-                    <SETTING><VALUE>
-m»–</VALUE></SETTING>
+                    <SETTING><VALUE>ù</VALUE></SETTING>
+                    <SETTING><VALUE>.qx</VALUE></SETTING>
+                    <SETTING><VALUE>BÚp</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
@@ -1049,13 +1039,6 @@ m»–</VALUE></SETTING>
                 </FILE>
                 <FILE>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>JavaScript.Lib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Library</FILEKIND>
-                    <FILEFLAGS></FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>Name</PATHTYPE>
                     <PATH>LibVRML97.rsrc</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Resource</FILEKIND>
@@ -1160,11 +1143,6 @@ m»–</VALUE></SETTING>
                 </FILEREF>
                 <FILEREF>
                     <PATHTYPE>Name</PATHTYPE>
-                    <PATH>JavaScript.Lib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>Name</PATHTYPE>
                     <PATH>LibVRML97.rsrc</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
@@ -1198,14 +1176,6 @@ m»–</VALUE></SETTING>
             </FILEREF>
         </GROUP>
         <GROUP><NAME>Libraries</NAME>
-            <GROUP><NAME>JavaScript Library</NAME>
-                <FILEREF>
-                    <TARGETNAME>Lookat</TARGETNAME>
-                    <PATHTYPE>Name</PATHTYPE>
-                    <PATH>JavaScript.Lib</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-            </GROUP>
             <GROUP><NAME>LibVRML97 Library</NAME>
                 <FILEREF>
                     <TARGETNAME>Lookat</TARGETNAME>
