@@ -18,13 +18,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#ifndef VRMLNODEPROTO_H
-#define VRMLNODEPROTO_H
+# ifndef OPENVRML_PROTO_H
+#   define OPENVRML_PROTO_H
 
-#include "common.h"
-#include "node.h"
-#include "Viewer.h"
-#include "field.h"
+#   include "common.h"
+#   include "node.h"
+#   include "Viewer.h"
 
 namespace OpenVRML {
 

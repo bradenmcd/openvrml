@@ -28,7 +28,7 @@
 # include "Route.h"
 # include "System.h"
 # include "script.h"
-# include "VrmlNodeProto.h"
+# include "proto.h"
 
 # ifndef NDEBUG
 #   include <typeinfo>

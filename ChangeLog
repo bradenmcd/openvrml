@@ -12,6 +12,8 @@
 
         * Moved Visual C++ pragma from `script.cpp' to `winconfig.h'.
 
+        * Moved ProtoNode implementation to `proto.[h,cpp]'.
+
 2001-11-24  Braden McDaniel  <braden@endoframe.com>
 
         * Placed libopenvrml members in OpenVRML namespace. Placed

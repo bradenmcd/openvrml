@@ -31,7 +31,7 @@
 #include "bvolume.h"
 #include "VrmlRenderContext.h"
 #include "doc2.hpp"
-#include "VrmlNodeProto.h" // Instances of PROTOtyped nodes
+#include "proto.h" // Instances of PROTOtyped nodes
 
 # ifndef NDEBUG
 #   define VRML_NODE_DEBUG

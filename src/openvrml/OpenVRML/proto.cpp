@@ -19,12 +19,10 @@
 // 
 
 # include <algorithm>
-# include "VrmlNodeProto.h"
+# include "proto.h"
 # include "VrmlNamespace.h"
 # include "Route.h"
 # include "bvolume.h"
-
-using namespace OpenVRML;
 
 /**
  * @class OpenVRML::ProtoNode
@@ -63,19 +61,17 @@ using namespace OpenVRML;
  */
 
 // Field name/value pairs specified in PROTO instantiation
-struct ProtoNode::NameValueRec {
+struct OpenVRML::ProtoNode::NameValueRec {
     std::string name;
     FieldValue * value;
 };
 
-struct ProtoNode::EventDispatch {
+struct OpenVRML::ProtoNode::EventDispatch {
     std::string name;
     NodeType::ISMap ismap;
 };
 
-
-
-ProtoNode::ProtoNode(const NodeType & nodeDef, VrmlScene *scene) :
+OpenVRML::ProtoNode::ProtoNode(const NodeType & nodeDef, VrmlScene *scene) :
   Node(nodeDef, scene),
   d_instantiated(false),
   d_scope(0),
@@ -84,7 +80,7 @@ ProtoNode::ProtoNode(const NodeType & nodeDef, VrmlScene *scene) :
   this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
-ProtoNode::ProtoNode(const ProtoNode &n) :
+OpenVRML::ProtoNode::ProtoNode(const ProtoNode &n) :
   Node(n),
   d_instantiated(false),
   d_scope(0),
@@ -100,7 +96,7 @@ ProtoNode::ProtoNode(const ProtoNode &n) :
   this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
-ProtoNode::~ProtoNode() {
+OpenVRML::ProtoNode::~ProtoNode() {
     for (std::list<NameValueRec*>::iterator i(d_fields.begin());
             i != d_fields.end(); i++) {
         delete (*i)->value;
@@ -120,7 +116,7 @@ ProtoNode::~ProtoNode() {
     delete d_scope;
 }
 
-bool ProtoNode::accept(NodeVisitor & visitor) {
+bool OpenVRML::ProtoNode::accept(NodeVisitor & visitor) {
     if (!this->visited) {
         this->visited = true;
         visitor.visit(*this);
@@ -130,7 +126,7 @@ bool ProtoNode::accept(NodeVisitor & visitor) {
     return false;
 }
 
-void ProtoNode::resetVisitedFlag() {
+void OpenVRML::ProtoNode::resetVisitedFlag() {
     if (this->visited) {
         this->visited = false;
         for (size_t i = 0; i < this->implNodes.getLength(); ++i) {
@@ -143,10 +139,14 @@ void ProtoNode::resetVisitedFlag() {
 
 namespace {
     struct AccumulateNodes_ :
-            std::unary_function<ProtoNode::NameValueRec *, void> {
-        explicit AccumulateNodes_(MFNode & children): children(children) {};
+            std::unary_function<OpenVRML::ProtoNode::NameValueRec *, void> {
+        explicit AccumulateNodes_(OpenVRML::MFNode & children):
+                children(children) {}
         
         result_type operator()(argument_type protoFieldRec) {
+            using OpenVRML::FieldValue;
+            using OpenVRML::SFNode;
+            using OpenVRML::MFNode;
             assert(protoFieldRec);
             if (protoFieldRec->value->fieldType() == FieldValue::SFNODE) {
                 assert(dynamic_cast<SFNode *>(protoFieldRec->value));
@@ -167,11 +167,11 @@ namespace {
         };
     
     private:
-        MFNode & children;
+        OpenVRML::MFNode & children;
     };
 }
 
-const MFNode ProtoNode::getChildren() const {
+const OpenVRML::MFNode OpenVRML::ProtoNode::getChildren() const {
     MFNode children;
     std::for_each(this->d_fields.begin(), this->d_fields.end(),
                   AccumulateNodes_(children));
@@ -183,7 +183,7 @@ const MFNode ProtoNode::getChildren() const {
  * actually loaded here. We don't want <em>references</em> (DEF/USE) to the
  * nodes in the PROTO definition, we need to actually clone new nodes.
  */
-void ProtoNode::instantiate()
+void OpenVRML::ProtoNode::instantiate()
 {
   if (this->implNodes.getLength() == 0)
     {
@@ -282,7 +282,8 @@ void ProtoNode::instantiate()
 }
 
 
-void ProtoNode::addToScene(VrmlScene * scene, const std::string & relUrl) {
+void OpenVRML::ProtoNode::addToScene(VrmlScene * scene,
+                                     const std::string & relUrl) {
     //theSystem->debug("ProtoNode::%s addToScene\n", name());
     this->d_scene = scene;
 
@@ -301,7 +302,7 @@ void ProtoNode::addToScene(VrmlScene * scene, const std::string & relUrl) {
     }
 }
 
-void ProtoNode::accumulateTransform( Node *n )
+void OpenVRML::ProtoNode::accumulateTransform( Node *n )
 {
   // Make sure my nodes are here
   if (! d_instantiated)
@@ -323,7 +324,7 @@ void ProtoNode::accumulateTransform( Node *n )
 
 // Print the node type, instance vars
 
-ostream& ProtoNode::printFields(ostream& os, int )
+ostream & OpenVRML::ProtoNode::printFields(ostream& os, int )
 {
   os << "#ProtoNode::printFields not implemented yet...\n";
   return os;
@@ -332,7 +333,7 @@ ostream& ProtoNode::printFields(ostream& os, int )
 
 // Use the first node to check the type
 
-const NodePtr ProtoNode::firstNode() const {
+const OpenVRML::NodePtr OpenVRML::ProtoNode::firstNode() const {
     return (this->implNodes.getLength() > 0)
             ? this->implNodes.getElement(0)
             : this->type.firstNode();
@@ -343,142 +344,154 @@ const NodePtr ProtoNode::firstNode() const {
 // If the first node is not present (EXTERNPROTO prior to retrieving the
 // the implementation), all tests fail.
 
-NodeAnchor* ProtoNode::toAnchor() const
+OpenVRML::NodeAnchor * OpenVRML::ProtoNode::toAnchor() const
 { return firstNode() ? firstNode()->toAnchor() : 0; }
 
-NodeAppearance* ProtoNode::toAppearance() const
+OpenVRML::NodeAppearance * OpenVRML::ProtoNode::toAppearance() const
 { return firstNode() ? firstNode()->toAppearance() : 0; }
 
-NodeAudioClip* ProtoNode::toAudioClip() const
+OpenVRML::NodeAudioClip * OpenVRML::ProtoNode::toAudioClip() const
 { return firstNode() ? firstNode()->toAudioClip() : 0; }
 
-NodeChild* ProtoNode::toChild() const
+OpenVRML::NodeChild * OpenVRML::ProtoNode::toChild() const
 { return firstNode() ? firstNode()->toChild() : 0; }
 
-NodeBackground* ProtoNode::toBackground() const
+OpenVRML::NodeBackground * OpenVRML::ProtoNode::toBackground() const
 { return firstNode() ? firstNode()->toBackground() : 0; }
 
-NodeBillboard * ProtoNode::toBillboard() const
+OpenVRML::NodeBillboard * OpenVRML::ProtoNode::toBillboard() const
 { return firstNode() ? firstNode()->toBillboard() : 0; }
 
-NodeBox* ProtoNode::toBox() const       
+OpenVRML::NodeBox * OpenVRML::ProtoNode::toBox() const       
 { return firstNode() ? firstNode()->toBox() : 0; }
  
-NodeCollision * ProtoNode::toCollision() const
+OpenVRML::NodeCollision * OpenVRML::ProtoNode::toCollision() const
 { return firstNode() ? firstNode()->toCollision() : 0; }
 
-NodeColor* ProtoNode::toColor() const
+OpenVRML::NodeColor * OpenVRML::ProtoNode::toColor() const
 { return firstNode() ? firstNode()->toColor() : 0; }
 
-NodeCone* ProtoNode::toCone() const       
+OpenVRML::NodeCone * OpenVRML::ProtoNode::toCone() const       
 { return firstNode() ? firstNode()->toCone() : 0; }
 
-NodeCoordinate* ProtoNode::toCoordinate() const
+OpenVRML::NodeCoordinate * OpenVRML::ProtoNode::toCoordinate() const
 { return firstNode() ? firstNode()->toCoordinate() : 0; }
 
-NodeCylinder* ProtoNode::toCylinder() const       
+OpenVRML::NodeCylinder * OpenVRML::ProtoNode::toCylinder() const       
 { return firstNode() ? firstNode()->toCylinder() : 0; }
 
-NodeCylinderSensor* ProtoNode::toCylinderSensor() const
+OpenVRML::NodeCylinderSensor * OpenVRML::ProtoNode::toCylinderSensor() const
 { return firstNode() ? firstNode()->toCylinderSensor() : 0; }
 
-NodeDirLight* ProtoNode::toDirLight() const       
+OpenVRML::NodeDirLight * OpenVRML::ProtoNode::toDirLight() const       
 { return firstNode() ? firstNode()->toDirLight() : 0; }
 
-NodeElevationGrid* ProtoNode::toElevationGrid() const       
+OpenVRML::NodeElevationGrid * OpenVRML::ProtoNode::toElevationGrid() const       
 { return firstNode() ? firstNode()->toElevationGrid() : 0; }
 
-NodeExtrusion* ProtoNode::toExtrusion() const       
+OpenVRML::NodeExtrusion * OpenVRML::ProtoNode::toExtrusion() const       
 { return firstNode() ? firstNode()->toExtrusion() : 0; }
 
-NodeFog* ProtoNode::toFog() const
+OpenVRML::NodeFog * OpenVRML::ProtoNode::toFog() const
 { return firstNode() ? firstNode()->toFog() : 0; }
 
-NodeFontStyle* ProtoNode::toFontStyle() const
+OpenVRML::NodeFontStyle * OpenVRML::ProtoNode::toFontStyle() const
 { return firstNode() ? firstNode()->toFontStyle() : 0; }
 
-NodeGeometry* ProtoNode::toGeometry() const
+OpenVRML::NodeGeometry * OpenVRML::ProtoNode::toGeometry() const
 { return firstNode() ? firstNode()->toGeometry() : 0; }
 
-NodeGroup* ProtoNode::toGroup() const
+OpenVRML::NodeGroup * OpenVRML::ProtoNode::toGroup() const
 { return firstNode() ? firstNode()->toGroup() : 0; }
 
-NodeImageTexture* ProtoNode::toImageTexture() const
+OpenVRML::NodeImageTexture * OpenVRML::ProtoNode::toImageTexture() const
 { return firstNode() ? firstNode()->toImageTexture() : 0; }
 
-NodeIFaceSet* ProtoNode::toIFaceSet() const  
+OpenVRML::NodeIFaceSet * OpenVRML::ProtoNode::toIFaceSet() const  
 { return firstNode() ? firstNode()->toIFaceSet() : 0; }
 
-NodeInline* ProtoNode::toInline() const
+OpenVRML::NodeInline * OpenVRML::ProtoNode::toInline() const
 { return firstNode() ? firstNode()->toInline() : 0; }
 
-NodeLight* ProtoNode::toLight() const
+OpenVRML::NodeLight * OpenVRML::ProtoNode::toLight() const
 { return firstNode() ? firstNode()->toLight() : 0; }
 
-NodeMaterial* ProtoNode::toMaterial() const
+OpenVRML::NodeLOD * OpenVRML::ProtoNode::toLOD() const
+{ return firstNode() ? firstNode()->toLOD() : 0; }
+
+OpenVRML::NodeMaterial * OpenVRML::ProtoNode::toMaterial() const
 { return firstNode() ? firstNode()->toMaterial() : 0; }
 
-NodeMovieTexture* ProtoNode::toMovieTexture() const
+OpenVRML::NodeMovieTexture * OpenVRML::ProtoNode::toMovieTexture() const
 { return firstNode() ? firstNode()->toMovieTexture() : 0; }
 
-NodeNavigationInfo* ProtoNode::toNavigationInfo() const
+OpenVRML::NodeNavigationInfo * OpenVRML::ProtoNode::toNavigationInfo() const
 { return firstNode() ? firstNode()->toNavigationInfo() : 0; }
 
-NodeNormal* ProtoNode::toNormal() const
+OpenVRML::NodeNormal * OpenVRML::ProtoNode::toNormal() const
 { return firstNode() ? firstNode()->toNormal() : 0; }
 
-NodePlaneSensor* ProtoNode::toPlaneSensor() const
-{ return firstNode() ? firstNode()->toPlaneSensor() : 0; }
+OpenVRML::NodeOrientationInt * OpenVRML::ProtoNode::toOrientationInt() const
+{ return firstNode() ? firstNode()->toOrientationInt() : 0; }
 
-NodeShape* ProtoNode::toShape() const  
-{ return firstNode() ? firstNode()->toShape() : 0; }
-
-NodeSphereSensor* ProtoNode::toSphereSensor() const
-{ return firstNode() ? firstNode()->toSphereSensor() : 0; }
-
-NodePixelTexture* ProtoNode::toPixelTexture() const
+OpenVRML::NodePixelTexture * OpenVRML::ProtoNode::toPixelTexture() const
 { return firstNode() ? firstNode()->toPixelTexture() : 0; }
  
-NodePointLight* ProtoNode::toPointLight() const
+OpenVRML::NodePlaneSensor * OpenVRML::ProtoNode::toPlaneSensor() const
+{ return firstNode() ? firstNode()->toPlaneSensor() : 0; }
+
+OpenVRML::NodePointLight * OpenVRML::ProtoNode::toPointLight() const
 { return firstNode() ? firstNode()->toPointLight() : 0; }
 
-ScriptNode * ProtoNode::toScript() const
+OpenVRML::NodePositionInt * OpenVRML::ProtoNode::toPositionInt() const    
+{ return firstNode() ? firstNode()->toPositionInt() : 0; }
+
+OpenVRML::NodeShape * OpenVRML::ProtoNode::toShape() const  
+{ return firstNode() ? firstNode()->toShape() : 0; }
+
+OpenVRML::NodeSphereSensor * OpenVRML::ProtoNode::toSphereSensor() const
+{ return firstNode() ? firstNode()->toSphereSensor() : 0; }
+
+OpenVRML::NodeScalarInt * OpenVRML::ProtoNode::toScalarInt() const    
+{ return firstNode() ? firstNode()->toScalarInt() : 0; }
+
+OpenVRML::ScriptNode * OpenVRML::ProtoNode::toScript() const
 { return firstNode() ? firstNode()->toScript() : 0; }
 
-NodeSound* ProtoNode::toSound() const
+OpenVRML::NodeSound * OpenVRML::ProtoNode::toSound() const
 { return firstNode() ? firstNode()->toSound() : 0; }
 
-NodeSphere* ProtoNode::toSphere() const       
+OpenVRML::NodeSphere * OpenVRML::ProtoNode::toSphere() const       
 { return firstNode() ? firstNode()->toSphere() : 0; }
 
-NodeSpotLight* ProtoNode::toSpotLight() const
+OpenVRML::NodeSpotLight * OpenVRML::ProtoNode::toSpotLight() const
 { return firstNode() ? firstNode()->toSpotLight() : 0; }
 
-NodeSwitch* ProtoNode::toSwitch() const       
+OpenVRML::NodeSwitch * OpenVRML::ProtoNode::toSwitch() const       
 { return firstNode() ? firstNode()->toSwitch() : 0; }
 
-NodeTexture* ProtoNode::toTexture() const
+OpenVRML::NodeTexture * OpenVRML::ProtoNode::toTexture() const
 { return firstNode() ? firstNode()->toTexture() : 0; }
 
-NodeTextureCoordinate* ProtoNode::toTextureCoordinate() const
+OpenVRML::NodeTextureCoordinate * OpenVRML::ProtoNode::toTextureCoordinate() const
 { return firstNode() ? firstNode()->toTextureCoordinate() : 0; }
 
-NodeTextureTransform* ProtoNode::toTextureTransform() const
+OpenVRML::NodeTextureTransform * OpenVRML::ProtoNode::toTextureTransform() const
 { return firstNode() ? firstNode()->toTextureTransform() : 0; }
 
-NodeTimeSensor* ProtoNode::toTimeSensor() const
+OpenVRML::NodeTimeSensor * OpenVRML::ProtoNode::toTimeSensor() const
 { return firstNode() ? firstNode()->toTimeSensor() : 0; }
 
-NodeTouchSensor* ProtoNode::toTouchSensor() const
+OpenVRML::NodeTouchSensor * OpenVRML::ProtoNode::toTouchSensor() const
 { return firstNode() ? firstNode()->toTouchSensor() : 0; }
 
-NodeTransform* ProtoNode::toTransform() const       
+OpenVRML::NodeTransform * OpenVRML::ProtoNode::toTransform() const       
 { return firstNode() ? firstNode()->toTransform() : 0; }
 
-NodeViewpoint* ProtoNode::toViewpoint() const
+OpenVRML::NodeViewpoint * OpenVRML::ProtoNode::toViewpoint() const
 { return firstNode() ? firstNode()->toViewpoint() : 0; }
 
-void ProtoNode::render(Viewer *viewer, VrmlRenderContext rc)
+void OpenVRML::ProtoNode::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if (! d_instantiated)
     {
@@ -514,9 +527,9 @@ void ProtoNode::render(Viewer *viewer, VrmlRenderContext rc)
 }
 
 
-void ProtoNode::eventIn(double timeStamp,
-			    const std::string & eventName,
-			    const FieldValue & fieldValue) {
+void OpenVRML::ProtoNode::eventIn(double timeStamp,
+                                  const std::string & eventName,
+                                  const FieldValue & fieldValue) {
     if (!d_instantiated) {
         theSystem->debug("ProtoNode::%s eventIn before instantiation\n",
                          this->getId().c_str());
@@ -555,8 +568,8 @@ void ProtoNode::eventIn(double timeStamp,
 /**
  * Find a field by name.
  */
-ProtoNode::NameValueRec *
-        ProtoNode::findField(const std::string & fieldName) const {
+OpenVRML::ProtoNode::NameValueRec *
+        OpenVRML::ProtoNode::findField(const std::string & fieldName) const {
     for (std::list<NameValueRec *>::const_iterator i(d_fields.begin());
             i != d_fields.end(); ++i) {
         if (*i && (*i)->name == fieldName) {
@@ -572,9 +585,8 @@ ProtoNode::NameValueRec *
  *
  * @todo Is it necessary to create the field if it doesn't exist?
  */
-void ProtoNode::setField(const std::string & fieldName,
-                         const FieldValue & fieldValue)
-{
+void OpenVRML::ProtoNode::setField(const std::string & fieldName,
+                                   const FieldValue & fieldValue) {
   NameValueRec *nv = findField(fieldName);
 
   if (! nv)
@@ -592,7 +604,8 @@ void ProtoNode::setField(const std::string & fieldName,
   this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
-const FieldValue *ProtoNode::getField(const std::string & fieldName) const {
+const OpenVRML::FieldValue *
+        OpenVRML::ProtoNode::getField(const std::string & fieldName) const {
     NameValueRec * nv = findField(fieldName);
     if (nv) {
         return nv->value;
@@ -600,23 +613,11 @@ const FieldValue *ProtoNode::getField(const std::string & fieldName) const {
     return this->type.fieldDefault(fieldName);
 }
 
-NodeLOD* ProtoNode::toLOD() const
-{ return firstNode() ? firstNode()->toLOD() : 0; }
-
-NodeOrientationInt* ProtoNode::toOrientationInt() const
-{ return firstNode() ? firstNode()->toOrientationInt() : 0; }
-
-NodePositionInt* ProtoNode::toPositionInt() const    
-{ return firstNode() ? firstNode()->toPositionInt() : 0; }
-
-NodeScalarInt* ProtoNode::toScalarInt() const    
-{ return firstNode() ? firstNode()->toScalarInt() : 0; }
-
-const MFNode & ProtoNode::getImplNodes() const {
+const OpenVRML::MFNode & OpenVRML::ProtoNode::getImplNodes() const {
     return this->implNodes;
 }
 
-const BVolume * ProtoNode::getBVolume() const
+const OpenVRML::BVolume * OpenVRML::ProtoNode::getBVolume() const
 {
   //cout << "ProtoNode::getBVolume() {" << endl;
   if (!d_instantiated) {
@@ -637,7 +638,7 @@ const BVolume * ProtoNode::getBVolume() const
 /**
  * @brief determine whether or not implementation is modified
  */
-bool ProtoNode::isModified() const {
+bool OpenVRML::ProtoNode::isModified() const {
   if ( d_modified ) return 1;
   int n = implNodes.getLength();
   for ( int i=0; i<n; ++i )
@@ -645,8 +646,7 @@ bool ProtoNode::isModified() const {
   return 0;
 }
 
-void
-ProtoNode::updateModified(NodePath& path, int flags)
+void OpenVRML::ProtoNode::updateModified(NodePath& path, int flags)
 {
   //cout << "ProtoNode::updateModified()" << endl;
   if (this->isModified()) markPathModified(path, true);
@@ -655,4 +655,3 @@ ProtoNode::updateModified(NodePath& path, int flags)
   if (base) base->updateModified(path, flags);    
   path.pop_front();
 }
-
