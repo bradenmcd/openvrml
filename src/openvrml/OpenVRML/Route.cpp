@@ -23,25 +23,8 @@
 
 Route::Route(const std::string & fromEventOut,
              const VrmlNodePtr & toNode, const std::string & toEventIn):
-        prevRoute(0), nextRoute(0), fromEventOut(fromEventOut), toNode(toNode),
-        toEventIn(toEventIn) {}
+        fromEventOut(fromEventOut), toNode(toNode), 
+	toEventIn(toEventIn) {}
 
-Route::Route(const Route & route): prevRoute(0), nextRoute(0),
-        fromEventOut(route.fromEventOut), toNode(route.toNode),
-        toEventIn(route.toEventIn) {}
-
-Route * Route::getPrev() const {
-    return this->prevRoute;
-}
-
-void Route::setPrev(Route * route) {
-    this->prevRoute = route;
-}
-
-Route * Route::getNext() const {
-    return this->nextRoute;
-}
-
-void Route::setNext(Route * route) {
-    this->nextRoute = route;
-}
+Route::Route(const Route & route): fromEventOut(route.fromEventOut), 
+	toNode(route.toNode), toEventIn(route.toEventIn) {}

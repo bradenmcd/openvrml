@@ -26,8 +26,6 @@
 #   include "VrmlNodePtr.h"
 
 class OPENVRML_SCOPE Route {
-    Route * prevRoute;
-    Route * nextRoute;
 
 public:
     const std::string fromEventOut;
@@ -38,10 +36,6 @@ public:
           const std::string & toEventIn);
     Route(const Route&);
 
-    Route * getPrev() const;
-    void setPrev(Route * route);
-    Route * getNext() const;
-    void setNext(Route * route);
 };
 
 # endif
