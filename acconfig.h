@@ -1,15 +1,11 @@
-#ifndef ACCONFIG_H
-#define ACCONFIG_H
+#ifndef CONFIG_H
+#define CONFIG_H
 /*
   Vrml 97 library
   Copyright (C) 1998 Chris Morley
 
   acconfig.h
 */
-
-#define LIBVRML_MAJOR_VERSION	0
-#define LIBVRML_MINOR_VERSION	8
-#define LIBVRML_MICRO_VERSION	0
 
 #ifdef _WIN32
 // Disable warning messages about truncation from const double to float
@@ -43,7 +39,9 @@ static const char COLON = ':';
 #define M_1_PI          0.31830988618379067154  /* 1/pi */
 #endif
 
-#undef LIBVRML_VERSION
+#undef LIBVRML97_MAJOR_VERSION
+#undef LIBVRML97_MINOR_VERSION
+#undef LIBVRML97_MICRO_VERSION
 #undef HAVE_LIBJPEG
 #undef HAVE_LIBPNG
 #undef HAVE_ZLIB
@@ -51,4 +49,4 @@ static const char COLON = ':';
 @TOP@
 @BOTTOM@
 
-#endif	/* ACCONFIG_H */
+#endif	/* CONFIG_H */

@@ -15,9 +15,25 @@ dnl
 
 AC_INIT(libvrml97core/src/vrml97/VrmlScene.cpp)
 PACKAGE=libvrml97
-VERSION="0.8.2"
+LIBVRML97_MAJOR_VERSION="0"
+LIBVRML97_MINOR_VERSION="8"
+LIBVRML97_MICRO_VERSION="2"
+VERSION="$LIBVRML97_MAJOR_VERSION.$LIBVRML97_MINOR_VERSION.$LIBVRML97_MICRO_VERSION"
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 AM_CONFIG_HEADER(config.h)
+
+AC_DEFINE_UNQUOTED(LIBVRML97_MAJOR_VERSION)
+AC_DEFINE_UNQUOTED(LIBVRML97_MINOR_VERSION)
+AC_DEFINE_UNQUOTED(LIBVRML97_MICRO_VERSION)
+
+dnl
+dnl libtool versions
+dnl
+LIBVRML97_SO_VERSION="0:0:0"
+LIBVRML97GL_SO_VERSION="0:0:0"
+
+AC_SUBST(LIBVRML97_SO_VERSION)
+AC_SUBST(LIBVRML97GL_SO_VERSION)
 
 dnl
 dnl Checks for Win32 stuff
@@ -40,12 +56,12 @@ AC_PROG_CXXCPP
 dnl
 dnl Check for libjpeg
 dnl
-VRML_PATH_JPEG(, [libjpeg not found. Check config.log for details.])
+VRML_PATH_JPEG(, [libjpeg not found. Check 'config.log' for details.])
 
 dnl
 dnl Check for libpng, zlib
 dnl
-VRML_PATH_PNG(, [libpng or zlib not found. Check config.log for details.])
+VRML_PATH_PNG(, [libpng or zlib not found. Check 'config.log' for details.])
 
 dnl
 dnl Check for X, GL/Mesa, glut
@@ -122,9 +138,13 @@ dnl Test for adequate namespace support in the C++ compiler
 dnl
 VRML_CXX_NAMESPACE(
   ,
-  AC_MSG_ERROR([Your compiler does not have sufficient support for C++ namespaces. See config.log for details.])
+  AC_MSG_ERROR([Your C++ compiler does not have sufficient support for namespaces. See 'config.log' for details.])
 )
 
+VRML_CXX_BOOL(
+  ,
+  AC_MSG_ERROR([Your C++ compiler does not have the required support for the 'bool' keyword. See 'config.log' for details.])
+)
 
 dnl NOTABLY COMPLEX C++ COMPILER TESTS
 dnl
@@ -139,20 +159,20 @@ dnl
 AC_LANG_CPLUSPLUS
 
 
-AC_MSG_CHECKING(if C++ compiler supports bool(required))
-AC_TRY_COMPILE(
-[
-],[
-   bool b=true;
-   bool b1=false;
-],[
-  ac_bool=yes
+dnl AC_MSG_CHECKING(if C++ compiler supports bool(required))
+dnl AC_TRY_COMPILE(
+dnl [
+dnl ],[
+dnl    bool b=true;
+dnl    bool b1=false;
+dnl ],[
+dnl   ac_bool=yes
 dnl  AC_DEFINE(HAVE_NATIVE_BOOL)
-],[
-  config_error=yes
-  AC_WARN(bool type is not supported by your compiler)
-])
-AC_MSG_RESULT([$ac_bool])
+dnl ],[
+dnl   config_error=yes
+dnl   AC_WARN(bool type is not supported by your compiler)
+dnl ])
+dnl AC_MSG_RESULT([$ac_bool])
 
 
 
