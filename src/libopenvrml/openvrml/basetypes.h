@@ -943,12 +943,10 @@ namespace openvrml {
     inline void image::pixel(const size_t index, const int32 value) throw ()
     {
         assert(index < this->x_ * this->y_);
-        std::cout << std::hex << value << std::endl;
         for (size_t component = this->comp_, i = index * this->comp_;
              component > 0;
              --component, ++i) {
             this->array_[i] = (value >> (8 * (component - 1))) & 0x000000ff;
-            std::cout << int(this->array_[i]) << std::endl;
         }
     }
 

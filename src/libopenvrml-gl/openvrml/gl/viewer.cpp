@@ -3337,8 +3337,6 @@ viewer::texture_object_t viewer::insert_texture(size_t w,
 {
     using std::vector;
 
-    std::cout << "insert_texture" << std::endl;
-
     static const GLenum fmt[] = {
         GL_LUMINANCE,       // single component
         GL_LUMINANCE_ALPHA, // 2 components

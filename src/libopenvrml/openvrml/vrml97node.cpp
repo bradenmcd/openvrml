@@ -10722,7 +10722,6 @@ const unsigned char * pixel_texture_node::pixels() const throw ()
 viewer::texture_object_t
 pixel_texture_node::do_render_texture(viewer & v, rendering_context context)
 {
-    std::cout << this->image << std::endl;
     return this->image.value.array().empty()
         ? 0
         : v.insert_texture(this->image.value.x(),

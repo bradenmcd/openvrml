@@ -1,5 +1,13 @@
 2003-11-18  Braden McDaniel  <braden@endoframe.com>
 
+	Removed some debugging output.
+
+	* src/libopenvrml/openvrml/basetypes.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
+2003-11-18  Braden McDaniel  <braden@endoframe.com>
+
 	Added image basic type.
 
 	* src/libopenvrml/openvrml/ScriptJDK.cpp
