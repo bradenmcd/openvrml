@@ -2157,12 +2157,14 @@ const std::string scene::url() const throw (std::bad_alloc)
  * @param viewer    a Viewer to render to.
  * @param context   a rendering_context.
  */
-void scene::render(openvrml::viewer & viewer, rendering_context context) {
+void scene::render(openvrml::viewer & viewer, rendering_context context)
+{
     for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {
         assert(*node);
-        (*node)->render(viewer, context);
+        child_node * child = node_cast<child_node *>(node->get());
+        if (child) { child->render(viewer, context); }
     }
 }
 

@@ -1,3 +1,8 @@
+2003-10-31  Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp:  Don't render root nodes
+	that aren't child nodes.
+
 2003-10-27  Braden McDaniel  <braden@endoframe.com>
 
 	Launch lookat with a shell script to set LD_LIBRARY_PATH
