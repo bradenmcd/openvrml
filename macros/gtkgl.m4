@@ -29,7 +29,7 @@ AC_DEFUN(OV_PATH_GTKGL,
         CPPFLAGS="${ac_save_CPPFLAGS}"
       ],
       have_gtkgl=no,
-      ${gtkgl__Ldir} ${GL_LIBS}
+      ${gtkgl__Ldir} ${GTK_LIBS} ${GL_LIBS}
     )
     AC_LANG_RESTORE
     
