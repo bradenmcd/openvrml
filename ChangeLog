@@ -1,3 +1,7 @@
+2002-12-13  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/Viewer.h:  Tab elimination.
+
 2002-12-11  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/script.cpp:  Fixed problem with
