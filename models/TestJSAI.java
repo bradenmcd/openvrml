@@ -36,6 +36,8 @@ import vrml.node.*;
  *   Event
  *   MFColor
  *   MFFloat
+ *   MFInt32
+ *   MFString
  *   Script
  *   SFBool
  *   SFColor
@@ -64,10 +66,8 @@ import vrml.node.*;
  *   toString
  *
  * Classes not tested
- *   MFInt32
  *   MFNode
  *   MFRotation
- *   MFString
  *   MFTime
  *   MFVec2f
  *   MFVec3f
@@ -147,6 +147,8 @@ class TestJSAI extends Script {
     System.out.println("World URL = " + browser.getWorldURL());
     /* Set Browser Description */
     browser.setDescription("JSAI Test World");
+
+    System.out.println("Script.toString = " + this);
 
     /* Test ConstSFBool/SFBool methods */
     System.out.println("Test ConstSFBool/SFBool");
@@ -393,7 +395,7 @@ class TestJSAI extends Script {
     MFColor testMFColor1 = new MFColor();
     MFColor testMFColor2 = new MFColor(colorArrays);
     MFColor testMFColor3 = new MFColor(colorArray2);
-    MFColor testMFColor4 = new MFColor(3, colorArray3);
+    MFColor testMFColor4 = new MFColor(1, colorArray3);
     if (testMFColor3.getSize() != 1)
       System.out.println("MFColor.getSize() failed");
     System.out.println("testMFColor2(pre-delete) = " + testMFColor2);
@@ -494,6 +496,10 @@ class TestJSAI extends Script {
     System.out.println("testMFFloat_1 = " + testMFFloat_1);
     testMFFloat_1.insertValue(1, testConstSFFloat);
     System.out.println("testMFFloat_1 = " + testMFFloat_1);
+    testMFFloat_1.delete(2);
+    System.out.println("testMFFloat_1 (after delete 2)" + testMFFloat_1);
+    testMFFloat_1.clear();
+    System.out.println("testMFFloat_1 (after clear)" + testMFFloat_1);
 
     /* Test ConstMFInt32/MFInt32 methods */
     System.out.println("Test ConstMFint32/MFInt32");
@@ -519,7 +525,32 @@ class TestJSAI extends Script {
                        "," + intResult[1] + "," + intResult[2]);
     System.out.println("testMFInt32_2[1] = " +
                        testMFInt32_2.get1Value(1));
+    testMFInt32_1.setValue(intArray2);
     System.out.println("testMFInt32_1 = " + testMFInt32_1);
+    testMFInt32_1.setValue(3, intArray1);
+    System.out.println("testMFInt32_1 = " + testMFInt32_1);
+    testMFInt32_1.setValue(testMFInt32_2);
+    System.out.println("testMFInt32_1 = " + testMFInt32_1);
+    testMFInt32_1.setValue(testConstMFInt32_2);
+    testMFInt32_1.set1Value(0, 99);
+    testMFInt32_1.set1Value(1, testConstSFInt32);
+    testMFInt32_1.set1Value(0, testSFInt32);
+    testMFInt32_1.addValue(105);
+    System.out.println("testMFInt32_1 = " + testMFInt32_1);
+    testMFInt32_1.addValue(testConstSFInt32);
+    System.out.println("testMFInt32_1 = " + testMFInt32_1);
+    testMFInt32_1.addValue(testSFInt32);
+    System.out.println("testMFInt32_1 = " + testMFInt32_1);
+    testMFInt32_1.insertValue(2, 84);
+    System.out.println("testMFInt32_1 = " + testMFInt32_1);
+    testMFInt32_1.insertValue(1, testConstSFInt32);
+    System.out.println("testMFInt32_1 = " + testMFInt32_1);
+    testMFInt32_1.insertValue(2, testSFInt32);
+    System.out.println("testMFInt32_1 = " + testMFInt32_1);
+    testMFInt32_1.delete(2);
+    System.out.println("testMFInt32_1 (after delete 2)" + testMFInt32_1);
+    testMFInt32_1.clear();
+    System.out.println("testMFInt32_1 (after clear)" + testMFInt32_1);
 
     /* Test ConstMFNode/MFNode methods */
     System.out.println("Test ConstMFNode/MFNode");
@@ -529,8 +560,17 @@ class TestJSAI extends Script {
     BaseNode[] nodeResult = new BaseNode[2];
     testConstMFNode1.getValue(nodeResult);
     BaseNode baseNodeResult = testConstMFNode2.get1Value(1);
+    if (testConstMFNode1.getSize() != 2)
+      System.out.println("ConstMFNode::getSize failed");
     System.out.println("testConstMFNode2[1] = " + baseNodeResult);
     System.out.println("testConstMFNode1 = " + testConstMFNode1);
+    MFNode testMFNode1 = new MFNode();
+    System.out.println("testMFNode1 = " + testMFNode1);
+    MFNode testMFNode2 = new MFNode(2, nodeResult);
+    System.out.println("testMFNode2 = " + testMFNode2);
+
+    MFNode testMFNode3 = new MFNode(nodeList);
+    System.out.println("testMFNode3 = " + testMFNode3);
 
     /* Test ConstMFRotation/MFRotation methods */
     System.out.println("Test ConstMFRotation/MFRotation");
@@ -549,6 +589,8 @@ class TestJSAI extends Script {
     testConstMFRotation1.getValue(testMFRotResult2);
     System.out.println("testConstMFRotation1.getValue[5] = " +
                        testMFRotResult2[5]);
+    if (testConstMFRotation1.getSize() != 2)
+      System.out.println("ConstMFRotation.getSize failed!");
     float[] testMFRot1Value = new float[4];
     testConstMFRotation1.get1Value(0, testMFRot1Value);
     System.out.println("testConstMFRotation1.get1Value = {" +
@@ -559,7 +601,17 @@ class TestJSAI extends Script {
     testConstMFRotation1.get1Value(0, testSFRotation1);
     System.out.println("testConstMFRotation1.get1Value = " + testSFRotation1);
     System.out.println("testConstMFRotation1 = " + testConstMFRotation1);
-     
+    MFRotation testMFRotation1 = new MFRotation();
+    System.out.println("testMFRotation1 = " + testMFRotation1);
+    MFRotation testMFRotation2 = new MFRotation(testRotations);
+    System.out.println("testMFRotation2 = " + testMFRotation2);
+
+    MFRotation testMFRotation3 = new MFRotation(testRotation2);
+    System.out.println("testMFRotation3 = " + testMFRotation3);
+
+    MFRotation testMFRotation4 = new MFRotation(1, testRotation2);
+    System.out.println("testMFRotation4 = " + testMFRotation4);
+
 
     /* Test ConstMFString/MFString methods */
     System.out.println("Test ConstMFString/MFString");
@@ -579,8 +631,39 @@ class TestJSAI extends Script {
     MFString testMFString3 = new MFString(stringArray);
     String[] stringArray2 = new String[4];
     testMFString2.getValue(stringArray2);
+    if (testMFString2.getSize() != 4)
+      System.out.println("MFString::getSize failed!");
     System.out.println("testMFString2[0] = " + testMFString2.get1Value(0));
-    System.out.println("testMFString2 = " + testMFString2);
+    testMFString3.setValue(testMFString1);
+    System.out.println("testMFString3 = " + testMFString3);
+    testMFString1.setValue(stringArray);
+    System.out.println("testMFString1 = " + testMFString1);
+    testMFString3.setValue(4, stringArray);
+    System.out.println("testMFString3 = " + testMFString3);
+    testMFString1.setValue(testConstMFString1);
+    System.out.println("testMFString1 = " + testMFString1);
+    testMFString1.set1Value(1, "newString");
+    System.out.println("testMFString1 = " + testMFString1);
+    testMFString1.set1Value(1, testConstSFString);
+    System.out.println("testMFString1 = " + testMFString1);
+    testMFString1.set1Value(1, testString);
+    System.out.println("testMFString1 = " + testMFString1);
+    testMFString1.addValue("addToEnd");
+    System.out.println("testMFString1 = " + testMFString1);
+    testMFString1.addValue(testConstSFString);
+    System.out.println("testMFString1 = " + testMFString1);
+    testMFString1.addValue(testString);
+    System.out.println("testMFString1 = " + testMFString1);
+    testMFString1.insertValue(2, "addToMiddle");
+    System.out.println("testMFString1 = " + testMFString1);
+    testMFString1.insertValue(2, testConstSFString);
+    System.out.println("testMFString1 = " + testMFString1);
+    testMFString1.insertValue(2, testString);
+    System.out.println("testMFString1 = " + testMFString1);
+    testMFString1.delete(2);
+    System.out.println("testMFString1 (after delete(2)) = " + testMFString1);
+    testMFString1.clear();
+    System.out.println("testMFString1 (after clear) = " + testMFString1);
 
     /* Test ConstMFTime/MFTime methods */
     System.out.println("Test ConstMFTime/MFTime");
@@ -593,6 +676,16 @@ class TestJSAI extends Script {
                        timeResult[1] + "," + timeResult[2] + "}");
     System.out.println("testConstMFTime[1] = " + testConstMFTime.get1Value(1));
     System.out.println("testConstMFTime2 = " + testConstMFTime2);
+    MFTime testMFTime1 = new MFTime();
+    MFTime testMFTime2 = new MFTime(3, timeArray);
+    MFTime testMFTime3 = new MFTime(timeArray);
+    testMFTime2.getValue(timeResult);
+    System.out.println("testMFTime2 = {" + timeResult[0] + "," +
+                       timeResult[1] + "," + timeResult[2] + "}");
+    System.out.println("testMFTime3[1] = " + testMFTime3.get1Value(1));
+    if (testConstMFTime.getSize() != 3)
+      System.out.println("ConstMFTime.getSize failed!");
+    System.out.println("testMFTime3 = " + testMFTime3);
 
     /* Test ConstMFVec2f/MFVec2f methods */
     System.out.println("Test ConstMFVec2f/MFVec2f");
@@ -613,7 +706,18 @@ class TestJSAI extends Script {
     testConstMFVec2f1.get1Value(1, vec2sResult3);
     testConstMFVec2f3.get1Value(0, testSFVec2f1);
     System.out.println("testConstMFVec2f3[0] = " + testSFVec2f1);
+    if (testConstMFVec2f1.getSize() != 2)
+      System.out.println("ConstMFVec2f.getSize failed!");
     System.out.println("testConstMFVec2f1 = " + testConstMFVec2f1);
+    MFVec2f testMFVec2f1 = new MFVec2f();
+    System.out.println("testMFVec2f1 = " + testMFVec2f1);
+    MFVec2f testMFVec2f2 = new MFVec2f(vec2sArray1);
+    System.out.println("testMFVec2f2 = " + testMFVec2f2);
+    MFVec2f testMFVec2f3 = new MFVec2f(vec2sArray2);
+    System.out.println("testMFVec2f3 = " + testMFVec2f3);
+    MFVec2f testMFVec2f4 = new MFVec2f(2, vec2sArray2);
+    System.out.println("testMFVec2f4 = " + testMFVec2f4);
+
 
     /* Test ConstMFVec3f/MFVec3f methods */
     System.out.println("Test ConstMFVec3f/MFVec3f");
@@ -625,6 +729,8 @@ class TestJSAI extends Script {
     float[][] vec3sResult1 = new float[2][3];
     float[] vec3sResult2 = new float[6];
     float[] vec3sResult3 = new float[3];
+    if (testConstMFVec3f1.getSize() != 2)
+      System.out.println("ConstMFVec3f.getSize failed!");
     testConstMFVec3f2.getValue(vec3sResult1);
     if (vec3sResult1[0][0] != 10.0f)
       System.out.println("ConstMFVec3f.getValue(1) failed");
@@ -635,6 +741,14 @@ class TestJSAI extends Script {
     testConstMFVec3f3.get1Value(0, testSFVec3f1);
     System.out.println("testConstMFVec3f3[0] = " + testSFVec3f1);
     System.out.println("testConstMFVec3f1 = " + testConstMFVec3f1);
+    MFVec3f testMFVec3f1 = new MFVec3f();
+    System.out.println("testMFVec3f1 = " + testMFVec3f1);
+    MFVec3f testMFVec3f2 = new MFVec3f(vec3sArray1);
+    System.out.println("testMFVec3f2 = " + testMFVec3f2);
+    MFVec3f testMFVec3f3 = new MFVec3f(vec3sArray2);
+    System.out.println("testMFVec3f3 = " + testMFVec3f3);
+    MFVec3f testMFVec3f4 = new MFVec3f(2, vec3sArray2);
+    System.out.println("testMFVec3f4 = " + testMFVec3f4);
 
     System.out.println("exit initialize method");
    }
