@@ -1,3 +1,7 @@
+2001-04-12  Thomas Flynn <tflynn@users.sourceforge.net>
+        * Checked in fixes for bugs 210011, 211349 and 407708.
+          Updated conformance testing results.
+
 2001-02-16  Braden McDaniel  <braden@endoframe.com>
 
         * Moved texture reading code to `Image.cpp'. This obsoletes the
