@@ -112,12 +112,7 @@ public:
 
   virtual void accumulateTransform( VrmlNode* );
 
-  // LarryD  Feb 11/99
-  int size();
-  // LarryD  Feb 11/99
-  VrmlNode *child(int index);
-
-  const VrmlMFNode & getNodes()  { assert(d_nodes); return *d_nodes;}
+  const VrmlMFNode & getImplNodes() const;
 
   // Field name/value pairs specified in PROTO instantiation
   typedef struct {
@@ -142,7 +137,7 @@ private:
   bool d_instantiated;
   VrmlNamespace *d_scope;	// Node type and name bindings
 
-  VrmlMFNode *d_nodes;		// Local copy of implementation nodes.
+  VrmlMFNode implNodes;		// Local copy of implementation nodes.
 
   std::list<NameValueRec*> d_fields;	// Field values
 

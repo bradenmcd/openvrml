@@ -94,7 +94,7 @@ public:
 
   const char *getName() const { return d_name; }
 
-  VrmlMFNode *getImplementationNodes();
+  const VrmlMFNode & getImplementationNodes();
 
   VrmlNode *firstNode();
 
@@ -138,7 +138,7 @@ private:
   VrmlSFString *d_actualUrl;	// The URL actually used.
   Doc2 *d_relative;
 
-  VrmlMFNode *d_implementation;	// The PROTO implementation nodes
+  VrmlMFNode implNodes;
 
   // Pointer to function to create instances
   VrmlNode* (*d_creator)( VrmlScene* );	

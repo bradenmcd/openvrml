@@ -361,7 +361,7 @@ void VrmlNodeGroup::setChildren(const VrmlMFNode & children) {
     for (size_t i = 0; i < children.getLength(); ++i) {
         VrmlNodeProto * p = 0;
         if (children[i] && (children[i]->toChild() ||
-	        ((p = children[i]->toProto()) != 0 && p->size() == 0))) {
+	        ((p = children[i]->toProto()) != 0 && p->getImplNodes().getLength() == 0))) {
 	    children[i]->addToScene(d_scene, d_relative.get());
 	    children[i]->accumulateTransform(d_parentTransform);
 	} else {
@@ -398,7 +398,7 @@ void VrmlNodeGroup::addChildren(const VrmlMFNode & children) {
         VrmlNodeProto *p = 0;
         
         if (child && (child->toChild() ||
-	        ((p = child->toProto()) != 0 && p->size() == 0))) {
+	        ((p = child->toProto()) != 0 && p->getImplNodes().getLength() == 0))) {
 	    d_children.addNode(child);
 	    child->addToScene( d_scene, d_relative.get() );
 	    child->accumulateTransform( d_parentTransform );

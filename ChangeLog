@@ -1,3 +1,12 @@
+2001-01-28  Braden McDaniel  <braden@endoframe.com>
+
+        * Changed VrmlNodeType and VrmlNodeProto to hold their
+          implementation nodes as a VrmlMFNode object, rather than a
+          pointer to a VrmlMFNode. (Since a PROTO *must* have at least
+          one node in its implementation, we can tell whether the
+          implementation has been retrieved by the length of the
+          VrmlMFNode object.)
+
 2001-01-27  Braden McDaniel  <braden@endoframe.com>
 
         * Changed VrmlNodeProto::getNodes() to return a VrmlMFNode
@@ -6,6 +15,8 @@
         * Added accessors to VrmlNodeSwitch.
 
         * Added accessors for source to VrmlNodeSound.
+
+        * Added accessors for fontStyle to VrmlNodeText.
 
 2001-01-24  Braden McDaniel  <braden@endoframe.com>
 
