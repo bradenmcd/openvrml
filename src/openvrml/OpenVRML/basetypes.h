@@ -27,9 +27,7 @@
 #   include <stddef.h>
 #   include <algorithm>
 #   include <iosfwd>
-#   ifndef _WIN32
-#     include <stdint.h>
-#   endif
+#   include <sys/types.h>
 #   include <OpenVRML/common.h>
 
 namespace OpenVRML {

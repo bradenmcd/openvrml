@@ -23,6 +23,9 @@
 
         * configure.ac:  Fixed error message for missing libjpeg.
 
+        * src/openvrml/OpenVRML/basetypes.h:  Include <sys/types.h>
+          instead of <stdint.h>.
+
 2003-03-10  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Makefile.am,
