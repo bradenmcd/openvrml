@@ -1,5 +1,15 @@
 2004-12-03 Braden McDaniel  <braden@endoframe.com>
 
+	Updated package version to 0.15.2.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* mozilla-plugin/configure.ac
+
+2004-12-03 Braden McDaniel  <braden@endoframe.com>
+
 	* openvrml.spec.in:  Use %makeinstall macro; install COPYING
 	(GPL) with lookat documentation rather than COPYING.LESSER
 	(LGPL).
