@@ -9,6 +9,9 @@
           Quaternion.  Modified SFRotation::multiply and ::slerp to use
           Quaternion class.
 
+        * src/openvrml/OpenVRML/quaternion.cpp:  Implemented stream
+          output operator for Quaternion.
+
 2003-01-24  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp:  Convert backslashes in

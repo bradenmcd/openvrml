@@ -329,5 +329,17 @@ const Quaternion Quaternion::normalize() const throw ()
     return q;
 }
 
+/**
+ * @brief Stream output.
+ *
+ * @param out   an output stream.
+ * @param quat  a quaternion.
+ *
+ * @return @p out.
+ */
+std::ostream & operator<<(std::ostream & out, const Quaternion & quat)
+{
+    return out << quat[0] << ' ' << quat[1] << ' ' << quat[2] << ' ' << quat[3];
+}
 
 } // namespace OpenVRML
