@@ -115,9 +115,9 @@ namespace OpenVRML {
                 throw (std::bad_alloc);
             virtual ~ProtoImplCloneVisitor() throw ();
 
-            void clone();
+            void clone() throw (std::bad_alloc);
 
-            virtual void visit(Node & node);
+            virtual void visit(Node & node) throw (std::bad_alloc);
 
         private:
             // Not copyable.
@@ -167,10 +167,10 @@ namespace OpenVRML {
         MFNode implNodes;
 
     public:
-        explicit ProtoNode(const NodeType & nodeType);
+        explicit ProtoNode(const NodeType & nodeType) throw (std::bad_alloc);
         ProtoNode(const NodeType & nodeType,
                   const ScopePtr & scope,
-                  const ProtoNode & node);
+                  const ProtoNode & node) throw (std::bad_alloc);
         virtual ~ProtoNode() throw ();
 
         void addRootNode(const NodePtr & node) throw (std::bad_alloc);
@@ -2444,10 +2444,11 @@ ProtoNode::ProtoImplCloneVisitor::~ProtoImplCloneVisitor() throw ()
 /**
  * @brief Clone the nodes.
  */
-void ProtoNode::ProtoImplCloneVisitor::clone()
+void ProtoNode::ProtoImplCloneVisitor::clone() throw (std::bad_alloc)
 {
     assert(this->fromProtoNode.implNodes.getElement(0));
-    this->toProtoNode.implNodes.setLength(this->fromProtoNode.implNodes.getLength());
+    this->toProtoNode.implNodes
+            .setLength(this->fromProtoNode.implNodes.getLength());
     size_t i;
     for (i = 0; i < this->toProtoNode.implNodes.getLength(); ++i) {
         if (this->fromProtoNode.implNodes.getElement(i)) {
@@ -2455,7 +2456,7 @@ void ProtoNode::ProtoImplCloneVisitor::clone()
             if (!childNode.accept(*this)) {
                 assert(this->toProtoNode.getScope()->findNode(childNode.getId()));
                 this->rootNodeStack
-                        .push(NodePtr(this->toProtoNode.getScope()->findNode(childNode.getId())));
+                    .push(NodePtr(this->toProtoNode.getScope()->findNode(childNode.getId())));
             }
             assert(this->rootNodeStack.top());
             this->toProtoNode.implNodes.setElement(i, this->rootNodeStack.top());
@@ -2475,7 +2476,7 @@ void ProtoNode::ProtoImplCloneVisitor::clone()
  *
  * @param node  a Node.
  */
-void ProtoNode::ProtoImplCloneVisitor::visit(Node & node)
+void ProtoNode::ProtoImplCloneVisitor::visit(Node & node) throw (std::bad_alloc)
 {
     //
     // Create a new node of the same type.
@@ -2710,8 +2711,10 @@ namespace {
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with the node.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-ProtoNode::ProtoNode(const NodeType & nodeType):
+ProtoNode::ProtoNode(const NodeType & nodeType) throw (std::bad_alloc):
     Node(nodeType, ScopePtr(0))
 {}
 
@@ -2721,10 +2724,12 @@ ProtoNode::ProtoNode(const NodeType & nodeType):
  * @param nodeType  the type object for the new ProtoNode instance.
  * @param scope     the scope the new node belongs to.
  * @param node      the ProtoNode to clone when creating the instance.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 ProtoNode::ProtoNode(const NodeType & nodeType,
                      const ScopePtr & scope,
-                     const ProtoNode & node):
+                     const ProtoNode & node) throw (std::bad_alloc):
     Node(nodeType, scope)
 {
     assert(node.implNodes.getLength() > 0);
@@ -2775,12 +2780,13 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
         } else {
             fieldValue = i->second;
         }
+
         const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
                 this->isMap.equal_range(i->first);
         for (ISMap::iterator j(rangeItrs.first); j != rangeItrs.second; ++j) {
             j->second.node.setField(j->second.interfaceId, *fieldValue);
         }
-        
+
         //
         // If we have a field that isn't IS'd to anything in the
         // implementation, we need to store it's value specially.

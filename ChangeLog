@@ -5,6 +5,9 @@
           Node::resetVisitedFlag that would cause a crash for several
           node types. Added nothrow exception spec to the method.
 
+        * src/openvrml/OpenVRML/browser.cpp: Added some exception
+          specifications.
+
 2002-09-10  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * doc/conformance.html: Retest Anchor, Inline and most of PROTO.
