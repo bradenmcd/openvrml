@@ -3,6 +3,9 @@
         * Fixed a bunch of warnings and errors flagged by the Intel C++
           compiler.
 
+        * src/openvrml/OpenVRML/VrmlMatrix.cpp:  Fixed errors
+          dereferencing matrix values.
+
 2002-06-21  Braden McDaniel  <braden@endoframe.com>
 
         * doc/openvrml.css: Stylesheet fixes for consistency with Web
