@@ -1390,14 +1390,15 @@ void VrmlScene::addBackground(Vrml97Node::Background & node) {
  *
  * @param node  a Background node.
  *
- * This method has no effect if @p node is not in the list of Background nodes
- * for the scene.
+ * @pre @p node is in the list of Background nodes for the scene.
  */
 void VrmlScene::removeBackground(Vrml97Node::Background & node) {
+    assert(!this->d_backgrounds.empty());
     const std::list<Node *>::iterator end = this->d_backgrounds.end();
     const std::list<Node *>::iterator pos =
             std::find(this->d_backgrounds.begin(), end, &node);
-    if (pos != end) { this->d_backgrounds.erase(pos); }
+    assert(pos != end);
+    this->d_backgrounds.erase(pos);
 }
 
 /**
@@ -1440,14 +1441,15 @@ void VrmlScene::addFog(Vrml97Node::Fog & n) { this->d_fogs.push_back(&n); }
  *
  * @param node  a Fog node.
  *
- * This method has no effect if @p node is not in the list of Fog nodes for
- * the scene.
+ * @pre @p node is in the list of Fog nodes for the scene.
  */
 void VrmlScene::removeFog(Vrml97Node::Fog & node) {
+    assert(!this->d_fogs.empty());
     const std::list<Node *>::iterator end = this->d_fogs.end();
     const std::list<Node *>::iterator pos =
             std::find(this->d_fogs.begin(), end, &node);
-    if (pos != end) { this->d_fogs.erase(pos); }
+    assert(pos != end);
+    this->d_fogs.erase(pos);
 }
 
 /**
@@ -1494,14 +1496,15 @@ void VrmlScene::addNavigationInfo(Vrml97Node::NavigationInfo & n) {
  *
  * @param node  a NavigationInfo node.
  *
- * This method has no effect if @p node is not in the list of NavigationInfo
- * nodes for the scene.
+ * @pre @p node is in the list of NavigationInfo nodes for the scene.
  */
 void VrmlScene::removeNavigationInfo(Vrml97Node::NavigationInfo & node) {
+    assert(!this->d_navigationInfos.empty());
     const std::list<Node *>::iterator end = this->d_navigationInfos.end();
     const std::list<Node *>::iterator pos =
             std::find(this->d_navigationInfos.begin(), end, &node);
-    if (pos != end) { this->d_navigationInfos.erase(pos); }
+    assert(pos != end);
+    this->d_navigationInfos.erase(pos);
 }
 
 /**
@@ -1547,14 +1550,15 @@ void VrmlScene::addViewpoint(Vrml97Node::Viewpoint & n) {
  *
  * @param node  a Viewpoint node.
  *
- * This method has no effect if @p node is not in the list of Viewpoint
- * nodes for the scene.
+ * @pre @p node is in the list of Viewpoint nodes for the scene.
  */
 void VrmlScene::removeViewpoint(Vrml97Node::Viewpoint & node) {
+    assert(!this->d_viewpoints.empty());
     const std::list<Node *>::iterator end = this->d_viewpoints.end();
     const std::list<Node *>::iterator pos =
             std::find(this->d_viewpoints.begin(), end, &node);
-    if (pos != end) { this->d_viewpoints.erase(pos); }
+    assert(pos != end);
+    this->d_viewpoints.erase(pos);
 }
 
 /**
@@ -1716,11 +1720,15 @@ void VrmlScene::addScopedLight(Vrml97Node::AbstractLight & light) {
  *
  * @param light the light node to remove.
  *
- * This method has no effect if @p light is not in the list of light nodes for
- * the scene.
+ * @pre @p light is in the list of light nodes for the scene.
  */
 void VrmlScene::removeScopedLight(Vrml97Node::AbstractLight & light) {
-    this->d_scopedLights.remove(&light);
+    assert(!this->d_scopedLights.empty());
+    const std::list<Node *>::iterator end = this->d_scopedLights.end();
+    const std::list<Node *>::iterator pos =
+            std::find(this->d_scopedLights.begin(), end, &light);
+    assert(pos != end);
+    this->d_scopedLights.erase(pos);
 }
 
 /**
@@ -1737,11 +1745,15 @@ void VrmlScene::addMovie(Vrml97Node::MovieTexture & movie) {
  *
  * @param movie the MovieTexture node to remove.
  *
- * This method has no effect if @p movie is not in the list of MovieTexture
- * nodes for the scene.
+ * @pre @p movie is in the list of MovieTexture nodes for the scene.
  */
 void VrmlScene::removeMovie(Vrml97Node::MovieTexture & movie) {
-    this->d_movies.remove(&movie);
+    assert(!this->d_movies.empty());
+    const std::list<Node *>::iterator end = this->d_movies.end();
+    const std::list<Node *>::iterator pos =
+            std::find(this->d_movies.begin(), end, &movie);
+    assert(pos != end);
+    this->d_movies.erase(pos);
 }
 
 /**
@@ -1758,11 +1770,16 @@ void VrmlScene::addScript(ScriptNode & script) {
  *
  * @param script    the Script node to remove.
  *
- * This method has no effect if @p script is not in the list of Script nodes
- * for the scene.
+ * @pre @p script is in the list of Script nodes for the scene.
  */
 void VrmlScene::removeScript(ScriptNode & script) {
-    this->d_scripts.remove(&script);
+    assert(!this->d_scripts.empty());
+    typedef std::list<ScriptNode *> ScriptNodeList;
+    const ScriptNodeList::iterator end = this->d_scripts.end();
+    const ScriptNodeList::iterator pos =
+            std::find(this->d_scripts.begin(), end, &script);
+    assert(pos != end);
+    this->d_scripts.erase(pos);
 }
 
 /**
@@ -1779,11 +1796,16 @@ void VrmlScene::addProto(ProtoNode & node) {
  *
  * @param node  the PROTO instance to remove.
  *
- * This method has no effect if @p node is not in the list of PROTO instances
- * for the scene.
+ * @pre @p node exists in the scene's list of prototype instances.
  */
 void VrmlScene::removeProto(ProtoNode & node) {
-    this->protoNodeList.remove(&node);
+    assert(!this->protoNodeList.empty());
+    typedef std::list<ProtoNode *> ProtoNodeList;
+    const ProtoNodeList::iterator end = this->protoNodeList.end();
+    const ProtoNodeList::iterator pos =
+            std::find(this->protoNodeList.begin(), end, &node);
+    assert(pos != end);
+    this->protoNodeList.erase(pos);
 }
 
 /**
@@ -1800,11 +1822,15 @@ void VrmlScene::addTimeSensor(Vrml97Node::TimeSensor & timer) {
  *
  * @param timer the TimeSensor node to remove.
  *
- * This method has no effect if @p timer is not in the list of TimeSensor nodes
- * for the scene.
+ * @pre @p timer is in the list of TimeSensor nodes for the scene.
  */
 void VrmlScene::removeTimeSensor(Vrml97Node::TimeSensor & timer) {
-    this->d_timers.remove(&timer);
+    assert(!this->d_timers.empty());
+    const std::list<Node *>::iterator end = this->d_timers.end();
+    const std::list<Node *>::iterator pos =
+            std::find(this->d_timers.begin(), end, &timer);
+    assert(pos != end);
+    this->d_timers.erase(pos);
 }
 
 
@@ -1822,11 +1848,15 @@ void VrmlScene::addAudioClip(Vrml97Node::AudioClip & audio_clip) {
  *
  * @param audio_clip    the AudioClip node to remove.
  *
- * This method has no effect if @p audio_clip is not in the list of AudioClip
- * nodes for the scene.
+ * @pre @p audio_clip is in the list of AudioClip nodes for the scene.
  */
 void VrmlScene::removeAudioClip(Vrml97Node::AudioClip & audio_clip) {
-    this->d_audioClips.remove(&audio_clip);
+    assert(!this->d_audioClips.empty());
+    const std::list<Node *>::iterator end = this->d_audioClips.end();
+    const std::list<Node *>::iterator pos =
+            std::find(this->d_audioClips.begin(), end, &audio_clip);
+    assert(pos != end);
+    this->d_audioClips.erase(pos);
 }
 
 

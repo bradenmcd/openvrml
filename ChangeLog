@@ -1,3 +1,10 @@
+2002-07-08  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/VrmlScene.cpp:  In the remove*Node
+          methods, use find..erase rather than remove.  This should be
+          more efficient; and it has the advantage of not producing a
+          weird segfault.
+
 2002-07-05  Braden McDaniel  <braden@endoframe.com>
 
         * Replaced VrmlNamespace with Scope. Scopes are owned by Nodes,
