@@ -128,7 +128,7 @@ void VrmlNodePixelTexture::render(Viewer *viewer, VrmlRenderContext rc) {
                     const size_t numBytes =
                             this->d_image.getWidth() * this->d_image.getHeight()
                                 * this->d_image.getComponents();
-                    unsigned char pixels[numBytes];
+                    unsigned char * pixels = new unsigned char[numBytes];
                     std::copy(this->d_image.getPixels(),
                               this->d_image.getPixels() + numBytes,
                               pixels);
@@ -137,6 +137,7 @@ void VrmlNodePixelTexture::render(Viewer *viewer, VrmlRenderContext rc) {
                                          d_image.getComponents(), pixels);
                     d_image.set(sizes[i-1], sizes[j-1], d_image.getComponents(),
                                 pixels);
+                    delete [] pixels;
 		}
                 
                 d_texObject = viewer->insertTexture(d_image.getWidth(),
