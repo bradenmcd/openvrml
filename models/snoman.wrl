@@ -1,88 +1,90 @@
 #VRML V2.0 utf8
 
 Background {                  #remove these lines
- skyColor .7 .7 1             #
- }                            # when placing this
- Viewpoint {                  #
+  skyColor .7 .7 1             #
+}                            # when placing this
+Viewpoint {                  #
   position 0 0 7            # object in a VRML world
-   }                          #
+}                          #
 NavigationInfo {              # or apartment.
- type "EXAMINE"               #
- }                            #
+  type "EXAMINE"               #
+}                            #
  
 WorldInfo {
-   title "Animated Snowman"
-    info [ "Copyright 1988 modeled by Kiwano [Andrew Reitemeyer] kiwano@t-online.de "
-          "This model is linkware. Non commercial users are required to link to" 
-					" http://home.t-online.de/home/kiwano4 "
-					"Commercial users must pay a small fee, details and more models from the above url"
-          "This node must remain unaltered in this code"
-          ]
-          }    
+  title "Animated Snowman"
+  info [
+    "Copyright 1988 modeled by Kiwano [Andrew Reitemeyer] kiwano@t-online.de "
+    "This model is linkware. Non commercial users are required to link to" 
+    " http://home.t-online.de/home/kiwano4 "
+    "Commercial users must pay a small fee, details and more models from the above url"
+    "This node must remain unaltered in this code"
+  ]
+}    
 
-
-
- Transform {           # main grouping node
-translation 0 0 0      # controls position
-scale 1 1 1            # controls size
-rotation 0 0 0 0       # controls orientation
+Transform {           # main grouping node
+  translation 0 0 0      # controls position
+  scale 1 1 1            # controls size
+  rotation 0 0 1 0       # controls orientation
   children [
-
-
-
-DEF Bottom Transform {
-translation 0 -1 0
-  scale 1.2 1 1.2
-    children [
-    DEF Ball  Shape {
-        appearance Appearance {
-          material Material {
-           diffuseColor 1 1 1
-           specularColor .9 .9 1
-           shininess 1
-           ambientIntensity .2
-          # transparency .2
-           }
-         }  
-       geometry Sphere {
-         radius 1
-         }
-       }
-       DEF  See VisibilitySensor {}
-     ]
-   }     
-DEF Middle Transform {
- translation 0 0 0
-  scale .9 .9 .9
-    children [
-    USE Ball  
-     ]
-   }     
-DEF head Transform {
- translation 0 .9 0
-  scale .6 .6 .6
-    children [
-    USE Ball  
-     ]
-   }  
-DEF Eye1 Transform {
-    translation .35 1.1 .4
-    children [
-    DEF Eye  Shape {
-        appearance Appearance {
-          material Material {
-           diffuseColor 0 0 0
-           specularColor 1 1 1
-           shininess 1
-           ambientIntensity 1
-           }
-         }  
-       geometry Sphere {
-         radius .1
-         }
-       }
-     ]
-   }     
+    DEF Bottom Transform {
+      translation 0 -1 0
+      scale 1.2 1 1.2
+      children [
+        DEF Ball Shape {
+          appearance
+            Appearance {
+              material
+                Material {
+                  diffuseColor 1 1 1
+                  specularColor .9 .9 1
+                  shininess 1
+                  ambientIntensity .2
+                  # transparency .2
+                }
+            }
+          geometry
+            Sphere {
+              radius 1
+            }
+        }
+        DEF See VisibilitySensor {}
+      ]
+    }
+    DEF Middle Transform {
+      translation 0 0 0
+      scale .9 .9 .9
+      children [
+        USE Ball  
+      ]
+    }
+    DEF head Transform {
+      translation 0 .9 0
+      scale .6 .6 .6
+      children [
+        USE Ball  
+      ]
+    }
+    DEF Eye1 Transform {
+      translation .35 1.1 .4
+      children [
+        DEF Eye  Shape {
+          appearance
+            Appearance {
+              material
+                Material {
+                  diffuseColor 0 0 0
+                  specularColor 1 1 1
+                  shininess 1
+                  ambientIntensity 1
+                }
+            }
+          geometry
+            Sphere {
+              radius .1
+            }
+        }
+      ]
+    }     
 DEF Eye2 Transform {
     translation -.35 1.1 .4
     children [
@@ -115,7 +117,7 @@ DEF Hat Transform  {
         
 Transform {
     translation 0 1.3 0
-    rotation 0 1 1 -.1
+    rotation 0 0.707106781 0.707106781 -.1
     children [
       Shape {
         appearance DEF Felt Appearance {
@@ -135,7 +137,7 @@ Transform {
    }  
  Transform {
     translation 0 1.6 0
-    rotation 0 1 1 -.1
+    rotation 0 0.707106781 0.707106781 -.1
     children [
       Shape {
         appearance USE Felt 
