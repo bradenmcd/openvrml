@@ -5333,7 +5333,7 @@ FontStyle::FontStyle(const NodeType & nodeType,
 FontStyle::~FontStyle() throw () {
 
 #ifdef OPENVRML_HAVE_FREETYPEFONTS
-        if(ftface) delete []ftface;
+        if(ftface) delete ftface;
 #endif
 
 }
