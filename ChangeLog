@@ -1,3 +1,16 @@
+2000-06-22  Christopher St. John <cstjohn@acm.org>
+
+	* vrml97parser.g There was a case missed in
+	protoScriptFieldInterfaceDeclaration where a field followed by an
+	IS wasn't having addField() called on it.
+
+	* vrml97parser.g, vrml97scanner.cpp, vrml97scanner.h Moved
+	identification of Script nodes from the scanner into the
+	parser. It was very difficult to identify all the cases where a
+	SCRIPT-token (rather than a normal ID token) should be returned
+	when the string "Script" was encountered, and the missing cases
+	were causing parse problems.
+
 2000-06-18  Christopher St. John <cstjohn@acm.org>
 
 	* Added default values for x/zDimension in VrmlNodeElevationGrid ctr
