@@ -1,4 +1,4 @@
-Changes new in version 0.12.0, ? June, 2002
+Changes new in version 0.12.0, 9 June, 2002
 ===========================================
 
 - Nodes have been completely rearchitected so as to abstract their
@@ -8,6 +8,10 @@ Changes new in version 0.12.0, ? June, 2002
 - Preliminary (incomplete) support for Java in the Script node.
 
 - Added VrmlMatrix class.
+
+- CylinderSensor is now supported.
+
+- Viewpoints inside Transforms should work correctly now.
 
 - Applied sanity to use of the garbage collector in the JavaScript
   binding.
