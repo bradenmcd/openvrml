@@ -1,3 +1,13 @@
+2004-03-28 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac:  Excise -rpath flag from the SDL_LIBS variable.
+	sdl-config (which is used by AM_PATH_SDL) emits an -rpath flag
+	pointing at its library installation directory.  We don't want
+	this, as it prevents users from linking lookat against, for
+	example, a locally compiled libGL when a version of the library
+	also exists in SDL's library installation directory, typically
+	/usr/lib.
+
 2004-03-23 Braden McDaniel  <braden@endoframe.com>
 
 	Removed rendering_context argument from
