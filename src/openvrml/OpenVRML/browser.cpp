@@ -299,6 +299,26 @@ namespace OpenVRML {
 namespace OpenVRML {
 
 /**
+ * @class InvalidVrml
+ *
+ * @brief Exception thrown when the parser fails due to errors in the VRML
+ *      input.
+ */
+
+/**
+ * @brief Constructor.
+ */
+InvalidVrml::InvalidVrml():
+    std::runtime_error("Invalid VRML.")
+{}
+
+/**
+ * @brief Destructor.
+ */
+InvalidVrml::~InvalidVrml() throw ()
+{}
+
+/**
  * @class Browser
  *
  * @brief Encapsulates a VRML browser.
@@ -729,10 +749,28 @@ void Browser::setDescription(const std::string & description) {
 }
 
 /**
- * @todo Implement me!
+ * @brief Generate nodes from a stream of VRML syntax.
+ *
+ * In addition to the exceptions listed, this method may throw any
+ * exception that may result from reading the input stream.
+ *
+ * @param in    an input stream.
+ *
+ * @return the root nodes generated from @p in.
+ *
+ * @exception InvalidVrml       if @p in has invalid VRML syntax.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 const MFNode Browser::createVrmlFromStream(std::istream & in) {
-    return MFNode();
+    MFNode nodes;
+    try {
+        Vrml97Scanner scanner(in);
+        Vrml97Parser parser(scanner, "");
+        parser.vrmlScene(*this, nodes);
+    } catch (antlr::RecognitionException & ex) {
+        throw InvalidVrml();
+    }
+    return nodes;
 }
 
 /**
@@ -1952,12 +1990,14 @@ namespace {
  * @param uri       the URI for the Scene.
  * @param parent    the parent Scene.
  *
+ * @exception InvalidVrml       if there is a syntax error in the VRML input.
  * @exception std::bad_alloc    if memory allocation fails.
  */
 Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
-        throw (std::bad_alloc):
-        browser(browser),
-        parent(parent) {
+    throw (InvalidVrml, std::bad_alloc):
+    browser(browser),
+    parent(parent)
+{
     std::string absoluteURI;
     for (size_t i = 0; i < uri.getLength(); ++i) {
         try {
@@ -1991,6 +2031,8 @@ Scene::Scene(Browser & browser, const MFString & uri, Scene * parent)
                 Vrml97Scanner scanner(in);
                 Vrml97Parser parser(scanner, this->getURI());
                 parser.vrmlScene(browser, this->nodes);
+            } catch (antlr::RecognitionException & ex) {
+                throw InvalidVrml();
             } catch (std::bad_alloc &) {
                 throw;
             } catch (...) {

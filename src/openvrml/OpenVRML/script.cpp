@@ -2447,7 +2447,6 @@ namespace {
                                         JSObject * const obj,
 				        const uintN argc, jsval * const argv,
                                         jsval * const rval) throw () {
-                using std::istringstream;
                 assert(argc >= 1);
 
                 Script * const script =
@@ -2462,22 +2461,26 @@ namespace {
                 JSString * str = JSVAL_TO_STRING(argv[0]);
                 assert(str);
 
-                istringstream in(JS_GetStringBytes(str));
+                try {
+                    std::istringstream in(JS_GetStringBytes(str));
 
-                assert(script->getScriptNode().getScene());
-                OpenVRML::Browser & browser =
-                        script->getScriptNode().getScene()->browser;
-                OpenVRML::MFNode nodes = 
-                        browser.createVrmlFromStream(in);
+                    assert(script->getScriptNode().getScene());
+                    OpenVRML::Browser & browser =
+                            script->getScriptNode().getScene()->browser;
+                    OpenVRML::MFNode nodes = 
+                            browser.createVrmlFromStream(in);
 
-                if (nodes.getLength() == 0) {
-                    *rval = JSVAL_NULL;
-                } else {
-                    if (!MFNode::toJsval(nodes, cx, obj, rval)) {
-                        return JS_FALSE;
+                    if (nodes.getLength() == 0) {
+                        *rval = JSVAL_NULL;
+                    } else {
+                        if (!MFNode::toJsval(nodes, cx, obj, rval)) {
+                            return JS_FALSE;
+                        }
                     }
+                    return JS_TRUE;
+                } catch (...) {
+                    return JS_FALSE;
                 }
-                return JS_TRUE;
             }
 
 

@@ -31,6 +31,12 @@
 
 namespace OpenVRML {
 
+    class OPENVRML_SCOPE InvalidVrml : public std::runtime_error {
+    public:
+        InvalidVrml();
+        virtual ~InvalidVrml() throw ();
+    };
+    
     class Doc2;
     class Viewer;
     class ProtoNode;
