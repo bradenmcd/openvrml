@@ -90,6 +90,10 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Sun Nov 26 2000  Braden McDaniel  <braden@endoframe.com>
+- Added doc subdir to %doc.
+- Removed obsolete COPYING.ANTLR from %doc.
+
 * Thu Nov 23 2000  Braden McDaniel  <braden@endoframe.com>
 - Gave much love. Checked into CVS. Still not guaranteed to work, though.
 
