@@ -51,7 +51,6 @@ LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
 
-
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
 # PROP BASE Use_MFC 0
@@ -522,7 +521,7 @@ SOURCE=.\antlr.g
 InputPath=.\antlr.g
 
 "temp.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	copy ..\src\vrml97\Vrml97TokenTypes.txt.in vrml97tokentypes.txt 
+	copy ..\src\vrml97\Vrml97TokenTypes.txt vrml97tokentypes.txt 
 	set classpath=c:\user\antlr-2.7.0 
 	c:\user\jdk1.2.2\bin\java antlr.Tool ..\src\vrml97\vrml97parser.g 
 	
@@ -534,7 +533,7 @@ InputPath=.\antlr.g
 InputPath=.\antlr.g
 
 "temp.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	copy ..\src\vrml97\Vrml97TokenTypes.txt.in  vrml97tokentypes.txt 
+	copy ..\src\vrml97\Vrml97TokenTypes.txt  vrml97tokentypes.txt 
 	set classpath = c:\user\antlr-2.7.0 
 	c:\user\jdk1.2.2\bin\java antlr.Tool ..\src\vrml97\vrml97parser.g 
 	
@@ -651,12 +650,12 @@ SOURCE=..\src\vrml97\ScriptJDK.cpp
 # Begin Source File
 
 SOURCE=..\src\vrml97\ScriptJS.cpp
-# ADD CPP /I "..\..\libvrml97js\src" /D "XP_PC" /D js_InitArrayClass=JS_InitArrayClass
+# ADD CPP /I "..\..\win32" /D "XP_PC" /D js_InitArrayClass=JS_InitArrayClass
 # End Source File
 # Begin Source File
 
 SOURCE=..\src\vrml97\ScriptObject.cpp
-# ADD CPP /I "..\..\libvrml97js\src" /D "XP_PC"
+# ADD CPP /I "..\..\win32" /D "XP_PC"
 # End Source File
 # Begin Source File
 
