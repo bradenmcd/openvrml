@@ -13,7 +13,7 @@ of "bison" (bison is yacc equivalent for windows) directory. Replace c:\flex wit
 location of "flex" (flex is lex equivalent for windows) directory. Otherwise you edit 
 the file libvrml97core.dsp in libvrml97\libvrml97core\win32 and do the same. 
 
-For building javascript dll library (javascript32.lib and javascript32.dll),workspace file 
-javascript.dsw is given in libvrml97\libvrml97core\win32\javascript directory.
+For building javascript dll library (libvrml97js32.lib and libvrml97js32.dll),workspace file 
+libvrml97js.dsw is given in libvrml97\libvrml97js\win32 directory.
 
 
