@@ -25,7 +25,7 @@
 using namespace OpenVRML;
 using namespace OpenVRML_;
 
-double OpenVRML::Vlength(float V[3])
+double OpenVRML::Vlength(const float V[3])
 {
   double vlen = sqrt(V[0]*V[0]+V[1]*V[1]+V[2]*V[2]);
   return (fpzero(vlen) ? 0.0 : vlen);

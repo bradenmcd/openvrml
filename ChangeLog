@@ -1,3 +1,10 @@
+2002-03-03  Braden McDaniel  <braden@endoframe.com>
+
+        * MathUtils.h: Changed Vset, Vscale, Vdot macros to inline
+          functions.
+
+        * MathUtils.h: Made Vlength const-correct.
+
 2002-03-02  Braden McDaniel  <braden@endoframe.com>
 
         * More doxygen love.

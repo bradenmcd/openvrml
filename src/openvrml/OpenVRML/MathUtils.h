@@ -21,22 +21,27 @@
 #ifndef MATHUTILS_H
 #define MATHUTILS_H
 
-#include <math.h>
-#include <iostream.h>
 #include "common.h"
-
-// Vector ops
-
-#define Vset( V, A ) \
- ((V[0]=A[0]),(V[1]=A[1]),(V[2]=A[2]))             // V <= A
-#define Vscale( V, s) \
- ((V[0]*=(s)),(V[1]*=(s)),(V[2]*=s)) 		   // V *= s
-#define Vdot( A, B ) \
- (A[0]*B[0]+A[1]*B[1]+A[2]*B[2])		   // A.B
 
 namespace OpenVRML {
 
-    double Vlength(float V[3]); // |V|
+    inline void Vset(float V[3], const float A[3]) {
+        V[0] = A[0];
+        V[1] = A[1];
+        V[2] = A[2];
+    }
+    
+    inline void Vscale(float V[3], const float s) {
+        V[0] *= s;
+        V[1] *= s;
+        V[2] *= s;
+    }
+    
+    inline float Vdot(const float A[3], const float B[3]) {
+        return A[0] * B[0] + A[1] * B[1] + A[2] * B[2];
+    }
+    
+    double Vlength(const float V[3]); // |V|
 
     void Vdiff(float V[3], const float A[3], const float B[3]);  // V <= A - B
     void Vcross(float V[3], const float A[3], const float B[3]); // V <= A x B
