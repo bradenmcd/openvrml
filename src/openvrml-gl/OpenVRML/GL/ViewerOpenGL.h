@@ -2,21 +2,21 @@
 // OpenVRML
 //
 // Copyright (C) 1998-2000  Chris Morley
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # ifndef VIEWEROPENGL_H
 #   define VIEWEROPENGL_H
@@ -46,28 +46,6 @@ namespace OpenVRML {
                 LIGHT_UNUSED,
                 LIGHT_DIRECTIONAL,
                 LIGHT_POSITIONAL
-            };
-
-            // Structs used in tesselator callbacks
-            struct IndexData {
-                const float * v; // data values
-                size_t ni; const long * i; // number of indices, index pointer
-            };
-
-            struct ShellData {
-                unsigned int mask;
-                const float * points;
-                size_t nfaces; const long * faces; // face list
-                IndexData texCoord; // texture coordinates and indices
-                IndexData normal; // normals and indices
-                IndexData color; // colors and indices
-                int *texAxes;
-                float *texParams;
-                size_t nf, i;
-            };
-
-            struct TextData {
-                 float cwidth,cheight; // width and height of a character
             };
 
             // Event types
@@ -140,7 +118,7 @@ namespace OpenVRML {
             int d_nObjects, d_nestedObjects;
 
             // Tessellation
-            GLUtesselator * d_tess;
+            GLUtesselator * tesselator;
 
             // Pickable entities
             int d_nSensitive;
@@ -196,18 +174,11 @@ namespace OpenVRML {
             // Text rendering
             void text2(int x, int y, float scale, char *text);
 
-            // IndexedFaceSet helpers
-            void insertShellConvex(ShellData *);
-            void insertShellTess(ShellData *);
-
-            // Text helpers
-            void insertTextTess(const FontVectoriser &, TextData &);
-
             // User interaction
             void step(float, float, float);
             void rot(float x , float y, float z, float a);
             void zoom(float);
-            void rot_trackball(float x1, float y1, float x2, float y2);  
+            void rot_trackball(float x1, float y1, float x2, float y2);
 
 #ifndef macintosh
             void handleKey(int);
@@ -291,10 +262,10 @@ namespace OpenVRML {
 
             virtual Object insertSphere(float radius);
 
-            virtual Object insertText(FontFace &  fface, 
-                                      size_t strarraysize, 
+            virtual Object insertText(FontFace &  fface,
+                                      size_t strarraysize,
                                       const std::string * string,
-                                      size_t lsize, const float length[], 
+                                      size_t lsize, const float length[],
                                       float maxextent);
 
             // Lights
@@ -355,7 +326,7 @@ namespace OpenVRML {
                                                 const unsigned char *pixels,
                                                 bool retainHint = false);
 
-            virtual TextureObject insertSubTexture(size_t xoffset, size_t yoffset, 
+            virtual TextureObject insertSubTexture(size_t xoffset, size_t yoffset,
                                                    size_t w, size_t h,
                                                    size_t whole_w, size_t whole_h,
                                                    size_t nc, bool repeat_s,
@@ -409,5 +380,3 @@ namespace OpenVRML {
 }
 
 # endif // VIEWEROPENGL_H
-
-

@@ -225,7 +225,17 @@ void ViewerOpenGL::ModelviewMatrixStack::pop()
  *
  * @param browser   the Browser.
  */
-ViewerOpenGL::ViewerOpenGL(Browser & browser): Viewer(browser) {
+ViewerOpenGL::ViewerOpenGL(Browser & browser):
+    Viewer(browser),
+# ifdef GLU_VERSION_1_2
+    tesselator(gluNewTess()),
+# endif
+    d_nSensitive(0),
+    d_overSensitive(0),
+    d_activeSensitive(0),
+    d_selectMode(false),
+    d_selectZ(0.0)
+{
   d_GLinitialized = false;
   d_blend = true;
   d_lit = true;
@@ -236,19 +246,11 @@ ViewerOpenGL::ViewerOpenGL(Browser & browser): Viewer(browser) {
   d_nObjects = 0;
   d_nestedObjects = 0;
 
-  d_nSensitive = 0;
-  d_overSensitive = 0;
-  d_activeSensitive = 0;
-  d_selectMode = false;
-  d_selectZ = 0.0;
-
   d_background[0] = d_background[1] = d_background[2] = 0.0;
   d_winWidth = 1;
   d_winHeight = 1;
   for (int i=0; i<MAX_LIGHTS; ++i)
     d_lightInfo[i].lightType = LIGHT_UNUSED;
-
-  d_tess = 0;
 
   d_scale = 1.0;
   d_translatex = d_translatey = d_translatez = 0.0;
@@ -277,9 +279,9 @@ ViewerOpenGL::ViewerOpenGL(Browser & browser): Viewer(browser) {
 
 ViewerOpenGL::~ViewerOpenGL()
 {
-#if GLU_VERSION_1_2
-  if (d_tess) gluDeleteTess( d_tess );
-#endif
+# ifdef GLU_VERSION_1_2
+    gluDeleteTess(this->tesselator);
+# endif
 }
 
 void ViewerOpenGL::initialize()
@@ -1339,21 +1341,19 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
 
   if (! (mask & MASK_CONVEX))
     {
-      if (! d_tess) d_tess = gluNewTess();
-
-      gluTessCallback(this->d_tess, GLU_TESS_BEGIN_DATA,
+      gluTessCallback(this->tesselator, GLU_TESS_BEGIN_DATA,
                       reinterpret_cast<TessCB>(tessExtrusionBegin));
-      gluTessCallback(this->d_tess, GLU_TESS_VERTEX_DATA,
+      gluTessCallback(this->tesselator, GLU_TESS_VERTEX_DATA,
                       reinterpret_cast<TessCB>(tessExtrusionVertex));
-      gluTessCallback(this->d_tess, GLU_TESS_END, glEnd);
+      gluTessCallback(this->tesselator, GLU_TESS_END, glEnd);
 
       if (mask & MASK_BOTTOM)
         {
           TessExtrusion bottom = { c, cs, xz[0], xz[2], dx, dz, 0 };
           indexFaceNormal( 0, 1, 2, c, bottom.N );
 
-          gluTessBeginPolygon( d_tess, &bottom );
-          gluTessBeginContour( d_tess );
+          gluTessBeginPolygon(this->tesselator, &bottom);
+          gluTessBeginContour(this->tesselator);
           GLdouble v[3];
           // Mesa tesselator doesn;t like closed polys
           int j = equalEndpts ? nCrossSection-2 : nCrossSection-1;
@@ -1362,10 +1362,10 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
               v[0] = c[3*j];
               v[1] = c[3*j+1];
               v[2] = c[3*j+2];
-              gluTessVertex( d_tess, v, (void*)j );
+              gluTessVertex(this->tesselator, v, (void*)j);
             }
-          gluTessEndContour( d_tess );
-          gluTessEndPolygon( d_tess );
+          gluTessEndContour(this->tesselator);
+          gluTessEndPolygon(this->tesselator);
         }
 
       if (mask & MASK_TOP)
@@ -1374,8 +1374,8 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
           TessExtrusion top = { c, cs, xz[0], xz[2], dx, dz, n };
           indexFaceNormal( 3*n+2, 3*n+1, 3*n, c, top.N );
 
-          gluTessBeginPolygon( d_tess, &top );
-          gluTessBeginContour( d_tess );
+          gluTessBeginPolygon(this->tesselator, &top);
+          gluTessBeginContour(this->tesselator);
 
           GLdouble v[3];
           // Mesa tesselator doesn;t like closed polys
@@ -1385,10 +1385,10 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
               v[0] = c[3*(j+n)];
               v[1] = c[3*(j+n)+1];
               v[2] = c[3*(j+n)+2];
-              gluTessVertex( d_tess, v, (void*)j );
+              gluTessVertex(this->tesselator, v, (void*)j);
             }
-          gluTessEndContour( d_tess );
-          gluTessEndPolygon( d_tess );
+          gluTessEndContour(this->tesselator);
+          gluTessEndPolygon(this->tesselator);
         }
     }
 
@@ -1872,220 +1872,237 @@ texGenParams( float bounds[],        // xmin,xmax, ymin,ymax, zmin,zmax
 #define INDEX_VTX_VAL(_v,_f,_i) \
  &((_v).v[ 3*(((_v).ni > 0) ? (_v).i[_i] : (_f)[_i]) ])
 
+namespace {
 
-void
-ViewerOpenGL::insertShellConvex( ShellData *s )
-{
-  float N[3];
-  size_t i, nf = 0;                        // Number of faces
+    struct IndexData {
+        const float * v; // data values
+        size_t ni; const long * i; // number of indices, index pointer
+    };
 
-  for (i = 0; i<s->nfaces; ++i)
+    struct ShellData {
+        unsigned int mask;
+        const float * points;
+        size_t nfaces; const long * faces; // face list
+        IndexData texCoord; // texture coordinates and indices
+        IndexData normal; // normals and indices
+        IndexData color; // colors and indices
+        int *texAxes;
+        float *texParams;
+        size_t nf, i;
+    };
+
+    void insertShellConvex(ShellData * s)
     {
-      if (i == 0 || s->faces[i] == -1)
+      float N[3];
+      size_t i, nf = 0;                        // Number of faces
+
+      for (i = 0; i<s->nfaces; ++i)
         {
-          if (i > 0) glEnd();
-          if (i == s->nfaces-1) break;
-
-          glBegin(GL_POLYGON);
-
-          // Per-face attributes
-          if (s->color.v && ! (s->mask & MASK_COLOR_PER_VERTEX))
-            glColor3fv( INDEX_VAL(s->color, nf) );
-
-          if (! (s->mask & MASK_NORMAL_PER_VERTEX))
+          if (i == 0 || s->faces[i] == -1)
             {
-              int i1 = (i == 0) ? 0 : i+1;
-              if (s->normal.v)
-                glNormal3fv( INDEX_VAL(s->normal, nf) );
-              else if (i < s->nfaces - 4 &&
-                       s->faces[i1] >= 0 &&
-                       s->faces[i1+1] >= 0 && s->faces[i1+2] >= 0)
-                {
-                  indexFaceNormal( 3*s->faces[i1], 3*s->faces[i1+1],
-                                   3*s->faces[i1+2], s->points, N );
+              if (i > 0) glEnd();
+              if (i == s->nfaces-1) break;
 
-                  // Lukas: flip normal if primitiv-orientation is clockwise
-                  if (!(s->mask & MASK_CCW))
-                    for (int k=0;k<3;k++) // flip Normal
-                      N[k] = -N[k];
-                        glNormal3fv( N );
+              glBegin(GL_POLYGON);
+
+              // Per-face attributes
+              if (s->color.v && ! (s->mask & Viewer::MASK_COLOR_PER_VERTEX))
+                glColor3fv( INDEX_VAL(s->color, nf) );
+
+              if (! (s->mask & Viewer::MASK_NORMAL_PER_VERTEX))
+                {
+                  int i1 = (i == 0) ? 0 : i+1;
+                  if (s->normal.v)
+                    glNormal3fv( INDEX_VAL(s->normal, nf) );
+                  else if (i < s->nfaces - 4 &&
+                           s->faces[i1] >= 0 &&
+                           s->faces[i1+1] >= 0 && s->faces[i1+2] >= 0)
+                    {
+                      indexFaceNormal( 3*s->faces[i1], 3*s->faces[i1+1],
+                                       3*s->faces[i1+2], s->points, N );
+
+                      // Lukas: flip normal if primitiv-orientation is clockwise
+                      if (!(s->mask & Viewer::MASK_CCW))
+                        for (int k=0;k<3;k++) // flip Normal
+                          N[k] = -N[k];
+                            glNormal3fv( N );
+                    }
                 }
+
+              ++nf;                        //
             }
 
-          ++nf;                        //
+          if (s->faces[i] >= 0)
+            {
+              // Per-vertex attributes
+              if (s->color.v && (s->mask & Viewer::MASK_COLOR_PER_VERTEX) )
+                glColor3fv( INDEX_VTX_VAL(s->color, s->faces, i) );
+
+              if (s->mask & Viewer::MASK_NORMAL_PER_VERTEX)
+                {
+                  if (s->normal.v)
+                    glNormal3fv( INDEX_VTX_VAL(s->normal, s->faces, i) );
+                  else
+                    ; // Generate per-vertex normal here...
+                }
+
+              const float * v = &s->points[3*s->faces[i]];
+              if (s->texCoord.v)
+                {
+                  int tcindex;
+                  if (s->texCoord.ni > 0)
+                    tcindex = 2 * s->texCoord.i[i];
+                  else
+                    tcindex = 2 * s->faces[i];
+                  glTexCoord2f( s->texCoord.v[ tcindex ],
+                                s->texCoord.v[ tcindex+1 ] );
+                }
+              else
+                {
+                  float c0, c1;
+                  c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
+                  c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
+                  glTexCoord2f( c0, c1 );
+                }
+
+              glVertex3fv( v );
+            }
         }
 
-      if (s->faces[i] >= 0)
-        {
-          // Per-vertex attributes
-          if (s->color.v && (s->mask & MASK_COLOR_PER_VERTEX) )
-            glColor3fv( INDEX_VTX_VAL(s->color, s->faces, i) );
+      // Watch out for no terminating -1 in face list
+      // two ways to break out:
+      //   i>0 && i==nfaces-1 && faces[i] == -1
+      //   i==nfaces
+      //
+      if (i>=s->nfaces) {
+        if (s->faces[i-1] >= 0) glEnd();
+      } else {
+        if (s->faces[i] >= 0) glEnd();
+      }
+    }
+}
 
-          if (s->mask & MASK_NORMAL_PER_VERTEX)
-            {
-              if (s->normal.v)
-                glNormal3fv( INDEX_VTX_VAL(s->normal, s->faces, i) );
-              else
+# ifdef GLU_VERSION_1_2
+
+namespace {
+
+    void WINAPI tessShellBegin(GLenum type, void * pdata)
+    {
+        ShellData * s = static_cast<ShellData *>(pdata);
+        float N[3];
+
+        glBegin(type);
+
+        // Per-face attributes
+        if (s->color.v && ! (s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
+            glColor3fv(INDEX_VAL(s->color, s->nf));
+        }
+
+        if (!(s->mask & Viewer::MASK_NORMAL_PER_VERTEX)) {
+            int i1 = (s->i == 0)
+                   ? 0
+                   : s->i - 1;
+            if (s->normal.v) {
+                glNormal3fv(INDEX_VAL(s->normal, s->nf));
+            } else if (s->i < s->nfaces - 4
+                    && s->faces[i1] >= 0
+                    && s->faces[i1 + 1] >= 0
+                    && s->faces[i1 + 2] >= 0) {
+                indexFaceNormal(3 * s->faces[i1],
+                                3 * s->faces[i1 + 1],
+                                3 * s->faces[i1 + 2], s->points, N);
+                // Lukas: flip normal if primitiv-orientation is clockwise
+                if (!(s->mask & Viewer::MASK_CCW)) {
+                    // flip Normal
+                    for (size_t k = 0; k < 3; k++) { N[k] = -N[k]; }
+                }
+                glNormal3fv( N );
+              }
+          }
+    }
+
+    void WINAPI tessShellVertex(void * vdata, void * pdata)
+    {
+        int i = int(vdata);
+        ShellData * s = static_cast<ShellData *>(pdata);
+
+        // Per-vertex attributes
+        if (s->color.v && (s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
+            glColor3fv(INDEX_VTX_VAL(s->color, s->faces, i));
+        }
+
+        if (s->mask & Viewer::MASK_NORMAL_PER_VERTEX) {
+            if (s->normal.v) {
+                glNormal3fv(INDEX_VTX_VAL(s->normal, s->faces, i));
+            } else {
                 ; // Generate per-vertex normal here...
             }
+        }
 
-          const float * v = &s->points[3*s->faces[i]];
-          if (s->texCoord.v)
-            {
-              int tcindex;
-              if (s->texCoord.ni > 0)
+        const float * v = &s->points[3 * s->faces[i]];
+        if (s->texCoord.v) {
+            int tcindex;
+            if (s->texCoord.ni > 0) {
                 tcindex = 2 * s->texCoord.i[i];
-              else
+            } else {
                 tcindex = 2 * s->faces[i];
-              glTexCoord2f( s->texCoord.v[ tcindex ],
-                            s->texCoord.v[ tcindex+1 ] );
             }
-          else
+            glTexCoord2f(s->texCoord.v[tcindex],
+                         s->texCoord.v[tcindex + 1]);
+        } else {
+            float c0, c1;
+            c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
+            c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
+            glTexCoord2f(c0, c1);
+        }
+
+        glVertex3fv(v );
+    }
+
+    void insertShellTess(GLUtesselator * tesselator, ShellData * s)
+    {
+      gluTessCallback(tesselator, GLU_TESS_BEGIN_DATA,
+                      reinterpret_cast<TessCB>(tessShellBegin));
+      gluTessCallback(tesselator, GLU_TESS_VERTEX_DATA,
+                      reinterpret_cast<TessCB>(tessShellVertex));
+      gluTessCallback(tesselator, GLU_TESS_END, glEnd);
+
+      size_t i;
+      for (i = 0; i<s->nfaces; ++i)
+        {
+          if (i == 0 || s->faces[i] == -1)
             {
-              float c0, c1;
-              c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
-              c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
-              glTexCoord2f( c0, c1 );
+              if (i > 0)
+                {
+                  gluTessEndContour(tesselator);
+                  gluTessEndPolygon(tesselator);
+                  ++ s->nf;
+                }
+              if (i == s->nfaces-1) break;
+              gluTessBeginPolygon(tesselator, s);
+              gluTessBeginContour(tesselator);
+              s->i = i;
             }
 
-          glVertex3fv( v );
-        }
-    }
-
-  // Watch out for no terminating -1 in face list
-  // two ways to break out:
-  //   i>0 && i==nfaces-1 && faces[i] == -1
-  //   i==nfaces
-  //
-  if (i>=s->nfaces) {
-    if (s->faces[i-1] >= 0) glEnd();
-  } else {
-    if (s->faces[i] >= 0) glEnd();
-  }
-}
-
-
-#if GLU_VERSION_1_2
-
-static void WINAPI tessShellBegin( GLenum type, void *pdata )
-{
-  ViewerOpenGL::ShellData *s = (ViewerOpenGL::ShellData *)pdata;
-  float N[3];
-
-  glBegin( type );
-
-  // Per-face attributes
-  if (s->color.v && ! (s->mask & Viewer::MASK_COLOR_PER_VERTEX))
-    glColor3fv( INDEX_VAL(s->color, s->nf) );
-
-  if (! (s->mask & Viewer::MASK_NORMAL_PER_VERTEX))
-    {
-      int i1 = s->i == 0 ? 0 : s->i-1;
-      if (s->normal.v)
-        glNormal3fv( INDEX_VAL(s->normal, s->nf) );
-      else if (s->i < s->nfaces - 4 &&
-               s->faces[i1] >= 0 &&
-               s->faces[i1+1] >= 0 && s->faces[i1+2] >= 0)
-        {
-          indexFaceNormal( 3*s->faces[i1], 3*s->faces[i1+1],
-                           3*s->faces[i1+2], s->points, N );
-          // Lukas: flip normal if primitiv-orientation is clockwise
-          if (!(s->mask & Viewer::MASK_CCW))
-            for (int k=0;k<3;k++) // flip Normal
-              N[k] = -N[k];
-          glNormal3fv( N );
-        }
-    }
-}
-
-
-static void WINAPI tessShellVertex( void *vdata, void *pdata )
-{
-  int i = (int)vdata;
-  ViewerOpenGL::ShellData *s = (ViewerOpenGL::ShellData *)pdata;
-
-  // Per-vertex attributes
-  if (s->color.v && (s->mask & Viewer::MASK_COLOR_PER_VERTEX) )
-    glColor3fv( INDEX_VTX_VAL(s->color, s->faces, i) );
-
-  if (s->mask & Viewer::MASK_NORMAL_PER_VERTEX)
-    {
-      if (s->normal.v)
-        glNormal3fv( INDEX_VTX_VAL(s->normal, s->faces, i) );
-      else
-        ; // Generate per-vertex normal here...
-    }
-
-  const float * v = &s->points[3*s->faces[i]];
-  if (s->texCoord.v)
-    {
-      int tcindex;
-      if (s->texCoord.ni > 0)
-        tcindex = 2 * s->texCoord.i[i];
-      else
-        tcindex = 2 * s->faces[i];
-      glTexCoord2f( s->texCoord.v[ tcindex ],
-                    s->texCoord.v[ tcindex+1 ] );
-    }
-  else
-    {
-      float c0, c1;
-      c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
-      c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
-      glTexCoord2f( c0, c1 );
-    }
-
-  glVertex3fv( v );
-}
-
-
-void
-ViewerOpenGL::insertShellTess(ShellData *s)
-{
-  if (! d_tess) d_tess = gluNewTess();
-
-  gluTessCallback(this->d_tess, GLU_TESS_BEGIN_DATA,
-                  reinterpret_cast<TessCB>(tessShellBegin));
-  gluTessCallback(this->d_tess, GLU_TESS_VERTEX_DATA,
-                  reinterpret_cast<TessCB>(tessShellVertex));
-  gluTessCallback(this->d_tess, GLU_TESS_END, glEnd);
-
-  size_t i;
-  for (i = 0; i<s->nfaces; ++i)
-    {
-      if (i == 0 || s->faces[i] == -1)
-        {
-          if (i > 0)
+          if (s->faces[i] >= 0)
             {
-              gluTessEndContour( d_tess );
-              gluTessEndPolygon( d_tess );
-              ++ s->nf;
+              GLdouble v[3];
+              v[0] = s->points[3*s->faces[i]+0];
+              v[1] = s->points[3*s->faces[i]+1];
+              v[2] = s->points[3*s->faces[i]+2];
+              gluTessVertex(tesselator, v, (void*)i);
             }
-          if (i == s->nfaces-1) break;
-          gluTessBeginPolygon( d_tess, s );
-          gluTessBeginContour( d_tess );
-          s->i = i;
         }
 
-      if (s->faces[i] >= 0)
+      // Watch out for no terminating -1 in face list
+      if (i > 1 && s->faces[i-1] >= 0)
         {
-          GLdouble v[3];
-          v[0] = s->points[3*s->faces[i]+0];
-          v[1] = s->points[3*s->faces[i]+1];
-          v[2] = s->points[3*s->faces[i]+2];
-          gluTessVertex( d_tess, v, (void*)i );
+          gluTessEndContour(tesselator);
+          gluTessEndPolygon(tesselator);
         }
-    }
-
-  // Watch out for no terminating -1 in face list
-  if (i > 1 && s->faces[i-1] >= 0)
-    {
-      gluTessEndContour( d_tess );
-      gluTessEndPolygon( d_tess );
     }
 }
-
-#endif // GLU_VERSION_1_2
+# endif // GLU_VERSION_1_2
 
 
 // There are too many arguments to this...
@@ -2166,7 +2183,7 @@ ViewerOpenGL::insertShell(unsigned int mask,
 #if GLU_VERSION_1_2
   // Handle non-convex polys
   if (! (mask & MASK_CONVEX))
-    insertShellTess( &s );
+    insertShellTess(this->tesselator, &s);
   else
 #endif
     insertShellConvex( &s );
@@ -2283,84 +2300,83 @@ Viewer::Object ViewerOpenGL::insertSphere(float radius)
 }
 
 
-#ifdef OPENVRML_HAVE_FREETYPEFONTS
-#if GLU_VERSION_1_2
-static void WINAPI tessTextBegin( GLenum type )
-{
-  glBegin(type);
+# if defined(OPENVRML_HAVE_FREETYPEFONTS) && defined(GLU_VERSION_1_2)
+namespace {
+
+    struct TextData {
+         float cwidth,cheight; // width and height of a character
+    };
+
+    void WINAPI tessTextBegin(GLenum type)
+    {
+        glBegin(type);
+    }
+
+    void WINAPI tessTextVertex(void * vdata, void * pdata)
+    {
+        float v[3];
+        Vertex* td = static_cast<Vertex *>(vdata);
+        TextData *t = static_cast<TextData *>(pdata);
+        float width = t->cwidth;
+        float height = t->cheight;
+        v[0] = td->V[0];
+        v[1] = td->V[1];
+        v[2] = 0.0;
+        float tx = fabs(v[0]/width);
+        float ty = fabs(v[1]/height);
+        glTexCoord2f(tx,ty);
+        glVertex3fv(v);
+    }
+
+    void WINAPI tessTextError(GLenum error_code)
+    {
+        std::cout << "Error in tessellation" << gluErrorString(error_code) << std::endl;
+    }
+
+    void WINAPI tessTextCombine(GLdouble coords[3], void * vertex_data[4],
+                                GLfloat weight[4], void ** outdata)
+    {
+        Vertex* vertex = new Vertex;
+        vertex->V[0] = coords[0];
+        vertex->V[1] = coords[1];
+        *outdata = vertex;
+    }
+
+    void insertTextTess(GLUtesselator * tesselator,
+                        const FontVectoriser & fVector,
+                        TextData & tdata)
+    {
+        gluTessCallback(tesselator, GLU_TESS_BEGIN,
+                        reinterpret_cast<TessCB>(tessTextBegin));
+        gluTessCallback(tesselator, GLU_TESS_VERTEX_DATA,
+                        reinterpret_cast<TessCB>(tessTextVertex));
+        gluTessCallback(tesselator, GLU_TESS_END,
+                        reinterpret_cast<TessCB>(glEnd));
+        gluTessCallback(tesselator, GLU_TESS_ERROR,
+                        reinterpret_cast<TessCB>(tessTextError));
+        gluTessCallback(tesselator, GLU_TESS_COMBINE,
+                        reinterpret_cast<TessCB>(tessTextCombine));
+        int ncontours = fVector.getTotContours();
+        const Contour *contour_list = &fVector.getContourlist();
+        GLdouble vertex[3];
+        gluTessBeginPolygon(tesselator, &tdata);
+        for (size_t j = 0; j < ncontours; j++) {
+            gluTessBeginContour(tesselator);
+            const Contour & contour = contour_list[j];
+            size_t size = contour.size();
+            for (size_t k = 0; k < size; k++){
+                const Vertex* ver = &contour[k];
+                vertex[0] = contour[k].V[0];
+                vertex[1] = contour[k].V[1];
+                vertex[2] = 0.0;
+                gluTessVertex(tesselator,vertex,(void *)ver);
+            }
+            gluTessEndContour(tesselator);
+        }
+        gluTessEndPolygon(tesselator);
+    }
 }
-
-static void WINAPI tessTextVertex( void *vdata, void *pdata )
-{
-  float v[3];
-  Vertex* td = static_cast<Vertex *>(vdata);
-  ViewerOpenGL::TextData *t = static_cast<ViewerOpenGL::TextData *>(pdata);
-  float width = t->cwidth;
-  float height = t->cheight;
-  v[0] = td->V[0];
-  v[1] = td->V[1];
-  v[2] = 0.0;
-  float tx = fabs(v[0]/width);
-  float ty = fabs(v[1]/height);
-  glTexCoord2f(tx,ty);
-  glVertex3fv(v);
-}
-
-static void WINAPI tessTextError(GLenum error_code)
-{
-  std::cout << "Error in tessellation" << gluErrorString(error_code) << std::endl;
-}
-
-static void WINAPI tessTextCombine( GLdouble coords[3], void* vertex_data[4],
-                                    GLfloat weight[4], void** outdata)
-{
-  Vertex* vertex = new Vertex;
-  vertex->V[0] = coords[0];
-  vertex->V[1] = coords[1];
-  *outdata = vertex;
-}
-
-#endif
-#endif
-
-void ViewerOpenGL::insertTextTess(const FontVectoriser & fVector, TextData & tdata)
-{
-#ifdef OPENVRML_HAVE_FREETYPEFONTS 
-#if GLU_VERSION_1_2
- 
-  if (! this->d_tess) this->d_tess = gluNewTess();
-  gluTessCallback(this->d_tess, GLU_TESS_BEGIN,
-                  reinterpret_cast<TessCB>(tessTextBegin));
-  gluTessCallback(this->d_tess, GLU_TESS_VERTEX_DATA,
-                  reinterpret_cast<TessCB>(tessTextVertex));
-  gluTessCallback(this->d_tess, GLU_TESS_END,
-                  reinterpret_cast<TessCB>(glEnd));
-  gluTessCallback(this->d_tess, GLU_TESS_ERROR,
-                  reinterpret_cast<TessCB>(tessTextError));
-  gluTessCallback(this->d_tess, GLU_TESS_COMBINE,
-                  reinterpret_cast<TessCB>(tessTextCombine));
-   int ncontours = fVector.getTotContours();
-   const Contour *contour_list = &fVector.getContourlist();
-   GLdouble vertex[3];
-   gluTessBeginPolygon(this->d_tess,&tdata);
-   for (size_t j = 0; j < ncontours; j++){
-     gluTessBeginContour(this->d_tess);
-     const Contour & contour= contour_list[j];
-     int size = contour.size();
-     for (int k = 0; k < size; k++){
-       const Vertex* ver = &contour[k];
-       vertex[0] = contour[k].V[0];
-       vertex[1] = contour[k].V[1];
-       vertex[2] = 0.0;
-       gluTessVertex(this->d_tess,vertex,(void *)ver);
-      }
-      gluTessEndContour(this->d_tess);
-   }
-   gluTessEndPolygon(this->d_tess);
-
-#endif              // GLU_VERSION_1_2
-#endif              // HAVE_OPENVRML_FREETYPEFONTS
-}
+# endif
 
 /** 
  * @class ViewerOpenGL::insertText
@@ -2503,9 +2519,9 @@ Viewer::Object ViewerOpenGL::insertText(FontFace & fface,
       const FontVectoriser *fVector = fface.getVectoriser(ch);
       if(fVector){
        glFrontFace(fVector->getOrientation() ? GL_CW : GL_CCW );
-       ViewerOpenGL::TextData td = {cwidth,cheight};
+       TextData td = {cwidth,cheight};
        glNormal3f(0.0,0.0,1.0);
-       this->insertTextTess(*fVector,td);
+       this->insertTextTess(this->tesselator, *fVector, td);
        if(fface.getHorizontal())
         stepx = fVector->getHoriadvance();
        else
