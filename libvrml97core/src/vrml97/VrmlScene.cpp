@@ -68,6 +68,7 @@
 //
 
 VrmlScene::VrmlScene( const char *sceneUrl, const char *localCopy ) :
+  d_flags_need_updating(false),
   d_url(0),
   d_urlLocal(0),
   d_namespace(0),
@@ -80,8 +81,7 @@ VrmlScene::VrmlScene( const char *sceneUrl, const char *localCopy ) :
   d_pendingScope(0),
   d_frameRate(0.0),
   d_firstEvent(0),
-  d_lastEvent(0),
-  d_flags_need_updating(false)
+  d_lastEvent(0)
 {
   d_nodes.addToScene(this, sceneUrl);
   d_backgrounds = new VrmlNodeList;
