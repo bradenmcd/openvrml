@@ -5,8 +5,10 @@ endif
 
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
 
-lib_LTLIBRARIES = libantlr.la
-libantlr_la_LDFLAGS = -version-info $(ANTLR_LIBRARY_VERSION)
+lib_LTLIBRARIES = @INSTALL_LIBANTLR@
+noinst_LTLIBRARIES = @NOINSTALL_LIBANTLR@
+EXTRA_LTLIBRARIES = libantlr.la
+libantlr_la_LDFLAGS = -version-info @ANTLR_LIBRARY_VERSION@
 
 libantlr_la_SOURCES = \
 	ANTLRException.cpp \
