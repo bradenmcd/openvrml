@@ -63,18 +63,21 @@ public:
     VrmlNode * get() const;
 
     void reset(VrmlNode * node = 0);
+    void swap(VrmlNodePtr & nodePtr) throw ();
 
 private:
-    void dispose();
+    void dispose() throw ();
+    void share(CountMap::value_type * countPtr) throw ();
 };
 
 
-inline VrmlNodePtr::~VrmlNodePtr() {
-    this->dispose();
-}
+inline VrmlNodePtr::~VrmlNodePtr() { this->dispose(); }
 
-inline VrmlNodePtr::operator bool() const {
-    return this->countPtr;
+inline VrmlNodePtr::operator bool() const { return this->countPtr; }
+
+inline VrmlNodePtr & VrmlNodePtr::operator=(const VrmlNodePtr & nodePtr) {
+    this->share(nodePtr.countPtr);
+    return *this;
 }
 
 inline VrmlNode & VrmlNodePtr::operator*() const {
@@ -91,6 +94,10 @@ inline VrmlNode * VrmlNodePtr::operator->() const {
 
 inline VrmlNode * VrmlNodePtr::get() const {
     return this->countPtr ? this->countPtr->first : 0;
+}
+
+inline void VrmlNodePtr::swap(VrmlNodePtr & nodePtr) throw () {
+    std::swap(this->countPtr, nodePtr.countPtr);
 }
 
 inline bool VrmlNodePtr::operator==(const VrmlNodePtr & nodePtr) const {

@@ -34,17 +34,18 @@ namespace {
  *
  * @param node a pointer to a VrmlNode
  */
-VrmlNodePtr::VrmlNodePtr(VrmlNode * node) {
+VrmlNodePtr::VrmlNodePtr(VrmlNode * node): countPtr(0) {
     if (node) {
-        std::pair<CountMap::iterator, bool>
-                result(countMap.insert(CountMap::value_type(node, 1)));
-        assert(result.first->first == node);
-        this->countPtr = &*result.first;
-        if (!result.second) {
-            ++this->countPtr->second;
+        CountMap::iterator pos = countMap.find(node);
+        if (pos == countMap.end()) {
+            const std::pair<CountMap::iterator, bool>
+                    result(countMap.insert(CountMap::value_type(node, 0)));
+            assert(result.second);
+            assert(result.first->first == node);
+            pos = result.first;
         }
-    } else {
-        this->countPtr = 0;
+        ++pos->second;
+        this->countPtr = &*pos;
     }
 }
 
@@ -58,21 +59,6 @@ VrmlNodePtr::VrmlNodePtr(const VrmlNodePtr & nodePtr):
     if (this->countPtr) {
         ++this->countPtr->second;
     }
-}
-
-/**
- * @brief Assignment operator.
- *
- * @param nodePtr
- */
-VrmlNodePtr & VrmlNodePtr::operator=(const VrmlNodePtr & nodePtr) {
-    if (this->countPtr != nodePtr.countPtr) {
-        this->dispose();
-        if (this->countPtr = nodePtr.countPtr) {
-            ++this->countPtr->second;
-        }
-    }
-    return *this;
 }
 
 /**
@@ -94,14 +80,22 @@ void VrmlNodePtr::reset(VrmlNode * node) {
     }
 }
 
-void VrmlNodePtr::dispose() {
+void VrmlNodePtr::dispose() throw () {
     if (this->countPtr) {
         --this->countPtr->second;
         if (this->countPtr->second == 0) {
             delete this->countPtr->first;
             countMap.erase(this->countPtr->first);
-            this->countPtr = 0;
         }
+        this->countPtr = 0;
+    }
+}
+
+void VrmlNodePtr::share(CountMap::value_type * countPtr) throw () {
+    if (this->countPtr != countPtr) {
+        ++countPtr->second;
+        this->dispose();
+        this->countPtr = countPtr;
     }
 }
 
@@ -115,6 +109,14 @@ void VrmlNodePtr::dispose() {
  * @fn VrmlNodePtr::operator bool() const
  *
  * @brief Automatic conversion to bool.
+ */
+
+/**
+ * @fn VrmlNodePtr & VrmlNodePtr::operator=(const VrmlNodePtr &)
+ *
+ * @brief Assignment operator.
+ *
+ * @param nodePtr
  */
 
 /**
