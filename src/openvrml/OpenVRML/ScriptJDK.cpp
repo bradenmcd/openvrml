@@ -1240,11 +1240,11 @@ jint JNICALL Java_vrml_field_SFImage_getWidth
 }
 
 /**
- * @brief JNI implementation of ConstSFImage::getHeight.
+ * @brief JNI implementation of SFImage::getHeight.
  *
  * @param env JNI environment
- * @param obj ConstSFImage object
- * @return Height of ConstSFImage
+ * @param obj SFImage object
+ * @return Height of SFImage
  */
 jint JNICALL Java_vrml_field_SFImage_getHeight
   (JNIEnv *env, jobject obj)
@@ -1253,11 +1253,11 @@ jint JNICALL Java_vrml_field_SFImage_getHeight
 }
 
 /**
- * @brief JNI implementation of ConstSFImage::getComponents.
+ * @brief JNI implementation of SFImage::getComponents.
  *
  * @param env JNI environment
- * @param obj ConstSFImage object
- * @return Number of components in ConstSFImage
+ * @param obj SFImage object
+ * @return Number of components in SFImage
  */
 jint JNICALL Java_vrml_field_SFImage_getComponents
   (JNIEnv *env, jobject obj)
@@ -1266,11 +1266,11 @@ jint JNICALL Java_vrml_field_SFImage_getComponents
 }
 
 /**
- * @brief JNI implementation of ConstSFImage::getPixels.
+ * @brief JNI implementation of SFImage::getPixels.
  *
  * @param env JNI environment
- * @param obj ConstSFImage object
- * @param pixels Array to fill with ConstSFImage pixels
+ * @param obj SFImage object
+ * @param pixels Array to fill with SFImage pixels
  */
 void JNICALL Java_vrml_field_SFImage_getPixels
   (JNIEnv *env, jobject obj, jbyteArray pixels)
@@ -1278,6 +1278,16 @@ void JNICALL Java_vrml_field_SFImage_getPixels
   Java_vrml_field_ConstSFImage_getPixels(env, obj, pixels);
 }
 
+/**
+ * @brief JNI implementation of SFImage::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFImage object
+ * @param width New width
+ * @param height New height
+ * @param components Number of components
+ * @param pixels New set of pixels
+ */
 void JNICALL Java_vrml_field_SFImage_setValue__III_3B
   (JNIEnv *env, jobject obj, jint width, jint height,
    jint components, jbyteArray pixels)
@@ -1291,6 +1301,13 @@ void JNICALL Java_vrml_field_SFImage_setValue__III_3B
   env->ReleaseByteArrayElements(pixels, pjb, JNI_ABORT);
 }
 
+/**
+ * @brief JNI implementation of SFImage::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFImage object
+ * @param value ConstSFImage to copy value from
+ */
 void JNICALL
 Java_vrml_field_SFImage_setValue__Lvrml_field_ConstSFImage_2
   (JNIEnv *env, jobject obj, jobject value)
@@ -1305,6 +1322,13 @@ Java_vrml_field_SFImage_setValue__Lvrml_field_ConstSFImage_2
   *sfimage = *newSFImage;
 }
 
+/**
+ * @brief JNI implementation of SFImage::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFImage object
+ * @param value SFImage to copy value from
+ */
 void JNICALL
 Java_vrml_field_SFImage_setValue__Lvrml_field_SFImage_2
   (JNIEnv *env, jobject obj, jobject value)
@@ -3809,6 +3833,7 @@ void JNICALL Java_vrml_field_MFRotation_setValue__I_3F(JNIEnv * env,
         MFRotation * const mfrotation =
                 static_cast<MFRotation *>(getFieldValue(env, obj));
         if (!mfrotation) return;
+        mfrotation->setLength(size);
         jfloat * const r = env->GetFloatArrayElements(value, 0);
         if (!r) {
             // Presumably we raised an OutOfMemoryError.
@@ -4577,7 +4602,7 @@ Java_vrml_field_MFTime_insertValue__ILvrml_field_ConstSFTime_2
   MFTime* mftime = static_cast<MFTime*>(getFieldValue(env, obj));
   SFTime* sftime = static_cast<SFTime*>(getFieldValue(env, sftimeObj));
   if (!mftime || !sftime) return;
-  mftime->setElement(index, sftime->get());
+  mftime->insertElement(index, sftime->get());
 }
 
 void JNICALL
@@ -5008,7 +5033,7 @@ Java_vrml_field_MFVec2f_addValue__Lvrml_field_ConstSFVec2f_2
   if (!mfvec2f || !sfvec2f) return;
   size_t curLength = mfvec2f->getLength();
   mfvec2f->setLength(curLength + 1);
-  mfvec2f->insertElement(curLength, sfvec2f->get());
+  mfvec2f->setElement(curLength, sfvec2f->get());
 }
 
 /**
@@ -6311,8 +6336,8 @@ void JNICALL Java_vrml_Browser_deleteRoute
  *
  * @param env JNI environment
  * @param obj JNI version of a Java Browser object.
- * @param jUrlArray ...
- * @param jParameterArray ...
+ * @param jUrlArray URL to load with alternates.
+ * @param jParameterArray Array of parameters to load URL with
  *
  * @todo This method should throw an InvalidVRMLSyntaxException
  *       if the syntax is invalid. Also need to check if
