@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2002, 2003, 2004  Braden McDaniel
+// Copyright 2002, 2003, 2004, 2005  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,6 +29,7 @@
 #   include <stdexcept>
 #   include <utility>
 #   include <boost/shared_ptr.hpp>
+#   include <boost/thread/recursive_mutex.hpp>
 #   include <boost/utility.hpp>
 #   include <openvrml/field_value.h>
 #   include <openvrml/viewer.h>
@@ -301,8 +302,8 @@ namespace openvrml {
     class event_listener;
     class event_emitter;
 
-    template <typename FieldValue>
-    class exposedfield;
+    template <typename FieldValue> class field_value_listener;
+    template <typename FieldValue> class exposedfield;
 
     class node : boost::noncopyable {
         friend std::ostream & operator<<(std::ostream & out, const node & n);
@@ -331,6 +332,27 @@ namespace openvrml {
         friend transform_node * node_cast<transform_node *>(node * n) throw ();
         friend viewpoint_node * node_cast<viewpoint_node *>(node * n) throw ();
 
+        friend class field_value_listener<sfbool>;
+        friend class field_value_listener<sfcolor>;
+        friend class field_value_listener<sffloat>;
+        friend class field_value_listener<sfimage>;
+        friend class field_value_listener<sfint32>;
+        friend class field_value_listener<sfnode>;
+        friend class field_value_listener<sfrotation>;
+        friend class field_value_listener<sfstring>;
+        friend class field_value_listener<sftime>;
+        friend class field_value_listener<sfvec2f>;
+        friend class field_value_listener<sfvec3f>;
+        friend class field_value_listener<mfcolor>;
+        friend class field_value_listener<mffloat>;
+        friend class field_value_listener<mfint32>;
+        friend class field_value_listener<mfnode>;
+        friend class field_value_listener<mfrotation>;
+        friend class field_value_listener<mfstring>;
+        friend class field_value_listener<mftime>;
+        friend class field_value_listener<mfvec2f>;
+        friend class field_value_listener<mfvec3f>;
+
         friend class exposedfield<sfbool>;
         friend class exposedfield<sfcolor>;
         friend class exposedfield<sffloat>;
@@ -352,6 +374,7 @@ namespace openvrml {
         friend class exposedfield<mfvec2f>;
         friend class exposedfield<mfvec3f>;
 
+        mutable boost::recursive_mutex mutex_;
         const node_type & type_;
         boost::shared_ptr<openvrml::scope> scope_;
         openvrml::scene * scene_;
@@ -404,13 +427,15 @@ namespace openvrml {
         virtual bool bounding_volume_dirty() const;
 
     protected:
+        static void emit_event(openvrml::event_emitter & emitter,
+                               double timestamp)
+            throw (std::bad_alloc);
+
         node(const node_type & type,
              const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
-        static void emit_event(openvrml::event_emitter & emitter,
-                               double timestamp)
-            throw (std::bad_alloc);
+        boost::recursive_mutex & mutex() const throw ();
 
     private:
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
@@ -451,6 +476,11 @@ namespace openvrml {
     inline openvrml::scene * node::scene() const throw ()
     {
         return this->scene_;
+    }
+
+    inline boost::recursive_mutex & node::mutex() const throw ()
+    {
+        return this->mutex_;
     }
 
 

@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2004  Braden McDaniel
+// Copyright 2004, 2005  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,10 @@
 # ifndef OPENVRML_EVENT_H
 #   define OPENVRML_EVENT_H
 
+#   include <boost/thread/mutex.hpp>
+#   include <boost/thread/recursive_mutex.hpp>
 #   include <openvrml/field_value.h>
+#   include <openvrml/node.h>
 
 namespace openvrml {
 
@@ -113,6 +116,7 @@ namespace openvrml {
     class event_emitter : boost::noncopyable {
         friend class node;
 
+        mutable boost::recursive_mutex mutex_;
         const field_value & value_;
         std::set<event_listener *> listeners_;
         double last_time_;
@@ -130,6 +134,7 @@ namespace openvrml {
         double last_time() const throw ();
 
     protected:
+        boost::recursive_mutex & mutex() const throw ();
         listener_set & listeners() throw ();
         void last_time(double t) throw ();
 
@@ -138,6 +143,7 @@ namespace openvrml {
     private:
         virtual void emit_event(double timestamp) throw (std::bad_alloc) = 0;
     };
+
 
     template <typename FieldValue>
     class field_value_emitter : public event_emitter {
@@ -170,6 +176,7 @@ namespace openvrml {
     void field_value_emitter<FieldValue>::emit_event(const double timestamp)
         throw (std::bad_alloc)
     {
+        boost::recursive_mutex::scoped_lock lock(this->mutex());
         for (typename listener_set::iterator listener =
                  this->listeners().begin();
              listener != this->listeners().end();
@@ -188,6 +195,7 @@ namespace openvrml {
     field_value_emitter<FieldValue>::
     add(field_value_listener<FieldValue> & listener) throw (std::bad_alloc)
     {
+        boost::recursive_mutex::scoped_lock lock(this->mutex());
         return this->listeners().insert(&listener).second;
     }
 
@@ -196,6 +204,7 @@ namespace openvrml {
     field_value_emitter<FieldValue>::
     remove(field_value_listener<FieldValue> & listener) throw ()
     {
+        boost::recursive_mutex::scoped_lock lock(this->mutex());
         return (this->listeners().erase(&listener) > 0);
     }
 

@@ -1,5 +1,14 @@
 2005-01-16 Braden McDaniel  <braden@endoframe.com>
 
+	Added mutexes for node and event_emitter.
+
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/event.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+
+2005-01-16 Braden McDaniel  <braden@endoframe.com>
+
 	Eliminated unnecessary inclusion of <iostream>.
 
 	* src/libopenvrml/openvrml/Vrml97Parser.cpp

@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2004  Braden McDaniel
+// Copyright 2004, 2005  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -411,6 +411,16 @@ event_emitter::~event_emitter() throw ()
 {}
 
 /**
+ * @brief Get the mutex for the <code>event_emitter</code>.
+ *
+ * @return a reference to the <code>event_emitter</code>'s mutex.
+ */
+boost::recursive_mutex & event_emitter::mutex() const throw ()
+{
+    return this->mutex_;
+}
+
+/**
  * @brief A reference to the <code>field_value</code> for the
  *        <code>event_emitter</code>.
  *
@@ -449,6 +459,7 @@ event_emitter::listener_set & event_emitter::listeners() throw ()
  */
 double event_emitter::last_time() const throw ()
 {
+    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->last_time_;
 }
 
@@ -459,6 +470,7 @@ double event_emitter::last_time() const throw ()
  */
 void event_emitter::last_time(const double t) throw ()
 {
+    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->last_time_ = t;
 }
 
