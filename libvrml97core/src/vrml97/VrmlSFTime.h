@@ -23,7 +23,7 @@
 #include "VrmlField.h"
 
 
-class VrmlSFTime : public VrmlSField {
+class VrmlSFTime : public VrmlField {
 public:
 
   VrmlSFTime(double value = 0.0);

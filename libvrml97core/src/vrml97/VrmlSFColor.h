@@ -23,7 +23,7 @@
 #include "VrmlField.h"
 
 
-class VrmlSFColor : public VrmlSField {
+class VrmlSFColor : public VrmlField {
 public:
 
   VrmlSFColor(float r = 1.0, float g = 1.0, float b = 1.0);

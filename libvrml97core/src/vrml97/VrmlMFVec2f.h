@@ -30,7 +30,7 @@
 // change.
 //
 
-class VrmlMFVec2f : public VrmlMField {
+class VrmlMFVec2f : public VrmlField {
 private:
 
   class FData {			// reference counted float data

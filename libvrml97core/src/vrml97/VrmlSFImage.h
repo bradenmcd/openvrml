@@ -36,7 +36,7 @@
  * red/green/blue.
  *
  */
-class VrmlSFImage : public VrmlSField {
+class VrmlSFImage : public VrmlField {
 public:
 
   /**

@@ -17,12 +17,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
-#ifndef  _VRMLSFROTATION_
-#define  _VRMLSFROTATION_
+#ifndef  VRMLSFROTATION_H
+#define  VRMLSFROTATION_H
 
 #include "VrmlField.h"
 
-class VrmlSFRotation : public VrmlSField {
+class VrmlSFRotation : public VrmlField {
 public:
 
   VrmlSFRotation(float x = 0.0, float y = 0.0, float z = 1.0, float r = 0.0);
@@ -58,4 +58,4 @@ private:
 
 };
 
-#endif _VRMLSFROTATION_
+#endif

@@ -22,7 +22,7 @@
 
 #include "VrmlField.h"
 
-class VrmlSFInt : public VrmlSField {
+class VrmlSFInt : public VrmlField {
 public:
 
   VrmlSFInt(int value = 0);

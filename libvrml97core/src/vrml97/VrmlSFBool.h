@@ -23,7 +23,7 @@
 #include "VrmlField.h"
 
 
-class VrmlSFBool : public VrmlSField {
+class VrmlSFBool : public VrmlField {
 public:
 
   VrmlSFBool(bool value = false);

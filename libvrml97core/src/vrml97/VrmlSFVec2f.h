@@ -23,7 +23,7 @@
 #include "VrmlField.h"
 
 
-class VrmlSFVec2f : public VrmlSField {
+class VrmlSFVec2f : public VrmlField {
 public:
 
   VrmlSFVec2f(float x = 0.0, float y = 0.0);

@@ -22,7 +22,7 @@
 
 #include "VrmlField.h"
 
-class VrmlSFString : public VrmlSField {
+class VrmlSFString : public VrmlField {
 public:
 
   VrmlSFString(const char *s = 0);

@@ -17,13 +17,13 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
-#ifndef  _VRMLSFVEC3F_
-#define  _VRMLSFVEC3F_
+#ifndef  VRMLSFVEC3F_H
+#define  VRMLSFVEC3F_H
 
 #include "VrmlField.h"
 
 
-class VrmlSFVec3f : public VrmlSField {
+class VrmlSFVec3f : public VrmlField {
 public:
 
   VrmlSFVec3f(float x = 0.0, float y = 0.0, float z = 0.0);
@@ -64,4 +64,4 @@ private:
 
 };
 
-#endif _VRMLSFVEC3F_
+#endif

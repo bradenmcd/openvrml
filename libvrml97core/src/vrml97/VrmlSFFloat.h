@@ -23,7 +23,7 @@
 #include "VrmlField.h"
 
 
-class VrmlSFFloat : public VrmlSField {
+class VrmlSFFloat : public VrmlField {
 public:
 
   VrmlSFFloat(float value = 0.0);

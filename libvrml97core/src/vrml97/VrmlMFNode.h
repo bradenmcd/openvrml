@@ -25,7 +25,7 @@
 
 class VrmlNode;
 
-class VrmlMFNode : public VrmlMField {
+class VrmlMFNode : public VrmlField {
 public:
 
   VrmlMFNode();

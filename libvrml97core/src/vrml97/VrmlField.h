@@ -17,10 +17,6 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
-//  VrmlField.h
-//  Each field type should support clone, get, and set methods. (Most of these
-//  field types could be handled by SF and MF templates ...)
-//
 
 #ifndef VRMLFIELD_H
 #define VRMLFIELD_H
@@ -153,12 +149,4 @@ public:
 
 };
 
-// Abstract base classes for single-valued & multi-valued fields
-// So far they don't do anything, so they don't really exist yet,
-// but I would like to make VrmlMFields be ref counted (I think)...
-
-#define VrmlSField VrmlField
-#define VrmlMField VrmlField
-
-
-#endif VRMLFIELD_H
+#endif

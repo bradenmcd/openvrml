@@ -24,7 +24,7 @@
 #   include "VrmlField.h"
 
 
-class VrmlMFString : public VrmlMField {
+class VrmlMFString : public VrmlField {
 public:
 
   VrmlMFString();

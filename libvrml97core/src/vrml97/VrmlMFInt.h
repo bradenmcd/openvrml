@@ -30,7 +30,7 @@
 // change.
 //
 
-class VrmlMFInt : public VrmlMField {
+class VrmlMFInt : public VrmlField {
 private:
 
   class IData {			// reference counted int data
