@@ -23,10 +23,10 @@
 # endif
 
 # include <algorithm>
-# include <sstream>
+# include <stdio.h>
 # include "node.h"
-# include "scope.h"
-# include "browser.h"
+# include "VrmlNamespace.h"
+# include "VrmlScene.h"
 # include "MathUtils.h"
 # include "bvolume.h"
 # include "VrmlRenderContext.h"
@@ -52,38 +52,12 @@ namespace OpenVRML {
  * @param message   An informative error message.
  */
 UnsupportedInterface::UnsupportedInterface(const std::string & message):
-    std::runtime_error(message)
-{}
-
-/**
- * @brief Constructor.
- *
- * @param message   An informative error message.
- */
-UnsupportedInterface::UnsupportedInterface(const NodeType & nodeType,
-                                           const std::string & interfaceId):
-    std::runtime_error(nodeType.id + " has no interface \"" + interfaceId + '"')
-{}
-
-/**
- * @brief Constructor.
- *
- * @param message   An informative error message.
- */
-UnsupportedInterface::UnsupportedInterface(const NodeType & nodeType,
-                                           const NodeInterface::Type interfaceType,
-                                           const std::string & interfaceId):
-    std::runtime_error(nodeType.id + " has no "
-                       + static_cast<std::ostringstream &>
-                         (std::ostringstream() << interfaceType).str()
-                       + " \"" + interfaceId + '"')
-{}
+        std::invalid_argument(message) {}
 
 /**
  * @brief Destructor.
  */
-UnsupportedInterface::~UnsupportedInterface() throw ()
-{}
+UnsupportedInterface::~UnsupportedInterface() throw () {}
 
 
 /**
@@ -97,70 +71,6 @@ UnsupportedInterface::~UnsupportedInterface() throw ()
  *
  * @brief Identify the type of interface.
  */
-
-namespace {
-    const char * const nodeInterfaceTypeId_[] = {
-        "<invalid interface type>",
-        "eventIn",
-        "eventOut",
-        "exposedField",
-        "field"
-    };
-}
-
-/**
- * @brief Stream inserter.
- *
- * @relates NodeInterface
- *
- * If @p type is NodeInterface::invalidType, @c failbit is set on @p out.
- *
- * @param out   an output stream.
- * @param type  a node interface type.
- *
- * @return @p out.
- */
-std::ostream & operator<<(std::ostream & out, const NodeInterface::Type type)
-{
-    if (type == NodeInterface::invalidType) {
-        out.setstate(std::ios_base::failbit);
-    } else {
-        out << nodeInterfaceTypeId_[type];
-    }
-    return out;
-}
-
-/**
- * @brief Stream extractor.
- *
- * @relates NodeInterface
- *
- * @param in    an input stream.
- * @param type  a node interface type.
- *
- * @return @p in.
- */
-std::istream & operator>>(std::istream & in, NodeInterface::Type & type)
-{
-    using std::find;
-    using std::string;
-
-    string interfaceTypeId;
-    in >> interfaceTypeId;
-    
-    static const char * const * const begin =
-            nodeInterfaceTypeId_ + NodeInterface::eventIn;
-    static const char * const * const end =
-            nodeInterfaceTypeId_ + NodeInterface::field + 1;
-    const char * const * const pos = find(begin, end, interfaceTypeId);
-    if (pos != end) {
-        type = NodeInterface::Type(pos - begin);
-    } else {
-        in.setstate(std::ios_base::failbit);
-    }
-    return in;
-}
-
 
 /**
  * @var NodeInterface::type
@@ -192,30 +102,19 @@ NodeInterface::NodeInterface(const Type type, const FieldValue::Type fieldType,
         type(type), fieldType(fieldType), id(id) {}
 
 /**
- * @fn bool operator==(const NodeInterface & lhs, const NodeInterface & rhs) throw ()
- *
- * @relates NodeInterface
- *
  * @brief Compare for equality.
  *
- * @param lhs   a NodeInterface.
  * @param rhs   a NodeInterface.
+ * @param lhs   a NodeInterface.
  *
  * @return @c true if the two NodeInterfaces are equal, @c false otherwise.
  */
+bool operator==(const NodeInterface & rhs, const NodeInterface & lhs) {
+    return rhs.type == lhs.type
+            && rhs.fieldType == lhs.fieldType
+            && rhs.id == lhs.id;
+}
 
-/**
- * @fn bool operator!=(const NodeInterface & lhs, const NodeInterface & rhs) throw ()
- *
- * @relates NodeInterface
- *
- * @brief Compare for inequality.
- *
- * @param lhs   a NodeInterface.
- * @param rhs   a NodeInterface.
- *
- * @return @c true if the two NodeInterfaces are equal, @c false otherwise.
- */
 
 /**
  * @class NodeInterfaceSet
@@ -288,50 +187,6 @@ void NodeInterfaceSet::add(const NodeInterface & nodeInterface)
  *       NodeInterface in the set.
  */
 
-namespace {
-    struct InterfaceIdMatches_ :
-            std::unary_function<OpenVRML::NodeInterface, bool> {
-        explicit InterfaceIdMatches_(const std::string & interfaceId):
-            interfaceId(&interfaceId)
-        {}
-
-        bool operator()(const OpenVRML::NodeInterface & interface) const
-        {
-            static const char eventInPrefix[] = "set_";
-            static const char eventOutSuffix[] = "_changed";
-            
-            return interface.id == *this->interfaceId
-                || (interface.type == NodeInterface::exposedField
-                    && (eventInPrefix + interface.id == *this->interfaceId
-                        || (interface.id + eventOutSuffix == *this->interfaceId)))
-                || (interface.type == NodeInterface::eventIn
-                    && interface.id == eventInPrefix + *this->interfaceId)
-                || (interface.type == NodeInterface::eventOut
-                    && interface.id == *this->interfaceId + eventOutSuffix);
-        }
-
-    private:
-        const std::string * interfaceId;
-    };
-}
-
-/**
- * @brief Find an interface matching @a interfaceId @p id.
- *
- * If no interface is found with an @a interfaceId that is an exact match for
- * @p id, this method will look for @c set_ and @c _changed variants.
- *
- * @param id    the interface id to look for.
- *
- * @return a const_iterator to the interface, or NodeInterfaceSet::end if no
- *      interface is found.
- */
-NodeInterfaceSet::const_iterator
-NodeInterfaceSet::findInterface(const std::string & id) const throw ()
-{
-    return std::find_if(this->begin(), this->end(), InterfaceIdMatches_(id));
-}
-
 
 /**
  * @class NodeClass
@@ -346,47 +201,25 @@ NodeInterfaceSet::findInterface(const std::string & id) const throw ()
  */
 
 /**
- * @var Browser & NodeClass::browser
+ * @var VrmlScene & NodeClass::scene
  *
- * @brief The Browser associated with this NodeClass.
+ * @brief The scene associated with this NodeClass.
  */
 
 /**
  * @brief Constructor.
  *
- * A NodeClass is constructed using a Browser. All Node instances that share
- * a particular NodeClass "belong to" the Browser associated with the NodeClass.
+ * A NodeClass is constructed using a VrmlScene. All Node instances that share
+ * a particular NodeClass are "in" the VrmlScene associated with the NodeClass.
  *
- * @param browser   the Browser to be associated with the NodeClass.
+ * @param scene the VrmlScene to be associated with the NodeClass.
  */
-NodeClass::NodeClass(Browser & browser) throw (): browser(browser) {}
+NodeClass::NodeClass(VrmlScene & scene) throw (): scene(scene) {}
 
 /**
  * @brief Destructor.
  */
 NodeClass::~NodeClass() throw () {}
-
-/**
- * @brief NodeClass-specific initialization.
- *
- * This method is called during initialization of a Browser object with a new
- * root Scene. It is called after the individual node instances have been
- * initialized, and before the world starts running.
- *
- * @param viewer    the Viewer to render to.
- */
-void NodeClass::initialize(const double timestamp) throw ()
-{}
-
-/**
- * @brief NodeClass-specific rendering.
- *
- * The default implementation of this method does nothing.
- *
- * @param viewer    the Viewer to render to.
- */
-void NodeClass::render(Viewer & viewer) throw ()
-{}
 
 /**
  * @fn const NodeTypePtr NodeClass::createType(const std::string & id, const NodeInterfaceSet & interfaces) throw (std::invalid_argument, std::bad_alloc)
@@ -600,45 +433,23 @@ FieldValue::Type NodeType::hasField(const std::string & id) const throw () {
 }
 
 /**
- * @fn const NodeInterfaceSet & NodeType::getInterfaces() const throw ()
+ * @brief Determine if the node type has an interface.
  *
- * @brief Get the set of interfaces for the NodeType.
+ * If the node type has an interface named @p id, this method will return the
+ * type identifier corresponding to the data type accepted by the interface.
  *
- * @return the set of interfaces.
+ * @param id    the name of the interface.
+ *
+ * @return the data type of the interface, or FieldValue::invalidType if no
+ *      such interface exists.
  */
-
-/**
- * @fn const NodePtr NodeType::createNode(const ScopePtr & scope) const throw (std::bad_alloc)
- *
- * @brief Create a new Node with this NodeType.
- *
- * @param scope         the Scope that the new node should belong to.
- *
- * @return a NodePtr to a new Node.
- *
- * @excpetion std::bad_alloc    if memory allocation fails.
- */
-
-
-/**
- * @class FieldValueTypeMismatch
- *
- * @brief Thrown when field value types do not match, generally in a @c ROUTE
- *      or @c IS.
- */
-
-/**
- * @brief Constructor.
- */
-FieldValueTypeMismatch::FieldValueTypeMismatch():
-    std::runtime_error("Field value types do not match.")
-{}
-
-/**
- * @brief Destructor.
- */
-FieldValueTypeMismatch::~FieldValueTypeMismatch() throw ()
-{}
+FieldValue::Type NodeType::hasInterface(const std::string & id) const throw () {
+    FieldValue::Type retval;
+    if ((retval = this->hasEventIn(id)))      { return retval; }
+    if ((retval = this->hasEventOut(id)))     { return retval; }
+    if ((retval = this->hasExposedField(id))) { return retval; }
+    return (retval = this->hasField(id));
+}
 
 
 /**
@@ -740,13 +551,6 @@ Node::Route::Route(const Route & route): fromEventOut(route.fromEventOut),
  */
 
 /**
- * @brief Default constructor.
- */
-Node::PolledEventOutValue::PolledEventOutValue():
-    modified(false)
-{}
-
-/**
  * @brief Constructor.
  *
  * @param value     the value.
@@ -766,31 +570,10 @@ Node::PolledEventOutValue::PolledEventOutValue(const FieldValuePtr & value,
  * @brief Constructor.
  *
  * @param type  the NodeType associated with the instance.
- * @param scope the Scope associated with the instance.
  */
-Node::Node(const NodeType & type, const ScopePtr & scope):
-        nodeType(type),
-        scope(scope),
-        scene(0),
-        d_modified(false),
-        d_bvol_dirty(false),
+Node::Node(const NodeType & type):
+        nodeType(type), d_modified(false), d_bvol_dirty(false),
         visited(false) {}
-
-typedef std::map<std::string, Node *> NamedNodeMap;
-
-namespace {
-    
-    struct NodeIs_ : std::unary_function<NamedNodeMap::value_type, bool> {
-        NodeIs_(const Node & node): node(&node) {}
-        
-        bool operator()(const NamedNodeMap::value_type & value) const {
-            return value.second == this->node;
-        }
-        
-    private:
-        const Node * node;
-    };
-}
 
 /**
  * @brief Destructor.
@@ -798,18 +581,14 @@ namespace {
  * Remove node name (if any) from the scope.
  */
 Node::~Node() throw () {
-    //
-    // If this is the primordial node in a prototype definition, this->scope
-    // will be null.
-    //
-    if (this->scope) {
-        using std::find_if;
-        const NamedNodeMap::iterator end = this->scope->namedNodeMap.end();
-        const NamedNodeMap::iterator pos =
-                find_if(this->scope->namedNodeMap.begin(), end, NodeIs_(*this));
-        if (pos != end) { this->scope->namedNodeMap.erase(pos); }
+    // Remove the node's name (if any) from the map...
+    if (!this->id.empty()) {
+        assert(this->nodeType.nodeClass.scene.getScope());
+        this->nodeType.nodeClass.scene.getScope()->removeNodeName(*this);
     }
 }
+
+
 
 /**
  * @brief Accept a visitor.
@@ -830,7 +609,7 @@ Node::~Node() throw () {
  * @return @c true if the visitor is accepted (the node
  *         <em>has not</em> been visited during this traversal),
  *         @c false otherwise (the node <em>has</em> been
- *         visited during this traversal).
+ *         visited during this traversal.
  */
 bool Node::accept(NodeVisitor & visitor) {
     if (!this->visited) {
@@ -848,8 +627,7 @@ bool Node::accept(NodeVisitor & visitor) {
  * Typically used by a visitor (a class that implements NodeVisitor)
  * after traversal is complete.
  */
-void Node::resetVisitedFlag() throw ()
-{
+void Node::resetVisitedFlag() {
     if (this->visited) {
         //
         // Set this node's visited flag to false.
@@ -859,24 +637,10 @@ void Node::resetVisitedFlag() throw ()
         //
         // Recursively call this method on any child nodes.
         //
-        const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
-        for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
-                interface != interfaces.end(); ++interface) {
-            if (interface->type == NodeInterface::exposedField
-                    || interface->type == NodeInterface::field) {
-                if (interface->fieldType == FieldValue::sfnode) {
-                    const SFNode & sfnode =
-                        static_cast<const SFNode &>(this->getField(interface->id));
-                    if (sfnode.get()) { sfnode.get()->resetVisitedFlag(); }
-                } else if (interface->fieldType == FieldValue::mfnode) {
-                    const MFNode & mfnode =
-                        static_cast<const MFNode &>(this->getField(interface->id));
-                    for (size_t i = 0; i < mfnode.getLength(); ++i) {
-                        if (mfnode.getElement(i)) {
-                            mfnode.getElement(i)->resetVisitedFlag();
-                        }
-                    }
-                }
+        const MFNode & children = this->getChildren();
+        for (size_t i = 0; i < children.getLength(); ++i) {
+            if (children.getElement(i)) {
+                children.getElement(i)->resetVisitedFlag();
             }
         }
     }
@@ -885,11 +649,18 @@ void Node::resetVisitedFlag() throw ()
 /**
  * @brief Set the nodeId of the node.
  *
- * @param nodeId   the ID for the node.
+ * Some one else (the parser) needs to tell the scene about the name for
+ * use in USE/ROUTEs.
+ *
+ * @param nodeName a string
+ * @param ns a pointer to the VrmlNamespace to which this node should
+ *           belong
  */
-void Node::setId(const std::string & nodeId) {
-    assert(this->scope);
-    this->scope->namedNodeMap[nodeId] = this;
+void Node::setId(const std::string & nodeId, VrmlNamespace * const ns) {
+    this->id = nodeId;
+    if (!nodeId.empty() && ns) {
+        ns->addNodeName(*this);
+    }
 }
 
 /**
@@ -897,74 +668,17 @@ void Node::setId(const std::string & nodeId) {
  *
  * @return the nodeId
  */
-const std::string Node::getId() const {
-    using std::find_if;
-    assert(this->scope);
-    const NamedNodeMap::iterator end = this->scope->namedNodeMap.end();
-    const NamedNodeMap::iterator pos =
-            find_if(this->scope->namedNodeMap.begin(), end, NodeIs_(*this));
-    return (pos != end) ? pos->first : std::string();
-}
+const std::string & Node::getId() const { return this->id; }
 
 void Node::addEventOutIS(const std::string & eventOutId,
                          PolledEventOutValue * const eventOutValue)
         throw (UnsupportedInterface, std::bad_alloc) {
     if (!this->nodeType.hasEventOut(eventOutId)) {
-        throw UnsupportedInterface(this->nodeType.id
-                                   + " node has no eventOut \"" + eventOutId
-                                   + "\"");
+        throw UnsupportedInterface(this->nodeType.id + " node has no eventOut "
+                                   + eventOutId);
     }
     const EventOutISMap::value_type value(eventOutId, eventOutValue);
     this->eventOutISMap.insert(value);
-}
-
-/**
- * @brief Initialize the Node.
- *
- * This method works recursively, initializing any child nodes to the same
- * @p scene and @p timestamp. If the node has already been initialized, this
- * method has no effect.
- *
- * @param scene     the Scene to which the Node will belong.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void Node::initialize(Scene & scene, const double timestamp)
-    throw (std::bad_alloc)
-{
-    if (!this->scene) {
-        this->scene = &scene;
-        this->initializeImpl(timestamp);
-        
-        const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
-        for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
-                interface != interfaces.end(); ++interface) {
-            if (interface->type == NodeInterface::exposedField
-                    || interface->type == NodeInterface::field) {
-                if (interface->fieldType == FieldValue::sfnode) {
-                    assert(dynamic_cast<const SFNode *>
-                           (&this->getField(interface->id)));
-                    const SFNode & sfnode = static_cast<const SFNode &>
-                                            (this->getField(interface->id));
-                    if (sfnode.get()) {
-                        sfnode.get()->initialize(scene, timestamp);
-                    }
-                } else if (interface->fieldType == FieldValue::mfnode) {
-                    assert(dynamic_cast<const MFNode *>
-                           (&this->getField(interface->id)));
-                    const MFNode & mfnode = static_cast<const MFNode &>
-                                            (this->getField(interface->id));
-                    for (size_t i = 0; i < mfnode.getLength(); ++i) {
-                        if (mfnode.getElement(i)) {
-                            mfnode.getElement(i)->initialize(scene, timestamp);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    assert(this->scene == &scene);
 }
 
 /**
@@ -1277,7 +991,13 @@ Vrml97Node::Anchor * Node::toAnchor() const { return 0; }
 
 Vrml97Node::AudioClip * Node::toAudioClip() const { return 0; }
 
+Vrml97Node::Background * Node::toBackground() const { return 0; }
+
+Vrml97Node::Fog * Node::toFog() const { return 0; }
+
 Vrml97Node::Group * Node::toGroup() const { return 0; }
+
+Vrml97Node::Inline * Node::toInline() const { return 0; }
 
 Vrml97Node::AbstractLight * Node::toLight() const { return 0; }
 
@@ -1353,7 +1073,7 @@ const Node::RouteList & Node::getRoutes() const {
  */
 void Node::setModified() {
     this->d_modified = true;
-    this->nodeType.nodeClass.browser.setModified(); 
+    this->nodeType.nodeClass.scene.setModified(); 
 }
 
 bool Node::isModified() const { return this->d_modified; }
@@ -1364,10 +1084,9 @@ bool Node::isModified() const { return this->d_modified; }
  *
  * Convenience function used by updateModified.
  *
- * @param path  stack of ancestor nodes.
- * @param mod   set modified flag to this value.
- * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
+ * @param path
+ * @param mod
+ * @param flags
  */
 void Node::markPathModified(NodePath& path, bool mod, int flags) {
   NodePath::iterator i;
@@ -1394,24 +1113,23 @@ void Node::markPathModified(NodePath& path, bool mod, int flags) {
   }
 }
 
+
+void Node::updateModified(NodePath& path, int flags) {
+  if (this->d_modified||this->d_bvol_dirty) markPathModified(path, true, flags);
+}
+
+
 /**
- * @brief Propagate the bvolume dirty flag from children to parents.
- *
- * I don't like this at all, but it's not worth making it pretty
+ * Propagate the bvolume dirty flag from children to parents. I
+ * don't like this at all, but it's not worth making it pretty
  * because the need for it will go away when parent pointers are
  * implemented.
  *
- * @param path  stack of ancestor nodes.
+ * @param path stack of ancestor nodes
+ * @param mod set modified flag to this value
  * @param flags 1 indicates normal modified flag, 2 indicates the
- *              bvolume dirty flag, 3 indicates both.
+ *              bvolume dirty flag, 3 indicates both
  */
-void Node::updateModified(NodePath & path, int flags)
-{
-    if (this->d_modified || this->d_bvol_dirty) {
-        this->markPathModified(path, true, flags);
-    }
-}
-
 // note not virtual
 //
 void Node::updateModified(int flags)
@@ -1492,7 +1210,7 @@ void Node::setBVolume(const BVolume & v) {
 void Node::setBVolumeDirty(bool f) {
     this->d_bvol_dirty = f;
     if (f) { // only if dirtying, not clearing
-        this->nodeType.nodeClass.browser.d_flags_need_updating = true;
+        this->nodeType.nodeClass.scene.d_flags_need_updating = true;
     }
 }
 
@@ -1501,27 +1219,26 @@ void Node::setBVolumeDirty(bool f) {
  * recalculated.
  */
 bool Node::isBVolumeDirty() const {
-    if (this->nodeType.nodeClass.browser.d_flags_need_updating) {
-        this->nodeType.nodeClass.browser.updateFlags();
-        this->nodeType.nodeClass.browser.d_flags_need_updating = false;
+    if (this->nodeType.nodeClass.scene.d_flags_need_updating) {
+        this->nodeType.nodeClass.scene.updateFlags();
+        this->nodeType.nodeClass.scene.d_flags_need_updating = false;
     }
     return this->d_bvol_dirty;
 }
 
 /**
- * @brief Render this node.
+ * Render this node. Actually, most of the rendering work is
+ * delegated to the viewer, but this method is responsible for
+ * traversal to the node's renderable children, including
+ * culling. Each node class needs to implement this routine
+ * appropriately. It's not abstract since it doesn't make sense to
+ * call render on some nodes. Alternative would be to break render
+ * out into a seperate mixins class, but that's probably overkill.
  *
- * Actually, most of the rendering work is delegated to the viewer, but this
- * method is responsible for traversal to the node's renderable children,
- * including culling. Each node class needs to implement this routine
- * appropriately. It's not abstract since it doesn't make sense to call render
- * on some nodes. Alternative would be to break render out into a seperate
- * mixins class, but that's probably overkill.
- *
- * @param v     viewer implementation responsible for actually doing the
- *              drawing.
- * @param rc    generic context argument, holds things like the
- *              accumulated modelview transform.
+ * @param v viewer implementation responsible for actually doing the
+ *          drawing
+ * @param rc generic context argument, holds things like the
+ *          accumulated modelview transform.
  */
 void Node::render(Viewer* v, VrmlRenderContext rc)
 {
@@ -1554,6 +1271,24 @@ void Node::accumulateTransform(Node *) {}
 Node * Node::getParentTransform() { return 0; }
 
 /**
+ * Compute the inverse of the transform above a viewpoint node. Just
+ * like the version that takes a matrix, but instead calls
+ * Viewer::setTransform at each level. The idea is to call this
+ * routine right before the start of a render traversal.
+ *
+ * @see getParentTransform
+ *
+ * @deprecated This method is (gradually) being replaces by
+ *      inverseTranform(double[4][4]) and should no longer be used.
+ */
+void Node::inverseTransform(Viewer *v)
+{
+  Node *parentTransform = getParentTransform();
+  if (parentTransform)
+    parentTransform->inverseTransform(v);
+}
+
+/**
  * Compute the inverse of the transform stack above a Viewpoint
  * node. This is safe since the behavior of multi-parented
  * Viewpoint nodes is undefined. May be called at any time.
@@ -1573,12 +1308,54 @@ void Node::inverseTransform(VrmlMatrix & M) {
 }
 
 /**
+ * @brief Get this node's child nodes as an MFNode.
+ *
+ * This method is intended to provide generalized access to a node's child
+ * nodes. The default implementation returns an empty MFNode. Node
+ * implementations that include child nodes should override this method to
+ * return an appropriate MFNode.
+ *
+ * The returned MFNode should include <strong>all</strong> of the node's
+ * child nodes, from all of the node's SFNode or MFNode fields. Since fields
+ * do not have a defined order, no ordering is defined for the nodes that
+ * occur in the returned MFNode. Therefore, traversals that depend on any
+ * such ordering should not use this method.
+ *
+ * @return an MFNode containing any children of this node.
+ */
+const MFNode Node::getChildren() const {
+    MFNode children;
+    const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
+    for (NodeInterfaceSet::const_iterator itr(interfaces.begin());
+            itr != interfaces.end(); ++itr) {
+        if (itr->type == NodeInterface::exposedField
+                || itr->type == NodeInterface::field) {
+            if (itr->fieldType == FieldValue::sfnode) {
+                assert(dynamic_cast<const SFNode *>(&this->getField(itr->id)));
+                children.setLength(children.getLength() + 1);
+                children.setElement(children.getLength() - 1,
+                        static_cast<const SFNode &>(this->getField(itr->id)).get());
+            } else if (itr->fieldType == FieldValue::mfnode) {
+                assert(dynamic_cast<const MFNode *>(&this->getField(itr->id)));
+                const MFNode & nodes =
+                        static_cast<const MFNode &>(this->getField(itr->id));
+                const size_t oldLength = children.getLength();
+                children.setLength(oldLength + nodes.getLength());
+                for (size_t i = 0; i < nodes.getLength(); ++i) {
+                    children.setElement(oldLength + i, nodes.getElement(i));
+                }
+            }
+        }
+    }
+    return children;
+}
+
+/**
  * @brief Send an event from this node.
  */
 void Node::emitEvent(const std::string & id, const FieldValue & value,
                      const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    assert(this->getScene());
     EventOutISMap::const_iterator pos = this->eventOutISMap.find(id);
     if (pos != this->eventOutISMap.end()) {
         pos->second->value->assign(value);
@@ -1588,9 +1365,10 @@ void Node::emitEvent(const std::string & id, const FieldValue & value,
     for (RouteList::const_iterator itr = this->routes.begin();
             itr != this->routes.end(); ++itr) {
         if (id == itr->fromEventOut) {
-            FieldValue * const eventValue = value.clone().release();
-            this->getScene()->browser.queueEvent(timestamp, eventValue,
-                                                 itr->toNode, itr->toEventIn);
+            FieldValue * const eventValue = value.clone();
+            this->nodeType.nodeClass.scene
+                    .queueEvent(timestamp, eventValue,
+                                itr->toNode, itr->toEventIn);
         }
     }
 }
@@ -1619,9 +1397,8 @@ namespace {
 
 std::ostream & Node::print(std::ostream & out, const size_t indent) const {
     for (size_t i = 0; i < indent; ++i) { out << ' '; }
-    std::string nodeId = this->getId();
-    if (!nodeId.empty()) { out << "DEF " << nodeId << " "; }
-    out << this->nodeType.id << " { ";
+    if (!this->id.empty()) { out << "DEF " << this->id.c_str() << " "; }
+    out << this->nodeType.id.c_str() << " { ";
     const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
     std::for_each(interfaces.begin(), interfaces.end(),
                   PrintField_(*this, out, indent));
@@ -1631,22 +1408,6 @@ std::ostream & Node::print(std::ostream & out, const size_t indent) const {
 std::ostream & operator<<(std::ostream & out, const Node & node) {
     return node.print(out, 0);
 }
-
-/**
- * @brief Node subclass-specific initialization.
- *
- * This method is called by Node::initialize. Subclasses of Node should
- * override this method for any subclass-specific initialization. Note that
- * this method cannot throw.
- *
- * The default implementation of this method does nothing.
- *
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void Node::initializeImpl(const double timestamp) throw (std::bad_alloc)
-{}
 
 
 /**
@@ -1658,12 +1419,9 @@ void Node::initializeImpl(const double timestamp) throw (std::bad_alloc)
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the NodeType associated with the node.
  */
-AppearanceNode::AppearanceNode(const NodeType & nodeType,
-                               const ScopePtr & scope):
-        Node(nodeType, scope) {}
+AppearanceNode::AppearanceNode(const NodeType & type): Node(type) {}
 
 /**
  * @brief Destructor.
@@ -1720,11 +1478,9 @@ AppearanceNode * AppearanceNode::toAppearance() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the NodeType associated with the node.
  */
-ChildNode::ChildNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+ChildNode::ChildNode(const NodeType & type): Node(type) {}
 
 /**
  * @brief Destructor.
@@ -1755,11 +1511,9 @@ ChildNode * ChildNode::toChild() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the NodeType associated with the node.
  */
-ColorNode::ColorNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+ColorNode::ColorNode(const NodeType & type): Node(type) {}
 
 /**
  * @brief Destructor.
@@ -1798,12 +1552,9 @@ ColorNode * ColorNode::toColor() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the NodeType associated with the node.
  */
-CoordinateNode::CoordinateNode(const NodeType & nodeType,
-                               const ScopePtr & scope)
-        : Node(nodeType, scope) {}
+CoordinateNode::CoordinateNode(const NodeType & type): Node(type) {}
 
 /**
  * @brief Destructor.
@@ -1844,11 +1595,9 @@ CoordinateNode * CoordinateNode::toCoordinate() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the NodeType associated with the node.
  */
-FontStyleNode::FontStyleNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+FontStyleNode::FontStyleNode(const NodeType & type): Node(type) {}
 
 /**
  * @brief Destructor.
@@ -1961,11 +1710,9 @@ FontStyleNode * FontStyleNode::toFontStyle() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the NodeType associated with the node.
  */
-GeometryNode::GeometryNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+GeometryNode::GeometryNode(const NodeType & type): Node(type) {}
 
 /**
  * @brief Destructor.
@@ -2007,11 +1754,9 @@ const ColorNode * GeometryNode::getColor() const throw () { return 0; }
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the NodeType associated with the node.
  */
-MaterialNode::MaterialNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+MaterialNode::MaterialNode(const NodeType & type): Node(type) {}
 
 /**
  * @brief Destructor.
@@ -2090,11 +1835,9 @@ MaterialNode * MaterialNode::toMaterial() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the NodeType associated with the node.
  */
-NormalNode::NormalNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+NormalNode::NormalNode(const NodeType & type): Node(type) {}
 
 /**
  * @brief Destructor.
@@ -2133,12 +1876,9 @@ NormalNode * NormalNode::toNormal() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the NodeType associated with the node.
  */
-SoundSourceNode::SoundSourceNode(const NodeType & nodeType,
-                                 const ScopePtr & scope):
-        Node(nodeType, scope) {}
+SoundSourceNode::SoundSourceNode(const NodeType & type): Node(type) {}
 
 /**
  * @brief Destructor.
@@ -2174,11 +1914,9 @@ SoundSourceNode * SoundSourceNode::toSoundSource() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the NodeType associated with the node.
  */
-TextureNode::TextureNode(const NodeType & nodeType, const ScopePtr & scope):
-        Node(nodeType, scope) {}
+TextureNode::TextureNode(const NodeType & type): Node(type) {}
 
 /**
  * @brief Destructor.
@@ -2272,12 +2010,10 @@ TextureNode * TextureNode::toTexture() throw () { return this; }
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the NodeType associated with the node.
  */
-TextureCoordinateNode::TextureCoordinateNode(const NodeType & nodeType,
-                                             const ScopePtr & scope):
-        Node(nodeType, scope) {}
+TextureCoordinateNode::TextureCoordinateNode(const NodeType & type):
+        Node(type) {}
 
 /**
  * @brief Destructor.
@@ -2313,12 +2049,10 @@ TextureCoordinateNode * TextureCoordinateNode::toTextureCoordinate() throw () {
 /**
  * @brief Constructor.
  *
- * @param nodeType  the NodeType associated with the node.
- * @param scope     the Scope the node belongs to.
+ * @param type  the NodeType associated with the node.
  */
-TextureTransformNode::TextureTransformNode(const NodeType & nodeType,
-                                           const ScopePtr & scope):
-        Node(nodeType, scope) {}
+TextureTransformNode::TextureTransformNode(const NodeType & type):
+        Node(type) {}
 
 /**
  * @brief Destructor.

@@ -27,6 +27,7 @@ LIBDIR = .\lib
 SOURCE = ..\..\..\..\src\openvrml\OpenVRML
 LIBINCLUDE = ..\..\..\..\lib
 ANTLRLIBDIR = ..\tplib\antlr
+SCRIPTDIR = ..\..\..\..\java
 
 help:
 	more < <<
@@ -39,29 +40,25 @@ where: [target] may be any one of the following ...
     ---- build options -----------------
 
    WITH_PNG = YES .................... - If it is YES, 
-               then you must have libpng in your system and in 
-               winconfig.h you must define OPENVRML_HAVE_LIBPNG. 
+               then you must have libpng in your system. 
                This is default. Otherwise build without PNG support 
                (if you don't have libpng or don't want PNG support),
-               by giving WITH_PNG = NO. You must undefine 
-               OPENVRML_HAVE_LIBPNG in winconfig.h for this option.
+               by giving WITH_PNG = NO.
 
    PNGLIB_DIR  .................... - required to be defined as 
                the path where your PNGLIB is installed. Default path 
-               is C:\User\lpng105, however you may provide it as an 
+               is C:\User\lpng123, however you may provide it as an 
                environment variable by doing something like this prior 
                to execute nmake:
 
-               set PNGLIB_DIR=C:\lpng105
+               set PNGLIB_DIR=C:\lpng123
                However it is not needed, if you give option WITH_PNG=NO
 
    WITH_JPEG = YES .................... - If it is YES, 
-               then you must have libjpeg in your system and in
-               winconfig.h you must define OPENVRML_HAVE_LIBJPEG. 
+               then you must have libjpeg in your system. 
                This is default. Otherwise build without JPEG support 
                (if you don't have libjpeg or don't want JPEG support), 
-               by giving WITH_JPEG = NO. You must undefine 
-               OPENVRML_HAVE_LIBJPEG in winconfig.h for this option.
+               by giving WITH_JPEG = NO.
 
 
    JPEGLIB_DIR  .................... - required to be defined as the path
@@ -75,12 +72,10 @@ where: [target] may be any one of the following ...
 
    WITH_JAVASCRIPT = YES .................... - If it is YES, 
                then you must have js32.lib and js32.dll from mozilla 
-               in your system and in winconfig.h you must define 
-               OPENVRML_HAVE_SPIDERMONKEY. This is default. Otherwise 
+               in your system. This is default. Otherwise 
                build without JAVASCRIPT support (if you don't have 
                SpiderMonkey or don't want JAVASCRIPT support),
-               by giving WITH_JAVASCRIPT = NO. You must undefine 
-               OPENVRML_HAVE_SPIDERMONKEY in winconfig.h for this option.
+               by giving WITH_JAVASCRIPT = NO.
 
 
    MOZILLALIB_DIR  .................... - required to be defined as the path
@@ -96,12 +91,10 @@ where: [target] may be any one of the following ...
 
    WITH_JNI =  YES .................... - If it is YES, 
                then you must have jvm.lib and jvm.dll from SUN  
-               Microsystems in your system and in winconfig.h you must 
-               define OPENVRML_HAVE_JNI. This is default. Otherwise 
+               Microsystems in your system. This is default. Otherwise 
                build without JAVA support (if you don't have 
                Java SDK from SUN or don't want JAVA support),
-               by giving WITH_JNI = NO. You must undefine 
-               OPENVRML_HAVE_JNI in winconfig.h for this option.
+               by giving WITH_JNI = NO.
 
    JAVA_DIR  .................... - required to be defined as 
                the path where your Java SDK is installed. 
@@ -145,7 +138,6 @@ where: [target] may be any one of the following ...
 
               set LIBTYPE=STATIC
               It will make without java (JNI) support for static library.
-              You must undefine the macro OPENVRML_HAVE_JNI in winconfig.h
   
 
     ---- makefile Author (bose@pavan.barc.ernet.in) notes ------------------
@@ -174,7 +166,7 @@ WITH_PNG = YES
 !ENDIF
 
 !IF "$(PNGLIB_DIR)" == ""
-PNGLIB_DIR = c:\User\lpng105
+PNGLIB_DIR = c:\User\lpng123
 !ENDIF
 
 !IF "$(WITH_JPEG)" == ""
@@ -268,14 +260,14 @@ LINKFLAGS = wsock32.lib /nologo /subsystem:windows /dll /incremental:no\
 OBJ1 = $(BINOUTDIR)\Audio$(O) $(BINOUTDIR)\Doc$(O) $(BINOUTDIR)\Doc2$(O) $(BINOUTDIR)\dummysound$(O)\
        $(BINOUTDIR)\field$(O) $(BINOUTDIR)\Image$(O) $(BINOUTDIR)\MathUtils$(O) \
        $(BINOUTDIR)\VrmlMatrix$(O) \
-       $(BINOUTDIR)\script$(O) $(BINOUTDIR)\ScriptJDK$(O)\
-      $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O)\
-      $(BINOUTDIR)\VrmlNamespace$(O) $(BINOUTDIR)\node$(O)\
-      $(BINOUTDIR)\proto$(O) $(BINOUTDIR)\nodeptr$(O) $(BINOUTDIR)\Route$(O) \
-      $(BINOUTDIR)\VrmlScene$(O)\
-	$(BINOUTDIR)\nodetypeptr$(O)\
-      $(BINOUTDIR)\bvolume$(O) $(BINOUTDIR)\VrmlFrustum$(O) $(BINOUTDIR)\VrmlRenderContext$(O) \
-	$(BINOUTDIR)\vrml97node$(O)  
+       $(BINOUTDIR)\script$(O) $(BINOUTDIR)\ScriptJDK$(O) \
+       $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O)\
+       $(BINOUTDIR)\VrmlNamespace$(O) $(BINOUTDIR)\fieldvalueptr$(O) $(BINOUTDIR)\node$(O)\
+       $(BINOUTDIR)\nodeptr$(O) $(BINOUTDIR)\nodeclassptr$(O)\
+       $(BINOUTDIR)\VrmlScene$(O)\
+       $(BINOUTDIR)\nodetypeptr$(O)\
+       $(BINOUTDIR)\bvolume$(O) $(BINOUTDIR)\VrmlFrustum$(O) $(BINOUTDIR)\VrmlRenderContext$(O) \
+       $(BINOUTDIR)\vrml97node$(O)  
 
 clean:
  if exist $(LIBDIR) del /Q $(LIBDIR)
@@ -287,6 +279,10 @@ clean:
       if exist Vrml97ParserTokenTypes.txt del Vrml97ParserTokenTypes.txt
       if exist vrml97tokentypes.txt del vrml97tokentypes.txt
 !endif
+!IF "$(WITH_JNI)" == "YES"
+  cd ../../../../java
+  nmake /F Makefile.vc6 clean
+!endif
    cd $(MAKEDIR)
 
 all : core
@@ -295,8 +291,15 @@ core  : \
 !IF "$(LIBTYPE)" == "STATIC"  
      prompt $(BINOUTDIR) $(LIBDIR) $(LIBDIR)\openvrmlcore.lib
 !ELSE
-     prompt $(BINOUTDIR) $(LIBDIR) $(LIBDIR)\openvrmlcore.dll
+     prompt script-jar $(BINOUTDIR) $(LIBDIR) $(LIBDIR)\openvrmlcore.dll
 !ENDIF
+
+script-jar:
+!IF "$(WITH_JNI)" == "YES"
+  cd $(SCRIPTDIR)
+  nmake /F Makefile.vc6 JDK_DIR=$(JAVA_DIR) all
+  cd $(MAKEDIR)
+!endif
 
 $(LIBDIR)\openvrmlcore.lib : ant $(OBJ1)
                    if exist $(LIBDIR) del /Q $(LIBDIR)
@@ -319,220 +322,204 @@ ant:
   cd $(MAKEDIR)
 
 $(BINOUTDIR)\Audio.obj :  $(SOURCE)\Audio.cpp $(SOURCE)\Audio.h $(SOURCE)\Doc.h \
-						  $(SOURCE)\common.h $(SOURCE)\System.h	
-            			  $(CPP) $(CFLAGS) /I $(ZLIB_DIR) $(SOURCE)\Audio.cpp
+                          $(SOURCE)\common.h $(SOURCE)\System.h	
+                          $(CPP) $(CFLAGS) /I $(ZLIB_DIR) $(SOURCE)\Audio.cpp
 
-$(BINOUTDIR)\Doc.obj :  $(SOURCE)\Doc.cpp $(SOURCE)\Doc.h ..\winconfig.h $(SOURCE)\common.h\
-						$(SOURCE)\doc2.hpp $(SOURCE)\System.h
-						$(CPP) $(CFLAGS) /I ..\  /I $(ZLIB_DIR) $(SOURCE)\Doc.cpp
+$(BINOUTDIR)\Doc.obj :  $(SOURCE)\Doc.cpp $(SOURCE)\Doc.h $(SOURCE)\common.h\
+                        $(SOURCE)\doc2.hpp $(SOURCE)\System.h
+                        $(CPP) $(CFLAGS) /I $(ZLIB_DIR) $(SOURCE)\Doc.cpp
 
-$(BINOUTDIR)\Doc2.obj :  $(SOURCE)\Doc2.cpp $(SOURCE)\Doc2.hpp ..\winconfig.h $(SOURCE)\common.h\
-						 $(SOURCE)\System.h
-            			$(CPP) $(CFLAGS) /I ..\ /I $(ZLIB_DIR) $(SOURCE)\Doc2.cpp
+$(BINOUTDIR)\Doc2.obj :  $(SOURCE)\Doc2.cpp $(SOURCE)\Doc2.hpp $(SOURCE)\common.h\
+                         $(SOURCE)\System.h
+                         $(CPP) $(CFLAGS) /I $(ZLIB_DIR) $(SOURCE)\Doc2.cpp
 
 $(BINOUTDIR)\dummysound.obj : $(SOURCE)\dummysound.cpp $(SOURCE)\sound.h
-    						$(CPP) $(CFLAGS) $(SOURCE)\dummysound.cpp
+                              $(CPP) $(CFLAGS) $(SOURCE)\dummysound.cpp
 
 $(BINOUTDIR)\field.obj :    $(SOURCE)\field.cpp $(SOURCE)\field.h \
-								$(SOURCE)\MathUtils.h \
-								$(SOURCE)\nodeptr.h\
-								$(SOURCE)\common.h 
-								$(CPP) $(CFLAGS) $(SOURCE)\field.cpp
+                            $(SOURCE)\private.h \
+                            $(SOURCE)\nodeptr.h\
+                            $(SOURCE)\node.h\
+                            $(SOURCE)\common.h 
+                            $(CPP) $(CFLAGS) $(SOURCE)\field.cpp
+
+$(BINOUTDIR)\fieldvalueptr.obj :  $(SOURCE)\fieldvalueptr.cpp \
+                                  $(SOURCE)\fieldvalueptr.h \
+                                  $(SOURCE)\field.h \
+                                  $(SOURCE)\common.h 
+                                  $(CPP) $(CFLAGS) $(SOURCE)\fieldvalueptr.cpp
+
 
 $(BINOUTDIR)\Image.obj :  $(SOURCE)\Image.cpp $(SOURCE)\Image.h $(SOURCE)\common.h \
-						  $(SOURCE)\Doc.h $(SOURCE)\field.h\
-						  $(SOURCE)\System.h ..\winconfig.h
-            			  $(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
+                          $(SOURCE)\Doc.h $(SOURCE)\field.h\
+                          $(SOURCE)\System.h
+                          $(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
 !IF "$(WITH_PNG)" == "YES"
-						  /I $(PNGLIB_DIR)\
+                          /I $(PNGLIB_DIR) /D "OPENVRML_HAVE_LIBPNG"\
 !ENDIF
 !IF "$(WITH_JPEG)" == "YES"
-						  /I $(JPEGLIB_DIR)\
+                          /I $(JPEGLIB_DIR) /D "OPENVRML_HAVE_LIBJPEG"\
 !ENDIF
-						  /I ..\ /D XMD_H $(SOURCE)\Image.cpp
+                          /D XMD_H $(SOURCE)\Image.cpp
 						   						   							 
 $(BINOUTDIR)\MathUtils.obj : $(SOURCE)\MathUtils.cpp $(SOURCE)\MathUtils.h 
-							$(CPP) $(CFLAGS) $(SOURCE)\MathUtils.cpp
-
-$(BINOUTDIR)\Route.obj : $(SOURCE)\Route.cpp $(SOURCE)\Route.h $(SOURCE)\common.h \
- 						$(SOURCE)\nodeptr.h 
-	                    	$(CPP) $(CFLAGS) $(SOURCE)\Route.cpp
+                             $(CPP) $(CFLAGS) $(SOURCE)\MathUtils.cpp
 
 $(BINOUTDIR)\script.obj : $(SOURCE)\script.cpp $(SOURCE)\script.h\
-	             		$(SOURCE)\common.h\
-                              $(SOURCE)\private.h\
-                              $(SOURCE)\VrmlNamespace.h\
-                              $(SOURCE)\VrmlScene.h\
-                              $(SOURCE)\doc2.hpp\
-                              $(SOURCE)\vrml97node.h\
-                              $(SOURCE)\ScriptJDK.h\
-                              ..\winconfig.h
-					$(CPP) $(CFLAGS)\
+                          $(SOURCE)\common.h\
+                          $(SOURCE)\private.h\
+                          $(SOURCE)\VrmlNamespace.h\
+                          $(SOURCE)\VrmlScene.h\
+                          $(SOURCE)\doc2.hpp\
+                          $(SOURCE)\vrml97node.h\
+                          $(SOURCE)\ScriptJDK.h
+                          $(CPP) $(CFLAGS)\
 !IF "$(WITH_JAVASCRIPT)" == "YES"
-					   /I $(MOZILLALIB_DIR)\
+                     /I $(MOZILLALIB_DIR) /D "OPENVRML_HAVE_SPIDERMONKEY"\
 !ENDIF
 !IF "$(WITH_JNI)" == "YES"
-					   /I $(JAVA_DIR)\include /I $(JAVA_DIR)\include\win32\
+             /I $(JAVA_DIR)\include /I $(JAVA_DIR)\include\win32 /D "OPENVRML_HAVE_JNI"\
 !ENDIF
-					    /I $(ZLIB_DIR) /I ..\ \
-					    /D XP_PC $(SOURCE)\script.cpp
+                         /I $(ZLIB_DIR) \
+                         /D XP_PC $(SOURCE)\script.cpp
 
 $(BINOUTDIR)\ScriptJDK.obj : $(SOURCE)\ScriptJDK.cpp $(SOURCE)\ScriptJDK.h\
-	             		$(SOURCE)\common.h\
-                              $(SOURCE)\doc2.hpp\
-                              $(SOURCE)\MathUtils.h\
-                              $(SOURCE)\System.h\
-                              $(SOURCE)\script.h\
-                              $(SOURCE)\VrmlNamespace.h\
-                              $(SOURCE)\node.h\
-                              $(SOURCE)\VrmlScene.h\
-                              $(SOURCE)\VrmlEvent.h\
-                              $(SOURCE)\nodeptr.h\
-                              $(SOURCE)\Field.h\
-                              ..\winconfig.h
-					$(CPP) $(CFLAGS) /I ..\ /I $(JAVA_DIR)\include\
-                              /I $(JAVA_DIR)\include\win32 $(SOURCE)\ScriptJDK.cpp
+                             $(SOURCE)\common.h\
+                             $(SOURCE)\doc2.hpp\
+                             $(SOURCE)\MathUtils.h\
+                             $(SOURCE)\System.h\
+                             $(SOURCE)\script.h\
+                             $(SOURCE)\VrmlNamespace.h\
+                             $(SOURCE)\node.h\
+                             $(SOURCE)\VrmlScene.h\
+                             $(SOURCE)\nodeptr.h\
+                             $(SOURCE)\Field.h
+                             $(CPP) $(CFLAGS) \
+!IF "$(WITH_JNI)" == "YES"
+                  /I $(SCRIPTDIR) /I $(JAVA_DIR)\include /I $(JAVA_DIR)\include\win32 /D "OPENVRML_HAVE_JNI"\
+!ENDIF
+                             $(SOURCE)\ScriptJDK.cpp
 
 
 $(BINOUTDIR)\System.obj : $(SOURCE)\System.cpp $(SOURCE)\System.h $(SOURCE)\common.h 
-						 $(CPP) $(CFLAGS) $(SOURCE)\System.cpp
+                          $(CPP) $(CFLAGS) $(SOURCE)\System.cpp
 
 $(BINOUTDIR)\Viewer.obj :   $(SOURCE)\Viewer.cpp $(SOURCE)\Viewer.h\
-							$(SOURCE)\MathUtils.h\
-							$(SOURCE)\VrmlFrustum.h\
-							$(SOURCE)\field.h\
-							$(SOURCE)\bvolume.h\
-							$(SOURCE)\VrmlScene.h\
-							$(SOURCE)\common.h \
-							..\winconfig.h
-							$(CPP) $(CFLAGS) /I ..\ $(SOURCE)\Viewer.cpp
+                            $(SOURCE)\MathUtils.h\
+                            $(SOURCE)\private.h\
+                            $(SOURCE)\VrmlFrustum.h\
+                            $(SOURCE)\node.h\
+                            $(SOURCE)\bvolume.h\
+                            $(SOURCE)\VrmlScene.h\
+                            $(SOURCE)\common.h
+                            $(CPP) $(CFLAGS) $(SOURCE)\Viewer.cpp
 
 $(BINOUTDIR)\vrml97node.obj :   $(SOURCE)\vrml97node.cpp $(SOURCE)\vrml97node.h \
-									$(SOURCE)\node.h\
-									$(SOURCE)\VrmlNamespace.h\
-									$(SOURCE)\Proto.h\
-									$(SOURCE)\Doc.h\
-									$(SOURCE)\doc2.hpp\
-									$(SOURCE)\Audio.h\
-									$(SOURCE)\Sound.h\
-									$(SOURCE)\MathUtils.h\
-									$(SOURCE)\Viewer.h\
-									$(SOURCE)\field.h\
-									$(SOURCE)\Image.h\
-									$(SOURCE)\VrmlScene.h\
-									$(SOURCE)\common.h \
-									..\winconfig.h
-									$(CPP) $(CFLAGS) /I ..\ $(SOURCE)\vrml97node.cpp
+                                $(SOURCE)\node.h\
+                                $(SOURCE)\VrmlNamespace.h\
+                                $(SOURCE)\Doc.h\
+                                $(SOURCE)\doc2.hpp\
+                                $(SOURCE)\Audio.h\
+                                $(SOURCE)\Sound.h\
+                                $(SOURCE)\MathUtils.h\
+                                $(SOURCE)\Viewer.h\
+                                $(SOURCE)\field.h\
+                                $(SOURCE)\Image.h\
+                                $(SOURCE)\VrmlScene.h\
+                                $(SOURCE)\VrmlMatrix.h\
+                                $(SOURCE)\nodetypeptr.h\
+                                $(SOURCE)\bvolume.h\
+                                $(SOURCE)\system.h\
+                                $(SOURCE)\private.h\
+                                $(SOURCE)\common.h 
+                                $(CPP) $(CFLAGS) /Zm400 $(SOURCE)\vrml97node.cpp
 
 
 
-Vrml97Parser         :                $(SOURCE)\vrml97parser.g $(SOURCE)\Vrml97TokenTypes.txt 
+Vrml97Parser           :   $(SOURCE)\vrml97parser.g $(SOURCE)\Vrml97TokenTypes.txt 
 						   copy $(SOURCE)\Vrml97TokenTypes.txt vrml97tokentypes.txt
 						   SET CLASSPATH=$(ANTLRLIB_DIR)
 						   java antlr.Tool -o $(SOURCE) $(SOURCE)\vrml97parser.g
 
-$(BINOUTDIR)\VrmlMatrix.obj  :         $(SOURCE)\VrmlMatrix.cpp \
-                                       $(SOURCE)\field.h $(SOURCE)\private.h \
-						   $(SOURCE)\VrmlMatrix.h 
-						   $(CPP) $(CFLAGS) $(SOURCE)\VrmlMatrix.cpp
+$(BINOUTDIR)\VrmlMatrix.obj  :  $(SOURCE)\VrmlMatrix.cpp \
+                                $(SOURCE)\field.h $(SOURCE)\private.h \
+                                $(SOURCE)\VrmlMatrix.h 
+                                $(CPP) $(CFLAGS) $(SOURCE)\VrmlMatrix.cpp
 
 $(BINOUTDIR)\bvolume.obj : $(SOURCE)\bvolume.cpp $(SOURCE)\bvolume.h\
                            $(SOURCE)\private.h $(SOURCE)\field.h\
                            $(SOURCE)\VrmlMatrix.h $(SOURCE)\VrmlFrustum.h\
                            $(SOURCE)\MathUtils.h                							
-				   $(CPP) $(CFLAGS) $(SOURCE)\bvolume.cpp
+                           $(CPP) $(CFLAGS) $(SOURCE)\bvolume.cpp
 
 
 $(BINOUTDIR)\VrmlFrustum.obj : $(SOURCE)\VrmlFrustum.cpp $(SOURCE)\VrmlFrustum.h\
-								$(SOURCE)\MathUtils.h $(SOURCE)\common.h 							
-								$(CPP) $(CFLAGS) /I ..\ $(SOURCE)\VrmlFrustum.cpp
+                               $(SOURCE)\MathUtils.h $(SOURCE)\common.h 							
+                               $(CPP) $(CFLAGS) /I ..\ $(SOURCE)\VrmlFrustum.cpp
 
     
 $(BINOUTDIR)\VrmlNamespace.obj :  $(SOURCE)\VrmlNamespace.cpp $(SOURCE)\VrmlNamespace.h\
-								$(SOURCE)\node.h\
-								$(SOURCE)\VrmlNamespace.h\
-								$(SOURCE)\field.h\
-								$(SOURCE)\Route.h\
-								$(SOURCE)\script.h\
-								$(SOURCE)\proto.h\
-								$(SOURCE)\common.h 
-								$(CPP) $(CFLAGS) $(SOURCE)\VrmlNamespace.cpp
+                                  $(SOURCE)\node.h\
+                                  $(SOURCE)\VrmlNamespace.h\
+                                  $(SOURCE)\field.h\
+                                  $(SOURCE)\script.h\
+                                  $(SOURCE)\common.h 
+                                  $(CPP) $(CFLAGS) $(SOURCE)\VrmlNamespace.cpp
 
 $(BINOUTDIR)\node.obj :  $(SOURCE)\node.cpp $(SOURCE)\node.h\
-                                                $(SOURCE)\field.h\
-                                                $(SOURCE)\doc2.hpp\
-								$(SOURCE)\MathUtils.h\
-								$(SOURCE)\nodeptr.h\
-								$(SOURCE)\Route.h\
-								$(SOURCE)\bvolume.h\
-								$(SOURCE)\VrmlNamespace.h\
-								$(SOURCE)\system.h\
-								$(SOURCE)\VrmlScene.h\
-								$(SOURCE)\VrmlRenderContext.h\
-                                                $(SOURCE)\proto.h\
-								$(SOURCE)\common.h
-								$(CPP) $(CFLAGS) $(SOURCE)\node.cpp
+                         $(SOURCE)\field.h\
+                         $(SOURCE)\fieldvalueptr.h\
+                         $(SOURCE)\nodetypeptr.h\
+                         $(SOURCE)\doc2.hpp\
+                         $(SOURCE)\MathUtils.h\
+                         $(SOURCE)\bvolume.h\
+                         $(SOURCE)\VrmlNamespace.h\
+                         $(SOURCE)\VrmlScene.h\
+                         $(SOURCE)\VrmlRenderContext.h\
+                         $(SOURCE)\common.h
+                         $(CPP) $(CFLAGS) $(SOURCE)\node.cpp
+
+$(BINOUTDIR)\nodeclassptr.obj : $(SOURCE)\nodeclassptr.cpp\
+                                $(SOURCE)\nodeclassptr.h\
+                                $(SOURCE)\node.h\
+                                $(SOURCE)\common.h
+                                $(CPP) $(CFLAGS)\
+                                $(SOURCE)\nodeclassptr.cpp
+
+$(BINOUTDIR)\nodeptr.obj:  $(SOURCE)\nodeptr.cpp\
+                           $(SOURCE)\node.h\
+                           $(SOURCE)\nodeptr.h\
+                           $(SOURCE)\common.h
+                           $(CPP) $(CFLAGS) $(SOURCE)\nodeptr.cpp
 
 
-$(BINOUTDIR)\proto.obj:                         $(SOURCE)\proto.cpp\
-								$(SOURCE)\Viewer.h\
-								$(SOURCE)\field.h\
-								$(SOURCE)\VrmlNamespace.h\
-								$(SOURCE)\node.h\
-								$(SOURCE)\proto.h\
-								$(SOURCE)\Route.h\
-								$(SOURCE)\bvolume.h\
-								$(SOURCE)\common.h
-								$(CPP) $(CFLAGS) $(SOURCE)\proto.cpp
-
-$(BINOUTDIR)\nodeptr.obj:                       $(SOURCE)\nodeptr.cpp\
-								$(SOURCE)\node.h\
-								$(SOURCE)\nodeptr.h\
-								$(SOURCE)\common.h
-								$(CPP) $(CFLAGS) $(SOURCE)\nodeptr.cpp
-
-
-$(BINOUTDIR)\nodetype.obj : $(SOURCE)\nodetype.cpp\
-                                                $(SOURCE)\nodetype.h\
-								$(SOURCE)\Doc2.hpp\
-								$(SOURCE)\field.h\
-								$(SOURCE)\VrmlNamespace.h\
-								$(SOURCE)\VrmlNode.h\
-								$(SOURCE)\nodeptr.h\
-								$(SOURCE)\proto.h\
-								$(SOURCE)\VrmlScene.h\
-								$(SOURCE)\common.h
-								$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
-							      $(SOURCE)\nodetype.cpp
 
 $(BINOUTDIR)\nodetypeptr.obj : $(SOURCE)\nodetypeptr.cpp\
-                                                $(SOURCE)\nodetypeptr.h\
-								$(SOURCE)\node.h\
-								$(SOURCE)\common.h
-								$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
-							      $(SOURCE)\nodetypeptr.cpp
-
-
+                               $(SOURCE)\nodetypeptr.h\
+                               $(SOURCE)\node.h\
+                               $(SOURCE)\common.h
+                               $(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
+                               $(SOURCE)\nodetypeptr.cpp
 
 $(BINOUTDIR)\VrmlRenderContext.obj : $(SOURCE)\VrmlRenderContext.cpp $(SOURCE)\VrmlRenderContext.h\
-								$(SOURCE)\bvolume.h 							
-								$(CPP) $(CFLAGS) $(SOURCE)\VrmlRenderContext.cpp
+                                     $(SOURCE)\bvolume.h 							
+                                     $(CPP) $(CFLAGS) $(SOURCE)\VrmlRenderContext.cpp
 
 $(BINOUTDIR)\VrmlScene.obj : $(SOURCE)\VrmlScene.cpp\
 !IF "$(WITH_ANTLR)" == "YES"
-				                       Vrml97Parser\
+                             Vrml97Parser\
 !ENDIF
-								$(SOURCE)\Doc2.hpp $(SOURCE)\System.h\
-								$(SOURCE)\Viewer.h\
-								$(SOURCE)\MathUtils.h\
-								$(SOURCE)\vrml97node.h $(SOURCE)\VrmlNamespace.h\
-								$(SOURCE)\Vrml97Parser.hpp \
-								$(SOURCE)\VrmlRenderContext.h\
-								$(SOURCE)\node.h\
-								$(SOURCE)\VrmlScene.h\
-								$(SOURCE)\common.h\
-								..\winconfig.h
-								$(CPP) $(CFLAGS)  /GR /I $(LIBINCLUDE) /I ..\ /I $(ZLIB_DIR) $(SOURCE)\VrmlScene.cpp
+                             $(SOURCE)\Doc2.hpp $(SOURCE)\System.h\
+                             $(SOURCE)\Viewer.h\
+                             $(SOURCE)\MathUtils.h\
+                             $(SOURCE)\vrml97node.h $(SOURCE)\VrmlNamespace.h\
+                             $(SOURCE)\Vrml97Parser.hpp \
+                             $(SOURCE)\VrmlRenderContext.h\
+                             $(SOURCE)\node.h\
+                             $(SOURCE)\VrmlScene.h\
+                             $(SOURCE)\common.h
+                             $(CPP) $(CFLAGS)  /GR /I $(LIBINCLUDE) /D PACKAGE_VERSION=\"0.12.5\"\
+                             /I $(ZLIB_DIR) $(SOURCE)\VrmlScene.cpp
 
 
 

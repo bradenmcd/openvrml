@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = 1.6.2 foreign
 
-SUBDIRS = doc m4 models lib java src
+SUBDIRS = doc ide-projects m4 models lib java src
 
 ACLOCAL_AMFLAGS = -I m4
 

@@ -22,8 +22,11 @@
 # ifndef OPENVRML_SCRIPT_H
 #   define OPENVRML_SCRIPT_H
 
+#   include <stddef.h>
+#   include <string>
+#   include "common.h"
 #   include "fieldvalueptr.h"
-#   include "node.h"
+#   include "vrml97node.h"
 
 namespace OpenVRML {
 
@@ -54,7 +57,7 @@ namespace OpenVRML {
     
     class OPENVRML_SCOPE ScriptNodeClass : public NodeClass {
     public:
-        ScriptNodeClass(Browser & browser);
+        ScriptNodeClass(VrmlScene & scene);
         virtual ~ScriptNodeClass() throw ();
         
         virtual const NodeTypePtr createType(const std::string & id,
@@ -64,6 +67,7 @@ namespace OpenVRML {
     
     
     class Doc;
+    class VrmlScene;
 
     class OPENVRML_SCOPE ScriptNode : public ChildNode {
     public:
@@ -82,8 +86,7 @@ namespace OpenVRML {
                     throw (std::invalid_argument);
 
             virtual const NodeInterfaceSet & getInterfaces() const throw ();
-            virtual const NodePtr createNode(const ScopePtr & scope) const
-                    throw (std::bad_alloc);
+            virtual const NodePtr createNode() const throw (std::bad_alloc);
         };
         
         friend class ScriptNodeType;
@@ -98,8 +101,7 @@ namespace OpenVRML {
         int eventsReceived;
     
     public:
-        ScriptNode(ScriptNodeClass & nodeClass,
-                   const ScopePtr & scope);
+        ScriptNode(ScriptNodeClass & nodeClass);
         virtual ~ScriptNode() throw ();
         
         void setUrl(const MFString & value, double timestamp);
@@ -131,8 +133,6 @@ namespace OpenVRML {
         
         void assignWithSelfRefCheck(const SFNode &, SFNode &) const throw ();
         void assignWithSelfRefCheck(const MFNode &, MFNode &) const throw ();
-        
-        virtual void initializeImpl(double timestamp) throw (std::bad_alloc);
         
         virtual void setFieldImpl(const std::string & id,
                                   const FieldValue & value)

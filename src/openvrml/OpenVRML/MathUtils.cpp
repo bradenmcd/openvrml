@@ -20,46 +20,47 @@
 
 #include "MathUtils.h"
 #include "private.h"
+#include <string.h>		// memcpy
 
+using namespace OpenVRML;
 using namespace OpenVRML_;
 
-namespace OpenVRML {
-
-double Vlength(const float V[3])
+double OpenVRML::Vlength(const float V[3])
 {
-    const double vlen = sqrt(V[0]*V[0]+V[1]*V[1]+V[2]*V[2]);
-    return (fpzero(vlen) ? 0.0 : vlen);
+  double vlen = sqrt(V[0]*V[0]+V[1]*V[1]+V[2]*V[2]);
+  return (fpzero(vlen) ? 0.0 : vlen);
 }
 
-void Vdiff(float V[3], const float A[3], const float B[3])
+void OpenVRML::Vdiff(float V[3], const float A[3], const float B[3])
 {
-    V[0] = A[0] - B[0];
-    V[1] = A[1] - B[1];
-    V[2] = A[2] - B[2];
+  V[0] = A[0] - B[0];
+  V[1] = A[1] - B[1];
+  V[2] = A[2] - B[2];
 }
 
-void Vcross(float V[3], const float A[3], const float B[3])
+void OpenVRML::Vcross(float V[3], const float A[3], const float B[3])
 {
-    float x, y, z; // Use temps so V can be A or B
-    x = A[1] * B[2] - A[2] * B[1];
-    y = A[2] * B[0] - A[0] * B[2];
-    z = A[0] * B[1] - A[1] * B[0];
-    V[0] = x;
-    V[1] = y;
-    V[2] = z;
+  float x,y,z;			// Use temps so V can be A or B
+  x = A[1]*B[2] - A[2]*B[1];
+  y = A[2]*B[0] - A[0]*B[2];
+  z = A[0]*B[1] - A[1]*B[0];
+  V[0] = x;
+  V[1] = y;
+  V[2] = z;
 }
 
-void Vnorm(float V[3])
+void OpenVRML::Vnorm(float V[3])
 {
-    const float vlen = float(sqrt(V[0] * V[0] + V[1] * V[1] + V[2] * V[2]));
-    if (!fpzero(vlen)) {
-        V[0] /= vlen;
-        V[1] /= vlen;
-        V[2] /= vlen;
+  float vlen = (float) sqrt(V[0]*V[0]+V[1]*V[1]+V[2]*V[2]);
+  if (! fpzero(vlen))
+    {
+      V[0] /= vlen;
+      V[1] /= vlen;
+      V[2] /= vlen;
     }
 }
 
-void axis_aligned_bbox(float M[4][4], float *min, float *max)
+void OpenVRML::axis_aligned_bbox(float M[4][4], float *min, float *max)
 {
 // Algorithm is taken from "Transforming Axis aligned Bounding Boxes"
 // by Jim Arvo "Graphics Gems Academic Press 1990"
@@ -90,24 +91,54 @@ void axis_aligned_bbox(float M[4][4], float *min, float *max)
 	 max[0] = newbox[4]; max[1] = newbox[5]; max[2] = newbox[6];
 }
 
+bool OpenVRML::InvertMatrix3x3of4x4(const float In[16], float Out[9]) {
+    const float * Inp = &In[0];
+    float mat[] = {Inp[0], Inp[1], Inp[2],
+                   Inp[4], Inp[5], Inp[6],
+		   Inp[8], Inp[9], Inp[10]};
+    float a = mat[4] * mat[8];
+    float b = mat[5] * mat[7];
+    float c = mat[3] * mat[8];
+    float d = mat[5] * mat[6];
+    float e = mat[3] * mat[7];
+    float f = mat[4] * mat[6];
+    float det = mat[0] * (a - b) - mat[1] * (c - d) + mat[2] * (e - f);
+    if(det == 0) return false;
+    Out[0] = (a - b)/det;
+    Out[1] = (mat[2] * mat[7] - mat[1] * mat[8])/det;
+    Out[2] = (mat[1] * mat[5] - mat[2] * mat[4])/det;
+    Out[3] = (d - c)/det;
+    Out[4] = (mat[0] * mat[8] - mat[2] * mat[6])/det;
+    Out[5] = (mat[2] * mat[3] - mat[0] * mat[5])/det;
+    Out[6] = (e - f)/det;
+    Out[7] = (mat[1] * mat[6] - mat[0] * mat[7])/det;
+    Out[8] = (mat[0] * mat[4] - mat[1] * mat[3])/det;
+    return true;
+}
+
 /*
  *  Given quaternion, compute axis and angle.
  */
-void quat_to_axis(const float q[4], float axisAngle[4])
+
+void OpenVRML::quat_to_axis(float q[4], float axisAngle[4])
 {
-    const float val = acos(q[3]);
-    if (fpzero(val)) {
-        axisAngle[0] = 0.0;
-        axisAngle[1] = 1.0;
-        axisAngle[2] = 0.0;
-        axisAngle[3] = 0.0;
-    } else {
-        axisAngle[0] = q[0] / sin(val);
-        axisAngle[1] = q[1] / sin(val);
-        axisAngle[2] = q[2] / sin(val);
-        axisAngle[3] = 2 * val;
-        normalize(&axisAngle[0]);
-    }
+  float val = acos(q[3]);
+  if (fpzero(val))
+  {
+    axisAngle[0] = 0.0;
+    axisAngle[1] = 1.0;
+    axisAngle[2] = 0.0;
+    axisAngle[3] = 0.0;
+  }
+  else
+  {
+    axisAngle[0] = q[0]/sin(val);
+    axisAngle[1] = q[1]/sin(val);
+    axisAngle[2] = q[2]/sin(val);
+    axisAngle[3] = 2*val;
+  }
 }                 
 
-} // namespace OpenVRML
+
+
+

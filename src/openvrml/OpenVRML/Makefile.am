@@ -1,4 +1,4 @@
-LIBRARY_VERSION = 2:2:0
+LIBRARY_VERSION = 2:3:0
 #                 | | |
 #          +------+ | +---+
 #          |        |     |
@@ -18,7 +18,7 @@ AM_CXXFLAGS = $(JNI_CFLAGS) $(JS_CFLAGS)
 
 lib_LTLIBRARIES = libopenvrml.la 
 libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) $(JPEG_LIBS) \
-$(PNG_LIBS) $(Z_LIBS) $(JS_LIBS) $(JNI_LIBS) $(FTF_LIBS)
+$(PNG_LIBS) $(Z_LIBS) $(JS_LIBS) $(JNI_LIBS)
 
 libopenvrml_la_SOURCES = \
         MathUtils.cpp \
@@ -31,8 +31,6 @@ libopenvrml_la_SOURCES = \
         field.cpp \
         fieldvalueptr.cpp \
         VrmlMatrix.cpp \
-        scope.cpp \
-        scopeptr.cpp \
         node.cpp \
         nodeptr.cpp \
         nodetypeptr.cpp \
@@ -40,9 +38,9 @@ libopenvrml_la_SOURCES = \
         bvolume.cpp \
         script.cpp \
         ScriptJDK.cpp \
-        browser.cpp \
+        VrmlNamespace.cpp \
+        VrmlScene.cpp \
         Viewer.cpp \
-        font.cpp \
         VrmlRenderContext.cpp \
         VrmlFrustum.cpp \
         vrml97node.cpp
@@ -61,8 +59,6 @@ OpenVRMLinclude_HEADERS = \
         field.h \
         fieldvalueptr.h \
         VrmlMatrix.h \
-        scope.h \
-        scopeptr.h \
         node.h \
         nodeptr.h \
         nodetypeptr.h \
@@ -70,9 +66,9 @@ OpenVRMLinclude_HEADERS = \
         bvolume.h \
         script.h \
         ScriptJDK.h \
-        browser.h \
+        VrmlNamespace.h \
+        VrmlScene.h \
         Viewer.h \
-        font.h \
         VrmlRenderContext.h \
         VrmlFrustum.h \
         vrml97node.h

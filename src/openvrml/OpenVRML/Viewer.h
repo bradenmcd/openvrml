@@ -25,20 +25,16 @@
 #   define OPENVRML_VIEWER_H
 
 #   include <stddef.h>
-#   include <string>
-#   include "bvolume.h"
+#   include "common.h"
+#   include "node.h"
 #   include "VrmlFrustum.h"
 
 namespace OpenVRML {
 
-    class Node;
     class BSphere;
     class AABox;
     class SFVec3f;
     class VrmlMatrix;
-    class FontFace;
-    class FontVectoriser;
-    class Browser;
 
     class OPENVRML_SCOPE Viewer {
     protected:
@@ -65,7 +61,7 @@ namespace OpenVRML {
         typedef long Object;
         typedef long TextureObject;
         
-        Browser & browser;
+        VrmlScene & scene;
 
         virtual ~Viewer() = 0;
 
@@ -124,10 +120,7 @@ namespace OpenVRML {
 			           const float * color,
 			           size_t nci, const long * ci) = 0;
         virtual Object insertSphere(float radius) = 0;
-        virtual Object insertText(FontFace & fface, 
-                                  size_t strarraysize, const std::string * string,
-                                  size_t lsize, const float length[], 
-                                  float maxextent) = 0;
+        virtual Object insertText(int*, float size, int n, char const * const *s) = 0;
         virtual Object insertDirLight(float, float, const float [], const float []) = 0;
         virtual Object insertPointLight(float, const float [], const float [],
 				        float, const float [], float) = 0;
@@ -184,16 +177,36 @@ namespace OpenVRML {
 				         const float scale[2],
 				         const float translation[2]) = 0;
 
-        virtual void setViewpoint(const float position[3],
-			          const float orientation[4],
-			          float fieldOfView,
-			          float avatarSize,
-			          float visLimit) = 0;
+        virtual void setTransform(const float center[3],
+			          const float rotation[4],
+			          const float scale[3],
+			          const float scaleOrientation[4],
+			          const float translation[3]) = 0;
 
-        virtual void transform(const VrmlMatrix & mat) = 0;
+        // This is a hack to work around the glPushMatrix() limit (32 deep on Mesa).
+        // It has some ugly disadvantages: it is slower and the resulting transform
+        // after a setTransform/unsetTransform may not be identical to the original.
+        // It might be better to just build our own matrix stack...
+        virtual void unsetTransform(const float center[3],
+			            const float rotation[4],
+			            const float scale[3],
+			            const float scaleOrientation[4],
+			            const float translation[3]) = 0;
+
+        virtual void setBillboardTransform(const float axisOfRotation[3]) = 0;
+
+        virtual void unsetBillboardTransform(const float axisOfRotation[3]) = 0;
+
+        virtual void setViewpoint(const float * /*position*/,
+			          float * /*orientation*/,
+			          float /*fieldOfView*/,
+			          float /*avatarSize*/,
+			          float /*visLimit*/) = 0;
 
         // The viewer knows the current viewpoint
         virtual void transformPoints(int nPoints, float *points) = 0;
+
+        virtual void MatrixMultiply(const float M[4][4]) = 0;
 
         // still working on some navigation api issues, so don't depend on
         // thses yet. there's a default implementation in any case, so you
@@ -202,14 +215,29 @@ namespace OpenVRML {
         virtual const VrmlFrustum& getFrustum() const;
         virtual void setFrustum(const VrmlFrustum& afrust);
 
-        virtual BVolume::Intersection
-        intersectViewVolume(const BVolume & bvolume) const;
+        virtual int isectViewVolume(const BVolume & bv) const;
 
-        virtual void drawBSphere(const BSphere & bs,
-                                 BVolume::Intersection intersection) = 0;
+        virtual void drawBSphere(const BSphere & bs, int flag) = 0;
 
     protected:
-        explicit Viewer(Browser & browser);
+        static void computeCylinder(double height, double radius, int numFacets,
+		                    float c[][3], float tc[][3], int faces[]);
+
+        static void computeExtrusion(int nOrientation, const float * orientation,
+                                     int nScale, const float * scale,
+                                     int nCrossSection, const float * crossSection,
+                                     int nSpine, const float * spine,
+                                     float * c,   // OUT: coordinates
+                                     float * tc,  // OUT: texture coords
+                                     int * faces);    // OUT: face list
+
+        static void computeSphere(double radius, int numLatLong,
+                                  float c[][3], float tc[][3], int faces[]);
+
+        static void computeView(const float position[3], float orientation[3],
+                                float distance, float target[3], float up[3]);
+        
+        explicit Viewer(VrmlScene & scene);
 
     private:
         // non-copyable

@@ -17,6 +17,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
+//  Program to exercise the VrmlScene and ViewerGlut classes.
+//
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
@@ -32,32 +34,27 @@
 #   include "SIOUX.h"
 # endif
 
-# include <iostream>
-# ifdef HAVE_OPENGL_GLUT_H
-#   include <OpenGL/glut.h>
-# else
-#   include <GL/glut.h>
-# endif
+# include <stdio.h>
+# include OPENVRML_GLUT_H
 # include <OpenVRML/doc2.hpp>
-# include <OpenVRML/browser.h>
+# include <OpenVRML/VrmlScene.h>
 
 # include "ViewerGlut.h"
 
-using OpenVRML::Browser;
-using OpenVRML::MFString;
+using OpenVRML::VrmlScene;
+using OpenVRML::Doc2;
 
 extern "C" {
     typedef void (*GlutMenu)(int);
 }
 
 namespace {
-    Browser * browser = 0;
+    VrmlScene * vrmlScene = 0;
     ViewerGlut * viewer = 0;
     
     bool setTitleUrl = true;
     
-    void onExit();
-    void worldChangedCB(Browser::CBReason);
+    void worldChangedCB(VrmlScene::CBReason);
     void buildViewpointMenu();
 }
 
@@ -65,9 +62,6 @@ int main(int argc, char * argv[]) {
     using std::cerr;
     using std::cout;
     using std::endl;
-    using std::string;
-    
-    atexit(onExit);
     
 #if defined(__FreeBSD__)
     fpsetmask(0);
@@ -83,11 +77,12 @@ int main(int argc, char * argv[]) {
     glutInitWindowSize(400, 320);
     glutInit(&argc, argv);
 
-    string inputUrl;
-    string inputName;
+    const char * inputUrl = 0;
+    const char * inputName = 0;
+    const char * outputName = 0;
     const char * title = 0;
 
-    const char * const usage = " file.wrl\n";
+    const char * const usage = " file.wrl [outputfile]\n";
 
     for (int i = 1; i < argc; ++i) {
         if (*argv[i] == '-') {
@@ -103,31 +98,36 @@ int main(int argc, char * argv[]) {
                 cerr << "Usage: " << argv[0] << usage << endl;
                 exit(EXIT_FAILURE);
             }
-        } else if (inputName.empty()) {
+        } else if (!inputName) {
             inputName = argv[i];
+        } else if (!outputName) {
+            outputName = argv[i];
         } else {
             cerr << "Usage: " << argv[0] << usage << endl;
             exit(EXIT_FAILURE);
         }
     }
 
-    if (inputName.empty()) {
-        if (inputUrl.empty()) {
+    if (!inputName) {
+        if (inputUrl) {
             inputName = inputUrl;
         } else {
             inputName = inputUrl = "-"; // Read stdin
         }
     }
 
-    if (inputUrl.empty()) { inputUrl = inputName; }
+    if (!inputUrl) { inputUrl = inputName; }
 
-    browser = new Browser(cout, cerr);
+    vrmlScene = new VrmlScene(inputUrl);
 
-    MFString uri(1, &inputUrl);
-    MFString parameter;
-    browser->loadURI(uri, parameter);
+    if (outputName) {
+        cout << "  Saving scene to " << outputName << endl;
+        if (! vrmlScene->save(outputName)) {
+            cout << "\nError: couldn't write to " << outputName << endl;
+        }
+    }
 
-    viewer = new ViewerGlut(*browser);
+    viewer = new ViewerGlut(*vrmlScene);
     if (!viewer) {
         cerr << "\nError: couldn't create GLUT viewer.\n";
         exit(EXIT_FAILURE);
@@ -135,8 +135,8 @@ int main(int argc, char * argv[]) {
 
     if (title && *title) { glutSetWindowTitle(title); }
 
-    browser->addWorldChangedCallback( worldChangedCB );
-    worldChangedCB(Browser::REPLACE_WORLD);
+    vrmlScene->addWorldChangedCallback( worldChangedCB );
+    worldChangedCB( VrmlScene::REPLACE_WORLD );
     viewer->update();
 
     glutMainLoop();
@@ -144,20 +144,17 @@ int main(int argc, char * argv[]) {
 
 namespace {
 
-    void onExit() {
-        delete browser;
-        delete viewer;
-    }
-
-    void worldChangedCB(const Browser::CBReason reason) {
+    void worldChangedCB(const VrmlScene::CBReason reason) {
         switch (reason) {
-        case Browser::DESTROY_WORLD:
+        case VrmlScene::DESTROY_WORLD:
             exit(0);
             break;
 
-        case Browser::REPLACE_WORLD:
+        case VrmlScene::REPLACE_WORLD:
             if (setTitleUrl) {
-                glutSetWindowTitle(browser->getWorldURI().c_str());
+                Doc2 * urlDoc = vrmlScene->urlDoc();
+                const char * title = urlDoc ? urlDoc->urlBase() : 0;
+                if (title && *title) glutSetWindowTitle(title);
             }
             buildViewpointMenu();
             break;
@@ -168,7 +165,7 @@ namespace {
         if (item == 0) {
             viewer->resetUserNavigation(); // ...
         } else {
-            browser->setViewpoint(item - 1);
+            vrmlScene->setViewpoint(item - 1);
         }
     }
 
@@ -193,13 +190,13 @@ namespace {
         glutSetMenu(vpmenu);
         //glutAddMenuEntry( "Reset", 0 );
 
-        numberOfViewpoints = browser->nViewpoints();
+        numberOfViewpoints = vrmlScene->nViewpoints();
         nvp = numberOfViewpoints;
 
         if (numberOfViewpoints > 0) {
             for (int i = 0; i < numberOfViewpoints; i++) {
                 std::string name, description;
-                browser->getViewpoint(i, name, description);
+                vrmlScene->getViewpoint(i, name, description);
                 if (description.length() > 0) {
                     glutAddMenuEntry(description.c_str(), i + 1);
                 } else if (name.length() > 0) {

@@ -31,7 +31,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <algorithm>
 
 # ifndef NDEBUG
 #   define SYSTEM_DEBUG
@@ -249,7 +248,7 @@ int System::connectSocket( const char *host, int port )
 
   if (he)
     {
-      std::copy(he->h_addr, he->h_addr + he->h_length, (char*)&sin.sin_addr);
+      memcpy((char *)&sin.sin_addr, he->h_addr, he->h_length);
       sockfd = socket( PF_INET, SOCK_STREAM, IPPROTO_TCP );
       if (sockfd != -1)
 	if (connect( sockfd, (struct sockaddr *)&sin, sizeof(sin)) == -1)

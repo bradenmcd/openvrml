@@ -34,6 +34,7 @@
 namespace OpenVRML {
 
     class ScriptNode;
+    class VrmlScene;
 
     class ScriptJDK : public Script {
         // Shared by all JDK Script objects

@@ -22,11 +22,7 @@
 #   include <config.h>
 # endif
 
-# ifdef HAVE_OPENGL_GLUT_H
-#   include <OpenGL/glut.h>
-# else
-#   include <GL/glut.h>
-# endif
+#include OPENVRML_GLUT_H
 #include <OpenVRML/System.h>
 
 #include "ViewerGlut.h"
@@ -237,7 +233,7 @@ static void reshape(int width, int height)
 #endif
 }
 
-ViewerGlut::ViewerGlut(Browser & browser): ViewerOpenGL(browser) {
+ViewerGlut::ViewerGlut(VrmlScene & scene): ViewerOpenGL(scene) {
 #if USE_STENCIL_SHAPE
   glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE | GLUT_STENCIL);
 #else

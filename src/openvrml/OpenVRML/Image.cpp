@@ -35,7 +35,6 @@
 #include <stdio.h>
 #include <stdlib.h>		// free()
 #include <string.h>
-#include <algorithm>
 
 /************************************************************************
 	GIF File Reader
@@ -711,7 +710,7 @@ namespace {
 //
 // PNG reader
 //
-# ifdef HAVE_LIBPNG
+# ifdef OPENVRML_HAVE_LIBPNG
 #   include <png.h>
 namespace {
 
@@ -980,12 +979,12 @@ namespace {
 //
 // JPEG reader
 //
-# ifdef HAVE_LIBJPEG
+# ifdef OPENVRML_HAVE_LIBJPEG
 #   include <setjmp.h>
 
 extern "C" {
 #   include <jpeglib.h>
-
+    
     typedef void (*JpegErrorExit)(j_common_ptr);
 }
 
@@ -3307,7 +3306,7 @@ namespace {
 
       if (m->buf_length > 0)
         {
-          std::copy(m->buffer, m->buffer + (m->buf_length * 4), m->buf_start);
+          memcpy(m->buf_start, m->buffer, m->buf_length * 4);
           mark = (unsigned char *) (m->buf_start + m->buf_length);
         }
       else
@@ -6809,11 +6808,11 @@ typedef enum {
   ImageFile_UNKNOWN,
 
   ImageFile_GIF
-# ifdef HAVE_LIBJPEG
+# ifdef OPENVRML_HAVE_LIBJPEG
   , ImageFile_JPG
 # endif
   , ImageFile_MPG
-# ifdef HAVE_LIBPNG
+# ifdef OPENVRML_HAVE_LIBPNG
   , ImageFile_PNG
 # endif
 
@@ -6823,14 +6822,12 @@ typedef enum {
 static ImageFileType imageFileType(const char *, FILE *);
 
 
-Image::Image():
-    d_url(0),
-    d_w(0),
-    d_h(0),
-    d_nc(0),
-    d_pixels(0),
-    d_frame(0)
-{}
+Image::Image(const char *url, Doc * relative) :
+  d_url(0),
+  d_w(0), d_h(0), d_nc(0), d_pixels(0), d_frame(0)
+{
+  if (url) (void) setURL(url, relative);
+}
 
 
 Image::~Image()
@@ -6840,63 +6837,146 @@ Image::~Image()
   if (d_frame) free(d_frame);
 }
 
-bool Image::setURL(const char * const url, const Doc2 * const relative)
+
+bool Image::setURL(const char *url, Doc *relative)
 {
-    if (this->d_url) {
-        delete this->d_url;
-        this->d_url = 0;
-    }
-    if (this->d_pixels) {
-        free(this->d_pixels); // Assumes file readers use malloc.
-        this->d_pixels = 0;
-    }
-    if (this->d_frame) {
-        this->d_frame = 0;
-        free(this->d_frame);
-    }
-    this->d_w = this->d_h = this->d_nc = this->d_nFrames = 0;
-    if (!url) { return true; }
+  if (d_url) delete d_url;
+  if (d_pixels) free(d_pixels); // assumes file readers use malloc...
+  if (d_frame) free(d_frame);
+  d_pixels = 0;
+  d_frame = 0;
+  d_w = d_h = d_nc = d_nFrames = 0;
+  if (! url) return true;
 
-    this->d_url = new Doc(url, relative);
+  d_url = new Doc(url, relative);
 
-    FILE * const fp = this->d_url->fopen("rb");
+  //  theSystem->debug("Image: trying to create Doc(%s, %s)\n",
+  //		   url, relative ? relative->url() : "");
 
-    if (fp) {
-        switch (imageFileType(url, fp)) {
-        case ImageFile_GIF:
-            this->d_pixels = gifread(fp, &this->d_w, &this->d_h, &this->d_nc,
-                                     &this->d_nFrames, &this->d_frame);
-            break;
-# ifdef HAVE_LIBJPEG
-        case ImageFile_JPG:
-            this->d_pixels = jpgread(fp, &this->d_w, &this->d_h, &this->d_nc);
-            break;
+  FILE *fp = d_url->fopen("rb");
+
+  if (fp)
+  {
+      switch (imageFileType(url, fp))
+	    {
+	      case ImageFile_GIF:
+	        d_pixels = gifread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
+	        break;
+# ifdef OPENVRML_HAVE_LIBJPEG
+	      case ImageFile_JPG:
+	        d_pixels = jpgread(fp, &d_w, &d_h, &d_nc);
+	        break;
 # endif
-        case ImageFile_MPG:
-            this->d_pixels = mpgread(fp, &this->d_w, &this->d_h, &this->d_nc,
-                                     &this->d_nFrames, &this->d_frame);
-            break;
-# ifdef HAVE_LIBPNG
-        case ImageFile_PNG:
-            this->d_pixels = pngread(fp, &this->d_w, &this->d_h, &this->d_nc);
-            break;
+	      case ImageFile_MPG:
+	        d_pixels = mpgread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
+	        break;
+# ifdef OPENVRML_HAVE_LIBPNG
+	      case ImageFile_PNG:
+	        d_pixels = pngread(fp, &d_w, &d_h, &d_nc);
+	        break;
 # endif
-        default:
-            theSystem->error("Error: unrecognized image file format (%s).\n", url);
-            break;
+	      default:
+	        theSystem->error("Error: unrecognized image file format (%s).\n", url);
+	        break;
 	}
 
-        if (! d_pixels) {
-            theSystem->error("Error: unable to read image file (%s).\n", url);
-        }
+  if (! d_pixels)
+	  theSystem->error("Error: unable to read image file (%s).\n", url);
 
-        this->d_url->fclose();
-    }
+  d_url->fclose();
+  }
 
-    return (this->d_pixels != 0);
+  return (d_pixels != 0);
 }
 
-bool Image::tryURLs(const MFString & urls, const Doc2 * const relative) {
+bool Image::setURL(const char *url, Doc2 *relative)
+{
+  if (d_url) delete d_url;
+  if (d_pixels) free(d_pixels); // assumes file readers use malloc...
+  if (d_frame) free(d_frame);
+  d_pixels = 0;
+  d_frame = 0;
+  d_w = d_h = d_nc = d_nFrames = 0;
+  if (! url) return true;
+
+  d_url = new Doc(url, relative);
+
+  //  theSystem->debug("Image: trying to create Doc(%s, %s)\n",
+  //		   url, relative ? relative->url() : "");
+
+  FILE *fp = d_url->fopen("rb");
+
+  if (fp)
+  {
+      switch (imageFileType(url, fp))
+	    {
+	      case ImageFile_GIF:
+	        d_pixels = gifread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
+	        break;
+# ifdef OPENVRML_HAVE_LIBJPEG
+	      case ImageFile_JPG:
+	        d_pixels = jpgread(fp, &d_w, &d_h, &d_nc);
+	        break;
+# endif
+	      case ImageFile_MPG:
+	        d_pixels = mpgread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
+	        break;
+# ifdef OPENVRML_HAVE_LIBPNG
+	      case ImageFile_PNG:
+	        d_pixels = pngread(fp, &d_w, &d_h, &d_nc);
+	        break;
+# endif
+	      default:
+	        theSystem->error("Error: unrecognized image file format (%s).\n", url);
+	        break;
+	}
+
+      if (! d_pixels)
+	  theSystem->error("Error: unable to read image file (%s).\n", url);
+
+      d_url->fclose();
+  }
+
+  return (d_pixels != 0);
+}
+
+bool Image::tryURLs(size_t nUrls, char const * const * urls, Doc * relative)
+{
+    size_t i(0);
+    for (; i < nUrls; ++i) {  // Try each url until one succeeds
+        if (urls[i] && setURL(urls[i], relative)) {
+            break;
+        }
+    }
+
+    return i < nUrls;
+}
+
+bool Image::tryURLs(size_t nUrls, char const * const * urls, Doc2 * relative)
+{
+    size_t i(0);
+    for (; i < nUrls; ++i) {  // Try each url until one succeeds
+        if (urls[i] && setURL(urls[i], relative)) {
+            break;
+        }
+    }
+
+    return i < nUrls;
+}
+
+bool Image::tryURLs(const MFString & urls, Doc * relative) {
+    size_t i(0);
+    for (; i < urls.getLength(); ++i) {
+        if ((urls.getElement(i).length() > 0)
+                && setURL(urls.getElement(i).c_str(), relative)) {
+            break;
+        }
+    }
+
+    return (i < urls.getLength());
+}
+
+bool Image::tryURLs(const MFString & urls, Doc2 * relative) {
     size_t i(0);
     for (; i < urls.getLength(); ++i) {
         if ((urls.getElement(i).length() > 0)
@@ -6921,7 +7001,7 @@ static ImageFileType imageFileType(const char *url, FILE *)
   if (strcmp(suffix,"gif") == 0 ||
       strcmp(suffix,"GIF") == 0)
     return ImageFile_GIF;
-# ifdef HAVE_LIBJPEG
+# ifdef OPENVRML_HAVE_LIBJPEG
   else if (strcmp(suffix,"jpg") == 0 ||
 	   strcmp(suffix,"JPG") == 0 ||
 	   strcmp(suffix,"jpeg") == 0 ||
@@ -6933,7 +7013,7 @@ static ImageFileType imageFileType(const char *url, FILE *)
 	   strcmp(suffix,"mpeg") == 0 ||
 	   strcmp(suffix,"MPEG") == 0)
     return ImageFile_MPG;
-# ifdef HAVE_LIBPNG
+# ifdef OPENVRML_HAVE_LIBPNG
   else if (strcmp(suffix,"png") == 0 ||
 	   strcmp(suffix,"PNG") == 0)
     return ImageFile_PNG;

@@ -22,34 +22,11 @@ package vrml.field;
 
 import vrml.ConstField;
 
-/**
- * Represents a read-only VRML SFInt32 field in Java.
- */
 public class ConstSFInt32 extends ConstField
 {
-  /**
-   * Construct a new SFInt32 field in OpenVRML using the given value.
-   *
-   * @param value Initial value of field.
-   */
   private native void CreateObject(int value);
 
-  /**
-   * Construct a read-only SFInt32 field.
-   *
-   * @param value Initial value of field.
-   */
-  public ConstSFInt32(int value)
-  {
-    CreateObject(value);
-  }
-
-  /**
-   * Get the value of the SFInt32 field.
-   *
-   * @return Value of SFInt32.
-   */
+  public ConstSFInt32(int value) { CreateObject(value); }
   public native int getValue();
-
   public native String toString();
 }

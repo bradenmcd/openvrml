@@ -48,11 +48,9 @@ where: [target] may be any one of the following ...
 
     WITH_JAVASCRIPT = YES .................... - If it is YES, 
                then you must have js32.lib and js32.dll from mozilla in your 
-               system and in winconfig.h you must define HAVE_MOZJS. This is 
-               default. Otherwise build without JAVASCRIPT support (if you 
-               don't have SpiderMonkey or don't want JAVASCRIPT support),
-               by giving WITH_JAVASCRIPT = NO. You must undefine HAVE_MOZJS in 
-               winconfig.h for this option.
+               system. This is default. Otherwise build without JAVASCRIPT 
+               support (if you don't have SpiderMonkey or don't want 
+               JAVASCRIPT support), by giving WITH_JAVASCRIPT = NO.
 
 
    MOZILLALIB_DIR  .................... - required to be defined as the path
@@ -66,12 +64,10 @@ where: [target] may be any one of the following ...
 
    WITH_JNI =  YES .................... - If it is YES, 
                then you must have jvm.lib and jvm.dll from SUN  
-               Microsystems in your system and in winconfig.h you must 
-               define OPENVRML_HAVE_JNI. This is default. Otherwise 
+               Microsystems in your system. This is default. Otherwise 
                build without JAVA support (if you don't have 
                Java SDK from SUN or don't want JAVA support),
-               by giving WITH_JNI = NO. You must undefine 
-               OPENVRML_HAVE_JNI in winconfig.h for this option.
+               by giving WITH_JNI = NO.
 
    JAVA_DIR  .................... - required to be defined as 
                the path where your Java SDK is installed. 
@@ -139,24 +135,24 @@ $(BINOUTDIR) :
 
 CPP = cl.exe
 STATIC_CFLAGS = /nologo /MD /W0 /GX /O2 /D "WIN32" /D "_WINDOWS" \
-	/Fp"$(INTDIR)\lookat.pch" /Fo"$(INTDIR)\\"\
-	/Fd"$(INTDIR)\\" /FD /c
+                /Fp"$(INTDIR)\lookat.pch" /Fo"$(INTDIR)\\"\
+                /Fd"$(INTDIR)\\" /FD /c
 
 DYNAMIC_CFLAGS = /nologo /MD /W0 /GX /O2 /D "WIN32" /D "_WINDOWS" /D "OPENVRML_DLL_IMPORT" \
-	/Fp"$(INTDIR)\lookat.pch" /Fo"$(INTDIR)\\"\
-	/Fd"$(INTDIR)\\" /FD /c
+                /Fp"$(INTDIR)\lookat.pch" /Fo"$(INTDIR)\\"\
+                /Fd"$(INTDIR)\\" /FD /c
 
 O=.obj
 LINK32 = link.exe 
 LINK32_DYNAMIC_FLAGS = $(VRML97LIB)\openvrml.lib $(GLUTLIB_DIR)\glut32.lib /nologo \
-    /subsystem:console /incremental:no /pdb:"$(BINOUTDIR)\lookat.pdb" /machine:I386 \
+   /subsystem:console /incremental:no /pdb:"$(BINOUTDIR)\lookat.pdb" /machine:I386 \
    /nodefaultlib:LIBC 
 
 LINK32_STATIC_FLAGS = $(VRML97LIB)\openvrml.lib \
   $(GLUTLIB_DIR)\glut32.lib\
   /nologo \
-   /subsystem:console /incremental:no /pdb:"$(BINOUTDIR)\lookat.pdb" /machine:I386 \
-   /nodefaultlib:LIBC
+  /subsystem:console /incremental:no /pdb:"$(BINOUTDIR)\lookat.pdb" /machine:I386 \
+  /nodefaultlib:LIBC
 
 OBJ = $(BINOUTDIR)\lookat$(O) $(BINOUTDIR)\ViewerGlut$(O)
 
@@ -188,45 +184,46 @@ lookat-static : PROMPT $(BINOUTDIR)  lookat_static copydll
 
 lookat_dynamic     : $(OBJ)
 	               if exist $(BINOUTDIR)\lookat.exe del $(BINOUTDIR)\lookat.exe
-		         $(LINK32) $(LINK32_DYNAMIC_FLAGS) /out:$(BINOUTDIR)\lookat.exe $(OBJ)
+                   $(LINK32) $(LINK32_DYNAMIC_FLAGS) /out:$(BINOUTDIR)\lookat.exe $(OBJ)
 
 lookat_static      :  $(STATIC_OBJ)
-	               if exist $(BINOUTDIR)\lookat.exe del $(BINOUTDIR)\lookat.exe
-		         $(LINK32) $(LINK32_STATIC_FLAGS) /out:$(BINOUTDIR)\lookat.exe $(OBJ)
+	                  if exist $(BINOUTDIR)\lookat.exe del $(BINOUTDIR)\lookat.exe
+                      $(LINK32) $(LINK32_STATIC_FLAGS) /out:$(BINOUTDIR)\lookat.exe $(OBJ)
 
 $(BINOUTDIR)\lookat.obj :   $(SOURCE)\lookat.cpp\
-       		          $(SOURCE)\ViewerGlut.h\
-				    $(CORESOURCE)\doc2.hpp \
-	       			$(CORESOURCE)\System.h \
-					$(CORESOURCE)\VrmlScene.h
-					$(CPP) $(DYNAMIC_CFLAGS) /I $(COREINCLUDE) /I $(GLUTLIB_DIR)\
-					/I $(GLINCLUDE) $(SOURCE)\lookat.cpp
+                            $(SOURCE)\ViewerGlut.h\
+                            $(CORESOURCE)\doc2.hpp \
+                            $(CORESOURCE)\System.h \
+                            $(CORESOURCE)\VrmlScene.h
+                            $(CPP) $(DYNAMIC_CFLAGS) /I $(COREINCLUDE)\
+                            /D "OPENVRML_GLUT_H=<gl/glut.h>" /I $(GLUTLIB_DIR)\
+                            /I $(GLINCLUDE) $(SOURCE)\lookat.cpp
             	
 
 $(BINOUTDIR)\ViewerGlut.obj :  $(SOURCE)\ViewerGlut.cpp\
-					   $(SOURCE)\ViewerGlut.h\
-					$(CORESOURCE)\System.h\
-					$(GLSOURCE)\ViewerOpenGL.h
-            			$(CPP) $(DYNAMIC_CFLAGS) /I $(GLUTLIB_DIR) /I $(COREINCLUDE)\
-					/I .. /I $(GLINCLUDE) $(SOURCE)\ViewerGlut.cpp
+                               $(SOURCE)\ViewerGlut.h\
+                               $(CORESOURCE)\System.h\
+                               $(GLSOURCE)\ViewerOpenGL.h
+                               $(CPP) $(DYNAMIC_CFLAGS) /I $(GLUTLIB_DIR) /I $(COREINCLUDE)\
+                               /I $(GLINCLUDE) /D "OPENVRML_GLUT_H=<gl/glut.h>"\
+                               $(SOURCE)\ViewerGlut.cpp
 
-
-
-static_lookat :             $(SOURCE)\lookat.cpp\
-       		          $(SOURCE)\ViewerGlut.h\
-				    $(CORESOURCE)\doc2.hpp \
-	       			$(CORESOURCE)\System.h \
-					$(CORESOURCE)\VrmlScene.h
-					$(CPP) $(STATIC_CFLAGS) /I $(COREINCLUDE) /I $(GLUTLIB_DIR)\
-					/I $(GLINCLUDE) $(SOURCE)\lookat.cpp
+static_lookat :   $(SOURCE)\lookat.cpp\
+                  $(SOURCE)\ViewerGlut.h\
+                  $(CORESOURCE)\doc2.hpp \
+                  $(CORESOURCE)\System.h \
+                  $(CORESOURCE)\VrmlScene.h
+                  $(CPP) $(STATIC_CFLAGS) /I $(COREINCLUDE)\
+                  /D "OPENVRML_GLUT_H=<gl/glut.h>" /I $(GLUTLIB_DIR)\
+                  /I $(GLINCLUDE) $(SOURCE)\lookat.cpp
             	
-
-static_ViewerGlut :           $(SOURCE)\ViewerGlut.cpp\
-					   $(SOURCE)\ViewerGlut.h\
-					$(CORESOURCE)\System.h\
-					$(GLSOURCE)\ViewerOpenGL.h
-            			$(CPP) $(STATIC_CFLAGS) /I $(GLUTLIB_DIR) /I $(COREINCLUDE)\
-					/I .. /I $(GLINCLUDE) $(SOURCE)\ViewerGlut.cpp
+static_ViewerGlut :  $(SOURCE)\ViewerGlut.cpp\
+                     $(SOURCE)\ViewerGlut.h\
+                     $(CORESOURCE)\System.h\
+                     $(GLSOURCE)\ViewerOpenGL.h
+                     $(CPP) $(STATIC_CFLAGS) /I $(GLUTLIB_DIR) /I $(COREINCLUDE)\
+                     /I $(GLINCLUDE) /D "OPENVRML_GLUT_H=<gl/glut.h>"\
+                     $(SOURCE)\ViewerGlut.cpp
 
 
 

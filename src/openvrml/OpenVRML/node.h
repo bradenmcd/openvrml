@@ -2,7 +2,6 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
-// Copyright (C) 2002  Braden McDaniel
 // 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -26,15 +25,24 @@
 #   include <list>
 #   include <set>
 #   include <stdexcept>
-#   include <utility>
+#   include <string>
+#   include <typeinfo>
+#   include <vector>
+#   include "common.h"
 #   include "field.h"
 #   include "fieldvalueptr.h"
 #   include "nodetypeptr.h"
-#   include "scopeptr.h"
 #   include "VrmlRenderContext.h"
 
 namespace OpenVRML {
 
+    class UnsupportedInterface : public std::invalid_argument {
+    public:
+        UnsupportedInterface(const std::string & message);
+        virtual ~UnsupportedInterface() throw ();
+    };
+    
+    
     struct OPENVRML_SCOPE NodeInterface {
         enum Type { invalidType, eventIn, eventOut, exposedField, field };
 
@@ -46,35 +54,12 @@ namespace OpenVRML {
                       const std::string & id);
     };
     
-    std::ostream & operator<<(std::ostream & out, NodeInterface::Type type);
-    std::istream & operator>>(std::istream & in, NodeInterface::Type & type);
+    bool operator==(const NodeInterface & rhs, const NodeInterface & lhs);
     
-    inline bool operator==(const NodeInterface & lhs, const NodeInterface & rhs)
-        throw ()
-    {
-        return lhs.type == rhs.type
-                && lhs.fieldType == rhs.fieldType
-                && lhs.id == rhs.id;
+    inline bool operator!=(const NodeInterface & rhs,
+                           const NodeInterface & lhs) {
+        return !(rhs == lhs);
     }
-    
-    inline bool operator!=(const NodeInterface & lhs, const NodeInterface & rhs)
-        throw ()
-    {
-        return !(lhs == rhs);
-    }
-
-    class NodeType;
-
-    class UnsupportedInterface : public std::runtime_error {
-    public:
-        explicit UnsupportedInterface(const std::string & message);
-        UnsupportedInterface(const NodeType & nodeType,
-                             const std::string & interfaceId);
-        UnsupportedInterface(const NodeType & nodeType,
-                             NodeInterface::Type interfaceType,
-                             const std::string & interfaceId);
-        virtual ~UnsupportedInterface() throw ();
-    };
     
     
     class OPENVRML_SCOPE NodeInterfaceSet {
@@ -95,7 +80,6 @@ namespace OpenVRML {
                 throw (std::invalid_argument, std::bad_alloc);
         const_iterator begin() const throw ();
         const_iterator end() const throw ();
-        const_iterator findInterface(const std::string & id) const throw ();
     };
     
     inline NodeInterfaceSet::const_iterator
@@ -109,23 +93,21 @@ namespace OpenVRML {
     }
     
     
-    class Browser;
-    class Viewer;
+    class VrmlScene;
     
     class OPENVRML_SCOPE NodeClass {
     public:
-        Browser & browser;
-
+        VrmlScene & scene;
+        
         virtual ~NodeClass() throw () = 0;
-        virtual void initialize(double time) throw ();
-        virtual void render(Viewer & viewer) throw ();
+        
         virtual const NodeTypePtr
-            createType(const std::string & id,
-                       const NodeInterfaceSet & interfaces)
-            throw (UnsupportedInterface, std::bad_alloc) = 0;
+                createType(const std::string & id,
+                           const NodeInterfaceSet & interfaces)
+                throw (UnsupportedInterface, std::bad_alloc) = 0;
     
     protected:
-        explicit NodeClass(Browser & browser) throw ();
+        explicit NodeClass(VrmlScene & scene) throw ();
     };
     
     class OPENVRML_SCOPE NodeType {
@@ -139,10 +121,10 @@ namespace OpenVRML {
         FieldValue::Type hasEventOut(const std::string & id) const throw ();
         FieldValue::Type hasField(const std::string & id) const throw ();
         FieldValue::Type hasExposedField(const std::string & id) const throw ();
+        FieldValue::Type hasInterface(const std::string & id) const throw ();
         
         virtual const NodeInterfaceSet & getInterfaces() const throw () = 0;
-        virtual const NodePtr createNode(const ScopePtr & scope) const
-                throw (std::bad_alloc) = 0;
+        virtual const NodePtr createNode() const throw (std::bad_alloc) = 0;
     
     protected:
         NodeType(NodeClass & nodeClass, const std::string & id)
@@ -150,14 +132,10 @@ namespace OpenVRML {
     };
 
 
-    class OPENVRML_SCOPE FieldValueTypeMismatch : public std::runtime_error {
-    public:
-        FieldValueTypeMismatch();
-        virtual ~FieldValueTypeMismatch() throw ();
-    };
-
-
-    class Scope;
+    class VrmlNamespace;
+    class Viewer;
+    class NodeType;
+    class FieldValue;
     class VrmlMatrix;
     class NodeVisitor;
     class BVolume;
@@ -174,13 +152,15 @@ namespace OpenVRML {
     class TextureNode;
     class TextureCoordinateNode;
     class TextureTransformNode;
-    class FontFace;
     
     namespace Vrml97Node {
         class Anchor;
         class AudioClip;
+        class Background;
         class CylinderSensor;
+        class Fog;
         class Group;
+        class Inline;
         class AbstractLight;
         class MovieTexture;
         class NavigationInfo;
@@ -193,8 +173,6 @@ namespace OpenVRML {
         class Viewpoint;
     }
 
-    class Scene;
-    
     std::ostream & operator<<(std::ostream & out, const Node & node);
 
     class OPENVRML_SCOPE Node {
@@ -217,13 +195,11 @@ namespace OpenVRML {
             const FieldValuePtr value;
             bool modified;
             
-            PolledEventOutValue();
             PolledEventOutValue(const FieldValuePtr & value, bool modified);
         };
 
     private:
-        ScopePtr scope;
-        Scene * scene;
+        std::string id;
         RouteList routes;
         
         typedef std::map<std::string, PolledEventOutValue *> EventOutISMap;
@@ -234,24 +210,20 @@ namespace OpenVRML {
 
         virtual ~Node() throw () = 0;
 
-        const std::string getId() const;
-        void setId(const std::string & nodeId);
-        
-        const ScopePtr & getScope() const;
-        
-        Scene * getScene() const;
+        const std::string & getId() const;
+        void setId(const std::string & nodeId, VrmlNamespace * ns = 0);
         
         std::ostream & print(std::ostream & out, size_t indent) const;
 
         bool accept(NodeVisitor & visitor);
-        void resetVisitedFlag() throw ();
+        void resetVisitedFlag();
         
+        const MFNode getChildren() const;
+
         void addEventOutIS(const std::string & eventOut,
                            PolledEventOutValue * eventOutValue)
                 throw (UnsupportedInterface, std::bad_alloc);
 
-        void initialize(Scene & scene, double timestamp) throw (std::bad_alloc);
-        
         void setField(const std::string & id, const FieldValue & value)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
         const FieldValue & getField(const std::string & id) const
@@ -293,8 +265,11 @@ namespace OpenVRML {
         
         virtual Vrml97Node::Anchor * toAnchor() const;
         virtual Vrml97Node::AudioClip * toAudioClip() const;
+        virtual Vrml97Node::Background * toBackground() const;
         virtual Vrml97Node::CylinderSensor * toCylinderSensor() const;
+        virtual Vrml97Node::Fog * toFog() const;
         virtual Vrml97Node::Group * toGroup() const;
+        virtual Vrml97Node::Inline * toInline() const;
         virtual Vrml97Node::AbstractLight * toLight() const;
         virtual Vrml97Node::MovieTexture * toMovieTexture() const;
         virtual Vrml97Node::NavigationInfo * toNavigationInfo() const;
@@ -310,7 +285,7 @@ namespace OpenVRML {
         void setModified();
         void clearModified() { d_modified = false; }
         virtual bool isModified() const;
-        typedef std::list< Node* > NodePath;
+        typedef std::list< Node* > NodePath; // duplicate from VrmlScene. argh.
 
 
         static void markPathModified(NodePath& path, bool mod, int flags = 0x003);
@@ -349,10 +324,13 @@ namespace OpenVRML {
         virtual void accumulateTransform(Node*);
 
         virtual Node* getParentTransform();
+
+        virtual void inverseTransform(Viewer *);
+
         virtual void inverseTransform(VrmlMatrix &);
 
     protected:
-        Node(const NodeType & nodeType, const ScopePtr & scope);
+        explicit Node(const NodeType & nodeType);
 
         // Send a named event from this node.
         void emitEvent(const std::string & id, const FieldValue & fieldValue,
@@ -370,8 +348,6 @@ namespace OpenVRML {
         Node(const Node &);
         Node & operator=(const Node &);
         
-        virtual void initializeImpl(double timestamp) throw (std::bad_alloc);
-        
         virtual void setFieldImpl(const std::string & id,
                                   const FieldValue & value)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
@@ -388,10 +364,6 @@ namespace OpenVRML {
                 throw (UnsupportedInterface) = 0;
     };
 
-    inline const ScopePtr & Node::getScope() const { return this->scope; }
-    
-    inline Scene * Node::getScene() const { return this->scene; }
-    
     inline bool operator==(const Node::Route & lhs, const Node::Route & rhs) {
         return lhs.fromEventOut == rhs.fromEventOut
             && lhs.toNode == rhs.toNode
@@ -415,7 +387,7 @@ namespace OpenVRML {
         virtual const SFNode & getTextureTransform() const throw () = 0;
     
     protected:
-        AppearanceNode(const NodeType & nodeType, const ScopePtr & scope);
+        explicit AppearanceNode(const NodeType &);
     };
     
     
@@ -427,7 +399,7 @@ namespace OpenVRML {
         virtual ChildNode * toChild() throw ();
     
     protected:
-        ChildNode(const NodeType & nodeType, const ScopePtr & scope);
+        explicit ChildNode(const NodeType &);
     };
     
     
@@ -441,7 +413,7 @@ namespace OpenVRML {
         virtual const MFColor & getColor() const throw () = 0;
     
     protected:
-        ColorNode(const NodeType & nodeType, const ScopePtr & scope);
+        explicit ColorNode(const NodeType &);
     };
     
     
@@ -455,7 +427,7 @@ namespace OpenVRML {
         virtual const MFVec3f & getPoint() const throw () = 0;
     
     protected:
-        CoordinateNode(const NodeType & nodeType, const ScopePtr & scope);
+        explicit CoordinateNode(const NodeType &);
     };
     
     
@@ -475,11 +447,9 @@ namespace OpenVRML {
         virtual const SFFloat & getSpacing() const throw () = 0;
         virtual const SFString & getStyle() const throw () = 0;
         virtual const SFBool & getTopToBottom() const throw () = 0;
-
-        virtual const FontFace & getFtFace(void) throw (std::bad_alloc) = 0;
         
     protected:
-        FontStyleNode(const NodeType & nodeType, const ScopePtr & scope);
+        explicit FontStyleNode(const NodeType &);
     };
     
     
@@ -493,7 +463,7 @@ namespace OpenVRML {
         virtual const ColorNode * getColor() const throw ();
     
     protected:
-        GeometryNode(const NodeType & nodeType, const ScopePtr & scope);
+        explicit GeometryNode(const NodeType &);
     };
     
     
@@ -512,7 +482,7 @@ namespace OpenVRML {
         virtual const SFFloat & getTransparency() const throw () = 0;
     
     protected:
-        MaterialNode(const NodeType & nodeType, const ScopePtr & scope);
+        explicit MaterialNode(const NodeType &);
     };
     
     
@@ -526,7 +496,7 @@ namespace OpenVRML {
         virtual const MFVec3f & getVector() const throw () = 0;
     
     protected:
-        NormalNode(const NodeType & nodeType, const ScopePtr & scope);
+        explicit NormalNode(const NodeType &);
     };
     
     
@@ -537,7 +507,7 @@ namespace OpenVRML {
         virtual SoundSourceNode * toSoundSource() throw ();
     
     protected:
-        SoundSourceNode(const NodeType & nodeType, const ScopePtr & scope);
+        explicit SoundSourceNode(const NodeType &);
     };
     
     
@@ -557,7 +527,7 @@ namespace OpenVRML {
         virtual const SFBool & getRepeatT() const throw () = 0;
     
     protected:
-        TextureNode(const NodeType & nodeType, const ScopePtr & scope);
+        explicit TextureNode(const NodeType &);
     };
     
     
@@ -572,8 +542,7 @@ namespace OpenVRML {
         virtual const MFVec2f & getPoint() const throw () = 0;
     
     protected:
-        TextureCoordinateNode(const NodeType & nodeType,
-                              const ScopePtr & scope);
+        explicit TextureCoordinateNode(const NodeType &);
     };
     
     
@@ -585,7 +554,7 @@ namespace OpenVRML {
         virtual TextureTransformNode * toTextureTransform() throw ();
     
     protected:
-        TextureTransformNode(const NodeType & nodeType, const ScopePtr & scope);
+        explicit TextureTransformNode(const NodeType &);
     };
     
     

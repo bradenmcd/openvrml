@@ -18,13 +18,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# ifdef HAVE_CONFIG_H
-#   include <config.h>
-# endif
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-# include "private.h"
-# include "MathUtils.h"
-# include "VrmlFrustum.h"
+#include <iostream.h>     // ostream for dump
+#include "private.h"
+#include "MathUtils.h"    // Vcross(), Vnorm(), etc
+#include "VrmlFrustum.h"
 
 namespace OpenVRML {
 
@@ -105,6 +106,8 @@ VrmlFrustum::VrmlFrustum() {
  *
  */
 VrmlFrustum::VrmlFrustum(float afovy, float aaspect, double anear, double afar) {
+    using OpenVRML_::pi;
+
     fovy = (afovy / 360.0) * 2.0 * pi;
     float cy = (float)tan(fovy/2.0);
     fovx = 2.0*atan(cy*aaspect);
@@ -187,6 +190,22 @@ void VrmlFrustum::update() {
     bot_plane[1] = -top_plane[1];
     bot_plane[2] = top_plane[2];
     bot_plane[3] = 0;
+}
+
+
+/**
+ * @brief Dumps the frustum to the given stream.
+ */
+std::ostream & VrmlFrustum::dump(std::ostream & ostr) const {
+    using OpenVRML_::pi;
+
+    ostr << "VrmlFrustum {" << endl;
+    ostr << z_near << endl;
+    ostr << z_far << endl;
+    ostr << fovx * (360.0 / (pi * 2.0)) << endl;
+    ostr << fovy * (360.0 / (pi * 2.0)) << endl;
+    ostr << "}";
+    return ostr;
 }
 
 } // namespace OpenVRML

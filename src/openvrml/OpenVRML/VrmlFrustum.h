@@ -21,6 +21,7 @@
 #ifndef VRMLFRUSTUM_H
 #define VRMLFRUSTUM_H
 
+#include <iostream>
 #include "common.h"
 
 namespace OpenVRML {
@@ -38,6 +39,8 @@ namespace OpenVRML {
 
         VrmlFrustum();
         VrmlFrustum(float afovy, float aaspect, double anear, double afar);
+
+        std::ostream & dump(std::ostream & out) const;
 
     private:
         void update();

@@ -234,7 +234,4 @@ vrml_node_Script.h: vrml/node/Script.class
 
 endif
 
-#EXTRA_DIST = vrml
-
-#dist-hook:
-#	rm -rf `find $(distdir)/java/vrml -name CVS`
+EXTRA_DIST = Makefile.vc6

@@ -43,8 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MD /w /W0 /GR /GX /O2 /I ".\\" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "DLL_EXPORT" /FD /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /MD /w /W0 /GR /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "DLL_EXPORT" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409
@@ -54,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 .\tplib\antlr\release\libantlr.lib js32.lib opengl32.lib glu32.lib glut32.lib libpng.lib libjpeg.lib zlib.lib freetype211.lib wsock32.lib jvm.lib regex.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Release\openvrml.dll"
+# ADD LINK32 .\tplib\antlr\release\libantlr.lib js32.lib opengl32.lib glu32.lib glut32.lib libpng.lib libjpeg.lib zlib.lib wsock32.lib jvm.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Release\openvrml.dll"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
@@ -71,8 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MDd /W3 /GR /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FD /LDd /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /MDd /w /W0 /GR /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /LDd /c
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409
@@ -82,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
-# ADD LINK32 .\tplib\antlr\debug\libantlr.lib js32.lib opengl32.lib glu32.lib glut32.lib libpng.lib libjpeg.lib zlib.lib freetype211_d.lib wsock32.lib jvm.lib regex.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"LIBC.lib" /nodefaultlib:"MSVCRT.lib" /out:".\Debug\openvrml.dll"
+# ADD LINK32 .\tplib\antlr\debug\libantlr.lib js32.lib opengl32.lib glu32.lib glut32.lib libpng.lib libjpeg.lib zlib.lib wsock32.lib jvm.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Debug\openvrml.dll"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
@@ -97,10 +95,6 @@ LINK32=link.exe
 # Begin Source File
 
 SOURCE=..\..\..\src\openvrml\OpenVRML\Audio.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\openvrml\OpenVRML\browser.h
 # End Source File
 # Begin Source File
 
@@ -125,10 +119,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\field.h
 # Begin Source File
 
 SOURCE=..\..\..\src\openvrml\OpenVRML\fieldvalueptr.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\openvrml\OpenVRML\font.h
 # End Source File
 # Begin Source File
 
@@ -161,14 +151,6 @@ SOURCE="..\..\..\src\openvrml-gl\OpenVRML\GL\OpenGLEvent.h"
 # Begin Source File
 
 SOURCE=..\..\..\src\openvrml\OpenVRML\private.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\openvrml\OpenVRML\scope.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\openvrml\OpenVRML\scopeptr.h
 # End Source File
 # Begin Source File
 
@@ -208,7 +190,15 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlMatrix.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlNamespace.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlRenderContext.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlScene.h
 # End Source File
 # End Group
 # Begin Group "Source File"
@@ -221,7 +211,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\Audio.cpp
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
 # ADD CPP /w /W0
-# SUBTRACT CPP /I ".\\"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
@@ -232,27 +221,9 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\Audio.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\openvrml\OpenVRML\browser.cpp
-
-!IF  "$(CFG)" == "openvrml - Win32 Release"
-
-# ADD CPP /I "../../../lib" /I "./" /D "HAVE_CONFIG_H" /D "__STDC__"
-# SUBTRACT CPP /I ".\\"
-
-!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
-
-# ADD CPP /w /W0 /I "../../../lib" /I "./" /D "DLL_EXPORT" /D "HAVE_CONFIG_H" /D "__STDC__"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\src\openvrml\OpenVRML\bvolume.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
-
-# SUBTRACT CPP /I ".\\"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
@@ -268,7 +239,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\Doc.cpp
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
 # ADD CPP /w /W0
-# SUBTRACT CPP /I ".\\"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
@@ -283,11 +253,11 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\doc2.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# ADD CPP /w /W0 /D "__STDC__" /D "XP_PC"
+# ADD CPP /w /W0
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0 /I ".\\" /D "DLL_EXPORT" /D "__STDC__" /D "XP_PC"
+# ADD CPP /w /W0 /D "DLL_EXPORT"
 
 !ENDIF 
 
@@ -299,7 +269,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\dummysound.cpp
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
 # ADD CPP /w /W0
-# SUBTRACT CPP /I ".\\"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
@@ -315,7 +284,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\field.cpp
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
 # ADD CPP /w /W0
-# SUBTRACT CPP /I ".\\"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
@@ -330,26 +298,9 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\fieldvalueptr.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# SUBTRACT CPP /I ".\\"
-
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
 # ADD CPP /w /W0 /D "DLL_EXPORT"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\openvrml\OpenVRML\font.cpp
-
-!IF  "$(CFG)" == "openvrml - Win32 Release"
-
-# ADD CPP /D "HAVE_CONFIG_H"
-
-!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
-
-# ADD CPP /w /W0 /I ".\\" /D "HAVE_CONFIG_H"
 
 !ENDIF 
 
@@ -360,11 +311,11 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\Image.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# ADD CPP /w /W0 /D "XMD_H" /D "HAVE_CONFIG_H"
+# ADD CPP /w /W0 /D "XMD_H" /D "OPENVRML_HAVE_LIBJPEG" /D "OPENVRML_HAVE_LIBPNG"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0 /I ".\\" /D "DLL_EXPORT" /D "XMD_H" /D "HAVE_CONFIG_H"
+# ADD CPP /w /W0 /D "DLL_EXPORT" /D "XMD_H" /D "OPENVRML_HAVE_LIBJPEG" /D "OPENVRML_HAVE_LIBPNG"
 
 !ENDIF 
 
@@ -376,7 +327,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\MathUtils.cpp
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
 # ADD CPP /w /W0
-# SUBTRACT CPP /I ".\\"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
@@ -392,11 +342,9 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\node.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# SUBTRACT CPP /I ".\\"
-
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0
+# ADD CPP /w /W0 /D "DLL_EXPORT"
 
 !ENDIF 
 
@@ -407,11 +355,9 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\nodeclassptr.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# SUBTRACT CPP /I ".\\"
-
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0
+# ADD CPP /w /W0 /D "DLL_EXPORT"
 
 !ENDIF 
 
@@ -422,11 +368,9 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\nodeptr.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# SUBTRACT CPP /I ".\\"
-
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0
+# ADD CPP /w /W0 /D "DLL_EXPORT"
 
 !ENDIF 
 
@@ -436,8 +380,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\nodeptr.cpp
 SOURCE=..\..\..\src\openvrml\OpenVRML\nodetypeptr.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
-
-# SUBTRACT CPP /I ".\\"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
@@ -453,7 +395,6 @@ SOURCE="..\..\..\src\openvrml-gl\OpenVRML\GL\OpenGLEvent.cpp"
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
 # ADD CPP /w /W0
-# SUBTRACT CPP /I ".\\"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
@@ -464,45 +405,15 @@ SOURCE="..\..\..\src\openvrml-gl\OpenVRML\GL\OpenGLEvent.cpp"
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\openvrml\OpenVRML\scope.cpp
-
-!IF  "$(CFG)" == "openvrml - Win32 Release"
-
-# SUBTRACT CPP /I ".\\"
-
-!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
-
-# ADD CPP /w /W0
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\openvrml\OpenVRML\scopeptr.cpp
-
-!IF  "$(CFG)" == "openvrml - Win32 Release"
-
-# SUBTRACT CPP /I ".\\"
-
-!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
-
-# ADD CPP /w /W0
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\src\openvrml\OpenVRML\script.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# ADD CPP /D "XP_PC" /D "HAVE_CONFIG_H"
+# ADD CPP /D "XP_PC" /D "OPENVRML_HAVE_SPIDERMONKEY" /D "OPENVRML_HAVE_JNI"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0 /I ".\\" /D "XP_PC" /D "DLL_EXPORT" /D "HAVE_CONFIG_H"
+# ADD CPP /w /W0 /D "DLL_EXPORT" /D "XP_PC" /D "OPENVRML_HAVE_SPIDERMONKEY" /D "OPENVRML_JAVE_JNI"
 
 !ENDIF 
 
@@ -513,12 +424,12 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\ScriptJDK.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# ADD CPP /w /W0 /D "HAVE_CONFIG_H"
+# ADD CPP /w /W0 /D "OPENVRML_HAVE_JNI" /D "_WIN32_IDE"
 # SUBTRACT CPP /YX
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0 /I ".\\" /D "DLL_EXPORT" /D "HAVE_CONFIG_H"
+# ADD CPP /w /W0 /D "DLL_EXPORT" /D "OPENVRML_HAVE_JNI" /D "_WIN32_IDE"
 # SUBTRACT CPP /YX
 
 !ENDIF 
@@ -531,7 +442,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\System.cpp
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
 # ADD CPP /w /W0
-# SUBTRACT CPP /I ".\\"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
@@ -547,7 +457,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\Viewer.cpp
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
 # ADD CPP /w /W0
-# SUBTRACT CPP /I ".\\"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
@@ -562,12 +471,12 @@ SOURCE="..\..\..\src\openvrml-gl\OpenVRML\GL\ViewerOpenGL.cpp"
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# ADD CPP /w /W0 /I "..\..\..\src\openvrml" /D "HAVE_CONFIG_H"
+# ADD CPP /w /W0 /I "..\..\..\src\openvrml" /D "OPENVRML_GL_H=<gl/gl.h>" /D "OPENVRML_GLUT_H=<gl/glut.h>" /D "OPENVRML_GLU_H=<gl/glu.h>"
 # SUBTRACT CPP /YX
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0 /I "..\..\..\src\openvrml" /I ".\\" /D "DLL_EXPORT" /D "HAVE_CONFIG_H"
+# ADD CPP /w /W0 /I "..\..\..\src\openvrml" /D "DLL_EXPORT" /D "OPENVRML_GL_H=<gl/gl.h>" /D "OPENVRML_GLU_H=<gl/glu.h>" /D "OPENVRML_GLUT_H=<gl/glut.h>"
 # SUBTRACT CPP /YX
 
 !ENDIF 
@@ -579,11 +488,11 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\vrml97node.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# ADD CPP /w /W0 /D "HAVE_CONFIG_H" /Zm400
+# ADD CPP /w /W0 /Zm400
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /w /W0 /I ".\\" /D "DLL_EXPORT" /D "HAVE_CONFIG_H" /Zm400
+# ADD CPP /w /W0 /D "DLL_EXPORT" /Zm400
 
 !ENDIF 
 
@@ -595,7 +504,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlFrustum.cpp
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
 # ADD CPP /w /W0
-# SUBTRACT CPP /I ".\\"
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
@@ -610,7 +518,20 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlMatrix.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
-# SUBTRACT CPP /I ".\\"
+!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
+
+# ADD CPP /w /W0 /D "DLL_EXPORT"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlNamespace.cpp
+
+!IF  "$(CFG)" == "openvrml - Win32 Release"
+
+# ADD CPP /w /W0
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
@@ -630,6 +551,22 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlRenderContext.cpp
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
 # ADD CPP /w /W0 /D "DLL_EXPORT"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlScene.cpp
+
+!IF  "$(CFG)" == "openvrml - Win32 Release"
+
+# ADD CPP /w /W0 /GR /I "..\..\..\lib" /D PACKAGE_VERSION=\"0.12.5\"
+
+!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
+
+# ADD CPP /w /W0 /I "..\..\..\lib" /D "DLL_EXPORT" /D PACKAGE_VERSION=\"0.12.5\"
+# SUBTRACT CPP /X
 
 !ENDIF 
 

@@ -21,16 +21,13 @@
 # include "nodeptr.h"
 # include "node.h"
 
-namespace OpenVRML {
-
 /**
- * @class NodePtr
+ * @class OpenVRML::NodePtr
  *
- * @brief A reference-counted smart pointer for @link Node Nodes@endlink.
+ * @brief A reference-counted smart pointer for <code>Node</code>s.
  */
 
 namespace {
-    typedef std::map<OpenVRML::Node *, size_t> CountMap;
     CountMap countMap;
 }
 
@@ -39,9 +36,7 @@ namespace {
  *
  * @param node a pointer to a Node
  */
-NodePtr::NodePtr(Node * node):
-    countPtr(0)
-{
+OpenVRML::NodePtr::NodePtr(Node * node): countPtr(0) {
     if (node) {
         CountMap::iterator pos = countMap.find(node);
         if (pos == countMap.end()) {
@@ -61,9 +56,8 @@ NodePtr::NodePtr(Node * node):
  *
  * @param nodePtr
  */
-NodePtr::NodePtr(const NodePtr & nodePtr):
-    countPtr(nodePtr.countPtr)
-{
+OpenVRML::NodePtr::NodePtr(const NodePtr & nodePtr):
+        countPtr(nodePtr.countPtr) {
     if (this->countPtr) {
         ++this->countPtr->second;
     }
@@ -74,25 +68,21 @@ NodePtr::NodePtr(const NodePtr & nodePtr):
  *
  * @param node
  */
-void NodePtr::reset(Node * node)
-{
+void OpenVRML::NodePtr::reset(Node * node) {
     if (this->countPtr && this->countPtr->first == node) {
         return;
     }
     this->dispose();
-    if (node) {
-        std::pair<CountMap::iterator, bool>
-                result(countMap.insert(CountMap::value_type(node, 1)));
-        assert(result.first->first == node);
-        this->countPtr = &*result.first;
-        if (!result.second) { // The node already exists in the table.
-            ++this->countPtr->second;
-        }
+    std::pair<CountMap::iterator, bool>
+            result(countMap.insert(CountMap::value_type(node, 1)));
+    assert(result.first->first == node);
+    this->countPtr = &*result.first;
+    if (!result.second) { // The node already exists in the table.
+        ++this->countPtr->second;
     }
 }
 
-void NodePtr::dispose() throw ()
-{
+void OpenVRML::NodePtr::dispose() throw () {
     if (this->countPtr) {
         --this->countPtr->second;
         if (this->countPtr->second == 0) {
@@ -103,8 +93,7 @@ void NodePtr::dispose() throw ()
     }
 }
 
-void NodePtr::share(CountMap::value_type * countPtr) throw ()
-{
+void OpenVRML::NodePtr::share(CountMap::value_type * countPtr) throw () {
     if (this->countPtr != countPtr) {
         ++countPtr->second;
         this->dispose();
@@ -113,19 +102,19 @@ void NodePtr::share(CountMap::value_type * countPtr) throw ()
 }
 
 /**
- * @fn NodePtr::~NodePtr()
+ * @fn OpenVRML::NodePtr::~NodePtr()
  *
  * @brief Destructor.
  */
 
 /**
- * @fn NodePtr::operator bool() const
+ * @fn OpenVRML::NodePtr::operator bool() const
  *
  * @brief Automatic conversion to bool.
  */
 
 /**
- * @fn NodePtr & NodePtr::operator=(const NodePtr &)
+ * @fn OpenVRML::NodePtr & OpenVRML::NodePtr::operator=(const NodePtr &)
  *
  * @brief Assignment operator.
  *
@@ -133,7 +122,7 @@ void NodePtr::share(CountMap::value_type * countPtr) throw ()
  */
 
 /**
- * @fn Node & NodePtr::operator*() const
+ * @fn OpenVRML::Node & OpenVRML::NodePtr::operator*() const
  *
  * @brief Dereference operator.
  *
@@ -141,13 +130,13 @@ void NodePtr::share(CountMap::value_type * countPtr) throw ()
  */
 
 /**
- * @fn Node * NodePtr::operator->() const
+ * @fn OpenVRML::Node * OpenVRML::NodePtr::operator->() const
  *
  * @brief Access a method of the Node.
  */
 
 /**
- * @fn Node * NodePtr::get() const
+ * @fn OpenVRML::Node * OpenVRML::NodePtr::get() const
  *
  * @brief Get a raw pointer to the Node.
  *
@@ -155,12 +144,10 @@ void NodePtr::share(CountMap::value_type * countPtr) throw ()
  */
 
 /**
- * @fn bool NodePtr::operator==(const NodePtr & nodePtr) const
+ * @fn bool OpenVRML::NodePtr::operator==(const NodePtr & nodePtr) const
  *
  * @brief Compare two NodePtrs.
  *
- * @return @c true if both NodePtrs point to the same Node; @c false
+ * @return true if both NodePtrs point to the same Node; false
  *         otherwise.
  */
-
-} // namespace OpenVRML

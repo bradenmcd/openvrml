@@ -22,33 +22,12 @@ package vrml.field;
 
 import vrml.ConstField;
 
-/**
- * Represents a read-only VRML SFTime in Java.
- */
 public class ConstSFTime extends ConstField
 {
-  /**
-   * Construct a new SFTime field in OpenVRML using the given value.
-   *
-   * @param time Initial value of field.
-   */
   private native void CreateObject(double time);
 
-  /**
-   * Construct an SFTime field using the given value.
-   *
-   * @param time Initial value of field.
-   */
-  public ConstSFTime(double time)
-  {
-    CreateObject(time);
-  }
+  public ConstSFTime(double time) { CreateObject(time); }
 
-  /**
-   * Get the value of the SFTime field.
-   *
-   * @return Value of SFTime.
-   */
   public native double getValue();
 
   public native String toString();

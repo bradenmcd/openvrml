@@ -1,7 +1,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 2001  Henri Manson 
+// Copyright (C) 2001  Braden McDaniel
 // 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,20 +18,24 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-package vrml.field;
+namespace {
+    namespace OpenVRML_ {
+        namespace GL_ {
 
-import vrml.ConstField;
+            const double PI     = 3.14159265358979323846;
+            const double PI_2   = 1.57079632679489661923;
+            const double PI_4   = 0.78539816339744830962;
+            const double INV_PI = 0.31830988618379067154;
 
-public class ConstSFVec3f extends ConstField
-{
-  private native void CreateObject(float x, float y, float z);
+            const float FPTOLERANCE(1.0e-6);
 
-  public ConstSFVec3f(float x, float y, float z) { CreateObject(x, y, z); }
+            inline bool fpzero(const float f) {
+                return (fabs(f) <= FPTOLERANCE);
+            }
 
-  public native void getValue(float vec3s[]);
-  public native float getX();
-  public native float getY();
-  public native float getZ();
-
-  public native String toString();
+            inline bool fpequal(const float a, const float b) {
+                return fpzero(a - b);
+            }
+        }
+    }
 }

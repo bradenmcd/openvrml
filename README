@@ -1,4 +1,4 @@
-OpenVRML library version 0.13.0
+OpenVRML library version 0.12.5
 Copyright (C) 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
 Copyright (C) 2000, 2001, 2002 Braden McDaniel <braden@endoframe.com>
 Portions Copyright SGI and others
@@ -88,10 +88,9 @@ your system, you may need to add arguments to the CPPFLAGS and LDFLAGS
 variables when running `configure'. See INSTALL for details.
 
 Most of OpenVRML's dependencies are either commonplace or easy to obtain
-for POSIX systems.  Windows and Macintosh users may encounter additional
-difficulty compiling some of these dependencies, so compiled versions
-are provided for convenience:
-     <http://openvrml.org/dist/macos_required_libs.sit>
+for POSIX systems.  Windows users may encounter additional difficulty
+compiling some of these dependencies, so compiled versions are provided
+for convenience:
      <http://openvrml.org/dist/win32_required_libs.zip>
 
  * ANTLR
@@ -108,13 +107,13 @@ are provided for convenience:
    OpenVRML uses zlib for reading gzipped VRML worlds.  If your system
    does not include zlib, you can obtain it from
    <http://www.gzip.org/zlib/index.html>.  The GNU build includes
-   configuration options to allow the build either to locate zlib on
-   your system, or to build OpenVRML without support for gzipped worlds.
-   These arguments can be passed to "configure":
+   configuration options to allow the build either to use zlib, or to
+   build OpenVRML without support for gzipped worlds.  These arguments
+   can be passed to "configure":
    
    --with-zlib
    --with-zlib=yes
-      Attempt to locate and build using zlib.  This is the default.
+      Build using zlib.  This is the default.
    
    --without-zlib
    --with-zlib=no
@@ -130,13 +129,12 @@ are provided for convenience:
    renderer.  If your system does not include OpenGL or an OpenGL-
    compatible implementation, you can find such an implementation at
    <http://mesa3d.org>.  The GNU build includes configuration options to
-   allow the build either to locate an OpenGL implementation on your
-   system, or to build only the core runtime without the GL renderer and
-   LookAt.  These arguments can be passed to "configure":
+   use OpenGL, or to build only the core runtime without the GL renderer
+   and LookAt.  These arguments can be passed to "configure":
    
    --with-gl
    --with-gl=yes
-      Attempt to locate and build using OpenGL/Mesa.  This is the default.
+      Build using OpenGL/Mesa.  This is the default.
    
    --without-gl
    --with-gl=no
@@ -151,13 +149,12 @@ are provided for convenience:
    not present on your system, it can be found at
    <http://opengl.org/developers/documentation/glut/index.html>.  The
    GNU build includes configuration options to allow the build either to
-   locate GLUT on your system, or to build OpenVRML without Text node
-   support and without building LookAt.  These arguments can be passed
-   to "configure":
+   use GLUT, or to build OpenVRML without Text node support and without
+   building LookAt.  These arguments can be passed to "configure":
    
    --with-glut
    --with-glut=yes
-      Attempt to locate and build using GLUT.  This is the default.
+      Build using GLUT.  This is the default.
    
    --without-glut
    --with-glut=no
@@ -172,14 +169,13 @@ are provided for convenience:
    libpng is required for PNG support in OpenVRML.  If libpng is not
    already installed on your system, you can find it at
    <http://www.libpng.org/pub/png/libpng.html>.  The GNU build includes
-   configuration options to allow the build either to locate libpng on
-   your system, or to build without PNG support (if you don't have
-   libpng or don't want PNG support).  These arguments can be passed to
-   "configure":
+   configuration options to allow the build either to use libpng, or to
+   build without PNG support (if you don't have libpng or don't want PNG
+   support).  These arguments can be passed to "configure":
    
    --with-libpng
    --with-libpng=yes
-      Attempt to locate and build using libpng.  This is the default.
+      Build using libpng.  This is the default.
    
    --without-libpng
    --with-libpng=no
@@ -193,13 +189,13 @@ are provided for convenience:
    libjpeg is required for JPEG support in OpenVRML.  If libjpeg is not
    already installed on your system, you can find it at
    <http://www.ijg.org>.  The GNU build includes configuration options
-   to either allow the build to locate libjpeg on your system, or build
-   without JPEG support (if you don't have libjpeg or don't want JPEG
-   support).  These arguments can be passed to "configure":
+   to either allow the build to use libjpeg, or build without JPEG
+   support (if you don't have libjpeg or don't want JPEG support).
+   These arguments can be passed to "configure":
    
    --with-libjpeg
    --with-libjpeg=yes
-      Attempt to locate and build using libjpeg.  This is the default.
+      Build using libjpeg.  This is the default.
    
    --without-libjpeg
    --with-libjpeg=no
@@ -214,15 +210,14 @@ are provided for convenience:
    JavaScript support in OpenVRML.  If SpiderMonkey is not already
    installed on your system, you can find it at
    <http://www.mozilla.org/js/spidermonkey/>.  The GNU build includes
-   configuration options to allow the build either to locate
-   SpiderMonkey on your system, or build without JavaScript support (if
-   you don't have SpiderMonkey or don't want JavaScript support). These
-   arguments can be passed to "configure":
+   configuration options to allow the build either to use SpiderMonkey,
+   or build without JavaScript support (if you don't have SpiderMonkey
+   or don't want JavaScript support). These arguments can be passed to
+   "configure":
    
    --with-spidermonkey
    --with-spidermonkey=yes
-      Attempt to locate and build using SpiderMonkey.  This is the
-      default.
+      Build using SpiderMonkey.  This is the default.
    
    --without-spidermonkey
    --with-spidermonkey=no
@@ -234,29 +229,26 @@ are provided for convenience:
  * Sun Java Development Kit
    
    OpenVRML uses the Java Development Kit to provide Java support.
-   These libraries and headers are provided by the Java Development Kit.
    If the JDK is not already installed on your system, you can find it
    at <http://java.sun.com/j2se/>.
    
-      As of the 1.4 release, the Sun distribution of the JDK is rather
+      As of the 1.4.1 release, the Sun distribution of the JDK is rather
    badly broken for some recent GNU/Linux distributions, including Red
-   Hat 7.x.  The native code libraries in the Sun distribution have been
-   built with an obsolete variant of the gcc compiler that is not
-   binary-compatible with the compilers used in these GNU/Linux
+   Hat 7.x and 8.x.  The native code libraries in the Sun distribution
+   have been built with an obsolete variant of the gcc compiler that is
+   not binary-compatible with the compilers used in these GNU/Linux
    distributions.  If you build OpenVRML using the Sun JDK in this
    situation, the resulting code tends to crash at the first
-   dynamic_cast that is encountered.  The Blackdown distributions of the
-   JDK tend to work better; see <http://blackdown.org>.
+   dynamic_cast that is encountered.
    
       The GNU build includes configuration options to allow the build
-   either to locate the JDK on your system, or build without Java
-   support (if you don't have the JDK or don't want Java support).
-   These arguments can be passed to "configure":
+   either to use the JDK, or build without Java support (if you don't
+   have the JDK or don't want Java support). These arguments can be
+   passed to "configure":
    
    --with-jdk
    --with-jdk=yes
-      Attempt to locate and build using the Java Development Kit.  This
-      is the default.
+      Build using the Java Development Kit.  This is the default.
    
    --without-jdk
    --with-jdk=no
@@ -275,7 +267,7 @@ are provided for convenience:
    
    --with-doxygen
    --with-doxygen=yes
-      Attempt to locate and build using Doxygen. This is the default.
+      Build using Doxygen. This is the default.
    
    --without-doxygen
    --with-doxygen=no
@@ -294,43 +286,6 @@ Conformance
    OpenVRML aspires to full conformance to the VRML97 specification. It
 isn't there yet, but much of the spec is supported, and OpenVRML will
 continue to get better.
-
-
-System-specific notes
-=====================
-
- * X11 colormap flashing on 8-bit displays
-
-   If you are having trouble with colormap flashing on an 8-bit display,
-   try restarting your X server (e.g., log out and back in in an xdm
-   environment) and running "xstdcmap -default" BEFORE running anything
-   else.
-
- * Compiling on Irix
-   
-   OpenVRML cannot currently be compiled with the SGI C++ compiler.  It
-   can be compiled with gcc 2.95, but to prevent a runtime error libGLU
-   must also be compiled with gcc 2.95 since gcc and the MIPSPro
-   compiler have different ABIs. The source code to the SGI OpenGL
-   sample implementation (which includes the GLU library) can be found
-   here:
-     <ftp://oss.sgi.com/projects/ogl-sample/download/>
-
- * Using helper applications on the Macintosh
-   
-   A creator code should be supplied in
-   `libvrml97core/macos/LibVRML97.prefix' to enable InternetConfig to
-   pass non-VRML anchors to helper applications.  The supplied prefix
-   files assumes that you are building MacLookat (code vrVW).
-
- * Initializing VrmlScene on the Macintosh
-   
-   VrmlScene should be initialised with either a URL or a Unix-style
-   filepath starting with "///" (instead of "/").  This is consistent
-   with Mac file URLs of the form "file:///".  This means that if you
-   want to open local files using a Mac file dialog then you need to
-   retrieve the full path of the selected file, prepend ///, and
-   replace colons with slashes before passing it to VrmlScene.
 
 
 Bug reports

@@ -1,605 +1,18 @@
-2002-11-14  Braden McDaniel  <braden@endoframe.com>
+2002-11-15  Braden McDaniel  <braden@endoframe.com>
 
-        * m4/jpeg.m4, m4/png.m4, m4/zlib.m4: Fixed problem with macros
-          when using config.cache.
+        * README: Minor edits to configure option descriptions.
 
-        * src/lookat/Makefile.am: Updated obsolete substitutions
-          JAVA_CFLAGS, JAVA_LIBS to JNI_CFLAGS, JNI_LIBS.
+        * doc/openvrml.css:  Maintain vertical scrollbar on Mozilla.
 
-        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Fixed Win32
-          calling convention stuff on GL callbacks for Cygwin, MinGW.
+        * src/openvrml/OpenVRML/Makefile.am,
+          src/openvrml-gl/OpenVRML/GL/Makefile.am: Updated libtool
+          library version numbers.
 
-2002-11-11  Thomas Flynn  <tflynn@users.sourceforge.net>
-
-        * src/openvrml/OpenVRML/ScriptJDK.cpp: Fix bugs in
-          MFRotation::setValue, MFTime::insertValue and MFVec2f::addValue.
-
-        * src/openvrml/OpenVRML/field.cpp: Fix problem with
-          ArrayVector::erase.
-
-        * java/vrml/field/MFRotation.java: Fix bug in setValue method.
-
-        * java/vrml/field/MFVec2f.java, java/vrml/field/MFVec3f.java:
-          Add additional comments.
-
-        * models/TestJSAI.java: Add tests for MFNode, MFRotation, MFTime,
-          MFVec2f and MFVec3f.
-
-        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: insertTextTess
-          is now declared in unnamed namespace so cannot be used as
-          method call on object.
-
-2002-11-04  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Factored
-          tesselation helper structs out of ViewerOpenGL interface.
-
-2002-10-31  Braden McDaniel  <braden@endoframe.com>
-
-        * configure.ac, m4/jpeg.m4, m4/png.m4, m4/zlib.m4,
-          src/openvrml/OpenVRML/Image.cpp,
-          src/openvrml/OpenVRML/doc2.cpp: Improved autoconf macros for
-          zlib, libpng, and libjpeg.  These macros now work a bit more
-          like AC_PATH_X, and the test result is cached.
-
-        * m4/jpeg.m4:  Fixed cut&paste error.
-
-        * configure.ac, m4/gl.m4, m4/glut.m4, src/lookat/ViewerGlut.cpp,
-          src/lookat/lookat.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Rewrote
-          OpenGL/GLUT autoconf macros.  The new macros should work under
-          Cygwin.
-
-        * configure.ac, m4/gl.m4, m4/glut.m4: OV_WITH_GL only needs to
-          AC_REQUIRE([AC_PATH_X]), not AC_PATH_XTRA.
-
-        * configure.ac, m4/Makefile.am, m4/acx_pthread.m4, m4/gl.m4: Use
-          ACX_PTHREAD (from the Autoconf Macro Archive) to check for
-          pthreads. (Nvidia OpenGL implementation, for one, needs this.)
-
-2002-10-30  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/field.cpp, 
-          src/openvrml/OpenVRML/field.h: Added protected default
-          constructor, copy constructor, and assignment operator to
-          FieldValue.
-
-2002-10-30  S. K. Bose  <bose@pavan.barc.ernet.in>
-
-        * configure.ac, m4/ftflib.m4 : Autoconf macros to check for
-          system font files and freetype library.
-
-        * ide-projects/Windows/VisualC6/config.h: include macros for
-          system font files.
-
-2002-10-29  S. K. Bose  <bose@pavan.barc.ernet.in>
-
-        * ide-projects/Windows/VisualC6/openvrml.dsp,
-          ide-projects/Windows/VisualC6/lookat/lookat.dsp, 
-          ide-projects/Windows/VisualC6/openvrml-core/openvrmlcore.dsp,
-          ide-projects/Windows/VisualC6/openvrml-gl/openvrmlgl.dsp:
-          Accommodate font and defined "HAVE_CONFIG_H"
-
-        * src/lookat/ViewerGlut.cpp: Remove "winconfig.h"
-
-        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:
-          Fixed if there is no vector information about character in
-          "insertText" method.
-  
-2002-10-28  S. K. Bose  <bose@pavan.barc.ernet.in>
-
-        * src/openvrml/OpenVRML/font.h,
-          src/openvrml/OpenVRML/font.cpp,
-          src/openvrml/OpenVRML/vrml97node.cpp,
-          src/openvrml/OpenVRML/vrml97node.h,
-          src/opevrml/OpenVRML/node.h, src/openvrml/OpenVRML/Viewer.h,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:
-          To support font based on scalable font (TrueType, Type1) 
-          present in the system using FreeType library.
-
-        * src/openvrml/OpenVRML/doc2.cpp, 
-          src/openvrml/OpenVRML/browser.cpp:
-          std:: correctness fixes.
-
-        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:
-          remove "tex3" method.
-
-2002-10-27  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h:
-          Fixed crash when calling ProtoNode::setFieldImpl to set the
-          value of an un-IS'd exposedField.
-
-2002-10-26  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/Vrml97Parser.cpp,
-          src/openvrml/OpenVRML/Vrml97Parser.g,
-          src/openvrml/OpenVRML/Vrml97Parser.hpp,
-          src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/field.cpp,
-          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h:
-          Fixed crash when parsing IS mappings.
-
-2002-10-24  Braden McDaniel  <braden@endoframe.com>
-
-        * configure.ac, m4/Makefile.am, m4/cxxhash_map.m4,
-          src/openvrml/OpenVRML/nodeptr.cpp,
-          src/openvrml/OpenVRML/nodeptr.h: Removed optional usage of
-          hash_map; use std::map.  hash_map is likely a performance win,
-          but until there's data indicating the magnitude of the gain,
-          its not worth the maintenance burden.  Since hash_map is
-          nonstandard, different implementations do different things
-          with it.  If hash_map usage is reinstated, the autoconf test
-          will need to be a good deal smarter than the one that is being
-          retired with this change.
-
-2002-10-20  Thomas Flynn  <tflynn@users.sourceforge.net>
-
-        * src/openvrml/OpenVRML/Vrml97Parser.cpp,
-          src/openvrml/OpenVRML/Vrml97Parser.g,
-          src/openvrml/OpenVRML/VrmlMatrix.cpp,
-          src/openvrml/OpenVRML/VrmlMatrix.h,
-          src/openvrml/OpenVRML/node.cpp,
-          src/openvrml/OpenVRML/node.h,
-          src/openvrml/OpenVRML/vrml97node.cpp: Backed out of some of the
-          #include file cleanup due to problems with gcc 2.96.
-
-2002-10-19  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/Vrml97Parser.cpp,
-          src/openvrml/OpenVRML/Vrml97Parser.g: Fixed crash (assertion
-          failure) when encountering an EXTERNPROTO. Arbitrary
-          EXTERNPROTOs still aren't supported, but at least we don't die
-          on them anymore.
-
-2002-10-18  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/browser.h,
-          src/openvrml/OpenVRML/script.h: Removed unnecessary inclusion
-          of vrml97node.h.
-
-        * src/openvrml/OpenVRML/Viewer.h,
-          src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/vrml97node.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Replace
-          Viewer::MatrixMultiply with Viewer::transform; Viewer::transform
-          simply takes a VrmlMatrix instead of a float[4][4].
-
-        * src/openvrml/OpenVRML/vrml97node.cpp: Fixed goofiness in
-          TimeSensor::processSet_enabled. Route from a TimeSensor's
-          isActive to its set_enabled was causing an infinite loop.
-
-        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Source
-          formatting changes.
-
-        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: More source
-          formatting changes.
-
-        * src/lookat/lookat.cpp, src/openvrml/OpenVRML/Doc.h,
-          src/openvrml/OpenVRML/Viewer.h,
-          src/openvrml/OpenVRML/Vrml97Parser.cpp,
-          src/openvrml/OpenVRML/Vrml97Parser.g,
-          src/openvrml/OpenVRML/Vrml97Parser.hpp,
-          src/openvrml/OpenVRML/Vrml97Frustum.cpp,
-          src/openvrml/OpenVRML/VrmlMatrix.cpp,
-          src/openvrml/OpenVRML/VrmlMatrix.h,
-          src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/browser.h,
-          src/openvrml/OpenVRML/bvolume.h,
-          src/openvrml/OpenVRML/doc2.cpp,
-          src/openvrml/OpenVRML/doc2.hpp, src/openvrml/OpenVRML/field.h,
-          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h,
-          src/openvrml/OpenVRML/scope.h, src/openvrml/OpenVRML/script.h,
-          src/openvrml/OpenVRML/vrml97node.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: #include
-          cleanup.
-
-        * src/openvrml/OpenVRML/script.cpp: Cleaned up error handler a
-          bit.
-
-2002-10-17  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/vrml97node.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Use a modelview
-          matrix stack instead of undoing transformations by multiplying
-          by a transformation's inverse.
-
-2002-10-16  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/script.cpp: Use
-          JS_ConstructObjectWithArguments when doing so.
-
-        * src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/browser.h,
-          src/openvrml/OpenVRML/node.cpp,
-          src/openvrml/OpenVRML/node.h,
-          src/openvrml/OpenVRML/vrml97node.cpp,
-          src/openvrml/OpenVRML/vrml97node.h: Refactored bound Fog node
-          stack to FogClass.
-
-        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Source
-          formatting changes.
-
-2002-10-15  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/node.cpp,
-          src/openvrml/OpenVRML/node.h,
-          src/openvrml/OpenVRML/script.cpp,
-          src/openvrml/OpenVRML/script.h: Allow Node::initialize to
-          throw std::bad_alloc; initialize prototype objects of SF*
-          classes in JavaScript; JavaScript SFNode::getProperty should
-          return JS_TRUE if no eventOut is found so that the common
-          handling code in SpiderMonkey can attempt to handle the
-          property.
-
-        * src/openvrml/OpenVRML/MathUtils.cpp,
-          src/openvrml/OpenVRML/MathUtils.h,
-          src/openvrml/OpenVRML/Viewer.h,
-          src/openvrml/OpenVRML/vrml97node.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Removed dead code
-          obsoleted by VrmlMatrix usage.
-
-2002-10-12  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/browser.h,
-          src/openvrml/OpenVRML/node.cpp,
-          src/openvrml/OpenVRML/node.h,
-          src/openvrml/OpenVRML/vrml97node.cpp,
-          src/openvrml/OpenVRML/vrml97node.h: Refactored bound
-          Background node stack to BackgroundClass; added render and
-          initialize methods to NodeClass.
-
-2002-10-10  Thomas Flynn  <tflynn@users.sourceforge.net>
-
-        * java/vrml/field/ConstMFColor.java
-          java/vrml/field/ConstMFInt32.java
-          java/vrml/field/ConstMFString.java
-          java/vrml/field/ConstMFVec2f.java
-          java/vrml/field/ConstMFVec3f.java
-          java/vrml/field/MFColor.java
-          java/vrml/field/MFFloat.java
-          java/vrml/field/MFInt32.java
-          java/vrml/field/MFNode.java
-          java/vrml/field/MFRotation.java
-          java/vrml/field/MFString.java
-          java/vrml/field/MFTime.java
-          java/vrml/field/MFVec2f.java
-          java/vrml/field/MFVec3f.java:: Various JSAI bug fixes and add
-          additional comments.
-
-        * models/TestJSAI.java: Add addtional tests for MFInt32 and
-          MFString.
-
-        * src/openvrml/OpenVRML/ScriptJDK.cpp: Start checking the
-          results of calls to getFid and getFieldValue against 0 to
-          better handle exceptions. Remove duplicated methods.
-          Fix numerous bugs. Implement Script::toString. Purge usage
-          of memcpy. Add addional comments.
-
-        * src/openvrml/OpenVRML/Image.cpp,
-          src/openvrml/OpenVRML/System.cpp: Purge uses of memcpy in
-          favor of std::copy.
-
-2002-10-09  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/Doc.cpp: Fixed bug where relative URI
-          paths were being corrupted in Doc::seturl.
-
-        * src/openvrml/OpenVRML/Image.cpp,
-          src/openvrml/OpenVRML/Image.h,
-          src/openvrml/OpenVRML/vrml97node.cpp: Removed unnecessary
-          methods from Image.
-
-        * src/openvrml/OpenVRML/MathUtils.cpp,
-          src/openvrml/OpenVRML/MathUtils.h: Made quat_to_axis const-
-          correct; normalize axis vector.
-
-2002-10-07  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/browser.h,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Changed
-          Browser::render to take a Viewer & instead of a Viewer *.
-
-2002-09-30  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/Viewer.h,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Improved
-          const-correctness of Viewer::setViewpoint.
-
-        * src/openvrml/OpenVRML/VrmlFrustum.cpp,
-          src/openvrml/OpenVRML/VrmlFrustum.h,
-          src/openvrml/OpenVRML/bvolume.cpp,
-          src/openvrml/OpenVRML/bvolume.h: Removed BVolume::dump and
-          VrmlFrustum::dump.
-
-        * src/openvrml-gl/OpenVRML/GL/Makefile.am,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
-          src/openvrml-gl/OpenVRML/GL/private.h: Removed private.h.
-          
-
-2002-09-29  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/Viewer.cpp,
-          src/openvrml/OpenVRML/Viewer.h,
-          src/openvrml/OpenVRML/VrmlFrustum.cpp,
-          src/openvrml/OpenVRML/common.h,
-          src/openvrml/OpenVRML/private.h,
-          src/openvrml/OpenVRML/vrml97node.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
-          src/openvrml-gl/OpenVRML/GL/private.h: Moved utility functions
-          from OpenVRML::Viewer to OpenVRML::GL::ViewerOpenGL.
-
-        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Corrected minor
-          error in computeView.
-
-        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
-          src/openvrml-gl/OpenVRML/GL/private.h: Corrected correction to
-          minor error in computeView.
-
-2002-09-27  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/Viewer.cpp,
-          src/openvrml/OpenVRML/Viewer.h,
-          src/openvrml/OpenVRML/VrmlRenderContext.cpp,
-          src/openvrml/OpenVRML/VrmlRenderContext.h,
-          src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/bvolume.cpp,
-          src/openvrml/OpenVRML/bvolume.h,
-          src/openvrml/OpenVRML/vrml97node.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
-          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Made intersection
-          enumeration in BVolume a named type.
-
-        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Removed
-          workaround for old bug in Mesa.
-
-2002-09-27  S. K. Bose  <bose@pavan.barc.ernet.in>
-
-        * ide-projects/Windows/VisualC6/winconfig.h: In MSVC project
-          file, if macros are defined with values, it does not give 
-          the result as expected. Rename "winconfig.h" as "config.h"
-          to define macros for MSVC project file. Inside the project
-          file "HAVE_CONFIG_H" macro is defined.
-
-2002-09-27  S. K. Bose  <bose@pavan.barc.ernet.in>
-
-        * Remove the directory regex. This library is under GPL whereas
-          OpenVRML is under LGPL.
-
-2002-09-26  S. K. Bose  <bose@pavan.barc.ernet.in>
-
-        * Create a directory under "lib" by name "regex" to put
-          needed file (regex.c and regex.h) from regular expression
-          library <http://ftp.gnu.org/pub/gnu/regex/regx-0.12.
-          tar.gz>. These files are needed for MSVC build.
-
-        * Put Makefile.vc6 to build regex library using MSVC
-
-        * lib/regex/regex.h: Minor fixes for MSVC build to deal with
-          "extern".
-   
-2002-09-25  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/node.cpp,
-          src/openvrml/OpenVRML/node.h,
-          src/openvrml/OpenVRML/browser.cpp: Removed Node::toInline
-          method.
-
-        * src/openvrml/OpenVRML/field.cpp: Fixed const issue.
-
-        * src/openvrml/OpenVRML/script.cpp: Eliminated <strstream>
-          dependency; moved includes needed only by the JavaScript
-          binding to the conditionally compiled section.
-
-2002-09-23  S. K. Bose  <bose@pavan.barc.ernet.in>
-
-        * src/openvrml/OpenVRML/field.cpp: VC++6.0 complains about
-          reference to a zero-sized array at "typedef value_type 
-          & reference" within array_vector class definition. Though
-          ArraySize is passed as an argument in template declaration.
-          To get rid of this spurious complain "enum {_ArraySize = 
-          ArraySize}" is declared.
-
-        * src/openvrml/OpenVRML/field.cpp: reverse_iterator template
-          definition in VC++6.0 does not take one argument and some
-          other fixes for VC++6.0.
-   
-2002-09-23  Thomas Flynn  <tflynn@users.sourceforge.net>
-
-        * src/openvrml/OpenVRML/ScriptJDK.cpp: Use std::copy instead of
-          memcpy. Fix bugs in ConstSFNode::CreateObject, 
-          ConstMFRotation::CreateObject, ConstMFVec3f::CreateObject and
-          MFVec3f::setValue. Additional documentation.
-
-        * src/openvrml/OpenVRML/MathUtils.cpp: Removed unneeded include.
-
-        * models/TestJSAI.java: Add tests of SFNode, ConstMFNode,
-          ConstMFRotation, ConstMFTime, ConstMFVec2f and ConstMFVec3f.
-
-        * java/vrml/field/ConstMFFloat.java,
-          java/vrml/field/ConstMFNode.java,
-          java/vrml/field/ConstMFRotation.java,
-          java/vrml/field/ConstMFTime.java: Update javadoc comments.
-
-2002-09-21  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/field.cpp: Fixes to MFNode::print to
-          correctly print the last element, and to avoid printing null
-          elements.
-
-2002-09-16  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/vrml97node.cpp,
-          src/openvrml/OpenVRML/vrml97node.h: Removed
-          Group::setChildren, Group::addChildren, and
-          Group::removeChildren; moved this functionality to the
-          Group::process* methods.
-
-2002-09-13  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/node.cpp,
-          src/openvrml/OpenVRML/node.h: Fixed a bug in
-          Node::resetVisitedFlag that would cause a crash for several
-          node types. Added nothrow exception spec to the method.
-
-        * src/openvrml/OpenVRML/browser.cpp: Added some exception
-          specifications.
-
-        * src/openvrml/OpenVRML/node.cpp,
-          src/openvrml/OpenVRML/node.h,
-          src/openvrml/OpenVRML/vrml97node.cpp,
-          src/openvrml/OpenVRML/vrml97node.h: Removed deprecated method
-          Node::inverseTransform(Viewer *).
-
-        * src/openvrml/OpenVRML/vrml97node.cpp: Removed some #if 0'd
-          cruft.
-
-2002-09-10  Thomas Flynn  <tflynn@users.sourceforge.net>
-
-        * doc/conformance.html: Retest Anchor, Inline and most of PROTO.
-
-        * src/openvrml/OpenVRML/ScriptJDK.cpp: Fix bug in MFInt32::getValue.
-          Add additional documentation.
-
-        * models/TestJSAI.java: Add tests of MFColor and MFFloat fields.
-
-        * java/vrml/field/MFColor.java: Update javadoc comments.
-
-2002-09-09  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/node.cpp,
-          src/openvrml/OpenVRML/node.h: Removed Node::getChildren. This
-          method seemed prone to misunderstanding, and thus created more
-          problems than it solved. Since it was just a convenience
-          method, anyone who really needs this functionality can
-          implement it as a nonmember.
-
-2002-09-08  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/browser.cpp: Should now correctly handle
-          fields in PROTOs that aren't IS'd to anything in the
-          implementation.
-
-2002-09-07  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/vrml97node.cpp: Removed code in
-          Browser::sensitiveEvent to print the URI when the pointer is
-          over the Anchor. We need to call Browser::setDescription, but
-          inside the implementation of Anchor. Removed
-          Anchor::getDescription and Anchor::getUrl. Modified
-          Scene::loadURI to do nothing if the MFString uri argument is
-          empty.
-
-2002-09-07  Thomas Flynn  <tflynn@users.sourceforge.net>
-
-        * src/openvrml/OpenVRML/ScriptJDK.cpp: Additional documentation.
-          Fix ConstMFColor/MFColor CreateObject methods. Fix issues with
-          retrieving and setting eventOut fields. Workaround for
-          BaseNode::getBrowser problems.
-
-        * java/vrml/node/Script.java,
-          java/vrml/BaseNode.java: Temporary workaround for getBrowser
-          problems.
-
-        * java/vrml/ConstMFInt32.java: Update javadoc comments.
-
-        * models/TestJSAI.java: Add additional tests of JSAI functionality.
-
-2002-09-06  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/field.cpp: Fixed size increment in
-          array_vector<>::insert.
-
-        * src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/node.cpp: Made Node::initialize
-          recursive, so it no longer needs to be used with a
-          NodeVisitor.
-
-        * src/openvrml/OpenVRML/browser.cpp: Set default [exposed]field
-          values for PROTO instances. We still need some additional
-          magic to handle field values that aren't IS'd to anything in
-          the implementation.
-
-2002-08-31  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/nodeptr.cpp: Fixed bug in NodePtr::reset
-          when 0 is passed as the argument.
-
-2002-08-29  Thomas Flynn  <tflynn@users.sourceforge.net>
-
-        * java/vrml/BaseNode.java,
-          java/vrml/MField.java,
-          java/vrml/field/ConstMFColor.java,
-          java/vrml/field/ConstMFFloat.java,
-          java/vrml/field/ConstSFImage.java,
-          java/vrml/field/ConstSFVec2f.java,
-          java/vrml/field/ConstSFVec3f.java,
-          java/vrml/field/SFImage.java,
-          java/vrml/field/SFString.java,
-          java/vrml/field/SFVec2f.java,
-          java/vrml/field/SFVec3f.java: Update javadoc comments.
-
-2002-08-28  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/browser.h,
-          src/openvrml/OpenVRML/field.cpp,
-          src/openvrml/OpenVRML/field.h,
-          src/openvrml/OpenVRML/node.cpp,
-          src/openvrml/OpenVRML/vrml97node.cpp: Doc-comment fixes and
-          code beautification.
-
-        * src/openvrml/OpenVRML/browser.cpp: More doc-comment additions.
-
-        * src/openvrml/OpenVRML/browser.cpp: Fixed
-          ProtoNode::getFieldImpl to return the default value for the
-          field if it hasn't been IS'd to anything.
-
-2002-08-27  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/browser.h: Fixed Scene::loadURI to work
-          for "#ViewpointName" syntax.
-
-2002-08-26  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/script.cpp: Fixed bug where assignments
-          to elements of MF* objects in JavaScript didn't trigger an
-          eventOut.
-
-        * src/openvrml/OpenVRML/doc2.cpp: Fixed problem with
-          Doc2::filename.
-
-2002-08-25  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/node.cpp,
-          src/openvrml/OpenVRML/node.h: Made operator== for
-          NodeInterface inline; added doc-comment for operator!=.
+        * NEWS: Updates for 0.12.5 release.
 
 2002-08-24  Thomas Flynn  <tflynn@users.sf.net>
 
         * Finish updating conformance test results.
-
-2002-08-24  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/browser.cpp,
-          src/openvrml/OpenVRML/browser.h,
-          src/openvrml/OpenVRML/script.cpp: Implemented
-          Browser::createVrmlFromStream.
-
-        * src/openvrml/OpenVRML/browser.h: Oops.
 
 2002-08-23  S. K. Bose  <bose@pavan.barc.ernet.in>
 
@@ -608,110 +21,58 @@
 
         * private.h: Add macro to print debug messages.
   
-2002-08-23  Braden McDaniel  <braden@endoframe.com>
+2002-08-21  S. K. Bose  <bose@pavan.barc.ernet.in>
 
-        * src/openvrml/OpenVRML/field.cpp,
-          src/openvrml/OpenVRML/field.h,
-          src/openvrml/OpenVRML/node.cpp,
-          src/openvrml/OpenVRML/script.cpp,
-          src/openvrml/OpenVRML/ScriptJDK.cpp: Modified
-          FieldValue::clone to return an auto_ptr.
+        * Update *.dsp and *.vc6 to remove "winconfig.h" dependencies and
+          again to make libraries and lookat under windows
 
-        * src/openvrml/OpenVRML/script.cpp: Work around auto_ptr brain
-          damage on gcc 2.96.
+        * Update ide-projects/Windows/VisualC6/Install
 
-        * src/openvrml/OpenVRML/browser.cpp: Fixed InitVisitor to set
-          the visited flag on root nodes.
+        * Remove ide-projects/Windows/VisualC6/winconfig.h
 
-2002-08-22  Braden McDaniel  <braden@endoframe.com>
+        * Update ViewerOpenGL.cpp and ViewerGlut.cpp to remove winconfig.h 
 
-        * src/openvrml/OpenVRML/ScriptJDK.cpp: Fixes to work with the
-          changes to the MF* FieldValue interfaces; spotty improvements
-          exception safety and Java exception propagation.
+        * Replace "cout" and "endl" with "std::cout" and "std::endl" in
+          ScriptJDK.cpp
 
 2002-08-20  Braden McDaniel  <braden@endoframe.com>
 
-        * src/openvrml/OpenVRML/field.cpp,
-          src/openvrml/OpenVRML/field.h: General clean-up of FieldValue
-          classes; print method now returns void.
-
         * README: Added note about Sun JDK problems under GNU/Linux.
-
-2002-08-19  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/browser.cpp: Fixed crash when calling
-          Browser::loadURI.
-
-        * src/openvrml/OpenVRML/field.cpp: Fixed const correctness
-          issue in array_vector copy ctor.
-
-        * src/openvrml/OpenVRML/browser.cpp: Fixed (?) Scene::loadURI;
-          Anchor nodes should work now.
-
-        * src/openvrml/OpenVRML/browser.cpp: Added code that should make
-          createFileURL work on Win32.
 
 2002-08-19  Thomas Flynn  <tflynn@users.sourceforge.net>
 
-        * Continue upating conformance test results.
+        * Contiue updating conformance test results.
 
-2002-08-18  Braden McDaniel  <braden@endoframe.com>
+2002-08-14  Braden McDaniel  <braden@endoframe.com>
 
-        * src/openvrml/OpenVRML/Vrml97Parser.g,
-          src/openvrml/OpenVRML/Vrml97Parser.cpp,
-          src/openvrml/OpenVRML/Vrml97Parser.hpp,
-          src/openvrml/OpenVRML/browser.cpp: Provide the resource URI to
-          the parser in a parameter to the constructor.
+        * Added MS Visual C++ 6.0 project and Makefiles to the
+          distribution.
 
-2002-08-17  Braden McDaniel  <braden@endoframe.com>
+        * configure.ac, README: Incremented version to 0.12.5.
 
-        * src/openvrml/OpenVRML/browser.cpp: If the Scene's parent is 0,
-          then a relative reference will simply be passed to the stream
-          loader as-is.  This should accommodate references that refer
-          to the local file system. (The reference must still parse as
-          a URI, so DOS-style file system references won't work.)
-
-        * src/openvrml/OpenVRML/Vrml97Parser.g,
-          src/openvrml/OpenVRML/Vrml97Parser.cpp,
-          src/openvrml/OpenVRML/field.h,
-          src/openvrml/OpenVRML/field.cpp,
-          src/openvrml/OpenVRML/vrml97node.h,
-          src/openvrml/OpenVRML/vrml97node.cpp: Modified implementation
-          of the MF* types not to use a refcounted internal object.
-
-2002-08-16  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/doc2.cpp,
-          src/openvrml/OpenVRML/browser.cpp: Apparently gcc 2.95.3
-          doesn't have basic_string<>::clear.
+        * Fixed line endings on Visual C++ project files to be /r/n
+          rather than /n.
 
 2002-08-13  Braden McDaniel  <braden@endoframe.com>
 
         * lib/antlr/config.hpp, src/openvrml/OpenVRML/field.cpp: Fixes
           to build with Irix 6.5 CC.
 
+        * README: Removed obsolete references to Mac build; removed
+          comment about Irix not working.
+
 2002-08-12  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp: Workarounds for a bug in
           gcc 3.1.
 
-        * src/openvrml/OpenVRML/browser.h,
-          src/openvrml/OpenVRML/browser.cpp: BadURI exception destructor
-          must not throw.
-
         * m4/gl.m4: Link against libm when checking for libGLU.
-
-2002-08-04  Braden McDaniel  <braden@endoframe.com>
-
-        * Refactored VrmlScene into Browser and Scene; Node now contains
-          a pointer to its associated Scene. Nodes are added to a Scene
-          with Node::initialize.
 
 2002-08-02  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * Continue updating conformance test results.
 
-2002-07-22  Thomas Flynn  <tflynn@users.sourceforge.net>
+2002-07-21  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * Continue updating conformance test results.
 
@@ -719,20 +80,9 @@
 
         * Fix a number of problems in the JSAI code.
 
-        * Add additional javadoc comments to Java classes.
-
         * Improve output format of SFImage::print.
 
         * Update conformance test results.
-
-2002-07-12  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/Vrml97Parser.g,
-          src/openvrml/OpenVRML/Vrml97Parser.cpp,
-          src/openvrml/OpenVRML/Vrml97Parser.hpp,
-          src/openvrml/OpenVRML/VrmlScene.cpp:  Removed Doc2 parameter
-          from parser methods.  This parameter is unused now that we
-          no longer use VrmlNamespace.
 
 2002-07-11  Braden McDaniel  <braden@endoframe.com>
 
@@ -749,38 +99,10 @@
           functions are not themselves 'extern "C"'.  Solution:  provide
           'extern "C"' typedefs and cast to them.
 
-2002-07-09  Braden McDaniel  <braden@endoframe.com>
-
-        * Added a boolean parameter to NodeType::createNode to indicate
-          whether the new node will be part of a prototype definition.
-          If the node will be part of a prototype definition, it should
-          not be adding itself to the scene.
-
-        * src/openvrml/OpenVRML/VrmlScene.cpp:  For
-          VrmlScene::add[node], made the absence of the node in the
-          scene's node lists a precondition.
-
-2002-07-08  Braden McDaniel  <braden@endoframe.com>
-
-        * src/openvrml/OpenVRML/VrmlScene.cpp:  In the remove*Node
-          methods, use find..erase rather than remove.  This should be
-          more efficient; and it has the advantage of not producing a
-          weird segfault.
-
 2002-07-05  Braden McDaniel  <braden@endoframe.com>
 
-        * Replaced VrmlNamespace with Scope. Scopes are owned by Nodes,
-          and refcounted using ScopePtr.
-
-2002-07-04  Braden McDaniel  <braden@endoframe.com>
-
-        * src/lookat/lookat.cpp:  Minor code cleanup.
-
-2002-07-03  Braden McDaniel  <braden@endoframe.com>
-
-        * src/lookat/lookat.cpp:  Code cleanup; delete the VrmlScene and
-          Viewer atexit. (glut provides no mechanism for cleaning up
-          resources when the window is closed.)
+        * src/lookat/lookat.cpp:  Code cleanup; quelled some warnings
+          from Sun Forte compiler.
 
 2002-07-01  Braden McDaniel  <braden@endoframe.com>
 
@@ -948,7 +270,7 @@
 
 2002-06-17  Braden McDaniel  <braden@endoframe.com>
 
-        * configure.ac, README: Incremented version number to 0.13.0.
+        * configure.ac, README: Incremented version number to 0.12.1.
 
         * src/openvrml/OpenVRML/private.h,
           src/openvrml/OpenVRML/VrmlMatrix.h: #include <stddef.h>.
@@ -959,6 +281,11 @@
           src/openvrml/OpenVRML/node.cpp,
           src/openvrml/OpenVRML/vrml97node.cpp: Removed vestigal
           '#include "proto.h"'.
+
+        * src/openvrml/OpenVRML/Makefile.am: Updated libopenvrml
+          library version to 2:1:0.
+
+        * NEWS: Updates for 0.12.1 release.
 
         * doc/openvrml.css: Changes for consistency with Web site.
 

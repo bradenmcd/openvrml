@@ -18,7 +18,7 @@
 # define ANTLR_RBRACE }
 
 namespace OpenVRML {
-    class Scope;
+    class VrmlNamespace;
     class ScriptNode;
     class NodeType;
     class Doc2;
@@ -106,18 +106,7 @@ namespace OpenVRML ANTLR_LBRACE
 #line 107 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
  {
-#line 605 "Vrml97Parser.g"
-
-public:
-    Vrml97Parser(antlr::TokenStream & lexer, const std::string & uri):
-        antlr::LLkParser(lexer, 1),
-        uri(uri)
-    {
-        setTokenNames(_tokenNames);
-    }
-
-private:
-    const std::string uri;
+#line 1 "Vrml97Parser.g"
 #line 111 "Vrml97Parser.hpp"
 protected:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf, int k);
@@ -129,64 +118,70 @@ public:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenStream& lexer);
 	Vrml97Parser(const ANTLR_USE_NAMESPACE(antlr)ParserSharedInputState& state);
 	public: void vrmlScene(
-		OpenVRML::Browser & browser,
-          OpenVRML::MFNode & mfNode
+		OpenVRML::VrmlScene & scene,
+          OpenVRML::MFNode & mfNode,
+          OpenVRML::VrmlNamespace & vrmlNamespace,
+          const OpenVRML::Doc2 * doc
 	);
 	public: void statement(
-		OpenVRML::Browser & browser,
+		OpenVRML::VrmlScene & scene,
           OpenVRML::MFNode & mfNode,
-          const OpenVRML::ScopePtr & scope
+          OpenVRML::VrmlNamespace & vrmlNamespace,
+          const OpenVRML::Doc2 * doc
 	);
 	public: OpenVRML::NodePtr  nodeStatement(
-		OpenVRML::Browser & browser,
-              const OpenVRML::ScopePtr & scope
+		OpenVRML::VrmlScene & scene,
+              OpenVRML::VrmlNamespace & vrmlNamespace,
+              const OpenVRML::Doc2 * doc
 	);
 	public: void protoStatement(
-		OpenVRML::Browser & browser,
-               const OpenVRML::ScopePtr & scope
+		OpenVRML::VrmlScene & scene,
+               OpenVRML::VrmlNamespace & scope,
+               const OpenVRML::Doc2 * doc
 	);
 	public: void routeStatement(
-		const OpenVRML::Scope & scope
+		const OpenVRML::VrmlNamespace & vrmlNamespace
 	);
 	public: OpenVRML::NodePtr  node(
-		OpenVRML::Browser & browser,
-     const OpenVRML::ScopePtr & scope,
+		OpenVRML::VrmlScene & scene,
+     OpenVRML::VrmlNamespace & scope,
+     const OpenVRML::Doc2 * doc,
      const std::string & nodeId
 	);
 	public: void externproto(
-		OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope
+		OpenVRML::VrmlScene & scene, OpenVRML::VrmlNamespace & scope,
+            const OpenVRML::Doc2 * doc
 	);
 	public: void proto(
-		OpenVRML::Browser & browser,
-      const OpenVRML::ScopePtr & scope
+		OpenVRML::VrmlScene & scene,
+      OpenVRML::VrmlNamespace & scope,
+      const OpenVRML::Doc2 * doc
 	);
 	public: void protoInterfaceDeclaration(
-		const OpenVRML::ScopePtr & scope,
+		OpenVRML::VrmlNamespace & scope,
+                          const OpenVRML::Doc2 * doc,
                           OpenVRML::ProtoNodeClass & proto
 	);
 	public: void protoBody(
-		const OpenVRML::ScopePtr & scope,
-          OpenVRML::ProtoNodeClass & proto
+		const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto
 	);
 	public: OpenVRML::NodeInterface::Type  eventInterfaceType();
 	public: OpenVRML::FieldValue::Type  fieldType();
 	public: OpenVRML::NodeInterface::Type  fieldInterfaceType();
 	public: OpenVRML::FieldValuePtr  fieldValue(
-		OpenVRML::Browser & browser,
-           const OpenVRML::ScopePtr & scope,
+		OpenVRML::VrmlScene & scene,
+           OpenVRML::VrmlNamespace & scope,
+           const OpenVRML::Doc2 * doc,
            OpenVRML::FieldValue::Type ft
 	);
 	public: OpenVRML::NodePtr  protoNodeStatement(
-		OpenVRML::ProtoNodeClass & proto,
-                   const OpenVRML::ScopePtr & scope
+		const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto
 	);
 	public: void protoBodyStatement(
-		OpenVRML::ProtoNodeClass & proto,
-                   const OpenVRML::ScopePtr & scope
+		const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto
 	);
 	public: OpenVRML::NodePtr  protoNode(
-		OpenVRML::ProtoNodeClass & proto,
-          const OpenVRML::ScopePtr & scope,
+		const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto,
           const std::string & nodeId
 	);
 	public: void externInterfaceDeclaration(
@@ -196,30 +191,33 @@ public:
 	public: OpenVRML::NodeInterface::Type  interfaceType();
 	public: std::string  stringValue();
 	public: void nodeBodyElement(
-		const OpenVRML::ScopePtr & scope,
+		OpenVRML::VrmlNamespace & scope,
+                const OpenVRML::Doc2 * doc,
                 OpenVRML::Node & node
 	);
 	public: void scriptInterfaceDeclaration(
-		const OpenVRML::ScopePtr & scope,
+		OpenVRML::VrmlNamespace & scope,
+                           const OpenVRML::Doc2 * doc,
                            OpenVRML::ScriptNode & node
 	);
 	public: void scriptFieldInterfaceDeclaration(
-		const OpenVRML::ScopePtr & scope,
+		OpenVRML::VrmlNamespace & scope,
+                                const OpenVRML::Doc2 * doc,
                                 OpenVRML::ScriptNode & node
 	);
 	public: void protoNodeBodyElement(
-		OpenVRML::ProtoNodeClass & proto,
-                     const OpenVRML::ScopePtr & scope,
+		const OpenVRML::Doc2 * doc,
+                     OpenVRML::ProtoNodeClass & proto,
                      OpenVRML::Node & node
 	);
 	public: void protoScriptInterfaceDeclaration(
-		OpenVRML::ProtoNodeClass & proto,
-                                const OpenVRML::ScopePtr & scope,
+		const OpenVRML::Doc2 * doc,
+                                OpenVRML::ProtoNodeClass & proto,
                                 OpenVRML::ScriptNode & node
 	);
 	public: OpenVRML::FieldValuePtr  protoFieldValue(
-		OpenVRML::ProtoNodeClass & proto,
-                const OpenVRML::ScopePtr & scope,
+		const OpenVRML::Doc2 * doc,
+                OpenVRML::ProtoNodeClass & proto,
                 OpenVRML::FieldValue::Type ft
 	);
 	public: void isStatement(
@@ -227,21 +225,22 @@ public:
             std::string const & nodeInterfaceId
 	);
 	public: void protoScriptFieldInterfaceDeclaration(
-		OpenVRML::ProtoNodeClass & proto,
-                                     const OpenVRML::ScopePtr & scope,
+		const OpenVRML::Doc2 * doc,
+                                     OpenVRML::ProtoNodeClass & proto,
                                      OpenVRML::ScriptNode & node
 	);
 	public: OpenVRML::FieldValuePtr  nodeFieldValue(
-		OpenVRML::Browser & browser,
-               const OpenVRML::ScopePtr & scope,
+		OpenVRML::VrmlScene & scene,
+               OpenVRML::VrmlNamespace & scope,
+               const OpenVRML::Doc2 * doc,
                OpenVRML::FieldValue::Type ft
 	);
 	public: OpenVRML::FieldValuePtr  nonNodeFieldValue(
 		OpenVRML::FieldValue::Type ft
 	);
 	public: OpenVRML::FieldValuePtr  protoNodeFieldValue(
-		OpenVRML::ProtoNodeClass & proto,
-                    const OpenVRML::ScopePtr & scope,
+		const OpenVRML::Doc2 * doc,
+                    OpenVRML::ProtoNodeClass & proto,
                     OpenVRML::FieldValue::Type ft
 	);
 	public: OpenVRML::FieldValuePtr  sfBoolValue();
@@ -263,20 +262,20 @@ public:
 	public: OpenVRML::FieldValuePtr  mfVec2fValue();
 	public: OpenVRML::FieldValuePtr  mfVec3fValue();
 	public: OpenVRML::FieldValuePtr  sfNodeValue(
-		OpenVRML::Browser & browser,
-            const OpenVRML::ScopePtr & scope
+		OpenVRML::VrmlScene & scene,
+            OpenVRML::VrmlNamespace & scope,
+            const OpenVRML::Doc2 * doc
 	);
 	public: OpenVRML::FieldValuePtr  mfNodeValue(
-		OpenVRML::Browser & browser,
-            const OpenVRML::ScopePtr & scope
+		OpenVRML::VrmlScene & scene,
+            OpenVRML::VrmlNamespace & scope,
+            const OpenVRML::Doc2 * doc
 	);
 	public: OpenVRML::FieldValuePtr  protoSfNodeValue(
-		OpenVRML::ProtoNodeClass & proto,
-                 const OpenVRML::ScopePtr & scope
+		const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto
 	);
 	public: OpenVRML::FieldValuePtr  protoMfNodeValue(
-		OpenVRML::ProtoNodeClass & proto,
-                 const OpenVRML::ScopePtr & scope
+		const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto
 	);
 	public: bool  boolValue();
 	public: void colorValue(

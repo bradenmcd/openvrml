@@ -21,7 +21,7 @@
 # ifndef OPENVRML_BVOLUME_H
 #   define OPENVRML_BVOLUME_H
 
-#   include <iosfwd>
+#   include <iostream>
 #   include "common.h"
 
 namespace OpenVRML {
@@ -33,13 +33,12 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE BVolume {
     public:
-        enum Intersection { inside = 1, outside = -1, partial = 0 };
+        enum { BV_INSIDE = 1, BV_OUTSIDE = -1, BV_PARTIAL = 0 };
 
         virtual ~BVolume() = 0;
         virtual bool isMAX() const = 0;
         virtual void setMAX() = 0;
-        virtual Intersection
-        intersectFrustum(const VrmlFrustum & frustum) const = 0;
+        virtual int isectFrustum(const VrmlFrustum & f) const = 0;
         virtual void extend(const BVolume & b) = 0;
         virtual void extend(const float p[3]) = 0;
         virtual void extend(const AABox & b) = 0;
@@ -47,6 +46,7 @@ namespace OpenVRML {
         virtual void enclose(const float* p, int n) = 0;
         virtual void orthoTransform(const VrmlMatrix & M) = 0;
         virtual void transform(const VrmlMatrix & M) = 0;
+        virtual std::ostream & dump(std::ostream & ostr) const = 0;
     };
 
 
@@ -63,8 +63,7 @@ namespace OpenVRML {
 
         void reset();
 
-        virtual Intersection
-        intersectFrustum(const VrmlFrustum & frustum) const;
+        virtual int isectFrustum(const VrmlFrustum & f) const;
 
         virtual void extend(const BVolume & b);
         virtual void extend(const float p[3]) ;
@@ -85,14 +84,15 @@ namespace OpenVRML {
 
         float getRadius() const;
         void setRadius(float r);
+
+        virtual std::ostream & dump(std::ostream & out) const;
     };
 
 
     class OPENVRML_SCOPE AABox : public BVolume {
     public:
         virtual ~AABox();
-        virtual Intersection
-        intersectFrustum(const VrmlFrustum & frustum) const;
+        virtual int isectFrustum(const VrmlFrustum & f) const;
         virtual void extend(const BVolume & b);
         virtual void extend(const float p[3]);
         virtual void extend(const AABox & b);
@@ -102,6 +102,7 @@ namespace OpenVRML {
         virtual void setMAX();
         virtual void orthoTransform(const VrmlMatrix & M);
         virtual void transform(const VrmlMatrix & M);
+        virtual std::ostream & dump(std::ostream & out) const;
     };
 }
 

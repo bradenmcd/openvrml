@@ -173,31 +173,33 @@ void Doc::seturl(const char * url, const Doc * relative)
  * @param relative  the Doc2 that @p url is relative to, or 0 if @p url is an
  *                  absolute URL.
  */
-void Doc::seturl(const char * const url, const Doc2 * const relative)
+void Doc::seturl(const char * url, const Doc2 * relative)
 {
-    delete [] this->d_url;
-    this->d_url = 0;
+  delete [] d_url;
+  d_url = 0;
 
-    if (url) {
-        std::string path;
+  if (url)
+  {
+      const char *path = "";
 
 #ifdef _WIN32
-        // Convert windows path stream to standard URL
-        char *p = (char *)url;
-        for (; *p != '\0'; p++) { if (*p == '\\') { *p = '/'; } }
+// Convert windows path stream to standard URL
+	  char *p = (char *)url;
+	  for(;*p != '\0';p++)
+		  if(*p == '\\')*p = '/';
 #endif
 
-        if (relative && !isAbsolute(url)) { path = relative->urlPath(); }
+      if ( relative && ! isAbsolute(url) )
+	    path = relative->urlPath();
 
-        this->d_url = new char[path.length() + strlen(url) + 1];
-        strcpy(this->d_url, path.c_str());
+      d_url = new char[strlen(path) + strlen(url) + 1];
+      strcpy(d_url, path);
 
-        if (strlen(url) > 2 && url[0] == '.' && url[1] == '/') {
-            strcat(this->d_url, url + 2); // skip "./"
-        } else {
-            strcat(this->d_url, url);
-        }
-    }
+      if (strlen(url)>2 && url[0] == '.' && url[1] == '/')
+        strcat(d_url, url+2); // skip "./"
+      else
+        strcat(d_url, url);
+  }
 }
 
 /**
@@ -458,7 +460,7 @@ char* Doc::convertCommonToMacPath( char *fn, int nfn )
 {
   /* Note that only full paths can be use on the Mac to
      retrieve files correctly, so this function assumes
-     that the viewer, e.g. Lookat, has provided the Browser with
+     that the viewer, e.g. Lookat, has provided VrmlScene with
      a file path in the form of a URL (optionally without the protocol
      if it is a local path) */
 

@@ -30,18 +30,14 @@
 #   include <config.h>
 # endif
 
-# include <stddef.h>
+# include "doc2.hpp"
+# include "System.h"
 # include <string.h>
 # include <ctype.h>
 # include <algorithm>
 # include <fstream>
-# include <iostream>
-# include <regex.h>
-# include "doc2.hpp"
-# include "System.h"
-# include "browser.h"
 
-# ifdef HAVE_ZLIB
+# ifdef OPENVRML_HAVE_ZLIB
 #   include <zlib.h>
 
 namespace {
@@ -232,37 +228,9 @@ namespace {
         void ifstream::close() { this->fbuf.close(); }
     }
 }
-# endif // HAVE_ZLIB
+# endif // OPENVRML_HAVE_ZLIB
 
 namespace OpenVRML {
-
-namespace {
-
-    class URI {
-        std::string str;
-        enum { nmatch = 11 };
-        regmatch_t regmatch[nmatch];
-
-    public:
-        explicit URI(const std::string & str)
-                throw (InvalidURI, std::bad_alloc);
-
-        operator std::string() const throw (std::bad_alloc);
-
-        const std::string getScheme() const throw (std::bad_alloc);
-        const std::string getSchemeSpecificPart() const throw (std::bad_alloc);
-        const std::string getAuthority() const throw (std::bad_alloc);
-        const std::string getUserinfo() const throw (std::bad_alloc);
-        const std::string getHost() const throw (std::bad_alloc);
-        const std::string getPort() const throw (std::bad_alloc);
-        const std::string getPath() const throw (std::bad_alloc);
-        const std::string getQuery() const throw (std::bad_alloc);
-        const std::string getFragment() const throw (std::bad_alloc);
-
-        const URI resolveAgainst(const URI & absoluteURI) const
-                throw (std::bad_alloc);
-    };
-}
 
 /**
  * @class Doc2
@@ -307,10 +275,11 @@ namespace {
  * @param relative  the Doc2 that @p url is relative to, or 0 if @p url is an
  *                  absolute URL.
  */
-Doc2::Doc2(const std::string & url, const Doc2 * relative):
-        tmpfile_(0), istm_(0), ostm_(0) {
-    if (!url.empty()) {
-        this->seturl(url, relative);
+Doc2::Doc2(const std::string & url, const Doc2 * relative)
+  : url_(0), tmpfile_(0), istm_(0), ostm_(0)
+{
+    if (url.length() > 0) {
+        this->seturl(url.c_str(), relative);
     }
 }
 
@@ -319,6 +288,7 @@ Doc2::Doc2(const std::string & url, const Doc2 * relative):
  */
 Doc2::~Doc2()
 {
+    delete [] url_;
     delete istm_;
     delete ostm_;
     if (tmpfile_) {
@@ -334,16 +304,30 @@ Doc2::~Doc2()
 }
 
 namespace {
-    const std::string stripProtocol(const std::string & url) {
-        using std::string;
-        const string::size_type colonPos = url.find_first_of(':');
-        return (colonPos != string::npos)
-                ? url.substr(colonPos + 1)
-                : url;
+    const char * stripProtocol(const char * url) {
+        const char * s = url;
+
+# ifdef _WIN32
+        if (strncmp(s+1,":/",2) == 0) {
+            return url;
+        }
+# endif
+
+        // strip off protocol if any
+        while (*s && isalpha(*s)) {
+            ++s;
+        }
+
+        if (*s == ':') {
+            return s + 1;
+        }
+
+        return url;
     }
 
-    bool isAbsolute(const std::string & url) {
-        return stripProtocol(url)[0] == '/';
+    bool isAbsolute(const char * url) {
+      const char *s = stripProtocol(url);
+      return ( *s == '/' || *(s+1) == ':' );
     }
 }
 
@@ -354,30 +338,37 @@ namespace {
  * @param relative  the Doc2 that @p url is relative to, or 0 if @p url is an
  *                  absolute URL.
  */
-void Doc2::seturl(const std::string & url, const Doc2 * relative) {
-    using std::string;
+void Doc2::seturl(const char * url, const Doc2 * relative) {
+    delete [] this->url_;
+    this->url_ = 0;
 
-    this->url_ = string();
-
-    if (!url.empty()) {
+    if (url) {
 
         delete this->istm_;
         this->istm_ = 0;
         delete this->ostm_;
         this->ostm_ = 0;
 
-        string path;
+        const char * path = "";
+
+#ifdef _WIN32
+// Convert windows path stream to standard URL
+	  char *p = (char *)url;
+	  for(;*p != '\0';p++)
+		  if(*p == '\\')*p = '/';
+#endif
 
         if (relative && !isAbsolute(url)) {
-            path = relative->urlPath();
+	    path = relative->urlPath();
         }
 
-        this->url_ = path;
+        this->url_ = new char[strlen(path) + strlen(url) + 1];
+        strcpy(this->url_, path);
 
-        if (url.length() > 2 && url[0] == '.' && url[1] == '/') {
-            this->url_ += url.substr(2);
+        if (strlen(url) > 2 && url[0] == '.' && url[1] == '/') {
+            strcat(this->url_, url + 2); // skip "./"
         } else {
-            this->url_ += url;
+            strcat(this->url_, url);
         }
     }
 }
@@ -387,7 +378,7 @@ void Doc2::seturl(const std::string & url, const Doc2 * relative) {
  *
  * @return the URL.
  */
-const std::string Doc2::url() const { return this->url_; }
+const char * Doc2::url() const { return this->url_; }
 
 /**
  * @brief Get the portion of the path likely to correspond to a file name
@@ -396,22 +387,24 @@ const std::string Doc2::url() const { return this->url_; }
  * @return the portion of the last path element preceding the last '.' in the
  *      path, or an empty string if the last path element is empty.
  */
-const std::string Doc2::urlBase() const {
-    using std::string;
+const char * Doc2::urlBase() const {
+    if (!url_) { return ""; }
 
-    string::size_type lastSlashPos = this->url_.find_last_of('/');
-    string::size_type lastDotPos = this->url_.find_last_of('.');
+    static char path[1024];
+    char * p, * s = path;
+    strncpy(path, url_, sizeof(path) - 1);
+    path[sizeof(path) - 1] = '\0';
+    if ((p = strrchr(s, '/')) != 0) {
+        s = p + 1;
+    } else if ((p = strchr(s, ':')) != 0) {
+        s = p + 1;
+    }
 
-    string::size_type beginPos = (lastSlashPos != string::npos)
-                               ? lastSlashPos + 1
-                               : 0;
-    string::size_type length = (lastDotPos != string::npos)
-                             ? lastDotPos - beginPos
-                             : this->url_.length() - 1 - beginPos;
+    if ((p = strrchr(s, '.')) != 0) {
+        *p = '\0';
+    }
 
-    return (beginPos < this->url_.length())
-            ? this->url_.substr(beginPos, length)
-            : "";
+    return s;
 }
 
 /**
@@ -421,12 +414,20 @@ const std::string Doc2::urlBase() const {
  * @return the portion of the last path element succeeding the last '.' in the
  *      path, or an empty string if the last path element includes no '.'.
  */
-const std::string Doc2::urlExt() const {
-    using std::string;
-    string::size_type lastDotPos = this->url_.find_last_of('.');
-    return (lastDotPos != string::npos)
-            ? this->url_.substr(lastDotPos + 1)
-            : "";
+const char * Doc2::urlExt() const {
+    if (!url_) { return ""; }
+
+    static char ext[20];
+    char * p;
+
+    if ((p = strrchr(url_, '.')) != 0) {
+        strncpy(ext, p + 1, sizeof(ext) - 1);
+        ext[sizeof(ext)-1] = '\0';
+    } else {
+        ext[0] = '\0';
+    }
+
+    return &ext[0];
 }
 
 /**
@@ -437,14 +438,20 @@ const std::string Doc2::urlExt() const {
  * @return the portion of the URL including the scheme, the authority, and all
  *      but the last component of the path.
  */
-const std::string Doc2::urlPath() const {
-    using std::string;
+const char * Doc2::urlPath() const {
+    if (!url_) { return ""; }
 
-    string::size_type lastSlashPos = this->url_.find_last_of('/');
+    static char path[1024];
 
-    return (lastSlashPos != string::npos)
-            ? this->url_.substr(0, lastSlashPos + 1)
-            : this->url_;
+    strcpy(path, url_);
+    char * slash;
+    if ((slash = strrchr(path, '/')) != 0) {
+        *(slash+1) = '\0';
+    } else {
+        path[0] = '\0';
+    }
+
+    return &path[0];
 }
 
 /**
@@ -452,13 +459,30 @@ const std::string Doc2::urlPath() const {
  *
  * @return the URL scheme.
  */
-const std::string Doc2::urlProtocol() const {
-    using std::string;
+const char * Doc2::urlProtocol() const {
+    if (url_) {
+        static char protocol[12];
+        const char * s = url_;
 
-    string::size_type firstColonPos = this->url_.find_first_of(':');
-    return (firstColonPos != string::npos)
-            ? this->url_.substr(0, firstColonPos)
-            : "file";
+# ifdef _WIN32
+        if (strncmp(s+1,":/",2) == 0) {
+            return "file";
+        }
+# endif
+        for (unsigned int i = 0; i < sizeof(protocol); ++i, ++s) {
+	    if (*s == 0 || !isalpha(*s)) {
+	        protocol[i] = '\0';
+	        break;
+	    }
+	    protocol[i] = tolower(*s);
+	}
+        protocol[sizeof(protocol)-1] = '\0';
+        if (*s == ':') {
+            return protocol;
+        }
+    }
+
+    return "file";
 }
 
 /**
@@ -467,12 +491,9 @@ const std::string Doc2::urlProtocol() const {
  * @return the fragment identifier, including the leading '#', or an empty
  *      string if there is no fragment identifier.
  */
-const std::string Doc2::urlModifier() const {
-    using std::string;
-    string::size_type lastHashPos = this->url_.find_last_of('#');
-    return (lastHashPos != string::npos)
-            ? this->url_.substr(lastHashPos)
-            : "";
+const char * Doc2::urlModifier() const {
+    const char * mod = url_ ? strrchr(url_, '#') : 0;
+    return mod;
 }
 
 /**
@@ -521,11 +542,11 @@ std::istream & Doc2::inputStream() {
 
         char fn[256];
 
-        this->filename(fn, sizeof(fn));
+        filename(fn, sizeof(fn));
         if (strcmp(fn, "-") == 0) {
             this->istm_ = &std::cin;
         } else {
-# ifdef HAVE_ZLIB
+# ifdef OPENVRML_HAVE_ZLIB
             this->istm_ = new z::ifstream(
 #   ifdef macintosh
                                           convertCommonToMacPath(fn, sizeof(fn))
@@ -555,7 +576,7 @@ std::istream & Doc2::inputStream() {
  */
 std::ostream & Doc2::outputStream() {
     if (!ostm_) {
-        ostm_ = new std::ofstream(stripProtocol(url_).c_str(), std::ios::out);
+        ostm_ = new std::ofstream(stripProtocol(url_), std::ios::out);
     }
     return *this->ostm_;
 }
@@ -567,30 +588,22 @@ std::ostream & Doc2::outputStream() {
  * @param nfn   the number of elements in the buffer @p fn points to.
  */
 bool Doc2::filename(char * fn, int nfn) {
-    using std::copy;
-    using std::string;
-
     fn[0] = '\0';
 
-    const char * s = 0;
+    char * e = 0;
+    char * s = const_cast<char *>(stripProtocol(url_));
 
-    const std::string protocol = this->urlProtocol();
+    if ((e = strrchr(s,'#')) != 0) {
+        *e = '\0';
+    }
 
-    if (protocol == "file") {
-        string name = URI(this->url_).getPath();
-        size_t len = (name.length() < (nfn - 1))
-                   ? name.length()
-                   : nfn - 1;
-        copy(name.begin(), name.begin() + len, fn);
-        fn[len] = '\0';
-        return true;
-    } else if (protocol == "http") {
-        //
-        // Get a local copy of http files.
-        //
-        if (this->tmpfile_) {    // Already fetched it
-            s = this->tmpfile_;
-        } else if ((s = theSystem->httpFetch(this->url_.c_str()))) {
+    const char * protocol = urlProtocol();
+
+    // Get a local copy of http files
+    if (strcmp(protocol, "http") == 0) {
+        if (tmpfile_) {    // Already fetched it
+            s = tmpfile_;
+        } else if ((s = (char *) theSystem->httpFetch(url_))) {
             tmpfile_ = new char[strlen(s)+1];
             strcpy(tmpfile_, s);
             free(const_cast<char *>(s));        // assumes tempnam or equiv...
@@ -598,13 +611,23 @@ bool Doc2::filename(char * fn, int nfn) {
         }
     }
     // Unrecognized protocol (need ftp here...)
-    else {
+    else if (strcmp(protocol, "file") != 0) {
         s = 0;
     }
+
+#ifdef _WIN32
+  // Does not like "//C:" skip "// "
+   if(s)
+	   if(strlen(s)>2 && s[0] == '/' && s[1] == '/')s=s+2;
+#endif
 
     if (s) {
         strncpy( fn, s, nfn-1 );
         fn[nfn-1] = '\0';
+    }
+
+    if (e) {
+        *e = '#';
     }
 
     return s && *s;
@@ -659,7 +682,7 @@ char* Doc2::convertCommonToMacPath( char *fn, int nfn )
 {
   /* Note that only full paths can be use on the Mac to
      retrieve files correctly, so this function assumes
-     that the viewer, e.g. Lookat, has provided the Browser with
+     that the viewer, e.g. Lookat, has provided VrmlScene with
      a file path in the form of a URL (optionally without the protocol
      if it is a local path) */
 
@@ -701,184 +724,5 @@ char* Doc2::convertCommonToMacPath( char *fn, int nfn )
 }
 
 # endif /* macintosh */
-
-namespace {
-
-    const char * const expression =
-            "^(([^:/?#]+):)?((//([^/?#]*))?([^?#]*)([?]([^#]*))?(#(.*))?)";
-        //    12            34  5          6       7   8        9 10
-    class URIRegex {
-        regex_t regex;
-
-    public:
-        URIRegex() throw (std::bad_alloc);
-        ~URIRegex() throw ();
-
-        int exec(const char * str, size_t nmatch, regmatch_t pmatch[],
-                 int eflags);
-    };
-
-    URIRegex::URIRegex() throw (std::bad_alloc) {
-        int err = regcomp(&this->regex, expression, REG_EXTENDED);
-        if (err == REG_ESPACE) { throw std::bad_alloc(); }
-        assert(err == 0);
-    }
-
-    URIRegex::~URIRegex() throw () { regfree(&this->regex); }
-
-    int URIRegex::exec(const char * str, size_t nmatch, regmatch_t pmatch[],
-                       int eflags) {
-        return regexec(&this->regex, str, nmatch, pmatch, eflags);
-    }
-
-    URIRegex uriRegex;
-
-    URI::URI(const std::string & str) throw (InvalidURI, std::bad_alloc):
-            str(str) {
-        int err = uriRegex.exec(str.c_str(), URI::nmatch, this->regmatch, 0);
-        if (err != 0) { throw InvalidURI(); }
-    }
-
-    URI::operator std::string() const throw (std::bad_alloc) {
-        return this->str;
-    }
-
-    const std::string URI::getScheme() const throw (std::bad_alloc) {
-        return (this->regmatch[2].rm_so > -1)
-                ? this->str.substr(this->regmatch[2].rm_so,
-                                   this->regmatch[2].rm_eo - this->regmatch[2].rm_so)
-                : std::string();
-    }
-
-    const std::string URI::getSchemeSpecificPart() const
-            throw (std::bad_alloc) {
-        return (this->regmatch[3].rm_so > -1)
-                ? this->str.substr(this->regmatch[3].rm_so,
-                                   this->regmatch[3].rm_eo - this->regmatch[3].rm_so)
-                : std::string();
-    }
-
-    const std::string URI::getAuthority() const throw (std::bad_alloc) {
-        return (this->regmatch[4].rm_so > -1)
-                ? this->str.substr(this->regmatch[4].rm_so,
-                                   this->regmatch[4].rm_eo - this->regmatch[4].rm_so)
-                : std::string();
-    }
-
-    const std::string URI::getUserinfo() const throw (std::bad_alloc) {
-        return std::string();
-    }
-
-    const std::string URI::getHost() const throw (std::bad_alloc) {
-        return std::string();
-    }
-
-    const std::string URI::getPort() const throw (std::bad_alloc) {
-        return std::string();
-    }
-
-    const std::string URI::getPath() const throw (std::bad_alloc) {
-        return (this->regmatch[6].rm_so > -1)
-                ? this->str.substr(this->regmatch[6].rm_so,
-                                   this->regmatch[6].rm_eo - this->regmatch[6].rm_so)
-                : std::string();
-    }
-
-    const std::string URI::getQuery() const throw (std::bad_alloc) {
-        return (this->regmatch[7].rm_so > -1)
-                ? this->str.substr(this->regmatch[7].rm_so,
-                                   this->regmatch[7].rm_eo - this->regmatch[7].rm_so)
-                : std::string();
-    }
-
-    const std::string URI::getFragment() const throw (std::bad_alloc) {
-        return (this->regmatch[10].rm_so > -1)
-                ? this->str.substr(this->regmatch[10].rm_so,
-                                   this->regmatch[10].rm_eo - this->regmatch[10].rm_so)
-                : std::string();
-    }
-
-    const URI URI::resolveAgainst(const URI & absoluteURI) const
-            throw (std::bad_alloc) {
-        using std::list;
-        using std::string;
-
-        assert(this->getScheme().empty());
-        assert(!absoluteURI.getScheme().empty());
-
-        string result = absoluteURI.getScheme() + ':';
-
-        string authority = this->getAuthority();
-        if (!authority.empty()) {
-            authority = absoluteURI.getAuthority();
-        }
-        if (!authority.empty()) {
-            result += "//" + authority;
-        }
-
-        string path = absoluteURI.getPath();
-        const string::size_type lastSlashIndex = path.find_last_of('/');
-
-        //
-        // Chop off the leading slash and the last path segment (typically a
-        // file name).
-        //
-        path = path.substr(1, lastSlashIndex);
-
-        //
-        // Append the relative path.
-        //
-        path += this->getPath();
-
-        //
-        // Put the path segments in a list to process them.
-        //
-        list<string> pathSegments;
-        string::size_type slashIndex = 0;
-        string::size_type segmentStartIndex = 0;
-        while (slashIndex = path.find('/', segmentStartIndex)) {
-            string segment = path.substr(segmentStartIndex,
-                                         slashIndex - segmentStartIndex);
-            if (!segment.empty()) {
-                pathSegments.push_back(segment);
-            }
-            segmentStartIndex = slashIndex + 1;
-        }
-
-        //
-        // Remove any "." segments.
-        //
-        pathSegments.remove(".");
-
-        //
-        // Remove any ".." segments along with the segment that precedes them.
-        //
-        for (std::list<string>::iterator pos; pos != pathSegments.end(); ++pos) {
-            if (pos != pathSegments.begin() && *pos == "..") {
-                --(pos = pathSegments.erase(pos));
-                --(pos = pathSegments.erase(pos));
-            }
-        }
-
-        //
-        // Reconstruct the path.
-        //
-        path = "";
-        for (std::list<string>::iterator cpos; cpos != pathSegments.end(); ++cpos) {
-            path += '/' + *cpos;
-        }
-
-        //
-        // End in a slash?
-        //
-        if (*(this->getPath().end() - 1) == '/') { path += '/'; }
-
-        result += path;
-        result += this->getQuery();
-        result += this->getFragment();
-
-        return URI(result);
-    }
-}
 
 } // namespace OpenVRML

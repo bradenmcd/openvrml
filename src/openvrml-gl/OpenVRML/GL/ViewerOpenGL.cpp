@@ -2,94 +2,86 @@
 // OpenVRML
 //
 // Copyright (C) 1998-2000  Chris Morley
-//
+// 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-//
+// 
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-//
+// 
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
+// 
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
 
-# ifdef _WIN32
-#   include <wtypes.h>
-#   include <winbase.h>
-#   include <windef.h>
-#   include <wingdi.h>
-# endif
+// Win32 needs to know that GL stuff lives in a DLL (OPENGL32.DLL)
+#if defined(_WIN32)
+#include <wtypes.h>
+#include <winbase.h>
+#include <windef.h>
+#include <wingdi.h>
+#endif
 
-# ifdef HAVE_OPENGL_GL_H
-#   include <OpenGL/gl.h>
-# else
-#   include <GL/gl.h>
-# endif
-
-# ifdef HAVE_OPENGL_GLU_H
-#   include <OpenGL/glu.h>
-# else
-#   include <GL/glu.h>
-# endif
-
+# include OPENVRML_GL_H
+# include OPENVRML_GLU_H
 # ifdef OPENVRML_HAVE_GLUT
-#   if defined(HAVE_GLUT_GLUT_H)
-#     include <GLUT/glut.h>
-#   elif defined(HAVE_GL_GLUT_H)
-#     include <GL/glut.h>
-#   endif
+#   include OPENVRML_GLUT_H
 # endif
-# include <stdio.h> // sprintf
+# include <stdio.h>		// sprintf
 # include <math.h>
 
 # include <OpenVRML/MathUtils.h>
 # include <OpenVRML/System.h>
-# include <OpenVRML/browser.h>
+# include <OpenVRML/VrmlScene.h>
 # include <OpenVRML/vrml97node.h>
 # include <OpenVRML/bvolume.h>
 # include <OpenVRML/VrmlFrustum.h>
-# include <OpenVRML/font.h>
 
 # include "ViewerOpenGL.h"
 # include "OpenGLEvent.h"
+# include "private.h"
+
+/**
+ * @namespace OpenVRML::GL
+ *
+ * @brief OpenGL geometry renderer
+ */
+
+/**
+ * @class OpenVRML::GL::ViewerOpenGL
+ *
+ * @brief Abstract class for display of VRML models using OpenGL/Mesa.
+ *
+ * A window-system specific subclass needs to redefine the pure
+ * virtual methods.
+ */
 
 // Put geometry into display lists.
 // If geometry is not in display lists, performance will suffer,
 // especially for non-convex geometries. You probably shouldn't
 // change these unless you know what you are doing.
 
-# define USE_GEOMETRY_DISPLAY_LISTS 1
+#define USE_GEOMETRY_DISPLAY_LISTS 1
 
 // Textures are now done using OGL1.1 bindTexture API rather than
 // display lists when this flag is set. Don't define this if you
 // are still at OpenGL 1.0 (or get a newer OpenGL).
 
-# define USE_TEXTURE_DISPLAY_LISTS 1
+#define USE_TEXTURE_DISPLAY_LISTS 1
+
+using namespace OpenVRML;
+using namespace OpenVRML::GL;
+using namespace OpenVRML_::GL_;
 
 namespace {
-    const float FPTOLERANCE(1.0e-6);
-
-    inline bool fpzero(const float f) {
-        return (fabs(f) <= FPTOLERANCE);
-    }
-
-    inline bool fpequal(const float a, const float b) {
-        return fpzero(a - b);
-    }
-
-    inline double length(const float vec[3]) {
-        return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
-    }
-
     void matrix_to_glmatrix(const float M[4][4], float GLM[16]) {
         GLM[0]  = M[0][0];
         GLM[1]  = M[1][0];
@@ -108,134 +100,17 @@ namespace {
         GLM[14] = M[2][3];
         GLM[15] = M[3][3];
     }
-
-    class GLCapabilities {
-    public:
-        GLint maxModelviewStackDepth;
-
-        GLCapabilities();
-    };
-
-    GLCapabilities::GLCapabilities()
-    {
-        glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH,
-                      &this->maxModelviewStackDepth);
-    }
-
-    const GLCapabilities glCapabilities;
 }
 
-namespace OpenVRML {
+//  Construct a viewer for the specified scene. I'm not happy with the
+//  mutual dependencies between VrmlScene/VrmlNodes and Viewers...
+//  Maybe a static callback function pointer should be passed in rather
+//  than a class object pointer. Currently, the scene is used to access
+//  the VrmlScene::render() method. Also, the static VrmlScene::update
+//  is called from the idle function. A way to pass mouse/keyboard sensor 
+//  events back to the scene is also needed.
 
-/**
- * @brief OpenGL geometry renderer.
- */
-namespace GL {
-
-/**
- * @class ViewerOpenGL
- *
- * @brief Abstract class for display of VRML models using OpenGL/Mesa.
- *
- * A window-system specific subclass needs to redefine the pure
- * virtual methods.
- */
-
-/**
- * @class ViewerOpenGL::ModelviewMatrixStack
- *
- * @brief Encapsulates and extended modelview matrix stack.
- *
- * OpenGL requires that implementations have a modelview matrix stack with a
- * maximum depth of only 32. Regardless of that, the maximum depth can be
- * expected to vary between implementations, and we don't want nesting of
- * Transform nodes in VRML worlds to be constrained by this limit.
- *
- * ModelviewMatrixStack uses the OpenGL modelview matrix stack until it fills
- * up, at which point any additional matrices that spill over are pushed onto
- * a conventional stack of @link VrmlMatrix VrmlMatrices@endlink.
- */
-
-/**
- * @var size_t ViewerOpenGL::ModelviewMatrixStack::size
- *
- * @brief The current stack depth.
- */
-
-/**
- * @var std::stack<VrmlMatrix> ViewerOpenGL::ModelviewMatrixStack::spillover
- *
- * @brief Any matrices that won't fit on the OpenGL modelview matrix stack get
- *      pushed onto this stack.
- */
-
-/**
- * @brief Constructor.
- */
-ViewerOpenGL::ModelviewMatrixStack::ModelviewMatrixStack():
-    size(0)
-{}
-
-/**
- * @brief Push the current matrix onto the stack.
- *
- * @pre The current matrix is the modelview matrix.
- */
-void ViewerOpenGL::ModelviewMatrixStack::push()
-{
-# ifndef NDEBUG
-    GLint matrixMode;
-    glGetIntegerv(GL_MATRIX_MODE, &matrixMode);
-# endif
-    assert(matrixMode == GL_MODELVIEW);
-    if (this->size == glCapabilities.maxModelviewStackDepth - 1) {
-        VrmlMatrix mat;
-        glGetFloatv(GL_MODELVIEW_MATRIX, &mat[0][0]);
-        this->spillover.push(mat);
-        glPopMatrix();
-    }
-    glPushMatrix();
-    ++this->size;
-}
-
-/**
- * @brief Pop the current matrix off of the stack.
- *
- * @pre The current matrix is the modelview matrix.
- */
-void ViewerOpenGL::ModelviewMatrixStack::pop()
-{
-# ifndef NDEBUG
-    GLint matrixMode;
-    glGetIntegerv(GL_MATRIX_MODE, &matrixMode);
-# endif
-    assert(matrixMode == GL_MODELVIEW);
-    glPopMatrix();
-    if (!this->spillover.empty()) {
-        glLoadMatrixf(&this->spillover.top()[0][0]);
-        this->spillover.pop();
-        glPushMatrix();
-    }
-    --this->size;
-}
-
-
-/**
- * @brief Construct a viewer for the specified Browser.
- *
- * @param browser   the Browser.
- */
-ViewerOpenGL::ViewerOpenGL(Browser & browser):
-    Viewer(browser),
-# ifdef GLU_VERSION_1_2
-    tesselator(gluNewTess()),
-# endif
-    d_nSensitive(0),
-    d_overSensitive(0),
-    d_activeSensitive(0),
-    d_selectMode(false),
-    d_selectZ(0.0)
-{
+ViewerOpenGL::ViewerOpenGL(VrmlScene & scene): Viewer(scene) {
   d_GLinitialized = false;
   d_blend = true;
   d_lit = true;
@@ -246,11 +121,19 @@ ViewerOpenGL::ViewerOpenGL(Browser & browser):
   d_nObjects = 0;
   d_nestedObjects = 0;
 
+  d_nSensitive = 0;
+  d_overSensitive = 0;
+  d_activeSensitive = 0;
+  d_selectMode = false;
+  d_selectZ = 0.0;
+
   d_background[0] = d_background[1] = d_background[2] = 0.0;
   d_winWidth = 1;
   d_winHeight = 1;
   for (int i=0; i<MAX_LIGHTS; ++i)
     d_lightInfo[i].lightType = LIGHT_UNUSED;
+
+  d_tess = 0;
 
   d_scale = 1.0;
   d_translatex = d_translatey = d_translatez = 0.0;
@@ -279,9 +162,9 @@ ViewerOpenGL::ViewerOpenGL(Browser & browser):
 
 ViewerOpenGL::~ViewerOpenGL()
 {
-# ifdef GLU_VERSION_1_2
-    gluDeleteTess(this->tesselator);
-# endif
+#if GLU_VERSION_1_2
+  if (d_tess) gluDeleteTess( d_tess );
+#endif
 }
 
 void ViewerOpenGL::initialize()
@@ -308,22 +191,19 @@ void ViewerOpenGL::initialize()
   d_GLinitialized = true;
 }
 
-namespace {
-
-    // Call this after each frame for debugging...
-    void checkErrors(const char * s)
-    {
-        GLenum glerr;
-        while ((glerr = glGetError()) != GL_NO_ERROR) {
-# ifdef macintosh
-            if (glerr != 1285) // This avoids automatic switching between SW and
-                               // HW renderers being continuously reported as an
-                               // error
-# endif
-            theSystem->error("GL ERROR: %s %s\n", s, gluErrorString(glerr));
-        }
-    }
+// Call this after each frame for debugging...
+static void checkErrors(const char * s)
+{
+  GLenum glerr;
+  while ((glerr = glGetError()) != GL_NO_ERROR) {
+#ifdef macintosh
+    if (glerr != 1285) // This avoids automatic switching between SW and HW
+                       // renderers being continuously reported as an error
+#endif
+      theSystem->error("GL ERROR: %s %s\n", s, gluErrorString(glerr));
+ }
 }
+
 
 
 //
@@ -333,7 +213,7 @@ namespace {
 //  (but the retain flag is just a hint, not guaranteed). Retained
 //  objects can be referred to later to avoid duplicating geometry.
 //  OpenGL doesn't allow nested objects. The top-down approach of
-//  putting entire groups in display lists is faster for static
+//  putting entire groups in display lists is faster for static 
 //  scenes but uses more memory and means that if anything is changed,
 //  the whole object must be tossed.
 //  The bottom-up model wraps each piece of geometry in a dlist but
@@ -345,53 +225,47 @@ namespace {
 //  retain hint is ignored.
 
 Viewer::Object ViewerOpenGL::beginObject(const char *,
-                                         bool retain)
+					 bool /* retain */
+					 )
 {
-    // Finish setup stuff before first object
-    if (1 == ++this->d_nObjects) {
-        // Finish specifying the view (postponed to make Background easier)
-        this->modelviewMatrixStack.push();
-        glTranslatef(this->d_zoom[0],
-                     this->d_zoom[1],
-                     this->d_zoom[2]); // M = M * T
-        glMultMatrixf(&this->d_rotationMatrix[0][0]); // M = M * R
-        glTranslatef(this->d_translatex,
-                     this->d_translatey,
-                     this->d_translatez); // M = M * T
-        if (!this->d_lit) { glDisable(GL_LIGHTING); }
+  // Finish setup stuff before first object
+  if (1 == ++d_nObjects)
+    {
+      // Finish specifying the view (postponed to make Background easier)
+      glPushMatrix();
+      glTranslatef(d_zoom[0], d_zoom[1], d_zoom[2]); // M = M * T
+      glMultMatrixf(&d_rotationMatrix[0][0]);                  // M = M * R 
+      glTranslatef(d_translatex, d_translatey, d_translatez);  // M = M * T 
+      if (!d_lit) glDisable(GL_LIGHTING);
     }
 
-    ++this->d_nestedObjects;
+  ++d_nestedObjects;
 
-    // Increment nesting level for group-scoped lights
-    for (size_t i = 0; i < MAX_LIGHTS; ++i) {
-        if (this->d_lightInfo[i].lightType == LIGHT_DIRECTIONAL) {
-            ++this->d_lightInfo[i].nestingLevel;
-        }
-    }
-    this->modelviewMatrixStack.push();
-    return 0;
+  // Increment nesting level for group-scoped lights
+  for (int i=0; i<MAX_LIGHTS; ++i)
+    if (d_lightInfo[i].lightType == LIGHT_DIRECTIONAL)
+      ++d_lightInfo[i].nestingLevel;
+
+  return 0;
 }
 
 // End of group scope
 
 void ViewerOpenGL::endObject()
 {
-    // Decrement nesting level for group-scoped lights and get rid
-    // of any defined at this level
-    for (size_t i = 0; i < MAX_LIGHTS; ++i) {
-        if (this->d_lightInfo[i].lightType == LIGHT_DIRECTIONAL) {
-            if (--this->d_lightInfo[i].nestingLevel < 0) {
-                glDisable(GLenum(GL_LIGHT0 + i));
-                this->d_lightInfo[i].lightType = LIGHT_UNUSED;
-            }
-        }
-    }
+  // Decrement nesting level for group-scoped lights and get rid
+  // of any defined at this level
+  for (int i=0; i<MAX_LIGHTS; ++i)
+    if (d_lightInfo[i].lightType == LIGHT_DIRECTIONAL)
+      if (--d_lightInfo[i].nestingLevel < 0)
+	{
+	  glDisable( (GLenum) (GL_LIGHT0 + i) );
+	  d_lightInfo[i].lightType = LIGHT_UNUSED;
+	}
 
-    this->modelviewMatrixStack.pop();
-
-    if (--this->d_nestedObjects == 0) {
-        this->modelviewMatrixStack.pop();
+  if (--d_nestedObjects == 0)
+    {
+      glPopMatrix();
     }
 }
 
@@ -416,7 +290,6 @@ void ViewerOpenGL::endGeometry()
   glPopAttrib();
   glCullFace( GL_BACK );
   glShadeModel( GL_SMOOTH );
-  glFrontFace( GL_CCW );
 
   // if needed...
   glMatrixMode(GL_TEXTURE);
@@ -424,9 +297,83 @@ void ViewerOpenGL::endGeometry()
   glMatrixMode(GL_MODELVIEW);
 }
 
-Viewer::RenderMode ViewerOpenGL::getRenderMode()
+// Construct Billboard transformation matrix M  
+//
+// get rid of this asap: change over to use the transformation matrix
+// accumulated during render traversal. -cks
+//
+void ViewerOpenGL::getBillboardTransformMatrix(float M[4][4],
+                                               const float axisOfRotation[3])
 {
-  return d_selectMode ? RENDER_MODE_PICK : RENDER_MODE_DRAW;
+  GLfloat modelview[16],invert[9];
+  glGetFloatv (GL_MODELVIEW_MATRIX, modelview);
+  float pos[] = {-modelview[12], - modelview[13], -modelview[14]};
+  float v[3],y[3];
+
+  if(InvertMatrix3x3of4x4(modelview,invert))
+  {
+// Viewer position in local coordinate system
+   v[0] = pos[0] * invert[0] + pos[1] * invert[3] + pos[2] * invert[6];
+   v[1] = pos[0] * invert[1] + pos[1] * invert[4] + pos[2] * invert[7];
+   v[2] = pos[0] * invert[2] + pos[1] * invert[5] + pos[2] * invert[8];
+   Vnorm( v );
+// Viewer-alignment
+  if ( fpzero(axisOfRotation[0]) &&
+       fpzero(axisOfRotation[1]) &&
+       fpzero(axisOfRotation[2]) )
+    {
+// Viewer's up vector
+	  y[0] = invert[3];
+	  y[1] = invert[4];
+	  y[2] = invert[5];
+      Vnorm( y );
+// get x-vector from the cross product of Viewer's
+// up vector and billboard-to-viewer vector. 
+     float x[3];
+     Vcross( x, y, v );
+	 Vnorm( x );
+     M[0][0] = x[0]; M[0][1] = x[1]; M[0][2] = x[2]; M[0][3] = 0.0;
+     M[1][0] = y[0]; M[1][1] = y[1]; M[1][2] = y[2]; M[1][3] = 0.0;
+     M[2][0] = v[0]; M[2][1] = v[1]; M[2][2] = v[2]; M[2][3] = 0.0,
+     M[3][0] = M[3][1] = M[3][2] = 0.0; M[3][3] = 1.0;
+    }
+
+  // use axis of rotation
+  else
+    {
+// axis of rotation will be the y-axis vector
+     y[0] = axisOfRotation[0];
+     y[1] = axisOfRotation[1];
+     y[2] = axisOfRotation[2];
+     Vnorm( y );
+
+// Plane defined by the axisOfRotation and billboard-to-viewer vector
+     float x[3];
+     Vcross( x, y, v );
+     Vnorm( x );
+// Get Z axis vector from cross product of X and Y
+     float z[3];
+     Vcross(z, x, y);
+// Transform Z axis vector of current coordinate system to new coordinate system.
+     float nz[3];
+     nz[0] = x[2]; nz[1] = y[2]; nz[2] = z[2];
+// calculate the angle by which the Z axis vector of current coordinate system
+// has to be rotated around the Y axis to new coordinate system.
+     float angle = acos(nz[2]) * 180 / PI;
+     if(nz[0] > 0) angle = -angle;
+     glPushMatrix();
+     glLoadIdentity();
+     glRotatef(angle,y[0],y[1],y[2]);
+     glGetFloatv (GL_MODELVIEW_MATRIX,(float *) M);
+     glPopMatrix();	 
+  }
+  }
+}
+
+
+Viewer::RenderMode ViewerOpenGL::getRenderMode() 
+{
+  return d_selectMode ? RENDER_MODE_PICK : RENDER_MODE_DRAW; 
 }
 
 double ViewerOpenGL::getFrameRate()
@@ -451,7 +398,7 @@ void ViewerOpenGL::resetUserNavigation()
 void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
 {
   // The Matrix M should be a unit matrix
-  VrmlMatrix tmp,rot(d_rotationMatrix);
+  VrmlMatrix tmp,rot(d_rotationMatrix); 
   float pos_vec[3];
   pos_vec[0] = d_zoom[0];
   pos_vec[1] = d_zoom[1];
@@ -463,23 +410,22 @@ void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
   pos_vec[1] = d_translatey;
   pos_vec[2] = d_translatez;
   tmp.setTranslate(pos_vec);
-  M = M.multLeft(tmp);
+  M = M.multLeft(tmp);             
 }
 
-namespace {
-    // Generate a normal from 3 indexed points.
-    void indexFaceNormal(const int i1,
-                         const int i2,
-                         const int i3,
-                         const float * const p,
-                         float * N)
-    {
-        float V1[3], V2[3];
+// Generate a normal from 3 indexed points.
 
-        Vdiff(V1, &p[i2], &p[i3]);
-        Vdiff(V2, &p[i2], &p[i1]);
-        Vcross(N, V1, V2);
-    }
+static void indexFaceNormal(int i1,
+			    int i2,
+			    int i3,
+			    const float * p,
+			    float *N)
+{
+  float V1[3], V2[3];
+
+  Vdiff( V1, &p[i2], &p[i3] );
+  Vdiff( V2, &p[i2], &p[i1] );
+  Vcross( N, V1, V2 );
 }
 
 //
@@ -487,289 +433,295 @@ namespace {
 //
 
 Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
-                                              const float * groundAngle,
-                                              const float * groundColor,
-                                              size_t nSkyAngles,
-                                              const float * skyAngle,
-                                              const float * skyColor,
-                                              int * whc,
-                                              unsigned char ** pixels)
+				              const float * groundAngle,
+				              const float * groundColor,
+				              size_t nSkyAngles,
+				              const float * skyAngle,
+				              const float * skyColor,
+				              int* whc,
+                                              unsigned char ** pixels) 
 {
-    float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
+  float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
 
-    // Clear to last sky color
-    if (skyColor != 0) {
-        r = skyColor[3 * nSkyAngles + 0];
-        g = skyColor[3 * nSkyAngles + 1];
-        b = skyColor[3 * nSkyAngles + 2];
+  // Clear to last sky color
+  if (skyColor != 0)
+    {
+      r = skyColor[3*nSkyAngles+0];
+      g = skyColor[3*nSkyAngles+1];
+      b = skyColor[3*nSkyAngles+2];
     }
 
-    GLuint glid = 0;
+  GLuint glid = 0;
 
-    // Need to separate the geometry from the transformation so the
-    // dlist doesn't have to get rebuilt for every mouse movement...
-# if USE_GEOMETRY_DISPLAY_LISTS && 0
-    // Don't bother with a dlist if we aren't drawing anything
-    if (!this->d_selectMode
-            && (nSkyAngles > 0 || nGroundAngles > 0 || pixels)) {
-        glid = glGenLists(1);
-        glNewList(glid, GL_COMPILE_AND_EXECUTE);
+  // Need to separate the geometry from the transformation so the
+  // dlist doesn't have to get rebuilt for every mouse movement...
+#if USE_GEOMETRY_DISPLAY_LISTS && 0
+  // Don't bother with a dlist if we aren't drawing anything
+  if (! d_selectMode &&
+      (nSkyAngles > 0 || nGroundAngles > 0 || pixels) )
+    {
+      glid = glGenLists(1);
+      glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
-# endif
+#endif
 
-    glClearColor(r, g, b, a);
-    GLuint mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
-# if USE_STENCIL_SHAPE
-    mask |= GL_STENCIL_BUFFER_BIT;
-    glClear(mask);
-# else
-    glClear(mask);
+  glClearColor( r, g, b, a );
+  GLuint mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+#if USE_STENCIL_SHAPE
+  mask |= GL_STENCIL_BUFFER_BIT;
+  glClear( mask );
+#else
+  glClear( mask );
 
-    // Draw the background as big spheres centered at the view position
-    if (!this->d_selectMode
-            && (nSkyAngles > 0 || nGroundAngles > 0 || pixels)) {
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_LIGHTING);
+  // Draw the background as big spheres centered at the view position
+  if ( ! d_selectMode && (nSkyAngles > 0 || nGroundAngles > 0 || pixels) )
+    {
+      glDisable( GL_DEPTH_TEST );
+      glDisable( GL_LIGHTING );
 
-        this->modelviewMatrixStack.push();
+      glPushMatrix();
+//      glLoadIdentity();
 
-        // Apply current view rotation
-        glMultMatrixf(&this->d_rotationMatrix[0][0]);
+      // Undo translation
+//      glTranslatef( d_position[0], d_position[1], d_position[2] );
 
-        glScalef(1000.0, 1000.0, 1000.0);
+      // Apply current view rotation
+      glMultMatrixf( &d_rotationMatrix[0][0] );
 
-        // Sphere constants
-        const int nCirc = 8; // number of circumferential slices
-        const double cd = 2.0 * pi / nCirc;
+      glScalef(1000.,1000.,1000.);
 
-        double heightAngle0, heightAngle1 = 0.0;
-        const float *c0, *c1 = skyColor;
+      // Sphere constants
+      const int nCirc = 8;		// number of circumferential slices
+      const double cd = 2.0 * PI / nCirc;
 
-        for (size_t nSky = 0; nSky < nSkyAngles; ++nSky) {
-            heightAngle0 = heightAngle1;
-            heightAngle1 = skyAngle[nSky];
-            c0 = c1;
-            c1 += 3;
+      double heightAngle0, heightAngle1 = 0.0;
+      const float *c0, *c1 = skyColor;
 
-            double circAngle0, circAngle1 = 0.0;
-            double sha0 = sin(heightAngle0), cha0 = cos(heightAngle0);
-            double sha1 = sin(heightAngle1), cha1 = cos(heightAngle1);
-            double sca0, cca0;
-            double sca1 = sin(circAngle1), cca1 = cos(circAngle1);
+      for (size_t nSky=0; nSky<nSkyAngles; ++nSky)
+	{
+	  heightAngle0 = heightAngle1;
+	  heightAngle1 = skyAngle[nSky];
+	  c0 = c1;
+	  c1 += 3;
 
-            glBegin(GL_QUADS);
-            for (size_t nc = 0; nc < nCirc; ++nc) {
-                circAngle0 = circAngle1;
-                circAngle1 = (nc + 1) * cd;
-                sca0 = sca1;
-                sca1 = sin(circAngle1);
-                cca0 = cca1;
-                cca1 = cos(circAngle1);
+	  double circAngle0, circAngle1 = 0.0;
+	  double sha0 = sin(heightAngle0), cha0 = cos(heightAngle0);
+	  double sha1 = sin(heightAngle1), cha1 = cos(heightAngle1);
+	  double sca0, cca0;
+	  double sca1 = sin(circAngle1), cca1 = cos(circAngle1);
 
-                glColor3fv(c1);
-                glVertex3f(sha1 * cca0, cha1, sha1 * sca0);
-                glVertex3f(sha1 * cca1, cha1, sha1 * sca1);
-                glColor3fv(c0);
-                glVertex3f(sha0 * cca1, cha0, sha0 * sca1);
-                glVertex3f(sha0 * cca0, cha0, sha0 * sca0);
-            }
-            glEnd();
-        }
+	  glBegin( GL_QUADS );
+	  for (int nc=0; nc<nCirc; ++nc)
+	    {
+	      circAngle0 = circAngle1;
+	      circAngle1 = (nc+1) * cd;
+	      sca0 = sca1;
+	      sca1 = sin(circAngle1);
+	      cca0 = cca1;
+	      cca1 = cos(circAngle1);
 
-        // Ground
-        heightAngle1 = pi;
-        c1 = groundColor;
+	      glColor3fv( c1 );
+	      glVertex3f( sha1 * cca0, cha1, sha1 * sca0 );
+	      glVertex3f( sha1 * cca1, cha1, sha1 * sca1 );
+	      glColor3fv( c0 );
+	      glVertex3f( sha0 * cca1, cha0, sha0 * sca1 );
+	      glVertex3f( sha0 * cca0, cha0, sha0 * sca0 );
+	    }
+	  glEnd();
+	}
 
-        for (size_t nGround = 0; nGround < nGroundAngles; ++nGround) {
-            heightAngle0 = heightAngle1;
-            heightAngle1 = pi - groundAngle[nGround];
-            c0 = c1;
-            c1 += 3;
+      // Ground
+      heightAngle1 = PI;
+      c1 = groundColor;
 
-            double circAngle0, circAngle1 = 0.0;
-            double sha0 = sin(heightAngle0), cha0 = cos(heightAngle0);
-            double sha1 = sin(heightAngle1), cha1 = cos(heightAngle1);
-            double sca0, cca0;
-            double sca1 = sin(circAngle1), cca1 = cos(circAngle1);
+      for (size_t nGround=0; nGround<nGroundAngles; ++nGround)
+	{
+	  heightAngle0 = heightAngle1;
+	  heightAngle1 = PI - groundAngle[nGround];
+	  c0 = c1;
+	  c1 += 3;
 
-            glBegin(GL_QUADS);
-            for (size_t nc = 0; nc < nCirc; ++nc) {
-                circAngle0 = circAngle1;
-                circAngle1 = (nc + 1) * cd;
-                sca0 = sca1;
-                sca1 = sin(circAngle1);
-                cca0 = cca1;
-                cca1 = cos(circAngle1);
+	  double circAngle0, circAngle1 = 0.0;
+	  double sha0 = sin(heightAngle0), cha0 = cos(heightAngle0);
+	  double sha1 = sin(heightAngle1), cha1 = cos(heightAngle1);
+	  double sca0, cca0;
+	  double sca1 = sin(circAngle1), cca1 = cos(circAngle1);
 
-                glColor3fv(c1);
-                glVertex3f(sha1 * cca1, cha1, sha1 * sca1);
-                glVertex3f(sha1 * cca0, cha1, sha1 * sca0);
-                glColor3fv(c0);
-                glVertex3f(sha0 * cca0, cha0, sha0 * sca0);
-                glVertex3f(sha0 * cca1, cha0, sha0 * sca1);
-            }
-            glEnd();
-        }
+	  glBegin( GL_QUADS );
+	  for (int nc=0; nc<nCirc; ++nc)
+	    {
+	      circAngle0 = circAngle1;
+	      circAngle1 = (nc+1) * cd;
+	      sca0 = sca1;
+	      sca1 = sin(circAngle1);
+	      cca0 = cca1;
+	      cca1 = cos(circAngle1);
 
-        // Background textures are drawn on a transparent cube
-        if (pixels && this->d_texture && !this->d_wireframe) {
-            float v2[6][4][3] = {
-              {{1,-1,1}, {-1,-1,1}, {-1,1,1}, {1,1,1}},     // Back
-              {{-1,-1,1}, {1,-1,1}, {1,-1,-1}, {-1,-1,-1}}, // Bottom
-              {{-1,-1,-1}, {1,-1,-1}, {1,1,-1}, {-1,1,-1}}, // Front
-              {{-1,-1,1}, {-1,-1,-1}, {-1,1,-1}, {-1,1,1}}, // Left
-              {{1,-1,-1}, {1,-1,1}, {1,1,1}, {1,1,-1}},     // Right
-              {{-1,1,-1}, {1,1,-1}, {1,1,1}, {-1,1,1}}};    // Top
+	      glColor3fv( c1 );
+	      glVertex3f( sha1 * cca1, cha1, sha1 * sca1 );
+	      glVertex3f( sha1 * cca0, cha1, sha1 * sca0 );
+	      glColor3fv( c0 );
+	      glVertex3f( sha0 * cca0, cha0, sha0 * sca0 );
+	      glVertex3f( sha0 * cca1, cha0, sha0 * sca1 );
+	    }
+	  glEnd();
+	}
 
-            // Tile big textures into 256x256 (or 256xsmaller or smallerx256) pieces
+      // Background textures are drawn on a transparent cube
+      if (pixels && d_texture && ! d_wireframe)
+	{
+	  float v2[6][4][3] = {
+	    {{1,-1,1}, {-1,-1,1}, {-1,1,1}, {1,1,1}},     // Back
+	    {{-1,-1,1}, {1,-1,1}, {1,-1,-1}, {-1,-1,-1}}, // Bottom
+	    {{-1,-1,-1}, {1,-1,-1}, {1,1,-1}, {-1,1,-1}}, // Front
+	    {{-1,-1,1}, {-1,-1,-1}, {-1,1,-1}, {-1,1,1}}, // Left
+	    {{1,-1,-1}, {1,-1,1}, {1,1,1}, {1,1,-1}},     // Right
+	    {{-1,1,-1}, {1,1,-1}, {1,1,1}, {-1,1,1}}};    // Top
 
-            float v3[6][4][3];
-            int number_tiles;
-            int number_vertices;
-            const size_t NUM_SPLITS = 4;
-            float v[NUM_SPLITS * NUM_SPLITS * 6][4][3];
-            float size_x;
-            float size_y;
-            int number_splits_x;
-            int number_splits_y;
-            number_splits_x = NUM_SPLITS;
-            number_splits_y = NUM_SPLITS;
-            number_tiles = number_splits_x * number_splits_y;
-            size_x = 2.0 / float(number_splits_x);
-            size_y = 2.0 / float(number_splits_y);
-            int i, j, k;
-            for (j = 0; j < 16 * 6; j++) {
-                for (k = 0; k < 4; k++) {
-                    for (i = 0; i < 3; i++) { v[j][k][i] = 0; }
+          // Tile big textures into 256x256 (or 256xsmaller or smallerx256) pieces 
+
+	  float v3[6][4][3];
+          int number_tiles;
+          int number_vertices;
+          const size_t NUM_SPLITS = 4;
+	  float v[NUM_SPLITS*NUM_SPLITS*6][4][3];
+          float size_x;
+          float size_y;
+          int number_splits_x; 
+          int number_splits_y; 
+          number_splits_x=NUM_SPLITS;
+          number_splits_y=NUM_SPLITS;
+          number_tiles=number_splits_x*number_splits_y;
+          size_x=2.0/(float)number_splits_x;
+          size_y=2.0/(float)number_splits_y;
+          int i, j, k;
+          for (j=0;j<16*6;j++)
+            for (k=0;k<4;k++)
+              for (i=0;i<3;i++)
+                 v[j][k][i]=0;
+
+          for (j=0;j<6;j++)
+            for (k=0;k<4;k++)
+              for (i=0;i<3;i++)
+                 v3[j][k][i]=v2[j][k][i]-v2[j][0][i];
+
+          for (j=0;j<6;j++)
+            for (i=0;i<3;i++)
+            {
+              v[j*number_tiles][0][i]=v2[j][0][i];
+              for (k=0;k<4;k++)
+                v[j*number_tiles][k][i]=v[j*number_tiles][0][i]+v3[j][k][i]/number_splits_y;
+            }          
+
+          for (j=0;j<6;j++)
+          {
+            number_vertices=j*number_tiles+1;
+            for (k=0;k<number_splits_y;k++)
+            {
+              int num_line;
+              num_line=number_vertices-1;
+              for (int l=1;l<number_splits_x;l++)
+              {
+                for (i=0;i<3;i++)
+                {
+                  v[number_vertices][0][i]=v[number_vertices-1][0][i]+
+                                           v3[j][1][i]/number_splits_x;
+                  for (int m=0;m<4;m++)
+                    v[number_vertices][m][i]=v[number_vertices][0][i]+
+                                             v3[j][m][i]/number_splits_x;
                 }
+                number_vertices++;
+              }
+              if (k==(number_splits_y-1)) break;
+              for (i=0;i<3;i++)
+              {
+                v[number_vertices][0][i]=v[num_line][0][i]+
+                                         v3[j][3][i]/number_splits_y;
+                for (int m=0;m<4;m++)
+                  v[number_vertices][m][i]=v[number_vertices][0][i]+
+                                           v3[j][m][i]/number_splits_y;
+              }
+              number_vertices++;                
             }
+          }
 
-            for (j = 0; j < 6; j++) {
-                for (k = 0; k < 4; k++) {
-                    for (i = 0; i < 3; i++) {
-                        v3[j][k][i] = v2[j][k][i] - v2[j][0][i];
-                    }
+	  glScalef( 0.5, 0.5, 0.5 );
+
+	  glEnable( GL_TEXTURE_2D );
+	  glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+
+          int vertices_number = 0;
+	  int t, lastT = -1;
+          for (t=0; t<6; ++t, whc+=3) 
+            for (j=0;j<number_splits_y;j++)
+              for (i=0;i<number_splits_x;i++)
+              {
+
+                // Check for non-zero width,height,coords and pixel data
+                if (whc[0] && whc[1] && whc[2] && pixels[t])
+                {
+                  // Optimize for the case where the same texture is used
+// do not work here....
+//                  if (lastT == -1 || pixels[t] != pixels[lastT])
+                    insertSubTexture(
+                            i*whc[0]/number_splits_x,
+                            j*whc[1]/number_splits_y,
+                            whc[0]/number_splits_x, 
+                            whc[1]/number_splits_y,
+                            whc[0],
+                            whc[1], 
+                            whc[2],
+                            false, false, pixels[t],
+                            false);  // Don't put the textures in dlists
+    
+                //
+                // The commented out code suggests what might be done to
+                // subdivide a texture with sides that are a *multiple* of 2
+                // into textures that have sides that are a *power* of 2.
+                //
+                  lastT = t;
+                  glBegin( GL_QUADS );
+//                  float len_x=1.0/number_splits_x;
+//                  float len_y=1.0/number_splits_y;
+//                  float x0=i*len_x;
+//                  float y0=j*len_y;
+//                  glTexCoord2f( x0, y0 );
+                  glTexCoord2f( 0, 0 );
+                  glVertex3fv( v[vertices_number][0] );
+//                  glTexCoord2f( x0+len_x, y0 );
+                  glTexCoord2f( 1, 0 );
+                  glVertex3fv( v[vertices_number][1] );
+//                  glTexCoord2f( x0+len_x, y0+len_y );
+                  glTexCoord2f( 1, 1 );
+                  glVertex3fv( v[vertices_number][2] );
+//                  glTexCoord2f( x0, y0+len_y );
+                  glTexCoord2f( 0, 1 );
+                  glVertex3fv( v[vertices_number][3] );
+                  glEnd();
+                  vertices_number++;
                 }
-            }
+              }
+	  glDisable( GL_TEXTURE_2D );
+	}
 
-            for (j = 0; j < 6; j++) {
-                for (i = 0; i < 3; i++) {
-                    v[j * number_tiles][0][i] = v2[j][0][i];
-                    for (k = 0; k < 4; k++) {
-                        v[j * number_tiles][k][i] =
-                            v[j * number_tiles][0][i]
-                            + v3[j][k][i] / number_splits_y;
-                    }
-                }
-            }
+      // Put everything back the way it was
+      glPopMatrix();
 
-            for (j = 0; j < 6; j++) {
-                number_vertices = j * number_tiles + 1;
-                for (k = 0; k < number_splits_y; k++) {
-                    int num_line;
-                    num_line = number_vertices - 1;
-                    for (int l = 1; l < number_splits_x; l++) {
-                        for (i = 0; i < 3; i++) {
-                            v[number_vertices][0][i] =
-                                v[number_vertices-1][0][i]
-                                + v3[j][1][i] / number_splits_x;
-                            for (int m = 0; m < 4; m++) {
-                                v[number_vertices][m][i] =
-                                    v[number_vertices][0][i]
-                                    + v3[j][m][i] / number_splits_x;
-                            }
-                        }
-                        number_vertices++;
-                    }
-                    if (k == (number_splits_y - 1)) { break; }
-                    for (i = 0; i < 3; i++) {
-                        v[number_vertices][0][i] =
-                            v[num_line][0][i] + v3[j][3][i] / number_splits_y;
-                        for (size_t m = 0; m < 4; m++) {
-                            v[number_vertices][m][i] =
-                                v[number_vertices][0][i]
-                                + v3[j][m][i] / number_splits_y;
-                        }
-                    }
-                    number_vertices++;
-                }
-            }
-
-            glScalef(0.5, 0.5, 0.5);
-
-            glEnable(GL_TEXTURE_2D);
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-            int vertices_number = 0;
-            int t, lastT = -1;
-            for (t = 0; t < 6; ++t, whc += 3) {
-                for (j = 0; j < number_splits_y; j++) {
-                    for (i = 0; i < number_splits_x; i++) {
-                        // Check for non-zero width,height,coords and pixel data
-                        if (whc[0] && whc[1] && whc[2] && pixels[t]) {
-                            // Optimize for the case where the same texture is used
-                            // do not work here....
-                            // if (lastT == -1 || pixels[t] != pixels[lastT])
-                            insertSubTexture(i * whc[0] / number_splits_x,
-                                             j * whc[1] / number_splits_y,
-                                             whc[0] / number_splits_x,
-                                             whc[1] / number_splits_y,
-                                             whc[0],
-                                             whc[1],
-                                             whc[2],
-                                             false, false, pixels[t],
-                                             false); // Don't put the textures in dlists
-
-                            //
-                            // The commented out code suggests what might be
-                            // done to subdivide a texture with sides that are
-                            // a *multiple* of 2 into textures that have sides
-                            // that are a *power* of 2.
-                            //
-                            lastT = t;
-                            glBegin(GL_QUADS);
-                            // float len_x = 1.0 / number_splits_x;
-                            // float len_y = 1.0 / number_splits_y;
-                            // float x0 = i * len_x;
-                            // float y0 = j * len_y;
-                            // glTexCoord2f(x0, y0);
-                            glTexCoord2f(0, 0);
-                            glVertex3fv(v[vertices_number][0]);
-                            // glTexCoord2f(x0 + len_x, y0);
-                            glTexCoord2f(1, 0);
-                            glVertex3fv(v[vertices_number][1]);
-                            // glTexCoord2f(x0 + len_x, y0 + len_y);
-                            glTexCoord2f(1, 1);
-                            glVertex3fv(v[vertices_number][2]);
-                            // glTexCoord2f(x0, y0 + len_y);
-                            glTexCoord2f(0, 1);
-                            glVertex3fv(v[vertices_number][3]);
-                            glEnd();
-                            vertices_number++;
-                        }
-                    }
-                }
-            }
-            glDisable(GL_TEXTURE_2D);
-        }
-
-        // Put everything back the way it was
-        this->modelviewMatrixStack.pop();
-
-        if (this->d_lit) { glEnable(GL_LIGHTING); }
-        glEnable(GL_DEPTH_TEST);
+      if (d_lit) glEnable( GL_LIGHTING );
+      glEnable( GL_DEPTH_TEST );
     }
 
-# endif // USE_STENCIL_SHAPE
+#endif // USE_STENCIL_SHAPE
 
-    if (glid) { glEndList(); }
+  //endGeometry();
+  if (glid) glEndList();
 
-    // Save bg color so we can choose a fg color (doesn't help bg textures...)
-    this->d_background[0] = r;
-    this->d_background[1] = g;
-    this->d_background[2] = b;
+  // Save bg color so we can choose a fg color (doesn't help bg textures...)
+  d_background[0] = r;
+  d_background[1] = g;
+  d_background[2] = b;
 
-    return Object(glid);
+  return (Object) glid;
 }
 
 
@@ -796,7 +748,7 @@ Viewer::Object ViewerOpenGL::insertBox(float x, float y, float z)
     {0, 4, 5, 1}
   };
 
-  static GLfloat n[6][3] =        // normals
+  static GLfloat n[6][3] =	// normals
   {
     {-1.0, 0.0, 0.0},
     {0.0, 0.0, 1.0},
@@ -848,70 +800,11 @@ Viewer::Object ViewerOpenGL::insertBox(float x, float y, float z)
   return (Object) glid;
 }
 
-namespace {
 
-    /**
-     * @brief Build a cylinder object.
-     *
-     * @param height    the height for the cylinder.
-     * @param radius    the radius for the cylinder.
-     * @param numFacets the number of facets for the sides of the cylinder.
-     * @retval c        the coordinates.
-     * @retval tc       the texture coordinates.
-     * @retval faces    the faces.
-     *
-     * It might be smarter to do just one, and reference it with scaling (but the
-     * world creator could just as easily do that with DEF/USE ...).
-     */
-    void computeCylinder(const double height, const double radius,
-                         const int numFacets, float c[][3],
-                         float tc[][3], int faces[])
-    {
-        using OpenVRML::pi;
-
-        double angle, x, y;
-        int i, polyIndex;
-
-        // Compute coordinates, texture coordinates:
-        for (i = 0; i < numFacets; ++i) {
-            angle = i * 2 * pi / numFacets;
-            x = cos(angle);
-            y = sin(angle);
-            c[i][0] = radius * x;
-            c[i][1] = 0.5 * height;
-            c[i][2] = radius * y;
-            c[numFacets+i][0] = radius * x;
-            c[numFacets+i][1] = -0.5 * height;
-            c[numFacets+i][2] = radius * y;
-
-            if (tc) {
-                double u = 0.75 - ((float) i) / numFacets;
-                //double u = ((float) i) / numFacets + 0.25;
-                //if ( u > 1.0 ) u -= 1.0;
-                tc[i][0] = u; // ((float) i) / numFacets;
-                tc[i][1] = 1.0;
-                tc[i][2] = 0.0;
-                tc[numFacets+i][0] = u; //((float) i) / numFacets;
-                tc[numFacets+i][1] = 0.0;
-                tc[numFacets+i][2] = 0.0;
-            }
-        }
-
-        // And compute indices:
-        for (i = 0; i < numFacets; ++i) {
-            polyIndex = 5*i;
-            faces[polyIndex + 0] = i;
-            faces[polyIndex + 1] = (i+1) % numFacets;
-            faces[polyIndex + 2] = (i+1) % numFacets + numFacets;
-            faces[polyIndex + 3] = i + numFacets;
-            faces[polyIndex + 4] = -1;
-        }
-    }
-}
 
 Viewer::Object ViewerOpenGL::insertCone(float h,
-                                        float r,
-                                        bool bottom, bool side)
+					float r,
+					bool bottom, bool side)
 {
   GLuint glid = 0;
 
@@ -929,61 +822,61 @@ Viewer::Object ViewerOpenGL::insertCone(float h,
 
   if (bottom || side)
     {
-      const int nfacets = 11;                // Number of polygons for sides
+      const int nfacets = 11;		// Number of polygons for sides
       const int npts = 2 * nfacets;
       const int nfaces = nfacets * 5;
 
-      float c[ npts ][ 3 ];                // coordinates
-      float tc[ npts ][ 3 ];                // texture coordinates
-      int faces[ nfaces ];                // face lists
+      float c[ npts ][ 3 ];		// coordinates
+      float tc[ npts ][ 3 ];		// texture coordinates
+      int faces[ nfaces ];		// face lists
 
       // should only compute tc if a texture is present...
       computeCylinder( h, r, nfacets, c, tc, faces);
 
       for (int i=0; i<nfacets; ++i)
-        c[i][0] = c[i][2] = 0.0;
+	c[i][0] = c[i][2] = 0.0;
 
       if (side)
-        {
-          float Ny = r * r / h;
-          glBegin( GL_QUAD_STRIP );
-          for (int i = 0; i < nfacets; ++i)
-            {
-              glNormal3f( c[i+nfacets][0], Ny, c[i+nfacets][2] );
-              glTexCoord2fv( &tc[i+nfacets][0] );
-              glVertex3fv(   &c [i+nfacets][0] );
-              glTexCoord2fv( &tc[i][0] );
-              glVertex3fv(   &c [i][0] );
-            }
+	{
+	  float Ny = r * r / h;
+	  glBegin( GL_QUAD_STRIP );
+	  for (int i = 0; i < nfacets; ++i)
+	    {
+	      glNormal3f( c[i+nfacets][0], Ny, c[i+nfacets][2] );
+	      glTexCoord2fv( &tc[i+nfacets][0] );
+	      glVertex3fv(   &c [i+nfacets][0] );
+	      glTexCoord2fv( &tc[i][0] );
+	      glVertex3fv(   &c [i][0] );
+	    }
 
-          glNormal3f( c[nfacets][0], Ny, c[nfacets][2] );
-          glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
-          glVertex3fv(   &c [nfacets][0] );
-          glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
-          glVertex3fv(   & c[0][0] );
-          glEnd();
-        }
+	  glNormal3f( c[nfacets][0], Ny, c[nfacets][2] );
+	  glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
+	  glVertex3fv(   &c [nfacets][0] );
+	  glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
+	  glVertex3fv(   & c[0][0] );
+	  glEnd();
+	}
 
       if (bottom)
-        {
-          glBegin( GL_TRIANGLE_FAN );
-          glNormal3f( 0.0, -1.0, 0.0 );
-          glTexCoord2f( 0.5, 0.5 );
-          glVertex3f( 0.0, - 0.5 * h, 0.0 );
+	{
+	  glBegin( GL_TRIANGLE_FAN );
+	  glNormal3f( 0.0, -1.0, 0.0 );
+	  glTexCoord2f( 0.5, 0.5 );
+	  glVertex3f( 0.0, - 0.5 * h, 0.0 );
 
-          float angle = 0.5 * pi; // First v is at max x
-          float aincr = 2.0 * pi / (float) nfacets;
-          for (int i = 0; i < nfacets; ++i, angle+=aincr )
-            {
-              glTexCoord2f( 0.5*(1.0+sin( angle )),
-                            1.0-0.5*(1.+cos( angle )) );
-              glVertex3fv( &c[i+nfacets][0] );
-            }
-          glTexCoord2f( 0.5*(1.0+sin( angle )),
-                        1.0-0.5*(1.+cos( angle )) );
-          glVertex3fv( &c[nfacets][0] );
-          glEnd();
-        }
+	  float angle = 0.5 * PI; // First v is at max x
+	  float aincr = 2.0 * PI / (float) nfacets;
+	  for (int i = 0; i < nfacets; ++i, angle+=aincr )
+	    {
+	      glTexCoord2f( 0.5*(1.0+sin( angle )),
+			    1.0-0.5*(1.+cos( angle )) );
+	      glVertex3fv( &c[i+nfacets][0] );
+	    }
+	  glTexCoord2f( 0.5*(1.0+sin( angle )),
+			1.0-0.5*(1.+cos( angle )) );
+	  glVertex3fv( &c[nfacets][0] );
+	  glEnd();
+	}
     }
 
   endGeometry();
@@ -994,8 +887,8 @@ Viewer::Object ViewerOpenGL::insertCone(float h,
 
 
 Viewer::Object ViewerOpenGL::insertCylinder(float h,
-                                            float r,
-                                            bool bottom, bool side, bool top)
+					    float r,
+					    bool bottom, bool side, bool top)
 {
   GLuint glid = 0;
 
@@ -1013,78 +906,78 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 
   if (bottom || side || top)
     {
-      const int nfacets = 8;                // Number of polygons for sides
+      const int nfacets = 8;		// Number of polygons for sides
       const int npts = 2 * nfacets;
       const int nfaces = nfacets * 5;
 
-      float c[ npts ][ 3 ];                // coordinates
-      float tc[ npts ][ 3 ];                // texture coordinates
-      int faces[ nfaces ];                // face lists
+      float c[ npts ][ 3 ];		// coordinates
+      float tc[ npts ][ 3 ];		// texture coordinates
+      int faces[ nfaces ];		// face lists
 
       // should only compute tc if a texture is present...
       computeCylinder( h, r, nfacets, c, tc, faces);
 
       if (side)
-        {
-          glBegin( GL_QUAD_STRIP );
-          for (int i = 0; i < nfacets; ++i)
-            {
-              glNormal3f( c[i+nfacets][0], 0.0, c[i+nfacets][2] );
-              glTexCoord2fv( &tc[i+nfacets][0] );
-              glVertex3fv(   &c [i+nfacets][0] );
-              glTexCoord2fv( &tc[i][0] );
-              glVertex3fv(   &c [i][0] );
-            }
+	{
+	  glBegin( GL_QUAD_STRIP );
+	  for (int i = 0; i < nfacets; ++i)
+	    {
+	      glNormal3f( c[i+nfacets][0], 0.0, c[i+nfacets][2] );
+	      glTexCoord2fv( &tc[i+nfacets][0] );
+	      glVertex3fv(   &c [i+nfacets][0] );
+	      glTexCoord2fv( &tc[i][0] );
+	      glVertex3fv(   &c [i][0] );
+	    }
 
-          glNormal3f( c[nfacets][0], 0.0, c[nfacets][2] );
-          glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
-          glVertex3fv(   &c [nfacets][0] );
-          glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
-          glVertex3fv(   & c[0][0] );
-          glEnd();
-        }
+	  glNormal3f( c[nfacets][0], 0.0, c[nfacets][2] );
+	  glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
+	  glVertex3fv(   &c [nfacets][0] );
+	  glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
+	  glVertex3fv(   & c[0][0] );
+	  glEnd();
+	}
 
-      if (bottom)                // tex coords...
-        {
-          glBegin( GL_TRIANGLE_FAN );
-          glNormal3f( 0.0, -1.0, 0.0);
-          glTexCoord2f( 0.5, 0.5 );
-          glVertex3f( 0.0, - 0.5 * h, 0.0 );
+      if (bottom)		// tex coords...
+	{
+	  glBegin( GL_TRIANGLE_FAN );
+	  glNormal3f( 0.0, -1.0, 0.0);
+	  glTexCoord2f( 0.5, 0.5 );
+	  glVertex3f( 0.0, - 0.5 * h, 0.0 );
 
-          float angle = 0.5 * pi; // First v is at max x
-          float aincr = 2.0 * pi / (float) nfacets;
-          for (int i = 0; i < nfacets; ++i, angle+=aincr)
-            {
-              glTexCoord2f( 0.5*(1.+sin( angle )),
-                            1.0 - 0.5*(1.+cos( angle )) );
-              glVertex3fv( &c[i+nfacets][0] );
-            }
-          glTexCoord2f( 0.5*(1.+sin( angle )),
-                        1.0 - 0.5*(1.+cos( angle )) );
-          glVertex3fv( &c[nfacets][0] );
-          glEnd();
-        }
+	  float angle = 0.5 * PI; // First v is at max x
+	  float aincr = 2.0 * PI / (float) nfacets;
+	  for (int i = 0; i < nfacets; ++i, angle+=aincr)
+	    {
+	      glTexCoord2f( 0.5*(1.+sin( angle )),
+			    1.0 - 0.5*(1.+cos( angle )) );
+	      glVertex3fv( &c[i+nfacets][0] );
+	    }
+	  glTexCoord2f( 0.5*(1.+sin( angle )),
+			1.0 - 0.5*(1.+cos( angle )) );
+	  glVertex3fv( &c[nfacets][0] );
+	  glEnd();
+	}
 
-      if (top)                // tex coords...
-        {
-          glBegin( GL_TRIANGLE_FAN );
-          glNormal3f( 0.0, 1.0, 0.0);
-          glTexCoord2f( 0.5, 0.5 );
-          glVertex3f( 0.0, 0.5 * h, 0.0 );
+      if (top)		// tex coords...
+	{
+	  glBegin( GL_TRIANGLE_FAN );
+	  glNormal3f( 0.0, 1.0, 0.0);
+	  glTexCoord2f( 0.5, 0.5 );
+	  glVertex3f( 0.0, 0.5 * h, 0.0 );
 
-          float angle = 0.75 * pi;
-          float aincr = 2.0 * pi / (float) nfacets;
-          for (int i = nfacets-1; i >= 0; --i, angle+=aincr)
-            {
-              glTexCoord2f( 0.5*(1.+sin( angle )),
-                            1.0 - 0.5*(1.+cos( angle )) );
-              glVertex3fv( &c[i][0] );
-            }
-          glTexCoord2f( 0.5*(1.+sin( angle )),
-                        1.0 - 0.5*(1.+cos( angle )) );
-          glVertex3fv( &c[nfacets-1][0] );
-          glEnd();
-        }
+	  float angle = 0.75 * PI;
+	  float aincr = 2.0 * PI / (float) nfacets;
+	  for (int i = nfacets-1; i >= 0; --i, angle+=aincr)
+	    {
+	      glTexCoord2f( 0.5*(1.+sin( angle )),
+			    1.0 - 0.5*(1.+cos( angle )) );
+	      glVertex3fv( &c[i][0] );
+	    }
+	  glTexCoord2f( 0.5*(1.+sin( angle )),
+			1.0 - 0.5*(1.+cos( angle )) );
+	  glVertex3fv( &c[nfacets-1][0] );
+	  glEnd();
+	}
     }
 
   endGeometry();
@@ -1093,44 +986,51 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
   return (Object) glid;
 }
 
-namespace {
+// Compute a normal at vert i,j of an ElevationGrid.
 
-    // Compute a normal at vert i,j of an ElevationGrid.
+static void elevationVertexNormal(int i, int j,
+				  int nx, int nz,
+				  float dx, float dz,
+				  const float * height,
+				  float N[])
+{
+  float Vx[3], Vz[3];
 
-    void elevationVertexNormal(const int i, const int j,
-                               const int nx, const int nz,
-                               const float dx, const float dz,
-                               const float * const height,
-                               float N[])
+  if (i > 0 && i < nx-1)
     {
-        float Vx[3], Vz[3];
-
-        if (i > 0 && i < nx - 1) {
-            Vx[0] = 2.0 * dx;
-            Vx[1] = *(height + 1) - *(height - 1);
-        } else if (i == 0) {
-            Vx[0] = dx;
-            Vx[1] = *(height + 1) - *(height);
-        } else {
-            Vx[0] = dx;
-            Vx[1] = *(height) - *(height - 1);
-        }
-        Vx[2] = 0.0;
-
-        Vz[0] = 0.0;
-        if (j > 0 && j < nz - 1) {
-            Vz[1] = *(height + nx) - *(height - nx);
-            Vz[2] = 2.0 * dz;
-        } else if (j == 0) {
-            Vz[1] = *(height+nx) - *(height);
-            Vz[2] = dz;
-        } else {
-            Vz[1] = *(height) - *(height - nx);
-            Vz[2] = dz;
-        }
-
-        Vcross(N, Vz, Vx);
+      Vx[0] = 2.0 * dx;
+      Vx[1] = *(height+1) - *(height-1);
     }
+  else if (i == 0)
+    {
+      Vx[0] = dx;
+      Vx[1] = *(height+1) - *(height);
+    }
+  else
+    {
+      Vx[0] = dx;
+      Vx[1] = *(height) - *(height-1);
+    }
+  Vx[2] = 0.0;
+
+  Vz[0] = 0.0;
+  if (j > 0 && j < nz-1)
+    {
+      Vz[1] = *(height+nx) - *(height-nx);
+      Vz[2] = 2.0 * dz;
+    }
+  else if (j == 0)
+    {
+      Vz[1] = *(height+nx) - *(height);
+      Vz[2] = dz;
+    }
+  else
+    {
+      Vz[1] = *(height) - *(height-nx);
+      Vz[2] = dz;
+    }
+
+  Vcross( N, Vz, Vx );
 }
 
 
@@ -1171,86 +1071,86 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 
       z = dz * j;
       if (! texture_coords)
-        {
-          t0 = ((float) j) / (nz-1);
-          t1 = ((float) j+1) / (nz-1);
-        }
+	{
+	  t0 = ((float) j) / (nz-1);
+	  t1 = ((float) j+1) / (nz-1);
+	}
 
       glBegin( GL_QUAD_STRIP );
 
       for (i=0; i<nx; ++i)
-        {
-          x = dx * i;
+	{
+	  x = dx * i;
+	  
+	  if (colors &&
+	      ((mask & MASK_COLOR_PER_VERTEX) || (i < nx-1)))
+	    {
+	      glColor3fv( colors );
+	    }
+	      
+	  if (normals &&
+	      ((mask & MASK_NORMAL_PER_VERTEX) || (i < nx-1)))
+	    {
+	      glNormal3fv( normals );
+	    }
+	  else if (! normals)
+	    {
+	      float N[3];
+	      if (mask & MASK_NORMAL_PER_VERTEX)
+		{
+		  elevationVertexNormal(i, j, nx, nz, dx, dz, height, N);
+		  glNormal3fv( N );
+		}
+	      else if (i < nx-1)		// Normal per face
+		{
+		  float Vx[3] = { dx, *(height+1) - *height, 0.0 };
+		  float Vz[3] = { 0.0, *(height+nx) - *height, dz };
+		  Vcross( N, Vx, Vz );
+		  glNormal3fv( N );
+		}
+	    }
 
-          if (colors &&
-              ((mask & MASK_COLOR_PER_VERTEX) || (i < nx-1)))
-            {
-              glColor3fv( colors );
-            }
-
-          if (normals &&
-              ((mask & MASK_NORMAL_PER_VERTEX) || (i < nx-1)))
-            {
-              glNormal3fv( normals );
-            }
-          else if (! normals)
-            {
-              float N[3];
-              if (mask & MASK_NORMAL_PER_VERTEX)
-                {
-                  elevationVertexNormal(i, j, nx, nz, dx, dz, height, N);
-                  glNormal3fv( N );
-                }
-              else if (i < nx-1)                // Normal per face
-                {
-                  float Vx[3] = { dx, *(height+1) - *height, 0.0 };
-                  float Vz[3] = { 0.0, *(height+nx) - *height, dz };
-                  Vcross( N, Vx, Vz );
-                  glNormal3fv( N );
-                }
-            }
-
-          if (texture_coords)
-            {
-              s0 = *(texture_coords);
-              t0 = *(texture_coords+1);
-              s1 = *(texture_coords+(nx*2));
-              t1 = *(texture_coords+(nx*2)+1);
+	  if (texture_coords)
+	    {
+	      s0 = *(texture_coords);
+	      t0 = *(texture_coords+1);
+	      s1 = *(texture_coords+(nx*2));
+	      t1 = *(texture_coords+(nx*2)+1);
               texture_coords+=2;
-            }
-          else
-            s0 = s1 = ((float) i) / (nx-1);
+	    }
+	  else
+	    s0 = s1 = ((float) i) / (nx-1);
 
-          glTexCoord2f( s0, t0 );
-          glVertex3f( x, *height, z );
+	  glTexCoord2f( s0, t0 );
+	  glVertex3f( x, *height, z );
 
-          // Vertex from next row
-          if (colors && (mask & MASK_COLOR_PER_VERTEX))
-            {
-              glColor3fv( colors+3*nx );
-            }
+	  // Vertex from next row
+	  if (colors && (mask & MASK_COLOR_PER_VERTEX))
+	    {
+	      glColor3fv( colors+3*nx );
+	    }
 
-          if (mask & MASK_NORMAL_PER_VERTEX)
-            {
-              if (normals)
-                {
-                  glNormal3fv( normals+3*nx );
-                }
-              else
-                {
-                  float N[3];
-                  elevationVertexNormal(i, j+1, nx, nz, dx, dz, height+nx, N);
-                  glNormal3fv( N );
-                }
-            }
+	  if (mask & MASK_NORMAL_PER_VERTEX)
+	    {
+	      if (normals)
+		{
+		  glNormal3fv( normals+3*nx );
+		}
+	      else
+		{
+		  float N[3];
+		  elevationVertexNormal(i, j+1, nx, nz, dx, dz, height+nx, N);
+		  glNormal3fv( N );
+		}
+	    }
 
-          glTexCoord2f( s1, t1 );
-          glVertex3f( x, *(height+nx), z+dz );
+	  glTexCoord2f( s1, t1 );
+	  glVertex3f( x, *(height+nx), z+dz );
 
-          ++height;
-          if ( colors ) colors += 3;
-          if ( normals ) normals += 3;
-        }
+	  ++height;
+	  if ( colors ) colors += 3;
+	  if ( normals ) normals += 3;
+	}
 
       glEnd();
     }
@@ -1261,58 +1161,57 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 }
 
 
-# ifdef GLU_VERSION_1_2
+#if GLU_VERSION_1_2
 
 // Tesselator callback
 
-#   if defined(__CYGWIN__) || defined(__MINGW32__)
-#     define OPENVRML_GL_CALLBACK_ __attribute__ ((__stdcall__))
-#   elif defined (_WIN32)
-#     define OPENVRML_GL_CALLBACK_ APIENTRY
-#   else
-#     define OPENVRML_GL_CALLBACK_
-#   endif
+#if _WIN32
+# define WINAPI __stdcall
+#else
+# define WINAPI 
+#endif
 extern "C" {
-    typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)();
+    typedef GLvoid (WINAPI *TessCB)();
 }
 
-namespace {
 
-    // Extrusion cap tessellation for non-convex shapes
+// Extrusion cap tessellation for non-convex shapes
 
-    struct TessExtrusion {
-        const float * c; // coordinates array [nVerts * 3]
-        const float * crossSection; // crossSection coordinates [nCrossSection * 2]
-        float tcDeltaU, tcDeltaV;
-        float tcScaleU, tcScaleV;
-        int vOffset;
-        float N[3]; // Normal
-    };
+typedef struct {
+  const float * c;			// coordinates array [nVerts * 3]
+  const float * crossSection;		// crossSection coordinates [nCrossSection * 2]
+  float tcDeltaU, tcDeltaV;
+  float tcScaleU, tcScaleV;
+  int vOffset;
+  float N[3];			// Normal
+} TessExtrusion;
 
-    void OPENVRML_GL_CALLBACK_ tessExtrusionBegin(const GLenum type, void * const pdata)
-    {
-        TessExtrusion * const p = static_cast<TessExtrusion *>(pdata);
-        glBegin(type);
-        glNormal3fv(&p->N[0]);
-    }
-
-    void OPENVRML_GL_CALLBACK_ tessExtrusionVertex(void * const vdata, void * const pdata)
-    {
-        const int j = reinterpret_cast<int>(vdata);
-        TessExtrusion * const p = static_cast<TessExtrusion *>(pdata);
-
-        glTexCoord2f((p->crossSection[2 * j] - p->tcDeltaU) * p->tcScaleU,
-                     (p->crossSection[2 * j + 1] - p->tcDeltaV) * p->tcScaleV);
-        glVertex3fv(&(p->c[3 * (j + p->vOffset)]));
-    }
+static void WINAPI tessExtrusionBegin( GLenum type, void *pdata )
+{
+  TessExtrusion *p = (TessExtrusion *)pdata;
+  glBegin( type );
+  glNormal3fv( &p->N[0] );
 }
-# endif
+
+
+static void WINAPI tessExtrusionVertex( void *vdata, void *pdata )
+{
+  int j = (int)vdata;
+  TessExtrusion *p = (TessExtrusion *)pdata;
+  
+  glTexCoord2f( (p->crossSection[2*j] - p->tcDeltaU) * p->tcScaleU,
+		(p->crossSection[2*j+1] - p->tcDeltaV) * p->tcScaleV );
+  glVertex3fv( &(p->c[3 * (j + p->vOffset)]) );
+}
+
+#endif
+
 
 void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
-                                        size_t nSpine,
-                                        const float * c,
-                                        size_t nCrossSection,
-                                        const float * cs )
+					size_t nSpine,
+					const float * c,
+					size_t nCrossSection,
+					const float * cs )
 {
   // Determine x,z ranges for top & bottom tex coords
   float xz[4] = { cs[0], cs[0], cs[1], cs[1] };
@@ -1339,55 +1238,57 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
 
   if (! (mask & MASK_CONVEX))
     {
-      gluTessCallback(this->tesselator, GLU_TESS_BEGIN_DATA,
+      if (! d_tess) d_tess = gluNewTess();
+
+      gluTessCallback(this->d_tess, GLU_TESS_BEGIN_DATA,
                       reinterpret_cast<TessCB>(tessExtrusionBegin));
-      gluTessCallback(this->tesselator, GLU_TESS_VERTEX_DATA,
+      gluTessCallback(this->d_tess, GLU_TESS_VERTEX_DATA,
                       reinterpret_cast<TessCB>(tessExtrusionVertex));
-      gluTessCallback(this->tesselator, GLU_TESS_END, glEnd);
+      gluTessCallback(this->d_tess, GLU_TESS_END, glEnd);
 
       if (mask & MASK_BOTTOM)
-        {
-          TessExtrusion bottom = { c, cs, xz[0], xz[2], dx, dz, 0 };
-          indexFaceNormal( 0, 1, 2, c, bottom.N );
+	{
+	  TessExtrusion bottom = { c, cs, xz[0], xz[2], dx, dz, 0 };
+	  indexFaceNormal( 0, 1, 2, c, bottom.N );
 
-          gluTessBeginPolygon(this->tesselator, &bottom);
-          gluTessBeginContour(this->tesselator);
-          GLdouble v[3];
-          // Mesa tesselator doesn;t like closed polys
-          int j = equalEndpts ? nCrossSection-2 : nCrossSection-1;
-          for ( ; j>=0; --j)
-            {
-              v[0] = c[3*j];
-              v[1] = c[3*j+1];
-              v[2] = c[3*j+2];
-              gluTessVertex(this->tesselator, v, (void*)j);
-            }
-          gluTessEndContour(this->tesselator);
-          gluTessEndPolygon(this->tesselator);
-        }
-
+	  gluTessBeginPolygon( d_tess, &bottom );
+	  gluTessBeginContour( d_tess );
+	  GLdouble v[3];
+	  // Mesa tesselator doesn;t like closed polys
+	  int j = equalEndpts ? nCrossSection-2 : nCrossSection-1;
+	  for ( ; j>=0; --j)
+	    {
+	      v[0] = c[3*j];
+	      v[1] = c[3*j+1];
+	      v[2] = c[3*j+2];
+	      gluTessVertex( d_tess, v, (void*)j );
+	    }
+	  gluTessEndContour( d_tess );
+	  gluTessEndPolygon( d_tess );
+	}
+      
       if (mask & MASK_TOP)
-        {
-          int n = (nSpine - 1) * nCrossSection;
-          TessExtrusion top = { c, cs, xz[0], xz[2], dx, dz, n };
-          indexFaceNormal( 3*n+2, 3*n+1, 3*n, c, top.N );
+	{
+	  int n = (nSpine - 1) * nCrossSection;
+	  TessExtrusion top = { c, cs, xz[0], xz[2], dx, dz, n };
+	  indexFaceNormal( 3*n+2, 3*n+1, 3*n, c, top.N );
 
-          gluTessBeginPolygon(this->tesselator, &top);
-          gluTessBeginContour(this->tesselator);
+	  gluTessBeginPolygon( d_tess, &top );
+	  gluTessBeginContour( d_tess );
 
-          GLdouble v[3];
-          // Mesa tesselator doesn;t like closed polys
-          size_t j = equalEndpts ? 1 : 0;
-          for ( ; j < nCrossSection; ++j)
-            {
-              v[0] = c[3*(j+n)];
-              v[1] = c[3*(j+n)+1];
-              v[2] = c[3*(j+n)+2];
-              gluTessVertex(this->tesselator, v, (void*)j);
-            }
-          gluTessEndContour(this->tesselator);
-          gluTessEndPolygon(this->tesselator);
-        }
+	  GLdouble v[3];
+	  // Mesa tesselator doesn;t like closed polys
+	  size_t j = equalEndpts ? 1 : 0;
+	  for ( ; j < nCrossSection; ++j)
+	    {
+	      v[0] = c[3*(j+n)];
+	      v[1] = c[3*(j+n)+1];
+	      v[2] = c[3*(j+n)+2];
+	      gluTessVertex( d_tess, v, (void*)j );
+	    }
+	  gluTessEndContour( d_tess );
+	  gluTessEndPolygon( d_tess );
+	}
     }
 
   else
@@ -1395,242 +1296,40 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
 
     // Convex (or not GLU1.2 ...)
     {
-      float N[3];                        // Normal
+      float N[3];			// Normal
 
       if (mask & MASK_BOTTOM)
-        {
-          glBegin( GL_POLYGON );
-          indexFaceNormal( 0, 1, 2, c, N );
-          glNormal3fv( N );
+	{
+	  glBegin( GL_POLYGON );
+	  indexFaceNormal( 0, 1, 2, c, N );
+	  glNormal3fv( N );
 
-          for (int j = nCrossSection-1; j>=0; --j)
-            {
-              glTexCoord2f( (cs[2*j]-xz[0])*dx, (cs[2*j+1]-xz[2])*dz );
-              glVertex3fv( &c[3*j] );
-            }
-          glEnd();
-        }
-
+	  for (int j = nCrossSection-1; j>=0; --j)
+	    {
+	      glTexCoord2f( (cs[2*j]-xz[0])*dx, (cs[2*j+1]-xz[2])*dz );
+	      glVertex3fv( &c[3*j] );
+	    }
+	  glEnd();
+	}
+      
       if (mask & MASK_TOP)
-        {
-          int n = (nSpine - 1) * nCrossSection;
-          glBegin( GL_POLYGON );
-          indexFaceNormal( 3*n+2, 3*n+1, 3*n, c, N );
-          glNormal3fv( N );
+	{
+	  int n = (nSpine - 1) * nCrossSection;
+	  glBegin( GL_POLYGON );
+	  indexFaceNormal( 3*n+2, 3*n+1, 3*n, c, N );
+	  glNormal3fv( N );
 
-          for (size_t j = 0; j < nCrossSection; ++j)
-            {
-              glTexCoord2f( (cs[2*j]-xz[0])*dx, (cs[2*j+1]-xz[2])*dz );
-              glVertex3fv( &c [3*(j+n)] );
-            }
-          glEnd();
-        }
+	  for (size_t j = 0; j < nCrossSection; ++j)
+	    {
+	      glTexCoord2f( (cs[2*j]-xz[0])*dx, (cs[2*j+1]-xz[2])*dz );
+	      glVertex3fv( &c [3*(j+n)] );
+	    }
+	  glEnd();
+	}
     }
 }
 
-namespace {
 
-    /**
-     * @brief Build an extrusion.
-     */
-    void computeExtrusion(int nOrientation,
-                          const float *orientation,
-                          int nScale,
-                          const float *scale,
-                          int nCrossSection,
-                          const float *crossSection,
-                          int nSpine,
-                          const float *spine,
-                          float *c,   // OUT: coordinates
-                          float *tc,  // OUT: texture coords
-                          int *faces)   // OUT: face list
-    {
-        int i, j, ci;
-
-        // Xscp, Yscp, Zscp- columns of xform matrix to align cross section
-        // with spine segments.
-        float Xscp[3] = { 1.0, 0.0, 0.0};
-        float Yscp[3] = { 0.0, 1.0, 0.0};
-        float Zscp[3] = { 0.0, 0.0, 1.0};
-        float lastZ[3];
-
-        // Is the spine a closed curve (last pt == first pt)?
-        bool spineClosed = (fpzero(spine[ 3*(nSpine-1)+0 ] - spine[0])
-                            && fpzero(spine[ 3*(nSpine-1)+1 ] - spine[1])
-                            && fpzero(spine[ 3*(nSpine-1)+2 ] - spine[2]));
-
-        // Is the spine a straight line?
-        bool spineStraight = true;
-        for (i = 1; i < nSpine-1; ++i) {
-            float v1[3], v2[3];
-            v1[0] = spine[3*(i-1)+0] - spine[3*(i)+0];
-            v1[1] = spine[3*(i-1)+1] - spine[3*(i)+1];
-            v1[2] = spine[3*(i-1)+2] - spine[3*(i)+2];
-            v2[0] = spine[3*(i+1)+0] - spine[3*(i)+0];
-            v2[1] = spine[3*(i+1)+1] - spine[3*(i)+1];
-            v2[2] = spine[3*(i+1)+2] - spine[3*(i)+2];
-            Vcross(v1, v2, v1);
-            if (Vlength(v1) != 0.0) {
-                spineStraight = false;
-                Vnorm(v1);
-                Vset(lastZ, v1);
-                break;
-            }
-        }
-
-        // If the spine is a straight line, compute a constant SCP xform
-        if (spineStraight) {
-            float V1[3] = { 0.0, 1.0, 0.0}, V2[3], V3[3];
-            V2[0] = spine[3*(nSpine-1)+0] - spine[0];
-            V2[1] = spine[3*(nSpine-1)+1] - spine[1];
-            V2[2] = spine[3*(nSpine-1)+2] - spine[2];
-            Vcross( V3, V2, V1 );
-            double len = Vlength(V3);
-            if (len != 0.0) {                // Not aligned with Y axis
-                Vscale(V3, 1.0/len);
-
-                float orient[4];                // Axis/angle
-                Vset(orient, V3);
-                orient[3] = acos(Vdot(V1,V2));
-                VrmlMatrix scp;                // xform matrix
-                scp.setRotate(orient);
-                for (int k=0; k<3; ++k) {
-                    Xscp[k] = scp[0][k];
-                    Yscp[k] = scp[1][k];
-                    Zscp[k] = scp[2][k];
-                }
-            }
-        }
-
-        // Orientation matrix
-        VrmlMatrix om;
-        if (nOrientation == 1 && ! fpzero(orientation[3])) {
-            om.setRotate(orientation);
-        }
-
-        // Compute coordinates, texture coordinates:
-        for (i = 0, ci = 0; i < nSpine; ++i, ci+=nCrossSection) {
-
-            // Scale cross section
-            for (j = 0; j < nCrossSection; ++j) {
-                c[3*(ci+j)+0] = scale[0] * crossSection[ 2*j ];
-                c[3*(ci+j)+1] = 0.0;
-                c[3*(ci+j)+2] = scale[1] * crossSection[ 2*j+1 ];
-            }
-
-            // Compute Spine-aligned Cross-section Plane (SCP)
-            if (!spineStraight) {
-                float S1[3], S2[3];        // Spine vectors [i,i-1] and [i,i+1]
-                int yi1, yi2, si1, s1i2, s2i2;
-
-                if (spineClosed && (i == 0 || i == nSpine-1)) {
-                    yi1 = 3*(nSpine-2);
-                    yi2 = 3;
-                    si1 = 0;
-                    s1i2 = 3*(nSpine-2);
-                    s2i2 = 3;
-                } else if (i == 0) {
-                    yi1 = 0;
-                    yi2 = 3;
-                    si1 = 3;
-                    s1i2 = 0;
-                    s2i2 = 6;
-                } else if (i == nSpine-1) {
-                    yi1 = 3*(nSpine-2);
-                    yi2 = 3*(nSpine-1);
-                    si1 = 3*(nSpine-2);
-                    s1i2 = 3*(nSpine-3);
-                    s2i2 = 3*(nSpine-1);
-                } else {
-                    yi1 = 3*(i-1);
-                    yi2 = 3*(i+1);
-                    si1 = 3*i;
-                    s1i2 = 3*(i-1);
-                    s2i2 = 3*(i+1);
-                }
-
-                Vdiff(Yscp, &spine[yi2], &spine[yi1]);
-                Vdiff(S1, &spine[s1i2], &spine[si1]);
-                Vdiff(S2, &spine[s2i2], &spine[si1]);
-
-                Vnorm(Yscp);
-                Vset(lastZ, Zscp);        // Save last Zscp
-                Vcross(Zscp, S2, S1);
-
-                float VlenZ = Vlength(Zscp);
-                if (VlenZ == 0.0) {
-                    Vset(Zscp, lastZ);
-                } else {
-                    Vscale(Zscp, 1.0 / VlenZ);
-                }
-
-                if ((i > 0) && (Vdot( Zscp, lastZ ) < 0.0)) {
-                    Vscale( Zscp, -1.0 );
-                }
-
-                Vcross(Xscp, Yscp, Zscp);
-            }
-
-            // Rotate cross section into SCP
-            for (j = 0; j < nCrossSection; ++j) {
-                float cx, cy, cz;
-                cx = c[3*(ci+j)+0]*Xscp[0]+c[3*(ci+j)+1]*Yscp[0]+c[3*(ci+j)+2]*Zscp[0];
-                cy = c[3*(ci+j)+0]*Xscp[1]+c[3*(ci+j)+1]*Yscp[1]+c[3*(ci+j)+2]*Zscp[1];
-                cz = c[3*(ci+j)+0]*Xscp[2]+c[3*(ci+j)+1]*Yscp[2]+c[3*(ci+j)+2]*Zscp[2];
-                c[3*(ci+j)+0] = cx;
-                c[3*(ci+j)+1] = cy;
-                c[3*(ci+j)+2] = cz;
-            }
-
-            // Apply orientation
-            if (!fpzero(orientation[3])) {
-                if (nOrientation > 1) {
-                    om.setRotate(orientation);
-                }
-
-                for (j = 0; j < nCrossSection; ++j) {
-                    float cx, cy, cz;
-                    cx = c[3*(ci+j)+0]*om[0][0]+c[3*(ci+j)+1]*om[1][0]+c[3*(ci+j)+2]*om[2][0];
-                    cy = c[3*(ci+j)+0]*om[0][1]+c[3*(ci+j)+1]*om[1][1]+c[3*(ci+j)+2]*om[2][1];
-                    cz = c[3*(ci+j)+0]*om[0][2]+c[3*(ci+j)+1]*om[1][2]+c[3*(ci+j)+2]*om[2][2];
-                    c[3*(ci+j)+0] = cx;
-                    c[3*(ci+j)+1] = cy;
-                    c[3*(ci+j)+2] = cz;
-                }
-            }
-
-            // Translate cross section
-            for (j = 0; j < nCrossSection; ++j) {
-                c[3*(ci+j)+0] += spine[3*i+0];
-                c[3*(ci+j)+1] += spine[3*i+1];
-                c[3*(ci+j)+2] += spine[3*i+2];
-
-                // Texture coords
-                tc[3*(ci+j)+0] = ((float) j) / (nCrossSection-1);
-                tc[3*(ci+j)+1] = ((float) i) / (nSpine-1);
-                tc[3*(ci+j)+2] = 0.0;
-            }
-
-            if (nScale > 1) { scale += 2; }
-            if (nOrientation > 1) { orientation += 4; }
-        }
-
-        // And compute face indices:
-        if (faces) {
-            int polyIndex = 0;
-            for (i = 0, ci = 0; i < nSpine-1; ++i, ci+=nCrossSection) {
-                for (j = 0; j < nCrossSection-1; ++j) {
-                    faces[polyIndex + 0] = ci+j;
-                    faces[polyIndex + 1] = ci+j+1;
-                    faces[polyIndex + 2] = ci+j+1 + nCrossSection;
-                    faces[polyIndex + 3] = ci+j + nCrossSection;
-                    faces[polyIndex + 4] = -1;
-                    polyIndex += 5;
-                }
-            }
-        }
-    }
-}
 
 Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
                                              size_t nOrientation,
@@ -1646,10 +1345,10 @@ Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
   float *tc = new float[nCrossSection * nSpine * 3];
 
   computeExtrusion( nOrientation, orientation,
-                    nScale, scale,
-                    nCrossSection, crossSection,
-                    nSpine, spine,
-                    c, tc, 0 );
+		    nScale, scale,
+		    nCrossSection, crossSection,
+		    nSpine, spine,
+		    c, tc, 0 );
 
   GLuint glid = 0;
 
@@ -1674,22 +1373,22 @@ Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
     {
       glBegin( GL_QUAD_STRIP );
       for (size_t j = 0; j < nCrossSection; ++j)
-        {
-          // Compute normals
-          float v1[3], v2[3];
-          if (j < nCrossSection-1)
-            Vdiff( v1, &c[3*(n+j+1)], &c[3*(n+j)] );
-          else
-            Vdiff( v1, &c[3*(n+j)], &c[3*(n+j-1)] );
-          Vdiff( v2, &c[3*(n+j+nCrossSection)], &c[3*(n+j)] );
-          Vcross( v1, v1, v2 );
-          glNormal3fv( v1 );
+	{
+	  // Compute normals
+	  float v1[3], v2[3];
+	  if (j < nCrossSection-1)
+	    Vdiff( v1, &c[3*(n+j+1)], &c[3*(n+j)] );
+	  else
+	    Vdiff( v1, &c[3*(n+j)], &c[3*(n+j-1)] );
+	  Vdiff( v2, &c[3*(n+j+nCrossSection)], &c[3*(n+j)] );
+	  Vcross( v1, v1, v2 );
+	  glNormal3fv( v1 );
 
-          glTexCoord2fv( &tc[3*(n+j+nCrossSection)] );
-          glVertex3fv(   &c [3*(n+j+nCrossSection)] );
-          glTexCoord2fv( &tc[3*(n+j)] );
-          glVertex3fv(   &c [3*(n+j)] );
-        }
+	  glTexCoord2fv( &tc[3*(n+j+nCrossSection)] );
+	  glVertex3fv(   &c [3*(n+j+nCrossSection)] );
+	  glTexCoord2fv( &tc[3*(n+j)] );
+	  glVertex3fv(   &c [3*(n+j)] );
+	}
       glEnd();
     }
 
@@ -1708,12 +1407,12 @@ Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
 
 Viewer::Object ViewerOpenGL::insertLineSet(size_t npoints,
                                            const float * points,
-                                           size_t nlines,
-                                           const long * lines,
-                                           bool colorPerVertex,
+					   size_t nlines,
+					   const long * lines,
+					   bool colorPerVertex,
                                            const float * color,
-                                           size_t nci,
-                                           const long * ci)
+					   size_t nci,
+					   const long * ci)
 {
   GLuint glid = 0;
 
@@ -1743,19 +1442,19 @@ Viewer::Object ViewerOpenGL::insertLineSet(size_t npoints,
   for (size_t i = 0; i<nlines; ++i)
     {
       if (lines[i] == -1)
-        {
-          glEnd();
-          glBegin( GL_LINE_STRIP );
-          ++nl;
-          if ((i < nlines-1) && color && ! colorPerVertex)
-            glColor3fv( &color[ (nci > 0) ? 3*ci[nl] : 3*nl ] );
-        }
+	{
+	  glEnd();
+	  glBegin( GL_LINE_STRIP );
+	  ++nl;
+	  if ((i < nlines-1) && color && ! colorPerVertex)
+	    glColor3fv( &color[ (nci > 0) ? 3*ci[nl] : 3*nl ] );
+	}
       else
-        {
-          if (color && colorPerVertex)
-            glColor3fv( &color[ (nci > 0) ? 3*ci[i] : 3*lines[i] ] );
-          glVertex3fv( &points[3*lines[i]] );
-        }
+	{
+	  if (color && colorPerVertex)
+	    glColor3fv( &color[ (nci > 0) ? 3*ci[i] : 3*lines[i] ] );
+	  glVertex3fv( &points[3*lines[i]] );
+	}
     }
 
   glEnd();
@@ -1766,8 +1465,8 @@ Viewer::Object ViewerOpenGL::insertLineSet(size_t npoints,
 }
 
 Viewer::Object ViewerOpenGL::insertPointSet(size_t npoints,
-                                            const float * points,
-                                            const float * colors)
+					    const float * points,
+					    const float * colors)
 {
   GLuint glid = 0;
 
@@ -1790,10 +1489,10 @@ Viewer::Object ViewerOpenGL::insertPointSet(size_t npoints,
   for (size_t i = 0; i<npoints; ++i)
     {
       if (colors)
-        {
-          glColor3fv( colors );
-          colors += 3;
-        }
+	{
+	  glColor3fv( colors );
+	  colors += 3;
+	}
       glVertex3fv( points );
       points += 3;
     }
@@ -1805,30 +1504,31 @@ Viewer::Object ViewerOpenGL::insertPointSet(size_t npoints,
   return (Object) glid;
 }
 
-namespace {
-    
-    void computeBounds(size_t npoints, const float * points, float * bounds)
-    {
-        bounds[0] = bounds[1] = points[0]; // xmin, xmax
-        bounds[2] = bounds[3] = points[1]; // ymin, ymax
-        bounds[4] = bounds[5] = points[2]; // zmin, zmax
+// 
 
-        for (size_t i = 1; i<npoints; ++i) {
-            points += 3;
-            if (points[0] < bounds[0])      bounds[0] = points[0];
-            else if (points[0] > bounds[1]) bounds[1] = points[0];
-            if (points[1] < bounds[2])      bounds[2] = points[1];
-            else if (points[1] > bounds[3]) bounds[3] = points[1];
-            if (points[2] < bounds[4])      bounds[4] = points[2];
-            else if (points[2] > bounds[5]) bounds[5] = points[2];
-        }
+static void computeBounds(size_t npoints, const float * points, float * bounds)
+{
+  bounds[0] = bounds[1] = points[0]; // xmin, xmax
+  bounds[2] = bounds[3] = points[1]; // ymin, ymax
+  bounds[4] = bounds[5] = points[2]; // zmin, zmax
+
+  for (size_t i=1; i<npoints; ++i)
+    {
+      points += 3;
+      if (points[0] < bounds[0])      bounds[0] = points[0];
+      else if (points[0] > bounds[1]) bounds[1] = points[0];
+      if (points[1] < bounds[2])      bounds[2] = points[1];
+      else if (points[1] > bounds[3]) bounds[3] = points[1];
+      if (points[2] < bounds[4])      bounds[4] = points[2];
+      else if (points[2] > bounds[5]) bounds[5] = points[2];
     }
 }
 
+
 void
-texGenParams( float bounds[],        // xmin,xmax, ymin,ymax, zmin,zmax
-              int axes[2],        // s, t
-              float params[4] ) // s0, 1/sSize, t0, 1/tSize
+texGenParams( float bounds[],	// xmin,xmax, ymin,ymax, zmin,zmax
+	      int axes[2],	// s, t
+	      float params[4] ) // s0, 1/sSize, t0, 1/tSize
 {
   axes[0] = 0;
   axes[1] = 1;
@@ -1838,25 +1538,25 @@ texGenParams( float bounds[],        // xmin,xmax, ymin,ymax, zmin,zmax
     {
       float db = bounds[2*nb+1]-bounds[2*nb];
       if ( db > params[1] )
-        {
-          axes[1] = axes[0];
-          axes[0] = nb;
-          params[2] = params[0];
-          params[3] = params[1];
-          params[0] = bounds[2*nb];
-          params[1] = db;
-        }
+	{
+	  axes[1] = axes[0];
+	  axes[0] = nb;
+	  params[2] = params[0];
+	  params[3] = params[1];
+	  params[0] = bounds[2*nb];
+	  params[1] = db;
+	}
       else if ( db > params[3] )
-        {
-          axes[1] = nb;
-          params[2] = bounds[2*nb];
-          params[3] = db;
-        }
+	{
+	  axes[1] = nb;
+	  params[2] = bounds[2*nb];
+	  params[3] = db;
+	}
     }
 
   // If two of the dimensions are zero, give up.
   if ( fpzero( params[1] ) || fpzero( params[3] )) return;
-
+  
   params[1] = 1.0 / params[1];
   params[3] = 1.0 / params[3];
 }
@@ -1869,267 +1569,250 @@ texGenParams( float bounds[],        // xmin,xmax, ymin,ymax, zmin,zmax
 #define INDEX_VTX_VAL(_v,_f,_i) \
  &((_v).v[ 3*(((_v).ni > 0) ? (_v).i[_i] : (_f)[_i]) ])
 
-namespace {
 
-    struct IndexData {
-        const float * v; // data values
-        size_t ni; const long * i; // number of indices, index pointer
-    };
+void 
+ViewerOpenGL::insertShellConvex( ShellData *s )
+{
+  float N[3];
+  size_t i, nf = 0;			// Number of faces
 
-    struct ShellData {
-        unsigned int mask;
-        const float * points;
-        size_t nfaces; const long * faces; // face list
-        IndexData texCoord; // texture coordinates and indices
-        IndexData normal; // normals and indices
-        IndexData color; // colors and indices
-        int *texAxes;
-        float *texParams;
-        size_t nf, i;
-    };
-
-    void insertShellConvex(ShellData * s)
+  for (i = 0; i<s->nfaces; ++i)
     {
-      float N[3];
-      size_t i, nf = 0;                        // Number of faces
+      if (i == 0 || s->faces[i] == -1)
+	{
+	  if (i > 0) glEnd();
+	  if (i == s->nfaces-1) break;
 
-      for (i = 0; i<s->nfaces; ++i)
-        {
-          if (i == 0 || s->faces[i] == -1)
-            {
-              if (i > 0) glEnd();
-              if (i == s->nfaces-1) break;
+	  glBegin(GL_POLYGON);
 
-              glBegin(GL_POLYGON);
+	  // Per-face attributes
+	  if (s->color.v && ! (s->mask & MASK_COLOR_PER_VERTEX))
+	    glColor3fv( INDEX_VAL(s->color, nf) );
 
-              // Per-face attributes
-              if (s->color.v && ! (s->mask & Viewer::MASK_COLOR_PER_VERTEX))
-                glColor3fv( INDEX_VAL(s->color, nf) );
+	  if (! (s->mask & MASK_NORMAL_PER_VERTEX))
+	    {
+	      int i1 = (i == 0) ? 0 : i+1;
+	      if (s->normal.v)
+		glNormal3fv( INDEX_VAL(s->normal, nf) );
+	      else if (i < s->nfaces - 4 &&
+		       s->faces[i1] >= 0 &&
+		       s->faces[i1+1] >= 0 && s->faces[i1+2] >= 0)
+		{
+		  indexFaceNormal( 3*s->faces[i1], 3*s->faces[i1+1],
+				   3*s->faces[i1+2], s->points, N );
 
-              if (! (s->mask & Viewer::MASK_NORMAL_PER_VERTEX))
-                {
-                  int i1 = (i == 0) ? 0 : i+1;
-                  if (s->normal.v)
-                    glNormal3fv( INDEX_VAL(s->normal, nf) );
-                  else if (i < s->nfaces - 4 &&
-                           s->faces[i1] >= 0 &&
-                           s->faces[i1+1] >= 0 && s->faces[i1+2] >= 0)
-                    {
-                      indexFaceNormal( 3*s->faces[i1], 3*s->faces[i1+1],
-                                       3*s->faces[i1+2], s->points, N );
+		  // Lukas: flip normal if primitiv-orientation is clockwise
+		  if (!(s->mask & MASK_CCW)) 
+		    for (int k=0;k<3;k++) // flip Normal
+		      N[k] = -N[k];
+      		  glNormal3fv( N );
+		}
+	    }
 
-                      // Lukas: flip normal if primitiv-orientation is clockwise
-                      if (!(s->mask & Viewer::MASK_CCW))
-                        for (int k=0;k<3;k++) // flip Normal
-                          N[k] = -N[k];
-                            glNormal3fv( N );
-                    }
-                }
+	  ++nf;			// 
+	}
 
-              ++nf;                        //
-            }
+      if (s->faces[i] >= 0)
+	{
+	  // Per-vertex attributes
+	  if (s->color.v && (s->mask & MASK_COLOR_PER_VERTEX) )
+	    glColor3fv( INDEX_VTX_VAL(s->color, s->faces, i) );
 
-          if (s->faces[i] >= 0)
-            {
-              // Per-vertex attributes
-              if (s->color.v && (s->mask & Viewer::MASK_COLOR_PER_VERTEX) )
-                glColor3fv( INDEX_VTX_VAL(s->color, s->faces, i) );
+	  if (s->mask & MASK_NORMAL_PER_VERTEX)
+	    {
+	      if (s->normal.v)
+		glNormal3fv( INDEX_VTX_VAL(s->normal, s->faces, i) );
+	      else
+		; // Generate per-vertex normal here...
+	    }
 
-              if (s->mask & Viewer::MASK_NORMAL_PER_VERTEX)
-                {
-                  if (s->normal.v)
-                    glNormal3fv( INDEX_VTX_VAL(s->normal, s->faces, i) );
-                  else
-                    ; // Generate per-vertex normal here...
-                }
+	  const float * v = &s->points[3*s->faces[i]];
+	  if (s->texCoord.v)
+	    {
+	      int tcindex;
+	      if (s->texCoord.ni > 0)
+		tcindex = 2 * s->texCoord.i[i];
+	      else
+		tcindex = 2 * s->faces[i];
+	      glTexCoord2f( s->texCoord.v[ tcindex ],
+			    s->texCoord.v[ tcindex+1 ] );
+	    }
+	  else
+	    {
+	      float c0, c1;
+	      c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
+	      c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
+	      glTexCoord2f( c0, c1 );
+	    }
 
-              const float * v = &s->points[3*s->faces[i]];
-              if (s->texCoord.v)
-                {
-                  int tcindex;
-                  if (s->texCoord.ni > 0)
-                    tcindex = 2 * s->texCoord.i[i];
-                  else
-                    tcindex = 2 * s->faces[i];
-                  glTexCoord2f( s->texCoord.v[ tcindex ],
-                                s->texCoord.v[ tcindex+1 ] );
-                }
-              else
-                {
-                  float c0, c1;
-                  c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
-                  c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
-                  glTexCoord2f( c0, c1 );
-                }
+	  glVertex3fv( v );
+	}
+    }
 
-              glVertex3fv( v );
-            }
-        }
+  // Watch out for no terminating -1 in face list
+  // two ways to break out:
+  //   i>0 && i==nfaces-1 && faces[i] == -1
+  //   i==nfaces
+  //
+  if (i>=s->nfaces) {
+    if (s->faces[i-1] >= 0) glEnd();
+  } else {
+    if (s->faces[i] >= 0) glEnd();
+  }
+}
 
-      // Watch out for no terminating -1 in face list
-      // two ways to break out:
-      //   i>0 && i==nfaces-1 && faces[i] == -1
-      //   i==nfaces
-      //
-      if (i>=s->nfaces) {
-        if (s->faces[i-1] >= 0) glEnd();
-      } else {
-        if (s->faces[i] >= 0) glEnd();
-      }
+
+#if GLU_VERSION_1_2
+
+static void WINAPI tessShellBegin( GLenum type, void *pdata )
+{
+  ViewerOpenGL::ShellData *s = (ViewerOpenGL::ShellData *)pdata;
+  float N[3];
+
+  glBegin( type );
+
+  // Per-face attributes
+  if (s->color.v && ! (s->mask & Viewer::MASK_COLOR_PER_VERTEX))
+    glColor3fv( INDEX_VAL(s->color, s->nf) );
+
+  if (! (s->mask & Viewer::MASK_NORMAL_PER_VERTEX))
+    {
+      int i1 = s->i == 0 ? 0 : s->i-1;
+      if (s->normal.v)
+	glNormal3fv( INDEX_VAL(s->normal, s->nf) );
+      else if (s->i < s->nfaces - 4 &&
+	       s->faces[i1] >= 0 &&
+	       s->faces[i1+1] >= 0 && s->faces[i1+2] >= 0)
+	{
+	  indexFaceNormal( 3*s->faces[i1], 3*s->faces[i1+1],
+			   3*s->faces[i1+2], s->points, N );
+	  // Lukas: flip normal if primitiv-orientation is clockwise
+	  if (!(s->mask & Viewer::MASK_CCW)) 
+	    for (int k=0;k<3;k++) // flip Normal
+	      N[k] = -N[k];
+	  glNormal3fv( N );
+	}
     }
 }
 
-# ifdef GLU_VERSION_1_2
 
-namespace {
+static void WINAPI tessShellVertex( void *vdata, void *pdata )
+{
+  int i = (int)vdata;
+  ViewerOpenGL::ShellData *s = (ViewerOpenGL::ShellData *)pdata;
+  
+  // Per-vertex attributes
+  if (s->color.v && (s->mask & Viewer::MASK_COLOR_PER_VERTEX) )
+    glColor3fv( INDEX_VTX_VAL(s->color, s->faces, i) );
 
-    void OPENVRML_GL_CALLBACK_ tessShellBegin(GLenum type, void * pdata)
+  if (s->mask & Viewer::MASK_NORMAL_PER_VERTEX)
     {
-        ShellData * s = static_cast<ShellData *>(pdata);
-        float N[3];
-
-        glBegin(type);
-
-        // Per-face attributes
-        if (s->color.v && ! (s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
-            glColor3fv(INDEX_VAL(s->color, s->nf));
-        }
-
-        if (!(s->mask & Viewer::MASK_NORMAL_PER_VERTEX)) {
-            int i1 = (s->i == 0)
-                   ? 0
-                   : s->i - 1;
-            if (s->normal.v) {
-                glNormal3fv(INDEX_VAL(s->normal, s->nf));
-            } else if (s->i < s->nfaces - 4
-                    && s->faces[i1] >= 0
-                    && s->faces[i1 + 1] >= 0
-                    && s->faces[i1 + 2] >= 0) {
-                indexFaceNormal(3 * s->faces[i1],
-                                3 * s->faces[i1 + 1],
-                                3 * s->faces[i1 + 2], s->points, N);
-                // Lukas: flip normal if primitiv-orientation is clockwise
-                if (!(s->mask & Viewer::MASK_CCW)) {
-                    // flip Normal
-                    for (size_t k = 0; k < 3; k++) { N[k] = -N[k]; }
-                }
-                glNormal3fv( N );
-              }
-          }
+      if (s->normal.v)
+	glNormal3fv( INDEX_VTX_VAL(s->normal, s->faces, i) );
+      else
+	; // Generate per-vertex normal here...
     }
 
-    void OPENVRML_GL_CALLBACK_ tessShellVertex(void * vdata, void * pdata)
+  const float * v = &s->points[3*s->faces[i]];
+  if (s->texCoord.v)
     {
-        int i = int(vdata);
-        ShellData * s = static_cast<ShellData *>(pdata);
-
-        // Per-vertex attributes
-        if (s->color.v && (s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
-            glColor3fv(INDEX_VTX_VAL(s->color, s->faces, i));
-        }
-
-        if (s->mask & Viewer::MASK_NORMAL_PER_VERTEX) {
-            if (s->normal.v) {
-                glNormal3fv(INDEX_VTX_VAL(s->normal, s->faces, i));
-            } else {
-                ; // Generate per-vertex normal here...
-            }
-        }
-
-        const float * v = &s->points[3 * s->faces[i]];
-        if (s->texCoord.v) {
-            int tcindex;
-            if (s->texCoord.ni > 0) {
-                tcindex = 2 * s->texCoord.i[i];
-            } else {
-                tcindex = 2 * s->faces[i];
-            }
-            glTexCoord2f(s->texCoord.v[tcindex],
-                         s->texCoord.v[tcindex + 1]);
-        } else {
-            float c0, c1;
-            c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
-            c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
-            glTexCoord2f(c0, c1);
-        }
-
-        glVertex3fv(v );
+      int tcindex;
+      if (s->texCoord.ni > 0)
+	tcindex = 2 * s->texCoord.i[i];
+      else
+	tcindex = 2 * s->faces[i];
+      glTexCoord2f( s->texCoord.v[ tcindex ],
+		    s->texCoord.v[ tcindex+1 ] );
+    }
+  else
+    {
+      float c0, c1;
+      c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
+      c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
+      glTexCoord2f( c0, c1 );
     }
 
-    void insertShellTess(GLUtesselator * tesselator, ShellData * s)
+  glVertex3fv( v );
+}
+
+
+void 
+ViewerOpenGL::insertShellTess(ShellData *s)
+{
+  if (! d_tess) d_tess = gluNewTess();
+
+  gluTessCallback(this->d_tess, GLU_TESS_BEGIN_DATA,
+                  reinterpret_cast<TessCB>(tessShellBegin));
+  gluTessCallback(this->d_tess, GLU_TESS_VERTEX_DATA,
+                  reinterpret_cast<TessCB>(tessShellVertex));
+  gluTessCallback(this->d_tess, GLU_TESS_END, glEnd);
+
+  size_t i;
+  for (i = 0; i<s->nfaces; ++i)
     {
-      gluTessCallback(tesselator, GLU_TESS_BEGIN_DATA,
-                      reinterpret_cast<TessCB>(tessShellBegin));
-      gluTessCallback(tesselator, GLU_TESS_VERTEX_DATA,
-                      reinterpret_cast<TessCB>(tessShellVertex));
-      gluTessCallback(tesselator, GLU_TESS_END, glEnd);
+      if (i == 0 || s->faces[i] == -1)
+	{
+	  if (i > 0)
+	    {
+	      gluTessEndContour( d_tess );
+	      gluTessEndPolygon( d_tess );
+	      ++ s->nf;
+	    }
+	  if (i == s->nfaces-1) break;
+	  gluTessBeginPolygon( d_tess, s );
+	  gluTessBeginContour( d_tess );
+	  s->i = i;
+	}
 
-      size_t i;
-      for (i = 0; i<s->nfaces; ++i)
-        {
-          if (i == 0 || s->faces[i] == -1)
-            {
-              if (i > 0)
-                {
-                  gluTessEndContour(tesselator);
-                  gluTessEndPolygon(tesselator);
-                  ++ s->nf;
-                }
-              if (i == s->nfaces-1) break;
-              gluTessBeginPolygon(tesselator, s);
-              gluTessBeginContour(tesselator);
-              s->i = i;
-            }
+      if (s->faces[i] >= 0)
+	{
+	  GLdouble v[3];
+	  v[0] = s->points[3*s->faces[i]+0];
+	  v[1] = s->points[3*s->faces[i]+1];
+	  v[2] = s->points[3*s->faces[i]+2];
+	  gluTessVertex( d_tess, v, (void*)i );
+	}
+    }
 
-          if (s->faces[i] >= 0)
-            {
-              GLdouble v[3];
-              v[0] = s->points[3*s->faces[i]+0];
-              v[1] = s->points[3*s->faces[i]+1];
-              v[2] = s->points[3*s->faces[i]+2];
-              gluTessVertex(tesselator, v, (void*)i);
-            }
-        }
-
-      // Watch out for no terminating -1 in face list
-      if (i > 1 && s->faces[i-1] >= 0)
-        {
-          gluTessEndContour(tesselator);
-          gluTessEndPolygon(tesselator);
-        }
+  // Watch out for no terminating -1 in face list
+  if (i > 1 && s->faces[i-1] >= 0)
+    {
+      gluTessEndContour( d_tess );
+      gluTessEndPolygon( d_tess );
     }
 }
-# endif // GLU_VERSION_1_2
+
+#endif // GLU_VERSION_1_2
 
 
 // There are too many arguments to this...
 
-Viewer::Object
+Viewer::Object 
 ViewerOpenGL::insertShell(unsigned int mask,
-                          size_t npoints,
-                          const float * points,
-                          size_t nfaces,
-                          const long * faces,    // face list (-1 ends each face)
-                          const float * tc,     // texture coordinates
-                          size_t ntci,      // # of texture coordinate indices
-                          const long * tci,      // texture coordinate indices
-                          const float * normal, // normals
-                          size_t nni,       // # of normal indices
-                          const long * ni,       // normal indices
-                          const float *color,  // colors
-                          size_t nci,
-                          const long * ci)
+			  size_t npoints,
+			  const float * points,
+			  size_t nfaces,
+			  const long * faces,    // face list (-1 ends each face)
+			  const float * tc,     // texture coordinates
+			  size_t ntci,      // # of texture coordinate indices
+			  const long * tci,      // texture coordinate indices
+			  const float * normal, // normals
+			  size_t nni,       // # of normal indices
+			  const long * ni,       // normal indices
+			  const float *color,  // colors
+			  size_t nci,
+			  const long * ci)
 {
-  if (nfaces < 4) return 0;        // 3 pts and a trailing -1
+  if (nfaces < 4) return 0;	// 3 pts and a trailing -1
 
   // Texture coordinate generation parameters.
-  int texAxes[2];                        // Map s,t to x,y,z
-  float texParams[4];                // s0, 1/sSize, t0, 1/tSize
+  int texAxes[2];			// Map s,t to x,y,z
+  float texParams[4];		// s0, 1/sSize, t0, 1/tSize
 
   // Compute bounding box for texture coord generation and lighting.
   if ( ! tc )  // || any positional lights are active...
     {
-      float bounds[6];                // xmin,xmax, ymin,ymax, zmin,zmax
+      float bounds[6];		// xmin,xmax, ymin,ymax, zmin,zmax
       computeBounds( npoints, points, bounds );
 
       // do the bounds intersect the radius of any active positional lights...
@@ -2180,7 +1863,7 @@ ViewerOpenGL::insertShell(unsigned int mask,
 #if GLU_VERSION_1_2
   // Handle non-convex polys
   if (! (mask & MASK_CONVEX))
-    insertShellTess(this->tesselator, &s);
+    insertShellTess( &s );
   else
 #endif
     insertShellConvex( &s );
@@ -2191,53 +1874,6 @@ ViewerOpenGL::insertShell(unsigned int mask,
   return (Object) glid;
 }
 
-namespace {
-
-    void computeSphere(const double radius, const int numLatLong,
-                       float c[][3], float tc[][3], int *faces)
-    {
-        using OpenVRML::pi;
-        using OpenVRML::pi_2;
-
-        double r, angle, x, y, z;
-        int i, j, polyIndex;
-
-        // Compute coordinates, texture coordinates:
-        for (i = 0; i < numLatLong; ++i) {
-            /*y = 2.0 * ( ((double)i) / (numLatLong-1) ) - 1.0;*/
-            angle = ( i * pi / (numLatLong-1) ) - pi_2;
-            y = sin( angle );
-            r = sqrt( 1.0 - y*y );
-            for (j = 0; j < numLatLong; ++j) {
-                angle = 2 * pi * ((double)j) / numLatLong;
-                x = - sin(angle)*r;
-                z = - cos(angle)*r;
-                c[i * numLatLong + j][0] = radius * x;
-                c[i * numLatLong + j][1] = radius * y;
-                c[i * numLatLong + j][2] = radius * z;
-                if (tc) {
-                    tc[i * numLatLong + j][0] = ((float) j)/(numLatLong);
-                    tc[i * numLatLong + j][1] = ((float) i)/(numLatLong);
-                    tc[i * numLatLong + j][2] = 0.0;
-                }
-            }
-        }
-
-        // And compute indices:
-        if (faces) {
-            for (i = 0; i < numLatLong-1; ++i) {
-                for (j = 0; j < numLatLong; ++j) {
-                    polyIndex = 5 * (i * numLatLong + j);
-                    faces[polyIndex + 0] = i * numLatLong + j;
-                    faces[polyIndex + 1] = i * numLatLong + (j + 1) % numLatLong;
-                    faces[polyIndex + 2] = (i + 1) * numLatLong + (j + 1) % numLatLong;
-                    faces[polyIndex + 3] = (i + 1) * numLatLong + j;
-                    faces[polyIndex + 4] = -1;  // quad
-                }
-            }
-        }
-    }
-}
 
 Viewer::Object ViewerOpenGL::insertSphere(float radius)
 {
@@ -2269,15 +1905,15 @@ Viewer::Object ViewerOpenGL::insertSphere(float radius)
       glBegin( GL_QUAD_STRIP );
 
       for ( int j = 0; j < numLatLong; ++j )
-        {
-          glTexCoord2f( tc[n+j+numLatLong][0], tc[n+j+numLatLong][1] );
-          glNormal3fv( &c[n+j+numLatLong][0] );
-          glVertex3fv( &c[n+j+numLatLong][0] );
+	{
+	  glTexCoord2f( tc[n+j+numLatLong][0], tc[n+j+numLatLong][1] );
+	  glNormal3fv( &c[n+j+numLatLong][0] );
+	  glVertex3fv( &c[n+j+numLatLong][0] );
 
-          glTexCoord2f( tc[n+j][0], tc[n+j][1] );
-          glNormal3fv( &c[n+j][0] );
-          glVertex3fv( &c[n+j][0] );
-        }
+	  glTexCoord2f( tc[n+j][0], tc[n+j][1] );
+	  glNormal3fv( &c[n+j][0] );
+	  glVertex3fv( &c[n+j][0] );
+	}
 
       glTexCoord2f( 1.0, tc[n+numLatLong][1] );
       glNormal3fv( &c[n+numLatLong][0] );
@@ -2297,109 +1933,16 @@ Viewer::Object ViewerOpenGL::insertSphere(float radius)
 }
 
 
-# if defined(OPENVRML_HAVE_FREETYPEFONTS) && defined(GLU_VERSION_1_2)
-namespace {
+// Not fully implemented... need font, extents
 
-    struct TextData {
-         float cwidth,cheight; // width and height of a character
-    };
-
-    void OPENVRML_GL_CALLBACK_ tessTextBegin(GLenum type)
-    {
-        glBegin(type);
-    }
-
-    void OPENVRML_GL_CALLBACK_ tessTextVertex(void * vdata, void * pdata)
-    {
-        float v[3];
-        Vertex* td = static_cast<Vertex *>(vdata);
-        TextData *t = static_cast<TextData *>(pdata);
-        float width = t->cwidth;
-        float height = t->cheight;
-        v[0] = td->V[0];
-        v[1] = td->V[1];
-        v[2] = 0.0;
-        float tx = fabs(v[0]/width);
-        float ty = fabs(v[1]/height);
-        glTexCoord2f(tx,ty);
-        glVertex3fv(v);
-    }
-
-    void OPENVRML_GL_CALLBACK_ tessTextError(GLenum error_code)
-    {
-        std::cout << "Error in tessellation" << gluErrorString(error_code) << std::endl;
-    }
-
-    void OPENVRML_GL_CALLBACK_ tessTextCombine(GLdouble coords[3], void * vertex_data[4],
-                                GLfloat weight[4], void ** outdata)
-    {
-        Vertex* vertex = new Vertex;
-        vertex->V[0] = coords[0];
-        vertex->V[1] = coords[1];
-        *outdata = vertex;
-    }
-
-    void insertTextTess(GLUtesselator * tesselator,
-                        const FontVectoriser & fVector,
-                        TextData & tdata)
-    {
-        gluTessCallback(tesselator, GLU_TESS_BEGIN,
-                        reinterpret_cast<TessCB>(tessTextBegin));
-        gluTessCallback(tesselator, GLU_TESS_VERTEX_DATA,
-                        reinterpret_cast<TessCB>(tessTextVertex));
-        gluTessCallback(tesselator, GLU_TESS_END,
-                        reinterpret_cast<TessCB>(glEnd));
-        gluTessCallback(tesselator, GLU_TESS_ERROR,
-                        reinterpret_cast<TessCB>(tessTextError));
-        gluTessCallback(tesselator, GLU_TESS_COMBINE,
-                        reinterpret_cast<TessCB>(tessTextCombine));
-        int ncontours = fVector.getTotContours();
-        const Contour *contour_list = &fVector.getContourlist();
-        GLdouble vertex[3];
-        gluTessBeginPolygon(tesselator, &tdata);
-        for (size_t j = 0; j < ncontours; j++) {
-            gluTessBeginContour(tesselator);
-            const Contour & contour = contour_list[j];
-            size_t size = contour.size();
-            for (size_t k = 0; k < size; k++){
-                const Vertex* ver = &contour[k];
-                vertex[0] = contour[k].V[0];
-                vertex[1] = contour[k].V[1];
-                vertex[2] = 0.0;
-                gluTessVertex(tesselator,vertex,(void *)ver);
-            }
-            gluTessEndContour(tesselator);
-        }
-        gluTessEndPolygon(tesselator);
-    }
-}
-# endif
-
-/** 
- * @class ViewerOpenGL::insertText
- *                
- * @brief Insert text into a display list.
- *
- * @param ftface FontFace object
- * @param strarraysize size of string array
- * @param string pointer to string array
- * @param lsize size of length array
- * @param length length array for the length of each text string
- * @param maxextent maxextent of all text strings
- */
-
-Viewer::Object ViewerOpenGL::insertText(FontFace & fface, 
-                                        size_t strarraysize, const std::string * string,
-                                        size_t lsize, const float length[], 
-                                        float maxExtent)
+Viewer::Object ViewerOpenGL::insertText(int *justify,
+					float size,
+					int n, char const * const * s)
 {
-
   GLuint glid = 0;
 
-#ifdef OPENVRML_HAVE_FREETYPEFONTS
-
 #if USE_GEOMETRY_DISPLAY_LISTS
-  if (! this->d_selectMode)
+  if (! d_selectMode)
     {
       glid = glGenLists(1);
       glNewList( glid, GL_COMPILE_AND_EXECUTE );
@@ -2407,160 +1950,11 @@ Viewer::Object ViewerOpenGL::insertText(FontFace & fface,
 #endif
 
   beginGeometry();
-  glShadeModel( GL_FLAT );
-  glDisable( GL_CULL_FACE );
-  float x = 0.0, y = 0.0;
-  float nextLine;
-  float xmin,xmax,ymin,ymax;
-  float width,height;
-  GLfloat escalex = 1.0, escaley = 1.0;
-  int tlength=0, tindex = 0;
-  for (size_t j=0; j < strarraysize; ++j){
-   if(string[j].length() > 0){
-    if(string[j].length() > tlength){
-     tlength = string[j].length();
-     tindex = j;
-    }
-   }
-  }
-  fface.getBbox(string[tindex],xmin,ymin,xmax,ymax);
-  width = xmax - xmin;
-  height = ymax - ymin;
-  if (maxExtent != 0.0){
-   if(fface.getHorizontal()){
-    if(width > maxExtent)
-    escalex = maxExtent/width;
-   }
-   else {
-    if(height > maxExtent)
-    escaley = maxExtent/height;
-   }
-  }
-  for (size_t i=0; i < strarraysize; ++i) {
-    if ( string[i].length() > 0 ){
-     GLfloat transx = x, transy = y;
-     GLfloat scalex = 1.0, scaley = 1.0;
-     float cwidth,cheight;
-     int text_index = 0;
-     GLfloat stepx = 0.0, stepy = 0.0;
-     float advx = 0.0, advy = 0.0;
-     std::string text = string[i];
-     int slength = text.length();
-     fface.getBbox(text,xmin,ymin,xmax,ymax);
-     width = xmax - xmin;
-     height = ymax - ymin;
-     if(length && i < lsize && (length[i] != 0.0)){
-       if(fface.getHorizontal())
-         scalex = length[i]/width;
-       else 
-         scaley = length[i]/height;     
-     }
-     scalex = escalex * scalex;
-     scaley = escaley * scaley;
-     const std::string * justify = fface.getJustify();
-     if (fface.getHorizontal()) {
-       cwidth = width/slength;
-       cheight = height;
-       if (!fface.getLeftToRight())
-           text_index = slength - 1;
-       if ((justify[0] == "BEGIN" || justify[0] == "FIRST") && 
-           (!fface.getLeftToRight())) 
-           transx = x - width;
-       else if (justify[0] == "MIDDLE") 
-           transx = x - width/2.0;
-       else if (justify[0] == "END" && fface.getLeftToRight()) 
-           transx = x - width;
-           if (fface.getTopToBottom()) {
-             if (justify[1] == "BEGIN")
-               transy = y - height;
-             else if (justify[1] == "MIDDLE")
-               transy = y - height/2.0;
-           }
-           else {
-              if (justify[1] == "END")
-               transy = y - height;
-              else if (justify[1] == "MIDDLE")
-               transy = y - height/2.0;           
-           }
-     }
-     else {
-       cwidth = width;
-       cheight = height/slength;
-       if (fface.getTopToBottom())
-           text_index = slength - 1;
-       if ((justify[0] == "BEGIN" || justify[0] == "FIRST") && 
-           (fface.getTopToBottom())) 
-           transy = y - height;
-       else if (justify[0] == "MIDDLE") 
-           transy = y - height/2.0;
-       else if (justify[0] == "END" && !fface.getTopToBottom()) 
-           transy = y - height;
-           if (fface.getLeftToRight()) {
-             if (justify[1] == "END")
-               transx = x - width;
-             else if (justify[1] == "MIDDLE")
-               transx = x - width/2.0;
-           }
-           else {
-              if (justify[1] == "BEGIN" || justify[1] == "FIRST")
-               transx = x - width;
-             else if (justify[1] == "MIDDLE")
-               transx = x - height/2.0;           
-           }
-     }
-     this->modelviewMatrixStack.push();
-     glTranslatef(transx*scalex, transy*scaley, 0.0);
-     glScalef(scalex,scaley,1.0);
-     for (int j=0; j < slength; j++){
-      unsigned char ch = text[text_index];                   
-      const FontVectoriser *fVector = fface.getVectoriser(ch);
-      if(fVector){
-       glFrontFace(fVector->getOrientation() ? GL_CW : GL_CCW );
-       TextData td = {cwidth,cheight};
-       glNormal3f(0.0,0.0,1.0);
-       insertTextTess(this->tesselator, *fVector, td);
-       if(fface.getHorizontal())
-        stepx = fVector->getHoriadvance();
-       else
-        stepy = fVector->getVertadvance();
-       glTranslatef(stepx,stepy,0.0);
-       advx += stepx;
-       advy += stepy;
-      }
-      if(fface.getHorizontal()){
-       if(fface.getLeftToRight())
-         text_index++;
-        else
-         text_index--;
-      }
-      else{
-       if(fface.getTopToBottom())
-         text_index--;
-       else
-         text_index++;
-      }
-     }
-     this->modelviewMatrixStack.pop();
-     }
-     if(fface.getHorizontal()){
-       nextLine = fface.getAdvanceHeight();
-       if(fface.getTopToBottom())
-         y-=nextLine;
-       else
-         y+=nextLine;
-    }
-    else {
-       nextLine = fface.getAdvanceWidth();
-       if(fface.getLeftToRight())
-        x+=nextLine;
-       else
-        x-=nextLine;
-    }
-   }
+
+  this->text3(justify, size, n, s);
+
   endGeometry();
   if (glid) glEndList();
-
-#endif              // HAVE_OPENVRML_FREETYPEFONTS
 
   return (Object) glid;
 }
@@ -2569,18 +1963,18 @@ Viewer::Object ViewerOpenGL::insertText(FontFace & fface,
 // Lights
 
 Viewer::Object ViewerOpenGL::insertDirLight(float ambient,
-                                            float intensity,
-                                            const float rgb[],
-                                            const float direction[])
+					    float intensity,
+					    const float rgb[],
+					    const float direction[])
 {
   float amb[4] = { ambient * rgb[0],
-                   ambient * rgb[1],
-                   ambient * rgb[2],
-                   1.0 };
+		   ambient * rgb[1],
+		   ambient * rgb[2],
+		   1.0 };
   float dif[4] = { intensity * rgb[0],
-                   intensity * rgb[1],
-                   intensity * rgb[2],
-                   1.0 };
+		   intensity * rgb[1],
+		   intensity * rgb[2],
+		   1.0 };
   float pos[4] = { direction[0], direction[1], -direction[2], 0.0 };
 
   // Find an unused light, give up if none left.
@@ -2590,7 +1984,7 @@ Viewer::Object ViewerOpenGL::insertDirLight(float ambient,
       break;
   if (i == MAX_LIGHTS)
     return 0;
-
+  
   d_lightInfo[i].lightType = LIGHT_DIRECTIONAL;
   d_lightInfo[i].nestingLevel = 0;
   GLenum light = (GLenum) (GL_LIGHT0 + i);
@@ -2619,20 +2013,20 @@ Viewer::Object ViewerOpenGL::insertDirLight(float ambient,
 //
 
 Viewer::Object ViewerOpenGL::insertPointLight(float ambient,
-                                              const float attenuation[],
-                                              const float rgb[],
-                                              float intensity,
-                                              const float location[],
-                                              float radius)
+					      const float attenuation[],
+					      const float rgb[],
+					      float intensity,
+					      const float location[],
+					      float radius)
 {
   float amb[4] = { ambient * rgb[0],
-                   ambient * rgb[1],
-                   ambient * rgb[2],
-                   1.0 };
+		   ambient * rgb[1],
+		   ambient * rgb[2],
+		   1.0 };
   float dif[4] = { intensity * rgb[0],
-                   intensity * rgb[1],
-                   intensity * rgb[2],
-                   1.0 };
+		   intensity * rgb[1],
+		   intensity * rgb[2],
+		   1.0 };
   float pos[4] = { location[0], location[1], location[2], 1.0 };
 
   // Find an unused light, give up if none left.
@@ -2642,7 +2036,7 @@ Viewer::Object ViewerOpenGL::insertPointLight(float ambient,
       break;
   if (i == MAX_LIGHTS)
     return 0;
-
+  
   d_lightInfo[i].lightType = LIGHT_POSITIONAL;
   d_lightInfo[i].location[0] = location[0];
   d_lightInfo[i].location[1] = location[1];
@@ -2681,13 +2075,13 @@ OpenVRML::Viewer::Object
                                                     float radius)
 {
   float amb[4] = { ambient * rgb[0],
-                   ambient * rgb[1],
-                   ambient * rgb[2],
-                   1.0 };
+		   ambient * rgb[1],
+		   ambient * rgb[2],
+		   1.0 };
   float dif[4] = { intensity * rgb[0],
-                   intensity * rgb[1],
-                   intensity * rgb[2],
-                   1.0 };
+		   intensity * rgb[1],
+		   intensity * rgb[2],
+		   1.0 };
   float pos[4] = { location[0], location[1], location[2], 1.0 };
 
 
@@ -2698,7 +2092,7 @@ OpenVRML::Viewer::Object
       break;
   if (i == MAX_LIGHTS)
     return 0;
-
+  
   d_lightInfo[i].lightType = LIGHT_POSITIONAL;
   d_lightInfo[i].location[0] = location[0];
   d_lightInfo[i].location[1] = location[1];
@@ -2718,7 +2112,7 @@ OpenVRML::Viewer::Object
   glLightf(light, GL_QUADRATIC_ATTENUATION, attenuation[2]);
 
   glLightfv(light, GL_SPOT_DIRECTION, direction);
-  glLightf(light, GL_SPOT_CUTOFF, cutOffAngle * 180.0 / pi);
+  glLightf(light, GL_SPOT_CUTOFF, cutOffAngle * 180.0 / PI);
   // The exponential dropoff is not right/spec compliant...
   glLightf(light, GL_SPOT_EXPONENT, beamWidth < cutOffAngle ? 1.0 : 0.0);
 
@@ -2742,7 +2136,7 @@ void ViewerOpenGL::removeObject(Object key)
 }
 
 
-void ViewerOpenGL::enableLighting(bool lightsOn)
+void ViewerOpenGL::enableLighting(bool lightsOn) 
 {
   if (lightsOn)
     {
@@ -2754,20 +2148,20 @@ void ViewerOpenGL::enableLighting(bool lightsOn)
 
 // Set attributes
 
-void ViewerOpenGL::setColor(float r, float g, float b, float a)
+void ViewerOpenGL::setColor(float r, float g, float b, float a) 
 {
   glColor4f(r,g,b,a);
 }
 
 void ViewerOpenGL::setFog(const float * color,
-                          float   visibilityRange,
-                          const char * fogType)
+			  float   visibilityRange,
+			  const char * fogType)
 {
   GLfloat fogColor[4] = { color[0], color[1], color[2], 1.0 };
   GLint fogMode = (strcmp(fogType,"EXPONENTIAL") == 0) ? GL_EXP : GL_LINEAR;
 
   glEnable( GL_FOG );
-  glFogf( GL_FOG_START, 1.5 );        // What should this be?...
+  glFogf( GL_FOG_START, 1.5 );	// What should this be?...
   glFogf( GL_FOG_END, visibilityRange );
   glFogi( GL_FOG_MODE, fogMode );
   glFogfv( GL_FOG_COLOR, fogColor );
@@ -2775,30 +2169,30 @@ void ViewerOpenGL::setFog(const float * color,
 }
 
 void ViewerOpenGL::setMaterial(float ambientIntensity,
-                               const float diffuseColor[3],
-                               const float emissiveColor[3],
-                               float shininess,
-                               const float specularColor[3],
-                               float transparency)
+			       const float diffuseColor[3],
+			       const float emissiveColor[3],
+			       float shininess,
+			       const float specularColor[3],
+			       float transparency)
 {
   float alpha = 1.0 - transparency;
 
   float ambient[4] = { ambientIntensity*diffuseColor[0],
-                       ambientIntensity*diffuseColor[1],
-                       ambientIntensity*diffuseColor[2],
-                       alpha };
+		       ambientIntensity*diffuseColor[1],
+		       ambientIntensity*diffuseColor[2],
+		       alpha };
   float diffuse[4] = { diffuseColor[0],
-                       diffuseColor[1],
-                       diffuseColor[2],
-                       alpha };
+		       diffuseColor[1],
+		       diffuseColor[2],
+		       alpha };
   float emission[4] = { emissiveColor[0],
-                        emissiveColor[1],
-                        emissiveColor[2],
-                        alpha };
+			emissiveColor[1],
+			emissiveColor[2],
+			alpha };
   float specular[4] = { specularColor[0],
-                        specularColor[1],
-                        specularColor[2],
-                        alpha };
+			specularColor[1],
+			specularColor[2],
+			alpha };
 
   // doesn't work right yet (need alpha render pass...)
   if (d_blend && ! fpzero(transparency))
@@ -2808,7 +2202,7 @@ void ViewerOpenGL::setMaterial(float ambientIntensity,
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
 // In OGL standard range of shininess is [0.0,128.0]
-// In VRML97 the range is [0.0,1.0]
+// In VRML97 the range is [0.0,1.0] 
   glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess*128);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 
@@ -2834,7 +2228,7 @@ void ViewerOpenGL::setMaterial(float ambientIntensity,
 // USE'd with a different context.
 
 void ViewerOpenGL::setMaterialMode (int textureComponents,
-                                    bool colors)
+				    bool colors)
 {
   if (textureComponents && d_texture && ! d_wireframe)
     {
@@ -2844,9 +2238,9 @@ void ViewerOpenGL::setMaterialMode (int textureComponents,
       // they take precedence over textures with GL_MODULATE. The
       // textures won't be lit this way but at least they show up...
       if (textureComponents > 2 && colors)
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
       else
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
     }
   else
     glDisable( GL_TEXTURE_2D );
@@ -2879,14 +2273,14 @@ void ViewerOpenGL::setSensitive(Node * object) {
 // into the memory pointed to by pixels, so there better be enough.
 
 void ViewerOpenGL::scaleTexture(size_t w, size_t h,
-                                size_t newW, size_t newH,
-                                size_t nc,
-                                unsigned char* pixels)
+				size_t newW, size_t newH,
+				size_t nc,
+				unsigned char* pixels)
 {
-  GLenum fmt[] = { GL_LUMINANCE,        // single component
-                   GL_LUMINANCE_ALPHA,        // 2 components
-                   GL_RGB,                // 3 components
-                   GL_RGBA                // 4 components
+  GLenum fmt[] = { GL_LUMINANCE,	// single component
+		   GL_LUMINANCE_ALPHA,	// 2 components
+		   GL_RGB,		// 3 components
+		   GL_RGBA		// 4 components
   };
 
   unsigned char *newpix = new unsigned char[nc*newW*newH];
@@ -2894,7 +2288,7 @@ void ViewerOpenGL::scaleTexture(size_t w, size_t h,
   glPixelStorei( GL_PACK_ALIGNMENT, 1 );
   glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
   if (0 == gluScaleImage( fmt[nc-1], w, h, GL_UNSIGNED_BYTE, pixels,
-                          newW, newH, GL_UNSIGNED_BYTE, newpix))
+			  newW, newH, GL_UNSIGNED_BYTE, newpix))
     memcpy(pixels, newpix, nc*newW*newH);
 
   delete [] newpix;
@@ -2906,15 +2300,15 @@ void ViewerOpenGL::scaleTexture(size_t w, size_t h,
 //
 Viewer::TextureObject
 ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
-                            bool repeat_s,
-                            bool repeat_t,
-                            const unsigned char * pixels,
-                            bool retainHint)
+			    bool repeat_s,
+			    bool repeat_t,
+			    const unsigned char * pixels,
+			    bool retainHint)
 {
-  GLenum fmt[] = { GL_LUMINANCE,        // single component
-                   GL_LUMINANCE_ALPHA,        // 2 components
-                   GL_RGB,                // 3 components
-                   GL_RGBA                // 4 components
+  GLenum fmt[] = { GL_LUMINANCE,	// single component
+		   GL_LUMINANCE_ALPHA,	// 2 components
+		   GL_RGB,		// 3 components
+		   GL_RGBA		// 4 components
   };
 
   GLuint glid = 0;
@@ -2934,12 +2328,12 @@ ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
   glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
   glTexImage2D( GL_TEXTURE_2D, 0, nc, w, h, 0,
-                fmt[nc-1], GL_UNSIGNED_BYTE, pixels);
+		fmt[nc-1], GL_UNSIGNED_BYTE, pixels);
 
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                   repeat_s ? GL_REPEAT : GL_CLAMP );
+		   repeat_s ? GL_REPEAT : GL_CLAMP );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                   repeat_t ? GL_REPEAT : GL_CLAMP );
+		   repeat_t ? GL_REPEAT : GL_CLAMP );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
@@ -2952,19 +2346,19 @@ ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
 //
 
 Viewer::TextureObject
-ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset,
+ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset, 
                             size_t w, size_t h,
                             size_t whole_w,size_t whole_h,size_t nc,
-                            bool repeat_s,
-                            bool repeat_t,
-                            const unsigned char *pixels,
-                            bool retainHint)
+			    bool repeat_s,
+			    bool repeat_t,
+			    const unsigned char *pixels,
+			    bool retainHint)
 {
 
-  GLenum fmt[] = { GL_LUMINANCE,        // single component
-                   GL_LUMINANCE_ALPHA,        // 2 components
-                   GL_RGB,                // 3 components
-                   GL_RGBA                // 4 components
+  GLenum fmt[] = { GL_LUMINANCE,	// single component
+		   GL_LUMINANCE_ALPHA,	// 2 components
+		   GL_RGB,		// 3 components
+		   GL_RGBA		// 4 components
   };
 
   GLuint glid = 0;
@@ -2988,13 +2382,13 @@ ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset,
     memcpy(texturepart+i*w*nc,pixels+(i+yoffset)*whole_w*nc+xoffset*nc, w*nc);
 
   glTexImage2D( GL_TEXTURE_2D, 0, nc, w, h, 0,
-                fmt[nc-1], GL_UNSIGNED_BYTE, texturepart);
+		fmt[nc-1], GL_UNSIGNED_BYTE, texturepart);
 
   delete [] texturepart;
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                   repeat_s ? GL_REPEAT : GL_CLAMP );
+		   repeat_s ? GL_REPEAT : GL_CLAMP );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                   repeat_t ? GL_REPEAT : GL_CLAMP );
+		   repeat_t ? GL_REPEAT : GL_CLAMP );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
@@ -3026,16 +2420,16 @@ void ViewerOpenGL::removeTextureObject(TextureObject t)
 // Tc' = -C x S x R x C x T x Tc
 
 void ViewerOpenGL::setTextureTransform(const float center[2],
-                                       float rotation,
-                                       const float scale[2],
-                                       const float translation[2]) {
+				       float rotation,
+				       const float scale[2],
+				       const float translation[2]) {
   glMatrixMode(GL_TEXTURE);
   glLoadIdentity();
 
   if (center) glTranslatef(-center[0], -center[1], 0.0);
   if (scale) glScalef(scale[0], scale[1], 1.0);
   if (rotation != 0.0)
-    glRotatef(rotation * 180.0 / pi, 0.0, 0.0, 1.0);
+    glRotatef(rotation * 180.0 / PI, 0.0, 0.0, 1.0);
 
   if (center) glTranslatef(center[0], center[1], 0.0);
   if (translation) glTranslatef(translation[0], translation[1], 0.0);
@@ -3043,55 +2437,122 @@ void ViewerOpenGL::setTextureTransform(const float center[2],
   glMatrixMode(GL_MODELVIEW);
 }
 
-namespace {
+// Transforms
+// P' = T x C x R x SR x S x -SR x -C x P
 
-    /**
-     * Compute a target and up vector from position/orientation/distance.
-     */
-    void computeView(const float position[3],
-                     const float orientation[4],
-                     const float distance,
-                     float target[3],
-                     float up[3])
+void ViewerOpenGL::setTransform(const float center[3],
+				const float rotation[4],
+				const float scale[3],
+				const float scaleOrientation[4],
+				const float translation[3]) 
+{
+  glTranslatef(translation[0], translation[1], translation[2]);
+  glTranslatef(center[0], center[1], center[2]);
+
+  if (! fpzero(rotation[3]) )
+    glRotatef(rotation[3] * 180.0 / PI,
+	      rotation[0],
+	      rotation[1],
+	      rotation[2]);
+
+  if (! fpequal(scale[0], 1.0) ||
+      ! fpequal(scale[1], 1.0) ||
+      ! fpequal(scale[2], 1.0) )
     {
-        // Graphics Gems, p 466. Convert between axis/angle and rotation matrix
+      if (! fpzero(scaleOrientation[3]) )
+	glRotatef(scaleOrientation[3] * 180.0 / PI,
+		  scaleOrientation[0],
+		  scaleOrientation[1],
+		  scaleOrientation[2]);
 
-        //
-        // orientation axis should be normalized.
-        //
-        assert(fpequal(length(&orientation[0]), 1.0));
+      glScalef(scale[0], scale[1], scale[2]);
 
-        double s = sin(orientation[3]);
-        double c = cos(orientation[3]);
-        double t = 1.0 - c;
-
-        // Transform [0,0,1] by the orientation to determine sight line
-        target[0] = t * orientation[0] * orientation[2] + s * orientation[1];
-        target[1] = t * orientation[1] * orientation[2] - s * orientation[0];
-        target[2] = t * orientation[2] * orientation[2] + c;
-
-        // Move along that vector the specified distance away from position[]
-        target[0] = -distance*target[0] + position[0];
-        target[1] = -distance*target[1] + position[1];
-        target[2] = -distance*target[2] + position[2];
-
-        // Transform [0,1,0] by the orientation to determine up vector
-        up[0] = t * orientation[0] * orientation[1] - s * orientation[2];
-        up[1] = t * orientation[1] * orientation[1] + c;
-        up[2] = t * orientation[1] * orientation[2] + s * orientation[0];
+      if (! fpzero(scaleOrientation[3]) )
+	glRotatef(-scaleOrientation[3] * 180.0 / PI,
+		  scaleOrientation[0],
+		  scaleOrientation[1],
+		  scaleOrientation[2]);
     }
+
+  glTranslatef(-center[0], -center[1], -center[2]);
 }
 
-void ViewerOpenGL::setViewpoint(const float position[3],
-                                const float orientation[4],
-                                const float fieldOfView,
-                                const float avatarSize,
-                                const float visibilityLimit)
+// I used to just do a glPushMatrix()/glPopMatrix() in beginObject()/endObject().
+// This is a hack to work around the glPushMatrix() limit (32 deep on Mesa).
+// It has some ugly disadvantages: it is slower and the resulting transform
+// after a setTransform/unsetTransform may not be identical to the original.
+// It might be better to just build our own matrix stack...
+
+void ViewerOpenGL::unsetTransform(const float center[3],
+				  const float rotation[4],
+				  const float scale[3],
+				  const float scaleOrientation[4],
+				  const float translation[3])
+{
+  glTranslatef(center[0], center[1], center[2]);
+
+  if (! fpequal(scale[0], 1.0) ||
+      ! fpequal(scale[1], 1.0) ||
+      ! fpequal(scale[2], 1.0) )
+    {
+      if (! fpzero(scaleOrientation[3]) )
+	glRotatef(scaleOrientation[3] * 180.0 / PI,
+		  scaleOrientation[0],
+		  scaleOrientation[1],
+		  scaleOrientation[2]);
+
+      glScalef(1.0/scale[0], 1.0/scale[1], 1.0/scale[2]);
+
+      if (! fpzero(scaleOrientation[3]) )
+	glRotatef(-scaleOrientation[3] * 180.0 / PI,
+		  scaleOrientation[0],
+		  scaleOrientation[1],
+		  scaleOrientation[2]);
+    }
+
+  if (! fpzero(rotation[3]) )
+    glRotatef(- rotation[3] * 180.0 / PI,
+	      rotation[0],
+	      rotation[1],
+	      rotation[2]);
+
+  glTranslatef(-center[0], -center[1], -center[2]);
+  glTranslatef(-translation[0], -translation[1], -translation[2]);
+}
+
+// The matrix gets popped at endObject() - Not anymore. I added
+// an explicit unsetBillboardTransform to work around the matrix
+// depth limit of 32 in mesa. Now the limit only applies to 
+// nested billboards.
+
+void ViewerOpenGL::setBillboardTransform(const float axisOfRotation[3]) 
+{
+// Following code is modified by S. K. Bose March 02/2000 to fix the Billboardtransform
+// according to the specification.
+
+  float M[4][4];
+  getBillboardTransformMatrix(M, axisOfRotation);
+
+  glPushMatrix();
+  glMultMatrixf(&M[0][0]);
+
+}
+
+void ViewerOpenGL::unsetBillboardTransform(const float axisOfRotation[3])
+{
+  glPopMatrix();
+}
+
+void ViewerOpenGL::setViewpoint(const float *position,
+				float *orientation,
+				float fieldOfView,
+				float avatarSize,
+				float visibilityLimit)
 {
   glMatrixMode( GL_PROJECTION );
   if (! d_selectMode) glLoadIdentity();
 
-  float field_of_view = fieldOfView * 180.0 / pi;
+  float field_of_view = fieldOfView * 180.0 / PI;
   float aspect = ((float) d_winWidth) / d_winHeight;
   float znear = (avatarSize > 0.0) ? (0.5 * avatarSize) : 0.01;
   float zfar = (visibilityLimit > 0.0) ? visibilityLimit : 30000.0;
@@ -3115,8 +2576,8 @@ void ViewerOpenGL::setViewpoint(const float position[3],
   d_position[2] = position[2] + d_translatez;
 
   gluLookAt(position[0], position[1], position[2],
-            target[0]+d_target[0], target[1]+d_target[1], target[2]+d_target[2],
-            up[0], up[1], up[2]);
+	    target[0]+d_target[0], target[1]+d_target[1], target[2]+d_target[2],
+	    up[0], up[1], up[2]);
 
 #if 0
   double MV[4][4];
@@ -3124,7 +2585,7 @@ void ViewerOpenGL::setViewpoint(const float position[3],
   float OGL_MV[16];
   matrix_to_glmatrix(MV, OGL_MV);
   glLoadMatrixf(OGL_MV);
-#endif
+#endif 
 
   // View modifiers are applied in first beginObject
   if (d_rotationChanged)
@@ -3141,14 +2602,14 @@ void ViewerOpenGL::transformPoints(int np, float *p)
 {
   float m[16];
   glGetFloatv (GL_MODELVIEW_MATRIX, m);
-
+  
   float x, y, z;
   for (int i=0; i<np; ++i)
     {
       x = m[0]*p[0] + m[4]*p[1] + m[8]*p[2] + m[12];
       y = m[1]*p[0] + m[5]*p[1] + m[9]*p[2] + m[13];
       z = m[2]*p[0] + m[6]*p[1] + m[10]*p[2] + m[14];
-
+      
       p[0] = x;
       p[1] = y;
       p[2] = z;
@@ -3157,14 +2618,14 @@ void ViewerOpenGL::transformPoints(int np, float *p)
 
 }
 
-/**
- * @brief Multiply the current modelview matrix by @p mat.
- *
- * @param mat   a matrix.
- */
-void ViewerOpenGL::transform(const VrmlMatrix & mat)
+//   
+// Multiply current ModelView Matrix with Given Matrix M
+// @param M matrix in OpenGL format
+//
+// 
+void ViewerOpenGL::MatrixMultiply(const float M[4][4])
 {
-    glMultMatrixf(&mat[0][0]);
+   glMultMatrixf(&M[0][0]);
 }
 
 //
@@ -3173,23 +2634,23 @@ void ViewerOpenGL::transform(const VrmlMatrix & mat)
 
 // update is called from a timer callback and from checkSensitive
 void ViewerOpenGL::update(const double timeNow) {
-    if (this->browser.update(timeNow)) {
+    if (this->scene.update(timeNow)) {
         checkErrors("update");
-        this->wsPostRedraw();
+        wsPostRedraw();
     }
 
     // Set an alarm clock for the next update time.
-    this->wsSetTimer(this->browser.getDelta());
+    wsSetTimer(this->scene.getDelta());
 }
 
-void ViewerOpenGL::redraw()
+void ViewerOpenGL::redraw() 
 {
   if (! d_GLinitialized) initialize();
 
   double start = theSystem->time();
 
 
-  glDisable( GL_FOG );                // this is a global attribute
+  glDisable( GL_FOG );		// this is a global attribute
   glDisable( GL_TEXTURE_2D );
 
   glEnable( GL_CULL_FACE );
@@ -3219,14 +2680,14 @@ void ViewerOpenGL::redraw()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  this->browser.render(*this);
+  this->scene.render(this);
 
   if (d_reportFPS)
     {
       if (d_background[0]+d_background[1]+d_background[2] > 2.0)
-        glColor3f(0.0, 0.0, 0.0);
+	glColor3f(0.0, 0.0, 0.0);
       else
-        glColor3f(1.0, 1.0, 1.0);
+	glColor3f(1.0, 1.0, 1.0);
 
       // Report average of last 2 frame times (can't report this
       // frame time because we want to count swapBuffers time).
@@ -3243,7 +2704,7 @@ void ViewerOpenGL::redraw()
   d_renderTime = theSystem->time() - start;
 }
 
-void ViewerOpenGL::resize(int width, int height)
+void ViewerOpenGL::resize(int width, int height) 
 {
   if (width < 2) width = 2;
   if (height < 2) height = 2;
@@ -3300,7 +2761,7 @@ void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
    add_quats(q, d_curquat, d_curquat);
    d_rotationChanged = true;
    wsPostRedraw();
-}
+}                
 
 void ViewerOpenGL::step(float x, float y, float z) {
     GLint viewport[4];
@@ -3308,8 +2769,7 @@ void ViewerOpenGL::step(float x, float y, float z) {
     glGetIntegerv (GL_VIEWPORT, viewport);
     glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev (GL_PROJECTION_MATRIX, projection);
-    Vrml97Node::NavigationInfo * nav =
-            this->browser.bindableNavigationInfoTop();
+    Vrml97Node::NavigationInfo * nav = this->scene.bindableNavigationInfoTop();
     GLdouble x_c = d_winWidth/2;
     GLdouble y_c = d_winHeight/2;
     GLdouble z_c = 0.5;
@@ -3356,8 +2816,7 @@ void ViewerOpenGL::zoom(float z) {
     glGetIntegerv (GL_VIEWPORT, viewport);
     glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev (GL_PROJECTION_MATRIX, projection);
-    Vrml97Node::NavigationInfo * nav =
-            this->browser.bindableNavigationInfoTop();
+    Vrml97Node::NavigationInfo * nav = this->scene.bindableNavigationInfoTop();
     GLdouble x_c = d_winWidth/2;
     GLdouble y_c = d_winHeight/2;
     GLdouble z_c = 0.5;
@@ -3395,50 +2854,50 @@ void ViewerOpenGL::handleKey(int key)
     case KEY_LEFT:
           step(-1, 0, 0);
       break;
-
+ 
     case KEY_RIGHT:
           step(1, 0, 0);
      break;
-
+ 
     case KEY_UP:  // move forward along line of sight
       zoom(1);
       break;
-
+ 
     case KEY_DOWN: // move backwards along line of sight
       zoom(-1);
       break;
-
+ 
     case 'a':  // look up
       rot_trackball(0.0, 0.45, 0.0, 0.55);
       break;
-
+ 
     case 'z':  // look down
       rot_trackball(0.0, 0.55, 0.0, 0.45);
       break;
-
+ 
     case 'A':  // translate up
       step(0,1,0);
       break;
-
+ 
     case 'Z':  // translate down
-      step(0,-1,0);
+      step(0,-1,0);                              
       break;
-
+ 
     case ',':                   // Look left
       rot_trackball(0.55, 0.0, 0.45, 0.0);
       break;
-
+ 
     case '.':                   // Look right
       rot_trackball(0.45, 0.0, 0.55, 0.0);
       break;
-
+               
     case KEY_PAGE_DOWN:
-      this->browser.nextViewpoint(); wsPostRedraw(); break;
+      this->scene.nextViewpoint(); wsPostRedraw(); break;
 
     case KEY_PAGE_UP:
-      this->browser.prevViewpoint(); wsPostRedraw(); break;
+      this->scene.prevViewpoint(); wsPostRedraw(); break;
 
-    case '/':                        // Frames/second
+    case '/':			// Frames/second
       d_reportFPS = ! d_reportFPS;
       wsPostRedraw();
       break;
@@ -3447,9 +2906,9 @@ void ViewerOpenGL::handleKey(int key)
       d_blend = ! d_blend;
       wsPostRedraw();
       theSystem->inform(" Alpha blending %sabled.",
-                     d_blend ? "en" : "dis");
+		     d_blend ? "en" : "dis");
       break;
-
+	
     case 'd':
       d_drawBSpheres = ! d_drawBSpheres;
       theSystem->inform(" bspheres %sabled.", d_drawBSpheres ? "en" : "dis");
@@ -3461,7 +2920,7 @@ void ViewerOpenGL::handleKey(int key)
       theSystem->inform(" culling %sabled.", d_cull ? "en" : "dis");
       wsPostRedraw();
       break;
-
+	
     case 'l':
       d_lit = ! d_lit;
       theSystem->inform(" Lighting %sabled.", d_lit ? "en" : "dis");
@@ -3469,18 +2928,18 @@ void ViewerOpenGL::handleKey(int key)
       break;
 
     case KEY_HOME:
-    case 'r':                        // Reset view
+    case 'r':			// Reset view
       resetUserNavigation();
       break;
-
+	
     case 't':
       d_texture = ! d_texture;
       wsPostRedraw();
       theSystem->inform(" Texture mapping %sabled.",
-                     d_texture ? "en" : "dis");
+		     d_texture ? "en" : "dis");
       break;
-
-    case 'w':                        // Wireframe (should disable texturing)
+	
+    case 'w':			// Wireframe (should disable texturing)
       d_wireframe = ! d_wireframe;
       glPolygonMode(GL_FRONT_AND_BACK, d_wireframe ? GL_LINE : GL_FILL);
       wsPostRedraw();
@@ -3488,7 +2947,7 @@ void ViewerOpenGL::handleKey(int key)
       break;
 # if 0
     case 'q':
-      this->browser.destroyWorld();        // may not return
+      this->scene.destroyWorld();	// may not return
       break;
 # endif
     default:
@@ -3513,28 +2972,28 @@ void ViewerOpenGL::handleButton( EventInfo *e)
   if (e->event == EVENT_MOUSE_RELEASE)
     wsSetCursor( CURSOR_INHERIT );
   else
-    switch (e->what)                // button
+    switch (e->what)		// button
       {
       case 0:
-        wsSetCursor( CURSOR_CYCLE );
-        d_rotating = true;
-        d_beginx = e->x;
-        d_beginy = e->y;
-        break;
-
+	wsSetCursor( CURSOR_CYCLE );
+	d_rotating = true;
+	d_beginx = e->x;
+	d_beginy = e->y;
+	break;
+      
       case 1:
-        wsSetCursor( CURSOR_UP_DOWN );
-        d_scaling = true;
-        d_beginx = e->x;
-        d_beginy = e->y;
-        break;
-
+	wsSetCursor( CURSOR_UP_DOWN );
+	d_scaling = true;
+	d_beginx = e->x;
+	d_beginy = e->y;
+	break;
+      
       case 2:
-        wsSetCursor( CURSOR_CROSSHAIR );
-        d_translating = true;
-        d_beginx = e->x;
-        d_beginy = e->y;
-        break;
+	wsSetCursor( CURSOR_CROSSHAIR );
+	d_translating = true;
+	d_beginx = e->x;
+	d_beginy = e->y;
+	break;
       }
 }
 
@@ -3597,7 +3056,7 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     glPushMatrix();
     glLoadIdentity();
     gluPickMatrix(GLdouble(x), GLdouble(viewport[3] - y),
-                  2.0, 2.0, viewport);
+		  2.0, 2.0, viewport);
 
     // Set up the global attributes
     glDisable(GL_FOG);
@@ -3627,7 +3086,7 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    this->browser.render(*this);
+    this->scene.render(this);
 
     this->d_selectMode = false;
 
@@ -3713,20 +3172,20 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     if (this->d_activeSensitive) {
         if (mouseEvent == EVENT_MOUSE_RELEASE
                 || mouseEvent == EVENT_MOUSE_MOVE) {
-            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
-                                         timeNow,
-                                         selected == this->d_activeSensitive,
-                                         false,
-                                         selectCoord);
-            this->d_activeSensitive = 0;
+            this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
+                                       timeNow,
+                                       selected == this->d_activeSensitive,
+                                       false,
+                                       selectCoord);
+	    this->d_activeSensitive = 0;
         } else {
             // _DRAG
-            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
-                                         timeNow,
-                                         selected == this->d_activeSensitive,
-                                         true,
-                                         selectCoord);
-        }
+	    this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
+                                       timeNow,
+                                       selected == this->d_activeSensitive,
+                                       true,
+                                       selectCoord);
+	}
         wasActive = true;
     } else if (mouseEvent == EVENT_MOUSE_CLICK && selected) {
         //
@@ -3734,31 +3193,31 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
         // mouse over events are no longer relevant.
         //
         if (d_overSensitive && d_overSensitive != selected) {
-            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
-                                         timeNow,
-                                         false, false, // isOver, isActive
-                                         selectCoord);
-            this->d_overSensitive = 0;
+            this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
+                                       timeNow,
+                                       false, false, // isOver, isActive
+                                       selectCoord);
+	    this->d_overSensitive = 0;
         }
         this->d_activeSensitive = selected;
-        this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
-                                     timeNow,
-                                     true, true, // isOver, isActive
-                                     selectCoord);
+        this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
+                                   timeNow,
+                                   true, true, // isOver, isActive
+                                   selectCoord);
     } else if (mouseEvent == EVENT_MOUSE_MOVE) {
         // Handle isOver events (coords are bogus)
         if (d_overSensitive && d_overSensitive != selected) {
-            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
-                                         timeNow,
-                                         false, false, // isOver, isActive
-                                         selectCoord);
+            this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
+                                       timeNow,
+                                       false, false, // isOver, isActive
+                                       selectCoord);
         }
         this->d_overSensitive = selected;
         if (this->d_overSensitive) {
-            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
-                                         timeNow,
-                                         true, false,  // isOver, isActive
-                                         selectCoord);
+            this->scene.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
+                                       timeNow,
+                                       true, false,  // isOver, isActive
+                                       selectCoord);
         }
     }
 
@@ -3776,7 +3235,7 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
 
 /* text: general purpose text routine.  draws a string according to
  * format in a stroke font at x, y after scaling it by the scale
- * specified (scale is in window-space (lower-left origin) pixels).
+ * specified (scale is in window-space (lower-left origin) pixels).  
  *
  * x      - position in x (in window-space)
  * y      - position in y (in window-space)
@@ -3795,7 +3254,7 @@ void ViewerOpenGL::text2( int x, int y, float scale, char* text )
   gluOrtho2D(0, d_winWidth, 0, d_winHeight);
 
   glMatrixMode(GL_MODELVIEW);
-  this->modelviewMatrixStack.push();
+  glPushMatrix();
   glLoadIdentity();
 
   glPushAttrib(GL_ENABLE_BIT);
@@ -3811,76 +3270,120 @@ void ViewerOpenGL::text2( int x, int y, float scale, char* text )
 
   glPopAttrib();
 
-  this->modelviewMatrixStack.pop();
+  glPopMatrix();
   glMatrixMode(GL_PROJECTION);
   glPopMatrix();
   glMatrixMode(GL_MODELVIEW);
 # endif
 }
 
-void ViewerOpenGL::drawBSphere(const BSphere & bs,
-                               const BVolume::Intersection intersection)
+void ViewerOpenGL::text3(int *justify, float size, int n, const char * const *s)
 {
-    static const GLfloat green[] = { 0.25f, 1.0f, 0.25f, 1.0f };
-    static const GLfloat red[] = { 1.0f, 0.5f, 0.5f, 1.0f };
-    static const GLfloat grey[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+# ifdef OPENVRML_HAVE_GLUT
+  float font_scale = 0.005 * size;
 
-    if (!this->d_drawBSpheres || bs.isMAX() || bs.getRadius() == -1.0) {
-        return;
+  glPushAttrib(GL_ENABLE_BIT);
+  glDisable(GL_LIGHTING);
+  glDisable(GL_TEXTURE_2D);
+
+  GLfloat x = 0.0, y = 0.0;
+
+  if (justify[0] < 0)
+    x -= strlen(s[0]);
+  else if (justify[0] == 0)
+    x -= 0.5 * strlen(s[0]);
+
+  float font_height = 1.0;
+  for (int i=0; i<n; ++i, y-=font_height)
+    {
+      const char *textLine = s[i];
+      if ( textLine )
+	{
+	  glPushMatrix();
+	  glTranslatef(x, y, 0.0);
+	  glScalef(font_scale, font_scale, font_scale);
+	  while (*textLine)
+	    glutStrokeCharacter(GLUT_STROKE_ROMAN, *textLine++);
+	  glPopMatrix();
+	}
     }
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    //glEnable(GL_LIGHTING);
-    glShadeModel(GL_FLAT);
-    GLUquadricObj * sph = 0;
-    glMatrixMode(GL_MODELVIEW);
-    this->modelviewMatrixStack.push();
-    const float * c = bs.getCenter();
-    glTranslatef(c[0], c[1], c[2]);
-    sph = gluNewQuadric();
-    switch (intersection) {
-    case BVolume::outside:
-        //glDisable(GL_LIGHTING);
-        //glEnable(GL_LIGHTING);
-        gluQuadricDrawStyle(sph, GLU_LINE);
-        //gluQuadricDrawStyle(sph, GLU_POINT);
-        glColor3f(0.5, 0.5, 0.5);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
-        gluSphere(sph, bs.getRadius(), 5, 5);
-        break;
 
-    case BVolume::partial:
-        //glEnable(GL_LIGHTING);
-        gluQuadricNormals(sph, GLU_SMOOTH);
-        //gluQuadricDrawStyle(sph, GLU_FILL);
-        gluQuadricDrawStyle(sph, GLU_LINE);
-        glColor3f(0.25, 1.0, 0.25);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
-        gluSphere(sph, bs.getRadius(), 8, 8);
-        break;
-
-    case BVolume::inside:
-        //glEnable(GL_LIGHTING);
-        gluQuadricNormals(sph, GLU_SMOOTH);
-        //gluQuadricDrawStyle(sph, GLU_FILL);
-        gluQuadricDrawStyle(sph, GLU_LINE);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, red);
-        glColor3f(1.0, 0.5, 0.5);
-        gluSphere(sph, bs.getRadius(), 8, 8);
-        break;
-
-    default:
-        //glEnable(GL_LIGHTING);
-        gluQuadricNormals(sph, GLU_SMOOTH);
-        gluQuadricDrawStyle(sph, GLU_LINE);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
-        glColor3f(0.5, 0.5, 0.5);
-        gluSphere(sph, bs.getRadius(), 8, 8);
-    }
-    gluDeleteQuadric(sph);
-    this->modelviewMatrixStack.pop();
+  glPopAttrib();
+# endif
 }
 
-} // namespace GL
 
-} // namespace OpenVRML
+static GLfloat green[] = {0.25f, 1.0f, 0.25f, 1.0f};
+static GLfloat red[] = {1.0f, 0.5f, 0.5f, 1.0f};
+static GLfloat grey[] = {0.5f, 0.5f, 0.5f, 1.0f};
+
+
+// argh: see <URL:http://www.debian.org/Bugs/db/44/44489-b.html> for
+// an explanation. quick version: mesa doesn't work right with newver
+// c++ compilers (c++ has recently become more strict about
+// enums). should this go into configure.in? probably, since it might
+// occur outside this file. the problem should go away with the next
+// version of mesa.. -cks
+//
+#ifdef MESA
+#if (GLU_VERSION_1_1 || GLU_VERSION_1_2)
+#define MESA_GLU_ENUM_FIX (GLenum)
+#else
+#define MESA_GLU_ENUM_FIX
+#endif
+#else
+#define MESA_GLU_ENUM_FIX
+#endif
+
+
+void ViewerOpenGL::drawBSphere(const BSphere & bs, int flag) {
+  if (!d_drawBSpheres) return;
+  if (bs.isMAX()) return;
+  if (bs.getRadius()==-1.0) return;
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
+  //glEnable(GL_LIGHTING);
+  glShadeModel(GL_FLAT);
+  GLUquadricObj* sph = (GLUquadricObj*)0;
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  const float* c = bs.getCenter();
+  glTranslatef(c[0], c[1], c[2]);
+  sph = gluNewQuadric();
+  if (flag == BVolume::BV_OUTSIDE) {
+    //glDisable(GL_LIGHTING);
+    //glEnable(GL_LIGHTING);
+    gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
+    //gluQuadricDrawStyle(sph, GLU_POINT);
+    glColor3f(0.5, 0.5, 0.5);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
+    gluSphere(sph, bs.getRadius(), 5, 5);
+  } else if (flag == BVolume::BV_PARTIAL) {
+    //glEnable(GL_LIGHTING);
+    gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
+    //gluQuadricDrawStyle(sph, GLU_FILL);
+    gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
+    glColor3f(0.25, 1.0, 0.25);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
+    gluSphere(sph, bs.getRadius(), 8, 8);
+  } else if (flag == BVolume::BV_INSIDE) {
+    //glEnable(GL_LIGHTING);
+    gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
+    //gluQuadricDrawStyle(sph, GLU_FILL);
+    gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, red);
+    glColor3f(1.0, 0.5, 0.5);
+    gluSphere(sph, bs.getRadius(), 8, 8);
+  } else {
+    //glEnable(GL_LIGHTING);
+    gluQuadricNormals(sph, MESA_GLU_ENUM_FIX GLU_SMOOTH);
+    gluQuadricDrawStyle(sph, MESA_GLU_ENUM_FIX GLU_LINE);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
+    glColor3f(0.5, 0.5, 0.5);
+    gluSphere(sph, bs.getRadius(), 8, 8);
+  }
+  gluDeleteQuadric(sph);
+
+  glPopMatrix();
+  
+}

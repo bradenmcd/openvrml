@@ -114,20 +114,12 @@ antlr 2.7.0
          using OpenVRML dll.
        By default it will make OpenVRML dynamic library with mozilla 
    javascript, JNI, JPEG image and PNG image support. Options are there to 
-   support all these selectively by undefined the corresponding macro in
-   `<openvrml>\ide-projects\Windows\VisualC6\winconfig.h`.Macros 
-   are, OPENVRML_HAVE_SPIDERMONKEY for javascript, OPENVRML_HAVE_JNI
-   for java, OPENVRML_HAVE_LIBJPEG for JPEG image support and  
-   OPENVRML_HAVE_LIBPNG for PNG image support.
+   support all these selectively.
 
        For example if you don't want javascript support in OpenVRML 
-   library, then edit `winconfig.h` in `<openvrml>\ide-projects\Windows
-   \VisualC6` by undefined the macro OPENVRML_HAVE_SPIDERMONKEY and give 
-   the command
+   library, the command is
          nmake /F Makefile.vc6 WITH_JAVASCRIPT=NO all
 
-       Use Makefile.vc6 in '<openvrml>\java' to make all java support
-   classes in jar format (script.jar).
  
   b) Using MSVC++6 Projects (*.dsp) and workspace files (*.dsw) 
 
@@ -143,11 +135,12 @@ antlr 2.7.0
     where you've installed OpenVRML's dependencies. You can have options
     to support javascript, JNI, JPEG image and PNG image support selectively.
     By default all these are supported. If you don't want to support all 
-    these selectively then edit the file `<openvrml>\ide-projects\Windows
-    \VisualC6\winconfig.h` and undefined the corresponding macro. Macros 
-    are, OPENVRML_HAVE_SPIDERMONKEY for javascript, OPENVRML_HAVE_JNI
-    for java, OPENVRML_HAVE_LIBJPEG for JPEG image support and  
-    OPENVRML_HAVE_LIBPNG for PNG image support.
+    these selectively then undefined the corresponding macro in
+    preprocessor definitions by means of Project->Settings. Macros 
+    are, OPENVRML_HAVE_SPIDERMONKEY for javascript in script.cpp, 
+    OPENVRML_HAVE_JNI for java in script.cpp and ScriptJDK.cpp, 
+    OPENVRML_HAVE_LIBJPEG for JPEG image support in image.cpp and  
+    OPENVRML_HAVE_LIBPNG for PNG image support in image.cpp.
     Set include directories and library directories for GLUT, Zlib, 
     mozilla javascript (optional), java SDK (optional), PNG image 
     support (optional) and JPEG image support (optional) library 

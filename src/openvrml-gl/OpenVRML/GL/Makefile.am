@@ -1,4 +1,4 @@
-LIBRARY_VERSION = 3:0:0
+LIBRARY_VERSION = 3:1:0
 #                 | | |
 #          +------+ | +---+
 #          |        |     |
@@ -22,5 +22,7 @@ libopenvrml_gl_la_LDFLAGS = -version-info $(LIBRARY_VERSION) $(GLUT_LIBS)
 OpenVRMLGLincludedir = $(includedir)/OpenVRML/GL
 OpenVRMLGLinclude_HEADERS = common.h OpenGLEvent.h ViewerOpenGL.h
 endif
+
+noinst_HEADERS = private.h
 
 EXTRA_DIST = ViewerOpenGL.cpp OpenGLEvent.cpp
