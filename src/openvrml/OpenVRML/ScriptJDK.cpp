@@ -41,26 +41,7 @@
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
 
-#include "VrmlSFBool.h"
-#include "VrmlSFColor.h"
-#include "VrmlSFFloat.h"
-#include "VrmlSFImage.h"
-#include "VrmlSFInt.h"
-#include "VrmlSFNode.h"
-#include "VrmlSFRotation.h"
-#include "VrmlSFString.h"
-#include "VrmlSFTime.h"
-#include "VrmlSFVec2f.h"
-#include "VrmlSFVec3f.h"
-
-#include "VrmlMFColor.h"
-#include "VrmlMFFloat.h"
-#include "VrmlMFInt.h"
-#include "VrmlMFNode.h"
-#include "VrmlMFRotation.h"
-#include "VrmlMFString.h"
-#include "VrmlMFVec2f.h"
-#include "VrmlMFVec3f.h"
+#include "field.h"
 
 #ifdef _WIN32
 #define PATH_SEPARATOR ";"
