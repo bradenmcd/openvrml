@@ -2,8 +2,8 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
-// Copyright (C) 2001  Braden McDaniel
+// Copyright 1998  Chris Morley
+// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -138,15 +138,8 @@ namespace openvrml {
         virtual void print(std::ostream & out) const;
     };
 
-    inline bool operator==(const sfbool & lhs, const sfbool & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const sfbool & lhs, const sfbool & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const sfbool & lhs, const sfbool & rhs) throw ();
+    bool operator!=(const sfbool & lhs, const sfbool & rhs) throw ();
 
 
     class sfcolor : public field_value {
@@ -170,15 +163,8 @@ namespace openvrml {
         virtual void print(std::ostream & out) const;
     };
 
-    inline bool operator==(const sfcolor & lhs, const sfcolor & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const sfcolor & lhs, const sfcolor & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const sfcolor & lhs, const sfcolor & rhs) throw ();
+    bool operator!=(const sfcolor & lhs, const sfcolor & rhs) throw ();
 
 
     class sffloat : public field_value {
@@ -202,15 +188,8 @@ namespace openvrml {
         virtual void print(std::ostream & out) const;
     };
 
-    inline bool operator==(const sffloat & lhs, const sffloat & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const sffloat & lhs, const sffloat & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const sffloat & lhs, const sffloat & rhs) throw ();
+    bool operator!=(const sffloat & lhs, const sffloat & rhs) throw ();
 
 
     class sfimage : public field_value {
@@ -234,15 +213,8 @@ namespace openvrml {
         virtual void print(std::ostream & out) const;
     };
 
-    inline bool operator==(const sfimage & lhs, const sfimage & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const sfimage & lhs, const sfimage & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const sfimage & lhs, const sfimage & rhs) throw ();
+    bool operator!=(const sfimage & lhs, const sfimage & rhs) throw ();
 
 
     class sfint32 : public field_value {
@@ -266,15 +238,8 @@ namespace openvrml {
         virtual void print(std::ostream &) const;
     };
 
-    inline bool operator==(const sfint32 & lhs, const sfint32 & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const sfint32 & lhs, const sfint32 & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const sfint32 & lhs, const sfint32 & rhs) throw ();
+    bool operator!=(const sfint32 & lhs, const sfint32 & rhs) throw ();
 
 
     class sfnode : public field_value {
@@ -298,15 +263,8 @@ namespace openvrml {
         virtual void print(std::ostream &) const;
     };
 
-    inline bool operator==(const sfnode & lhs, const sfnode & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const sfnode & lhs, const sfnode & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const sfnode & lhs, const sfnode & rhs) throw ();
+    bool operator!=(const sfnode & lhs, const sfnode & rhs) throw ();
 
 
     class sfrotation : public field_value {
@@ -330,17 +288,8 @@ namespace openvrml {
         virtual void print(std::ostream & out) const;
     };
 
-    inline bool operator==(const sfrotation & lhs, const sfrotation & rhs)
-        throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const sfrotation & lhs, const sfrotation & rhs)
-        throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const sfrotation & lhs, const sfrotation & rhs) throw ();
+    bool operator!=(const sfrotation & lhs, const sfrotation & rhs) throw ();
 
 
     class sfstring : public field_value {
@@ -365,15 +314,8 @@ namespace openvrml {
         virtual void print(std::ostream &) const;
     };
 
-    inline bool operator==(const sfstring & lhs, const sfstring & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const sfstring & lhs, const sfstring & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const sfstring & lhs, const sfstring & rhs) throw ();
+    bool operator!=(const sfstring & lhs, const sfstring & rhs) throw ();
 
 
     class sftime : public field_value {
@@ -397,15 +339,8 @@ namespace openvrml {
         virtual void print(std::ostream &) const;
     };
 
-    inline bool operator==(const sftime & lhs, const sftime & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const sftime & lhs, const sftime & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const sftime & lhs, const sftime & rhs) throw ();
+    bool operator!=(const sftime & lhs, const sftime & rhs) throw ();
 
 
     class sfvec2f : public field_value {
@@ -429,15 +364,8 @@ namespace openvrml {
         virtual void print(std::ostream &) const;
     };
 
-    inline bool operator==(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const sfvec2f & lhs, const sfvec2f & rhs) throw ();
+    bool operator!=(const sfvec2f & lhs, const sfvec2f & rhs) throw ();
 
 
     class sfvec3f : public field_value {
@@ -461,15 +389,8 @@ namespace openvrml {
         virtual void print(std::ostream &) const;
     };
 
-    inline bool operator==(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
-    {
-        return !(lhs == rhs);
-    }
+    bool operator==(const sfvec3f & lhs, const sfvec3f & rhs) throw ();
+    bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs) throw ();
 
 
     class mfcolor : public field_value {
@@ -508,15 +429,8 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    inline bool operator==(const mfcolor & lhs, const mfcolor & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ()
-    {
-        return lhs.value != rhs.value;
-    }
+    bool operator==(const mfcolor & lhs, const mfcolor & rhs) throw ();
+    bool operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ();
 
 
     class mffloat : public field_value {
@@ -555,15 +469,8 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    inline bool operator==(const mffloat & lhs, const mffloat & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const mffloat & lhs, const mffloat & rhs) throw ()
-    {
-        return lhs.value != rhs.value;
-    }
+    bool operator==(const mffloat & lhs, const mffloat & rhs) throw ();
+    bool operator!=(const mffloat & lhs, const mffloat & rhs) throw ();
 
 
     class mfint32 : public field_value {
@@ -601,15 +508,8 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    inline bool operator==(const mfint32 & lhs, const mfint32 & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const mfint32 & lhs, const mfint32 & rhs) throw ()
-    {
-        return lhs.value != rhs.value;
-    }
+    bool operator==(const mfint32 & lhs, const mfint32 & rhs) throw ();
+    bool operator!=(const mfint32 & lhs, const mfint32 & rhs) throw ();
 
 
     class mfnode : public field_value {
@@ -648,15 +548,8 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    inline bool operator==(const mfnode & lhs, const mfnode & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const mfnode & lhs, const mfnode & rhs) throw ()
-    {
-        return lhs.value != rhs.value;
-    }
+    bool operator==(const mfnode & lhs, const mfnode & rhs) throw ();
+    bool operator!=(const mfnode & lhs, const mfnode & rhs) throw ();
 
 
     class mfrotation : public field_value {
@@ -695,17 +588,8 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    inline bool operator==(const mfrotation & lhs, const mfrotation & rhs)
-        throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const mfrotation & lhs, const mfrotation & rhs)
-        throw ()
-    {
-        return lhs.value != rhs.value;
-    }
+    bool operator==(const mfrotation & lhs, const mfrotation & rhs) throw ();
+    bool operator!=(const mfrotation & lhs, const mfrotation & rhs) throw ();
 
 
     class mfstring : public field_value {
@@ -744,15 +628,8 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    inline bool operator==(const mfstring & lhs, const mfstring & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const mfstring & lhs, const mfstring & rhs) throw ()
-    {
-        return lhs.value != rhs.value;
-    }
+    bool operator==(const mfstring & lhs, const mfstring & rhs) throw ();
+    bool operator!=(const mfstring & lhs, const mfstring & rhs) throw ();
 
 
     class mftime : public field_value {
@@ -791,15 +668,8 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    inline bool operator==(const mftime & lhs, const mftime & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const mftime & lhs, const mftime & rhs) throw ()
-    {
-        return lhs.value != rhs.value;
-    }
+    bool operator==(const mftime & lhs, const mftime & rhs) throw ();
+    bool operator!=(const mftime & lhs, const mftime & rhs) throw ();
 
 
     class mfvec2f : public field_value {
@@ -838,15 +708,8 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    inline bool operator==(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
-    {
-        return lhs.value != rhs.value;
-    }
+    bool operator==(const mfvec2f & lhs, const mfvec2f & rhs) throw ();
+    bool operator!=(const mfvec2f & lhs, const mfvec2f & rhs) throw ();
 
 
     class mfvec3f : public field_value {
@@ -885,15 +748,8 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    inline bool operator==(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
-    {
-        return lhs.value == rhs.value;
-    }
-
-    inline bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
-    {
-        return lhs.value != rhs.value;
-    }
+    bool operator==(const mfvec3f & lhs, const mfvec3f & rhs) throw ();
+    bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs) throw ();
 
 
     class event_listener {

@@ -2,8 +2,8 @@
 //
 // OpenVRML
 //
-// Copyright 1998 Chris Morley
-// Copyright 2003 Braden McDaniel
+// Copyright 1998  Chris Morley
+// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -506,8 +506,6 @@ field_value::type_id sfbool::type() const throw ()
 }
 
 /**
- * @fn bool operator==(const sfbool & lhs, const sfbool & rhs) throw ()
- *
  * @relatesalso sfbool
  *
  * @brief Compare for equality.
@@ -518,10 +516,12 @@ field_value::type_id sfbool::type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const sfbool & lhs, const sfbool & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const sfbool & lhs, const sfbool & rhs) throw ()
- *
  * @relatesalso sfbool
  *
  * @brief Compare for inequality.
@@ -532,6 +532,10 @@ field_value::type_id sfbool::type() const throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
  */
+bool operator!=(const sfbool & lhs, const sfbool & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 
 /**
@@ -616,8 +620,6 @@ field_value::type_id sfcolor::type() const throw ()
 }
 
 /**
- * @fn bool operator==(const sfcolor & lhs, const sfcolor & rhs) throw ()
- *
  * @relatesalso sfcolor
  *
  * @brief Compare for equality.
@@ -628,10 +630,12 @@ field_value::type_id sfcolor::type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const sfcolor & lhs, const sfcolor & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const sfcolor & lhs, const sfcolor & rhs) throw ()
- *
  * @relatesalso sfcolor
  *
  * @brief Compare for inequality.
@@ -642,6 +646,10 @@ field_value::type_id sfcolor::type() const throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const sfcolor & lhs, const sfcolor & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 
 /**
@@ -726,8 +734,6 @@ field_value::type_id sffloat::type() const throw ()
 }
 
 /**
- * @fn bool operator==(const sffloat & lhs, const sffloat & rhs) throw ()
- *
  * @relatesalso sffloat
  *
  * @brief Compare for equality.
@@ -738,10 +744,12 @@ field_value::type_id sffloat::type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const sffloat & lhs, const sffloat & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const sffloat & lhs, const sffloat & rhs) throw ()
- *
  * @relatesalso sffloat
  *
  * @brief Compare for inequality.
@@ -752,6 +760,10 @@ field_value::type_id sffloat::type() const throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
  */
+bool operator!=(const sffloat & lhs, const sffloat & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 
 /**
@@ -839,6 +851,38 @@ field_value::type_id sfimage::type() const throw ()
     return field_value::sfimage_id;
 }
 
+/**
+ * @relatesalso sfimage
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
+ */
+bool operator==(const sfimage & lhs, const sfimage & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
+
+/**
+ * @relatesalso sfimage
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+bool operator!=(const sfimage & lhs, const sfimage & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
+
 
 /**
  * @class sfint32
@@ -922,8 +966,6 @@ field_value::type_id sfint32::type() const throw ()
 }
 
 /**
- * @fn bool operator==(const sfint32 & lhs, const sfint32 & rhs) throw ()
- *
  * @relatesalso sfint32
  *
  * @brief Compare for equality.
@@ -934,10 +976,12 @@ field_value::type_id sfint32::type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const sfint32 & lhs, const sfint32 & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const sfint32 & lhs, const sfint32 & rhs) throw ()
- *
  * @relatesalso sfint32
  *
  * @brief Compare for inequality.
@@ -948,6 +992,10 @@ field_value::type_id sfint32::type() const throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const sfint32 & lhs, const sfint32 & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 
 /**
@@ -1036,7 +1084,6 @@ field_value::type_id sfnode::type() const throw ()
 }
 
 /**
- * @fn bool operator==(const sfnode & lhs, const sfnode & rhs) throw ()
  *
  * @relatesalso sfnode
  *
@@ -1048,10 +1095,12 @@ field_value::type_id sfnode::type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const sfnode & lhs, const sfnode & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const sfnode & lhs, const sfnode & rhs) throw ()
- *
  * @relatesalso sfnode
  *
  * @brief Compare for inequality.
@@ -1062,6 +1111,10 @@ field_value::type_id sfnode::type() const throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const sfnode & lhs, const sfnode & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 
 /**
@@ -1133,7 +1186,8 @@ std::auto_ptr<field_value> sfrotation::clone() const throw (std::bad_alloc)
  *
  * @exception std::bad_cast if @p value is not an sfrotation.
  */
-field_value & sfrotation::assign(const field_value & value) throw (std::bad_cast)
+field_value & sfrotation::assign(const field_value & value)
+    throw (std::bad_cast)
 {
     return (*this = dynamic_cast<const sfrotation &>(value));
 }
@@ -1159,8 +1213,6 @@ void sfrotation::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const sfrotation & lhs, const sfrotation & rhs) throw ()
- *
  * @relatesalso sfrotation
  *
  * @brief Compare for equality.
@@ -1171,10 +1223,12 @@ void sfrotation::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const sfrotation & lhs, const sfrotation & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const sfrotation & lhs, const sfrotation & rhs) throw ()
- *
  * @relatesalso sfrotation
  *
  * @brief Compare for inequality.
@@ -1185,6 +1239,10 @@ void sfrotation::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const sfrotation & lhs, const sfrotation & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 
 /**
@@ -1273,8 +1331,6 @@ field_value::type_id sfstring::type() const throw ()
 }
 
 /**
- * @fn bool operator==(const sfstring & lhs, const sfstring & rhs) throw ()
- *
  * @relatesalso sfstring
  *
  * @brief Compare for equality.
@@ -1285,10 +1341,12 @@ field_value::type_id sfstring::type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const sfstring & lhs, const sfstring & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const sfstring & lhs, const sfstring & rhs) throw ()
- *
  * @relatesalso sfstring
  *
  * @brief Compare for inequality.
@@ -1299,6 +1357,10 @@ field_value::type_id sfstring::type() const throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const sfstring & lhs, const sfstring & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 
 /**
@@ -1383,8 +1445,6 @@ field_value::type_id sftime::type() const throw ()
 }
 
 /**
- * @fn bool operator==(const sftime & lhs, const sftime & rhs) throw ()
- *
  * @relatesalso sftime
  *
  * @brief Compare for equality.
@@ -1395,10 +1455,13 @@ field_value::type_id sftime::type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const sftime & lhs, const sftime & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
+
 
 /**
- * @fn bool operator!=(const sftime & lhs, const sftime & rhs) throw ()
- *
  * @relatesalso sftime
  *
  * @brief Compare for inequality.
@@ -1409,6 +1472,10 @@ field_value::type_id sftime::type() const throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const sftime & lhs, const sftime & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 
 /**
@@ -1493,8 +1560,6 @@ void sfvec2f::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
- *
  * @relatesalso sfvec2f
  *
  * @brief Compare for equality.
@@ -1505,10 +1570,12 @@ void sfvec2f::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
- *
  * @relatesalso sfvec2f
  *
  * @brief Compare for inequality.
@@ -1519,6 +1586,10 @@ void sfvec2f::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 
 /**
@@ -1603,8 +1674,6 @@ void sfvec3f::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
- *
  * @relatesalso sfvec3f
  *
  * @brief Compare for equality.
@@ -1615,10 +1684,12 @@ void sfvec3f::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
- *
  * @relatesalso sfvec3f
  *
  * @brief Compare for inequality.
@@ -1629,6 +1700,10 @@ void sfvec3f::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 
 /**
@@ -1757,8 +1832,6 @@ void mfcolor::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const mfcolor & lhs, const mfcolor & rhs) throw ()
- *
  * @relatesalso mfcolor
  *
  * @brief Compare for equality.
@@ -1769,10 +1842,12 @@ void mfcolor::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const mfcolor & lhs, const mfcolor & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ()
- *
  * @relatesalso mfcolor
  *
  * @brief Compare for inequality.
@@ -1783,6 +1858,10 @@ void mfcolor::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
  */
+bool operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ()
+{
+    return lhs.value != rhs.value;
+}
 
 
 /**
@@ -1911,8 +1990,6 @@ void mffloat::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const mffloat & lhs, const mffloat & rhs) throw ()
- *
  * @relatesalso mffloat
  *
  * @brief Compare for equality.
@@ -1923,10 +2000,12 @@ void mffloat::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const mffloat & lhs, const mffloat & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const mffloat & lhs, const mffloat & rhs) throw ()
- *
  * @relatesalso mffloat
  *
  * @brief Compare for inequality.
@@ -1937,6 +2016,10 @@ void mffloat::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const mffloat & lhs, const mffloat & rhs) throw ()
+{
+    return lhs.value != rhs.value;
+}
 
 
 /**
@@ -2065,8 +2148,6 @@ void mfint32::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const mfint32 & lhs, const mfint32 & rhs) throw ()
- *
  * @relatesalso mfint32
  *
  * @brief Compare for equality.
@@ -2077,10 +2158,12 @@ void mfint32::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const mfint32 & lhs, const mfint32 & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const mfint32 & lhs, const mfint32 & rhs) throw ()
- *
  * @relatesalso mfint32
  *
  * @brief Compare for inequality.
@@ -2091,6 +2174,10 @@ void mfint32::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const mfint32 & lhs, const mfint32 & rhs) throw ()
+{
+    return lhs.value != rhs.value;
+}
 
 
 /**
@@ -2223,8 +2310,6 @@ void mfnode::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const mfnode & lhs, const mfnode & rhs) throw ()
- *
  * @relatesalso mfnode
  *
  * @brief Compare for equality.
@@ -2235,10 +2320,12 @@ void mfnode::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const mfnode & lhs, const mfnode & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const mfnode & lhs, const mfnode & rhs) throw ()
- *
  * @relatesalso mfnode
  *
  * @brief Compare for inequality.
@@ -2249,6 +2336,10 @@ void mfnode::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const mfnode & lhs, const mfnode & rhs) throw ()
+{
+    return lhs.value != rhs.value;
+}
 
 
 /**
@@ -2379,8 +2470,6 @@ void mfrotation::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const mfrotation & lhs, const mfrotation & rhs) throw ()
- *
  * @relatesalso mfrotation
  *
  * @brief Compare for equality.
@@ -2391,10 +2480,12 @@ void mfrotation::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const mfrotation & lhs, const mfrotation & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const mfrotation & lhs, const mfrotation & rhs) throw ()
- *
  * @relatesalso mfrotation
  *
  * @brief Compare for inequality.
@@ -2405,6 +2496,10 @@ void mfrotation::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const mfrotation & lhs, const mfrotation & rhs) throw ()
+{
+    return lhs.value != rhs.value;
+}
 
 
 /**
@@ -2536,8 +2631,6 @@ void mfstring::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const mfstring & lhs, const mfstring & rhs) throw ()
- *
  * @relatesalso mfstring
  *
  * @brief Compare for equality.
@@ -2548,10 +2641,12 @@ void mfstring::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const mfstring & lhs, const mfstring & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const mfstring & lhs, const mfstring & rhs) throw ()
- *
  * @relatesalso mfstring
  *
  * @brief Compare for inequality.
@@ -2562,6 +2657,10 @@ void mfstring::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const mfstring & lhs, const mfstring & rhs) throw ()
+{
+    return lhs.value != rhs.value;
+}
 
 
 /**
@@ -2691,8 +2790,6 @@ void mftime::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const mftime & lhs, const mftime & rhs) throw ()
- *
  * @relatesalso mftime
  *
  * @brief Compare for equality.
@@ -2703,10 +2800,12 @@ void mftime::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const mftime & lhs, const mftime & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const mftime & lhs, const mftime & rhs) throw ()
- *
  * @relatesalso mftime
  *
  * @brief Compare for inequality.
@@ -2717,6 +2816,10 @@ void mftime::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const mftime & lhs, const mftime & rhs) throw ()
+{
+    return lhs.value != rhs.value;
+}
 
 
 /**
@@ -2846,8 +2949,6 @@ void mfvec2f::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
- *
  * @relatesalso mfvec2f
  *
  * @brief Compare for equality.
@@ -2858,10 +2959,12 @@ void mfvec2f::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
- *
  * @relatesalso mfvec2f
  *
  * @brief Compare for inequality.
@@ -2872,6 +2975,10 @@ void mfvec2f::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
+{
+    return lhs.value != rhs.value;
+}
 
 
 /**
@@ -3001,8 +3108,6 @@ void mfvec3f::print(std::ostream & out) const
 }
 
 /**
- * @fn bool operator==(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
- *
  * @relatesalso mfvec3f
  *
  * @brief Compare for equality.
@@ -3013,10 +3118,12 @@ void mfvec3f::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
+bool operator==(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
 
 /**
- * @fn bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
- *
  * @relatesalso mfvec3f
  *
  * @brief Compare for inequality.
@@ -3027,6 +3134,10 @@ void mfvec3f::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
+bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
+{
+    return lhs.value != rhs.value;
+}
 
 
 /**
