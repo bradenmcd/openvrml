@@ -236,10 +236,22 @@ are provided for convenience:
    OpenVRML uses the Java Development Kit to provide Java support.
    These libraries and headers are provided by the Java Development Kit.
    If the JDK is not already installed on your system, you can find it
-   at <http://java.sun.com/j2se/>.  The GNU build includes configuration
-   options to allow the build either to locate the JDK on your system,
-   or build without Java support (if you don't have the JDK or don't
-   want Java support). These arguments can be passed to "configure":
+   at <http://java.sun.com/j2se/>.
+   
+      As of the 1.4 release, the Sun distribution of the JDK is rather
+   badly broken for some recent GNU/Linux distributions, including Red
+   Hat 7.x.  The native code libraries in the Sun distribution have been
+   built with an obsolete variant of the gcc compiler that is not
+   binary-compatible with the compilers used in these GNU/Linux
+   distributions.  If you build OpenVRML using the Sun JDK in this
+   situation, the resulting code tends to crash at the first
+   dynamic_cast that is encountered.  The Blackdown distributions of the
+   JDK tend to work better; see <http://blackdown.org>.
+   
+      The GNU build includes configuration options to allow the build
+   either to locate the JDK on your system, or build without Java
+   support (if you don't have the JDK or don't want Java support).
+   These arguments can be passed to "configure":
    
    --with-jdk
    --with-jdk=yes
