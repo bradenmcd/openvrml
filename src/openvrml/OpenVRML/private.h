@@ -30,9 +30,10 @@
 #   else
 #     define OPENVRML_VERIFY_(condition_) \
             do { \
-                if (!condition_) { \
-                    std::cerr << __FILE__ << ":" << __LINE__ << ": verification (" \
-                              << ##condition_ << ") failed" << std::endl; \
+                if (!(condition_)) { \
+                    std::cerr << __FILE__ << ":" << __LINE__ \
+                              << ": verification (" #condition_ ") failed" \
+                              << std::endl; \
                 } \
             } while (false)
 #   endif
