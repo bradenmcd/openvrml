@@ -1,5 +1,14 @@
 2004-12-24 Braden McDaniel  <braden@endoframe.com>
 
+	Updated libtool library versions.
+
+	* src/libopenvrml/Makefile.am:  Updated library version to
+	5:1:0.
+	* src/libopenvrml-gl/Makefile.am:  Updated library version to
+	6:1:0.
+
+2004-12-24 Braden McDaniel  <braden@endoframe.com>
+
 	Link plug-in shared object with requisite libraries.
 
 	* mozilla-plugin/Makefile.am
