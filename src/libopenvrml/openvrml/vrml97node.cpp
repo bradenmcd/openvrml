@@ -2060,11 +2060,12 @@ void background_class::unbind(background_node & background,
 /**
  * @brief node_class-specific initialization.
  *
- * @param initialViewpoint  the viewpoint_node that should be bound initially.
+ * @param initial_viewpoint the viewpoint_node that should be bound initially.
  * @param timestamp         the current time.
  */
-void background_class::initialize(openvrml::viewpoint_node * initialViewpoint,
-                                  const double timestamp)
+void
+background_class::do_initialize(openvrml::viewpoint_node * initial_viewpoint,
+                                const double timestamp)
     throw ()
 {
     if (this->first) {
@@ -2087,7 +2088,7 @@ void background_class::initialize(openvrml::viewpoint_node * initialViewpoint,
  *
  * @param v viewer.
  */
-void background_class::render(viewer & v) const throw ()
+void background_class::do_render(viewer & v) const throw ()
 {
     if (this->bound_nodes.empty()) {
         //
@@ -6634,11 +6635,11 @@ void fog_class::unbind(fog_node & fog, const double timestamp) throw ()
 /**
  * @brief node_class-specific initialization.
  *
- * @param initialViewpoint  the viewpoint_node that should be bound initially.
+ * @param initial_viewpoint the viewpoint_node that should be bound initially.
  * @param timestamp         the current time.
  */
-void fog_class::initialize(openvrml::viewpoint_node * initialViewpoint,
-                           const double timestamp)
+void fog_class::do_initialize(openvrml::viewpoint_node * initial_viewpoint,
+                              const double timestamp)
     throw ()
 {
     if (this->first) {
@@ -6661,7 +6662,7 @@ void fog_class::initialize(openvrml::viewpoint_node * initialViewpoint,
  *
  * @param v a viewer.
  */
-void fog_class::render(viewer & v) const throw ()
+void fog_class::do_render(viewer & v) const throw ()
 {
     if (!this->bound_nodes.empty()) {
         fog_node & fog = dynamic_cast<fog_node &>(*this->bound_nodes.back());
@@ -18839,8 +18840,9 @@ void viewpoint_class::unbind(viewpoint_node & viewpoint,
  * @param initial_viewpoint the viewpoint_node that should be bound initially.
  * @param timestamp         the current time.
  */
-void viewpoint_class::initialize(openvrml::viewpoint_node * initial_viewpoint,
-                                 const double timestamp)
+void
+viewpoint_class::do_initialize(openvrml::viewpoint_node * initial_viewpoint,
+                               const double timestamp)
     throw ()
 {
     if (!initial_viewpoint) { initial_viewpoint = this->first; }

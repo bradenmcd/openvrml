@@ -1,5 +1,13 @@
 2004-11-12 Braden McDaniel  <braden@endoframe.com>
 
+	Converted node implementations to override
+	node_class::do_initialize and node_class::do_render.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
+2004-11-12 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/exposedfield.h:  Call
 	event_side_effect from do_process_event (instead of recursively
 	calling do_process_event and blowing out the stack).

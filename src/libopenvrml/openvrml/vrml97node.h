@@ -371,11 +371,10 @@ namespace openvrml {
             void unbind(background_node & background, double timestamp)
                 throw ();
 
-            virtual void initialize(viewpoint_node * initialViewpoint,
-                                    double timestamp) throw ();
-            virtual void render(viewer & v) const throw ();
-
         private:
+            virtual void do_initialize(viewpoint_node * initialViewpoint,
+                                       double timestamp) throw ();
+            virtual void do_render(viewer & v) const throw ();
             virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
@@ -1054,11 +1053,10 @@ namespace openvrml {
             void bind(fog_node & fog, double timestamp) throw (std::bad_alloc);
             void unbind(fog_node & fog, double timestamp) throw ();
 
-            virtual void initialize(viewpoint_node * initialViewpoint,
-                                    double timestamp) throw ();
-            virtual void render(viewer & v) const throw ();
-
         private:
+            virtual void do_initialize(viewpoint_node * initialViewpoint,
+                                       double timestamp) throw ();
+            virtual void do_render(viewer & v) const throw ();
             virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
@@ -2590,8 +2588,9 @@ namespace openvrml {
             void unbind(viewpoint_node & viewpoint, double timestamp) throw ();
 
             virtual void
-            initialize(openvrml::viewpoint_node * initial_viewpoint,
-                       double timestamp) throw ();
+            do_initialize(openvrml::viewpoint_node * initial_viewpoint,
+                          double timestamp)
+                throw ();
 
         private:
             virtual const node_type_ptr
