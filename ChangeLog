@@ -1,5 +1,12 @@
 2004-05-15 Braden McDaniel  <braden@endoframe.com>
 
+	* openvrml.spec.in:  Use "License" instead of "Copyright";
+	require xorg-x11 packages instead of XFree86; removed "Prefix"
+	specification; use "%configure" macro; install script.jar; use
+	%{_libdir}, etc. macros; install openvrml.idl.
+
+2004-05-15 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/configure.ac:  Escape brackes in regexp for
 	processing by m4; remove "componentsdir" substitution.
 	* mozilla-plugin/src/Makefile.am:  Install typelib in the

@@ -2,7 +2,7 @@ Name:           @PACKAGE_TARNAME@
 Version:        @PACKAGE_VERSION@
 Release:        1
 Summary:        VRML97 runtime library.
-Copyright:      LGPL
+License:        LGPL
 Group:          System Environment/Libraries
 Packager:       The OpenVRML Development Team <openvrml-develop@lists.sf.net>
 Source:         http://prdownloads.sf.net/openvrml/%{name}-%{version}.tar.gz
@@ -17,7 +17,7 @@ BuildRequires:  fontconfig-devel >= 2.0
 BuildRequires:  freetype-devel >= 2.1.2
 BuildRequires:  mozilla-devel >= 1.2.1
 BuildRequires:  libgcj-devel >= 3.3
-BuildRequires:  XFree86-devel >= 4.3
+BuildRequires:  xorg-x11-devel >= 6.7
 BuildRequires:  SDL-devel >= 1.2
 BuildRequires:  gtkglext-devel >= 1.0.0
 Requires:       zlib >= 1.1.3
@@ -27,7 +27,6 @@ Requires:       fontconfig >= 2.0
 Requires:       freetype >= 2.1.2
 Requires:       mozilla >= 1.2.1
 Requires:       libgcj >= 3.3
-Prefix:         /usr
 
 %description
 OpenVRML is a VRML support library, including a runtime and facilities for
@@ -46,7 +45,7 @@ using OpenVRML
 Summary:        OpenGL renderer for OpenVRML
 Group:          System Environment/Libraries
 Requires:       %{name} = %{version}
-Requires:       XFree86-Mesa-libGLU >= 4.3
+Requires:       xorg-x11-Mesa-libGLU >= 4.3
 %description gl
 OpenGL renderer for OpenVRML.
 
@@ -63,7 +62,7 @@ using the OpenVRML OpenGL renderer.
 Summary:        VRML viewer
 Group:          Applications/Multimedia
 Requires:       %{name}-gl = %{version}
-Requires:       mozilla = %(rpm -q mozilla --qf='%%{version}')
+Requires:       mozilla = %(rpm -q mozilla --qf='%%{epoch}:%%{version}')
 Requires:       SDL >= 1.2
 %description -n lookat
 SDL-based VRML viewer.
@@ -71,6 +70,7 @@ SDL-based VRML viewer.
 %package mozilla
 Summary:        VRML browser plug-in for Mozilla.
 Group:          Applications/Internet
+License:        GPL
 Requires:       %{name}-gl = %{version}
 Requires:       gtkglext >= 1.0.0
 Requires:       mozilla >= 1.6
@@ -80,54 +80,66 @@ VRML browser plug-in for Mozilla.
 %prep
 %setup
 
-
 %build
-./configure --prefix=%{prefix} CPPFLAGS="-DNDEBUG" CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
+%configure CPPFLAGS="-DNDEBUG"
 make %{?_smp_mflags}
-
 
 %install
 if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
-make DESTDIR=$RPM_BUILD_ROOT%{prefix} install
+make install DESTDIR=$RPM_BUILD_ROOT
+rm $RPM_BUILD_ROOT%{_libdir}/mozilla/plugins/openvrml.la
 
+%clean
+rm -rf $RPM_BUILD_ROOT
 
 %files
 %doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
-%{prefix}/lib/libopenvrml.so.*
+%{_libdir}/libopenvrml.so.*
+%{_datadir}/openvrml/java/script.jar
 
 %files devel
 %doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
 %doc doc/manual
-%{prefix}/include/%{name}/openvrml/*.h
-%{prefix}/lib/libopenvrml.la
-%{prefix}/lib/libopenvrml.a
-%{prefix}/lib/libopenvrml.so
-%{prefix}/lib/pkgconfig/openvrml.pc
+%{_includedir}/%{name}/openvrml/*.h
+%{_libdir}/libopenvrml.la
+%{_libdir}/libopenvrml.a
+%{_libdir}/libopenvrml.so
+%{_libdir}/pkgconfig/openvrml.pc
 
 %files gl
 %doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
-%{prefix}/lib/libopenvrml-gl.so.*
+%{_libdir}/libopenvrml-gl.so.*
 
 %files gl-devel
 %doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
-%{prefix}/include/%{name}/openvrml/gl
-%{prefix}/lib/libopenvrml-gl.la
-%{prefix}/lib/libopenvrml-gl.a
-%{prefix}/lib/libopenvrml-gl.so
-%{prefix}/lib/pkgconfig/openvrml-gl.pc
+%{_includedir}/%{name}/openvrml/gl
+%{_libdir}/libopenvrml-gl.la
+%{_libdir}/libopenvrml-gl.a
+%{_libdir}/libopenvrml-gl.so
+%{_libdir}/pkgconfig/openvrml-gl.pc
 
 %files -n lookat
 %doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
-%{prefix}/bin/lookat
-%{prefix}/share/pixmaps/lookat.xpm
+%{_bindir}/lookat
+%{_datadir}/pixmaps/lookat.xpm
 
 %files mozilla
 %doc AUTHORS COPYING ChangeLog NEWS README THANKS
-%{prefix}/lib/mozilla/plugins/openvrml.so
-%{prefix}/lib/mozilla-%(rpm -q mozilla --qf='%%{version}')/components/openvrml.xpt
+%{_libdir}/mozilla/plugins/openvrml.so
+%{_libdir}/mozilla/plugins/openvrml.xpt
+%{_datadir}/idl/%{name}-%{version}/openvrml.idl
 
 
 %changelog
+* Sat May 15 2004  Braden McDaniel  <braden@endoframe.com>
+- Use "License" instead of "Copyright".
+- Require xorg-x11 packages instead of XFree86.
+- Removed "Prefix" specification.
+- Use "%configure" macro.
+- Install script.jar.
+- Use %{_libdir}, etc. macros.
+- Install openvrml.idl.
+
 * Sun May 09 2004  Braden McDaniel  <braden@endoframe.com>
 - Corrected description of lookat RPM to reflect the change to using SDL.
 - Define NDEBUG when configuring.
