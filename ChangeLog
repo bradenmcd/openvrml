@@ -1,5 +1,14 @@
 2003-09-28  Braden McDaniel  <braden@endoframe.com>
 
+	Renamed COPYING.LIB to COPYING.LESSER.
+
+	* COPYING.LESSER:  Added file.
+	* COPYING.LIB:  Removed file.
+	* openvrml.spec.in:  Changes for parity with build, install
+	changes.
+
+2003-09-28  Braden McDaniel  <braden@endoframe.com>
+
 	Added GNUmakefile to DISTCLEANFILES to quell an error message
 	from distcleancheck. (This has got to be a bug in Automake
 	(1.7.7).)

@@ -1,7 +1,7 @@
 Name:           @PACKAGE_TARNAME@
 Version:        @PACKAGE_VERSION@
 Release:        1
-Summary:        VRML97 runtime library. 
+Summary:        VRML97 runtime library.
 Copyright:      LGPL
 Group:          System Environment/Libraries
 Packager:       The OpenVRML Development Team <openvrml-develop@lists.sf.net>
@@ -25,7 +25,7 @@ Requires:       freetype >= 2.1.2
 Requires:       mozilla >= 1.2.1
 Prefix:         /usr
 
-%description 
+%description
 OpenVRML is a VRML support library, including a runtime and facilities for
 reading and writing VRML models.
 
@@ -79,38 +79,43 @@ if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
-%files 
-%doc AUTHORS COPYING.LIB ChangeLog NEWS README THANKS
+%files
+%doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
 %{prefix}/lib/libopenvrml.so.*
-%{prefix}/lib/pkgconfig/openvrml.pc
 
 %files devel
-%doc AUTHORS COPYING.LIB ChangeLog NEWS README THANKS
+%doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
 %doc doc/manual
-%{prefix}/include/OpenVRML/*.h*
+%{prefix}/include/%{name}/openvrml/*.h
 %{prefix}/lib/libopenvrml.la
 %{prefix}/lib/libopenvrml.a
 %{prefix}/lib/libopenvrml.so
+%{prefix}/lib/pkgconfig/openvrml.pc
 
 %files gl
-%doc AUTHORS COPYING.LIB ChangeLog NEWS README THANKS
+%doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
 %{prefix}/lib/libopenvrml-gl.so.*
-%{prefix}/lib/pkgconfig/openvrml-gl.pc
 
 %files gl-devel
-%doc AUTHORS COPYING.LIB ChangeLog NEWS README THANKS
-%{prefix}/include/OpenVRML/GL
+%doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
+%{prefix}/include/%{name}/openvrml/gl
 %{prefix}/lib/libopenvrml-gl.la
 %{prefix}/lib/libopenvrml-gl.a
 %{prefix}/lib/libopenvrml-gl.so
+%{prefix}/lib/pkgconfig/openvrml-gl.pc
 
 %files -n lookat
-%doc AUTHORS COPYING.LIB ChangeLog NEWS README THANKS
+%doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
 %{prefix}/bin/lookat
 %{prefix}/share/pixmaps/lookat.xpm
 
 
 %changelog
+* Sun Sep 28 2003  Braden McDaniel  <braden@endoframe.com>
+- Changed COPYING.LIB to COPYING.LESSER.
+- Moved pkg-config metadata files to devel packages.
+- Changes for parity with installation directory names.
+
 * Tue Dec 17 2002  Braden McDaniel  <braden@endoframe.com>
 - Removed conformance.html from %doc.  This doc now incorporated into doxygen
   docs.
@@ -171,7 +176,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 - Removed obsolete TODO from %doc.
 
 * Sun Dec 31 2000  Clayton Cottingham <drfrog@smartt.com>
-- Change in install section rm command is now recursive 
+- Change in install section rm command is now recursive
 
 * Fri Dec 15 2000  Braden McDaniel  <braden@endoframe.com>
 - Added lookat.xpm to files section for lookat.
