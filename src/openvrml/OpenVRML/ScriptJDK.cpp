@@ -51,7 +51,7 @@
 #include "VrmlNamespace.h"
 #include "VrmlScene.h"
 #include "VrmlEvent.h"
-#include "VrmlNodePtr.h"
+#include "nodeptr.h"
 
 #include "field.h"
 
