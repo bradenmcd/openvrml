@@ -28,7 +28,9 @@ openvrml_la_LDFLAGS = \
         -module -avoid-version \
         -R@mozlibdir@ \
         @MOZILLA_PLUGIN_LIBS@ \
-        @GTK_LIBS@
+        @GTK_LIBS@ \
+        @GL_LIBS@ \
+        -lXmu -lXt @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@
 
 EXTRA_DIST = $(openvrml_la_SOURCES)
 

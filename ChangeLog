@@ -1,5 +1,13 @@
 2004-12-24 Braden McDaniel  <braden@endoframe.com>
 
+	Link plug-in shared object with requisite libraries.
+
+	* mozilla-plugin/Makefile.am
+	* mozilla-plugin/configure.ac
+	* mozilla-plugin/src/Makefile.am
+
+2004-12-24 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/lib/gtkglext/gdk/gdkglconfig.c:  Use
 	g_type_from_name to first check if the type has already been
 	registered.  This would be the case if the shared object had

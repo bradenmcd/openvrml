@@ -29,6 +29,9 @@ AC_SUBST([mozlibdir])
 AC_SUBST([MOZILLA_XPIDLFLAGS])
 PKG_CHECK_MODULES([GTK], [gtk+-2.0], , [have_gtk=no])
 
+AX_CHECK_GL
+AC_PATH_XTRA
+
 if test "X$enable_mozilla_plugin" != "Xno"; then
   if test "X$have_mozilla_plugin" = "Xno"; then
     AC_MSG_FAILURE([Mozilla plug-in development headers are required to build the Mozilla plug-in.])
