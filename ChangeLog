@@ -1,7 +1,10 @@
 2001-08-19  Braden McDaniel  <braden@endoframe.com>
 
-        * Added getChilren() method to VrmlNode; implemented this for
+        * Added getChildren() method to VrmlNode; implemented this for
           everything except VrmlNodeProto.
+
+        * Changed VrmlNode::setName() and ::getName() to setId() and
+          getId().
 
 2001-08-16  Braden McDaniel  <braden@endoframe.com>
 

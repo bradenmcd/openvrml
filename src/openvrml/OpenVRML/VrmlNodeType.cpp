@@ -336,10 +336,10 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
 	      const VrmlNodePtr & n((*j)->node);
-	      if (n->getName().length() == 0)
+	      if (n->getId().empty())
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
-		  n->setName( buf );
+		  n->setId(buf);
 		}
 
 	      if ((*i)->defaultValue)
@@ -356,10 +356,10 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
 	      const VrmlNodePtr & n((*j)->node);
-	      if (n->getName().length() == 0)
+	      if (n->getId().empty())
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
-		  n->setName( buf );
+		  n->setId(buf);
 		}
 	    }
 	}
@@ -370,10 +370,10 @@ const VrmlMFNode & VrmlNodeType::getImplementationNodes() {
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
 	      const VrmlNodePtr & n((*j)->node);
-	      if (n->getName().length() == 0)
+	      if (n->getId().empty())
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
-		  n->setName( buf );
+		  n->setId(buf);
 		}
 	    }
 	}
@@ -550,7 +550,7 @@ void VrmlNodeType::addIS(const std::string & isFieldName,
 		   getName().c_str(),
 		   isFieldName.c_str(),
 		   implNode.nodeType().getName().c_str(),
-		   implNode.getName().c_str(),
+		   implNode.getId().c_str(),
 		   implFieldName.c_str());
 
   // Fields

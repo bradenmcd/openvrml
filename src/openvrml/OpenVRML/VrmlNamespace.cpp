@@ -236,10 +236,10 @@ void VrmlNamespace::removeNodeName(const VrmlNode & namedNode) {
 }
 
 
-const VrmlNodePtr VrmlNamespace::findNode(const std::string & name) const {
+const VrmlNodePtr VrmlNamespace::findNode(const std::string & nodeId) const {
     for (std::list<VrmlNodePtr>::const_iterator nodeItr(d_nameList.begin());
             nodeItr != d_nameList.end(); ++nodeItr) {
-        if (name == (*nodeItr)->getName()) {
+        if (nodeId == (*nodeItr)->getId()) {
             return *nodeItr;
         }
     }
@@ -736,13 +736,14 @@ namespace {
             if (node.accept(*this)) {
                 assert(this->rootNodeStack.size() > 0);
                 assert(typeid(node) == typeid(*this->rootNodeStack.top()));
-                const std::string & name = this->rootNodeStack.top()->getName();
-                if (this->rootNodeStack.top()->getName().length() > 0) {
+                const std::string & nodeId =
+                        this->rootNodeStack.top()->getId();
+                if (!this->rootNodeStack.top()->getId().empty()) {
                     this->ns.addNodeName(this->rootNodeStack.top());
                 }
             } else {
-                assert(this->ns.findNode(node.getName()));
-                this->rootNodeStack.push(this->ns.findNode(node.getName()));
+                assert(this->ns.findNode(node.getId()));
+                this->rootNodeStack.push(this->ns.findNode(node.getId()));
             }
         }
         
@@ -1070,16 +1071,16 @@ namespace {
         NodeRouteCopyVisitor & operator=(const NodeRouteCopyVisitor &);
         
         void copyRoutesFromNode(VrmlNode & node) {
-            const std::string & fromName = node.getName();
-            if (fromName.length() > 0) {
-                const VrmlNodePtr fromNode = this->ns.findNode(fromName);
+            const std::string & fromNodeId = node.getId();
+            if (!fromNodeId.empty()) {
+                const VrmlNodePtr fromNode = this->ns.findNode(fromNodeId);
                 assert(fromNode);
                 for (Route * route = node.getRoutes(); route;
                         route = route->getNext()) {
-                    const std::string & toName = route->toNode->getName();
-                    assert(this->ns.findNode(toName));
+                    const std::string & toNodeId = route->toNode->getId();
+                    assert(this->ns.findNode(toNodeId));
                     fromNode->addRoute(route->fromEventOut,
-                            this->ns.findNode(toName), route->toEventIn);
+                            this->ns.findNode(toNodeId), route->toEventIn);
                 }
             }
         }

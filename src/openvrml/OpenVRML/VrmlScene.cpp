@@ -725,7 +725,7 @@ bool VrmlScene::update( double timeStamp )
       if (this != n->scene())
 	{
 	  theSystem->debug("VrmlScene::update: %s::%s is not in the scene graph yet.\n",
-			   n->nodeType().getName().c_str(), n->getName().c_str());
+			   n->nodeType().getName().c_str(), n->getId().c_str());
 	  n->addToScene((VrmlScene*)this, urlDoc()->url() );
 	}
       n->eventIn(e->timeStamp, e->toEventIn, *e->value);
@@ -1171,7 +1171,7 @@ void VrmlScene::getViewpoint(const size_t nvp, std::string & name,
     size_t n = 0;
     for (; i != this->d_viewpoints->end(); ++i, ++n ) {
         if (n == nvp) {
-            name = (*i)->getName();
+            name = (*i)->getId();
             description = (*i)->toViewpoint()->description();
             return;
         }
@@ -1182,7 +1182,7 @@ void VrmlScene::setViewpoint(const std::string & name,
                              const std::string & description) {
     VrmlNodeList::iterator i = this->d_viewpoints->begin();
     for (; i != this->d_viewpoints->end(); ++i) {
-        if (name == (*i)->getName()
+        if (name == (*i)->getId()
                 && description == (*i)->toViewpoint()->description()) {
             VrmlNodeViewpoint * vp;
             VrmlSFBool flag(true);

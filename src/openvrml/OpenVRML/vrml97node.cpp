@@ -1311,7 +1311,7 @@ void VrmlNodeBillboard::render(Viewer *viewer, VrmlRenderContext rc)
 
   else if (d_children.getLength() > 0)
     {
-      d_xformObject = viewer->beginObject(this->getName().c_str());
+      d_xformObject = viewer->beginObject(this->getId().c_str());
 
       viewer->setBillboardTransform( d_axisOfRotation.get() );
 
@@ -3557,7 +3557,7 @@ void VrmlNodeGroup::clearFlags()
 
 void VrmlNodeGroup::addToScene(VrmlScene * scene,
                                const std::string & relativeUrl) {
-    cout << "Adding " << this->nodeType().getName() << " " << this->getName()
+    cout << "Adding " << this->nodeType().getName() << " " << this->getId()
          << " to scene 0x" << hex << reinterpret_cast<unsigned long>(scene)
          << dec << endl;
     this->d_scene = scene;
@@ -3648,7 +3648,7 @@ void VrmlNodeGroup::renderNoCull(Viewer *viewer, VrmlRenderContext rc)
       int i, n = d_children.getLength();
       int nSensors = 0;
 
-      d_viewerObject = viewer->beginObject(this->getName().c_str());
+      d_viewerObject = viewer->beginObject(this->getId().c_str());
 
       // Draw nodes that impact their siblings (DirectionalLights,
       // TouchSensors, any others? ...)
@@ -3863,7 +3863,7 @@ void VrmlNodeGroup::eventIn(double timeStamp, const std::string & eventName,
 	addChildren(static_cast<const VrmlMFNode &>(fieldValue));
       else
 	theSystem->error("VrmlNodeGroup.%s %s eventIn invalid field type.\n",
-		         this->getName().c_str(), eventName.c_str());
+		         this->getId().c_str(), eventName.c_str());
     }
 
   else if (eventName == "removeChildren")
@@ -3872,7 +3872,7 @@ void VrmlNodeGroup::eventIn(double timeStamp, const std::string & eventName,
 	removeChildren(static_cast<const VrmlMFNode &>(fieldValue));
       else
 	theSystem->error("VrmlNodeGroup.%s %s eventIn invalid field type.\n",
-		         this->getName().c_str(), eventName.c_str());
+		         this->getId().c_str(), eventName.c_str());
     }
 
   else
@@ -7364,7 +7364,7 @@ void VrmlNodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
       if (inside && ! wasIn)
 	{
 	  theSystem->debug("PS.%s::render ENTER %g %g %g\n",
-                           this->getName().c_str(), x, y, z);
+                           this->getId().c_str(), x, y, z);
 
 	  d_isActive.set(true);
 	  eventOut(timeNow.get(), "isActive", d_isActive);
@@ -7377,7 +7377,7 @@ void VrmlNodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
       else if (wasIn && ! inside)
 	{
 	  theSystem->debug("PS.%s::render EXIT %g %g %g\n",
-                           this->getName().c_str(), x, y, z);
+                           this->getId().c_str(), x, y, z);
 
 	  d_isActive.set(false);
 	  eventOut(timeNow.get(), "isActive", d_isActive );
@@ -7731,7 +7731,7 @@ void VrmlNodeShape::render(Viewer *viewer, VrmlRenderContext rc)
 
   else if ( g )
     {
-      d_viewerObject = viewer->beginObject(this->getName().c_str());
+      d_viewerObject = viewer->beginObject(this->getId().c_str());
 
       // Don't care what color it is if we are picking
       bool picking = (Viewer::RENDER_MODE_PICK == viewer->getRenderMode());
@@ -9242,7 +9242,7 @@ void VrmlNodeTimeSensor::update( VrmlSFTime &inTime )
 	{
 	  d_isActive.set(true);
 	  theSystem->debug("TimeSensor.%s isActive TRUE\n",
-                           this->getName().c_str());
+                           this->getId().c_str());
 
 	  // Start at first tick >= startTime
 	  eventOut( timeNow.get(), "isActive", d_isActive );
@@ -9747,7 +9747,7 @@ void VrmlNodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
 
   else if (d_children.getLength() > 0)
     {
-      d_xformObject = viewer->beginObject(this->getName().c_str());
+      d_xformObject = viewer->beginObject(this->getId().c_str());
 
       // Apply transforms
       viewer->setTransform(d_center.get(),
@@ -10223,7 +10223,7 @@ void VrmlNodeViewpoint::eventIn(double timeStamp, const std::string & eventName,
 		current->eventOut( timeStamp, "isBound", VrmlSFBool(false));
 	      d_scene->bindablePush( this );
 	      eventOut( timeStamp, "isBound", VrmlSFBool(true) );
-	      const std::string & n = this->getName();
+	      const std::string & n = this->getId();
 	      const std::string & d = d_description.get();
 	      if (n.length() > 0 && d.length() > 0)
 		theSystem->inform("%s: %s", n.c_str(), d.c_str());

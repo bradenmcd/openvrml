@@ -192,7 +192,7 @@ void VrmlNodeProto::instantiate()
 	  for (j = ismap->begin(); j != ismap->end(); ++j)
 	    {
 	      VrmlNodeType::NodeFieldRec *nf = new VrmlNodeType::NodeFieldRec;
-	      nf->node = d_scope->findNode((*j)->node->getName());
+	      nf->node = d_scope->findNode((*j)->node->getId());
 	      nf->fieldName = (*j)->fieldName;
 	      ed->ismap.push_front(nf);
 	    }
@@ -209,7 +209,7 @@ void VrmlNodeProto::instantiate()
           for (j = ismap->begin(); j != ismap->end(); ++j)
             {
               VrmlNodeType::NodeFieldRec *nf = new VrmlNodeType::NodeFieldRec;
-              nf->node = d_scope->findNode((*j)->node->getName());
+              nf->node = d_scope->findNode((*j)->node->getId());
               nf->fieldName = (*j)->fieldName;
               ed->ismap.push_front(nf);
             }
@@ -226,7 +226,7 @@ void VrmlNodeProto::instantiate()
 	      ismap = &(*ev)->thisIS;
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
-		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->getName()));
+		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->getId()));
 		  if (n)
 		    n->addRoute((*j)->fieldName, r->toNode, r->toEventIn);
 		}
@@ -240,7 +240,7 @@ void VrmlNodeProto::instantiate()
 	{
 	  VrmlField *value = (*ifld)->value;
 #ifdef VRML_NODE_PROTO_DEBUG
-	  cerr << d_nodeType->getName() << "::" << this->getName()
+	  cerr << d_nodeType->getName() << "::" << this->getId()
 	       << " setting IS field " << (*ifld)->name;
 	  // Too much stuff...
 	  //if (value) cerr << " to " << *value << endl;
@@ -252,9 +252,9 @@ void VrmlNodeProto::instantiate()
 	    {
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
-		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->getName()));
+		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->getId()));
 #ifdef VRML_NODE_PROTO_DEBUG
-		  cerr << " on " << n->getName() << "::" << (*j)->fieldName << endl;
+		  cerr << " on " << n->getId() << "::" << (*j)->fieldName << endl;
 #endif
 		  if (n) n->setField( (*j)->fieldName, *value );
 		}
@@ -292,7 +292,7 @@ void VrmlNodeProto::accumulateTransform( VrmlNode *n )
   if (! d_instantiated)
     {
       theSystem->debug("VrmlNodeProto::%s accumTrans before instantiation\n",
-		       this->getName().c_str());
+		       this->getId().c_str());
       instantiate();
     }
 
@@ -468,7 +468,7 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
   if (! d_instantiated)
     {
       theSystem->debug("VrmlNodeProto::%s render before instantiation\n",
-		       this->getName().c_str());
+		       this->getId().c_str());
       instantiate();
     }
 
@@ -485,7 +485,7 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
 
   else if (this->implNodes.getLength() > 0)
     {
-      d_viewerObject = viewer->beginObject(this->getName().c_str());
+      d_viewerObject = viewer->beginObject(this->getId().c_str());
 
       // render the nodes with the new values
       int n = this->implNodes.getLength();
@@ -508,7 +508,7 @@ void VrmlNodeProto::eventIn(double timeStamp,
 
     if (!d_instantiated) {
         theSystem->debug("VrmlNodeProto::%s eventIn before instantiation\n",
-                         this->getName().c_str());
+                         this->getId().c_str());
         instantiate();
     }
 

@@ -300,7 +300,7 @@ void VrmlNodeScript::eventIn(double timeStamp,
     }
     bool valid = (this->hasEventIn(eventName)
                 || this->hasEventIn(basicEventName));
-    cerr << "eventIn Script::" << this->getName() << "." << eventName
+    cerr << "eventIn Script::" << this->getId() << "." << eventName
          << " " << fieldValue << ", valid " << valid
          << ", d_script " << (unsigned long)d_script
          << endl;
@@ -545,7 +545,7 @@ void VrmlNodeScript::setEventIn(const std::string & fname,
 
 void VrmlNodeScript::setEventOut(const std::string & fname,
                                  const VrmlField & value) {
-    cout << "Script::" << this->getName() << " setEventOut(" << fname << ", "
+    cout << "Script::" << this->getId() << " setEventOut(" << fname << ", "
          << value << endl;
     this->set(d_eventOuts, fname, value);
 }
@@ -1421,7 +1421,7 @@ namespace {
 # ifndef NDEBUG
                 if (!ok) {
                     cerr << "Call to " << fname << " in Script node "
-                         << this->scriptNode.getName() << " failed." << endl;
+                         << this->scriptNode.getId() << " failed." << endl;
                 }
 # endif
 

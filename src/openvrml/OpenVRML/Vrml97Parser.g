@@ -637,7 +637,7 @@ protoInterfaceDeclaration[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlN
     :   it=eventInterfaceType ft=fieldType id0:ID
         {
             if (nodeType.hasInterface(id0->getText()) != VrmlField::NO_FIELD) {
-                throw antlr::SemanticException("Interface \"" + id0->getText() + "\" already declared for " + std::string(nodeType.getName()) + " node type.");
+                throw antlr::SemanticException("Interface \"" + id0->getText() + "\" already declared for " + nodeType.getName() + " node type.");
             }
             
             switch (it) {
@@ -662,7 +662,7 @@ protoInterfaceDeclaration[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlN
             const std::auto_ptr<VrmlField> autofv(fv);
             
             if (nodeType.hasInterface(id1->getText()) != VrmlField::NO_FIELD) {
-                throw antlr::SemanticException("Interface \"" + id1->getText() + "\" already declared for " + std::string(nodeType.getName()) + " node type.");
+                throw antlr::SemanticException("Interface \"" + id1->getText() + "\" already declared for " + nodeType.getName() + " node type.");
             }
             
             switch (it) {
@@ -838,7 +838,7 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
                 }
                 
                 if (fromInterfaceType == VrmlField::NO_FIELD) {
-                    throw antlr::SemanticException(std::string(fromNodeType.getName()) + " has no eventOut or exposedField \"" + fromInterfaceId->getText() + "\".");
+                    throw antlr::SemanticException(fromNodeType.getName() + " has no eventOut or exposedField \"" + fromInterfaceId->getText() + "\".");
                 }
             }
             
@@ -859,7 +859,7 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
                 }
                 
                 if (toInterfaceType == VrmlField::NO_FIELD) {
-                    throw antlr::SemanticException(std::string(toNodeType.getName()) + " has no eventIn or exposedField \"" + toInterfaceId->getText() + "\".");
+                    throw antlr::SemanticException(toNodeType.getName() + " has no eventIn or exposedField \"" + toInterfaceId->getText() + "\".");
                 }
             }
             
@@ -890,7 +890,7 @@ options {
             n = VrmlNodePtr(nodeType->newNode());
             
             if (nodeId.length() > 0) {
-                n->setName(nodeId, &vrmlNamespace);
+                n->setId(nodeId, &vrmlNamespace);
             }
             
             VrmlNodeScript * const scriptNode = n->toScript();
@@ -911,7 +911,7 @@ options {
             n = VrmlNodePtr(nodeType->newNode());
             
             if (nodeId.length() > 0) {
-                n->setName(nodeId, &vrmlNamespace);
+                n->setId(nodeId, &vrmlNamespace);
             }
         }
         LBRACE (nodeBodyElement[vrmlNamespace, doc, *n])* RBRACE
@@ -1015,7 +1015,7 @@ options {
             
             if (nodeId.length() > 0) {
                 assert(protoNodeType.getScope());
-                n->setName(nodeId, protoNodeType.getScope());
+                n->setId(nodeId, protoNodeType.getScope());
             }
             
             VrmlNodeScript * const scriptNode = n->toScript();
@@ -1037,7 +1037,7 @@ options {
             
             if (nodeId.length() > 0) {
                 assert(protoNodeType.getScope());
-                n->setName(nodeId, protoNodeType.getScope());
+                n->setId(nodeId, protoNodeType.getScope());
             }
         }
         LBRACE (protoNodeBodyElement[doc, protoNodeType, *n])* RBRACE
@@ -1059,7 +1059,7 @@ protoNodeBodyElement[Doc2 const * doc,
             if (   ((ft = nodeType.hasField(id->getText())) == VrmlField::NO_FIELD)
                 && ((ft = nodeType.hasExposedField(id->getText())) == VrmlField::NO_FIELD)) {
                 
-                throw antlr::SemanticException(std::string(nodeType.getName()) + " node has no field or exposedField \"" + id->getText() + "\" (protoNodeBodyEl).");
+                throw antlr::SemanticException(nodeType.getName() + " node has no field or exposedField \"" + id->getText() + "\" (protoNodeBodyEl).");
             }
             
             VrmlField * fv = 0;

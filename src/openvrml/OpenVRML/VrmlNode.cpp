@@ -70,7 +70,7 @@ VrmlNode::VrmlNode(VrmlScene * scene): d_scene(scene), d_modified(false),
   this->setBVolumeDirty(true);
 }
 
-VrmlNode::VrmlNode(const VrmlNode & node): name(node.name), d_scene(0),
+VrmlNode::VrmlNode(const VrmlNode & node): id(node.id), d_scene(0),
         d_modified(true), d_routes(0) {
     this->setBVolumeDirty(true);
 }
@@ -84,7 +84,7 @@ VrmlNode::VrmlNode(const VrmlNode & node): name(node.name), d_scene(0),
 VrmlNode::~VrmlNode() 
 {
   // Remove the node's name (if any) from the map...
-  if (!this->name.empty())
+  if (!this->id.empty())
     {
       if (d_scene && d_scene->scope())
 	d_scene->scope()->removeNodeName(*this);
@@ -139,7 +139,7 @@ void VrmlNode::resetVisitedFlag() {
 }
 
 /**
- * @brief Set the name of the node.
+ * @brief Set the nodeId of the node.
  *
  * Some one else (the parser) needs to tell the scene about the name for
  * use in USE/ROUTEs.
@@ -148,20 +148,20 @@ void VrmlNode::resetVisitedFlag() {
  * @param ns a pointer to the VrmlNamespace to which this node should
  *           belong
  */
-void VrmlNode::setName(const std::string & nodeName, VrmlNamespace * const ns) {
-    this->name = nodeName;
-    if (nodeName.length() > 0 && ns) {
+void VrmlNode::setId(const std::string & nodeId, VrmlNamespace * const ns) {
+    this->id = nodeId;
+    if (!nodeId.empty() && ns) {
         ns->addNodeName(VrmlNodePtr(this));
     }
 }
 
 /**
- * @brief Retrieve the name of this node.
+ * @brief Retrieve the nodeId of this node.
  *
- * @return a pointer to a C-style (0-terminated) string
+ * @return the nodeId
  */
-const std::string & VrmlNode::getName() const {
-    return this->name;
+const std::string & VrmlNode::getId() const {
+    return this->id;
 }
 
 /**
@@ -174,7 +174,7 @@ const std::string & VrmlNode::getName() const {
  * @param relativeUrl
  */
 void VrmlNode::addToScene(VrmlScene * scene, const std::string &) {
-    cout << "Adding " << this->nodeType().getName() << " " << this->getName()
+    cout << "Adding " << this->nodeType().getName() << " " << this->getId()
          << " to scene 0x" << hex << reinterpret_cast<unsigned long>(scene)
          << dec << endl;
     this->d_scene = scene;
@@ -296,7 +296,7 @@ void VrmlNode::addRoute(const std::string & fromEventOut,
 			const VrmlNodePtr & toNode,
 			const std::string & toEventIn) {
 # ifdef VRML_NODE_DEBUG
-    cout << this->nodeType().getName() << "::" << this->getName() << " "
+    cout << this->nodeType().getName() << "::" << this->getId() << " "
          << hex << reinterpret_cast<unsigned long>(this) << dec
          << " addRoute " << fromEventOut << endl;
 # endif
@@ -633,7 +633,7 @@ void VrmlNode::eventIn(double timeStamp,
   cout << "eventIn "
        << nodeType().getName()
        << "::"
-       << this->name
+       << this->id
        << "."
        << eventName
        << " "
@@ -666,7 +666,7 @@ void VrmlNode::eventIn(double timeStamp,
         this->setModified();
     } else
         cerr << "Error: unhandled eventIn " << nodeType().getName()
-		    << "::" << this->name << "." << eventName << endl;
+		    << "::" << this->id << "." << eventName << endl;
 }
 
 /**
@@ -695,7 +695,7 @@ const VrmlMFNode VrmlNode::getChildren() const {
 void VrmlNode::eventOut(double timeStamp, const std::string & eventOut,
 			const VrmlField & fieldValue) {
 # ifdef VRML_NODE_DEBUG
-    cout << this->nodeType().getName() << "::" << this->name
+    cout << this->nodeType().getName() << "::" << this->id
          << hex << reinterpret_cast<unsigned long>(this) << dec
          << " eventOut " << eventOut << endl;
 # endif	  
@@ -710,7 +710,7 @@ void VrmlNode::eventOut(double timeStamp, const std::string & eventOut,
 	  cerr << "  => "
 	       << r->toNode->nodeType().getName()
 	       << "::"
-	       << r->toNode->name
+	       << r->toNode->id
 	       << "."
 	       << r->toEventIn
 	       << endl;
@@ -733,8 +733,8 @@ ostream& VrmlNode::print(ostream& os, int indent) const
   for (int i=0; i<indent; ++i)
     os << ' ';
 
-  if (this->name.length() > 0) {
-    os << "DEF " << this->name << " ";
+  if (!this->id.empty()) {
+    os << "DEF " << this->id << " ";
   }
 
   os << nodeType().getName() << " { ";

@@ -683,7 +683,7 @@ void Vrml97Parser::routeStatement(
 		}
 		
 		if (fromInterfaceType == VrmlField::NO_FIELD) {
-		throw antlr::SemanticException(std::string(fromNodeType.getName()) + " has no eventOut or exposedField \"" + fromInterfaceId->getText() + "\".");
+		throw antlr::SemanticException(fromNodeType.getName() + " has no eventOut or exposedField \"" + fromInterfaceId->getText() + "\".");
 		}
 		}
 		
@@ -704,7 +704,7 @@ void Vrml97Parser::routeStatement(
 		}
 		
 		if (toInterfaceType == VrmlField::NO_FIELD) {
-		throw antlr::SemanticException(std::string(toNodeType.getName()) + " has no eventIn or exposedField \"" + toInterfaceId->getText() + "\".");
+		throw antlr::SemanticException(toNodeType.getName() + " has no eventIn or exposedField \"" + toInterfaceId->getText() + "\".");
 		}
 		}
 		
@@ -749,7 +749,7 @@ VrmlNodePtr  Vrml97Parser::node(
 		n = VrmlNodePtr(nodeType->newNode());
 		
 		if (nodeId.length() > 0) {
-		n->setName(nodeId, &vrmlNamespace);
+		n->setId(nodeId, &vrmlNamespace);
 		}
 		
 		VrmlNodeScript * const scriptNode = n->toScript();
@@ -798,7 +798,7 @@ VrmlNodePtr  Vrml97Parser::node(
 		n = VrmlNodePtr(nodeType->newNode());
 		
 		if (nodeId.length() > 0) {
-		n->setName(nodeId, &vrmlNamespace);
+		n->setId(nodeId, &vrmlNamespace);
 		}
 		
 #line 805 "Vrml97Parser.cpp"
@@ -942,7 +942,7 @@ void Vrml97Parser::protoInterfaceDeclaration(
 #line 638 "Vrml97Parser.g"
 			
 			if (nodeType.hasInterface(id0->getText()) != VrmlField::NO_FIELD) {
-			throw antlr::SemanticException("Interface \"" + id0->getText() + "\" already declared for " + std::string(nodeType.getName()) + " node type.");
+			throw antlr::SemanticException("Interface \"" + id0->getText() + "\" already declared for " + nodeType.getName() + " node type.");
 			}
 			
 			switch (it) {
@@ -979,7 +979,7 @@ void Vrml97Parser::protoInterfaceDeclaration(
 			const std::auto_ptr<VrmlField> autofv(fv);
 			
 			if (nodeType.hasInterface(id1->getText()) != VrmlField::NO_FIELD) {
-			throw antlr::SemanticException("Interface \"" + id1->getText() + "\" already declared for " + std::string(nodeType.getName()) + " node type.");
+			throw antlr::SemanticException("Interface \"" + id1->getText() + "\" already declared for " + nodeType.getName() + " node type.");
 			}
 			
 			switch (it) {
@@ -1464,7 +1464,7 @@ VrmlNodePtr  Vrml97Parser::protoNode(
 		
 		if (nodeId.length() > 0) {
 		assert(protoNodeType.getScope());
-		n->setName(nodeId, protoNodeType.getScope());
+		n->setId(nodeId, protoNodeType.getScope());
 		}
 		
 		VrmlNodeScript * const scriptNode = n->toScript();
@@ -1514,7 +1514,7 @@ VrmlNodePtr  Vrml97Parser::protoNode(
 		
 		if (nodeId.length() > 0) {
 		assert(protoNodeType.getScope());
-		n->setName(nodeId, protoNodeType.getScope());
+		n->setId(nodeId, protoNodeType.getScope());
 		}
 		
 #line 1521 "Vrml97Parser.cpp"
@@ -1928,7 +1928,7 @@ void Vrml97Parser::protoNodeBodyElement(
 				if (   ((ft = nodeType.hasField(id->getText())) == VrmlField::NO_FIELD)
 				&& ((ft = nodeType.hasExposedField(id->getText())) == VrmlField::NO_FIELD)) {
 				
-				throw antlr::SemanticException(std::string(nodeType.getName()) + " node has no field or exposedField \"" + id->getText() + "\" (protoNodeBodyEl).");
+				throw antlr::SemanticException(nodeType.getName() + " node has no field or exposedField \"" + id->getText() + "\" (protoNodeBodyEl).");
 				}
 				
 				VrmlField * fv = 0;

@@ -95,15 +95,15 @@ class OPENVRML_SCOPE VrmlNode {
 
     friend ostream & operator<<(ostream & os, const VrmlNode & f);
 
-    std::string name;
+    std::string id;
 
 public:
     VrmlNode(VrmlScene * scene);
     VrmlNode(const VrmlNode &);
     virtual ~VrmlNode() = 0;
 
-    const std::string & getName() const;
-    void setName(const std::string & nodeName, VrmlNamespace * ns = 0);
+    const std::string & getId() const;
+    void setId(const std::string & nodeId, VrmlNamespace * ns = 0);
 
     virtual VrmlNodeType & nodeType() const = 0;
     virtual bool accept(VrmlNodeVisitor & visitor) = 0;
