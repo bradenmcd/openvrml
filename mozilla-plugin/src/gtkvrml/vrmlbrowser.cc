@@ -1,3 +1,4 @@
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
 //
 // GTK+ OpenVRML widget
 // Copyright 2004  Braden N. McDaniel
@@ -32,7 +33,7 @@ public:
     bool redrawNeeded;
 
     GtkGLViewer(GtkVrmlBrowser & vrml_browser);
-    ~GtkGLViewer() throw ();
+    virtual ~GtkGLViewer() throw ();
 
     void timer_update();
 
@@ -167,11 +168,22 @@ void gtk_vrml_browser_init(GtkVrmlBrowser * const vrml_browser)
                                  render_type);
 
     try {
-        vrml_browser->browser = new openvrml::browser(std::cout, std::cerr);
-        vrml_browser->viewer = new GtkGLViewer(*vrml_browser);
-    } catch (std::bad_alloc & ex) {
+        using std::auto_ptr;
+        using openvrml::browser;
+        using openvrml::viewer;
+
+        auto_ptr<browser> b(new browser(std::cout, std::cerr));
+        auto_ptr<viewer> v(new GtkGLViewer(*vrml_browser));
+
+        b->viewer(v.get());
+
+        vrml_browser->browser = b.release();
+        vrml_browser->viewer = v.release();
+    } catch (std::bad_alloc &) {
         g_return_if_fail(vrml_browser->browser);
         g_return_if_fail(vrml_browser->viewer);
+    } catch (openvrml::viewer_in_use &) {
+        g_return_if_fail(false);
     }
 }
 

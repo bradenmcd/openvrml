@@ -1,5 +1,10 @@
 2004-11-19 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml.cpp (gtk_vrml_browser_init):
+	Set the viewer for the browser.
+
+2004-11-19 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml.cpp (NP_GetValue):  Handle
 	variables NPPVpluginNameString and NPPVpluginDescriptionString.
 
