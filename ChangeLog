@@ -1,3 +1,9 @@
+2000-08-02  Christopher St. John <cstjohn@acm.org>
+
+	* VrmlNodePlaneSensor.cpp, VrmlNodePlaneSensor.h Added cache of
+	inverse transform in case manipulation of plane sensor modifies
+	the transform hierarchy above the plane sensor. Fixes bug #108126.
+
 2000-06-28  Chris Morley  <cmorley@vermontel.net>
 
 	* Change license to LGPL for library code.
