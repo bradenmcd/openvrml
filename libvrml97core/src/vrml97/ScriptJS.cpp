@@ -2615,6 +2615,17 @@ static JSBool createVrmlFromURL(JSContext* cx, JSObject* b,
 	  VrmlMFNode *kids = VrmlScene::readWrl( url, relative, &ns );
 	  VrmlNode *nn = node->get();
 
+	  if ( ! kids )
+	    {
+	      const char* sUrl = (url->get() && url->get(0)) ?
+		url->get(0) : "(null)";
+	      theSystem->error("createVrmlFromUrl \"%s\" failed.\n", sUrl);
+
+	      delete node;
+	      delete url;
+	      return JS_FALSE;
+	    }
+
 	  if (nn)
 	    nn->eventIn( s_timeStamp, // fix me...
 			 event,
