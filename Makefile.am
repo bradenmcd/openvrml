@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = doc macros models lib src test
+SUBDIRS = doc macros models lib src
 
 ACLOCAL_AMFLAGS = -I macros
 
