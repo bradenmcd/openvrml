@@ -1,3 +1,7 @@
+2001-08-06 Thomas Flynn <tflynn@users.sourceforge.net>
+	* Initial checkin for Java in the Script node support.
+	  From patch submitted by Henri Manson.
+
 2001-08-04  Braden McDaniel  <braden@endoframe.com>
 
         * Fixed minor bug in MFInt32::setElement() in the JavaScript
