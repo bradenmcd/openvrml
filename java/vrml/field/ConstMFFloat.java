@@ -43,14 +43,20 @@ public class ConstMFFloat extends ConstMField
    * @param size Number of SFFloat elements passed in.
    * @param values Array of SFFloat values.
    */
-  public ConstMFFloat(int size, float values[]) { CreateObject(size, values); }
+  public ConstMFFloat(int size, float values[])
+  {
+    CreateObject(size, values);
+  }
 
   /**
    * Construct a read-only MFFloat field.
    *
    * @param values An array of SFFloat values.
    */
-  public ConstMFFloat(float values[])  { CreateObject(values.length, values); }
+  public ConstMFFloat(float values[])
+  {
+    CreateObject(values.length, values);
+  }
 
   /**
    * Retrieves the value of an MFFloat field.
