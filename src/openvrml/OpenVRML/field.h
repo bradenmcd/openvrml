@@ -22,10 +22,11 @@
 # ifndef OPENVRML_FIELD_H
 #   define OPENVRML_FIELD_H
 
+#   include <iostream>
+#   include <memory>
 #   include <string>
 #   include <typeinfo>
 #   include <vector>
-#   include <iostream>
 #   include "common.h"
 #   include "nodeptr.h"
 
@@ -48,9 +49,10 @@ namespace OpenVRML {
 
         virtual ~FieldValue() throw () = 0;
         
-        virtual FieldValue * clone() const throw (std::bad_alloc) = 0;
+        virtual std::auto_ptr<FieldValue> clone() const
+            throw (std::bad_alloc) = 0;
         virtual FieldValue & assign(const FieldValue & value)
-                throw (std::bad_cast, std::bad_alloc) = 0;
+            throw (std::bad_cast, std::bad_alloc) = 0;
         virtual Type type() const throw () = 0;
     
     private:
@@ -73,9 +75,9 @@ namespace OpenVRML {
         bool get() const throw ();
         void set(bool value) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
-                throw (std::bad_cast);
+            throw (std::bad_cast);
         virtual Type type() const throw ();
     
     private:
@@ -114,9 +116,9 @@ namespace OpenVRML {
         void setHSV(float h, float s, float v) throw ();
         void getHSV(ArrayReference hsv) const throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
-                throw (std::bad_cast);
+            throw (std::bad_cast);
         virtual Type type() const throw ();
     
     private:
@@ -136,9 +138,9 @@ namespace OpenVRML {
         float get() const throw ();
         void set(float value) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
-                throw (std::bad_cast);
+            throw (std::bad_cast);
         virtual Type type() const throw ();
     
     private:
@@ -166,9 +168,9 @@ namespace OpenVRML {
         void set(size_t width, size_t height, size_t components,
                  const unsigned char * pixels) throw (std::bad_alloc);
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
         virtual FieldValue & assign(const FieldValue & value)
-                throw (std::bad_cast, std::bad_alloc);
+            throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const throw ();
     
     private:
@@ -188,8 +190,9 @@ namespace OpenVRML {
         long get() const throw ();
         void set(long) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
+            throw (std::bad_cast);
         virtual Type type() const throw ();
     
     private:
@@ -209,8 +212,9 @@ namespace OpenVRML {
         const NodePtr & get() const throw ();
         void set(const NodePtr & node) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
+            throw (std::bad_cast);
         virtual Type type() const throw ();
     
     private:
@@ -256,8 +260,9 @@ namespace OpenVRML {
         const SFRotation slerp(const SFRotation & destRot, float t) const
                 throw ();  
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
+            throw (std::bad_cast);
         virtual Type type() const throw ();
 
     private:
@@ -278,9 +283,9 @@ namespace OpenVRML {
         const std::string & get() const throw ();
         void set(const std::string & value) throw (std::bad_alloc);
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
+            throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const throw ();
     
     private:
@@ -300,8 +305,9 @@ namespace OpenVRML {
         double get() const throw ();
         void set(double value) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
+            throw (std::bad_cast);
         virtual Type type() const throw ();
     
     private:
@@ -342,8 +348,9 @@ namespace OpenVRML {
         const SFVec2f normalize() const throw ();
         const SFVec2f subtract(const SFVec2f & vec) const throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
+            throw (std::bad_cast);
         virtual Type type() const throw ();
     
     private:
@@ -387,8 +394,9 @@ namespace OpenVRML {
         const SFVec3f normalize() const throw ();
         const SFVec3f subtract(const SFVec3f & vec) const throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
+            throw (std::bad_cast);
         virtual Type type() const throw ();
     
     private:
@@ -417,8 +425,8 @@ namespace OpenVRML {
             throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const throw ();
     
@@ -432,7 +440,7 @@ namespace OpenVRML {
 
     public:
         explicit MFFloat(size_t length = 0, float const * numbers = 0)
-                throw (std::bad_alloc);
+            throw (std::bad_alloc);
         virtual ~MFFloat() throw ();
 
         // Use compiler-generated copy constructor and operator=.
@@ -444,9 +452,9 @@ namespace OpenVRML {
         void insertElement(size_t index, float value) throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
+            throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const throw ();
     
     private:
@@ -459,7 +467,7 @@ namespace OpenVRML {
 
     public:
         explicit MFInt32(size_t length = 0, const long * numbers = 0)
-                throw (std::bad_alloc);
+            throw (std::bad_alloc);
         virtual ~MFInt32() throw ();
 
         // Use compiler-defined copy constructor and operator=.
@@ -471,9 +479,9 @@ namespace OpenVRML {
         void insertElement(size_t index, long value) throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
+            throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const throw ();
     
     private:
@@ -486,7 +494,7 @@ namespace OpenVRML {
 
     public:
         explicit MFNode(size_t length = 0, const NodePtr * nodes = 0)
-                throw (std::bad_alloc);
+            throw (std::bad_alloc);
         virtual ~MFNode() throw ();
 
         // Use compiler-defined copy ctor and operator=
@@ -499,13 +507,13 @@ namespace OpenVRML {
         bool addNode(const NodePtr & node);
         bool removeNode(const Node & node);
         void insertElement(size_t index, const NodePtr & node)
-                throw (std::bad_alloc);
+            throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
         void clear() throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
+            throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const throw ();
     
     private:
@@ -535,8 +543,8 @@ namespace OpenVRML {
             throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const throw ();
     
@@ -558,16 +566,16 @@ namespace OpenVRML {
 
         const std::string & getElement(size_t index) const throw ();
         void setElement(size_t index, const std::string & value)
-                throw (std::bad_alloc);
+            throw (std::bad_alloc);
         size_t getLength() const throw ();
         void setLength(const size_t length) throw (std::bad_alloc);
         void insertElement(size_t index, const std::string & value)
-                throw (std::bad_alloc);
+            throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
+            throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const throw ();
     
     private:
@@ -580,7 +588,7 @@ namespace OpenVRML {
 
     public:
         explicit MFTime(size_t length = 0, const double * times = 0)
-                throw (std::bad_alloc);
+            throw (std::bad_alloc);
         virtual ~MFTime() throw ();
 
         // Use compiler-defined copy constructor and operator=.
@@ -592,9 +600,9 @@ namespace OpenVRML {
         void insertElement(size_t index, double value) throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
-                throw (std::bad_cast, std::bad_alloc);
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
+            throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const throw ();
     
     private:
@@ -623,8 +631,8 @@ namespace OpenVRML {
             throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const throw ();
     
@@ -654,8 +662,8 @@ namespace OpenVRML {
             throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
 
-        virtual FieldValue * clone() const throw (std::bad_alloc);
-        virtual FieldValue & assign(const FieldValue &)
+        virtual std::auto_ptr<FieldValue> clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual Type type() const throw ();
     

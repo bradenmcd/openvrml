@@ -1412,6 +1412,7 @@ const MFNode Node::getChildren() const {
 void Node::emitEvent(const std::string & id, const FieldValue & value,
                      const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
+    assert(this->getScene());
     EventOutISMap::const_iterator pos = this->eventOutISMap.find(id);
     if (pos != this->eventOutISMap.end()) {
         pos->second->value->assign(value);
@@ -1421,10 +1422,9 @@ void Node::emitEvent(const std::string & id, const FieldValue & value,
     for (RouteList::const_iterator itr = this->routes.begin();
             itr != this->routes.end(); ++itr) {
         if (id == itr->fromEventOut) {
-            FieldValue * const eventValue = value.clone();
-            this->nodeType.nodeClass.browser
-                    .queueEvent(timestamp, eventValue,
-                                itr->toNode, itr->toEventIn);
+            FieldValue * const eventValue = value.clone().release();
+            this->getScene()->browser.queueEvent(timestamp, eventValue,
+                                                 itr->toNode, itr->toEventIn);
         }
     }
 }

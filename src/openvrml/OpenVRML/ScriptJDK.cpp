@@ -117,7 +117,7 @@ namespace {
                   const FieldValue * value) :
           d_timeStamp(timeStamp),
           d_eventName(new char[strlen(eventName)+1]),
-          d_value(value->clone()),
+          d_value(value->clone().release()),
           d_refCount(1)
         { strcpy(d_eventName, eventName); }
 
@@ -558,7 +558,7 @@ jobject JNICALL Java_vrml_Field_clone
   os.rdbuf()->freeze(false);
   jCloneField = env->AllocObject(clazz);
   fid = env->GetFieldID(clazz, "FieldPtr", "I");
-  pCloneField = pField->clone();
+  pCloneField = pField->clone().release();
   env->SetIntField(jCloneField, fid, (int) pCloneField);
   return jCloneField;
 }

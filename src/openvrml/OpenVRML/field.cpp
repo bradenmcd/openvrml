@@ -193,15 +193,13 @@ FieldValue::~FieldValue() throw ()
 {}
 
 /**
- * @fn FieldValue * FieldValue::clone() const throw (std::bad_alloc)
+ * @fn std::auto_ptr<FieldValue> FieldValue::clone() const throw (std::bad_alloc)
  *
  * @brief Virtual copy constructor.
  *
  * @return a new FieldValue identical to this one.
  *
  * @exception std::bad_alloc    if memory allocation fails.
- *
- * @todo This should probably return an std::auto_ptr<FieldValue>.
  */
 
 /**
@@ -325,9 +323,9 @@ SFBool::~SFBool() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFBool::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> SFBool::clone() const throw (std::bad_alloc)
 {
-    return new SFBool(*this);
+    return std::auto_ptr<FieldValue>(new SFBool(*this));
 }
 
 /**
@@ -448,9 +446,9 @@ SFColor::~SFColor() throw () {}
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFColor::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> SFColor::clone() const throw (std::bad_alloc)
 {
-    return new SFColor(*this);
+    return std::auto_ptr<FieldValue>(new SFColor(*this));
 }
 
 /**
@@ -700,9 +698,9 @@ void SFFloat::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFFloat::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> SFFloat::clone() const throw (std::bad_alloc)
 {
-    return new SFFloat(*this);
+    return std::auto_ptr<FieldValue>(new SFFloat(*this));
 }
 
 /**
@@ -868,8 +866,9 @@ void SFImage::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFImage::clone() const throw (std::bad_alloc) {
-    return new SFImage(*this);
+std::auto_ptr<FieldValue> SFImage::clone() const throw (std::bad_alloc)
+{
+    return std::auto_ptr<FieldValue>(new SFImage(*this));
 }
 
 /**
@@ -983,9 +982,9 @@ void SFInt32::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFInt32::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> SFInt32::clone() const throw (std::bad_alloc)
 {
-    return new SFInt32(*this);
+    return std::auto_ptr<FieldValue>(new SFInt32(*this));
 }
 
 /**
@@ -1075,9 +1074,9 @@ void SFNode::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFNode::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> SFNode::clone() const throw (std::bad_alloc)
 {
-    return new SFNode(*this);
+    return std::auto_ptr<FieldValue>(new SFNode(*this));
 }
 
 /**
@@ -1279,9 +1278,9 @@ void SFRotation::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFRotation::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> SFRotation::clone() const throw (std::bad_alloc)
 {
-    return new SFRotation(*this);
+    return std::auto_ptr<FieldValue>(new SFRotation(*this));
 }
 
 /**
@@ -1691,9 +1690,9 @@ void SFString::set(const std::string & value) throw (std::bad_alloc)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFString::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> SFString::clone() const throw (std::bad_alloc)
 {
-    return new SFString(*this);
+    return std::auto_ptr<FieldValue>(new SFString(*this));
 }
 
 /**
@@ -1761,9 +1760,9 @@ SFTime::~SFTime() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFTime::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> SFTime::clone() const throw (std::bad_alloc)
 {
-    return new SFTime(*this);
+    return std::auto_ptr<FieldValue>(new SFTime(*this));
 }
 
 /**
@@ -1911,9 +1910,9 @@ void SFVec2f::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFVec2f::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> SFVec2f::clone() const throw (std::bad_alloc)
 {
-    return new SFVec2f(*this);
+    return std::auto_ptr<FieldValue>(new SFVec2f(*this));
 }
 
 /**
@@ -2209,9 +2208,9 @@ void SFVec3f::print(std::ostream & out) const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * SFVec3f::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> SFVec3f::clone() const throw (std::bad_alloc)
 {
-    return new SFVec3f(*this);
+    return std::auto_ptr<FieldValue>(new SFVec3f(*this));
 }
 
 /**
@@ -2959,9 +2958,9 @@ void MFColor::removeElement(size_t index) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFColor::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> MFColor::clone() const throw (std::bad_alloc)
 {
-    return new MFColor(*this);
+    return std::auto_ptr<FieldValue>(new MFColor(*this));
 }
 
 /**
@@ -3121,9 +3120,9 @@ void MFFloat::removeElement(size_t index) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFFloat::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> MFFloat::clone() const throw (std::bad_alloc)
 {
-    return new MFFloat(*this);
+    return std::auto_ptr<FieldValue>(new MFFloat(*this));
 }
 
 /**
@@ -3281,9 +3280,9 @@ void MFInt32::removeElement(size_t index) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFInt32::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> MFInt32::clone() const throw (std::bad_alloc)
 {
-    return new MFInt32(*this);
+    return std::auto_ptr<FieldValue>(new MFInt32(*this));
 }
 
 /**
@@ -3508,9 +3507,9 @@ void MFNode::removeElement(size_t index) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFNode::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> MFNode::clone() const throw (std::bad_alloc)
 {
-    return new MFNode(*this);
+    return std::auto_ptr<FieldValue>(new MFNode(*this));
 }
 
 /**
@@ -3706,9 +3705,9 @@ void MFRotation::removeElement(const size_t index) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFRotation::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> MFRotation::clone() const throw (std::bad_alloc)
 {
-    return new MFRotation(*this);
+    return std::auto_ptr<FieldValue>(new MFRotation(*this));
 }
 
 /**
@@ -3897,8 +3896,8 @@ void MFString::removeElement(const size_t index) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFString::clone() const throw (std::bad_alloc) {
-    return new MFString(*this);
+std::auto_ptr<FieldValue> MFString::clone() const throw (std::bad_alloc) {
+    return std::auto_ptr<FieldValue>(new MFString(*this));
 }
 
 /**
@@ -4055,9 +4054,9 @@ void MFTime::removeElement(const size_t index) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFTime::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> MFTime::clone() const throw (std::bad_alloc)
 {
-    return new MFTime(*this);
+    return std::auto_ptr<FieldValue>(new MFTime(*this));
 }
 
 /**
@@ -4250,9 +4249,9 @@ void MFVec2f::removeElement(size_t index) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFVec2f::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> MFVec2f::clone() const throw (std::bad_alloc)
 {
-    return new MFVec2f(*this);
+    return std::auto_ptr<FieldValue>(new MFVec2f(*this));
 }
 
 /**
@@ -4446,9 +4445,9 @@ void MFVec3f::removeElement(size_t index) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-FieldValue * MFVec3f::clone() const throw (std::bad_alloc)
+std::auto_ptr<FieldValue> MFVec3f::clone() const throw (std::bad_alloc)
 {
-    return new MFVec3f(*this);
+    return std::auto_ptr<FieldValue>(new MFVec3f(*this));
 }
 
 /**
