@@ -249,16 +249,12 @@ void VrmlNodeTransform::setField(const char *fieldName,
 // Cache a pointer to (one of the) parent transforms for proper
 // rendering of bindables.
 
-void VrmlNodeTransform::accumulateTransform( VrmlNode *parent )
-{
-  d_parentTransform = parent;
-
-  int i, n = d_children.getLength();
-
-  for (i = 0; i<n; ++i)
-    {
-      VrmlNode *kid = d_children[i];
-      kid->accumulateTransform( this );
+void VrmlNodeTransform::accumulateTransform(VrmlNode * parent) {
+    d_parentTransform = parent;
+    for (size_t i = 0; i < this->d_children.getLength(); ++i) {
+        if (this->d_children[i]) {
+            this->d_children[i]->accumulateTransform(this);
+        }
     }
 }
 

@@ -4,8 +4,9 @@
           VrmlNodeElevationGrid's, and VrmlNodeShape's setters in favor
           of toNode() methods.
 
-        * Fixed problem with VrmlNodeBillboard::accumulateTransform()
-          where a null pointer could potentially be dereferenced.
+        * Fixed problem with accumulateTransform() in VrmlNodeBillboard
+          and VrmlNodeTransform where a null pointer could potentially
+          be dereferenced.
 
         * Added VrmlNode::toBillboard() and ::toCollision() methods.
 
