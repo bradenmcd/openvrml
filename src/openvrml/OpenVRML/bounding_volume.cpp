@@ -21,7 +21,7 @@
 
 # include <limits>
 # include "private.h"
-# include "bvolume.h"
+# include "bounding_volume.h"
 # include "field.h"
 # include "VrmlFrustum.h"
 
@@ -30,7 +30,7 @@ namespace OpenVRML {
 using namespace OpenVRML_;
 
 /**
- * @class BVolume
+ * @class bounding_volume
  *
  * @brief A bounding volume.
  *
@@ -40,27 +40,27 @@ using namespace OpenVRML_;
  * that are expected to be static. That probably means boxes for geometry and
  * spheres for grouping nodes.
  *
- * @see Node::render
- * @see BSphere
- * @see AABox
+ * @see node::render
+ * @see bounding_sphere
+ * @see axis_aligned_bounding_box
  */
 
 /**
- * @var BVolume::inside
+ * @var bounding_volume::inside
  *
  * @brief Results of an intersection; indicates that the tested volume is
  *      entirely inside the target volume.
  */
 
 /**
- * @var BVolume::outside
+ * @var bounding_volume::outside
  *
  * @brief Results of an intersection; indicates that the tested volume is
  *      entirely outside the target volume.
  */
 
 /**
- * @var BVolume::partial
+ * @var bounding_volume::partial
  *
  * @brief Results of an intersection; indicates that the tested volume
  *      intersects with the target volume.
@@ -69,33 +69,34 @@ using namespace OpenVRML_;
 /**
  * @brief Destructor.
  */
-BVolume::~BVolume() {}
+bounding_volume::~bounding_volume() {}
 
 /**
- * @fn bool BVolume::isMAX() const
+ * @fn bool bounding_volume::maximized() const
  *
- * @brief Gets the MAX flag.
+ * @brief Indicates whether the bounding volume is maximized.
  *
  * The convention is that nodes that should be rendered unconditionally set a
- * MAX bvolume, ensuring that the branch they are on does not get pruned during
- * culling. Stuff like the picking code needs a way to differentiate this from
- * just a really big bounding volume, or an unset bounding volume.
+ * maximum bounding volume, ensuring that the branch they are on does not get
+ * pruned during culling. Stuff like the picking code needs a way to
+ * differentiate this from just a really big bounding volume, or an unset
+ * bounding volume.
  *
- * @return the max flag
+ * @return @c true if the bounding voume is maximized; @c false otherwise.
  *
- * @see setMax
+ * @see maximize
  */
 
 /**
- * @fn void BVolume::setMAX()
+ * @fn void bounding_volume::maximize()
  *
- * @brief Sets the MAX flag.
+ * @brief Maximize the bounding volume.
  *
- * @see isMAX
+ * @see maximized
  */
 
 /**
- * @fn BVolume::Intersection BVolume::intersectFrustum(const VrmlFrustum & frustum) const
+ * @fn bounding_volume::intersection bounding_volume::intersect_frustum(const VrmlFrustum & frustum) const
  *
  * @brief Intersect this bvolume with a frustum.
  *
@@ -110,12 +111,12 @@ BVolume::~BVolume() {}
  *
  * @return inside, outside, or partial.
  *
- * @see BVolume::transform
- * @see BVolume::orthoTransform
+ * @see bounding_volume::transform
+ * @see bounding_volume::orthoTransform
  */
 
 /**
- * @fn void BVolume::extend(const BVolume & b)
+ * @fn void bounding_volume::extend(const bounding_volume & b)
  *
  * @brief Extend this bvolume to enclose the given bvolume.
  *
@@ -138,7 +139,7 @@ BVolume::~BVolume() {}
  */
 
 /**
- * @fn void BVolume::extend(const float p[3])
+ * @fn void bounding_volume::extend(const float p[3])
  *
  * @brief Extend this bvolume to enclose the given point.
  *
@@ -146,7 +147,7 @@ BVolume::~BVolume() {}
  */
 
 /**
- * @fn void BVolume::extend(const AABox & b)
+ * @fn void bounding_volume::extend(const axis_aligned_bounding_box & b)
  *
  * @brief Extend this bvolume to enclose the given box.
  *
@@ -154,7 +155,7 @@ BVolume::~BVolume() {}
  */
 
 /**
- * @fn void BVolume::extend(const BSphere & b)
+ * @fn void bounding_volume::extend(const bounding_sphere & b)
  *
  * @brief Extend this bvolume to enclose the given sphere.
  *
@@ -162,7 +163,7 @@ BVolume::~BVolume() {}
  */
 
 /**
- * @fn void BVolume::enclose(const std::vector<vec3f> & points)
+ * @fn void bounding_volume::enclose(const std::vector<vec3f> & points)
  *
  * @brief Enclose the given set of points.
  *
@@ -172,7 +173,7 @@ BVolume::~BVolume() {}
  */
 
 /**
- * @fn void BVolume::orthoTransform(const mat4f & M)
+ * @fn void bounding_volume::orthoTransform(const mat4f & M)
  *
  * @brief Transform this bounding volume using an orthogonal transfom.
  *
@@ -182,7 +183,7 @@ BVolume::~BVolume() {}
  * transformations that it's worth special casing. The caller is
  * responsible for assuring that the transformation is in fact
  * orthogonal, otherwise the results are undefined. If in doubt,
- * call <code>transform</code> instead and take the speed hit.
+ * call transform instead and take the speed hit.
  *
  * @param M orthonormal transformation matrix in mat4f format
  *
@@ -190,7 +191,7 @@ BVolume::~BVolume() {}
  */
 
 /**
- * @fn void BVolume::transform(const mat4f & M)
+ * @fn void bounding_volume::transform(const mat4f & M)
  *
  * @brief Transform this bounding volume using an affine transfom.
  *
@@ -204,14 +205,12 @@ BVolume::~BVolume() {}
  * affine transformations, so unless you're doing something tricky
  * this routine should always be safe.
  *
- * @param M affine transformation matrix in mat4f format
- *
- * @see MathUtils
+ * @param M affine transformation matrix.
  */
 
 
 /**
- * @class BSphere
+ * @class bounding_sphere
  *
  * @brief A bounding sphere.
  *
@@ -222,51 +221,53 @@ BVolume::~BVolume() {}
  */
 
 /**
- * @var BSphere::center
+ * @var bounding_sphere::center_
  *
  * @brief The center of the sphere.
  */
 
 /**
- * @var BSphere::radius
+ * @var bounding_sphere::radius_
  *
  * @brief The radius of the sphere.
  */
 
-BSphere::BSphere()
+bounding_sphere::bounding_sphere()
 {
     this->reset();
 }
 
-BSphere::~BSphere()
+bounding_sphere::~bounding_sphere()
 {}
 
-void BSphere::reset()
+void bounding_sphere::reset()
 {
-    this->radius = -1.0f;
-    this->center = vec3f(0.0, 0.0, 0.0);
+    this->radius_ = -1.0f;
+    this->center_ = vec3f(0.0, 0.0, 0.0);
 }
 
 
 namespace {
-    float sphere_plane_distance(const BSphere & bs, const float N[3], float D)
+    float sphere_plane_distance(const bounding_sphere & bs,
+                                const float N[3],
+                                float D)
     {
         //
         // r = Ax + By + Cz + D
         //
-        const vec3f & c = bs.getCenter();
+        const vec3f & c = bs.center();
         float d = N[0] * c[0] + N[1] * c[1] + N[2] * c[2] - D;
         return d;
     }
 }
 
-BVolume::Intersection
-BSphere::intersectFrustum(const VrmlFrustum & frustum) const
+bounding_volume::intersection
+bounding_sphere::intersect_frustum(const VrmlFrustum & frustum) const
 {
-    if (this->isMAX()) { return BVolume::partial; }
-    if (this->radius == -1.0f) { return BVolume::partial; } // ???
+    if (this->maximized()) { return bounding_volume::partial; }
+    if (this->radius_ == -1.0f) { return bounding_volume::partial; } // ???
 
-    BVolume::Intersection code = BVolume::inside;
+    bounding_volume::intersection code = bounding_volume::inside;
 
     //
     // Quick test against near/far planes since we know in the VRML97
@@ -279,18 +280,18 @@ BSphere::intersectFrustum(const VrmlFrustum & frustum) const
     // Distance from the center of the sphere to the near plane.
     //
     float znear = -frustum.z_near;
-    float d = znear - this->center.z();
-    if (d < -this->radius) { return BVolume::outside; }
-    if (d < this->radius) { code = BVolume::partial; }
+    float d = znear - this->center_.z();
+    if (d < -this->radius_) { return bounding_volume::outside; }
+    if (d < this->radius_) { code = bounding_volume::partial; }
 
     //
     // Distance from the sphere center to the far plane. Same logic as
     // above.
     //
     float zfar = -frustum.z_far;
-    d = this->center.z() - zfar;
-    if (d < -this->radius) { return BVolume::outside; }
-    if (d < this->radius) { code = BVolume::partial; }
+    d = this->center_.z() - zfar;
+    if (d < -this->radius_) { return bounding_volume::outside; }
+    if (d < this->radius_) { code = bounding_volume::partial; }
 
     //
     // Test against the top; the same logic will be used to test against
@@ -298,34 +299,34 @@ BSphere::intersectFrustum(const VrmlFrustum & frustum) const
     // unlike the near/far planes we have to use the dot product.
     //
     d = sphere_plane_distance(*this, frustum.top_plane, frustum.top_plane[3]);
-    if (d < -this->radius) { return BVolume::outside; }
-    if (d < this->radius) { code = BVolume::partial; }
+    if (d < -this->radius_) { return bounding_volume::outside; }
+    if (d < this->radius_) { code = bounding_volume::partial; }
 
     d = sphere_plane_distance(*this, frustum.bot_plane, frustum.bot_plane[3]);
-    if (d < -this->radius) { return BVolume::outside; }
-    if (d < this->radius) { code = BVolume::partial; }
+    if (d < -this->radius_) { return bounding_volume::outside; }
+    if (d < this->radius_) { code = bounding_volume::partial; }
 
     d = sphere_plane_distance(*this, frustum.left_plane, frustum.left_plane[3]);
-    if (d < -this->radius) { return BVolume::outside; }
-    if (d < this->radius) { code = BVolume::partial; }
+    if (d < -this->radius_) { return bounding_volume::outside; }
+    if (d < this->radius_) { code = bounding_volume::partial; }
 
     d = sphere_plane_distance(*this, frustum.right_plane, frustum.right_plane[3]);
-    if (d < -this->radius) { return BVolume::outside; }
-    if (d < this->radius) { code = BVolume::partial; }
+    if (d < -this->radius_) { return bounding_volume::outside; }
+    if (d < this->radius_) { code = bounding_volume::partial; }
 
     return code;
 }
 
 void
-BSphere::extend(const BVolume & bv)
+bounding_sphere::extend(const bounding_volume & bv)
 {
-  const BSphere * bs = 0;
-  const AABox * ab = 0;
-  if ((bs = dynamic_cast<const BSphere *>(&bv))) {
+  const bounding_sphere * bs = 0;
+  const axis_aligned_bounding_box * ab = 0;
+  if ((bs = dynamic_cast<const bounding_sphere *>(&bv))) {
     this->extend(*bs);
     return;
   }
-  if ((ab = dynamic_cast<const AABox *>(&bv))) {
+  if ((ab = dynamic_cast<const axis_aligned_bounding_box *>(&bv))) {
     this->extend(*ab);
     return;
   }
@@ -334,27 +335,27 @@ BSphere::extend(const BVolume & bv)
   // pattern.
 }
 
-void BSphere::extend(const vec3f & p)
+void bounding_sphere::extend(const vec3f & p)
 {
-    if (this->isMAX()) { return; }
+    if (this->maximized()) { return; }
 
     // if this bsphere isn't set yet, then just do an assign. what's it
     // mean to have a zero radius bsphere? is that going to mess
     // anything up (iow, do we ever divide by radius?)
     //
-    if (this->radius == -1.0f) { // flag, not comparison
-        this->radius = 0.0f;
-        this->center = p;
+    if (this->radius_ == -1.0f) { // flag, not comparison
+        this->radius_ = 0.0f;
+        this->center_ = p;
         return;
     }
 
     // you know, we could probably just call extend(sphere) with a
     // radius of zero and it would work out the same.
 
-    float x0 = this->center.x();
-    float y0 = this->center.y();
-    float z0 = this->center.z();
-    float r0 = this->radius;
+    float x0 = this->center_.x();
+    float y0 = this->center_.y();
+    float z0 = this->center_.z();
+    float r0 = this->radius_;
 
     float x1 = p.x();
     float y1 = p.y();
@@ -378,35 +379,35 @@ void BSphere::extend(const vec3f & p)
     float cy = y0 + yn * tmp;
     float cz = z0 + zn * tmp;
 
-    this->radius = cr;
-    this->center.x(cx);
-    this->center.y(cy);
-    this->center.z(cz);
+    this->radius_ = cr;
+    this->center_.x(cx);
+    this->center_.y(cy);
+    this->center_.z(cz);
 }
 
 /**
  * @todo Implement me!
  */
-void BSphere::extend(const AABox & b) {
+void bounding_sphere::extend(const axis_aligned_bounding_box & b) {
 }
 
-void BSphere::extend(const BSphere & b)
+void bounding_sphere::extend(const bounding_sphere & b)
 {
-    if (this->isMAX()) { return; }
+    if (this->maximized()) { return; }
 
-    if (b.isMAX()) {
-        this->setMAX();
+    if (b.maximized()) {
+        this->maximize();
         return;
     }
 
     // if the other bsphere isn't set, ignore it?
     //
-    if (b.radius == -1.0f) { return; }
+    if (b.radius_ == -1.0f) { return; }
 
     // if this bsphere isn't set yet, then just do an
     // assign.
     //
-    if (this->radius == -1.0f) { // flag, not comparison
+    if (this->radius_ == -1.0f) { // flag, not comparison
         *this = b;
         return;
     }
@@ -414,15 +415,15 @@ void BSphere::extend(const BSphere & b)
     // s0 = ((x0,y0,z0),r0)
     // s1 = ((x1,y1,z1),r1)
 
-    float x0 = this->center.x();
-    float y0 = this->center.y();
-    float z0 = this->center.z();
-    float r0 = this->radius;
+    float x0 = this->center_.x();
+    float y0 = this->center_.y();
+    float z0 = this->center_.z();
+    float r0 = this->radius_;
 
-    float x1 = b.center.x();
-    float y1 = b.center.y();
-    float z1 = b.center.z();
-    float r1 = b.radius;
+    float x1 = b.center_.x();
+    float y1 = b.center_.y();
+    float z1 = b.center_.z();
+    float r1 = b.radius_;
 
     float xn = x1 - x0;
     float yn = y1 - y0;
@@ -445,8 +446,8 @@ void BSphere::extend(const BSphere & b)
     float cy = y0 + yn * tmp;
     float cz = z0 + zn * tmp;
 
-    this->radius = cr;
-    this->center = vec3f(cx, cy, cz);
+    this->radius_ = cr;
+    this->center_ = vec3f(cx, cy, cz);
 }
 
 /**
@@ -456,7 +457,7 @@ void BSphere::extend(const BSphere & b)
  *
  * @param points    points.
  */
-void BSphere::enclose(const std::vector<vec3f> & points)
+void bounding_sphere::enclose(const std::vector<vec3f> & points)
 {
     // doing an extend() for each point is ok, but there are
     // faster algorithms reference "An Efficient Bounding Sphere"
@@ -514,71 +515,71 @@ void BSphere::enclose(const std::vector<vec3f> & points)
         max_span_dist = dz;
     }
 
-    this->center = (*max_span0 + *max_span1) / 2.0;
+    this->center_ = (*max_span0 + *max_span1) / 2.0;
 
-    this->radius = float(sqrt(this->center.dot(this->center)));
+    this->radius_ = float(sqrt(this->center_.dot(this->center_)));
 
     for (i = 0; i < points.size(); ++i) { this->extend(points[i]); }
 }
 
 
-const vec3f & BSphere::getCenter() const
+const vec3f & bounding_sphere::center() const
 {
-    return this->center;
+    return this->center_;
 }
 
-void BSphere::setCenter(const vec3f & center)
+void bounding_sphere::center(const vec3f & value)
 {
-    this->center = center;
+    this->center_ = value;
 }
 
-float BSphere::getRadius() const
+float bounding_sphere::radius() const
 {
-    return this->radius;
+    return this->radius_;
 }
 
-void BSphere::setRadius(const float radius)
+void bounding_sphere::radius(const float value)
 {
-    this->radius = radius;
+    this->radius_ = value;
 }
 
-void BSphere::setMAX()
+void bounding_sphere::maximize()
 {
-    this->radius = std::numeric_limits<float>::max();
-    this->center = vec3f(0.0, 0.0, 0.0);
+    this->radius_ = std::numeric_limits<float>::max();
+    this->center_ = vec3f(0.0, 0.0, 0.0);
 }
 
-bool BSphere::isMAX() const
+bool bounding_sphere::maximized() const
 {
-    if (this->radius == std::numeric_limits<float>::max()) { return true; }
+    if (this->radius_ == std::numeric_limits<float>::max()) { return true; }
     return false;
 }
 
 
 
-void BSphere::orthoTransform(const mat4f & M)
+void bounding_sphere::orthoTransform(const mat4f & M)
 {
     using OpenVRML_::length;
 
-    if (this->isMAX()) { return; }
-    if (this->radius == -1) { return; }
+    if (this->maximized()) { return; }
+    if (this->radius_ == -1) { return; }
     // ortho is easy: since we know it's uniform scaling, we can just
     // scale the radius and translate the center, and we're done.
-    this->center = this->center * M;
+    this->center_ *= M;
 
     // uniform scale means we can pick any of the scale elements? wait:
     // can we really do this?
-    this->radius *= vec3f(M[0][0], M[1][0], M[2][0]).length();
+    this->radius_ *= vec3f(M[0][0], M[1][0], M[2][0]).length();
 }
 
 
-void BSphere::transform(const mat4f & M)
+void bounding_sphere::transform(const mat4f & M)
 {
     using OpenVRML_::length;
 
-    if (this->isMAX()) { return; }
-    if (this->radius == -1) { return; }
-    this->center = this->center * M;
+    if (this->maximized()) { return; }
+    if (this->radius_ == -1) { return; }
+    this->center_ *= M;
 
     vec3f x_scale_v(M[0][0], M[1][0], M[2][0]);
     vec3f y_scale_v(M[0][1], M[1][1], M[2][1]);
@@ -592,55 +593,53 @@ void BSphere::transform(const mat4f & M)
     if (scale_y > max_scale) { max_scale = scale_y; }
     if (scale_z > max_scale) { max_scale = scale_z; }
 
-    this->radius *= max_scale;
+    this->radius_ *= max_scale;
 }
 
 
 /**
- * @class AABox
+ * @class axis_aligned_bounding_box
  *
  * @brief An axis-aligned bounding box.
  *
  * @todo This class is currently just a placeholder.
  */
 
-AABox::~AABox() {}
+axis_aligned_bounding_box::~axis_aligned_bounding_box() {}
 
 /**
  * @todo Implement me!
  */
-BVolume::Intersection
-AABox::intersectFrustum(const VrmlFrustum & frustum) const {
-    return BVolume::partial;
+bounding_volume::intersection
+axis_aligned_bounding_box::intersect_frustum(const VrmlFrustum & frustum) const
+{
+    return bounding_volume::partial;
 }
 
 
-void
-AABox::extend(const BVolume & bv)
+void axis_aligned_bounding_box::extend(const bounding_volume & bv)
 {
-  const BSphere * bs = 0;
-  const AABox * ab = 0;
-  if ((bs = dynamic_cast<const BSphere *>(&bv))) {
+  const bounding_sphere * bs = 0;
+  const axis_aligned_bounding_box * ab = 0;
+  if ((bs = dynamic_cast<const bounding_sphere *>(&bv))) {
     this->extend(*bs);
     return;
   }
-  if ((ab = dynamic_cast<const AABox *>(&bv))) {
+  if ((ab = dynamic_cast<const axis_aligned_bounding_box *>(&bv))) {
     this->extend(*ab);
     return;
   }
 }
 
 
-void AABox::extend(const vec3f & p)
+void axis_aligned_bounding_box::extend(const vec3f & p)
 {}
 
-void
-AABox::extend(const AABox& b)
+void axis_aligned_bounding_box::extend(const axis_aligned_bounding_box& b)
 {
 }
 
-void
-AABox::extend(const BSphere& b)
+void axis_aligned_bounding_box::extend(const bounding_sphere& b)
 {
 }
 
@@ -653,27 +652,23 @@ AABox::extend(const BSphere& b)
  *
  * @todo Implement me!
  */
-void AABox::enclose(const std::vector<vec3f> & points)
+void axis_aligned_bounding_box::enclose(const std::vector<vec3f> & points)
 {}
 
-void
-AABox::setMAX()
+void axis_aligned_bounding_box::maximize()
 {
 }
 
-bool
-AABox::isMAX() const
+bool axis_aligned_bounding_box::maximized() const
 {
   return true;
 }
 
-void
-AABox::orthoTransform(const mat4f & M)
+void axis_aligned_bounding_box::orthoTransform(const mat4f & M)
 {
 }
 
-void
-AABox::transform(const mat4f & M)
+void axis_aligned_bounding_box::transform(const mat4f & M)
 {
 }
 

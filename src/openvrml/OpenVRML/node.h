@@ -186,7 +186,7 @@ namespace OpenVRML {
     typedef std::deque<node *> node_path;
 
 
-    class BVolume;
+    class bounding_volume;
     class script_node;
     class appearance_node;
     class child_node;
@@ -355,13 +355,11 @@ namespace OpenVRML {
 
         void update_modified(int flags = 0x003);
 
-        virtual const BVolume * bvolume() const;
+        virtual void bounding_volume(const OpenVRML::bounding_volume & v);
+        virtual const OpenVRML::bounding_volume & bounding_volume() const;
 
-        virtual void bvolume(const BVolume & v);
-
-        virtual void bvolume_dirty(bool f);
-
-        virtual bool bvolume_dirty() const;
+        virtual void bounding_volume_dirty(bool f);
+        virtual bool bounding_volume_dirty() const;
 
         void add_route(const std::string & from_eventout,
                        const node_ptr & toNode, const std::string & to_eventin)
@@ -385,7 +383,7 @@ namespace OpenVRML {
             throw (std::bad_cast, std::bad_alloc);
 
         bool modified_;
-        bool bvolume_dirty_;
+        bool bounding_volume_dirty_;
 
     private:
         // Not copyable.

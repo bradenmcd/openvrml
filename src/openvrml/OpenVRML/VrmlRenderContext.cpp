@@ -3,28 +3,27 @@
 // OpenVRML
 //
 // Copyright (C) 2000  Christopher K. St. John
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "VrmlRenderContext.h"
-#include "bvolume.h"
 
 namespace OpenVRML {
 
@@ -61,7 +60,7 @@ namespace OpenVRML {
  * the "initialization is resource acquisition" pattern, but I felt
  * this was cleaner.
  *
- * @author Christopher K. St. John 
+ * @author Christopher K. St. John
  *
  * @see Node::render
  * @see Browser::render
@@ -94,14 +93,14 @@ namespace OpenVRML {
  * This constructor is useful only for debugging and experimentation.
  */
 VrmlRenderContext::VrmlRenderContext():
-    cull_flag(BVolume::partial),
+    cull_flag(bounding_volume::partial),
     modelview(0),
     draw_bspheres(false)
 {}
 
 /**
  * @brief Constructs and initializes a render context.
- * 
+ *
  * @param cull_flag The cull flag argument will normally be BVolume::partial.
  *
  * @param modelview The modelview matrix. The transform can be affine, but the
@@ -110,7 +109,7 @@ VrmlRenderContext::VrmlRenderContext():
  *
  * @see setCullFlag
  */
-VrmlRenderContext::VrmlRenderContext(const BVolume::Intersection cull_flag,
+VrmlRenderContext::VrmlRenderContext(const bounding_volume::intersection cull_flag,
                                      mat4f & modelview):
     cull_flag(cull_flag),
     modelview(&modelview),
@@ -122,7 +121,7 @@ VrmlRenderContext::VrmlRenderContext(const BVolume::Intersection cull_flag,
  *
  * @return the cull flag
  */
-BVolume::Intersection VrmlRenderContext::getCullFlag() const
+bounding_volume::intersection VrmlRenderContext::getCullFlag() const
 {
   return cull_flag;
 }
@@ -149,7 +148,8 @@ BVolume::Intersection VrmlRenderContext::getCullFlag() const
  * @see Browser
  * @see BVolume
  */
-void VrmlRenderContext::setCullFlag(const BVolume::Intersection intersection)
+void VrmlRenderContext::setCullFlag(
+    const bounding_volume::intersection intersection)
 {
     cull_flag = intersection;
 }

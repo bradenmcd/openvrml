@@ -30,7 +30,7 @@
 #   include <OpenVRML/node.h>
 #   include <OpenVRML/Viewer.h>
 #   include <OpenVRML/Image.h>
-#   include <OpenVRML/bvolume.h>
+#   include <OpenVRML/bounding_volume.h>
 
 typedef unsigned int FT_UInt;
 typedef struct FT_LibraryRec_ * FT_Library;
@@ -225,24 +225,21 @@ namespace OpenVRML {
             /**
              * Cached copy of the bsphere enclosing this node's children.
              */
-            BSphere bsphere;
+            bounding_sphere bsphere;
 
         public:
-            Group(const node_type & type,
-                  const scope_ptr & scope);
+            Group(const node_type & type, const scope_ptr & scope);
             virtual ~Group() throw ();
 
+            virtual const OpenVRML::bounding_volume & bounding_volume() const;
             virtual bool modified() const;
             virtual void update_modified(node_path& path, int flags);
-
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
             virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timeStamp, bool isOver, bool isActive, double *p);
 
             void renderNoCull(Viewer & viewer, VrmlRenderContext context);
-
-            const BVolume * bvolume() const;
 
         protected:
             //
@@ -289,11 +286,10 @@ namespace OpenVRML {
 
             virtual Anchor * to_anchor() const;
 
+            virtual const OpenVRML::bounding_volume & bounding_volume() const;
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
             void activate();
-
-            const BVolume * bvolume() const;
 
         private:
             //
@@ -593,7 +589,7 @@ namespace OpenVRML {
 
             sfvec3f size;
 
-            BSphere bsphere;
+            bounding_sphere bsphere;
 
         public:
             Box(const node_type & type,
@@ -602,7 +598,7 @@ namespace OpenVRML {
 
             virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
-            virtual const BVolume * bvolume() const;
+            virtual const OpenVRML::bounding_volume & bounding_volume() const;
         };
 
 
@@ -1230,7 +1226,7 @@ namespace OpenVRML {
             sfnode texCoord;
             mfint32 texCoordIndex;
 
-            BSphere bsphere;
+            bounding_sphere bsphere;
 
         public:
             IndexedFaceSet(const node_type & type,
@@ -1241,7 +1237,7 @@ namespace OpenVRML {
             virtual void update_modified(node_path & path, int flags = 0x003);
             virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
-            virtual const BVolume * bvolume() const;
+            virtual const OpenVRML::bounding_volume & bounding_volume() const;
 
         private:
             //
@@ -1349,7 +1345,7 @@ namespace OpenVRML {
             mffloat range;
 
             mfnode children_;
-            BSphere bsphere;
+            bounding_sphere bsphere;
 
         public:
             LOD(const node_type & type,
@@ -1359,7 +1355,7 @@ namespace OpenVRML {
             virtual bool modified() const;
             virtual void update_modified(node_path & path, int flags = 0x003);
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-            virtual const BVolume * bvolume() const;
+            virtual const OpenVRML::bounding_volume & bounding_volume() const;
 
             virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
@@ -1835,7 +1831,7 @@ namespace OpenVRML {
             sfnode color;
             sfnode coord;
 
-            BSphere bsphere;
+            bounding_sphere bsphere;
 
         public:
             PointSet(const node_type & type,
@@ -1846,7 +1842,7 @@ namespace OpenVRML {
             virtual bool modified() const;
             virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
-            virtual const BVolume * bvolume() const;
+            virtual const OpenVRML::bounding_volume & bounding_volume() const;
 
         private:
             //
@@ -2004,7 +2000,7 @@ namespace OpenVRML {
 
             virtual bool modified() const;
             virtual void update_modified(node_path& path, int flags);
-            virtual const BVolume * bvolume() const;
+            virtual const OpenVRML::bounding_volume & bounding_volume() const;
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
         private:
@@ -2091,7 +2087,7 @@ namespace OpenVRML {
             friend class SphereClass;
 
             sffloat radius;
-            BSphere bsphere;
+            bounding_sphere bsphere;
 
         public:
             Sphere(const node_type & type,
@@ -2100,7 +2096,7 @@ namespace OpenVRML {
 
             virtual Viewer::Object insert_geometry(Viewer & viewer,
                                                   VrmlRenderContext context);
-            virtual const BVolume * bvolume() const;
+            virtual const OpenVRML::bounding_volume & bounding_volume() const;
         };
 
 
@@ -2228,7 +2224,7 @@ namespace OpenVRML {
             sfint32 whichChoice;
 
             mfnode children_;
-            BSphere bsphere;
+            bounding_sphere bsphere;
 
         public:
             Switch(const node_type & type,
@@ -2238,7 +2234,7 @@ namespace OpenVRML {
             virtual bool modified() const;
             virtual void update_modified(node_path & path, int flags = 0x003);
             virtual void render(Viewer & viewer, VrmlRenderContext context);
-            virtual const BVolume * bvolume() const;
+            virtual const OpenVRML::bounding_volume & bounding_volume() const;
 
             virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
@@ -2454,7 +2450,6 @@ namespace OpenVRML {
             virtual ~TimeSensor() throw ();
 
             virtual TimeSensor * to_time_sensor() const;
-            virtual const BVolume * bvolume() const;
 
             void update(double time);
 
@@ -2554,7 +2549,7 @@ namespace OpenVRML {
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
-            virtual const BVolume * bvolume() const;
+            virtual const OpenVRML::bounding_volume & bounding_volume() const;
 
             virtual const mat4f & transform() const throw ();
 
@@ -2639,8 +2634,6 @@ namespace OpenVRML {
 
             const sfrotation & orientation() const;
             const sfvec3f & position() const;
-
-            const BVolume * bvolume() const;
 
             void getFrustum(VrmlFrustum& frust) const; // get a copy
 

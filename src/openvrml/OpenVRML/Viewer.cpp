@@ -431,9 +431,11 @@ Viewer::~Viewer() {}
  *
  * @param bvolume   the bounding volume to intersect with the view volume.
  *
- * @return BVolume::inside, BVolume::outside, or BVolume::partial.
+ * @return bounding_volume::inside, bounding_volume::outside, or
+ *         bounding_volume::partial.
  */
-BVolume::Intersection Viewer::intersectViewVolume(const BVolume & bvolume) const
+bounding_volume::intersection
+Viewer::intersectViewVolume(const bounding_volume & bvolume) const
 {
     //
     // For normal VRML97 use, this won't need to be overridden, but for
@@ -444,11 +446,11 @@ BVolume::Intersection Viewer::intersectViewVolume(const BVolume & bvolume) const
     // is enough. If it isn't, please express any concerns to the
     // OpenVRML developer's list, and it can be fixed...
     //
-    return bvolume.intersectFrustum(this->d_frust);
+    return bvolume.intersect_frustum(this->d_frust);
 }
 
 /**
- * @fn void Viewer::drawBSphere(const BSphere & bs, BVolume::Intersection intersection)
+ * @fn void Viewer::drawBSphere(const BSphere & bs, bounding_volume::intersection intersection)
  *
  * Draw a bounding sphere. Used for debugging view culling. Probably
  * should be drawBVolume and handle aaboxes as well.

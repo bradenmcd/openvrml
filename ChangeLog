@@ -1,3 +1,38 @@
+2003-05-31  Braden McDaniel  <braden@endoframe.com>
+
+	* src/openvrml/OpenVRML/bounding_volume.cpp:  Added.  Replaces
+	bvolume.cpp.  Same as bvolume.cpp, but changed to match new
+	naming convention.
+	* src/openvrml/OpenVRML/bounding_volume.h:  Added.  Replaces
+	bvolume.h.  Same as bvolume.h, but changed to match new naming
+	convention.
+	* src/openvrml/OpenVRML/bvolume.cpp:  Removed.
+	* src/openvrml/OpenVRML/bvolume.h:  Removed.
+	* src/openvrml/OpenVRML/Makefile.am: Replaced bvolume.h and
+	bvolume.cpp with bounding_volume.h and bounding_volume.cpp.
+	* src/openvrml/OpenVRML/Viewer.cpp:  Changes associated with
+	naming convention changes to bounding_volume.
+	* src/openvrml/OpenVRML/Viewer.h:  Changes associated with
+	naming convention changes to bounding_volume.
+	* src/openvrml/OpenVRML/VrmlRenderContext.cpp:  Changes
+	associated with naming convention changes to bounding_volume.
+	* src/openvrml/OpenVRML/VrmlRenderContext.h:  Changes
+	associated with naming convention changes to bounding_volume.
+	* src/openvrml/OpenVRML/browser.cpp:  Changes associated with
+	naming convention changes to bounding_volume.
+	* src/openvrml/OpenVRML/node.cpp:  Changes associated with
+	naming convention changes to bounding_volume.
+	* src/openvrml/OpenVRML/node.h:  Changes associated with naming
+	convention changes to bounding_volume.
+	* src/openvrml/OpenVRML/vrml97node.cpp:  Changes associated with
+	naming convention changes to bounding_volume.
+	* src/openvrml/OpenVRML/vrml97node.h:  Changes associated with
+	naming convention changes to bounding_volume.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  Changes
+	associated with naming convention changes to bounding_volume.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Changes
+	associated with naming convention changes to bounding_volume.
+
 2003-05-26  Braden McDaniel  <braden@endoframe.com>
 
         * src/lookat/ViewerGlut.cpp, src/lookat/ViewerGlut.h,

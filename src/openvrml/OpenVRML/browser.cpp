@@ -1453,7 +1453,7 @@ void browser::render(Viewer & viewer)
 
     viewer.beginObject(0);
     mat4f modelview = t.inverse();
-    VrmlRenderContext rc(BVolume::partial, modelview);
+    VrmlRenderContext rc(bounding_volume::partial, modelview);
     rc.setDrawBSpheres(true);
 
     // Do the browser-level lights (Points and Spots)

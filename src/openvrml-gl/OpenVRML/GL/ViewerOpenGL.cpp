@@ -43,7 +43,7 @@
 # include <OpenVRML/System.h>
 # include <OpenVRML/browser.h>
 # include <OpenVRML/vrml97node.h>
-# include <OpenVRML/bvolume.h>
+# include <OpenVRML/bounding_volume.h>
 # include <OpenVRML/VrmlFrustum.h>
 
 # include "ViewerOpenGL.h"
@@ -3662,14 +3662,15 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     return this->d_activeSensitive || wasActive;
 }
 
-void ViewerOpenGL::drawBSphere(const BSphere & bs,
-                               const BVolume::Intersection intersection)
+void
+ViewerOpenGL::drawBSphere(const bounding_sphere & bs,
+                          const bounding_volume::intersection intersection)
 {
     static const GLfloat green[] = { 0.25f, 1.0f, 0.25f, 1.0f };
     static const GLfloat red[] = { 1.0f, 0.5f, 0.5f, 1.0f };
     static const GLfloat grey[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 
-    if (!this->d_drawBSpheres || bs.isMAX() || bs.getRadius() == -1.0) {
+    if (!this->d_drawBSpheres || bs.maximized() || bs.radius() == -1.0) {
         return;
     }
     glEnable(GL_CULL_FACE);
@@ -3679,38 +3680,38 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs,
     GLUquadricObj * sph = 0;
     glMatrixMode(GL_MODELVIEW);
     this->modelviewMatrixStack.push();
-    const vec3f & c = bs.getCenter();
+    const vec3f & c = bs.center();
     glTranslatef(c.x(), c.y(), c.z());
     sph = gluNewQuadric();
     switch (intersection) {
-    case BVolume::outside:
+    case bounding_volume::outside:
         //glDisable(GL_LIGHTING);
         //glEnable(GL_LIGHTING);
         gluQuadricDrawStyle(sph, GLU_LINE);
         //gluQuadricDrawStyle(sph, GLU_POINT);
         glColor3f(0.5, 0.5, 0.5);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
-        gluSphere(sph, bs.getRadius(), 5, 5);
+        gluSphere(sph, bs.radius(), 5, 5);
         break;
 
-    case BVolume::partial:
+    case bounding_volume::partial:
         //glEnable(GL_LIGHTING);
         gluQuadricNormals(sph, GLU_SMOOTH);
         //gluQuadricDrawStyle(sph, GLU_FILL);
         gluQuadricDrawStyle(sph, GLU_LINE);
         glColor3f(0.25, 1.0, 0.25);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
-        gluSphere(sph, bs.getRadius(), 8, 8);
+        gluSphere(sph, bs.radius(), 8, 8);
         break;
 
-    case BVolume::inside:
+    case bounding_volume::inside:
         //glEnable(GL_LIGHTING);
         gluQuadricNormals(sph, GLU_SMOOTH);
         //gluQuadricDrawStyle(sph, GLU_FILL);
         gluQuadricDrawStyle(sph, GLU_LINE);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, red);
         glColor3f(1.0, 0.5, 0.5);
-        gluSphere(sph, bs.getRadius(), 8, 8);
+        gluSphere(sph, bs.radius(), 8, 8);
         break;
 
     default:
@@ -3719,7 +3720,7 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs,
         gluQuadricDrawStyle(sph, GLU_LINE);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
         glColor3f(0.5, 0.5, 0.5);
-        gluSphere(sph, bs.getRadius(), 8, 8);
+        gluSphere(sph, bs.radius(), 8, 8);
     }
     gluDeleteQuadric(sph);
     this->modelviewMatrixStack.pop();

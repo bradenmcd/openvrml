@@ -28,7 +28,6 @@
 # include "node.h"
 # include "scope.h"
 # include "browser.h"
-# include "bvolume.h"
 # include "VrmlRenderContext.h"
 # include "doc2.hpp"
 
@@ -883,7 +882,7 @@ node::node(const node_type & type, const scope_ptr & scope) throw ():
     scene_(0),
     type(type),
     modified_(false),
-    bvolume_dirty_(false)
+    bounding_volume_dirty_(false)
 {}
 
 /**
@@ -1757,7 +1756,7 @@ void node::mark_path_modified(node_path & path, bool mod, int flags)
     }
     if (flags & 0x002) {
         for (node_path::iterator i = path.begin(); i != end; ++i) {
-            (*i)->bvolume_dirty(mod);
+            (*i)->bounding_volume_dirty(mod);
         }
     }
 }
@@ -1775,7 +1774,7 @@ void node::mark_path_modified(node_path & path, bool mod, int flags)
  */
 void node::update_modified(node_path & path, int flags)
 {
-    if (this->modified_ || this->bvolume_dirty_) {
+    if (this->modified_ || this->bounding_volume_dirty_) {
         node::mark_path_modified(path, true, flags);
     }
 }
@@ -1797,20 +1796,22 @@ void node::update_modified(int flags)
  * ancestors will also end up with an infinite bvolume, and will never be
  * culled.
  *
- * @return this node's bounding volume
- *
- * @todo Should this return a reference?
+ * @return a maximized bounding volume.
  */
-const BVolume * node::bvolume() const
+const bounding_volume & node::bounding_volume() const
 {
-    static BSphere infBSphere;
-    static BSphere * infBSpherePtr = 0;
-    if (!infBSpherePtr) {
-        infBSpherePtr = &infBSphere;
-        infBSpherePtr->setMAX();
-    }
-    const_cast<node *>(this)->bvolume_dirty(false);
-    return infBSpherePtr;
+    class default_bounding_volume : public bounding_sphere {
+    public:
+        default_bounding_volume()
+        {
+            this->maximize();
+        }
+    };
+
+    static const default_bounding_volume default_bvolume;
+
+    const_cast<node *>(this)->bounding_volume_dirty(false);
+    return default_bvolume;
 }
 
 
@@ -1819,7 +1820,7 @@ const BVolume * node::bvolume() const
  *
  * @todo Implement me!
  */
-void node::bvolume(const BVolume & v)
+void node::bounding_volume(const OpenVRML::bounding_volume & v)
 {
     // XXX Implement me!
 }
@@ -1830,9 +1831,9 @@ void node::bvolume(const BVolume & v)
  * all that node's ancestors are also invalid. Normally, the node
  * itself will determine when its bvolume needs updating.
  */
-void node::bvolume_dirty(const bool value)
+void node::bounding_volume_dirty(const bool value)
 {
-    this->bvolume_dirty_ = value;
+    this->bounding_volume_dirty_ = value;
     if (value) { // only if dirtying, not clearing
         this->type._class.browser.flags_need_updating = true;
     }
@@ -1842,13 +1843,13 @@ void node::bvolume_dirty(const bool value)
  * Return true if the node's bounding volume needs to be
  * recalculated.
  */
-bool node::bvolume_dirty() const
+bool node::bounding_volume_dirty() const
 {
     if (this->type._class.browser.flags_need_updating) {
         this->type._class.browser.update_flags();
         this->type._class.browser.flags_need_updating = false;
     }
-    return this->bvolume_dirty_;
+    return this->bounding_volume_dirty_;
 }
 
 /**

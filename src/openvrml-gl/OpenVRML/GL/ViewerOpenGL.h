@@ -333,8 +333,9 @@ namespace OpenVRML {
             // The viewer knows the current viewpoint
             virtual void transformPoints(int nPoints, float *points);
 
-            virtual void drawBSphere(const BSphere & bs,
-                                     BVolume::Intersection intersection);
+            virtual void
+            drawBSphere(const bounding_sphere & bs,
+                        bounding_volume::intersection intersection);
 
 
 

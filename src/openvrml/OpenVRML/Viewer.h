@@ -24,13 +24,12 @@
 
 #   include <stddef.h>
 #   include <vector>
-#   include <OpenVRML/bvolume.h>
+#   include <OpenVRML/bounding_volume.h>
 #   include <OpenVRML/VrmlFrustum.h>
 
 namespace OpenVRML {
 
     class node;
-    class BSphere;
     class browser;
 
     class OPENVRML_SCOPE Viewer {
@@ -197,11 +196,12 @@ namespace OpenVRML {
         virtual const VrmlFrustum& getFrustum() const;
         virtual void setFrustum(const VrmlFrustum& afrust);
 
-        virtual BVolume::Intersection
-        intersectViewVolume(const BVolume & bvolume) const;
+        virtual bounding_volume::intersection
+        intersectViewVolume(const bounding_volume & bvolume) const;
 
-        virtual void drawBSphere(const BSphere & bs,
-                                 BVolume::Intersection intersection) = 0;
+        virtual void
+        drawBSphere(const bounding_sphere & bs,
+                    bounding_volume::intersection intersection) = 0;
 
     protected:
         explicit Viewer(OpenVRML::browser & browser);

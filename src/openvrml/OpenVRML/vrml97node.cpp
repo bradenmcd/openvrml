@@ -1140,7 +1140,7 @@ Anchor::Anchor(const node_type & type,
     grouping_node(type, scope),
     Group(type, scope)
 {
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
 }
 
 /**
@@ -1240,9 +1240,9 @@ void Anchor::activate()
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * Anchor::bvolume() const
+const bounding_volume & Anchor::bounding_volume() const
 {
-    return Group::bvolume();
+    return Group::bounding_volume();
 }
 
 /**
@@ -2889,7 +2889,7 @@ Box::Box(const node_type & type,
     AbstractGeometry(type, scope),
     size(vec3f(2.0, 2.0, 2.0))
 {
-    this->bvolume_dirty(true); // lazy calc of bvolume
+    this->bounding_volume_dirty(true); // lazy calc of bvolume
 }
 
 /**
@@ -2917,19 +2917,15 @@ Viewer::Object Box::insert_geometry(Viewer & viewer,
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * Box::bvolume() const
+const bounding_volume & Box::bounding_volume() const
 {
-    using OpenVRML_::length;
-
-    if (this->bvolume_dirty()) {
-        const float corner[3] = { this->size.value.x() / 2.0f,
-                                  this->size.value.y() / 2.0f,
-                                  this->size.value.z() / 2.0f };
-        float r = length(corner);
-        ((Box*)this)->bsphere.setRadius(r);
-        ((Box*)this)->bvolume_dirty(false); // logical const
+    if (this->bounding_volume_dirty()) {
+        const vec3f corner = this->size.value / 2.0f;
+        const float r = corner.length();
+        const_cast<Box *>(this)->bsphere.radius(r);
+        const_cast<Box *>(this)->bounding_volume_dirty(false); // logical const
     }
-    return &this->bsphere;
+    return this->bsphere;
 }
 
 
@@ -5817,7 +5813,7 @@ Group::Group(const node_type & type,
     bboxSize(vec3f(-1.0, -1.0, -1.0)),
     viewerObject(0)
 {
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
 }
 
 /**
@@ -5857,7 +5853,7 @@ void Group::processAddChildren(const field_value & value,
 
     if (nNow != this->children_.value.size()) {
         this->node::modified(true);
-        this->bvolume_dirty(true);
+        this->bounding_volume_dirty(true);
     }
 }
 
@@ -5891,7 +5887,7 @@ void Group::processRemoveChildren(const field_value & value,
 
     if (oldLength != this->children_.value.size()) {
         this->node::modified(true);
-        this->bvolume_dirty(true);
+        this->bounding_volume_dirty(true);
     }
 }
 
@@ -5917,7 +5913,7 @@ void Group::processSet_children(const field_value & value,
     }
 
     this->node::modified(true);
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
     this->emit_event("children_changed", this->children_, timestamp);
 }
 
@@ -5965,14 +5961,16 @@ void Group::update_modified(node_path & path, int flags)
  */
 void Group::render(Viewer & viewer, VrmlRenderContext context)
 {
-    if (context.getCullFlag() != BVolume::inside) {
-        const BSphere * bs = static_cast<const BSphere *>(this->bvolume());
-        BSphere bv_copy(*bs);
+    if (context.getCullFlag() != bounding_volume::inside) {
+        assert(dynamic_cast<const bounding_sphere *>(&this->bounding_volume()));
+        const bounding_sphere & bs =
+            static_cast<const bounding_sphere &>(this->bounding_volume());
+        bounding_sphere bv_copy(bs);
         bv_copy.transform(context.getMatrix());
-        BVolume::Intersection r = viewer.intersectViewVolume(bv_copy);
-        if (context.getDrawBSpheres()) { viewer.drawBSphere(*bs, r); }
-        if (r == BVolume::outside) { return; }
-        if (r == BVolume::inside) { context.setCullFlag(BVolume::inside); }
+        bounding_volume::intersection r = viewer.intersectViewVolume(bv_copy);
+        if (context.getDrawBSpheres()) { viewer.drawBSphere(bs, r); }
+        if (r == bounding_volume::outside) { return; }
+        if (r == bounding_volume::inside) { context.setCullFlag(bounding_volume::inside); }
     }
     this->renderNoCull(viewer, context);
 }
@@ -6077,11 +6075,12 @@ void Group::activate(double time, bool isOver, bool isActive, double *p)
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * Group::bvolume() const
+const bounding_volume & Group::bounding_volume() const
 {
-  if (this->bvolume_dirty())
-    ((Group*)this)->recalcBSphere();
-  return &this->bsphere;
+    if (this->bounding_volume_dirty()) {
+        const_cast<Group *>(this)->recalcBSphere();
+    }
+    return this->bsphere;
 }
 
 /**
@@ -6093,11 +6092,11 @@ void Group::recalcBSphere()
     for (size_t i = 0; i < this->children_.value.size(); ++i) {
         const node_ptr & node = this->children_.value[i];
         if (node) {
-            const BVolume * const ci_bv = node->bvolume();
-            if (ci_bv) { this->bsphere.extend(*ci_bv); }
+            const OpenVRML::bounding_volume & ci_bv = node->bounding_volume();
+            this->bsphere.extend(ci_bv);
         }
     }
-    this->bvolume_dirty(false);
+    this->bounding_volume_dirty(false);
 }
 
 
@@ -6112,7 +6111,9 @@ void Group::recalcBSphere()
  *
  * @param browser the browser associated with this node class object.
  */
-ImageTextureClass::ImageTextureClass(OpenVRML::browser & browser): node_class(browser) {}
+ImageTextureClass::ImageTextureClass(OpenVRML::browser & browser):
+    node_class(browser)
+{}
 
 /**
  * @brief Destructor.
@@ -6510,7 +6511,7 @@ IndexedFaceSet::IndexedFaceSet(const node_type & type,
         creaseAngle(0.0),
         normalPerVertex(true),
         solid(true) {
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
 }
 
 /**
@@ -6566,13 +6567,15 @@ void IndexedFaceSet::update_modified(node_path& path, int flags) {
  * @todo stripify, crease angle, generate normals ...
  */
 Viewer::Object IndexedFaceSet::insert_geometry(Viewer & viewer,
-                                              const VrmlRenderContext context)
+                                               const VrmlRenderContext context)
 {
     using std::vector;
 
     if (context.getDrawBSpheres()) {
-        const BSphere* bs = (BSphere*)this->bvolume();
-        viewer.drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
+        assert(dynamic_cast<const bounding_sphere *>(&this->bounding_volume()));
+        const bounding_sphere & bs =
+            static_cast<const bounding_sphere &>(this->bounding_volume());
+        viewer.drawBSphere(bs, static_cast<bounding_volume::intersection>(4));
     }
 
     coordinate_node * const coordinateNode = this->coord.value
@@ -6654,7 +6657,7 @@ void IndexedFaceSet::recalcBSphere()
         this->bsphere.reset();
         this->bsphere.enclose(coord);
     }
-    this->bvolume_dirty(false);
+    this->bounding_volume_dirty(false);
 }
 
 /**
@@ -6662,9 +6665,11 @@ void IndexedFaceSet::recalcBSphere()
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * IndexedFaceSet::bvolume() const {
-    if (this->bvolume_dirty()) { ((IndexedFaceSet*)this)->recalcBSphere(); }
-    return &this->bsphere; // hmmm, const?
+const bounding_volume & IndexedFaceSet::bounding_volume() const {
+    if (this->bounding_volume_dirty()) {
+        const_cast<IndexedFaceSet *>(this)->recalcBSphere();
+    }
+    return this->bsphere;
 }
 
 /**
@@ -7013,7 +7018,7 @@ Inline::Inline(const node_type & type,
     inlineScene(0),
     hasLoaded(false)
 {
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
 }
 
 /**
@@ -7086,7 +7091,7 @@ void Inline::load() {
     if (this->hasLoaded) { return; }
 
     this->hasLoaded = true; // although perhaps not successfully
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
 
     assert(this->scene());
     this->inlineScene = new OpenVRML::scene(this->scene()->browser,
@@ -7193,9 +7198,9 @@ const node_type_ptr LODClass::create_type(const std::string & id,
  */
 
 /**
- * @var BSphere LOD::bsphere
+ * @var bounding_sphere LOD::bsphere
  *
- * @brief Cached copy of the BSphere enclosing this node's children.
+ * @brief Cached copy of the bounding_sphere enclosing this node's children.
  */
 
 /**
@@ -7212,7 +7217,7 @@ LOD::LOD(const node_type & type,
     grouping_node(type, scope),
     children_(1)
 {
-    this->bvolume_dirty(true); // lazy calc of bvolume
+    this->bounding_volume_dirty(true); // lazy calc of bvolume
 }
 
 /**
@@ -7306,11 +7311,11 @@ void LOD::render(Viewer & viewer, const VrmlRenderContext context)
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * LOD::bvolume() const {
-    if (this->bvolume_dirty()) {
-        ((LOD*)this)->recalcBSphere();
+const bounding_volume & LOD::bounding_volume() const {
+    if (this->bounding_volume_dirty()) {
+        const_cast<LOD *>(this)->recalcBSphere();
     }
-    return &this->bsphere;
+    return this->bsphere;
 }
 
 /**
@@ -7367,11 +7372,11 @@ void LOD::recalcBSphere() {
     for (size_t i = 0; i < this->level.value.size(); i++) {
         const node_ptr & node = this->level.value[i];
         if (node) {
-            const BVolume * ci_bv = node->bvolume();
-            this->bsphere.extend(*ci_bv);
+            const OpenVRML::bounding_volume & ci_bv = node->bounding_volume();
+            this->bsphere.extend(ci_bv);
         }
     }
-    this->bvolume_dirty(false);
+    this->bounding_volume_dirty(false);
 }
 
 /**
@@ -9985,7 +9990,7 @@ const node_type_ptr PointSetClass::create_type(const std::string & id,
  */
 
 /**
- * @var BSphere PointSet::bsphere
+ * @var bounding_sphere PointSet::bsphere
  *
  * @brief Bounding volume.
  */
@@ -10001,7 +10006,7 @@ PointSet::PointSet(const node_type & type,
     node(type, scope),
     AbstractGeometry(type, scope)
 {
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
 }
 
 /**
@@ -10051,8 +10056,10 @@ Viewer::Object PointSet::insert_geometry(Viewer & viewer,
     using std::vector;
 
     if (context.getDrawBSpheres()) {
-        const BSphere * bs = (const BSphere*)this->bvolume();
-        viewer.drawBSphere(*bs, static_cast<BVolume::Intersection>(4));
+        assert(dynamic_cast<const bounding_sphere *>(&this->bounding_volume()));
+        const bounding_sphere & bs =
+            static_cast<const bounding_sphere &>(this->bounding_volume());
+        viewer.drawBSphere(bs, static_cast<bounding_volume::intersection>(4));
     }
 
     coordinate_node * const coordinateNode = this->coord.value
@@ -10093,7 +10100,7 @@ void PointSet::recalcBSphere()
             this->bsphere.extend(*vec);
         }
     }
-    this->bvolume_dirty(false);
+    this->bounding_volume_dirty(false);
 }
 
 /**
@@ -10101,12 +10108,12 @@ void PointSet::recalcBSphere()
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume* PointSet::bvolume() const
+const bounding_volume & PointSet::bounding_volume() const
 {
-    if (this->bvolume_dirty()) {
-        ((PointSet*)this)->recalcBSphere();
+    if (this->bounding_volume_dirty()) {
+        const_cast<PointSet *>(this)->recalcBSphere();
     }
-    return &this->bsphere;
+    return this->bsphere;
 }
 
 /**
@@ -11123,16 +11130,17 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume* Shape::bvolume() const
+const bounding_volume & Shape::bounding_volume() const
 {
     //
     // just pass off to the geometry's getbvolume() method
     //
-    const BVolume * r = 0;
-    const node_ptr & geom = this->geometry.value;
-    if (geom) { r = geom->bvolume(); }
-    ((Shape*)this)->bvolume_dirty(false);
-    return r;
+    const OpenVRML::bounding_volume & result =
+        this->geometry.value
+        ? this->geometry.value->bounding_volume()
+        : this->node::bounding_volume();
+    const_cast<Shape *>(this)->bounding_volume_dirty(false);
+    return result;
 }
 
 /**
@@ -11659,7 +11667,7 @@ const node_type_ptr SphereClass::create_type(const std::string & id,
  */
 
 /**
- * @var BSphere Sphere::bsphere
+ * @var bounding_sphere Sphere::bsphere
  *
  * @brief Bounding volume.
  */
@@ -11676,7 +11684,7 @@ Sphere::Sphere(const node_type & type,
     AbstractGeometry(type, scope),
     radius(1.0)
 {
-    this->bvolume_dirty(true); // lazy calc of bvolumes
+    this->bounding_volume_dirty(true); // lazy calc of bvolumes
 }
 
 /**
@@ -11702,13 +11710,13 @@ Viewer::Object Sphere::insert_geometry(Viewer & viewer,
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * Sphere::bvolume() const
+const bounding_volume & Sphere::bounding_volume() const
 {
-    if (this->bvolume_dirty()) {
-        ((Sphere*)this)->bsphere.setRadius(this->radius.value);
-        ((node*)this)->bvolume_dirty(false); // logical const
+    if (this->bounding_volume_dirty()) {
+        const_cast<Sphere *>(this)->bsphere.radius(this->radius.value);
+        const_cast<Sphere *>(this)->bounding_volume_dirty(false); // logical const
     }
-    return &this->bsphere;
+    return this->bsphere;
 }
 
 
@@ -12552,7 +12560,7 @@ const node_type_ptr SwitchClass::create_type(const std::string & id,
  */
 
 /**
- * @var BSphere Switch::bsphere
+ * @var bounding_sphere Switch::bsphere
  *
  * @brief Cached copy of the bsphere enclosing this node's children.
  */
@@ -12572,7 +12580,7 @@ Switch::Switch(const node_type & type,
     whichChoice(-1),
     children_(1)
 {
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
 }
 
 /**
@@ -12639,11 +12647,11 @@ void Switch::render(Viewer & viewer, const VrmlRenderContext context)
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume* Switch::bvolume() const {
-    if (this->bvolume_dirty()) {
-        ((Switch*)this)->recalcBSphere();
+const bounding_volume & Switch::bounding_volume() const {
+    if (this->bounding_volume_dirty()) {
+        const_cast<Switch *>(this)->recalcBSphere();
     }
-    return &this->bsphere;
+    return this->bsphere;
 }
 
 /**
@@ -12682,17 +12690,18 @@ void Switch::activate(double time, bool isOver, bool isActive, double *p)
 /**
  * @brief Recalculate the bounding volume.
  */
-void Switch::recalcBSphere() {
+void Switch::recalcBSphere()
+{
     this->bsphere.reset();
     long w = this->whichChoice.value;
     if (w >= 0 && size_t(w) < this->choice.value.size()) {
         const node_ptr & node = this->choice.value[w];
         if (node) {
-            const BVolume * ci_bv = node->bvolume();
-            if (ci_bv) { this->bsphere.extend(*ci_bv); }
+            const OpenVRML::bounding_volume & ci_bv = node->bounding_volume();
+            this->bsphere.extend(ci_bv);
         }
     }
-    this->bvolume_dirty(false);
+    this->bounding_volume_dirty(false);
 }
 
 /**
@@ -14901,18 +14910,6 @@ void TimeSensor::update(const double currentTime)
 }
 
 /**
- * @brief Get the bounding volume.
- *
- * @return the bounding volume associated with the node.
- */
-const BVolume * TimeSensor::bvolume() const
-{
-    static BSphere * inf_bsphere = 0;
-    if (!inf_bsphere) { inf_bsphere = new BSphere(); }
-    return inf_bsphere;
-}
-
-/**
  * @brief Initialize.
  *
  * @param timestamp the current time.
@@ -15524,7 +15521,7 @@ Transform::Transform(const node_type & type,
     transformDirty(true),
     xformObject(0)
 {
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
 }
 
 /**
@@ -15554,17 +15551,19 @@ const mat4f & Transform::transform() const throw ()
  */
 void Transform::render(Viewer & viewer, VrmlRenderContext context)
 {
-    if (context.getCullFlag() != BVolume::inside) {
-        const BSphere * bs = (BSphere*)this->bvolume();
-        BSphere bv_copy(*bs);
+    if (context.getCullFlag() != bounding_volume::inside) {
+        assert(dynamic_cast<const bounding_sphere *>(&this->bounding_volume()));
+        const bounding_sphere & bs =
+            static_cast<const bounding_sphere &>(this->bounding_volume());
+        bounding_sphere bv_copy(bs);
         bv_copy.transform(context.getMatrix());
-        BVolume::Intersection r = viewer.intersectViewVolume(bv_copy);
-        if (context.getDrawBSpheres()) { viewer.drawBSphere(*bs, r); }
+        bounding_volume::intersection r = viewer.intersectViewVolume(bv_copy);
+        if (context.getDrawBSpheres()) { viewer.drawBSphere(bs, r); }
 
-        if (r == BVolume::outside) { return; }
-        if (r == BVolume::inside) { context.setCullFlag(BVolume::inside); }
+        if (r == bounding_volume::outside) { return; }
+        if (r == bounding_volume::inside) { context.setCullFlag(bounding_volume::inside); }
 
-        //context.setCullFlag(BVolume::BV_PARTIAL);
+        //context.setCullFlag(bounding_volume::BV_PARTIAL);
     }
 
     mat4f LM = this->transform();
@@ -15597,12 +15596,12 @@ void Transform::render(Viewer & viewer, VrmlRenderContext context)
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * Transform::bvolume() const
+const bounding_volume & Transform::bounding_volume() const
 {
-    if (this->bvolume_dirty()) {
-        ((Transform*)this)->recalcBSphere();
+    if (this->bounding_volume_dirty()) {
+        const_cast<Transform *>(this)->recalcBSphere();
     }
-    return &this->bsphere;
+    return this->bsphere;
 }
 
 /**
@@ -15614,13 +15613,12 @@ void Transform::recalcBSphere()
     for (size_t i = 0; i < this->children_.value.size(); ++i) {
         const node_ptr & node = this->children_.value[i];
         if (node) {
-            const BVolume * ci_bv = node->bvolume();
-            if (ci_bv) { this->bsphere.extend(*ci_bv); }
+            const OpenVRML::bounding_volume & ci_bv = node->bounding_volume();
+            this->bsphere.extend(ci_bv);
         }
     }
     this->bsphere.transform(this->transform());
-
-    this->bvolume_dirty(false);
+    this->bounding_volume_dirty(false);
 }
 
 
@@ -15634,15 +15632,15 @@ Transform::recalcBSphere()
   d_bsphere.reset();
   for (int i = 0; i<d_children.size(); ++i) {
     Node* ci = d_children[i];
-    const BVolume * ci_bv = ci->bvolume();
+    const bounding_volume * ci_bv = ci->bounding_volume();
     if (ci_bv) { // shouldn't happen...
-      BSphere * bs = (BSphere*)ci_bv;
-      BSphere tmp(*bs);
+      bounding_sphere * bs = (bounding_sphere*)ci_bv;
+      bounding_sphere tmp(*bs);
       tmp.transform(M);
       d_bsphere.extend(tmp);
     }
   }
-  this->bvolume_dirty(false);
+  this->bounding_volume_dirty(false);
 }
 #endif
 
@@ -15681,7 +15679,7 @@ void Transform::processSet_center(const field_value & value,
 {
     this->center = dynamic_cast<const sfvec3f &>(value);
     this->node::modified(true);
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
     this->transformDirty = true;
     this->emit_event("center_changed", this->center, timestamp);
 }
@@ -15700,7 +15698,7 @@ void Transform::processSet_rotation(const field_value & value,
 {
     this->rotation = dynamic_cast<const sfrotation &>(value);
     this->node::modified(true);
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
     this->transformDirty = true;
     this->emit_event("rotation_changed", this->rotation, timestamp);
 }
@@ -15719,7 +15717,7 @@ void Transform::processSet_scale(const field_value & value,
 {
     this->scale = dynamic_cast<const sfvec3f &>(value);
     this->node::modified(true);
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
     this->transformDirty = true;
     this->emit_event("scale_changed", this->scale, timestamp);
 }
@@ -15738,7 +15736,7 @@ void Transform::processSet_scaleOrientation(const field_value & value,
 {
     this->scaleOrientation = dynamic_cast<const sfrotation &>(value);
     this->node::modified(true);
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
     this->transformDirty = true;
     this->emit_event("scaleOrientation_changed", this->scaleOrientation,
                      timestamp);
@@ -15758,7 +15756,7 @@ void Transform::processSet_translation(const field_value & value,
 {
     this->translation = dynamic_cast<const sfvec3f &>(value);
     this->node::modified(true);
-    this->bvolume_dirty(true);
+    this->bounding_volume_dirty(true);
     this->transformDirty = true;
     this->emit_event("translation_changed", this->translation, timestamp);
 }
@@ -16160,18 +16158,6 @@ float Viewpoint::field_of_view() const throw ()
 void Viewpoint::getFrustum(VrmlFrustum& frust) const
 {
     // XXX Implement me!
-}
-
-/**
- * @brief Get the bounding volume.
- *
- * @return the bounding volume associated with the node.
- */
-const BVolume * Viewpoint::bvolume() const
-{
-    static BSphere * inf_bsphere = 0;
-    if (!inf_bsphere) { inf_bsphere = new BSphere(); }
-    return inf_bsphere;
 }
 
 /**
