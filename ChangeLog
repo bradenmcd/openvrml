@@ -1,5 +1,10 @@
 2005-01-16 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/Makefile.am:  Removed reference to
+	openvrml/common.h.
+
+2005-01-16 Braden McDaniel  <braden@endoframe.com>
+
 	Moved definition of constants from libopenvrml/openvrml/common.h
 	to libopenvrml/private.h.
 

@@ -2,7 +2,6 @@ lib_LTLIBRARIES = libopenvrml.la
 
 openvrml_includedir = $(pkgincludedir)/openvrml
 openvrml_include_HEADERS = \
-        openvrml/common.h \
         openvrml/basetypes.h \
         openvrml/img.h \
         openvrml/system.h \
