@@ -1,5 +1,21 @@
 2004-01-24 Braden McDaniel  <braden@endoframe.com>
 
+	Consolidated "Makefile.am" contents.
+
+	* configure.ac
+	* lib/antlr/GNUmakefile.am
+	* lib/antlr/antlr/GNUmakefile.am:  Removed file.
+	* lib/antlr/src/GNUmakefile.am:  Removed file.
+	* src/libopenvrml/Makefile.am
+	* src/libopenvrml/openvrml/Makefile.am:  Removed file.
+	* src/libopenvrml-gl/Makefile.am
+	* src/libopenvrml-gl/openvrml/Makefile.am:  Removed file.
+	* src/libopenvrml-gl/openvrml/gl/Makefile.am:  Removed file.
+	* src/lookat/Makefile.am
+	* test/Makefile.am
+
+2004-01-24 Braden McDaniel  <braden@endoframe.com>
+
 	Fixed argument numbering in NaN error message in SFVec2f and
 	SFVec3f constructors.
 

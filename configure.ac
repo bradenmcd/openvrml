@@ -1,6 +1,6 @@
 AC_INIT([OpenVRML], [0.14.99], [openvrml-develop@lists.sourceforge.net])
 AC_PREREQ([2.53])
-AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003 Braden McDaniel])
+AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]
                 [doc/Doxyfile]
                 [doc/Makefile]
@@ -11,8 +11,6 @@ AC_CONFIG_FILES([Makefile]
                 [models/textures/Makefile]
                 [lib/Makefile]
                 [lib/antlr/GNUmakefile]
-                [lib/antlr/antlr/GNUmakefile]
-                [lib/antlr/src/GNUmakefile]
                 [lib/regex/Makefile]
                 [java/Makefile]
                 [java/vrml/Makefile]
@@ -20,10 +18,7 @@ AC_CONFIG_FILES([Makefile]
                 [java/vrml/field/Makefile]
                 [src/Makefile]
                 [src/libopenvrml/Makefile]
-                [src/libopenvrml/openvrml/Makefile]
                 [src/libopenvrml-gl/Makefile]
-                [src/libopenvrml-gl/openvrml/Makefile]
-                [src/libopenvrml-gl/openvrml/gl/Makefile]
                 [src/lookat/Makefile]
                 [test/Makefile]
                 [openvrml.pc]

@@ -3,8 +3,8 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/src/libopenvrml-gl
 AM_CXXFLAGS = @SDL_CFLAGS@
 AM_LDFLAGS = -rpath @OPENVRML_RPATH@ @SDL_LIBS@ @JNI_LIBS@
-LDADD = $(top_builddir)/src/libopenvrml-gl/openvrml/gl/libopenvrml-gl.la \
-        $(top_builddir)/src/libopenvrml/openvrml/libopenvrml.la
+LDADD = $(top_builddir)/src/libopenvrml-gl/libopenvrml-gl.la \
+        $(top_builddir)/src/libopenvrml/libopenvrml.la
 
 if ENABLE_LOOKAT
 bin_PROGRAMS = lookat

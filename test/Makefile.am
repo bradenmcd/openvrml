@@ -1,6 +1,6 @@
 AM_CPPFLAGS = -I$(top_srcdir)/src/libopenvrml
 AM_LDFLAGS = -rpath @OPENVRML_RPATH@
-LDADD = $(top_builddir)/src/libopenvrml/openvrml/libopenvrml.la
+LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
 TESTS = browser_basic \
         browser-create_vrml_from_stream \
