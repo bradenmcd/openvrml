@@ -245,7 +245,7 @@ namespace OpenVRML {
         Scene * const parent;
     
         Scene(Browser & browser, const MFString & uri, Scene * parent = 0)
-                throw (std::bad_alloc);
+            throw (InvalidVrml, std::bad_alloc);
 
         const MFNode & getNodes() const throw ();
         const std::string getURI() const throw (std::bad_alloc);

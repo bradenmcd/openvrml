@@ -5,6 +5,8 @@
           src/openvrml/OpenVRML/script.cpp: Implemented
           Browser::createVrmlFromStream.
 
+        * src/openvrml/OpenVRML/browser.h: Oops.
+
 2002-08-23  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * VrmlMatrix.cpp: If the matrix is singular then it  
