@@ -1,30 +1,16 @@
 body {
   background-color: black;
+  color: white;
   margin-left: 1em;
   margin-right: 1em;
   margin-bottom: 1em;
 }
 
-.body {
-  color: black;
-  background-color: white;
-  font-family: "Lucida", "Lucida Sans", sans-serif;
-  padding: 1em;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: "LucidaBright", serif;
-}
-
-pre, code {
-  font-family: "LucidaTypewriter", "Lucida Console", monospace;
-}
-
 :link {
-  color: black;
+  color: white;
 }
 :visited {
-  color: gray;
+  color: silver;
 }
 :link, :visited {
   border-bottom: dashed 1px;
@@ -40,19 +26,46 @@ pre, code {
   border: solid 1px;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: "LucidaBright", "Palatino", serif;
+}
+
+pre, code {
+  font-family: "LucidaTypewriter", "Lucida Console", monospace;
+}
+
 hr {
-  color: red;
   background-color: red;
+  color: red;
   height: 3px;
   border-style: outset;
 }
 
+.sitenav, .body, .body th, .body td, .body caption {
+  font-family: "Verdana", "Lucida", sans-serif;
+}
+
+.body, .body th, .body td, .body caption {
+  line-height: 1.3em;
+}
+
+.body {
+  color: black;
+  background-color: white;
+  padding: 1em;
+}
+
+.body :link {
+  color: black;
+}
+.body :visited {
+  color: gray;
+}
+
 .sitenav {
-  font-family: "LucidaBright", serif;
-  font-size: larger;
-  font-weight: normal;
   background-color: black;
   color: white;
+  font-size: smaller;
   width: 100%;
   border: 0;
   border-spacing: 0;
@@ -70,21 +83,20 @@ hr {
 
 .sitenav :link, .sitenav :visited {
   background-color: black;
-  color: white;
+  color: rgb(85%, 85%, 85%);
   display: block;
   color: white;
   margin: 0;
   border: 0;
-  padding: 0.5em;
+  padding: 0.25em;
 }
 
 .sitenav :link:hover, .sitenav :visited:hover {
   background-color: rgb(95%, 95%, 95%);
-  color: black;
+  color: rgb(40%, 40%, 40%);
 }
 
 .footer {
-  color: white;
   margin-top: 1em;
 }
 

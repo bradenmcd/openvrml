@@ -8,11 +8,11 @@
 <table class="sitenav">
   <tr>
     <th><a href="http://openvrml.org/index.php">Home</a></th>
-    <th><a href="http://openvrml.org/about.php">About</a></th>
     <th><a href="http://openvrml.org/download.php">Download</a></th>
+    <th><a href="http://openvrml.org/screenshots/index.php" title="Screen shots">Screen shots</a></th>
     <th><a href="http://openvrml.org/discussion.php">Discussion</a></th>
     <th>Documentation</th>
-    <th><a href="http://openvrml.org/links.php">Links</a></th>
+    <th><a href="http://openvrml.org/links.php" title="Links to related resources">Links</a></th>
   </tr>
 </table>
 <div class="body">
