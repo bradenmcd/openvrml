@@ -1,3 +1,8 @@
+2000-11-16  S. K. Bose <bose@pavan.barc.ernet.in>
+        
+        * Changes in Makefile.win to include conditional generation
+          of C++ code from ANTLR grammar by having java or not.
+
 2000-11-07  Braden McDaniel  <braden@endoframe.com>
 
         * Took the ANTLR source out of the automated build.
