@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeElevationGrid.cpp
 
 #include "VrmlNodeElevationGrid.h"
@@ -233,3 +232,4 @@ VrmlNode* VrmlNodeElevationGrid::getTexCoord()  // LarryD Mar 09/99
 
 const VrmlMFFloat& VrmlNodeElevationGrid::getHeight() const  // LarryD Mar 09/99
 {   return d_height; }
+
