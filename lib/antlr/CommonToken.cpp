@@ -30,8 +30,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/CommonToken.hpp"
-#include "antlr/String.hpp"
+#include "CommonToken.hpp"
+#include "String.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

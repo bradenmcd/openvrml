@@ -1,7 +1,7 @@
 #ifndef INC_BitSet_hpp__
 #define INC_BitSet_hpp__
 
-#include "antlr/config.hpp"
+#include "config.hpp"
 #include <vector>
 #include <stdexcept>
 

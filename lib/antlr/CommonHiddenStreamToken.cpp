@@ -1,4 +1,4 @@
-#include "antlr/CommonHiddenStreamToken.hpp"
+#include "CommonHiddenStreamToken.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

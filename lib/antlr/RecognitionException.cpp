@@ -30,8 +30,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/RecognitionException.hpp"
-#include "antlr/String.hpp"
+#include "RecognitionException.hpp"
+#include "String.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

@@ -1,5 +1,5 @@
-#include "antlr/TokenStreamHiddenTokenFilter.hpp"
-#include "antlr/CommonHiddenStreamToken.hpp"
+#include "TokenStreamHiddenTokenFilter.hpp"
+#include "CommonHiddenStreamToken.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

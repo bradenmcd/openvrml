@@ -1,5 +1,5 @@
-#include "antlr/LexerSharedInputState.hpp"
-#include "antlr/CharBuffer.hpp"
+#include "LexerSharedInputState.hpp"
+#include "CharBuffer.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

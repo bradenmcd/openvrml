@@ -33,11 +33,11 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/config.hpp"
-#include "antlr/RecognitionException.hpp"
-#include "antlr/BitSet.hpp"
-#include "antlr/Token.hpp"
-#include "antlr/AST.hpp"
+#include "config.hpp"
+#include "RecognitionException.hpp"
+#include "BitSet.hpp"
+#include "Token.hpp"
+#include "AST.hpp"
 #include <vector>
 
 ANTLR_BEGIN_NAMESPACE(antlr)

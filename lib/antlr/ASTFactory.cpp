@@ -30,8 +30,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/ASTFactory.hpp"
-#include "antlr/CommonAST.hpp"
+#include "ASTFactory.hpp"
+#include "CommonAST.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

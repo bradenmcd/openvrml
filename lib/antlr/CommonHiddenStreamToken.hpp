@@ -1,8 +1,8 @@
 #ifndef INC_CommonHiddenStreamToken_hpp__
 #define INC_CommonHiddenStreamToken_hpp__
 
-#include "antlr/config.hpp"
-#include "antlr/CommonToken.hpp"
+#include "config.hpp"
+#include "CommonToken.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

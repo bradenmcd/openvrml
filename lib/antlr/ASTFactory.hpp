@@ -33,10 +33,10 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/config.hpp"
-#include "antlr/AST.hpp"
-#include "antlr/ASTArray.hpp"
-#include "antlr/ASTPair.hpp"
+#include "config.hpp"
+#include "AST.hpp"
+#include "ASTArray.hpp"
+#include "ASTPair.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

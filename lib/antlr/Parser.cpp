@@ -30,11 +30,11 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/Parser.hpp"
+#include "Parser.hpp"
 
-#include "antlr/BitSet.hpp"
-#include "antlr/TokenBuffer.hpp"
-#include "antlr/MismatchedTokenException.hpp"
+#include "BitSet.hpp"
+#include "TokenBuffer.hpp"
+#include "MismatchedTokenException.hpp"
 //#include "antlr/ASTFactory.hpp"
 #include <iostream>
 

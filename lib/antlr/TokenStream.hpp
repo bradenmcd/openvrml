@@ -38,8 +38,8 @@
  * @author Terence Parr, MageLang Institute
  */
 
-#include "antlr/config.hpp"
-#include "antlr/Token.hpp"
+#include "config.hpp"
+#include "Token.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

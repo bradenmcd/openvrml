@@ -30,7 +30,7 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/String.hpp"
+#include "String.hpp"
 
 #ifdef HAS_NOT_CSTDIO_H
 #include <stdio.h>

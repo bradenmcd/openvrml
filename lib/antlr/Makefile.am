@@ -12,6 +12,7 @@ LIBRARY_VERSION = 0:0:0
 #          +- Increment if interfaces have been added, removed or changed
 
 if DEBUG
+DEBUG_CPPFLAGS =
 else
 DEBUG_CPPFLAGS = -DNDEBUG
 endif

@@ -32,12 +32,12 @@
  * @author <br>John Lilley, <a href=http://www.Empathy.com>Empathy Software</a>
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
-#include "antlr/config.hpp"
-#include "antlr/AST.hpp"
-#include "antlr/ASTFactory.hpp"
-#include "antlr/BitSet.hpp"
-#include "antlr/RecognitionException.hpp"
-#include "antlr/TreeParserSharedInputState.hpp"
+#include "config.hpp"
+#include "AST.hpp"
+#include "ASTFactory.hpp"
+#include "BitSet.hpp"
+#include "RecognitionException.hpp"
+#include "TreeParserSharedInputState.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

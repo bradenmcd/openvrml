@@ -1,6 +1,6 @@
-#include "antlr/config.hpp"
-#include "antlr/CommonASTWithHiddenTokens.hpp"
-#include "antlr/CommonHiddenStreamToken.hpp"
+#include "config.hpp"
+#include "CommonASTWithHiddenTokens.hpp"
+#include "CommonHiddenStreamToken.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

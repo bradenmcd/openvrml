@@ -33,10 +33,10 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/config.hpp"
-#include "antlr/RecognitionException.hpp"
-#include "antlr/BitSet.hpp"
-#include "antlr/CharScanner.hpp"
+#include "config.hpp"
+#include "RecognitionException.hpp"
+#include "BitSet.hpp"
+#include "CharScanner.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

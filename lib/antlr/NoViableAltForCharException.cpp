@@ -30,8 +30,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/NoViableAltForCharException.hpp"
-#include "antlr/String.hpp"
+#include "NoViableAltForCharException.hpp"
+#include "String.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

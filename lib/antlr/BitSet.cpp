@@ -1,4 +1,4 @@
-#include "antlr/BitSet.hpp"
+#include "BitSet.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

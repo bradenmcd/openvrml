@@ -1,8 +1,8 @@
 #ifndef INC_CharStreamException_hpp__
 #define INC_CharStreamException_hpp__
 
-#include "antlr/config.hpp"
-#include "antlr/ANTLRException.hpp"
+#include "config.hpp"
+#include "ANTLRException.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

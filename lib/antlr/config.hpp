@@ -48,6 +48,7 @@
 #define ANTLR_USING_NAMESPACE(_x_) using namespace _x_;
 #define ANTLR_BEGIN_NAMESPACE(_x_) namespace _x_ {
 #define ANTLR_END_NAMESPACE }
+#define ANTLR_C_USING(_x_)
 
 # if defined __GNUC__
 #   if __GNUC__ == 2 && __GNUC_MINOR__ == 96
@@ -83,6 +84,12 @@
 //
 #ifdef __SUNPRO_CC
 
+#if (__SUNPRO_CC >= 0x500)
+
+#define NEEDS_OPERATOR_LESS_THAN
+#define NO_TEMPLATE_PARTS
+
+#else
 
 #undef namespace
 #define namespace
@@ -111,7 +118,7 @@
 // ObjectSpace + some specific templates constructions with stl.
 /* #define OS_NO_ALLOCATOR */
 
-// This great compiler does not has the namespace feature.
+// This great compiler does not have the namespace feature.
 #undef  ANTLR_USE_NAMESPACE
 #define ANTLR_USE_NAMESPACE(_x_)
 #undef ANTLR_USING_NAMESPACE
@@ -136,6 +143,8 @@
 
 #endif
 
+#endif
+
 //
 // Inprise C++ Builder 3.0
 //
@@ -151,6 +160,19 @@
 // - Anyone know which is in which standard?
 #define NO_STRCASECMP
 
+#endif
+
+//
+// Metrowerks Codewarrior
+//
+#ifdef __MWERKS__
+#if (__MWERKS__ <= 0x2201)
+#define NO_TEMPLATE_PARTS
+#define ANTLR_REALLY_NO_STRCASECMP
+#endif
+
+#undef ANTLR_C_USING
+#define ANTLR_C_USING(_x_)   using std:: ## _x_;
 #endif
 
 #endif //INC_config_hpp__

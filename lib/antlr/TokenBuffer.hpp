@@ -33,9 +33,9 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/config.hpp"
-#include "antlr/TokenStream.hpp"
-#include "antlr/CircularQueue.hpp"
+#include "config.hpp"
+#include "TokenStream.hpp"
+#include "CircularQueue.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

@@ -1,8 +1,8 @@
 #ifndef INC_TokenStreamException_hpp__
 #define INC_TokenStreamException_hpp__
 
-#include "antlr/config.hpp"
-#include "antlr/ANTLRException.hpp"
+#include "config.hpp"
+#include "ANTLRException.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

@@ -33,7 +33,7 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-# include "antlr/config.hpp"
+# include "config.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

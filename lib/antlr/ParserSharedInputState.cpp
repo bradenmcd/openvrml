@@ -1,4 +1,4 @@
-#include "antlr/ParserSharedInputState.hpp"
+#include "ParserSharedInputState.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

@@ -30,7 +30,7 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/BaseAST.hpp"
+#include "BaseAST.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

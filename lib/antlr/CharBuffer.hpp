@@ -46,8 +46,8 @@
  * @see antlr.CharQueue
  */
 
-#include "antlr/config.hpp"
-#include "antlr/InputBuffer.hpp"
+#include "config.hpp"
+#include "InputBuffer.hpp"
 #include <iostream>
 
 ANTLR_BEGIN_NAMESPACE(antlr)

@@ -1,9 +1,9 @@
 #ifndef INC_LexerSharedInputState_hpp__
 #define INC_LexerSharedInputState_hpp__
 
-#include "antlr/config.hpp"
-#include "antlr/InputBuffer.hpp"
-#include "antlr/RefCount.hpp"
+#include "config.hpp"
+#include "InputBuffer.hpp"
+#include "RefCount.hpp"
 #include <string>
 
 ANTLR_BEGIN_NAMESPACE(antlr)

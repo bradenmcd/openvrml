@@ -33,9 +33,9 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/config.hpp"
-#include "antlr/ASTRefCount.hpp"
-#include "antlr/Token.hpp"
+#include "config.hpp"
+#include "ASTRefCount.hpp"
+#include "Token.hpp"
 #include <vector>
 #include <string>
 

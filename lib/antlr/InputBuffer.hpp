@@ -46,8 +46,8 @@
  * @see antlr.CharQueue
  */
 
-#include "antlr/config.hpp"
-#include "antlr/CircularQueue.hpp"
+#include "config.hpp"
+#include "CircularQueue.hpp"
 #include <string>
 
 ANTLR_BEGIN_NAMESPACE(antlr)

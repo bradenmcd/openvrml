@@ -30,9 +30,9 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/CharScanner.hpp"
-#include "antlr/CommonToken.hpp"
-#include "antlr/MismatchedCharException.hpp"
+#include "CharScanner.hpp"
+#include "CommonToken.hpp"
+#include "MismatchedCharException.hpp"
 #include <map>
 
 #ifdef HAS_NOT_CCTYPE_H

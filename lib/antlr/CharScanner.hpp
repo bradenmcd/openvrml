@@ -6,7 +6,7 @@
  * <p>
  * ANTLR 2.6.0 MageLang Insitute, 1999
  * <p>
- * $Id: CharScanner.hpp,v 1.1.1.2 2000-12-16 08:26:16 braden Exp $
+ * $Id: CharScanner.hpp,v 1.2 2000-12-16 09:30:40 braden Exp $
  * <p>
  * We reserve no legal rights to the ANTLR--it is fully in the
  * public domain. An individual or company may do whatever
@@ -35,12 +35,12 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/config.hpp"
-#include "antlr/TokenStream.hpp"
-#include "antlr/RecognitionException.hpp"
-#include "antlr/InputBuffer.hpp"
-#include "antlr/BitSet.hpp"
-#include "antlr/LexerSharedInputState.hpp"
+#include "config.hpp"
+#include "TokenStream.hpp"
+#include "RecognitionException.hpp"
+#include "InputBuffer.hpp"
+#include "BitSet.hpp"
+#include "LexerSharedInputState.hpp"
 #include <map>
 
 ANTLR_BEGIN_NAMESPACE(antlr)

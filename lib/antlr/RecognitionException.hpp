@@ -33,8 +33,8 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/config.hpp"
-#include "antlr/ANTLRException.hpp"
+#include "config.hpp"
+#include "ANTLRException.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

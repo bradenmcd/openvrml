@@ -29,9 +29,9 @@
  * @author <br>John Lilley, <a href=http://www.Empathy.com>Empathy Software</a>
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
-#include "antlr/TreeParser.hpp"
-#include "antlr/ASTNULLType.hpp"
-#include "antlr/MismatchedTokenException.hpp"
+#include "TreeParser.hpp"
+#include "ASTNULLType.hpp"
+#include "MismatchedTokenException.hpp"
 #include <iostream>
 
 ANTLR_BEGIN_NAMESPACE(antlr)

@@ -33,12 +33,12 @@
  * @author <br><a href="mailto:pete@yamuna.demon.co.uk">Pete Wells</a>
  */
 
-#include "antlr/config.hpp"
-#include "antlr/BitSet.hpp"
-#include "antlr/TokenBuffer.hpp"
-#include "antlr/RecognitionException.hpp"
-#include "antlr/ASTFactory.hpp"
-#include "antlr/ParserSharedInputState.hpp"
+#include "config.hpp"
+#include "BitSet.hpp"
+#include "TokenBuffer.hpp"
+#include "RecognitionException.hpp"
+#include "ASTFactory.hpp"
+#include "ParserSharedInputState.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 

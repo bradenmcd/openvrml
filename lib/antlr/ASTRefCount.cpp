@@ -1,5 +1,5 @@
-#include "antlr/ASTRefCount.hpp"
-#include "antlr/AST.hpp"
+#include "ASTRefCount.hpp"
+#include "AST.hpp"
 
 ANTLR_BEGIN_NAMESPACE(antlr)
 
