@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 ..\tplib\antlr\release\libantlr.lib regex.lib js32.lib libpng.lib libjpeg.lib zlib.lib jvm.lib wsock32.lib freetype211.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Release\openvrmlcore.dll"
+# ADD LINK32 ..\tplib\antlr\release\libantlr.lib regex.lib js32.lib libpng.lib libjpeg.lib zlib.lib jvm.lib wsock32.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Release\openvrmlcore.dll"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
-# ADD LINK32 ..\tplib\antlr\debug\libantlr.lib js32.lib libpng.lib libjpeg.lib zlib.lib jvm.lib wsock32.lib freetype211_d.lib regex.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Debug\openvrmlcore.dll"
+# ADD LINK32 ..\tplib\antlr\debug\libantlr.lib js32.lib libpng.lib libjpeg.lib zlib.lib jvm.lib wsock32.lib regex.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"LIBC.lib" /out:".\Debug\openvrmlcore.dll"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
