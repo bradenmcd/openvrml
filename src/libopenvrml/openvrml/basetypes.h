@@ -194,6 +194,12 @@ namespace openvrml {
         return result *= rhs;
     }
 
+    inline const vec2f operator*(const float lhs, const vec2f & rhs) throw ()
+    {
+        vec2f result(rhs);
+        return result *= lhs;
+    }
+
     inline vec2f & vec2f::operator/=(const float scalar) throw ()
     {
         this->vec[0] /= scalar;
@@ -376,6 +382,12 @@ namespace openvrml {
     {
         vec3f result(lhs);
         return result *= rhs;
+    }
+
+    inline const vec3f operator*(const float lhs, const vec3f & rhs) throw ()
+    {
+        vec3f result(rhs);
+        return result *= lhs;
     }
 
     inline const vec3f operator*(const vec3f & vec, const mat4f & mat) throw ()

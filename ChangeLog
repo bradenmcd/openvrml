@@ -1,3 +1,11 @@
+2004-01-01 Braden McDaniel  <braden@endoframe.com>
+
+	Added operator* implementations for vec2f and vec3f that take a
+	scalar on the left-hand side.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/basetypes.h
+
 2003-12-31 Braden McDaniel  <braden@endoframe.com>
 
 	Doxygen doc-comment updates.

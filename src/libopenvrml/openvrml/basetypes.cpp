@@ -316,6 +316,19 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  */
 
 /**
+ * @fn const vec2f operator*(float lhs, const vec2f & rhs) throw ()
+ *
+ * @relates openvrml::vec2f
+ *
+ * @brief Multiply a vector by a scalar.
+ *
+ * @param lhs   left-hand operand (the scalar).
+ * @param rhs   right-hand operand (the vector).
+ *
+ * @return the result vector.
+ */
+
+/**
  * @fn vec2f & vec2f::operator/=(float scalar) throw ()
  *
  * @brief Divide by a scalar.
@@ -670,6 +683,19 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  *
  * @param lhs   left-hand operand (the vector).
  * @param rhs   right-hand operand (the scalar).
+ *
+ * @return the result vector.
+ */
+
+/**
+ * @fn const vec3f operator*(float lhs, const vec2f & rhs) throw ()
+ *
+ * @relates openvrml::vec3f
+ *
+ * @brief Multiply a vector by a scalar.
+ *
+ * @param lhs   left-hand operand (the scalar).
+ * @param rhs   right-hand operand (the vector).
  *
  * @return the result vector.
  */
