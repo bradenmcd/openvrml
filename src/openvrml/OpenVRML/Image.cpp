@@ -714,7 +714,7 @@ namespace {
 //
 // PNG reader
 //
-# ifdef HAVE_LIBPNG
+# ifdef OPENVRML_HAVE_LIBPNG
 #   include <png.h>
 namespace {
     
@@ -983,7 +983,7 @@ namespace {
 //
 // JPEG reader
 //
-# ifdef HAVE_LIBJPEG
+# ifdef OPENVRML_HAVE_LIBJPEG
 #   include <setjmp.h>
 
 extern "C" {

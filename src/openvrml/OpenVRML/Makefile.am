@@ -12,13 +12,6 @@ LIBRARY_VERSION = 1:2:0
 #          +- Increment if interfaces have been added, removed or changed
 
 #
-# Blow off "std" if the compiler doesn't support namespaces
-#
-if NO_CXX_NAMESPACES
-  NO_STD_NAMESPACE_DEF = -Dstd=""
-endif
-
-#
 # Add any debug flags
 #
 if DEBUG
@@ -28,11 +21,11 @@ endif
 
 INCLUDES = -I$(top_srcdir)/lib $(JAVASCRIPT_INCLUDES)
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF)
-AM_CXXFLAGS = @JPEG_CFLAGS@ @PNG_CFLAGS@ @Z_CFLAGS@ @MOZJS_CFLAGS@ @JAVA_CFLAGS@
+AM_CXXFLAGS = $(JNI_CFLAGS) $(JS_CFLAGS)
 
 lib_LTLIBRARIES = libopenvrml.la 
-libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ \
-@PNG_LIBS@ @Z_LIBS@ @MOZJS_LIBS@ @JAVA_LIBS@
+libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) $(JPEG_LIBS) \
+$(PNG_LIBS) $(Z_LIBS) $(JS_LIBS) $(JNI_LIBS)
 
 libopenvrml_la_SOURCES = Doc.cpp doc2.cpp MathUtils.cpp dummysound.cpp \
 Image.cpp Audio.cpp System.cpp Viewer.cpp VrmlBVolume.cpp VrmlBSphere.cpp \

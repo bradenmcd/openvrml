@@ -34,13 +34,8 @@
 #include <wingdi.h>
 #endif
 
-# if defined(__MACH__)&&defined(__APPLE__)
-#   include <OpenGL/gl.h>
-#   include <OpenGL/glu.h>
-# else
-#   include <GL/gl.h>
-#   include <GL/glu.h>
-# endif
+# include OPENVRML_GL_H
+# include OPENVRML_GLU_H
 # include <stdio.h>		// sprintf
 # include <math.h>
 

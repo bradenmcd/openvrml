@@ -28,7 +28,7 @@
 #   include <winconfig.h>
 # endif
 
-#ifdef OPENVRML_HAVE_JAVA
+#ifdef OPENVRML_HAVE_JNI
 //
 //  Java (via Sun JDK) Script class
 //
@@ -70,6 +70,6 @@ protected:
   jmethodID d_processEventsID, d_processEventID, d_eventsProcessedID;
 };
 
-#endif // OPENVRML_HAVE_JAVA
+#endif // OPENVRML_HAVE_JNI
 #endif // _SCRIPTJDK_
 

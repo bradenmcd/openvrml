@@ -119,7 +119,7 @@ bool VrmlScene::loadUrl(const VrmlMFString & url,
         // Load .wrl's, or pass off to system
         else {
             // Check mime type...
-            string::size_type tailPos = currentUrl.find_last_of(SLASH);
+            string::size_type tailPos = currentUrl.find_last_of('/');
             if (tailPos == string::npos) {
                 tailPos = 0;
             }

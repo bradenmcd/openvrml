@@ -18,12 +18,15 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#if defined (__MACH__) && defined(__APPLE__)
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
+# if defined(_WIN32) && !defined(__CYGWIN__)
+#   include <winconfig.h>
+# endif
+
+#include OPENVRML_GLUT_H
 #include <OpenVRML/System.h>
 
 #include "ViewerGlut.h"

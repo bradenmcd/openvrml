@@ -8,31 +8,23 @@
 */
 
 #define OPENVRML_MAJOR_VERSION	0
-#define OPENVRML_MINOR_VERSION	11
+#define OPENVRML_MINOR_VERSION	12
 #define OPENVRML_MICRO_VERSION	0
-
-
 
 // Disable warning messages about truncation from const double to float
 # pragma warning( disable : 4305 )  
 // Disable warning messages about truncating names in debug info
 # pragma warning( disable : 4786 )  
-static const char SLASH = '/';
 
+#define OPENVRML_HAVE_LIBJPEG
+#define OPENVRML_HAVE_LIBPNG
+#define OPENVRML_HAVE_SPIDERMONKEY
+/* #define OPENVRML_HAVE_JNI */
 
-static const char COLON = ':';
+#define OPENVRML_GL_H   <GL/gl.h>
+#define OPENVRML_GLU_H  <GL/glu.h>
+#define OPENVRML_GLUT_H <GL/glut.h>
 
-
-#define HAVE_LIBJPEG
-#define HAVE_LIBPNG
-#define OPENVRML_HAVE_JS
-/* #define OPENVRML_HAVE_JAVA */
-
-/* #undef HAVE_LIBJPEG */
-/* #undef HAVE_LIBPNG  */
-/* #undef OPENVRML_HAVE_JS  */ 
-#undef OPENVRML_HAVE_JAVA   
-
-
+#define OPENVRML_JSAPI_H <jsapi.h>
 
 #endif	/* WINCONFIG_H */

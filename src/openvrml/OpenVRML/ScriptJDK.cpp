@@ -32,7 +32,7 @@
 #   include <winconfig.h>
 # endif
 
-#ifdef OPENVRML_HAVE_JAVA
+#ifdef OPENVRML_HAVE_JNI
 #include "ScriptJDK.h"
 
 #include <stdio.h>
@@ -3870,4 +3870,4 @@ JNIEXPORT void JNICALL Java_vrml_Browser_setDescription
 
 } // extern "C"
 
-#endif // OPENVRML_HAVE_JAVA
+#endif // OPENVRML_HAVE_JNI

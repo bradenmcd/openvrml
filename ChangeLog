@@ -1,5 +1,30 @@
 2001-10-12  Braden McDaniel  <braden@endoframe.com>
 
+        * Replaced `configure.in' with `configure.ac'. We now require
+          autoconf 2.52 for generating `configure'. The file
+          `acconfig.h' (that was previously used to generate `config.h')
+          is now obsolete.
+
+        * Modifications to autoconf macros to reflect autoconf 2.52
+          conventions.
+
+        * The autoconf macro to find the JNI headers/libraries now uses
+          $JAVA_HOME, and should reliably detect the Sun JDK on Linux.
+          Additional work will need to be done to cover other JDKs and
+          platforms.
+
+        * Use preprocessor definitions determined by `configure' for
+          including the SpiderMonkey header. This addresses the problem
+          where Mozilla headers may occur in `${includedir}' or
+          `${includedir}/mozilla'.
+
+        * Use preprocessor definitions determined by `configure' for
+          including the OpenGL/GLUT headers. Most platforms put these
+          headers in `${includedir}/GL'; but Mac OS X puts them in
+          `${includedir}/OpenGL' and `{includedir}/GLUT'.
+
+2001-10-12  Braden McDaniel  <braden@endoframe.com>
+
         * A bit of finesse to get the ANTLR parser in an anonymous
           namespace in the VrmlScene implementation.
 

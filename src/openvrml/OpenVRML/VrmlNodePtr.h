@@ -26,7 +26,7 @@
 
 class VrmlNode;
 
-#   ifdef HAVE_STL_HASH_MAP
+#   ifdef OPENVRML_HAVE_SGI_HASH_MAP
 #     include <hash_map>
 template <>
     struct hash<VrmlNode *> {

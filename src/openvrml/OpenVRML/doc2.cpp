@@ -159,7 +159,7 @@ void Doc2::seturl(char const * url, Doc2 const * relative)
         this->url_ = new char[strlen(path) + strlen(url) + 1];
         strcpy(this->url_, path);
         
-        if (strlen(url) > 2 && url[0] == '.' && url[1] == SLASH) {
+        if (strlen(url) > 2 && url[0] == '.' && url[1] == '/') {
             strcat(this->url_, url + 2); // skip "./"
         } else {
             strcat(this->url_, url);
@@ -182,9 +182,9 @@ char const * Doc2::urlBase() const
     char * p, * s = path;
     strncpy(path, url_, sizeof(path) - 1);
     path[sizeof(path) - 1] = '\0';
-    if ((p = strrchr(s, SLASH)) != 0) {
+    if ((p = strrchr(s, '/')) != 0) {
         s = p + 1;
-    } else if ((p = strchr(s, COLON)) != 0) {
+    } else if ((p = strchr(s, ':')) != 0) {
         s = p + 1;
     }
     
@@ -222,7 +222,7 @@ char const * Doc2::urlPath() const
     
     strcpy(path, url_);
     char * slash;
-    if ((slash = strrchr(path, SLASH)) != 0) {
+    if ((slash = strrchr(path, '/')) != 0) {
         *(slash+1) = '\0';
     } else {
         path[0] = '\0';
@@ -250,7 +250,7 @@ char const * Doc2::urlProtocol() const
 	    protocol[i] = tolower(*s);
 	}
         protocol[sizeof(protocol)-1] = '\0';
-        if (*s == COLON) {
+        if (*s == ':') {
             return protocol;
         }
     }
@@ -281,7 +281,7 @@ char const * Doc2::localPath()
     
     if (filename(buf, sizeof(buf))) {
         
-        char * s = strrchr(buf, SLASH);
+        char * s = strrchr(buf, '/');
         if (s) {
             *(s+1) = '\0';
         }
@@ -339,7 +339,7 @@ char const * Doc2::stripProtocol(char const * url)
         ++s;
     }
     
-    if (*s == COLON) {
+    if (*s == ':') {
         return s + 1;
     }
     
@@ -349,7 +349,7 @@ char const * Doc2::stripProtocol(char const * url)
 bool Doc2::isAbsolute(const char *url)
 {
   const char *s = stripProtocol(url);
-  return ( *s == SLASH || *(s+1) == ':' );
+  return ( *s == '/' || *(s+1) == ':' );
 }
 
 // Converts a url into a local filename
@@ -465,15 +465,15 @@ char* Doc2::convertCommonToMacPath( char *fn, int nfn )
 
   int macfnpos = 0;
   for ( int i = 3; i < nfn; i++ ) {
-    if ( fn[i] == SLASH ) {
-      macfn[macfnpos] = COLON;
+    if ( fn[i] == '/' ) {
+      macfn[macfnpos] = ':';
       macfnpos++;
     }
     else {
       if ( fn[i] == '.' ) {
          if ( (i+2 < nfn) && (fn[i+1] == '.') && (fn[i+2] == '/') ) {
            // replace "../" with an extra :
-           macfn[macfnpos] = COLON;
+           macfn[macfnpos] = ':';
            macfnpos++;
            i=i+2;
         }
