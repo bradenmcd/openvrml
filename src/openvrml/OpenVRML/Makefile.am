@@ -19,7 +19,7 @@ else
   DEBUG_CPPFLAGS = -DNDEBUG
 endif
 
-INCLUDES = -I$(top_srcdir)/lib
+INCLUDES = -I$(top_srcdir)/lib -I$(top_builddir)/java
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS) -DOPENVRML_PACKAGE_NAME_=\"$(PACKAGE_NAME)\" \
 -DOPENVRML_PACKAGE_VERSION_=\"$(PACKAGE_VERSION)\" \
 -DOPENVRML_LIBDIR_=\"$(libdir)\" -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\"
