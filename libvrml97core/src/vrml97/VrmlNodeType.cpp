@@ -220,6 +220,10 @@ void VrmlNodeType::fetchImplementation()
 
       delete proto;
     }
+  else
+    {
+      theSystem->warn("Couldn't read EXTERNPROTO %s\n", getName());
+    }
 }
 
 
