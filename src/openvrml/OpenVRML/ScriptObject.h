@@ -25,14 +25,10 @@
 #include "common.h"
 
 class VrmlField;
-class VrmlMFString;
 class VrmlNodeScript;
 
 class OPENVRML_SCOPE ScriptObject {
 public:
-    static ScriptObject * create(VrmlNodeScript & scriptNode,
-                                 const VrmlMFString & url);
-
     virtual ~ScriptObject() = 0;
     virtual void activate(double timeStamp, const char * fname,
                           size_t argc, const VrmlField * argv[]) = 0;
@@ -41,6 +37,11 @@ protected:
     ScriptObject(VrmlNodeScript & scriptNode);
 
     VrmlNodeScript & scriptNode;
+
+private:
+    // non-copyable
+    ScriptObject(const ScriptObject &);
+    ScriptObject & operator=(const ScriptObject &);
 };
 
 #endif

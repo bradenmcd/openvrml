@@ -1,3 +1,11 @@
+2001-06-25  Braden McDaniel <braden@endoframe.com>
+
+        * Moved ScriptObject's factory method from the static method on
+          ScriptObject to a private method of VrmlNodeScript. This
+          serves to clean up the ScriptObject interface. In conjunction
+          with this change, the JavaScript binding code has been moved
+          from `ScriptObject.cpp' to `VrmlNodeScript.cpp'.
+
 2001-06-24  Braden McDaniel <braden@endoframe.com>
 
         * Added a private header `private.h' for macros used in the
