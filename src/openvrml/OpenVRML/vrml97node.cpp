@@ -2678,10 +2678,10 @@ Billboard::~Billboard() throw ()
  */
 void Billboard::render(Viewer & viewer, VrmlRenderContext context)
 {
-    VrmlMatrix LM;
-    VrmlMatrix new_LM = context.getMatrix();
+    mat4f LM;
+    mat4f new_LM = context.getMatrix();
     billboard_to_matrix(this, new_LM, LM);
-    new_LM = new_LM.multLeft(LM);
+    new_LM = LM * new_LM;
     context.setMatrix(new_LM);
 
     if (this->xformObject && this->isModified()) {
@@ -2708,7 +2708,7 @@ void Billboard::render(Viewer & viewer, VrmlRenderContext context)
 /**
  * @brief Calculate bb transformation matrix and store it in @p M.
  *
- * Here we are dealing with VrmlMatrix format (Matrices are stored
+ * Here we are dealing with mat4f format (Matrices are stored
  * in row-major order).
  *
  * @param t_arg a pointer to a Billboard node.
@@ -2716,9 +2716,10 @@ void Billboard::render(Viewer & viewer, VrmlRenderContext context)
  * @retval M    a copy of the resulting transform.
  */
 void Billboard::billboard_to_matrix(const Billboard* t_arg,
-                                    const VrmlMatrix & L_MV, VrmlMatrix& M)
+                                    const mat4f & L_MV,
+                                    mat4f & M)
 {
-    VrmlMatrix MV = L_MV.affine_inverse();
+    mat4f MV = L_MV.inverse();
 
     // Viewer position in local coordinate system
     vec3f VP(MV[3][0], MV[3][1], MV[3][2]);
@@ -2760,8 +2761,7 @@ void Billboard::billboard_to_matrix(const Billboard* t_arg,
         // system has to be rotated around the Y axis to new coordinate system.
         float angle = acos(nz[2]);
         if(nz[0] > 0) { angle = -angle; }
-        rotation Rot(Y,angle);
-        M.setRotate(Rot);
+        M = mat4f::rotation(rotation(Y, angle));
     }
 }
 
@@ -4081,8 +4081,8 @@ void CylinderSensor::activate(double timeStamp, bool isActive, double *p)
 
         // set activation point in local coords
         vec3f Vec(p[0], p[1], p[2]);
-        this->activationMatrix = this->modelview.affine_inverse();
-        this->activationMatrix.multVecMatrix(Vec,Vec);
+        this->activationMatrix = this->modelview.inverse();
+        Vec = Vec * this->activationMatrix;
         this->activationPoint.value = Vec;
         // Bearing vector in local coordinate system
         Vec[0] = this->activationMatrix[2][0];
@@ -4118,7 +4118,7 @@ void CylinderSensor::activate(double timeStamp, bool isActive, double *p)
     else if (isActive) {
         // get local coord for touch point
         vec3f Vec(p[0], p[1], p[2]);
-        this->activationMatrix.multVecMatrix(Vec , Vec);
+        Vec = Vec * this->activationMatrix;
         this->trackPoint.value = Vec;
         this->emitEvent("trackPoint_changed", this->trackPoint, timeStamp);
         vec3f tempv;
@@ -7120,8 +7120,8 @@ void LOD::render(Viewer & viewer, const VrmlRenderContext context)
 
     float x, y, z;
 
-    VrmlMatrix MV = context.getMatrix();
-    MV = MV.affine_inverse();
+    mat4f MV = context.getMatrix();
+    MV = MV.inverse();
     x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
     float dx = x - this->center.value.x();
     float dy = y - this->center.value.y();
@@ -9173,11 +9173,11 @@ const NodeTypePtr
  */
 
 /**
- * @var VrmlMatrix PlaneSensor::activationMatrix
+ * @var mat4f PlaneSensor::activationMatrix
  */
 
 /**
- * @var VrmlMatrix PlaneSensor::modelview
+ * @var mat4f PlaneSensor::modelview
  *
  * @brief The modelview matrix.
  */
@@ -9247,8 +9247,8 @@ void PlaneSensor::activate(double timeStamp, bool isActive, double * p)
         this->active.value = isActive;
 
         vec3f V(p[0], p[1], p[2]);
-        this->activationMatrix = this->modelview.affine_inverse();
-        this->activationMatrix.multVecMatrix(V,V);
+        this->activationMatrix = this->modelview.inverse();
+        V = V * this->activationMatrix;
         this->activationPoint.value = V;
         this->emitEvent("isActive", this->active, timeStamp);
     }
@@ -9268,7 +9268,7 @@ void PlaneSensor::activate(double timeStamp, bool isActive, double * p)
     // Tracking
     else if (isActive) {
         vec3f V(p[0], p[1], p[2]);
-        this->activationMatrix.multVecMatrix(V,V);
+        V = V * this->activationMatrix;
         this->trackPoint.value = V;
         this->emitEvent("trackPoint_changed", this->trackPoint, timeStamp);
 
@@ -10351,8 +10351,8 @@ void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
         float x, y, z;
 
         // Is viewer inside the box?
-        VrmlMatrix MV = context.getMatrix();
-        MV = MV.affine_inverse();
+        mat4f MV = context.getMatrix();
+        MV = MV.inverse();
         x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
         bool inside = (fabs(x - this->center.value.x())
                             <= 0.5 * this->size.value.x()
@@ -10390,7 +10390,7 @@ void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
 
             vec3f trans, scale, shear;
             rotation orientation;
-            MV.getTransform(trans, orientation, scale, shear);
+            MV.transformation(trans, orientation, scale, shear);
             if (this->orientation.value != orientation) {
                 this->orientation.value = orientation;
                 this->emitEvent("orientation_changed", this->orientation,
@@ -11622,7 +11622,7 @@ SphereSensorClass::createType(const std::string & id,
  */
 
 /**
- * @var VrmlMatrix SphereSensor::modelview
+ * @var mat4f SphereSensor::modelview
  *
  * @brief Modelview matrix.
  */
@@ -11702,8 +11702,8 @@ void SphereSensor::activate(double timeStamp, bool isActive, double * p)
 
         // calculate the center of the object in world coords
         vec3f V;
-        VrmlMatrix M = this->modelview.affine_inverse();
-        M.multVecMatrix(V , V);
+        mat4f M = this->modelview.inverse();
+        V = V * M;
         this->centerPoint.value = V;
 
         // send message
@@ -11724,8 +11724,8 @@ void SphereSensor::activate(double timeStamp, bool isActive, double * p)
     else if (isActive) {
         // get local coord for touch point
         vec3f V(p[0], p[1], p[2]);
-        VrmlMatrix M = this->modelview.affine_inverse();
-        M.multVecMatrix( V , V );
+        mat4f M = this->modelview.inverse();
+        V = V * M;
         this->trackPoint.value = V;
         this->emitEvent("trackPoint_changed", this->trackPoint, timeStamp);
 
@@ -15045,7 +15045,7 @@ TransformClass::createType(const std::string & id,
  */
 
 /**
- * @var VrmlMatrix Transform::M
+ * @var mat4f Transform::M
  *
  * @brief Cached copy of this node's transformation.
  *
@@ -15101,7 +15101,7 @@ Transform::~Transform() throw ()
  *
  * @return the transformation associated with the node.
  */
-const VrmlMatrix & Transform::getTransform() const throw ()
+const mat4f & Transform::getTransform() const throw ()
 {
     this->updateTransform();
     return this->transform;
@@ -15128,9 +15128,9 @@ void Transform::render(Viewer & viewer, VrmlRenderContext context)
         //context.setCullFlag(BVolume::BV_PARTIAL);
     }
 
-    VrmlMatrix LM = this->getTransform();
-    VrmlMatrix new_LM = context.getMatrix();
-    new_LM = new_LM.multLeft(LM);
+    mat4f LM = this->getTransform();
+    mat4f new_LM = context.getMatrix();
+    new_LM = LM * new_LM;
     context.setMatrix(new_LM);
 
     if (this->xformObject && isModified()) {
@@ -15219,11 +15219,11 @@ Transform::recalcBSphere()
 void Transform::updateTransform() const throw ()
 {
     if (this->transformDirty) {
-        this->transform.setTransform(this->translation.value,
-                                     this->rotation.value,
-                                     this->scale.value,
-                                     this->scaleOrientation.value,
-                                     this->center.value);
+        this->transform = mat4f::transformation(this->translation.value,
+                                                this->rotation.value,
+                                                this->scale.value,
+                                                this->scaleOrientation.value,
+                                                this->center.value);
         this->transformDirty = false;
     }
 }
@@ -15634,7 +15634,8 @@ Viewpoint::Viewpoint(const NodeType & nodeType,
     orientation(rotation(0.0, 0.0, 1.0, 0.0)),
     position(vec3f(0.0, 0.0, 10.0)),
     bound(false),
-    bindTime(0)
+    bindTime(0),
+    finalTransformationDirty(true)
 {}
 
 /**
@@ -15650,7 +15651,7 @@ Viewpoint::~Viewpoint() throw ()
  * @return the transformation of the ViewpointNode in the global coordinate
  *      system.
  */
-const VrmlMatrix & Viewpoint::getTransformation() const throw ()
+const mat4f & Viewpoint::getTransformation() const throw ()
 {
     this->updateFinalTransformation();
     return this->finalTransformation;
@@ -15662,7 +15663,7 @@ const VrmlMatrix & Viewpoint::getTransformation() const throw ()
  *
  * @return the transformation of the user view relative to the ViewpointNode.
  */
-const VrmlMatrix & Viewpoint::getUserViewTransform() const throw ()
+const mat4f & Viewpoint::getUserViewTransform() const throw ()
 {
     return this->userViewTransform;
 }
@@ -15673,7 +15674,7 @@ const VrmlMatrix & Viewpoint::getUserViewTransform() const throw ()
  *
  * @param transform the new transformation.
  */
-void Viewpoint::setUserViewTransform(const VrmlMatrix & transform) throw ()
+void Viewpoint::setUserViewTransform(const mat4f & transform) throw ()
 {
     this->userViewTransform = transform;
 }
@@ -15756,7 +15757,7 @@ void Viewpoint::do_initialize(const double timestamp) throw ()
 namespace {
 
     struct AccumulateTransform : std::unary_function<const Node *, void> {
-        explicit AccumulateTransform(VrmlMatrix & transform) throw ():
+        explicit AccumulateTransform(mat4f & transform) throw ():
             transform(&transform)
         {}
 
@@ -15766,12 +15767,12 @@ namespace {
             const TransformNode * const transformNode = node->toTransform();
             if (transformNode) {
                 *this->transform =
-                    this->transform->multLeft(transformNode->getTransform());
+                        transformNode->getTransform() * *this->transform;
             }
         }
 
     private:
-        VrmlMatrix * transform;
+        mat4f * transform;
     };
 }
 
@@ -15785,7 +15786,7 @@ void Viewpoint::do_relocate() throw (std::bad_alloc)
     assert(this->getScene());
     const NodePath path = this->getScene()->browser.findNode(*this);
     assert(!path.empty());
-    this->parentTransform = VrmlMatrix();
+    this->parentTransform = mat4f();
     std::for_each(path.begin(), path.end(),
                   AccumulateTransform(this->parentTransform));
     this->finalTransformationDirty = true;
@@ -15906,13 +15907,12 @@ void Viewpoint::updateFinalTransformation() const throw ()
         static const vec3f scale(1.0, 1.0, 1.0);
         static const rotation scaleOrientation;
         static const vec3f center;
-        VrmlMatrix t;
-        t.setTransform(this->position.value,
-                       this->orientation.value,
-                       scale,
-                       scaleOrientation,
-                       center);
-        this->finalTransformation = this->parentTransform.multLeft(t);
+        const mat4f & t = mat4f::transformation(this->position.value,
+                                                this->orientation.value,
+                                                scale,
+                                                scaleOrientation,
+                                                center);
+        this->finalTransformation = t * this->parentTransform;
         this->finalTransformationDirty = false;
     }
 }

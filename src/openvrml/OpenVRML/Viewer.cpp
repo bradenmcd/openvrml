@@ -145,7 +145,7 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn void Viewer::getUserNavigation(VrmlMatrix & M)
+ * @fn void Viewer::getUserNavigation(mat4f & M)
  *
  * @brief Get the user's navigation from the last bound viewpoint.
  *
@@ -262,14 +262,14 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn void Viewer::transform(const VrmlMatrix & mat)
+ * @fn void Viewer::transform(const mat4f & mat)
  *
  * @brief Transform the modelview.
  *
  * Multiply the current modelview matrix by @p mat; the result is the new
  * modelview matrix.
  *
- * @param mat matrix in VrmlMatrix format (Same as OGL)
+ * @param mat transformation matrix.
  */
 
 /**

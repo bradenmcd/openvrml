@@ -21,28 +21,28 @@
 # ifndef VRMLRENDERCONTEXT_H
 #   define VRMLRENDERCONTEXT_H
 
-#   include "common.h"
-#   include "bvolume.h"
-#   include "VrmlMatrix.h"
+#   include <OpenVRML/common.h>
+#   include <OpenVRML/bvolume.h>
 
 namespace OpenVRML {
 
+    class mat4f;
+
     class OPENVRML_SCOPE VrmlRenderContext {
         BVolume::Intersection cull_flag;
-        VrmlMatrix * modelview;
+        mat4f * modelview;
         bool draw_bspheres;
 
     public:
         VrmlRenderContext();
-        VrmlRenderContext(BVolume::Intersection cull_flag,
-                          VrmlMatrix & modelview);
+        VrmlRenderContext(BVolume::Intersection cull_flag, mat4f & modelview);
 
         // Use compiler-generated copy-ctor, dtor, operator=.
 
         BVolume::Intersection getCullFlag() const;
         void setCullFlag(BVolume::Intersection intersection);
-        const VrmlMatrix & getMatrix() const;
-        void setMatrix(VrmlMatrix & modelview);
+        const mat4f & getMatrix() const;
+        void setMatrix(mat4f & modelview);
         void setDrawBSpheres(bool f);
         bool getDrawBSpheres() const;
     };

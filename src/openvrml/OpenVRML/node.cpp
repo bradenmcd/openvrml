@@ -1887,53 +1887,6 @@ void Node::render(Viewer & viewer, VrmlRenderContext context)
     clearModified();
 }
 
-# if 0
-/**
- * @brief Accumulate transformations for proper rendering of bindable nodes.
- *
- * Cache a pointer to one of the parent transforms. The resulting
- * pointer is used by getParentTransform. Grouping nodes need to
- * redefine this, the default implementation does nothing.
- *
- * @param parent    the parent node.
- */
-void Node::accumulateTransform(Node * parent)
-{}
-
-/**
- * @brief Get the nearest ancestor node that affects the modelview transform.
- *
- * Doesn't work for nodes with more than one parent.
- *
- * @return the nearest ancestor node that affects the modelview
- *      transform.
- */
-Node * Node::getParentTransform()
-{
-    return 0;
-}
-
-/**
- * Compute the inverse of the transform stack above a Viewpoint
- * node. This is safe since the behavior of multi-parented
- * Viewpoint nodes is undefined. May be called at any time.
- *
- * @param M return the accumulated inverse
- *
- * @see accumulateTransform
- * @see getParentTransform
- */
-void Node::inverseTransform(VrmlMatrix & M)
-{
-    Node * parentTransform = getParentTransform();
-    if (parentTransform) {
-        parentTransform->inverseTransform(M);
-    } else {
-        M = VrmlMatrix(); // Set to identity.
-    }
-}
-# endif
-
 /**
  * @brief Send an event from this node.
  */
@@ -2929,7 +2882,7 @@ TransformNode * TransformNode::toTransform() throw ()
 }
 
 /**
- * @fn const VrmlMatrix & TransformNode::getTransform() const throw ()
+ * @fn const mat4f & TransformNode::getTransform() const throw ()
  *
  * @brief Get the transformation associated with the node as a matrix.
  *
@@ -2982,7 +2935,7 @@ ViewpointNode * ViewpointNode::toViewpoint() throw ()
 }
 
 /**
- * @fn const VrmlMatrix & ViewpointNode::getTransformation() const throw ()
+ * @fn const mat4f & ViewpointNode::getTransformation() const throw ()
  *
  * @brief Get the transformation of the ViewpointNode in the global coordinate
  *      system.
@@ -2992,7 +2945,7 @@ ViewpointNode * ViewpointNode::toViewpoint() throw ()
  */
 
 /**
- * @fn const VrmlMatrix & ViewpointNode::getUserViewTransform() const throw ()
+ * @fn const mat4f & ViewpointNode::getUserViewTransform() const throw ()
  *
  * @brief Get the transformation of the user view relative to the
  *      ViewpointNode.
@@ -3001,7 +2954,7 @@ ViewpointNode * ViewpointNode::toViewpoint() throw ()
  */
 
 /**
- * @fn void ViewpointNode::setUserViewTransform(const VrmlMatrix & transform) throw ()
+ * @fn void ViewpointNode::setUserViewTransform(const mat4f & transform) throw ()
  *
  * @brief Set the transformation of the user view relative to the
  *      ViewpointNode.

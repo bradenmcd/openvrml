@@ -29,7 +29,7 @@ namespace OpenVRML {
     class VrmlFrustum;
     class AABox;
     class BSphere;
-    class VrmlMatrix;
+    class mat4f;
 
     class OPENVRML_SCOPE BVolume {
     public:
@@ -45,8 +45,8 @@ namespace OpenVRML {
         virtual void extend(const AABox & b) = 0;
         virtual void extend(const BSphere & b) = 0;
         virtual void enclose(const float* p, int n) = 0;
-        virtual void orthoTransform(const VrmlMatrix & M) = 0;
-        virtual void transform(const VrmlMatrix & M) = 0;
+        virtual void orthoTransform(const mat4f & M) = 0;
+        virtual void transform(const mat4f & M) = 0;
     };
 
 
@@ -72,8 +72,8 @@ namespace OpenVRML {
         virtual bool isMAX() const;
         virtual void setMAX();
 
-        virtual void orthoTransform(const VrmlMatrix & M);
-        virtual void transform(const VrmlMatrix & M);
+        virtual void orthoTransform(const mat4f & M);
+        virtual void transform(const mat4f & M);
 
         const vec3f & getCenter() const;
         void setCenter(const vec3f & c);
@@ -95,8 +95,8 @@ namespace OpenVRML {
         virtual void enclose(const float* p, int n);
         virtual bool isMAX() const;
         virtual void setMAX();
-        virtual void orthoTransform(const VrmlMatrix & M);
-        virtual void transform(const VrmlMatrix & M);
+        virtual void orthoTransform(const mat4f & M);
+        virtual void transform(const mat4f & M);
     };
 }
 

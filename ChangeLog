@@ -30,6 +30,28 @@
           FieldValue classes to expose their value in a public data
           member.
 
+        * src/openvrml/OpenVRML/Makefile.am,
+          src/openvrml/OpenVRML/Viewer.cpp
+          src/openvrml/OpenVRML/Viewer.h,
+          src/openvrml/OpenVRML/VrmlMatrix.cpp,
+          src/openvrml/OpenVRML/VrmlMatrix.h,
+          src/openvrml/OpenVRML/VrmlRenderContext.cpp,
+          src/openvrml/OpenVRML/VrmlRenderContext.h,
+          src/openvrml/OpenVRML/basetypes.cpp,
+          src/openvrml/OpenVRML/basetypes.h,
+          src/openvrml/OpenVRML/bvolume.cpp,
+          src/openvrml/OpenVRML/bvolume.h,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/quaternion.cpp,
+          src/openvrml/OpenVRML/quaternion.h,
+          src/openvrml/OpenVRML/script.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Replaced
+          VrmlMatrix with mat4f.
+
 2003-03-05  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Fix for Javascript core dump

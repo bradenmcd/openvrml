@@ -30,6 +30,7 @@
 namespace OpenVRML {
 
     class rotation;
+    class mat4f;
 
     class OPENVRML_SCOPE Quaternion {
         float quat[4];
@@ -39,6 +40,7 @@ namespace OpenVRML {
         Quaternion(float x, float y, float z, float w) throw ();
         explicit Quaternion(const float quat[4]) throw ();
         explicit Quaternion(const rotation & rot) throw ();
+        explicit Quaternion(const mat4f & mat) throw ();
 
         // use compiler-defined operator= and copy constructor.
 

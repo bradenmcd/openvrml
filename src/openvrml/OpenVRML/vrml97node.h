@@ -30,7 +30,6 @@
 #   include <OpenVRML/Viewer.h>
 #   include <OpenVRML/Image.h>
 #   include <OpenVRML/bvolume.h>
-#   include <OpenVRML/VrmlMatrix.h>
 
 typedef unsigned int FT_UInt;
 typedef struct FT_LibraryRec_ * FT_Library;
@@ -549,8 +548,8 @@ namespace OpenVRML {
 
         public:
             static void billboard_to_matrix(const Billboard * t_arg,
-                                            const VrmlMatrix & MV,
-                                            VrmlMatrix & M);
+                                            const mat4f & MV,
+                                            mat4f & M);
 
             Billboard(const NodeType & nodeType,
                       const ScopePtr & scope);
@@ -890,8 +889,8 @@ namespace OpenVRML {
             SFFloat rotation_val;
             SFVec3f activationPoint;
             SFBool disk;
-            VrmlMatrix activationMatrix;
-            VrmlMatrix modelview;
+            mat4f activationMatrix;
+            mat4f modelview;
 
         public:
             CylinderSensor(const NodeType & nodeType,
@@ -1740,8 +1739,8 @@ namespace OpenVRML {
 
             SFVec3f activationPoint;
 
-            VrmlMatrix activationMatrix;
-            VrmlMatrix modelview;
+            mat4f activationMatrix;
+            mat4f modelview;
 
         public:
             PlaneSensor(const NodeType & nodeType,
@@ -2121,7 +2120,7 @@ namespace OpenVRML {
 
             SFVec3f activationPoint;
             SFVec3f centerPoint;
-            VrmlMatrix modelview;
+            mat4f modelview;
 
         public:
             SphereSensor(const NodeType & nodeType,
@@ -2519,7 +2518,7 @@ namespace OpenVRML {
             SFRotation scaleOrientation;
             SFVec3f translation;
 
-            mutable VrmlMatrix transform;
+            mutable mat4f transform;
             mutable bool transformDirty;
             Viewer::Object xformObject;
 
@@ -2532,7 +2531,7 @@ namespace OpenVRML {
 
             virtual const BVolume * getBVolume() const;
 
-            virtual const VrmlMatrix & getTransform() const throw ();
+            virtual const mat4f & getTransform() const throw ();
 
         private:
             //
@@ -2592,19 +2591,19 @@ namespace OpenVRML {
             SFBool bound;
             SFTime bindTime;
 
-            VrmlMatrix parentTransform;
+            mat4f parentTransform;
             mutable bool finalTransformationDirty;
-            mutable VrmlMatrix finalTransformation;
-            VrmlMatrix userViewTransform;
+            mutable mat4f finalTransformation;
+            mat4f userViewTransform;
 
         public:
             Viewpoint(const NodeType & nodeType,
                       const ScopePtr & scope);
             virtual ~Viewpoint() throw ();
 
-            virtual const VrmlMatrix & getTransformation() const throw ();
-            virtual const VrmlMatrix & getUserViewTransform() const throw ();
-            virtual void setUserViewTransform(const VrmlMatrix & transform)
+            virtual const mat4f & getTransformation() const throw ();
+            virtual const mat4f & getUserViewTransform() const throw ();
+            virtual void setUserViewTransform(const mat4f & transform)
                 throw ();
             virtual const SFString & getDescription() const throw ();
             virtual const SFFloat & getFieldOfView() const throw ();

@@ -75,7 +75,7 @@ namespace OpenVRML {
  */
 
 /**
- * @var VrmlMatrix * VrmlRenderContext::modelview;
+ * @var mat4f * VrmlRenderContext::modelview;
  *
  * The current modelview matrix.
  */
@@ -110,7 +110,7 @@ VrmlRenderContext::VrmlRenderContext():
  * @see setCullFlag
  */
 VrmlRenderContext::VrmlRenderContext(const BVolume::Intersection cull_flag,
-                                     VrmlMatrix & modelview):
+                                     mat4f & modelview):
     cull_flag(cull_flag),
     modelview(&modelview),
     draw_bspheres(false)
@@ -163,7 +163,7 @@ void VrmlRenderContext::setCullFlag(const BVolume::Intersection intersection)
  * @param modelview the modelview matrix. Must be at least affine, although the
  *                  render code may optimize for orthogonal transforms.
  */
-void VrmlRenderContext::setMatrix(VrmlMatrix & modelview)
+void VrmlRenderContext::setMatrix(mat4f & modelview)
 {
     this->modelview = &modelview;
 }
@@ -173,8 +173,7 @@ void VrmlRenderContext::setMatrix(VrmlMatrix & modelview)
  *
  * @return the modelview matrix.
  */
-const VrmlMatrix&
-VrmlRenderContext::getMatrix()const 
+const mat4f & VrmlRenderContext::getMatrix() const 
 {
   return *(this->modelview);
 }

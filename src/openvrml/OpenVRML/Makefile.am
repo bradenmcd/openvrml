@@ -38,7 +38,6 @@ libopenvrml_la_SOURCES = \
         System.cpp \
         field.cpp \
         fieldvalueptr.cpp \
-        VrmlMatrix.cpp \
         scope.cpp \
         scopeptr.cpp \
         node.cpp \
@@ -69,7 +68,6 @@ OpenVRMLinclude_HEADERS = \
         System.h \
         field.h \
         fieldvalueptr.h \
-        VrmlMatrix.h \
         scope.h \
         scopeptr.h \
         node.h \

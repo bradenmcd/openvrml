@@ -3875,9 +3875,7 @@ JSBool SFRotation::multVec(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    OpenVRML::VrmlMatrix rotMat;
-    rotMat.setRotate(thisRot.value);
-    rotMat.multVecMatrix(argVec.value, resultVec.value);
+    resultVec.value = argVec.value * mat4f::rotation(thisRot.value);
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -6660,7 +6658,7 @@ JSBool VrmlMatrix::initObject(JSContext * const cx, JSObject * const obj,
          ? argc
          : 16;
     try {
-        std::auto_ptr<OpenVRML::VrmlMatrix> mat(new OpenVRML::VrmlMatrix);
+        std::auto_ptr<mat4f> mat(new mat4f);
         for (uintN i = 0; i < argc; ++i) {
             jsdouble d;
             if (!JSVAL_IS_NUMBER(argv[0])
@@ -6690,8 +6688,7 @@ JSBool VrmlMatrix::getElement(JSContext * const cx, JSObject * const obj,
             return JS_FALSE;
         }
 
-        OpenVRML::VrmlMatrix * const thisMat =
-                static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+        mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
 
         //
         // Construct the result object.
@@ -6805,15 +6802,14 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx, JSObject * const obj,
         }
     }
 
-    OpenVRML::VrmlMatrix * const thisMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
     assert(thisMat);
 
-    thisMat->setTransform(translation,
-                          rot,
-                          scale,
-                          scaleOrientation,
-                          center);
+    *thisMat = mat4f::transformation(translation,
+                                     rot,
+                                     scale,
+                                     scaleOrientation,
+                                     center);
     *rval = JSVAL_VOID;
     return JS_TRUE;
 }
@@ -6833,13 +6829,11 @@ JSBool VrmlMatrix::getTransform(JSContext * const cx, JSObject * const obj,
     rotation rot;
     vec3f scale;
 
-    const OpenVRML::VrmlMatrix * const thisMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    const mat4f * const thisMat =
+            static_cast<mat4f *>(JS_GetPrivate(cx, obj));
     assert(thisMat);
 
-    thisMat->getTransform(translation,
-                          rot,
-                          scale);
+    thisMat->transformation(translation, rot, scale);
     
     for (uintN i = 0; i < argc; ++i) {
         if (JSVAL_IS_NULL(argv[i])) { continue; }
@@ -6904,14 +6898,13 @@ JSBool VrmlMatrix::inverse(JSContext * const cx, JSObject * const obj,
                                          JS_GetParent(cx, obj));
     if (!robj) { return JS_FALSE; }
 
-    const OpenVRML::VrmlMatrix * const thisMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    const mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
     assert(thisMat);
 
-    OpenVRML::VrmlMatrix * const newMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, robj));
+    mat4f * const newMat =
+            static_cast<mat4f *>(JS_GetPrivate(cx, robj));
     assert(newMat);
-    *newMat = thisMat->affine_inverse();
+    *newMat = thisMat->inverse();
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
 }
@@ -6928,12 +6921,10 @@ JSBool VrmlMatrix::transpose(JSContext * const cx, JSObject * const obj,
                                          JS_GetParent(cx, obj));
     if (!robj) { return JS_FALSE; }
 
-    const OpenVRML::VrmlMatrix * const thisMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    const mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
     assert(thisMat);
 
-    OpenVRML::VrmlMatrix * const newMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, robj));
+    mat4f * const newMat = static_cast<mat4f *>(JS_GetPrivate(cx, robj));
     assert(newMat);
     *newMat = thisMat->transpose();
     *rval = OBJECT_TO_JSVAL(robj);
@@ -6955,13 +6946,11 @@ JSBool VrmlMatrix::multLeft(JSContext * const cx, JSObject * const obj,
         return JS_FALSE;
     }
 
-    const OpenVRML::VrmlMatrix * const argMat =
-            static_cast<OpenVRML::VrmlMatrix *>
-                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+    const mat4f * const argMat =
+            static_cast<mat4f *>(JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
     assert(argMat);
 
-    const OpenVRML::VrmlMatrix * const thisMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    const mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
     assert(thisMat);
 
     //
@@ -6971,11 +6960,10 @@ JSBool VrmlMatrix::multLeft(JSContext * const cx, JSObject * const obj,
                                                JS_GetParent(cx, obj));
     if (!robj) { return JS_FALSE; }
 
-    OpenVRML::VrmlMatrix * const resultMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, robj));
+    mat4f * const resultMat = static_cast<mat4f *>(JS_GetPrivate(cx, robj));
     assert(resultMat);
 
-    *resultMat = thisMat->multLeft(*argMat);
+    *resultMat = *argMat * *thisMat;
     return JS_TRUE;
 }
 
@@ -6994,13 +6982,11 @@ JSBool VrmlMatrix::multRight(JSContext * const cx, JSObject * const obj,
         return JS_FALSE;
     }
 
-    const OpenVRML::VrmlMatrix * const argMat =
-            static_cast<OpenVRML::VrmlMatrix *>
-                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+    const mat4f * const argMat =
+            static_cast<mat4f *> (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
     assert(argMat);
 
-    const OpenVRML::VrmlMatrix * const thisMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    const mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
     assert(thisMat);
 
     //
@@ -7010,11 +6996,10 @@ JSBool VrmlMatrix::multRight(JSContext * const cx, JSObject * const obj,
                                                JS_GetParent(cx, obj));
     if (!robj) { return JS_FALSE; }
 
-    OpenVRML::VrmlMatrix * const resultMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, robj));
+    mat4f * const resultMat = static_cast<mat4f *>(JS_GetPrivate(cx, robj));
     assert(resultMat);
 
-    *resultMat = thisMat->multRight(*argMat);
+    *resultMat = *thisMat * *argMat;
     return JS_TRUE;
 }
 
@@ -7045,8 +7030,7 @@ JSBool VrmlMatrix::multVecMatrix(JSContext * const cx, JSObject * const obj,
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
     sfdata = 0;
 
-    const OpenVRML::VrmlMatrix * const thisMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    const mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
     assert(thisMat);
 
     //
@@ -7062,7 +7046,8 @@ JSBool VrmlMatrix::multVecMatrix(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
         static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    thisMat->multVecMatrix(argVec.value, resultVec.value);
+    resultVec.value = argVec.value * *thisMat;
+    
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
 }
@@ -7094,8 +7079,7 @@ JSBool VrmlMatrix::multMatrixVec(JSContext * const cx, JSObject * const obj,
             static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
     sfdata = 0;
 
-    const OpenVRML::VrmlMatrix * const thisMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    const mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
     assert(thisMat);
 
     //
@@ -7111,7 +7095,8 @@ JSBool VrmlMatrix::multMatrixVec(JSContext * const cx, JSObject * const obj,
     OpenVRML::SFVec3f & resultVec =
         static_cast<OpenVRML::SFVec3f &>(sfdata->getFieldValue());
 
-    thisMat->multMatrixVec(argVec.value, resultVec.value);
+    resultVec.value = *thisMat * argVec.value;
+
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
 }
@@ -7125,8 +7110,7 @@ JSBool VrmlMatrix::toString(JSContext * const cx, JSObject * const obj,
     assert(obj);
     assert(rval);
 
-    const OpenVRML::VrmlMatrix * const thisMat =
-            static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    const mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
     assert(thisMat);
 
     JSString * jsstr = 0;
@@ -7145,7 +7129,7 @@ JSBool VrmlMatrix::toString(JSContext * const cx, JSObject * const obj,
 
 void VrmlMatrix::finalize(JSContext * const cx, JSObject * const obj) throw ()
 {
-    delete static_cast<OpenVRML::VrmlMatrix *>(JS_GetPrivate(cx, obj));
+    delete static_cast<mat4f *>(JS_GetPrivate(cx, obj));
     JS_SetPrivate(cx, obj, 0);
 }
 

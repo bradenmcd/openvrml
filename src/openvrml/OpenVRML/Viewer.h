@@ -22,14 +22,13 @@
 #   define OPENVRML_VIEWER_H
 
 #   include <stddef.h>
-#   include "bvolume.h"
-#   include "VrmlFrustum.h"
+#   include <OpenVRML/bvolume.h>
+#   include <OpenVRML/VrmlFrustum.h>
 
 namespace OpenVRML {
 
     class Node;
     class BSphere;
-    class VrmlMatrix;
     class Browser;
 
     class OPENVRML_SCOPE Viewer {
@@ -64,7 +63,7 @@ namespace OpenVRML {
         virtual RenderMode getRenderMode() = 0;
         virtual double getFrameRate() = 0;
         virtual void resetUserNavigation() = 0;
-        virtual void getUserNavigation(VrmlMatrix & M) = 0;
+        virtual void getUserNavigation(mat4f & M) = 0;
 
         virtual Object beginObject(const char *, bool = false) = 0;
         virtual void endObject() = 0;
@@ -178,7 +177,7 @@ namespace OpenVRML {
                                   float avatarSize,
                                   float visLimit) = 0;
 
-        virtual void transform(const VrmlMatrix & mat) = 0;
+        virtual void transform(const mat4f & mat) = 0;
 
         // The viewer knows the current viewpoint
         virtual void transformPoints(int nPoints, float *points) = 0;

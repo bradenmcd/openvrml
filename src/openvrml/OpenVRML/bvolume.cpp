@@ -22,7 +22,6 @@
 # include "private.h"
 # include "bvolume.h"
 # include "field.h"
-# include "VrmlMatrix.h"
 # include "VrmlFrustum.h"
 # include "MathUtils.h"
 
@@ -174,7 +173,7 @@ BVolume::~BVolume() {}
  */
 
 /**
- * @fn void BVolume::orthoTransform(const VrmlMatrix & M)
+ * @fn void BVolume::orthoTransform(const mat4f & M)
  *
  * @brief Transform this bounding volume using an orthogonal transfom.
  *
@@ -186,13 +185,13 @@ BVolume::~BVolume() {}
  * orthogonal, otherwise the results are undefined. If in doubt,
  * call <code>transform</code> instead and take the speed hit.
  *
- * @param M orthonormal transformation matrix in VrmlMatrix format
+ * @param M orthonormal transformation matrix in mat4f format
  *
  * @see MathUtils
  */
 
 /**
- * @fn void BVolume::transform(const VrmlMatrix & M)
+ * @fn void BVolume::transform(const mat4f & M)
  *
  * @brief Transform this bounding volume using an affine transfom.
  *
@@ -206,7 +205,7 @@ BVolume::~BVolume() {}
  * affine transformations, so unless you're doing something tricky
  * this routine should always be safe.
  *
- * @param M affine transformation matrix in VrmlMatrix format
+ * @param M affine transformation matrix in mat4f format
  *
  * @see MathUtils
  */
@@ -554,7 +553,7 @@ bool BSphere::isMAX() const
 
 
 
-void BSphere::orthoTransform(const VrmlMatrix & M)
+void BSphere::orthoTransform(const mat4f & M)
 {
     using OpenVRML_::length;
 
@@ -562,7 +561,7 @@ void BSphere::orthoTransform(const VrmlMatrix & M)
     if (this->radius == -1) { return; }
     // ortho is easy: since we know it's uniform scaling, we can just
     // scale the radius and translate the center, and we're done.
-    M.multVecMatrix(this->center, this->center);
+    this->center = this->center * M;
 
     // uniform scale means we can pick any of the scale elements? wait:
     // can we really do this?
@@ -570,13 +569,13 @@ void BSphere::orthoTransform(const VrmlMatrix & M)
 }
 
 
-void BSphere::transform(const VrmlMatrix & M)
+void BSphere::transform(const mat4f & M)
 {
     using OpenVRML_::length;
 
     if (this->isMAX()) { return; }
     if (this->radius == -1) { return; }
-    M.multVecMatrix(this->center, this->center);
+    this->center = this->center * M;
 
     vec3f x_scale_v(M[0][0], M[1][0], M[2][0]);
     vec3f y_scale_v(M[0][1], M[1][1], M[2][1]);
@@ -659,12 +658,12 @@ AABox::isMAX() const
 }
 
 void
-AABox::orthoTransform(const VrmlMatrix & M)
+AABox::orthoTransform(const mat4f & M)
 {
 }
 
 void
-AABox::transform(const VrmlMatrix & M)
+AABox::transform(const mat4f & M)
 {
 }
 

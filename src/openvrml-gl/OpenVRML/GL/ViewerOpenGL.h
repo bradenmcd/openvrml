@@ -85,7 +85,7 @@ namespace OpenVRML {
 
             class ModelviewMatrixStack {
                 size_t size;
-                std::stack<VrmlMatrix> spillover;
+                std::stack<mat4f> spillover;
 
             public:
                 ModelviewMatrixStack();
@@ -189,7 +189,7 @@ namespace OpenVRML {
 
             //
             virtual void resetUserNavigation();
-            virtual void getUserNavigation(VrmlMatrix & M);
+            virtual void getUserNavigation(mat4f & M);
 
             // Scope dirlights, open/close display lists
             virtual Object beginObject(const char *name, bool retain);
@@ -331,7 +331,7 @@ namespace OpenVRML {
                                       float avatarSize,
                                       float visLimit);
 
-            virtual void transform(const VrmlMatrix & mat);
+            virtual void transform(const mat4f & mat);
 
             // The viewer knows the current viewpoint
             virtual void transformPoints(int nPoints, float *points);

@@ -82,6 +82,37 @@ Quaternion::Quaternion(const float quat[4]) throw ()
     this->quat[3] = quat[3];
 }
 
+Quaternion::Quaternion(const mat4f & mat) throw ()
+{
+    float diagonal, s;
+    diagonal = mat[0][0] + mat[1][1] + mat[2][2];
+    // check the diagonal
+    if (diagonal > 0.0) {
+        s = sqrt(diagonal + 1.0);
+        this->quat[3] = s / 2.0;
+        s = 0.5 / s;
+        this->quat[0] = (mat[1][2] - mat[2][1]) * s;
+        this->quat[1] = (mat[2][0] - mat[0][2]) * s;
+        this->quat[2] = (mat[0][1] - mat[1][0]) * s;
+    } else {
+        size_t i, j, k;
+        static const size_t next[3] = { 1, 2, 0 };
+        // diagonal is negative
+        i = 0;
+        if (mat[1][1] > mat[0][0]) { i = 1; }
+        if (mat[2][2] > mat[i][i]) { i = 2; }
+        j = next[i];
+        k = next[j];
+        s = sqrt ((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0);
+        this->quat[i] = s * 0.5;
+
+        if (s != 0.0) { s = 0.5 / s; }
+        this->quat[3] = (mat[j][k] - mat[k][j]) * s;
+        this->quat[j] = (mat[i][j] + mat[j][i]) * s;
+        this->quat[k] = (mat[i][k] + mat[k][i]) * s;
+    }
+}
+
 /**
  * @brief Construct from an SFRotation.
  *

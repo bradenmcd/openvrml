@@ -1,6 +1,7 @@
 //
 // OpenVRML
 //
+// Copyright (C) 2001  S. K. Bose
 // Copyright (C) 2003  Braden McDaniel
 // 
 // This library is free software; you can redistribute it and/or
@@ -560,6 +561,65 @@ std::ostream & operator<<(std::ostream & out, const vec2f & v)
  *
  * @return the result vector.
  */
+
+/**
+ * @brief Multiply by a matrix.
+ *
+ * @param mat   matrix by which to multiply.
+ *
+ * @return a reference to the object.
+ */
+vec3f & vec3f::operator*=(const mat4f & mat) throw ()
+{
+    const float x = this->vec[0] * mat[0][0] + this->vec[1] * mat[1][0]
+                    + this->vec[2] * mat[2][0] + mat[3][0];
+    const float y = this->vec[0] * mat[0][1] + this->vec[1] * mat[1][1]
+                    + this->vec[2] * mat[2][1] + mat[3][1];
+    const float z = this->vec[0] * mat[0][2] + this->vec[1] * mat[1][2]
+                    + this->vec[2] * mat[2][2] + mat[3][2];
+    const float w = this->vec[0] * mat[0][3] + this->vec[1] * mat[1][3]
+                    + this->vec[2] * mat[2][3] + mat[3][3];
+    this->vec[0] = x / w;
+    this->vec[1] = y / w;
+    this->vec[2] = z / w;
+    return *this;
+}
+
+/**
+ * @fn const vec3f operator*(const vec3f & vec, const mat4f & mat) throw ()
+ *
+ * @relates vec3f
+ *
+ * @brief Multiply a vector by a matrix.
+ *
+ * @param mat   a matrix.
+ * @param vec   a 3-component vector.
+ *
+ * @return the result vector.
+ */
+
+/**
+ * @relates vec3f
+ *
+ * @brief Multiply a matrix by a vector.
+ *
+ * @param mat   a matrix.
+ * @param vec   a 3-component vector.
+ *
+ * @return the result vector.
+ */
+const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
+{
+    const float x = mat[0][0] * vec[0] + mat[0][1] * vec[1]
+                    + mat[0][2] * vec[2] + mat[0][3];
+    const float y = mat[1][0] * vec[0] + mat[1][1] * vec[1]
+                    + mat[1][2] * vec[2] + mat[1][3];
+    const float z = mat[2][0] * vec[0] + mat[2][1] * vec[1]
+                    + mat[2][2] * vec[2] + mat[2][3];
+    const float w = mat[3][0] * vec[0] + mat[3][1] * vec[1]
+                    + mat[3][2] * vec[2] + mat[3][3];
+    return vec3f(x / w, y / w, z / w);
+}
 
 /**
  * @fn vec3f & vec3f::operator*=(float scalar) throw ()
@@ -1176,5 +1236,783 @@ std::ostream & operator<<(std::ostream & out, const rotation & r)
 {
     return out << r.x() << ' ' << r.y() << ' ' << r.z() << ' ' << r.angle();
 }
+
+
+/**
+ * @class mat4f
+ *
+ * @ingroup basetypes
+ *
+ * @brief A class for all matrix operations.
+ *
+ * Matrices are stored in row-major order.
+ */
+
+/**
+ * @brief Create a rotation matrix.
+ *
+ * @param rot   a rotation.
+ *
+ * @return a matrix representation of @p rot.
+ */
+const mat4f mat4f::rotation(const OpenVRML::rotation & rot) throw ()
+{
+    const double s = sin(rot.angle());
+    const double c = cos(rot.angle());
+    const double t = 1.0 - c;
+    const float x = rot.x();
+    const float y = rot.y();
+    const float z = rot.z();
+
+    return mat4f(t * x * x + c,     t * x * y + s * z, t * x * z - s * y, 0.0,
+                 t * x * y - s * z, t * y * y + c,     t * y * z + s * x, 0.0,
+                 t * x * z + s * y, t * y * z - s * x, t * z * z + c,     0.0,
+                 0.0,               0.0,               0.0,               1.0);
+}
+
+/**
+ * @brief Create a rotation matrix.
+ *
+ * @param quat  a quaternion.
+ *
+ * @return a matrix representation of @p quat.
+ */
+const mat4f mat4f::rotation(const Quaternion & quat) throw ()
+{
+    const float x = quat.getX();
+    const float y = quat.getY();
+    const float z = quat.getZ();
+    const float w = quat.getW();
+
+    return mat4f(1.0 - 2.0 * (y * y + z * z),
+                 2.0 * (x * y + z * w),
+                 2.0 * (z * x - y * w),
+                 0.0,
+                 2.0 * (x * y - z * w),
+                 1.0 - 2.0 * (z * z + x * x),
+                 2.0 * (y * z + x * w),
+                 0.0,
+                 2.0 * (z * x + y * w),
+                 2.0 * (y * z - x * w),
+                 1.0 - 2.0 * (y * y + x * x),
+                 0.0,
+                 0.0,
+                 0.0,
+                 0.0,
+                 1.0);
+}
+
+/**
+ * @brief Create a uniform scale matrix.
+ *
+ * @param s scale factor.
+ *
+ * @return a uniform scale matrix.
+ */
+const mat4f mat4f::scale(const float s) throw ()
+{
+    return mat4f(s,   0.0, 0.0, 0.0,
+                 0.0, s,   0.0, 0.0,
+                 0.0, 0.0, s,   0.0,
+                 0.0, 0.0, 0.0, 1.0);
+}
+
+/**
+ * @brief Create a scale matrix.
+ *
+ * @param s a vector.
+ *
+ * @return a scale matrix.
+ */
+const mat4f mat4f::scale(const vec3f & s) throw ()
+{
+    return mat4f(s.x(), 0.0,   0.0,   0.0,
+                 0.0,   s.y(), 0.0,   0.0,
+                 0.0,   0.0,   s.z(), 0.0,
+                 0.0,   0.0,   0.0,   1.0);
+}
+
+/**
+ * @brief Create a translation matrix.
+ *
+ * @param t translation vector.
+ *
+ * @return a translation matrix.
+ */
+const mat4f mat4f::translation(const vec3f & t) throw ()
+{
+    return mat4f(1.0,   0.0,   0.0,   0.0,
+                 0.0,   1.0,   0.0,   0.0,
+                 0.0,   0.0,   1.0,   0.0,
+                 t.x(), t.y(), t.z(), 1.0);
+}
+
+/**
+ * @brief Create a transformation matrix from a translation, a rotation,
+ *      a scale, a scaleOrientation, and a center.
+ *
+ * @param t     the translation.
+ * @param r     the rotation.
+ * @param s     the scale.
+ * @param sr    the scale orientation.
+ * @param c     the center.
+ *
+ * @return a transformation matrix.
+ */
+const mat4f mat4f::transformation(const vec3f & t,
+                                  const OpenVRML::rotation & r,
+                                  const vec3f & s,
+                                  const OpenVRML::rotation & sr,
+                                  const vec3f & c)
+    throw ()
+{
+    using OpenVRML_::fpzero;
+
+    mat4f mat;
+    if (t != vec3f(0.0, 0.0, 0.0)) {
+        mat = translation(t) * mat; // M = T * M   = T
+    }
+    if (c != vec3f(0.0, 0.0, 0.0)) {
+        mat = translation(c) * mat; // M = C * M   = C * T
+    }
+    if (!fpzero(r.angle())) {
+        mat = rotation(r) * mat; // M = R * M    = R * C * T
+    }
+    if (s != vec3f(1.0, 1.0, 1.0)) {
+        if (!fpzero(sr.angle())) {
+            mat = rotation(sr) * mat; // M = SR * M    = SR * R * C * T
+        }
+        mat = scale(s) * mat; // M = S * M     = S * SR * R * C * T
+        if (!fpzero(sr.angle())) {
+            mat = rotation(sr.inverse()) * mat; // M = -SR * M   = -SR * S * SR * R * C * T
+        }
+    }
+    if (c != vec3f(0.0, 0.0, 0.0)) {
+        mat = translation(-c) * mat; // M = -C * M    =  -C * -SR * S * SR * R * C * T
+    }
+    return mat;
+}
+
+/**
+ * @brief Construct.
+ *
+ * Matrix is initialized to the identity matrix.
+ */
+mat4f::mat4f() throw ()
+{
+    this->mat[0][0] = 1.0;
+    this->mat[0][1] = 0.0;
+    this->mat[0][2] = 0.0;
+    this->mat[0][3] = 0.0;
+
+    this->mat[1][0] = 0.0;
+    this->mat[1][1] = 1.0;
+    this->mat[1][2] = 0.0;
+    this->mat[1][3] = 0.0;
+
+    this->mat[2][0] = 0.0;
+    this->mat[2][1] = 0.0;
+    this->mat[2][2] = 1.0;
+    this->mat[2][3] = 0.0;
+
+    this->mat[3][0] = 0.0;
+    this->mat[3][1] = 0.0;
+    this->mat[3][2] = 0.0;
+    this->mat[3][3] = 1.0;
+}
+
+/**
+ * @brief Construct mat4f with given 16 elements in row-major order.
+ *
+ * @param f11
+ * @param f12
+ * @param f13
+ * @param f14
+ * @param f21
+ * @param f22
+ * @param f23
+ * @param f24
+ * @param f31
+ * @param f32
+ * @param f33
+ * @param f34
+ * @param f41
+ * @param f42
+ * @param f43
+ * @param f44
+ */
+mat4f::mat4f(float f11, float f12, float f13, float f14,
+             float f21, float f22, float f23, float f24,
+             float f31, float f32, float f33, float f34,
+             float f41, float f42, float f43, float f44)
+    throw ()
+{
+    this->mat[0][0] = f11;
+    this->mat[0][1] = f12;
+    this->mat[0][2] = f13;
+    this->mat[0][3] = f14;
+
+    this->mat[1][0] = f21;
+    this->mat[1][1] = f22;
+    this->mat[1][2] = f23;
+    this->mat[1][3] = f24;
+
+    this->mat[2][0] = f31;
+    this->mat[2][1] = f32;
+    this->mat[2][2] = f33;
+    this->mat[2][3] = f34;
+
+    this->mat[3][0] = f41;
+    this->mat[3][1] = f42;
+    this->mat[3][2] = f43;
+    this->mat[3][3] = f44;
+}
+
+/**
+ * @brief Construct from an array of 16 values.
+ *
+ * @param m an array of values in row-major order.
+ */
+mat4f::mat4f(const float mat[16]) throw ()
+{
+    std::copy(mat, mat + 16, &this->mat[0][0]);
+}
+
+/**
+ * @brief Construct from a 4x4 array.
+ *
+ * @param m a 4x4 array of elements in row-major order.
+ */
+mat4f::mat4f(const float (&mat)[4][4]) throw ()
+{
+    std::copy(&mat[0][0], &mat[0][0] + 16, &this->mat[0][0]);
+}
+
+/**
+ * @brief Multiply by a scalar.
+ *
+ * @param scalar    value by which to multiply.
+ *
+ * @return a reference to the object.
+ */
+mat4f & mat4f::operator*=(const float scalar) throw ()
+{
+    this->mat[0][0] *= scalar;
+    this->mat[0][1] *= scalar;
+    this->mat[0][2] *= scalar;
+    this->mat[0][3] *= scalar;
+    this->mat[1][0] *= scalar;
+    this->mat[1][1] *= scalar;
+    this->mat[1][2] *= scalar;
+    this->mat[1][3] *= scalar;
+    this->mat[2][0] *= scalar;
+    this->mat[2][1] *= scalar;
+    this->mat[2][2] *= scalar;
+    this->mat[2][3] *= scalar;
+    this->mat[3][0] *= scalar;
+    this->mat[3][1] *= scalar;
+    this->mat[3][2] *= scalar;
+    this->mat[3][3] *= scalar;
+}
+
+/**
+ * @fn const mat4f operator*(const mat4f & mat, const float scalar) throw ()
+ *
+ * @relates mat4f
+ *
+ * @brief Multiply a matrix by a scalar value.
+ *
+ * @param mat       matrix.
+ * @param scalar    scalar.
+ *
+ * @return the result matrix.
+ */
+
+/**
+ * @fn const mat4f operator*(const float scalar, const mat4f & mat) throw ()
+ *
+ * @relates mat4f
+ *
+ * @brief Multiply a scalar value by matrix.
+ *
+ * @param scalar    scalar.
+ * @param mat       matrix.
+ *
+ * @return the result matrix.
+ */
+
+/**
+ * @brief Multiply by another matrix.
+ *
+ * Sets the matrix equal to the matrix multiplied by @p mat.
+ *
+ * @param mat   the matrix by which to multiply.
+ *
+ * @return a reference to the object.
+ */
+mat4f & mat4f::operator*=(const mat4f & mat) throw ()
+{
+    mat4f temp;
+
+#define POSTMULT(i,j) (this->mat[i][0] * mat.mat[0][j] + \
+                       this->mat[i][1] * mat.mat[1][j] + \
+                       this->mat[i][2] * mat.mat[2][j] + \
+                       this->mat[i][3] * mat.mat[3][j])
+
+    temp[0][0] = POSTMULT(0,0);
+    temp[0][1] = POSTMULT(0,1);
+    temp[0][2] = POSTMULT(0,2);
+    temp[0][3] = POSTMULT(0,3);
+    temp[1][0] = POSTMULT(1,0);
+    temp[1][1] = POSTMULT(1,1);
+    temp[1][2] = POSTMULT(1,2);
+    temp[1][3] = POSTMULT(1,3);
+    temp[2][0] = POSTMULT(2,0);
+    temp[2][1] = POSTMULT(2,1);
+    temp[2][2] = POSTMULT(2,2);
+    temp[2][3] = POSTMULT(2,3);
+    temp[3][0] = POSTMULT(3,0);
+    temp[3][1] = POSTMULT(3,1);
+    temp[3][2] = POSTMULT(3,2);
+    temp[3][3] = POSTMULT(3,3);
+
+#undef POSTMULT
+
+    *this = temp;
+    return *this;
+}
+
+/**
+ * @fn const mat4f operator*(const mat4f & lhs, const mat4f & rhs) throw ()
+ *
+ * @relates mat4f
+ *
+ * @brief Multiply two matrices.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return the result matrix.
+ */
+
+namespace {
+
+    float det3(const mat4f & mat,
+               int r1, int r2, int r3, int c1, int c2, int c3) throw ()
+    {
+        return mat[r1][c1] * mat[r2][c2] * mat[r3][c3]
+             - mat[r1][c1] * mat[r2][c3] * mat[r3][c2]
+             + mat[r1][c2] * mat[r2][c3] * mat[r3][c1]
+             - mat[r1][c2] * mat[r2][c1] * mat[r3][c3]
+             + mat[r1][c3] * mat[r2][c1] * mat[r3][c2]
+             - mat[r1][c3] * mat[r2][c2] * mat[r3][c1];
+    }
+}
+
+/**
+ * @brief Get the translation, rotation and scale from the orthogonal
+ *        transformation matrix.
+ *
+ * Here any projection or shear information in the matrix is ignored. The
+ * caller is responsible for assuring that the transformation is in fact
+ * orthogonal, otherwise the results are undefined.
+ *
+ * @retval t    translation.
+ * @retval r    rotation.
+ * @retval s    scale.
+ */
+void mat4f::transformation(vec3f & t, OpenVRML::rotation & r, vec3f & s) const
+    throw ()
+{
+    //
+    // Some portions are taken from Graphics Gems 2.
+    //
+    using OpenVRML_::fpzero;
+
+    //
+    // Check if it is singular.
+    //
+    assert(!fpzero(this->mat[3][3]));
+    if(fpzero(det3(*this, 0, 1, 2, 0, 1, 2))){
+       OPENVRML_PRINT_MESSAGE_("Warning: matrix is singular.");
+       return;
+    }
+
+    mat4f tmp_matrix(*this);
+    size_t i, j;
+
+    //
+    // Ignore perspective.
+    //
+    tmp_matrix[0][3] = tmp_matrix[1][3] = tmp_matrix[2][3] = 0.0;
+
+    //
+    // Normalize the matrix.
+    //
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {
+            tmp_matrix[i][j] /= tmp_matrix[3][3];
+        }
+    }
+    t.x(tmp_matrix[3][0]);
+    t.y(tmp_matrix[3][1]);
+    t.z(tmp_matrix[3][2]);
+    tmp_matrix[3][0] = tmp_matrix[3][1] = tmp_matrix[3][2] = 0.0;
+    vec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
+    vec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
+    vec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
+
+    //
+    // Compute X scale factor and normalize first row.
+    //
+    s.x(row_0.length());
+    row_0 = row_0.normalize();
+
+    //
+    // Compute Y scale factor and normalize second row.
+    //
+    s.y(row_1.length());
+    row_1 = row_1.normalize();
+
+    //
+    // Compute Z scale factor and normalize third row.
+    //
+    s.z(row_2.length());
+    row_2 = row_2.normalize();
+    for (j = 0; j < 3; j++) {
+        tmp_matrix[0][j] = row_0[j];
+        tmp_matrix[1][j] = row_1[j];
+        tmp_matrix[2][j] = row_2[j];
+    }
+
+    //
+    // At this point, the matrix (in rows[]) is orthonormal.
+    // That is, each row has length one and are mutually perpendicular.
+    // Is it needed to calculate the det of this matrix (1 or -1) for checking
+    // coordinate system flip ? (According to VRML standard, scale > 0.0)
+    // Calculate quaternion rotation from this matrix.
+    //
+    Quaternion quat(tmp_matrix);
+
+    //
+    // now convert back to axis/angle.
+    //
+    r = OpenVRML::rotation(quat);
+}
+
+/**
+ * @brief Get the translation, rotation, scale and shear from affine
+ *      transformation matrix.
+ *
+ * Here any projection information in matrix is ignored. As VRML allows
+ * non-uniform scaling, it is safe to call this routine. The caller is
+ * responsible for assuring that the transformation is in fact affine,
+ * otherwise the results are undefined.
+ *
+ * @retval t        translation.
+ * @retval r        rotation.
+ * @retval s        scale.
+ * @retval shear    shear.
+ */
+void mat4f::transformation(vec3f & t,
+                           OpenVRML::rotation & r,
+                           vec3f & s,
+                           vec3f & shear) const
+    throw ()
+{
+    //
+    // Some portions are taken from Graphics Gems 2.
+    //
+    using OpenVRML_::fpzero;
+
+    //
+    // Check if it is singular.
+    //
+    assert(!fpzero(this->mat[3][3]));
+    if(fpzero(det3(*this, 0, 1, 2, 0, 1, 2))){
+        OPENVRML_PRINT_MESSAGE_("Warning: matrix is singular.");
+        return;
+    }
+
+    mat4f tmp_matrix(*this);
+    size_t i, j;
+
+    //
+    // Ignore perspective.
+    //
+    tmp_matrix[0][3] = tmp_matrix[1][3] = tmp_matrix[2][3] = 0.0;
+
+    //
+    // Normalize the matrix.
+    //
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {
+            tmp_matrix[i][j] /= tmp_matrix[3][3];
+        }
+    }
+    t.x(tmp_matrix[3][0]);
+    t.y(tmp_matrix[3][1]);
+    t.z(tmp_matrix[3][2]);
+    tmp_matrix[3][0] = tmp_matrix[3][1] = tmp_matrix[3][2] = 0.0;
+    vec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
+    vec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
+    vec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
+
+    //
+    // Compute X scale factor and normalize first row.
+    //
+    s.x(row_0.length());
+    row_0 = row_0.normalize();
+
+    //
+    // Compute XY shear factor and make 2nd row orthogonal to 1st.
+    //
+    float shear_xy = row_0.dot(row_1);
+    row_1[0] = row_1[0] - row_0[0] * shear_xy;
+    row_1[1] = row_1[1] - row_0[1] * shear_xy;
+    row_1[2] = row_1[2] - row_0[2] * shear_xy;
+
+    //
+    // Compute Y scale factor and normalize second row.
+    //
+    s.y(row_1.length());
+    row_1 = row_1.normalize();
+    shear.x(shear_xy / s.y());
+
+    //
+    // Compute XZ and YZ shears, orthogonalize third row.
+    //
+    float shear_xz = row_0.dot(row_2);
+    row_2[0] = row_2[0] - row_0[0] * shear_xz;
+    row_2[1] = row_2[1] - row_0[1] * shear_xz;
+    row_2[2] = row_2[2] - row_0[2] * shear_xz;
+    float shear_yz = row_1.dot(row_2);
+    row_2[0] = row_2[0] - row_1[0] * shear_yz;
+    row_2[1] = row_2[1] - row_1[1] * shear_yz;
+    row_2[2] = row_2[2] - row_1[2] * shear_yz;
+
+    //
+    // Compute Z scale factor and normalize third row.
+    //
+    s.z(row_2.length());
+    row_2 = row_2.normalize();
+    shear.y(shear_xz / s.z());
+    shear.z(shear_yz / s.z());
+    for (j = 0; j < 3; j++){
+        tmp_matrix[0][j] = row_0[j];
+        tmp_matrix[1][j] = row_1[j];
+        tmp_matrix[2][j] = row_2[j];
+    }
+
+    //
+    // At this point, the matrix (in rows[]) is orthonormal.
+    // That is, each row has length one and are mutually perpendicular.
+    // Is it needed to calculate the det of this matrix (1 or -1) for checking
+    // coordinate system flip ? (According to VRML standard, scale > 0.0)
+    // Calculate quaternion rotation from this matrix.
+    //
+    Quaternion quat(tmp_matrix);
+
+    //
+    // Now convert back to axis/angle.
+    //
+    r = OpenVRML::rotation(quat);
+}
+
+namespace {
+    /**
+     * This is taken from Graphics Gems 2, Page 603 and it is valid for only
+     * affine matrix with dimension of 4x4. As here we are storing row-major order,
+     * this means the last column ***MUST** be [0 0 0 1]
+     *
+     * By this procedure there is a significant performance improvement over
+     * a general procedure that can invert any nonsingular matrix.
+     *
+     *            -1
+     *  -1   |    |      |  -1    |
+     * M   = |A  0|  =   | A     0|
+     *       |    |      |        |
+     *       |    |      |   -1   |
+     *       |B  1|      |-BA    1|
+     *
+     *  where   M is a 4 by 4 matrix,
+     *          A is the 3 by 3 upper left submatrix of M,
+     *          B is the 1 by 3 lower left submatrix of M.
+     *
+     * It aborts if input matrix is not affine.
+     * It returns without doing any calculations if the input matrix is singular.
+     *
+     * @param in   3D affine matrix.
+     *
+     * @retval out  inverse of 3D affine matrix.
+     */
+    void get_affine_inverse(const mat4f & in, mat4f & out) {
+        // Check if it is an affine matrix
+        assert(! ( in[0][3] != 0.0 || in[1][3] != 0.0 || in[2][3] != 0.0 ||
+               in[3][3] != 1.0 ));
+
+        double det;
+        double pos, neg, temp;
+
+        pos = neg = 0.0;
+        temp =  in[0][0] * in[1][1] * in[2][2];
+        if(temp >= 0.0) pos += temp; else neg += temp;
+        temp =  in[0][1] * in[1][2] * in[2][0];
+        if(temp >= 0.0) pos += temp; else neg += temp;
+        temp =  in[0][2] * in[1][0] * in[2][1];
+        if(temp >= 0.0) pos += temp; else neg += temp;
+        temp = -in[0][2] * in[1][1] * in[2][0];
+        if(temp >= 0.0) pos += temp; else neg += temp;
+        temp = -in[0][1] * in[1][0] * in[2][2];
+        if(temp >= 0.0) pos += temp; else neg += temp;
+        temp = -in[0][0] * in[1][2] * in[2][1];
+        if(temp >= 0.0) pos += temp; else neg += temp;
+        det = pos + neg;
+
+#define PRECISION_LIMIT (1.0e-25)
+
+        // Is the submatrix A singular?
+
+        if(det*det < PRECISION_LIMIT){
+            OPENVRML_PRINT_MESSAGE_("Warning : Matrix is singular");
+            return;
+        }
+
+        // Calculate inverse(A) = adj(A) / det(A)
+
+        det = 1.0 / det;
+        out[0][0] =  (in[1][1] * in[2][2] - in[1][2] * in[2][1]) * det;
+        out[1][0] = -(in[1][0] * in[2][2] - in[1][2] * in[2][0]) * det;
+        out[2][0] =  (in[1][0] * in[2][1] - in[1][1] * in[2][0]) * det;
+        out[0][1] = -(in[0][1] * in[2][2] - in[0][2] * in[2][1]) * det;
+        out[1][1] =  (in[0][0] * in[2][2] - in[0][2] * in[2][0]) * det;
+        out[2][1] = -(in[0][0] * in[2][1] - in[0][1] * in[2][0]) * det;
+        out[0][2] =  (in[0][1] * in[1][2] - in[0][2] * in[1][1]) * det;
+        out[1][2] = -(in[0][0] * in[1][2] - in[0][2] * in[1][0]) * det;
+        out[2][2] =  (in[0][0] * in[1][1] - in[0][1] * in[1][0]) * det;
+
+        // Calculate -B * inverse(A) Do the translation part
+
+        out[3][0] = -( in[3][0] * out[0][0] +
+                       in[3][1] * out[1][0] +
+                       in[3][2] * out[2][0] );
+        out[3][1] = -( in[3][0] * out[0][1] +
+                       in[3][1] * out[1][1] +
+                       in[3][2] * out[2][1] );
+        out[3][2] = -( in[3][0] * out[0][2] +
+                       in[3][1] * out[1][2] +
+                       in[3][2] * out[2][2] );
+
+        // Fill in last column
+        out[0][3] = out[1][3] = out[2][3] = 0.0;
+        out[3][3] = 1.0;
+
+#undef PRECISION_LIMIT
+
+    }
+}
+
+/**
+ * @brief Get the inverse of an affine matrix.
+ *
+ * @return the inverse of the matrix.
+ *
+ * @pre the current matrix must be affine.
+ */
+const mat4f mat4f::inverse() const throw ()
+{
+    mat4f out;
+    get_affine_inverse(*this, out);
+    return out;
+}
+
+/**
+ * @brief Get the transposition of the matrix.
+ *
+ * @return a transposed copy of the matrix.
+ */
+const mat4f mat4f::transpose() const throw ()
+{
+    return mat4f(this->mat[0][0], this->mat[1][0], this->mat[2][0], this->mat[3][0],
+                 this->mat[0][1], this->mat[1][1], this->mat[2][1], this->mat[3][1],
+                 this->mat[0][2], this->mat[1][2], this->mat[2][2], this->mat[3][2],
+                 this->mat[0][3], this->mat[1][3], this->mat[2][3], this->mat[3][3]);
+}
+
+/**
+ * @brief Return determinant of entire matrix.
+ *
+ * @return the determinant.
+ */
+float mat4f::det() const throw ()
+{
+    return (  this->mat[0][0] * det3(*this, 1, 2, 3, 1, 2, 3)
+            + this->mat[0][1] * det3(*this, 1, 2, 3, 0, 2, 3)
+            + this->mat[0][2] * det3(*this, 1, 2, 3, 0, 1, 3)
+            + this->mat[0][3] * det3(*this, 1, 2, 3, 0, 1, 2));
+}
+
+/**
+ * @fn float (&mat4f::operator[](size_t index) throw ())[4]
+ *
+ * @brief To make it usual matrix (non-const)
+ */
+
+/**
+ * @fn float (&mat4f::operator[](size_t index) const throw ())[4]
+ *
+ * @brief To make it usual matrix (const)
+ */
+
+/**
+ * @relates mat4f
+ *
+ * @brief Stream output.
+ *
+ * @param out   an output stream.
+ * @param mat   a matrix.
+ *
+ * @return @p out.
+ */
+std::ostream & operator<<(std::ostream & out, const mat4f & mat)
+{
+    out << '[';
+    for (size_t i = 0; i < 4; i++) {
+        out << '[';
+        for (size_t j = 0; j < 4; j++) {
+            out << mat[i][j];
+            if (j != 3) { out << ", "; }
+        }
+        out << ']';
+        if (i != 3) { out << ", "; }
+    }
+    out << ']';
+    return out;
+}
+
+
+/**
+ * @fn bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
+ *
+ * @relates mat4f
+ *
+ * @brief Equality comparison operator.
+ *
+ * All componenents must match exactly.
+ *
+ * @param lhs   a matrix.
+ * @param rhs   a matrix.
+ */
+
+/**
+ * @fn bool operator!=(const mat4f & lhs, const mat4f & rhs) throw ()
+ *
+ * @relates mat4f
+ *
+ * @brief Inequality comparison operator.
+ *
+ * @param lhs   a matrix.
+ * @param rhs   a matrix.
+ */
 
 }

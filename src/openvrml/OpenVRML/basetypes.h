@@ -1,6 +1,7 @@
 //
 // OpenVRML
 //
+// Copyright (C) 2001  S. K. Bose
 // Copyright (C) 2003  Braden McDaniel
 // 
 // This library is free software; you can redistribute it and/or
@@ -24,6 +25,7 @@
 #   include <assert.h>
 #   include <math.h>
 #   include <stddef.h>
+#   include <algorithm>
 #   include <iosfwd>
 #   include <OpenVRML/common.h>
 
@@ -281,6 +283,8 @@ namespace OpenVRML {
                                              const vec2f & v);
 
 
+    class mat4f;
+
     class OPENVRML_SCOPE vec3f {
         float vec[3];
 
@@ -290,6 +294,7 @@ namespace OpenVRML {
         vec3f(float x, float y, float z) throw ();
 
         vec3f & operator*=(const vec3f & vec) throw ();
+        vec3f & operator*=(const mat4f & mat) throw ();
         vec3f & operator*=(float scalar) throw ();
         vec3f & operator/=(float scalar) throw ();
         vec3f & operator+=(const vec3f & vec) throw ();
@@ -363,6 +368,15 @@ namespace OpenVRML {
         vec3f result(lhs);
         return result *= rhs;
     }
+
+    inline const vec3f operator*(const vec3f & vec, const mat4f & mat) throw ()
+    {
+        vec3f result(vec);
+        return result *= mat;
+    }
+
+    const vec3f OPENVRML_SCOPE operator*(const mat4f & mat, const vec3f & vec)
+        throw ();
 
     inline vec3f & vec3f::operator/=(const float scalar) throw ()
     {
@@ -578,6 +592,93 @@ namespace OpenVRML {
 
     std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
                                              const rotation & r);
+
+
+    class OPENVRML_SCOPE mat4f {
+        float mat[4][4];
+
+    public:
+        static const mat4f rotation(const OpenVRML::rotation & rot) throw ();
+        static const mat4f rotation(const Quaternion & quat) throw ();
+        static const mat4f scale(float s) throw ();
+        static const mat4f scale(const vec3f & s) throw ();
+        static const mat4f translation(const vec3f & t) throw ();
+        static const mat4f transformation(const vec3f & t,
+                                          const OpenVRML::rotation & r,
+                                          const vec3f & s,
+                                          const OpenVRML::rotation & sr,
+                                          const vec3f & c) throw ();
+
+        mat4f() throw ();
+        mat4f(float f11, float f12, float f13, float f14,
+              float f21, float f22, float f23, float f24,
+              float f31, float f32, float f33, float f34,
+              float f41, float f42, float f43, float f44) throw ();
+        explicit mat4f(const float mat[16]) throw ();
+        explicit mat4f(const float (&mat)[4][4]) throw ();
+
+        // Use compiler-defined operator= and copy constructor.
+
+        mat4f & operator*=(float scalar) throw ();
+        mat4f & operator*=(const mat4f & mat) throw ();
+
+        float (&operator[](size_t index) throw ())[4];
+        const float (&operator[](size_t index) const throw ())[4];
+
+        void transformation(vec3f & t, OpenVRML::rotation & r, vec3f & s) const
+            throw ();
+        void transformation(vec3f & t, OpenVRML::rotation & r, vec3f & s,
+                            vec3f & shear) const
+            throw ();
+
+        const mat4f inverse() const throw ();
+        const mat4f transpose() const throw ();
+        float det() const throw ();
+    };
+
+    inline bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
+    {
+        return std::equal(&lhs[0][0], &lhs[0][0] + 16, &rhs[0][0]);
+    }
+
+    inline bool operator!=(const mat4f & lhs, const mat4f & rhs)
+        throw ()
+    {
+        return !(lhs == rhs);
+    }
+
+    inline float (&mat4f::operator[](size_t index) throw ())[4]
+    {
+        assert(index < 4);
+        return this->mat[index];
+    }
+
+    inline const float (&mat4f::operator[](size_t index) const throw ())[4]
+    {
+        assert(index < 4);
+        return this->mat[index];
+    }
+
+    inline const mat4f operator*(const mat4f & lhs, const mat4f & rhs) throw ()
+    {
+        mat4f result(lhs);
+        return result *= rhs;
+    }
+
+    inline const mat4f operator*(const mat4f & mat, const float scalar) throw ()
+    {
+        mat4f result(mat);
+        return result *= scalar;
+    }
+
+    inline const mat4f operator*(const float scalar, const mat4f & mat) throw ()
+    {
+        mat4f result(mat);
+        return result *= scalar;
+    }
+
+    std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
+                                             const mat4f & mat);
 
 } // namespace OpenVRML
 

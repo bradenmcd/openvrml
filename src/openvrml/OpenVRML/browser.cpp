@@ -285,15 +285,15 @@ public:
 
 
 class DefaultViewpoint : public ViewpointNode {
-    VrmlMatrix userViewTransform;
+    mat4f userViewTransform;
 
 public:
     explicit DefaultViewpoint(const NullNodeType & nodeType) throw ();
     virtual ~DefaultViewpoint() throw ();
 
-    virtual const VrmlMatrix & getTransformation() const throw ();
-    virtual const VrmlMatrix & getUserViewTransform() const throw ();
-    virtual void setUserViewTransform(const VrmlMatrix & transform) throw ();
+    virtual const mat4f & getTransformation() const throw ();
+    virtual const mat4f & getUserViewTransform() const throw ();
+    virtual void setUserViewTransform(const mat4f & transform) throw ();
     virtual const SFString & getDescription() const throw ();
     virtual const SFFloat & getFieldOfView() const throw ();
 
@@ -1397,12 +1397,11 @@ void Browser::render(Viewer & viewer)
 
     // sets the viewpoint transformation
     //
-    const VrmlMatrix t =
-            this->activeViewpoint->getTransformation()
-            .multLeft(this->activeViewpoint->getUserViewTransform());
+    const mat4f t = this->activeViewpoint->getUserViewTransform()
+                    * this->activeViewpoint->getTransformation();
     vec3f position, scale;
     rotation orientation;
-    t.getTransform(position, orientation, scale);
+    t.transformation(position, orientation, scale);
     viewer.setViewpoint(&position[0],
                         &orientation[0],
                         activeViewpoint->getFieldOfView().value,
@@ -1415,7 +1414,7 @@ void Browser::render(Viewer & viewer)
     // Top level object
 
     viewer.beginObject(0);
-    VrmlMatrix modelview = t.affine_inverse();
+    mat4f modelview = t.inverse();
     VrmlRenderContext rc(BVolume::partial, modelview);
     rc.setDrawBSpheres(true);
 
@@ -4759,34 +4758,27 @@ DefaultViewpoint::DefaultViewpoint(const NullNodeType & nodeType) throw ():
 DefaultViewpoint::~DefaultViewpoint() throw ()
 {}
 
-const VrmlMatrix & DefaultViewpoint::getTransformation() const throw ()
+const mat4f & DefaultViewpoint::getTransformation() const throw ()
 {
-    class DefaultTransformation : public VrmlMatrix {
-    public:
-        DefaultTransformation() throw ()
-        {
-            static const vec3f position(0.0, 0.0, 10.0);
-            static const rotation orientation;
-            static const vec3f scale(1.0, 1.0, 1.0);
-            static const rotation scaleOrientation;
-            static const vec3f center;
-            this->setTransform(position,
-                               orientation,
-                               scale,
-                               scaleOrientation,
-                               center);
-        }
-    };
-    static const DefaultTransformation t;
+    static const vec3f position(0.0, 0.0, 10.0);
+    static const rotation orientation;
+    static const vec3f scale(1.0, 1.0, 1.0);
+    static const rotation scaleOrientation;
+    static const vec3f center;
+    static const mat4f t(mat4f::transformation(position,
+                                               orientation,
+                                               scale,
+                                               scaleOrientation,
+                                               center));
     return t;
 }
 
-const VrmlMatrix & DefaultViewpoint::getUserViewTransform() const throw ()
+const mat4f & DefaultViewpoint::getUserViewTransform() const throw ()
 {
     return this->userViewTransform;
 }
 
-void DefaultViewpoint::setUserViewTransform(const VrmlMatrix & transform)
+void DefaultViewpoint::setUserViewTransform(const mat4f & transform)
     throw ()
 {
     this->userViewTransform = transform;

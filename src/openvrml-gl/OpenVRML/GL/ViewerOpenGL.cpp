@@ -133,7 +133,7 @@ namespace GL {
  *
  * ModelviewMatrixStack uses the OpenGL modelview matrix stack until it fills
  * up, at which point any additional matrices that spill over are pushed onto
- * a conventional stack of @link VrmlMatrix VrmlMatrices@endlink.
+ * a conventional stack of mat4f.
  */
 
 /**
@@ -143,7 +143,7 @@ namespace GL {
  */
 
 /**
- * @var std::stack<VrmlMatrix> ViewerOpenGL::ModelviewMatrixStack::spillover
+ * @var std::stack<mat4f> ViewerOpenGL::ModelviewMatrixStack::spillover
  *
  * @brief Any matrices that won't fit on the OpenGL modelview matrix stack get
  *      pushed onto this stack.
@@ -169,7 +169,7 @@ void ViewerOpenGL::ModelviewMatrixStack::push()
 # endif
     assert(matrixMode == GL_MODELVIEW);
     if (this->size == size_t(glCapabilities.maxModelviewStackDepth - 1)) {
-        VrmlMatrix mat;
+        mat4f mat;
         glGetFloatv(GL_MODELVIEW_MATRIX, &mat[0][0]);
         this->spillover.push(mat);
         glPopMatrix();
@@ -525,7 +525,7 @@ double ViewerOpenGL::getFrameRate()
 void ViewerOpenGL::resetUserNavigation()
 {
     ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
-    activeViewpoint.setUserViewTransform(VrmlMatrix());
+    activeViewpoint.setUserViewTransform(mat4f());
 
     this->curquat = Quaternion(trackball(0.0, 0.0, 0.0, 0.0));
     this->d_rotationChanged = true;
@@ -533,11 +533,11 @@ void ViewerOpenGL::resetUserNavigation()
     wsPostRedraw();
 }
 
-void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
+void ViewerOpenGL::getUserNavigation(mat4f & M)
 {
     // The Matrix M should be a unit matrix
     ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
-    M = M.multLeft(activeViewpoint.getUserViewTransform());
+    M = activeViewpoint.getUserViewTransform() * M;
 }
 
 namespace {
@@ -1548,8 +1548,7 @@ namespace {
                 V3 *= (1.0 / len);
 
                 rotation orient(V3, acos(V1.dot(V2))); // Axis/angle
-                VrmlMatrix scp;                // xform matrix
-                scp.setRotate(orient);
+                const mat4f scp = mat4f::rotation(orient); // xform matrix
                 for (size_t k = 0; k < 3; ++k) {
                     Xscp[k] = scp[0][k];
                     Yscp[k] = scp[1][k];
@@ -1559,12 +1558,12 @@ namespace {
         }
 
         // Orientation matrix
-        VrmlMatrix om;
+        mat4f om;
         if (nOrientation == 1 && ! fpzero(orientation[3])) {
-            om.setRotate(rotation(orientation[0],
-                                  orientation[1],
-                                  orientation[2],
-                                  orientation[3]));
+            om = mat4f::rotation(rotation(orientation[0],
+                                          orientation[1],
+                                          orientation[2],
+                                          orientation[3]));
         }
 
         // Compute coordinates, texture coordinates:
@@ -1644,10 +1643,10 @@ namespace {
             // Apply orientation
             if (!fpzero(orientation[3])) {
                 if (nOrientation > 1) {
-                    om.setRotate(rotation(orientation[0],
-                                          orientation[1],
-                                          orientation[2],
-                                          orientation[3]));
+                    om = mat4f::rotation(rotation(orientation[0],
+                                                  orientation[1],
+                                                  orientation[2],
+                                                  orientation[3]));
                 }
 
                 for (j = 0; j < nCrossSection; ++j) {
@@ -2913,7 +2912,7 @@ void ViewerOpenGL::transformPoints(int np, float *p)
  *
  * @param mat   a matrix.
  */
-void ViewerOpenGL::transform(const VrmlMatrix & mat)
+void ViewerOpenGL::transform(const mat4f & mat)
 {
     glMultMatrixf(&mat[0][0]);
 }
@@ -3016,45 +3015,37 @@ void ViewerOpenGL::rotate(const rotation & rot) throw ()
     if (fpzero(rot.angle())) { return; }
 
     ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
-    const VrmlMatrix & viewpointTransformation =
-            activeViewpoint.getTransformation();
-    const VrmlMatrix & currentUserViewTransform =
+    const mat4f & viewpointTransformation = activeViewpoint.getTransformation();
+    const mat4f & currentUserViewTransform =
             activeViewpoint.getUserViewTransform();
 
-    VrmlMatrix oldCameraTransform =
-            viewpointTransformation.multLeft(currentUserViewTransform);
+    mat4f oldCameraTransform =
+            currentUserViewTransform * viewpointTransformation;
 
     vec3f currentTranslation, currentScale;
     rotation currentRotation;
-    oldCameraTransform.getTransform(currentTranslation,
-                                    currentRotation,
-                                    currentScale);
+    oldCameraTransform.transformation(currentTranslation,
+                                      currentRotation,
+                                      currentScale);
 
-    VrmlMatrix r;
-    r.setRotate(rot);
+    const mat4f r = mat4f::rotation(rot);
+
+    const mat4f prevOrientation = mat4f::rotation(currentRotation);
     
-    VrmlMatrix prevOrientation;
-    prevOrientation.setRotate(currentRotation);
-    
-    VrmlMatrix t;
-    t.setTranslate(currentTranslation);
+    const mat4f t = mat4f::translation(currentTranslation);
 
-    VrmlMatrix newCameraTransform = viewpointTransformation.affine_inverse()
-                                    .multLeft(r)
-                                    .multLeft(t)
-                                    .multLeft(prevOrientation);
+    const mat4f newCameraTransform =
+            prevOrientation * (t * (r * viewpointTransformation.inverse()));
 
-    activeViewpoint
-            .setUserViewTransform(newCameraTransform);
+    activeViewpoint.setUserViewTransform(newCameraTransform);
 
-    VrmlMatrix rotationMatrix;
+    mat4f rotationMatrix;
     glGetFloatv(GL_MODELVIEW_MATRIX, &rotationMatrix[0][0]);
     rotationMatrix[3][0] = 0.0;
     rotationMatrix[3][1] = 0.0;
     rotationMatrix[3][2] = 0.0;
 
-    vec3f d;
-    rotationMatrix.multMatrixVec(rot.axis(), d);
+    vec3f d = rotationMatrix * rot.axis();
     Quaternion q(rotation(d, rot.angle()));
     this->curquat = q.multiply(this->curquat);
     this->d_rotationChanged = true;
@@ -3064,12 +3055,10 @@ void ViewerOpenGL::rotate(const rotation & rot) throw ()
 
 void ViewerOpenGL::step(float x, float y, float z)
 {
-    const vec3f translation(x, y, z);
-    VrmlMatrix t;
-    t.setTranslate(translation);
+    mat4f t = mat4f::translation(vec3f(x, y, z));
     ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
-    activeViewpoint.setUserViewTransform(activeViewpoint.getUserViewTransform()
-                                            .multLeft(t));
+    activeViewpoint
+            .setUserViewTransform(t * activeViewpoint.getUserViewTransform());
     wsPostRedraw();
 }
 
@@ -3107,12 +3096,10 @@ void ViewerOpenGL::zoom(float z)
     dy *= dist;
     dz *= dist;
     const vec3f translation(dx, dy, dz);
-    VrmlMatrix t;
-    t.setTranslate(translation);
+    mat4f t = mat4f::translation(translation);
     ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
-    const VrmlMatrix & userViewTransform =
-            activeViewpoint.getUserViewTransform();
-    activeViewpoint.setUserViewTransform(userViewTransform.multLeft(t));
+    const mat4f & userViewTransform = activeViewpoint.getUserViewTransform();
+    activeViewpoint.setUserViewTransform(t * userViewTransform);
     wsPostRedraw();
 }
 

@@ -28,12 +28,12 @@
 #   include <set>
 #   include <stdexcept>
 #   include <utility>
-#   include "field.h"
-#   include "fieldvalueptr.h"
-#   include "nodetypeptr.h"
-#   include "scopeptr.h"
-#   include "Viewer.h"
-#   include "VrmlRenderContext.h"
+#   include <OpenVRML/field.h>
+#   include <OpenVRML/fieldvalueptr.h>
+#   include <OpenVRML/nodetypeptr.h>
+#   include <OpenVRML/scopeptr.h>
+#   include <OpenVRML/Viewer.h>
+#   include <OpenVRML/VrmlRenderContext.h>
 
 namespace OpenVRML {
 
@@ -177,7 +177,6 @@ namespace OpenVRML {
 
 
     class Scope;
-    class VrmlMatrix;
     class BVolume;
     class ScriptNode;
     class AppearanceNode;
@@ -632,7 +631,7 @@ namespace OpenVRML {
         virtual const TransformNode * toTransform() const throw ();
         virtual TransformNode * toTransform() throw ();
 
-        virtual const VrmlMatrix & getTransform() const throw () = 0;
+        virtual const mat4f & getTransform() const throw () = 0;
 
     protected:
         TransformNode(const NodeType & nodeType, const ScopePtr & scope);
@@ -646,9 +645,9 @@ namespace OpenVRML {
         virtual const ViewpointNode * toViewpoint() const throw ();
         virtual ViewpointNode * toViewpoint() throw ();
 
-        virtual const VrmlMatrix & getTransformation() const throw () = 0;
-        virtual const VrmlMatrix & getUserViewTransform() const throw () = 0;
-        virtual void setUserViewTransform(const VrmlMatrix & transform)
+        virtual const mat4f & getTransformation() const throw () = 0;
+        virtual const mat4f & getUserViewTransform() const throw () = 0;
+        virtual void setUserViewTransform(const mat4f & transform)
             throw () = 0;
         virtual const SFString & getDescription() const throw () = 0;
         virtual const SFFloat & getFieldOfView() const throw () = 0;
