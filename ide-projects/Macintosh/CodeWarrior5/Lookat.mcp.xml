@@ -771,9 +771,9 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>	äÙÄ</VALUE></SETTING>
-                    <SETTING><VALUE>¿∂¯</VALUE></SETTING>
-                    <SETTING><VALUE>’8</VALUE></SETTING>
+                    <SETTING><VALUE>	ù5∞</VALUE></SETTING>
+                    <SETTING><VALUE>	%8</VALUE></SETTING>
+                    <SETTING><VALUE>9ö@</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
@@ -1048,6 +1048,15 @@
                     <FILEKIND>Library</FILEKIND>
                     <FILEFLAGS></FILEFLAGS>
                 </FILE>
+                <FILE>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>CodeWarrior</PATHROOT>
+                    <ACCESSPATH>:MacOS Support:Libraries:</ACCESSPATH>
+                    <PATH>:Runtime:Runtime PPC:MSL RuntimePPC.Lib</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Library</FILEKIND>
+                    <FILEFLAGS></FILEFLAGS>
+                </FILE>
             </FILELIST>
             <LINKORDER>
                 <FILEREF>
@@ -1174,6 +1183,13 @@
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>:</ACCESSPATH>
                     <PATH>:OpenVRML.Lib</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>CodeWarrior</PATHROOT>
+                    <ACCESSPATH>:MacOS Support:Libraries:</ACCESSPATH>
+                    <PATH>:Runtime:Runtime PPC:MSL RuntimePPC.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
             </LINKORDER>
@@ -1317,6 +1333,14 @@
                 </FILEREF>
             </GROUP>
             <GROUP><NAME>MSL Libraries</NAME>
+                <FILEREF>
+                    <TARGETNAME>Lookat</TARGETNAME>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>CodeWarrior</PATHROOT>
+                    <ACCESSPATH>:MacOS Support:Libraries:</ACCESSPATH>
+                    <PATH>:Runtime:Runtime PPC:MSL RuntimePPC.Lib</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
                 <FILEREF>
                     <TARGETNAME>Lookat</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
