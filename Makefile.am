@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = doc macros models lib src
+SUBDIRS = doc macros models lib src java
 
 ACLOCAL_AMFLAGS = -I macros
 
