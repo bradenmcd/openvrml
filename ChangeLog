@@ -1,3 +1,16 @@
+2001-02-16  Braden McDaniel  <braden@endoframe.com>
+
+        * Moved texture reading code to `Image.cpp'. This obsoletes the
+          files:
+            gifread.h
+            gifread.cpp
+            pngread.h
+            pngread.cpp
+            jpgread.h
+            jpgread.cpp
+            mpgread.h
+            mpgread.cpp
+
 2001-02-14  Braden McDaniel  <braden@endoframe.com>
 
         * Changed VrmlNode::eventIn() to take a reference to a VrmlField
