@@ -1,4 +1,4 @@
-AC_INIT([OpenVRML], [0.14.99], [openvrml-develop@lists.sourceforge.net])
+AC_INIT([OpenVRML], [0.15.0], [openvrml-develop@lists.sourceforge.net])
 AC_PREREQ([2.53])
 AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]
@@ -25,7 +25,7 @@ AC_CONFIG_FILES([Makefile]
                 [openvrml.spec])
 
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.7 foreign dejagnu subdir-objects])
+AM_INIT_AUTOMAKE([1.7 foreign dejagnu subdir-objects check-news])
 AM_CONFIG_HEADER([config.h])
 
 #

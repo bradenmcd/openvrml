@@ -1,5 +1,5 @@
 AC_PREREQ([2.53])
-AC_INIT([OpenVRML Mozilla Plugin], [0.14.99],
+AC_INIT([OpenVRML Mozilla Plugin], [0.15.0],
         [openvrml-develop@lists.sourceforge.net])
 AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]

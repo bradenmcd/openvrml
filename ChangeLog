@@ -1,5 +1,14 @@
 2004-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	Updated version number for 0.15.0 release.
+
+	* NEWS:  Updated for 0.15.0.
+	* configure.ac:  Updated package version.
+	* doc/Doxyfile:  Updated package version.
+	* mozilla-plugin/configure.ac:  Updated package version.
+
+2004-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/Makefile.am:  Update DISTCLEANFILES to point to $(srcdir)
 	for doxygen-generated files.
 

@@ -1,3 +1,26 @@
+Changes new in version 0.15.0, 26 November, 2004
+================================================
+
+- lookat now uses SDL instead of GLUT and is licenced under the terms of
+  the GPL.  (The OpenVRML libraries remain available under the terms of
+  the LGPL.)
+
+- OpenVRML now builds with Microsoft Visual C++ 7.1.
+
+- Rearchitected event propagation to eliminate string comparisons.
+  Event propagation is now much, much faster.
+
+- Added a Mozilla plug-in (for platforms that use a GTK+ 2.x-based
+  Mozilla browser).  In this release the plug-in is mostly a proof of
+  concept which may not be usable for day-to-day browsing of VRML
+  worlds.
+
+- Eliminated use of regex (so Windows users no longer need the regex
+  library.)
+
+- Fixed too many bugs to mention here.
+
+
 Changes new in version 0.14.3, 16 November, 2003
 ================================================
 
