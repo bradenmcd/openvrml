@@ -16,7 +16,7 @@
 # pragma warning( disable : 4305 )  
 // Disable warning messages about truncating names in debug info
 # pragma warning( disable : 4786 )  
-static const char SLASH = '\\';
+static const char SLASH = '/';
 
 
 static const char COLON = ':';
