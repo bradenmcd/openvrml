@@ -1,104 +1,51 @@
 #include <MacHeaders.h>
 
-
-
 #define LIBVRML_MAJOR_VERSION	0
-
 #define LIBVRML_MINOR_VERSION	8
-
 #define LIBVRML_MICRO_VERSION	1
 
-
-
 #include <fstream.h>
-
 #include <iostream.h>
-
 #include <list.h>
-
 #include <strstream.h>
-
 #include <vector.h>
 
-
-
 static const char SLASH = '/';
-
 static const char COLON = ':';
-
-
 
 #define XP_MAC
 
-
-
 #ifndef M_PI
-
 #define M_PI            3.14159265358979323846  /* pi */
-
 #endif
-
-
 
 #ifndef M_PI_2
-
 #define M_PI_2          1.57079632679489661923  /* pi/2 */
-
 #endif
-
-
 
 #ifndef M_PI_4
-
 #define M_PI_4          0.78539816339744830962  /* pi/4 */
-
 #endif
-
-
 
 #ifndef M_1_PI
-
 #define M_1_PI          0.31830988618379067154  /* 1/pi */
-
 #endif
 
-
-
 #define HAVE_LIBJPEG	1
-
 #define HAVE_LIBPNG	    1
-
 #define HAVE_GL		    1
-
 #define HAVE_GLUT	    1
-
 #define HAVE_XT		    0
-
 #define HAVE_XM		    0
-
 #define HAVE_GTK	    0
-
-#define HAVE_JAVASCRIPT	1
-
 #define HAVE_JDK	    0
-
 #define HAVE_HOOPS	    0
-
 #define HAVE_SOUND	    0
-
 #define HAVE_ESD	    0
 
-
-
 #define HAVE_CONST_CAST		        1
-
 #define HAVE_NATIVE_BOOL	        1
-
 #define HAVE_PARTIAL_SPECIALIZATION 1
-
 #define HAVE_MEMBER_TEMPLATES	    1
-
 #define HAVE_NO_STATIC_TEMPLATES    0
-
 #define HAVE_VOID_RETURN_TYPE	    0
-
