@@ -1,3 +1,8 @@
+2002-08-19  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp: Fixed crash when calling
+          Browser::loadURI.
+
 2002-08-19  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * Continue upating conformance test results.

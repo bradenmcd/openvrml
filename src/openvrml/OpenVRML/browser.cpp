@@ -670,6 +670,11 @@ void Browser::replaceWorld(const MFNode & nodes) {}
 void Browser::loadURI(const MFString & uri, const MFString & parameter)
         throw (std::bad_alloc) {
     delete this->scene;
+    this->scene = 0;
+    this->d_backgroundStack.clear();
+    this->d_fogStack.clear();
+    this->d_navigationInfoStack.clear();
+    this->d_viewpointStack.clear();
     assert(this->d_backgrounds.empty());
     assert(this->d_fogs.empty());
     assert(this->d_navigationInfos.empty());
@@ -2026,10 +2031,11 @@ void Scene::loadURI(const MFString & uri, const MFString & parameter)
     for (size_t i = 0; i < absoluteURIs.getLength(); ++i) {
         try {
             const URI uriElement(uri.getElement(i));
-            absoluteURIs.setElement(i, uriElement.getScheme().empty()
-                                       ? uriElement
-                                            .resolveAgainst(URI(this->getURI()))
-                                       : uriElement);
+            const std::string value =
+                (uriElement.getScheme().empty() && parent)
+                    ? uriElement.resolveAgainst(URI(this->getURI()))
+                    : uriElement;
+            absoluteURIs.setElement(i, value);
         } catch (InvalidURI & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
         }
