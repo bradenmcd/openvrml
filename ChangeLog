@@ -40,6 +40,8 @@
         * src/openvrml/OpenVRML/node.cpp:  Added OPENVRML_SCOPE to
           Node's operator<<.
 
+        * doc/Makefile.am:  Fixed doc installation.
+
 2002-12-14  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,

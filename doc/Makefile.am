@@ -10,7 +10,7 @@ EXTRA_DIST = \
 
 install-data-local:
 	$(mkinstalldirs) $(docdir)/manual
-	$(INSTALL_DATA) manual/* $(docdir)/manual
+	$(INSTALL_DATA) $(srcdir)/manual/* $(docdir)/manual
 
 uninstall-local:
 	rm -rf $(docdir)/manual
