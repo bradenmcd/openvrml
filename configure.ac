@@ -21,11 +21,13 @@ AC_CONFIG_FILES([Makefile]
                 [src/libopenvrml-gl/Makefile]
                 [src/lookat/Makefile]
                 [test/Makefile]
+                [test/parse/Makefile]
+                [test/parse/testsuite/Makefile]
                 [openvrml.pc]
                 [openvrml.spec])
 
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.7 foreign])
+AM_INIT_AUTOMAKE([1.7 foreign dejagnu])
 AM_CONFIG_HEADER([config.h])
 
 #
@@ -52,6 +54,11 @@ AC_PATH_PROG([DOXYGEN], [doxygen])
 
 AC_ARG_VAR([REZ], [Mac OS X resource fork compiler])
 AC_PATH_PROG([REZ], [Rez], [$PATH:/Developer/Tools])
+
+#
+# AM_INIT_AUTOMAKE should probably take care of this, but it doesn't.
+#
+AC_ARG_VAR([RUNTESTFLAGS], [DejaGnu runtest flags])
 
 #
 # Checks for libraries/headers.

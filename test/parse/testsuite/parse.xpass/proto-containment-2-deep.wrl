@@ -1,0 +1,16 @@
+#VRML V2.0 utf8
+
+#
+# Trivial case.
+#
+PROTO Outer [] {
+  PROTO Inner0 [] {
+    PROTO Inner1 [] {
+      Group {}
+    }
+    Inner1 {}
+  }
+  Inner0 {}
+}
+
+Outer {}

@@ -1,3 +1,5 @@
+SUBDIRS = parse
+
 AM_CPPFLAGS = -I$(top_srcdir)/src/libopenvrml
 AM_LDFLAGS = -rpath @OPENVRML_RPATH@
 LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la

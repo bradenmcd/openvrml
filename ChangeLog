@@ -1,5 +1,24 @@
 2004-03-09 Braden McDaniel  <braden@endoframe.com>
 
+	Added the beginnings of a DejaGnu test suite for the parser.
+
+	* configure.ac
+	* test/Makefile.am
+	* test/parse/.cvsignore
+	* test/parse/Makefile.am
+	* test/parse/parse.cpp
+	* test/parse/testsuite/.cvsignore
+	* test/parse/testsuite/Makefile.am
+	* test/parse/testsuite/config/unix.exp
+	* test/parse/testsuite/parse.xpass/parse.exp
+	* test/parse/testsuite/parse.xpass/proto-containment-2-deep.wrl
+	* test/parse/testsuite/parse.xpass/proto-containment-trivial.wrl
+	* test/parse/testsuite/parse.xpass/proto-containment.wrl
+	* test/parse/testsuite/parse.xpass/proto-field-is-proto.wrl
+	* test/parse/testsuite/parse.xpass/proto-impl-exposedfield-event-is.wrl
+
+2004-03-09 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(proto_node::proto_exposedfield<FieldValue>::process_event):
 	Propagate events to exposedField listeners.
