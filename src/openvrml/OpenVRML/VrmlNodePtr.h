@@ -21,8 +21,8 @@
 # ifndef OPENVRML_NODEPTR_H
 #   define OPENVRML_NODEPTR_H
 
+#   include <assert.h>
 #   include "common.h"
-# include <assert.h>
 
 class VrmlNode;
 
