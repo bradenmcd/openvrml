@@ -2863,8 +2863,8 @@ namespace {
      * Compute a target and up vector from position/orientation/distance.
      */
     void computeView(const float position[3],
-                     float orientation[3],
-                     float distance,
+                     const float orientation[4],
+                     const float distance,
                      float target[3],
                      float up[3])
     {
