@@ -1758,8 +1758,10 @@ void AudioClip::update(const double currentTime)
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void AudioClip::do_initialize(const double timestamp) throw ()
+void AudioClip::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addAudioClip(*this);
@@ -7862,8 +7864,11 @@ const unsigned char * MovieTexture::pixels() const throw () {
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void MovieTexture::do_initialize(const double timestamp) throw () {
+void MovieTexture::do_initialize(const double timestamp) throw (std::bad_alloc)
+{
     assert(this->getScene());
     this->getScene()->browser.addMovie(*this);
 }
@@ -8101,8 +8106,12 @@ NavigationInfo* NavigationInfo::toNavigationInfo() const
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void NavigationInfo::do_initialize(const double timestamp) throw () {
+void NavigationInfo::do_initialize(const double timestamp)
+    throw (std::bad_alloc)
+{
     assert(this->getScene());
     this->getScene()->browser.addNavigationInfo(*this);
 }
@@ -9584,8 +9593,10 @@ void PointLight::renderScoped(Viewer & viewer)
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void PointLight::do_initialize(const double timestamp) throw ()
+void PointLight::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addScopedLight(*this);
@@ -12059,8 +12070,10 @@ void SpotLight::renderScoped(Viewer & viewer)
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void SpotLight::do_initialize(const double timestamp) throw ()
+void SpotLight::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addScopedLight(*this);
@@ -13027,8 +13040,10 @@ Viewer::Object Text::insertGeometry(Viewer & viewer,
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void Text::do_initialize(const double timestamp) throw ()
+void Text::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     this->updateUcs4();
     this->updateFace();
@@ -14480,8 +14495,10 @@ const BVolume * TimeSensor::getBVolume() const
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void TimeSensor::do_initialize(const double timestamp) throw ()
+void TimeSensor::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addTimeSensor(*this);
@@ -15664,8 +15681,10 @@ const SFString & Viewpoint::getDescription() const
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void Viewpoint::do_initialize(const double timestamp) throw ()
+void Viewpoint::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addViewpoint(*this);

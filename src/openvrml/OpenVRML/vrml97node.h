@@ -401,7 +401,7 @@ namespace OpenVRML {
             virtual AudioClip * toAudioClip() const;
 
         private:
-            virtual void do_initialize(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw (std::bad_alloc);
 
             //
             // eventIn handlers
@@ -1465,7 +1465,7 @@ namespace OpenVRML {
             virtual const unsigned char * pixels() const throw ();
 
         private:
-            virtual void do_initialize(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw (std::bad_alloc);
 
             //
             // eventIn handlers
@@ -1521,7 +1521,7 @@ namespace OpenVRML {
             float getVisibilityLimit() { return this->visibilityLimit.get(); }
 
         private:
-            virtual void do_initialize(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw (std::bad_alloc);
 
             //
             // eventIn handlers
@@ -1777,7 +1777,7 @@ namespace OpenVRML {
             virtual void renderScoped(Viewer & viewer);
 
         private:
-            virtual void do_initialize(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw (std::bad_alloc);
 
             //
             // eventIn handlers
@@ -2155,7 +2155,7 @@ namespace OpenVRML {
             virtual void renderScoped(Viewer & viewer);
 
         private:
-            virtual void do_initialize(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw (std::bad_alloc);
 
             //
             // eventIn handlers
@@ -2278,7 +2278,7 @@ namespace OpenVRML {
                                                   VrmlRenderContext context);
 
         private:
-            virtual void do_initialize(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw (std::bad_alloc);
 
             //
             // eventIn handlers
@@ -2413,7 +2413,7 @@ namespace OpenVRML {
             void update(double time);
 
         private:
-            virtual void do_initialize(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw (std::bad_alloc);
 
             //
             // eventIn handlers
@@ -2575,7 +2575,7 @@ namespace OpenVRML {
             void getFrustum(VrmlFrustum& frust) const; // get a copy
 
         private:
-            virtual void do_initialize(double timestamp) throw ();
+            virtual void do_initialize(double timestamp) throw (std::bad_alloc);
 
             //
             // eventIn handlers
