@@ -183,7 +183,7 @@ const VrmlBVolume* VrmlNodeSwitch::getBVolume() const
 void
 VrmlNodeSwitch::recalcBSphere()
 {
-  cout << "VrmlNodeSwitch[" << this << "]::recalcBSphere()" << endl;
+  //cout << "VrmlNodeSwitch[" << this << "]::recalcBSphere()" << endl;
   d_bsphere.reset();
   int w = d_whichChoice.get();
   if (w >= 0 && w < d_choice.size()) {
