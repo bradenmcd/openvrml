@@ -1,3 +1,8 @@
+2004-11-26 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/Makefile.am:  Added dependencies for documentation
+	generation.
+
 2004-11-25 Braden McDaniel  <braden@endoframe.com>
 
 	Fixes for distcheck.
