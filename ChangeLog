@@ -1,3 +1,8 @@
+2002-08-13  Braden McDaniel  <braden@endoframe.com>
+
+        * lib/antlr/config.hpp, src/openvrml/OpenVRML/field.cpp: Fixes
+          to build with Irix 6.5 CC.
+
 2002-08-12  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp: Workarounds for a bug in

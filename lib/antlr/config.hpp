@@ -74,6 +74,16 @@
 #endif
 
 //
+// Irix Compiler
+//
+#if defined(__sgi) && !defined(__GNUC__)
+#define HAS_NOT_CASSERT_H
+#define HAS_NOT_CCTYPE_H
+#define HAS_NOT_CSTRING_H
+#define HAS_NOT_CSTDIO_H
+#endif
+
+//
 // SunPro Compiler (Using OBJECTSPACE STL)
 //
 #ifdef __SUNPRO_CC
