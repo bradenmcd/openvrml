@@ -30,7 +30,7 @@
 # include <iostream>
 # include <iterator>
 # include <limits>
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
 #   include <ft2build.h>
 #   include FT_FREETYPE_H
 #   include FT_GLYPH_H
@@ -40,9 +40,9 @@ extern "C" {
 #   include <fontconfig/fcfreetype.h>
 }
 # endif
-# include <private.h>
 # include "vrml97node.h"
 # include "browser.h"
+# include "private.h"
 
 namespace {
 
@@ -542,7 +542,7 @@ namespace {
         const typename field_value_map_t::const_iterator itr =
                 this->field_value_map.find(id);
         if (itr == this->field_value_map.end()) {
-            throw unsupported_interface(node.node::type(),
+            throw unsupported_interface(node.type(),
                                         node_interface::field_id,
                                         id);
         }
@@ -564,7 +564,7 @@ namespace {
             this->event_listener_map.find(id);
         if (pos == end) { pos = this->event_listener_map.find("set_" + id); }
         if (pos == end) {
-            throw unsupported_interface(node.node::type(),
+            throw unsupported_interface(node.type(),
                                         node_interface::eventin_id,
                                         id);
         }
@@ -588,7 +588,7 @@ namespace {
             pos = this->event_emitter_map.find(id + "_changed");
         }
         if (pos == end) {
-            throw unsupported_interface(node.node::type(),
+            throw unsupported_interface(node.type(),
                                         node_interface::eventout_id,
                                         id);
         }
@@ -1959,7 +1959,7 @@ background_class::~background_class() throw ()
  * @brief Set the first Background node in the world.
  *
  * The first Background node in the world is used as the initial background.
- * This method is used by background_node::do_initialize.
+ * This method is used by Background::do_initialize.
  *
  * @param background    a Background node.
  */
@@ -10289,8 +10289,7 @@ viewer::texture_object_t movie_texture_node::do_render_texture(viewer & v)
  * @param browser the browser associated with this class object.
  */
 navigation_info_class::navigation_info_class(openvrml::browser & browser):
-    node_class(browser),
-    first(0)
+    node_class(browser)
 {}
 
 /**
@@ -10298,133 +10297,6 @@ navigation_info_class::navigation_info_class(openvrml::browser & browser):
  */
 navigation_info_class::~navigation_info_class() throw ()
 {}
-
-/**
- * @brief Set the first NavigationInfo node in the world.
- *
- * The first NavigationInfo node in the world is used as the initially active
- * NavigationInfo. This method is used by navigation_info_node::do_initialize.
- *
- * @param nav_info    a Background node.
- */
-void navigation_info_class::set_first(navigation_info_node & nav_info) throw ()
-{
-    this->first = &nav_info;
-}
-
-/**
- * @brief Check to see if the first node has been set.
- *
- * This method is used by navigation_info_node::do_initialize.
- *
- * @return @c true if the first node has already been set; @c false otherwise.
- */
-bool navigation_info_class::has_first() const throw ()
-{
-    return this->first;
-}
-
-/**
- * @brief Push a navigation_info_node on the top of the bound node stack.
- *
- * @param nav_info    the node to bind.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void navigation_info_class::bind(navigation_info_node & nav_info,
-                                 const double timestamp)
-    throw (std::bad_alloc)
-{
-    using std::find;
-
-    //
-    // If the node is already the active node, do nothing.
-    //
-    if (!this->bound_nodes.empty() && &nav_info == this->bound_nodes.back())
-    {
-        return;
-    }
-
-    //
-    // If the node is already on the stack, remove it.
-    //
-    const bound_nodes_t::iterator pos =
-        find(this->bound_nodes.begin(), this->bound_nodes.end(), &nav_info);
-    if (pos != this->bound_nodes.end()) { this->bound_nodes.erase(pos); }
-
-    //
-    // Send FALSE from the currently active node's isBound.
-    //
-    if (!this->bound_nodes.empty()) {
-        navigation_info_node & current =
-            dynamic_cast<navigation_info_node &>(*this->bound_nodes.back());
-        current.is_bound_.value = false;
-        node::emit_event(current.is_bound_emitter_, timestamp);
-    }
-
-    //
-    // Push the node to the top of the stack, and have it send isBound TRUE.
-    //
-    this->bound_nodes.push_back(&nav_info);
-    nav_info.is_bound_.value = true;
-    node::emit_event(nav_info.is_bound_emitter_, timestamp);
-}
-
-/**
- * @brief Remove a navigation_info_node from the bound node stack.
- *
- * @param nav_info    the node to unbind.
- * @param timestamp     the current time.
- */
-void navigation_info_class::unbind(navigation_info_node & nav_info,
-                                   const double timestamp)
-    throw ()
-{
-    using std::find;
-
-    const bound_nodes_t::iterator pos =
-        find(this->bound_nodes.begin(), this->bound_nodes.end(), &nav_info);
-    if (pos != this->bound_nodes.end()) {
-        nav_info.is_bound_.value = false;
-        node::emit_event(nav_info.is_bound_emitter_, timestamp);
-
-        if (pos == this->bound_nodes.end() - 1
-            && this->bound_nodes.size() > 1) {
-            navigation_info_node & newActive =
-                dynamic_cast<navigation_info_node &>(
-                    **(this->bound_nodes.end() - 2));
-            newActive.is_bound_.value = true;
-            node::emit_event(newActive.is_bound_emitter_, timestamp);
-        }
-        this->bound_nodes.erase(pos);
-    }
-}
-
-/**
- * @brief node_class-specific initialization.
- *
- * @param initial_viewpoint the viewpoint_node that should be bound initially.
- * @param timestamp         the current time.
- */
-void
-navigation_info_class::
-do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-              const double timestamp)
-    throw ()
-{
-    if (this->first) {
-        try {
-            event_listener & listener =
-                this->first->event_listener("set_bind");
-            assert(dynamic_cast<sfbool_listener *>(&listener));
-            static_cast<sfbool_listener &>(listener)
-                .process_event(sfbool(true), timestamp);
-        } catch (unsupported_interface & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        }
-    }
-}
 
 /**
  * @brief Create a node_type.
@@ -10602,22 +10474,39 @@ navigation_info_node::set_bind_listener::~set_bind_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-navigation_info_node::set_bind_listener::
-do_process_event(const sfbool & bind,
-                 const double timestamp)
+navigation_info_node::set_bind_listener::do_process_event(const sfbool & bind,
+                                                       const double timestamp)
     throw (std::bad_alloc)
 {
     try {
         navigation_info_node & node =
             dynamic_cast<navigation_info_node &>(this->node());
-        navigation_info_class & node_class =
-            const_cast<navigation_info_class &>(
-                static_cast<const navigation_info_class &>(
-                    this->node().type().node_class()));
-        if (bind.value) {
-            node_class.bind(node, timestamp);
-        } else {
-            node_class.unbind(node, timestamp);
+
+        navigation_info_node * current =
+            node.type().node_class().browser().bindable_navigation_info_top();
+
+        if (bind.value) {        // set_bind TRUE
+            if (&node != current) {
+                if (current) {
+                    current->is_bound_.value = false;
+                    node::emit_event(current->is_bound_emitter_, timestamp);
+                }
+                node.type().node_class().browser().bindable_push(&node);
+                node.is_bound_.value = true;
+                node::emit_event(node.is_bound_emitter_, timestamp);
+            }
+        } else {            // set_bind FALSE
+            node.type().node_class().browser().bindable_remove(&node);
+            if (&node == current) {
+                node.is_bound_.value = false;
+                node::emit_event(node.is_bound_emitter_, timestamp);
+                current = node.type().node_class().browser()
+                    .bindable_navigation_info_top();
+                if (current) {
+                    current->is_bound_.value = true;
+                    node::emit_event(current->is_bound_emitter_, timestamp);
+                }
+            }
         }
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
@@ -10683,13 +10572,11 @@ namespace {
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-navigation_info_node::
-navigation_info_node(const node_type & t,
-                     const boost::shared_ptr<openvrml::scope> & scope):
-    node(t, scope),
-    abstract_base(t, scope),
-    child_node(t, scope),
-    openvrml::navigation_info_node(t, scope),
+navigation_info_node::navigation_info_node(const node_type & type,
+                                           const boost::shared_ptr<openvrml::scope> & scope):
+    node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_bind_listener_(*this),
     avatar_size_(*this, std::vector<float>(navigation_avatar_size_,
                                            navigation_avatar_size_ + 3)),
@@ -10708,13 +10595,23 @@ navigation_info_node::~navigation_info_node() throw ()
 {}
 
 /**
+ * @brief Cast to a navigation_info_node.
+ *
+ * @return A pointer to the navigation_info_node.
+ */
+navigation_info_node* navigation_info_node::to_navigation_info() const
+{ return (navigation_info_node*) this; }
+
+/**
  * @brief The avatar size.
  *
  * @return the avatar size.
  */
-const std::vector<float> & navigation_info_node::avatar_size() const throw ()
+const float * navigation_info_node::avatar_size() const
 {
-    return this->avatar_size_.mffloat::value;
+    return !this->avatar_size_.mffloat::value.empty()
+        ? &this->avatar_size_.mffloat::value[0]
+        : 0;
 }
 
 /**
@@ -10722,7 +10619,7 @@ const std::vector<float> & navigation_info_node::avatar_size() const throw ()
  *
  * @return @c true if the headlight is on; @c false otherwise.
  */
-bool navigation_info_node::headlight() const throw ()
+bool navigation_info_node::headlight() const
 {
     return this->headlight_.sfbool::value;
 }
@@ -10732,19 +10629,9 @@ bool navigation_info_node::headlight() const throw ()
  *
  * @return the speed.
  */
-float navigation_info_node::speed() const throw ()
+float navigation_info_node::speed() const
 {
     return this->speed_.sffloat::value;
-}
-
-/**
- * @brief The navigation type.
- *
- * @return the navigation type.
- */
-const std::vector<std::string> & navigation_info_node::type() const throw ()
-{
-    return this->type_.mfstring::value;
 }
 
 /**
@@ -10752,7 +10639,7 @@ const std::vector<std::string> & navigation_info_node::type() const throw ()
  *
  * @return the visibility limit.
  */
-float navigation_info_node::visibility_limit() const throw ()
+float navigation_info_node::visibility_limit() const
 {
     return this->visibility_limit_.sffloat::value;
 }
@@ -10761,16 +10648,14 @@ float navigation_info_node::visibility_limit() const throw ()
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void navigation_info_node::do_initialize(const double timestamp) throw ()
+void navigation_info_node::do_initialize(const double timestamp)
+    throw (std::bad_alloc)
 {
-    using boost::polymorphic_downcast;
-
-    navigation_info_class & node_class =
-        const_cast<navigation_info_class &>(
-            *polymorphic_downcast<const navigation_info_class *>(
-                &this->node::type().node_class()));
-    if (!node_class.has_first()) { node_class.set_first(*this); }
+    assert(this->scene());
+    this->scene()->browser.add_navigation_info(*this);
 }
 
 /**
@@ -10780,13 +10665,8 @@ void navigation_info_node::do_initialize(const double timestamp) throw ()
  */
 void navigation_info_node::do_shutdown(const double timestamp) throw ()
 {
-    using boost::polymorphic_downcast;
-
-    navigation_info_class & node_class =
-        const_cast<navigation_info_class &>(
-            *polymorphic_downcast<const navigation_info_class *>(
-                &this->node::type().node_class()));
-    node_class.unbind(*this, timestamp);
+    assert(this->scene());
+    this->scene()->browser.remove_navigation_info(*this);
 }
 
 
@@ -15178,13 +15058,13 @@ void switch_node::recalcBSphere()
 text_class::text_class(openvrml::browser & browser):
     node_class(browser)
 {
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# if OPENVRML_ENABLE_TEXT_NODE
     FT_Error error = 0;
     error = FT_Init_FreeType(&this->freeTypeLibrary);
     if (error) {
         browser.err << "Error initializing FreeType library." << std::endl;
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -15192,14 +15072,14 @@ text_class::text_class(openvrml::browser & browser):
  */
 text_class::~text_class() throw ()
 {
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# if OPENVRML_ENABLE_TEXT_NODE
     FT_Error error = 0;
     error = FT_Done_FreeType(this->freeTypeLibrary);
     if (error) {
         this->browser().err << "Error shutting down FreeType library."
                             << std::endl;
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -15547,7 +15427,7 @@ event_side_effect(const sffloat & max_extent,
  *      glyph.
  */
 
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
 namespace {
 
     /**
@@ -15823,7 +15703,7 @@ namespace {
         return -1;
     }
 }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 
 /**
  * @brief Construct from a set of contours.
@@ -15845,7 +15725,7 @@ text_node::glyph_geometry::glyph_geometry(
     advance_width(advance_width),
     advance_height(advance_height)
 {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
     using std::vector;
 
     const vector<polygon_> polygons = get_polygons_(contours);
@@ -15923,7 +15803,7 @@ text_node::glyph_geometry::glyph_geometry(
         assert(connection_map.empty());
         this->coord_index.push_back(-1);
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -16087,12 +15967,12 @@ void text_node::do_initialize(const double timestamp) throw (std::bad_alloc)
  */
 void text_node::do_shutdown(const double timestamp) throw ()
 {
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# if OPENVRML_ENABLE_TEXT_NODE
     if (this->face) {
         FT_Error ftError = FT_Done_Face(this->face);
         assert(ftError == FT_Err_Ok); // Surely this can't fail.
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -16102,7 +15982,7 @@ void text_node::do_shutdown(const double timestamp) throw ()
  */
 void text_node::update_ucs4() throw (std::bad_alloc)
 {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
     this->ucs4_string.clear();
     this->ucs4_string.resize(this->string_.mfstring::value.size());
 
@@ -16133,10 +16013,10 @@ void text_node::update_ucs4() throw (std::bad_alloc)
             }
         }
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
 namespace {
 
     //
@@ -16260,7 +16140,7 @@ namespace {
         return e1 == e2;
     }
 }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 
 /**
  * @brief Called when @a fontStyle changes to update the font face.
@@ -16269,7 +16149,7 @@ namespace {
  */
 void text_node::update_face() throw (std::bad_alloc)
 {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
     static const char * const fcResultMessage[] = { "match",
                                                     "no match",
                                                     "type mismatch",
@@ -16434,10 +16314,10 @@ void text_node::update_face() throw (std::bad_alloc)
     } catch (FreeTypeError & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
 namespace {
 
     struct GlyphContours_ {
@@ -16602,7 +16482,7 @@ namespace {
         return 0;
     }
 }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 
 /**
  * @brief Called to update @a text_geometry.
@@ -16611,7 +16491,7 @@ namespace {
  */
 void text_node::update_geometry() throw (std::bad_alloc)
 {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
     using std::pair;
     using std::string;
     using std::vector;
@@ -16924,7 +16804,7 @@ void text_node::update_geometry() throw (std::bad_alloc)
     }
 
     this->text_geometry_ = newGeometry;
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 
@@ -19813,10 +19693,11 @@ void visibility_sensor_node::do_render_child(openvrml::viewer & viewer,
         if (inside) {
             using openvrml_::fequal;
 
-            openvrml::navigation_info_node & nav_info =
-                this->type().node_class().browser().active_navigation_info();
-            if (!fequal<float>()(nav_info.visibility_limit(), 0.0f)
-                && xyz[0][2] < -(nav_info.visibility_limit())) {
+            navigation_info_node * ni =
+                this->type().node_class().browser()
+                .bindable_navigation_info_top();
+            if (ni && !fequal<float>()(ni->visibility_limit(), 0.0f)
+                    && xyz[0][2] < -(ni->visibility_limit())) {
                 inside = false;
             }
         }

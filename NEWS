@@ -1,3 +1,11 @@
+Changes new in version 0.15.4, 29 December, 2004
+================================================
+
+- Refactored use of GtkGLExt in the Mozilla plug-in.
+
+- Fixed a typo in a dependency of the openvrml-gl-devel RPM package.
+
+
 Changes new in version 0.15.3, 25 December, 2004
 ================================================
 

@@ -3884,12 +3884,13 @@ void viewer::zoom(const float z)
     glGetIntegerv (GL_VIEWPORT, viewport);
     glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev (GL_PROJECTION_MATRIX, projection);
-    navigation_info_node & nav_info =
-        this->browser()->active_navigation_info();
+    vrml97_node::navigation_info_node * const nav =
+        this->browser()->bindable_navigation_info_top();
     GLdouble x_c = this->win_width / 2;
     GLdouble y_c = this->win_height / 2;
     GLdouble z_c = 0.5;
-    float visibilityLimit = nav_info.visibility_limit();
+    float visibilityLimit = 0.0;
+    if (nav) { visibilityLimit = nav->visibility_limit(); }
     if (fequal<float>()(visibilityLimit, 0.0f)) { visibilityLimit = 30000.0; }
     GLdouble ox, oy, oz;
     gluUnProject(x_c, y_c, z_c,
@@ -3910,7 +3911,8 @@ void viewer::zoom(const float z)
     double dist = dx * dx + dy * dy + dz * dz;
     if (dist < 1.0e-25) { return; }
     dist = sqrt(dist);
-    float speed = nav_info.speed();
+    float speed = 1.0;
+    if (nav) { speed = nav->speed(); }
     dist = speed / dist;
     if (fequal<float>()(float(dist), 0.0f)) { return; }
     dx *= dist;

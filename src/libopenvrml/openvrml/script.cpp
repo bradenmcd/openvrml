@@ -24,7 +24,7 @@
 #   include <config.h>
 # endif
 
-# include <private.h>
+# include "private.h"
 # include "script.h"
 # include "scope.h"
 # include "browser.h"
@@ -63,116 +63,28 @@ script::~script()
 {}
 
 /**
- * @brief Initialize the Script node.
- *
- * Delegates to <code>script::do_initialize</code>.
- *
- * @param timestamp the current time.
- */
-void script::initialize(double timestamp)
-{
-    this->do_initialize(timestamp);
-    this->process_direct_output(timestamp);
-}
-
-/**
- * @fn void script::do_initialize(double timestamp)
+ * @fn void script::initialize(double timestamp)
  *
  * @brief Initialize the Script node.
- *
- * @param timestamp the current time.
  */
 
 /**
- * @brief Process an event.
- *
- * Delegates to <code>script::do_process_event</script>.
- *
- * @param id        eventIn identifier.
- * @param value     event value.
- * @param timestamp the current time.
- */
-void script::process_event(const std::string & id,
-                           const field_value & value,
-                           double timestamp)
-{
-    this->do_process_event(id, value, timestamp);
-    this->process_direct_output(timestamp);
-}
-
-/**
- * @fn void script::do_process_event(const std::string & id, const field_value & value, double timestamp)
+ * @fn void script::process_event(const std::string & id, const field_value & value, double timestamp)
  *
  * @brief Process an event.
- *
- * @param id        eventIn identifier.
- * @param value     event value.
- * @param timestamp the current time.
  */
 
 /**
- * @brief Execute script code after processing events.
- *
- * Delegates to <code>script::do_events_processed</code>.
- *
- * @param timestamp the current time.
- */
-void script::events_processed(double timestamp)
-{
-    this->do_events_processed(timestamp);
-}
-
-/**
- * @fn void script::do_events_processed(double timestamp)
+ * @fn void script::events_processed(double timestamp)
  *
  * @brief Execute script code after processing events.
- *
- * @param timestamp the current time.
  */
 
 /**
- * @brief Shut down the Script node.
- *
- * Delegates to <code>script::do_shutdown</code>.
- *
- * @param timestamp the current time.
- */
-void script::shutdown(double timestamp)
-{
-    this->do_shutdown(timestamp);
-    this->process_direct_output(timestamp);
-}
-
-/**
- * @fn void script::do_shutdown(double timestamp)
+ * @fn void script::shutdown(double timestamp)
  *
  * @brief Shut down the Script node.
- *
- * @param timestamp the current time.
  */
-
-/**
- * @brief Whether direct output is enabled for the Script node.
- *
- * @return @c true if direct output is enabled for the Script node; @c false
- *         otherwise.
- */
-bool script::direct_output() const throw ()
-{
-    return this->node.direct_output.value;
-}
-
-/**
- * @brief Whether the browser may delay sending input events to the script
- *        until its outputs are needed by the browser.
- *
- * @return @c true if the browser may delay sending input events to the script
- *         until its outputs are needed by the browser; @c false otherwise.
- */
-bool script::must_evaluate() const throw ()
-{
-    return this->node.must_evaluate.value;
-}
 
 /**
  * @brief Set the value of a field.
@@ -195,142 +107,6 @@ void script::field(const std::string & id, const field_value & value)
                                     id);
     }
     field->second->assign(value); // throws std::bad_cast, std::bad_alloc
-}
-
-/**
- * @brief Add an event for direct output processing at the end of script
- *        execution.
- *
- * @param listener  the <code>event_listener</code> to which the event should
- *                  be sent.
- * @param value     the value to send.
- *
- * @exception field_value_type_mismatch if @p listener is not the correct type
- *                                      to process events of @p value's type.
- * @exception std::bad_alloc            if memory allocation fails.
- */
-void script::direct_output(event_listener & listener,
-                           const boost::shared_ptr<field_value> & value)
-    throw (field_value_type_mismatch, std::bad_alloc)
-{
-    assert(value);
-    if (listener.type() != value->type()) {
-        throw field_value_type_mismatch();
-    }
-    this->direct_output_map_[&listener] = value;
-}
-
-void script::process_direct_output(double timestamp)
-{
-    for (direct_output_map_t::const_iterator output =
-             this->direct_output_map_.begin();
-         output != this->direct_output_map_.end();
-         ++output) {
-        using boost::polymorphic_downcast;
-        switch (output->first->type()) {
-        case field_value::sfbool_id:
-            polymorphic_downcast<sfbool_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfbool *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfcolor_id:
-            polymorphic_downcast<sfcolor_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfcolor *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sffloat_id:
-            polymorphic_downcast<sffloat_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sffloat *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfimage_id:
-            polymorphic_downcast<sfimage_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfimage *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfint32_id:
-            polymorphic_downcast<sfint32_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfint32 *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfnode_id:
-            polymorphic_downcast<sfnode_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfnode *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfrotation_id:
-            polymorphic_downcast<sfrotation_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfrotation *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfstring_id:
-            polymorphic_downcast<sfstring_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfstring *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sftime_id:
-            polymorphic_downcast<sftime_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sftime *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfvec2f_id:
-            polymorphic_downcast<sfvec2f_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfvec2f *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfvec3f_id:
-            polymorphic_downcast<sfvec3f_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfvec3f *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfcolor_id:
-            polymorphic_downcast<mfcolor_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfcolor *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mffloat_id:
-            polymorphic_downcast<mffloat_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mffloat *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfint32_id:
-            polymorphic_downcast<mfint32_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfint32 *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfnode_id:
-            polymorphic_downcast<mfnode_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfnode *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfrotation_id:
-            polymorphic_downcast<mfrotation_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfrotation *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfstring_id:
-            polymorphic_downcast<mfstring_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfstring *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mftime_id:
-            polymorphic_downcast<mftime_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mftime *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfvec2f_id:
-            polymorphic_downcast<mfvec2f_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfvec2f *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfvec3f_id:
-            polymorphic_downcast<mfvec3f_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfvec3f *>(
-                    output->second.get()), timestamp);
-            break;
-        }
-    }
-    this->direct_output_map_.clear();
 }
 
 
@@ -1606,43 +1382,27 @@ namespace {
 
 namespace js_ {
 
-class SFNode;
-class MFNode;
-
-namespace Browser {
-    JSBool addRoute(JSContext * cx, JSObject * obj,
-                    uintN argc, jsval * argv, jsval * rval) throw ();
-    JSBool deleteRoute(JSContext * cx, JSObject * obj,
-                       uintN argc, jsval * argv, jsval * rval) throw ();
-}
-
 class script : public openvrml::script {
-
-    friend class SFNode;
-    friend class MFNode;
-    friend JSBool Browser::addRoute(JSContext * cx, JSObject * obj,
-                                    uintN argc, jsval * argv, jsval * rval)
-        throw ();
-    friend JSBool Browser::deleteRoute(JSContext * cx, JSObject * obj,
-                                       uintN argc, jsval * argv, jsval * rval)
-        throw ();
-
     static JSRuntime * rt;
     static size_t nInstances;
 
     double d_timeStamp;
 
     JSContext * cx;
-    JSClass & sfnode_class;
 
 public:
     script(openvrml::script_node & node, const std::string & source)
         throw (std::bad_alloc);
     virtual ~script();
 
-    openvrml::script_node & script_node();
+    virtual void initialize(double timeStamp);
+    virtual void process_event(const std::string & id,
+                              const openvrml::field_value & value,
+                              double timestamp);
+    virtual void events_processed(double timeStamp);
+    virtual void shutdown(double timeStamp);
 
-    using openvrml::script::direct_output;
+    openvrml::script_node & script_node();
 
     jsval vrmlFieldToJSVal(const openvrml::field_value & value) throw ();
 
@@ -1651,14 +1411,7 @@ private:
                                     jsval id, jsval * val)
         throw ();
 
-    virtual void do_initialize(double timeStamp);
-    virtual void do_process_event(const std::string & id,
-                                  const openvrml::field_value & value,
-                                  double timestamp);
-    virtual void do_events_processed(double timeStamp);
-    virtual void do_shutdown(double timeStamp);
-
-    void initVrmlClasses() throw (std::bad_alloc);
+    void initVrmlClasses(bool direct_output) throw (std::bad_alloc);
     void defineBrowserObject() throw (std::bad_alloc);
     void defineFields() throw (std::bad_alloc);
     void activate(double timeStamp, const std::string & fname,
@@ -1916,7 +1669,8 @@ public:
     static JSClass jsclass;
     static JSClass direct_output_jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj)
+    static JSObject * initClass(JSContext * cx, JSObject * obj,
+                                bool direct_output)
         throw ();
     static JSBool toJsval(const node_ptr & node,
                           JSContext * cx, JSObject * obj, jsval * rval)
@@ -2384,10 +2138,7 @@ void errorReporter(JSContext * cx, const char * message,
 script::script(openvrml::script_node & node, const std::string & source)
     throw (std::bad_alloc):
     openvrml::script(node),
-    cx(0),
-    sfnode_class(this->direct_output()
-                 ? SFNode::direct_output_jsclass
-                 : SFNode::jsclass)
+    cx(0)
 {
     //
     // Initialize the runtime.
@@ -2452,7 +2203,10 @@ script::script(openvrml::script_node & node, const std::string & source)
     //
     // Define SF*/MF* classes.
     //
-    this->initVrmlClasses();
+    const bool direct_output =
+        static_cast<const sfbool &>(
+            this->script_node().field("directOutput")).value;
+    this->initVrmlClasses(direct_output);
 
     //
     // Define field/eventOut vars for this script.
@@ -2480,30 +2234,30 @@ script::~script()
     }
 }
 
-void script::do_initialize(const double timestamp)
+void script::initialize(const double timestamp)
 {
     const sftime arg(timestamp);
     const field_value * argv[] = { &arg };
     this->activate(timestamp, "initialize", 1, argv);
 }
 
-void script::do_process_event(const std::string & id,
-                              const field_value & value,
-                              const double timestamp)
+void script::process_event(const std::string & id,
+                           const field_value & value,
+                           const double timestamp)
 {
     const sftime timestampArg(timestamp);
     const field_value * argv[] = { &value, &timestampArg };
     this->activate(timestamp, id, 2, argv);
 }
 
-void script::do_events_processed(const double timestamp)
+void script::events_processed(const double timestamp)
 {
     const sftime arg(timestamp);
     const field_value * argv[] = { &arg };
     this->activate(timestamp, "eventsProcessed", 1, argv);
 }
 
-void script::do_shutdown(const double timestamp)
+void script::shutdown(const double timestamp)
 {
     const sftime arg(timestamp);
     const field_value * argv[] = { &arg };
@@ -2948,13 +2702,13 @@ JSBool script::field_setProperty(JSContext * const cx,
 //
 // Initialize SF*/MF* types.
 //
-void script::initVrmlClasses() throw (std::bad_alloc)
+void script::initVrmlClasses(const bool direct_output) throw (std::bad_alloc)
 {
     JSObject * const globalObj = JS_GetGlobalObject(this->cx);
     assert(globalObj);
     if (!(SFColor::initClass(this->cx, globalObj)
             && SFImage::initClass(this->cx, globalObj)
-            && SFNode::initClass(this->cx, globalObj)
+            && SFNode::initClass(this->cx, globalObj, direct_output)
             && SFRotation::initClass(this->cx, globalObj)
             && SFVec2f::initClass(this->cx, globalObj)
             && SFVec3f::initClass(this->cx, globalObj)
@@ -3463,9 +3217,6 @@ JSBool createVrmlFromString(JSContext * const cx,
         } else {
             if (!MFNode::toJsval(nodes, cx, obj, rval)) { return JS_FALSE; }
         }
-    } catch (std::exception & ex) {
-        JS_ReportError(cx, ex.what());
-        return JS_FALSE;
     } catch (...) {
         return JS_FALSE;
     }
@@ -3507,13 +3258,9 @@ JSBool createVrmlFromURL(JSContext * const cx,
     //
     // Make sure our second arument is an SFNode.
     //
-    js_::script & script =
-        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-    JSClass & sfnode_jsclass = script.sfnode_class;
-
     JSObject * arg1_obj;
     if (!JS_ValueToObject(cx, argv[1], &arg1_obj)) { return JS_FALSE; }
-    if (!JS_InstanceOf(cx, arg1_obj, &sfnode_jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg1_obj, &SFNode::jsclass, argv)) {
         return JS_FALSE;
     }
 
@@ -3559,10 +3306,7 @@ JSBool addRoute(JSContext * const cx,
     //
     JSObject * arg0_obj;
     if (!JS_ValueToObject(cx, argv[0], &arg0_obj)) { return JS_FALSE; }
-    js_::script & script =
-        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-    JSClass & sfnode_jsclass = script.sfnode_class;
-    if (!JS_InstanceOf(cx, arg0_obj, &sfnode_jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg0_obj, &SFNode::jsclass, argv)) {
         return JS_FALSE;
     }
     auto_ptr<openvrml::sfnode> fromNode =
@@ -3587,7 +3331,7 @@ JSBool addRoute(JSContext * const cx,
     //
     JSObject * arg2_obj;
     if (!JS_ValueToObject(cx, argv[2], &arg2_obj)) { return JS_FALSE; }
-    if (!JS_InstanceOf(cx, arg2_obj, &sfnode_jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg2_obj, &SFNode::jsclass, argv)) {
         return JS_FALSE;
     }
     auto_ptr<openvrml::sfnode> toNode =
@@ -3634,10 +3378,7 @@ JSBool deleteRoute(JSContext * const cx,
     //
     JSObject * arg0_obj;
     if (!JS_ValueToObject(cx, argv[0], &arg0_obj)) { return JS_FALSE; }
-    js_::script & script =
-        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-    JSClass & sfnode_jsclass = script.sfnode_class;
-    if (!JS_InstanceOf(cx, arg0_obj, &sfnode_jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg0_obj, &SFNode::jsclass, argv)) {
         return JS_FALSE;
     }
     auto_ptr<openvrml::sfnode> fromNode =
@@ -3655,7 +3396,7 @@ JSBool deleteRoute(JSContext * const cx,
     //
     JSObject * arg2_obj;
     if (!JS_ValueToObject(cx, argv[2], &arg2_obj)) { return JS_FALSE; }
-    if (!JS_InstanceOf(cx, arg2_obj, &sfnode_jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg2_obj, &SFNode::jsclass, argv)) {
         return JS_FALSE;
     }
     auto_ptr<openvrml::sfnode> toNode =
@@ -4238,7 +3979,7 @@ JSClass SFNode::jsclass = {
     JS_PropertyStub,
     JS_PropertyStub,
     getProperty,
-    JS_PropertyStub,
+    setProperty,
     JS_EnumerateStub,
     JS_ResolveStub,
     JS_ConvertStub,
@@ -4251,7 +3992,7 @@ JSClass SFNode::direct_output_jsclass = {
     JS_PropertyStub,
     JS_PropertyStub,
     getProperty,
-    setProperty,
+    JS_PropertyStub,
     JS_EnumerateStub,
     JS_ResolveStub,
     JS_ConvertStub,
@@ -4259,23 +4000,25 @@ JSClass SFNode::direct_output_jsclass = {
 };
 
 JSObject * SFNode::initClass(JSContext * const cx,
-                             JSObject * const obj)
+                             JSObject * const obj,
+                             const bool direct_output)
     throw ()
 {
     static JSFunctionSpec methods[] =
             { { "toString", SFNode::toString, 0, 0, 0 },
               { 0, 0, 0, 0, 0 } };
 
-    js_::script & script =
-        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-    JSClass & jsclass = script.sfnode_class;
-
     jsval arg = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "Group {}"));
     JSObject * const proto =
-        JS_InitClass(cx, obj, 0, &jsclass,
-                     SFNode::construct, 1, // constructor function, min arg count
-                     0, methods, // instance properties, methods
-                     0, 0); // static properties and methods
+        direct_output
+        ? JS_InitClass(cx, obj, 0, &direct_output_jsclass,
+                       SFNode::construct, 1, // constructor function, min arg count
+                       0, methods, // instance properties, methods
+                       0, 0) // static properties and methods
+        : JS_InitClass(cx, obj, 0, &jsclass,
+                       SFNode::construct, 1, // constructor function, min arg count
+                       0, methods, // instance properties, methods
+                       0, 0); // static properties and methods
     if (!proto || !initObject(cx, proto, 1, &arg)) { return 0; }
     return proto;
 }
@@ -4286,9 +4029,6 @@ JSBool SFNode::toJsval(const node_ptr & node,
                        jsval * const rval)
     throw ()
 {
-    js_::script & script =
-        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-    JSClass & jsclass = script.sfnode_class;
     //
     // The SFNode constructor requires one arg (a vrmlstring),
     // so we can't use JS_ConstructObject here.
@@ -4318,11 +4058,7 @@ SFNode::createFromJSObject(JSContext * const cx,
     throw (bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
-    js_::script & script =
-        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-    JSClass & sfnode_jsclass = script.sfnode_class;
-
-    if (!JS_InstanceOf(cx, obj, &sfnode_jsclass, 0)) {
+    if (!JS_InstanceOf(cx, obj, &SFNode::jsclass, 0)) {
         throw bad_conversion("SFNode object expected.");
     }
     assert(JS_GetPrivate(cx, obj));
@@ -4341,9 +4077,6 @@ JSBool SFNode::construct(JSContext * const cx,
                          jsval * rval)
     throw ()
 {
-    js_::script & script =
-        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-    JSClass & jsclass = script.sfnode_class;
     //
     // If called without new, replace obj with a new object.
     //
@@ -4417,27 +4150,26 @@ JSBool SFNode::getProperty(JSContext * const cx,
                            jsval * const vp)
     throw ()
 {
-    if (!JSVAL_IS_STRING(id)) { return JS_TRUE; }
+    if (JSVAL_IS_STRING(id)) {
+        assert(JS_GetPrivate(cx, obj));
+        const sfield::sfdata & sfdata =
+            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+        assert(dynamic_cast<openvrml::sfnode *>(&sfdata.field_value()));
+        const openvrml::sfnode & thisNode =
+            static_cast<openvrml::sfnode &>(sfdata.field_value());
 
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    assert(dynamic_cast<openvrml::sfnode *>(&sfdata.field_value()));
-    const openvrml::sfnode & thisNode =
-        static_cast<openvrml::sfnode &>(sfdata.field_value());
+        if (!thisNode.value) { return JS_TRUE; }
 
-    if (!thisNode.value) { return JS_TRUE; }
+        assert(JS_GetContextPrivate(cx));
+        js_::script & script =
+            *static_cast<js_::script *>(JS_GetContextPrivate(cx));
 
-    assert(JS_GetContextPrivate(cx));
-    js_::script & script =
-        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-
-    try {
-        const char * eventOut = JS_GetStringBytes(JSVAL_TO_STRING(id));
-        event_emitter & emitter = thisNode.value->event_emitter(eventOut);
-        *vp = script.vrmlFieldToJSVal(emitter.value());
-    } catch (unsupported_interface & ex) {}
-
+        try {
+            const char * eventOut = JS_GetStringBytes(JSVAL_TO_STRING(id));
+            event_emitter & emitter = thisNode.value->event_emitter(eventOut);
+            *vp = script.vrmlFieldToJSVal(emitter.value());
+        } catch (unsupported_interface & ex) {}
+    }
     return JS_TRUE;
 }
 
@@ -4466,25 +4198,16 @@ JSBool SFNode::setProperty(JSContext * const cx,
 
         const char * const eventInId = JS_GetStringBytes(JSVAL_TO_STRING(id));
 
+        // convert vp to field, send eventIn to node
+        const node_interface_set & interfaces = nodePtr->type().interfaces();
+        const node_interface_set::const_iterator interface =
+            find_if(interfaces.begin(), interfaces.end(),
+                    bind2nd(node_interface_matches_eventin(), eventInId));
+        if (interface == interfaces.end()) { return JS_TRUE; }
+        field_value::type_id expectType = interface->field_type;
+        auto_ptr<field_value> fieldValue;
         try {
-            //
-            // Get the event_listener.
-            //
-            event_listener & listener = nodePtr->event_listener(eventInId);
-
-            // convert vp to field, send eventIn to node
-            field_value::type_id expectType = listener.type();
-            auto_ptr<field_value> fieldValue;
             fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
-            
-            assert(JS_GetContextPrivate(cx));
-            js_::script & script =
-                *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-            script.direct_output(listener,
-                                 boost::shared_ptr<field_value>(fieldValue));
-        } catch (unsupported_interface & ex) {
-            // We can't handle the property here, so get out of the way.
-            return JS_TRUE;
         } catch (bad_conversion & ex) {
             JS_ReportError(cx, ex.what());
             return JS_FALSE;
@@ -4492,6 +4215,18 @@ JSBool SFNode::setProperty(JSContext * const cx,
             JS_ReportOutOfMemory(cx);
             return JS_FALSE;
         }
+        // the timestamp should be stored as a global property and
+        // looked up via obj somehow...
+        assert(JS_GetContextPrivate(cx));
+        js_::script & script =
+            *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+        script.script_node().scene()
+            ->browser.queue_event(s_timeStamp,
+                                  fieldValue.get(),
+                                  nodePtr,
+                                  eventInId);
+        fieldValue.release();
+        sfdata.changed = true;
     }
     return JS_TRUE;
 }
@@ -6147,7 +5882,7 @@ JSBool MField::getElement(JSContext * const cx,
 
     if (JSVAL_IS_INT(id)
         && JSVAL_TO_INT(id) >= 0
-        && size_t(JSVAL_TO_INT(id)) < mfdata->array.size()) {
+        && size_t(JSVAL_TO_INT(id)) >= mfdata->array.size()) {
         *vp = mfdata->array[JSVAL_TO_INT(id)];
     }
     return JS_TRUE;
@@ -7018,18 +6753,13 @@ JSBool MFNode::initObject(JSContext * const cx, JSObject * const obj,
 
     try {
         std::auto_ptr<MFData> mfdata(new MFData(argc));
-
-        js_::script & script =
-            *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-        JSClass & sfnode_jsclass = script.sfnode_class;
-
         for (uintN i = 0; i < argc; ++i) {
             //
             // Make sure all args are SFNodes.
             //
             if (!JSVAL_IS_OBJECT(argv[i])
                     || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[i]),
-                                      &sfnode_jsclass, argv)) {
+                                      &SFNode::jsclass, argv)) {
                 return JS_FALSE;
             }
             mfdata->array[i] = argv[i];
@@ -7073,12 +6803,6 @@ MFNode::createFromJSObject(JSContext * const cx, JSObject * const obj)
     assert(cx);
     assert(obj);
 
-# ifndef NDEBUG
-    js_::script & script =
-        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-    JSClass & sfnode_jsclass = script.sfnode_class;
-# endif
-
     if (!JS_InstanceOf(cx, obj, &MFNode::jsclass, 0)) {
         throw bad_conversion("MFNode object expected.");
     }
@@ -7090,7 +6814,7 @@ MFNode::createFromJSObject(JSContext * const cx, JSObject * const obj)
     for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
         assert(JSVAL_IS_OBJECT(mfdata->array[i]));
         assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
-                             &sfnode_jsclass, 0));
+                             &SFNode::jsclass, 0));
         const sfield::sfdata * const sfdata =
             static_cast<sfield::sfdata *>
                 (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
@@ -7144,10 +6868,7 @@ JSBool MFNode::setElement(JSContext * const cx,
         //
         JSObject * vp_obj;
         if (!JS_ValueToObject(cx, *vp, &vp_obj)) { return JS_FALSE; }
-        js_::script & script =
-            *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-        JSClass & sfnode_jsclass = script.sfnode_class;
-        if (!JS_InstanceOf(cx, vp_obj, &sfnode_jsclass, 0)) {
+        if (!JS_InstanceOf(cx, vp_obj, &SFNode::jsclass, 0)) {
             JS_ReportError(cx, "Expected an SFNode.");
             return JS_FALSE;
         }
@@ -7208,13 +6929,9 @@ JSBool MFNode::setLength(JSContext * const cx,
         try {
             jsval arg = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "Group {}"));
 
-            js_::script & script =
-                *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-            JSClass & sfnode_jsclass = script.sfnode_class;
-
             for (size_t i = length; i < newArray.size(); ++i) {
                 JSObject * const element =
-                    JS_ConstructObjectWithArguments(cx, &sfnode_jsclass, 0, 0,
+                    JS_ConstructObjectWithArguments(cx, &SFNode::jsclass, 0, 0,
                                                     1, &arg);
                 if (!element) { throw std::bad_alloc(); }
                 newArray[i] = OBJECT_TO_JSVAL(element);

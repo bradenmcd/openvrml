@@ -372,7 +372,7 @@ namespace openvrml {
                 throw ();
 
         private:
-            virtual void do_initialize(viewpoint_node * initial_viewpoint,
+            virtual void do_initialize(viewpoint_node * initialViewpoint,
                                        double timestamp) throw ();
             virtual void do_render(viewer & v) const throw ();
             virtual const node_type_ptr
@@ -1470,28 +1470,12 @@ namespace openvrml {
         };
 
 
-        class navigation_info_node;
-
         class navigation_info_class : public node_class {
-            typedef std::vector<navigation_info_node *> bound_nodes_t;
-
-            navigation_info_node * first;
-            bound_nodes_t bound_nodes;
-
         public:
             explicit navigation_info_class(openvrml::browser & browser);
             virtual ~navigation_info_class() throw ();
 
-            void set_first(navigation_info_node & nav_info) throw ();
-            bool has_first() const throw ();
-            void bind(navigation_info_node & nav_info, double timestamp)
-                throw (std::bad_alloc);
-            void unbind(navigation_info_node & nav_info, double timestamp)
-                throw ();
-
         private:
-            virtual void do_initialize(viewpoint_node * initial_viewpoint,
-                                       double timestamp) throw ();
             virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
@@ -1499,7 +1483,7 @@ namespace openvrml {
         };
 
         class navigation_info_node : public abstract_base,
-                                     public openvrml::navigation_info_node {
+                                     public child_node {
             friend class navigation_info_class;
 
             class set_bind_listener : public sfbool_listener {
@@ -1523,19 +1507,20 @@ namespace openvrml {
             sfbool_emitter is_bound_emitter_;
 
         public:
-            navigation_info_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            navigation_info_node(const node_type & type,
+                                 const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~navigation_info_node() throw ();
 
-            virtual const std::vector<float> & avatar_size() const throw ();
-            virtual bool headlight() const throw ();
-            virtual float speed() const throw ();
-            virtual const std::vector<std::string> & type() const throw ();
-            virtual float visibility_limit() const throw ();
+            virtual navigation_info_node * to_navigation_info() const;
+
+            const float * avatar_size() const;
+            bool headlight() const;
+            float speed() const;
+            float visibility_limit() const;
 
         private:
-            virtual void do_initialize(double timestamp) throw ();
+            virtual void do_initialize(double timestamp)
+                throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
         };
 
@@ -1559,8 +1544,7 @@ namespace openvrml {
             exposedfield<mfvec3f> vector_;
 
         public:
-            normal_node(const node_type & type,
-                        const boost::shared_ptr<openvrml::scope> & scope);
+            normal_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~normal_node() throw ();
 
             //
@@ -1605,9 +1589,8 @@ namespace openvrml {
             mfvec3f_emitter value_changed_emitter_;
 
         public:
-            normal_interpolator_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            normal_interpolator_node(const node_type & type,
+                                     const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~normal_interpolator_node() throw ();
         };
 
@@ -1648,9 +1631,8 @@ namespace openvrml {
             sfrotation_emitter value_changed_emitter_;
 
         public:
-            orientation_interpolator_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            orientation_interpolator_node(const node_type & type,
+                                          const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~orientation_interpolator_node() throw ();
         };
 
@@ -1673,9 +1655,8 @@ namespace openvrml {
             exposedfield<sfimage> image_;
 
         public:
-            pixel_texture_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            pixel_texture_node(const node_type & type,
+                               const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~pixel_texture_node() throw ();
 
             virtual const openvrml::image & image() const throw ();
@@ -1720,9 +1701,8 @@ namespace openvrml {
             mat4f modelview;
 
         public:
-            plane_sensor_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            plane_sensor_node(const node_type & type,
+                              const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~plane_sensor_node() throw ();
 
             virtual plane_sensor_node * to_plane_sensor() const;
@@ -1757,9 +1737,7 @@ namespace openvrml {
             exposedfield<sffloat> radius_;
 
         public:
-            point_light_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            point_light_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~point_light_node() throw ();
 
             virtual point_light_node * to_point_light() const;
@@ -2609,11 +2587,12 @@ namespace openvrml {
                 throw (std::bad_alloc);
             void unbind(viewpoint_node & viewpoint, double timestamp) throw ();
 
-        private:
             virtual void
             do_initialize(openvrml::viewpoint_node * initial_viewpoint,
                           double timestamp)
                 throw ();
+
+        private:
             virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
@@ -2674,8 +2653,7 @@ namespace openvrml {
             mat4f user_view_transform_;
 
         public:
-            viewpoint_node(const node_type & type,
-                           const boost::shared_ptr<openvrml::scope> & scope);
+            viewpoint_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~viewpoint_node() throw ();
 
             virtual const mat4f & transformation() const throw ();
