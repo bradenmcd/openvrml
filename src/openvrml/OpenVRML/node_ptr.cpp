@@ -157,7 +157,7 @@ void node_ptr::dispose() throw ()
     if (this->count_ptr) {
         --this->count_ptr->second;
         if (this->count_ptr->second == 0) {
-            this->count_ptr->first->shutdown(Browser::getCurrentTime());
+            this->count_ptr->first->shutdown(browser::current_time());
             delete this->count_ptr->first;
             count_map.erase(this->count_ptr->first);
         }

@@ -31,7 +31,7 @@ namespace OpenVRML {
 
     class node;
     class BSphere;
-    class Browser;
+    class browser;
 
     class OPENVRML_SCOPE Viewer {
     protected:
@@ -58,7 +58,7 @@ namespace OpenVRML {
         typedef long Object;
         typedef long TextureObject;
 
-        Browser & browser;
+        OpenVRML::browser & browser;
 
         virtual ~Viewer() = 0;
 
@@ -204,7 +204,7 @@ namespace OpenVRML {
                                  BVolume::Intersection intersection) = 0;
 
     protected:
-        explicit Viewer(Browser & browser);
+        explicit Viewer(OpenVRML::browser & browser);
 
     private:
         // non-copyable

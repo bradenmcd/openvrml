@@ -7110,11 +7110,11 @@ jstring JNICALL Java_vrml_Browser_toString(JNIEnv * const env,
     assert(env);
     const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
     if (!fid) return 0;
-    Browser * const browser =
-      reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+    OpenVRML::browser * const browser =
+      reinterpret_cast<OpenVRML::browser *>(env->GetIntField(obj, fid));
     assert(browser);
     std::ostringstream out;
-    out << browser->getName() << ' ' << browser->getVersion() << std::ends;
+    out << browser->name() << ' ' << browser->version() << std::ends;
     return env->NewStringUTF(out.str().c_str());
 }
 
@@ -7130,10 +7130,10 @@ jstring JNICALL Java_vrml_Browser_getName(JNIEnv * const env,
 {
   const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
   if (!fid) return 0;
-  Browser * const browser =
-    reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+  OpenVRML::browser * const browser =
+    reinterpret_cast<OpenVRML::browser *>(env->GetIntField(obj, fid));
   assert(browser);
-  return env->NewStringUTF(browser->getName());
+  return env->NewStringUTF(browser->name());
 }
 
 /**
@@ -7148,10 +7148,10 @@ jstring JNICALL Java_vrml_Browser_getVersion(JNIEnv * const env,
 {
   const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
   if (!fid) return 0;
-  Browser * const browser =
-    reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+  OpenVRML::browser * const browser =
+    reinterpret_cast<OpenVRML::browser *>(env->GetIntField(obj, fid));
   assert(browser);
-  return env->NewStringUTF(browser->getVersion());
+  return env->NewStringUTF(browser->version());
 }
 
 /**
@@ -7168,10 +7168,10 @@ jfloat JNICALL Java_vrml_Browser_getCurrentSpeed(JNIEnv * const env,
 {
   const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
   if (!fid) return 0.0;
-  Browser * const browser =
-    reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+  OpenVRML::browser * const browser =
+    reinterpret_cast<OpenVRML::browser *>(env->GetIntField(obj, fid));
   assert(browser);
-  return browser->getCurrentSpeed();
+  return browser->current_speed();
 }
 
 /**
@@ -7190,10 +7190,10 @@ jfloat JNICALL Java_vrml_Browser_getCurrentFrameRate(JNIEnv * const env,
   assert(env);
   const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
   if (!fid) return 0.0;
-  Browser * const browser =
-    reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+  OpenVRML::browser * const browser =
+    reinterpret_cast<OpenVRML::browser *>(env->GetIntField(obj, fid));
   assert(browser);
-  return browser->getFrameRate();
+  return browser->frame_rate();
 }
 
 /**
@@ -7209,10 +7209,10 @@ jstring JNICALL Java_vrml_Browser_getWorldURL(JNIEnv * const env,
   assert(env);
   const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
   if (!fid) return 0;
-  Browser * const browser =
-    reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+  OpenVRML::browser * const browser =
+    reinterpret_cast<OpenVRML::browser *>(env->GetIntField(obj, fid));
   assert(browser);
-  return env->NewStringUTF(browser->getWorldURI().c_str());
+  return env->NewStringUTF(browser->world_url().c_str());
 }
 
 /**
@@ -7249,8 +7249,8 @@ Java_vrml_Browser_createVrmlFromString(JNIEnv * const env,
 {
   const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
   if (!fid) return 0;
-  Browser * const browser =
-    reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+  OpenVRML::browser * const browser =
+    reinterpret_cast<OpenVRML::browser *>(env->GetIntField(obj, fid));
   assert(browser);
   return 0;
 }
@@ -7404,10 +7404,10 @@ void JNICALL Java_vrml_Browser_loadURL(JNIEnv * const env,
 
         const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
         if (!fid) { return; }
-        Browser * const browser =
-                reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+        OpenVRML::browser * const browser =
+            reinterpret_cast<OpenVRML::browser *>(env->GetIntField(obj, fid));
         assert(browser);
-        browser->loadURI(url, parameters);
+        browser->load_url(url, parameters);
     } catch (std::bad_alloc & ex) {
         env->ExceptionDescribe();
         env->ExceptionClear();
@@ -7434,10 +7434,10 @@ void JNICALL Java_vrml_Browser_setDescription
     if (!description) { return; } // OutOfMemoryError
     const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
     if (!fid) { return; }
-    Browser * const browser =
-            reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
+    OpenVRML::browser * const browser =
+        reinterpret_cast<OpenVRML::browser *>(env->GetIntField(obj, fid));
     assert(browser);
-    browser->setDescription(description);
+    browser->description(description);
     env->ReleaseStringUTFChars(jDescription, description);
 }
 

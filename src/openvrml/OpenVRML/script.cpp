@@ -106,17 +106,17 @@ script::~script() {}
  *
  * @brief Class object for @link script_node script_nodes@endlink.
  *
- * There is one ScripNodeClass per Browser instance.
+ * There is one script_node_class per browser instance.
  *
- * @see Browser::scriptNodeClass
+ * @see browser::scriptNodeClass
  */
 
 /**
  * @brief Constructor.
  *
- * @param browser   the Browser to be associated with the script_node_class.
+ * @param browser   the browser to be associated with the script_node_class.
  */
-script_node_class::script_node_class(Browser & browser):
+script_node_class::script_node_class(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -134,7 +134,7 @@ script_node_class::~script_node_class() throw ()
  * an @c EXTERNPROTO. It is an error to call this method.
  */
 const node_type_ptr script_node_class::create_type(const std::string &,
-                                                 const node_interface_set &)
+                                                   const node_interface_set &)
     throw ()
 {
     assert(false);
@@ -592,7 +592,7 @@ void script_node::assign_with_self_ref_check(const mfnode & inval,
 void script_node::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.addScript(*this);
+    this->scene()->browser.add_script(*this);
 
     this->events_received = 0;
     this->script_ = this->create_script();
@@ -767,7 +767,7 @@ const field_value & script_node::do_eventout(const std::string & id) const
 void script_node::do_shutdown(const double timestamp) throw ()
 {
     if (this->script_) { this->script_->shutdown(timestamp); }
-    this->scene()->browser.removeScript(*this);
+    this->scene()->browser.remove_script(*this);
 }
 
 } // namespace OpenVRML
@@ -853,7 +853,7 @@ script * script_node::create_script() {
                                this->url_.value[i].end() - 6)
                     || std::equal(javaExtension2, javaExtension2 + 6,
                                   this->url_.value[i].end() - 6))) {
-            Doc2 base(this->type._class.browser.getWorldURI());
+            Doc2 base(this->type._class.browser.world_url());
             Doc2 doc(this->url_.value[i], &base);
             if (doc.localName()) {
                 return new ScriptJDK(*this,
@@ -2135,7 +2135,7 @@ void errorReporter(JSContext * const cx,
     Script * const script = static_cast<Script *>(JS_GetContextPrivate(cx));
     assert(script);
 
-    OpenVRML::Browser & browser = script->getScriptNode().scene()->browser;
+    OpenVRML::browser & browser = script->getScriptNode().scene()->browser;
 
     string nodeId = script->getScriptNode().id();
     if (!nodeId.empty()) {
@@ -2355,7 +2355,7 @@ JSBool getName(JSContext * const cx, JSObject *,
     assert(script);
 
     const char * const name =
-            script->getScriptNode().node::type._class.browser.getName();
+            script->getScriptNode().node::type._class.browser.name();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, name));
     return JS_TRUE;
 }
@@ -2369,7 +2369,7 @@ JSBool getVersion(JSContext * const cx, JSObject *,
     assert(script);
 
     const char * const version =
-            script->getScriptNode().node::type._class.browser.getVersion();
+            script->getScriptNode().node::type._class.browser.version();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, version));
     return JS_TRUE;
 }
@@ -2383,7 +2383,7 @@ JSBool getCurrentSpeed(JSContext * const cx, JSObject *,
     assert(script);
 
     float speed = script->getScriptNode().node::type._class
-                  .browser.getCurrentSpeed();
+                  .browser.current_speed();
     *rval = DOUBLE_TO_JSVAL(JS_NewDouble( cx, speed ));
     return JS_TRUE;
 }
@@ -2397,7 +2397,7 @@ JSBool getCurrentFrameRate(JSContext * const cx, JSObject *,
     assert(script);
 
     *rval = DOUBLE_TO_JSVAL(JS_NewDouble(cx,
-            script->getScriptNode().node::type._class.browser.getFrameRate()));
+            script->getScriptNode().node::type._class.browser.frame_rate()));
     return JS_TRUE;
 }
 
@@ -2410,7 +2410,7 @@ JSBool getWorldURL(JSContext * const cx, JSObject *,
     assert(script);
 
     const std::string url =
-            script->getScriptNode().node::type._class.browser.getWorldURI();
+            script->getScriptNode().node::type._class.browser.world_url();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, url.c_str()));
     return JS_TRUE;
 }
@@ -2455,8 +2455,8 @@ JSBool loadURL(JSContext * const cx, JSObject *,
             MFString::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[1]));
     assert(parameters.get());
 
-    script->getScriptNode().scene()
-            ->browser.loadURI(url->value, parameters->value);
+    script->getScriptNode().scene()->browser.load_url(url->value,
+                                                      parameters->value);
     return JS_TRUE;
 }
 
@@ -2487,7 +2487,7 @@ JSBool replaceWorld(JSContext * const cx, JSObject *,
             MFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(argv[0]));
     assert(nodes.get());
 
-    script->getScriptNode().scene()->browser.replaceWorld(nodes->value);
+    script->getScriptNode().scene()->browser.replace_world(nodes->value);
 
     *rval = JSVAL_VOID;
     return JS_TRUE;
@@ -2517,9 +2517,10 @@ JSBool createVrmlFromString(JSContext * const cx,
         std::istringstream in(JS_GetStringBytes(str));
 
         assert(script->getScriptNode().scene());
-        OpenVRML::Browser & browser =
+        OpenVRML::browser & browser =
                 script->getScriptNode().scene()->browser;
-        const std::vector<node_ptr> nodes = browser.createVrmlFromStream(in);
+        const std::vector<node_ptr> nodes =
+            browser.create_vrml_from_stream(in);
 
         if (nodes.empty()) {
             *rval = JSVAL_NULL;
@@ -2589,7 +2590,7 @@ JSBool createVrmlFromURL(JSContext * const cx, JSObject *,
 
     const char * const eventInId =
             JS_GetStringBytes(JSVAL_TO_STRING(argv[2]));
-    OpenVRML::Browser & browser =
+    OpenVRML::browser & browser =
             script->getScriptNode().nodeType.nodeClass.browser;
     std::auto_ptr<OpenVRML::mfnode>
             kids(browser.readWrl(*url, relative));
@@ -3347,11 +3348,11 @@ JSBool SFNode::initObject(JSContext * const cx, JSObject * const obj,
     istringstream in(JS_GetStringBytes(str));
 
     assert(script->getScriptNode().scene());
-    OpenVRML::Browser & browser = script->getScriptNode().scene()->browser;
+    OpenVRML::browser & browser = script->getScriptNode().scene()->browser;
     std::vector<node_ptr> nodes;
     try {
-        nodes = browser.createVrmlFromStream(in);
-    } catch (InvalidVrml & ex) {
+        nodes = browser.create_vrml_from_stream(in);
+    } catch (invalid_vrml & ex) {
         JS_ReportError(cx, ex.what());
         return JS_FALSE;
     } catch (std::bad_alloc & ex) {
@@ -3452,11 +3453,11 @@ JSBool SFNode::setProperty(JSContext * const cx, JSObject * const obj,
 	Script * const script =
             static_cast<Script *>(JS_GetContextPrivate(cx));
         assert(script);
-        script->getScriptNode().scene()->browser
-            .queueEvent(s_timeStamp,
-                        fieldValue.release(),
-                        nodePtr,
-                        eventInId);
+        script->getScriptNode().scene()
+            ->browser.queue_event(s_timeStamp,
+                                  fieldValue.release(),
+                                  nodePtr,
+                                  eventInId);
     } else if ((expectType = nodePtr->type.has_field(eventInId))) {
         try {
             fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
@@ -3474,11 +3475,11 @@ JSBool SFNode::setProperty(JSContext * const cx, JSObject * const obj,
 	Script * const script =
             static_cast<Script *>(JS_GetContextPrivate(cx));
 	assert(script);
-	script->getScriptNode().scene()->browser
-                .queueEvent(s_timeStamp,
-                            fieldValue.release(),
-                            nodePtr,
-                            eventInId);
+	script->getScriptNode().scene()
+            ->browser.queue_event(s_timeStamp,
+                                  fieldValue.release(),
+                                  nodePtr,
+                                  eventInId);
     }
     sfdata->changed = true;
     return JS_TRUE;

@@ -327,11 +327,11 @@ namespace {
 }
 
 /**
- * @brief Construct a viewer for the specified Browser.
+ * @brief Construct a viewer for the specified browser.
  *
- * @param browser   the Browser.
+ * @param browser   the browser.
  */
-ViewerOpenGL::ViewerOpenGL(Browser & browser):
+ViewerOpenGL::ViewerOpenGL(OpenVRML::browser & browser):
     Viewer(browser),
     tesselator(gluNewTess()),
     d_nSensitive(0),
@@ -519,7 +519,7 @@ double ViewerOpenGL::getFrameRate()
 
 void ViewerOpenGL::resetUserNavigation()
 {
-    viewpoint_node & activeViewpoint = this->browser.getActiveViewpoint();
+    viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
     activeViewpoint.user_view_transform(mat4f());
 
     this->curquat = quatf(trackball(0.0, 0.0, 0.0, 0.0));
@@ -531,7 +531,7 @@ void ViewerOpenGL::resetUserNavigation()
 void ViewerOpenGL::getUserNavigation(mat4f & M)
 {
     // The Matrix M should be a unit matrix
-    viewpoint_node & activeViewpoint = this->browser.getActiveViewpoint();
+    viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
     M = activeViewpoint.user_view_transform() * M;
 }
 
@@ -3066,14 +3066,14 @@ void ViewerOpenGL::update(const double timeNow) {
     }
 
     // Set an alarm clock for the next update time.
-    this->wsSetTimer(this->browser.getDelta());
+    this->wsSetTimer(this->browser.delta());
 }
 
 void ViewerOpenGL::redraw()
 {
   if (! d_GLinitialized) initialize();
 
-  double start = Browser::getCurrentTime();
+  double start = browser::current_time();
 
 
   glDisable( GL_FOG );                // this is a global attribute
@@ -3111,7 +3111,7 @@ void ViewerOpenGL::redraw()
   wsSwapBuffers();
 
   d_renderTime1 = d_renderTime;
-  d_renderTime = Browser::getCurrentTime() - start;
+  d_renderTime = browser::current_time() - start;
 }
 
 void ViewerOpenGL::resize(int width, int height)
@@ -3151,7 +3151,7 @@ void ViewerOpenGL::rotate(const rotation & rot) throw ()
     this->lastquat = quatf(rot);
     if (fpzero(rot.angle())) { return; }
 
-    viewpoint_node & activeViewpoint = this->browser.getActiveViewpoint();
+    viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
     const mat4f & viewpointTransformation = activeViewpoint.transformation();
     const mat4f & currentUserViewTransform =
             activeViewpoint.user_view_transform();
@@ -3193,7 +3193,7 @@ void ViewerOpenGL::rotate(const rotation & rot) throw ()
 void ViewerOpenGL::step(float x, float y, float z)
 {
     mat4f t = mat4f::translation(vec3f(x, y, z));
-    viewpoint_node & activeViewpoint = this->browser.getActiveViewpoint();
+    viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
     activeViewpoint
             .user_view_transform(t * activeViewpoint.user_view_transform());
     wsPostRedraw();
@@ -3207,7 +3207,7 @@ void ViewerOpenGL::zoom(float z)
     glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev (GL_PROJECTION_MATRIX, projection);
     Vrml97Node::NavigationInfo * nav =
-            this->browser.bindableNavigationInfoTop();
+            this->browser.bindable_navigation_info_top();
     GLdouble x_c = d_winWidth/2;
     GLdouble y_c = d_winHeight/2;
     GLdouble z_c = 0.5;
@@ -3234,7 +3234,7 @@ void ViewerOpenGL::zoom(float z)
     dz *= dist;
     const vec3f translation(dx, dy, dz);
     mat4f t = mat4f::translation(translation);
-    viewpoint_node & activeViewpoint = this->browser.getActiveViewpoint();
+    viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
     const mat4f & userViewTransform = activeViewpoint.user_view_transform();
     activeViewpoint.user_view_transform(t * userViewTransform);
     wsPostRedraw();
@@ -3296,9 +3296,9 @@ void ViewerOpenGL::handleKey(int key)
     case KEY_PAGE_DOWN:
         {
             viewpoint_node & currentViewpoint =
-                    this->browser.getActiveViewpoint();
+                this->browser.active_viewpoint();
             const list<viewpoint_node *> & viewpoints =
-                    this->browser.getViewpoints();
+                this->browser.viewpoints();
             list<viewpoint_node *>::const_iterator pos =
                     find(viewpoints.begin(), viewpoints.end(),
                          &currentViewpoint);
@@ -3306,7 +3306,7 @@ void ViewerOpenGL::handleKey(int key)
                 ++pos;
                 if (pos == viewpoints.end()) { pos = viewpoints.begin(); }
                 (*pos)->process_event("set_bind", sfbool(true),
-                                      Browser::getCurrentTime());
+                                      browser::current_time());
             }
         }
         wsPostRedraw();
@@ -3315,9 +3315,9 @@ void ViewerOpenGL::handleKey(int key)
     case KEY_PAGE_UP:
         {
             viewpoint_node & currentViewpoint =
-                    this->browser.getActiveViewpoint();
+                this->browser.active_viewpoint();
             const list<viewpoint_node *> & viewpoints =
-                    this->browser.getViewpoints();
+                this->browser.viewpoints();
             list<viewpoint_node *>::const_iterator pos =
                     find(viewpoints.begin(), viewpoints.end(),
                          &currentViewpoint);
@@ -3327,7 +3327,7 @@ void ViewerOpenGL::handleKey(int key)
                 }
                 --pos;
                 (*pos)->process_event("set_bind", sfbool(true),
-                                      Browser::getCurrentTime());
+                                      browser::current_time());
             }
         }
         wsPostRedraw();
@@ -3466,7 +3466,7 @@ void ViewerOpenGL::handleMouseDrag(int x, int y)
  */
 bool ViewerOpenGL::checkSensitive(const int x, const int y,
                                   const EventType mouseEvent) {
-    double timeNow = Browser::getCurrentTime();
+    double timeNow = browser::current_time();
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
 
@@ -3599,19 +3599,21 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     if (this->d_activeSensitive) {
         if (mouseEvent == EVENT_MOUSE_RELEASE
                 || mouseEvent == EVENT_MOUSE_MOVE) {
-            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
-                                         timeNow,
-                                         selected == this->d_activeSensitive,
-                                         false,
-                                         selectCoord);
+            this->browser.sensitive_event(
+                this->d_sensitiveObject[this->d_activeSensitive - 1],
+                timeNow,
+                selected == this->d_activeSensitive,
+                false,
+                selectCoord);
             this->d_activeSensitive = 0;
         } else {
             // _DRAG
-            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
-                                         timeNow,
-                                         selected == this->d_activeSensitive,
-                                         true,
-                                         selectCoord);
+            this->browser.sensitive_event(
+                this->d_sensitiveObject[this->d_activeSensitive - 1],
+                timeNow,
+                selected == this->d_activeSensitive,
+                true,
+                selectCoord);
         }
         wasActive = true;
     } else if (mouseEvent == EVENT_MOUSE_CLICK && selected) {
@@ -3620,31 +3622,35 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
         // mouse over events are no longer relevant.
         //
         if (d_overSensitive && d_overSensitive != selected) {
-            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
-                                         timeNow,
-                                         false, false, // isOver, isActive
-                                         selectCoord);
+            this->browser.sensitive_event(
+                this->d_sensitiveObject[this->d_overSensitive - 1],
+                timeNow,
+                false, false, // isOver, isActive
+                selectCoord);
             this->d_overSensitive = 0;
         }
         this->d_activeSensitive = selected;
-        this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_activeSensitive - 1],
-                                     timeNow,
-                                     true, true, // isOver, isActive
-                                     selectCoord);
+        this->browser.sensitive_event(
+            this->d_sensitiveObject[this->d_activeSensitive - 1],
+            timeNow,
+            true, true, // isOver, isActive
+            selectCoord);
     } else if (mouseEvent == EVENT_MOUSE_MOVE) {
         // Handle isOver events (coords are bogus)
         if (d_overSensitive && d_overSensitive != selected) {
-            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
-                                         timeNow,
-                                         false, false, // isOver, isActive
-                                         selectCoord);
+            this->browser.sensitive_event(
+                this->d_sensitiveObject[this->d_overSensitive - 1],
+                timeNow,
+                false, false, // isOver, isActive
+                selectCoord);
         }
         this->d_overSensitive = selected;
         if (this->d_overSensitive) {
-            this->browser.sensitiveEvent(this->d_sensitiveObject[this->d_overSensitive - 1],
-                                         timeNow,
-                                         true, false,  // isOver, isActive
-                                         selectCoord);
+            this->browser.sensitive_event(
+                this->d_sensitiveObject[this->d_overSensitive - 1],
+                timeNow,
+                true, false,  // isOver, isActive
+                selectCoord);
         }
     }
 

@@ -178,7 +178,7 @@ namespace OpenVRML {
             bool checkSensitive(int x, int y, EventType );
 
         public:
-            explicit ViewerOpenGL(Browser & browser);
+            explicit ViewerOpenGL(OpenVRML::browser & browser);
             virtual ~ViewerOpenGL();
 
             virtual RenderMode getRenderMode();

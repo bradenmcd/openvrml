@@ -1021,9 +1021,9 @@ bool AbstractTexture::repeat_t() const throw ()
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this AnchorClass.
+ * @param browser the browser associated with this AnchorClass.
  */
-AnchorClass::AnchorClass(Browser & browser):
+AnchorClass::AnchorClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -1254,9 +1254,9 @@ const BVolume * Anchor::bvolume() const
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-AppearanceClass::AppearanceClass(Browser & browser):
+AppearanceClass::AppearanceClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -1531,9 +1531,9 @@ const node_ptr & Appearance::texture_transform() const throw ()
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-AudioClipClass::AudioClipClass(Browser & browser):
+AudioClipClass::AudioClipClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -1778,7 +1778,7 @@ void AudioClip::update(const double currentTime)
 void AudioClip::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.addAudioClip(*this);
+    this->scene()->browser.add_audio_clip(*this);
 }
 
 /**
@@ -1789,7 +1789,7 @@ void AudioClip::do_initialize(const double timestamp) throw (std::bad_alloc)
 void AudioClip::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.removeAudioClip(*this);
+    this->scene()->browser.remove_audio_clip(*this);
 }
 
 /**
@@ -1903,9 +1903,9 @@ void AudioClip::processSet_url(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-BackgroundClass::BackgroundClass(Browser & browser):
+BackgroundClass::BackgroundClass(OpenVRML::browser & browser):
     node_class(browser),
     first(0)
 {}
@@ -2567,9 +2567,9 @@ void Background::processSet_skyColor(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-BillboardClass::BillboardClass(Browser & browser): node_class(browser)
+BillboardClass::BillboardClass(OpenVRML::browser & browser): node_class(browser)
 {}
 
 /**
@@ -2801,9 +2801,9 @@ void Billboard::processSet_axisOfRotation(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-BoxClass::BoxClass(Browser & browser):
+BoxClass::BoxClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -2920,9 +2920,9 @@ const BVolume * Box::bvolume() const
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-CollisionClass::CollisionClass(Browser & browser):
+CollisionClass::CollisionClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -3080,9 +3080,9 @@ void Collision::processSet_collide(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this node class object.
+ * @param browser the browser associated with this node class object.
  */
-ColorClass::ColorClass(Browser & browser): node_class(browser) {}
+ColorClass::ColorClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -3186,9 +3186,9 @@ void Color::processSet_color(const field_value & value, const double timestamp)
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-ColorInterpolatorClass::ColorInterpolatorClass(Browser & browser):
+ColorInterpolatorClass::ColorInterpolatorClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -3399,9 +3399,9 @@ void ColorInterpolator::processSet_keyValue(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-ConeClass::ConeClass(Browser & browser): node_class(browser) {}
+ConeClass::ConeClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -3517,9 +3517,9 @@ Viewer::Object Cone::insert_geometry(Viewer & viewer,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this node class object.
+ * @param browser the browser associated with this node class object.
  */
-CoordinateClass::CoordinateClass(Browser & browser): node_class(browser) {}
+CoordinateClass::CoordinateClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -3628,9 +3628,9 @@ const std::vector<vec3f> & Coordinate::point() const throw ()
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-CoordinateInterpolatorClass::CoordinateInterpolatorClass(Browser & browser):
+CoordinateInterpolatorClass::CoordinateInterpolatorClass(OpenVRML::browser & browser):
     node_class(browser) {}
 
 /**
@@ -3835,9 +3835,9 @@ void CoordinateInterpolator::processSet_keyValue(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-CylinderClass::CylinderClass(Browser & browser): node_class(browser) {}
+CylinderClass::CylinderClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -3964,9 +3964,9 @@ Viewer::Object Cylinder::insert_geometry(Viewer & viewer,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-CylinderSensorClass::CylinderSensorClass(Browser & browser): node_class(browser) {}
+CylinderSensorClass::CylinderSensorClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -4318,9 +4318,9 @@ void CylinderSensor::processSet_offset(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-DirectionalLightClass::DirectionalLightClass(Browser & browser):
+DirectionalLightClass::DirectionalLightClass(OpenVRML::browser & browser):
         node_class(browser) {}
 
 /**
@@ -4469,9 +4469,9 @@ void DirectionalLight::processSet_direction(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-ElevationGridClass::ElevationGridClass(Browser & browser): node_class(browser) {}
+ElevationGridClass::ElevationGridClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -4809,9 +4809,9 @@ void ElevationGrid::processSet_texCoord(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-ExtrusionClass::ExtrusionClass(Browser & browser): node_class(browser) {}
+ExtrusionClass::ExtrusionClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -5091,9 +5091,9 @@ void Extrusion::processSet_spine(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-FogClass::FogClass(Browser & browser):
+FogClass::FogClass(OpenVRML::browser & browser):
     node_class(browser),
     first(0)
 {}
@@ -5427,9 +5427,9 @@ void Fog::processSet_visibilityRange(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-FontStyleClass::FontStyleClass(Browser & browser): node_class(browser) {}
+FontStyleClass::FontStyleClass(OpenVRML::browser & browser): node_class(browser) {}
 
 FontStyleClass::~FontStyleClass() throw () {}
 
@@ -5692,9 +5692,9 @@ bool FontStyle::top_to_bottom() const throw ()
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this node class object.
+ * @param browser the browser associated with this node class object.
  */
-GroupClass::GroupClass(Browser & browser): node_class(browser) {}
+GroupClass::GroupClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -6088,9 +6088,9 @@ void Group::recalcBSphere()
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this node class object.
+ * @param browser the browser associated with this node class object.
  */
-ImageTextureClass::ImageTextureClass(Browser & browser): node_class(browser) {}
+ImageTextureClass::ImageTextureClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -6301,9 +6301,9 @@ void ImageTexture::processSet_url(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this node class object.
+ * @param browser the browser associated with this node class object.
  */
-IndexedFaceSetClass::IndexedFaceSetClass(Browser & browser): node_class(browser) {}
+IndexedFaceSetClass::IndexedFaceSetClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -6723,9 +6723,9 @@ void IndexedFaceSet::processSet_texCoordIndex(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this node class object.
+ * @param browser the browser associated with this node class object.
  */
-IndexedLineSetClass::IndexedLineSetClass(Browser & browser):
+IndexedLineSetClass::IndexedLineSetClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -6901,9 +6901,9 @@ Viewer::Object IndexedLineSet::insert_geometry(Viewer & viewer,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this node class object.
+ * @param browser the browser associated with this node class object.
  */
-InlineClass::InlineClass(Browser & browser): node_class(browser) {}
+InlineClass::InlineClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -7070,7 +7070,7 @@ void Inline::load() {
     this->inlineScene = new Scene(this->scene()->browser,
                                   this->url.value,
                                   this->scene());
-    this->inlineScene->initialize(Browser::getCurrentTime());
+    this->inlineScene->initialize(browser::current_time());
 }
 
 /**
@@ -7102,9 +7102,9 @@ void Inline::processSet_url(const field_value & value, const double timestamp)
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this node class object.
+ * @param browser the browser associated with this node class object.
  */
-LODClass::LODClass(Browser & browser): node_class(browser) {}
+LODClass::LODClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -7377,9 +7377,9 @@ void LOD::processSet_level(const field_value & value, const double timestamp)
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this node class object.
+ * @param browser the browser associated with this node class object.
  */
-MaterialClass::MaterialClass(Browser & browser): node_class(browser) {}
+MaterialClass::MaterialClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -7667,9 +7667,9 @@ float Material::transparency() const throw ()
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-MovieTextureClass::MovieTextureClass(Browser & browser):
+MovieTextureClass::MovieTextureClass(OpenVRML::browser & browser):
         node_class(browser) {}
 
 /**
@@ -7943,7 +7943,7 @@ void MovieTexture::update(const double currentTime)
     if (this->active.value) {
         double d = this->lastFrameTime + fabs(1 / this->speed.value)
                     - currentTime;
-        this->type._class.browser.setDelta(0.9 * d);
+        this->type._class.browser.delta(0.9 * d);
     }
 }
 
@@ -8032,7 +8032,7 @@ const unsigned char * MovieTexture::pixels() const throw () {
 void MovieTexture::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.addMovie(*this);
+    this->scene()->browser.add_movie(*this);
 }
 
 /**
@@ -8043,7 +8043,7 @@ void MovieTexture::do_initialize(const double timestamp) throw (std::bad_alloc)
 void MovieTexture::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.removeMovie(*this);
+    this->scene()->browser.remove_movie(*this);
 }
 
 /**
@@ -8144,9 +8144,9 @@ void MovieTexture::processSet_url(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-NavigationInfoClass::NavigationInfoClass(Browser & browser):
+NavigationInfoClass::NavigationInfoClass(OpenVRML::browser & browser):
         node_class(browser) {}
 
 /**
@@ -8286,7 +8286,7 @@ void NavigationInfo::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.addNavigationInfo(*this);
+    this->scene()->browser.add_navigation_info(*this);
 }
 
 /**
@@ -8297,7 +8297,7 @@ void NavigationInfo::do_initialize(const double timestamp)
 void NavigationInfo::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.removeNavigationInfo(*this);
+    this->scene()->browser.remove_navigation_info(*this);
 }
 
 /**
@@ -8331,7 +8331,7 @@ void NavigationInfo::processSet_bind(const field_value & value,
     throw (std::bad_cast, std::bad_alloc)
 {
     NavigationInfo * current =
-        this->node::type._class.browser.bindableNavigationInfoTop();
+        this->node::type._class.browser.bindable_navigation_info_top();
     const sfbool & b = dynamic_cast<const sfbool &>(value);
 
     if (b.value) {        // set_bind TRUE
@@ -8340,17 +8340,17 @@ void NavigationInfo::processSet_bind(const field_value & value,
                 current->bound.value = false;
                 current->emit_event("isBound", current->bound, timestamp);
             }
-            this->node::type._class.browser.bindablePush(this);
+            this->node::type._class.browser.bindable_push(this);
             this->bound.value = true;
             this->emit_event("isBound", this->bound, timestamp);
         }
     } else {            // set_bind FALSE
-        this->node::type._class.browser.bindableRemove(this);
+        this->node::type._class.browser.bindable_remove(this);
         if (this == current) {
             this->bound.value = false;
             this->emit_event("isBound", this->bound, timestamp);
             current = this->node::type._class.browser
-                        .bindableNavigationInfoTop();
+                        .bindable_navigation_info_top();
             if (current) {
                 current->bound.value = true;
                 current->emit_event("isBound", current->bound, timestamp);
@@ -8439,9 +8439,9 @@ void NavigationInfo::processSet_visibilityLimit(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this node class object.
+ * @param browser the browser associated with this node class object.
  */
-NormalClass::NormalClass(Browser & browser): node_class(browser) {}
+NormalClass::NormalClass(OpenVRML::browser & browser): node_class(browser) {}
 
 /**
  * @brief Destructor.
@@ -8551,9 +8551,9 @@ void Normal::processSet_vector(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-NormalInterpolatorClass::NormalInterpolatorClass(Browser & browser):
+NormalInterpolatorClass::NormalInterpolatorClass(OpenVRML::browser & browser):
         node_class(browser) {}
 
 /**
@@ -8765,9 +8765,9 @@ void NormalInterpolator::processSet_keyValue(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-OrientationInterpolatorClass::OrientationInterpolatorClass(Browser & browser):
+OrientationInterpolatorClass::OrientationInterpolatorClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -8991,9 +8991,9 @@ void OrientationInterpolator::processSet_keyValue(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-PixelTextureClass::PixelTextureClass(Browser & browser):
+PixelTextureClass::PixelTextureClass(OpenVRML::browser & browser):
         node_class(browser) {}
 
 /**
@@ -9207,9 +9207,9 @@ void PixelTexture::processSet_image(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this node class object.
+ * @param browser the browser associated with this node class object.
  */
-PlaneSensorClass::PlaneSensorClass(Browser & browser):
+PlaneSensorClass::PlaneSensorClass(OpenVRML::browser & browser):
         node_class(browser) {}
 
 /**
@@ -9609,9 +9609,9 @@ void PlaneSensor::processSet_offset(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this class object.
+ * @param browser the browser associated with this class object.
  */
-PointLightClass::PointLightClass(Browser & browser):
+PointLightClass::PointLightClass(OpenVRML::browser & browser):
         node_class(browser) {}
 
 /**
@@ -9803,7 +9803,7 @@ void PointLight::renderScoped(Viewer & viewer)
 void PointLight::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.addScopedLight(*this);
+    this->scene()->browser.add_scoped_light(*this);
 }
 
 /**
@@ -9814,7 +9814,7 @@ void PointLight::do_initialize(const double timestamp) throw (std::bad_alloc)
 void PointLight::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.removeScopedLight(*this);
+    this->scene()->browser.remove_scoped_light(*this);
 }
 
 /**
@@ -9878,9 +9878,9 @@ void PointLight::processSet_radius(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-PointSetClass::PointSetClass(Browser & browser):
+PointSetClass::PointSetClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -10132,9 +10132,9 @@ void PointSet::processSet_coord(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-PositionInterpolatorClass::PositionInterpolatorClass(Browser & browser):
+PositionInterpolatorClass::PositionInterpolatorClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -10351,9 +10351,9 @@ void PositionInterpolator::processSet_keyValue(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-ProximitySensorClass::ProximitySensorClass(Browser & browser):
+ProximitySensorClass::ProximitySensorClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -10574,7 +10574,7 @@ void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
             && this->size.value.y() > 0.0
             && this->size.value.z() > 0.0
             && viewer.getRenderMode() == Viewer::RENDER_MODE_DRAW) {
-        sftime timeNow(Browser::getCurrentTime());
+        sftime timeNow(browser::current_time());
         float x, y, z;
 
         // Is viewer inside the box?
@@ -10691,9 +10691,9 @@ void ProximitySensor::processSet_enabled(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-ScalarInterpolatorClass::ScalarInterpolatorClass(Browser & browser):
+ScalarInterpolatorClass::ScalarInterpolatorClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -10895,9 +10895,9 @@ void ScalarInterpolator::processSet_keyValue(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-ShapeClass::ShapeClass(Browser & browser):
+ShapeClass::ShapeClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -11158,9 +11158,9 @@ void Shape::processSet_geometry(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-SoundClass::SoundClass(Browser & browser):
+SoundClass::SoundClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -11568,9 +11568,9 @@ void Sound::processSet_source(const field_value & value, double timestamp)
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-SphereClass::SphereClass(Browser & browser):
+SphereClass::SphereClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -11698,9 +11698,9 @@ const BVolume * Sphere::bvolume() const
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-SphereSensorClass::SphereSensorClass(Browser & browser):
+SphereSensorClass::SphereSensorClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -12046,9 +12046,9 @@ void SphereSensor::processSet_offset(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-SpotLightClass::SpotLightClass(Browser & browser):
+SpotLightClass::SpotLightClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -12310,7 +12310,7 @@ void SpotLight::renderScoped(Viewer & viewer)
 void SpotLight::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.addScopedLight(*this);
+    this->scene()->browser.add_scoped_light(*this);
 }
 
 /**
@@ -12321,7 +12321,7 @@ void SpotLight::do_initialize(const double timestamp) throw (std::bad_alloc)
 void SpotLight::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.removeScopedLight(*this);
+    this->scene()->browser.remove_scoped_light(*this);
 }
 
 /**
@@ -12436,9 +12436,9 @@ void SpotLight::processSet_radius(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-SwitchClass::SwitchClass(Browser & browser):
+SwitchClass::SwitchClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -12733,9 +12733,9 @@ void Switch::processSet_whichChoice(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-TextClass::TextClass(Browser & browser):
+TextClass::TextClass(OpenVRML::browser & browser):
     node_class(browser)
 {
 # if OPENVRML_ENABLE_TEXT_NODE
@@ -14207,9 +14207,9 @@ void Text::updateGeometry() throw (std::bad_alloc)
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-TextureCoordinateClass::TextureCoordinateClass(Browser & browser):
+TextureCoordinateClass::TextureCoordinateClass(OpenVRML::browser & browser):
         node_class(browser) {}
 
 /**
@@ -14335,9 +14335,9 @@ void TextureCoordinate::processSet_point(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-TextureTransformClass::TextureTransformClass(Browser & browser):
+TextureTransformClass::TextureTransformClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -14564,9 +14564,9 @@ void TextureTransform::processSet_translation(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser   the Browser associated with this NodeClass.
+ * @param browser   the browser associated with this NodeClass.
  */
-TimeSensorClass::TimeSensorClass(Browser & browser):
+TimeSensorClass::TimeSensorClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -14868,9 +14868,9 @@ void TimeSensor::update(const double currentTime)
         // being used, and set delta to cycleTime if not...
         if (this->active.value) {
 #ifdef macintosh
-            this->type._class.browser.setDelta(0.001); //0.0 is too fast(!)
+            this->type._class.browser.delta(0.001); //0.0 is too fast(!)
 #else
-            this->type._class.browser.setDelta(0.0);
+            this->type._class.browser.delta(0.0);
 #endif
         }
         this->lastTime = currentTime;
@@ -14899,7 +14899,7 @@ const BVolume * TimeSensor::bvolume() const
 void TimeSensor::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser.addTimeSensor(*this);
+    this->scene()->browser.add_time_sensor(*this);
 }
 
 /**
@@ -14910,7 +14910,7 @@ void TimeSensor::do_initialize(const double timestamp) throw (std::bad_alloc)
 void TimeSensor::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.removeTimeSensor(*this);
+    this->scene()->browser.remove_time_sensor(*this);
 }
 
 /**
@@ -15040,9 +15040,9 @@ void TimeSensor::processSet_stopTime(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-TouchSensorClass::TouchSensorClass(Browser & browser):
+TouchSensorClass::TouchSensorClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -15296,9 +15296,9 @@ void TouchSensor::processSet_enabled(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-TransformClass::TransformClass(Browser & browser):
+TransformClass::TransformClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -15750,9 +15750,9 @@ void Transform::processSet_translation(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-ViewpointClass::ViewpointClass(Browser & browser):
+ViewpointClass::ViewpointClass(OpenVRML::browser & browser):
     node_class(browser),
     first(0)
 {}
@@ -15830,7 +15830,7 @@ void ViewpointClass::bind(Viewpoint & viewpoint, const double timestamp)
     viewpoint.bound.value = true;
     viewpoint.emit_event("isBound", viewpoint.bound, timestamp);
 
-    this->browser.setActiveViewpoint(viewpoint);
+    this->browser.active_viewpoint(viewpoint);
 }
 
 /**
@@ -15855,9 +15855,9 @@ void ViewpointClass::unbind(Viewpoint & viewpoint, const double timestamp)
             newActive.bound.value = true;
             newActive.emit_event("isBound", newActive.bound, timestamp);
 
-            this->browser.setActiveViewpoint(viewpoint);
+            this->browser.active_viewpoint(viewpoint);
         } else {
-            this->browser.resetDefaultViewpoint();
+            this->browser.reset_default_viewpoint();
         }
         this->boundNodes.erase(pos);
     }
@@ -16179,7 +16179,7 @@ const sfvec3f & Viewpoint::position() const
 void Viewpoint::do_initialize(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.addViewpoint(*this);
+    this->scene()->browser.add_viewpoint(*this);
     assert(dynamic_cast<ViewpointClass *>(&this->type._class));
     ViewpointClass & nodeClass =
             static_cast<ViewpointClass &>(this->type._class);
@@ -16216,7 +16216,7 @@ namespace {
 void Viewpoint::do_relocate() throw (std::bad_alloc)
 {
     assert(this->scene());
-    const node_path path = this->scene()->browser.findNode(*this);
+    const node_path path = this->scene()->browser.find_node(*this);
     assert(!path.empty());
     this->parentTransform = mat4f();
     std::for_each(path.begin(), path.end(),
@@ -16232,7 +16232,7 @@ void Viewpoint::do_relocate() throw (std::bad_alloc)
 void Viewpoint::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser.removeViewpoint(*this);
+    this->scene()->browser.remove_viewpoint(*this);
 }
 
 /**
@@ -16359,9 +16359,9 @@ void Viewpoint::updateFinalTransformation() const throw ()
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-VisibilitySensorClass::VisibilitySensorClass(Browser & browser):
+VisibilitySensorClass::VisibilitySensorClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 
@@ -16535,7 +16535,7 @@ void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
     using OpenVRML_::fpzero;
 
     if (this->enabled.value) {
-        sftime timeNow(Browser::getCurrentTime());
+        sftime timeNow(browser::current_time());
         float xyz[2][3];
 
         // hack: enclose box in a sphere...
@@ -16561,7 +16561,7 @@ void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
         bool inside = xyz[0][2] < 0.0; // && z > - scene->visLimit()
         if (inside) {
             NavigationInfo * ni = this->type._class.browser
-                                    .bindableNavigationInfoTop();
+                                    .bindable_navigation_info_top();
             if (ni && !fpzero(ni->getVisibilityLimit())
                     && xyz[0][2] < -(ni->getVisibilityLimit())) {
                 inside = false;
@@ -16657,9 +16657,9 @@ void VisibilitySensor::processSet_size(const field_value & value,
 /**
  * @brief Constructor.
  *
- * @param browser the Browser associated with this NodeClass.
+ * @param browser the browser associated with this NodeClass.
  */
-WorldInfoClass::WorldInfoClass(Browser & browser):
+WorldInfoClass::WorldInfoClass(OpenVRML::browser & browser):
     node_class(browser)
 {}
 

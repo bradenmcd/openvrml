@@ -31,10 +31,10 @@
 
 namespace OpenVRML {
 
-    class OPENVRML_SCOPE InvalidVrml : public std::runtime_error {
+    class OPENVRML_SCOPE invalid_vrml : public std::runtime_error {
     public:
-        InvalidVrml();
-        virtual ~InvalidVrml() throw ();
+        invalid_vrml();
+        virtual ~invalid_vrml() throw ();
     };
 
     class Doc2;
@@ -42,162 +42,162 @@ namespace OpenVRML {
     class ProtoNode;
     class Scene;
     class Vrml97RootScope;
-    class NullNodeClass;
-    class NullNodeType;
+    class null_node_class;
+    class null_node_type;
 
-    class OPENVRML_SCOPE Browser {
+    class OPENVRML_SCOPE browser {
         friend class Vrml97Parser;
         friend class ProtoNodeClass;
         friend class Vrml97RootScope;
 
     public:
-        enum CBReason {
-            DESTROY_WORLD,
-            REPLACE_WORLD
+        enum cb_reason {
+            destroy_world_id,
+            replace_world_id
         };
 
-        typedef void (*SceneCB)(CBReason reason);
+        typedef void (*scene_cb)(cb_reason reason);
 
     private:
-        std::auto_ptr<NullNodeClass> nullNodeClass;
-        std::auto_ptr<NullNodeType> nullNodeType;
-        typedef std::map<std::string, node_class_ptr> NodeClassMap;
-        NodeClassMap nodeClassMap;
-        script_node_class scriptNodeClass;
+        std::auto_ptr<null_node_class> null_node_class_;
+        std::auto_ptr<null_node_type> null_node_type_;
+        typedef std::map<std::string, node_class_ptr> node_class_map_t;
+        node_class_map_t node_class_map;
+        script_node_class script_node_class_;
         Scene * scene;
-        node_ptr defaultViewpoint;
-        viewpoint_node * activeViewpoint;
-        std::list<viewpoint_node *> viewpointList;
-        typedef std::list<node_ptr> BindStack;
-        BindStack d_navigationInfoStack;
-        std::list<node *> d_navigationInfos;
-        std::list<node *> d_scopedLights;
-        std::list<script_node *> d_scripts;
-        std::list<node *> d_timers;
-        std::list<node *> d_audioClips;
-        std::list<node *> d_movies;
-        std::list<ProtoNode *> protoNodeList;
-        bool d_modified;
-        bool d_newView;
-        double d_deltaTime;
+        node_ptr default_viewpoint;
+        viewpoint_node * active_viewpoint_;
+        std::list<viewpoint_node *> viewpoint_list;
+        typedef std::list<node_ptr> bind_stack_t;
+        bind_stack_t navigation_info_stack;
+        std::list<node *> navigation_infos;
+        std::list<node *> scoped_lights;
+        std::list<script_node *> scripts;
+        std::list<node *> timers;
+        std::list<node *> audio_clips;
+        std::list<node *> movies;
+        std::list<ProtoNode *> proto_node_list;
+        bool modified_;
+        bool new_view;
+        double delta_time;
 
     protected:
-        typedef std::list < SceneCB > SceneCBList;
+        typedef std::list<scene_cb> scene_cb_list_t;
 
-        struct Event {
-            double timeStamp;
+        struct event {
+            double timestamp;
             field_value * value;
-            node_ptr toNode;
-            std::string toEventIn;
+            node_ptr to_node;
+            std::string to_eventin;
         };
 
-        SceneCBList d_sceneCallbacks;
+        scene_cb_list_t scene_callbacks;
 
-        double d_frameRate;
+        double frame_rate_;
 
-        enum { MAXEVENTS = 400 };
-        Event d_eventMem[MAXEVENTS];
-        size_t d_firstEvent;
-        size_t d_lastEvent;
+        enum { max_events = 400 };
+        event event_mem[max_events];
+        size_t first_event;
+        size_t last_event;
 
     public:
-        static double getCurrentTime() throw ();
+        static double current_time() throw ();
 
         std::ostream & out;
         std::ostream & err;
-        bool d_flags_need_updating;
+        bool flags_need_updating;
 
-        Browser(std::ostream & out, std::ostream & err) throw (std::bad_alloc);
-        virtual ~Browser() throw ();
+        browser(std::ostream & out, std::ostream & err) throw (std::bad_alloc);
+        virtual ~browser() throw ();
 
-        const std::vector<node_ptr> & getRootNodes() const throw ();
-        const node_path findNode(const node & node) const
+        const std::vector<node_ptr> & root_nodes() const throw ();
+        const node_path find_node(const node & node) const
             throw (std::bad_alloc);
-        viewpoint_node & getActiveViewpoint() const throw ();
-        void setActiveViewpoint(viewpoint_node & viewpoint) throw ();
-        void resetDefaultViewpoint() throw ();
-        void addViewpoint(viewpoint_node & viewpoint) throw (std::bad_alloc);
-        void removeViewpoint(viewpoint_node & viewpoint) throw ();
-        const std::list<viewpoint_node *> & getViewpoints() const throw ();
+        viewpoint_node & active_viewpoint() const throw ();
+        void active_viewpoint(viewpoint_node & viewpoint) throw ();
+        void reset_default_viewpoint() throw ();
+        void add_viewpoint(viewpoint_node & viewpoint) throw (std::bad_alloc);
+        void remove_viewpoint(viewpoint_node & viewpoint) throw ();
+        const std::list<viewpoint_node *> & viewpoints() const throw ();
 
-        virtual const char * getName() const throw ();
-        virtual const char * getVersion() const throw ();
-        float getCurrentSpeed();
-        const std::string getWorldURI() const throw (std::bad_alloc);
-        void replaceWorld(const std::vector<node_ptr> & nodes);
-        virtual void loadURI(const std::vector<std::string> & uri,
-                             const std::vector<std::string> & parameter)
+        virtual const char * name() const throw ();
+        virtual const char * version() const throw ();
+        float current_speed();
+        const std::string world_url() const throw (std::bad_alloc);
+        void replace_world(const std::vector<node_ptr> & nodes);
+        virtual void load_url(const std::vector<std::string> & url,
+                              const std::vector<std::string> & parameter)
             throw (std::bad_alloc);
-        virtual void setDescription(const std::string & description);
-        const std::vector<node_ptr> createVrmlFromStream(std::istream & in);
-        void createVrmlFromURI(const std::vector<std::string> & uri,
-                               const node_ptr & node,
-                               const std::string & event);
+        virtual void description(const std::string & description);
+        const std::vector<node_ptr> create_vrml_from_stream(std::istream & in);
+        void create_vrml_from_url(const std::vector<std::string> & url,
+                                  const node_ptr & node,
+                                  const std::string & event);
 
-        void addWorldChangedCallback(SceneCB);
+        void add_world_changed_callback(scene_cb);
 
-        void sensitiveEvent(node * object, double timeStamp,
-		            bool isOver, bool isActive, double *point );
+        void sensitive_event(node * object, double timestamp,
+                             bool is_over, bool is_active, double * point);
 
-        void queueEvent(double timeStamp, field_value * value,
-                        const node_ptr & toNode, const std::string & toEventIn);
+        void queue_event(double timestamp, field_value * value,
+                         const node_ptr & toNode,
+                         const std::string & to_eventin);
 
-        bool eventsPending();
+        bool events_pending();
 
-        void flushEvents();
+        void flush_events();
 
-        double getFrameRate() const;
+        double frame_rate() const;
 
-        bool update(double currentTime = -1.0);
+        bool update(double current_time = -1.0);
 
         void render(Viewer & viewer);
 
-        void setModified();
-        void clearModified();
-        bool isModified() const;
+        void modified(bool value);
+        bool modified() const;
 
-        void setDelta(double d);
-        double getDelta() const;
+        void delta(double d);
+        double delta() const;
 
-        void addNavigationInfo(Vrml97Node::NavigationInfo &);
-        void removeNavigationInfo(Vrml97Node::NavigationInfo &);
-        Vrml97Node::NavigationInfo *bindableNavigationInfoTop();
-        void bindablePush(Vrml97Node::NavigationInfo *);
-        void bindableRemove(Vrml97Node::NavigationInfo *);
+        void add_navigation_info(Vrml97Node::NavigationInfo &);
+        void remove_navigation_info(Vrml97Node::NavigationInfo &);
+        Vrml97Node::NavigationInfo *bindable_navigation_info_top();
+        void bindable_push(Vrml97Node::NavigationInfo *);
+        void bindable_remove(Vrml97Node::NavigationInfo *);
 
-        void addScopedLight(Vrml97Node::AbstractLight &);
-        void removeScopedLight(Vrml97Node::AbstractLight &);
+        void add_scoped_light(Vrml97Node::AbstractLight &);
+        void remove_scoped_light(Vrml97Node::AbstractLight &);
 
-        void addTimeSensor(Vrml97Node::TimeSensor &);
-        void removeTimeSensor(Vrml97Node::TimeSensor &);
+        void add_time_sensor(Vrml97Node::TimeSensor &);
+        void remove_time_sensor(Vrml97Node::TimeSensor &);
 
-        void addAudioClip(Vrml97Node::AudioClip &);
-        void removeAudioClip(Vrml97Node::AudioClip &);
+        void add_audio_clip(Vrml97Node::AudioClip &);
+        void remove_audio_clip(Vrml97Node::AudioClip &);
 
-        void addMovie(Vrml97Node::MovieTexture &);
-        void removeMovie(Vrml97Node::MovieTexture &);
+        void add_movie(Vrml97Node::MovieTexture &);
+        void remove_movie(Vrml97Node::MovieTexture &);
 
-        void addProto(ProtoNode & node);
-        void removeProto(ProtoNode & node);
-        void addScript(script_node &);
-        void removeScript(script_node &);
+        void add_proto(ProtoNode & node);
+        void remove_proto(ProtoNode & node);
+        void add_script(script_node &);
+        void remove_script(script_node &);
 
-        void updateFlags();
+        void update_flags();
 
     protected:
-        bool headlightOn();
-        void doCallbacks(CBReason reason);
+        bool headlight_on();
+        void do_callbacks(cb_reason reason);
 
-        const node_ptr bindableTop(const BindStack & stack);
-        void bindablePush(BindStack & stack, const node_ptr & node);
-        void bindableRemove(BindStack & stack, const node_ptr & node);
+        const node_ptr bindable_top(const bind_stack_t & stack);
+        void bindable_push(bind_stack_t & stack, const node_ptr & node);
+        void bindable_remove(bind_stack_t & stack, const node_ptr & node);
 
     private:
         // Not copyable.
-        Browser(const Browser &);
-        Browser & operator=(const Browser &);
+        browser(const browser &);
+        browser & operator=(const browser &);
 
-        void initNodeClassMap();
+        void init_node_class_map();
     };
 
 
@@ -227,12 +227,13 @@ namespace OpenVRML {
         std::string uri;
 
     public:
-        Browser & browser;
+        OpenVRML::browser & browser;
         Scene * const parent;
 
-        Scene(Browser & browser, const std::vector<std::string> & uri,
+        Scene(OpenVRML::browser & browser,
+              const std::vector<std::string> & uri,
               Scene * parent = 0)
-            throw (InvalidVrml, std::bad_alloc);
+            throw (invalid_vrml, std::bad_alloc);
 
         void initialize(double timestamp) throw (std::bad_alloc);
         const std::vector<node_ptr> & getNodes() const throw ();

@@ -54,7 +54,7 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE script_node_class : public node_class {
     public:
-        script_node_class(Browser & browser);
+        script_node_class(OpenVRML::browser & browser);
         virtual ~script_node_class() throw ();
 
         virtual const node_type_ptr

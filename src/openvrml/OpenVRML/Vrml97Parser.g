@@ -608,7 +608,7 @@ private:
     const std::string uri;
 }
 
-vrmlScene[OpenVRML::Browser & browser,
+vrmlScene[OpenVRML::browser & browser,
           std::vector<node_ptr> & nodes]
 {
     const scope_ptr scope(new Vrml97RootScope(browser, this->uri));
@@ -616,7 +616,7 @@ vrmlScene[OpenVRML::Browser & browser,
     :   (statement[browser, nodes, scope])*
     ;
 
-statement[OpenVRML::Browser & browser,
+statement[OpenVRML::browser & browser,
           std::vector<node_ptr> & nodes,
           const OpenVRML::scope_ptr & scope]
     {
@@ -633,7 +633,7 @@ statement[OpenVRML::Browser & browser,
     | routeStatement[*scope]
     ;
 
-nodeStatement[OpenVRML::Browser & browser,
+nodeStatement[OpenVRML::browser & browser,
               const OpenVRML::scope_ptr & scope]
 returns [OpenVRML::node_ptr n]
 options { defaultErrorHandler=false; }
@@ -657,7 +657,7 @@ options { defaultErrorHandler=false; }
         reportError(ex);
     }
 
-protoStatement[OpenVRML::Browser & browser,
+protoStatement[OpenVRML::browser & browser,
                const OpenVRML::scope_ptr & scope]
     //
     // XXX What if the node type already exists in the scope? Probably need to
@@ -667,7 +667,7 @@ protoStatement[OpenVRML::Browser & browser,
     | proto[browser, scope]
     ;
 
-proto[OpenVRML::Browser & browser,
+proto[OpenVRML::browser & browser,
       const OpenVRML::scope_ptr & scope]
 {
     node_class_ptr nodeClass;
@@ -693,7 +693,7 @@ proto[OpenVRML::Browser & browser,
         RBRACE
         {
             //
-            // Add the new NodeClass (prototype definition) to the Browser's
+            // Add the new NodeClass (prototype definition) to the browser's
             // NodeClassMap.
             //
             // First, construct the id for the node implementation.
@@ -703,8 +703,9 @@ proto[OpenVRML::Browser & browser,
                 implId += '#' + protoScope->id;
                 protoScope = protoScope->parent;
             }
-            const Browser::NodeClassMap::value_type value(implId, nodeClass);
-            browser.nodeClassMap.insert(value);
+            const browser::node_class_map_t::value_type
+                value(implId, nodeClass);
+            browser.node_class_map.insert(value);
 
             //
             // PROTO's implicitly introduce a new node type as well...
@@ -830,7 +831,7 @@ options { defaultErrorHandler=false; }
     | n=protoNode[proto, scope, std::string()]
     ;
 
-externproto[OpenVRML::Browser & browser, const OpenVRML::scope_ptr & scope]
+externproto[OpenVRML::browser & browser, const OpenVRML::scope_ptr & scope]
 {
     OpenVRML::node_interface_set interfaces;
     OpenVRML::mfstring urlList;
@@ -840,9 +841,9 @@ externproto[OpenVRML::Browser & browser, const OpenVRML::scope_ptr & scope]
         (externInterfaceDeclaration[interfaces])* RBRACKET
         urlList=externprotoUrlList {
             for (size_t i = 0; i < urlList.value.size(); ++i) {
-            	Browser::NodeClassMap::const_iterator pos =
-                        browser.nodeClassMap.find(urlList.value[i]);
-                if (pos != browser.nodeClassMap.end()) {
+            	browser::node_class_map_t::const_iterator pos =
+                        browser.node_class_map.find(urlList.value[i]);
+                if (pos != browser.node_class_map.end()) {
                     nodeType = pos->second->create_type(id->getText(),
                                                         interfaces);
                     break;
@@ -939,7 +940,7 @@ routeStatement[const OpenVRML::scope & scope]
         }
     ;
 
-node[OpenVRML::Browser & browser,
+node[OpenVRML::browser & browser,
      const OpenVRML::scope_ptr & scope,
      const std::string & nodeId]
 returns [OpenVRML::node_ptr n]
@@ -953,7 +954,7 @@ options { defaultErrorHandler = false; }
     node_type_ptr nodeType;
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID {
-            n.reset(new script_node(browser.scriptNodeClass, scope));
+            n.reset(new script_node(browser.script_node_class_, scope));
             if (!nodeId.empty()) { n->id(nodeId); }
 
             script_node * const scriptNode = n->to_script();
@@ -1086,7 +1087,7 @@ options { defaultErrorHandler=false; }
     node_type_ptr nodeType;
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID {
-            n.reset(new script_node(proto.browser.scriptNodeClass, scope));
+            n.reset(new script_node(proto.browser.script_node_class_, scope));
             if (!nodeId.empty()) { n->id(nodeId); }
 
             script_node * const scriptNode = n->to_script();
@@ -1318,7 +1319,7 @@ returns [OpenVRML::field_value::type_id ft = OpenVRML::field_value::invalid_type
     | FIELDTYPE_SFVEC3F     { ft = field_value::sfvec3f_id; }
     ;
 
-fieldValue[OpenVRML::Browser & browser,
+fieldValue[OpenVRML::browser & browser,
            const OpenVRML::scope_ptr & scope,
            OpenVRML::field_value::type_id ft]
 returns [OpenVRML::field_value_ptr fv]
@@ -1369,7 +1370,7 @@ options { defaultErrorHandler=false; }
     | fv=mfVec3fValue
     ;
 
-nodeFieldValue[OpenVRML::Browser & browser,
+nodeFieldValue[OpenVRML::browser & browser,
                const OpenVRML::scope_ptr & scope,
                OpenVRML::field_value::type_id ft]
 returns [OpenVRML::field_value_ptr fv]
@@ -1543,7 +1544,7 @@ options { defaultErrorHandler=false; }
     |  	i1:HEX_INTEGER  { std::istringstream(i1->getText()) >> val; }
     ;
 
-sfNodeValue[OpenVRML::Browser & browser,
+sfNodeValue[OpenVRML::browser & browser,
             const OpenVRML::scope_ptr & scope]
 returns [OpenVRML::field_value_ptr snv]
 {
@@ -1563,7 +1564,7 @@ returns [OpenVRML::field_value_ptr snv]
     | KEYWORD_NULL                       { snv.reset(new sfnode); }
     ;
 
-mfNodeValue[OpenVRML::Browser & browser,
+mfNodeValue[OpenVRML::browser & browser,
             const OpenVRML::scope_ptr & scope]
 returns [OpenVRML::field_value_ptr mnv = OpenVRML::field_value_ptr(new mfnode)]
 {

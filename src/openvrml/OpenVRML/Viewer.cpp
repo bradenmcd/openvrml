@@ -104,17 +104,19 @@ namespace OpenVRML {
  */
 
 /**
- * @var Browser & Viewer::browser
+ * @var OpenVRML::browser & Viewer::browser
  *
- * @brief The Browser associated with the Viewer.
+ * @brief The browser associated with the Viewer.
  */
 
 /**
  * @brief Constructor.
  *
- * @param browser   a Browser.
+ * @param browser   a browser.
  */
-Viewer::Viewer(Browser & browser): browser(browser) {}
+Viewer::Viewer(OpenVRML::browser & browser):
+    browser(browser)
+{}
 
 /**
  * @brief Destructor.

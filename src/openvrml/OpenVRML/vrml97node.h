@@ -202,7 +202,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE GroupClass : public node_class {
         public:
-            explicit GroupClass(Browser & browser);
+            explicit GroupClass(OpenVRML::browser & browser);
             virtual ~GroupClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -267,7 +267,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE AnchorClass : public node_class {
         public:
-            explicit AnchorClass(Browser & browser);
+            explicit AnchorClass(OpenVRML::browser & browser);
             virtual ~AnchorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -322,7 +322,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE AppearanceClass : public node_class {
         public:
-            explicit AppearanceClass(Browser & browser);
+            explicit AppearanceClass(OpenVRML::browser & browser);
             virtual ~AppearanceClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -373,7 +373,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE AudioClipClass : public node_class {
         public:
-            explicit AudioClipClass(Browser & browser);
+            explicit AudioClipClass(OpenVRML::browser & browser);
             virtual ~AudioClipClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -446,7 +446,7 @@ namespace OpenVRML {
             BoundNodes boundNodes;
 
         public:
-            explicit BackgroundClass(Browser & browser);
+            explicit BackgroundClass(OpenVRML::browser & browser);
             virtual ~BackgroundClass() throw ();
 
             void setFirst(Background & background) throw ();
@@ -536,7 +536,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE BillboardClass : public node_class {
         public:
-            explicit BillboardClass(Browser & browser);
+            explicit BillboardClass(OpenVRML::browser & browser);
             virtual ~BillboardClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -580,7 +580,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE BoxClass : public node_class {
         public:
-            explicit BoxClass(Browser & browser);
+            explicit BoxClass(OpenVRML::browser & browser);
             virtual ~BoxClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -608,7 +608,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE CollisionClass : public node_class {
         public:
-            explicit CollisionClass(Browser & browser);
+            explicit CollisionClass(OpenVRML::browser & browser);
             virtual ~CollisionClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -641,7 +641,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE ColorClass : public node_class {
         public:
-            explicit ColorClass(Browser & browser);
+            explicit ColorClass(OpenVRML::browser & browser);
             virtual ~ColorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -682,7 +682,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE ColorInterpolatorClass : public node_class {
         public:
-            explicit ColorInterpolatorClass(Browser & browser);
+            explicit ColorInterpolatorClass(OpenVRML::browser & browser);
             virtual ~ColorInterpolatorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -727,7 +727,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE ConeClass : public node_class {
         public:
-            explicit ConeClass(Browser & browser);
+            explicit ConeClass(OpenVRML::browser & browser);
             virtual ~ConeClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -755,7 +755,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE CoordinateClass : public node_class {
         public:
-            explicit CoordinateClass(Browser & browser);
+            explicit CoordinateClass(OpenVRML::browser & browser);
             virtual ~CoordinateClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -796,7 +796,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE CoordinateInterpolatorClass : public node_class {
         public:
-            explicit CoordinateInterpolatorClass(Browser & browser);
+            explicit CoordinateInterpolatorClass(OpenVRML::browser & browser);
             virtual ~CoordinateInterpolatorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -842,7 +842,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE CylinderClass : public node_class {
         public:
-            explicit CylinderClass(Browser & browser);
+            explicit CylinderClass(OpenVRML::browser & browser);
             virtual ~CylinderClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -871,7 +871,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE CylinderSensorClass : public node_class {
         public:
-            explicit CylinderSensorClass(Browser & browser);
+            explicit CylinderSensorClass(OpenVRML::browser & browser);
             virtual ~CylinderSensorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -931,7 +931,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE DirectionalLightClass : public node_class {
         public:
-            explicit DirectionalLightClass(Browser & browser);
+            explicit DirectionalLightClass(OpenVRML::browser & browser);
             virtual ~DirectionalLightClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -962,7 +962,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE ElevationGridClass : public node_class {
         public:
-            explicit ElevationGridClass(Browser & browser);
+            explicit ElevationGridClass(OpenVRML::browser & browser);
             virtual ~ElevationGridClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1015,7 +1015,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE ExtrusionClass : public node_class {
         public:
-            explicit ExtrusionClass(Browser & browser);
+            explicit ExtrusionClass(OpenVRML::browser & browser);
             virtual ~ExtrusionClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1073,7 +1073,7 @@ namespace OpenVRML {
             BoundNodes boundNodes;
 
         public:
-            explicit FogClass(Browser & browser);
+            explicit FogClass(OpenVRML::browser & browser);
             virtual ~FogClass() throw ();
 
             void setFirst(Fog & fog) throw ();
@@ -1124,7 +1124,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE FontStyleClass : public node_class {
         public:
-            explicit FontStyleClass(Browser & browser);
+            explicit FontStyleClass(OpenVRML::browser & browser);
             virtual ~FontStyleClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1168,7 +1168,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE ImageTextureClass : public node_class {
         public:
-            explicit ImageTextureClass(Browser & browser);
+            explicit ImageTextureClass(OpenVRML::browser & browser);
             virtual ~ImageTextureClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1209,7 +1209,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE IndexedFaceSetClass : public node_class {
         public:
-            explicit IndexedFaceSetClass(Browser & browser);
+            explicit IndexedFaceSetClass(OpenVRML::browser & browser);
             virtual ~IndexedFaceSetClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1265,7 +1265,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE IndexedLineSetClass : public node_class {
         public:
-            explicit IndexedLineSetClass(Browser & browser);
+            explicit IndexedLineSetClass(OpenVRML::browser & browser);
             virtual ~IndexedLineSetClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1288,7 +1288,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE InlineClass : public node_class {
         public:
-            explicit InlineClass(Browser & browser);
+            explicit InlineClass(OpenVRML::browser & browser);
             virtual ~InlineClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1332,7 +1332,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE LODClass : public node_class {
         public:
-            explicit LODClass(Browser & browser);
+            explicit LODClass(OpenVRML::browser & browser);
             virtual ~LODClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1378,7 +1378,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE MaterialClass : public node_class {
         public:
-            explicit MaterialClass(Browser & browser);
+            explicit MaterialClass(OpenVRML::browser & browser);
             virtual ~MaterialClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1439,7 +1439,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE MovieTextureClass : public node_class {
         public:
-            explicit MovieTextureClass(Browser & browser);
+            explicit MovieTextureClass(OpenVRML::browser & browser);
             virtual ~MovieTextureClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1503,7 +1503,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE NavigationInfoClass : public node_class {
         public:
-            explicit NavigationInfoClass(Browser & browser);
+            explicit NavigationInfoClass(OpenVRML::browser & browser);
             virtual ~NavigationInfoClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1576,7 +1576,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE NormalClass : public node_class {
         public:
-            explicit NormalClass(Browser & browser);
+            explicit NormalClass(OpenVRML::browser & browser);
             virtual ~NormalClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1610,7 +1610,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE NormalInterpolatorClass : public node_class {
         public:
-            explicit NormalInterpolatorClass(Browser & browser);
+            explicit NormalInterpolatorClass(OpenVRML::browser & browser);
             virtual ~NormalInterpolatorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1647,7 +1647,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE OrientationInterpolatorClass : public node_class {
         public:
-            explicit OrientationInterpolatorClass(Browser & browser);
+            explicit OrientationInterpolatorClass(OpenVRML::browser & browser);
             virtual ~OrientationInterpolatorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1684,7 +1684,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE PixelTextureClass : public node_class {
         public:
-            explicit PixelTextureClass(Browser & browser);
+            explicit PixelTextureClass(OpenVRML::browser & browser);
             virtual ~PixelTextureClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1723,7 +1723,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE PlaneSensorClass : public node_class {
         public:
-            explicit PlaneSensorClass(Browser & browser);
+            explicit PlaneSensorClass(OpenVRML::browser & browser);
             virtual ~PlaneSensorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1779,7 +1779,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE PointLightClass : public node_class {
         public:
-            explicit PointLightClass(Browser & browser);
+            explicit PointLightClass(OpenVRML::browser & browser);
             virtual ~PointLightClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1821,7 +1821,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE PointSetClass : public node_class {
         public:
-            explicit PointSetClass(Browser & browser);
+            explicit PointSetClass(OpenVRML::browser & browser);
             virtual ~PointSetClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1863,7 +1863,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE PositionInterpolatorClass : public node_class {
         public:
-            explicit PositionInterpolatorClass(Browser & browser);
+            explicit PositionInterpolatorClass(OpenVRML::browser & browser);
             virtual ~PositionInterpolatorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1901,7 +1901,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE ProximitySensorClass : public node_class {
         public:
-            explicit ProximitySensorClass(Browser & browser);
+            explicit ProximitySensorClass(OpenVRML::browser & browser);
             virtual ~ProximitySensorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1943,7 +1943,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE ScalarInterpolatorClass : public node_class {
         public:
-            explicit ScalarInterpolatorClass(Browser & browser);
+            explicit ScalarInterpolatorClass(OpenVRML::browser & browser);
             virtual ~ScalarInterpolatorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -1981,7 +1981,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE ShapeClass : public node_class {
         public:
-            explicit ShapeClass(Browser & browser);
+            explicit ShapeClass(OpenVRML::browser & browser);
             virtual ~ShapeClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2022,7 +2022,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE SoundClass : public node_class {
         public:
-            explicit SoundClass(Browser & browser);
+            explicit SoundClass(OpenVRML::browser & browser);
             virtual ~SoundClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2079,7 +2079,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE SphereClass : public node_class {
         public:
-            explicit SphereClass(Browser & browser);
+            explicit SphereClass(OpenVRML::browser & browser);
             virtual ~SphereClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2106,7 +2106,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE SphereSensorClass : public node_class {
         public:
-            explicit SphereSensorClass(Browser & browser);
+            explicit SphereSensorClass(OpenVRML::browser & browser);
             virtual ~SphereSensorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2158,7 +2158,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE SpotLightClass : public node_class {
         public:
-            explicit SpotLightClass(Browser & browser);
+            explicit SpotLightClass(OpenVRML::browser & browser);
             virtual ~SpotLightClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2212,7 +2212,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE SwitchClass : public node_class {
         public:
-            explicit SwitchClass(Browser & browser);
+            explicit SwitchClass(OpenVRML::browser & browser);
             virtual ~SwitchClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2263,7 +2263,7 @@ namespace OpenVRML {
         public:
             FT_Library freeTypeLibrary;
 
-            explicit TextClass(Browser & browser);
+            explicit TextClass(OpenVRML::browser & browser);
             virtual ~TextClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2344,7 +2344,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE TextureCoordinateClass : public node_class {
         public:
-            explicit TextureCoordinateClass(Browser & browser);
+            explicit TextureCoordinateClass(OpenVRML::browser & browser);
             virtual ~TextureCoordinateClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2380,7 +2380,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE TextureTransformClass : public node_class {
         public:
-            explicit TextureTransformClass(Browser & browser);
+            explicit TextureTransformClass(OpenVRML::browser & browser);
             virtual ~TextureTransformClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2425,7 +2425,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE TimeSensorClass : public node_class {
         public:
-            explicit TimeSensorClass(Browser & browser);
+            explicit TimeSensorClass(OpenVRML::browser & browser);
             virtual ~TimeSensorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2483,7 +2483,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE TouchSensorClass : public node_class {
         public:
-            explicit TouchSensorClass(Browser & browser);
+            explicit TouchSensorClass(OpenVRML::browser & browser);
             virtual ~TouchSensorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2525,7 +2525,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE TransformClass : public node_class {
         public:
-            explicit TransformClass(Browser & browser);
+            explicit TransformClass(OpenVRML::browser & browser);
             virtual ~TransformClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2592,7 +2592,7 @@ namespace OpenVRML {
             BoundNodes boundNodes;
 
         public:
-            explicit ViewpointClass(Browser & browser);
+            explicit ViewpointClass(OpenVRML::browser & browser);
             virtual ~ViewpointClass() throw ();
 
             void setFirst(Viewpoint & viewpoint) throw ();
@@ -2672,7 +2672,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE VisibilitySensorClass : public node_class {
         public:
-            explicit VisibilitySensorClass(Browser & browser);
+            explicit VisibilitySensorClass(OpenVRML::browser & browser);
             virtual ~VisibilitySensorClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
@@ -2714,7 +2714,7 @@ namespace OpenVRML {
 
         class OPENVRML_SCOPE WorldInfoClass : public node_class {
         public:
-            explicit WorldInfoClass(Browser & browser);
+            explicit WorldInfoClass(OpenVRML::browser & browser);
             virtual ~WorldInfoClass() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,

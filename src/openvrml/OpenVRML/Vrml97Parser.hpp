@@ -139,35 +139,35 @@ public:
 		return Vrml97Parser::tokenNames;
 	}
 	public: void vrmlScene(
-		OpenVRML::Browser & browser,
+		OpenVRML::browser & browser,
           std::vector<node_ptr> & nodes
 	);
 	public: void statement(
-		OpenVRML::Browser & browser,
+		OpenVRML::browser & browser,
           std::vector<node_ptr> & nodes,
           const OpenVRML::scope_ptr & scope
 	);
 	public: OpenVRML::node_ptr  nodeStatement(
-		OpenVRML::Browser & browser,
+		OpenVRML::browser & browser,
               const OpenVRML::scope_ptr & scope
 	);
 	public: void protoStatement(
-		OpenVRML::Browser & browser,
+		OpenVRML::browser & browser,
                const OpenVRML::scope_ptr & scope
 	);
 	public: void routeStatement(
 		const OpenVRML::scope & scope
 	);
 	public: OpenVRML::node_ptr  node(
-		OpenVRML::Browser & browser,
+		OpenVRML::browser & browser,
      const OpenVRML::scope_ptr & scope,
      const std::string & nodeId
 	);
 	public: void externproto(
-		OpenVRML::Browser & browser, const OpenVRML::scope_ptr & scope
+		OpenVRML::browser & browser, const OpenVRML::scope_ptr & scope
 	);
 	public: void proto(
-		OpenVRML::Browser & browser,
+		OpenVRML::browser & browser,
       const OpenVRML::scope_ptr & scope
 	);
 	public: void protoInterfaceDeclaration(
@@ -182,7 +182,7 @@ public:
 	public: OpenVRML::field_value::type_id  fieldType();
 	public: OpenVRML::node_interface::type_id  fieldInterfaceType();
 	public: OpenVRML::field_value_ptr  fieldValue(
-		OpenVRML::Browser & browser,
+		OpenVRML::browser & browser,
            const OpenVRML::scope_ptr & scope,
            OpenVRML::field_value::type_id ft
 	);
@@ -242,7 +242,7 @@ public:
                                      OpenVRML::script_node & node
 	);
 	public: OpenVRML::field_value_ptr  nodeFieldValue(
-		OpenVRML::Browser & browser,
+		OpenVRML::browser & browser,
                const OpenVRML::scope_ptr & scope,
                OpenVRML::field_value::type_id ft
 	);
@@ -273,11 +273,11 @@ public:
 	public: OpenVRML::field_value_ptr  mfVec2fValue();
 	public: OpenVRML::field_value_ptr  mfVec3fValue();
 	public: OpenVRML::field_value_ptr  sfNodeValue(
-		OpenVRML::Browser & browser,
+		OpenVRML::browser & browser,
             const OpenVRML::scope_ptr & scope
 	);
 	public: OpenVRML::field_value_ptr  mfNodeValue(
-		OpenVRML::Browser & browser,
+		OpenVRML::browser & browser,
             const OpenVRML::scope_ptr & scope
 	);
 	public: OpenVRML::field_value_ptr  protoSfNodeValue(

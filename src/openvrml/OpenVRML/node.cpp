@@ -400,20 +400,20 @@ node_interface_set::find(const std::string & id) const throw ()
  */
 
 /**
- * @var Browser & node_class::browser
+ * @var OpenVRML::browser & node_class::browser
  *
- * @brief The Browser associated with this node_class.
+ * @brief The browser associated with this node_class.
  */
 
 /**
  * @brief Constructor.
  *
- * A node_class is constructed using a Browser. All node instances that share
- * a particular node_class "belong to" the Browser associated with the node_class.
+ * A node_class is constructed using a browser. All node instances that share
+ * a particular node_class "belong to" the browser associated with the node_class.
  *
- * @param browser   the Browser to be associated with the node_class.
+ * @param browser   the browser to be associated with the node_class.
  */
-node_class::node_class(Browser & browser) throw ():
+node_class::node_class(OpenVRML::browser & browser) throw ():
     browser(browser)
 {}
 
@@ -426,7 +426,7 @@ node_class::~node_class() throw ()
 /**
  * @brief node_class-specific initialization.
  *
- * This method is called during initialization of a Browser object with a new
+ * This method is called during initialization of a browser object with a new
  * root Scene. It is called after the individual node instances have been
  * initialized, and before the world starts running.
  *
@@ -1720,7 +1720,7 @@ const node::routes_t & node::routes() const
 void node::modified(const bool value)
 {
     this->modified_ = value;
-    if (this->modified_) { this->type._class.browser.setModified(); }
+    if (this->modified_) { this->type._class.browser.modified(true); }
 }
 
 /**
@@ -1834,7 +1834,7 @@ void node::bvolume_dirty(const bool value)
 {
     this->bvolume_dirty_ = value;
     if (value) { // only if dirtying, not clearing
-        this->type._class.browser.d_flags_need_updating = true;
+        this->type._class.browser.flags_need_updating = true;
     }
 }
 
@@ -1844,9 +1844,9 @@ void node::bvolume_dirty(const bool value)
  */
 bool node::bvolume_dirty() const
 {
-    if (this->type._class.browser.d_flags_need_updating) {
-        this->type._class.browser.updateFlags();
-        this->type._class.browser.d_flags_need_updating = false;
+    if (this->type._class.browser.flags_need_updating) {
+        this->type._class.browser.update_flags();
+        this->type._class.browser.flags_need_updating = false;
     }
     return this->bvolume_dirty_;
 }
@@ -1890,10 +1890,10 @@ void node::emit_event(const std::string & id,
             itr != this->routes_.end(); ++itr) {
         if (id == itr->from_eventout) {
             field_value * const event_value = value.clone().release();
-            this->scene()->browser.queueEvent(timestamp,
-                                              event_value,
-                                              itr->to_node,
-                                              itr->to_eventin);
+            this->scene()->browser.queue_event(timestamp,
+                                               event_value,
+                                               itr->to_node,
+                                               itr->to_eventin);
         }
     }
 }

@@ -128,13 +128,13 @@ namespace OpenVRML {
     }
 
 
-    class Browser;
+    class browser;
     class Viewer;
     class viewpoint_node;
 
     class OPENVRML_SCOPE node_class {
     public:
-        Browser & browser;
+        OpenVRML::browser & browser;
 
         virtual ~node_class() throw () = 0;
         virtual void initialize(viewpoint_node * initial_viewpoint,
@@ -146,7 +146,7 @@ namespace OpenVRML {
             throw (unsupported_interface, std::bad_alloc) = 0;
 
     protected:
-        explicit node_class(Browser & browser) throw ();
+        explicit node_class(OpenVRML::browser & browser) throw ();
     };
 
     class OPENVRML_SCOPE node_type {

@@ -3,21 +3,21 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
@@ -69,12 +69,12 @@ static ViewerGlut* getViewer(int w)
 }
 
 
-//  These callbacks locate the viewer object then call the 
+//  These callbacks locate the viewer object then call the
 //  viewer-specific versions.
 
 //  Do redraw callback.
 
-static void display() 
+static void display()
 {
   ViewerGlut *viewer = getViewer( glutGetWindow() );
   if (viewer) viewer->redraw();
@@ -166,11 +166,11 @@ static void resizeshapemask (void)
   Window root;
   int x, y;
   unsigned int h, w, depth;
-  XGCValues gcvalues;   
+  XGCValues gcvalues;
 
   /* Create a pixmap the same size as the window */
   XGetGeometry( display, window, &root, &x, &y,
-		&w, &h, &bwidth, &depth );  
+		&w, &h, &bwidth, &depth );
 
   if (! shape_mask || w != shapew || h != shapeh)
     {
@@ -208,7 +208,7 @@ static void doshape (void)
 
   glReadPixels(0, 0, shapew, shapeh, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE,
 	       stencil_data);
-  
+
   // yuck
   int i,j,k = 0;
   for (j=0; j<shapeh; ++j)
@@ -222,8 +222,8 @@ static void doshape (void)
 
   XPutImage(display, shape_mask, gc, shape_image, 0, 0, 0, 0, shapew, shapeh);
 
-  XShapeCombineMask(display,window,ShapeBounding, -bwidth, -bwidth, 
-		    shape_mask, 
+  XShapeCombineMask(display,window,ShapeBounding, -bwidth, -bwidth,
+		    shape_mask,
 		    ShapeSet );
 }
 
@@ -240,40 +240,39 @@ static void reshape(int width, int height)
 #endif
 }
 
-ViewerGlut::ViewerGlut(Browser & browser): ViewerOpenGL(browser) {
+ViewerGlut::ViewerGlut(OpenVRML::browser & browser):
+    ViewerOpenGL(browser)
+{
 #if USE_STENCIL_SHAPE
-  glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE | GLUT_STENCIL);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE | GLUT_STENCIL);
 #else
-  glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE );
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE );
 #endif
 
 #if 0
-  if (!  glutGet((GLenum) GLUT_DISPLAY_MODE_POSSIBLE))
-    exit(1);
+    if (!glutGet(GLenum(GLUT_DISPLAY_MODE_POSSIBLE))) { exit(1); }
 #endif
 
-  glutCreateWindow("VRML97 OpenGL Viewer");
-  d_window = glutGetWindow();
-  d_timerPending = false;
+    glutCreateWindow("VRML97 OpenGL Viewer");
+    d_window = glutGetWindow();
+    d_timerPending = false;
 
-  // If d_window is not "small", convert viewers to a map...
-  if (d_window > MAX_WINDOWS)
-    {
-      theSystem->error("ViewerGlut: too many windows.\n");
-      return;
+    // If d_window is not "small", convert viewers to a map...
+    if (d_window > MAX_WINDOWS) {
+        theSystem->error("ViewerGlut: too many windows.\n");
+        return;
     }
-  
-  viewers[d_window-1] = this;
 
-  // Register callbacks
-  glutDisplayFunc(reinterpret_cast<GlutDisplay>(display));
-  glutKeyboardFunc(reinterpret_cast<GlutKeyboard>(keyboard));
-  glutSpecialFunc(reinterpret_cast<GlutSpecial>(specialKey));
-  glutMouseFunc(reinterpret_cast<GlutMouse>(mouse));
-  glutMotionFunc(reinterpret_cast<GlutMotion>(motion));
-  glutPassiveMotionFunc(reinterpret_cast<GlutPassiveMotion>(passiveMotion));
-  glutReshapeFunc(reinterpret_cast<GlutReshape>(reshape));
+    viewers[d_window-1] = this;
 
+    // Register callbacks
+    glutDisplayFunc(reinterpret_cast<GlutDisplay>(display));
+    glutKeyboardFunc(reinterpret_cast<GlutKeyboard>(keyboard));
+    glutSpecialFunc(reinterpret_cast<GlutSpecial>(specialKey));
+    glutMouseFunc(reinterpret_cast<GlutMouse>(mouse));
+    glutMotionFunc(reinterpret_cast<GlutMotion>(motion));
+    glutPassiveMotionFunc(reinterpret_cast<GlutPassiveMotion>(passiveMotion));
+    glutReshapeFunc(reinterpret_cast<GlutReshape>(reshape));
 }
 
 
@@ -284,8 +283,8 @@ ViewerGlut::~ViewerGlut()
 }
 
 
-void ViewerGlut::wsPostRedraw() { 
-  glutPostRedisplay(); 
+void ViewerGlut::wsPostRedraw() {
+  glutPostRedisplay();
 }
 
 void ViewerGlut::wsSetCursor( CursorStyle c)
@@ -296,15 +295,14 @@ void ViewerGlut::wsSetCursor( CursorStyle c)
 			     GLUT_CURSOR_UP_DOWN,
 			     GLUT_CURSOR_CROSSHAIR
   };
-			     
   glutSetCursor( cursorMap[c] );
 }
 
-void ViewerGlut::wsSwapBuffers() { 
+void ViewerGlut::wsSwapBuffers() {
 #if USE_STENCIL_SHAPE
   doshape();
 #endif
-  glutSwapBuffers(); 
+  glutSwapBuffers();
 }
 
 
@@ -322,7 +320,7 @@ void ViewerGlut::timerUpdate()
 }
 
 // I think glut timers are one-shot deals.
-void ViewerGlut::wsSetTimer( double t ) 
+void ViewerGlut::wsSetTimer( double t )
 {
   if (! d_timerPending)
     {
