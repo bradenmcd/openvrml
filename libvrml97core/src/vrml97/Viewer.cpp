@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  Viewer.cpp
 //  Abstract base class for display of VRML models
 //
@@ -54,10 +53,13 @@ void Viewer::computeCylinder(double height,
 
     if (tc)
       {
-	tc[i][0] = ((float) i) / numFacets;
+	double u = 0.75 - ((float) i) / numFacets;
+	//double u = ((float) i) / numFacets + 0.25;
+	//if ( u > 1.0 ) u -= 1.0;
+	tc[i][0] = u; // ((float) i) / numFacets;
 	tc[i][1] = 0.0;
 	tc[i][2] = 0.0;
-	tc[numFacets+i][0] = ((float) i) / numFacets;
+	tc[numFacets+i][0] = u; //((float) i) / numFacets;
 	tc[numFacets+i][1] = 1.0;
 	tc[numFacets+i][2] = 0.0;
       }

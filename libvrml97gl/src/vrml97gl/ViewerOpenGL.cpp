@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  ViewerOpenGL.cpp
 //  Display of VRML models using OpenGL. This is an abstract class
 //  with no window system dependencies.
@@ -663,22 +662,30 @@ Viewer::Object ViewerOpenGL::insertCone(float h,
 	  glNormal3f( c[nfacets][1] + 0.5 * h,
 		      c[nfacets][0],
 		      c[nfacets][2] );
-	  glTexCoord2fv( &tc[nfacets][0] );
+	  glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
 	  glVertex3fv(   &c [nfacets][0] );
-	  glTexCoord2fv( &tc[0][0] );
+	  glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
 	  glVertex3fv(   & c[0][0] );
 	  glEnd();
 	}
 
-      if (bottom)		// tex coords...
+      if (bottom)
 	{
 	  glBegin( GL_TRIANGLE_FAN );
 	  glNormal3f( 0.0, -1.0, 0.0 );
+	  glTexCoord2f( 0.5, 0.5 );
 	  glVertex3f( 0.0, - 0.5 * h, 0.0 );
-	  for (int i = 0; i < nfacets; ++i)
+
+	  float angle = 0.5 * M_PI; // First v is at max x
+	  float aincr = 2.0 * M_PI / (float) nfacets;
+	  for (int i = 0; i < nfacets; ++i, angle+=aincr )
 	    {
+	      glTexCoord2f( 0.5*(1.+sin( angle )),
+			    0.5*(1.+cos( angle )) );
 	      glVertex3fv( &c[i+nfacets][0] );
 	    }
+	  glTexCoord2f( 0.5*(1.+sin( angle )),
+			0.5*(1.+cos( angle )) );
 	  glVertex3fv( &c[nfacets][0] );
 	  glEnd();
 	}
@@ -735,9 +742,9 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 	    }
 
 	  glNormal3f( c[nfacets][0], 0.0, c[nfacets][2] );
-	  glTexCoord2fv( &tc[nfacets][0] );
+	  glTexCoord2f( tc[nfacets][0]-1.0, tc[nfacets][1] );
 	  glVertex3fv(   &c [nfacets][0] );
-	  glTexCoord2fv( &tc[0][0] );
+	  glTexCoord2f( tc[0][0]-1.0, tc[0][1] );
 	  glVertex3fv(   & c[0][0] );
 	  glEnd();
 	}
@@ -746,11 +753,19 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 	{
 	  glBegin( GL_TRIANGLE_FAN );
 	  glNormal3f( 0.0, -1.0, 0.0);
+	  glTexCoord2f( 0.5, 0.5 );
 	  glVertex3f( 0.0, - 0.5 * h, 0.0 );
-	  for (int i = 0; i < nfacets; ++i)
+
+	  float angle = 0.5 * M_PI; // First v is at max x
+	  float aincr = 2.0 * M_PI / (float) nfacets;
+	  for (int i = 0; i < nfacets; ++i, angle+=aincr)
 	    {
+	      glTexCoord2f( 0.5*(1.+sin( angle )),
+			    0.5*(1.+cos( angle )) );
 	      glVertex3fv( &c[i+nfacets][0] );
 	    }
+	  glTexCoord2f( 0.5*(1.+sin( angle )),
+			0.5*(1.+cos( angle )) );
 	  glVertex3fv( &c[nfacets][0] );
 	  glEnd();
 	}
@@ -759,11 +774,19 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 	{
 	  glBegin( GL_TRIANGLE_FAN );
 	  glNormal3f( 0.0, 1.0, 0.0);
+	  glTexCoord2f( 0.5, 0.5 );
 	  glVertex3f( 0.0, 0.5 * h, 0.0 );
-	  for (int i = nfacets-1; i >= 0; --i)
+
+	  float angle = 0.75 * M_PI;
+	  float aincr = 2.0 * M_PI / (float) nfacets;
+	  for (int i = nfacets-1; i >= 0; --i, angle+=aincr)
 	    {
+	      glTexCoord2f( 0.5*(1.+sin( angle )),
+			    0.5*(1.+cos( angle )) );
 	      glVertex3fv( &c[i][0] );
 	    }
+	  glTexCoord2f( 0.5*(1.+sin( angle )),
+			0.5*(1.+cos( angle )) );
 	  glVertex3fv( &c[nfacets-1][0] );
 	  glEnd();
 	}
