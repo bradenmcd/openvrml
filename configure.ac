@@ -101,17 +101,17 @@ AC_SUBST([Z_LIBS])
 #
 # ImageTexture node support
 #
-AC_ARG_ENABLE([imagetexture-node],
-              [AC_HELP_STRING([--disable-imagetexture-node],
-                              [disable ImageTexture node support])])
-if test "X$enable_imagetexture_node" = "Xno"; then
+AC_ARG_ENABLE([render-imagetexture-node],
+              [AC_HELP_STRING([--disable-render-imagetexture-node],
+                              [disable support for rendering ImageTexture nodes])])
+if test "X$enable_render_imagetexture_node" = "Xno"; then
   PNG_LIBS=""
   JPEG_LIBS=""
 else
   PNG_LIBS="-lpng -lz"
   JPEG_LIBS="-ljpeg"
-  AC_DEFINE([OPENVRML_ENABLE_IMAGETEXTURE_NODE], [1],
-            [Defined if ImageTexture node support is enabled.])
+  AC_DEFINE([OPENVRML_ENABLE_RENDER_IMAGETEXTURE_NODE], [1],
+            [Defined if support for rendering ImageTexture nodes is enabled.])
 fi
 AC_SUBST([PNG_LIBS])
 AC_SUBST([JPEG_LIBS])
@@ -119,10 +119,10 @@ AC_SUBST([JPEG_LIBS])
 #
 # Text node support
 #
-AC_ARG_ENABLE([text-node],
-              [AC_HELP_STRING([--disable-text-node],
-                              [disable Text node support])])
-if test "X$enable_text_node" = "Xno"; then
+AC_ARG_ENABLE([render-text-node],
+              [AC_HELP_STRING([--disable-render-text-node],
+                              [disable support for rendering Text nodes])])
+if test "X$enable_render_text_node" = "Xno"; then
   FONTCONFIG_CFLAGS=""
   FONTCONFIG_LIBS=""
   FREETYPE_CFLAGS=""
@@ -137,8 +137,8 @@ else
   OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${REQUIRE_FONTCONFIG}"
   FREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
   FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
-  AC_DEFINE([OPENVRML_ENABLE_TEXT_NODE], [1],
-            [Defined if Text node support is enabled.])
+  AC_DEFINE([OPENVRML_ENABLE_RENDER_TEXT_NODE], [1],
+            [Defined if support for rendering Text nodes is enabled.])
 fi
 AC_SUBST([FONTCONFIG_CFLAGS])
 AC_SUBST([FONTCONFIG_LIBS])

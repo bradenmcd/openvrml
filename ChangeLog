@@ -1,5 +1,16 @@
 2004-12-03 Braden McDaniel  <braden@endoframe.com>
 
+	Changed the names of the options to disable ImageTexture and
+	Text node rendering to reflect the fact that only rendering is
+	being disabled.
+
+	* README
+	* configure.ac
+	* src/libopenvrml/openvrml/img.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
+2004-12-03 Braden McDaniel  <braden@endoframe.com>
+
 	Merged changes from 0.15.2 release.
 
 	* NEWS

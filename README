@@ -1,4 +1,4 @@
-OpenVRML library version 0.15.2
+OpenVRML library version 0.15.99
 Copyright 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
 Copyright 2000, 2001, 2002, 2003, 2004 Braden McDaniel <braden@endoframe.com>
 Portions Copyright SGI and others
@@ -127,17 +127,17 @@ depends on.
      Disable support for gzipped VRML worlds. By default, OpenVRML uses
      zlib to read gzipped worlds.
 
- --disable-imagetexture-node
-     Disable support for the ImageTexture node.  The node is still
-     parsed, and events to and from it are processed; but no textures
-     are rendered.  By default OpenVRML uses libpng and libjpeg to read
-     get ImageTexture data.
+ --disable-render-imagetexture-node
+     Disable support for rendering ImageTexture nodes.  The node is
+     still parsed, and events to and from it are processed; but no
+     textures are rendered.  By default OpenVRML uses libpng and libjpeg
+     to read get ImageTexture data.
 
- --disable-text-node
-     Disable support for the Text node.  The node is still parsed, and
-     events to and from it are processed; but no text is rendered.  By
-     default OpenVRML uses Fontconfig for font discovery and FreeType to
-     get font data.
+ --disable-render-text-node
+     Disable support for rendering Text nodes.  The node is still
+     parsed, and events to and from it are processed; but no text is
+     rendered.  By default OpenVRML uses Fontconfig for font discovery
+     and FreeType to get font data.
 
  --disable-script-node-javascript
      Disable support for JavaScript in the Script node.  By default,
@@ -192,13 +192,13 @@ to compile OpenVRML without the GNU build tools.
  OPENVRML_ENABLE_GZIP
      Include support for gzipped VRML files.  Requires zlib.
 
- OPENVRML_ENABLE_IMAGETEXTURE_NODE
-     Include support for images as textures using the ImageTexture node.
-     Requires libpng and libjpeg.
+ OPENVRML_ENABLE_RENDER_IMAGETEXTURE_NODE
+     Include support for rendering images as textures using the
+     ImageTexture node.  Requires libpng and libjpeg.
 
- OPENVRML_ENABLE_TEXT_NODE
-     Include support for text using the Text node.  Requires fontconfig
-     and FreeType.
+ OPENVRML_ENABLE_RENDER_TEXT_NODE
+     Include support for rendering text using the Text node.  Requires
+     fontconfig and FreeType.
 
  OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
      Include support for JavaScript scripts in the Script node.
