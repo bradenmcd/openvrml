@@ -1,4 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
+VERSION = 1.5
 SUBDIRS = doc macros models lib src java
 
 ACLOCAL_AMFLAGS = -I macros
