@@ -173,13 +173,13 @@ void frustum::update()
 
     vec3f tmp0, tmp1;
 
-    tmp0[0] = NL;
-    tmp0[1] = NB;
-    tmp0[2] = float(-z_near);
+    tmp0.x(NL);
+    tmp0.y(NB);
+    tmp0.z(float(-z_near));
 
-    tmp1[0] = NL;
-    tmp1[1] = NT;
-    tmp1[2] = float(-z_near);
+    tmp1.x(NL);
+    tmp1.y(NT);
+    tmp1.z(float(-z_near));
 
     vec3f v;
     v = (tmp0 * tmp1).normalize();
@@ -193,13 +193,13 @@ void frustum::update()
     right_plane[2] = left_plane[2];
     right_plane[3] = 0;
 
-    tmp0[0] = NL;
-    tmp0[1] = NT;
-    tmp0[2] = float(-z_near);
+    tmp0.x(NL);
+    tmp0.y(NT);
+    tmp0.z(float(-z_near));
 
-    tmp1[0] = NR;
-    tmp1[1] = NT;
-    tmp1[2] = float(-z_near);
+    tmp1.x(NR);
+    tmp1.y(NT);
+    tmp1.z(float(-z_near));
 
     v = (tmp0 * tmp1).normalize();
     top_plane[0] = v.x();

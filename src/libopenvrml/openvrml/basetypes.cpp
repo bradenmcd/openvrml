@@ -280,6 +280,8 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  *
  * @brief Construct from an array.
  *
+ * @pre Elements of @p vec are valid numeric values (i.e., not NaN).
+ *
  * @param vec   an array comprising the vector components.
  */
 
@@ -287,6 +289,8 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  * @fn vec2f::vec2f(float x, float y) throw ()
  *
  * @brief Construct from @p x and @p y components.
+ *
+ * @pre @p x and @p y are valid numeric values (i.e., not NaN).
  *
  * @param x x component.
  * @param y y component.
@@ -333,7 +337,9 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  *
  * @brief Divide by a scalar.
  *
- * @param scalar    factor by which to multiply.
+ * @pre @p scalar is nonzero.
+ *
+ * @param scalar    divisor.
  *
  * @return a reference to the object.
  */
@@ -344,6 +350,8 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  * @relatesalso vec2f
  *
  * @brief Divide a vector by a scalar.
+ *
+ * @pre @p rhs is nonzero.
  *
  * @param lhs   left-hand operand (the vector).
  * @param rhs   right-hand operand (the scalar).
@@ -419,19 +427,6 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  */
 
 /**
- * @fn float & vec2f::operator[](const size_t index) throw ()
- *
- * @brief Index-based component access.
- *
- * @param index 0 corresponds to the x component; 1 corresponds to the y
- *              component.
- *
- * @return a reference to the component corresponding to @p index.
- *
- * @pre @p index is less than 2.
- */
-
-/**
  * @fn float vec2f::x() const throw ()
  *
  * @brief Get the x component.
@@ -452,6 +447,8 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  *
  * @brief Set the x component.
  *
+ * @pre @p value is a valid numeric value (i.e., not NaN).
+ *
  * @param value new x component value.
  */
 
@@ -459,6 +456,8 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  * @fn void vec2f::y(float value) throw ()
  *
  * @brief Set the y component.
+ *
+ * @pre @p value is a valid numeric value (i.e., not NaN).
  *
  * @param value new y component value.
  */
@@ -569,6 +568,8 @@ std::ostream & operator<<(std::ostream & out, const vec2f & v)
  *
  * @brief Construct from an array.
  *
+ * @pre Elements of @p vec are valid numeric values (i.e., not NaN).
+ *
  * @param vec   an array comprising the vector components.
  */
 
@@ -576,6 +577,8 @@ std::ostream & operator<<(std::ostream & out, const vec2f & v)
  * @fn vec3f::vec3f(float x, float y, float z) throw ()
  *
  * @brief Construct from @p x, @p y, and @p z components.
+ *
+ * @pre @p x, @p y, and @p z are valid numeric values (i.e., not NaN).
  *
  * @param x x component.
  * @param y y component.
@@ -705,7 +708,9 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  *
  * @brief Divide by a scalar.
  *
- * @param scalar    factor by which to multiply.
+ * @pre @p scalar is nonzero.
+ *
+ * @param scalar    divisor.
  *
  * @return a reference to the object.
  */
@@ -716,6 +721,8 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  * @relatesalso vec3f
  *
  * @brief Divide a vector by a scalar.
+ *
+ * @pre @p rhs is nonzero.
  *
  * @param lhs   left-hand operand (the vector).
  * @param rhs   right-hand operand (the scalar).
@@ -832,6 +839,8 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  *
  * @brief Set the x component.
  *
+ * @pre @p value is a valid numeric value (i.e., not NaN).
+ *
  * @param value new x component value.
  */
 
@@ -840,6 +849,8 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  *
  * @brief Set the y component.
  *
+ * @pre @p value is a valid numeric value (i.e., not NaN).
+ *
  * @param value new y component value.
  */
 
@@ -847,6 +858,8 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  * @fn void vec3f::z(float value) throw ()
  *
  * @brief Set the z component.
+ *
+ * @pre @p value is a valid numeric value (i.e., not NaN).
  *
  * @param value new z component value.
  */
@@ -1894,9 +1907,9 @@ void mat4f::transformation(vec3f & t,
     // Compute XY shear factor and make 2nd row orthogonal to 1st.
     //
     float shear_xy = row_0.dot(row_1);
-    row_1[0] = row_1[0] - row_0[0] * shear_xy;
-    row_1[1] = row_1[1] - row_0[1] * shear_xy;
-    row_1[2] = row_1[2] - row_0[2] * shear_xy;
+    row_1.x(row_1[0] - row_0[0] * shear_xy);
+    row_1.y(row_1[1] - row_0[1] * shear_xy);
+    row_1.z(row_1[2] - row_0[2] * shear_xy);
 
     //
     // Compute Y scale factor and normalize second row.
@@ -1909,13 +1922,13 @@ void mat4f::transformation(vec3f & t,
     // Compute XZ and YZ shears, orthogonalize third row.
     //
     float shear_xz = row_0.dot(row_2);
-    row_2[0] = row_2[0] - row_0[0] * shear_xz;
-    row_2[1] = row_2[1] - row_0[1] * shear_xz;
-    row_2[2] = row_2[2] - row_0[2] * shear_xz;
+    row_2.x(row_2[0] - row_0[0] * shear_xz);
+    row_2.y(row_2[1] - row_0[1] * shear_xz);
+    row_2.z(row_2[2] - row_0[2] * shear_xz);
     float shear_yz = row_1.dot(row_2);
-    row_2[0] = row_2[0] - row_1[0] * shear_yz;
-    row_2[1] = row_2[1] - row_1[1] * shear_yz;
-    row_2[2] = row_2[2] - row_1[2] * shear_yz;
+    row_2.x(row_2[0] - row_1[0] * shear_yz);
+    row_2.y(row_2[1] - row_1[1] * shear_yz);
+    row_2.z(row_2[2] - row_1[2] * shear_yz);
 
     //
     // Compute Z scale factor and normalize third row.
@@ -2366,6 +2379,7 @@ quatf & quatf::operator*=(const float scalar) throw ()
  */
 quatf & quatf::operator/=(const float scalar) throw ()
 {
+    assert(scalar != 0.0);
     this->quat[0] /= scalar;
     this->quat[1] /= scalar;
     this->quat[2] /= scalar;

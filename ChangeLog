@@ -1,3 +1,22 @@
+2004-01-24 Braden McDaniel  <braden@endoframe.com>
+
+	Prevent "nan" as a component of vec2f, vec3f.  A side effect of
+	this is that the non-const operator[] for these types must be
+	removed.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/basetypes.h
+	* src/libopenvrml/openvrml/frustum.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
+2004-01-24 Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment fixes.
+
+	* src/libopenvrml/openvrml/field.cpp
+	* src/libopenvrml/openvrml/node.cpp
+
 2004-01-22 Braden McDaniel  <braden@endoframe.com>
 
 	Express noncopyability by inheriting "boost::noncopyable".

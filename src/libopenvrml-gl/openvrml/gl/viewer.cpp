@@ -1566,27 +1566,27 @@ namespace {
         vec3f Vx, Vz;
 
         if (i > 0 && i < nx - 1) {
-            Vx[0] = float(2.0 * dx);
-            Vx[1] = *(height + 1) - *(height - 1);
+            Vx.x(float(2.0 * dx));
+            Vx.y(*(height + 1) - *(height - 1));
         } else if (i == 0) {
-            Vx[0] = dx;
-            Vx[1] = *(height + 1) - *(height);
+            Vx.x(dx);
+            Vx.y(*(height + 1) - *(height));
         } else {
-            Vx[0] = dx;
-            Vx[1] = *(height) - *(height - 1);
+            Vx.x(dx);
+            Vx.y(*(height) - *(height - 1));
         }
-        Vx[2] = 0.0;
+        Vx.z(0.0);
 
-        Vz[0] = 0.0;
+        Vz.x(0.0);
         if (j > 0 && j < nz - 1) {
-            Vz[1] = *(height + nx) - *(height - nx);
-            Vz[2] = float(2.0 * dz);
+            Vz.y(*(height + nx) - *(height - nx));
+            Vz.z(float(2.0 * dz));
         } else if (j == 0) {
-            Vz[1] = *(height+nx) - *(height);
-            Vz[2] = dz;
+            Vz.y(*(height+nx) - *(height));
+            Vz.z(dz);
         } else {
-            Vz[1] = *(height) - *(height - nx);
-            Vz[2] = dz;
+            Vz.y(*(height) - *(height - nx));
+            Vz.z(dz);
         }
 
         return Vz * Vx;
@@ -1993,11 +1993,9 @@ namespace {
 
                 const rotation orient(v3, float(acos(v1.dot(v2)))); // Axis/angle
                 const mat4f scp = mat4f::rotation(orient); // xform matrix
-                for (size_t k = 0; k < 3; ++k) {
-                    Xscp[k] = scp[0][k];
-                    Yscp[k] = scp[1][k];
-                    Zscp[k] = scp[2][k];
-                }
+                Xscp = vec3f(scp[0][0], scp[0][1], scp[0][2]);
+                Yscp = vec3f(scp[1][0], scp[1][1], scp[1][2]);
+                Zscp = vec3f(scp[2][0], scp[2][1], scp[2][2]);
             }
         }
 

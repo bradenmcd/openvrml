@@ -4359,7 +4359,16 @@ JSBool SFVec2f::setProperty(JSContext * const cx,
         jsdouble d;
         if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
 
-        thisVec.value[JSVAL_TO_INT(id)] = d;
+        switch (JSVAL_TO_INT(id)) {
+        case 0:
+            thisVec.value.x(d);
+            break;
+        case 1:
+            thisVec.value.y(d);
+            break;
+        default:
+            assert(false);
+        }
         sfdata.changed = true;
     }
     return JS_TRUE;
@@ -4848,7 +4857,20 @@ JSBool SFVec3f::setProperty(JSContext * const cx,
 
         jsdouble d;
         if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
-        thisVec.value[JSVAL_TO_INT(id)] = d;
+
+        switch (JSVAL_TO_INT(id)) {
+        case 0:
+            thisVec.value.x(d);
+            break;
+        case 1:
+            thisVec.value.y(d);
+            break;
+        case 2:
+            thisVec.value.z(d);
+            break;
+        default:
+            assert(false);
+        }
         sfdata.changed = true;
     }
     return JS_TRUE;

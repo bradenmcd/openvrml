@@ -28,6 +28,7 @@
 #   include <cstddef>
 #   include <algorithm>
 #   include <iosfwd>
+#   include <limits>
 #   include <vector>
 #   include <sys/types.h>
 #   include <openvrml/common.h>
@@ -150,7 +151,6 @@ namespace openvrml {
         const vec2f operator-() const throw ();
 
         const float & operator[](size_t index) const throw ();
-        float & operator[](size_t index) throw ();
 
         float x() const throw ();
         float y() const throw ();
@@ -171,12 +171,16 @@ namespace openvrml {
 
     inline vec2f::vec2f(const float (&vec)[2]) throw ()
     {
+        assert(vec[0] != std::numeric_limits<float>::quiet_NaN());
+        assert(vec[1] != std::numeric_limits<float>::quiet_NaN());
         this->vec[0] = vec[0];
         this->vec[1] = vec[1];
     }
 
     inline vec2f::vec2f(const float x, const float y) throw ()
     {
+        assert(x != std::numeric_limits<float>::quiet_NaN());
+        assert(y != std::numeric_limits<float>::quiet_NaN());
         this->vec[0] = x;
         this->vec[1] = y;
     }
@@ -202,6 +206,7 @@ namespace openvrml {
 
     inline vec2f & vec2f::operator/=(const float scalar) throw ()
     {
+        assert(scalar != 0.0);
         this->vec[0] /= scalar;
         this->vec[1] /= scalar;
         return *this;
@@ -250,12 +255,6 @@ namespace openvrml {
         return this->vec[index];
     }
 
-    inline float & vec2f::operator[](const size_t index) throw ()
-    {
-        assert(index < 2);
-        return this->vec[index];
-    }
-
     inline float vec2f::x() const throw ()
     {
         return this->vec[0];
@@ -268,11 +267,13 @@ namespace openvrml {
 
     inline void vec2f::x(const float value) throw ()
     {
+        assert(value != std::numeric_limits<float>::quiet_NaN());
         this->vec[0] = value;
     }
 
     inline void vec2f::y(const float value) throw ()
     {
+        assert(value != std::numeric_limits<float>::quiet_NaN());
         this->vec[1] = value;
     }
 
@@ -318,7 +319,6 @@ namespace openvrml {
         const vec3f operator-() const throw ();
 
         const float & operator[](size_t index) const throw ();
-        float & operator[](size_t index) throw ();
 
         float x() const throw ();
         float y() const throw ();
@@ -342,6 +342,9 @@ namespace openvrml {
 
     inline vec3f::vec3f(const float (&vec)[3]) throw ()
     {
+        assert(vec[0] != std::numeric_limits<float>::quiet_NaN());
+        assert(vec[1] != std::numeric_limits<float>::quiet_NaN());
+        assert(vec[2] != std::numeric_limits<float>::quiet_NaN());
         this->vec[0] = vec[0];
         this->vec[1] = vec[1];
         this->vec[2] = vec[2];
@@ -349,6 +352,9 @@ namespace openvrml {
 
     inline vec3f::vec3f(const float x, const float y, const float z) throw ()
     {
+        assert(x != std::numeric_limits<float>::quiet_NaN());
+        assert(y != std::numeric_limits<float>::quiet_NaN());
+        assert(z != std::numeric_limits<float>::quiet_NaN());
         this->vec[0] = x;
         this->vec[1] = y;
         this->vec[2] = z;
@@ -401,6 +407,7 @@ namespace openvrml {
 
     inline vec3f & vec3f::operator/=(const float scalar) throw ()
     {
+        assert(scalar != 0.0);
         this->vec[0] /= scalar;
         this->vec[1] /= scalar;
         this->vec[2] /= scalar;
@@ -452,12 +459,6 @@ namespace openvrml {
         return this->vec[index];
     }
 
-    inline float & vec3f::operator[](const size_t index) throw ()
-    {
-        assert(index < 3);
-        return this->vec[index];
-    }
-
     inline float vec3f::x() const throw ()
     {
         return this->vec[0];
@@ -475,16 +476,19 @@ namespace openvrml {
 
     inline void vec3f::x(const float value) throw ()
     {
+        assert(value != std::numeric_limits<float>::quiet_NaN());
         this->vec[0] = value;
     }
 
     inline void vec3f::y(const float value) throw ()
     {
+        assert(value != std::numeric_limits<float>::quiet_NaN());
         this->vec[1] = value;
     }
 
     inline void vec3f::z(const float value) throw ()
     {
+        assert(value != std::numeric_limits<float>::quiet_NaN());
         this->vec[2] = value;
     }
 

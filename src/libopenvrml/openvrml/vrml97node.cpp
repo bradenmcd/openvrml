@@ -4961,9 +4961,9 @@ void cylinder_sensor_node::activate(double timeStamp,
         v *= this->activationMatrix;
         this->activationPoint = v;
         // Bearing vector in local coordinate system
-        v[0] = this->activationMatrix[2][0];
-        v[1] = this->activationMatrix[2][1];
-        v[2] = this->activationMatrix[2][2];
+        v.x(this->activationMatrix[2][0]);
+        v.y(this->activationMatrix[2][1]);
+        v.z(this->activationMatrix[2][2]);
         const vec3f bearing = v.normalize();
         const vec3f up(0.0, 1.0, 0.0);
         double ang = acos(bearing.dot(up));
@@ -15505,12 +15505,11 @@ namespace {
             const float t = i * stepSize_; // Parametric points 0 <= t <= 1
             for (size_t j = 1; j < npoints; j++) {
                 for (size_t k = 0; k < (npoints - j); k++) {
-                    buffer[j * npoints + k][0] =
-                            (1 - t) * buffer[(j - 1) * npoints + k][0]
-                            + t * buffer[(j - 1) * npoints + k + 1][0];
-                    buffer[j * npoints + k][1] =
-                            (1 - t) * buffer[(j - 1) * npoints + k][1]
-                            + t * buffer[(j - 1) * npoints + k + 1][1];
+                    vec2f & element = buffer[j * npoints + k];
+                    element.x((1 - t) * buffer[(j - 1) * npoints + k][0]
+                              + t * buffer[(j - 1) * npoints + k + 1][0]);
+                    element.y((1 - t) * buffer[(j - 1) * npoints + k][1]
+                              + t * buffer[(j - 1) * npoints + k + 1][1]);
                 }
             }
             //
