@@ -3414,8 +3414,7 @@ JSBool SFNode::setProperty(JSContext * const cx, JSObject * const obj,
     std::auto_ptr<FieldValue> fieldValue;
     if ((expectType = nodePtr->nodeType.hasEventIn(eventInId))) {
         try {
-            fieldValue.reset(createFieldValueFromJsval(cx, *vp, expectType)
-                                .release());
+            fieldValue =  createFieldValueFromJsval(cx, *vp, expectType);
         } catch (BadConversion & ex) {
             std::cout << ex.what() << std::endl;
             return JS_FALSE;
@@ -3434,9 +3433,7 @@ JSBool SFNode::setProperty(JSContext * const cx, JSObject * const obj,
                             eventInId);
     } else if ((expectType = nodePtr->nodeType.hasField(eventInId))) {
         try {
-            fieldValue
-                .reset(createFieldValueFromJsval(cx, *vp, expectType)
-                        .release());
+            fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
         } catch (BadConversion & ex) {
             std::cout << ex.what() << std::endl;
             return JS_FALSE;
@@ -6699,9 +6696,8 @@ JSBool VrmlMatrix::getElement(JSContext * const cx, JSObject * const obj,
                                                    JS_GetParent(cx, obj));
         if (!robj) { return JS_FALSE; }
         
-        if (!JS_SetPrivate(cx, robj, &(*thisMat)[JSVAL_TO_INT(id)])) {
-            return JS_FALSE;
-        }
+        float (&row)[4] = (*thisMat)[JSVAL_TO_INT(id)];
+        if (!JS_SetPrivate(cx, robj, &row)) { return JS_FALSE; }   
         *vp = OBJECT_TO_JSVAL(robj);
     }
     return JS_TRUE;

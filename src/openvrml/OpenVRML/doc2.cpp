@@ -59,41 +59,47 @@ namespace {
             huffman_only        = Z_HUFFMAN_ONLY
         };
 
-        class filebuf : public std::streambuf {
+        template<class E, class T>
+        class tfilebuf : public std::basic_streambuf<E,T> {
             enum { buffer_size = 16384 };
             char buffer[buffer_size];
             gzFile file;
 
         public:
-            filebuf();
-            virtual ~filebuf();
+            tfilebuf<E,T>();
+            virtual ~tfilebuf<E,T>();
 
             bool is_open() const;
-            filebuf * open(const char * path, int mode,
+            tfilebuf<E,T> * open(const char * path, int mode,
                            level = default_compression,
                            strategy = default_strategy);
-            filebuf * close();
+            tfilebuf<E,T> * close();
 
         protected:
             virtual int underflow();
             virtual int overflow(int = EOF);
         };
+        typedef tfilebuf<char, std::char_traits<char> > filebuf;
 
-        class ifstream : public std::istream {
-            filebuf fbuf;
+        template<class E, class T>
+         class tifstream : public std::basic_istream<E,T> {
+            tfilebuf<E,T> fbuf;
 
         public:
-            ifstream();
-            explicit ifstream(const char * path, level = default_compression,
+            tifstream<E,T>();
+            explicit tifstream<E,T>(const char * path, level = default_compression,
                               strategy = default_strategy);
-            virtual ~ifstream();
+            virtual ~tifstream<E,T>();
 
-            filebuf * rdbuf() const;
+            tfilebuf<E,T> * rdbuf() const;
+
             bool is_open() const;
             void open(const char * path, level = default_compression,
                       strategy = default_strategy);
             void close();
         };
+
+        typedef tifstream<char, std::char_traits<char> > ifstream;
 
         //
         // filebuf
@@ -101,21 +107,25 @@ namespace {
 
         int const lookback(4);
 
-        filebuf::filebuf(): file(0) {
+        template<class E, class T>
+         tfilebuf<E,T>::tfilebuf(): file(0) {
             this->setg(this->buffer + lookback,  // beginning of putback area
                        this->buffer + lookback,  // read position
                        this->buffer + lookback); // end position
         }
 
-        filebuf::~filebuf() {
+        template<class E, class T> 
+        tfilebuf<E,T>::~tfilebuf() {
             this->close();
         }
 
-        bool filebuf::is_open() const {
+        template<class E, class T>
+        bool tfilebuf<E,T>::is_open() const {
             return (this->file != 0);
         }
 
-        filebuf * filebuf::open(const char * path,
+        template<class E, class T>
+        tfilebuf<E,T> * tfilebuf<E,T>::open(const char * path,
                                 const int mode,
                                 const level comp_level,
                                 const strategy comp_strategy) {
@@ -146,14 +156,16 @@ namespace {
             return this;
         }
 
-        filebuf * filebuf::close() {
+         template<class E, class T>
+         tfilebuf<E,T> * tfilebuf<E,T>::close() {
             if (!this->file) { return 0; }
             gzclose(this->file);
             this->file = 0;
             return this;
         }
 
-        int filebuf::underflow() {
+         template<class E, class T>
+         int tfilebuf<E,T>::underflow() {
             if (this->gptr() < this->egptr()) { return *this->gptr(); }
 
             //
@@ -188,7 +200,8 @@ namespace {
             return *this->gptr();
         }
 
-        int filebuf::overflow(int c) {
+        template<class E, class T>
+         int tfilebuf<E,T>::overflow(int c) {
             //
             // This probably ought to be buffered, but this will do for now.
             //
@@ -203,22 +216,28 @@ namespace {
         // ifstream
         //
 
-        ifstream::ifstream(): std::istream(&fbuf) {}
+         template<class E, class T>
+         tifstream<E,T>::tifstream(): std::basic_istream<E,T>(&fbuf) {}
 
-        ifstream::ifstream(const char * path, level lev, strategy strat):
-                std::istream(&fbuf) {
+        template<class E, class T>
+        tifstream<E,T>::tifstream(const char * path, level lev, strategy strat):
+               std::basic_istream<E,T>(&fbuf) {
             this->open(path, lev, strat);
         }
 
-        ifstream::~ifstream() {}
+        template<class E, class T>
+        tifstream<E,T>::~tifstream() {}
 
-        filebuf * ifstream::rdbuf() const {
-            return const_cast<filebuf *>(&this->fbuf);
+        template<class E, class T>
+        tfilebuf<E,T> * tifstream<E,T>::rdbuf() const {
+            return const_cast<tfilebuf<E,T> *>(&this->fbuf);
         }
 
-        bool ifstream::is_open() const { return this->fbuf.is_open(); }
+        template<class E, class T>
+        bool tifstream<E,T>::is_open() const { return this->fbuf.is_open(); }
 
-        void ifstream::open(const char * path, level lev, strategy strat) {
+        template<class E, class T>
+        void tifstream<E,T>::open(const char * path, level lev, strategy strat) {
             using std::ios;
             if (!this->fbuf.open(path, ios::binary | ios::in, lev, strat)) {
 #   ifdef _WIN32
@@ -229,7 +248,8 @@ namespace {
             }
         }
 
-        void ifstream::close() { this->fbuf.close(); }
+        template<class E, class T>
+        void tifstream<E,T>::close() { this->fbuf.close(); }
     }
 }
 # endif // OPENVRML_ENABLE_GZIP
@@ -525,7 +545,7 @@ std::istream & Doc2::inputStream() {
         if (strcmp(fn, "-") == 0) {
             this->istm_ = &std::cin;
         } else {
-# ifdef HAVE_ZLIB
+# ifdef OPENVRML_ENABLE_GZIP
             this->istm_ = new z::ifstream(
 #   ifdef macintosh
                                           convertCommonToMacPath(fn, sizeof(fn))
