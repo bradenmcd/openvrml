@@ -1,3 +1,7 @@
+2003-09-28  Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac:  Added AC_COPYRIGHT.
+
 2003-09-25  Braden McDaniel  <braden@endoframe.com>
 
 	Removed Microsoft Visual C++ 6.0 project files and makefiles.
