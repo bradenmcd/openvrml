@@ -30,7 +30,7 @@ noinst_HEADERS = \
         private.h \
         ScriptJDK.h
 
-LIBRARY_VERSION = 3:0:0
+LIBRARY_VERSION = 4:0:0
 #                 | | |
 #          +------+ | +---+
 #          |        |     |

@@ -1,5 +1,12 @@
 2003-09-28  Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/Makefile.am:  Incremented library
+	version number to 4:0:0.
+	* src/libopenvrml-gl/openvrml/gl/Makefile.am:  Incremented
+	library version number to 5:0:0.
+
+2003-09-28  Braden McDaniel  <braden@endoframe.com>
+
 	Renamed COPYING.LIB to COPYING.LESSER.
 
 	* COPYING.LESSER:  Added file.
