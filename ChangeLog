@@ -12,6 +12,11 @@
         * Changed VrmlNodeType::addNode() to take a VrmlNode reference
           (rather than a pointer).
 
+        * In `VrmlNamespace.cpp', moved definitions of NodeCloneVisitor
+          and NodeRouteCopyVisitor from inside the cloneNodes() method
+          to unnamed namespace at global scope. This fixes a weird
+          problem with linking under egcs 1.1.2.
+
 2001-02-05  Braden McDaniel  <braden@endoframe.com>
 
         * Removed dynamic_cast in assertions in VrmlNodeAppearance's,

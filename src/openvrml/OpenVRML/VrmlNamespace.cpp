@@ -294,7 +294,7 @@ VrmlNode * VrmlNamespace::findNode( const char *name ) const
     return 0;
 }
 
-const VrmlMFNode VrmlNamespace::cloneNodes(const VrmlMFNode & mfnode) {
+namespace {
     
     class NodeCloneVisitor : public VrmlNodeVisitor {
     public:
@@ -1113,6 +1113,9 @@ const VrmlMFNode VrmlNamespace::cloneNodes(const VrmlMFNode & mfnode) {
         
         VrmlNamespace & ns;
     };
+}
+
+const VrmlMFNode VrmlNamespace::cloneNodes(const VrmlMFNode & mfnode) {
     
     VrmlMFNode clonedNodes(NodeCloneVisitor(*this).clone(mfnode));
     NodeRouteCopyVisitor(*this).copyRoutes(mfnode);
