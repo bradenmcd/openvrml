@@ -1,3 +1,13 @@
+2001-08-22  Thomas Flynn <tflynn@users.sourceforge.net>
+
+	* Fixed typo in README.
+
+	* Add ScriptJDK back into the build.
+
+	* Use OPENVRML_HAVE_JAVA instead of HAVE_JDK.
+
+	* Update ScriptJDK code to use std::string. 
+
 2001-08-22  Braden McDaniel  <braden@endoframe.com>
 
         * Fixed crash in VrmlScene::readPROTO().
