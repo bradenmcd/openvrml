@@ -3,6 +3,9 @@
         * Fixed "ScriptJDK.cpp" to account for identifier changes to
           FieldValue::Type.
 
+        * Fixed some errors introduced through unduly aggressive use of
+          "find & replace".
+
 2002-01-22  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Implement three more methods (det3, det4 and getTransform) in

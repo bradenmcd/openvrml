@@ -64,26 +64,26 @@ namespace ANTLR_LBRACE
         static const int KEYWORD_TO;
         static const int KEYWORD_TRUE;
         static const int KEYWORD_USE;
-        static const int FIELDTYPE_sfbool;
-        static const int FIELDTYPE_sfcolor;
-        static const int FIELDTYPE_sffloat;
-        static const int FIELDTYPE_sfimage;
-        static const int FIELDTYPE_sfint32;
-        static const int FIELDTYPE_sfnode;
-        static const int FIELDTYPE_sfrotation;
-        static const int FIELDTYPE_sfstring;
-        static const int FIELDTYPE_sftime;
-        static const int FIELDTYPE_sfvec2f;
-        static const int FIELDTYPE_sfvec3f;
-        static const int FIELDTYPE_mfcolor;
-        static const int FIELDTYPE_mffloat;
-        static const int FIELDTYPE_mfint32;
-        static const int FIELDTYPE_mfnode;
-        static const int FIELDTYPE_mfrotation;
-        static const int FIELDTYPE_mfstring;
-        static const int FIELDTYPE_mftime;
-        static const int FIELDTYPE_mfvec2f;
-        static const int FIELDTYPE_mfvec3f;
+        static const int FIELDTYPE_SFBOOL;
+        static const int FIELDTYPE_SFCOLOR;
+        static const int FIELDTYPE_SFFLOAT;
+        static const int FIELDTYPE_SFIMAGE;
+        static const int FIELDTYPE_SFINT32;
+        static const int FIELDTYPE_SFNODE;
+        static const int FIELDTYPE_SFROTATION;
+        static const int FIELDTYPE_SFSTRING;
+        static const int FIELDTYPE_SFTIME;
+        static const int FIELDTYPE_SFVEC2F;
+        static const int FIELDTYPE_SFVEC3F;
+        static const int FIELDTYPE_MFCOLOR;
+        static const int FIELDTYPE_MFFLOAT;
+        static const int FIELDTYPE_MFINT32;
+        static const int FIELDTYPE_MFNODE;
+        static const int FIELDTYPE_MFROTATION;
+        static const int FIELDTYPE_MFSTRING;
+        static const int FIELDTYPE_MFTIME;
+        static const int FIELDTYPE_MFVEC2F;
+        static const int FIELDTYPE_MFVEC3F;
 
         Vrml97Scanner(istream &);
 
@@ -163,26 +163,26 @@ const int Vrml97Scanner::KEYWORD_ROUTE          (24);
 const int Vrml97Scanner::KEYWORD_TO             (25);
 const int Vrml97Scanner::KEYWORD_TRUE           (26);
 const int Vrml97Scanner::KEYWORD_USE            (27);
-const int Vrml97Scanner::FIELDTYPE_sfbool       (28);
-const int Vrml97Scanner::FIELDTYPE_sfcolor      (29);
-const int Vrml97Scanner::FIELDTYPE_sffloat      (30);
-const int Vrml97Scanner::FIELDTYPE_sfimage      (31);
-const int Vrml97Scanner::FIELDTYPE_sfint32      (32);
-const int Vrml97Scanner::FIELDTYPE_sfnode       (33);
-const int Vrml97Scanner::FIELDTYPE_sfrotation   (34);
-const int Vrml97Scanner::FIELDTYPE_sfstring     (35);
-const int Vrml97Scanner::FIELDTYPE_sftime       (36);
-const int Vrml97Scanner::FIELDTYPE_sfvec2f      (37);
-const int Vrml97Scanner::FIELDTYPE_sfvec3f      (38);
-const int Vrml97Scanner::FIELDTYPE_mfcolor      (39);
-const int Vrml97Scanner::FIELDTYPE_mffloat      (40);
-const int Vrml97Scanner::FIELDTYPE_mfint32      (41);
-const int Vrml97Scanner::FIELDTYPE_mfnode       (42);
-const int Vrml97Scanner::FIELDTYPE_mfrotation   (43);
-const int Vrml97Scanner::FIELDTYPE_mfstring     (44);
-const int Vrml97Scanner::FIELDTYPE_mftime       (45);
-const int Vrml97Scanner::FIELDTYPE_mfvec2f      (46);
-const int Vrml97Scanner::FIELDTYPE_mfvec3f      (47);
+const int Vrml97Scanner::FIELDTYPE_SFBOOL       (28);
+const int Vrml97Scanner::FIELDTYPE_SFCOLOR      (29);
+const int Vrml97Scanner::FIELDTYPE_SFFLOAT      (30);
+const int Vrml97Scanner::FIELDTYPE_SFIMAGE      (31);
+const int Vrml97Scanner::FIELDTYPE_SFINT32      (32);
+const int Vrml97Scanner::FIELDTYPE_SFNODE       (33);
+const int Vrml97Scanner::FIELDTYPE_SFROTATION   (34);
+const int Vrml97Scanner::FIELDTYPE_SFSTRING     (35);
+const int Vrml97Scanner::FIELDTYPE_SFTIME       (36);
+const int Vrml97Scanner::FIELDTYPE_SFVEC2F      (37);
+const int Vrml97Scanner::FIELDTYPE_SFVEC3F      (38);
+const int Vrml97Scanner::FIELDTYPE_MFCOLOR      (39);
+const int Vrml97Scanner::FIELDTYPE_MFFLOAT      (40);
+const int Vrml97Scanner::FIELDTYPE_MFINT32      (41);
+const int Vrml97Scanner::FIELDTYPE_MFNODE       (42);
+const int Vrml97Scanner::FIELDTYPE_MFROTATION   (43);
+const int Vrml97Scanner::FIELDTYPE_MFSTRING     (44);
+const int Vrml97Scanner::FIELDTYPE_MFTIME       (45);
+const int Vrml97Scanner::FIELDTYPE_MFVEC2F      (46);
+const int Vrml97Scanner::FIELDTYPE_MFVEC3F      (47);
 
 Vrml97Scanner::Vrml97Scanner(::istream & istm)
   : _istm(istm), _line(1), _col(0), _c(' '), _prevChar('\0'), _prevTokenType(0),
@@ -474,26 +474,26 @@ void Vrml97Scanner::_identifyFieldType(antlr::Token & token)
     
     std::string const tokenText(token.getText());
     
-    if      (tokenText == "SFBool")     { token.setType(FIELDTYPE_sfbool); }
-    else if (tokenText == "SFColor")    { token.setType(FIELDTYPE_sfcolor); }
-    else if (tokenText == "SFFloat")    { token.setType(FIELDTYPE_sffloat); }
-    else if (tokenText == "SFImage")    { token.setType(FIELDTYPE_sfimage); }
-    else if (tokenText == "SFInt32")    { token.setType(FIELDTYPE_sfint32); }
-    else if (tokenText == "SFNode")     { token.setType(FIELDTYPE_sfnode); }
-    else if (tokenText == "SFRotation") { token.setType(FIELDTYPE_sfrotation); }
-    else if (tokenText == "SFString")   { token.setType(FIELDTYPE_sfstring); }
-    else if (tokenText == "SFTime")     { token.setType(FIELDTYPE_sftime); }
-    else if (tokenText == "SFVec2f")    { token.setType(FIELDTYPE_sfvec2f); }
-    else if (tokenText == "SFVec3f")    { token.setType(FIELDTYPE_sfvec3f); }
-    else if (tokenText == "MFColor")    { token.setType(FIELDTYPE_mfcolor); }
-    else if (tokenText == "MFFloat")    { token.setType(FIELDTYPE_mffloat); }
-    else if (tokenText == "MFInt32")    { token.setType(FIELDTYPE_mfint32); }
-    else if (tokenText == "MFNode")     { token.setType(FIELDTYPE_mfnode); }
-    else if (tokenText == "MFRotation") { token.setType(FIELDTYPE_mfrotation); }
-    else if (tokenText == "MFString")   { token.setType(FIELDTYPE_mfstring); }
-    else if (tokenText == "MFTime")     { token.setType(FIELDTYPE_mftime); }
-    else if (tokenText == "MFVec2f")    { token.setType(FIELDTYPE_mfvec2f); }
-    else if (tokenText == "MFVec3f")    { token.setType(FIELDTYPE_mfvec3f); }
+    if      (tokenText == "SFBool")     { token.setType(FIELDTYPE_SFBOOL); }
+    else if (tokenText == "SFColor")    { token.setType(FIELDTYPE_SFCOLOR); }
+    else if (tokenText == "SFFloat")    { token.setType(FIELDTYPE_SFFLOAT); }
+    else if (tokenText == "SFImage")    { token.setType(FIELDTYPE_SFIMAGE); }
+    else if (tokenText == "SFInt32")    { token.setType(FIELDTYPE_SFINT32); }
+    else if (tokenText == "SFNode")     { token.setType(FIELDTYPE_SFNODE); }
+    else if (tokenText == "SFRotation") { token.setType(FIELDTYPE_SFROTATION); }
+    else if (tokenText == "SFString")   { token.setType(FIELDTYPE_SFSTRING); }
+    else if (tokenText == "SFTime")     { token.setType(FIELDTYPE_SFTIME); }
+    else if (tokenText == "SFVec2f")    { token.setType(FIELDTYPE_SFVEC2F); }
+    else if (tokenText == "SFVec3f")    { token.setType(FIELDTYPE_SFVEC3F); }
+    else if (tokenText == "MFColor")    { token.setType(FIELDTYPE_MFCOLOR); }
+    else if (tokenText == "MFFloat")    { token.setType(FIELDTYPE_MFFLOAT); }
+    else if (tokenText == "MFInt32")    { token.setType(FIELDTYPE_MFINT32); }
+    else if (tokenText == "MFNode")     { token.setType(FIELDTYPE_MFNODE); }
+    else if (tokenText == "MFRotation") { token.setType(FIELDTYPE_MFROTATION); }
+    else if (tokenText == "MFString")   { token.setType(FIELDTYPE_MFSTRING); }
+    else if (tokenText == "MFTime")     { token.setType(FIELDTYPE_MFTIME); }
+    else if (tokenText == "MFVec2f")    { token.setType(FIELDTYPE_MFVEC2F); }
+    else if (tokenText == "MFVec3f")    { token.setType(FIELDTYPE_MFVEC3F); }
 }
 
 void Vrml97Scanner::_identifyTerminalSymbol(antlr::Token & token)
@@ -1239,26 +1239,26 @@ returns [OpenVRML::FieldValue::Type ft = OpenVRML::FieldValue::invalidType]
         {
             using OpenVRML::FieldValue;
         }
-    :   FIELDTYPE_mfcolor { ft = FieldValue::mfcolor; }
-    |   FIELDTYPE_mffloat { ft = FieldValue::mffloat; }
-    |   FIELDTYPE_mfint32 { ft = FieldValue::mfint32; }
-    |   FIELDTYPE_mfnode { ft = FieldValue::mfnode; }
-    |   FIELDTYPE_mfrotation { ft = FieldValue::mfrotation; }
-    |   FIELDTYPE_mfstring { ft = FieldValue::mfstring; }
-    |   FIELDTYPE_mftime { ft = FieldValue::mftime; }
-    |   FIELDTYPE_mfvec2f { ft = FieldValue::mfvec2f; }
-    |   FIELDTYPE_mfvec3f { ft = FieldValue::mfvec3f; }
-    |   FIELDTYPE_sfbool { ft = FieldValue::sfbool; }
-    |   FIELDTYPE_sfcolor { ft = FieldValue::sfcolor; }
-    |   FIELDTYPE_sffloat { ft = FieldValue::sffloat; }
-    |   FIELDTYPE_sfimage { ft = FieldValue::sfimage; }
-    |   FIELDTYPE_sfint32 { ft = FieldValue::sfint32; }
-    |   FIELDTYPE_sfnode { ft = FieldValue::sfnode; }
-    |   FIELDTYPE_sfrotation { ft = FieldValue::sfrotation; }
-    |   FIELDTYPE_sfstring { ft = FieldValue::sfstring; }
-    |   FIELDTYPE_sftime { ft = FieldValue::sftime; }
-    |   FIELDTYPE_sfvec2f { ft = FieldValue::sfvec2f; }
-    |   FIELDTYPE_sfvec3f { ft = FieldValue::sfvec3f; }
+    :   FIELDTYPE_MFCOLOR { ft = FieldValue::mfcolor; }
+    |   FIELDTYPE_MFFLOAT { ft = FieldValue::mffloat; }
+    |   FIELDTYPE_MFINT32 { ft = FieldValue::mfint32; }
+    |   FIELDTYPE_MFNODE { ft = FieldValue::mfnode; }
+    |   FIELDTYPE_MFROTATION { ft = FieldValue::mfrotation; }
+    |   FIELDTYPE_MFSTRING { ft = FieldValue::mfstring; }
+    |   FIELDTYPE_MFTIME { ft = FieldValue::mftime; }
+    |   FIELDTYPE_MFVEC2F { ft = FieldValue::mfvec2f; }
+    |   FIELDTYPE_MFVEC3F { ft = FieldValue::mfvec3f; }
+    |   FIELDTYPE_SFBOOL { ft = FieldValue::sfbool; }
+    |   FIELDTYPE_SFCOLOR { ft = FieldValue::sfcolor; }
+    |   FIELDTYPE_SFFLOAT { ft = FieldValue::sffloat; }
+    |   FIELDTYPE_SFIMAGE { ft = FieldValue::sfimage; }
+    |   FIELDTYPE_SFINT32 { ft = FieldValue::sfint32; }
+    |   FIELDTYPE_SFNODE { ft = FieldValue::sfnode; }
+    |   FIELDTYPE_SFROTATION { ft = FieldValue::sfrotation; }
+    |   FIELDTYPE_SFSTRING { ft = FieldValue::sfstring; }
+    |   FIELDTYPE_SFTIME { ft = FieldValue::sftime; }
+    |   FIELDTYPE_SFVEC2F { ft = FieldValue::sfvec2f; }
+    |   FIELDTYPE_SFVEC3F { ft = FieldValue::sfvec3f; }
     ;
 
 fieldValue[OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc,
