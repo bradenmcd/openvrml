@@ -1,3 +1,10 @@
+2004-11-08 Braden McDaniel  <braden@endoframe.com>
+
+	Updated to ANTLR 2.7.4.
+
+	* lib/antlr/antlr/config.hpp
+	* lib/antlr/src/BaseAST.cpp
+
 2004-11-01 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac:  Removed reference to regex library Makefile.in.
