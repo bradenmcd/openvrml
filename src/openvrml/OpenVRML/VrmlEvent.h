@@ -60,4 +60,4 @@ protected:
 
 };
 
-#endif VRMLEVENT_H
+#endif /* VRMLEVENT_H */
