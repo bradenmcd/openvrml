@@ -1,3 +1,10 @@
+2000-10-24  Braden McDaniel  <braden@endoframe.com>
+
+        * Unified typedef for Win32 and non-Win32 for TessCB in
+          ViewerOpenGL.cpp.
+        
+        * Removed gcc-specific compiler flags from JavaScript's Makefile.am.
+
 2000-10-15  Braden McDaniel  <braden@endoframe.com>
 
         * Took out the #ifdef around including <string.h> in System.cpp. It
