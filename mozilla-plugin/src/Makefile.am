@@ -8,7 +8,7 @@ idldir = $(datadir)/idl/@PACKAGE_NAME@-@PACKAGE_VERSION@
 
 if ENABLE_MOZILLA_PLUGIN
 mozplugins_LTLIBRARIES = openvrml.la
-mozcomponents_DATA = openvrml.xpt
+mozplugins_DATA = openvrml.xpt
 endif
 noinst_HEADERS = gtkvrml/vrmlbrowser.h
 dist_idl_DATA = openvrml.idl
@@ -22,6 +22,8 @@ openvrml_la_LDFLAGS = -module -avoid-version @GTKGLEXT_LIBS@
 EXTRA_DIST = $(openvrml_la_SOURCES)
 
 BUILT_SOURCES = openvrml.h
+
+CLEANFILES = openvrml.h openvrml.xpt
 
 .idl.h:
 	$(XPIDL) -I $(mozidldir) -m header $<
