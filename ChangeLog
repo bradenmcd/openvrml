@@ -1,5 +1,10 @@
 2004-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Doxyfile:  Turned off collaboration diagram generation;
+	turned off call graph generation.
+
+2004-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/conformance.doc:  Note that conformance results table is
 	out of date.
 
