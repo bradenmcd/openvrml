@@ -137,6 +137,22 @@ System-specific notes
    But you should really get a graphics card with 24-bit color.  Tell
    your boss I said so.
 
+ * Using helper applications on the Macintosh
+   
+   A creator code should be supplied in
+   `libvrml97core/macos/LibVRML97.prefix' to enable InternetConfig to
+   pass non-VRML anchors to helper applications.  The supplied prefix
+   files assumes that you are building MacLookat (code vrVW).
+
+ * Initializing VrmlScene on the Macintosh
+   
+   VrmlScene should be initialised with either a URL or a Unix-style
+   filepath starting with "///" (instead of "/").  This is consistent
+   with Mac file URLs of the form "file:///".  This means that if you
+   want to open local files using a Mac file dialog then you need to
+   retrieve the full path of the selected file, prepend ///, and
+   replace colons with slashes before passing it to VrmlScene.
+
 
 Bug reports
 ===========
