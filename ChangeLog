@@ -1,5 +1,21 @@
 2004-03-01 Braden McDaniel  <braden@endoframe.com>
 
+	* ide-projects/Makefile.am:  Added Visual C++ 7.1 project files.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/OpenVRML.sln:  Added
+	file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/antlr/antlr.vcproj:
+	Added file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/lookat/lookat.vcproj:
+	Added file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
+	Added file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml-gl/openvrml-gl.vcproj:
+	Added file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/regex/regex.vcproj:
+	Added file.
+
+2004-03-01 Braden McDaniel  <braden@endoframe.com>
+
 	* Makefile.am:  Removed residual "doc" target cruft.
 
 2004-03-01 Braden McDaniel  <braden@endoframe.com>
