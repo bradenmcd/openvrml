@@ -1009,14 +1009,14 @@ static void elevationVertexNormal(int i, int j,
 
 
 Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
-				                 size_t nx,
-				                 size_t nz,
-				                 const float * height,
-				                 float dx,
-				                 float dz,
-				                 const float * texture_coords,
-				                 const float * normals,
-				                 const float * colors)
+                                                 size_t nx,
+                                                 size_t nz,
+                                                 const float * height,
+                                                 float dx,
+                                                 float dz,
+                                                 const float * texture_coords,
+                                                 const float * normals,
+                                                 const float * colors)
 {
   size_t i, j;
   float x, z;
@@ -1309,14 +1309,14 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
 
 
 Viewer::Object ViewerOpenGL::insertExtrusion(unsigned int mask,
-				             size_t nOrientation,
-				             const float * orientation,
-				             size_t nScale,
-				             const float * scale,
-				             size_t nCrossSection,
-				             const float * crossSection,
-				             size_t nSpine,
-				             const float * spine)
+                                             size_t nOrientation,
+                                             const float * orientation,
+                                             size_t nScale,
+                                             const float * scale,
+                                             size_t nCrossSection,
+                                             const float * crossSection,
+                                             size_t nSpine,
+                                             const float * spine)
 {
   float *c  = new float[nCrossSection * nSpine * 3];
   float *tc = new float[nCrossSection * nSpine * 3];
