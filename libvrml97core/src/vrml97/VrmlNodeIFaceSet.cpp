@@ -320,6 +320,6 @@ const VrmlBVolume* VrmlNodeIFaceSet::getBVolume() const
 {
   //cout << "VrmlNodeIFaceSet::getBVolume():" << this->isBVolumeDirty() << endl;
   if (this->isBVolumeDirty())
-    recalcBSphere();
+    ((VrmlNodeIFaceSet*)this)->recalcBSphere();
   return &d_bsphere; // hmmm, const?
 }

@@ -186,6 +186,6 @@ void VrmlNodePointSet::recalcBSphere()
 const VrmlBVolume* VrmlNodePointSet::getBVolume() const
 {
   if (this->isBVolumeDirty())
-    recalcBSphere();
+    ((VrmlNodePointSet*)this)->recalcBSphere();
   return &d_bsphere;
 }

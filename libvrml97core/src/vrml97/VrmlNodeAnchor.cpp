@@ -134,7 +134,7 @@ const VrmlBVolume*
 VrmlNodeAnchor::getBVolume() const
 {
   //cout << "VrmlNodeAnchor::getBVolume() {" << endl;
-  VrmlBVolume* bv = VrmlNodeGroup::getBVolume();
+  const VrmlBVolume* bv = VrmlNodeGroup::getBVolume();
   //cout << "}:";
   //bv->dump(cout) << endl;
   return bv;

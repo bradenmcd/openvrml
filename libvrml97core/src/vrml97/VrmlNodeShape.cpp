@@ -212,6 +212,6 @@ const VrmlBVolume* VrmlNodeShape::getBVolume() const
   //cout << "}:" << r << ":";
   //if (r) r->dump(cout);
   //cout << endl;
-  this->setBVolumeDirty(false);
+  ((VrmlNodeShape*)this)->setBVolumeDirty(false);
   return r;
 }

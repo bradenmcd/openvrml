@@ -100,8 +100,8 @@ VrmlNodeBox::getBVolume() const
   if (this->isBVolumeDirty()) {
     float corner[3] = { d_size.x()/2.0f, d_size.y()/2.0f, d_size.z()/2.0f };
     float r = Vlength(corner);
-    d_bsphere.setRadius(r);
-    ((VrmlNode*)this)->setBVolumeDirty(false); // logical const
+    ((VrmlNodeBox*)this)->d_bsphere.setRadius(r);
+    ((VrmlNodeBox*)this)->setBVolumeDirty(false); // logical const
   }
   //cout << "VrmlNodeBox::getBVolume():";
   //box_sphere->dump(cout) << endl;

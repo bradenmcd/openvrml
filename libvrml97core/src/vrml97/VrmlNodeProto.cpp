@@ -574,7 +574,7 @@ VrmlNodeProto::getBVolume() const
     cout << "VrmlNodeProto::getBVolume():WARNING:!base" << endl;
     return (VrmlBVolume*)0; // shouldn't happen
   }
-  VrmlBVolume* bv = base->getBVolume();
+  const VrmlBVolume* bv = base->getBVolume();
   //cout << "}";
   //bv->dump(cout) << endl;
   return bv;

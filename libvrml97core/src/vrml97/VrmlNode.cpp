@@ -392,7 +392,7 @@ VrmlNode::getBVolume() const
     inf_bsphere = new VrmlBSphere();
     inf_bsphere->setMAX();
   }
-  this->setBVolumeDirty(false);
+  ((VrmlNode*)this)->setBVolumeDirty(false);
   return inf_bsphere;
 }
 

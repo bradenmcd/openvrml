@@ -89,7 +89,7 @@ VrmlNodeSphere::getBVolume() const
   //cout << "VrmlNodeSphere::getBVolume()" << endl;
   //static VrmlBSphere* sphere_sphere = new VrmlBSphere();
   if (this->isBVolumeDirty()) {
-    d_bsphere.setRadius(d_radius.get());
+    ((VrmlNodeSphere*)this)->d_bsphere.setRadius(d_radius.get());
     ((VrmlNode*)this)->setBVolumeDirty(false); // logical const
     //cout << "VrmlNodeSphere::getBVolume():recalc:";
   }
