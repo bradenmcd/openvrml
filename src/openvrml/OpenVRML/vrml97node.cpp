@@ -731,7 +731,8 @@ void VrmlNodeAudioClip::update (VrmlSFTime &inTime)
     {
         Doc relDoc(d_relativeUrl.get(), static_cast<Doc const *>(0));
         delete d_audio;
-        d_audio = new Audio(0);
+        std::string emptyUrl;
+        d_audio = new Audio(emptyUrl);
         if (this->d_audio->tryURLs(d_url, &relDoc))
         {
             d_duration.set (d_audio->duration());

@@ -42,7 +42,7 @@ OPENVRML_SCOPE enum AudioEncoding
 class OPENVRML_SCOPE  Audio
 {
   public:
-    Audio (const char *url = 0, Doc *relative = 0);
+    Audio (const std::string & url, Doc *relative = 0);
     ~Audio ();
 
     bool setURL(const std::string & url, Doc * relative = 0);

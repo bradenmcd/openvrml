@@ -137,7 +137,7 @@ static AudioFileType audioFileType(const std::string & url, FILE *) {
 | Rev     Date      Who         Description
 | 0.8     11Nov98   kumaran     Created
  ========================================================================*/
-Audio::Audio(const char *url, Doc *relative)
+Audio::Audio(const std::string & url, Doc *relative)
     : _doc(0),
       _encoding(AUDIO_LINEAR),
       _channels(0),
