@@ -11,6 +11,9 @@
 
         * Fixed crash on exit in VrmlNodePtr::dispose().
 
+        * Using erase() instead of remove() for the node lists in
+          VrmlScene is more efficient and avoids a crash on exit.
+
 2001-10-17  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Fixes for bug #213579. Problem on invariant background under

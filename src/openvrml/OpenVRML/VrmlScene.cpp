@@ -26,6 +26,7 @@
 #include <winconfig.h>
 #endif
 
+#include <algorithm>
 #include "VrmlScene.h"
 
 #include <errno.h>
@@ -933,7 +934,12 @@ void VrmlScene::addBackground(VrmlNodeBackground & node) {
 }
 
 void VrmlScene::removeBackground(VrmlNodeBackground & node) {
-    this->d_backgrounds.remove(&node);
+    const std::list<VrmlNode *>::iterator end = this->d_backgrounds.end();
+    const std::list<VrmlNode *>::iterator pos =
+            std::find(this->d_backgrounds.begin(), end, &node);
+    if (pos != end) {
+        this->d_backgrounds.erase(pos);
+    }
 }
 
 VrmlNodeBackground *VrmlScene::bindableBackgroundTop() {
@@ -957,7 +963,12 @@ void VrmlScene::addFog(VrmlNodeFog & n) {
 }
 
 void VrmlScene::removeFog(VrmlNodeFog & n) {
-    this->d_fogs.remove(&n);
+    const std::list<VrmlNode *>::iterator end = this->d_fogs.end();
+    const std::list<VrmlNode *>::iterator pos =
+            std::find(this->d_fogs.begin(), end, &node);
+    if (pos != end) {
+        this->d_fogs.erase(pos);
+    }
 }
 
 VrmlNodeFog *VrmlScene::bindableFogTop()
@@ -982,7 +993,12 @@ void VrmlScene::addNavigationInfo(VrmlNodeNavigationInfo & n) {
 }
 
 void VrmlScene::removeNavigationInfo(VrmlNodeNavigationInfo & n) {
-    this->d_navigationInfos.remove(&n);
+    const std::list<VrmlNode *>::iterator end = this->d_navigationInfos.end();
+    const std::list<VrmlNode *>::iterator pos =
+            std::find(this->d_navigationInfos.begin(), end, &node);
+    if (pos != end) {
+        this->d_navigationInfos.erase(pos);
+    }
 }
 
 VrmlNodeNavigationInfo *VrmlScene::bindableNavigationInfoTop()
@@ -1006,8 +1022,13 @@ void VrmlScene::addViewpoint(VrmlNodeViewpoint & n) {
     this->d_viewpoints.push_back(&n);
 }
 
-void VrmlScene::removeViewpoint(VrmlNodeViewpoint & n) {
-    this->d_viewpoints.remove(&n);
+void VrmlScene::removeViewpoint(VrmlNodeViewpoint & node) {
+    const std::list<VrmlNode *>::iterator end = this->d_viewpoints.end();
+    const std::list<VrmlNode *>::iterator pos =
+            std::find(this->d_viewpoints.begin(), end, &node);
+    if (pos != end) {
+        this->d_viewpoints.erase(pos);
+    }
 }
 
 VrmlNodeViewpoint *VrmlScene::bindableViewpointTop()
