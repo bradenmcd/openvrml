@@ -1,6 +1,6 @@
 #!/bin/sh
 
-aclocal -I ./macros
+aclocal
 automake --add-missing
 autoreconf
 ./configure $@ \
