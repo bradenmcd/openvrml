@@ -18,6 +18,9 @@
           OV_CHECK_GLUT may need to get a good deal smarter; OTOH, we
           will eventually be eliminating the GLUT dependency altogether.
 
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: checkError
+          should take a const char *.
+
 2002-06-20  Braden McDaniel  <braden@endoframe.com>
 
         * m4/gl.m4: AC_REQUIRE([AC_PATH_XTRA]) and add the X CFLAGS and

@@ -196,7 +196,7 @@ void ViewerOpenGL::initialize()
 }
 
 // Call this after each frame for debugging...
-static void checkErrors(char *s)
+static void checkErrors(const char * s)
 {
   GLenum glerr;
   while ((glerr = glGetError()) != GL_NO_ERROR) {
