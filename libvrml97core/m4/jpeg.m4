@@ -12,6 +12,9 @@ AC_DEFUN(VRML_PATH_JPEG,
       jpeg__Ldir="-I${with_jpeg_prefix}/lib"
     fi
     
+    JPEG_CFLAGS=""
+    JPEG_LIBS=""
+    
     AC_LANG_SAVE
     AC_LANG_C
     
@@ -40,8 +43,6 @@ AC_DEFUN(VRML_PATH_JPEG,
     if test "X$have_jpeg" = "Xyes"; then
       ifelse([$1], , :, [$1])
     else
-      JPEG_CFLAGS=""
-      JPEG_LIBS=""
       ifelse([$2], , :, [$2])
     fi
     

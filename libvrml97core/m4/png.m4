@@ -14,6 +14,9 @@ AC_DEFUN(VRML_PATH_PNG,
       png__Ldir="-I${with_png_prefix}/lib"
     fi
     
+    PNG_CFLAGS=""
+    PNG_LIBS=""
+    
     AC_LANG_SAVE
     AC_LANG_C
     
@@ -30,20 +33,18 @@ AC_DEFUN(VRML_PATH_PNG,
             PNG_CFLAGS="${ZLIB_CFLAGS} ${png__Idir}"
             PNG_LIBS="${ZLIB_LIBS} ${png__Ldir} -lpng"
           ],
-          have_zlib=no
+          have_png=no
         )
         CPPFLAGS="${ac_save_CPPFLAGS}"
       ],
-      have_zlib=no
+      have_png=no
     )
     
     LDFLAGS="${ac_save_LDFLAGS}"
     
-    if test "X$have_zlib" = "Xyes"; then
+    if test "X$have_png" = "Xyes"; then
       ifelse([$1], , :, [$1])
     else
-      ZLIB_CFLAGS=""
-      ZLIB_LIBS=""
       ifelse([$2], , :, [$2])
     fi
     
