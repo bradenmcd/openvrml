@@ -6619,7 +6619,8 @@ JSObject * VrmlMatrix::initClass(JSContext * const cx, JSObject * const obj)
               { "multRight", multRight, 1, 0, 0 },
               { "multVecMatrix", multVecMatrix, 1, 0, 0 },
               { "multMatrixVec", multMatrixVec, 1, 0, 0 },
-              { "toString", toString, 0, 0, 0 } };
+              { "toString", toString, 0, 0, 0 }, 
+              { 0, 0, 0, 0, 0 } };
 
     JSObject * const proto = JS_InitClass(cx, obj, 0, &jsclass,
                                           construct, 0,
