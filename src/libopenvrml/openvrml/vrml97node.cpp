@@ -1505,58 +1505,6 @@ bool appearance_node::modified() const
                 && this->textureTransform.value->modified()));
 }
 
-# if 0
-/**
- * @brief Render the node.
- *
- * @param viewer    a Viewer.
- * @param context   a rendering context.
- */
-void appearance_node::render(openvrml::viewer & viewer,
-                             const rendering_context context)
-{
-    openvrml::material_node * const material =
-        node_cast<openvrml::material_node *>(this->material_.value.get());
-    texture_node * const texture =
-        node_cast<texture_node *>(this->texture_.value.get());
-
-    if (material) {
-        float trans = material->transparency();
-        color diffuse = material->diffuse_color();
-        size_t nTexComponents = texture ? texture->components() : 0;
-        if (nTexComponents == 2 || nTexComponents == 4) { trans = 0.0; }
-        if (nTexComponents >= 3) { diffuse = color(1.0, 1.0, 1.0); }
-
-        viewer.enable_lighting(true);   // turn lighting on for this object
-        viewer.set_material(material->ambient_intensity(),
-                            diffuse,
-                            material->emissive_color(),
-                            material->shininess(),
-                            material->specular_color(),
-                            trans);
-
-        material->modified(false);
-    } else {
-        viewer.set_color(color(1.0, 1.0, 1.0)); // default color
-        viewer.enable_lighting(false);   // turn lighting off for this object
-    }
-
-    if (texture) {
-        if (this->textureTransform.value) {
-            this->textureTransform.value->render(viewer, context);
-        } else {
-            static const vec2f center(0.0, 0.0);
-            static const float rotation = 0.0;
-            static const vec2f scale(1.0, 1.0);
-            static const vec2f translation(0.0, 0.0);
-            viewer.set_texture_transform(center, rotation, scale, translation);
-        }
-        texture->render_texture(viewer, context);
-    }
-    this->node::modified(false);
-}
-# endif
-
 /**
  * @brief Get the material node.
  *
@@ -7320,10 +7268,6 @@ image_texture_node::image_texture_node(const node_type & type,
     abstract_texture_node(type, scope),
     image(0),
     texture_needs_update(true)
-# if 0
-,
-    texObject(0)
-# endif
 {}
 
 /**
@@ -7334,57 +7278,6 @@ image_texture_node::~image_texture_node() throw ()
     delete this->image;
     // delete texObject...
 }
-
-# if 0
-/**
- * @brief Render the node.
- *
- * @param viewer    a Viewer.
- * @param context   a rendering context.
- */
-void image_texture_node::render(openvrml::viewer & viewer,
-                                rendering_context context)
-{
-    if (modified()) {
-        if (this->image) {
-            delete this->image;        // URL is the only modifiable bit
-            this->image = 0;
-        }
-        if (this->texObject) {
-            viewer.remove_texture_object(this->texObject);
-            this->texObject = 0;
-        }
-    }
-
-    // should probably read the image during addToScene...
-    // should cache on url so multiple references to the same file are
-    // loaded just once... of course world authors should just DEF/USE
-    // them...
-    if (!this->image && !this->url.value.empty()) {
-        doc2 baseDoc(this->scene()->url());
-        this->image = new img;
-        if (!this->image->try_urls(this->url.value, &baseDoc)) {
-            OPENVRML_PRINT_MESSAGE_("Couldn't read ImageTexture from URL "
-                                    + this->url.value[0]);
-        }
-    }
-
-    // Check texture cache
-    if (this->texObject && this->image) {
-        viewer.insert_texture_reference(this->texObject, this->image->nc());
-    } else {
-        this->texObject = viewer.insert_texture(this->image->w(),
-                                                this->image->h(),
-                                                this->image->nc(),
-                                                this->repeatS.value,
-                                                this->repeatT.value,
-                                                this->image->pixels(),
-                                                true);
-    }
-
-    this->node::modified(false);
-}
-# endif
 
 /**
  * @brief The number of components.
@@ -9281,10 +9174,6 @@ movie_texture_node::movie_texture_node(const node_type & type,
     frame(0),
     lastFrame(-1),
     lastFrameTime(-1.0)
-# if 0
-,
-    texObject(0)
-# endif
 {}
 
 /**
@@ -9429,45 +9318,6 @@ void movie_texture_node::update(const double time)
         this->type.node_class.browser.delta(0.9 * d);
     }
 }
-
-# if 0
-/**
- * @brief Render the node.
- *
- * Render a frame if there is one available.
- *
- * @param viewer    a Viewer.
- * @param context   a rendering context.
- */
-void movie_texture_node::render(openvrml::viewer & viewer,
-                                const rendering_context context)
-{
-    if (!this->image || this->frame < 0) { return; }
-
-    if (this->frame != this->lastFrame && this->texObject) {
-        viewer.remove_texture_object(this->texObject);
-        this->texObject = 0;
-    }
-
-    if (!this->image->pixels(this->frame)) {
-        this->frame = -1;
-    } else if (this->texObject) {
-        viewer.insert_texture_reference(this->texObject, this->image->nc());
-    } else {
-        this->texObject =
-            viewer.insert_texture(this->image->w(),
-                                  this->image->h(),
-                                  this->image->nc(),
-                                  this->repeatS.value,
-                                  this->repeatT.value,
-                                  this->image->pixels(this->frame),
-                                  !this->active.value);
-    }
-
-    this->lastFrame = this->frame;
-    this->node::modified(false);
-}
-# endif
 
 /**
  * @brief The number of components.
@@ -10799,10 +10649,6 @@ pixel_texture_node::pixel_texture_node(const node_type & type,
                                        const scope_ptr & scope):
     node(type, scope),
     abstract_texture_node(type, scope)
-# if 0
-,
-    texObject(0)
-# endif
 {}
 
 /**
@@ -10812,45 +10658,6 @@ pixel_texture_node::~pixel_texture_node() throw ()
 {
     // viewer.remove_texture_object(this->texObject); ...
 }
-
-# if 0
-/**
- * @brief Render the node.
- *
- * @param viewer    a Viewer.
- * @param context   a rendering context.
- *
- * @todo Currently we modify the image when rescaling it to have
- *       2<sup><var>n</var></sup> sides. This is wrong. We should maintain a
- *       cache of rescaled images in the renderer.
- */
-void pixel_texture_node::render(openvrml::viewer & viewer,
-                                const rendering_context context)
-{
-    if (modified()) {
-        if (this->texObject) {
-            viewer.remove_texture_object(this->texObject);
-            this->texObject = 0;
-        }
-    }
-
-    if (this->image.array()) {
-        if (this->texObject) {
-            viewer.insert_texture_reference(this->texObject,
-                                            this->image.comp());
-        } else {
-            this->texObject = viewer.insert_texture(this->image.x(),
-                                                    this->image.y(),
-                                                    this->image.comp(),
-                                                    this->repeatS.value,
-                                                    this->repeatT.value,
-                                                    this->image.array(),
-                                                    true);
-        }
-    }
-    this->node::modified(false);
-}
-# endif
 
 /**
  * @brief The number of components in the image.
@@ -16326,24 +16133,6 @@ texture_transform_node::texture_transform_node(const node_type & type,
  */
 texture_transform_node::~texture_transform_node() throw ()
 {}
-
-# if 0
-/**
- * @brief Render the node.
- *
- * @param viewer    a Viewer.
- * @param context   a rendering context.
- */
-void texture_transform_node::render(openvrml::viewer & viewer,
-                                    const rendering_context context)
-{
-    viewer.set_texture_transform(this->center.value,
-                                 this->rotation.value,
-                                 this->scale.value,
-                                 this->translation.value);
-    this->node::modified(false);
-}
-# endif
 
 /**
  * @brief render_texture_transform implementation.

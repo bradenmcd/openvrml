@@ -311,11 +311,6 @@ namespace openvrml {
 
             virtual bool modified() const;
 
-# if 0
-            virtual void render(openvrml::viewer & viewer,
-                                rendering_context context);
-# endif
-
             //
             // appearance_node implementation
             //
@@ -1150,19 +1145,10 @@ namespace openvrml {
             img * image;
             bool texture_needs_update;
 
-# if 0
-            viewer::texture_object_t texObject;
-# endif
-
         public:
             image_texture_node(const node_type & type,
                                const scope_ptr & scope);
             virtual ~image_texture_node() throw ();
-
-# if 0
-            virtual void render(openvrml::viewer & viewer,
-                                rendering_context context);
-# endif
 
             virtual size_t components() const throw ();
             virtual size_t width() const throw ();
@@ -1452,10 +1438,6 @@ namespace openvrml {
             int frame, lastFrame;
             double lastFrameTime;
 
-# if 0
-            viewer::texture_object_t texObject;
-# endif
-
         public:
             movie_texture_node(const node_type & type,
                                const scope_ptr & scope);
@@ -1464,11 +1446,6 @@ namespace openvrml {
             virtual movie_texture_node * to_movie_texture() const;
 
             void update(double time);
-
-# if 0
-            virtual void render(openvrml::viewer & viewer,
-                                rendering_context context);
-# endif
 
             virtual size_t components() const throw ();
             virtual size_t width() const throw ();
@@ -1692,19 +1669,10 @@ namespace openvrml {
 
             sfimage image;
 
-# if 0
-            viewer::texture_object_t texObject;
-# endif
-
         public:
             pixel_texture_node(const node_type & type,
                                const scope_ptr & scope);
             virtual ~pixel_texture_node() throw ();
-
-# if 0
-            virtual void render(openvrml::viewer & viewer,
-                                rendering_context context);
-# endif
 
             virtual size_t components() const throw ();
             virtual size_t width() const throw ();
@@ -2451,11 +2419,6 @@ namespace openvrml {
             texture_transform_node(const node_type & type,
                                    const scope_ptr & scope);
             virtual ~texture_transform_node() throw ();
-
-# if 0
-            virtual void render(openvrml::viewer & viewer,
-                                rendering_context context);
-# endif
 
         private:
             virtual void
