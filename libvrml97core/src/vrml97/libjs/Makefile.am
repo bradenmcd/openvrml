@@ -1,6 +1,15 @@
 SUBDIRS = fdlibm
 
-CFLAGS = @CFLAGS@ @JSCFLAGS@
+#
+# Add any debug flags
+#
+if DEBUG
+  DEBUG_CFLAGS = -g
+else
+  DEBUG_CFLAGS = -DNDEBUG
+endif
+
+CFLAGS = -Wall -O2 $(DEBUG_CFLAGS) @JSCFLAGS@
 
 noinst_PROGRAMS = jscpucfg js
 

@@ -47,44 +47,8 @@ dnl Check for libpng, zlib
 dnl
 VRML_PATH_PNG(, [libpng or zlib not found. Check config.log for details.])
 
-dnl ZLIB
 dnl
-dnl zlib is required. this test requires it to be installed, but we'd
-dnl really like to have one of those nifty --with-zlib=path thingies.
-dnl until then, users can get around a compiled-but-not-installed zlib
-dnl by setting LD_LIBRARY_PATH, right?
-dnl
-dnl AC_CHECK_LIB(z, zlibVersion, AC_MSG_RESULT([ok]), AC_MSG_ERROR([libz not found]))
-dnl AC_CHECK_HEADER(zlib.h, AC_MSG_RESULT([ok]), AC_MSG_ERROR([zlib.h not found]))
-dnl VRML_PATH_ZLIB(, [zlib not found. Check config.log for details.])
-
-
-dnl JPEG
-dnl
-dnl libjpeg is now a required part of the core build, but since we can
-dnl expect some people not to have it, it should get one of those
-dnl --jpeg-libraries type options so you aren't required to install it
-dnl in the system directories just to try out lookat. normally check_lib
-dnl tries to add the library to the global list of libs needed to link
-dnl apps, but we don't want that, so stick in a spurious result message
-dnl to inhibit the default action.
-dnl
-dnl AC_CHECK_LIB(jpeg, jpeg_read_header, AC_MSG_RESULT([ok]), AC_MSG_ERROR([libjpeg not found]))
-dnl AC_CHECK_HEADER(jpeglib.h, AC_MSG_RESULT([ok]), AC_MSG_ERROR([jpeglib.h not found]))
-
-
-dnl PNG
-dnl
-dnl like libjpeg, libpng is required for the core build, but we don't
-dnl want to require that it be in a system directory.
-dnl
-dnl AC_CHECK_LIB(png, png_read_info, AC_MSG_RESULT([ok]), AC_MSG_ERROR([libpng not found]))
-dnl AC_CHECK_HEADER(png.h, AC_MSG_RESULT([ok]), AC_MSG_ERROR([png.h not found]))
-
-
-dnl X Window System, X, GL/MESA, GLUT
-dnl
-dnl need to remove the dependency on glut
+dnl Check for X, GL/Mesa, glut
 dnl
 VRMLGL_PATH_GLUT(, AC_MSG_ERROR([glut or one of its dependencies not found. See 'config.log' for details.]))
 
@@ -315,35 +279,24 @@ dnl
 JSCFLAGS="-DXP_UNIX"
 AC_SUBST(JSCFLAGS)
 
-
-
-dnl Developer settings
-dnl
-dnl does anything actually _use_ ndebug? well, libjs does, and
-dnl someday someone might put in some asserts(). we have to
-dnl explicitly get rid of the existing cflags, which makes me
-dnl suspect there might be a builtin rule that does this exact same
-dnl thing. maybe not.
-dnl
-CFLAGS=""
-AC_ARG_ENABLE(debug, [  --enable-debug ])
-if test "${enable_debug}" = "yes"; then
-  CFLAGS="$CFLAGS -g"
-else
-  CFLAGS="$CFLAGS -DNDEBUG"
-fi
-AC_ARG_ENABLE(optimized, [  --disable-optimized ])
-if test "${enable_optimized}" != "no"; then
-  CFLAGS="$CFLAGS -O2"
-fi
-AC_SUBST(CFLAGS)
-
-
-
 dnl Checks for library functions.
 AC_CHECK_FUNCS(ftime getcwd gettimeofday mktime strdup strerror strstr)
 
-
+dnl
+dnl Modulate debug mode
+dnl
+AC_ARG_ENABLE(debug,
+  [  --enable-debug          Turn on debugging],
+  [
+    case "${enableval}" in
+      yes) debug=true ;;
+      no)  debug=false ;;
+      *)   AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
+    esac
+  ],
+  [ debug=false ]
+)
+AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 AC_OUTPUT(Makefile \
           m4/Makefile \

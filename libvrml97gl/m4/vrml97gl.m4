@@ -178,7 +178,7 @@ AC_DEFUN(VRMLGL_PATH_GLUT,
     )
     
     AC_ARG_WITH(glut-prefix,
-      [  --with-glut-prefix=DIR    pass '-IDIR/include' to CPP, '-LDIR/lib' to LD]
+      [  --with-glut-prefix=DIR  pass '-IDIR/include' to CPP, '-LDIR/lib' to LD]
     )
     
     if test -n "${with_glut_prefix}"; then
