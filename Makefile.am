@@ -44,7 +44,7 @@ EXTRA_DIST = Doxyfile.in openvrml.pc.in openvrml-gl.pc.in openvrml.spec.in \
 lookat.xpm $(IDE_PROJECT_FILES) java
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = openvrml.pc openvrml-gl.pc
+pkgconfig_DATA = openvrml.pc @OPENVRML_GL_PC@
 
 pixmapdatadir = $(datadir)/pixmaps
 pixmapdata_DATA = lookat.xpm

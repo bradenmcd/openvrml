@@ -69,6 +69,7 @@ if test "X$with_gl" = "Xyes"; then
     AC_MSG_ERROR([OpenGL/Mesa not found.])
   else
     AC_SUBST([OPENVRML_GL_SUBDIR], [openvrml-gl])
+    AC_SUBST([OPENVRML_GL_PC], [openvrml-gl.pc])
     AC_DEFINE([OPENVRML_HAVE_GL], , [Defined if OpenGL/Mesa is a available and should be used.])
     
     if test "X$with_glut" = "Xyes"; then
