@@ -1,6 +1,6 @@
 // -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
 //
-// lookat
+// sdl-viewer
 //
 // Copyright 2003, 2004, 2005  Braden McDaniel
 //
@@ -172,8 +172,8 @@ namespace {
             {
                 //
                 // A real application should use OS facilities for this.  This
-                // is a crude hack because lookat uses std::filebuf in order to
-                // remain simple and portable.
+                // is a crude hack because sdl-viewer uses std::filebuf in
+                // order to remain simple and portable.
                 //
                 using std::string;
                 using boost::algorithm::iequals;
