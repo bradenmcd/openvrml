@@ -106,19 +106,22 @@ using namespace OpenVRML;
 
 namespace {
 
+   /**
+    * @class VrmlEvent
+    *
+    * @brief Used to store events to be processed by the JSAI code.
+    */
     class VrmlEvent {
         double d_timeStamp;
         char *d_eventName;
         FieldValue *d_value;
-        int d_refCount;
 
     public:
         VrmlEvent(double timeStamp, const char *eventName,
                   const FieldValue * value) :
           d_timeStamp(timeStamp),
           d_eventName(new char[strlen(eventName)+1]),
-          d_value(value->clone().release()),
-          d_refCount(1)
+          d_value(value->clone().release())
         { strcpy(d_eventName, eventName); }
 
         ~VrmlEvent() { delete [] d_eventName; delete d_value; }
@@ -126,16 +129,6 @@ namespace {
         VrmlEvent * clone() const {
           return new VrmlEvent(this->d_timeStamp, this->d_eventName, this->d_value);
         }
-
-        // VrmlEvents are reference counted.
-        // The reference counting is manual (that is, each user of a
-        // VrmlEvent, such as the VrmlNode class, calls reference()
-        // and dereference() explicitly). Should make it internal...
-
-        // Add/remove references to a VrmlEvent. This is silly, as it
-        // requires the users of VrmlEvent to do the reference/derefs...
-        VrmlEvent *reference() { ++d_refCount; return this; }
-        void dereference() { if (--d_refCount == 0) delete this; }
 
         double timeStamp() const { return d_timeStamp; }
         const char * name() const { return d_eventName; }
@@ -191,6 +184,7 @@ ScriptJDK::ScriptJDK(ScriptNode & scriptNode, const char * className,
 		     const char * classDir):
         Script(scriptNode), d_class(0), d_object(0), d_processEventsID(0),
         d_processEventID(0), d_eventsProcessedID(0) {
+
   if (! d_jvm)			// Initialize static members
   {
     JavaVMInitArgs vm_args;
@@ -259,7 +253,7 @@ ScriptJDK::ScriptJDK(ScriptNode & scriptNode, const char * className,
       d_object = d_env->NewObject(d_class, ctorId);
 
     jfieldID fid = d_env->GetFieldID(d_class, "NodePtr", "I");
-    d_env->SetIntField(d_object, fid, reinterpret_cast<int>(&this->scriptNode));
+    d_env->SetIntField(d_object, fid, reinterpret_cast<int>(&scriptNode));
 
     // Cache other method IDs
     d_processEventID =
@@ -291,8 +285,6 @@ namespace {
     /**
      * @brief ...
      *
-     * ...
-     *
      * @param env JNI environment
      * @param obj ...
      * @param membername ...
@@ -319,6 +311,8 @@ namespace {
      * @param obj JNI version of a Java field object
      * @return OpenVRML field value pointer representing the passed in Java
      *         field object.
+     * @todo This method needs to be revisited. We immediately set the
+     *       modified flag on eventOuts even though nothing has been set yet.
      */
     FieldValue* getFieldValue(JNIEnv *env, jobject obj)
     {
@@ -472,12 +466,10 @@ void ScriptJDK::activate( double timeStamp,
 }
 
 /**
- * @brief ...
+ * @brief Create a new FieldValue of the given type.
  *
- * ...
- *
- * @param fieldtype ...
- * @return ...
+ * @param fieldtype Type of field to create.
+ * @return New FieldValue of given type
  */
 static FieldValue* newField(FieldValue::Type fieldtype)
 {
@@ -533,8 +525,6 @@ static FieldValue* newField(FieldValue::Type fieldtype)
 /**
  * @brief ...
  *
- * ...
- *
  * @param env JNI environment
  * @param obj ...
  * @return ...
@@ -566,8 +556,6 @@ jobject JNICALL Java_vrml_Field_clone
 /**
  * @brief ...
  *
- * ...
- *
  * @param vm ...
  * @param reserved ...
  * @return ...
@@ -589,18 +577,12 @@ void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved)
 {
 }
 
-//
-// ConstSFBool
-//
-
 /**
- * @brief ...
- *
- * ...
+ * @brief JNI implementation of ConstSFBool::CreateObject.
  *
  * @param env JNI environment
- * @param obj ...
- * @param value ...
+ * @param obj ConstSFBool object
+ * @param value Initial value of ConstSFBool field
  */
 void JNICALL Java_vrml_field_ConstSFBool_CreateObject
   (JNIEnv *env, jobject obj, jboolean value)
@@ -611,13 +593,11 @@ void JNICALL Java_vrml_field_ConstSFBool_CreateObject
 }
 
 /**
- * @brief ...
- *
- * ...
+ * @brief JNI implementation of ConstSFBool::getValue.
  *
  * @param env JNI environment
- * @param obj ...
- * @return ...
+ * @param obj ConstSFBool object
+ * @return Value of ConstSFBool field
  */
 jboolean JNICALL Java_vrml_field_ConstSFBool_getValue(JNIEnv * env,
                                                       jobject obj) {
@@ -626,13 +606,11 @@ jboolean JNICALL Java_vrml_field_ConstSFBool_getValue(JNIEnv * env,
 }
 
 /**
- * @brief ...
- *
- * ...
+ * @brief JNI implementation of ConstSFBool::toString.
  *
  * @param env JNI environment
- * @param obj ...
- * @return ...
+ * @param obj ConstSFBool object
+ * @return String representation of ConstSFBool field.
  */
 jstring JNICALL Java_vrml_field_ConstSFBool_toString
   (JNIEnv *env, jobject obj)
@@ -640,17 +618,11 @@ jstring JNICALL Java_vrml_field_ConstSFBool_toString
   return fieldToString(env, obj);
 }
 
-//
-// SFBool
-//
-
 /**
- * @brief ...
- *
- * ...
+ * @brief JNI implementation of SFBool::CreateObject.
  *
  * @param env JNI environment
- * @param obj ...
+ * @param obj SFBool object
  * @param value ...
  */
 void JNICALL Java_vrml_field_SFBool_CreateObject
@@ -660,12 +632,10 @@ void JNICALL Java_vrml_field_SFBool_CreateObject
 }
 
 /**
- * @brief ...
- *
- * ...
+ * @brief JNI implementation of SFBool::getValue.
  *
  * @param env JNI environment
- * @param obj ...
+ * @param obj SFBool object
  * @return ...
  */
 jboolean JNICALL Java_vrml_field_SFBool_getValue
@@ -675,12 +645,10 @@ jboolean JNICALL Java_vrml_field_SFBool_getValue
 }
 
 /**
- * @brief ...
- *
- * ...
+ * @brief JNI implementation of SFBool::setValue.
  *
  * @param env JNI environment
- * @param obj ...
+ * @param obj SFBool object
  * @param value ...
  */
 void JNICALL Java_vrml_field_SFBool_setValue__Z(JNIEnv * env,
@@ -691,12 +659,10 @@ void JNICALL Java_vrml_field_SFBool_setValue__Z(JNIEnv * env,
 }
 
 /**
- * @brief ...
- *
- * ...
+ * @brief JNI implementation of SFBool::setValue.
  *
  * @param env JNI environment
- * @param obj ...
+ * @param obj SFBool object
  * @param value ...
  */
 void JNICALL
@@ -709,12 +675,10 @@ Java_vrml_field_SFBool_setValue__Lvrml_field_ConstSFBool_2
 }
 
 /**
- * @brief ...
- *
- * ...
+ * @brief JNI implementation of SFBool::setValue.
  *
  * @param env JNI environment
- * @param obj ...
+ * @param obj SFBool object
  * @param value ...
  */
 void JNICALL
@@ -725,12 +689,10 @@ Java_vrml_field_SFBool_setValue__Lvrml_field_SFBool_2
 }
 
 /**
- * @brief ...
- *
- * ...
+ * @brief JNI implementation of SFBool::toString.
  *
  * @param env JNI environment
- * @param obj ...
+ * @param obj SFBool object
  * @return ...
  */
 jstring JNICALL Java_vrml_field_SFBool_toString
@@ -739,17 +701,11 @@ jstring JNICALL Java_vrml_field_SFBool_toString
   return fieldToString(env, obj);
 }
 
-//
-// ConstSFColor
-//
-
 /**
- * @brief ...
- *
- * ...
+ * @brief JNI implementation of ConstSFColor::CreateObject.
  *
  * @param env JNI environment
- * @param obj ...
+ * @param obj ConstSFColor object.
  * @param r ...
  * @param g ...
  * @param b ...
@@ -763,13 +719,11 @@ void JNICALL Java_vrml_field_ConstSFColor_CreateObject
 }
 
 /**
- * @brief ...
- *
- * ...
+ * @brief JNI implementation of ConstSFColor::getValue.
  *
  * @param env JNI environment
- * @param obj ...
- * @param jarr ...
+ * @param obj ConstSFColor object
+ * @param jarr Array to fill with RGB values of SFColor.
  */
 void JNICALL Java_vrml_field_ConstSFColor_getValue(JNIEnv * env,
                                                    jobject obj,
@@ -778,62 +732,130 @@ void JNICALL Java_vrml_field_ConstSFColor_getValue(JNIEnv * env,
     env->SetFloatArrayRegion(jarr, 0, 3, const_cast<float *>(pSFColor->get()));
 }
 
+/**
+ * @brief JNI implementation of ConstSFColor::getRed.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFColor object
+ * @return Red component of SFColor
+ */
 jfloat JNICALL Java_vrml_field_ConstSFColor_getRed(JNIEnv * env, jobject obj) {
     SFColor * pSFColor = static_cast<SFColor *>(getFieldValue(env, obj));
     return pSFColor->getR();
 }
 
+/**
+ * @brief JNI implementation of ConstSFColor::getGreen.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFColor object
+ * @return Green component of SFColor
+ */
 jfloat JNICALL Java_vrml_field_ConstSFColor_getGreen(JNIEnv * env,
                                                      jobject obj) {
     SFColor * pSFColor = static_cast<SFColor *>(getFieldValue(env, obj));
     return pSFColor->getG();
 }
 
+/**
+ * @brief JNI implementation of ConstSFColor::getBlue.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFColor object
+ * @return Blue component of SFColor
+ */
 jfloat JNICALL Java_vrml_field_ConstSFColor_getBlue(JNIEnv * env, jobject obj) {
     SFColor * pSFColor = static_cast<SFColor *>(getFieldValue(env, obj));
     return pSFColor->getB();
 }
 
+/**
+ * @brief JNI implementation of ConstSFColor::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFColor object.
+ * @return String representation of ConstSFColor.
+ */
 jstring JNICALL Java_vrml_field_ConstSFColor_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
 
-//
-// SFColor
-//
-
+/**
+ * @brief JNI implementation of SFColor::CreateObject
+ *
+ * @param env JNI environment
+ * @param obj SFColor object
+ * @param r Red component of Color
+ * @param g Green component of Color
+ * @param b Blue component of Color
+ */
 void JNICALL Java_vrml_field_SFColor_CreateObject
   (JNIEnv *env, jobject obj, jfloat r, jfloat g, jfloat b)
 {
   Java_vrml_field_ConstSFColor_CreateObject(env, obj, r, g, b);
 }
 
+/**
+ * @brief JNI implementation of SFColor::getValue
+ *
+ * @param env JNI environment
+ * @param obj SFColor object
+ * @param jarr Array to populate with SFColor RGB components.
+ */
 void JNICALL Java_vrml_field_SFColor_getValue
   (JNIEnv *env, jobject obj, jfloatArray jarr)
 {
   Java_vrml_field_ConstSFColor_getValue(env, obj, jarr);
 }
 
+/**
+ * @brief JNI implementation of SFColor::getRed.
+ *
+ * @param env JNI environment
+ * @param obj SFColor object
+ * @return Red component of SFColor.
+ */
 jfloat JNICALL Java_vrml_field_SFColor_getRed
   (JNIEnv *env, jobject obj)
 {
   return Java_vrml_field_ConstSFColor_getRed(env, obj);
 }
 
+/**
+ * @brief JNI implementation of SFColor::getGreen.
+ *
+ * @param env JNI environment
+ * @param obj SFColor object
+ * @return Green component of SFColor.
+ */
 jfloat JNICALL Java_vrml_field_SFColor_getGreen
   (JNIEnv *env, jobject obj)
 {
   return Java_vrml_field_ConstSFColor_getGreen(env, obj);
 }
 
+/**
+ * @brief JNI implementation of SFColor::getBlue.
+ *
+ * @param env JNI environment
+ * @param obj SFColor object
+ * @return Blue component of SFColor.
+ */
 jfloat JNICALL Java_vrml_field_SFColor_getBlue
   (JNIEnv *env, jobject obj)
 {
   return Java_vrml_field_ConstSFColor_getBlue(env, obj);
 }
 
+/**
+ * @brief JNI implementation of SFColor::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFColor object
+ * @param jarr Array containing RGB components of desired SFColor.
+ */
 void JNICALL Java_vrml_field_SFColor_setValue___3F(JNIEnv * env,
                                                    jobject obj,
                                                    jfloatArray jarr)
@@ -845,6 +867,15 @@ void JNICALL Java_vrml_field_SFColor_setValue___3F(JNIEnv * env,
     env->ReleaseFloatArrayElements(jarr, pjf, JNI_ABORT);
 }
 
+/**
+ * @brief JNI implementation of SFColor::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFColor object
+ * @param r Red component of desired color.
+ * @param g Green component of desired color.
+ * @param b Blue component of desired color.
+ */
 void JNICALL Java_vrml_field_SFColor_setValue__FFF
   (JNIEnv *env, jobject obj, jfloat r, jfloat g, jfloat b)
 {
@@ -853,6 +884,13 @@ void JNICALL Java_vrml_field_SFColor_setValue__FFF
   pSFColor->set(rgb);
 }
 
+/**
+ * @brief JNI implementation of SFColor::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFColor object
+ * @param value ConstSFColor object to copy color from.
+ */
 void JNICALL
 Java_vrml_field_SFColor_setValue__Lvrml_field_ConstSFColor_2
   (JNIEnv *env, jobject obj, jobject value)
@@ -862,6 +900,13 @@ Java_vrml_field_SFColor_setValue__Lvrml_field_ConstSFColor_2
   pSFColor->set(pNewSFColor->get());
 }
 
+/**
+ * @brief JNI implementation of SFColor::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFColor object
+ * @param value SFColor object to copy color from.
+ */
 void JNICALL
 Java_vrml_field_SFColor_setValue__Lvrml_field_SFColor_2
   (JNIEnv *env, jobject obj, jobject value)
@@ -870,15 +915,18 @@ Java_vrml_field_SFColor_setValue__Lvrml_field_SFColor_2
     (env, obj, value);
 }
 
+/**
+ * @brief JNI implementation of SFColor::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFColor object
+ * @return String representation of SFColor.
+ */
 jstring JNICALL Java_vrml_field_SFColor_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// ConstSFFloat
-//
 
 void JNICALL Java_vrml_field_ConstSFFloat_CreateObject
   (JNIEnv *env, jobject obj, jfloat value)
@@ -894,15 +942,19 @@ jfloat JNICALL Java_vrml_field_ConstSFFloat_getValue(JNIEnv * env,
     return pSFFloat->get();
 }
 
+/**
+ * @brief JNI implementation of ConstSFFloat::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFFloat object
+ * @return String representation of ConstSFFloat.
+ */
 jstring JNICALL Java_vrml_field_ConstSFFloat_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
 
-//
-// SFFloat
-//
 
 void JNICALL Java_vrml_field_SFFloat_CreateObject
   (JNIEnv *env, jobject obj, jfloat value)
@@ -940,15 +992,18 @@ Java_vrml_field_SFFloat_setValue__Lvrml_field_SFFloat_2
     (env, obj, value);
 }
 
+/**
+ * @brief JNI implementation of SFFloat::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFFloat object
+ * @return String representation of SFFloat.
+ */
 jstring JNICALL Java_vrml_field_SFFloat_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// ConstSFImage
-//
 
 void JNICALL Java_vrml_field_ConstSFImage_CreateObject
   (JNIEnv *env, jobject obj, jint width, jint height,
@@ -1006,15 +1061,18 @@ void JNICALL Java_vrml_field_ConstSFImage_getPixels
                           (jbyte*)pSFImage->getPixels());
 }
 
+/**
+ * @brief JNI implementation of ConstSFImage::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFImage object
+ * @return String representation of ConstSFImage.
+ */
 jstring JNICALL Java_vrml_field_ConstSFImage_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// SFImage
-//
 
 void JNICALL Java_vrml_field_SFImage_CreateObject
   (JNIEnv *env, jobject obj, jint width, jint height,
@@ -1078,15 +1136,18 @@ Java_vrml_field_SFImage_setValue__Lvrml_field_SFImage_2
                                                                value);
 }
 
+/**
+ * @brief JNI implementation of SFImage::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFImage object
+ * @return String representation of SFImage.
+ */
 jstring JNICALL Java_vrml_field_SFImage_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// ConstSFInt32
-//
 
 void JNICALL Java_vrml_field_ConstSFInt32_CreateObject
   (JNIEnv *env, jobject obj, jint value)
@@ -1103,15 +1164,18 @@ jint JNICALL Java_vrml_field_ConstSFInt32_getValue
   return static_cast<int>(pSFInt32->get());
 }
 
+/**
+ * @brief JNI implementation of ConstSFInt32::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFInt32 object
+ * @return String representation of ConstSFInt32.
+ */
 jstring JNICALL Java_vrml_field_ConstSFInt32_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// SFInt32
-//
 
 void JNICALL Java_vrml_field_SFInt32_CreateObject
   (JNIEnv *env, jobject obj, jint value)
@@ -1149,15 +1213,18 @@ Java_vrml_field_SFInt32_setValue__Lvrml_field_SFInt32_2
     (env, obj, value);
 }
 
+/**
+ * @brief JNI implementation of SFInt32::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFInt32 object
+ * @return String representation of SFInt32.
+ */
 jstring JNICALL Java_vrml_field_SFInt32_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// ConstSFNode
-//
 
 void JNICALL Java_vrml_field_ConstSFNode_CreateObject
   (JNIEnv *env, jobject obj, jobject value)
@@ -1180,15 +1247,18 @@ jobject JNICALL Java_vrml_field_ConstSFNode_getValue
   return jNode;
 }
 
+/**
+ * @brief JNI implementation of ConstSFNode::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFNode object
+ * @return String representation of ConstSFNode.
+ */
 jstring JNICALL Java_vrml_field_ConstSFNode_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// SFNode
-//
 
 void JNICALL Java_vrml_field_SFNode_CreateObject
   (JNIEnv *env, jobject obj, jobject value)
@@ -1226,15 +1296,18 @@ void JNICALL Java_vrml_field_SFNode_setValue__Lvrml_field_SFNode_2
   Java_vrml_field_SFNode_setValue__Lvrml_field_ConstSFNode_2(env, obj, value);
 }
 
+/**
+ * @brief JNI implementation of SFNode::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFNode object
+ * @return String representation of SFNode.
+ */
 jstring JNICALL Java_vrml_field_SFNode_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// ConstSFRotation
-//
 
 void JNICALL Java_vrml_field_ConstSFRotation_CreateObject
   (JNIEnv *env, jobject obj, jfloat axisX, jfloat axisY,
@@ -1255,15 +1328,18 @@ void JNICALL Java_vrml_field_ConstSFRotation_getValue(JNIEnv * env,
                              const_cast<float *>(pSFRotation->get()));
 }
 
+/**
+ * @brief JNI implementation of ConstSFRotation::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFRotation object
+ * @return String representation of ConstSFRotation.
+ */
 jstring JNICALL Java_vrml_field_ConstSFRotation_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// SFRotation
-//
 
 void JNICALL Java_vrml_field_SFRotation_CreateObject
   (JNIEnv *env, jobject obj, jfloat axisX, jfloat axisY,
@@ -1318,16 +1394,18 @@ Java_vrml_field_SFRotation_setValue__Lvrml_field_SFRotation_2
     (env, obj, value);
 }
 
+/**
+ * @brief JNI implementation of SFRotation::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFRotation object
+ * @return String representation of SFRotation.
+ */
 jstring JNICALL Java_vrml_field_SFRotation_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-
-//
-// ConstSFString
-//
 
 void JNICALL Java_vrml_field_ConstSFString_CreateObject
   (JNIEnv *env, jobject obj, jstring jstr)
@@ -1358,15 +1436,18 @@ jstring JNICALL Java_vrml_field_ConstSFString_getValue
   return env->NewStringUTF((pSFString->get()).c_str());
 }
 
+/**
+ * @brief JNI implementation of ConstSFString::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFString object
+ * @return String representation of ConstSFString.
+ */
 jstring JNICALL Java_vrml_field_ConstSFString_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// SFString
-//
 
 void JNICALL Java_vrml_field_SFString_CreateObject
   (JNIEnv *env, jobject obj, jstring jstr)
@@ -1406,15 +1487,18 @@ Java_vrml_field_SFString_setValue__Lvrml_field_SFString_2
                                                                  value);
 }
 
+/**
+ * @brief JNI implementation of SFString::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFString object
+ * @return String representation of SFString.
+ */
 jstring JNICALL Java_vrml_field_SFString_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// ConstSFTime
-//
 
 void JNICALL Java_vrml_field_ConstSFTime_CreateObject
   (JNIEnv *env, jobject obj, jdouble time)
@@ -1432,22 +1516,24 @@ jdouble JNICALL Java_vrml_field_ConstSFTime_getValue
   return static_cast<jdouble>(pSFTime->get());
 }
 
+/**
+ * @brief JNI implementation of ConstSFTime::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFTime object
+ * @return String representation of ConstSFTime.
+ */
 jstring JNICALL Java_vrml_field_ConstSFTime_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
 
-//
-// SFTime
-//
-
 void JNICALL Java_vrml_field_SFTime_CreateObject
   (JNIEnv *env, jobject obj, jdouble time)
 {
   Java_vrml_field_ConstSFTime_CreateObject(env, obj, time);
 }
-
 
 jdouble JNICALL Java_vrml_field_SFTime_getValue
   (JNIEnv *env, jobject obj)
@@ -1461,7 +1547,6 @@ void JNICALL Java_vrml_field_SFTime_setValue__D
   SFTime* pSFTime = static_cast<SFTime*>(getFieldValue(env, obj));
   pSFTime->set(static_cast<double>(time));
 }
-
 
 void JNICALL
 Java_vrml_field_SFTime_setValue__Lvrml_field_ConstSFTime_2
@@ -1479,15 +1564,18 @@ void JNICALL Java_vrml_field_SFTime_setValue__Lvrml_field_SFTime_2
                                                              value);
 }
 
+/**
+ * @brief JNI implementation of SFTime::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFTime object
+ * @return String representation of SFTime.
+ */
 jstring JNICALL Java_vrml_field_SFTime_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// ConstSFVec2f
-//
 
 void JNICALL Java_vrml_field_ConstSFVec2f_CreateObject
   (JNIEnv *env, jobject obj, jfloat x, jfloat y)
@@ -1518,15 +1606,18 @@ jfloat JNICALL Java_vrml_field_ConstSFVec2f_getY
   return static_cast<jfloat>(pSFVec2f->getY());
 }
 
+/**
+ * @brief JNI implementation of ConstSFVec2f::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFVec2f object
+ * @return String representation of ConstSFVec2f.
+ */
 jstring JNICALL Java_vrml_field_ConstSFVec2f_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// SFVec2f
-//
 
 void JNICALL Java_vrml_field_SFVec2f_CreateObject
   (JNIEnv *env, jobject obj, jfloat x, jfloat y)
@@ -1588,15 +1679,18 @@ Java_vrml_field_SFVec2f_setValue__Lvrml_field_SFVec2f_2
                                                                value);
 }
 
+/**
+ * @brief JNI implementation of SFVec2f::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFVec2f object
+ * @return String representation of SFVec2f.
+ */
 jstring JNICALL Java_vrml_field_SFVec2f_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// ConstSFVec3f
-//
 
 void JNICALL Java_vrml_field_ConstSFVec3f_CreateObject
   (JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat z)
@@ -1628,15 +1722,18 @@ jfloat JNICALL Java_vrml_field_ConstSFVec3f_getZ(JNIEnv * env, jobject obj) {
     return pSFVec3f->getZ();
 }
 
+/**
+ * @brief JNI implementation of ConstSFVec3f::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFVec3f object
+ * @return String representation of ConstSFVec3f.
+ */
 jstring JNICALL Java_vrml_field_ConstSFVec3f_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
-
-//
-// SFVec3f
-//
 
 void JNICALL Java_vrml_field_SFVec3f_CreateObject
   (JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat z)
@@ -1704,26 +1801,25 @@ Java_vrml_field_SFVec3f_setValue__Lvrml_field_SFVec3f_2
                                                                value);
 }
 
+/**
+ * @brief JNI implementation of SFVec3f::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFVec3f object
+ * @return String representation of SFVec3f.
+ */
 jstring JNICALL Java_vrml_field_SFVec3f_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
 }
 
-//
-// MFField's
-//
-
-//
-// ConstMFColor
-//
-
 void JNICALL Java_vrml_field_ConstMFColor_CreateObject___3_3F(JNIEnv * env,
                                                               jobject obj,
                                                               jobjectArray jarr)
 {
     try {
-        std::auto_ptr<MFColor> mfcolor(new MFColor(env->GetArrayLength(jarr)));
+      std::auto_ptr<MFColor> mfcolor(new MFColor(env->GetArrayLength(jarr)));
         jfieldID fid = getFid(env, obj, "FieldPtr", "I");
         env->SetIntField(obj, fid, reinterpret_cast<int>(mfcolor.release()));
     } catch (std::bad_alloc & ex) {
@@ -1757,8 +1853,9 @@ void JNICALL Java_vrml_field_ConstMFColor_CreateObject__I_3F(JNIEnv * env,
             return;
         }
         env->ThrowNew(exceptionClass, ex.what());
-    } 
-    Java_vrml_field_MFColor_setValue__I_3F(env, obj, size, jarr);
+    }
+
+    Java_vrml_field_MFColor_setValue__I_3F(env, obj, size / 3, jarr);
 }
 
 jint JNICALL Java_vrml_field_ConstMFColor_getSize(JNIEnv * env, jobject obj)
@@ -1844,10 +1941,6 @@ jstring JNICALL Java_vrml_field_ConstMFColor_toString
   return fieldToString(env, obj);
 }
 
-//
-// MFColor
-//
-
 void JNICALL Java_vrml_field_MFColor_CreateObject__I_3F
   (JNIEnv *env, jobject obj, jint size, jfloatArray jarr)
 {
@@ -1913,7 +2006,6 @@ void JNICALL Java_vrml_field_MFColor_setValue___3_3F(JNIEnv * env,
         MFColor * const mfcolor =
                 static_cast<MFColor *>(getFieldValue(env, obj));
         mfcolor->setLength(env->GetArrayLength(value)); // throws bad_alloc
-        
         for (size_t i = 0; i < mfcolor->getLength(); ++i) {
             jfloatArray element =
                 static_cast<jfloatArray>(env->GetObjectArrayElement(value, i));
@@ -1982,7 +2074,7 @@ void JNICALL Java_vrml_field_MFColor_setValue__I_3F(JNIEnv * env,
     try {
         MFColor * const mfcolor =
                 static_cast<MFColor *>(getFieldValue(env, obj));
-        mfcolor->setLength(size / 3); // throws bad_alloc
+        mfcolor->setLength(size); // throws bad_alloc
         jfloat * const colors = env->GetFloatArrayElements(value, 0);
         if (!colors) {
             // Presumably we raised an OutOfMemoryError.
@@ -2140,10 +2232,6 @@ jstring JNICALL Java_vrml_field_MFColor_toString
   return fieldToString(env, obj);
 }
 
-//
-// ConstMFFloat
-//
-
 void JNICALL Java_vrml_field_ConstMFFloat_CreateObject
   (JNIEnv *env, jobject obj, jint size, jfloatArray value)
 {
@@ -2186,9 +2274,6 @@ jstring JNICALL Java_vrml_field_ConstMFFloat_toString
   return fieldToString(env, obj);
 }
 
-//
-// MFFloat
-//
 void JNICALL Java_vrml_field_MFFloat_CreateObject
   (JNIEnv *env, jobject obj, jint size, jfloatArray value)
 {
@@ -2409,10 +2494,6 @@ jstring JNICALL Java_vrml_field_MFFloat_toString
   return fieldToString(env, obj);
 }
 
-//
-// ConstMFInt32
-//
-
 void JNICALL Java_vrml_field_ConstMFInt32_CreateObject
   (JNIEnv *env, jobject obj, jint size, jintArray value)
 {
@@ -2468,10 +2549,6 @@ jstring JNICALL Java_vrml_field_ConstMFInt32_toString
 {
   return fieldToString(env, obj);
 }
-
-//
-// MFInt32
-//
 
 void JNICALL Java_vrml_field_MFInt32_CreateObject
   (JNIEnv *env, jobject obj, jint size, jintArray value)
@@ -2689,10 +2766,6 @@ jstring JNICALL Java_vrml_field_MFInt32_toString
   return fieldToString(env, obj);
 }
 
-//
-// ConstMFNode
-//
-
 void JNICALL Java_vrml_field_ConstMFNode_CreateObject
   (JNIEnv *env, jobject obj, jint size, jobjectArray jarr)
 {
@@ -2762,10 +2835,6 @@ jstring JNICALL Java_vrml_field_ConstMFNode_toString
   return fieldToString(env, obj);
 }
 
-//
-// MFNode
-//
-
 void JNICALL Java_vrml_field_MFNode_CreateObject
   (JNIEnv *env, jobject obj, jint size, jobjectArray basenode)
 {
@@ -2805,6 +2874,12 @@ jobject JNICALL Java_vrml_field_MFNode_get1Value
 }
 
 /**
+ * @brief JNI implementation of MFNode::setValue
+ *
+ * @param env JNI environment.
+ * @param obj MFNode object.
+ * @param size ...
+ * @param basenode ...
  * @todo Implement me!
  */
 void JNICALL Java_vrml_field_MFNode_setValue__I_3Lvrml_BaseNode_2
@@ -2907,10 +2982,6 @@ jstring JNICALL Java_vrml_field_MFNode_toString
 {
   return fieldToString(env, obj);
 }
-
-//
-// ConstMFRotation
-//
 
 void JNICALL
 Java_vrml_field_ConstMFRotation_CreateObject___3_3F(JNIEnv * env,
@@ -3041,11 +3112,6 @@ jstring JNICALL Java_vrml_field_ConstMFRotation_toString
 {
   return fieldToString(env, obj);
 }
-
-
-//
-// MFRotation
-//
 
 void JNICALL Java_vrml_field_MFRotation_CreateObject___3_3F
   (JNIEnv *env, jobject obj, jobjectArray jarr)
@@ -3351,10 +3417,6 @@ jstring JNICALL Java_vrml_field_MFRotation_toString
   return fieldToString(env, obj);
 }
 
-//
-// ConstMFString
-//
-
 void JNICALL Java_vrml_field_ConstMFString_CreateObject
   (JNIEnv *env, jobject obj, jint size, jobjectArray jarr)
 {
@@ -3419,10 +3481,6 @@ jstring JNICALL Java_vrml_field_ConstMFString_toString
 {
   return fieldToString(env, obj);
 }
-
-//
-// MFString
-//
 
 void JNICALL Java_vrml_field_MFString_CreateObject
   (JNIEnv *env, jobject obj, jint size, jobjectArray jarr)
@@ -3588,10 +3646,6 @@ jstring JNICALL Java_vrml_field_MFString_toString
   return fieldToString(env, obj);
 }
 
-//
-// ConstMFTime
-//
-
 void JNICALL Java_vrml_field_ConstMFTime_CreateObject
   (JNIEnv *env, jobject obj, jint size, jdoubleArray value)
 {
@@ -3632,10 +3686,6 @@ jstring JNICALL Java_vrml_field_ConstMFTime_toString
 {
   return fieldToString(env, obj);
 }
-
-//
-// MFTime
-//
 
 void JNICALL Java_vrml_field_MFTime_CreateObject
   (JNIEnv *env, jobject obj, jint size, jdoubleArray value)
@@ -3823,10 +3873,6 @@ jstring JNICALL Java_vrml_field_MFTime_toString
   return fieldToString(env, obj);
 }
 
-//
-// ConstMFVec2f
-//
-
 void JNICALL Java_vrml_field_ConstMFVec2f_CreateObject___3_3F(JNIEnv * env,
                                                               jobject obj,
                                                               jobjectArray jarr)
@@ -3952,10 +3998,6 @@ jstring JNICALL Java_vrml_field_ConstMFVec2f_toString
 {
   return fieldToString(env, obj);
 }
-
-//
-// MFVec2f
-//
 
 void JNICALL Java_vrml_field_MFVec2f_CreateObject___3_3F
   (JNIEnv *env, jobject obj, jobjectArray jarr)
@@ -4211,10 +4253,6 @@ jstring JNICALL Java_vrml_field_MFVec2f_toString
   return fieldToString(env, obj);
 }
 
-//
-// ConstMFVec3f
-//
-
 void JNICALL Java_vrml_field_ConstMFVec3f_CreateObject___3_3F(JNIEnv * env,
                                                               jobject obj,
                                                               jobjectArray jarr)
@@ -4339,10 +4377,6 @@ jstring JNICALL Java_vrml_field_ConstMFVec3f_toString
 {
   return fieldToString(env, obj);
 }
-
-//
-// MFVec3f
-//
 
 void JNICALL Java_vrml_field_MFVec3f_CreateObject___3_3F
   (JNIEnv *env, jobject obj, jobjectArray jarr)
@@ -4602,17 +4636,13 @@ jstring JNICALL Java_vrml_field_MFVec3f_toString
   return fieldToString(env, obj);
 }
 
-//
-// Script
-//
-
 /**
- * @brief ...
+ * @brief JNI implementation of Script::getField.
  *
- * @param env ...
- * @param obj ...
- * @param jstrFieldName ...
- * @return ...
+ * @param env JNI environment
+ * @param obj Script object
+ * @param jstrFieldName Name of desired exposed field
+ * @return Exposed field object
  */
 jobject JNICALL Java_vrml_node_Script_getField
   (JNIEnv *env, jobject obj, jstring jstrFieldName)
@@ -4658,11 +4688,11 @@ jobject JNICALL Java_vrml_node_Script_getField
 }
 
 /**
- * @brief ...
+ * @brief JNI implementation of Script::getEventOut.
  *
- * @param env ...
- * @param obj ...
- * @param jstrFieldName Name of desired eventOut
+ * @param env JNI environment
+ * @param obj Script object
+ * @param jstrEventOutName Name of desired eventOut
  * @return eventOut object
  */
 jobject JNICALL Java_vrml_node_Script_getEventOut
@@ -4679,12 +4709,14 @@ jobject JNICALL Java_vrml_node_Script_getEventOut
 
   if (eventOutType != FieldValue::invalidType)
   {
-    ScriptNode::EventOutValueMap eventOutMap = pScript->getEventOutValueMap();
-    ScriptNode::EventOutValueMap::iterator iter = eventOutMap.find(eventOutName);
+    const ScriptNode::EventOutValueMap& eventOutMap =
+      pScript->getEventOutValueMap();
+    ScriptNode::EventOutValueMap::const_iterator iter =
+      eventOutMap.find(eventOutName);
 
     if (iter != eventOutMap.end())
     {
-      ScriptNode::PolledEventOutValue eventOutValue = iter->second;
+      const ScriptNode::PolledEventOutValue& eventOutValue = iter->second;
       // Found the eventOut
       std::ostrstream os;
       os << "vrml/field/" << iter->second.value->type() << '\0';
@@ -4697,34 +4729,16 @@ jobject JNICALL Java_vrml_node_Script_getEventOut
   }
   else
   {
-    // look for eventOut in exposed fields list
-    eventOutType = pScript->nodeType.hasField(eventOutName);
-
-    if (eventOutType != FieldValue::invalidType)
+    jclass excClazz = env->FindClass("vrml/InvalidEventOutException");
+    if (excClazz == 0)
     {
-      // Then we've found the eventOut
-      const FieldValue* fieldPtr = &(pScript->getField(eventOutName));
-      std::ostrstream os;
-      os << "vrml/field/" << eventOutType << '\0';
-      jclass clazz = env->FindClass(os.str());
-      os.rdbuf()->freeze(false);
-      eventOut = env->AllocObject(clazz);
-      fid = getFid(env, eventOut, "FieldPtr", "I");
-      env->SetIntField(eventOut, fid, (int) fieldPtr);
-    }
-    else
-    {
-      jclass excClazz = env->FindClass("vrml/InvalidEventOutException");
-      if (excClazz == 0)
-      {
-        // Can't find exception, just return
-        return 0;
-      }
-
-      // throw an exception as the given eventOut doesn't exist
-      env->ThrowNew(excClazz, "EventOut not found");
+      // Can't find exception, just return
       return 0;
     }
+
+    // throw an exception as the given eventOut doesn't exist
+    env->ThrowNew(excClazz, "EventOut not found");
+    return 0;
   }
 
   fid = getFid(env, eventOut,"isEventOut", "Z");
@@ -4735,12 +4749,12 @@ jobject JNICALL Java_vrml_node_Script_getEventOut
 }
 
 /**
- * @brief ...
+ * @brief JNI implementation of Script::getEventIn.
  *
- * @param env ...
- * @param obj ...
- * @param jstrFieldName ...
- * @return ...
+ * @param env JNI environment
+ * @param obj Script object
+ * @param jstrEventInName EventIn name
+ * @return EventIn field object.
  */
 jobject JNICALL Java_vrml_node_Script_getEventIn
   (JNIEnv *env, jobject obj, jstring jstrEventInName)
@@ -4803,6 +4817,12 @@ jobject JNICALL Java_vrml_node_Script_getEventIn
 }
 
 /**
+ * @brief JNI implementation of Script::toString.
+ *
+ * @param JNI environment.
+ * @param Script object.
+ * @return String representation of Script object.
+ *
  * @todo Implement me!
  */
 jstring JNICALL Java_vrml_node_Script_toString
@@ -4811,62 +4831,72 @@ jstring JNICALL Java_vrml_node_Script_toString
   return 0;
 }
 
-//
-// BaseNode
-//
-
 /**
  * @brief JNI implementation of BaseNode::getType.
  *
- * @todo Figure out how to implement this.
+ * @param env JNI environment
+ * @param obj JNI version of a Java node object
+ * @return Type of node
  */
 jstring JNICALL Java_vrml_BaseNode_getType
   (JNIEnv *env, jobject obj)
 {
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   Node* pNode = (Node*)env->GetIntField(obj, fid);
-  // Haven't found a way to do this yet
-  return env->NewStringUTF("unimplemented");
+  return env->NewStringUTF(pNode->nodeType.id.c_str());
 }
 
 /**
- * @brief JNI implementation of BaseNode::getBrowser
+ * @brief JNI implementation of BaseNode::getBrowser.
  *
  * @param env JNI environment
  * @param obj JNI version of a Java node object
- *
  * @return Browser object
  */
 jobject JNICALL Java_vrml_BaseNode_getBrowser(JNIEnv * const env,
                                               const jobject obj)
 {
-    assert(env);
-    jfieldID fid = getFid(env, obj, "NodePtr", "I");
-    Node * const pNode = reinterpret_cast<Node *>(env->GetIntField(obj, fid));
-    const jclass clazz = env->FindClass("vrml/Browser");
-    const jobject jBrowser = env->AllocObject(clazz);
-    fid = getFid(env, jBrowser, "BrowserPtr", "I");
+  assert(env);
+  jfieldID fid = getFid(env, obj, "isScript", "Z");
+  bool isScript = static_cast<bool>(env->GetBooleanField(obj, fid));
+  const jclass clazz = env->FindClass("vrml/Browser");
+  const jobject jBrowser = env->AllocObject(clazz);
+  fid = getFid(env, obj, "NodePtr", "I");
+
+  if (isScript)
+  {
+    ScriptNode * const pNode =
+      reinterpret_cast<ScriptNode *>(env->GetIntField(obj, fid));
     assert(pNode);
     assert(pNode->getScene());
+    fid = getFid(env, jBrowser, "BrowserPtr", "I");
     env->SetIntField(jBrowser, fid,
                      reinterpret_cast<int>(&pNode->getScene()->browser));
-    return jBrowser;
+  }
+  else
+  {
+    Node * const pNode =
+      reinterpret_cast<Node *>(env->GetIntField(obj, fid));
+    assert(pNode);
+    assert(pNode->getScene());
+    fid = getFid(env, jBrowser, "BrowserPtr", "I");
+    env->SetIntField(jBrowser, fid,
+                     reinterpret_cast<int>(&pNode->getScene()->browser));
+  }
+
+  return jBrowser;
 }
 
-//
-// Node
-//
-
 /**
- * @brief ...
+ * @brief JNI implementation of Node::getEventIn.
  *
  * @param env JNI environment
  * @param obj JNI version of a Java node object
  * @param jstrEventInName Name of the eventIn
- * @return EventIn object
+ * @return EventIn field object
  *
- * @todo This method needs to be revisited. Need to throw
- *       InvalidEventInException if eventIn not present.
+ * @todo Implement me! Need to throw InvalidEventInException if
+ *       eventIn not present.
  */
 jobject JNICALL Java_vrml_node_Node_getEventIn
   (JNIEnv *env, jobject obj, jstring jstrEventInName)
@@ -4898,6 +4928,13 @@ jobject JNICALL Java_vrml_node_Node_getEventIn
 
 
 /**
+ * @brief JNI Implementation of Node::getEventOut.
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java node object
+ * @param jstrEventOutName Name of the eventOut
+ * @return EventOut field object
+ *
  * @todo Implement me. Need to throw InvalidEventOutException 
  * if eventOut not present.
  */
@@ -4930,6 +4967,13 @@ jobject JNICALL Java_vrml_node_Node_getEventOut
 }
 
 /**
+ * @brief JNI Implementation of Node::getExposedField
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java node object
+ * @param jstrEventOutName Name of the exposed field
+ * @return Exposed field object
+ *
  * @todo Implement me. Need to throw InvalidEventOutException 
  * if eventOut not present.
  */
@@ -4963,6 +5007,13 @@ jobject JNICALL Java_vrml_node_Node_getExposedField
   return 0;
 }
 
+/**
+ * @brief JNI implementation of Node::toString.
+ *
+ * @param env JNI environment
+ * @param obj Node object.
+ * @return Stringified version of node.
+ */
 jstring JNICALL Java_vrml_node_Node_toString
   (JNIEnv *env, jobject obj)
 {
@@ -4975,10 +5026,13 @@ jstring JNICALL Java_vrml_node_Node_toString
   return result;
 }
 
-//
-// Event
-//
-
+/**
+ * @brief JNI implementation of Event::getName.
+ *
+ * @param env JNI environment
+ * @param obj Event object.
+ * @return Name of the event.
+ */
 jstring JNICALL Java_vrml_Event_getName
   (JNIEnv *env, jobject obj)
 {
@@ -4987,12 +5041,26 @@ jstring JNICALL Java_vrml_Event_getName
   return env->NewStringUTF(pEvent->name());
 }
 
+/**
+ * @brief JNI implementation of Event::getTimeStamp.
+ *
+ * @param env JNI environment
+ * @param obj Event object.
+ * @return Timestamp of event.
+ */
 jdouble JNICALL Java_vrml_Event_getTimeStamp(JNIEnv * env, jobject obj) {
-    jfieldID fid = getFid(env, obj, "EventPtr", "I");
-    VrmlEvent* pEvent = (VrmlEvent*) env->GetIntField(obj, fid);
-    return pEvent->timeStamp();
+  jfieldID fid = getFid(env, obj, "EventPtr", "I");
+  VrmlEvent* pEvent = (VrmlEvent*) env->GetIntField(obj, fid);
+  return pEvent->timeStamp();
 }
 
+/**
+ * @brief JNI implementation of Event::getValue
+ *
+ * @param env JNI environment
+ * @param obj Event object.
+ * @return Changed field.
+ */
 jobject JNICALL Java_vrml_Event_getValue
   (JNIEnv *env, jobject obj)
 {
@@ -5009,6 +5077,13 @@ jobject JNICALL Java_vrml_Event_getValue
   return Field;
 }
 
+/**
+ * @brief JNI implementation of Event::clone.
+ *
+ * @param env JNI environment
+ * @param obj Event object.
+ * @return Clone of event.
+ */
 jobject JNICALL Java_vrml_Event_clone
   (JNIEnv *env, jobject obj)
 {
@@ -5022,6 +5097,13 @@ jobject JNICALL Java_vrml_Event_clone
   return jCloneEvent;
 }
 
+/**
+ * @brief JNI implementation of Event::toString.
+ *
+ * @param env JNI environment
+ * @param obj Event object.
+ * @return Name of the event.
+ */
 jstring JNICALL Java_vrml_Event_toString
   (JNIEnv *env, jobject obj)
 {
@@ -5030,10 +5112,13 @@ jstring JNICALL Java_vrml_Event_toString
   return env->NewStringUTF(pEvent->name());
 }
 
-//
-// Browser
-//
-
+/**
+ * @brief JNI implementation of Browser::toString.
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java Browser object.
+ * @return Browser name and version.
+ */
 jstring JNICALL Java_vrml_Browser_toString(JNIEnv * const env,
                                            const jobject obj)
 {
@@ -5047,15 +5132,29 @@ jstring JNICALL Java_vrml_Browser_toString(JNIEnv * const env,
     return env->NewStringUTF(out.str().c_str());
 }
 
+/**
+ * @brief JNI implementation of Browser::getName.
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java Browser object.
+ * @return Name of browser.
+ */
 jstring JNICALL Java_vrml_Browser_getName(JNIEnv * const env,
                                           const jobject obj)
 {
-    const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
+  const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
     Browser * const pBrowser =
             reinterpret_cast<Browser *>(env->GetIntField(obj, fid));
     return env->NewStringUTF(pBrowser->getName());
 }
 
+/**
+ * @brief JNI implementation of Browser::getVersion.
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java Browser object.
+ * @return Version of OpenVRML being used
+ */
 jstring JNICALL Java_vrml_Browser_getVersion(JNIEnv * const env,
                                              const jobject obj)
 {
@@ -5066,11 +5165,11 @@ jstring JNICALL Java_vrml_Browser_getVersion(JNIEnv * const env,
 }
 
 /**
- * @brief Returns the average naviagation speed in m/s.
+ * @brief JNI implementation of Browser::getCurrentSpeed.
  *
  * @param env JNI environment
  * @param obj JNI version of a Java Browser object.
- * @return Average navigation speed.
+ * @return Average navigation speed in m/s.
  *
  * @todo Fix me to properly return the current speed.
  */
@@ -5084,7 +5183,9 @@ jfloat JNICALL Java_vrml_Browser_getCurrentSpeed(JNIEnv * const env,
 }
 
 /**
- * @brief Returns the current frame rate in frames per second.
+ * @brief JNI implementation of Browser::getCurrentFrameRate.
+ *
+ * Returns the current frame rate in frames per second.
  *
  * @param env JNI environment
  * @param obj JNI version of a Java Browser object.
@@ -5101,6 +5202,13 @@ jfloat JNICALL Java_vrml_Browser_getCurrentFrameRate(JNIEnv * const env,
     return pBrowser->getFrameRate();
 }
 
+/**
+ * @brief JNI implementation of Browser::getWorldURL.
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java Browser object.
+ * @return URL of current world displayed in browser.
+ */
 jstring JNICALL Java_vrml_Browser_getWorldURL(JNIEnv * const env,
                                               const jobject obj)
 {
@@ -5112,6 +5220,12 @@ jstring JNICALL Java_vrml_Browser_getWorldURL(JNIEnv * const env,
 }
 
 /**
+ * @brief JNI implementation of Browser::replaceWorld.
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java Browser object.
+ * @param basenodes ...
+ *
  * @todo Implement me!
  */
 void JNICALL Java_vrml_Browser_replaceWorld
@@ -5122,6 +5236,13 @@ void JNICALL Java_vrml_Browser_replaceWorld
 }
 
 /**
+ * @brief JNI implementation of Browser::createVrmlFromString
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java Browser object.
+ * @param vrmlSyntax ...
+ * @return ...
+ *
  * @todo Implement me! This method should throw an
  *       InvalidVRMLSyntaxException if the syntax is invalid.
  */
@@ -5137,6 +5258,14 @@ Java_vrml_Browser_createVrmlFromString(JNIEnv * const env,
 }
 
 /**
+ * @brief JNI implementation of Browser::createVrmlFromURL.
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java Browser object.
+ * @param urls ...
+ * @param basenode ...
+ * @param event ...
+ *
  * @todo Implement me!  This method should throw an
  *       InvalidVRMLSyntaxException if the syntax is invalid.
  */
@@ -5147,6 +5276,15 @@ void JNICALL Java_vrml_Browser_createVrmlFromURL
 }
 
 /**
+ * @brief JNI implementation of Browser::addRoute.
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java Browser object.
+ * @param fromNode ...
+ * @param fromEventOut ...
+ * @param toNode ...
+ * @param toEventIn ...
+ *
  * @todo This method should throw an InvalidRouteException if one of
  *       the arguments is invalid. This method should first check
  *       if directOutput is set, if it isn't, don't continue.
@@ -5169,6 +5307,15 @@ void JNICALL Java_vrml_Browser_addRoute
 }
 
 /**
+ * @brief JNI implementation of Browser::deleteRoute
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java Browser object.
+ * @param fromNode ...
+ * @param fromEventOut ...
+ * @param toNode ...
+ * @param toEventIn ...
+ *
  * @todo This method should throw an InvalidRouteException if one of
  *       the arguments is invalid. This method should first check
  *       if directOutput is set, if it isn't, don't continue.
@@ -5191,9 +5338,16 @@ void JNICALL Java_vrml_Browser_deleteRoute
 }
 
 /**
- *  @todo This method should throw an InvalidVRMLSyntaxException
- *        if the syntax is invalid. Also need to check if
- *        mustEvaluate flag is set, if not, don't continue.
+ * @brief JNI implementation of Browser::loadURL.
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java Browser object.
+ * @param jUrlArray ...
+ * @param jParameterArray ...
+ *
+ * @todo This method should throw an InvalidVRMLSyntaxException
+ *       if the syntax is invalid. Also need to check if
+ *       mustEvaluate flag is set, if not, don't continue.
  */
 void JNICALL Java_vrml_Browser_loadURL(JNIEnv * const env,
                                        const jobject obj,
@@ -5229,6 +5383,13 @@ void JNICALL Java_vrml_Browser_loadURL(JNIEnv * const env,
     browser->loadURI(url, parameters);
 }
 
+/**
+ * @brief JNI implementation of Browser::setDescription.
+ *
+ * @param env JNI environment
+ * @param obj JNI version of a Java Browser object.
+ * @param jDescription ...
+ */
 void JNICALL Java_vrml_Browser_setDescription
   (JNIEnv *env, jobject obj, jstring jDescription)
 {
