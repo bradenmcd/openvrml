@@ -1,5 +1,44 @@
-Basic Installation
-==================
+Building and Installing OpenVRML
+================================
+
+   The OpenVRML distribution includes facilities for building and
+installation in three environments:
+
+  * Using the GNU build tools in a Un*x environment.
+  * Using Microsoft Visual C++ 6.0 under Microsoft Windows 9x/NT/2000.
+  * Using Metrowerks CodeWarrior Pro 5 on an Apple Macintosh.
+
+
+Contents
+========
+
+   1    Using the GNU Build Tools
+   1.1  Basic Installation
+   1.2  Compilers and Options
+   1.3  Compiling For Multiple Architectures
+   1.4  Installation Names
+   1.5  Optional Features
+   1.6  Specifying the System Type
+   1.7  Sharing Defaults
+   1.8  Operation Controls
+   
+   2    Microsoft Visual C++ 6.0
+   2.1  Using nmake
+   2.2  Using DevStudio
+   
+   3    CodeWarrior 5.0 Professional for Macintosh
+   3.1  Source directory structure
+   3.2  Build order
+
+
+1  Using the GNU Build Tools
+============================
+
+   This section is derived from the generic installation instructions
+provided by automake.
+
+1.1  Basic Installation
+=======================
 
    The `configure' shell script attempts to guess correct values for
 various system-dependent variables used during compilation.  It uses
@@ -49,8 +88,8 @@ The simplest way to compile this package is:
      all sorts of other programs in order to regenerate files that came
      with the distribution.
 
-Compilers and Options
-=====================
+1.2 Compilers and Options
+=========================
 
    Some systems require unusual options for compilation or linking that
 the `configure' script does not know about.  You can give `configure'
@@ -62,8 +101,8 @@ this:
 Or on systems that have the `env' program, you can do it like this:
      env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
 
-Compiling For Multiple Architectures
-====================================
+1.3 Compiling For Multiple Architectures
+========================================
 
    You can compile the package for more than one kind of computer at the
 same time, by placing the object files for each architecture in their
@@ -79,8 +118,8 @@ in the source code directory.  After you have installed the package for
 one architecture, use `make distclean' before reconfiguring for another
 architecture.
 
-Installation Names
-==================
+1.4 Installation Names
+======================
 
    By default, `make install' will install the package's files in
 `/usr/local/bin', `/usr/local/man', etc.  You can specify an
@@ -102,8 +141,8 @@ you can set and what kinds of files go in them.
 with an extra prefix or suffix on their names by giving `configure' the
 option `--program-prefix=PREFIX' or `--program-suffix=SUFFIX'.
 
-Optional Features
-=================
+1.5 Optional Features
+=====================
 
    Some packages pay attention to `--enable-FEATURE' options to
 `configure', where FEATURE indicates an optional part of the package.
@@ -117,8 +156,8 @@ find the X include and library files automatically, but if it doesn't,
 you can use the `configure' options `--x-includes=DIR' and
 `--x-libraries=DIR' to specify their locations.
 
-Specifying the System Type
-==========================
+1.6 Specifying the System Type
+==============================
 
    There may be some features `configure' can not figure out
 automatically, but needs to determine by the type of host the package
@@ -137,8 +176,8 @@ use the `--target=TYPE' option to select the type of system they will
 produce code for and the `--build=TYPE' option to select the type of
 system on which you are compiling the package.
 
-Sharing Defaults
-================
+1.7 Sharing Defaults
+====================
 
    If you want to set default values for `configure' scripts to share,
 you can create a site shell script called `config.site' that gives
@@ -148,8 +187,8 @@ default values for variables like `CC', `cache_file', and `prefix'.
 `CONFIG_SITE' environment variable to the location of the site script.
 A warning: not all `configure' scripts look for a site script.
 
-Operation Controls
-==================
+1.8 Operation Controls
+======================
 
    `configure' recognizes the following options to control how it
 operates.
@@ -178,3 +217,113 @@ operates.
      script, and exit.
 
 `configure' also accepts some other, not widely useful, options.
+
+
+2  Microsoft Visual C++ 6.0
+===========================
+
+   The OpenVRML distribution includes DevStudio projects as well as
+makefiles for use with nmake.
+
+
+2.1  Using nmake
+================
+
+   Before executing nmake, ensure your PATH, INCLUDE, and LIB
+environment variables are set appropriately.  This is generally
+accomplished by running the batch file `vcvars32.bat'.
+
+   In a console window, change to the `win32' subdirectory of the
+OpenVRML distribution. Run
+     nmake /F Makefile.win
+for help and options, or
+     nmake /F Makefile.win all
+to build the OpenVRML libraries and the Lookat program.
+
+2.2  Using DevStudio
+====================
+
+   The OpenVRML distribution includes a workspace file (*.dsw) and
+project files (*.dsp) for each library and the Lookat program. Simply
+open the workspace file--in the `win32' subdirectory of the
+distribution--in DevStudio.  This will load the libvrml97core,
+libvrml97gl, and lookat, which should be built in that order. Remember
+to set the include and library directories to point to where you've
+installed OpenVRML's dependencies (`README' for further information on
+obtaining these).  libvrml97core depends on libjpeg, libpng, and zlib.
+libvrml97gl depends on OpenGL. lookat depends on GLUT.
+
+   For building only javascript dll library (libjavascript.lib and
+libjavascript.dll), workspace file `libvrml97js.dsw' is given in
+`libvrml97\libvrml97core\win32\javascript' directory.
+
+   For building only antlr library (libantlr.lib), workspace file
+`libantlr.dsw' is given in `libvrml97\libvrml97core\win32\antlr'.
+
+   For building the Lookat program, you need to set include directories
+libvrml97core and libvrml97gl (for example,
+`c:\libvrml97\libvrml97core\src') and library directories for
+libvrml97core, libvrml97gl, GLUT, PNG, Zlib and JPEG library by
+Tools->Options->Directories in MSVC++6.
+
+   There are currently problems with undefined symbols when building
+Lookat in debug mode.  Release mode does not experience this.
+
+
+3  CodeWarrior 5.0 Professional for Macintosh
+=============================================
+
+3.1  Source directory structure
+===============================
+
+   The default location for installing all of these, except the OpenGL
+SDK, is in the folder that contains the OpenVRML CVS root folder, i.e.:
+     
+     OpenVRML
+       - InternetConfig
+       - libjpeg
+       - libjs
+       - libpng
+       - zlib
+       - OpenVRML             <- CVS root
+         - libvrml97
+           - libvrml97core
+           - libvrml97gl
+           - lookat
+           - ...
+
+3.2  Build order
+================
+
+   Observe the following order when building Lookat:
+
+  1. Compile the `LibVRML97gl.mcp' project in `libvrml97gl/macos'.
+
+  2. Compile the `ImageReader.mcp' project in `libvrml97core/macos'.
+
+  3. Compile the `LibANTLR.mcp' project in `libvrml97core/macos'.
+
+  4. Compile the `LibVRML97core.mcp' project in `libvrml97core/macos'.
+
+  5. Compile the `LibVRML97.mcp' project in `libvrml97core/macos'.
+
+  6. Decode `LibVRML97.rsrc.hqx' (e.g., using Stuffit Expander) in
+     `libvrml97core/macos'.
+
+  7. Compile the `Lookat.mcp' project in `lookat/macos'.
+
+   For steps 1 and 7, you will need to adjust the project access paths
+so that CodeWarrior can locate your OpenGL SDK files.  If you do not
+have the libjpeg, libpng, zlib and InternetConfig files in the default
+file structure described above then you will need to adjust the access
+paths for those for steps 2 and 5, too.  `Lookat.mcp' in step 8 needs to
+be able to locate the JavaScript library file.
+
+   NOTE:  If you have problems with the project files then create new
+   ones using the supplied XML files instead (using the
+   "Import Project..." command in CodeWarrior's "File" menu).
+
+   The final result should be a `LibVRML97.Lib' library in
+`libvrml97core/macos' and a simple GLUT-based viewer in `lookat/macos'.
+You can enter URLs (file or http) into the dialog box that appears when
+you start Lookat to choose which VRML files to view.
