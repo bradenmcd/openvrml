@@ -1,3 +1,7 @@
+2003-01-15  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp:  Removed obsolete code.
+
 2003-01-08  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp,
