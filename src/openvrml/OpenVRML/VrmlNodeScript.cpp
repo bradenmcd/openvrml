@@ -230,14 +230,24 @@ void VrmlNodeScript::shutdown( double ts )
     d_script->activate( ts, "shutdown", 0, 0 );
 }
 
-void VrmlNodeScript::update( VrmlSFTime &timeNow )
-{
-  if (d_eventsReceived > 0)
-    {
-      //theSystem->debug("Script.%s::update\n", name());
-      if (d_script)
-	d_script->activate( timeNow.get(), "eventsProcessed", 0, 0 );
-      d_eventsReceived = 0;
+void VrmlNodeScript::update(VrmlSFTime & timeNow) {
+    if (d_eventsReceived > 0) {
+        d_eventsReceived = 0;
+        
+        //theSystem->debug("Script.%s::update\n", name());
+        
+        if (d_script) {
+            d_script->activate( timeNow.get(), "eventsProcessed", 0, 0 );
+        }
+        
+        // For each modified eventOut, send an event
+        for (FieldList::const_iterator i = d_eventOuts.begin();
+                i != d_eventOuts.end(); ++i) {
+            if ((*i)->modified) {
+                this->eventOut(timeNow.get(), (*i)->name, *((*i)->value));
+                (*i)->modified = false;
+            }
+        }
     }
 }
 
@@ -246,43 +256,38 @@ void VrmlNodeScript::update( VrmlSFTime &timeNow )
 
 void VrmlNodeScript::eventIn(double timeStamp,
 			     const char *eventName,
-			     const VrmlField & fieldValue)
-{
-  if (! d_script ) initialize( timeStamp );
-  if (! d_script ) return;
-
-  const char *origEventName = eventName;
-  bool valid = hasEventIn( eventName );
-  if (! valid && strncmp(eventName, "set_", 4) == 0 )
-    {
-      eventName += 4;
-      valid = hasEventIn( eventName );
+			     const VrmlField & fieldValue) {
+    if (!this->d_script ) { initialize(timeStamp); }
+    if (!this->d_script ) { return; }
+    
+    const char *origEventName = eventName;
+    bool valid = hasEventIn( eventName );
+    if (!valid && strncmp(eventName, "set_", 4) == 0) {
+        eventName += 4;
+        valid = hasEventIn(eventName);
     }
-#if 0
-  cerr << "eventIn Script::" << name() << "." << origEventName
-       << " " << fieldValue << ", valid " << valid
-       << ", d_script " << (unsigned long)d_script
-       << endl;
-#endif
-  if ( valid )
-    {
-      setEventIn( eventName, fieldValue );
 
-      VrmlSFTime ts( timeStamp );
-      const VrmlField *args[] = { &fieldValue, &ts };
+    if (valid) {
+        setEventIn( eventName, fieldValue );
 
-      FieldList::const_iterator i;
-      for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i)
-	(*i)->modified = false;
+        VrmlSFTime ts( timeStamp );
+        const VrmlField *args[] = { &fieldValue, &ts };
 
-      d_script->activate( timeStamp, eventName, 2, args );
+        FieldList::const_iterator i;
+        for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i) {
+            (*i)->modified = false;
+        }
 
-      // For each modified eventOut, send an event
-      for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i)
-	if ((*i)->modified)
-	  eventOut( timeStamp, (*i)->name, *((*i)->value) );
+        this->d_script->activate(timeStamp, eventName, 2, args);
+        
+        // For each modified eventOut, send an event
+        for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i) {
+            if ((*i)->modified) {
+                this->eventOut(timeStamp, (*i)->name, *((*i)->value));
+            }
+        }
 
-      ++d_eventsReceived;	// call eventsProcessed later
+        ++d_eventsReceived;	// call eventsProcessed later
     }
 
   // Let the generic code handle the rest.
@@ -525,10 +530,6 @@ VrmlNodeScript::setEventIn(const char *fname, const VrmlField & value)
 void
 VrmlNodeScript::setEventOut(const char *fname, const VrmlField & value)
 {
-#if 0
-  cerr << "Script::" << name() << " setEventOut(" << fname << ", "
-       << value << endl;
-#endif
   set(d_eventOuts, fname, value);
 }
 
@@ -1333,9 +1334,6 @@ namespace {
             jsval fval, rval;
             JSObject * const globalObj = JS_GetGlobalObject(this->cx);
             assert(globalObj);
-            
-            cout << "Call to " << fname << " in Script node "
-                 << this->scriptNode.name() << endl;
             
             try {
                 if (!JS_LookupProperty(cx, globalObj, fname, &fval)) {
@@ -2968,12 +2966,6 @@ namespace {
                     if ( ! f ) return JS_FALSE;
 
                     // This should only happen if directOutput is set...
-# ifdef SCRIPTJS_DEBUG
-                    cout << "Script::node_setProperty sending " << eventIn
-                         << " (" << (*f) << ") to "
-                         << n->nodeType().getName() << "::"
-                         << n->name() << endl;
-# endif
 
 	            // the timestamp should be stored as a global property and
 	            // looked up via obj somehow...

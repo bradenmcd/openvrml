@@ -1,3 +1,7 @@
+2001-10-11  Braden McDaniel  <braden@endoframe.com>
+
+        * Propagate events resulting from eventsProcessed().
+
 2001-10-07  Braden McDaniel  <braden@endoframe.com>
 
         * Fixed a bug in SFVec3f construction in JavaScript.
