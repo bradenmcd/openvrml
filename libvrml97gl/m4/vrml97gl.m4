@@ -1,10 +1,13 @@
+dnl
 dnl VRMLGL_PATH_GL([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
-dnl
-AC_DEFUN(
-  VRMLGL_PATH_GL,
-  [
+AC_DEFUN(VRMLGL_PATH_GL,
+  [dnl
+    dnl
+    dnl Dependencies
+    dnl
     AC_REQUIRE([AC_PATH_XTRA])
+    
     
     if test "x$x_includes" = "x"; then
       X__Idir=""
@@ -140,10 +143,11 @@ AC_DEFUN(
 dnl
 dnl VRMLGL_PATH_GLUT([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
-AC_DEFUN(
-  VRMLGL_PATH_GLUT,
-  [
+AC_DEFUN(VRMLGL_PATH_GLUT,
+  [dnl
+    dnl
     dnl Dependencies
+    dnl
     AC_REQUIRE([AC_PATH_XTRA])
     AC_REQUIRE([VRMLGL_PATH_GL])
     
@@ -205,14 +209,17 @@ AC_DEFUN(
   ]
 )
 
-AC_DEFUN(
-  AM_PATH_VRMLGL,
-  [
+AC_DEFUN(AM_PATH_VRMLGL,
+  [dnl
+    dnl
     dnl Dependencies
+    dnl
     AC_REQUIRE([VRMLGL_PATH_GLUT]) dnl Need to get rid of this and just depend on OpenGL.
     AC_REQUIRE([AM_PATH_VRML])
     
+    dnl
     dnl Test for libvrml97gl
+    dnl
     AC_MSG_CHECKING([for libvrml97gl])
     AC_LANG_CPLUSPLUS
     ac_save_LIBS="$LIBS"
