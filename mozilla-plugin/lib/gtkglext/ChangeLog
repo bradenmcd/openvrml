@@ -1,0 +1,565 @@
+2004-03-10  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* ==== Released 1.0.6 ====
+
+	* configure.in: Version 1.0.6, binary age 6, interface age 4.
+
+2004-03-10  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gtkglext.nsi.in: Rewritten for the NSIS 2.0.
+
+2004-02-21  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/shapes.c (idle_add, idle_remove): 
+	* examples/gears.c (idle_add, idle_remove):
+	* examples/rotating-square.c (idle_add, idle_remove): 
+	gtk_idle_add()/remove() is deprecated in GTK+ 2.3. Use
+	g_idle_add_full()/g_source_remove().
+
+	* examples/button.c (timeout_add, timeout_remove): 
+	* examples/logo.c (timeout_add, timeout_remove): 
+	* examples/multiarb.c (timeout_add, timeout_remove): 
+	* examples/viewlw.c (timeout_add, timeout_remove): 
+	* examples/coolwave.c (timeout_add, timeout_remove): 
+	* examples/coolwave2.c (timeout_add, timeout_remove): 
+	* examples/template.c (timeout_add, timeout_remove): 
+	* examples/font-pangoft2-tex.c (timeout_add, timeout_remove): 
+	gtk_timeout_add()/remove() is deprecated in GTK+ 2.3. Use
+	g_timeout_add()/g_source_remove().
+
+2004-02-20  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* m4macros/gtkglext.m4: Quote AC_DEFUN argument to avoid warnings
+	with automake-1.8.x.
+
+2004-02-20  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/*.[ch]: 
+	* gdk/glext/*.[ch]: 
+	* gdk/x11/*.[ch]: 
+	* gdk/win32/*.[ch]: 
+	* gtk/*.[ch]: Updated copyright.
+
+2004-02-13  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gtk/gtkglwidget.c (gtk_widget_get_gl_context):
+	gtk_quit_add_destroy() call is removed because it cause a problem
+	with recursive mainloop.
+	(gtk_gl_widget_unrealize): Rendering context is now destroyed on
+	"unrealize" signal.
+
+2003-11-20  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* ==== Released 1.0.5 ====
+
+	* configure.in: Version 1.0.5, binary age 5, interface age 3.
+
+2003-11-14  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/low-level.c (realize): Set a background of "None" on
+	window to avoid AIX X server crash.
+
+2003-11-09  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gtk/gtkglwidget.c (gtk_gl_widget_size_allocate): Check whether
+	GdkGLWindow is already realized.
+
+	* gtk/gtkglwidget.c (gtk_widget_set_gl_capability):
+	"size_allocate" signal handler is connected by set_gl_capability()
+	function instead of "realize" handler.
+
+2003-11-07  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/low-level.c (realize, unrealize): Use
+	gdk_gl_window_new()/g_object_unref() instead of
+	gdk_window_(set|unset)_gl_capability() extension function.
+	It's really "low-level".
+
+2003-11-07  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/low-level.c (main): 
+	* examples/simple.c (main): 
+	* examples/simple-mixed.c (main): 
+	* examples/share-lists.c (main): 
+	* examples/color.c (main): 
+	* examples/font.c (main): 
+	* examples/button.c (main): 
+	* examples/shapes.c (main): 
+	* examples/logo.c (main): 
+	* examples/gears.c (main): 
+	* examples/multiarb.c (main): 
+	* examples/viewlw.c (show_lwobject): 
+	* examples/rotating-square.c (create_window): 
+	* examples/coolwave.c (create_window): 
+	* examples/coolwave2.c (create_window): 
+	* examples/template.c (create_window): 
+	* examples/scribble-gl.c (create_window): 
+	* examples/font-pangoft2.c (main): 
+	* examples/font-pangoft2-tex.c (main):
+	* examples/simple-pbuffer-sgix.c (main): 
+	* examples/glade/simple.c (main): 
+	* examples/glade/share-lists.c (main): 
+	gtk_container_set_resize_mode() call is unnecessary.
+
+	* examples/low-level.c (size_allocate): Added "size_allocate"
+	signal handler. It synchronizes OpenGL rendering pipeline, and
+	reduces flickering on resizing X window.
+
+2003-11-07  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/logo.c (timeout): 
+	* examples/shapes.c (idle): 
+	* examples/multiarb.c (timeout): 
+	* examples/button.c (timeout): 
+	* examples/font-pangoft2-tex.c (timeout): 
+	* examples/viewlw.c (timeout): 
+	* examples/template.c (timeout): 
+	* examples/scribble-gl.c (motion_notify_event): 
+	* examples/rotating-square.c (idle): Now use
+	gdk_window_invalidate_rect() and gdk_window_process_updates()
+	instead of gtk_widget_queue_draw() to update OpenGL area
+	synchronously.
+
+	* examples/coolwave2.c (timeout): 
+	* examples/coolwave.c (timeout, motion_notify_event) 
+	(key_press_event, toggle_animation, init_wireframe): 
+	* examples/gears.c (idle): Optimized frame rate by using
+	gdk_window_invalidate_rect() + gdk_window_process_updates()
+	instead of gtk_widget_queue_draw().
+
+2003-11-06  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gtk/gtkglwidget.c (gtk_gl_widget_size_allocate) 
+	(gtk_gl_widget_realize): Added "size_allocate" signal handler. It
+	synchronizes OpenGL rendering pipeline, and reduces flickering on
+	resizing X window. (Reported by Mathieu Lacage. Thanks!)
+
+2003-09-15  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* ==== Released 1.0.4 ====
+
+	* configure.in: Version 1.0.4, Binary age 4, interface age 2.
+
+2003-09-14  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/low-level.c (realize, configure_event, expose_event):
+	make_current() -> gl_begin().
+
+2003-09-13  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/simple-mixed.c (expose_event): 
+	* examples/pixmap-mixed.c (configure_event): Use
+	widget->style->black_gc to draw GDK rectangle.
+
+	* examples/pixmap-mixed.c (configure_event): 
+	* examples/pixmap.c (configure_event): Don't need to pass
+	depth argument.
+
+2003-09-12  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gtk/gtkglwidget.c (gtk_widget_set_gl_capability) 
+	(gl_widget_private_destroy): Own reference to private->share_list.
+
+2003-09-09  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gtk/gtkglwidget.c (gtk_widget_set_gl_capability): Check whether
+	given widget has own GdkWindow. GL widget's "realize" signal
+	handler should be connected by g_signal_connect() instead of
+	g_signal_connect_after().
+
+2003-09-09  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* configure.in (AC_CONFIG_FILES): 
+	* examples/Makefile.am (DIST_SUBDIRS): 
+	* examples/glade/Makefile.am: 
+	* examples/glade/README: 
+	* examples/glade/simple.glade: 
+	* examples/glade/simple.c: 
+	* examples/glade/share-lists.glade: 
+	* examples/glade/share-lists.c: Added new libglade examples.
+
+2003-09-04  Alif Wahid  <awah005@users.sourceforge.net>
+
+	* AUTHORS:
+	* examples/coolwave2.c
+	* examples/Makefile.am:
+	* examples/Makefile.mingw:
+	* examples/Makefile.msc: Added new example coolwave2.c to 
+	test how well a Gtk window behaves in fullscreen mode
+	when containing an OpenGL capable drawable. Use the
+	popup menu items to change between fullscreen and normal
+	mode. Otherwise this is identical to the coolwave.c program.
+
+2003-08-31  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/font-pangoft2-tex.c (gl_tex_pango_ft2_render_layout):
+	Fixed texel buffer setup code.
+
+	* examples/font-pangoft2.c (gl_pango_ft2_render_layout): Fixed
+	pixel store setup code.
+
+	* gdk/*.c:
+	* gdk/x11/*.c:
+	* gdk/win32/*.c:
+	* gtk/*.c: Use new function call debug macros.
+
+2003-08-26  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gtk/gtkglwidget.c: Use new debug macros.
+
+	* gdk/gdkgldebug.h:
+	* gtk/gtkgldebug.h: Added G[DT]K_GL_NOTE_FUNC* debug macros.
+
+2003-08-24  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/glext/common-header.h:
+	* gdk/glext/gen-gdkgl*.pl: Code cleanup. Read common header part
+	from common-header.h.
+
+2003-08-18  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* ==== Released 1.0.3 ====
+
+	* configure.in: Version 1.0.3, Binary age 3, interface age 1.
+
+2003-08-17  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/Makefile.am (x11_programs):
+	* examples/simple-pbuffer-sgix.c: Added simple GLX_SGIX_pbuffer
+	example.
+
+	* README:
+	* docs/reference/gtkglext/building.sgml:
+	* configure.in: Removed --disable-sgi-fast-atoms configure
+	option. Now GdkGLExt doesn't use XSGIFastInternAtom(), so this
+	option is no longer needed.
+
+	* gdk/x11/gdkglconfig-x11.c (gdk_gl_config_setup_colormap):
+	New _gdk_x11_gl_overlay_get_info() function.
+
+	* gdk/x11/gdkgloverlay-x11.h:
+	* gdk/x11/gdkgloverlay-x11.c (gdk_gl_overlay_get_sov_props)
+	(_gdk_x11_gl_overlay_get_info): Rewritten.
+
+2003-08-16  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/x11/gdkglconfig-x11.c (gdk_gl_config_get_std_rgb_colormap):
+	Use gdk_x11_get_xatom_by_name_for_display() instead of
+	XInternAtom().
+
+2003-08-15  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* README:
+	* README.win32: Updated CVS pserver info.
+
+	* examples/Makefile.mingw (clean-obj):
+	* examples/Makefile.msc (clean-obj): Added clean-obj target for
+	convenience.
+
+	* Makefile.am (examples):
+	* examples/Makefile.am (all-local): Use all-local target for
+	building example programs.
+
+	* gdk/win32/gdkglpixmap-win32.c (gdk_gl_pixmap_new):
+	* gdk/win32/gdkglwindow-win32.c (gdk_gl_window_new): Do
+	DescribePixelFormat().
+
+	* gdk/win32/Makefile.am (gdkglext_win32_private_h_sources):
+	* gdk/win32/gdkinternal-win32.h: Removed.
+
+	* gdk/win32/gdkglpixmap-win32.h (struct _GdkGLPixmapImplWin32):
+	* gdk/win32/gdkglpixmap-win32.c (gdk_gl_pixmap_new)
+	(gdk_gl_pixmap_sync_gl, gdk_gl_pixmap_sync_gdk): Don't use
+	GdkPixmapImplWin32 private data. In the latest CVS version of
+	GTK+, GdkPixmapImplWin32 data structure has been changed, so old
+	code doesn't work. New code doesn't use GdkPixmap's internal data,
+	so it works well with both GTK+ <= 2.2.2 and later.
+	(Reported by Bruce Hochstetler. Thanks Bruce.)
+
+2003-07-31  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/template.c (expose_event): Do glClear().
+
+2003-07-30  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/x11/gdkglx.h:
+	* gdk/win32/gdkglwin32.h: Don't include gdk/gdkglprivate.h.
+	(reported by Ralf Corsepius)
+
+2003-07-29  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* ==== Released 1.0.2 ====
+
+	* configure.in: Version 1.0.2, Binary age 2, interface age 0.
+
+2003-07-29  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/button.c (timeout): Modified animation.
+	(unrealize): Remove timeout handler.
+
+	* configure.in: 
+	* gdk/glext/gen-gdkglglxext-h.pl: 
+	* gdk/x11/gdkglglxext.h: Check GLXVideoSourceSGIX typedef to avoid
+	old SGI's glxext.h bug.
+
+	* gdk/gdkglglext.h: 
+	* gdk/x11/gdkglglxext.h: 
+	* gdk/win32/gdkglwglext.h: Updated.
+
+	* gdk/glext/gen-gdkglglext-h.pl: 
+	* gdk/glext/gen-gdkglglxext-h.pl: 
+	* gdk/glext/gen-gdkglwglext-h.pl: Include <gdk/glext/*.h>
+	extension headers.
+
+	* configure.in: 
+	* gdk/glext/Makefile.am: 
+	* gdk/glext: Renamed gdk/GL to gdk/glext to prevent <GL/gl.h> from
+	including <GL/glext.h> in gdk directory.
+
+2003-07-28  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/viewlw.c: Improved mouse operation.
+
+	* examples/button.c: 
+	* examples/multiarb.c: 
+	* examples/coolwave.c: 
+	* examples/template.c: 
+	* examples/font-pangoft2-tex.c: Use gtk_timeout instead of
+	gtk_idle. (Dave Andruczyk's advice)
+
+	* examples/logo.c: Removed frame counter.
+
+2003-07-28  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/x11/gdkglglxext.[ch]: Updated.
+
+	* gdk/GL/glxext-extra.h: Added GLX_MESA_agp_offset extension.
+
+	* gdk/gdkglglext.h: 
+	* gdk/x11/gdkglglxext.h: 
+	* gdk/win32/gdkglwglext.h: Updated.
+
+	* gdk/GL/gen-gdkglglext-h.pl: Define __glext_h_ before
+	#include <GL/gl.h> to avoid including system's glext.h.
+
+	* gdk/GL/gen-gdkglglxext-h.pl: Define __glxext_h_ before
+	#include <GL/glx.h> to avoid including system's glxext.h.
+
+	* gdk/GL/gen-gdkglwglext-h.pl: Define __wglext_h_ before
+	#include <GL/gl.h> to avoid including system's wglext.h.
+
+	* gdk/gdkglglext.h: 
+	* gdk/GL/gen-gdkglglext-h.pl: Typedef GLhalfNV if needed.
+
+	* configure.in: Check whether GLhalfNV typedef is needed.
+
+2003-07-27  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* ==== Released 1.0.1 ====
+
+	* configure.in: Version 1.0.1, Binary age 1, interface age 0.
+
+2003-07-27  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/font-pangoft2.c (gl_pango_ft2_render_layout): 
+	* examples/font-pangoft2-tex.c (gl_tex_pango_ft2_render_layout):
+	Use GL_UNSIGNED_BYTE data type if OpenGL 1.2 is not supported.
+
+2003-07-27  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/Makefile.mingw (PROGRAMS): 
+	* examples/Makefile.msc (PROGRAMS): Removed font-pangoft2*
+	examples. They don't work on win32.
+
+2003-07-24  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gtk/gtkglwidget.c (struct GLWidgetPrivate): Added
+	unrealize_handler and destroy_handler members. Removed
+	need_unrealize flag.
+	(gtk_gl_widget_realize, gtk_gl_widget_unrealize) 
+	(gtk_widget_set_gl_capability): "unrealize" signal handler
+	connection is done by "realize" handler. This change makes
+	user's "unrealize" handler possible to call OpenGL functions.
+	(gtk_widget_get_gl_context, gtk_gl_widget_destroy_gl_context):
+	"destroy" signal handler connection is done by
+	gtk_widget_get_gl_context().
+
+	* examples/template.c (unrealize): OpenGL functions can be called
+	in "unrealize" handler.
+
+2003-07-24  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/font-pangoft2-tex.c: 
+	* examples/Makefile.am (common_programs): 
+	* examples/Makefile.mingw (PROGRAMS): 
+	* examples/Makefile.msc (PROGRAMS): Added simple example for text
+	texture rendering with PangoFT2.
+
+2003-07-21  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* configure.in: Added $EXAMPLES_DEP_CFLAGS contains PangoFT2
+	cflags. Added $GTKGLEXT_DEP_LIBS_WITH_PANGOFT2 contains PangoFT2
+	libs.
+
+	* examples/Makefile.am (INCLUDES): Use $EXAMPLES_DEP_CFLAGS.
+	(LDADDS_WITH_PANGOFT2): For font-pangoft2.
+
+	* examples/Makefile.msc (LIBS_WITH_PANGOFT2): 
+	* examples/Makefile.mingw (LIBS_WITH_PANGOFT2): For font-pangoft2.
+
+	* examples/scribble-gl.c: Suppress "comparison between signed and
+	unsigned" warnings.
+
+	* examples/font-pangoft2.c: Suppress "implicit declaration of
+	function `memset'" warning.
+
+	* examples/font-pangoft2.c (gl_pango_ft2_render_layout):
+	Optimized. Fixed render position of the layout.
+
+2003-07-20  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/font-pangoft2.c: 
+	* examples/Makefile.am (common_programs): 
+	* examples/Makefile.mingw (PROGRAMS): 
+	* examples/Makefile.msc (PROGRAMS): Added simple example for text
+	rendering with PangoFT2.
+
+2003-07-18  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/Makefile.am (scribble_gl_SOURCES) 
+	(scribble_gl_DEPENDENCIES, scribble_gl_LDADD): Fixed variable
+	name.
+
+2003-07-18  Alif Wahid  <awah005@users.sourceforge.net>
+
+	* examples/scribble-gl.c
+	* examples/Makefile.am (common_programs):
+	* examples/Makefile.mingw (PROGRAMS):
+	* examples/Makefile.msc (PROGRAMS): Added new scribble-gl.c
+	example program. This is mapped back to C from Python according
+	to the scribble-gl.py script in PyGtkGLExt.
+
+2003-07-16  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* examples/button.c:
+	* examples/Makefile.am (common_programs):
+	* examples/Makefile.mingw (PROGRAMS):
+	* examples/Makefile.msc (PROGRAMS): Added simple toggle button
+	example.
+
+2003-07-14  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/GL/wglext-extra.h: Removed WGL_NV_allocate_memory.
+
+2003-07-13  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/GL/glext-extra.h: 
+	* gdk/GL/glxext-extra.h: Added extra SGI extensions.
+	Added extra EXT extensions. Added extra ATIX extensions.
+
+2003-07-12  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/GL/glxext-extra.h: Added extra NVIDIA extensions.
+	* gdk/GL/wglext-extra.h: Added extra I3D extensions.
+
+	* gdk/GL/list-ext.pl: 
+	* gdk/GL/Makefile.am (EXTRA_DIST): Added list-ext.pl script.
+
+	* gdk/GL/glext-extra.h: 
+	* gdk/gdkglglext.[ch]: Added extra APPLE extensions.
+	Added extra ATI extensions.
+
+	* gdk/GL/glxext-extra.h: 
+	* gdk/GL/wglext-extra.h: Added.
+
+	* gdk/GL/gen-gdkglglxext-h.pl: Read glxext-extra.h.
+
+	* gdk/GL/gen-gdkglwglext-h.pl: Read wglext-extra.h.
+
+	* gdk/GL/glext-extra.h: 
+	* gdk/gdkglglext.[ch]: 
+	* gdk/x11/gdkglglxext.[ch]: 
+	* gdk/win32/gdkglwglext.[ch]: Added some additional OpenGL
+	extensions.
+
+2003-07-11  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/GL/glext.h : Fixed GL_ARB_texture_mirror_repeat to
+	GL_ARB_texture_mirrored_repeat.
+
+	* gdk/gdkglcontext.c: 
+	* gdk/gdkgldrawable.c: 
+	* gdk/gdkglpixmap.c: 
+	* gdk/gdkglwindow.c: 
+	* gdk/x11/gdkglcontext-x11.c: 
+	* gdk/x11/gdkglpixmap-x11.c: 
+	* gdk/x11/gdkglwindow-x11.c: 
+	* gdk/x11/gdkglfont-x11.c: 
+	* gtk/gtkglwidget.c: Fixed documentations.
+
+	* gdk/GL/gen-gdkglglext-h.pl: 
+	* gdk/gdkglglext.h: Include glext-extra.h.
+
+	* gdk/GL/glext-extra.h: 
+	* gdk/GL/gen-gdkglglext-[ch].pl: 
+	* gdk/GL/Makefile.am: Renamed glext_extra.h to glext-extra.h.
+
+	* gdk/GL/Makefile.am (gdkglext_gl_public_h_sources): Install
+	glext_extra.h.
+	(EXTRA_DIST): Added gen-gdkgl*ext-[ch].pl scripts.
+
+	* gdk/GL/gen-gdkglglext-c.pl (generate_code): 
+	* gdk/GL/gen-gdkglglxext-c.pl (generate_code): 
+	* gdk/GL/gen-gdkglwglext-c.pl (generate_code): Changed
+	_procs_$extension struct initialization code. Changed debug
+	message.
+
+	* gdk/GL/glext.[ch]: 
+	* gdk/GL/glxext.[ch]: 
+	* gdk/GL/wglext.[ch]: Use auto-generated code.
+
+	* gdk/GL/glext_extra.h: Added.
+
+	* gdk/GL/gen-gdkglglext-[ch].pl: 
+	* gdk/GL/gen-gdkglglxext-[ch].pl: 
+	* gdk/GL/gen-gdkglwglext-[ch].pl: Added perl scripts for
+	generating gdkgl*ext.[ch] sources from SGI's OpenGL extension
+	header.
+
+2003-07-10  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/gdkglglext.[ch]: Added new OpenGL extensions defined in
+	glext.h version 18.
+
+	* gdk/GL/glext.h: 
+	* gdk/GL/glxext.h: 
+	* gdk/GL/wglext.h: Updated.
+
+2003-07-09  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/gdkglglext.c: 
+	* gdk/x11/gdkglglxext.c: 
+	* gdk/win32/gdkglwglext.c: Cleanup the code. Reduced the use of
+	static variables.
+
+	* gdk/x11/gdkglquery-x11.c (gdk_gl_get_proc_address): Cleanup the
+	code.
+
+2003-07-07  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/x11/gdkglfont-x11.c (gdk_gl_font_charset_for_locale): 
+	* gdk/x11/gdkglpixmap-x11.c (gdk_gl_pixmap_new): 
+	* gdk/x11/gdkgloverlay-x11.c (gdk_gl_overlay_get_sov_prop): 
+	* gdk/x11/gdkglconfig-x11.c (gdk_gl_config_get_std_rgb_colormap) 
+	(gdk_gl_config_setup_colormap): Suppress "comparison between signed 
+	and unsigned" warnings.
+
+2003-07-01  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* gdk/x11/gdkglquery-x11.c (gdk_gl_get_proc_address): Added Mac OS X 
+	(10.1 or above) support.
+
+2003-05-14  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* ==== Released 1.0.0 ====
+
