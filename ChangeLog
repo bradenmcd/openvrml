@@ -22,6 +22,8 @@
 
         * Changed `--with-jni' option to `--with-jdk'. 
 
+        * Don't attempt to compile Java classes for `--without-jdk'.
+
 2001-10-15  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Add accumulateTransform after adding all nodes to Scene in

@@ -107,13 +107,14 @@ if test "X$with_spidermonkey" = "Xyes"; then
 fi
 
 AC_ARG_WITH(jdk, [  --with-jdk              use the Java Development Kit (Java support)], ,
-             [# Use JNI by default.
+             [# Use the JDK by default.
               with_jdk=yes])
 if test "X$with_jdk" = "Xyes"; then
   AC_PATH_PROG(JAVAC, javac)
   if test -z "${JAVAC}"; then
     AC_MSG_ERROR([Java compiler not found.])
   fi
+  AC_SUBST(JAVA_SUBDIR, java)
   AC_PATH_PROG(JAR, jar)
   if test -z "${JAR}"; then
     AC_MSG_ERROR([Java archive utility not found.])
