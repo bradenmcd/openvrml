@@ -62,10 +62,6 @@ this:
 Or on systems that have the `env' program, you can do it like this:
      env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
 
-Red Hat Linux 7.0 systems using the gcc 2.96 development snapshot will
-need to turn off optimization in the CFLAGS variable. For example:
-     CFLAGS="-O0" ./configure
-
 Compiling For Multiple Architectures
 ====================================
 

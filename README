@@ -65,17 +65,6 @@ SphereSensor), navigation types other than examine.
 System-specific notes
 =====================
 
- * Compiling on Red Hat Linux 7.0
-   
-   If you are compiling the library with the version of gcc that comes with Red
-   Hat Linux 7.0 (a development snapshot labeled 2.96), you will need to turn of
-   optimization in the CFLAGS variable when running configure. For example:
-   
-     CFLAGS="-O0" ./configure
-   
-   This version of gcc has a bug which is triggered by compiling the JavaScript
-   engine with optimization.
-
  * X11 colormap flashing on 8-bit displays
 
    If you are having trouble with colormap flashing on an 8-bit display, try

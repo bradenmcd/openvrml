@@ -1,3 +1,9 @@
+2000-11-18  Braden McDaniel  <braden@endoframe.com>
+
+        * Backported the patch to Mozilla bug 24892.  We should nolonger need
+          special CFLAGS to compile JavaScript under Red Hat 7.0. This fixes
+          <http://sourceforge.net/bugs/?func=detailbug&bug_id=122654&group_id=7151>
+
 2000-11-17  Braden McDaniel  <braden@endoframe.com>
 
         * Made the parser, scanner, and ANTLR headers non-public.
