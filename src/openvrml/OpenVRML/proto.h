@@ -54,7 +54,7 @@ namespace OpenVRML {
         friend class ProtoNodeClass;
         friend class Vrml97Parser;
         
-        friend class NodeCloneVisitor : public NodeVisitor {
+        class NodeCloneVisitor : public NodeVisitor {
             std::stack<NodePtr> rootNodeStack;
 
             const ProtoNode & fromProtoNode;
@@ -75,7 +75,9 @@ namespace OpenVRML {
             NodeCloneVisitor & operator=(const NodeCloneVisitor &);
         };
         
-        friend class RouteCopyVisitor : public NodeVisitor {
+        friend class NodeCloneVisitor;
+        
+        class RouteCopyVisitor : public NodeVisitor {
             const ProtoNode & fromProtoNode;
             ProtoNode & toProtoNode;
 
@@ -93,6 +95,8 @@ namespace OpenVRML {
             RouteCopyVisitor(const RouteCopyVisitor &);
             RouteCopyVisitor & operator=(const RouteCopyVisitor &);
         };
+        
+        friend class RouteCopyVisitor;
 
     public:
         struct ImplNodeInterface {
