@@ -255,6 +255,20 @@ are provided for convenience:
    the CPPFLAGS and LDFLAGS variables.  Other build systems should
    define OPENVRML_HAVE_JNI when building OpenVRML with the JDK.
 
+ * Doxygen
+
+   OpenVRML uses Doxygen to build API documentation.  If Doxygen is not
+   already installed on your system, you can find it at
+   <http://doxygen.org>.  These arguments can be passed to "configure":
+   
+   --with-doxygen
+   --with-doxygen=yes
+      Attempt to locate and build using Doxygen. This is the default.
+   
+   --without-doxygen
+   --with-doxygen=no
+      Do not build API documentation.
+
 
 Installation
 ============

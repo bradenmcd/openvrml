@@ -1,3 +1,8 @@
+2002-06-29  Braden McDaniel  <braden@endoframe.com>
+
+        * README: Added documentation for --with-doxygen configure
+          option.
+
 2002-06-28  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/script.cpp,
