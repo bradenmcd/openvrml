@@ -2988,12 +2988,15 @@ void ViewerOpenGL::text3(int *justify, float size, int n, const char **s)
   for (int i=0; i<n; ++i, y-=font_height)
     {
       const char *textLine = s[i];
-      glPushMatrix();
-      glTranslatef(x, y, 0.0);
-      glScalef(font_scale, font_scale, font_scale);
-      while (*textLine)
-	glutStrokeCharacter(GLUT_STROKE_ROMAN, *textLine++);
-      glPopMatrix();
+      if ( textLine )
+	{
+	  glPushMatrix();
+	  glTranslatef(x, y, 0.0);
+	  glScalef(font_scale, font_scale, font_scale);
+	  while (*textLine)
+	    glutStrokeCharacter(GLUT_STROKE_ROMAN, *textLine++);
+	  glPopMatrix();
+	}
     }
 
   glPopAttrib();
