@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
+// Copyright (C) 2000  Christopher K. St. John
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,33 +19,32 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef VIEWERGLUT_H
-#define VIEWERGLUT_H
+# ifndef VRMLRENDERCONTEXT_H
+#   define VRMLRENDERCONTEXT_H
 
-#include <openvrml/gl/viewer.h>
+#   include <openvrml/common.h>
+#   include <openvrml/bounding_volume.h>
 
-/**
- * GLUT version of OpenGL class for display of VRML models.
- */
-class ViewerGlut : public openvrml::gl::viewer {
-    int d_window;
-    bool d_timerPending;
+namespace openvrml {
 
-public:
-    ViewerGlut(openvrml::browser & browser);
-    virtual ~ViewerGlut();
+    class mat4f;
 
-    // Public so glut callbacks can access
-    void timerUpdate();
+    class OPENVRML_SCOPE rendering_context {
+        mat4f * modelview;
 
-protected:
-    //
-    // Window system specific methods
-    //
-    virtual void post_redraw();
-    virtual void set_cursor(cursor_style c);
-    virtual void swap_buffers();
-    virtual void set_timer(double);
-};
+    public:
+        bounding_volume::intersection cull_flag;
+        bool draw_bounding_spheres;
 
-#endif // VIEWERGLUT_H
+        rendering_context();
+        rendering_context(bounding_volume::intersection cull_flag,
+                          mat4f & modelview);
+
+        // Use compiler-generated copy-ctor, dtor, operator=.
+
+        const mat4f & matrix() const;
+        void matrix(mat4f & modelview);
+    };
+}
+
+# endif

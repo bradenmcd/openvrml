@@ -1,3 +1,8 @@
+2003-07-29  Braden McDaniel  <braden@endoframe.com>
+
+	Naming convention changes. Change "OpenVRML" namespace to
+	"openvrml"; changed "OpenVRML::GL" namespace to "openvrml::gl".
+
 2003-07-28  Braden McDaniel  <braden@endoframe.com>
 
 	Doxygen documentation improvements.

@@ -33,7 +33,7 @@
 
 # include "ViewerGlut.h"
 
-using namespace OpenVRML;
+using namespace openvrml;
 
 /**
  * @class ViewerGlut
@@ -86,7 +86,7 @@ extern "C" {
     {
         ViewerGlut * viewer = getViewer(glutGetWindow());
 
-        GL::viewer::event_info e = { GL::viewer::event_key_down, key, x, y };
+        gl::viewer::event_info e = { gl::viewer::event_key_down, key, x, y };
         if (viewer) { viewer->input(&e); }
     }
 
@@ -94,16 +94,16 @@ extern "C" {
 
     void specialKey(int key, int x, int y)
     {
-        GL::viewer::event_info e = { GL::viewer::event_key_down, 0, x, y };
+        gl::viewer::event_info e = { gl::viewer::event_key_down, 0, x, y };
 
         switch (key) {
-        case GLUT_KEY_HOME:  e.what = GL::viewer::key_home; break;
-        case GLUT_KEY_LEFT:  e.what = GL::viewer::key_left; break;
-        case GLUT_KEY_UP:    e.what = GL::viewer::key_up; break;
-        case GLUT_KEY_RIGHT: e.what = GL::viewer::key_right; break;
-        case GLUT_KEY_DOWN:  e.what = GL::viewer::key_down; break;
-        case GLUT_KEY_PAGE_DOWN: e.what = GL::viewer::key_page_down; break;
-        case GLUT_KEY_PAGE_UP: e.what = GL::viewer::key_page_up; break;
+        case GLUT_KEY_HOME:  e.what = gl::viewer::key_home; break;
+        case GLUT_KEY_LEFT:  e.what = gl::viewer::key_left; break;
+        case GLUT_KEY_UP:    e.what = gl::viewer::key_up; break;
+        case GLUT_KEY_RIGHT: e.what = gl::viewer::key_right; break;
+        case GLUT_KEY_DOWN:  e.what = gl::viewer::key_down; break;
+        case GLUT_KEY_PAGE_DOWN: e.what = gl::viewer::key_page_down; break;
+        case GLUT_KEY_PAGE_UP: e.what = gl::viewer::key_page_up; break;
         default: return;
         }
 
@@ -118,11 +118,11 @@ extern "C" {
     {
         ViewerGlut *viewer = getViewer( glutGetWindow() );
 
-        GL::viewer::event_info e = { GL::viewer::event_mouse_click,
+        gl::viewer::event_info e = { gl::viewer::event_mouse_click,
                                      button,
                                      x,
                                      y };
-        if (state == GLUT_UP) e.event = GL::viewer::event_mouse_release;
+        if (state == GLUT_UP) e.event = gl::viewer::event_mouse_release;
         lastButton = button;
         if (viewer) viewer->input( &e );
     }
@@ -132,7 +132,7 @@ extern "C" {
     void motion(int x, int y)
     {
         ViewerGlut * viewer = getViewer(glutGetWindow());
-        GL::viewer::event_info e = { GL::viewer::event_mouse_drag,
+        gl::viewer::event_info e = { gl::viewer::event_mouse_drag,
                                      lastButton, x, y };
         if (viewer) { viewer->input(&e); }
     }
@@ -142,7 +142,7 @@ extern "C" {
     void passiveMotion(int x, int y)
     {
         ViewerGlut *viewer = getViewer( glutGetWindow() );
-        GL::viewer::event_info e = { GL::viewer::event_mouse_move,
+        gl::viewer::event_info e = { gl::viewer::event_mouse_move,
                                      lastButton, x, y };
         if (viewer) viewer->input( &e );
     }
@@ -243,8 +243,8 @@ static void reshape(int width, int height)
 #endif
 }
 
-ViewerGlut::ViewerGlut(OpenVRML::browser & browser):
-    GL::viewer(browser)
+ViewerGlut::ViewerGlut(openvrml::browser & browser):
+    gl::viewer(browser)
 {
 #if USE_STENCIL_SHAPE
     glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE | GLUT_STENCIL);

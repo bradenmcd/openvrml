@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
+// Copyright (C) 2000  Christopher K. St. John
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,33 +19,30 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef VIEWERGLUT_H
-#define VIEWERGLUT_H
+# ifndef OPENVRML_FRUSTUM_H
+#   define OPENVRML_FRUSTUM_H
 
-#include <openvrml/gl/viewer.h>
+#   include <openvrml/common.h>
 
-/**
- * GLUT version of OpenGL class for display of VRML models.
- */
-class ViewerGlut : public openvrml::gl::viewer {
-    int d_window;
-    bool d_timerPending;
+namespace openvrml {
 
-public:
-    ViewerGlut(openvrml::browser & browser);
-    virtual ~ViewerGlut();
+    class OPENVRML_SCOPE frustum {
+    public:
+        float fovy;
+        float fovx;
+        double z_near;
+        double z_far;
+        float left_plane[4];
+        float right_plane[4];
+        float top_plane[4];
+        float bot_plane[4];
 
-    // Public so glut callbacks can access
-    void timerUpdate();
+        frustum();
+        frustum(float fovy, float aspect, double near, double far);
 
-protected:
-    //
-    // Window system specific methods
-    //
-    virtual void post_redraw();
-    virtual void set_cursor(cursor_style c);
-    virtual void swap_buffers();
-    virtual void set_timer(double);
-};
+    private:
+        void update();
+    };
+}
 
-#endif // VIEWERGLUT_H
+# endif // OPENVRML_FRUSTUM_H

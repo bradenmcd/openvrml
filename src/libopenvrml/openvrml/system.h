@@ -19,33 +19,28 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef VIEWERGLUT_H
-#define VIEWERGLUT_H
+# ifndef OPENVRML_SYSTEM_H
+#   define OPENVRML_SYSTEM_H
 
-#include <openvrml/gl/viewer.h>
+#   include <cstddef>
+#   include <string>
+#   include <openvrml/common.h>
 
-/**
- * GLUT version of OpenGL class for display of VRML models.
- */
-class ViewerGlut : public openvrml::gl::viewer {
-    int d_window;
-    bool d_timerPending;
+namespace openvrml {
 
-public:
-    ViewerGlut(openvrml::browser & browser);
-    virtual ~ViewerGlut();
+    class mfstring;
 
-    // Public so glut callbacks can access
-    void timerUpdate();
+    class OPENVRML_SCOPE system {
+    public:
+        virtual bool load_url(const std::string & url,
+                             const mfstring & parameters);
+        virtual int connect_socket( const char *host, int port );
+        virtual const char *http_host(const char *url, int *port);
+        virtual const char *http_fetch( const char *url );
+        virtual void remove_file( const char *fn );
+    };
 
-protected:
-    //
-    // Window system specific methods
-    //
-    virtual void post_redraw();
-    virtual void set_cursor(cursor_style c);
-    virtual void swap_buffers();
-    virtual void set_timer(double);
-};
+    extern OPENVRML_SCOPE system * the_system;
+}
 
-#endif // VIEWERGLUT_H
+#endif // OPENVRML_SYSTEM_H

@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
+// Copyright (C) 2001  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,33 +19,26 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef VIEWERGLUT_H
-#define VIEWERGLUT_H
+# ifndef OPENVRML_COMMON_H
+#   define OPENVRML_COMMON_H
 
-#include <openvrml/gl/viewer.h>
+#   if defined(_WIN32)
+#     if defined(DLL_EXPORT)
+#       define OPENVRML_SCOPE __declspec(dllexport)
+#     elif defined(OPENVRML_DLL_IMPORT)
+#       define OPENVRML_SCOPE __declspec(dllimport)
+#     endif
+#   endif
+#   if !defined(OPENVRML_SCOPE)
+#     define OPENVRML_SCOPE
+#   endif
 
-/**
- * GLUT version of OpenGL class for display of VRML models.
- */
-class ViewerGlut : public openvrml::gl::viewer {
-    int d_window;
-    bool d_timerPending;
+namespace openvrml {
 
-public:
-    ViewerGlut(openvrml::browser & browser);
-    virtual ~ViewerGlut();
+    const double pi     = 3.14159265358979323846;
+    const double pi_2   = 1.57079632679489661923;
+    const double pi_4   = 0.78539816339744830962;
+    const double inv_pi = 0.31830988618379067154;
+}
 
-    // Public so glut callbacks can access
-    void timerUpdate();
-
-protected:
-    //
-    // Window system specific methods
-    //
-    virtual void post_redraw();
-    virtual void set_cursor(cursor_style c);
-    virtual void swap_buffers();
-    virtual void set_timer(double);
-};
-
-#endif // VIEWERGLUT_H
+# endif

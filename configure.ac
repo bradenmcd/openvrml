@@ -61,7 +61,8 @@ else
   if test "X$have_zlib" = "Xno"; then
     AC_MSG_ERROR([zlib is required for gzipped world support.])
   fi
-  AC_DEFINE([OPENVRML_ENABLE_GZIP], [1], [Defined if support for gzipped worlds is enabled.])
+  AC_DEFINE([OPENVRML_ENABLE_GZIP], [1],
+            [Defined if support for gzipped worlds is enabled.])
 fi
 AC_SUBST([Z_LIBS])
 
@@ -78,7 +79,8 @@ else
   if test "X$have_libpng" = "Xno" -o "X$have_libjpeg" = "Xno"; then
     AC_MSG_ERROR([libjpeg and libpng are required for ImageTexture node support.])
   fi
-  AC_DEFINE([OPENVRML_ENABLE_IMAGETEXTURE_NODE], [1], [Defined if ImageTexture node support is enabled.])
+  AC_DEFINE([OPENVRML_ENABLE_IMAGETEXTURE_NODE], [1],
+            [Defined if ImageTexture node support is enabled.])
 fi
 AC_SUBST([PNG_LIBS])
 AC_SUBST([JPEG_LIBS])
@@ -104,7 +106,8 @@ else
   OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${REQUIRE_FONTCONFIG}"
   FREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
   FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
-  AC_DEFINE([OPENVRML_ENABLE_TEXT_NODE], [1], [Defined if Text node support is enabled.])
+  AC_DEFINE([OPENVRML_ENABLE_TEXT_NODE], [1],
+            [Defined if Text node support is enabled.])
 fi
 AC_SUBST([FONTCONFIG_CFLAGS])
 AC_SUBST([FONTCONFIG_LIBS])
@@ -128,7 +131,8 @@ else
     OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
   fi
   OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${REQUIRE_MOZILLA_JS}"
-  AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1], [Defined if Script node JavaScript support is enabled.])
+  AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
+            [Defined if Script node JavaScript support is enabled.])
 fi
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
@@ -146,7 +150,8 @@ else
   if test "X$no_jdk" = "Xyes"; then
     AC_MSG_ERROR([The Java Development Kit is required for Script node Java support.])
   fi
-  AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVA], [1], [Defined if Script node Java support is enabled.])
+  AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVA], [1],
+            [Defined if Script node Java support is enabled.])
 fi
 AC_SUBST([JNI_CFLAGS])
 AC_SUBST([JNI_LIBS])
@@ -194,11 +199,11 @@ lib/antlr/GNUmakefile \
 lib/antlr/antlr/GNUmakefile \
 lib/antlr/src/GNUmakefile \
 src/Makefile \
-src/openvrml/Makefile \
-src/openvrml/OpenVRML/Makefile \
-src/openvrml-gl/Makefile \
-src/openvrml-gl/OpenVRML/Makefile \
-src/openvrml-gl/OpenVRML/GL/Makefile \
+src/libopenvrml/Makefile \
+src/libopenvrml/openvrml/Makefile \
+src/libopenvrml-gl/Makefile \
+src/libopenvrml-gl/openvrml/Makefile \
+src/libopenvrml-gl/openvrml/gl/Makefile \
 src/lookat/Makefile \
 java/Makefile \
 java/vrml/Makefile \

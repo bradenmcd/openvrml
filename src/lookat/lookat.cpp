@@ -33,7 +33,7 @@
 # else
 #   include <GL/glut.h>
 # endif
-# include <OpenVRML/browser.h>
+# include <openvrml/browser.h>
 
 # include "ViewerGlut.h"
 
@@ -42,13 +42,13 @@ extern "C" {
 }
 
 namespace {
-    OpenVRML::browser * browser = 0;
+    openvrml::browser * browser = 0;
     ViewerGlut * viewer = 0;
 
     bool setTitleUrl = true;
 
     void onExit();
-    void worldChangedCB(OpenVRML::browser::cb_reason);
+    void worldChangedCB(openvrml::browser::cb_reason);
     void buildViewpointMenu();
 }
 
@@ -106,7 +106,7 @@ int main(int argc, char * argv[]) {
 
     if (inputUrl.empty()) { inputUrl = inputName; }
 
-    browser = new OpenVRML::browser(cout, cerr);
+    browser = new openvrml::browser(cout, cerr);
 
     vector<string> uri(1, inputUrl);
     vector<string> parameter;
@@ -121,7 +121,7 @@ int main(int argc, char * argv[]) {
     if (title && *title) { glutSetWindowTitle(title); }
 
     browser->add_world_changed_callback(worldChangedCB);
-    worldChangedCB(OpenVRML::browser::replace_world_id);
+    worldChangedCB(openvrml::browser::replace_world_id);
     viewer->update();
 
     glutMainLoop();
@@ -134,13 +134,13 @@ namespace {
         delete viewer;
     }
 
-    void worldChangedCB(const OpenVRML::browser::cb_reason reason) {
+    void worldChangedCB(const openvrml::browser::cb_reason reason) {
         switch (reason) {
-        case OpenVRML::browser::destroy_world_id:
+        case openvrml::browser::destroy_world_id:
             exit(0);
             break;
 
-        case OpenVRML::browser::replace_world_id:
+        case openvrml::browser::replace_world_id:
             if (setTitleUrl) {
                 glutSetWindowTitle(browser->world_url().c_str());
             }
@@ -150,15 +150,15 @@ namespace {
     }
 
     void lookatViewpointMenu(int item) {
-        typedef std::list<OpenVRML::viewpoint_node *> viewpoint_list_t;
+        typedef std::list<openvrml::viewpoint_node *> viewpoint_list_t;
         const viewpoint_list_t & viewpoints = browser->viewpoints();
         viewpoint_list_t::const_iterator viewpoint = viewpoints.begin();
         while(std::distance(viewpoints.begin(), viewpoint) != item
                     && viewpoint != viewpoints.end()) {
             ++viewpoint;
         }
-        (*viewpoint)->process_event("set_bind", OpenVRML::sfbool(true),
-                                    OpenVRML::browser::current_time());
+        (*viewpoint)->process_event("set_bind", openvrml::sfbool(true),
+                                    openvrml::browser::current_time());
     }
 
     void buildViewpointMenu() {
@@ -186,7 +186,7 @@ namespace {
         numberOfViewpoints = browser->viewpoints().size();
         nvp = numberOfViewpoints;
 
-        typedef std::list<OpenVRML::viewpoint_node *> viewpoint_list_t;
+        typedef std::list<openvrml::viewpoint_node *> viewpoint_list_t;
         const viewpoint_list_t & viewpoints = browser->viewpoints();
         for (viewpoint_list_t::const_iterator viewpoint(viewpoints.begin());
                 viewpoint != viewpoints.end(); ++viewpoint) {
