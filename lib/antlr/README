@@ -1,0 +1,112 @@
+C++ support libraries
+
+HOW TO INSTALL
+
+In theory do at the toplevel:
+
+./configure --prefix=<basedirectory where you want it installed>
+make
+make install
+
+Now libantlr.a should reside under <basedir>/lib/libantlr.a and the
+includes should be at <basedir>/include/antlr. In <basedir>/bin two scripts
+are installed one called antlr that takes care of running java with the
+right classpath for antlr. And a script called antlr-config one can use to
+get the right compiler options for building a C++ project with antlr (based
+upon the compiler used during building)
+
+NOTE: this also installs antlr itself nowadays.
+
+In the contrib directory a dsp/dsw project for Microsoft Visual C++ can be
+found. This one is probably not working anymore.
+
+In general this library needs runtime typing information (RTTI) make sure
+you enable this in whatever compiler you are using.
+
+SUPPORTED COMPILERS
+
+Pasted from the FAQ entry on: http://www.jguru.com/jguru/faq/view.jsp?EID=121
+
+Compiler               OS                         Version
+------------------     ---------------------      ----------
+Sun Workshop 4.2       Solaris 2.6, 7             2.7.1
+Sun Workshop 5.0       Solaris 2.7                2.7.2 (III)
+Sun Workshop 6.0       Solaris 2.6-8              2.7.2
+Sun Workshop 6.0       Solaris 2.6                2.7.1
+egcs-1.1.2             Solaris 2.6,7              2.7.1
+egcs-1.1.2             Linux 2.2, Solaris 2.6     2.7.1
+gcc-2.8.1              Solaris 2.6                2.7.2
+gcc-2.95.3             Linux 2.2, Solaris 2.6-8   2.7.2
+gcc-2.95.3             Alpha Tru64 4.0E           2.7.1 (IV)
+gcc-2.95.3             Alpha Tru64 4.0E           2.7.2
+gcc-3.0.3              Solaris 2.6-8              2.7.2
+gcc-3.1                Solaris 2.8                2.7.2
+gcc-3.2                Solaris 2.8                2.7.2 (gcc 3.2 instable on solaris)
+gcc-3.2.1              Solaris 2.8                2.7.2
+aCC A.01.21            HP-UX 10.20                2.7.0 no!
+Visual C++ 6.0         PC                         2.7.2 (II)
+Intel C++ 4.0          NT 4.0                     2.7.0
+Borland 5.0            NT 4.0                     2.7.0
+MIPSPro                SGI Irix >= 6.5.10         2.7.2 (I)
+ (gcc 2.95.3)
+
+(I) SGI Irix 6.5.10 MIPSPro compiler (contributed by Anna Winkler)
+    Note: you can't compile ANTLR with the MIPSPro compiler on
+    anything < 6.5.10 because SGI just fixed a big bug dealing with
+    namespaces in that release.
+    Note: To get it to compile do basically the following:
+    CC=cc CXX=CC CXXFLAGS=-LANG:std ./configure --prefix=/usr/local/antlr
+
+    During linking you get a error message from libtool, it is reported
+    that it still yields a working runtime lib.
+
+(II) I heard that in some cases there could be problems with precompiled
+     headers and the use of normal '/' in the #include directives. Together
+     with service pack 5.
+     Currently there are problems with the DLL build. If some MSVC6 expert
+     could fix it I'd be much obliged. Switching to STLport for STL seems
+     to fix most problems.
+
+(III) It may be you'll have to change one or two static_cast<char*>()'s to a
+      C-style cast. (think that's a compiler bug)
+
+      Configure using:
+
+         CXX=CC CC=cc RANLIB="CC -xar" ./configure
+
+      The custom ranlib is needed to get the template instances into the
+      archive.
+
+(IV)  -pipe option not supported it seems. Configure using:
+
+          CFLAGS="-W -Wall" ./configure
+
+IT DOESN'T WORK!?
+
+Check out the FAQ: http://www.jguru.com/jguru/faq/view.jsp?EID=120
+
+The text of that entry (by Peter Wells):
+
+The ANTLR code uses some relatively new features of C++ which not all
+compilers support yet (such as namespaces, and new style standard headers).
+
+There is work currently in progress to provide a compatibility mode for
+ANTLR, to enable older compilers to handle this.
+
+At the moment, you may be able to work around the problem with a few nasty
+tricks:
+
+Try creating some header files like 'iostream' just containing:
+
+#include <iostream.h>
+
+and compile with an option to define away the word 'std', such as
+
+CC .... -Dstd= ....
+
+Also in the antlr subdirectory there's a file config.hpp. Tweak this one to
+enable/disable the different bells and whistles used in the rest of the code.
+Don't forget to submit those changes back to us (along with compiler info)
+so we can incorporate them in our next release!
+
+Thanks!
