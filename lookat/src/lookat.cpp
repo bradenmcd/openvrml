@@ -38,6 +38,7 @@ main(int argc, char **argv)
   char *inputUrl = 0;
   char *inputName = 0;
   char *outputName = 0;
+  char *title = 0;
 
   char usage[] = " file.wrl [outputfile]\n";
 
@@ -49,6 +50,11 @@ main(int argc, char **argv)
 	    inputUrl = argv[++i];
 	  else if (strcmp(argv[i], "-notitle") == 0)
 	    setTitleUrl = false;
+	  else if (strcmp(argv[i], "-title") == 0)
+	    {
+	      setTitleUrl = false;
+	      title = argv[++i];
+	    }
 	  else
 	    {
 	      cerr << "Error: unrecognized option " << argv[i] << '\n';
@@ -98,6 +104,8 @@ main(int argc, char **argv)
   if (*inputName != '-')
     cout << " done.\n";
 
+  if (title && *title) glutSetWindowTitle(title);
+
   vrmlScene->addWorldChangedCallback( worldChangedCB );
   worldChangedCB( VrmlScene::REPLACE_WORLD );
   viewer->update();
@@ -118,10 +126,10 @@ static void worldChangedCB(int reason)
       break;
 
     case VrmlScene::REPLACE_WORLD:
-      Doc *urlDoc = vrmlScene->urlDoc();
-      if (urlDoc && setTitleUrl)
+      if ( setTitleUrl )
 	{
-	  const char *title = urlDoc->urlBase();
+	  Doc *urlDoc = vrmlScene->urlDoc();
+	  const char *title = urlDoc ? urlDoc->urlBase() : 0;
 	  if (title && *title) glutSetWindowTitle(title);
 	}
       buildViewpointMenu();
