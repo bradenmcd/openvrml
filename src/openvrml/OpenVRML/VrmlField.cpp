@@ -2585,7 +2585,6 @@ VrmlMFString::~VrmlMFString()
 
 void VrmlMFString::set(size_t n, char const * const v[])
 {
-    cout << "d_size = " << d_size << endl;
     for (size_t i = 0; i < d_size; ++i) {
         cout << "d_v[" << i << "] = " << d_v[i] << endl;
         delete [] d_v[i];
