@@ -1,3 +1,9 @@
+2003-11-10  Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  Made
+	gl_capabilities a singleton.  Apparently it's not safe to call
+	glGetIntegerv during static initialization.
+
 2003-11-09  Braden McDaniel  <braden@endoframe.com>
 
 	Factored libGLU check into its own macro (AX_CHECK_GLU).
