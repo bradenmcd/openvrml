@@ -246,7 +246,7 @@ namespace {
 
     public:
         explicit URI(const std::string & str)
-                throw (InvalidURI, std::bad_alloc);
+                throw (invalid_url, std::bad_alloc);
 
         operator std::string() const throw (std::bad_alloc);
 
@@ -734,10 +734,10 @@ namespace {
 
     URIRegex uriRegex;
 
-    URI::URI(const std::string & str) throw (InvalidURI, std::bad_alloc):
+    URI::URI(const std::string & str) throw (invalid_url, std::bad_alloc):
             str(str) {
         int err = uriRegex.exec(str.c_str(), URI::nmatch, this->regmatch, 0);
-        if (err != 0) { throw InvalidURI(); }
+        if (err != 0) { throw invalid_url(); }
     }
 
     URI::operator std::string() const throw (std::bad_alloc) {

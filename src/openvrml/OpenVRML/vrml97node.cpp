@@ -1232,7 +1232,7 @@ void Anchor::render(Viewer & viewer, const VrmlRenderContext context)
 void Anchor::activate()
 {
     assert(this->scene());
-    this->scene()->loadURI(this->url.value, this->parameter.value);
+    this->scene()->load_url(this->url.value, this->parameter.value);
 }
 
 /**
@@ -2121,19 +2121,37 @@ void BackgroundClass::render(Viewer & viewer) throw ()
             viewer.insertReference(background.viewerObject);
         } else {
             if (background.modified() || background.texPtr[0] == 0) {
-                Doc2 baseDoc(background.scene()->getURI());
-                background.texPtr[0] =
-                        getTexture(background.backUrl, baseDoc, background.tex, 0, viewer);
-                background.texPtr[1] =
-                        getTexture(background.bottomUrl, baseDoc, background.tex, 1, viewer);
-                background.texPtr[2] =
-                        getTexture(background.frontUrl, baseDoc, background.tex, 2, viewer);
-                background.texPtr[3] =
-                        getTexture(background.leftUrl, baseDoc, background.tex, 3, viewer);
-                background.texPtr[4] =
-                        getTexture(background.rightUrl, baseDoc, background.tex, 4, viewer);
-                background.texPtr[5] =
-                        getTexture(background.topUrl, baseDoc, background.tex, 5, viewer);
+                Doc2 baseDoc(background.scene()->url());
+                background.texPtr[0] = getTexture(background.backUrl,
+                                                  baseDoc,
+                                                  background.tex,
+                                                  0,
+                                                  viewer);
+                background.texPtr[1] = getTexture(background.bottomUrl,
+                                                  baseDoc,
+                                                  background.tex,
+                                                  1,
+                                                  viewer);
+                background.texPtr[2] = getTexture(background.frontUrl,
+                                                  baseDoc,
+                                                  background.tex,
+                                                  2,
+                                                  viewer);
+                background.texPtr[3] = getTexture(background.leftUrl,
+                                                  baseDoc,
+                                                  background.tex,
+                                                  3,
+                                                  viewer);
+                background.texPtr[4] = getTexture(background.rightUrl,
+                                                  baseDoc,
+                                                  background.tex,
+                                                  4,
+                                                  viewer);
+                background.texPtr[5] = getTexture(background.topUrl,
+                                                  baseDoc,
+                                                  background.tex,
+                                                  5,
+                                                  viewer);
             }
 
             int i, whc[18];    // Width, height, and nComponents for 6 tex
@@ -2145,8 +2163,12 @@ void BackgroundClass::render(Viewer & viewer) throw ()
                 whc[3 * i + 1] = background.texPtr[i]->h();
                 whc[3 * i + 2] = background.texPtr[i]->nc();
                 pixels[i] = background.texPtr[i]->pixels();
-                if (whc[3 * i + 0] > 0 && whc[3 * i + 1] > 0 && whc[3 * i + 2] > 0
-                        && pixels[i]) { ++nPix; }
+                if (whc[3 * i + 0] > 0
+                    && whc[3 * i + 1] > 0
+                    && whc[3 * i + 2] > 0
+                    && pixels[i]) {
+                    ++nPix;
+                }
             }
 
             background.viewerObject =
@@ -6209,7 +6231,7 @@ void ImageTexture::render(Viewer & viewer, VrmlRenderContext context)
     // loaded just once... of course world authors should just DEF/USE
     // them...
     if (!this->image && this->url.value.size() > 0) {
-        Doc2 baseDoc(this->scene()->getURI());
+        Doc2 baseDoc(this->scene()->url());
         this->image = new Image;
         if (!this->image->tryURLs(this->url, &baseDoc)) {
             theSystem->error("Couldn't read ImageTexture from URL %s\n",
@@ -7024,7 +7046,7 @@ const std::vector<node_ptr> & Inline::children() const throw ()
 {
     static const std::vector<node_ptr> empty;
     return this->inlineScene
-            ? this->inlineScene->getNodes()
+            ? this->inlineScene->nodes()
             : empty;
 }
 
@@ -7067,9 +7089,9 @@ void Inline::load() {
     this->bvolume_dirty(true);
 
     assert(this->scene());
-    this->inlineScene = new Scene(this->scene()->browser,
-                                  this->url.value,
-                                  this->scene());
+    this->inlineScene = new OpenVRML::scene(this->scene()->browser,
+                                            this->url.value,
+                                            this->scene());
     this->inlineScene->initialize(browser::current_time());
 }
 
@@ -7086,7 +7108,8 @@ void Inline::load() {
  *      Scene.
  */
 void Inline::processSet_url(const field_value & value, const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->url = dynamic_cast<const mfstring &>(value);
     this->node::modified(true);
     this->emit_event("url_changed", this->url, timestamp);
@@ -7859,7 +7882,7 @@ void MovieTexture::update(const double currentTime)
 
     // Load the movie if needed (should check startTime...)
     if (!this->image && this->url.value.size() > 0) {
-        Doc2 baseDoc(this->scene()->getURI());
+        Doc2 baseDoc(this->scene()->url());
         this->image = new Image;
         if (!this->image->tryURLs(this->url, &baseDoc)) {
             std::cerr << "Error: couldn't read MovieTexture from URL "

@@ -1023,7 +1023,7 @@ void node::add_eventout_is(const std::string & eventout_id,
  *
  * @post @a scene points to @p scene.
  */
-void node::initialize(Scene & scene, const double timestamp)
+void node::initialize(OpenVRML::scene & scene, const double timestamp)
     throw (std::bad_alloc)
 {
     if (!this->scene_) {

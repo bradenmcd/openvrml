@@ -1304,7 +1304,7 @@ namespace OpenVRML {
             sfvec3f bboxSize;
             mfstring url;
 
-            Scene * inlineScene;
+            OpenVRML::scene * inlineScene;
             bool hasLoaded;
 
         public:

@@ -424,9 +424,9 @@ invalid_vrml::~invalid_vrml() throw ()
  */
 
 /**
- * @var Scene * browser::scene
+ * @var scene * browser::scene
  *
- * @brief Pointer to the root Scene.
+ * @brief Pointer to the root scene.
  */
 
 /**
@@ -638,7 +638,7 @@ browser::browser(std::ostream & out, std::ostream & err) throw (std::bad_alloc):
     null_node_class_(new null_node_class(*this)),
     null_node_type_(new null_node_type(*null_node_class_)),
     script_node_class_(*this),
-    scene(0),
+    scene_(0),
     default_viewpoint(new DefaultViewpoint(*null_node_type_)),
     active_viewpoint_(default_viewpoint->to_viewpoint()),
     modified_(false),
@@ -664,9 +664,9 @@ browser::~browser() throw ()
 {
     const double now = browser::current_time();
 
-    if (this->scene) { this->scene->shutdown(now); }
-    delete this->scene;
-    this->scene = 0;
+    if (this->scene_) { this->scene_->shutdown(now); }
+    delete this->scene_;
+    this->scene_ = 0;
     this->navigation_info_stack.clear();
     assert(this->viewpoint_list.empty());
     assert(this->navigation_infos.empty());
@@ -686,8 +686,8 @@ browser::~browser() throw ()
  */
 const std::vector<node_ptr> & browser::root_nodes() const throw ()
 {
-    assert(this->scene);
-    return this->scene->getNodes();
+    assert(this->scene_);
+    return this->scene_->nodes();
 }
 
 /**
@@ -704,7 +704,7 @@ const std::vector<node_ptr> & browser::root_nodes() const throw ()
 const node_path browser::find_node(const node & n) const
     throw (std::bad_alloc)
 {
-    assert(this->scene);
+    assert(this->scene_);
 
     class FindNodeTraverser : public node_traverser {
         const node & objectiveNode;
@@ -734,7 +734,7 @@ const node_path browser::find_node(const node & n) const
     };
 
     node_path nodePath;
-    FindNodeTraverser(n, nodePath).traverse(this->scene->getNodes());
+    FindNodeTraverser(n, nodePath).traverse(this->scene_->nodes());
     return nodePath;
 }
 
@@ -860,17 +860,19 @@ float browser::current_speed()
  *
  * @return the URI for the world.
  */
-const std::string browser::world_url() const throw (std::bad_alloc)
+const std::string  browser::world_url() const throw (std::bad_alloc)
 {
-    return this->scene
-            ? this->scene->getURI()
-            : std::string();
+    static const std::string empty_string;
+    return this->scene_
+        ? this->scene_->url() // Throws std::bad_alloc.
+        : empty_string;
 }
 
 /**
  * @todo Implement me!
  */
-void browser::replace_world(const std::vector<node_ptr> & nodes) {}
+void browser::replace_world(const std::vector<node_ptr> & nodes)
+{}
 
 namespace {
     typedef std::map<std::string, node_class_ptr> node_class_map_t;
@@ -919,7 +921,7 @@ namespace {
         regmatch_t regmatch[nmatch];
 
     public:
-        URI(const std::string & str) throw (InvalidURI, std::bad_alloc);
+        URI(const std::string & str) throw (invalid_url, std::bad_alloc);
 
         operator std::string() const throw (std::bad_alloc);
 
@@ -964,11 +966,11 @@ void browser::load_url(const std::vector<std::string> & url,
     const double now = browser::current_time();
 
     //
-    // Clear out the current Scene.
+    // Clear out the current scene.
     //
-    if (this->scene) { this->scene->shutdown(now); }
-    delete this->scene;
-    this->scene = 0;
+    if (this->scene_) { this->scene_->shutdown(now); }
+    delete this->scene_;
+    this->scene_ = 0;
     this->navigation_info_stack.clear();
     assert(this->viewpoint_list.empty());
     assert(this->navigation_infos.empty());
@@ -981,20 +983,20 @@ void browser::load_url(const std::vector<std::string> & url,
     this->node_class_map.clear();
 
     //
-    // Create the new Scene.
+    // Create the new scene.
     //
     this->init_node_class_map();
-    this->scene = new Scene(*this, url);
-    this->scene->initialize(now);
+    this->scene_ = new scene(*this, url);
+    this->scene_->initialize(now);
 
     //
     // Get the initial viewpoint_node, if any was specified.
     //
     viewpoint_node * initialViewpoint = 0;
-    const string viewpointNodeId = URI(this->scene->getURI()).getFragment();
+    const string viewpointNodeId = URI(this->scene_->url()).getFragment();
     if (!viewpointNodeId.empty()) {
-        if (!this->scene->getNodes().empty()) {
-            const node_ptr & n = this->scene->getNodes()[0];
+        if (!this->scene_->nodes().empty()) {
+            const node_ptr & n = this->scene_->nodes()[0];
             if (n) {
                 node * const vp = n->scope()->find_node(viewpointNodeId);
                 initialViewpoint = dynamic_cast<viewpoint_node *>(vp);
@@ -1223,7 +1225,7 @@ double browser::frame_rate() const
 /**
  * @brief Queue an event for a node.
  *
- * Current events are in the array @a event_mem[d_firstEvent,d_lastEvent). If
+ * Current events are in the array @a event_mem[first_event, last_event). If
  * @a first_event == @a last_event, the queue is empty. There is a fixed
  * maximum number of events. If we are so far behind that the queue is filled,
  * the oldest events get overwritten.
@@ -1462,8 +1464,8 @@ void browser::render(Viewer & viewer)
     }
 
     // Render the nodes
-    assert(this->scene);
-    this->scene->render(viewer, rc);
+    assert(this->scene_);
+    this->scene_->render(viewer, rc);
 
     viewer.endObject();
 
@@ -1825,7 +1827,7 @@ void browser::update_flags()
 
 
 /**
- * @class BadURI
+ * @class bad_url
  *
  * @brief Thrown when there is a problem resolving a URI.
  */
@@ -1835,16 +1837,16 @@ void browser::update_flags()
  *
  * @param message   Informative text.
  */
-BadURI::BadURI(const std::string & message): std::runtime_error(message) {}
+bad_url::bad_url(const std::string & message): std::runtime_error(message) {}
 
 /**
  * @brief Destructor.
  */
-BadURI::~BadURI() throw () {}
+bad_url::~bad_url() throw () {}
 
 
 /**
- * @class InvalidURI
+ * @class invalid_url
  *
  * @brief Thrown when parsing a URI fails.
  */
@@ -1852,16 +1854,16 @@ BadURI::~BadURI() throw () {}
 /**
  * @brief Constructor.
  */
-InvalidURI::InvalidURI(): BadURI("Invalid URI.") {}
+invalid_url::invalid_url(): bad_url("Invalid URI.") {}
 
 /**
  * @brief Destructor.
  */
-InvalidURI::~InvalidURI() throw () {}
+invalid_url::~invalid_url() throw () {}
 
 
 /**
- * @class UnreachableURI
+ * @class unreachable_url
  *
  * @brief Thrown when a URI cannot be reached.
  */
@@ -1869,28 +1871,28 @@ InvalidURI::~InvalidURI() throw () {}
 /**
  * @brief Constructor.
  */
-UnreachableURI::UnreachableURI(): BadURI("Unreachable URI.") {}
+unreachable_url::unreachable_url(): bad_url("Unreachable URI.") {}
 
 /**
  * @brief Destructor.
  */
-UnreachableURI::~UnreachableURI() throw () {}
+unreachable_url::~unreachable_url() throw () {}
 
 
 /**
- * @class Scene
+ * @class scene
  *
  * @brief A scene in the VRML world.
  */
 
 /**
- * @var mfnode Scene::nodes
+ * @var mfnode scene::nodes
  *
  * @brief The nodes for the scene.
  */
 
 /**
- * @var const std::string Scene::uri
+ * @var const std::string scene::uri
  *
  * @brief The URI for the scene.
  *
@@ -1898,17 +1900,17 @@ UnreachableURI::~UnreachableURI() throw () {}
  */
 
 /**
- * @var browser & Scene::browser
+ * @var browser & scene::browser
  *
- * @brief A reference to the browser associated with the Scene.
+ * @brief A reference to the browser associated with the scene.
  */
 
 /**
- * @var Scene * const Scene::parent
+ * @var scene * const scene::parent
  *
  * @brief A pointer to the parent scene.
  *
- * If the Scene is the root Scene, @a parent will be 0.
+ * If the scene is the root scene, @a parent will be 0.
  */
 
 namespace {
@@ -1973,18 +1975,18 @@ namespace {
 }
 
 /**
- * @brief Construct a Scene from a URI.
+ * @brief Construct a scene from a URI.
  *
- * @param browser   the browser associated with the Scene.
- * @param uri       the URI for the Scene.
- * @param parent    the parent Scene.
+ * @param browser   the browser associated with the scene.
+ * @param uri       the URI for the scene.
+ * @param parent    the parent scene.
  *
  * @exception invalid_vrml       if there is a syntax error in the VRML input.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-Scene::Scene(OpenVRML::browser & browser,
+scene::scene(OpenVRML::browser & browser,
              const std::vector<std::string> & uri,
-             Scene * parent)
+             scene * parent)
     throw (invalid_vrml, std::bad_alloc):
     browser(browser),
     parent(parent)
@@ -1993,7 +1995,7 @@ Scene::Scene(OpenVRML::browser & browser,
     for (size_t i = 0; i < uri.size(); ++i) {
         try {
             //
-            // Throw InvalidURI if it isn't a valid URI.
+            // Throw invalid_url if it isn't a valid URI.
             //
             URI testURI(uri[i]);
 
@@ -2012,24 +2014,24 @@ Scene::Scene(OpenVRML::browser & browser,
                 // If we have a relative URI and parent is not null, try to
                 // resolve the relative reference against the parent's URI.
                 //
-                absoluteURI = testURI.resolveAgainst(URI(parent->getURI()));
+                absoluteURI = testURI.resolveAgainst(URI(parent->url()));
             }
 
             Doc2 doc(absoluteURI);
             std::istream & in = doc.inputStream();
-            if (!in) { throw UnreachableURI(); }
+            if (!in) { throw unreachable_url(); }
             try {
                 Vrml97Scanner scanner(in);
-                Vrml97Parser parser(scanner, this->getURI());
-                parser.vrmlScene(browser, this->nodes);
+                Vrml97Parser parser(scanner, this->url());
+                parser.vrmlScene(browser, this->nodes_);
             } catch (antlr::RecognitionException & ex) {
                 throw invalid_vrml();
             } catch (std::bad_alloc &) {
                 throw;
             } catch (...) {
-                throw UnreachableURI();
+                throw unreachable_url();
             }
-        } catch (BadURI & ex) {
+        } catch (bad_url & ex) {
             browser.err << ex.what() << std::endl;
             continue;
         }
@@ -2037,25 +2039,25 @@ Scene::Scene(OpenVRML::browser & browser,
         // If this is the root scene (that is, the parent is null), then
         // this->uri must be the absolute URI.
         //
-        this->uri = parent
-                  ? uri[i]
-                  : absoluteURI;
+        this->url_ = parent
+            ? uri[i]
+            : absoluteURI;
         break;
     }
 }
 
 /**
- * @brief Get the absolute URI for the Scene.
+ * @brief Get the absolute URI for the scene.
  *
- * @return the absolute URI for the Scene.
+ * @return the absolute URI for the scene.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-const std::string Scene::getURI() const throw (std::bad_alloc) {
+const std::string scene::url() const throw (std::bad_alloc) {
     using std::string;
     return this->parent
-            ? string(URI(this->uri).resolveAgainst(URI(this->parent->getURI())))
-            : this->uri;
+            ? string(URI(this->url_).resolveAgainst(URI(this->parent->url())))
+            : this->url_;
 }
 
 /**
@@ -2065,10 +2067,11 @@ const std::string Scene::getURI() const throw (std::bad_alloc) {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void Scene::initialize(const double timestamp) throw (std::bad_alloc)
+void scene::initialize(const double timestamp) throw (std::bad_alloc)
 {
-    for (std::vector<node_ptr>::iterator node(this->nodes.begin());
-            node != this->nodes.end(); ++node) {
+    for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
+         node != this->nodes_.end();
+         ++node) {
         assert(*node);
         (*node)->initialize(*this, timestamp);
         (*node)->relocate();
@@ -2076,14 +2079,15 @@ void Scene::initialize(const double timestamp) throw (std::bad_alloc)
 }
 
 /**
- * @brief Render the Scene.
+ * @brief Render the scene.
  *
  * @param viewer    a Viewer to render to.
  * @param context   a VrmlRenderContext.
  */
-void Scene::render(Viewer & viewer, VrmlRenderContext context) {
-    for (std::vector<node_ptr>::iterator node(this->nodes.begin());
-            node != this->nodes.end(); ++node) {
+void scene::render(Viewer & viewer, VrmlRenderContext context) {
+    for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
+         node != this->nodes_.end();
+         ++node) {
         assert(*node);
         (*node)->render(viewer, context);
     }
@@ -2093,18 +2097,18 @@ void Scene::render(Viewer & viewer, VrmlRenderContext context) {
  * @brief Load a resource into @a browser.
  *
  * This method simply resolves any relative references in @p uri and calls
- * browser::loadURI.
+ * browser::load_url.
  *
  * @note There are a couple of edge cases here where we are probably doing the
  *      wrong thing:
- *       - If there is a URI in the list of the form "#NodeId" and it is not the
- *         first URI in the list, this URI will be loaded as if it were a new
- *         world rather than as a Viewpoint that should simply be bound.
+ *       - If there is a URI in the list of the form "#NodeId" and it is not
+ *         the first URI in the list, this URI will be loaded as if it were a
+ *         new world rather than as a Viewpoint that should simply be bound.
  *       - If the first URI in the list is of the form "#NodeId" and no
  *         Viewpoint named "NodeId" exists in the scene, this method will not
  *         try any subsequent URIs in the list.
  *
- * @param uri       an array of URIs. Per VRML97 convention, the first resource
+ * @param url       an array of URIs. Per VRML97 convention, the first resource
  *                  in the sequence that can be reached will be loaded into the
  *                  browser.
  * @param parameter an array of parameters to be associated with the URIs in
@@ -2112,17 +2116,17 @@ void Scene::render(Viewer & viewer, VrmlRenderContext context) {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
- * @todo This method currently fails silently if any of the URIs in @p uri is
- *      invalid. Should this throw InvalidURI?
+ * @todo This method currently fails silently if any of the URIs in @p url is
+ *      invalid. Should this throw invalid_url?
  */
-void Scene::loadURI(const std::vector<std::string> & uri,
-                    const std::vector<std::string> & parameter)
+void scene::load_url(const std::vector<std::string> & url,
+                     const std::vector<std::string> & parameter)
     throw (std::bad_alloc)
 {
     using std::string;
 
-    if (!uri.empty()) {
-        if (uri[0][0] == '#') {
+    if (!url.empty()) {
+        if (url[0][0] == '#') {
 # if 0
             //
             // If the first element in uri is a Viewpoint name, bind the
@@ -2131,16 +2135,16 @@ void Scene::loadURI(const std::vector<std::string> & uri,
             this->browser.setViewpoint(uri[0].substr(1));
 # endif
         } else {
-            std::vector<std::string> absoluteURIs(uri.size());
+            std::vector<std::string> absoluteURIs(url.size());
             for (size_t i = 0; i < absoluteURIs.size(); ++i) {
                 try {
-                    const URI uriElement(uri[i]);
+                    const URI urlElement(url[i]);
                     const string value =
-                        uriElement.getScheme().empty()
-                            ? uriElement.resolveAgainst(URI(this->getURI()))
-                            : uriElement;
+                        urlElement.getScheme().empty()
+                            ? urlElement.resolveAgainst(URI(this->url()))
+                            : urlElement;
                     absoluteURIs[i] = value;
-                } catch (InvalidURI & ex) {
+                } catch (invalid_url & ex) {
                     OPENVRML_PRINT_EXCEPTION_(ex);
                 }
             }
@@ -2150,16 +2154,17 @@ void Scene::loadURI(const std::vector<std::string> & uri,
 }
 
 /**
- * @brief Shut down the nodes in the Scene.
+ * @brief Shut down the nodes in the scene.
  *
- * This function @b must be called before the Scene is destroyed.
+ * This function @b must be called before the scene is destroyed.
  *
  * @param timestamp the current time.
  */
-void Scene::shutdown(const double timestamp) throw ()
+void scene::shutdown(const double timestamp) throw ()
 {
-    for (std::vector<node_ptr>::iterator node(this->nodes.begin());
-            node != this->nodes.end(); ++node) {
+    for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
+         node != this->nodes_.end();
+         ++node) {
         if (*node) { (*node)->shutdown(timestamp); }
     }
 }
@@ -3840,9 +3845,15 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     // Appearance node
     //
     static const node_interface appearanceInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "material"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "texture"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "textureTransform")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "material"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texture"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "textureTransform")
     };
     static const vrml97_node_interface_set_
             appearanceInterfaceSet(appearanceInterfaces,
@@ -3850,20 +3861,36 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     pos = nodeClassMap.find("urn:X-openvrml:node:Appearance");
     assert(pos != nodeClassMap.end());
     this->add_type(pos->second->create_type("Appearance",
-                                              appearanceInterfaceSet));
+                                            appearanceInterfaceSet));
 
     //
     // AudioClip node
     //
     static const node_interface audioClipInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sfstring_id, "description"),
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "loop"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "pitch"),
-        node_interface(node_interface::exposedfield_id, field_value::sftime_id, "startTime"),
-        node_interface(node_interface::exposedfield_id, field_value::sftime_id, "stopTime"),
-        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "url"),
-        node_interface(node_interface::eventout_id, field_value::sftime_id, "duration_changed"),
-        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "loop"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "pitch"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "startTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "stopTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "duration_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive")
     };
     static const vrml97_node_interface_set_
             audioClipInterfaceSet(audioClipInterfaces,
@@ -3871,7 +3898,7 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     pos = nodeClassMap.find("urn:X-openvrml:node:AudioClip");
     assert(pos != nodeClassMap.end());
     this->add_type(pos->second->create_type("AudioClip",
-                                              audioClipInterfaceSet));
+                                            audioClipInterfaceSet));
 
     //
     // Background node
@@ -4568,7 +4595,7 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
         pos = nodeClassMap.find("urn:X-openvrml:node:ProximitySensor");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("ProximitySensor",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4576,17 +4603,25 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id, field_value::sffloat_id, "set_fraction"),
-            node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "key"),
-            node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "keyValue"),
-            node_interface(node_interface::eventout_id, field_value::sffloat_id, "value_changed")
+            node_interface(node_interface::eventin_id,
+                           field_value::sffloat_id,
+                           "set_fraction"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mffloat_id,
+                           "key"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mffloat_id,
+                           "keyValue"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sffloat_id,
+                           "value_changed")
         };
         static const vrml97_node_interface_set_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
         pos = nodeClassMap.find("urn:X-openvrml:node:ScalarInterpolator");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("ScalarInterpolator",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4594,8 +4629,12 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "appearance"),
-            node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "geometry")
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "appearance"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "geometry")
         };
         static const vrml97_node_interface_set_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
@@ -4609,16 +4648,36 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "direction"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "intensity"),
-            node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "location"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "maxBack"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "maxFront"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "minBack"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "minFront"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "priority"),
-            node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "source"),
-            node_interface(node_interface::field_id, field_value::sfbool_id, "spatialize")
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfvec3f_id,
+                           "direction"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sffloat_id,
+                           "intensity"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfvec3f_id,
+                           "location"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sffloat_id,
+                           "maxBack"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sffloat_id,
+                           "maxFront"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sffloat_id,
+                           "minBack"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sffloat_id,
+                           "minFront"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sffloat_id,
+                           "priority"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "source"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "spatialize")
         };
         static const vrml97_node_interface_set_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
@@ -4632,7 +4691,9 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterface =
-                node_interface(node_interface::field_id, field_value::sffloat_id, "radius");
+                node_interface(node_interface::field_id,
+                               field_value::sffloat_id,
+                               "radius");
         static const vrml97_node_interface_set_
                 nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
         pos = nodeClassMap.find("urn:X-openvrml:node:Sphere");
@@ -4645,19 +4706,31 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "autoOffset"),
-            node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "offset"),
-            node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
-            node_interface(node_interface::eventout_id, field_value::sfrotation_id, "rotation_changed"),
-            node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed")
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfbool_id,
+                           "autoOffset"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfbool_id,
+                           "enabled"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sffloat_id,
+                           "offset"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isActive"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfrotation_id,
+                           "rotation_changed"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfvec3f_id,
+                           "trackPoint_changed")
         };
         static const vrml97_node_interface_set_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
         pos = nodeClassMap.find("urn:X-openvrml:node:SphereSensor");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("SphereSensor",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4701,7 +4774,7 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
         pos = nodeClassMap.find("urn:X-openvrml:node:SpotLight");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("SpotLight",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4761,7 +4834,7 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
         pos = nodeClassMap.find("urn:X-openvrml:node:TextureCoordinate");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("TextureCoordinate",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4769,17 +4842,25 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     //
     {
         static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "center"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "rotation"),
-            node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "scale"),
-            node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "translation")
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfvec2f_id,
+                           "center"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sffloat_id,
+                           "rotation"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfvec2f_id,
+                           "scale"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfvec2f_id,
+                           "translation")
         };
         static const vrml97_node_interface_set_
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
         pos = nodeClassMap.find("urn:X-openvrml:node:TextureTransform");
         assert(pos != nodeClassMap.end());
         this->add_type(pos->second->create_type("TextureTransform",
-                                                  nodeInterfaceSet));
+                                                nodeInterfaceSet));
     }
 
     //
@@ -5143,10 +5224,10 @@ namespace {
 
     URIRegex uriRegex;
 
-    URI::URI(const std::string & str) throw (InvalidURI, std::bad_alloc):
+    URI::URI(const std::string & str) throw (invalid_url, std::bad_alloc):
             str(str) {
         int err = uriRegex.exec(str.c_str(), URI::nmatch, this->regmatch, 0);
-        if (err != 0) { throw InvalidURI(); }
+        if (err != 0) { throw invalid_url(); }
     }
 
     URI::operator std::string() const throw (std::bad_alloc) {

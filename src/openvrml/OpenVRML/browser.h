@@ -40,7 +40,7 @@ namespace OpenVRML {
     class Doc2;
     class Viewer;
     class ProtoNode;
-    class Scene;
+    class scene;
     class Vrml97RootScope;
     class null_node_class;
     class null_node_type;
@@ -64,7 +64,7 @@ namespace OpenVRML {
         typedef std::map<std::string, node_class_ptr> node_class_map_t;
         node_class_map_t node_class_map;
         script_node_class script_node_class_;
-        Scene * scene;
+        scene * scene_;
         node_ptr default_viewpoint;
         viewpoint_node * active_viewpoint_;
         std::list<viewpoint_node *> viewpoint_list;
@@ -201,59 +201,59 @@ namespace OpenVRML {
     };
 
 
-    class OPENVRML_SCOPE BadURI : public std::runtime_error {
+    class OPENVRML_SCOPE bad_url : public std::runtime_error {
     public:
-        BadURI(const std::string & message);
-        virtual ~BadURI() throw ();
+        bad_url(const std::string & message);
+        virtual ~bad_url() throw ();
     };
 
 
-    class OPENVRML_SCOPE InvalidURI : public BadURI {
+    class OPENVRML_SCOPE invalid_url : public bad_url {
     public:
-        InvalidURI();
-        virtual ~InvalidURI() throw ();
+        invalid_url();
+        virtual ~invalid_url() throw ();
     };
 
 
-    class OPENVRML_SCOPE UnreachableURI : public BadURI {
+    class OPENVRML_SCOPE unreachable_url : public bad_url {
     public:
-        UnreachableURI();
-        virtual ~UnreachableURI() throw ();
+        unreachable_url();
+        virtual ~unreachable_url() throw ();
     };
 
 
-    class OPENVRML_SCOPE Scene {
-        std::vector<node_ptr> nodes;
-        std::string uri;
+    class OPENVRML_SCOPE scene {
+        std::vector<node_ptr> nodes_;
+        std::string url_;
 
     public:
         OpenVRML::browser & browser;
-        Scene * const parent;
+        scene * const parent;
 
-        Scene(OpenVRML::browser & browser,
-              const std::vector<std::string> & uri,
-              Scene * parent = 0)
+        scene(OpenVRML::browser & browser,
+              const std::vector<std::string> & url,
+              scene * parent = 0)
             throw (invalid_vrml, std::bad_alloc);
 
         void initialize(double timestamp) throw (std::bad_alloc);
-        const std::vector<node_ptr> & getNodes() const throw ();
-        const std::string getURI() const throw (std::bad_alloc);
+        const std::vector<node_ptr> & nodes() const throw ();
+        const std::string url() const throw (std::bad_alloc);
         void render(Viewer & viewer, VrmlRenderContext context);
-        void loadURI(const std::vector<std::string> & uri,
-                     const std::vector<std::string> & parameter)
+        void load_url(const std::vector<std::string> & uri,
+                      const std::vector<std::string> & parameter)
                 throw (std::bad_alloc);
         void shutdown(double timestamp) throw ();
 
     private:
         // Noncopyable.
-        Scene(const Scene &);
-        Scene & operator=(const Scene &);
+        scene(const scene &);
+        scene & operator=(const scene &);
     };
 
-    inline const std::vector<node_ptr> & Scene::getNodes() const throw()
+    inline const std::vector<node_ptr> & scene::nodes() const throw()
     {
-        return this->nodes;
+        return this->nodes_;
     }
 }
 
-# endif
+# endif // OPENVRML_BROWSER_H

@@ -219,7 +219,7 @@ namespace OpenVRML {
         class TouchSensor;
     }
 
-    class Scene;
+    class scene;
 
     std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
                                              const node & node);
@@ -253,7 +253,7 @@ namespace OpenVRML {
 
     private:
         scope_ptr scope_;
-        Scene * scene_;
+        OpenVRML::scene * scene_;
         routes_t routes_;
 
         typedef std::map<std::string, polled_eventout_value *>
@@ -270,7 +270,7 @@ namespace OpenVRML {
 
         const scope_ptr & scope() const throw ();
 
-        Scene * scene() const throw ();
+        OpenVRML::scene * scene() const throw ();
 
         std::ostream & print(std::ostream & out, size_t indent) const;
 
@@ -278,7 +278,7 @@ namespace OpenVRML {
                              polled_eventout_value & eventout_value)
             throw (unsupported_interface, std::bad_alloc);
 
-        void initialize(Scene & scene, double timestamp)
+        void initialize(OpenVRML::scene & scene, double timestamp)
             throw (std::bad_alloc);
         void relocate() throw (std::bad_alloc);
 
@@ -415,7 +415,7 @@ namespace OpenVRML {
         return this->scope_;
     }
 
-    inline Scene * node::scene() const throw ()
+    inline OpenVRML::scene * node::scene() const throw ()
     {
         return this->scene_;
     }
