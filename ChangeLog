@@ -3,6 +3,8 @@
         * Added MS Visual C++ 6.0 project and Makefiles to the
           distribution.
 
+        * configure.ac, README: Incremented version to 0.12.5.
+
 2002-08-13  Braden McDaniel  <braden@endoframe.com>
 
         * lib/antlr/config.hpp, src/openvrml/OpenVRML/field.cpp: Fixes
