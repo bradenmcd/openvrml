@@ -351,11 +351,7 @@ namespace {
 
       if (eventOut)
       {
-        script_node::polled_eventout_value * const eventOutPtr =
-          reinterpret_cast<script_node::polled_eventout_value *>
-            (env->GetIntField(obj, fid));
-        fieldPtr = eventOutPtr->value.get();
-        eventOutPtr->modified = true;
+        fieldPtr = reinterpret_cast<field_value *>(env->GetIntField(obj, fid));
       }
       else
       {
@@ -6646,8 +6642,9 @@ jobject JNICALL Java_vrml_node_Script_getField
  * @param jstrEventOutName Name of desired eventOut
  * @return eventOut object
  */
-jobject JNICALL Java_vrml_node_Script_getEventOut
-  (JNIEnv *env, jobject obj, jstring jstrEventOutName)
+jobject JNICALL Java_vrml_node_Script_getEventOut(JNIEnv * env,
+                                                  jobject obj,
+                                                  jstring jstrEventOutName)
 {
   jobject eventOut;
   const char *charEventOut = env->GetStringUTFChars(jstrEventOutName , 0);
@@ -6663,23 +6660,22 @@ jobject JNICALL Java_vrml_node_Script_getEventOut
 
   if (eventOutType != field_value::invalid_type_id)
   {
-    const script_node::eventout_value_map_t& eventOutMap =
-      script->eventout_value_map();
-    script_node::eventout_value_map_t::const_iterator iter =
+    const script_node::eventout_map_t & eventOutMap = script->eventout_map();
+    script_node::eventout_map_t::const_iterator iter =
       eventOutMap.find(eventOutName);
 
     if (iter != eventOutMap.end())
     {
-      const script_node::polled_eventout_value & eventOutValue = iter->second;
       // Found the eventOut
-      std::ostrstream os;
-      os << "vrml/field/" << iter->second.value->type() << '\0';
-      jclass clazz = env->FindClass(os.str());
-      os.rdbuf()->freeze(false);
+      std::ostringstream out;
+      out << "vrml/field/" << iter->second->value().type();
+      jclass clazz = env->FindClass(out.str().c_str());
       eventOut = env->AllocObject(clazz);
       fid = getFid(env, eventOut, "FieldPtr", "I");
       if (!fid) return 0;
-      env->SetIntField(eventOut, fid, reinterpret_cast<int>(&eventOutValue));
+      env->SetIntField(eventOut,
+                       fid,
+                       reinterpret_cast<int>(&iter->second->value()));
     }
   }
   else
@@ -7313,7 +7309,7 @@ void JNICALL Java_vrml_Browser_addRoute(JNIEnv * const env,
     str = env->GetStringUTFChars(toEventIn, 0);
     std::string eventIn(str);
     env->ReleaseStringUTFChars(toEventIn, str);
-    fromNode->add_route(eventOut, node_ptr(toNode), eventIn);
+    add_route(*fromNode, eventOut, *toNode, eventIn);
 }
 
 /**
@@ -7352,7 +7348,7 @@ void JNICALL Java_vrml_Browser_deleteRoute(JNIEnv * const env,
     str = env->GetStringUTFChars(toEventIn, 0);
     std::string eventIn(str);
     env->ReleaseStringUTFChars(toEventIn, str);
-    fromNode->delete_route(eventOut, node_ptr(toNode), eventIn);
+    delete_route(*fromNode, eventOut, *toNode, eventIn);
 }
 
 /**

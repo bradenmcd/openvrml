@@ -37,7 +37,9 @@ namespace openvrml {
     };
 
     class viewer;
+# if 0
     class ProtoNode;
+# endif
     class scene;
     class Vrml97RootScope;
     class null_node_class;
@@ -45,7 +47,9 @@ namespace openvrml {
 
     class browser : boost::noncopyable {
         friend class Vrml97Parser;
+# if 0
         friend class ProtoNodeClass;
+# endif
         friend class Vrml97RootScope;
 
     public:
@@ -74,7 +78,9 @@ namespace openvrml {
         std::list<node *> timers;
         std::list<node *> audio_clips;
         std::list<node *> movies;
+# if 0
         std::list<ProtoNode *> proto_node_list;
+# endif
         bool modified_;
         bool new_view;
         double delta_time;
@@ -174,8 +180,10 @@ namespace openvrml {
         void add_movie(vrml97_node::movie_texture_node &);
         void remove_movie(vrml97_node::movie_texture_node &);
 
+# if 0
         void add_proto(ProtoNode & node);
         void remove_proto(ProtoNode & node);
+# endif
         void add_script(script_node &);
         void remove_script(script_node &);
 

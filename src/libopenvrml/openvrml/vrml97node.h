@@ -53,13 +53,12 @@ namespace openvrml {
             virtual const field_value & do_field(const std::string & id) const
                 throw (unsupported_interface);
 
-            virtual void do_process_event(const std::string & id,
-                                          const field_value & value,
-                                          double timestamp)
-                throw (unsupported_interface, std::bad_cast, std::bad_alloc);
+            virtual openvrml::event_listener &
+            do_event_listener(const std::string & id)
+                throw (unsupported_interface);
 
-            virtual const field_value &
-            do_eventout(const std::string & id) const
+            virtual openvrml::event_emitter &
+            do_event_emitter(const std::string & id)
                 throw (unsupported_interface);
         };
 
@@ -88,11 +87,35 @@ namespace openvrml {
 
         class abstract_indexed_set_node : public abstract_geometry_node {
         protected:
-            sfnode color_;
-            mfint32 colorIndex;
-            sfbool colorPerVertex;
-            sfnode coord;
-            mfint32 coordIndex;
+            class set_color_index_listener : public mfint32_listener {
+            public:
+                explicit set_color_index_listener(
+                    abstract_indexed_set_node & node);
+                virtual ~set_color_index_listener() throw ();
+
+                virtual void process_event(const mfint32 & color_index,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class set_coord_index_listener : public mfint32_listener {
+            public:
+                explicit set_coord_index_listener(
+                    abstract_indexed_set_node & node);
+                virtual ~set_coord_index_listener() throw ();
+
+                virtual void process_event(const mfint32 & coord_index,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_color_index_listener set_color_index_;
+            set_coord_index_listener set_coord_index_;
+            exposedfield<sfnode> color_;
+            exposedfield<sfnode> coord_;
+            mfint32 color_index_;
+            sfbool color_per_vertex_;
+            mfint32 coord_index_;
 
         public:
             virtual ~abstract_indexed_set_node() throw () = 0;
@@ -104,31 +127,15 @@ namespace openvrml {
         protected:
             abstract_indexed_set_node(const node_type & type,
                                       const scope_ptr & scope);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_color(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_colorIndex(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_coord(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_coordIndex(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
         class abstract_light_node : public abstract_child_node {
         protected:
-            sffloat ambientIntensity;
-            sfcolor color_;
-            sffloat intensity_;
-            sfbool on_;
+            exposedfield<sffloat> ambient_intensity_;
+            exposedfield<sfcolor> color_;
+            exposedfield<sffloat> intensity_;
+            exposedfield<sfbool> on_;
 
         public:
             virtual ~abstract_light_node() throw () = 0;
@@ -144,28 +151,14 @@ namespace openvrml {
         protected:
             abstract_light_node(const node_type & type,
                                 const scope_ptr & scope);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_ambientIntensity(const field_value & value,
-                                              double timestamp)
-                throw (std::bad_cast);
-            void process_set_color(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast);
-            void process_set_intensity(const field_value & value,
-                                       double timestamp) throw (std::bad_cast);
-            void process_set_on(const field_value & value, double timestamp)
-                throw (std::bad_cast);
         };
 
 
         class abstract_texture_node : public abstract_base,
                                       public texture_node {
         protected:
-            sfbool repeatS;
-            sfbool repeatT;
+            sfbool repeat_s_;
+            sfbool repeat_t_;
 
         public:
             virtual ~abstract_texture_node() throw () = 0;
@@ -197,9 +190,42 @@ namespace openvrml {
             friend class group_class;
 
         protected:
-            sfvec3f bboxCenter;
-            sfvec3f bboxSize;
-            mfnode children_;
+            class add_children_listener : public mfnode_listener {
+            public:
+                explicit add_children_listener(group_node & node);
+                virtual ~add_children_listener() throw ();
+
+                virtual void process_event(const mfnode & value,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class remove_children_listener : public mfnode_listener {
+            public:
+                explicit remove_children_listener(group_node & node);
+                virtual ~remove_children_listener() throw ();
+
+                virtual void process_event(const mfnode & value,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class children_exposedfield : public exposedfield<mfnode> {
+            public:
+                explicit children_exposedfield(openvrml::node & node) throw ();
+                virtual ~children_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const mfnode & value,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            sfvec3f bbox_center_;
+            sfvec3f bbox_size_;
+            add_children_listener add_children_listener_;
+            remove_children_listener remove_children_listener_;
+            children_exposedfield children_;
 
             viewer::object_t viewerObject;
 
@@ -222,18 +248,6 @@ namespace openvrml {
         protected:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-            //
-            // eventIn handlers
-            //
-            void process_addChildren(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_removeChildren(const field_value & value,
-                                        double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_children(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
 
             void recalc_bsphere();
         };
@@ -252,9 +266,9 @@ namespace openvrml {
         class anchor_node : public group_node {
             friend class anchor_class;
 
-            sfstring description;
-            mfstring parameter;
-            mfstring url;
+            exposedfield<sfstring> description_;
+            exposedfield<mfstring> parameter_;
+            exposedfield<mfstring> url_;
 
         public:
             anchor_node(const node_type & type,
@@ -270,19 +284,6 @@ namespace openvrml {
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_description(const field_value & value,
-                                         double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_parameter(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_url(const field_value & value,
-                                 double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -300,9 +301,9 @@ namespace openvrml {
                                 public openvrml::appearance_node {
             friend class appearance_class;
 
-            sfnode material_;
-            sfnode texture_;
-            sfnode textureTransform;
+            exposedfield<sfnode> material_;
+            exposedfield<sfnode> texture_;
+            exposedfield<sfnode> texture_transform_;
 
         public:
             appearance_node(const node_type & type,
@@ -321,19 +322,6 @@ namespace openvrml {
         private:
             virtual void do_render_appearance(viewer & v,
                                               rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_material(const field_value & value,
-                                      double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_texture(const field_value & value,
-                                     double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_textureTransform(const field_value & value,
-                                              double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -350,18 +338,19 @@ namespace openvrml {
         class audio_clip_node : public abstract_base {
             friend class audio_clip_class;
 
-            sfstring description;
-            sfbool loop;
-            sffloat pitch;
-            sftime startTime;
-            sftime stopTime;
-            mfstring url;
-            sftime duration;
-            sfbool active;
+            exposedfield<sfstring> description_;
+            exposedfield<sfbool> loop_;
+            exposedfield<sffloat> pitch_;
+            exposedfield<sftime> start_time_;
+            exposedfield<sftime> stop_time_;
+            exposedfield<mfstring> url_;
+            sftime duration_changed_;
+            sftime_emitter duration_changed_emitter_;
+            sfbool is_active_;
+            sfbool_emitter is_active_emitter_;
 
         public:
-            audio_clip_node(const node_type & type,
-                            const scope_ptr & scope);
+            audio_clip_node(const node_type & type, const scope_ptr & scope);
             virtual ~audio_clip_node() throw ();
 
             void update(double time);
@@ -372,27 +361,6 @@ namespace openvrml {
             virtual void do_initialize(double timestamp)
                 throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
-
-            //
-            // eventIn handlers
-            //
-            void process_set_description(const field_value & value,
-                                        double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_loop(const field_value & value, double timestamp)
-                throw (std::bad_cast);
-            void process_set_pitch(const field_value & value,
-                                  double timestamp)
-                throw (std::bad_cast);
-            void process_set_startTime(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast);
-            void process_set_stopTime(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
-            void process_set_url(const field_value & value,
-                                 double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -426,17 +394,100 @@ namespace openvrml {
         class background_node : public abstract_child_node {
             friend class background_class;
 
-            mffloat groundAngle;
-            mfcolor groundColor;
-            mfstring backUrl;
-            mfstring bottomUrl;
-            mfstring frontUrl;
-            mfstring leftUrl;
-            mfstring rightUrl;
-            mfstring topUrl;
-            mffloat skyAngle;
-            mfcolor skyColor;
-            sfbool bound;
+            class set_bind_listener : public sfbool_listener {
+            public:
+                explicit set_bind_listener(background_node & node);
+                virtual ~set_bind_listener() throw ();
+
+                virtual void process_event(const sfbool & value,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class back_url_exposedfield : public exposedfield<mfstring> {
+            public:
+                explicit back_url_exposedfield(background_node & node)
+                    throw ();
+                virtual ~back_url_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const mfstring & value,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class bottom_url_exposedfield : public exposedfield<mfstring> {
+            public:
+                explicit bottom_url_exposedfield(background_node & node)
+                    throw ();
+                virtual ~bottom_url_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const mfstring & value,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class front_url_exposedfield : public exposedfield<mfstring> {
+            public:
+                explicit front_url_exposedfield(background_node & node)
+                    throw ();
+                virtual ~front_url_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const mfstring & value,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class left_url_exposedfield : public exposedfield<mfstring> {
+            public:
+                explicit left_url_exposedfield(background_node & node)
+                    throw ();
+                virtual ~left_url_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const mfstring & value,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class right_url_exposedfield : public exposedfield<mfstring> {
+            public:
+                explicit right_url_exposedfield(background_node & node)
+                    throw ();
+                virtual ~right_url_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const mfstring & value,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class top_url_exposedfield : public exposedfield<mfstring> {
+            public:
+                explicit top_url_exposedfield(background_node & node) throw ();
+                virtual ~top_url_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const mfstring & value,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_bind_listener set_bind_listener_;
+            exposedfield<mffloat> ground_angle_;
+            exposedfield<mfcolor> ground_color_;
+            back_url_exposedfield back_url_;
+            bottom_url_exposedfield bottom_url_;
+            front_url_exposedfield front_url_;
+            left_url_exposedfield left_url_;
+            right_url_exposedfield right_url_;
+            top_url_exposedfield top_url_;
+            exposedfield<mffloat> sky_angle_;
+            exposedfield<mfcolor> sky_color_;
+            sfbool is_bound_;
+            sfbool_emitter is_bound_emitter_;
 
             image front;
             bool front_needs_update;
@@ -463,42 +514,6 @@ namespace openvrml {
             virtual void do_initialize(double timestamp) throw ();
             virtual void do_shutdown(double timestamp) throw ();
 
-            //
-            // eventIn handlers
-            //
-            void process_set_bind(const field_value & value, double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_groundAngle(const field_value & value,
-                                        double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_groundColor(const field_value & value,
-                                        double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_backUrl(const field_value & value,
-                                    double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_bottomUrl(const field_value & value,
-                                      double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_frontUrl(const field_value & value,
-                                     double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_leftUrl(const field_value & value,
-                                    double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_rightUrl(const field_value & value,
-                                     double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_topUrl(const field_value & value,
-                                   double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_skyAngle(const field_value & value,
-                                     double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_skyColor(const field_value & value,
-                                     double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-
             void update_textures();
         };
 
@@ -516,7 +531,7 @@ namespace openvrml {
         class billboard_node : public group_node {
             friend class billboard_class;
 
-            sfvec3f axisOfRotation;
+            exposedfield<sfvec3f> axis_of_rotation_;
 
             viewer::object_t xformObject;
 
@@ -524,20 +539,12 @@ namespace openvrml {
             static const mat4f billboard_to_matrix(const billboard_node & node,
                                                    const mat4f & modelview);
 
-            billboard_node(const node_type & type,
-                           const scope_ptr & scope);
+            billboard_node(const node_type & type, const scope_ptr & scope);
             virtual ~billboard_node() throw ();
 
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_axisOfRotation(const field_value & value,
-                                           double timestamp)
-                    throw (std::bad_cast);
         };
 
 
@@ -559,8 +566,7 @@ namespace openvrml {
             bounding_sphere bsphere;
 
         public:
-            box_node(const node_type & type,
-                     const scope_ptr & scope);
+            box_node(const node_type & type, const scope_ptr & scope);
             virtual ~box_node() throw ();
 
             virtual const openvrml::bounding_volume & bounding_volume() const;
@@ -585,24 +591,16 @@ namespace openvrml {
         class collision_node : public group_node {
             friend class collision_class;
 
-            sfbool collide;
-            sfnode proxy;
-            sftime collideTime;
+            exposedfield<sfbool> collide_;
+            sfnode proxy_;
+            sftime collide_time_;
+            sftime_emitter collide_time_emitter_;
 
         public:
-            collision_node(const node_type & type,
-                           const scope_ptr & scope);
+            collision_node(const node_type & type, const scope_ptr & scope);
             virtual ~collision_node() throw ();
 
             virtual bool modified() const;
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_collide(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -620,7 +618,7 @@ namespace openvrml {
                            public openvrml::color_node {
             friend class color_class;
 
-            mfcolor color_;
+            exposedfield<mfcolor> color_;
 
         public:
             color_node(const node_type & type,
@@ -632,14 +630,6 @@ namespace openvrml {
             //
             virtual const std::vector<openvrml::color> & color() const
                 throw ();
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_color(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -656,28 +646,26 @@ namespace openvrml {
         class color_interpolator_node : public abstract_child_node {
             friend class color_interpolator_class;
 
-            mffloat key;
-            mfcolor keyValue;
-            sfcolor value;
+            class set_fraction_listener : public sffloat_listener {
+            public:
+                explicit set_fraction_listener(color_interpolator_node & node);
+                virtual ~set_fraction_listener() throw ();
+
+                virtual void process_event(const sffloat & value,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_fraction_listener set_fraction_listener_;
+            exposedfield<mffloat> key_;
+            exposedfield<mfcolor> key_value_;
+            sfcolor value_;
+            sfcolor_emitter value_changed_;
 
         public:
             color_interpolator_node(const node_type & type,
                                     const scope_ptr & scope);
             virtual ~color_interpolator_node() throw ();
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_fraction(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_key(const field_value & value,
-                                 double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_keyValue(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -723,10 +711,9 @@ namespace openvrml {
 
         class coordinate_node : public abstract_base,
                                 public openvrml::coordinate_node {
-
             friend class coordinate_class;
 
-            mfvec3f point_;
+            exposedfield<mfvec3f> point_;
 
         public:
             coordinate_node(const node_type & type,
@@ -737,14 +724,6 @@ namespace openvrml {
             // coordinate_node implementation
             //
             virtual const std::vector<vec3f> & point() const throw ();
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_point(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -761,31 +740,29 @@ namespace openvrml {
         };
 
         class coordinate_interpolator_node : public abstract_child_node {
-
             friend class coordinate_interpolator_class;
 
-            mffloat key;
-            mfvec3f keyValue;
-            mfvec3f value;
+            class set_fraction_listener : public sffloat_listener {
+            public:
+                explicit set_fraction_listener(
+                    coordinate_interpolator_node & node);
+                virtual ~set_fraction_listener() throw ();
+
+                virtual void process_event(const sffloat & value,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_fraction_listener set_fraction_listener_;
+            exposedfield<mffloat> key_;
+            exposedfield<mfvec3f> key_value_;
+            mfvec3f value_;
+            mfvec3f_emitter value_changed_;
 
         public:
             coordinate_interpolator_node(const node_type & type,
                                          const scope_ptr & scope);
             virtual ~coordinate_interpolator_node() throw ();
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_fraction(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_key(const field_value & value,
-                                 double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_keyValue(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -834,15 +811,18 @@ namespace openvrml {
 
             friend class cylinder_sensor_class;
 
-            sfbool autoOffset;
-            sffloat diskAngle;
-            sfbool enabled_;
-            sffloat maxAngle;
-            sffloat minAngle;
-            sffloat offset;
-            sfbool active;
-            sfrotation rotation;
-            sfvec3f trackPoint;
+            exposedfield<sfbool> auto_offset_;
+            exposedfield<sffloat> disk_angle_;
+            exposedfield<sfbool> enabled_;
+            exposedfield<sffloat> max_angle_;
+            exposedfield<sffloat> min_angle_;
+            exposedfield<sffloat> offset_;
+            sfbool is_active_;
+            sfbool_emitter is_active_emitter_;
+            sfrotation rotation_changed_;
+            sfrotation_emitter rotation_changed_emitter_;
+            sfvec3f track_point_changed_;
+            sfvec3f_emitter track_point_changed_emitter_;
 
             float rotation_val;
             vec3f activationPoint;
@@ -864,28 +844,6 @@ namespace openvrml {
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_autoOffset(const field_value & value,
-                                        double timestamp)
-                throw (std::bad_cast);
-            void process_set_diskAngle(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast);
-            void process_set_enabled(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
-            void process_set_maxAngle(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast);
-            void process_set_minAngle(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast);
-            void process_set_offset(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -900,10 +858,9 @@ namespace openvrml {
         };
 
         class directional_light_node : public abstract_light_node {
-
             friend class directional_light_class;
 
-            sfvec3f direction;
+            exposedfield<sfvec3f> direction_;
 
         public:
             directional_light_node(const node_type & type,
@@ -913,13 +870,6 @@ namespace openvrml {
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_direction(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -933,24 +883,33 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class elevation_grid_node :
-            public abstract_geometry_node {
-
+        class elevation_grid_node : public abstract_geometry_node {
             friend class elevation_grid_class;
 
-            sfnode color;
-            sfnode normal;
-            sfnode texCoord;
-            sfbool ccw;
-            sfbool colorPerVertex;
-            sffloat creaseAngle;
-            mffloat height;
-            sfbool normalPerVertex;
-            sfbool solid;
-            sfint32 xDimension;
-            sffloat xSpacing;
-            sfint32 zDimension;
-            sffloat zSpacing;
+            class set_height_listener : public mffloat_listener {
+            public:
+                explicit set_height_listener(elevation_grid_node & node);
+                virtual ~set_height_listener() throw ();
+
+                virtual void process_event(const mffloat & height,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_height_listener set_height_listener_;
+            exposedfield<sfnode> color_;
+            exposedfield<sfnode> normal_;
+            exposedfield<sfnode> tex_coord_;
+            mffloat height_;
+            sfbool ccw_;
+            sfbool color_per_vertex_;
+            sffloat crease_angle_;
+            sfbool normal_per_vertex_;
+            sfbool solid_;
+            sfint32 x_dimension_;
+            sffloat x_spacing_;
+            sfint32 z_dimension_;
+            sffloat z_spacing_;
 
         public:
             elevation_grid_node(const node_type & type,
@@ -963,22 +922,6 @@ namespace openvrml {
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_color(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_height(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_normal(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_texCoord(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -995,42 +938,69 @@ namespace openvrml {
         class extrusion_node : public abstract_geometry_node {
             friend class extrusion_class;
 
-            sfbool beginCap;
-            sfbool ccw;
-            sfbool convex;
-            sffloat creaseAngle;
-            mfvec2f crossSection;
-            sfbool endCap;
-            mfrotation orientation;
-            mfvec2f scale;
-            sfbool solid;
-            mfvec3f spine;
+            class set_cross_section_listener : public mfvec2f_listener {
+            public:
+                explicit set_cross_section_listener(extrusion_node & node);
+                virtual ~set_cross_section_listener() throw ();
+
+                virtual void process_event(const mfvec2f & cross_section,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class set_orientation_listener : public mfrotation_listener {
+            public:
+                explicit set_orientation_listener(extrusion_node & node);
+                virtual ~set_orientation_listener() throw ();
+
+                virtual void process_event(const mfrotation & orientation,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class set_scale_listener : public mfvec2f_listener {
+            public:
+                explicit set_scale_listener(extrusion_node & node);
+                virtual ~set_scale_listener() throw ();
+
+                virtual void process_event(const mfvec2f & scale,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class set_spine_listener : public mfvec3f_listener {
+            public:
+                explicit set_spine_listener(extrusion_node & node);
+                virtual ~set_spine_listener() throw ();
+
+                virtual void process_event(const mfvec3f & spine,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_cross_section_listener set_cross_section_listener_;
+            set_orientation_listener set_orientation_listener_;
+            set_scale_listener set_scale_listener_;
+            set_spine_listener set_spine_listener_;
+            sfbool begin_cap_;
+            sfbool ccw_;
+            sfbool convex_;
+            sffloat crease_angle_;
+            mfvec2f cross_section_;
+            sfbool end_cap_;
+            mfrotation orientation_;
+            mfvec2f scale_;
+            sfbool solid_;
+            mfvec3f spine_;
 
         public:
-            extrusion_node(const node_type & type,
-                           const scope_ptr & scope);
+            extrusion_node(const node_type & type, const scope_ptr & scope);
             virtual ~extrusion_node() throw ();
 
         private:
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_crossSection(const field_value & value,
-                                          double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_orientation(const field_value & value,
-                                         double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_scale(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_spine(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -1062,34 +1032,30 @@ namespace openvrml {
         class fog_node : public abstract_child_node {
             friend class fog_class;
 
-            sfcolor color;
-            sfstring fogType;
-            sffloat visibilityRange;
-            sfbool bound;
+            class set_bind_listener : public sfbool_listener {
+            public:
+                explicit set_bind_listener(fog_node & node);
+                virtual ~set_bind_listener() throw ();
+
+                virtual void process_event(const sfbool & bind,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_bind_listener set_bind_listener_;
+            exposedfield<sfcolor> color_;
+            exposedfield<sfstring> fog_type_;
+            exposedfield<sffloat> visibility_range_;
+            sfbool is_bound_;
+            sfbool_emitter is_bound_emitter_;
 
         public:
-            fog_node(const node_type & type,
-                     const scope_ptr & scope);
+            fog_node(const node_type & type, const scope_ptr & scope);
             virtual ~fog_node() throw ();
 
         private:
             virtual void do_initialize(double timestamp) throw ();
             virtual void do_shutdown(double timestamp) throw ();
-
-            //
-            // eventIn handlers
-            //
-            void process_set_bind(const field_value & value, double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_color(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast);
-            void process_set_fogType(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_visibilityRange(const field_value & value,
-                                             double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -1151,7 +1117,18 @@ namespace openvrml {
         class image_texture_node : public abstract_texture_node {
             friend class image_texture_class;
 
-            mfstring url;
+            class url_exposedfield : public exposedfield<mfstring> {
+            public:
+                explicit url_exposedfield(image_texture_node & node);
+                virtual ~url_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const mfstring & url,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            url_exposedfield url_;
 
             openvrml::image image_;
             bool texture_needs_update;
@@ -1169,13 +1146,6 @@ namespace openvrml {
             do_render_texture(viewer & v, rendering_context context);
 
             void update_texture();
-
-            //
-            // eventIn handlers
-            //
-            void process_set_url(const field_value & value,
-                                 double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -1190,18 +1160,41 @@ namespace openvrml {
         };
 
         class indexed_face_set_node : public abstract_indexed_set_node {
-
             friend class indexed_face_set_class;
 
-            sfbool ccw;
-            sfbool convex;
-            sffloat creaseAngle;
-            sfnode normal;
-            mfint32 normalIndex;
-            sfbool normalPerVertex;
-            sfbool solid;
-            sfnode texCoord;
-            mfint32 texCoordIndex;
+            class set_normal_index_listener : public mfint32_listener {
+            public:
+                explicit set_normal_index_listener(
+                    indexed_face_set_node & node);
+                virtual ~set_normal_index_listener() throw ();
+
+                virtual void process_event(const mfint32 & normal_index,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class set_tex_coord_index_listener : public mfint32_listener {
+            public:
+                explicit set_tex_coord_index_listener(
+                    indexed_face_set_node & node);
+                virtual ~set_tex_coord_index_listener() throw ();
+
+                virtual void process_event(const mfint32 & tex_coord_index,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_normal_index_listener set_normal_index_listener_;
+            set_tex_coord_index_listener set_tex_coord_index_listener_;
+            exposedfield<sfnode> normal_;
+            exposedfield<sfnode> tex_coord_;
+            sfbool ccw_;
+            sfbool convex_;
+            sffloat crease_angle_;
+            mfint32 normal_index_;
+            sfbool normal_per_vertex_;
+            sfbool solid_;
+            mfint32 tex_coord_index_;
 
             bounding_sphere bsphere;
 
@@ -1217,22 +1210,6 @@ namespace openvrml {
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_normal(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_normalIndex(const field_value & value,
-                                        double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_texCoord(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_texCoordIndex(const field_value & value,
-                                          double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
 
             void recalcBSphere();
         };
@@ -1274,20 +1251,18 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class inline_node : public abstract_base,
-                                           public grouping_node {
+        class inline_node : public abstract_base, public grouping_node {
             friend class inline_class;
 
-            sfvec3f bboxCenter;
-            sfvec3f bboxSize;
-            mfstring url;
+            exposedfield<mfstring> url_;
+            sfvec3f bbox_center_;
+            sfvec3f bbox_size_;
 
             openvrml::scene * inlineScene;
             bool hasLoaded;
 
         public:
-            inline_node(const node_type & type,
-                        const scope_ptr & scope);
+            inline_node(const node_type & type, const scope_ptr & scope);
             virtual ~inline_node() throw ();
 
             virtual inline_node * to_inline() const;
@@ -1301,13 +1276,6 @@ namespace openvrml {
                                          rendering_context context);
 
             void load();
-
-            //
-            // eventIn handlers
-            //
-            void process_set_url(const field_value & value,
-                                 double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -1321,20 +1289,18 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class lod_node : public abstract_base,
-                         public grouping_node {
+        class lod_node : public abstract_base, public grouping_node {
             friend class lod_class;
 
-            mfnode level;
-            sfvec3f center;
-            mffloat range;
+            exposedfield<mfnode> level_;
+            sfvec3f center_;
+            mffloat range_;
 
             mfnode children_;
             bounding_sphere bsphere;
 
         public:
-            lod_node(const node_type & type,
-                     const scope_ptr & scope);
+            lod_node(const node_type & type, const scope_ptr & scope);
             virtual ~lod_node() throw ();
 
             virtual bool modified() const;
@@ -1347,13 +1313,6 @@ namespace openvrml {
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_level(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
 
             virtual void recalcBSphere();
         };
@@ -1373,16 +1332,15 @@ namespace openvrml {
                               public openvrml::material_node {
             friend class material_class;
 
-            sffloat ambientIntensity;
-            sfcolor diffuseColor;
-            sfcolor emissiveColor;
-            sffloat shininess_;
-            sfcolor specularColor;
-            sffloat transparency_;
+            exposedfield<sffloat> ambient_intensity_;
+            exposedfield<sfcolor> diffuse_color_;
+            exposedfield<sfcolor> emissive_color_;
+            exposedfield<sffloat> shininess_;
+            exposedfield<sfcolor> specular_color_;
+            exposedfield<sffloat> transparency_;
 
         public:
-            material_node(const node_type & type,
-                          const scope_ptr & scope);
+            material_node(const node_type & type, const scope_ptr & scope);
             virtual ~material_node() throw ();
 
             //
@@ -1394,29 +1352,6 @@ namespace openvrml {
             virtual float shininess() const throw ();
             virtual const color & specular_color() const throw ();
             virtual float transparency() const throw ();
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_ambientIntensity(const field_value & value,
-                                              double timestamp)
-                throw (std::bad_cast);
-            void process_set_diffuseColor(const field_value & value,
-                                          double timestamp)
-                throw (std::bad_cast);
-            void process_set_emissiveColor(const field_value & value,
-                                           double timestamp)
-                throw (std::bad_cast);
-            void process_set_shininess(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast);
-            void process_set_specularColor(const field_value & value,
-                                           double timestamp)
-                throw (std::bad_cast);
-            void process_set_transparency(const field_value & value,
-                                          double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -1431,16 +1366,29 @@ namespace openvrml {
         };
 
         class movie_texture_node : public abstract_texture_node {
-
             friend class movie_texture_class;
 
-            sfbool loop;
-            sffloat speed;
-            sftime startTime;
-            sftime stopTime;
-            mfstring url;
-            sftime duration;
-            sfbool active;
+            class set_speed_listener : public sffloat_listener {
+            public:
+                explicit set_speed_listener(movie_texture_node & node);
+                virtual ~set_speed_listener() throw ();
+
+                virtual void process_event(const sffloat & speed,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            exposedfield<sfbool> loop_;
+            set_speed_listener set_speed_;
+            sffloat speed_;
+            sffloat_emitter speed_changed_;
+            exposedfield<sftime> start_time_;
+            exposedfield<sftime> stop_time_;
+            exposedfield<mfstring> url_;
+            sftime duration_;
+            sftime_emitter duration_changed_;
+            sfbool active_;
+            sfbool_emitter is_active_;
 
             img * img_;
             openvrml::image image_;
@@ -1465,24 +1413,6 @@ namespace openvrml {
             virtual void do_shutdown(double timestamp) throw ();
             virtual viewer::texture_object_t
             do_render_texture(viewer & v, rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_loop(const field_value & value, double timestamp)
-                throw (std::bad_cast);
-            void process_set_speed(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast);
-            void process_set_startTime(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast);
-            void process_set_stopTime(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast);
-            void process_set_url(const field_value & value,
-                                 double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -1497,15 +1427,26 @@ namespace openvrml {
         };
 
         class navigation_info_node : public abstract_child_node {
-
             friend class navigation_info_class;
 
-            mffloat avatarSize;
-            sfbool headlight_;
-            sffloat speed_;
-            mfstring type;
-            sffloat visibilityLimit;
-            sfbool bound;
+            class set_bind_listener : public sfbool_listener {
+            public:
+                explicit set_bind_listener(navigation_info_node & node);
+                virtual ~set_bind_listener() throw ();
+
+                virtual void process_event(const sfbool & bind,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_bind_listener set_bind_listener_;
+            exposedfield<mffloat> avatar_size_;
+            exposedfield<sfbool> headlight_;
+            exposedfield<sffloat> speed_;
+            exposedfield<mfstring> type_;
+            exposedfield<sffloat> visibility_limit_;
+            sfbool is_bound_;
+            sfbool_emitter is_bound_emitter_;
 
         public:
             navigation_info_node(const node_type & type,
@@ -1523,27 +1464,6 @@ namespace openvrml {
             virtual void do_initialize(double timestamp)
                 throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
-
-            //
-            // eventIn handlers
-            //
-            void process_set_avatarSize(const field_value & value,
-                                        double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_bind(const field_value & value, double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_headlight(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast);
-            void process_set_speed(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast);
-            void process_set_type(const field_value & value,
-                                  double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_visibilityLimit(const field_value & value,
-                                             double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -1552,34 +1472,26 @@ namespace openvrml {
             explicit normal_class(openvrml::browser & browser);
             virtual ~normal_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
-                    throw (unsupported_interface, std::bad_alloc);
+            virtual const node_type_ptr
+            create_type(const std::string & id,
+                        const node_interface_set & interfaces)
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class normal_node : public abstract_base,
                             public openvrml::normal_node {
             friend class normal_class;
 
-            mfvec3f vector_;
+            exposedfield<mfvec3f> vector_;
 
         public:
-            normal_node(const node_type & type,
-                        const scope_ptr & scope);
+            normal_node(const node_type & type, const scope_ptr & scope);
             virtual ~normal_node() throw ();
 
             //
             // normal_node implementation.
             //
             virtual const std::vector<vec3f> & vector() const throw ();
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_vector(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -1594,30 +1506,29 @@ namespace openvrml {
         };
 
         class normal_interpolator_node : public abstract_child_node {
-
             friend class normal_interpolator_class;
 
-            mffloat key;
-            mfvec3f keyValue;
-            mfvec3f value;
+            class set_fraction_listener : public sffloat_listener {
+            public:
+                explicit set_fraction_listener(
+                    normal_interpolator_node & node);
+                virtual ~set_fraction_listener() throw ();
+
+                virtual void process_event(const sffloat & fraction,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_fraction_listener set_fraction_listener_;
+            exposedfield<mffloat> key_;
+            exposedfield<mfvec3f> key_value_;
+            mfvec3f value_changed_;
+            mfvec3f_emitter value_changed_emitter_;
 
         public:
             normal_interpolator_node(const node_type & type,
                                      const scope_ptr & scope);
             virtual ~normal_interpolator_node() throw ();
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_fraction(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_key(const field_value & value, double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_keyValue(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -1633,30 +1544,29 @@ namespace openvrml {
         };
 
         class orientation_interpolator_node : public abstract_child_node {
-
             friend class orientation_interpolator_class;
 
-            mffloat key;
-            mfrotation keyValue;
-            sfrotation value;
+            class set_fraction_listener : public sffloat_listener {
+            public:
+                explicit set_fraction_listener(
+                    orientation_interpolator_node & node);
+                virtual ~set_fraction_listener() throw ();
+
+                virtual void process_event(const sffloat & fraction,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_fraction_listener set_fraction_listener_;
+            exposedfield<mffloat> key_;
+            exposedfield<mfrotation> key_value_;
+            sfrotation value_changed_;
+            sfrotation_emitter value_changed_emitter_;
 
         public:
             orientation_interpolator_node(const node_type & type,
                                           const scope_ptr & scope);
             virtual ~orientation_interpolator_node() throw ();
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_fraction(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_key(const field_value & value, double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_keyValue(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -1673,7 +1583,7 @@ namespace openvrml {
         class pixel_texture_node : public abstract_texture_node {
             friend class pixel_texture_class;
 
-            sfimage image_;
+            exposedfield<sfimage> image_;
 
         public:
             pixel_texture_node(const node_type & type,
@@ -1686,13 +1596,6 @@ namespace openvrml {
         private:
             virtual viewer::texture_object_t
             do_render_texture(viewer & v, rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_image(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -1709,14 +1612,17 @@ namespace openvrml {
         class plane_sensor_node : public abstract_child_node {
             friend class plane_sensor_class;
 
-            sfbool autoOffset;
-            sfbool enabled_;
-            sfvec2f maxPosition;
-            sfvec2f minPosition;
-            sfvec3f offset;
-            sfbool active;
-            sfvec3f translation;
-            sfvec3f trackPoint;
+            exposedfield<sfbool> auto_offset_;
+            exposedfield<sfbool> enabled_;
+            exposedfield<sfvec2f> max_position_;
+            exposedfield<sfvec2f> min_position_;
+            exposedfield<sfvec3f> offset_;
+            sfbool is_active_;
+            sfbool_emitter is_active_emitter_;
+            sfvec3f track_point_changed_;
+            sfvec3f_emitter track_point_changed_emitter_;
+            sfvec3f translation_changed_;
+            sfvec3f_emitter translation_changed_emitter_;
 
             sfvec3f activationPoint;
 
@@ -1737,25 +1643,6 @@ namespace openvrml {
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_autoOffset(const field_value & value,
-                                        double timestamp)
-                throw (std::bad_cast);
-            void process_set_enabled(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
-            void process_set_maxPosition(const field_value & value,
-                                         double timestamp)
-                throw (std::bad_cast);
-            void process_set_minPosition(const field_value & value,
-                                         double timestamp)
-                throw (std::bad_cast);
-            void process_set_offset(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -1772,13 +1659,12 @@ namespace openvrml {
         class point_light_node : public abstract_light_node {
             friend class point_light_class;
 
-            sfvec3f attenuation;
-            sfvec3f location;
-            sffloat radius;
+            exposedfield<sfvec3f> attenuation_;
+            exposedfield<sfvec3f> location_;
+            exposedfield<sffloat> radius_;
 
         public:
-            point_light_node(const node_type & type,
-                             const scope_ptr & scope);
+            point_light_node(const node_type & type, const scope_ptr & scope);
             virtual ~point_light_node() throw ();
 
             virtual point_light_node * to_point_light() const;
@@ -1789,19 +1675,6 @@ namespace openvrml {
             virtual void do_initialize(double timestamp)
                 throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
-
-            //
-            // eventIn handlers
-            //
-            void process_set_attenuation(const field_value & value,
-                                         double timestamp)
-                throw (std::bad_cast);
-            void process_set_location(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast);
-            void process_set_radius(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -1818,14 +1691,13 @@ namespace openvrml {
         class point_set_node : public abstract_geometry_node {
             friend class point_set_class;
 
-            sfnode color;
-            sfnode coord;
+            exposedfield<sfnode> color_;
+            exposedfield<sfnode> coord_;
 
             bounding_sphere bsphere;
 
         public:
-            point_set_node(const node_type & type,
-                           const scope_ptr & scope);
+            point_set_node(const node_type & type, const scope_ptr & scope);
             virtual ~point_set_node() throw ();
 
             virtual bool modified() const;
@@ -1835,16 +1707,6 @@ namespace openvrml {
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_color(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_coord(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
 
             void recalcBSphere();
         };
@@ -1861,31 +1723,29 @@ namespace openvrml {
         };
 
         class position_interpolator_node : public abstract_child_node {
-
             friend class position_interpolator_class;
 
-            mffloat key;
-            mfvec3f keyValue;
-            sfvec3f value;
+            class set_fraction_listener : public sffloat_listener {
+            public:
+                explicit set_fraction_listener(
+                    position_interpolator_node & node);
+                virtual ~set_fraction_listener() throw ();
+
+                virtual void process_event(const sffloat & fraction,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_fraction_listener set_fraction_listener_;
+            exposedfield<mffloat> key_;
+            exposedfield<mfvec3f> key_value_;
+            sfvec3f value_changed_;
+            sfvec3f_emitter value_changed_emitter_;
 
         public:
             position_interpolator_node(const node_type & type,
                                        const scope_ptr & scope);
             virtual ~position_interpolator_node() throw ();
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_fraction(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_key(const field_value & value,
-                                 double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_keyValue(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -1903,14 +1763,19 @@ namespace openvrml {
 
             friend class proximity_sensor_class;
 
-            sfvec3f center;
-            sfbool enabled;
-            sfvec3f size;
-            sfbool active;
-            sfvec3f position;
-            sfrotation orientation;
-            sftime enterTime;
-            sftime exitTime;
+            exposedfield<sfvec3f> center_;
+            exposedfield<sfbool> enabled_;
+            exposedfield<sfvec3f> size_;
+            sfbool is_active_;
+            sfbool_emitter is_active_emitter_;
+            sfvec3f position_changed_;
+            sfvec3f_emitter position_changed_emitter_;
+            sfrotation orientation_changed_;
+            sfrotation_emitter orientation_changed_emitter_;
+            sftime enter_time_;
+            sftime_emitter enter_time_emitter_;
+            sftime exit_time_;
+            sftime_emitter exit_time_emitter_;
 
         public:
             proximity_sensor_node(const node_type & type,
@@ -1920,19 +1785,6 @@ namespace openvrml {
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_center(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast);
-            void process_set_size(const field_value & value,
-                                  double timestamp)
-                throw (std::bad_cast);
-            void process_set_enabled(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -1947,31 +1799,29 @@ namespace openvrml {
         };
 
         class scalar_interpolator_node : public abstract_child_node {
-
             friend class scalar_interpolator_class;
 
-            mffloat key;
-            mffloat keyValue;
-            sffloat value;
+            class set_fraction_listener : public sffloat_listener {
+            public:
+                explicit set_fraction_listener(
+                    scalar_interpolator_node & node);
+                virtual ~set_fraction_listener() throw ();
+
+                virtual void process_event(const sffloat & fraction,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_fraction_listener set_fraction_listener_;
+            exposedfield<mffloat> key_;
+            exposedfield<mffloat> key_value_;
+            sffloat value_changed_;
+            sffloat_emitter value_changed_emitter_;
 
         public:
             scalar_interpolator_node(const node_type & type,
                                      const scope_ptr & scope);
             virtual ~scalar_interpolator_node() throw ();
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_fraction(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_key(const field_value & value,
-                                 double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_keyValue(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -1988,14 +1838,13 @@ namespace openvrml {
         class shape_node : public abstract_child_node {
             friend class shape_class;
 
-            sfnode appearance;
-            sfnode geometry;
+            exposedfield<sfnode> appearance_;
+            exposedfield<sfnode> geometry_;
 
-            viewer::object_t viewerObject; // move to Node.h ? ...
+            viewer::object_t viewerObject;
 
         public:
-            shape_node(const node_type & type,
-                       const scope_ptr & scope);
+            shape_node(const node_type & type, const scope_ptr & scope);
             virtual ~shape_node() throw ();
 
             virtual bool modified() const;
@@ -2004,16 +1853,6 @@ namespace openvrml {
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_appearance(const field_value & value,
-                                        double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_geometry(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -2030,56 +1869,24 @@ namespace openvrml {
         class sound_node : public abstract_child_node {
             friend class sound_class;
 
-            sfvec3f direction;
-            sffloat intensity;
-            sfvec3f location;
-            sffloat maxBack;
-            sffloat maxFront;
-            sffloat minBack;
-            sffloat minFront;
-            sffloat priority;
-            sfnode source;
-            sfbool spatialize;
+            exposedfield<sfvec3f> direction_;
+            exposedfield<sffloat> intensity_;
+            exposedfield<sfvec3f> location_;
+            exposedfield<sffloat> max_back_;
+            exposedfield<sffloat> max_front_;
+            exposedfield<sffloat> min_back_;
+            exposedfield<sffloat> min_front_;
+            exposedfield<sffloat> priority_;
+            exposedfield<sfnode> source_;
+            sfbool spatialize_;
 
         public:
-            sound_node(const node_type & type,
-                       const scope_ptr & scope);
+            sound_node(const node_type & type, const scope_ptr & scope);
             virtual ~sound_node() throw ();
 
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_direction(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast);
-            void process_set_intensity(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast);
-            void process_set_location(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast);
-            void process_set_maxBack(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
-            void process_set_maxFront(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast);
-            void process_set_minBack(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
-            void process_set_minFront(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast);
-            void process_set_priority(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast);
-            void process_set_source(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -2126,12 +1933,15 @@ namespace openvrml {
         class sphere_sensor_node : public abstract_child_node {
             friend class sphere_sensor_class;
 
-            sfbool autoOffset;
-            sfbool enabled;
-            sfrotation offset;
-            sfbool active;
-            sfrotation rotation;
-            sfvec3f trackPoint;
+            exposedfield<sfbool> auto_offset_;
+            exposedfield<sfbool> enabled_;
+            exposedfield<sfrotation> offset_;
+            sfbool is_active_;
+            sfbool_emitter is_active_emitter_;
+            sfrotation rotation_changed_;
+            sfrotation_emitter rotation_changed_emitter_;
+            sfvec3f track_point_changed_;
+            sfvec3f_emitter track_point_changed_emitter_;
 
             sfvec3f activationPoint;
             sfvec3f centerPoint;
@@ -2150,19 +1960,6 @@ namespace openvrml {
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_autoOffset(const field_value & value,
-                                        double timestamp)
-                throw (std::bad_cast);
-            void process_set_enabled(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
-            void process_set_offset(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -2179,16 +1976,15 @@ namespace openvrml {
         class spot_light_node : public abstract_light_node {
             friend class spot_light_class;
 
-            sfvec3f attenuation;
-            sffloat beamWidth;
-            sffloat cutOffAngle;
-            sfvec3f direction;
-            sfvec3f location;
-            sffloat radius;
+            exposedfield<sfvec3f> attenuation_;
+            exposedfield<sffloat> beam_width_;
+            exposedfield<sffloat> cut_off_angle_;
+            exposedfield<sfvec3f> direction_;
+            exposedfield<sfvec3f> location_;
+            exposedfield<sffloat> radius_;
 
         public:
-            spot_light_node(const node_type & type,
-                            const scope_ptr & scope);
+            spot_light_node(const node_type & type, const scope_ptr & scope);
             virtual ~spot_light_node() throw ();
 
             virtual spot_light_node * to_spot_light() const;
@@ -2199,28 +1995,6 @@ namespace openvrml {
             virtual void do_initialize(double timestamp)
                 throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
-
-            //
-            // eventIn handlers
-            //
-            void process_set_attenuation(const field_value & value,
-                                         double timestamp)
-                throw (std::bad_cast);
-            void process_set_beamWidth(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast);
-            void process_set_cutOffAngle(const field_value & value,
-                                         double timestamp)
-                throw (std::bad_cast);
-            void process_set_direction(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast);
-            void process_set_location(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast);
-            void process_set_radius(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -2234,19 +2008,39 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class switch_node : public abstract_base,
-                            public grouping_node {
+        class switch_node : public abstract_base, public grouping_node {
             friend class switch_class;
 
-            mfnode choice;
-            sfint32 whichChoice;
+            class choice_exposedfield : public exposedfield<mfnode> {
+            public:
+                explicit choice_exposedfield(switch_node & node);
+                virtual ~choice_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const mfnode & choice,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class which_choice_exposedfield : public exposedfield<sfint32> {
+            public:
+                explicit which_choice_exposedfield(switch_node & node);
+                virtual ~which_choice_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const sfint32 & which_choice,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            choice_exposedfield choice_;
+            which_choice_exposedfield which_choice_;
 
             mfnode children_;
             bounding_sphere bsphere;
 
         public:
-            switch_node(const node_type & type,
-                        const scope_ptr & scope);
+            switch_node(const node_type & type, const scope_ptr & scope);
             virtual ~switch_node() throw ();
 
             virtual bool modified() const;
@@ -2259,16 +2053,6 @@ namespace openvrml {
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_choice(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_whichChoice(const field_value & value,
-                                         double timestamp)
-                throw (std::bad_cast);
 
             virtual void recalcBSphere();
         };
@@ -2289,10 +2073,50 @@ namespace openvrml {
         class text_node : public abstract_geometry_node {
             friend class text_class;
 
-            mfstring string;
-            sfnode fontStyle;
-            mffloat length;
-            sffloat maxExtent;
+            class string_exposedfield : public exposedfield<mfstring> {
+            public:
+                explicit string_exposedfield(text_node & node);
+                virtual ~string_exposedfield() throw ();
+
+                virtual void do_process_event(const mfstring & string,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class font_style_exposedfield : public exposedfield<sfnode> {
+            public:
+                explicit font_style_exposedfield(text_node & node);
+                virtual ~font_style_exposedfield() throw ();
+
+                virtual void do_process_event(const sfnode & font_style,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class length_exposedfield : public exposedfield<mffloat> {
+            public:
+                explicit length_exposedfield(text_node & node);
+                virtual ~length_exposedfield() throw ();
+
+                virtual void do_process_event(const mffloat & length,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class max_extent_exposedfield : public exposedfield<sffloat> {
+            public:
+                explicit max_extent_exposedfield(text_node & node);
+                virtual ~max_extent_exposedfield() throw ();
+
+                virtual void do_process_event(const sffloat & max_extent,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            string_exposedfield string_;
+            font_style_exposedfield font_style_;
+            length_exposedfield length_;
+            max_extent_exposedfield max_extent_;
 
             struct glyph_geometry {
                 std::vector<vec2f> coord;
@@ -2322,8 +2146,7 @@ namespace openvrml {
             text_geometry text_geometry_;
 
         public:
-            text_node(const node_type & type,
-                      const scope_ptr & scope);
+            text_node(const node_type & type, const scope_ptr & scope);
             virtual ~text_node() throw ();
 
             virtual bool modified() const;
@@ -2336,22 +2159,6 @@ namespace openvrml {
             virtual void do_initialize(double timestamp)
                 throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
-
-            //
-            // eventIn handlers
-            //
-            void process_set_string(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_fontStyle(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_length(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
-            void process_set_maxExtent(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast);
 
             void update_ucs4() throw (std::bad_alloc);
             void update_face() throw (std::bad_alloc);
@@ -2375,7 +2182,7 @@ namespace openvrml {
 
             friend class texture_coordinate_class;
 
-            mfvec2f point_;
+            exposedfield<mfvec2f> point_;
 
         public:
             texture_coordinate_node(const node_type & type,
@@ -2386,14 +2193,6 @@ namespace openvrml {
             // texture_coordinate_node implementation.
             //
             virtual const std::vector<vec2f> & point() const throw();
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_point(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast, std::bad_alloc);
         };
 
 
@@ -2402,8 +2201,9 @@ namespace openvrml {
             explicit texture_transform_class(openvrml::browser & browser);
             virtual ~texture_transform_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+            virtual const node_type_ptr
+            create_type(const std::string & id,
+                        const node_interface_set & interfaces)
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -2413,10 +2213,10 @@ namespace openvrml {
 
             friend class texture_transform_class;
 
-            sfvec2f center;
-            sffloat rotation;
-            sfvec2f scale;
-            sfvec2f translation;
+            exposedfield<sfvec2f> center_;
+            exposedfield<sffloat> rotation_;
+            exposedfield<sfvec2f> scale_;
+            exposedfield<sfvec2f> translation_;
 
         public:
             texture_transform_node(const node_type & type,
@@ -2425,23 +2225,7 @@ namespace openvrml {
 
         private:
             virtual void
-            do_render_texture_transform(viewer & v,
-                                        rendering_context context);
-            //
-            // eventIn handlers
-            //
-            void process_set_center(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast);
-            void process_set_rotation(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast);
-            void process_set_scale(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast);
-            void process_set_translation(const field_value & value,
-                                         double timestamp)
-                throw (std::bad_cast);
+            do_render_texture_transform(viewer & v, rendering_context context);
         };
 
 
@@ -2450,23 +2234,63 @@ namespace openvrml {
             explicit time_sensor_class(openvrml::browser & browser);
             virtual ~time_sensor_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+            virtual const node_type_ptr
+            create_type(const std::string & id,
+                        const node_interface_set & interfaces)
                 throw (unsupported_interface, std::bad_alloc);
         };
 
         class time_sensor_node : public abstract_child_node {
             friend class time_sensor_class;
 
-            sftime cycleInterval;
-            sfbool enabled;
-            sfbool loop;
-            sftime startTime;
-            sftime stopTime;
-            sftime cycleTime;
-            sffloat fraction;
-            sfbool active;
-            sftime time;
+            class set_cycle_interval_listener : public sftime_listener {
+            public:
+                explicit set_cycle_interval_listener(time_sensor_node & node);
+                virtual ~set_cycle_interval_listener() throw ();
+
+                virtual void process_event(const sftime & cycle_interval,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class enabled_exposedfield : public exposedfield<sfbool> {
+            public:
+                explicit enabled_exposedfield(time_sensor_node & node);
+                virtual ~enabled_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const sfbool & enabled,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class set_start_time_listener : public sftime_listener {
+            public:
+                explicit set_start_time_listener(time_sensor_node & node);
+                virtual ~set_start_time_listener() throw ();
+
+                virtual void process_event(const sftime & start_time,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_cycle_interval_listener set_cycle_interval_listener_;
+            sftime cycle_interval_;
+            sftime_emitter cycle_interval_changed_emitter_;
+            enabled_exposedfield enabled_;
+            exposedfield<sfbool> loop_;
+            set_start_time_listener set_start_time_listener_;
+            sftime start_time_;
+            sftime_emitter start_time_changed_emitter_;
+            exposedfield<sftime> stop_time_;
+            sftime cycle_time_;
+            sftime_emitter cycle_time_emitter_;
+            sffloat fraction_changed_;
+            sffloat_emitter fraction_changed_emitter_;
+            sfbool is_active_;
+            sfbool_emitter is_active_emitter_;
+            sftime time_;
+            sftime_emitter time_emitter_;
 
             double lastTime;
 
@@ -2483,24 +2307,6 @@ namespace openvrml {
             virtual void do_initialize(double timestamp)
                 throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
-
-            //
-            // eventIn handlers
-            //
-            void process_set_cycleInterval(const field_value & value,
-                                           double timestamp)
-                throw (std::bad_cast);
-            void process_set_enabled(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
-            void process_set_loop(const field_value & value, double timestamp)
-                throw (std::bad_cast);
-            void process_set_startTime(const field_value & value,
-                                       double timestamp)
-                throw (std::bad_cast);
-            void process_set_stopTime(const field_value & value,
-                                      double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -2517,17 +2323,22 @@ namespace openvrml {
         class touch_sensor_node : public abstract_child_node {
             friend class touch_sensor_class;
 
-            sfbool enabled_;
-            sfvec3f hitNormal;
-            sfvec3f hitPoint;
-            sfvec2f hitTexCoord;
-            sfbool active;
-            sfbool over;
-            sftime touchTime;
+            exposedfield<sfbool> enabled_;
+            sfvec3f hit_normal_changed_;
+            sfvec3f_emitter hit_normal_changed_emitter_;
+            sfvec3f hit_point_changed_;
+            sfvec3f_emitter hit_point_changed_emitter_;
+            sfvec2f hit_tex_coord_changed_;
+            sfvec2f_emitter hit_tex_coord_changed_emitter_;
+            sfbool is_active_;
+            sfbool_emitter is_active_emitter_;
+            sfbool is_over_;
+            sfbool_emitter is_over_emitter_;
+            sftime touch_time_;
+            sftime_emitter touch_time_emitter_;
 
         public:
-            touch_sensor_node(const node_type & type,
-                              const scope_ptr & scope);
+            touch_sensor_node(const node_type & type, const scope_ptr & scope);
             virtual ~touch_sensor_node() throw ();
 
             virtual touch_sensor_node * to_touch_sensor() const;
@@ -2536,14 +2347,6 @@ namespace openvrml {
                           double *p );
 
             bool enabled() const;
-
-        private:
-            //
-            // eventIn handlers
-            //
-            void process_set_enabled(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -2552,20 +2355,78 @@ namespace openvrml {
             explicit transform_class(openvrml::browser & browser);
             virtual ~transform_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
-                    throw (unsupported_interface, std::bad_alloc);
+            virtual const node_type_ptr
+            create_type(const std::string & id,
+                        const node_interface_set & interfaces)
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class transform_node : public group_node,
                                public openvrml::transform_node {
             friend class transform_class;
 
-            sfvec3f center;
-            sfrotation rotation;
-            sfvec3f scale;
-            sfrotation scaleOrientation;
-            sfvec3f translation;
+            class center_exposedfield : public exposedfield<sfvec3f> {
+            public:
+                explicit center_exposedfield(transform_node & node);
+                virtual ~center_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const sfvec3f & center,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class rotation_exposedfield : public exposedfield<sfrotation> {
+            public:
+                explicit rotation_exposedfield(transform_node & node);
+                virtual ~rotation_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const sfrotation & rotation,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class scale_exposedfield : public exposedfield<sfvec3f> {
+            public:
+                explicit scale_exposedfield(transform_node & node);
+                virtual ~scale_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const sfvec3f & scale,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class scale_orientation_exposedfield :
+                public exposedfield<sfrotation> {
+            public:
+                explicit scale_orientation_exposedfield(transform_node & node);
+                virtual ~scale_orientation_exposedfield() throw ();
+
+            private:
+                virtual void
+                do_process_event(const sfrotation & scale_orientation,
+                                 double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class translation_exposedfield : public exposedfield<sfvec3f> {
+            public:
+                explicit translation_exposedfield(transform_node & node);
+                virtual ~translation_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const sfvec3f & translation,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            center_exposedfield center_;
+            rotation_exposedfield rotation_;
+            scale_exposedfield scale_;
+            scale_orientation_exposedfield scale_orientation_;
+            translation_exposedfield translation_;
 
             mutable mat4f transform_;
             mutable bool transform_dirty;
@@ -2583,25 +2444,6 @@ namespace openvrml {
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_center(const field_value & value,
-                                   double timestamp)
-                throw (std::bad_cast);
-            void process_set_rotation(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
-            void process_set_scale(const field_value & value,
-                                  double timestamp)
-                throw (std::bad_cast);
-            void process_set_scaleOrientation(const field_value & value,
-                                             double timestamp)
-                throw (std::bad_cast);
-            void process_set_translation(const field_value & value,
-                                        double timestamp)
-                throw (std::bad_cast);
 
             void recalc_bsphere();
             void update_transform() const throw ();
@@ -2638,13 +2480,48 @@ namespace openvrml {
                                public openvrml::viewpoint_node {
             friend class viewpoint_class;
 
-            sffloat fieldOfView;
-            sfbool jump;
-            sfrotation orientation_;
-            sfvec3f position_;
+            class set_bind_listener : public sfbool_listener {
+            public:
+                explicit set_bind_listener(viewpoint_node & node);
+                virtual ~set_bind_listener() throw ();
+
+                virtual void process_event(const sfbool & value,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class orientation_exposedfield : public exposedfield<sfrotation> {
+            public:
+                explicit orientation_exposedfield(viewpoint_node & node);
+                virtual ~orientation_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const sfrotation & orientation,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            class position_exposedfield : public exposedfield<sfvec3f> {
+            public:
+                explicit position_exposedfield(viewpoint_node & node);
+                virtual ~position_exposedfield() throw ();
+
+            private:
+                virtual void do_process_event(const sfvec3f & position,
+                                              double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            set_bind_listener set_bind_listener_;
+            exposedfield<sffloat> field_of_view_;
+            exposedfield<sfbool> jump_;
+            orientation_exposedfield orientation_;
+            position_exposedfield position_;
             sfstring description_;
-            sfbool bound;
-            sftime bindTime;
+            sfbool is_bound_;
+            sfbool_emitter is_bound_emitter_;
+            sftime bind_time_;
+            sftime_emitter bind_time_emitter_;
 
             mat4f parent_transform;
             mutable mat4f final_transformation;
@@ -2652,8 +2529,7 @@ namespace openvrml {
             mat4f user_view_transform_;
 
         public:
-            viewpoint_node(const node_type & type,
-                           const scope_ptr & scope);
+            viewpoint_node(const node_type & type, const scope_ptr & scope);
             virtual ~viewpoint_node() throw ();
 
             virtual const mat4f & transformation() const throw ();
@@ -2671,23 +2547,6 @@ namespace openvrml {
             virtual void do_relocate() throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
 
-            //
-            // eventIn handlers
-            //
-            void process_set_bind(const field_value & value, double timestamp)
-                    throw (std::bad_cast, std::bad_alloc);
-            void process_set_fieldOfView(const field_value & value,
-                                        double timestamp)
-                throw (std::bad_cast);
-            void process_set_jump(const field_value & value, double timestamp)
-                throw (std::bad_cast);
-            void process_set_orientation(const field_value & value,
-                                        double timestamp)
-                throw (std::bad_cast);
-            void process_set_position(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
-
             void update_final_transformation() const throw ();
         };
 
@@ -2703,15 +2562,17 @@ namespace openvrml {
         };
 
         class visibility_sensor_node : public abstract_child_node {
-
             friend class visibility_sensor_class;
 
-            sfvec3f center;
-            sfbool enabled;
-            sfvec3f size;
-            sfbool active;
-            sftime enterTime;
-            sftime exitTime;
+            exposedfield<sfvec3f> center_;
+            exposedfield<sfbool> enabled_;
+            exposedfield<sfvec3f> size_;
+            sfbool is_active_;
+            sfbool_emitter is_active_emitter_;
+            sftime enter_time_;
+            sftime_emitter enter_time_emitter_;
+            sftime exit_time_;
+            sftime_emitter exit_time_emitter_;
 
         public:
             visibility_sensor_node(const node_type & type,
@@ -2721,19 +2582,6 @@ namespace openvrml {
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            //
-            // eventIn handlers
-            //
-            void process_set_center(const field_value & value,
-                                    double timestamp)
-                throw (std::bad_cast);
-            void process_set_enabled(const field_value & value,
-                                     double timestamp)
-                throw (std::bad_cast);
-            void process_set_size(const field_value & value,
-                                  double timestamp)
-                throw (std::bad_cast);
         };
 
 
@@ -2742,8 +2590,9 @@ namespace openvrml {
             explicit world_info_class(openvrml::browser & browser);
             virtual ~world_info_class() throw ();
 
-            virtual const node_type_ptr create_type(const std::string & id,
-                                                    const node_interface_set &)
+            virtual const node_type_ptr
+            create_type(const std::string & id,
+                        const node_interface_set & interfaces)
                 throw (unsupported_interface, std::bad_alloc);
         };
 
@@ -2754,8 +2603,7 @@ namespace openvrml {
             sfstring title;
 
         public:
-            world_info_node(const node_type & type,
-                            const scope_ptr & scope);
+            world_info_node(const node_type & type, const scope_ptr & scope);
             virtual ~world_info_node() throw ();
         };
     }

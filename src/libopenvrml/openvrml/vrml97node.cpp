@@ -2,10 +2,10 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
-// Copyright (C) 1999  Kumaran Santhanam
-// Copyright (C) 2001, 2002  Braden McDaniel
-// Copyright (C) 2002  S. K. Bose
+// Copyright 1998  Chris Morley
+// Copyright 1999  Kumaran Santhanam
+// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
+// Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -72,13 +72,11 @@ namespace {
         field_value(const openvrml::node & node,
                     const std::string & id) const
             throw (unsupported_interface) = 0;
-        virtual void
-        dispatch_eventin(openvrml::node & node, const std::string & id,
-                         const openvrml::field_value &, double timestamp) const
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
-        virtual const openvrml::field_value &
-        eventout_value(const openvrml::node & node,
-                       const std::string & id) const
+        virtual openvrml::event_listener &
+        event_listener(openvrml::node & node, const std::string & id) const
+            throw (unsupported_interface) = 0;
+        virtual openvrml::event_emitter &
+        event_emitter(openvrml::node & node, const std::string & id) const
             throw (unsupported_interface) = 0;
 
     protected:
@@ -143,43 +141,149 @@ namespace {
     }
 
 
+    template <typename Node>
+    class event_listener_ptr {
+    public:
+        virtual ~event_listener_ptr() throw () = 0;
+        virtual event_listener & dereference(Node & obj) throw () = 0;
+    };
+
+    template <typename Node>
+    inline event_listener_ptr<Node>::~event_listener_ptr() throw ()
+    {}
+
+
+    template <typename Node, typename ConcreteEventListener>
+    class event_listener_ptr_impl : public event_listener_ptr<Node> {
+        ConcreteEventListener Node::* its_ptr;
+
+    public:
+        event_listener_ptr_impl(ConcreteEventListener Node::* ptr) throw ():
+            its_ptr(ptr)
+        {}
+
+        virtual ~event_listener_ptr_impl() throw ();
+
+        virtual event_listener & dereference(Node &) throw ();
+    };
+
+    template <typename Node, typename ConcreteEventListener>
+    inline event_listener_ptr_impl<Node, ConcreteEventListener>::
+    ~event_listener_ptr_impl() throw ()
+    {}
+
+    template <typename Node, typename ConcreteEventListener>
+    inline event_listener &
+    event_listener_ptr_impl<Node, ConcreteEventListener>::
+    dereference(Node & obj) throw ()
+    {
+        return obj.*its_ptr;
+    }
+
+
+    template <typename Node>
+    class event_emitter_ptr {
+    public:
+        virtual ~event_emitter_ptr() throw () = 0;
+        virtual event_emitter & dereference(Node & obj) throw () = 0;
+    };
+
+    template <typename Node>
+    inline event_emitter_ptr<Node>::~event_emitter_ptr() throw ()
+    {}
+
+
+    template <typename Node, typename ConcreteEventEmitter>
+    class event_emitter_ptr_impl : public event_emitter_ptr<Node> {
+        ConcreteEventEmitter Node::* its_ptr;
+
+    public:
+        event_emitter_ptr_impl(ConcreteEventEmitter Node::* ptr) throw ();
+        virtual ~event_emitter_ptr_impl() throw ();
+
+        virtual event_emitter & dereference(Node &) throw ();
+    };
+
+    template <typename Node, typename ConcreteEventEmitter>
+    inline event_emitter_ptr_impl<Node, ConcreteEventEmitter>::
+    event_emitter_ptr_impl(ConcreteEventEmitter Node::* ptr) throw ():
+        its_ptr(ptr)
+    {}
+
+    template <typename Node, typename ConcreteEventEmitter>
+    inline event_emitter_ptr_impl<Node, ConcreteEventEmitter>::
+    ~event_emitter_ptr_impl()
+        throw ()
+    {}
+
+    template <typename Node, typename ConcreteEventEmitter>
+    inline event_emitter &
+    event_emitter_ptr_impl<Node, ConcreteEventEmitter>::
+    dereference(Node & obj)
+        throw ()
+    {
+        return obj.*its_ptr;
+    }
+
+    using openvrml_::ptr_to_polymorphic_mem;
+    using openvrml_::ptr_to_polymorphic_mem_impl;
+
     template <typename NodeT>
     class vrml97_node_type_impl : public vrml97_node_type {
     public:
-        typedef node_field_ptr_impl<NodeT, sfbool> sfbool_ptr;
-        typedef node_field_ptr_impl<NodeT, sfcolor> sfcolor_ptr;
-        typedef node_field_ptr_impl<NodeT, sffloat> sffloat_ptr;
-        typedef node_field_ptr_impl<NodeT, sfint32> sfint32_ptr;
-        typedef node_field_ptr_impl<NodeT, sfimage> sfimage_ptr;
-        typedef node_field_ptr_impl<NodeT, sfnode> sfnode_ptr;
-        typedef node_field_ptr_impl<NodeT, sfrotation> sfrotation_ptr;
-        typedef node_field_ptr_impl<NodeT, sfstring> sfstring_ptr;
-        typedef node_field_ptr_impl<NodeT, sftime> sftime_ptr;
-        typedef node_field_ptr_impl<NodeT, sfvec2f> sfvec2f_ptr;
-        typedef node_field_ptr_impl<NodeT, sfvec3f> sfvec3f_ptr;
-        typedef node_field_ptr_impl<NodeT, mfcolor> mfcolor_ptr;
-        typedef node_field_ptr_impl<NodeT, mffloat> mffloat_ptr;
-        typedef node_field_ptr_impl<NodeT, mfint32> mfint32_ptr;
-        typedef node_field_ptr_impl<NodeT, mfnode> mfnode_ptr;
-        typedef node_field_ptr_impl<NodeT, mfrotation> mfrotation_ptr;
-        typedef node_field_ptr_impl<NodeT, mfstring> mfstring_ptr;
-        typedef node_field_ptr_impl<NodeT, mftime> mftime_ptr;
-        typedef node_field_ptr_impl<NodeT, mfvec2f> mfvec2f_ptr;
-        typedef node_field_ptr_impl<NodeT, mfvec3f> mfvec3f_ptr;
+        typedef NodeT node_type;
 
-        typedef boost::shared_ptr<node_field_ptr<NodeT> >
-            node_field_ptr_ptr;
-        typedef void (NodeT::* eventin_handler_ptr)
-            (const openvrml::field_value &, double);
+        typedef boost::shared_ptr<ptr_to_polymorphic_mem<openvrml::field_value,
+                                                         node_type> >
+            field_ptr_ptr;
+
+        template <typename FieldMember>
+        class field_ptr :
+            public ptr_to_polymorphic_mem_impl<openvrml::field_value,
+                                               FieldMember,
+                                               node_type> {
+        public:
+            explicit field_ptr(FieldMember node_type::* ptr_to_mem);
+        };
+
+        typedef boost::shared_ptr<
+            ptr_to_polymorphic_mem<openvrml::event_listener, node_type> >
+            event_listener_ptr_ptr;
+
+        template <typename EventListenerMember>
+        class event_listener_ptr :
+            public ptr_to_polymorphic_mem_impl<openvrml::event_listener,
+                                               EventListenerMember,
+                                               node_type> {
+        public:
+            explicit event_listener_ptr(
+                EventListenerMember node_type::* ptr_to_mem);
+        };
+
+        typedef boost::shared_ptr<
+            ptr_to_polymorphic_mem<openvrml::event_emitter, node_type> >
+            event_emitter_ptr_ptr;
+
+        template <typename EventEmitterMember>
+        class event_emitter_ptr :
+            public ptr_to_polymorphic_mem_impl<openvrml::event_emitter,
+                                               EventEmitterMember,
+                                               node_type> {
+        public:
+            explicit event_emitter_ptr(
+                EventEmitterMember node_type::* ptr_to_mem);
+        };
 
     private:
         node_interface_set interfaces_;
-        typedef std::map<std::string, eventin_handler_ptr>
-            eventin_handler_map_t;
-        typedef std::map<std::string, node_field_ptr_ptr> field_value_map_t;
+        typedef std::map<std::string, field_ptr_ptr> field_value_map_t;
+        typedef std::map<std::string, event_listener_ptr_ptr>
+            event_listener_map_t;
+        typedef std::map<std::string, event_emitter_ptr_ptr>
+            event_emitter_map_t;
         mutable field_value_map_t field_value_map;
-        eventin_handler_map_t eventin_handler_map;
-        field_value_map_t eventout_value_map;
+        mutable event_listener_map_t event_listener_map;
+        mutable event_emitter_map_t event_emitter_map;
 
     public:
         vrml97_node_type_impl(openvrml::node_class & node_class,
@@ -187,17 +291,18 @@ namespace {
         virtual ~vrml97_node_type_impl() throw ();
 
         void add_eventin(field_value::type_id, const std::string & id,
-                         eventin_handler_ptr eventInHandlerPtr)
+                         const event_listener_ptr_ptr & event_listener)
             throw (unsupported_interface, std::bad_alloc);
         void add_eventout(field_value::type_id, const std::string & id,
-                          const node_field_ptr_ptr & eventOutPtrPtr)
+                          const event_emitter_ptr_ptr & event_emitter)
             throw (unsupported_interface, std::bad_alloc);
         void add_exposedfield(field_value::type_id, const std::string & id,
-                              eventin_handler_ptr eventInHandlerPtr,
-                              const node_field_ptr_ptr & fieldPtrPtr)
+                              const event_listener_ptr_ptr & event_listener,
+                              const field_ptr_ptr & field,
+                              const event_emitter_ptr_ptr & event_emitter)
             throw (unsupported_interface, std::bad_alloc);
         void add_field(field_value::type_id, const std::string & id,
-                       const node_field_ptr_ptr & fieldPtrPtr)
+                       const field_ptr_ptr & fieldPtrPtr)
             throw (unsupported_interface, std::bad_alloc);
 
         virtual void field_value(openvrml::node & node, const std::string & id,
@@ -206,14 +311,11 @@ namespace {
         virtual const openvrml::field_value &
         field_value(const openvrml::node & node, const std::string & id) const
             throw (unsupported_interface);
-        virtual void dispatch_eventin(openvrml::node & node,
-                                      const std::string & id,
-                                      const openvrml::field_value &,
-                                      double timestamp) const
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
-        virtual const openvrml::field_value &
-        eventout_value(const openvrml::node & node,
-                       const std::string & id) const
+        virtual openvrml::event_listener &
+        event_listener(openvrml::node & node, const std::string & id) const
+            throw (unsupported_interface);
+        virtual openvrml::event_emitter &
+        event_emitter(openvrml::node & node, const std::string & id) const
             throw (unsupported_interface);
 
         virtual const node_interface_set & interfaces() const throw ();
@@ -228,15 +330,40 @@ namespace {
         do_field_value(const NodeT & node,
                        const std::string & id) const
             throw (unsupported_interface);
-        void do_dispatch_eventin(NodeT & node,
-                                 const std::string & id,
-                                 const openvrml::field_value &,
-                                 double timestamp) const
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
-        const openvrml::field_value &
-        do_eventout_value(const NodeT & node, const std::string & id) const
+        openvrml::event_listener &
+        do_event_listener(NodeT & node, const std::string & id) const
+            throw (unsupported_interface);
+        openvrml::event_emitter &
+        do_event_emitter(NodeT & node, const std::string & id) const
             throw (unsupported_interface);
     };
+
+    template <typename NodeT>
+    template <typename FieldMember>
+    vrml97_node_type_impl<NodeT>::field_ptr<FieldMember>::
+    field_ptr(FieldMember node_type::* ptr_to_mem):
+        ptr_to_polymorphic_mem_impl<openvrml::field_value,
+                                    FieldMember,
+                                    node_type>(ptr_to_mem)
+    {}
+
+    template <typename NodeT>
+    template <typename EventListenerMember>
+    vrml97_node_type_impl<NodeT>::event_listener_ptr<EventListenerMember>::
+    event_listener_ptr(EventListenerMember node_type::* ptr_to_mem):
+        ptr_to_polymorphic_mem_impl<openvrml::event_listener,
+                                    EventListenerMember,
+                                    node_type>(ptr_to_mem)
+    {}
+
+    template <typename NodeT>
+    template <typename EventEmitterMember>
+    vrml97_node_type_impl<NodeT>::event_emitter_ptr<EventEmitterMember>::
+    event_emitter_ptr(EventEmitterMember node_type::* ptr_to_mem):
+        ptr_to_polymorphic_mem_impl<openvrml::event_emitter,
+                                    EventEmitterMember,
+                                    node_type>(ptr_to_mem)
+    {}
 
     template <typename NodeT>
     vrml97_node_type_impl<NodeT>::vrml97_node_type_impl(
@@ -250,31 +377,32 @@ namespace {
     {}
 
     template <typename NodeT>
-    void vrml97_node_type_impl<NodeT>::add_eventin(
-            const field_value::type_id type,
-            const std::string & id,
-            const eventin_handler_ptr eventInHandlerPtr)
+    void vrml97_node_type_impl<NodeT>::
+    add_eventin(const field_value::type_id type,
+                const std::string & id,
+                const event_listener_ptr_ptr & event_listener)
         throw (unsupported_interface, std::bad_alloc)
     {
         const node_interface interface(node_interface::eventin_id, type, id);
         this->interfaces_.add(interface);
-        const typename eventin_handler_map_t::value_type
-                value(id, eventInHandlerPtr);
-        const bool succeeded = this->eventin_handler_map.insert(value).second;
+        const typename event_listener_map_t::value_type value(id,
+                                                              event_listener);
+        const bool succeeded = this->event_listener_map.insert(value).second;
         assert(succeeded);
     }
 
     template <typename NodeT>
-    void vrml97_node_type_impl<NodeT>::add_eventout(
-            const field_value::type_id type,
-            const std::string & id,
-            const node_field_ptr_ptr & eventOutPtrPtr)
+    void vrml97_node_type_impl<NodeT>::
+    add_eventout(const field_value::type_id type,
+                 const std::string & id,
+                 const event_emitter_ptr_ptr & event_emitter)
         throw (unsupported_interface, std::bad_alloc)
     {
         const node_interface interface(node_interface::eventout_id, type, id);
         this->interfaces_.add(interface);
-        const typename field_value_map_t::value_type value(id, eventOutPtrPtr);
-        const bool succeeded = this->eventout_value_map.insert(value).second;
+        const typename event_emitter_map_t::value_type value(id,
+                                                             event_emitter);
+        const bool succeeded = this->event_emitter_map.insert(value).second;
         assert(succeeded);
     }
 
@@ -282,32 +410,31 @@ namespace {
     void vrml97_node_type_impl<NodeT>::add_exposedfield(
             const field_value::type_id type,
             const std::string & id,
-            const eventin_handler_ptr eventInHandlerPtr,
-            const node_field_ptr_ptr & fieldPtrPtr)
+            const event_listener_ptr_ptr & event_listener,
+            const field_ptr_ptr & field,
+            const event_emitter_ptr_ptr & event_emitter)
         throw (unsupported_interface, std::bad_alloc)
     {
         const node_interface interface(node_interface::exposedfield_id,
                                        type,
                                        id);
         this->interfaces_.add(interface);
-
         bool succeeded;
         {
-            const typename eventin_handler_map_t::value_type
-                    value("set_" + id, eventInHandlerPtr);
-            succeeded = this->eventin_handler_map.insert(value).second;
+            const typename event_listener_map_t::value_type
+                value("set_" + id, event_listener);
+            succeeded = this->event_listener_map.insert(value).second;
             assert(succeeded);
         }
         {
-            const typename field_value_map_t::value_type
-                value(id, fieldPtrPtr);
+            const typename field_value_map_t::value_type value(id, field);
             succeeded = this->field_value_map.insert(value).second;
             assert(succeeded);
         }
         {
-            const typename field_value_map_t::value_type
-                    value(id + "_changed", fieldPtrPtr);
-            succeeded = this->eventout_value_map.insert(value).second;
+            const typename event_emitter_map_t::value_type
+                value(id + "_changed", event_emitter);
+            succeeded = this->event_emitter_map.insert(value).second;
             assert(succeeded);
         }
     }
@@ -316,7 +443,7 @@ namespace {
     void vrml97_node_type_impl<NodeT>::add_field(
             const field_value::type_id type,
             const std::string & id,
-            const node_field_ptr_ptr & nodeFieldPtrPtr)
+            const field_ptr_ptr & nodeFieldPtrPtr)
         throw (unsupported_interface, std::bad_alloc)
     {
         const node_interface interface(node_interface::field_id, type, id);
@@ -349,26 +476,23 @@ namespace {
     }
 
     template <typename NodeT>
-    void vrml97_node_type_impl<NodeT>::dispatch_eventin(
-        openvrml::node & node,
-        const std::string & id,
-        const openvrml::field_value & value,
-        const double timestamp) const
-        throw (unsupported_interface, std::bad_cast, std::bad_alloc)
-    {
-        assert(dynamic_cast<NodeT *>(&node));
-        this->do_dispatch_eventin(dynamic_cast<NodeT &>(node), id, value,
-                                  timestamp);
-    }
-
-    template <typename NodeT>
-    const field_value &
-    vrml97_node_type_impl<NodeT>::eventout_value(const openvrml::node & node,
+    event_listener &
+    vrml97_node_type_impl<NodeT>::event_listener(openvrml::node & node,
                                                  const std::string & id) const
         throw (unsupported_interface)
     {
-        assert(dynamic_cast<const NodeT *>(&node));
-        return this->do_eventout_value(dynamic_cast<const NodeT &>(node), id);
+        assert(dynamic_cast<NodeT *>(&node));
+        return this->do_event_listener(dynamic_cast<NodeT &>(node), id);
+    }
+
+    template <typename NodeT>
+    openvrml::event_emitter &
+    vrml97_node_type_impl<NodeT>::event_emitter(openvrml::node & node,
+                                                const std::string & id) const
+        throw (unsupported_interface)
+    {
+        assert(dynamic_cast<NodeT *>(&node));
+        return this->do_event_emitter(dynamic_cast<NodeT &>(node), id);
     }
 
     template <typename NodeT>
@@ -400,7 +524,7 @@ namespace {
                                         node_interface::field_id,
                                         id);
         }
-        itr->second->dereference(node).assign(newVal);
+        itr->second->deref(node).assign(newVal);
     }
 
     template <typename NodeT>
@@ -416,48 +540,49 @@ namespace {
                                         node_interface::field_id,
                                         id);
         }
-        return itr->second->dereference(node);
+        return itr->second->deref(node);
     }
 
     template <typename NodeT>
-    void vrml97_node_type_impl<NodeT>::do_dispatch_eventin(
-            NodeT & node,
-            const std::string & id,
-            const openvrml::field_value & value,
-            const double timestamp) const
-        throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+    event_listener &
+    vrml97_node_type_impl<NodeT>::
+    do_event_listener(NodeT & node,
+                      const std::string & id) const
+        throw (unsupported_interface)
     {
-        typename eventin_handler_map_t::const_iterator
-                itr(this->eventin_handler_map.find(id));
-        if (itr == this->eventin_handler_map.end()) {
-            itr = this->eventin_handler_map.find("set_" + id);
-        }
-        if (itr == this->eventin_handler_map.end()) {
+        const typename event_listener_map_t::const_iterator end =
+            this->event_listener_map.end();
+        typename event_listener_map_t::const_iterator pos =
+            this->event_listener_map.find(id);
+        if (pos == end) { pos = this->event_listener_map.find("set_" + id); }
+        if (pos == end) {
             throw unsupported_interface(node.openvrml::node::type,
                                         node_interface::eventin_id,
                                         id);
         }
-        (node.*(itr->second))(value, timestamp);
+        return pos->second->deref(node);
     }
 
     template <typename NodeT>
-    const field_value &
-    vrml97_node_type_impl<NodeT>::do_eventout_value(
-        const NodeT & node,
-        const std::string & id) const
+    event_emitter &
+    vrml97_node_type_impl<NodeT>::
+    do_event_emitter(NodeT & node,
+                     const std::string & id) const
         throw (unsupported_interface)
     {
-        typename field_value_map_t::const_iterator
-                itr(this->eventout_value_map.find(id));
-        if (itr == this->eventout_value_map.end()) {
-            itr = this->eventout_value_map.find(id + "_changed");
+        const typename event_emitter_map_t::const_iterator end =
+            this->event_emitter_map.end();
+        typename event_emitter_map_t::const_iterator pos =
+            this->event_emitter_map.find(id);
+        if (pos == end) {
+            pos = this->event_emitter_map.find(id + "_changed");
         }
-        if (itr == this->eventout_value_map.end()) {
+        if (pos == end) {
             throw unsupported_interface(node.openvrml::node::type,
                                         node_interface::eventout_id,
                                         id);
         }
-        return itr->second->dereference(node);
+        return pos->second->deref(node);
     }
 }
 
@@ -522,41 +647,41 @@ const field_value & abstract_base::do_field(const std::string & id) const
 }
 
 /**
- * @brief Process an event.
+ * @brief Get an event listener.
  *
- * @param id        an eventIn name.
- * @param value     a field_value.
- * @param timestamp the current time.
+ * This method is called by node::event_listener.
  *
- * @exception unsupported_interface  if the node has no eventIn @p id.
- * @exception std::bad_cast         if @p value is not the correct type.
- * @exception std::bad_alloc        if memory allocation fails.
+ * @param id    eventIn identifier.
  *
- * @pre @p value must be of the correct type.
+ * @return the event listener.
+ *
+ * @exception unsupported_interface if the node has no eventIn @p id.
  */
-void abstract_base::do_process_event(const std::string & id,
-                                     const field_value & value,
-                                     const double timestamp)
-    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
-{
-    assert(dynamic_cast<const vrml97_node_type *>(&this->type));
-    static_cast<const vrml97_node_type &>(this->type)
-        .dispatch_eventin(*this, id, value, timestamp);
-}
-
-/**
- * @brief Get an eventOut value for a node.
- *
- * @param id    an eventOut name.
- *
- * @exception unsupported_interface  if the node has no eventOut @p id.
- */
-const field_value & abstract_base::do_eventout(const std::string & id) const
+event_listener & abstract_base::do_event_listener(const std::string & id)
     throw (unsupported_interface)
 {
     assert(dynamic_cast<const vrml97_node_type *>(&this->type));
     return static_cast<const vrml97_node_type &>(this->type)
-        .eventout_value(*this, id);
+        .event_listener(*this, id);
+}
+
+/**
+ * @brief Get an event emitter.
+ *
+ * This method is called by node::event_emitter.
+ *
+ * @param id    eventOut identifier.
+ *
+ * @return the event emitter.
+ *
+ * @exception unsupported_interface if the node has no eventOut @p id.
+ */
+event_emitter & abstract_base::do_event_emitter(const std::string & id)
+    throw (unsupported_interface)
+{
+    assert(dynamic_cast<const vrml97_node_type *>(&this->type));
+    return static_cast<const vrml97_node_type &>(this->type)
+        .event_emitter(*this, id);
 }
 
 
@@ -632,31 +757,139 @@ abstract_geometry_node::~abstract_geometry_node() throw ()
  */
 
 /**
- * @var sfnode abstract_indexed_set_node::color_
+ * @class abstract_indexed_set_node::set_color_index_listener
+ *
+ * @brief set_colorIndex event handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  abstract_indexed_set_node.
+ */
+abstract_indexed_set_node::set_color_index_listener::
+set_color_index_listener(abstract_indexed_set_node & node):
+    mfint32_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+abstract_indexed_set_node::set_color_index_listener::
+~set_color_index_listener() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param color_index colorIndex.
+ * @param timestamp   the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+abstract_indexed_set_node::set_color_index_listener::
+process_event(const mfint32 & color_index,
+              const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        abstract_indexed_set_node & abstract_indexed_set =
+            dynamic_cast<abstract_indexed_set_node &>(this->node);
+
+        abstract_indexed_set.color_index_ = color_index;
+        abstract_indexed_set.node::modified(true);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class abstract_indexed_set_node::set_coord_index_listener
+ *
+ * @brief set_coordIndex event handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  abstract_indexed_set_node.
+ */
+abstract_indexed_set_node::set_coord_index_listener::
+set_coord_index_listener(abstract_indexed_set_node & node):
+    mfint32_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+abstract_indexed_set_node::set_coord_index_listener::
+~set_coord_index_listener() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param coord_index coordIndex.
+ * @param timestamp   the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+abstract_indexed_set_node::set_coord_index_listener::
+process_event(const mfint32 & coord_index,
+              const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        abstract_indexed_set_node & abstract_indexed_set =
+            dynamic_cast<abstract_indexed_set_node &>(this->node);
+
+        abstract_indexed_set.coord_index_ = coord_index;
+        abstract_indexed_set.node::modified(true);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var abstract_indexed_set_node::set_color_index_listener abstract_indexed_set_node::set_color_index_
+ *
+ * @brief set_colorIndex event handler.
+ */
+
+/**
+ * @var abstract_indexed_set_node::set_coord_index_listener abstract_indexed_set_node::set_coord_index_
+ *
+ * @brief set_coordIndex event handler.
+ */
+
+/**
+ * @var exposedfield<sfnode> abstract_indexed_set_node::color_
  *
  * @brief color exposedField.
  */
 
 /**
- * @var mfint32 abstract_indexed_set_node::colorIndex
- *
- * @brief colorIndex field.
- */
-
-/**
- * @var sfbool abstract_indexed_set_node::colorPerVertex
- *
- * @brief colorPerVertex field.
- */
-
-/**
- * @var sfnode abstract_indexed_set_node::coord
+ * @var exposedfield<sfnode> abstract_indexed_set_node::coord_
  *
  * @brief coord exposedField.
  */
 
 /**
- * @var mfint32 abstract_indexed_set_node::coordIndex
+ * @var mfint32 abstract_indexed_set_node::color_index_
+ *
+ * @brief colorIndex field.
+ */
+
+/**
+ * @var sfbool abstract_indexed_set_node::color_per_vertex_
+ *
+ * @brief colorPerVertex field.
+ */
+
+/**
+ * @var mfint32 abstract_indexed_set_node::coord_index_
  *
  * @brief coordIndex field.
  */
@@ -671,7 +904,11 @@ abstract_indexed_set_node::abstract_indexed_set_node(const node_type & type,
                                                      const scope_ptr & scope):
     node(type, scope),
     abstract_geometry_node(type, scope),
-    colorPerVertex(true)
+    set_color_index_(*this),
+    set_coord_index_(*this),
+    color_(*this),
+    coord_(*this),
+    color_per_vertex_(true)
 {}
 
 /**
@@ -688,9 +925,11 @@ abstract_indexed_set_node::~abstract_indexed_set_node() throw ()
  */
 bool abstract_indexed_set_node::modified() const
 {
-    return (this->node::modified()
-            || (this->color_.value && this->color_.value->modified())
-            || (this->coord.value && this->coord.value->modified()));
+    return this->node::modified()
+        || (this->color_.sfnode::value
+            && this->color_.sfnode::value->modified())
+        || (this->coord_.sfnode::value
+            && this->coord_.sfnode::value->modified());
 }
 
 /**
@@ -700,79 +939,7 @@ bool abstract_indexed_set_node::modified() const
  */
 const openvrml::color_node * abstract_indexed_set_node::color() const throw ()
 {
-    return node_cast<openvrml::color_node *>(this->color_.value.get());
-}
-
-/**
- * @brief set_color eventIn handler.
- *
- * @param value     an sfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void abstract_indexed_set_node::process_set_color(const field_value & value,
-                                                  const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->color_ = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("color_changed", this->color_, timestamp);
-}
-
-/**
- * @brief set_colorIndex eventIn handler.
- *
- * @param value     an mfint32 value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfint32.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void
-abstract_indexed_set_node::process_set_colorIndex(const field_value & value,
-                                                  const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->colorIndex = dynamic_cast<const mfint32 &>(value);
-    this->node::modified(true);
-}
-
-/**
- * @brief set_coord eventIn handler.
- *
- * @param value     an sfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void abstract_indexed_set_node::process_set_coord(const field_value & value,
-                                                  const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->coord = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("coord_changed", this->coord, timestamp);
-}
-
-/**
- * @brief set_coordIndex eventIn handler.
- *
- * @param value     an mfint32 value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfint32.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void
-abstract_indexed_set_node::process_set_coordIndex(const field_value & value,
-                                                  const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->coordIndex = dynamic_cast<const mfint32 &>(value);
-    this->node::modified(true);
+    return node_cast<openvrml::color_node *>(this->color_.sfnode::value.get());
 }
 
 
@@ -783,25 +950,25 @@ abstract_indexed_set_node::process_set_coordIndex(const field_value & value,
  */
 
 /**
- * @var sffloat abstract_light_node::ambientIntensity
+ * @var exposedfield<sffloat> abstract_light_node::ambient_intensity_
  *
  * @brief ambientIntensity exposedField.
  */
 
 /**
- * @var sfcolor abstract_light_node::color_
+ * @var exposedfield<sfcolor> abstract_light_node::color_
  *
  * @brief color exposedField.
  */
 
 /**
- * @var sffloat abstract_light_node::intensity_
+ * @var exposedfield<sffloat> abstract_light_node::intensity_
  *
  * @brief intensity exposedField.
  */
 
 /**
- * @var sfbool abstract_light_node::on_
+ * @var exposedfield<sfbool> abstract_light_node::on_
  *
  * @brief on exposedField.
  */
@@ -816,10 +983,10 @@ abstract_light_node::abstract_light_node(const node_type & type,
                                          const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
-    ambientIntensity(0.0),
-    color_(openvrml::color(1.0, 1.0, 1.0)),
-    intensity_(1.0),
-    on_(true)
+    ambient_intensity_(*this, 0.0),
+    color_(*this, openvrml::color(1.0, 1.0, 1.0)),
+    intensity_(*this, 1.0),
+    on_(*this, true)
 {}
 
 /**
@@ -845,7 +1012,7 @@ abstract_light_node * abstract_light_node::to_light() const
  */
 float abstract_light_node::ambient_intensity() const throw ()
 {
-    return this->ambientIntensity.value;
+    return this->ambient_intensity_.sffloat::value;
 }
 
 /**
@@ -855,7 +1022,7 @@ float abstract_light_node::ambient_intensity() const throw ()
  */
 float abstract_light_node::intensity() const throw ()
 {
-    return this->intensity_.value;
+    return this->intensity_.sffloat::value;
 }
 
 /**
@@ -865,7 +1032,7 @@ float abstract_light_node::intensity() const throw ()
  */
 bool abstract_light_node::on() const throw ()
 {
-    return this->on_.value;
+    return this->on_.sfbool::value;
 }
 
 /**
@@ -875,7 +1042,7 @@ bool abstract_light_node::on() const throw ()
  */
 const openvrml::color & abstract_light_node::color() const throw ()
 {
-    return this->color_.value;
+    return this->color_.sfcolor::value;
 }
 
 /**
@@ -888,76 +1055,6 @@ const openvrml::color & abstract_light_node::color() const throw ()
 void abstract_light_node::renderScoped(openvrml::viewer & viewer)
 {}
 
-/**
- * @brief set_ambientIntensity eventIn handler.
- *
- * @param value     an SFFloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void
-abstract_light_node::process_set_ambientIntensity(const field_value & value,
-                                                  const double timestamp)
-    throw (std::bad_cast)
-{
-    this->ambientIntensity = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("ambientIntensity_changed", this->ambientIntensity,
-                    timestamp);
-}
-
-/**
- * @brief set_color eventIn handler.
- *
- * @param value     an sfcolor value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfcolor.
- */
-void abstract_light_node::process_set_color(const field_value & value,
-                                            const double timestamp)
-    throw (std::bad_cast)
-{
-    this->color_ = dynamic_cast<const sfcolor &>(value);
-    this->node::modified(true);
-    this->emit_event("color_changed", this->color_, timestamp);
-}
-
-/**
- * @brief set_intensity eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void abstract_light_node::process_set_intensity(const field_value & value,
-                                                const double timestamp)
-    throw (std::bad_cast)
-{
-    this->intensity_ = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("intensity_changed", this->intensity_, timestamp);
-}
-
-/**
- * @brief set_on eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void abstract_light_node::process_set_on(const field_value & value,
-                                         const double timestamp)
-    throw (std::bad_cast)
-{
-    this->on_ = dynamic_cast<const sfbool &>(value);
-    this->node::modified(true);
-    this->emit_event("on_changed", this->on_, timestamp);
-}
-
 
 /**
  * @class abstract_texture_node
@@ -966,13 +1063,13 @@ void abstract_light_node::process_set_on(const field_value & value,
  */
 
 /**
- * @var sfbool abstract_texture_node::repeatS
+ * @var sfbool abstract_texture_node::repeat_s_
  *
  * @brief repeatS field.
  */
 
 /**
- * @var sfbool abstract_texture_node::repeatT
+ * @var sfbool abstract_texture_node::repeat_t_
  *
  * @brief repeatT field.
  */
@@ -988,8 +1085,8 @@ abstract_texture_node::abstract_texture_node(const node_type & type,
     node(type, scope),
     abstract_base(type, scope),
     texture_node(type, scope),
-    repeatS(true),
-    repeatT(true)
+    repeat_s_(true),
+    repeat_t_(true)
 {}
 
 /**
@@ -1006,7 +1103,7 @@ abstract_texture_node::~abstract_texture_node() throw ()
  */
 bool abstract_texture_node::repeat_s() const throw ()
 {
-    return this->repeatS.value;
+    return this->repeat_s_.value;
 }
 
 /**
@@ -1017,7 +1114,7 @@ bool abstract_texture_node::repeat_s() const throw ()
  */
 bool abstract_texture_node::repeat_t() const throw ()
 {
-    return this->repeatT.value;
+    return this->repeat_t_.value;
 }
 
 
@@ -1086,64 +1183,106 @@ anchor_class::create_type(const std::string & id,
                        "bboxSize")
     };
 
-    typedef anchor_node node_t;
     typedef vrml97_node_type_impl<anchor_node> node_type_t;
 
     const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & anchorNodeType = static_cast<node_type_t &>(*type);
-    typedef node_type_t::node_field_ptr_ptr field_ptr_ptr;
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
          ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            anchorNodeType.add_eventin(supportedInterfaces[0].field_type,
-                                       supportedInterfaces[0].id,
-                                       &node_t::process_addChildren);
+            anchorNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        anchor_node::add_children_listener>(
+                            &anchor_node::add_children_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
-            anchorNodeType.add_eventin(supportedInterfaces[1].field_type,
-                                       supportedInterfaces[1].id,
-                                       &node_t::process_removeChildren);
+            anchorNodeType.add_eventin(
+                supportedInterfaces[1].field_type,
+                supportedInterfaces[1].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        anchor_node::remove_children_listener>(
+                            &anchor_node::remove_children_listener_)));
         } else if (*interface == supportedInterfaces[2]) {
             anchorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &anchor_node::process_set_children,
-                field_ptr_ptr(
-                    new node_type_t::mfnode_ptr(&node_t::children_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        anchor_node::children_exposedfield>(
+                            &anchor_node::children_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                        anchor_node::children_exposedfield>(
+                            &anchor_node::children_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                        anchor_node::children_exposedfield>(
+                            &anchor_node::children_)));
         } else if (*interface == supportedInterfaces[3]) {
             anchorNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &anchor_node::process_set_description,
-                field_ptr_ptr(
-                    new node_type_t::sfstring_ptr(&node_t::description)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sfstring> >(
+                            &anchor_node::description_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfstring> >(
+                        &anchor_node::description_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                        exposedfield<sfstring> >(
+                            &anchor_node::description_)));
         } else if (*interface == supportedInterfaces[4]) {
             anchorNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &anchor_node::process_set_parameter,
-                field_ptr_ptr(
-                    new node_type_t::mfstring_ptr(&node_t::parameter)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<mfstring> >(
+                            &anchor_node::parameter_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfstring> >(
+                        &anchor_node::parameter_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                        exposedfield<mfstring> >(
+                            &anchor_node::parameter_)));
         } else if (*interface == supportedInterfaces[5]) {
             anchorNodeType.add_exposedfield(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                &anchor_node::process_set_url,
-                field_ptr_ptr(new node_type_t::mfstring_ptr(&node_t::url)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<mfstring> >(
+                            &anchor_node::url_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfstring> >(
+                        &anchor_node::url_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                        exposedfield<mfstring> >(
+                            &anchor_node::url_)));
         } else if (*interface == supportedInterfaces[6]) {
             anchorNodeType.add_field(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                field_ptr_ptr(
-                    new node_type_t::sfvec3f_ptr(&node_t::bboxCenter)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(
+                        &anchor_node::bbox_center_)));
         } else if (*interface == supportedInterfaces[7]) {
             anchorNodeType.add_field(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                field_ptr_ptr(
-                    new node_type_t::sfvec3f_ptr(&node_t::bboxSize)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(
+                        &anchor_node::bbox_size_)));
         } else {
-            throw unsupported_interface("Invalid interface.");
+            throw unsupported_interface(*interface);
         }
     }
     return type;
@@ -1162,19 +1301,19 @@ anchor_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfstring anchor_node::description
+ * @var exposedfield<sfstring> anchor_node::description_
  *
  * @brief description exposedField
  */
 
 /**
- * @var mfstring anchor_node::parameter
+ * @var exposedfield<mfstring> anchor_node::parameter_
  *
  * @brief parameter exposedField
  */
 
 /**
- * @var mfstring anchor_node::url
+ * @var exposedfield<mfstring> anchor_node::url_
  *
  * @brief url exposedField
  */
@@ -1190,7 +1329,10 @@ anchor_node::anchor_node(const node_type & type,
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
-    group_node(type, scope)
+    group_node(type, scope),
+    description_(*this),
+    parameter_(*this),
+    url_(*this)
 {
     this->bounding_volume_dirty(true);
 }
@@ -1200,57 +1342,6 @@ anchor_node::anchor_node(const node_type & type,
  */
 anchor_node::~anchor_node() throw ()
 {}
-
-/**
- * @brief set_description eventIn handler.
- *
- * @param value     an sfstring value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void anchor_node::process_set_description(const field_value & value,
-                                          const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->description = dynamic_cast<const sfstring &>(value);
-    this->emit_event("description_changed", this->description, timestamp);
-}
-
-/**
- * @brief set_parameter eventIn handler.
- *
- * @param value     an mfstring value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void anchor_node::process_set_parameter(const field_value & value,
-                                        const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->parameter = dynamic_cast<const mfstring &>(value);
-    this->emit_event("parameter_changed", this->parameter, timestamp);
-}
-
-/**
- * @brief set_url eventIn handler.
- *
- * @param value     an mfstring value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void anchor_node::process_set_url(const field_value & value,
-                             const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->url = dynamic_cast<const mfstring &>(value);
-    this->emit_event("url_changed", this->url, timestamp);
-}
 
 /**
  * @brief Cast to an anchor.
@@ -1285,7 +1376,8 @@ void anchor_node::do_render_child(openvrml::viewer & viewer,
 void anchor_node::activate()
 {
     assert(this->scene());
-    this->scene()->load_url(this->url.value, this->parameter.value);
+    this->scene()->load_url(this->url_.mfstring::value,
+                            this->parameter_.mfstring::value);
 }
 
 /**
@@ -1348,12 +1440,10 @@ appearance_class::create_type(const std::string & id,
                        "textureTransform")
     };
 
-    typedef appearance_node node_t;
     typedef vrml97_node_type_impl<appearance_node> node_type_t;
 
     const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & appearanceNodeType = static_cast<node_type_t &>(*type);
-    typedef node_type_t::node_field_ptr_ptr node_field_ptr_ptr;
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
          ++interface) {
@@ -1361,23 +1451,41 @@ appearance_class::create_type(const std::string & id,
             appearanceNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &node_t::process_set_material,
-                node_field_ptr_ptr(
-                    new node_type_t::sfnode_ptr(&node_t::material_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &appearance_node::material_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &appearance_node::material_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &appearance_node::material_)));
         } else if (*interface == supportedInterfaces[1]) {
             appearanceNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &node_t::process_set_texture,
-                node_field_ptr_ptr(
-                    new node_type_t::sfnode_ptr(&node_t::texture_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &appearance_node::texture_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &appearance_node::texture_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &appearance_node::texture_)));
         } else if (*interface == supportedInterfaces[2]) {
             appearanceNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &node_t::process_set_textureTransform,
-                node_field_ptr_ptr(
-                    new node_type_t::sfnode_ptr(&node_t::textureTransform)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &appearance_node::texture_transform_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &appearance_node::texture_transform_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &appearance_node::texture_transform_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -1398,19 +1506,19 @@ appearance_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfnode appearance_node::material_
+ * @var exposedfield<sfnode> appearance_node::material_
  *
  * @brief material exposedField.
  */
 
 /**
- * @var sfnode appearance_node::texture_
+ * @var exposedfield<sfnode> appearance_node::texture_
  *
  * @brief texture exposedField.
  */
 
 /**
- * @var sfnode appearance_node::textureTransform
+ * @var exposedfield<sfnode> appearance_node::texture_transform_
  *
  * @brief textureTransform exposedField.
  */
@@ -1425,7 +1533,10 @@ appearance_node::appearance_node(const node_type & type,
                                  const scope_ptr & scope):
     node(type, scope),
     abstract_base(type, scope),
-    openvrml::appearance_node(type, scope)
+    openvrml::appearance_node(type, scope),
+    material_(*this),
+    texture_(*this),
+    texture_transform_(*this)
 {}
 
 /**
@@ -1433,62 +1544,6 @@ appearance_node::appearance_node(const node_type & type,
  */
 appearance_node::~appearance_node() throw ()
 {}
-
-/**
- * @brief set_material eventIn handler.
- *
- * @param value     an sfnode value; should be a Material node.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void appearance_node::process_set_material(const field_value & value,
-                                           double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->material_ = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("material_changed", this->material_, timestamp);
-}
-
-/**
- * @brief set_texture eventIn handler.
- *
- * @param value     an sfnode value; should be a Texture node.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void appearance_node::process_set_texture(const field_value & value,
-                                     double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->texture_ = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("texture_changed", this->texture_, timestamp);
-}
-
-/**
- * @brief set_textureTransform eventIn handler.
- *
- * @param value     an sfnode value; should be a TextureTransform node.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void appearance_node::process_set_textureTransform(const field_value & value,
-                                                   double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->textureTransform = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("textureTransform_changed",
-                    this->textureTransform,
-                    timestamp);
-}
 
 /**
  * @brief Determine whether the node has been modified.
@@ -1499,10 +1554,12 @@ void appearance_node::process_set_textureTransform(const field_value & value,
 bool appearance_node::modified() const
 {
     return (this->node::modified()
-          || (this->material_.value && this->material_.value->modified())
-          || (this->texture_.value && this->texture_.value->modified())
-          || (this->textureTransform.value
-                && this->textureTransform.value->modified()));
+            || (this->material_.sfnode::value
+                && this->material_.sfnode::value->modified())
+            || (this->texture_.sfnode::value
+                && this->texture_.sfnode::value->modified())
+            || (this->texture_transform_.sfnode::value
+                && this->texture_transform_.sfnode::value->modified()));
 }
 
 /**
@@ -1513,7 +1570,7 @@ bool appearance_node::modified() const
  */
 const node_ptr & appearance_node::material() const throw ()
 {
-    return this->material_.value;
+    return this->material_.sfnode::value;
 }
 
 /**
@@ -1524,7 +1581,7 @@ const node_ptr & appearance_node::material() const throw ()
  */
 const node_ptr & appearance_node::texture() const throw ()
 {
-    return this->texture_.value;
+    return this->texture_.sfnode::value;
 }
 
 /**
@@ -1535,7 +1592,7 @@ const node_ptr & appearance_node::texture() const throw ()
  */
 const node_ptr & appearance_node::texture_transform() const throw ()
 {
-    return this->textureTransform.value;
+    return this->texture_transform_.sfnode::value;
 }
 
 /**
@@ -1548,9 +1605,10 @@ void appearance_node::do_render_appearance(viewer & v,
                                            rendering_context context)
 {
     openvrml::material_node * const material =
-        node_cast<openvrml::material_node *>(this->material_.value.get());
+        node_cast<openvrml::material_node *>(
+            this->material_.sfnode::value.get());
     texture_node * const texture =
-        node_cast<texture_node *>(this->texture_.value.get());
+        node_cast<texture_node *>(this->texture_.sfnode::value.get());
 
     if (material) {
         float trans = material->transparency();
@@ -1576,7 +1634,7 @@ void appearance_node::do_render_appearance(viewer & v,
     if (texture) {
         openvrml::texture_transform_node * texture_transform =
             node_cast<openvrml::texture_transform_node *>(
-                this->textureTransform.value.get());
+                this->texture_transform_.sfnode::value.get());
         if (texture_transform) {
             texture_transform->render_texture_transform(v, context);
         } else {
@@ -1655,12 +1713,10 @@ audio_clip_class::create_type(const std::string & id,
                        "isActive")
     };
 
-    typedef vrml97_node_type_impl<audio_clip_node> audio_clip_type_t;
+    typedef vrml97_node_type_impl<audio_clip_node> node_type_t;
 
-    const node_type_ptr type(new audio_clip_type_t(*this, id));
-    audio_clip_type_t & audioClipNodeType =
-        static_cast<audio_clip_type_t &>(*type);
-    typedef audio_clip_type_t::node_field_ptr_ptr node_field_ptr_ptr;
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & audioClipNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
          ++interface) {
@@ -1668,64 +1724,99 @@ audio_clip_class::create_type(const std::string & id,
             audioClipNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &audio_clip_node::process_set_description,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<audio_clip_node, sfstring>
-                    (&audio_clip_node::description)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sfstring> >(
+                            &audio_clip_node::description_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfstring> >(
+                        &audio_clip_node::description_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                        exposedfield<sfstring> >(
+                            &audio_clip_node::description_)));
         } else if (*interface == supportedInterfaces[1]) {
             audioClipNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &audio_clip_node::process_set_loop,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<audio_clip_node, sfbool>
-                    (&audio_clip_node::loop)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &audio_clip_node::loop_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &audio_clip_node::loop_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &audio_clip_node::loop_)));
         } else if (*interface == supportedInterfaces[2]) {
             audioClipNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &audio_clip_node::process_set_pitch,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<audio_clip_node, sffloat>
-                    (&audio_clip_node::pitch)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sffloat> >(
+                            &audio_clip_node::pitch_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &audio_clip_node::pitch_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &audio_clip_node::pitch_)));
         } else if (*interface == supportedInterfaces[3]) {
             audioClipNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &audio_clip_node::process_set_startTime,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<audio_clip_node, sftime>
-                    (&audio_clip_node::startTime)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sftime> >(
+                        &audio_clip_node::start_time_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sftime> >(
+                        &audio_clip_node::start_time_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sftime> >(
+                        &audio_clip_node::start_time_)));
         } else if (*interface == supportedInterfaces[4]) {
             audioClipNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &audio_clip_node::process_set_stopTime,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<audio_clip_node, sftime>
-                    (&audio_clip_node::stopTime)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sftime> >(
+                        &audio_clip_node::stop_time_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sftime> >(
+                        &audio_clip_node::stop_time_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sftime> >(
+                        &audio_clip_node::stop_time_)));
         } else if (*interface == supportedInterfaces[5]) {
             audioClipNodeType.add_exposedfield(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                &audio_clip_node::process_set_url,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<audio_clip_node, mfstring>
-                    (&audio_clip_node::url)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<mfstring> >(
+                            &audio_clip_node::url_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfstring> >(
+                        &audio_clip_node::url_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                        exposedfield<mfstring> >(
+                            &audio_clip_node::url_)));
         } else if (*interface == supportedInterfaces[6]) {
             audioClipNodeType.add_eventout(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<audio_clip_node, sftime>
-                    (&audio_clip_node::duration)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &audio_clip_node::duration_changed_emitter_)));
         } else if (*interface == supportedInterfaces[7]) {
             audioClipNodeType.add_eventout(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<audio_clip_node, sfbool>
-                    (&audio_clip_node::active)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &audio_clip_node::is_active_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -1748,51 +1839,63 @@ audio_clip_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfstring audio_clip_node::description
+ * @var exposedfield<sfstring> audio_clip_node::description_
  *
  * @brief description exposedField.
  */
 
 /**
- * @var sfbool audio_clip_node::loop
+ * @var exposedfield<sfbool> audio_clip_node::loop_
  *
  * @brief loop exposedField.
  */
 
 /**
- * @var sffloat audio_clip_node::pitch
+ * @var exposedfield<sffloat> audio_clip_node::pitch_
  *
  * @brief pitch exposedField.
  */
 
 /**
- * @var sftime audio_clip_node::startTime
+ * @var exposedfield<sftime> audio_clip_node::start_time_
  *
  * @brief startTime exposedField.
  */
 
 /**
- * @var sftime audio_clip_node::stopTime
+ * @var exposedfield<sftime> audio_clip_node::stop_time_
  *
  * @brief stopTime exposedField.
  */
 
 /**
- * @var mfstring audio_clip_node::url
+ * @var exposedfield<mfstring> audio_clip_node::url_
  *
  * @brief url exposedField.
  */
 
 /**
- * @var sftime audio_clip_node::duration
+ * @var sftime audio_clip_node::duration_changed_
  *
- * @brief duration_changed eventOut.
+ * @brief duration_changed eventOut value.
  */
 
 /**
- * @var sfbool audio_clip_node::active
+ * @var sftime_emitter audio_clip_node::duration_changed_emitter_
  *
- * @brief isActive eventOut.
+ * @brief duration_changed eventOut emitter.
+ */
+
+/**
+ * @var sfbool audio_clip_node::is_active_
+ *
+ * @brief isActive eventOut value.
+ */
+
+/**
+ * @var sfbool_emitter audio_clip_node::is_active_emitter_
+ *
+ * @brief isActive eventOut emitter.
  */
 
 /**
@@ -1802,11 +1905,17 @@ audio_clip_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 audio_clip_node::audio_clip_node(const node_type & type,
-                     const scope_ptr & scope):
+                                 const scope_ptr & scope):
     node(type, scope),
     abstract_base(type, scope),
-    pitch(1.0),
-    active(false)
+    description_(*this),
+    loop_(*this),
+    pitch_(*this, 1.0),
+    start_time_(*this),
+    stop_time_(*this),
+    url_(*this),
+    duration_changed_emitter_(this->duration_changed_),
+    is_active_emitter_(this->is_active_)
 {}
 
 /**
@@ -1858,109 +1967,6 @@ void audio_clip_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
     this->scene()->browser.remove_audio_clip(*this);
-}
-
-/**
- * @brief set_description eventIn handler.
- *
- * @param value     an sfstring.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void audio_clip_node::process_set_description(const field_value & value,
-                                              const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->description = dynamic_cast<const sfstring &>(value);
-    this->emit_event("description_changed", this->description, timestamp);
-}
-
-/**
- * @brief set_loop eventIn handler.
- *
- * @param value     an sfbool.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfbool.
- */
-void audio_clip_node::process_set_loop(const field_value & value,
-                                       double timestamp)
-    throw (std::bad_cast)
-{
-    this->loop = dynamic_cast<const sfbool &>(value);
-    this->node::modified(true);
-    this->emit_event("loop_changed", this->loop, timestamp);
-}
-
-/**
- * @brief set_pitch eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- */
-void audio_clip_node::process_set_pitch(const field_value & value,
-                                        double timestamp)
-    throw (std::bad_cast)
-{
-    this->pitch = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("pitch_changed", this->pitch, timestamp);
-}
-
-/**
- * @brief set_startTime eventIn handler.
- *
- * @param value     an sftime.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sftime.
- */
-void audio_clip_node::process_set_startTime(const field_value & value,
-                                     const double timestamp)
-    throw (std::bad_cast)
-{
-    this->startTime = dynamic_cast<const sftime &>(value);
-    this->node::modified(true);
-    this->emit_event("startTime_changed", this->startTime, timestamp);
-}
-
-/**
- * @brief set_stopTime eventIn handler.
- *
- * @param value     an sftime.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sftime.
- */
-void audio_clip_node::process_set_stopTime(const field_value & value,
-                                           const double timestamp)
-    throw (std::bad_cast)
-{
-    this->stopTime = dynamic_cast<const sftime &>(value);
-    this->node::modified(true);
-    this->emit_event("stopTime_changed", this->stopTime, timestamp);
-}
-
-/**
- * @brief set_url eventIn handler.
- *
- * @param value     an mfstring.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void audio_clip_node::process_set_url(const field_value & value,
-                                      const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->url = dynamic_cast<const mfstring &>(value);
-    this->node::modified(true);
-    this->emit_event("url_changed", this->url, timestamp);
 }
 
 
@@ -2046,8 +2052,8 @@ void background_class::bind(background_node & background,
     //
     // If the node is already the active node, do nothing.
     //
-    if (!this->bound_nodes.empty()
-        && &background == this->bound_nodes.back()) {
+    if (!this->bound_nodes.empty() && &background == this->bound_nodes.back())
+    {
         return;
     }
 
@@ -2064,16 +2070,16 @@ void background_class::bind(background_node & background,
     if (!this->bound_nodes.empty()) {
         background_node & current =
             dynamic_cast<background_node &>(*this->bound_nodes.back());
-        current.bound.value = false;
-        current.emit_event("isBound", current.bound, timestamp);
+        current.is_bound_.value = false;
+        node::emit_event(current.is_bound_emitter_, timestamp);
     }
 
     //
     // Push the node to the top of the stack, and have it send isBound TRUE.
     //
     this->bound_nodes.push_back(&background);
-    background.bound.value = true;
-    background.emit_event("isBound", background.bound, timestamp);
+    background.is_bound_.value = true;
+    node::emit_event(background.is_bound_emitter_, timestamp);
 }
 
 /**
@@ -2091,15 +2097,16 @@ void background_class::unbind(background_node & background,
     const bound_nodes_t::iterator pos =
         find(this->bound_nodes.begin(), this->bound_nodes.end(), &background);
     if (pos != this->bound_nodes.end()) {
-        background.bound.value = false;
-        background.emit_event("isBound", background.bound, timestamp);
+        background.is_bound_.value = false;
+        node::emit_event(background.is_bound_emitter_, timestamp);
 
         if (pos == this->bound_nodes.end() - 1
             && this->bound_nodes.size() > 1) {
-            background_node & newActive = dynamic_cast<background_node &>
-                                          (**(this->bound_nodes.end() - 2));
-            newActive.bound.value = true;
-            newActive.emit_event("isBound", newActive.bound, timestamp);
+            background_node & newActive =
+                dynamic_cast<background_node &>(
+                    **(this->bound_nodes.end() - 2));
+            newActive.is_bound_.value = true;
+            node::emit_event(newActive.is_bound_emitter_, timestamp);
         }
         this->bound_nodes.erase(pos);
     }
@@ -2116,7 +2123,15 @@ void background_class::initialize(openvrml::viewpoint_node * initialViewpoint,
     throw ()
 {
     if (this->first) {
-        this->first->process_event("set_bind", sfbool(true), timestamp);
+        try {
+            event_listener & listener =
+                this->first->event_listener("set_bind");
+            assert(dynamic_cast<sfbool_listener *>(&listener));
+            static_cast<sfbool_listener &>(listener)
+                .process_event(sfbool(true), timestamp);
+        } catch (unsupported_interface & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+        }
     }
 }
 
@@ -2172,10 +2187,10 @@ void background_class::render(viewer & v) throw ()
             background.update_textures();
 
             background.viewerObject =
-                v.insert_background(background.groundAngle.value,
-                                    background.groundColor.value,
-                                    background.skyAngle.value,
-                                    background.skyColor.value,
+                v.insert_background(background.ground_angle_.mffloat::value,
+                                    background.ground_color_.mfcolor::value,
+                                    background.sky_angle_.mffloat::value,
+                                    background.sky_color_.mfcolor::value,
                                     background.front,
                                     background.back,
                                     background.left,
@@ -2243,106 +2258,179 @@ background_class::create_type(const std::string & id,
                        field_value::sfbool_id,
                        "isBound")
     };
-    const node_type_ptr
-        type(new vrml97_node_type_impl<background_node>(*this, id));
-    vrml97_node_type_impl<background_node> & backgroundNodeType =
-        static_cast<vrml97_node_type_impl<background_node> &>(*type);
-    typedef vrml97_node_type_impl<background_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<background_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & backgroundNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
          ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            backgroundNodeType.add_eventin(supportedInterfaces[0].field_type,
-                                           supportedInterfaces[0].id,
-                                           &background_node::process_set_bind);
+            backgroundNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        background_node::set_bind_listener>(
+                            &background_node::set_bind_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
             backgroundNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &background_node::process_set_groundAngle,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<background_node, mffloat>
-                    (&background_node::groundAngle)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<mffloat> >(
+                            &background_node::ground_angle_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mffloat> >(
+                        &background_node::ground_angle_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mffloat> >(
+                        &background_node::ground_angle_)));
         } else if (*interface == supportedInterfaces[2]) {
             backgroundNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &background_node::process_set_groundColor,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<background_node, mfcolor>
-                    (&background_node::groundColor)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mfcolor> >(
+                        &background_node::ground_color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfcolor> >(
+                        &background_node::ground_color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mfcolor> >(
+                        &background_node::ground_color_)));
         } else if (*interface == supportedInterfaces[3]) {
             backgroundNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &background_node::process_set_backUrl,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<background_node, mfstring>
-                    (&background_node::backUrl)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    background_node::back_url_exposedfield>(
+                        &background_node::back_url_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    background_node::back_url_exposedfield>(
+                        &background_node::back_url_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    background_node::back_url_exposedfield>(
+                        &background_node::back_url_)));
         } else if (*interface == supportedInterfaces[4]) {
             backgroundNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &background_node::process_set_bottomUrl,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<background_node, mfstring>
-                    (&background_node::bottomUrl)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    background_node::bottom_url_exposedfield>(
+                        &background_node::bottom_url_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    background_node::bottom_url_exposedfield>(
+                        &background_node::bottom_url_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    background_node::bottom_url_exposedfield>(
+                        &background_node::bottom_url_)));
         } else if (*interface == supportedInterfaces[5]) {
             backgroundNodeType.add_exposedfield(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                &background_node::process_set_frontUrl,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<background_node, mfstring>
-                    (&background_node::frontUrl)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    background_node::front_url_exposedfield>(
+                        &background_node::front_url_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                        background_node::front_url_exposedfield>(
+                            &background_node::front_url_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    background_node::front_url_exposedfield>(
+                        &background_node::front_url_)));
         } else if (*interface == supportedInterfaces[6]) {
             backgroundNodeType.add_exposedfield(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                &background_node::process_set_leftUrl,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<background_node, mfstring>
-                    (&background_node::leftUrl)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    background_node::left_url_exposedfield>(
+                        &background_node::left_url_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    background_node::left_url_exposedfield>(
+                        &background_node::left_url_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    background_node::left_url_exposedfield>(
+                        &background_node::left_url_)));
         } else if (*interface == supportedInterfaces[7]) {
             backgroundNodeType.add_exposedfield(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                &background_node::process_set_rightUrl,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<background_node, mfstring>
-                    (&background_node::rightUrl)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    background_node::right_url_exposedfield>(
+                        &background_node::right_url_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    background_node::right_url_exposedfield>(
+                        &background_node::right_url_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    background_node::right_url_exposedfield>(
+                        &background_node::right_url_)));
         } else if (*interface == supportedInterfaces[8]) {
             backgroundNodeType.add_exposedfield(
                 supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
-                &background_node::process_set_topUrl,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<background_node, mfstring>
-                    (&background_node::topUrl)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    background_node::top_url_exposedfield>(
+                        &background_node::top_url_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    background_node::top_url_exposedfield>(
+                        &background_node::top_url_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    background_node::top_url_exposedfield>(
+                        &background_node::top_url_)));
         } else if (*interface == supportedInterfaces[9]) {
             backgroundNodeType.add_exposedfield(
                 supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
-                &background_node::process_set_skyAngle,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<background_node, mffloat>
-                    (&background_node::skyAngle)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mffloat> >(&background_node::sky_angle_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mffloat> >(
+                        &background_node::sky_angle_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mffloat> >(
+                        &background_node::sky_angle_)));
         } else if (*interface == supportedInterfaces[10]) {
             backgroundNodeType.add_exposedfield(
                 supportedInterfaces[10].field_type,
                 supportedInterfaces[10].id,
-                &background_node::process_set_skyColor,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<background_node, mfcolor>
-                    (&background_node::skyColor)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<mfcolor> >(&background_node::sky_color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfcolor> >(
+                        &background_node::sky_color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mfcolor> >(
+                        &background_node::sky_color_)));
         } else if (*interface == supportedInterfaces[11]) {
             backgroundNodeType.add_eventout(
                 supportedInterfaces[11].field_type,
                 supportedInterfaces[11].id,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<background_node, sfbool>
-                    (&background_node::bound)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &background_node::is_bound_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -2363,69 +2451,386 @@ background_class::create_type(const std::string & id,
  */
 
 /**
- * @var mffloat background_node::groundAngle
+ * @class background_node::set_bind_listener
+ *
+ * @brief set_bind eventIn listener.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node background_node.
+ */
+background_node::set_bind_listener::set_bind_listener(background_node & node):
+    sfbool_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+background_node::set_bind_listener::~set_bind_listener() throw ()
+{}
+
+/**
+ * @brief Process an event.
+ *
+ * @param value     event value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void background_node::set_bind_listener::process_event(const sfbool & value,
+                                                       const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        background_node & node = dynamic_cast<background_node &>(this->node);
+        background_class & node_class =
+            static_cast<background_class &>(node.type.node_class);
+        if (value.value) {
+            node_class.bind(node, timestamp);
+        } else {
+            node_class.unbind(node, timestamp);
+        }
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class background_node::back_url_exposedfield
+ *
+ * @brief backUrl exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  background_node.
+ */
+background_node::back_url_exposedfield::
+back_url_exposedfield(background_node & node) throw ():
+    exposedfield<mfstring>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+background_node::back_url_exposedfield::~back_url_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param value     new backUrl value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+background_node::back_url_exposedfield::
+do_process_event(const mfstring & value,
+                 const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        dynamic_cast<background_node &>(this->node).back_needs_update = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class background_node::bottom_url_exposedfield
+ *
+ * @brief bottomUrl exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  background_node.
+ */
+background_node::bottom_url_exposedfield::
+bottom_url_exposedfield(background_node & node) throw ():
+    exposedfield<mfstring>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+background_node::bottom_url_exposedfield::~bottom_url_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param value     new bottomUrl value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+background_node::bottom_url_exposedfield::
+do_process_event(const mfstring & value,
+                 const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        dynamic_cast<background_node &>(this->node).bottom_needs_update = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class background_node::front_url_exposedfield
+ *
+ * @brief frontUrl exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  background_node.
+ */
+background_node::front_url_exposedfield::
+front_url_exposedfield(background_node & node) throw ():
+    exposedfield<mfstring>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+background_node::front_url_exposedfield::~front_url_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param value     new frontUrl value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+background_node::front_url_exposedfield::
+do_process_event(const mfstring & value,
+                 const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        dynamic_cast<background_node &>(this->node).front_needs_update = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class background_node::left_url_exposedfield
+ *
+ * @brief leftUrl exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  background_node.
+ */
+background_node::left_url_exposedfield::
+left_url_exposedfield(background_node & node) throw ():
+    exposedfield<mfstring>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+background_node::left_url_exposedfield::~left_url_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param value     new leftUrl value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+background_node::left_url_exposedfield::
+do_process_event(const mfstring & value,
+                 const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        dynamic_cast<background_node &>(this->node).left_needs_update = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class background_node::right_url_exposedfield
+ *
+ * @brief rightUrl exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  background_node.
+ */
+background_node::right_url_exposedfield::
+right_url_exposedfield(background_node & node) throw ():
+    exposedfield<mfstring>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+background_node::right_url_exposedfield::~right_url_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param value     new rightUrl value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+background_node::right_url_exposedfield::
+do_process_event(const mfstring & value,
+                 const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        dynamic_cast<background_node &>(this->node).right_needs_update = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class background_node::top_url_exposedfield
+ *
+ * @brief topUrl exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  background_node.
+ */
+background_node::top_url_exposedfield::
+top_url_exposedfield(background_node & node) throw ():
+    exposedfield<mfstring>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+background_node::top_url_exposedfield::~top_url_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param value     new topUrl value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+background_node::top_url_exposedfield::
+do_process_event(const mfstring & value,
+                 const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        dynamic_cast<background_node &>(this->node).top_needs_update = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var background_node::set_bind_listener background_node::set_bind_listener_
+ *
+ * @brief set_bind eventIn handler.
+ */
+
+/**
+ * @var exposedfield<mffloat> background_node::ground_angle_
  *
  * @brief groundAngle exposedField.
  */
 
 /**
- * @var mfcolor background_node::groundColor
+ * @var exposedfield<mfcolor> background_node::ground_color_
  *
  * @brief groundColor exposedField.
  */
 
 /**
- * @var mfstring background_node::backUrl
+ * @var background_node::back_url_exposedfield background_node::back_url_
  *
  * @brief backUrl exposedField.
  */
 
 /**
- * @var mfstring background_node::bottomUrl
+ * @var background_node::bottom_url_exposedfield background_node::bottom_url_
  *
  * @brief bottomUrl exposedField.
  */
 
 /**
- * @var mfstring background_node::frontUrl
+ * @var background_node::front_url_exposedfield background_node::front_url_
  *
  * @brief frontUrl exposedField.
  */
 
 /**
- * @var mfstring background_node::leftUrl
+ * @var background_node::left_url_exposedfield background_node::left_url_
  *
  * @brief leftUrl exposedField.
  */
 
 /**
- * @var mfstring background_node::rightUrl
+ * @var background_node::right_url_exposedfield background_node::right_url_
  *
  * @brief rightUrl exposedField.
  */
 
 /**
- * @var mfstring background_node::topUrl
+ * @var background_node::top_url_exposedfield background_node::top_url_
  *
  * @brief topUrl exposedField.
  */
 
 /**
- * @var mffloat background_node::skyAngle
+ * @var exposedfield<mffloat> background_node::sky_angle_
  *
  * @brief skyAngle exposedField.
  */
 
 /**
- * @var mfcolor background_node::skyColor
+ * @var exposedfield<mfcolor> background_node::sky_color_
  *
  * @brief skyColor exposedField.
  */
 
 /**
- * @var sfbool background_node::bound
+ * @var sfbool background_node::is_bound_
  *
- * @brief isBound eventOut.
+ * @brief isBound eventOut value.
+ */
+
+/**
+ * @var sfbool_emitter background_node::is_bound_emitter_
+ *
+ * @brief isBound eventOut emitter.
  */
 
 /**
@@ -2516,7 +2921,18 @@ background_node::background_node(const node_type & type,
                                  const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
-    bound(false),
+    set_bind_listener_(*this),
+    ground_angle_(*this),
+    ground_color_(*this),
+    back_url_(*this),
+    bottom_url_(*this),
+    front_url_(*this),
+    left_url_(*this),
+    right_url_(*this),
+    top_url_(*this),
+    sky_angle_(*this),
+    sky_color_(*this, std::vector<color>(1, color(0.0, 0.0, 0.0))),
+    is_bound_emitter_(this->is_bound_),
     front_needs_update(true),
     back_needs_update(true),
     left_needs_update(true),
@@ -2562,221 +2978,17 @@ void background_node::do_shutdown(const double timestamp) throw ()
 }
 
 /**
- * @brief set_bind eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfbool.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void background_node::process_set_bind(const field_value & value,
-                                       const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    const sfbool & bind = dynamic_cast<const sfbool &>(value);
-    assert(dynamic_cast<background_class *>(&this->type.node_class));
-    background_class & nodeClass =
-        static_cast<background_class &>(this->type.node_class);
-    if (bind.value) {
-        nodeClass.bind(*this, timestamp);
-    } else {
-        nodeClass.unbind(*this, timestamp);
-    }
-}
-
-/**
- * @brief set_groundAngle eventIn handler.
- *
- * @param value     an mffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void background_node::process_set_groundAngle(const field_value & value,
-                                              const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->groundAngle = dynamic_cast<const mffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("groundAngle_changed", this->groundAngle, timestamp);
-}
-
-/**
- * @brief set_groundColor eventIn handler.
- *
- * @param value     an mfcolor.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfcolor.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void background_node::process_set_groundColor(const field_value & value,
-                                              const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->groundColor = dynamic_cast<const mfcolor &>(value);
-    this->node::modified(true);
-    this->emit_event("groundColor_changed", this->groundColor, timestamp);
-}
-
-/**
- * @brief set_backUrl eventIn handler.
- *
- * @param value     an mfstring.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void background_node::process_set_backUrl(const field_value & value,
-                                          const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->backUrl = dynamic_cast<const mfstring &>(value);
-    this->node::modified(true);
-    this->emit_event("backUrl_changed", this->backUrl, timestamp);
-}
-
-/**
- * @brief set_bottomUrl eventIn handler.
- *
- * @param value     an mfstring.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void background_node::process_set_bottomUrl(const field_value & value,
-                                            const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->bottomUrl = dynamic_cast<const mfstring &>(value);
-    this->node::modified(true);
-    this->emit_event("bottomUrl_changed", this->bottomUrl, timestamp);
-}
-
-/**
- * @brief set_frontUrl eventIn handler.
- *
- * @param value     an mfstring.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void background_node::process_set_frontUrl(const field_value & value,
-                                           const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->frontUrl = dynamic_cast<const mfstring &>(value);
-    this->node::modified(true);
-    this->emit_event("frontUrl_changed", this->backUrl, timestamp);
-}
-
-/**
- * @brief set_leftUrl eventIn handler.
- *
- * @param value     an mfstring.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void background_node::process_set_leftUrl(const field_value & value,
-                                          const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->leftUrl = dynamic_cast<const mfstring &>(value);
-    this->node::modified(true);
-    this->emit_event("leftUrl_changed", this->leftUrl, timestamp);
-}
-
-/**
- * @brief set_rightUrl eventIn handler.
- *
- * @param value     an mfstring.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void background_node::process_set_rightUrl(const field_value & value,
-                                           const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->rightUrl = dynamic_cast<const mfstring &>(value);
-    this->node::modified(true);
-    this->emit_event("rightUrl_changed", this->rightUrl, timestamp);
-}
-
-/**
- * @brief set_topUrl eventIn handler.
- *
- * @param value     an mfstring.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void background_node::process_set_topUrl(const field_value & value,
-                                   const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->topUrl = dynamic_cast<const mfstring &>(value);
-    this->node::modified(true);
-    this->emit_event("topUrl_changed", this->topUrl, timestamp);
-}
-
-/**
- * @brief set_skyAngle eventIn handler.
- *
- * @param value     an mffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void background_node::process_set_skyAngle(const field_value & value,
-                                           const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->skyAngle = dynamic_cast<const mffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("skyAngle_changed", this->skyAngle, timestamp);
-}
-
-/**
- * @brief set_skyColor eventIn handler.
- *
- * @param value     an mfcolor.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfcolor.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void background_node::process_set_skyColor(const field_value & value,
-                                           const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->skyColor = dynamic_cast<const mfcolor &>(value);
-    this->node::modified(true);
-    this->emit_event("skyColor_changed", this->skyColor, timestamp);
-}
-
-/**
  * @brief Called lazily to update texture data.
  */
 void background_node::update_textures()
 {
     if (this->front_needs_update) {
-        if (this->frontUrl.value.empty()) {
+        if (this->front_url_.mfstring::value.empty()) {
             this->front = image();
         } else {
             doc2 base(this->scene()->url());
             img img_;
-            if (img_.try_urls(this->frontUrl.value, &base)) {
+            if (img_.try_urls(this->front_url_.mfstring::value, &base)) {
                 this->front = image(img_.w(),
                                     img_.h(),
                                     img_.nc(),
@@ -2788,18 +3000,19 @@ void background_node::update_textures()
                 using std::endl;
 
                 ostream & err = this->type.node_class.browser.err;
-                err << "Couldn't read texture from " << this->frontUrl << endl;
+                err << "Couldn't read texture from " << this->front_url_
+                    << endl;
             }
         }
         this->front_needs_update = false;
     }
     if (this->back_needs_update) {
-        if (this->backUrl.value.empty()) {
+        if (this->back_url_.mfstring::value.empty()) {
             this->back = image();
         } else {
             doc2 base(this->scene()->url());
             img img_;
-            if (img_.try_urls(this->backUrl.value, &base)) {
+            if (img_.try_urls(this->back_url_.mfstring::value, &base)) {
                 this->back = image(img_.w(),
                                    img_.h(),
                                    img_.nc(),
@@ -2811,18 +3024,18 @@ void background_node::update_textures()
                 using std::endl;
 
                 ostream & err = this->type.node_class.browser.err;
-                err << "Couldn't read texture from " << this->backUrl << endl;
+                err << "Couldn't read texture from " << this->back_url_ << endl;
             }
         }
         this->back_needs_update = false;
     }
     if (this->left_needs_update) {
-        if (this->leftUrl.value.empty()) {
+        if (this->left_url_.mfstring::value.empty()) {
             this->left = image();
         } else {
             doc2 base(this->scene()->url());
             img img_;
-            if (img_.try_urls(this->leftUrl.value, &base)) {
+            if (img_.try_urls(this->left_url_.mfstring::value, &base)) {
                 this->left = image(img_.w(),
                                    img_.h(),
                                    img_.nc(),
@@ -2834,18 +3047,18 @@ void background_node::update_textures()
                 using std::endl;
 
                 ostream & err = this->type.node_class.browser.err;
-                err << "Couldn't read texture from " << this->leftUrl << endl;
+                err << "Couldn't read texture from " << this->left_url_ << endl;
             }
         }
         this->left_needs_update = false;
     }
     if (this->right_needs_update) {
-        if (this->rightUrl.value.empty()) {
+        if (this->right_url_.mfstring::value.empty()) {
             this->right = image();
         } else {
             doc2 base(this->scene()->url());
             img img_;
-            if (img_.try_urls(this->rightUrl.value, &base)) {
+            if (img_.try_urls(this->right_url_.mfstring::value, &base)) {
                 this->right = image(img_.w(),
                                     img_.h(),
                                     img_.nc(),
@@ -2857,18 +3070,19 @@ void background_node::update_textures()
                 using std::endl;
 
                 ostream & err = this->type.node_class.browser.err;
-                err << "Couldn't read texture from " << this->rightUrl << endl;
+                err << "Couldn't read texture from " << this->right_url_
+                    << endl;
             }
         }
         this->right_needs_update = false;
     }
     if (this->top_needs_update) {
-        if (this->topUrl.value.empty()) {
+        if (this->top_url_.mfstring::value.empty()) {
             this->top = image();
         } else {
             doc2 base(this->scene()->url());
             img img_;
-            if (img_.try_urls(this->topUrl.value, &base)) {
+            if (img_.try_urls(this->top_url_.mfstring::value, &base)) {
                 this->top = image(img_.w(),
                                   img_.h(),
                                   img_.nc(),
@@ -2880,18 +3094,18 @@ void background_node::update_textures()
                 using std::endl;
 
                 ostream & err = this->type.node_class.browser.err;
-                err << "Couldn't read texture from " << this->topUrl << endl;
+                err << "Couldn't read texture from " << this->top_url_ << endl;
             }
         }
         this->top_needs_update = false;
     }
     if (this->bottom_needs_update) {
-        if (this->bottomUrl.value.empty()) {
+        if (this->bottom_url_.mfstring::value.empty()) {
             this->bottom = image();
         } else {
             doc2 base(this->scene()->url());
             img img_;
-            if (img_.try_urls(this->bottomUrl.value, &base)) {
+            if (img_.try_urls(this->bottom_url_.mfstring::value, &base)) {
                 this->bottom = image(img_.w(),
                                      img_.h(),
                                      img_.nc(),
@@ -2903,7 +3117,7 @@ void background_node::update_textures()
                 using std::endl;
 
                 ostream & err = this->type.node_class.browser.err;
-                err << "Couldn't read texture from " << this->bottomUrl
+                err << "Couldn't read texture from " << this->bottom_url_
                     << endl;
             }
         }
@@ -2970,54 +3184,74 @@ billboard_class::create_type(const std::string & id,
                        field_value::sfvec3f_id,
                        "bboxSize")
     };
-    const node_type_ptr
-        type(new vrml97_node_type_impl<billboard_node>(*this, id));
-    vrml97_node_type_impl<billboard_node> & billboardNodeType =
-        static_cast<vrml97_node_type_impl<billboard_node> &>(*type);
-    typedef vrml97_node_type_impl<billboard_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<billboard_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & billboardNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            billboardNodeType
-                .add_eventin(supportedInterfaces[0].field_type,
-                             supportedInterfaces[0].id,
-                             &billboard_node::process_addChildren);
+            billboardNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        billboard_node::add_children_listener>(
+                            &billboard_node::add_children_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
-            billboardNodeType
-                .add_eventin(supportedInterfaces[1].field_type,
-                             supportedInterfaces[1].id,
-                             &billboard_node::process_removeChildren);
+            billboardNodeType.add_eventin(
+                supportedInterfaces[1].field_type,
+                supportedInterfaces[1].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        billboard_node::remove_children_listener>(
+                            &billboard_node::remove_children_listener_)));
         } else if (*interface == supportedInterfaces[2]) {
             billboardNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &billboard_node::process_set_axisOfRotation,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<billboard_node, sfvec3f>
-                    (&billboard_node::axisOfRotation)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(
+                        &billboard_node::axis_of_rotation_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &billboard_node::axis_of_rotation_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &billboard_node::axis_of_rotation_)));
         } else if (*interface == supportedInterfaces[3]) {
             billboardNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &billboard_node::process_set_children,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<billboard_node, mfnode>
-                    (&billboard_node::children_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        billboard_node::children_exposedfield>(
+                            &billboard_node::children_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                        billboard_node::children_exposedfield>(
+                            &billboard_node::children_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                        billboard_node::children_exposedfield>(
+                            &billboard_node::children_)));
         } else if (*interface == supportedInterfaces[4]) {
             billboardNodeType.add_field(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<billboard_node, sfvec3f>
-                    (&billboard_node::bboxCenter)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(
+                        &billboard_node::bbox_center_)));
         } else if (*interface == supportedInterfaces[5]) {
             billboardNodeType.add_field(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<billboard_node, sfvec3f>
-                    (&billboard_node::bboxSize)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(
+                        &billboard_node::bbox_size_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -3038,7 +3272,7 @@ billboard_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfvec3f billboard_node::axisOfRotation
+ * @var exposedfield<sfvec3f> billboard_node::axis_of_rotation_
  *
  * @brief axisOfRotation exposedField.
  */
@@ -3070,9 +3304,9 @@ const mat4f billboard_node::billboard_to_matrix(const billboard_node & node,
                                  inverse_modelview[3][2]).normalize();
 
     // Viewer-alignment
-    if ((node.axisOfRotation.value[0] == 0)
-            && (node.axisOfRotation.value[1] == 0)
-            && (node.axisOfRotation.value[2] == 0)) {
+    if ((node.axis_of_rotation_.sfvec3f::value[0] == 0)
+        && (node.axis_of_rotation_.sfvec3f::value[1] == 0)
+        && (node.axis_of_rotation_.sfvec3f::value[2] == 0)) {
         //
         // Viewer's up vector
         //
@@ -3105,7 +3339,7 @@ const mat4f billboard_node::billboard_to_matrix(const billboard_node & node,
         result[3][3] = 1.0;
     } else { // use axis of rotation
         // axis of rotation will be the y-axis vector
-        const vec3f Y(node.axisOfRotation.value);
+        const vec3f Y(node.axis_of_rotation_.sfvec3f::value);
 
         // Plane defined by the axisOfRotation and billboard-to-viewer vector
         const vec3f X = (Y * position).normalize();
@@ -3138,7 +3372,7 @@ billboard_node::billboard_node(const node_type & type,
     child_node(type, scope),
     grouping_node(type, scope),
     group_node(type, scope),
-    axisOfRotation(vec3f(0.0, 1.0, 0.0)),
+    axis_of_rotation_(*this, vec3f(0.0, 1.0, 0.0)),
     xformObject(0)
 {}
 
@@ -3171,7 +3405,7 @@ void billboard_node::do_render_child(openvrml::viewer & viewer,
 
     if (this->xformObject) {
         viewer.insert_reference(this->xformObject);
-    } else if (this->children_.value.size() > 0) {
+    } else if (this->children_.mfnode::value.size() > 0) {
         this->xformObject = viewer.begin_object(this->id().c_str());
 
         viewer.transform(LM);
@@ -3183,24 +3417,6 @@ void billboard_node::do_render_child(openvrml::viewer & viewer,
     }
 
     this->node::modified(false);
-}
-
-/**
- * @brief set_axisOfRotation eventIn handler.
- *
- * @param value     an sfvec3f.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void billboard_node::process_set_axisOfRotation(const field_value & value,
-                                                const double timestamp)
-    throw (std::bad_cast)
-{
-    this->axisOfRotation = dynamic_cast<const sfvec3f &>(value);
-    this->emit_event("axisOfRotation_changed",
-                     this->axisOfRotation,
-                     timestamp);
 }
 
 
@@ -3246,11 +3462,11 @@ box_class::create_type(const std::string & id,
         node_interface(node_interface::field_id,
                        field_value::sfvec3f_id,
                        "size");
-    const node_type_ptr type(new vrml97_node_type_impl<box_node>(*this, id));
-    vrml97_node_type_impl<box_node> & boxNodeType =
-        static_cast<vrml97_node_type_impl<box_node> &>(*type);
-    typedef vrml97_node_type_impl<box_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<box_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & boxNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
          ++interface) {
@@ -3258,8 +3474,8 @@ box_class::create_type(const std::string & id,
             boxNodeType.add_field(
                 supportedInterface.field_type,
                 supportedInterface.id,
-                node_field_ptr_ptr(new node_field_ptr_impl<box_node, sfvec3f>(
-                                       &box_node::size)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(&box_node::size)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -3407,69 +3623,87 @@ collision_class::create_type(const std::string & id,
                        field_value::sftime_id,
                        "collideTime")
     };
-    const node_type_ptr
-        type(new vrml97_node_type_impl<collision_node>(*this, id));
-    vrml97_node_type_impl<collision_node> & collisionNodeType =
-        static_cast<vrml97_node_type_impl<collision_node> &>(*type);
-    typedef vrml97_node_type_impl<collision_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<collision_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & collisionNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
          ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            collisionNodeType
-                .add_eventin(supportedInterfaces[0].field_type,
-                             supportedInterfaces[0].id,
-                             &collision_node::process_addChildren);
+            collisionNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        collision_node::add_children_listener>(
+                            &collision_node::add_children_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
-            collisionNodeType
-                .add_eventin(supportedInterfaces[1].field_type,
-                             supportedInterfaces[1].id,
-                             &collision_node::process_removeChildren);
+            collisionNodeType.add_eventin(
+                supportedInterfaces[1].field_type,
+                supportedInterfaces[1].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        collision_node::remove_children_listener>(
+                            &collision_node::remove_children_listener_)));
         } else if (*interface == supportedInterfaces[2]) {
             collisionNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &collision_node::process_set_children,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<collision_node, mfnode>
-                    (&collision_node::children_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        collision_node::children_exposedfield>(
+                            &collision_node::children_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                        collision_node::children_exposedfield>(
+                            &collision_node::children_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                        collision_node::children_exposedfield>(
+                            &collision_node::children_)));
         } else if (*interface == supportedInterfaces[3]) {
             collisionNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &collision_node::process_set_collide,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<collision_node, sfbool>
-                    (&collision_node::collide)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &collision_node::collide_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &collision_node::collide_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &collision_node::collide_)));
         } else if (*interface == supportedInterfaces[4]) {
             collisionNodeType.add_field(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<collision_node, sfvec3f>
-                    (&collision_node::bboxCenter)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(
+                        &collision_node::bbox_center_)));
         } else if (*interface == supportedInterfaces[5]) {
             collisionNodeType.add_field(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<collision_node, sfvec3f>
-                    (&collision_node::bboxSize)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(
+                        &collision_node::bbox_size_)));
         } else if (*interface == supportedInterfaces[6]) {
             collisionNodeType.add_field(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<collision_node, sfnode>
-                    (&collision_node::proxy)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfnode>(
+                        &collision_node::proxy_)));
         } else if (*interface == supportedInterfaces[7]) {
             collisionNodeType.add_eventout(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<collision_node, sftime>
-                    (&collision_node::collideTime)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &collision_node::collide_time_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -3490,19 +3724,25 @@ collision_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfbool collision_node::collide
+ * @var sfbool collision_node::collide_
  *
  * @brief collide exposedField.
  */
 
 /**
- * @var sfnode collision_node::proxy
+ * @var sfnode collision_node::proxy_
  *
  * @brief proxy field.
  */
 
 /**
- * @var sftime collision_node::collideTime
+ * @var sftime collision_node::collide_time_
+ *
+ * @brief collideTime eventOut.
+ */
+
+/**
+ * @var sftime_emitter collision_node::collide_time_emitter_
  *
  * @brief collideTime eventOut.
  */
@@ -3519,13 +3759,15 @@ collision_node::collision_node(const node_type & type,
     child_node(type, scope),
     grouping_node(type, scope),
     group_node(type, scope),
-    collide(true)
+    collide_(*this, true),
+    collide_time_emitter_(this->collide_time_)
 {}
 
 /**
  * @brief Destroy.
  */
-collision_node::~collision_node() throw () {}
+collision_node::~collision_node() throw ()
+{}
 
 /**
  * @brief Determine whether the node has been modified.
@@ -3533,25 +3775,10 @@ collision_node::~collision_node() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool collision_node::modified() const {
-  return ((this->proxy.value && this->proxy.value->modified())
-          || this->group_node::modified());
-}
-
-/**
- * @brief set_collide eventIn handler.
- *
- * @param value     an sfbool.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void collision_node::process_set_collide(const field_value & value,
-                                         const double timestamp)
-    throw (std::bad_cast)
+bool collision_node::modified() const
 {
-    this->collide = dynamic_cast<const sfbool &>(value);
-    this->emit_event("collide_changed", this->collide, timestamp);
+    return (this->proxy_.value && this->proxy_.value->modified())
+        || this->group_node::modified();
 }
 
 
@@ -3596,20 +3823,28 @@ color_class::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id,
                        field_value::mfcolor_id,
                        "color");
-    const node_type_ptr type(new vrml97_node_type_impl<color_node>(*this, id));
-    vrml97_node_type_impl<color_node> & colorNodeType =
-        static_cast<vrml97_node_type_impl<color_node> &>(*type);
-    typedef vrml97_node_type_impl<color_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<color_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & colorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterface) {
             colorNodeType.add_exposedfield(
                 supportedInterface.field_type,
                 supportedInterface.id,
-                &color_node::process_set_color,
-                node_field_ptr_ptr(new node_field_ptr_impl<color_node, mfcolor>
-                                    (&color_node::color_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<mfcolor> >(
+                            &color_node::color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfcolor> >(
+                        &color_node::color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mfcolor> >(
+                        &color_node::color_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -3630,7 +3865,7 @@ color_class::create_type(const std::string & id,
  */
 
 /**
- * @var mfcolor color_node::color_
+ * @var exposedfield<mfcolor> color_node::color_
  *
  * @brief color exposedField.
  */
@@ -3641,11 +3876,11 @@ color_class::create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-color_node::color_node(const node_type & type,
-                       const scope_ptr & scope):
+color_node::color_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
     abstract_base(type, scope),
-    openvrml::color_node(type, scope)
+    openvrml::color_node(type, scope),
+    color_(*this)
 {}
 
 /**
@@ -3661,25 +3896,7 @@ color_node::~color_node() throw ()
  */
 const std::vector<color> & color_node::color() const throw ()
 {
-    return this->color_.value;
-}
-
-/**
- * @brief set_color eventIn handler.
- *
- * @param value     an mfcolor.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfcolor.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void color_node::process_set_color(const field_value & value,
-                                   const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->color_ = dynamic_cast<const mfcolor &>(value);
-    this->node::modified(true);
-    this->emit_event("color_changed", this->color_, timestamp);
+    return this->color_.mfcolor::value;
 }
 
 
@@ -3737,44 +3954,58 @@ color_interpolator_class::create_type(const std::string & id,
                       field_value::sfcolor_id,
                       "value_changed")
     };
-    const node_type_ptr
-        type(new vrml97_node_type_impl<color_interpolator_node>(*this, id));
-    vrml97_node_type_impl<color_interpolator_node> &
-        colorInterpolatorNodeType =
-        static_cast<vrml97_node_type_impl<color_interpolator_node> &>(*type);
-    typedef vrml97_node_type_impl<color_interpolator_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<color_interpolator_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & colorInterpolatorNodeType =
+        static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
          ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            colorInterpolatorNodeType
-                .add_eventin(supportedInterfaces[0].field_type,
-                             supportedInterfaces[0].id,
-                             &color_interpolator_node::process_set_fraction);
+            colorInterpolatorNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        color_interpolator_node::set_fraction_listener>(
+                            &color_interpolator_node::set_fraction_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
             colorInterpolatorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &color_interpolator_node::process_set_key,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<color_interpolator_node, mffloat>
-                    (&color_interpolator_node::key)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<mffloat> >(
+                            &color_interpolator_node::key_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mffloat> >(
+                        &color_interpolator_node::key_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mffloat> >(
+                        &color_interpolator_node::key_)));
         } else if (*interface == supportedInterfaces[2]) {
             colorInterpolatorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &color_interpolator_node::process_set_keyValue,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<color_interpolator_node, mfcolor>
-                    (&color_interpolator_node::keyValue)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<mfcolor> >(
+                            &color_interpolator_node::key_value_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfcolor> >(
+                        &color_interpolator_node::key_value_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mfcolor> >(
+                        &color_interpolator_node::key_value_)));
         } else if (*interface == supportedInterfaces[3]) {
             colorInterpolatorNodeType.add_eventout(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<color_interpolator_node, sfcolor>
-                    (&color_interpolator_node::value)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfcolor_emitter>(
+                        &color_interpolator_node::value_changed_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -3795,19 +4026,123 @@ color_interpolator_class::create_type(const std::string & id,
  */
 
 /**
- * @var mffloat color_interpolator_node::key
+ * @class color_interpolator_node::set_fraction_listener
+ *
+ * @brief set_fraction event handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node color_interpolator_node.
+ */
+color_interpolator_node::set_fraction_listener::
+set_fraction_listener(color_interpolator_node & node):
+    sffloat_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+color_interpolator_node::set_fraction_listener::~set_fraction_listener()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param value     new fraction value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+color_interpolator_node::set_fraction_listener::
+process_event(const sffloat & value, const double timestamp)
+    throw (std::bad_alloc)
+{
+    using std::vector;
+
+    try {
+        color_interpolator_node & node =
+            dynamic_cast<color_interpolator_node &>(this->node);
+
+        float fraction = value.value;
+
+        vector<float>::size_type n = node.key_.mffloat::value.size() - 1;
+        if (fraction < node.key_.mffloat::value[0]) {
+            node.value_.value = node.key_value_.mfcolor::value[0];
+        } else if (fraction > node.key_.mffloat::value[n]) {
+            node.value_.value = node.key_value_.mfcolor::value[n];
+        } else {
+            // convert to HSV for the interpolation...
+            for (vector<float>::size_type i = 0; i < n; ++i) {
+                if (node.key_.mffloat::value[i] <= value.value
+                    && fraction <= node.key_.mffloat::value[i + 1]) {
+                    const color & rgb1 = node.key_value_.mfcolor::value[i];
+                    const color & rgb2 =
+                        node.key_value_.mfcolor::value[i + 1];
+
+                    fraction = (fraction - node.key_.mffloat::value[i])
+                        / (node.key_.mffloat::value[i + 1]
+                           - node.key_.mffloat::value[i]);
+                    float hsv1[3], hsv2[3];
+                    rgb1.hsv(hsv1);
+                    rgb2.hsv(hsv2);
+
+                    // Interpolate angles via the shortest direction
+                    if (fabs(hsv2[0] - hsv1[0]) > 180.0) {
+                        if (hsv2[0] > hsv1[0]) {
+                            hsv1[0] += 360.0;
+                        } else {
+                            hsv2[0] += 360.0;
+                        }
+                    }
+                    float h = hsv1[0] + fraction * (hsv2[0] - hsv1[0]);
+                    float s = hsv1[1] + fraction * (hsv2[1] - hsv1[1]);
+                    float v = hsv1[2] + fraction * (hsv2[2] - hsv1[2]);
+                    if (h >= 360.0) {
+                        h -= 360.0;
+                    } else if (h < 0.0) {
+                        h += 360.0;
+                    }
+                    node.value_.value.hsv(h, s, v);
+                    break;
+                }
+            }
+        }
+        node.emit_event(node.value_changed_, timestamp);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var color_interpolator_node::set_fraction_listener color_interpolator_node::set_fraction_listener_;
+ *
+ * @brief set_fraction event handler.
+ */
+
+/**
+ * @var exposedfield<mffloat> color_interpolator_node::key_
  *
  * @brief key exposedField.
  */
 
 /**
- * @var mfcolor color_interpolator_node::keyValue
+ * @var exposedfield<mfcolor> color_interpolator_node::key_value_
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var sfcolor color_interpolator_node::value
+ * @var sfcolor color_interpolator_node::value_
+ *
+ * @brief Current sfcolor value.
+ */
+
+/**
+ * @var sfcolor_emitter color_interpolator_node::value_changed_
  *
  * @brief value_changed eventOut.
  */
@@ -3821,109 +4156,18 @@ color_interpolator_class::create_type(const std::string & id,
 color_interpolator_node::color_interpolator_node(const node_type & type,
                                                  const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope)
+    abstract_child_node(type, scope),
+    set_fraction_listener_(*this),
+    key_(*this),
+    key_value_(*this),
+    value_changed_(this->value_)
 {}
 
 /**
  * @brief Destroy.
  */
-color_interpolator_node::~color_interpolator_node() throw () {}
-
-/**
- * @brief set_fraction eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void color_interpolator_node::process_set_fraction(const field_value & value,
-                                                   const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    using std::vector;
-
-    float f = dynamic_cast<const sffloat &>(value).value;
-
-    vector<float>::size_type n = this->key.value.size() - 1;
-    if (f < this->key.value[0]) {
-        this->value.value = this->keyValue.value[0];
-    } else if (f > this->key.value[n]) {
-        this->value.value = this->keyValue.value[n];
-    } else {
-        // convert to HSV for the interpolation...
-        for (vector<float>::size_type i = 0; i < n; ++i) {
-            if (this->key.value[i] <= f
-                    && f <= this->key.value[i + 1]) {
-                const color & rgb1 = this->keyValue.value[i];
-                const color & rgb2 = this->keyValue.value[i + 1];
-
-                f = (f - this->key.value[i])
-                    / (this->key.value[i + 1] - this->key.value[i]);
-                float hsv1[3], hsv2[3];
-                rgb1.hsv(hsv1);
-                rgb2.hsv(hsv2);
-
-                // Interpolate angles via the shortest direction
-                if (fabs(hsv2[0] - hsv1[0]) > 180.0) {
-                    if (hsv2[0] > hsv1[0]) {
-                        hsv1[0] += 360.0;
-                    } else {
-                        hsv2[0] += 360.0;
-                    }
-                }
-                float h = hsv1[0] + f * (hsv2[0] - hsv1[0]);
-                float s = hsv1[1] + f * (hsv2[1] - hsv1[1]);
-                float v = hsv1[2] + f * (hsv2[2] - hsv1[2]);
-                if (h >= 360.0) {
-                    h -= 360.0;
-                } else if (h < 0.0) {
-                    h += 360.0;
-                }
-                this->value.value.hsv(h, s, v);
-                break;
-            }
-        }
-    }
-
-    // Send the new value
-    this->emit_event("value_changed", this->value, timestamp);
-}
-
-/**
- * @brief set_key eventIn handler.
- *
- * @param value     an mffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void color_interpolator_node::process_set_key(const field_value & value,
-                                              const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->key = dynamic_cast<const mffloat &>(value);
-    this->emit_event("key_changed", this->key, timestamp);
-}
-
-/**
- * @brief set_keyValue eventIn handler.
- *
- * @param value     an mfcolor.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfcolor.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void color_interpolator_node::process_set_keyValue(const field_value & value,
-                                                   const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->keyValue = dynamic_cast<const mfcolor &>(value);
-    this->emit_event("keyValue_changed", this->keyValue, timestamp);
-}
+color_interpolator_node::~color_interpolator_node() throw ()
+{}
 
 
 /**
@@ -3937,12 +4181,14 @@ void color_interpolator_node::process_set_keyValue(const field_value & value,
  *
  * @param browser the browser associated with this class object.
  */
-cone_class::cone_class(openvrml::browser & browser): node_class(browser) {}
+cone_class::cone_class(openvrml::browser & browser): node_class(browser)
+{}
 
 /**
  * @brief Destroy.
  */
-cone_class::~cone_class() throw () {}
+cone_class::~cone_class() throw ()
+{}
 
 /**
  * @brief Create a node_type.
@@ -3975,11 +4221,11 @@ cone_class::create_type(const std::string & id,
                        field_value::sfbool_id,
                        "bottom")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<cone_node>(*this, id));
-    vrml97_node_type_impl<cone_node> & coneNodeType =
-        static_cast<vrml97_node_type_impl<cone_node> &>(*type);
-    typedef vrml97_node_type_impl<cone_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<cone_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & coneNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
          ++interface) {
@@ -3987,26 +4233,30 @@ cone_class::create_type(const std::string & id,
             coneNodeType.add_field(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<cone_node, sffloat>
-                                   (&cone_node::bottomRadius)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &cone_node::bottomRadius)));
         } else if (*interface == supportedInterfaces[1]) {
             coneNodeType.add_field(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<cone_node, sffloat>
-                                   (&cone_node::height)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &cone_node::height)));
         } else if (*interface == supportedInterfaces[2]) {
             coneNodeType.add_field(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<cone_node, sfbool>
-                                   (&cone_node::side)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &cone_node::side)));
         } else if (*interface == supportedInterfaces[3]) {
             coneNodeType.add_field(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<cone_node, sfbool>
-                                   (&cone_node::bottom)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &cone_node::bottom)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -4130,22 +4380,28 @@ coordinate_class::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id,
                        field_value::mfvec3f_id,
                        "point");
-    const node_type_ptr
-        type(new vrml97_node_type_impl<coordinate_node>(*this, id));
-    vrml97_node_type_impl<coordinate_node> & coordinateNodeType =
-        static_cast<vrml97_node_type_impl<coordinate_node> &>(*type);
-    typedef vrml97_node_type_impl<coordinate_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<coordinate_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & coordinateNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterface) {
             coordinateNodeType.add_exposedfield(
                 supportedInterface.field_type,
                 supportedInterface.id,
-                &coordinate_node::process_set_point,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<coordinate_node, mfvec3f>
-                    (&coordinate_node::point_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<mfvec3f> >(
+                            &coordinate_node::point_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfvec3f> >(
+                        &coordinate_node::point_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mfvec3f> >(
+                        &coordinate_node::point_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -4166,7 +4422,7 @@ coordinate_class::create_type(const std::string & id,
  */
 
 /**
- * @var mfvec3f coordinate_node::point_
+ * @var exposedfield<mfvec3f> coordinate_node::point_
  *
  * @brief point exposedField.
  */
@@ -4181,7 +4437,8 @@ coordinate_node::coordinate_node(const node_type & type,
                                  const scope_ptr & scope):
     node(type, scope),
     abstract_base(type, scope),
-    openvrml::coordinate_node(type, scope)
+    openvrml::coordinate_node(type, scope),
+    point_(*this)
 {}
 
 /**
@@ -4191,31 +4448,13 @@ coordinate_node::~coordinate_node() throw ()
 {}
 
 /**
- * @brief set_point eventIn handler.
- *
- * @param value     an array of vectors representing points.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfvec3f.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void coordinate_node::process_set_point(const field_value & value,
-                                        const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->point_ = dynamic_cast<const mfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("point_changed", this->point_, timestamp);
-}
-
-/**
  * @brief Get the points encapsulated by this node.
  *
  * @return the array of points for this node.
  */
 const std::vector<vec3f> & coordinate_node::point() const throw ()
 {
-    return this->point_.value;
+    return this->point_.mfvec3f::value;
 }
 
 
@@ -4274,14 +4513,11 @@ coordinate_interpolator_class::create_type(
                        "value_changed")
     };
 
-    typedef vrml97_node_type_impl<coordinate_interpolator_node>
-        coordinate_interpolator_type_t;
+    typedef vrml97_node_type_impl<coordinate_interpolator_node> node_type_t;
 
-    const node_type_ptr type(new coordinate_interpolator_type_t(*this, id));
-    coordinate_interpolator_type_t & coordinateInterpolatorNodeType =
-        static_cast<coordinate_interpolator_type_t &>(*type);
-    typedef coordinate_interpolator_type_t::node_field_ptr_ptr
-        node_field_ptr_ptr;
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & coordinateInterpolatorNodeType =
+        static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
          ++interface) {
@@ -4289,30 +4525,45 @@ coordinate_interpolator_class::create_type(
             coordinateInterpolatorNodeType.add_eventin(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &coordinate_interpolator_node::process_set_fraction);
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    coordinate_interpolator_node::set_fraction_listener>(
+                        &coordinate_interpolator_node::set_fraction_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
             coordinateInterpolatorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &coordinate_interpolator_node::process_set_key,
-                node_field_ptr_ptr(
-                    new coordinate_interpolator_type_t::mffloat_ptr(
-                        &coordinate_interpolator_node::key)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<mffloat> >(
+                            &coordinate_interpolator_node::key_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mffloat> >(
+                        &coordinate_interpolator_node::key_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mffloat> >(
+                        &coordinate_interpolator_node::key_)));
         } else if (*interface == supportedInterfaces[2]) {
             coordinateInterpolatorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &coordinate_interpolator_node::process_set_keyValue,
-                node_field_ptr_ptr(
-                    new coordinate_interpolator_type_t::mfvec3f_ptr(
-                        &coordinate_interpolator_node::keyValue)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<mfvec3f> >(
+                            &coordinate_interpolator_node::key_value_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfvec3f> >(
+                        &coordinate_interpolator_node::key_value_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mfvec3f> >(
+                        &coordinate_interpolator_node::key_value_)));
         } else if (*interface == supportedInterfaces[3]) {
             coordinateInterpolatorNodeType.add_eventout(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(
-                    new coordinate_interpolator_type_t::mfvec3f_ptr(
-                        &coordinate_interpolator_node::value)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<mfvec3f_emitter>(
+                        &coordinate_interpolator_node::value_changed_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -4333,19 +4584,116 @@ coordinate_interpolator_class::create_type(
  */
 
 /**
- * @var mffloat coordinate_interpolator_node::key
+ * @class coordinate_interpolator_node::set_fraction_listener
+ *
+ * @brief set_fraction event handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  coordinate_interpolator_node.
+ */
+coordinate_interpolator_node::set_fraction_listener::
+set_fraction_listener(coordinate_interpolator_node & node):
+    sffloat_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+coordinate_interpolator_node::set_fraction_listener::~set_fraction_listener()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param fraction  fraction value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+coordinate_interpolator_node::set_fraction_listener::
+process_event(const sffloat & fraction, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        using std::vector;
+
+        coordinate_interpolator_node & node =
+            dynamic_cast<coordinate_interpolator_node &>(this->node);
+
+        const vector<float> & key = node.key_.mffloat::value;
+        const vector<vec3f> & key_value = node.key_value_.mfvec3f::value;
+        vector<vec3f> & value = node.value_.mfvec3f::value;
+
+        size_t nCoords = key_value.size() / key.size();
+        size_t n = key.size() - 1;
+
+        if (fraction.value < key[0]) {
+            value.assign(key_value.begin(), key_value.begin() + nCoords);
+        } else if (fraction.value > key[n]) {
+            value.assign(key_value.begin() + n * nCoords,
+                         key_value.begin() + (n + 1) * nCoords);
+        } else {
+            // Reserve enough space for the new value
+            value.resize(nCoords);
+
+            for (size_t i = 0; i < n; ++i) {
+                if (key[i] <= fraction.value && fraction.value <= key[i + 1]) {
+                    vector<vec3f>::const_iterator v1 =
+                        key_value.begin() + i * nCoords;
+                    vector<vec3f>::const_iterator v2 =
+                        key_value.begin() + (i + 1) * nCoords;
+
+                    const float f =
+                        (fraction.value - key[i]) / (key[i + 1] - key[i]);
+
+                    for (size_t j = 0; j < nCoords; ++j) {
+                        value[j] = *v1 + (f * (*v2 - *v1));
+                        ++v1;
+                        ++v2;
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Send the new value
+        node::emit_event(node.value_changed_, timestamp);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var coordinate_interpolator_node::set_fraction_listener coordinate_interpolator_node::set_fraction_listener_
+ *
+ * @brief set_fraction event handler.
+ */
+
+/**
+ * @var exposedfield<mffloat> coordinate_interpolator_node::key_
  *
  * @brief key exposedField.
  */
 
 /**
- * @var mfvec3f coordinate_interpolator_node::keyValue
+ * @var exposedfield<mfvec3f> coordinate_interpolator_node::key_value_
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var mfvec3f coordinate_interpolator_node::value
+ * @var mfvec3f coordinate_interpolator_node::value_
+ *
+ * @brief Current value.
+ */
+
+/**
+ * @var mfvec3f_emitter coordinate_interpolator_node::value_changed_
  *
  * @brief value_changed eventOut.
  */
@@ -4360,7 +4708,11 @@ coordinate_interpolator_node::coordinate_interpolator_node(
     const node_type & type,
     const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope)
+    abstract_child_node(type, scope),
+    set_fraction_listener_(*this),
+    key_(*this),
+    key_value_(*this),
+    value_changed_(this->value_)
 {}
 
 /**
@@ -4368,99 +4720,6 @@ coordinate_interpolator_node::coordinate_interpolator_node(
  */
 coordinate_interpolator_node::~coordinate_interpolator_node() throw ()
 {}
-
-/**
- * @brief set_fraction eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void
-coordinate_interpolator_node::process_set_fraction(const field_value & value,
-                                                   const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    float f = dynamic_cast<const sffloat &>(value).value;
-
-    size_t nCoords = this->keyValue.value.size() / this->key.value.size();
-    size_t n = this->key.value.size() - 1;
-
-    if (f < this->key.value[0]) {
-        this->value.value.assign(this->keyValue.value.begin(),
-                                 this->keyValue.value.begin() + nCoords);
-    } else if (f > this->key.value[n]) {
-        this->value.value
-                .assign(this->keyValue.value.begin() + n * nCoords,
-                        this->keyValue.value.begin() + (n + 1) * nCoords);
-    } else {
-        // Reserve enough space for the new value
-        this->value.value.resize(nCoords);
-
-        for (size_t i = 0; i < n; ++i) {
-            if (this->key.value[i] <= f
-                    && f <= this->key.value[i + 1]) {
-                std::vector<vec3f>::const_iterator v1 =
-                        this->keyValue.value.begin() + i * nCoords;
-                std::vector<vec3f>::const_iterator v2 =
-                        this->keyValue.value.begin() + (i + 1) * nCoords;
-
-                f = (f - this->key.value[i])
-                    / (this->key.value[i + 1] - this->key.value[i]);
-
-                for (size_t j = 0; j < nCoords; ++j) {
-                    const vec3f vec(v1->x() + f * (v2->x() - v1->x()),
-                                    v1->y() + f * (v2->y() - v1->y()),
-                                    v1->z() + f * (v2->z() - v1->z()));
-                    this->value.value[j] = vec;
-                    ++v1;
-                    ++v2;
-                }
-                break;
-            }
-        }
-    }
-
-    // Send the new value
-    this->emit_event("value_changed", this->value, timestamp);
-}
-
-/**
- * @brief set_key eventIn handler.
- *
- * @param value     an mffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void coordinate_interpolator_node::process_set_key(const field_value & value,
-                                                   const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->key = dynamic_cast<const mffloat &>(value);
-    this->emit_event("key_changed", this->key, timestamp);
-}
-
-/**
- * @brief set_keyValue field mutator.
- *
- * @param value     an mfvec3f.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfvec3f.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void
-coordinate_interpolator_node::process_set_keyValue(const field_value & value,
-                                                   const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->keyValue = dynamic_cast<const mfvec3f &>(value);
-    this->emit_event("keyValue_changed", this->keyValue, timestamp);
-}
 
 
 /**
@@ -4519,11 +4778,10 @@ cylinder_class::create_type(const std::string & id,
                        "top")
     };
 
-    typedef vrml97_node_type_impl<cylinder_node> cylinder_type_t;
+    typedef vrml97_node_type_impl<cylinder_node> node_type_t;
 
-    const node_type_ptr type(new cylinder_type_t(*this, id));
-    cylinder_type_t & cylinderNodeType = static_cast<cylinder_type_t &>(*type);
-    typedef cylinder_type_t::node_field_ptr_ptr node_field_ptr_ptr;
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & cylinderNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
          ++interface) {
@@ -4531,32 +4789,35 @@ cylinder_class::create_type(const std::string & id,
             cylinderNodeType.add_field(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                node_field_ptr_ptr(
-                    new cylinder_type_t::sfbool_ptr(&cylinder_node::bottom)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &cylinder_node::bottom)));
         } else if (*interface == supportedInterfaces[1]) {
             cylinderNodeType.add_field(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                node_field_ptr_ptr(
-                    new cylinder_type_t::sffloat_ptr(&cylinder_node::height)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &cylinder_node::height)));
         } else if (*interface == supportedInterfaces[2]) {
             cylinderNodeType.add_field(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                node_field_ptr_ptr(
-                    new cylinder_type_t::sffloat_ptr(&cylinder_node::radius)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &cylinder_node::radius)));
         } else if (*interface == supportedInterfaces[3]) {
             cylinderNodeType.add_field(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(
-                    new cylinder_type_t::sfbool_ptr(&cylinder_node::side)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(&cylinder_node::side)));
         } else if (*interface == supportedInterfaces[4]) {
             cylinderNodeType.add_field(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(
-                    new cylinder_type_t::sfbool_ptr(&cylinder_node::top)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(&cylinder_node::top)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -4718,74 +4979,116 @@ cylinder_sensor_class::create_type(const std::string & id,
                        "trackPoint_changed")
     };
 
-    typedef vrml97_node_type_impl<cylinder_sensor_node> cylinder_sensor_type_t;
+    typedef vrml97_node_type_impl<cylinder_sensor_node> node_type_t;
 
-    const node_type_ptr type(new cylinder_sensor_type_t(*this, id));
-    cylinder_sensor_type_t & cylinderSensorNodeType =
-            static_cast<cylinder_sensor_type_t &>(*type);
-    typedef cylinder_sensor_type_t::node_field_ptr_ptr node_field_ptr_ptr;
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & cylinderSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             cylinderSensorNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &cylinder_sensor_node::process_set_autoOffset,
-                node_field_ptr_ptr(new cylinder_sensor_type_t::sfbool_ptr(
-                                       &cylinder_sensor_node::autoOffset)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &cylinder_sensor_node::auto_offset_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &cylinder_sensor_node::auto_offset_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &cylinder_sensor_node::auto_offset_)));
         } else if (*interface == supportedInterfaces[1]) {
             cylinderSensorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &cylinder_sensor_node::process_set_diskAngle,
-                node_field_ptr_ptr(new cylinder_sensor_type_t::sffloat_ptr(
-                                       &cylinder_sensor_node::diskAngle)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sffloat> >(
+                            &cylinder_sensor_node::disk_angle_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &cylinder_sensor_node::disk_angle_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &cylinder_sensor_node::disk_angle_)));
         } else if (*interface == supportedInterfaces[2]) {
             cylinderSensorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &cylinder_sensor_node::process_set_enabled,
-                node_field_ptr_ptr(new cylinder_sensor_type_t::sfbool_ptr(
-                                       &cylinder_sensor_node::enabled_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &cylinder_sensor_node::enabled_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &cylinder_sensor_node::enabled_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &cylinder_sensor_node::enabled_)));
         } else if (*interface == supportedInterfaces[3]) {
             cylinderSensorNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &cylinder_sensor_node::process_set_maxAngle,
-                node_field_ptr_ptr(new cylinder_sensor_type_t::sffloat_ptr(
-                                       &cylinder_sensor_node::maxAngle)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sffloat> >(
+                            &cylinder_sensor_node::max_angle_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &cylinder_sensor_node::max_angle_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &cylinder_sensor_node::max_angle_)));
         } else if (*interface == supportedInterfaces[4]) {
             cylinderSensorNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &cylinder_sensor_node::process_set_minAngle,
-                node_field_ptr_ptr(new cylinder_sensor_type_t::sffloat_ptr(
-                                       &cylinder_sensor_node::minAngle)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sffloat> >(
+                            &cylinder_sensor_node::min_angle_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &cylinder_sensor_node::min_angle_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &cylinder_sensor_node::min_angle_)));
         } else if (*interface == supportedInterfaces[5]) {
             cylinderSensorNodeType.add_exposedfield(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                &cylinder_sensor_node::process_set_offset,
-                node_field_ptr_ptr(new cylinder_sensor_type_t::sffloat_ptr(
-                                       &cylinder_sensor_node::offset)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sffloat> >(
+                            &cylinder_sensor_node::offset_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &cylinder_sensor_node::offset_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &cylinder_sensor_node::offset_)));
         } else if (*interface == supportedInterfaces[6]) {
             cylinderSensorNodeType.add_eventout(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(new cylinder_sensor_type_t::sfbool_ptr(
-                                       &cylinder_sensor_node::active)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &cylinder_sensor_node::is_active_emitter_)));
         } else if (*interface == supportedInterfaces[7]) {
             cylinderSensorNodeType.add_eventout(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(new cylinder_sensor_type_t::sfrotation_ptr(
-                                       &cylinder_sensor_node::rotation)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfrotation_emitter>(
+                        &cylinder_sensor_node::rotation_changed_emitter_)));
         } else if (*interface == supportedInterfaces[8]) {
             cylinderSensorNodeType.add_eventout(
                 supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
-                node_field_ptr_ptr(new cylinder_sensor_type_t::sfvec3f_ptr(
-                                       &cylinder_sensor_node::trackPoint)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfvec3f_emitter>(
+                        &cylinder_sensor_node::track_point_changed_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -4806,55 +5109,73 @@ cylinder_sensor_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfbool cylinder_sensor_node::autoOffset
+ * @var exposedfield<sfbool> cylinder_sensor_node::auto_offset_
  *
  * @brief autoOffset exposedField.
  */
 
 /**
- * @var sffloat cylinder_sensor_node::diskAngle
+ * @var exposedfield<sffloat> cylinder_sensor_node::disk_angle_
  *
  * @brief diskAngle exposedField.
  */
 
 /**
- * @var sfbool cylinder_sensor_node::enabled_
+ * @var exposedfield<sfbool> cylinder_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var sffloat cylinder_sensor_node::maxAngle
+ * @var exposedfield<sffloat> cylinder_sensor_node::max_angle_
  *
  * @brief maxAngle exposedField.
  */
 
 /**
- * @var sffloat cylinder_sensor_node::minAngle
+ * @var exposedfield<sffloat> cylinder_sensor_node::min_angle_
  *
  * @brief minAngle exposedField.
  */
 
 /**
- * @var sffloat cylinder_sensor_node::offset
+ * @var exposedfield<sffloat> cylinder_sensor_node::offset_
  *
  * @brief offset exposedField.
  */
 
 /**
- * @var sfbool cylinder_sensor_node::active
+ * @var sfbool cylinder_sensor_node::is_active_
+ *
+ * @brief Active state.
+ */
+
+/**
+ * @var sfbool_emitter cylinder_sensor_node::is_active_emitter_
  *
  * @brief isActive eventOut.
  */
 
 /**
- * @var sfrotation cylinder_sensor_node::rotation
+ * @var sfrotation cylinder_sensor_node::rotation_changed_
+ *
+ * @brief Rotation state.
+ */
+
+/**
+ * @var sfrotation_emitter cylinder_sensor_node::rotation_changed_emitter_
  *
  * @brief rotation_changed eventOut.
  */
 
 /**
- * @var sfvec3f cylinder_sensor_node::trackPoint
+ * @var sfvec3f cylinder_sensor_node::track_point_changed_
+ *
+ * @brief Track point state.
+ */
+
+/**
+ * @var sfvec3f_emitter cylinder_sensor_node::track_point_changed_emitter_
  *
  * @brief trackPoint_changed eventOut.
  */
@@ -4897,13 +5218,15 @@ cylinder_sensor_node::cylinder_sensor_node(const node_type & type,
                                            const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
-    autoOffset(true),
-    diskAngle(0.262f),
-    enabled_(true),
-    maxAngle(-1.0f),
-    minAngle(0.0f),
-    offset(0.0f),
-    active(false),
+    auto_offset_(*this, true),
+    disk_angle_(*this, 0.262f),
+    enabled_(*this, true),
+    max_angle_(*this, -1.0f),
+    min_angle_(*this, 0.0f),
+    offset_(*this, 0.0f),
+    is_active_emitter_(this->is_active_),
+    rotation_changed_emitter_(this->rotation_changed_),
+    track_point_changed_emitter_(this->track_point_changed_),
     rotation_val(0.0f),
     disk(false)
 {
@@ -4933,7 +5256,7 @@ cylinder_sensor_node * cylinder_sensor_node::to_cylinder_sensor() const
  * @param context   a rendering context.
  */
 void cylinder_sensor_node::do_render_child(openvrml::viewer & viewer,
-                                  rendering_context context)
+                                           rendering_context context)
 {
     //
     // Store the modelview matrix which is calculated at the time of rendering
@@ -4945,13 +5268,13 @@ void cylinder_sensor_node::do_render_child(openvrml::viewer & viewer,
 /**
  * @brief Called in response to user interaction.
  */
-void cylinder_sensor_node::activate(double timeStamp,
+void cylinder_sensor_node::activate(double timestamp,
                                     bool isActive,
                                     double * p)
 {
     // Become active
-    if (isActive && !this->active.value) {
-        this->active.value = isActive;
+    if (isActive && !this->is_active_.value) {
+        this->is_active_.value = isActive;
 
         // set activation point in local coords
         vec3f v(static_cast<float>(p[0]),
@@ -4968,20 +5291,20 @@ void cylinder_sensor_node::activate(double timeStamp,
         const vec3f up(0.0, 1.0, 0.0);
         double ang = acos(bearing.dot(up));
         if (ang > pi_2) { ang = pi - ang; }
-        this->disk = (ang < this->diskAngle.value);
+        this->disk = (ang < this->disk_angle_.sffloat::value);
         // send message
-        this->emit_event("isActive", this->active, timeStamp);
+        node::emit_event(this->is_active_emitter_, timestamp);
     }
 
     // Become inactive
-    else if (!isActive && this->active.value) {
-        this->active.value = isActive;
-        this->emit_event("isActive", this->active, timeStamp);
+    else if (!isActive && this->is_active_.value) {
+        this->is_active_.value = isActive;
+        node::emit_event(this->is_active_emitter_, timestamp);
 
         // save auto offset of rotation
-        if (this->autoOffset.value) {
-            this->offset.value = rotation_val;
-            this->emit_event("offset_changed", this->offset, timeStamp);
+        if (this->auto_offset_.sfbool::value) {
+            this->offset_.sffloat::value = rotation_val;
+            node::emit_event(this->offset_, timestamp);
         }
     }
 
@@ -4994,8 +5317,8 @@ void cylinder_sensor_node::activate(double timeStamp,
                   static_cast<float>(p[1]),
                   static_cast<float>(p[2]));
         Vec = Vec * this->activationMatrix;
-        this->trackPoint.value = Vec;
-        this->emit_event("trackPoint_changed", this->trackPoint, timeStamp);
+        this->track_point_changed_.value = Vec;
+        node::emit_event(this->track_point_changed_emitter_, timestamp);
         vec3f tempv;
         float rot, radius;
         vec3f dir1(Vec[0], 0, Vec[2]);
@@ -5011,20 +5334,22 @@ void cylinder_sensor_node::activate(double timeStamp,
         if (cx.length() == 0.0) { return; }
         rot = radius * float(acos(dir2.dot(dir1)));
         if (fequal<float>()(cx.y(), -1.0f)) { rot = -rot; }
-        if (this->autoOffset.value) {
-            rot = this->offset.value + rot;
+        if (this->auto_offset_.sfbool::value) {
+            rot = this->offset_.sffloat::value + rot;
         }
-        if (this->minAngle.value < this->maxAngle.value) {
-            if (rot < this->minAngle.value) {
-                rot = this->minAngle.value;
-            } else if (rot > this->maxAngle.value) {
-                rot = this->maxAngle.value;
+        if (this->min_angle_.sffloat::value
+            < this->max_angle_.sffloat::value) {
+            if (rot < this->min_angle_.sffloat::value) {
+                rot = this->min_angle_.sffloat::value;
+            } else if (rot > this->max_angle_.sffloat::value) {
+                rot = this->max_angle_.sffloat::value;
             }
         }
         this->rotation_val = rot;
-        this->rotation.value = openvrml::rotation(0, 1, 0, rot);
+        this->rotation_changed_.sfrotation::value =
+            openvrml::rotation(0, 1, 0, rot);
 
-        this->emit_event("rotation_changed", this->rotation, timeStamp);
+        node::emit_event(this->rotation_changed_emitter_, timestamp);
     }
 }
 
@@ -5035,103 +5360,7 @@ void cylinder_sensor_node::activate(double timeStamp,
  */
 bool cylinder_sensor_node::enabled() const
 {
-    return this->enabled_.value;
-}
-
-/**
- * @brief set_autoOffset eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void cylinder_sensor_node::process_set_autoOffset(const field_value & value,
-                                                  const double timestamp)
-    throw (std::bad_cast)
-{
-    this->autoOffset = dynamic_cast<const sfbool &>(value);
-    this->emit_event("autoOffset_changed", this->autoOffset, timestamp);
-}
-
-/**
- * @brief set_diskAngle eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void cylinder_sensor_node::process_set_diskAngle(const field_value & value,
-                                                 const double timestamp)
-    throw (std::bad_cast)
-{
-    this->diskAngle = dynamic_cast<const sffloat &>(value);
-    this->emit_event("diskAngle_changed", this->diskAngle, timestamp);
-}
-
-/**
- * @brief set_enabled eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void cylinder_sensor_node::process_set_enabled(const field_value & value,
-                                               const double timestamp)
-    throw (std::bad_cast)
-{
-    this->enabled_ = dynamic_cast<const sfbool &>(value);
-    this->emit_event("enabled_changed", this->enabled_, timestamp);
-}
-
-/**
- * @brief set_maxAngle eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void cylinder_sensor_node::process_set_maxAngle(const field_value & value,
-                                                const double timestamp)
-    throw (std::bad_cast)
-{
-    this->maxAngle = dynamic_cast<const sffloat &>(value);
-    this->emit_event("maxAngle_changed", this->maxAngle, timestamp);
-}
-
-/**
- * @brief set_minAngle eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void cylinder_sensor_node::process_set_minAngle(const field_value & value,
-                                                const double timestamp)
-    throw (std::bad_cast)
-{
-    this->minAngle = dynamic_cast<const sffloat &>(value);
-    this->emit_event("minAngle_changed", this->minAngle, timestamp);
-}
-
-/**
- * @brief set_offset eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void cylinder_sensor_node::process_set_offset(const field_value & value,
-                                              const double timestamp)
-    throw (std::bad_cast)
-{
-    this->offset = dynamic_cast<const sffloat &>(value);
-    this->emit_event("offset_changed", this->offset, timestamp);
+    return this->enabled_.sfbool::value;
 }
 
 
@@ -5192,13 +5421,10 @@ directional_light_class::create_type(const std::string & id,
                        "on")
     };
 
-    typedef vrml97_node_type_impl<directional_light_node>
-        directional_light_type_t;
+    typedef vrml97_node_type_impl<directional_light_node> node_type_t;
 
-    const node_type_ptr type(new directional_light_type_t(*this, id));
-    directional_light_type_t & directionalLightNodeType =
-        static_cast<directional_light_type_t &>(*type);
-    typedef directional_light_type_t::node_field_ptr_ptr node_field_ptr_ptr;
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & directionalLightNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
          ++interface) {
@@ -5206,41 +5432,70 @@ directional_light_class::create_type(const std::string & id,
             directionalLightNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &directional_light_node::process_set_ambientIntensity,
-                node_field_ptr_ptr(
-                    new directional_light_type_t::sffloat_ptr(
-                        &directional_light_node::ambientIntensity)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(
+                        &directional_light_node::ambient_intensity_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &directional_light_node::ambient_intensity_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &directional_light_node::ambient_intensity_)));
         } else if (*interface == supportedInterfaces[1]) {
             directionalLightNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &directional_light_node::process_set_color,
-                node_field_ptr_ptr(
-                    new directional_light_type_t::sfcolor_ptr(
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sfcolor> >(
+                            &directional_light_node::color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfcolor> >(
+                        &directional_light_node::color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfcolor> >(
                         &directional_light_node::color_)));
         } else if (*interface == supportedInterfaces[2]) {
             directionalLightNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &directional_light_node::process_set_direction,
-                node_field_ptr_ptr(
-                    new directional_light_type_t::sfvec3f_ptr(
-                        &directional_light_node::direction)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sfvec3f> >(
+                            &directional_light_node::direction_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &directional_light_node::direction_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &directional_light_node::direction_)));
         } else if (*interface == supportedInterfaces[3]) {
             directionalLightNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &directional_light_node::process_set_intensity,
-                node_field_ptr_ptr(
-                    new directional_light_type_t::sffloat_ptr(
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sffloat> >(
+                            &directional_light_node::intensity_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &directional_light_node::intensity_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
                         &directional_light_node::intensity_)));
         } else if (*interface == supportedInterfaces[4]) {
             directionalLightNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &directional_light_node::process_set_on,
-                node_field_ptr_ptr(
-                    new directional_light_type_t::sfbool_ptr(
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &directional_light_node::on_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &directional_light_node::on_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
                         &directional_light_node::on_)));
         } else {
             throw unsupported_interface("Invalid interface.");
@@ -5262,7 +5517,7 @@ directional_light_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfvec3f directional_light_node::direction
+ * @var exposedfield<sfvec3f> directional_light_node::direction_
  *
  * @brief direction exposedField.
  */
@@ -5277,7 +5532,7 @@ directional_light_node::directional_light_node(const node_type & type,
                                                const scope_ptr & scope):
     node(type, scope),
     abstract_light_node(type, scope),
-    direction(vec3f(0.0, 0.0, -1.0))
+    direction_(*this, vec3f(0.0, 0.0, -1.0))
 {}
 
 /**
@@ -5296,29 +5551,13 @@ directional_light_node::~directional_light_node() throw () {}
 void directional_light_node::do_render_child(openvrml::viewer & viewer,
                                     const rendering_context rc)
 {
-    if (this->on_.value) {
-        viewer.insert_dir_light(this->ambientIntensity.value,
-                                this->intensity_.value,
-                                this->color_.value,
-                                this->direction.value);
+    if (this->on_.sfbool::value) {
+        viewer.insert_dir_light(this->ambient_intensity_.sffloat::value,
+                                this->intensity_.sffloat::value,
+                                this->color_.sfcolor::value,
+                                this->direction_.sfvec3f::value);
     }
     this->node::modified(false);
-}
-
-/**
- * @brief set_direction eventIn handler.
- *
- * @param value     an sfvec3f.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void directional_light_node::process_set_direction(const field_value & value,
-                                            const double timestamp)
-        throw (std::bad_cast) {
-    this->direction = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("direction_changed", this->direction, timestamp);
 }
 
 
@@ -5362,113 +5601,174 @@ elevation_grid_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::mffloat_id, "set_height"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "color"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "normal"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "texCoord"),
-        node_interface(node_interface::field_id, field_value::mffloat_id, "height"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "ccw"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "colorPerVertex"),
-        node_interface(node_interface::field_id, field_value::sffloat_id, "creaseAngle"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "normalPerVertex"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
-        node_interface(node_interface::field_id, field_value::sfint32_id, "xDimension"),
-        node_interface(node_interface::field_id, field_value::sffloat_id, "xSpacing"),
-        node_interface(node_interface::field_id, field_value::sfint32_id, "zDimension"),
-        node_interface(node_interface::field_id, field_value::sffloat_id, "zSpacing")
+        node_interface(node_interface::eventin_id,
+                       field_value::mffloat_id,
+                       "set_height"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::mffloat_id,
+                       "height"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "creaseAngle"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "xDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "xSpacing"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "zDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "zSpacing")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<elevation_grid_node>(*this, id));
-    vrml97_node_type_impl<elevation_grid_node> & elevationGridNodeType =
-            static_cast<vrml97_node_type_impl<elevation_grid_node> &>(*type);
-    typedef vrml97_node_type_impl<elevation_grid_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<elevation_grid_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & elevationGridNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             elevationGridNodeType.add_eventin(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &elevation_grid_node::process_set_height);
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        elevation_grid_node::set_height_listener>(
+                            &elevation_grid_node::set_height_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
             elevationGridNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &elevation_grid_node::process_set_color,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, sfnode>
-                                    (&elevation_grid_node::color)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &elevation_grid_node::color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &elevation_grid_node::color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &elevation_grid_node::color_)));
         } else if (*interface == supportedInterfaces[2]) {
             elevationGridNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &elevation_grid_node::process_set_normal,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, sfnode>
-                                    (&elevation_grid_node::normal)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &elevation_grid_node::normal_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &elevation_grid_node::normal_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &elevation_grid_node::normal_)));
         } else if (*interface == supportedInterfaces[3]) {
             elevationGridNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &elevation_grid_node::process_set_texCoord,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, sfnode>
-                                    (&elevation_grid_node::texCoord)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &elevation_grid_node::tex_coord_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &elevation_grid_node::tex_coord_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &elevation_grid_node::tex_coord_)));
         } else if (*interface == supportedInterfaces[4]) {
             elevationGridNodeType.add_field(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, mffloat>
-                                    (&elevation_grid_node::height)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mffloat>(
+                        &elevation_grid_node::height_)));
         } else if (*interface == supportedInterfaces[5]) {
             elevationGridNodeType.add_field(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, sfbool>
-                                    (&elevation_grid_node::ccw)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &elevation_grid_node::ccw_)));
         } else if (*interface == supportedInterfaces[6]) {
             elevationGridNodeType.add_field(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, sfbool>
-                                    (&elevation_grid_node::colorPerVertex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &elevation_grid_node::color_per_vertex_)));
         } else if (*interface == supportedInterfaces[7]) {
             elevationGridNodeType.add_field(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, sffloat>
-                                    (&elevation_grid_node::creaseAngle)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &elevation_grid_node::crease_angle_)));
         } else if (*interface == supportedInterfaces[8]) {
             elevationGridNodeType.add_field(
                 supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, sfbool>
-                                    (&elevation_grid_node::normalPerVertex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &elevation_grid_node::normal_per_vertex_)));
         } else if (*interface == supportedInterfaces[9]) {
             elevationGridNodeType.add_field(
                 supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, sfbool>
-                                    (&elevation_grid_node::solid)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &elevation_grid_node::solid_)));
         } else if (*interface == supportedInterfaces[10]) {
             elevationGridNodeType.add_field(
                 supportedInterfaces[10].field_type,
                 supportedInterfaces[10].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, sfint32>
-                                    (&elevation_grid_node::xDimension)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfint32>(
+                        &elevation_grid_node::x_dimension_)));
         } else if (*interface == supportedInterfaces[11]) {
             elevationGridNodeType.add_field(
                 supportedInterfaces[11].field_type,
                 supportedInterfaces[11].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, sffloat>
-                                    (&elevation_grid_node::xSpacing)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &elevation_grid_node::x_spacing_)));
         } else if (*interface == supportedInterfaces[12]) {
             elevationGridNodeType.add_field(
                 supportedInterfaces[12].field_type,
                 supportedInterfaces[12].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, sfint32>
-                                    (&elevation_grid_node::zDimension)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfint32>(
+                        &elevation_grid_node::z_dimension_)));
         } else if (*interface == supportedInterfaces[13]) {
             elevationGridNodeType.add_field(
                 supportedInterfaces[13].field_type,
                 supportedInterfaces[13].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<elevation_grid_node, sffloat>
-                                    (&elevation_grid_node::zSpacing)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &elevation_grid_node::z_spacing_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -5489,79 +5789,132 @@ elevation_grid_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfnode elevation_grid_node::color
+ * @class elevation_grid_node::set_height_listener
+ *
+ * @brief set_height event handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  elevation_grid_node.
+ */
+elevation_grid_node::set_height_listener::
+set_height_listener(elevation_grid_node & node):
+    mffloat_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+elevation_grid_node::set_height_listener::~set_height_listener() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param height    height value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+elevation_grid_node::set_height_listener::process_event(const mffloat & height,
+                                                        const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        elevation_grid_node & elevation_grid =
+            dynamic_cast<elevation_grid_node &>(this->node);
+
+        elevation_grid.height_ = height;
+        elevation_grid.node::modified(true);
+
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var elevation_grid_node::set_height_listener elevation_grid_node::set_height_listener_
+ *
+ * @brief set_height eventIn handler.
+ */
+
+/**
+ * @var exposedfield<sfnode> elevation_grid_node::color_
  *
  * @brief color exposedField.
  */
 
 /**
- * @var sfnode elevation_grid_node::normal
+ * @var exposedfield<sfnode> elevation_grid_node::normal_
  *
  * @brief normal exposedField.
  */
 
 /**
- * @var sfnode elevation_grid_node::texCoord
+ * @var exposedfield<sfnode> elevation_grid_node::tex_coord_
  *
  * @brief texCoord exposedField.
  */
 
 /**
- * @var sfbool elevation_grid_node::ccw
+ * @var sfbool elevation_grid_node::ccw_
  *
  * @brief ccw field.
  */
 
 /**
- * @var sfbool elevation_grid_node::colorPerVertex
+ * @var sfbool elevation_grid_node::color_per_vertex_
  *
  * @brief colorPerVertex field.
  */
 
 /**
- * @var sffloat elevation_grid_node::creaseAngle
+ * @var sffloat elevation_grid_node::crease_angle_
  *
  * @brief creaseAngle field.
  */
 
 /**
- * @var mffloat elevation_grid_node::height
+ * @var mffloat elevation_grid_node::height_
  *
  * @brief height field.
  */
 
 /**
- * @var sfbool elevation_grid_node::normalPerVertex
+ * @var sfbool elevation_grid_node::normal_per_vertex_
  *
  * @brief normalPerVertex field.
  */
 
 /**
- * @var sfbool elevation_grid_node::solid
+ * @var sfbool elevation_grid_node::solid_
  *
  * @brief solid field.
  */
 
 /**
- * @var sfint32 elevation_grid_node::xDimension
+ * @var sfint32 elevation_grid_node::x_dimension_
  *
  * @brief xDimension field.
  */
 
 /**
- * @var sffloat elevation_grid_node::xSpacing
+ * @var sffloat elevation_grid_node::x_spacing_
  *
  * @brief xSpacing field.
  */
 
 /**
- * @var sfint32 elevation_grid_node::zDimension
+ * @var sfint32 elevation_grid_node::z_dimension_
  *
  * @brief zDimension field.
  */
 
 /**
- * @var sffloat elevation_grid_node::zSpacing
+ * @var sffloat elevation_grid_node::z_spacing_
  *
  * @brief zSpacing field.
  */
@@ -5576,14 +5929,18 @@ elevation_grid_node::elevation_grid_node(const node_type & type,
                                          const scope_ptr & scope):
     node(type, scope),
     abstract_geometry_node(type, scope),
-    ccw(true),
-    colorPerVertex(true),
-    normalPerVertex(true),
-    solid(true),
-    xDimension(0),
-    xSpacing(1.0f),
-    zDimension(0),
-    zSpacing(1.0f)
+    set_height_listener_(*this),
+    color_(*this),
+    normal_(*this),
+    tex_coord_(*this),
+    ccw_(true),
+    color_per_vertex_(true),
+    normal_per_vertex_(true),
+    solid_(true),
+    x_dimension_(0),
+    x_spacing_(1.0f),
+    z_dimension_(0),
+    z_spacing_(1.0f)
 {}
 
 /**
@@ -5600,10 +5957,13 @@ elevation_grid_node::~elevation_grid_node() throw ()
  */
 bool elevation_grid_node::modified() const
 {
-    return (this->node::modified()
-            || (this->color.value && this->color.value->modified())
-            || (this->normal.value && this->normal.value->modified())
-            || (this->texCoord.value && this->texCoord.value->modified()));
+    return this->node::modified()
+        || (this->color_.sfnode::value
+            && this->color_.sfnode::value->modified())
+        || (this->normal_.sfnode::value
+            && this->normal_.sfnode::value->modified())
+        || (this->tex_coord_.sfnode::value
+            && this->tex_coord_.sfnode::value->modified());
 }
 
 /**
@@ -5618,18 +5978,20 @@ elevation_grid_node::do_render_geometry(openvrml::viewer & viewer,
 {
     viewer::object_t obj = 0;
 
-    if (!this->height.value.empty()) {
+    if (!this->height_.mffloat::value.empty()) {
         using std::vector;
 
         openvrml::color_node * const colorNode =
-            node_cast<openvrml::color_node *>(this->color.value.get());
+            node_cast<openvrml::color_node *>(
+                this->color_.sfnode::value.get());
         const vector<openvrml::color> & color =
             colorNode
             ? colorNode->color()
             : vector<openvrml::color>();
 
         openvrml::normal_node * const normalNode =
-            node_cast<openvrml::normal_node *>(this->normal.value.get());
+            node_cast<openvrml::normal_node *>(
+                this->normal_.sfnode::value.get());
         const vector<vec3f> & normal =
             normalNode
             ? normalNode->vector()
@@ -5637,112 +5999,48 @@ elevation_grid_node::do_render_geometry(openvrml::viewer & viewer,
 
         openvrml::texture_coordinate_node * const texCoordNode =
             node_cast<openvrml::texture_coordinate_node *>(
-                this->texCoord.value.get());
+                this->tex_coord_.sfnode::value.get());
         const vector<vec2f> & texCoord =
             texCoordNode
             ? texCoordNode->point()
             : vector<vec2f>();
         // insert geometry
         unsigned int optMask = 0;
-        if (this->ccw.value) {
+        if (this->ccw_.value) {
             optMask |= viewer::mask_ccw;
         }
-        if (this->solid.value) {
+        if (this->solid_.value) {
             optMask |= viewer::mask_solid;
         }
-        if (this->colorPerVertex.value) {
+        if (this->color_per_vertex_.value) {
             optMask |= viewer::mask_color_per_vertex;
         }
-        if (this->normalPerVertex.value) {
+        if (this->normal_per_vertex_.value) {
             optMask |= viewer::mask_normal_per_vertex;
         }
 
         obj = viewer.insert_elevation_grid(optMask,
-                                           this->height.value,
-                                           this->xDimension.value,
-                                           this->zDimension.value,
-                                           this->xSpacing.value,
-                                           this->zSpacing.value,
+                                           this->height_.mffloat::value,
+                                           this->x_dimension_.sfint32::value,
+                                           this->z_dimension_.sfint32::value,
+                                           this->x_spacing_.sffloat::value,
+                                           this->z_spacing_.sffloat::value,
                                            color,
                                            normal,
                                            texCoord);
     }
 
-    if (this->color.value) { this->color.value->modified(false); }
-    if (this->normal.value) { this->normal.value->modified(false); }
-    if (this->texCoord.value) { this->texCoord.value->modified(false); }
+    if (this->color_.sfnode::value) {
+        this->color_.sfnode::value->modified(false);
+    }
+    if (this->normal_.sfnode::value) {
+        this->normal_.sfnode::value->modified(false);
+    }
+    if (this->tex_coord_.sfnode::value) {
+        this->tex_coord_.sfnode::value->modified(false);
+    }
 
     return obj;
-}
-
-/**
- * @brief set_color eventIn handler.
- *
- * @param value     an sfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void elevation_grid_node::process_set_color(const field_value & value,
-                                     const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->color = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("color_changed", this->color, timestamp);
-}
-
-/**
- * @brief set_height eventIn handler.
- *
- * @param value     an mffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void elevation_grid_node::process_set_height(const field_value & value,
-                                             const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->height = dynamic_cast<const mffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("height_changed", this->height, timestamp);
-}
-
-/**
- * @brief set_normal eventIn handler.
- *
- * @param value     an sfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void elevation_grid_node::process_set_normal(const field_value & value,
-                                             const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->normal = dynamic_cast<const sfnode &>(value);
-    this->emit_event("normal_changed", this->normal, timestamp);
-}
-
-/**
- * @brief set_texCoord eventIn handler.
- *
- * @param value     an sfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void elevation_grid_node::process_set_texCoord(const field_value & value,
-                                               const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->texCoord = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("texCoord_changed", this->texCoord, timestamp);
 }
 
 
@@ -5785,121 +6083,164 @@ extrusion_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::mfvec2f_id, "set_crossSection"),
-        node_interface(node_interface::eventin_id, field_value::mfrotation_id, "set_orientation"),
-        node_interface(node_interface::eventin_id, field_value::mfvec2f_id, "set_scale"),
-        node_interface(node_interface::eventin_id, field_value::mfvec3f_id, "set_spine"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "beginCap"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "ccw"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "convex"),
-        node_interface(node_interface::field_id, field_value::sffloat_id, "creaseAngle"),
-        node_interface(node_interface::field_id, field_value::mfvec2f_id, "crossSection"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "endCap"),
-        node_interface(node_interface::field_id, field_value::mfrotation_id, "orientation"),
-        node_interface(node_interface::field_id, field_value::mfvec2f_id, "scale"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
-        node_interface(node_interface::field_id, field_value::mfvec3f_id, "spine")
+        node_interface(node_interface::eventin_id,
+                       field_value::mfvec2f_id,
+                       "set_crossSection"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfrotation_id,
+                       "set_orientation"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfvec2f_id,
+                       "set_scale"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfvec3f_id,
+                       "set_spine"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "beginCap"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "convex"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "creaseAngle"),
+        node_interface(node_interface::field_id,
+                       field_value::mfvec2f_id,
+                       "crossSection"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "endCap"),
+        node_interface(node_interface::field_id,
+                       field_value::mfrotation_id,
+                       "orientation"),
+        node_interface(node_interface::field_id,
+                       field_value::mfvec2f_id,
+                       "scale"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::mfvec3f_id,
+                       "spine")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<extrusion_node>(*this, id));
-    vrml97_node_type_impl<extrusion_node> & extrusionNodeType =
-            static_cast<vrml97_node_type_impl<extrusion_node> &>(*type);
-    typedef vrml97_node_type_impl<extrusion_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<extrusion_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & extrusionNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            extrusionNodeType.add_eventin(supportedInterfaces[0].field_type,
-                                         supportedInterfaces[0].id,
-                                         &extrusion_node::process_set_crossSection);
+            extrusionNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        extrusion_node::set_cross_section_listener>(
+                            &extrusion_node::set_cross_section_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
-            extrusionNodeType.add_eventin(supportedInterfaces[1].field_type,
-                                         supportedInterfaces[1].id,
-                                         &extrusion_node::process_set_orientation);
+            extrusionNodeType.add_eventin(
+                supportedInterfaces[1].field_type,
+                supportedInterfaces[1].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        extrusion_node::set_orientation_listener>(
+                            &extrusion_node::set_orientation_listener_)));
         } else if (*interface == supportedInterfaces[2]) {
-            extrusionNodeType.add_eventin(supportedInterfaces[2].field_type,
-                                         supportedInterfaces[2].id,
-                                         &extrusion_node::process_set_scale);
+            extrusionNodeType.add_eventin(
+                supportedInterfaces[2].field_type,
+                supportedInterfaces[2].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        extrusion_node::set_scale_listener>(
+                            &extrusion_node::set_scale_listener_)));
         } else if (*interface == supportedInterfaces[3]) {
-            extrusionNodeType.add_eventin(supportedInterfaces[3].field_type,
-                                         supportedInterfaces[3].id,
-                                         &extrusion_node::process_set_spine);
+            extrusionNodeType.add_eventin(
+                supportedInterfaces[3].field_type,
+                supportedInterfaces[3].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        extrusion_node::set_spine_listener>(
+                            &extrusion_node::set_spine_listener_)));
         } else if (*interface == supportedInterfaces[4]) {
             extrusionNodeType.add_field(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<extrusion_node, sfbool>
-                                    (&extrusion_node::beginCap)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &extrusion_node::begin_cap_)));
         } else if (*interface == supportedInterfaces[5]) {
             extrusionNodeType.add_field(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<extrusion_node, sfbool>
-                                    (&extrusion_node::ccw)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &extrusion_node::ccw_)));
         } else if (*interface == supportedInterfaces[6]) {
             extrusionNodeType.add_field(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<extrusion_node, sfbool>
-                                    (&extrusion_node::convex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &extrusion_node::convex_)));
         } else if (*interface == supportedInterfaces[7]) {
             extrusionNodeType.add_field(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<extrusion_node, sffloat>
-                                    (&extrusion_node::creaseAngle)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &extrusion_node::crease_angle_)));
         } else if (*interface == supportedInterfaces[8]) {
             extrusionNodeType.add_field(
                 supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<extrusion_node, mfvec2f>
-                                    (&extrusion_node::crossSection)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfvec2f>(
+                        &extrusion_node::cross_section_)));
         } else if (*interface == supportedInterfaces[9]) {
             extrusionNodeType.add_field(
                 supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<extrusion_node, sfbool>
-                                    (&extrusion_node::endCap)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &extrusion_node::end_cap_)));
         } else if (*interface == supportedInterfaces[10]) {
             extrusionNodeType.add_field(
                 supportedInterfaces[10].field_type,
                 supportedInterfaces[10].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<extrusion_node, mfrotation>
-                                    (&extrusion_node::orientation)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfrotation>(
+                        &extrusion_node::orientation_)));
         } else if (*interface == supportedInterfaces[11]) {
             extrusionNodeType.add_field(
                 supportedInterfaces[11].field_type,
                 supportedInterfaces[11].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<extrusion_node, mfvec2f>
-                                    (&extrusion_node::scale)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfvec2f>(
+                        &extrusion_node::scale_)));
         } else if (*interface == supportedInterfaces[12]) {
             extrusionNodeType.add_field(
                 supportedInterfaces[12].field_type,
                 supportedInterfaces[12].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<extrusion_node, sfbool>
-                                    (&extrusion_node::solid)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &extrusion_node::solid_)));
         } else if (*interface == supportedInterfaces[13]) {
             extrusionNodeType.add_field(
                 supportedInterfaces[13].field_type,
                 supportedInterfaces[13].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<extrusion_node, mfvec3f>
-                                    (&extrusion_node::spine)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfvec3f>(
+                        &extrusion_node::spine_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
     }
     return type;
-}
-
-namespace {
-    const vec2f extrusionDefaultCrossSection_[] = { vec2f(1.0, 1.0),
-                                                    vec2f(1.0, -1.0),
-                                                    vec2f(-1.0, -1.0),
-                                                    vec2f(-1.0, 1.0),
-                                                    vec2f(1.0, 1.0) };
-    const vec2f extrusionDefaultScale_[] = { vec2f(1.0, 1.0) };
-    const rotation extrusionDefaultOrientation_[] =
-            { rotation(0.0, 0.0, 1.0, 0.0) };
-    const vec3f extrusionDefaultSpine_[] = { vec3f(0.0, 0.0, 0.0),
-                                             vec3f(0.0, 1.0, 0.0) };
 }
 
 /**
@@ -5915,87 +6256,310 @@ namespace {
  */
 
 /**
- * @var sfbool extrusion_node::beginCap
+ * @class extrusion_node::set_cross_section_listener
  *
- * @brief beginCap field.
- */
-
-/**
- * @var sfbool extrusion_node::ccw
- *
- * @brief ccw field.
- */
-
-/**
- * @var sfbool extrusion_node::convex
- *
- * @brief convex field.
- */
-
-/**
- * @var sffloat extrusion_node::creaseAngle
- *
- * @brief creaseAngle field.
- */
-
-/**
- * @var mfvec2f extrusion_node::crossSection
- *
- * @brief crossSection field.
- */
-
-/**
- * @var sfbool extrusion_node::endCap
- *
- * @brief endCap field.
- */
-
-/**
- * @var mfrotation extrusion_node::orientation
- *
- * @brief orientation field.
- */
-
-/**
- * @var mfvec2f extrusion_node::scale
- *
- * @brief scale field.
- */
-
-/**
- * @var sfbool extrusion_node::solid
- *
- * @brief solid field.
- */
-
-/**
- * @var mfvec3f extrusion_node::spine
- *
- * @brief spine field.
+ * @brief set_crossSection event handler.
  */
 
 /**
  * @brief Construct.
  *
+ * @param node  extrusion_node.
+ */
+extrusion_node::set_cross_section_listener::
+set_cross_section_listener(extrusion_node & node):
+    mfvec2f_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+extrusion_node::set_cross_section_listener::~set_cross_section_listener()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param cross_section cross_section value.
+ * @param timestamp     the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+extrusion_node::set_cross_section_listener::
+process_event(const mfvec2f & cross_section, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        extrusion_node & extrusion =
+            dynamic_cast<extrusion_node &>(this->node);
+        extrusion.cross_section_ = cross_section;
+        extrusion.node::modified(true);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class extrusion_node::set_orientation_listener
+ *
+ * @brief set_orientation event handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  extrusion_node.
+ */
+extrusion_node::set_orientation_listener::
+set_orientation_listener(extrusion_node & node):
+    mfrotation_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+extrusion_node::set_orientation_listener::~set_orientation_listener()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param orientation   orientation value.
+ * @param timestamp     the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+extrusion_node::set_orientation_listener::
+process_event(const mfrotation & orientation, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        extrusion_node & extrusion =
+            dynamic_cast<extrusion_node &>(this->node);
+        extrusion.orientation_ = orientation;
+        extrusion.node::modified(true);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class extrusion_node::set_scale_listener
+ *
+ * @brief set_scale event handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  extrusion_node.
+ */
+extrusion_node::set_scale_listener::set_scale_listener(extrusion_node & node):
+    mfvec2f_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+extrusion_node::set_scale_listener::~set_scale_listener()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param scale     scale value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+extrusion_node::set_scale_listener::process_event(const mfvec2f & scale,
+                                                  const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        extrusion_node & extrusion =
+            dynamic_cast<extrusion_node &>(this->node);
+        extrusion.scale_ = scale;
+        extrusion.node::modified(true);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class extrusion_node::set_spine_listener
+ *
+ * @brief set_spine event handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  extrusion_node.
+ */
+extrusion_node::set_spine_listener::set_spine_listener(extrusion_node & node):
+    mfvec3f_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+extrusion_node::set_spine_listener::~set_spine_listener()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param spine     spine value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+extrusion_node::set_spine_listener::process_event(const mfvec3f & spine,
+                                                  const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        extrusion_node & extrusion =
+            dynamic_cast<extrusion_node &>(this->node);
+        extrusion.spine_ = spine;
+        extrusion.node::modified(true);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var extrusion_node::set_cross_section_listener extrusion_node::set_cross_section_listener_
+ *
+ * @brief set_crossSection eventIn handler.
+ */
+
+/**
+ * @var extrusion_node::set_orientation_listener extrusion_node::set_orientation_listener_
+ *
+ * @brief set_orientation eventIn handler.
+ */
+
+/**
+ * @var extrusion_node::set_scale_listener extrusion_node::set_scale_listener_
+ *
+ * @brief set_scale eventIn handler.
+ */
+
+/**
+ * @var extrusion_node::set_spine_listener extrusion_node::set_spine_listener_
+ *
+ * @brief set_spine eventIn handler.
+ */
+
+/**
+ * @var sfbool extrusion_node::begin_cap_
+ *
+ * @brief beginCap field.
+ */
+
+/**
+ * @var sfbool extrusion_node::ccw_
+ *
+ * @brief ccw field.
+ */
+
+/**
+ * @var sfbool extrusion_node::convex_
+ *
+ * @brief convex field.
+ */
+
+/**
+ * @var sffloat extrusion_node::crease_angle_
+ *
+ * @brief creaseAngle field.
+ */
+
+/**
+ * @var mfvec2f extrusion_node::cross_section_
+ *
+ * @brief crossSection field.
+ */
+
+/**
+ * @var sfbool extrusion_node::end_cap_
+ *
+ * @brief endCap field.
+ */
+
+/**
+ * @var mfrotation extrusion_node::orientation_
+ *
+ * @brief orientation field.
+ */
+
+/**
+ * @var mfvec2f extrusion_node::scale_
+ *
+ * @brief scale field.
+ */
+
+/**
+ * @var sfbool extrusion_node::solid_
+ *
+ * @brief solid field.
+ */
+
+/**
+ * @var mfvec3f extrusion_node::spine_
+ *
+ * @brief spine field.
+ */
+
+namespace {
+    const vec2f extrusionDefaultCrossSection_[] = { vec2f(1.0, 1.0),
+                                                    vec2f(1.0, -1.0),
+                                                    vec2f(-1.0, -1.0),
+                                                    vec2f(-1.0, 1.0),
+                                                    vec2f(1.0, 1.0) };
+    const vec2f extrusionDefaultScale_[] = { vec2f(1.0, 1.0) };
+    const rotation extrusionDefaultOrientation_[] =
+            { rotation(0.0, 0.0, 1.0, 0.0) };
+    const vec3f extrusionDefaultSpine_[] = { vec3f(0.0, 0.0, 0.0),
+                                             vec3f(0.0, 1.0, 0.0) };
+}
+
+/**
+ * @brief Construct.
+ *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 extrusion_node::extrusion_node(const node_type & type,
                                const scope_ptr & scope):
     node(type, scope),
     abstract_geometry_node(type, scope),
-    beginCap(true),
-    ccw(true),
-    convex(true),
-    creaseAngle(0),
-    crossSection(extrusionDefaultCrossSection_,
-                 extrusionDefaultCrossSection_ + 5),
-    endCap(true),
-    orientation(extrusionDefaultOrientation_,
-                extrusionDefaultOrientation_ + 1),
-    scale(extrusionDefaultScale_, extrusionDefaultScale_ + 1),
-    solid(true),
-    spine(extrusionDefaultSpine_, extrusionDefaultSpine_ + 2)
+    set_cross_section_listener_(*this),
+    set_orientation_listener_(*this),
+    set_scale_listener_(*this),
+    set_spine_listener_(*this),
+    begin_cap_(true),
+    ccw_(true),
+    convex_(true),
+    crease_angle_(0),
+    cross_section_(extrusionDefaultCrossSection_,
+                   extrusionDefaultCrossSection_ + 5),
+    end_cap_(true),
+    orientation_(extrusionDefaultOrientation_,
+                 extrusionDefaultOrientation_ + 1),
+    scale_(extrusionDefaultScale_, extrusionDefaultScale_ + 1),
+    solid_(true),
+    spine_(extrusionDefaultSpine_, extrusionDefaultSpine_ + 2)
 {}
 
 /**
@@ -6014,91 +6578,22 @@ extrusion_node::do_render_geometry(openvrml::viewer & viewer,
                                    const rendering_context context)
 {
     viewer::object_t obj = 0;
-    if (this->crossSection.value.size() > 0 && this->spine.value.size() > 1) {
-
+    if (!this->cross_section_.value.empty() && this->spine_.value.size() > 1) {
         unsigned int optMask = 0;
-        if (this->ccw.value)        { optMask |= viewer::mask_ccw; }
-        if (this->convex.value)     { optMask |= viewer::mask_convex; }
-        if (this->solid.value)      { optMask |= viewer::mask_solid; }
-        if (this->beginCap.value)   { optMask |= viewer::mask_bottom; }
-        if (this->endCap.value)     { optMask |= viewer::mask_top; }
+        if (this->ccw_.value)        { optMask |= viewer::mask_ccw; }
+        if (this->convex_.value)     { optMask |= viewer::mask_convex; }
+        if (this->solid_.value)      { optMask |= viewer::mask_solid; }
+        if (this->begin_cap_.value)  { optMask |= viewer::mask_bottom; }
+        if (this->end_cap_.value)    { optMask |= viewer::mask_top; }
 
         obj = viewer.insert_extrusion(optMask,
-                                      this->spine.value,
-                                      this->crossSection.value,
-                                      this->orientation.value,
-                                      this->scale.value);
+                                      this->spine_.value,
+                                      this->cross_section_.value,
+                                      this->orientation_.value,
+                                      this->scale_.value);
     }
 
     return obj;
-}
-
-/**
- * @brief set_crossSection eventIn handler.
- *
- * @param value     an mfvec2f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfvec2f.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void extrusion_node::process_set_crossSection(const field_value & value,
-                                              const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->crossSection = dynamic_cast<const mfvec2f &>(value);
-    this->node::modified(true);
-}
-
-/**
- * @brief set_orientation field mutator.
- *
- * @param value     an mfrotation value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfrotation.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void extrusion_node::process_set_orientation(const field_value & value,
-                                             const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->orientation = dynamic_cast<const mfrotation &>(value);
-    this->node::modified(true);
-}
-
-/**
- * @brief set_scale eventIn handler.
- *
- * @param value     an mfvec2f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfvec2f.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void extrusion_node::process_set_scale(const field_value & value,
-                                       const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->scale = dynamic_cast<const mfvec2f &>(value);
-    this->node::modified(true);
-}
-
-/**
- * @brief set_spine eventIn handler.
- *
- * @param value     an mfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfvec3f.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void extrusion_node::process_set_spine(const field_value & value,
-                                       const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->spine = dynamic_cast<const mfvec3f &>(value);
-    this->node::modified(true);
 }
 
 
@@ -6198,16 +6693,16 @@ void fog_class::bind(fog_node & fog, const double timestamp)
     if (!this->bound_nodes.empty()) {
         fog_node & current =
             dynamic_cast<fog_node &>(*this->bound_nodes.back());
-        current.bound.value = false;
-        current.emit_event("isBound", current.bound, timestamp);
+        current.is_bound_.value = false;
+        node::emit_event(current.is_bound_emitter_, timestamp);
     }
 
     //
     // Push the node to the top of the stack, and have it send isBound TRUE.
     //
     this->bound_nodes.push_back(&fog);
-    fog.bound.value = true;
-    fog.emit_event("isBound", fog.bound, timestamp);
+    fog.is_bound_.value = true;
+    node::emit_event(fog.is_bound_emitter_, timestamp);
 }
 
 /**
@@ -6221,15 +6716,15 @@ void fog_class::unbind(fog_node & fog, const double timestamp) throw ()
     const bound_nodes_t::iterator pos =
         std::find(this->bound_nodes.begin(), this->bound_nodes.end(), &fog);
     if (pos != this->bound_nodes.end()) {
-        fog.bound.value = false;
-        fog.emit_event("isBound", fog.bound, timestamp);
+        fog.is_bound_.value = false;
+        node::emit_event(fog.is_bound_emitter_, timestamp);
 
         if (pos == this->bound_nodes.end() - 1
             && this->bound_nodes.size() > 1) {
             fog_node & newActive =
                 dynamic_cast<fog_node &>(**(this->bound_nodes.end() - 2));
-            newActive.bound.value = true;
-            newActive.emit_event("isBound", newActive.bound, timestamp);
+            newActive.is_bound_.value = true;
+            node::emit_event(newActive.is_bound_emitter_, timestamp);
         }
         this->bound_nodes.erase(pos);
     }
@@ -6246,7 +6741,15 @@ void fog_class::initialize(openvrml::viewpoint_node * initialViewpoint,
     throw ()
 {
     if (this->first) {
-        this->first->process_event("set_bind", sfbool(true), timestamp);
+        try {
+            event_listener & listener =
+                this->first->event_listener("set_bind");
+            assert(dynamic_cast<sfbool_listener *>(&listener));
+            static_cast<sfbool_listener &>(listener)
+                .process_event(sfbool(true), timestamp);
+        } catch (unsupported_interface & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+        }
     }
 }
 
@@ -6261,9 +6764,9 @@ void fog_class::render(openvrml::viewer & viewer) throw ()
 {
     if (!this->bound_nodes.empty()) {
         fog_node & fog = dynamic_cast<fog_node &>(*this->bound_nodes.back());
-        viewer.set_fog(fog.color.value,
-                       fog.visibilityRange.value,
-                       fog.fogType.value.c_str());
+        viewer.set_fog(fog.color_.sfcolor::value,
+                       fog.visibility_range_.sffloat::value,
+                       fog.fog_type_.sfstring::value.c_str());
     }
 }
 
@@ -6285,49 +6788,84 @@ fog_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::sfbool_id, "set_bind"),
-        node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "color"),
-        node_interface(node_interface::exposedfield_id, field_value::sfstring_id, "fogType"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "visibilityRange"),
-        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_bind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "fogType"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "visibilityRange"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isBound")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<fog_node>(*this, id));
-    vrml97_node_type_impl<fog_node> & fogNodeType =
-            static_cast<vrml97_node_type_impl<fog_node> &>(*type);
-    typedef vrml97_node_type_impl<fog_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<fog_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & fogNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            fogNodeType.add_eventin(supportedInterfaces[0].field_type,
-                                   supportedInterfaces[0].id,
-                                   &fog_node::process_set_bind);
+            fogNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    fog_node::set_bind_listener>(
+                        &fog_node::set_bind_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
             fogNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &fog_node::process_set_color,
-                node_field_ptr_ptr(new node_field_ptr_impl<fog_node, sfcolor>
-                                    (&fog_node::color)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfcolor> >(&fog_node::color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfcolor> >(
+                        &fog_node::color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfcolor> >(
+                        &fog_node::color_)));
         } else if (*interface == supportedInterfaces[2]) {
             fogNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &fog_node::process_set_fogType,
-                node_field_ptr_ptr(new node_field_ptr_impl<fog_node, sfstring>
-                                    (&fog_node::fogType)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfstring> >(&fog_node::fog_type_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfstring> >(
+                        &fog_node::fog_type_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                        exposedfield<sfstring> >(&fog_node::fog_type_)));
         } else if (*interface == supportedInterfaces[3]) {
             fogNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &fog_node::process_set_visibilityRange,
-                node_field_ptr_ptr(new node_field_ptr_impl<fog_node, sffloat>
-                                    (&fog_node::visibilityRange)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(&fog_node::visibility_range_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &fog_node::visibility_range_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &fog_node::visibility_range_)));
         } else if (*interface == supportedInterfaces[4]) {
             fogNodeType.add_eventout(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<fog_node, sfbool>
-                                    (&fog_node::bound)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &fog_node::is_bound_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -6348,43 +6886,102 @@ fog_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfcolor fog_node::color
+ * @class fog_node::set_bind_listener
+ *
+ * @brief set_bind event handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  fog_node.
+ */
+fog_node::set_bind_listener::set_bind_listener(fog_node & node):
+    sfbool_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+fog_node::set_bind_listener::~set_bind_listener() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param bind      bind state.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void fog_node::set_bind_listener::process_event(const sfbool & bind,
+                                                const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        fog_node & fog = dynamic_cast<fog_node &>(this->node);
+        fog_class & node_class =
+            static_cast<fog_class &>(node.type.node_class);
+        if (bind.value) {
+            node_class.bind(fog, timestamp);
+        } else {
+            node_class.unbind(fog, timestamp);
+        }
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var fog_node::set_bind_listener fog_node::set_bind_listener_
+ *
+ * @brief set_bind eventIn handler.
+ */
+
+/**
+ * @var exposedfield<sfcolor> fog_node::color_
  *
  * @brief color exposedField.
  */
 
 /**
- * @var sfstring fog_node::fogType
+ * @var exposedfield<sfstring> fog_node::fog_type_
  *
  * @brief fogType exposedField.
  */
 
 /**
- * @var sffloat fog_node::visibilityRange
+ * @var exposedfield<sffloat> fog_node::visibility_range_
  *
  * @brief visibilityRange exposedField.
  */
 
 /**
- * @var sfbool fog_node::bound
+ * @var sfbool fog_node::is_bound_
  *
- * @brief isBound eventOut.
+ * @brief isBound eventOut value.
+ */
+
+/**
+ * @var sfbool fog_node::is_bound_emitter_
+ *
+ * @brief isBound eventOut emitter.
  */
 
 /**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
-fog_node::fog_node(const node_type & type,
-                   const scope_ptr & scope):
+fog_node::fog_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
-    color(openvrml::color(1.0, 1.0, 1.0)),
-    fogType("LINEAR"),
-    visibilityRange(0.0),
-    bound(false)
+    set_bind_listener_(*this),
+    color_(*this, openvrml::color(1.0, 1.0, 1.0)),
+    fog_type_(*this, "LINEAR"),
+    visibility_range_(*this, 0.0),
+    is_bound_emitter_(this->is_bound_)
 {}
 
 /**
@@ -6417,81 +7014,6 @@ void fog_node::do_shutdown(const double timestamp) throw ()
     nodeClass.unbind(*this, timestamp);
 }
 
-/**
- * @brief set_bind eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfbool value.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void fog_node::process_set_bind(const field_value & value,
-                                const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    const sfbool & bind = dynamic_cast<const sfbool &>(value);
-    fog_class & nodeClass = static_cast<fog_class &>(this->type.node_class);
-    if (bind.value) {
-        nodeClass.bind(*this, timestamp);
-    } else {
-        nodeClass.unbind(*this, timestamp);
-    }
-}
-
-/**
- * @brief set_color eventIn handler.
- *
- * @param value     an sfcolor value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfcolor value.
- */
-void fog_node::process_set_color(const field_value & value,
-                                 const double timestamp)
-    throw (std::bad_cast)
-{
-    this->color = dynamic_cast<const sfcolor &>(value);
-    this->node::modified(true);
-    this->emit_event("color_changed", this->color, timestamp);
-}
-
-/**
- * @brief set_fogType eventIn handler.
- *
- * @param value     an sfstring value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfstring value.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void fog_node::process_set_fogType(const field_value & value,
-                                   const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->fogType = dynamic_cast<const sfstring &>(value);
-    this->node::modified(true);
-    this->emit_event("fogType_changed", this->fogType, timestamp);
-}
-
-/**
- * @brief set_visibilityRange eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat value.
- */
-void fog_node::process_set_visibilityRange(const field_value & value,
-                                           const double timestamp)
-    throw (std::bad_cast)
-{
-    this->visibilityRange = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("visibilityRange_changed", this->visibilityRange,
-                     timestamp);
-}
-
 
 /**
  * @class font_style_class
@@ -6508,6 +7030,9 @@ font_style_class::font_style_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
+/**
+ * @brief Destroy.
+ */
 font_style_class::~font_style_class() throw ()
 {}
 
@@ -6557,66 +7082,77 @@ font_style_class::create_type(const std::string & id,
                        field_value::sfbool_id,
                        "topToBottom")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<font_style_node>(*this, id));
-    vrml97_node_type_impl<font_style_node> & fontStyleNodeType =
-            static_cast<vrml97_node_type_impl<font_style_node> &>(*type);
-    typedef vrml97_node_type_impl<font_style_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<font_style_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & fontStyleNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             fontStyleNodeType.add_field(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<font_style_node, mfstring>
-                                    (&font_style_node::family_)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfstring>(
+                        &font_style_node::family_)));
         } else if (*interface == supportedInterfaces[1]) {
             fontStyleNodeType.add_field(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<font_style_node, sfbool>
-                                    (&font_style_node::horizontal_)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &font_style_node::horizontal_)));
         } else if (*interface == supportedInterfaces[2]) {
             fontStyleNodeType.add_field(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<font_style_node, mfstring>
-                                    (&font_style_node::justify_)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfstring>(
+                        &font_style_node::justify_)));
         } else if (*interface == supportedInterfaces[3]) {
             fontStyleNodeType.add_field(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<font_style_node, sfstring>
-                                    (&font_style_node::language_)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfstring>(
+                        &font_style_node::language_)));
         } else if (*interface == supportedInterfaces[4]) {
             fontStyleNodeType.add_field(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<font_style_node, sfbool>
-                                    (&font_style_node::leftToRight)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &font_style_node::leftToRight)));
         } else if (*interface == supportedInterfaces[5]) {
             fontStyleNodeType.add_field(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<font_style_node, sffloat>
-                                    (&font_style_node::size_)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &font_style_node::size_)));
         } else if (*interface == supportedInterfaces[6]) {
             fontStyleNodeType.add_field(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<font_style_node, sffloat>
-                                    (&font_style_node::spacing_)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &font_style_node::spacing_)));
         } else if (*interface == supportedInterfaces[7]) {
             fontStyleNodeType.add_field(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<font_style_node, sfstring>
-                                    (&font_style_node::style_)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfstring>(
+                        &font_style_node::style_)));
         } else if (*interface == supportedInterfaces[8]) {
             fontStyleNodeType.add_field(
                 supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<font_style_node, sfbool>
-                                    (&font_style_node::topToBottom)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &font_style_node::topToBottom)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -6873,40 +7409,59 @@ group_class::create_type(const std::string & id,
                        field_value::sfvec3f_id,
                        "bboxSize")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<group_node>(*this, id));
-    vrml97_node_type_impl<group_node> & groupNodeType =
-        static_cast<vrml97_node_type_impl<group_node> &>(*type);
-    typedef vrml97_node_type_impl<group_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<group_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & groupNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
             interface != interfaces.end(); ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            groupNodeType.add_eventin(supportedInterfaces[0].field_type,
-                                     supportedInterfaces[0].id,
-                                     &group_node::process_addChildren);
+            groupNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        group_node::add_children_listener>(
+                            &group_node::add_children_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
-            groupNodeType.add_eventin(supportedInterfaces[1].field_type,
-                                     supportedInterfaces[1].id,
-                                     &group_node::process_removeChildren);
+            groupNodeType.add_eventin(
+                supportedInterfaces[1].field_type,
+                supportedInterfaces[1].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        group_node::remove_children_listener>(
+                            &group_node::remove_children_listener_)));
         } else if (*interface == supportedInterfaces[2]) {
             groupNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &group_node::process_set_children,
-                node_field_ptr_ptr(new node_field_ptr_impl<group_node, mfnode>
-                                    (&group_node::children_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        group_node::children_exposedfield>(
+                            &group_node::children_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                        group_node::children_exposedfield>(
+                            &group_node::children_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                        group_node::children_exposedfield>(
+                            &group_node::children_)));
         } else if (*interface == supportedInterfaces[3]) {
             groupNodeType.add_field(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<group_node, sfvec3f>
-                                    (&group_node::bboxCenter)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(
+                        &group_node::bbox_center_)));
         } else if (*interface == supportedInterfaces[4]) {
             groupNodeType.add_field(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<group_node, sfvec3f>
-                                (&group_node::bboxSize)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(
+                        &group_node::bbox_size_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -6927,19 +7482,214 @@ group_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfvec3f group_node::bboxCenter
+ * @class group_node::add_children_listener
+ *
+ * @brief addChildren event listener.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  group_node.
+ */
+group_node::add_children_listener::add_children_listener(group_node & node):
+    mfnode_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+group_node::add_children_listener::~add_children_listener() throw ()
+{}
+
+/**
+ * @brief Process an event.
+ *
+ * If this function throws, it is possible (even likely) that only part of the
+ * nodes in @p value have been added to the Group node's children exposedField.
+ *
+ * @param value     @link openvrml::child_node child_nodes@endlink to add.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+void group_node::add_children_listener::process_event(const mfnode & value,
+                                                      const double timestamp)
+    throw (std::bad_alloc)
+{
+    using std::vector;
+
+    group_node & group = dynamic_cast<group_node &>(this->node);
+
+    for (vector<node_ptr>::const_iterator node = value.value.begin();
+         node != value.value.end();
+         ++node) {
+        //
+        // Don't add NULLs.
+        //
+        if (*node) {
+            using std::find;
+            using openvrml_::scope_guard;
+            using openvrml_::make_obj_guard;
+
+            vector<node_ptr>::iterator pos =
+                find(group.children_.mfnode::value.begin(),
+                     group.children_.mfnode::value.end(),
+                     *node);
+            if (pos == group.children_.mfnode::value.end()) {
+                //
+                // Throws std::bad_alloc.
+                //
+                group.children_.mfnode::value.push_back(*node);
+                scope_guard guard =
+                    make_obj_guard(group.children_.mfnode::value,
+                                   &vector<node_ptr>::pop_back);
+                child_node * const child =
+                    node_cast<child_node *>(node->get());
+                if (child) { child->relocate(); } // Throws std::bad_alloc.
+                guard.dismiss();
+            }
+        }
+    }
+
+    group.node::modified(true);
+    group.bounding_volume_dirty(true);
+    node::emit_event(group.children_, timestamp);
+}
+
+/**
+ * @class group_node::add_children_listener
+ *
+ * @brief removeChildren event listener.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  group_node.
+ */
+group_node::
+remove_children_listener::remove_children_listener(group_node & node):
+    mfnode_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+group_node::remove_children_listener::~remove_children_listener() throw ()
+{}
+
+/**
+ * @brief Process an event.
+ */
+void
+group_node::remove_children_listener::process_event(const mfnode & value,
+                                                    const double timestamp)
+    throw (std::bad_alloc)
+{
+    using std::vector;
+
+    group_node & group = dynamic_cast<group_node &>(this->node);
+
+    for (vector<node_ptr>::const_iterator node = value.value.begin();
+         node != value.value.end();
+         ++node) {
+        using std::remove;
+        group.children_.mfnode::value
+            .erase(remove(group.children_.mfnode::value.begin(),
+                          group.children_.mfnode::value.end(),
+                          *node),
+                   group.children_.mfnode::value.end());
+    }
+
+    group.node::modified(true);
+    group.bounding_volume_dirty(true);
+    node::emit_event(group.children_, timestamp);
+}
+
+/**
+ * @class group_node::children_exposedfield
+ *
+ * @brief children exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  group_node.
+ */
+group_node::children_exposedfield::children_exposedfield(openvrml::node & node)
+    throw ():
+    exposedfield<mfnode>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+group_node::children_exposedfield::~children_exposedfield() throw ()
+{}
+
+/**
+ * @brief Handle event.
+ */
+void
+group_node::children_exposedfield::do_process_event(const mfnode & value,
+                                                    const double timestamp)
+    throw (std::bad_alloc)
+{
+    using std::vector;
+
+    group_node & group = dynamic_cast<group_node &>(this->node);
+
+    this->mfnode::value.clear();
+
+    for (vector<node_ptr>::const_iterator node = value.value.begin();
+         node != value.value.end();
+         ++node) {
+        using openvrml_::scope_guard;
+        using openvrml_::make_obj_guard;
+
+        //
+        // The spec is ambiguous about whether the children field of grouping
+        // nodes can contain NULLs. We allow it; for now, at least.
+        //
+        this->mfnode::value.push_back(*node); // Throws std::bad_alloc.
+        scope_guard guard = make_obj_guard(this->mfnode::value,
+                                           &vector<node_ptr>::pop_back);
+        child_node * const child = node_cast<child_node *>(node->get());
+        if (child) { child->relocate(); } // Throws std::bad_alloc.
+        guard.dismiss();
+    }
+
+    group.bounding_volume_dirty(true);
+}
+
+/**
+ * @var sfvec3f group_node::bbox_center_
  *
  * @brief bboxCenter field.
  */
 
 /**
- * @var sfvec3f group_node::bboxSize
+ * @var sfvec3f group_node::bbox_size_
  *
  * @brief bboxSize field.
  */
 
 /**
- * @var mfnode group_node::children_
+ * @var group_node::add_children_listener group_node::add_children_listener_
+ *
+ * @brief addChildren eventIn handler.
+ */
+
+/**
+ * @var group_node::remove_children_listener group_node::remove_children_listener_
+ *
+ * @brief removeChildren eventIn handler.
+ */
+
+/**
+ * @var group_node::children_exposedfield group_node::children_
  *
  * @brief children exposedField.
  */
@@ -6962,13 +7712,15 @@ group_class::create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope the scope to which the node belongs.
  */
-group_node::group_node(const node_type & type,
-                       const scope_ptr & scope):
+group_node::group_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
     abstract_base(type, scope),
-    bboxSize(vec3f(-1.0, -1.0, -1.0)),
+    bbox_size_(vec3f(-1.0, -1.0, -1.0)),
+    add_children_listener_(*this),
+    remove_children_listener_(*this),
+    children_(*this),
     viewerObject(0)
 {
     this->bounding_volume_dirty(true);
@@ -6983,122 +7735,6 @@ group_node::~group_node() throw ()
 }
 
 /**
- * @brief addChildren eventIn handler.
- *
- * @param value     an mfnode containing nodes to add to this Group.
- * @param timestamp the current timestamp
- *
- * @exception std::bad_cast     if @p value is not an mfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- *
- * @todo This function should throw an exception if there is an attempt to
- *       add a node that is not a child_node.
- */
-void group_node::process_addChildren(const field_value & value,
-                                     const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    const mfnode & newChildren = dynamic_cast<const mfnode &>(value);
-    size_t nNow = this->children_.value.size();
-
-    for (size_t i = 0; i < newChildren.value.size(); ++i) {
-        const node_ptr & n = newChildren.value[i];
-        child_node * const child = node_cast<child_node *>(n.get());
-        if (child) {
-            this->children_.value.push_back(n);
-            child->relocate();
-        } else {
-            OPENVRML_PRINT_MESSAGE_("Attempt to add a " + child->type.id
-                                    + " node as a child of a " + this->type.id
-                                    + " node.");
-        }
-    }
-
-    if (nNow != this->children_.value.size()) {
-        this->node::modified(true);
-        this->bounding_volume_dirty(true);
-    }
-}
-
-/**
- * @brief removeChildren eventIn handler.
- *
- * @param value     an mfnode containing nodes to remove from this Group.
- * @param timestamp the current timestamp
- *
- * @exception std::bad_cast     if @p value is not an mfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void group_node::process_removeChildren(const field_value & value,
-                                        const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    const mfnode & childrenToRemove = dynamic_cast<const mfnode &>(value);
-    const size_t oldLength = this->children_.value.size();
-
-    for (size_t i = 0; i < childrenToRemove.value.size(); ++i) {
-        const node_ptr & node = childrenToRemove.value[i];
-        if (node) {
-            using std::remove;
-            using std::vector;
-            const vector<node_ptr>::iterator begin =
-                this->children_.value.begin();
-            const vector<node_ptr>::iterator end = this->children_.value.end();
-            this->children_.value.erase(remove(begin, end, node), end);
-        }
-    }
-
-    if (oldLength != this->children_.value.size()) {
-        this->node::modified(true);
-        this->bounding_volume_dirty(true);
-    }
-}
-
-/**
- * @brief set_children eventIn handler.
- *
- * @param value     an mfnode containing nodes for this Group.
- * @param timestamp the current timestamp
- *
- * @exception std::bad_cast     if @p value is not an mfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- *
- * @todo This function should throw an exception if there is an element of
- *       @p value is not a child_node.
- */
-void group_node::process_set_children(const field_value & value,
-                                      const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    using std::swap;
-    using std::vector;
-
-    const mfnode & new_children = dynamic_cast<const mfnode &>(value);
-    mfnode children(new_children.value.size());
-
-    for (vector<node_ptr>::size_type i = 0;
-         i < new_children.value.size();
-         ++i) {
-        const node_ptr & n = new_children.value[i];
-        child_node * const child = node_cast<child_node *>(n.get());
-        if (!n || child) {
-            children.value[i] = n;
-            if (child) { child->relocate(); }
-        } else {
-            OPENVRML_PRINT_MESSAGE_("Attempt to add a " + child->type.id
-                                    + " node as a child of a " + this->type.id
-                                    + " node.");
-        }
-    }
-
-    swap(this->children_, children);
-
-    this->node::modified(true);
-    this->bounding_volume_dirty(true);
-    this->emit_event("children_changed", this->children_, timestamp);
-}
-
-/**
  * @brief Determine whether the node has been modified.
  *
  * @return @c true if the node or one of its children has been modified,
@@ -7107,8 +7743,8 @@ void group_node::process_set_children(const field_value & value,
 bool group_node::modified() const
 {
     if (this->node::modified()) { return true; }
-    for (size_t i = 0; i < this->children_.value.size(); ++i) {
-        if (this->children_.value[i]->modified()) { return true; }
+    for (size_t i = 0; i < this->children_.mfnode::value.size(); ++i) {
+        if (this->children_.mfnode::value[i]->modified()) { return true; }
     }
     return false;
 }
@@ -7161,8 +7797,9 @@ void group_node::render_nocull(openvrml::viewer & viewer,
 
     if (this->viewerObject) {
         viewer.insert_reference(this->viewerObject);
-    } else if (this->children_.value.size() > 0) {
-        vector<node_ptr>::size_type i, n = this->children_.value.size();
+    } else if (!this->children_.mfnode::value.empty()) {
+        vector<node_ptr>::size_type i;
+        vector<node_ptr>::size_type n = this->children_.mfnode::value.size();
         size_t nSensors = 0;
 
         this->viewerObject = viewer.begin_object(this->id().c_str());
@@ -7171,7 +7808,8 @@ void group_node::render_nocull(openvrml::viewer & viewer,
         // TouchSensors, any others? ...)
         for (i = 0; i < n; ++i) {
             child_node * const child =
-                node_cast<child_node *>(this->children_.value[i].get());
+                node_cast<child_node *>(
+                    this->children_.mfnode::value[i].get());
             if (child) {
                 if (child->to_light()
                     && !(child->to_point_light() || child->to_spot_light())) {
@@ -7192,7 +7830,8 @@ void group_node::render_nocull(openvrml::viewer & viewer,
         // Do the rest of the children (except the scene-level lights)
         for (i = 0; i<n; ++i) {
             child_node * const child =
-                node_cast<child_node *>(this->children_.value[i].get());
+                node_cast<child_node *>(
+                    this->children_.mfnode::value[i].get());
             if (child && !(child->to_light()
 //                    || child->to_plane_sensor()
 //                    || child->to_cylinder_sensor()
@@ -7218,7 +7857,7 @@ void group_node::render_nocull(openvrml::viewer & viewer,
  */
 const std::vector<node_ptr> & group_node::children() const throw ()
 {
-    return this->children_.value;
+    return this->children_.mfnode::value;
 }
 
 /**
@@ -7226,8 +7865,8 @@ const std::vector<node_ptr> & group_node::children() const throw ()
  */
 void group_node::activate(double time, bool isOver, bool isActive, double *p)
 {
-    for (size_t i = 0; i < this->children_.value.size(); ++i) {
-        const node_ptr & node = this->children_.value[i];
+    for (size_t i = 0; i < this->children_.mfnode::value.size(); ++i) {
+        const node_ptr & node = this->children_.mfnode::value[i];
         if (node) {
             if (node->to_touch_sensor()
                     && node->to_touch_sensor()->enabled()) {
@@ -7265,8 +7904,8 @@ const bounding_volume & group_node::bounding_volume() const
 void group_node::recalc_bsphere()
 {
     this->bsphere = bounding_sphere();
-    for (size_t i = 0; i < this->children_.value.size(); ++i) {
-        const node_ptr & node = this->children_.value[i];
+    for (size_t i = 0; i < this->children_.mfnode::value.size(); ++i) {
+        const node_ptr & node = this->children_.mfnode::value[i];
         if (node) {
             const openvrml::bounding_volume & ci_bv = node->bounding_volume();
             this->bsphere.extend(ci_bv);
@@ -7325,32 +7964,44 @@ image_texture_class::create_type(const std::string & id,
                        field_value::sfbool_id,
                        "repeatT")
     };
-    const node_type_ptr
-        type(new vrml97_node_type_impl<image_texture_node>(*this, id));
-    vrml97_node_type_impl<image_texture_node> & imageTextureNodeType =
-            static_cast<vrml97_node_type_impl<image_texture_node> &>(*type);
-    typedef vrml97_node_type_impl<image_texture_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<image_texture_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & imageTextureNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             imageTextureNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &image_texture_node::process_set_url,
-                node_field_ptr_ptr(new node_field_ptr_impl<image_texture_node, mfstring>
-                                    (&image_texture_node::url)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        image_texture_node::url_exposedfield>(
+                            &image_texture_node::url_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                        image_texture_node::url_exposedfield>(
+                            &image_texture_node::url_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                        image_texture_node::url_exposedfield>(
+                            &image_texture_node::url_)));
         } else if (*interface == supportedInterfaces[1]) {
             imageTextureNodeType.add_field(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<image_texture_node, sfbool>
-                                    (&image_texture_node::repeatS)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &image_texture_node::repeat_s_)));
         } else if (*interface == supportedInterfaces[2]) {
             imageTextureNodeType.add_field(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<image_texture_node, sfbool>
-                                    (&image_texture_node::repeatT)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &image_texture_node::repeat_t_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -7371,7 +8022,53 @@ image_texture_class::create_type(const std::string & id,
  */
 
 /**
- * @var mfstring image_texture_node::url
+ * @class image_texture_node::url_exposedfield
+ *
+ * @brief url exposedField.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  image_texture_node.
+ */
+image_texture_node::url_exposedfield::
+url_exposedfield(image_texture_node & node):
+    exposedfield<mfstring>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+image_texture_node::url_exposedfield::~url_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param url       url.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+image_texture_node::url_exposedfield::do_process_event(const mfstring & url,
+                                                       const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        image_texture_node & image_texture =
+            dynamic_cast<image_texture_node &>(this->node);
+
+        image_texture.url_.mfstring::value = url.value;
+        image_texture.texture_needs_update = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var image_texture_node::url_exposedfield image_texture_node::url_
  *
  * @brief url exposedField.
  */
@@ -7393,12 +8090,13 @@ image_texture_class::create_type(const std::string & id,
  * @brief Construct.
  *
  * @param type  the node_type associated with the node.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 image_texture_node::image_texture_node(const node_type & type,
                                        const scope_ptr & scope):
     node(type, scope),
     abstract_texture_node(type, scope),
+    url_(*this),
     texture_needs_update(true)
 {}
 
@@ -7443,8 +8141,8 @@ image_texture_node::do_render_texture(viewer & v, rendering_context context)
 {
     this->update_texture();
     return v.insert_texture(this->image_,
-                            this->repeatS.value,
-                            this->repeatT.value,
+                            this->repeat_s_.value,
+                            this->repeat_t_.value,
                             true);
 }
 
@@ -7454,10 +8152,10 @@ image_texture_node::do_render_texture(viewer & v, rendering_context context)
 void image_texture_node::update_texture()
 {
     if (this->texture_needs_update) {
-        if (!this->url.value.empty()) {
+        if (!this->url_.mfstring::value.empty()) {
             doc2 baseDoc(this->scene()->url());
             img img_;
-            if (img_.try_urls(this->url.value, &baseDoc)) {
+            if (img_.try_urls(this->url_.mfstring::value, &baseDoc)) {
                 this->image_ =
                     openvrml::image(img_.w(),
                                     img_.h(),
@@ -7467,30 +8165,11 @@ void image_texture_node::update_texture()
                                     + (img_.w() * img_.h() * img_.nc()));
             } else {
                 OPENVRML_PRINT_MESSAGE_("Couldn't read ImageTexture from URL "
-                                        + this->url.value[0]);
+                                        + this->url_.mfstring::value[0]);
             }
         }
         this->texture_needs_update = false;
     }
-}
-
-/**
- * @brief set_url eventIn handler.
- *
- * @param value     an mfstring value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void image_texture_node::process_set_url(const field_value & value,
-                                         const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->url = dynamic_cast<const mfstring &>(value);
-    this->texture_needs_update = true;
-    this->node::modified(true);
-    this->emit_event("url_changed", this->url, timestamp);
 }
 
 
@@ -7521,7 +8200,8 @@ indexed_face_set_class::~indexed_face_set_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating IndexedFaceSet nodes.
+ * @return a node_type_ptr to a node_type capable of creating IndexedFaceSet
+ *         nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by indexed_face_set_class.
@@ -7533,139 +8213,223 @@ indexed_face_set_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::mfint32_id, "set_colorIndex"),
-        node_interface(node_interface::eventin_id, field_value::mfint32_id, "set_coordIndex"),
-        node_interface(node_interface::eventin_id, field_value::mfint32_id, "set_normalIndex"),
-        node_interface(node_interface::eventin_id, field_value::mfint32_id, "set_texCoordIndex"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "color"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "coord"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "normal"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "texCoord"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "ccw"),
-        node_interface(node_interface::field_id, field_value::mfint32_id, "colorIndex"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "colorPerVertex"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "convex"),
-        node_interface(node_interface::field_id, field_value::mfint32_id, "coordIndex"),
-        node_interface(node_interface::field_id, field_value::sffloat_id, "creaseAngle"),
-        node_interface(node_interface::field_id, field_value::mfint32_id, "normalIndex"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "normalPerVertex"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
-        node_interface(node_interface::field_id, field_value::mfint32_id, "texCoordIndex")
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_colorIndex"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_coordIndex"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_normalIndex"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_texCoordIndex"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "colorIndex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "convex"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "coordIndex"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "creaseAngle"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "normalIndex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "texCoordIndex")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<indexed_face_set_node>(*this, id));
-    vrml97_node_type_impl<indexed_face_set_node> & indexedFaceSetNodeType =
-            static_cast<vrml97_node_type_impl<indexed_face_set_node> &>(*type);
-    typedef vrml97_node_type_impl<indexed_face_set_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<indexed_face_set_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & indexedFaceSetNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            indexedFaceSetNodeType
-                    .add_eventin(supportedInterfaces[0].field_type,
-                                supportedInterfaces[0].id,
-                                &indexed_face_set_node::process_set_colorIndex);
+            indexedFaceSetNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        indexed_face_set_node::set_color_index_listener>(
+                            &indexed_face_set_node::set_color_index_)));
         } else if (*interface == supportedInterfaces[1]) {
-            indexedFaceSetNodeType
-                    .add_eventin(supportedInterfaces[1].field_type,
-                                supportedInterfaces[1].id,
-                                &indexed_face_set_node::process_set_coordIndex);
+            indexedFaceSetNodeType.add_eventin(
+                supportedInterfaces[1].field_type,
+                supportedInterfaces[1].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        indexed_face_set_node::set_coord_index_listener>(
+                            &indexed_face_set_node::set_coord_index_)));
         } else if (*interface == supportedInterfaces[2]) {
-            indexedFaceSetNodeType
-                    .add_eventin(supportedInterfaces[2].field_type,
-                                supportedInterfaces[2].id,
-                                &indexed_face_set_node::process_set_normalIndex);
+            indexedFaceSetNodeType.add_eventin(
+                supportedInterfaces[2].field_type,
+                supportedInterfaces[2].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        indexed_face_set_node::set_normal_index_listener>(
+                            &indexed_face_set_node::set_normal_index_listener_)));
         } else if (*interface == supportedInterfaces[3]) {
-            indexedFaceSetNodeType
-                    .add_eventin(supportedInterfaces[3].field_type,
-                                supportedInterfaces[3].id,
-                                &indexed_face_set_node::process_set_texCoordIndex);
+            indexedFaceSetNodeType.add_eventin(
+                supportedInterfaces[3].field_type,
+                supportedInterfaces[3].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        indexed_face_set_node::set_tex_coord_index_listener>(
+                            &indexed_face_set_node::set_tex_coord_index_listener_)));
         } else if (*interface == supportedInterfaces[4]) {
             indexedFaceSetNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &indexed_face_set_node::process_set_color,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, sfnode>
-                                    (&indexed_face_set_node::color_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &indexed_face_set_node::color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &indexed_face_set_node::color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &indexed_face_set_node::color_)));
         } else if (*interface == supportedInterfaces[5]) {
             indexedFaceSetNodeType.add_exposedfield(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                &indexed_face_set_node::process_set_coord,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, sfnode>
-                                    (&indexed_face_set_node::coord)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &indexed_face_set_node::coord_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &indexed_face_set_node::coord_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &indexed_face_set_node::coord_)));
         } else if (*interface == supportedInterfaces[6]) {
             indexedFaceSetNodeType.add_exposedfield(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                &indexed_face_set_node::process_set_normal,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, sfnode>
-                                    (&indexed_face_set_node::normal)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &indexed_face_set_node::normal_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &indexed_face_set_node::normal_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &indexed_face_set_node::normal_)));
         } else if (*interface == supportedInterfaces[7]) {
             indexedFaceSetNodeType.add_exposedfield(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                &indexed_face_set_node::process_set_texCoord,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, sfnode>
-                                    (&indexed_face_set_node::texCoord)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &indexed_face_set_node::tex_coord_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &indexed_face_set_node::tex_coord_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &indexed_face_set_node::tex_coord_)));
         } else if (*interface == supportedInterfaces[8]) {
             indexedFaceSetNodeType.add_field(
                 supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, sfbool>
-                                    (&indexed_face_set_node::ccw)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &indexed_face_set_node::ccw_)));
         } else if (*interface == supportedInterfaces[9]) {
             indexedFaceSetNodeType.add_field(
                 supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, mfint32>
-                                    (&indexed_face_set_node::colorIndex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfint32>(
+                        &indexed_face_set_node::color_index_)));
         } else if (*interface == supportedInterfaces[10]) {
             indexedFaceSetNodeType.add_field(
                 supportedInterfaces[10].field_type,
                 supportedInterfaces[10].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, sfbool>
-                                    (&indexed_face_set_node::colorPerVertex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &indexed_face_set_node::color_per_vertex_)));
         } else if (*interface == supportedInterfaces[11]) {
             indexedFaceSetNodeType.add_field(
                 supportedInterfaces[11].field_type,
                 supportedInterfaces[11].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, sfbool>
-                                    (&indexed_face_set_node::convex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &indexed_face_set_node::convex_)));
         } else if (*interface == supportedInterfaces[12]) {
             indexedFaceSetNodeType.add_field(
                 supportedInterfaces[12].field_type,
                 supportedInterfaces[12].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, mfint32>
-                                    (&indexed_face_set_node::coordIndex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfint32>(
+                        &indexed_face_set_node::coord_index_)));
         } else if (*interface == supportedInterfaces[13]) {
             indexedFaceSetNodeType.add_field(
                 supportedInterfaces[13].field_type,
                 supportedInterfaces[13].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, sffloat>
-                                    (&indexed_face_set_node::creaseAngle)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &indexed_face_set_node::crease_angle_)));
         } else if (*interface == supportedInterfaces[14]) {
             indexedFaceSetNodeType.add_field(
                 supportedInterfaces[14].field_type,
                 supportedInterfaces[14].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, mfint32>
-                                    (&indexed_face_set_node::normalIndex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfint32>(
+                        &indexed_face_set_node::normal_index_)));
         } else if (*interface == supportedInterfaces[15]) {
             indexedFaceSetNodeType.add_field(
                 supportedInterfaces[15].field_type,
                 supportedInterfaces[15].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, sfbool>
-                                    (&indexed_face_set_node::normalPerVertex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &indexed_face_set_node::normal_per_vertex_)));
         } else if (*interface == supportedInterfaces[16]) {
             indexedFaceSetNodeType.add_field(
                 supportedInterfaces[16].field_type,
                 supportedInterfaces[16].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, sfbool>
-                                    (&indexed_face_set_node::solid)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &indexed_face_set_node::solid_)));
         } else if (*interface == supportedInterfaces[17]) {
             indexedFaceSetNodeType.add_field(
                 supportedInterfaces[17].field_type,
                 supportedInterfaces[17].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_face_set_node, mfint32>
-                                    (&indexed_face_set_node::texCoordIndex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfint32>(
+                        &indexed_face_set_node::tex_coord_index_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -7680,61 +8444,168 @@ indexed_face_set_class::create_type(const std::string & id,
  */
 
 /**
+ * @class indexed_face_set_node::set_normal_index_listener
+ *
+ * @brief set_normalIndex event handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  indexed_face_set_node.
+ */
+indexed_face_set_node::set_normal_index_listener::
+set_normal_index_listener(indexed_face_set_node & node):
+    mfint32_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+indexed_face_set_node::set_normal_index_listener::
+~set_normal_index_listener() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param normal_index normalIndex.
+ * @param timestamp   the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+indexed_face_set_node::set_normal_index_listener::
+process_event(const mfint32 & normal_index,
+              const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        indexed_face_set_node & indexed_face_set =
+            dynamic_cast<indexed_face_set_node &>(this->node);
+
+        indexed_face_set.normal_index_ = normal_index;
+        indexed_face_set.node::modified(true);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class indexed_face_set_node::set_tex_coord_index_listener
+ *
+ * @brief set_coordIndex event handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  indexed_face_set_node.
+ */
+indexed_face_set_node::set_tex_coord_index_listener::
+set_tex_coord_index_listener(indexed_face_set_node & node):
+    mfint32_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+indexed_face_set_node::set_tex_coord_index_listener::
+~set_tex_coord_index_listener() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param tex_coord_index   texCoordIndex.
+ * @param timestamp         the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+indexed_face_set_node::set_tex_coord_index_listener::
+process_event(const mfint32 & tex_coord_index, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        indexed_face_set_node & indexed_face_set =
+            dynamic_cast<indexed_face_set_node &>(this->node);
+
+        indexed_face_set.tex_coord_index_ = tex_coord_index;
+        indexed_face_set.node::modified(true);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
  * @var indexed_face_set_node::indexed_face_set_class
  *
  * @brief Class object for IndexedFaceSet nodes.
  */
 
 /**
- * @var sfbool indexed_face_set_node::ccw
+ * @var indexed_face_set_node::set_normal_index_listener indexed_face_set_node::set_normal_index_listener_
  *
- * @brief ccw field.
+ * @brief set_normalIndex eventIn handler.
  */
 
 /**
- * @var sfbool indexed_face_set_node::convex
+ * @var indexed_face_set_node::set_tex_coord_index_listener indexed_face_set_node::set_tex_coord_index_listener_
  *
- * @brief convex field.
+ * @brief set_texCoordIndex eventIn handler.
  */
 
 /**
- * @var sffloat indexed_face_set_node::creaseAngle
- *
- * @brief creaseAngle field.
- */
-
-/**
- * @var sfnode indexed_face_set_node::normal
+ * @var exposedfield<sfnode> indexed_face_set_node::normal_
  *
  * @brief normal exposedField.
  */
 
 /**
- * @var mfint32 indexed_face_set_node::normalIndex
- *
- * @brief set_normalIndex eventIn.
- */
-
-/**
- * @var sfbool indexed_face_set_node::normalPerVertex
- *
- * @brief normalPerVertex field.
- */
-
-/**
- * @var sfbool indexed_face_set_node::solid
- *
- * @brief solid field.
- */
-
-/**
- * @var sfnode indexed_face_set_node::texCoord
+ * @var exposedfield<sfnode> indexed_face_set_node::tex_coord_
  *
  * @brief texCoord exposedField.
  */
 
 /**
- * @var mfint32 indexed_face_set_node::texCoordIndex
+ * @var sfbool indexed_face_set_node::ccw_
+ *
+ * @brief ccw field.
+ */
+
+/**
+ * @var sfbool indexed_face_set_node::convex_
+ *
+ * @brief convex field.
+ */
+
+/**
+ * @var sffloat indexed_face_set_node::crease_angle_
+ *
+ * @brief creaseAngle field.
+ */
+
+/**
+ * @var mfint32 indexed_face_set_node::normal_index_
+ *
+ * @brief set_normalIndex eventIn.
+ */
+
+/**
+ * @var sfbool indexed_face_set_node::normal_per_vertex_
+ *
+ * @brief normalPerVertex field.
+ */
+
+/**
+ * @var sfbool indexed_face_set_node::solid_
+ *
+ * @brief solid field.
+ */
+
+/**
+ * @var mfint32 indexed_face_set_node::tex_coord_index_
  *
  * @brief set_texCoordIndex eventIn.
  */
@@ -7755,11 +8626,16 @@ indexed_face_set_node::indexed_face_set_node(const node_type & type,
                                              const scope_ptr & scope):
     node(type, scope),
     abstract_indexed_set_node(type, scope),
-    ccw(true),
-    convex(true),
-    creaseAngle(0.0),
-    normalPerVertex(true),
-    solid(true) {
+    set_normal_index_listener_(*this),
+    set_tex_coord_index_listener_(*this),
+    normal_(*this),
+    tex_coord_(*this),
+    ccw_(true),
+    convex_(true),
+    crease_angle_(0.0),
+    normal_per_vertex_(true),
+    solid_(true)
+{
     this->bounding_volume_dirty(true);
 }
 
@@ -7774,12 +8650,17 @@ indexed_face_set_node::~indexed_face_set_node() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool indexed_face_set_node::modified() const {
-    return (this->node::modified()
-            || (this->color_.value && this->color_.value->modified())
-            || (this->coord.value && this->coord.value->modified())
-            || (this->normal.value && this->normal.value->modified())
-            || (this->texCoord.value && this->texCoord.value->modified()));
+bool indexed_face_set_node::modified() const
+{
+    return this->node::modified()
+        || (this->color_.sfnode::value
+            && this->color_.sfnode::value->modified())
+        || (this->coord_.sfnode::value
+            && this->coord_.sfnode::value->modified())
+        || (this->normal_.sfnode::value
+            && this->normal_.sfnode::value->modified())
+        || (this->tex_coord_.sfnode::value
+            && this->tex_coord_.sfnode::value->modified());
 }
 
 /**
@@ -7806,58 +8687,67 @@ indexed_face_set_node::do_render_geometry(openvrml::viewer & viewer,
     }
 
     openvrml::coordinate_node * const coordinateNode =
-        node_cast<openvrml::coordinate_node *>(this->coord.value.get());
+        node_cast<openvrml::coordinate_node *>(
+            this->coord_.sfnode::value.get());
     const vector<vec3f> & coord = coordinateNode
                                 ? coordinateNode->point()
                                 : vector<vec3f>();
 
     openvrml::color_node * const colorNode =
-        node_cast<openvrml::color_node *>(this->color_.value.get());
+        node_cast<openvrml::color_node *>(this->color_.sfnode::value.get());
     const vector<openvrml::color> & color = colorNode
                                           ? colorNode->color()
                                           : vector<openvrml::color>();
 
     openvrml::normal_node * const normalNode =
-        node_cast<openvrml::normal_node *>(this->normal.value.get());
+        node_cast<openvrml::normal_node *>(this->normal_.sfnode::value.get());
     const vector<vec3f> & normal = normalNode
                                  ? normalNode->vector()
                                  : vector<vec3f>();
 
     openvrml::texture_coordinate_node * const texCoordNode =
         node_cast<openvrml::texture_coordinate_node *>(
-            this->texCoord.value.get());
+            this->tex_coord_.sfnode::value.get());
     const vector<vec2f> & texCoord = texCoordNode
                                    ? texCoordNode->point()
                                    : vector<vec2f>();
 
     unsigned int optMask = 0;
-    if (this->ccw.value) {
+    if (this->ccw_.value) {
         optMask |= viewer::mask_ccw;
     }
-    if (this->convex.value) {
+    if (this->convex_.value) {
         optMask |= viewer::mask_convex;
     }
-    if (this->solid.value) {
+    if (this->solid_.value) {
         optMask |= viewer::mask_solid;
     }
-    if (this->colorPerVertex.value) {
+    if (this->color_per_vertex_.value) {
         optMask |= viewer::mask_color_per_vertex;
     }
-    if (this->normalPerVertex.value) {
+    if (this->normal_per_vertex_.value) {
         optMask |= viewer::mask_normal_per_vertex;
     }
 
     const viewer::object_t obj =
             viewer.insert_shell(optMask,
-                                coord, this->coordIndex.value,
-                                color, this->colorIndex.value,
-                                normal, this->normalIndex.value,
-                                texCoord, this->texCoordIndex.value);
+                                coord, this->coord_index_.value,
+                                color, this->color_index_.value,
+                                normal, this->normal_index_.value,
+                                texCoord, this->tex_coord_index_.value);
 
-    if (this->color_.value)     { this->color_.value->modified(false); }
-    if (this->coord.value)      { this->coord.value->modified(false); }
-    if (this->normal.value)     { this->normal.value->modified(false); }
-    if (this->texCoord.value)   { this->texCoord.value->modified(false); }
+    if (this->color_.sfnode::value) {
+        this->color_.sfnode::value->modified(false);
+    }
+    if (this->coord_.sfnode::value) {
+        this->coord_.sfnode::value->modified(false);
+    }
+    if (this->normal_.sfnode::value) {
+        this->normal_.sfnode::value->modified(false);
+    }
+    if (this->tex_coord_.sfnode::value) {
+        this->tex_coord_.sfnode::value->modified(false);
+    }
 
     return obj;
 }
@@ -7874,7 +8764,8 @@ void indexed_face_set_node::recalcBSphere()
     // changes). motto: always do it the simple way first...
     //
     openvrml::coordinate_node * const coordinateNode =
-        node_cast<openvrml::coordinate_node *>(this->coord.value.get());
+        node_cast<openvrml::coordinate_node *>(
+            this->coord_.sfnode::value.get());
     if (coordinateNode) {
         const std::vector<vec3f> & coord = coordinateNode->point();
         this->bsphere = bounding_sphere();
@@ -7894,75 +8785,6 @@ const bounding_volume & indexed_face_set_node::bounding_volume() const
         const_cast<indexed_face_set_node *>(this)->recalcBSphere();
     }
     return this->bsphere;
-}
-
-/**
- * @brief set_normal eventIn handler.
- *
- * @param value     an sfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void indexed_face_set_node::process_set_normal(const field_value & value,
-                                               const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->normal = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("normal_changed", this->normal, timestamp);
-}
-
-/**
- * @brief set_normalIndex eventIn handler.
- *
- * @param value     an mfint32 value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfint32.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void indexed_face_set_node::process_set_normalIndex(const field_value & value,
-                                                    const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->normalIndex = dynamic_cast<const mfint32 &>(value);
-    this->node::modified(true);
-}
-
-/**
- * @brief set_texCoord eventIn handler.
- *
- * @param value     an sfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void indexed_face_set_node::process_set_texCoord(const field_value & value,
-                                                 const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->texCoord = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("texCoord_changed", this->texCoord, timestamp);
-}
-
-/**
- * @brief set_texCoordIndex eventIn handler.
- *
- * @param value     an mfint32 value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfint32.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void
-indexed_face_set_node::process_set_texCoordIndex(const field_value & value,
-                                                 const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->texCoordIndex = dynamic_cast<const mfint32 &>(value);
-    this->node::modified(true);
 }
 
 
@@ -8027,56 +8849,77 @@ indexed_line_set_class::create_type(const std::string & id,
                       field_value::mfint32_id,
                       "coordIndex")
     };
-    const node_type_ptr
-        type(new vrml97_node_type_impl<indexed_line_set_node>(*this, id));
-    vrml97_node_type_impl<indexed_line_set_node> & indexedLineSetNodeType =
-        static_cast<vrml97_node_type_impl<indexed_line_set_node> &>(*type);
-    typedef vrml97_node_type_impl<indexed_line_set_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<indexed_line_set_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & indexedLineSetNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            indexedLineSetNodeType
-                    .add_eventin(supportedInterfaces[0].field_type,
-                                supportedInterfaces[0].id,
-                                &indexed_line_set_node::process_set_colorIndex);
+            indexedLineSetNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        indexed_line_set_node::set_color_index_listener>(
+                            &indexed_line_set_node::set_color_index_)));
         } else if (*interface == supportedInterfaces[1]) {
-            indexedLineSetNodeType
-                    .add_eventin(supportedInterfaces[1].field_type,
-                                supportedInterfaces[1].id,
-                                &indexed_line_set_node::process_set_coordIndex);
+            indexedLineSetNodeType.add_eventin(
+                supportedInterfaces[1].field_type,
+                supportedInterfaces[1].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        indexed_line_set_node::set_coord_index_listener>(
+                            &indexed_line_set_node::set_coord_index_)));
         } else if (*interface == supportedInterfaces[2]) {
             indexedLineSetNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &indexed_line_set_node::process_set_color,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_line_set_node, sfnode>
-                                    (&indexed_line_set_node::color_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &indexed_line_set_node::color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &indexed_line_set_node::color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &indexed_line_set_node::color_)));
         } else if (*interface == supportedInterfaces[3]) {
             indexedLineSetNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &indexed_line_set_node::process_set_coord,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_line_set_node, sfnode>
-                                    (&indexed_line_set_node::coord)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &indexed_line_set_node::coord_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &indexed_line_set_node::coord_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &indexed_line_set_node::coord_)));
         } else if (*interface == supportedInterfaces[4]) {
             indexedLineSetNodeType.add_field(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_line_set_node, mfint32>
-                                    (&indexed_line_set_node::colorIndex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfint32>(
+                        &indexed_line_set_node::color_index_)));
         } else if (*interface == supportedInterfaces[5]) {
             indexedLineSetNodeType.add_field(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_line_set_node, sfbool>
-                                    (&indexed_line_set_node::colorPerVertex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &indexed_line_set_node::color_per_vertex_)));
         } else if (*interface == supportedInterfaces[6]) {
             indexedLineSetNodeType.add_field(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<indexed_line_set_node, mfint32>
-                                    (&indexed_line_set_node::coordIndex)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfint32>(
+                        &indexed_line_set_node::coord_index_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -8129,24 +8972,29 @@ indexed_line_set_node::do_render_geometry(openvrml::viewer & viewer,
     using std::vector;
 
     openvrml::coordinate_node * const coordinateNode =
-        node_cast<openvrml::coordinate_node *>(this->coord.value.get());
+        node_cast<openvrml::coordinate_node *>(
+            this->coord_.sfnode::value.get());
     const vector<vec3f> & coord = coordinateNode
                                 ? coordinateNode->point()
                                 : vector<vec3f>();
 
     openvrml::color_node * const colorNode =
-        node_cast<openvrml::color_node *>(this->color_.value.get());
+        node_cast<openvrml::color_node *>(this->color_.sfnode::value.get());
     const vector<openvrml::color> & color = colorNode
                                           ? colorNode->color()
                                           : vector<openvrml::color>();
 
     viewer::object_t obj =
-        viewer.insert_line_set(coord, this->coordIndex.value,
-                               this->colorPerVertex.value,
-                               color, this->colorIndex.value);
+        viewer.insert_line_set(coord, this->coord_index_.value,
+                               this->color_per_vertex_.value,
+                               color, this->color_index_.value);
 
-    if (this->color_.value) { this->color_.value->modified(false); }
-    if (this->coord.value)  { this->coord.value->modified(false); }
+    if (this->color_.sfnode::value) {
+        this->color_.sfnode::value->modified(false);
+    }
+    if (this->coord_.sfnode::value) {
+        this->coord_.sfnode::value->modified(false);
+    }
 
     return obj;
 }
@@ -8198,31 +9046,41 @@ inline_class::create_type(const std::string & id,
                        field_value::sfvec3f_id,
                        "bboxSize")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<inline_node>(*this, id));
-    vrml97_node_type_impl<inline_node> & inlineNodeType =
-            static_cast<vrml97_node_type_impl<inline_node> &>(*type);
-    typedef vrml97_node_type_impl<inline_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<inline_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & inlineNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             inlineNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &inline_node::process_set_url,
-                node_field_ptr_ptr(new node_field_ptr_impl<inline_node, mfstring>
-                                    (&inline_node::url)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<mfstring> >(&inline_node::url_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfstring> >(
+                        &inline_node::url_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                        exposedfield<mfstring> >(&inline_node::url_)));
         } else if (*interface == supportedInterfaces[1]) {
             inlineNodeType.add_field(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<inline_node, sfvec3f>
-                                    (&inline_node::bboxCenter)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(
+                        &inline_node::bbox_center_)));
         } else if (*interface == supportedInterfaces[2]) {
             inlineNodeType.add_field(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<inline_node, sfvec3f>
-                                    (&inline_node::bboxSize)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(
+                        &inline_node::bbox_size_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -8243,19 +9101,19 @@ inline_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfvec3f inline_node::bboxCenter
+ * @var sfvec3f inline_node::bbox_center_
  *
  * @brief bboxCenter field.
  */
 
 /**
- * @var sfvec3f inline_node::bboxSize
+ * @var sfvec3f inline_node::bbox_size_
  *
  * @brief bboxSize field.
  */
 
 /**
- * @var mfstring inline_node::url
+ * @var exposedfield<mfstring> inline_node::url_
  *
  * @brief url exposedField.
  */
@@ -8278,12 +9136,12 @@ inline_class::create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-inline_node::inline_node(const node_type & type,
-                         const scope_ptr & scope):
+inline_node::inline_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
     grouping_node(type, scope),
+    url_(*this),
     inlineScene(0),
     hasLoaded(false)
 {
@@ -8374,30 +9232,9 @@ void inline_node::load() {
 
     assert(this->scene());
     this->inlineScene = new openvrml::scene(this->scene()->browser,
-                                            this->url.value,
+                                            this->url_.mfstring::value,
                                             this->scene());
     this->inlineScene->initialize(browser::current_time());
-}
-
-/**
- * @brief set_url eventIn handler.
- *
- * @param value     an mfstring value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- *
- * @todo Currently this only changes the field value; it does not load a new
- *      Scene.
- */
-void inline_node::process_set_url(const field_value & value,
-                                  const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->url = dynamic_cast<const mfstring &>(value);
-    this->node::modified(true);
-    this->emit_event("url_changed", this->url, timestamp);
 }
 
 
@@ -8447,31 +9284,39 @@ lod_class::create_type(const std::string & id,
                        field_value::mffloat_id,
                        "range")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<lod_node>(*this, id));
-    vrml97_node_type_impl<lod_node> & lodNodeType =
-            static_cast<vrml97_node_type_impl<lod_node> &>(*type);
-    typedef vrml97_node_type_impl<lod_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<lod_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & lodNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             lodNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &lod_node::process_set_level,
-                node_field_ptr_ptr(new node_field_ptr_impl<lod_node, mfnode>
-                                    (&lod_node::level)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<mfnode> >(
+                        &lod_node::level_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfnode> >(
+                        &lod_node::level_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mfnode> >(
+                        &lod_node::level_)));
         } else if (*interface == supportedInterfaces[1]) {
             lodNodeType.add_field(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<lod_node, sfvec3f>
-                                    (&lod_node::center)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(&lod_node::center_)));
         } else if (*interface == supportedInterfaces[2]) {
             lodNodeType.add_field(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<lod_node, mffloat>
-                                    (&lod_node::range)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mffloat>(&lod_node::range_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -8492,19 +9337,19 @@ lod_class::create_type(const std::string & id,
  */
 
 /**
- * @var mfnode lod_node::level
+ * @var exposedfield<mfnode> lod_node::level_
  *
  * @brief level exposedField.
  */
 
 /**
- * @var sfvec3f lod_node::center
+ * @var sfvec3f lod_node::center_
  *
  * @brief center field.
  */
 
 /**
- * @var mffloat lod_node::range
+ * @var mffloat lod_node::range_
  *
  * @brief range field.
  */
@@ -8527,12 +9372,12 @@ lod_class::create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-lod_node::lod_node(const node_type & type,
-                   const scope_ptr & scope):
+lod_node::lod_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
     grouping_node(type, scope),
+    level_(*this),
     children_(1)
 {
     this->bounding_volume_dirty(true); // lazy calc of bvolume
@@ -8555,8 +9400,8 @@ bool lod_node::modified() const
     if (this->node::modified()) { return true; }
 
     // This should really check which range is being rendered...
-    for (size_t i = 0; i < this->level.value.size(); ++i) {
-        if (this->level.value[i]->modified()) { return true; }
+    for (size_t i = 0; i < this->level_.mfnode::value.size(); ++i) {
+        if (this->level_.mfnode::value[i]->modified()) { return true; }
     }
     return false;
 }
@@ -8573,38 +9418,40 @@ void lod_node::do_render_child(openvrml::viewer & viewer,
                       const rendering_context context)
 {
     this->node::modified(false);
-    if (this->level.value.size() <= 0) { return; }
+    if (this->level_.mfnode::value.empty()) { return; }
 
     float x, y, z;
 
     mat4f MV = context.matrix();
     MV = MV.inverse();
     x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
-    float dx = x - this->center.value.x();
-    float dy = y - this->center.value.y();
-    float dz = z - this->center.value.z();
+    float dx = x - this->center_.value.x();
+    float dy = y - this->center_.value.y();
+    float dz = z - this->center_.value.z();
     float d2 = dx * dx + dy * dy + dz * dz;
 
     size_t i;
-    for (i = 0; i < this->range.value.size(); ++i) {
-        if (d2 < this->range.value[i] * this->range.value[i]) {
-            break;
-        }
+    for (i = 0; i < this->range_.value.size(); ++i) {
+        if (d2 < this->range_.value[i] * this->range_.value[i]) { break; }
     }
 
     // Should choose an "optimal" level...
-    if (this->range.value.size() == 0) { i = this->level.value.size() - 1; }
+    if (this->range_.value.empty()) {
+        i = this->level_.mfnode::value.size() - 1;
+    }
 
     // Not enough levels...
-    if (i >= this->level.value.size()) { i = this->level.value.size() - 1; }
+    if (i >= this->level_.mfnode::value.size()) {
+        i = this->level_.mfnode::value.size() - 1;
+    }
 
     child_node * const child =
-        node_cast<child_node *>(this->level.value[i].get());
+        node_cast<child_node *>(this->level_.mfnode::value[i].get());
     if (child) { child->render_child(viewer, context); }
 
     // Don't re-render on their accounts
-    for (i = 0; i < this->level.value.size(); ++i) {
-        this->level.value[i]->modified(false);
+    for (i = 0; i < this->level_.mfnode::value.size(); ++i) {
+        this->level_.mfnode::value[i]->modified(false);
     }
 }
 
@@ -8673,32 +9520,14 @@ void lod_node::recalcBSphere()
     // switch in delayed-load inlines. this would necessarily switch
     // them in all at once. live with it for now.
     //
-    for (size_t i = 0; i < this->level.value.size(); i++) {
-        const node_ptr & node = this->level.value[i];
+    for (size_t i = 0; i < this->level_.mfnode::value.size(); i++) {
+        const node_ptr & node = this->level_.mfnode::value[i];
         if (node) {
             const openvrml::bounding_volume & ci_bv = node->bounding_volume();
             this->bsphere.extend(ci_bv);
         }
     }
     this->bounding_volume_dirty(false);
-}
-
-/**
- * @brief set_level eventIn handler.
- *
- * @param value     an mfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void lod_node::process_set_level(const field_value & value,
-                                 const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->level = dynamic_cast<const mfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("level_changed", this->level, timestamp);
 }
 
 
@@ -8741,61 +9570,117 @@ material_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "ambientIntensity"),
-        node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "diffuseColor"),
-        node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "emissiveColor"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "shininess"),
-        node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "specularColor"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "transparency")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "diffuseColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "emissiveColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "shininess"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "specularColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "transparency")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<material_node>(*this, id));
-    vrml97_node_type_impl<material_node> & materialNodeType =
-            static_cast<vrml97_node_type_impl<material_node> &>(*type);
-    typedef vrml97_node_type_impl<material_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<material_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & materialNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             materialNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &material_node::process_set_ambientIntensity,
-                node_field_ptr_ptr(new node_field_ptr_impl<material_node, sffloat>
-                                    (&material_node::ambientIntensity)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sffloat> >(
+                            &material_node::ambient_intensity_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &material_node::ambient_intensity_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &material_node::ambient_intensity_)));
         } else if (*interface == supportedInterfaces[1]) {
             materialNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &material_node::process_set_diffuseColor,
-                node_field_ptr_ptr(new node_field_ptr_impl<material_node, sfcolor>
-                                    (&material_node::diffuseColor)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sfcolor> >(
+                            &material_node::diffuse_color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfcolor> >(
+                        &material_node::diffuse_color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfcolor> >(
+                        &material_node::diffuse_color_)));
         } else if (*interface == supportedInterfaces[2]) {
             materialNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &material_node::process_set_emissiveColor,
-                node_field_ptr_ptr(new node_field_ptr_impl<material_node, sfcolor>
-                                    (&material_node::emissiveColor)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sfcolor> >(
+                            &material_node::emissive_color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfcolor> >(
+                        &material_node::emissive_color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfcolor> >(
+                        &material_node::emissive_color_)));
         } else if (*interface == supportedInterfaces[3]) {
             materialNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &material_node::process_set_shininess,
-                node_field_ptr_ptr(new node_field_ptr_impl<material_node, sffloat>
-                                    (&material_node::shininess_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sffloat> >(
+                            &material_node::shininess_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &material_node::shininess_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &material_node::shininess_)));
         } else if (*interface == supportedInterfaces[4]) {
             materialNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &material_node::process_set_specularColor,
-                node_field_ptr_ptr(new node_field_ptr_impl<material_node, sfcolor>
-                                    (&material_node::specularColor)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sfcolor> >(
+                            &material_node::specular_color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfcolor> >(
+                        &material_node::specular_color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfcolor> >(
+                        &material_node::specular_color_)));
         } else if (*interface == supportedInterfaces[5]) {
             materialNodeType.add_exposedfield(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                &material_node::process_set_transparency,
-                node_field_ptr_ptr(new node_field_ptr_impl<material_node, sffloat>
-                                    (&material_node::transparency_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                        exposedfield<sffloat> >(
+                            &material_node::transparency_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &material_node::transparency_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &material_node::transparency_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -8816,37 +9701,37 @@ material_class::create_type(const std::string & id,
  */
 
 /**
- * @var sffloat material_node::ambientIntensity
+ * @var exposedfield<sffloat> material_node::ambient_intensity_
  *
  * @brief ambientIntensity exposedField.
  */
 
 /**
- * @var sfcolor material_node::diffuseColor
+ * @var exposedfield<sfcolor> material_node::diffuse_color_
  *
  * @brief diffuseColor exposedField.
  */
 
 /**
- * @var sfcolor material_node::emissiveColor
+ * @var exposedfield<sfcolor> material_node::emissive_color_
  *
  * @brief emissiveColor exposedField.
  */
 
 /**
- * @var sffloat material_node::shininess_
+ * @var exposefield<sffloat> material_node::shininess_
  *
  * @brief shininess exposedField.
  */
 
 /**
- * @var sfcolor material_node::specularColor
+ * @var exposedfield<sfcolor> material_node::specular_color_
  *
  * @brief specularColor exposedField.
  */
 
 /**
- * @var sffloat material_node::transparency_
+ * @var exposedfield<sffloat> material_node::transparency_
  *
  * @brief transparency exposedField.
  */
@@ -8855,19 +9740,19 @@ material_class::create_type(const std::string & id,
  * @brief Construct.
  *
  * @param type  the node_type associated with this node.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 material_node::material_node(const node_type & type,
                              const scope_ptr & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::material_node(type, scope),
-    ambientIntensity(0.2f),
-    diffuseColor(color(0.8f, 0.8f, 0.8f)),
-    emissiveColor(color(0.0, 0.0, 0.0)),
-    shininess_(0.2f),
-    specularColor(color(0.0, 0.0, 0.0)),
-    transparency_(0.0)
+    ambient_intensity_(*this, 0.2f),
+    diffuse_color_(*this, color(0.8f, 0.8f, 0.8f)),
+    emissive_color_(*this, color(0.0, 0.0, 0.0)),
+    shininess_(*this, 0.2f),
+    specular_color_(*this, color(0.0, 0.0, 0.0)),
+    transparency_(*this, 0.0)
 {}
 
 /**
@@ -8877,116 +9762,13 @@ material_node::~material_node() throw ()
 {}
 
 /**
- * @brief set_ambientIntensity eventIn handler.
- *
- * @param value     a value from 0.0 to 1.0.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- */
-void material_node::process_set_ambientIntensity(const field_value & value,
-                                                 const double timestamp)
-    throw (std::bad_cast)
-{
-    this->ambientIntensity = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("ambientIntensity_changed", this->ambientIntensity,
-                    timestamp);
-}
-
-/**
- * @brief set_diffuseColor eventIn handler.
- *
- * @param value     an sfcolor value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfcolor.
- */
-void material_node::process_set_diffuseColor(const field_value & value,
-                                             const double timestamp)
-    throw (std::bad_cast)
-{
-    this->diffuseColor = dynamic_cast<const sfcolor &>(value);
-    this->node::modified(true);
-    this->emit_event("diffuseColor_changed", this->diffuseColor, timestamp);
-}
-
-/**
- * @brief set_emissiveColor eventIn handler.
- *
- * @param value     an sfcolor value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfcolor.
- */
-void material_node::process_set_emissiveColor(const field_value & value,
-                                              const double timestamp)
-    throw (std::bad_cast)
-{
-    this->emissiveColor = dynamic_cast<const sfcolor &>(value);
-    this->node::modified(true);
-    this->emit_event("emissiveColor_changed", this->emissiveColor, timestamp);
-}
-
-/**
- * @brief set_shininess eventIn handler.
- *
- * @param value     a value from 0.0 to 1.0.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- */
-void material_node::process_set_shininess(const field_value & value,
-                                          const double timestamp)
-    throw (std::bad_cast)
-{
-    this->shininess_ = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("shininess_changed", this->shininess_, timestamp);
-}
-
-/**
- * @brief set_specularColor eventIn handler.
- *
- * @param value     an sfcolor value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfcolor.
- */
-void material_node::process_set_specularColor(const field_value & value,
-                                              const double timestamp)
-    throw (std::bad_cast)
-{
-    this->specularColor = dynamic_cast<const sfcolor &>(value);
-    this->node::modified(true);
-    this->emit_event("specularColor_changed", this->specularColor, timestamp);
-}
-
-/**
- * @brief set_transparency eventIn handler.
- *
- * @param value     a value from 0.0 to 1.0.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- */
-void material_node::process_set_transparency(const field_value & value,
-                                             const double timestamp)
-    throw (std::bad_cast)
-{
-    this->transparency_ = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("transparency_changed", this->transparency_, timestamp);
-}
-
-/**
  * @brief Get the ambient intensity.
  *
  * @return the ambient intensity.
  */
 float material_node::ambient_intensity() const throw ()
 {
-    return this->ambientIntensity.value;
+    return this->ambient_intensity_.sffloat::value;
 }
 
 /**
@@ -8996,7 +9778,7 @@ float material_node::ambient_intensity() const throw ()
  */
 const color & material_node::diffuse_color() const throw ()
 {
-    return this->diffuseColor.value;
+    return this->diffuse_color_.sfcolor::value;
 }
 
 /**
@@ -9006,7 +9788,7 @@ const color & material_node::diffuse_color() const throw ()
  */
 const color & material_node::emissive_color() const throw ()
 {
-    return this->emissiveColor.value;
+    return this->emissive_color_.sfcolor::value;
 }
 
 /**
@@ -9016,7 +9798,7 @@ const color & material_node::emissive_color() const throw ()
  */
 float material_node::shininess() const throw ()
 {
-    return this->shininess_.value;
+    return this->shininess_.sffloat::value;
 }
 
 /**
@@ -9026,7 +9808,7 @@ float material_node::shininess() const throw ()
  */
 const color & material_node::specular_color() const throw ()
 {
-    return this->specularColor.value;
+    return this->specular_color_.sfcolor::value;
 }
 
 /**
@@ -9036,7 +9818,7 @@ const color & material_node::specular_color() const throw ()
  */
 float material_node::transparency() const throw ()
 {
-    return this->transparency_.value;
+    return this->transparency_.sffloat::value;
 }
 
 
@@ -9108,72 +9890,108 @@ movie_texture_class::create_type(const std::string & id,
                       field_value::sfbool_id,
                       "isActive")
     };
-    const node_type_ptr
-        type(new vrml97_node_type_impl<movie_texture_node>(*this, id));
-    vrml97_node_type_impl<movie_texture_node> & movieTextureNodeType =
-            static_cast<vrml97_node_type_impl<movie_texture_node> &>(*type);
-    typedef vrml97_node_type_impl<movie_texture_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<movie_texture_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & movieTextureNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             movieTextureNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &movie_texture_node::process_set_loop,
-                node_field_ptr_ptr(new node_field_ptr_impl<movie_texture_node, sfbool>
-                                    (&movie_texture_node::loop)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &movie_texture_node::loop_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &movie_texture_node::loop_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &movie_texture_node::loop_)));
         } else if (*interface == supportedInterfaces[1]) {
             movieTextureNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &movie_texture_node::process_set_speed,
-                node_field_ptr_ptr(new node_field_ptr_impl<movie_texture_node, sffloat>
-                                    (&movie_texture_node::speed)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    movie_texture_node::set_speed_listener >(
+                        &movie_texture_node::set_speed_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &movie_texture_node::speed_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sffloat_emitter>(
+                        &movie_texture_node::speed_changed_)));
         } else if (*interface == supportedInterfaces[2]) {
             movieTextureNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &movie_texture_node::process_set_startTime,
-                node_field_ptr_ptr(new node_field_ptr_impl<movie_texture_node, sftime>
-                                    (&movie_texture_node::startTime)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sftime> >(
+                        &movie_texture_node::start_time_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sftime> >(
+                        &movie_texture_node::start_time_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sftime> >(
+                        &movie_texture_node::start_time_)));
         } else if (*interface == supportedInterfaces[3]) {
             movieTextureNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &movie_texture_node::process_set_stopTime,
-                node_field_ptr_ptr(new node_field_ptr_impl<movie_texture_node, sftime>
-                                    (&movie_texture_node::stopTime)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sftime> >(
+                        &movie_texture_node::stop_time_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sftime> >(
+                        &movie_texture_node::stop_time_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sftime> >(
+                        &movie_texture_node::stop_time_)));
         } else if (*interface == supportedInterfaces[4]) {
             movieTextureNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &movie_texture_node::process_set_url,
-                node_field_ptr_ptr(new node_field_ptr_impl<movie_texture_node, mfstring>
-                                    (&movie_texture_node::url)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mfstring> >(&movie_texture_node::url_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfstring> >(
+                        &movie_texture_node::url_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    exposedfield<mfstring> >(&movie_texture_node::url_)));
         } else if (*interface == supportedInterfaces[5]) {
             movieTextureNodeType.add_field(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<movie_texture_node, sfbool>
-                                    (&movie_texture_node::repeatS)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &movie_texture_node::repeat_s_)));
         } else if (*interface == supportedInterfaces[6]) {
             movieTextureNodeType.add_field(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<movie_texture_node, sfbool>
-                                    (&movie_texture_node::repeatT)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &movie_texture_node::repeat_t_)));
         } else if (*interface == supportedInterfaces[7]) {
             movieTextureNodeType.add_eventout(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<movie_texture_node, sftime>
-                                    (&movie_texture_node::duration)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &movie_texture_node::duration_changed_)));
         } else if (*interface == supportedInterfaces[8]) {
             movieTextureNodeType.add_eventout(
                 supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<movie_texture_node, sfbool>
-                                    (&movie_texture_node::active)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &movie_texture_node::is_active_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -9194,43 +10012,125 @@ movie_texture_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfbool movie_texture_node::loop
+ * @class movie_texture_node::set_speed_listener
+ *
+ * @brief set_speed eventIn handler.
+ *
+ * Unlike most exposedFields which are implemented either with an instance of
+ * the exposedfield template or a class derived from it, MovieTexture's speed
+ * exposedField is implemented using the listener and emitter primitives. This
+ * is because unlike most exposedFields, changes to the speed field (that is,
+ * set_speed events) are ignored if the node is not active.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param node  movie_texture_node.
+ */
+movie_texture_node::set_speed_listener::
+set_speed_listener(movie_texture_node & node):
+    sffloat_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+movie_texture_node::set_speed_listener::~set_speed_listener() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param speed     speed value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+movie_texture_node::set_speed_listener::process_event(const sffloat & speed,
+                                                      const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        movie_texture_node & node =
+            dynamic_cast<movie_texture_node &>(this->node);
+
+        //
+        // set_speed is ignored if the MovieTexture is active.
+        //
+        if (!node.active_.value) {
+            node.speed_ = speed;
+            node.node::modified(true);
+            node::emit_event(node.speed_changed_, timestamp);
+        }
+    } catch (std::bad_alloc & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var exposedfield<sfbool> movie_texture_node::loop_
  *
  * @brief loop exposedField.
  */
 
 /**
- * @var sffloat movie_texture_node::speed
+ * @var movie_texture_node::set_speed_listener movie_texture_node::set_speed_
  *
- * @brief speed exposedField.
+ * @brief set_speed event handler for the speed exposedField.
  */
 
 /**
- * @var sftime movie_texture_node::startTime
+ * @var sffloat movie_texture_node::speed_
+ *
+ * @brief Value for speed exposedField.
+ */
+
+/**
+ * @var sffloat_emitter movie_texture_node::speed_changed_
+ *
+ * @brief speed_changed event emitter for the speed exposedField.
+ */
+
+/**
+ * @var exposedfield<sftime> movie_texture_node::start_time_
  *
  * @brief startTime exposedField.
  */
 
 /**
- * @var sftime movie_texture_node::stopTime
+ * @var exposedfield<sftime> movie_texture_node::stop_time_
  *
  * @brief stopTime exposedField.
  */
 
 /**
- * @var mfstring movie_texture_node::url
+ * @var exposedfield<mfstring> movie_texture_node::url_
  *
  * @brief url exposedField.
  */
 
 /**
- * @var sftime movie_texture_node::duration
+ * @var sftime movie_texture_node::duration_
  *
- * @brief duration_changed eventOut.
+ * @brief duration value.
  */
 
 /**
- * @var sfbool movie_texture_node::active
+ * @var sftime_emitter movie_texture_node::duration_changed_
+ *
+ * @brief duration_changed eventOut
+ */
+
+/**
+ * @var sfbool movie_texture_node::active_
+ *
+ * @brief active state.
+ */
+
+/**
+ * @var sfbool_emitter movie_texture_node::is_active_
  *
  * @brief isActive eventOut.
  */
@@ -9281,8 +10181,15 @@ movie_texture_node::movie_texture_node(const node_type & type,
                                        const scope_ptr & scope):
     node(type, scope),
     abstract_texture_node(type, scope),
-    loop(false),
-    speed(1.0),
+    loop_(*this, false),
+    set_speed_(*this),
+    speed_(1.0),
+    speed_changed_(this->speed_),
+    start_time_(*this),
+    stop_time_(*this),
+    url_(*this),
+    duration_changed_(this->duration_),
+    is_active_(this->active_),
     img_(0),
     frame(0),
     lastFrame(-1),
@@ -9316,13 +10223,13 @@ void movie_texture_node::update(const double time)
         if (this->img_) {
             const char * imageUrl = this->img_->url();
             size_t imageLen = strlen(imageUrl);
-            size_t i, nUrls = this->url.value.size();
+            size_t i, nUrls = this->url_.mfstring::value.size();
             for (i = 0; i < nUrls; ++i) {
-                size_t len = this->url.value[i].length();
+                size_t len = this->url_.mfstring::value[i].length();
 
-                if (this->url.value[i] == imageUrl
+                if (this->url_.mfstring::value[i] == imageUrl
                         || (imageLen > len
-                            && this->url.value[i]
+                            && this->url_.mfstring::value[i]
                                 == (imageUrl + imageLen - len))) {
                     break;
                 }
@@ -9337,27 +10244,27 @@ void movie_texture_node::update(const double time)
     }
 
     // Load the movie if needed (should check startTime...)
-    if (!this->img_ && !this->url.value.empty()) {
+    if (!this->img_ && !this->url_.mfstring::value.empty()) {
         doc2 baseDoc(this->scene()->url());
         this->img_ = new img;
-        if (!this->img_->try_urls(this->url.value, &baseDoc)) {
+        if (!this->img_->try_urls(this->url_.mfstring::value, &baseDoc)) {
             std::cerr << "Error: couldn't read MovieTexture from URL "
-                      << this->url << std::endl;
+                      << this->url_ << std::endl;
         }
 
         const size_t nFrames = this->img_->nframes();
-        this->duration.value = (nFrames >= 0)
-                             ? double(nFrames)
-                             : -1.0;
-        this->emit_event("duration_changed", this->duration, time);
-        this->frame = (this->speed.value >= 0)
+        this->duration_.value = (nFrames >= 0)
+                              ? double(nFrames)
+                              : -1.0;
+        node::emit_event(this->duration_changed_, time);
+        this->frame = (this->speed_.value >= 0)
                     ? 0
                     : nFrames - 1;
         // Set the last frame equal to the start time.
         // This is needed to properly handle the case where the startTime
         // and stopTime are set at runtime to the same value (spec says
         // that a single loop should occur in this case...)
-        this->lastFrameTime = this->startTime.value;
+        this->lastFrameTime = this->start_time_.sftime::value;
     }
 
     // No pictures to show
@@ -9365,33 +10272,35 @@ void movie_texture_node::update(const double time)
 
     // See section 4.6.9 of the VRML97 spec for a detailed explanation
     // of the logic here.
-    if (!this->active.value) {
-        if (time >= this->startTime.value) {
-            if (time >= this->stopTime.value) {
-                if (this->startTime.value >= this->stopTime.value) {
-                    if (this->loop.value) {
-                        this->active.value = true;
-                        this->emit_event("isActive", this->active, time);
+    if (!this->active_.value) {
+        if (time >= this->start_time_.sftime::value) {
+            if (time >= this->stop_time_.sftime::value) {
+                if (this->start_time_.sftime::value
+                    >= this->stop_time_.sftime::value) {
+                    if (this->loop_.sfbool::value) {
+                        this->active_.value = true;
+                        node::emit_event(this->is_active_, time);
                         this->lastFrameTime = time;
-                        this->frame = (this->speed.value >= 0)
+                        this->frame = (this->speed_.value >= 0)
                                     ? 0
                                     : this->img_->nframes() - 1;
                         this->modified(true);
-	            } else if (this->startTime.value > this->lastFrameTime) {
-                        this->active.value = true;
-                        this->emit_event("isActive", this->active, time);
+	            } else if (this->start_time_.sftime::value
+                               > this->lastFrameTime) {
+                        this->active_.value = true;
+                        node::emit_event(this->is_active_, time);
                         this->lastFrameTime = time;
-                        this->frame = (this->speed.value >= 0)
+                        this->frame = (this->speed_.value >= 0)
                                     ? 0
                                     : this->img_->nframes() - 1;
                         this->modified(true);
 	            }
 	        }
-            } else if (this->stopTime.value > time) {
-                this->active.value = true;
-                this->emit_event("isActive", this->active, time);
+            } else if (this->stop_time_.sftime::value > time) {
+                this->active_.value = true;
+                node::emit_event(this->is_active_, time);
                 this->lastFrameTime = time;
-                this->frame = (this->speed.value >= 0)
+                this->frame = (this->speed_.value >= 0)
                             ? 0
                             : this->img_->nframes() - 1;
                 this->modified(true);
@@ -9399,22 +10308,23 @@ void movie_texture_node::update(const double time)
         }
     }
     // Check whether stopTime has passed
-    else if (this->active.value
-             && ((this->stopTime.value > this->startTime.value
-		  && this->stopTime.value <= time))
-             || ((this->frame < 0) && !this->loop.value)) {
-        this->active.value = false;
-        this->emit_event("isActive", this->active, time);
+    else if (this->active_.value
+             && ((this->stop_time_.sftime::value
+                  > this->start_time_.sftime::value
+		  && this->stop_time_.sftime::value <= time))
+             || ((this->frame < 0) && !this->loop_.sfbool::value)) {
+        this->active_.value = false;
+        node::emit_event(this->is_active_, time);
         this->modified(true);
-    } else if (this->frame < 0 && this->loop.value) {
+    } else if (this->frame < 0 && this->loop_.sfbool::value) {
         // Reset frame to 0 to begin loop again.
         this->frame = 0;
     }
 
     // Check whether the frame should be advanced
-    else if (this->active.value
-             && this->lastFrameTime + fabs(1 / this->speed.value) <= time) {
-        if (this->speed.value < 0.0) {
+    else if (this->active_.value
+             && this->lastFrameTime + fabs(1 / this->speed_.value) <= time) {
+        if (this->speed_.value < 0.0) {
             --this->frame;
         } else {
             ++this->frame;
@@ -9434,8 +10344,8 @@ void movie_texture_node::update(const double time)
                         this->img_->pixels(this->frame) + frame_bytes);
 
     // Tell the scene when the next update is needed.
-    if (this->active.value) {
-        double d = this->lastFrameTime + fabs(1 / this->speed.value) - time;
+    if (this->active_.value) {
+        double d = this->lastFrameTime + fabs(1 / this->speed_.value) - time;
         this->type.node_class.browser.delta(0.9 * d);
     }
 }
@@ -9504,104 +10414,13 @@ movie_texture_node::do_render_texture(viewer & v, rendering_context context)
         this->frame = -1;
     } else {
         texture_object = v.insert_texture(this->image_,
-                                          this->repeatS.value,
-                                          this->repeatT.value,
-                                          !this->active.value);
+                                          this->repeat_s_.value,
+                                          this->repeat_t_.value,
+                                          !this->active_.value);
     }
 
     this->lastFrame = this->frame;
     return texture_object;
-}
-
-/**
- * @brief set_loop eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void movie_texture_node::process_set_loop(const field_value & value,
-                                          const double timestamp)
-    throw (std::bad_cast)
-{
-    this->loop = dynamic_cast<const sfbool &>(value);
-    this->node::modified(true);
-    this->emit_event("loop_changed", this->loop, timestamp);
-}
-
-/**
- * @brief set_speed eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void movie_texture_node::process_set_speed(const field_value & value,
-                                           const double timestamp)
-    throw (std::bad_cast)
-{
-    //
-    // set_speed is ignored if the MovieTexture is active.
-    //
-    if (!this->active.value) {
-        this->speed = dynamic_cast<const sffloat &>(value);
-        this->node::modified(true);
-        this->emit_event("speed_changed", this->speed, timestamp);
-    }
-}
-
-/**
- * @brief set_startTime eventIn handler.
- *
- * @param value     an sftime value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sftime.
- */
-void movie_texture_node::process_set_startTime(const field_value & value,
-                                               const double timestamp)
-    throw (std::bad_cast)
-{
-    this->startTime = dynamic_cast<const sftime &>(value);
-    this->node::modified(true);
-    this->emit_event("startTime_changed", this->startTime, timestamp);
-}
-
-/**
- * @brief set_stopTime eventIn handler.
- *
- * @param value     an sftime value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sftime.
- */
-void movie_texture_node::process_set_stopTime(const field_value & value,
-                                              const double timestamp)
-    throw (std::bad_cast)
-{
-    this->stopTime = dynamic_cast<const sftime &>(value);
-    this->node::modified(true);
-    this->emit_event("stopTime_changed", this->stopTime, timestamp);
-}
-
-/**
- * @brief set_url eventIn handler.
- *
- * @param value     an mfstring value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void movie_texture_node::process_set_url(const field_value & value,
-                                         const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->url = dynamic_cast<const mfstring &>(value);
-    this->node::modified(true);
-    this->emit_event("url_changed", this->url, timestamp);
 }
 
 
@@ -9617,12 +10436,14 @@ void movie_texture_node::process_set_url(const field_value & value,
  * @param browser the browser associated with this class object.
  */
 navigation_info_class::navigation_info_class(openvrml::browser & browser):
-        node_class(browser) {}
+    node_class(browser)
+{}
 
 /**
  * @brief Destroy.
  */
-navigation_info_class::~navigation_info_class() throw () {}
+navigation_info_class::~navigation_info_class() throw ()
+{}
 
 /**
  * @brief Create a node_type.
@@ -9643,75 +10464,122 @@ navigation_info_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::sfbool_id, "set_bind"),
-        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "avatarSize"),
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "headlight"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "speed"),
-        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "type"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "visibilityLimit"),
-        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_bind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "avatarSize"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "headlight"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "speed"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id, "type"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "visibilityLimit"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isBound")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<navigation_info_node>(*this, id));
-    vrml97_node_type_impl<navigation_info_node> & navigationInfoNodeType =
-            static_cast<vrml97_node_type_impl<navigation_info_node> &>(*type);
-    typedef vrml97_node_type_impl<navigation_info_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<navigation_info_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & navigationInfoNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            navigationInfoNodeType.add_eventin(supportedInterfaces[0].field_type,
-                                   supportedInterfaces[0].id,
-                                   &navigation_info_node::process_set_bind);
+            navigationInfoNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    navigation_info_node::set_bind_listener>(
+                        &navigation_info_node::set_bind_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
             navigationInfoNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &navigation_info_node::process_set_avatarSize,
-                node_field_ptr_ptr(new node_field_ptr_impl<navigation_info_node, mffloat>
-                                    (&navigation_info_node::avatarSize)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mffloat> >(
+                        &navigation_info_node::avatar_size_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mffloat> >(
+                        &navigation_info_node::avatar_size_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mffloat> >(
+                        &navigation_info_node::avatar_size_)));
         } else if (*interface == supportedInterfaces[2]) {
             navigationInfoNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &navigation_info_node::process_set_headlight,
-                node_field_ptr_ptr(new node_field_ptr_impl<navigation_info_node, sfbool>
-                                    (&navigation_info_node::headlight_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &navigation_info_node::headlight_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &navigation_info_node::headlight_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &navigation_info_node::headlight_)));
         } else if (*interface == supportedInterfaces[3]) {
             navigationInfoNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &navigation_info_node::process_set_speed,
-                node_field_ptr_ptr(new node_field_ptr_impl<navigation_info_node, sffloat>
-                                    (&navigation_info_node::speed_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(&navigation_info_node::speed_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &navigation_info_node::speed_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &navigation_info_node::speed_)));
         } else if (*interface == supportedInterfaces[4]) {
             navigationInfoNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &navigation_info_node::process_set_type,
-                node_field_ptr_ptr(new node_field_ptr_impl<navigation_info_node, mfstring>
-                                    (&navigation_info_node::type)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mfstring> >(&navigation_info_node::type_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfstring> >(
+                        &navigation_info_node::type_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    exposedfield<mfstring> >(&navigation_info_node::type_)));
         } else if (*interface == supportedInterfaces[5]) {
             navigationInfoNodeType.add_exposedfield(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                &navigation_info_node::process_set_visibilityLimit,
-                node_field_ptr_ptr(new node_field_ptr_impl<navigation_info_node, sffloat>
-                                    (&navigation_info_node::visibilityLimit)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(
+                        &navigation_info_node::visibility_limit_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &navigation_info_node::visibility_limit_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &navigation_info_node::visibility_limit_)));
         } else if (*interface == supportedInterfaces[6]) {
             navigationInfoNodeType.add_eventout(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<navigation_info_node, sfbool>
-                                    (&navigation_info_node::bound)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &navigation_info_node::is_bound_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
     }
     return type;
-}
-
-namespace {
-    const float avatarSize_[] = { 0.25f, 1.6f, 0.75f };
-    const std::string type_[] = { "WALK", "ANY" };
 }
 
 /**
@@ -9727,57 +10595,147 @@ namespace {
  */
 
 /**
- * @var mffloat navigation_info_node::avatarSize
+ * @class navigation_info_node::set_bind_listener
  *
- * @brief avatarSize exposedField.
- */
-
-/**
- * @var sfbool navigation_info_node::headlight_
- *
- * @brief headlight exposedField.
- */
-
-/**
- * @var sffloat navigation_info_node::speed_
- *
- * @brief speed exposedField.
- */
-
-/**
- * @var mfstring navigation_info_node::type
- *
- * @brief type exposedField.
- */
-
-/**
- * @var sffloat navigation_info_node::visibilityLimit
- *
- * @brief visibilityLimit exposedField.
- */
-
-/**
- * @var sfbool navigation_info_node::bound
- *
- * @brief isBound eventOut.
+ * @brief set_bind eventIn handler.
  */
 
 /**
  * @brief Construct.
  *
+ * @param node  navigation_info_node.
+ */
+navigation_info_node::set_bind_listener::
+set_bind_listener(navigation_info_node & node):
+    sfbool_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+navigation_info_node::set_bind_listener::~set_bind_listener() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param bind      bind state.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+navigation_info_node::set_bind_listener::process_event(const sfbool & bind,
+                                                       const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        navigation_info_node & node =
+            dynamic_cast<navigation_info_node &>(this->node);
+
+        navigation_info_node * current =
+            node.type.node_class.browser.bindable_navigation_info_top();
+
+        if (bind.value) {        // set_bind TRUE
+            if (&node != current) {
+                if (current) {
+                    current->is_bound_.value = false;
+                    node::emit_event(current->is_bound_emitter_, timestamp);
+                }
+                node.type.node_class.browser.bindable_push(&node);
+                node.is_bound_.value = true;
+                node::emit_event(node.is_bound_emitter_, timestamp);
+            }
+        } else {            // set_bind FALSE
+            node.type.node_class.browser.bindable_remove(&node);
+            if (&node == current) {
+                node.is_bound_.value = false;
+                node::emit_event(node.is_bound_emitter_, timestamp);
+                current = node.type.node_class.browser
+                    .bindable_navigation_info_top();
+                if (current) {
+                    current->is_bound_.value = true;
+                    node::emit_event(current->is_bound_emitter_, timestamp);
+                }
+            }
+        }
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var navigation_info_node::set_bind_listener navigation_info_node::set_bind_listener_
+ *
+ * @brief set_bind eventIn handler.
+ */
+
+/**
+ * @var exposedfield<mffloat> navigation_info_node::avatar_size_
+ *
+ * @brief avatarSize exposedField.
+ */
+
+/**
+ * @var exposedfield<sfbool> navigation_info_node::headlight_
+ *
+ * @brief headlight exposedField.
+ */
+
+/**
+ * @var exposedfield<sffloat> navigation_info_node::speed_
+ *
+ * @brief speed exposedField.
+ */
+
+/**
+ * @var exposedfield<mfstring> navigation_info_node::type_
+ *
+ * @brief type exposedField.
+ */
+
+/**
+ * @var exposedfield<sffloat> navigation_info_node::visibility_limit_
+ *
+ * @brief visibilityLimit exposedField.
+ */
+
+/**
+ * @var sfbool navigation_info_node::is_bound_
+ *
+ * @brief isBound eventOut value.
+ */
+
+/**
+ * @var sfbool_emitter navigation_info_node::is_bound_emitter_
+ *
+ * @brief isBound eventOut emitter.
+ */
+
+namespace {
+    const float navigation_avatar_size_[] = { 0.25f, 1.6f, 0.75f };
+    const std::string navigation_type_[] = { "WALK", "ANY" };
+}
+
+/**
+ * @brief Construct.
+ *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 navigation_info_node::navigation_info_node(const node_type & type,
                                            const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
-    avatarSize(avatarSize_, avatarSize_ + 3),
-    headlight_(true),
-    speed_(1.0),
-    type(type_, type_ + 2),
-    visibilityLimit(0.0),
-    bound(false)
+    set_bind_listener_(*this),
+    avatar_size_(*this, std::vector<float>(navigation_avatar_size_,
+                                           navigation_avatar_size_ + 3)),
+    headlight_(*this, true),
+    speed_(*this, 1.0),
+    type_(*this, std::vector<std::string>(navigation_type_,
+                                          navigation_type_ + 2)),
+    visibility_limit_(*this, 0.0),
+    is_bound_emitter_(this->is_bound_)
 {}
 
 /**
@@ -9801,8 +10759,8 @@ navigation_info_node* navigation_info_node::to_navigation_info() const
  */
 const float * navigation_info_node::avatar_size() const
 {
-    return !this->avatarSize.value.empty()
-        ? &this->avatarSize.value[0]
+    return !this->avatar_size_.mffloat::value.empty()
+        ? &this->avatar_size_.mffloat::value[0]
         : 0;
 }
 
@@ -9813,7 +10771,7 @@ const float * navigation_info_node::avatar_size() const
  */
 bool navigation_info_node::headlight() const
 {
-    return this->headlight_.value;
+    return this->headlight_.sfbool::value;
 }
 
 /**
@@ -9823,7 +10781,7 @@ bool navigation_info_node::headlight() const
  */
 float navigation_info_node::speed() const
 {
-    return this->speed_.value;
+    return this->speed_.sffloat::value;
 }
 
 /**
@@ -9833,7 +10791,7 @@ float navigation_info_node::speed() const
  */
 float navigation_info_node::visibility_limit() const
 {
-    return this->visibilityLimit.value;
+    return this->visibility_limit_.sffloat::value;
 }
 
 /**
@@ -9859,136 +10817,6 @@ void navigation_info_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
     this->scene()->browser.remove_navigation_info(*this);
-}
-
-/**
- * @brief set_avatarSize eventIn handler.
- *
- * @param value     an mffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void navigation_info_node::process_set_avatarSize(const field_value & value,
-                                                  const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
-    this->avatarSize = dynamic_cast<const mffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("avatarSize_changed", this->avatarSize, timestamp);
-}
-
-/**
- * @brief set_bind eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfbool.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void navigation_info_node::process_set_bind(const field_value & value,
-                                            const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    navigation_info_node * current =
-        this->node::type.node_class.browser.bindable_navigation_info_top();
-    const sfbool & b = dynamic_cast<const sfbool &>(value);
-
-    if (b.value) {        // set_bind TRUE
-        if (this != current) {
-            if (current) {
-                current->bound.value = false;
-                current->emit_event("isBound", current->bound, timestamp);
-            }
-            this->node::type.node_class.browser.bindable_push(this);
-            this->bound.value = true;
-            this->emit_event("isBound", this->bound, timestamp);
-        }
-    } else {            // set_bind FALSE
-        this->node::type.node_class.browser.bindable_remove(this);
-        if (this == current) {
-            this->bound.value = false;
-            this->emit_event("isBound", this->bound, timestamp);
-            current = this->node::type.node_class.browser
-                        .bindable_navigation_info_top();
-            if (current) {
-                current->bound.value = true;
-                current->emit_event("isBound", current->bound, timestamp);
-            }
-        }
-    }
-}
-
-/**
- * @brief set_headlight eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfbool.
- */
-void navigation_info_node::process_set_headlight(const field_value & value,
-                                                 const double timestamp)
-    throw (std::bad_cast)
-{
-    this->headlight_ = dynamic_cast<const sfbool &>(value);
-    this->node::modified(true);
-    this->emit_event("headlight_changed", this->headlight_, timestamp);
-}
-
-/**
- * @brief set_speed eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- */
-void navigation_info_node::process_set_speed(const field_value & value,
-                                             const double timestamp)
-    throw (std::bad_cast)
-{
-    this->speed_ = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("speed_changed", this->speed_, timestamp);
-}
-
-/**
- * @brief set_type eventIn handler.
- *
- * @param value     an mfstring value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void navigation_info_node::process_set_type(const field_value & value,
-                                            const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->type = dynamic_cast<const mfstring &>(value);
-    this->node::modified(true);
-    this->emit_event("type_changed", this->type, timestamp);
-}
-
-/**
- * @brief set_visibilityLimit eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- */
-void
-navigation_info_node::process_set_visibilityLimit(const field_value & value,
-                                                  const double timestamp)
-    throw (std::bad_cast)
-{
-    this->visibilityLimit = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("visibilityLimit_changed", this->visibilityLimit,
-                    timestamp);
 }
 
 
@@ -10034,19 +10862,27 @@ normal_class::create_type(const std::string & id,
             node_interface(node_interface::exposedfield_id,
                            field_value::mfvec3f_id,
                            "vector");
-    const node_type_ptr type(new vrml97_node_type_impl<normal_node>(*this, id));
-    vrml97_node_type_impl<normal_node> & normalNodeType =
-            static_cast<vrml97_node_type_impl<normal_node> &>(*type);
-    typedef vrml97_node_type_impl<normal_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<normal_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & normalNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterface) {
             normalNodeType.add_exposedfield(
                 supportedInterface.field_type,
                 supportedInterface.id,
-                &normal_node::process_set_vector,
-                node_field_ptr_ptr(new node_field_ptr_impl<normal_node, mfvec3f>
-                                    (&normal_node::vector_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mfvec3f> >(&normal_node::vector_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfvec3f> >(
+                        &normal_node::vector_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mfvec3f> >(
+                        &normal_node::vector_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -10067,7 +10903,7 @@ normal_class::create_type(const std::string & id,
  */
 
 /**
- * @var mfvec3f normal_node::vector_
+ * @var exposedfield<mfvec3f> normal_node::vector_
  *
  * @brief vector exposedField.
  */
@@ -10078,17 +10914,18 @@ normal_class::create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope     the scope to which the node belongs.
  */
-normal_node::normal_node(const node_type & type,
-                         const scope_ptr & scope):
+normal_node::normal_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
     abstract_base(type, scope),
-    openvrml::normal_node(type, scope)
+    openvrml::normal_node(type, scope),
+    vector_(*this)
 {}
 
 /**
  * @brief Destroy.
  */
-normal_node::~normal_node() throw () {}
+normal_node::~normal_node() throw ()
+{}
 
 /**
  * @brief Get the array of normal vectors.
@@ -10097,25 +10934,7 @@ normal_node::~normal_node() throw () {}
  */
 const std::vector<vec3f> & normal_node::vector() const throw ()
 {
-    return this->vector_.value;
-}
-
-/**
- * @brief set_vector eventIn handler.
- *
- * @param value     an mfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfvec3f.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void normal_node::process_set_vector(const field_value & value,
-                                     const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->vector_ = dynamic_cast<const mfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("vector_changed", this->vector_, timestamp);
+    return this->vector_.mfvec3f::value;
 }
 
 
@@ -10160,42 +10979,70 @@ normal_interpolator_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::sffloat_id, "set_fraction"),
-        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "key"),
-        node_interface(node_interface::exposedfield_id, field_value::mfvec3f_id, "keyValue"),
-        node_interface(node_interface::eventout_id, field_value::mfvec3f_id, "value_changed")
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::mfvec3f_id,
+                       "value_changed")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<normal_interpolator_node>(*this, id));
-    vrml97_node_type_impl<normal_interpolator_node> & normalInterpolatorNodeType =
-            static_cast<vrml97_node_type_impl<normal_interpolator_node> &>(*type);
-    typedef vrml97_node_type_impl<normal_interpolator_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<normal_interpolator_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & normalInterpolatorNodeType =
+        static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            normalInterpolatorNodeType
-                    .add_eventin(supportedInterfaces[0].field_type,
-                                supportedInterfaces[0].id,
-                                &normal_interpolator_node::process_set_fraction);
+            normalInterpolatorNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    normal_interpolator_node::set_fraction_listener>(
+                        &normal_interpolator_node::set_fraction_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
             normalInterpolatorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &normal_interpolator_node::process_set_key,
-                node_field_ptr_ptr(new node_field_ptr_impl<normal_interpolator_node, mffloat>
-                                    (&normal_interpolator_node::key)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mffloat> >(&normal_interpolator_node::key_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mffloat> >(
+                        &normal_interpolator_node::key_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mffloat> >(
+                        &normal_interpolator_node::key_)));
         } else if (*interface == supportedInterfaces[2]) {
             normalInterpolatorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &normal_interpolator_node::process_set_keyValue,
-                node_field_ptr_ptr(new node_field_ptr_impl<normal_interpolator_node, mfvec3f>
-                                    (&normal_interpolator_node::keyValue)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mfvec3f> >(
+                        &normal_interpolator_node::key_value_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfvec3f> >(
+                        &normal_interpolator_node::key_value_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mfvec3f> >(
+                        &normal_interpolator_node::key_value_)));
         } else if (*interface == supportedInterfaces[3]) {
             normalInterpolatorNodeType.add_eventout(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<normal_interpolator_node, mfvec3f>
-                                    (&normal_interpolator_node::value)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<mfvec3f_emitter>(
+                        &normal_interpolator_node::value_changed_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -10216,149 +11063,160 @@ normal_interpolator_class::create_type(const std::string & id,
  */
 
 /**
- * @var mffloat normal_interpolator_node::key
+ * @class normal_interpolator_node::set_fraction_listener
+ *
+ * @brief set_fraction eventIn handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  normal_interpolator_node.
+ */
+normal_interpolator_node::set_fraction_listener::
+set_fraction_listener(normal_interpolator_node & node):
+    sffloat_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+normal_interpolator_node::set_fraction_listener::~set_fraction_listener()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param fraction  fraction.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+normal_interpolator_node::set_fraction_listener::
+process_event(const sffloat & fraction, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        using std::vector;
+
+        normal_interpolator_node & node =
+            dynamic_cast<normal_interpolator_node &>(this->node);
+
+        const vector<float> & key = node.key_.mffloat::value;
+        const vector<vec3f> & key_value = node.key_value_.mfvec3f::value;
+        vector<vec3f> & value = node.value_changed_.mfvec3f::value;
+
+        size_t nNormals = key_value.size() / key.size();
+        size_t n = key.size() - 1;
+
+        if (fraction.value < key[0]) {
+            value.assign(key_value.begin(), key_value.begin() + nNormals);
+        } else if (fraction.value > key[n]) {
+            value.assign(key_value.begin() + n * nNormals,
+                         key_value.begin() + (n + 1) * nNormals);
+        } else {
+            // Reserve enough space for the new value
+            value.resize(nNormals);
+
+            for (size_t i = 0; i < n; ++i) {
+                if (key[i] <= fraction.value && fraction.value <= key[i + 1]) {
+
+                    vector<vec3f>::const_iterator v1 =
+                        key_value.begin() + i * nNormals;
+                    vector<vec3f>::const_iterator v2 =
+                        key_value.begin() + (i + 1) * nNormals;
+
+                    const float f =
+                        (fraction.value - key[i]) / (key[i + 1] - key[i]);
+
+                    // Interpolate on the surface of unit sphere.
+                    for (size_t j = 0; j < nNormals; ++j) {
+                        using openvrml_::fequal;
+
+                        float alpha, beta;
+                        const float dot_product = v1->dot(*v2);
+                        if (!fequal<float>()(dot_product, 1.0f)
+                            && v1->normalize() != v2->normalize()) {
+                            // Vectors are not opposite and not coincident.
+                            const float omega = float(acos(dot_product));
+                            const float sinomega = float(sin(omega));
+                            alpha = float(sin((1.0 - f) * omega)) / sinomega;
+                            beta = float(sin(f * omega)) / sinomega;
+                        } else {
+                            // Do linear interpolation.
+                            alpha = 1.0f - f;
+                            beta = f;
+                        }
+                        value[j] = (alpha * *v1) + (beta * *v2);
+
+                        ++v1;
+                        ++v2;
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Send the new value
+        node::emit_event(node.value_changed_emitter_, timestamp);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var normal_interpolator_node::set_fraction_listener normal_interpolator_node::set_fraction_listener_
+ *
+ * @brief set_fraction eventIn handler.
+ */
+
+/**
+ * @var exposedfield<mffloat> normal_interpolator_node::key_
  *
  * @brief key exposedField.
  */
 
 /**
- * @var mfvec3f normal_interpolator_node::keyValue
+ * @var exposedfield<mfvec3f> normal_interpolator_node::key_value_
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var mfvec3f normal_interpolator_node::value
+ * @var mfvec3f normal_interpolator_node::value_changed_
  *
- * @brief value_changed eventOut.
+ * @brief value_changed eventOut value.
+ */
+
+/**
+ * @var mfvec3f_emitter normal_interpolator_node::value_changed_emitter_
+ *
+ * @brief value_changed eventOut emitter.
  */
 
 /**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 normal_interpolator_node::normal_interpolator_node(const node_type & type,
-                                       const scope_ptr & scope):
-        node(type, scope),
-        abstract_child_node(type, scope) {}
+                                                   const scope_ptr & scope):
+    node(type, scope),
+    abstract_child_node(type, scope),
+    set_fraction_listener_(*this),
+    key_(*this),
+    key_value_(*this),
+    value_changed_emitter_(this->value_changed_)
+{}
 
 /**
  * @brief Destroy.
  */
-normal_interpolator_node::~normal_interpolator_node() throw () {}
-
-/**
- * @brief set_fraction eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void normal_interpolator_node::process_set_fraction(const field_value & value,
-                                                    const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    float f = dynamic_cast<const sffloat &>(value).value;
-
-    size_t nNormals = this->keyValue.value.size() / this->key.value.size();
-    size_t n = this->key.value.size() - 1;
-
-    if (f < this->key.value[0]) {
-        this->value.value.assign(this->keyValue.value.begin(),
-                                 this->keyValue.value.begin() + nNormals);
-    } else if (f > this->key.value[n]) {
-        this->value.value
-                .assign(this->keyValue.value.begin() + n * nNormals,
-                        this->keyValue.value.begin() + (n + 1) * nNormals);
-    } else {
-        // Reserve enough space for the new value
-        this->value.value.resize(nNormals);
-
-        for (size_t i = 0; i < n; ++i) {
-            if (this->key.value[i] <= f && f <= this->key.value[i + 1]) {
-                using std::vector;
-
-                vector<vec3f>::const_iterator v1 =
-                    this->keyValue.value.begin() + i * nNormals;
-                vector<vec3f>::const_iterator v2 =
-                    this->keyValue.value.begin() + (i + 1) * nNormals;
-
-                f = (f - this->key.value[i])
-                    / (this->key.value[i + 1] - this->key.value[i]);
-
-                // Interpolate on the surface of unit sphere.
-                for (size_t j = 0; j < nNormals; ++j) {
-                    using openvrml_::fequal;
-
-                    float alpha, beta;
-                    const float dot_product = v1->dot(*v2);
-                    if (!fequal<float>()(dot_product, 1.0f)
-                            && v1->normalize() != v2->normalize()) {
-                        // Vectors are not opposite and not coincident.
-                        const float omega = float(acos(dot_product));
-                        const float sinomega = float(sin(omega));
-                        alpha = float(sin((1.0 - f) * omega)) / sinomega;
-                        beta = float(sin(f * omega)) / sinomega;
-                    } else {
-                        // Do linear interpolation.
-                        alpha = 1.0f - f;
-                        beta = f;
-                    }
-                    const vec3f vec(alpha * v1->x() + beta * v2->x(),
-                                    alpha * v1->y() + beta * v2->y(),
-                                    alpha * v1->z() + beta * v2->z());
-                    this->value.value[j] = vec;
-
-                    ++v1;
-                    ++v2;
-                }
-
-                break;
-            }
-        }
-    }
-
-    // Send the new value
-    this->emit_event("value_changed", this->value, timestamp);
-}
-
-/**
- * @brief set_key eventIn handler.
- *
- * @param value     an mffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void normal_interpolator_node::process_set_key(const field_value & value,
-                                               const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->key = dynamic_cast<const mffloat &>(value);
-    this->emit_event("key_changed", this->key, timestamp);
-}
-
-/**
- * @brief set_keyValue eventIn handler.
- *
- * @param value     an mfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfvec3f.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void normal_interpolator_node::process_set_keyValue(const field_value & value,
-                                                    const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->keyValue = dynamic_cast<const mfvec3f &>(value);
-    this->emit_event("keyValue_changed", this->keyValue, timestamp);
-}
+normal_interpolator_node::~normal_interpolator_node() throw ()
+{}
 
 
 /**
@@ -10372,8 +11230,8 @@ void normal_interpolator_node::process_set_keyValue(const field_value & value,
  *
  * @param browser the browser associated with this class object.
  */
-orientation_interpolator_class::orientation_interpolator_class(
-    openvrml::browser & browser):
+orientation_interpolator_class::
+orientation_interpolator_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
@@ -10397,9 +11255,9 @@ orientation_interpolator_class::~orientation_interpolator_class() throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
-orientation_interpolator_class::create_type(
-    const std::string & id,
-    const node_interface_set & interfaces)
+orientation_interpolator_class::
+create_type(const std::string & id,
+            const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -10416,43 +11274,59 @@ orientation_interpolator_class::create_type(
                       field_value::sfrotation_id,
                       "value_changed")
     };
-    const node_type_ptr
-        type(new vrml97_node_type_impl<orientation_interpolator_node>(*this, id));
-    vrml97_node_type_impl<orientation_interpolator_node> &
-        orientationInterpolatorNodeType =
-        static_cast<vrml97_node_type_impl<orientation_interpolator_node> &>(*type);
-    typedef vrml97_node_type_impl<orientation_interpolator_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<orientation_interpolator_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & orientationInterpolatorNodeType =
+        static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            orientationInterpolatorNodeType
-                    .add_eventin(supportedInterfaces[0].field_type,
-                                supportedInterfaces[0].id,
-                                &orientation_interpolator_node::process_set_fraction);
+            orientationInterpolatorNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    orientation_interpolator_node::set_fraction_listener>(
+                        &orientation_interpolator_node::set_fraction_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
             orientationInterpolatorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &orientation_interpolator_node::process_set_key,
-                node_field_ptr_ptr(new node_field_ptr_impl<orientation_interpolator_node,
-                                                     mffloat>
-                                (&orientation_interpolator_node::key)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mffloat> >(
+                        &orientation_interpolator_node::key_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mffloat> >(
+                        &orientation_interpolator_node::key_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mffloat> >(
+                        &orientation_interpolator_node::key_)));
         } else if (*interface == supportedInterfaces[2]) {
             orientationInterpolatorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &orientation_interpolator_node::process_set_keyValue,
-                node_field_ptr_ptr(new node_field_ptr_impl<orientation_interpolator_node,
-                                                     mfrotation>
-                                (&orientation_interpolator_node::keyValue)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mfrotation> >(
+                        &orientation_interpolator_node::key_value_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfrotation> >(
+                        &orientation_interpolator_node::key_value_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    exposedfield<mfrotation> >(
+                        &orientation_interpolator_node::key_value_)));
         } else if (*interface == supportedInterfaces[3]) {
             orientationInterpolatorNodeType.add_eventout(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<orientation_interpolator_node,
-                                                     sfrotation>
-                                (&orientation_interpolator_node::value)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfrotation_emitter>(
+                        &orientation_interpolator_node::value_changed_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -10473,34 +11347,154 @@ orientation_interpolator_class::create_type(
  */
 
 /**
- * @var mffloat orientation_interpolator_node::key
+ * @class orientation_interpolator_node::set_fraction_listener
+ *
+ * @brief set_fraction eventIn handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  orientation_interpolator_node.
+ */
+orientation_interpolator_node::set_fraction_listener::
+set_fraction_listener(orientation_interpolator_node & node):
+    sffloat_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+orientation_interpolator_node::set_fraction_listener::~set_fraction_listener()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param fraction  fraction.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+orientation_interpolator_node::set_fraction_listener::
+process_event(const sffloat & fraction, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        using std::vector;
+
+        orientation_interpolator_node & node =
+            dynamic_cast<orientation_interpolator_node &>(this->node);
+
+        const vector<float> & key = node.key_.mffloat::value;
+        const vector<rotation> & key_value = node.key_value_.mfrotation::value;
+
+        size_t n = key.size() - 1;
+        if (fraction.value < key[0]) {
+            node.value_changed_.value = key_value[0];
+        } else if (fraction.value > key[n]) {
+            node.value_changed_.value = key_value[n];
+        } else {
+            for (size_t i = 0; i < n; ++i) {
+                if (key[i] <= fraction.value && fraction.value <= key[i + 1]) {
+                    const rotation & v1 = key_value[i];
+                    const rotation & v2 = key_value[i + 1];
+
+                    // Interpolation factor
+                    const float f =
+                        (fraction.value - key[i]) / (key[i + 1] - key[i]);
+
+                    float x, y, z, r1, r2;
+                    r1 = v1[3];
+
+                    // Make sure the vectors are not pointing opposite ways
+                    if (v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2] < 0.0) {
+                        x = v1[0] + f * (-v2[0] - v1[0]);
+                        y = v1[1] + f * (-v2[1] - v1[1]);
+                        z = v1[2] + f * (-v2[2] - v1[2]);
+                        r2 = -v2[3];
+                    } else {
+                        x = v1[0] + f * (v2[0] - v1[0]);
+                        y = v1[1] + f * (v2[1] - v1[1]);
+                        z = v1[2] + f * (v2[2] - v1[2]);
+                        r2 = v2[3];
+                    }
+
+                    // Interpolate angles via the shortest direction
+                    if (fabs(r2 - r1) > pi) {
+                        if (r2 > r1) {
+                            r1 += float(2.0 * pi);
+                        } else {
+                            r2 += float(2.0 * pi);
+                        }
+                    }
+                    float angle = r1 + f * (r2 - r1);
+                    if (angle >= 2.0 * pi) {
+                        angle -= float(2.0 * pi);
+                    } else if (angle < 0.0) {
+                        angle += float(2.0 * pi);
+                    }
+                    node.value_changed_.value.axis(vec3f(x, y, z).normalize());
+                    node.value_changed_.value.angle(angle);
+                    break;
+                }
+            }
+        }
+
+        // Send the new value
+        node::emit_event(node.value_changed_emitter_, timestamp);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var orientation_interpolator_node::set_fraction_listener orientation_interpolator_node::set_fraction_listener_
+ *
+ * @brief set_fraction eventIn handler.
+ */
+
+/**
+ * @var exposedfield<mffloat> orientation_interpolator_node::key_
  *
  * @brief key exposedField.
  */
 
 /**
- * @var mfrotation orientation_interpolator_node::keyValue
+ * @var exposedfield<mfrotation> orientation_interpolator_node::key_value_
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var sfrotation orientation_interpolator_node::value
+ * @var sfrotation orientation_interpolator_node::value_changed_
  *
- * @brief value_changed eventOut.
+ * @brief value_changed eventOut value.
+ */
+
+/**
+ * @var sfrotation_emitter orientation_interpolator_node::value_changed_emitter_
+ *
+ * @brief value_changed eventOut emitter.
  */
 
 /**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
-orientation_interpolator_node::orientation_interpolator_node(
-    const node_type & type,
-    const scope_ptr & scope):
+orientation_interpolator_node::
+orientation_interpolator_node(const node_type & type,
+                              const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope)
+    abstract_child_node(type, scope),
+    set_fraction_listener_(*this),
+    key_(*this),
+    key_value_(*this),
+    value_changed_emitter_(this->value_changed_)
 {}
 
 /**
@@ -10508,115 +11502,6 @@ orientation_interpolator_node::orientation_interpolator_node(
  */
 orientation_interpolator_node::~orientation_interpolator_node() throw ()
 {}
-
-/**
- * @brief set_fraction eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void
-orientation_interpolator_node::process_set_fraction(const field_value & value,
-                                                    const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    float f = dynamic_cast<const sffloat &>(value).value;
-
-    size_t n = this->key.value.size() - 1;
-    if (f < this->key.value[0]) {
-        this->value.value = this->keyValue.value[0];
-    } else if (f > this->key.value[n]) {
-        this->value.value = this->keyValue.value[n];
-    } else {
-        for (size_t i = 0; i < n; ++i) {
-            if (this->key.value[i] <= f && f <= this->key.value[i + 1]) {
-                const rotation & v1 = this->keyValue.value[i];
-                const rotation & v2 = this->keyValue.value[i + 1];
-
-                // Interpolation factor
-                f = (f - this->key.value[i])
-                    / (this->key.value[i + 1] - this->key.value[i]);
-
-                float x, y, z, r1, r2;
-                r1 = v1[3];
-
-                // Make sure the vectors are not pointing opposite ways
-                if (v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2] < 0.0) {
-                    x = v1[0] + f * (-v2[0] - v1[0]);
-                    y = v1[1] + f * (-v2[1] - v1[1]);
-                    z = v1[2] + f * (-v2[2] - v1[2]);
-                    r2 = -v2[3];
-                } else {
-                    x = v1[0] + f * (v2[0] - v1[0]);
-                    y = v1[1] + f * (v2[1] - v1[1]);
-                    z = v1[2] + f * (v2[2] - v1[2]);
-                    r2 = v2[3];
-                }
-
-                // Interpolate angles via the shortest direction
-                if (fabs(r2 - r1) > pi) {
-                    if (r2 > r1) {
-                        r1 += float(2.0 * pi);
-                    } else {
-                        r2 += float(2.0 * pi);
-                    }
-                }
-                float angle = r1 + f * (r2 - r1);
-                if (angle >= 2.0 * pi) {
-                    angle -= float(2.0 * pi);
-                } else if (angle < 0.0) {
-                    angle += float(2.0 * pi);
-                }
-                vec3f Vec(x,y,z);
-                Vec = Vec.normalize();
-                this->value.value.axis(Vec);
-                this->value.value.angle(angle);
-                break;
-            }
-        }
-    }
-
-    // Send the new value
-    this->emit_event("value_changed", this->value, timestamp);
-}
-
-/**
- * @brief set_key eventIn handler.
- *
- * @param value     an mffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void orientation_interpolator_node::process_set_key(const field_value & value,
-                                                    const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->key = dynamic_cast<const mffloat &>(value);
-    this->emit_event("key_changed", this->key, timestamp);
-}
-
-/**
- * @brief set_keyValue eventIn handler.
- *
- * @param value     an mfrotation value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfrotation.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void
-orientation_interpolator_node::process_set_keyValue(const field_value & value,
-                                                    const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->keyValue = dynamic_cast<const mfrotation &>(value);
-    this->emit_event("keyValue_changed", this->keyValue, timestamp);
-}
 
 
 /**
@@ -10674,28 +11559,36 @@ pixel_texture_class::create_type(const std::string & id,
 
     const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & pixelTextureNodeType = static_cast<node_type_t &>(*type);
-    typedef node_type_t::node_field_ptr_ptr node_field_ptr_ptr;
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end(); ++interface) {
         if (*interface == supportedInterfaces[0]) {
             pixelTextureNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &pixel_texture_node::process_set_image,
-                node_field_ptr_ptr(new node_field_ptr_impl<pixel_texture_node, sfimage>
-                                    (&pixel_texture_node::image_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfimage> >(
+                        &pixel_texture_node::image_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfimage> >(
+                        &pixel_texture_node::image_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfimage> >(
+                        &pixel_texture_node::image_)));
         } else if (*interface == supportedInterfaces[1]) {
             pixelTextureNodeType.add_field(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<pixel_texture_node, sfbool>
-                                    (&pixel_texture_node::repeatS)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &pixel_texture_node::repeat_s_)));
         } else if (*interface == supportedInterfaces[2]) {
             pixelTextureNodeType.add_field(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<pixel_texture_node, sfbool>
-                                    (&pixel_texture_node::repeatT)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &pixel_texture_node::repeat_t_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -10736,7 +11629,8 @@ pixel_texture_class::create_type(const std::string & id,
 pixel_texture_node::pixel_texture_node(const node_type & type,
                                        const scope_ptr & scope):
     node(type, scope),
-    abstract_texture_node(type, scope)
+    abstract_texture_node(type, scope),
+    image_(*this)
 {}
 
 /**
@@ -10754,7 +11648,7 @@ pixel_texture_node::~pixel_texture_node() throw ()
  */
 const image & pixel_texture_node::image() const throw ()
 {
-    return this->image_.value;
+    return this->image_.sfimage::value;
 }
 
 /**
@@ -10778,28 +11672,10 @@ size_t pixel_texture_node::frames() const throw ()
 viewer::texture_object_t
 pixel_texture_node::do_render_texture(viewer & v, rendering_context context)
 {
-    return v.insert_texture(this->image_.value,
-                            this->repeatS.value,
-                            this->repeatT.value,
+    return v.insert_texture(this->image_.sfimage::value,
+                            this->repeat_s_.value,
+                            this->repeat_t_.value,
                             true);
-}
-
-/**
- * @brief set_image eventIn handler.
- *
- * @param value     an sfimage value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an SFImage.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void pixel_texture_node::process_set_image(const field_value & value,
-                                           const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->image_ = dynamic_cast<const sfimage &>(value);
-    this->node::modified(true);
-    this->emit_event("image_changed", this->image_, timestamp);
 }
 
 
@@ -10843,74 +11719,128 @@ plane_sensor_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "autoOffset"),
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
-        node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "maxPosition"),
-        node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "minPosition"),
-        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "offset"),
-        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
-        node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed"),
-        node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "translation_changed")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "autoOffset"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "maxPosition"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "minPosition"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "offset"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "trackPoint_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "translation_changed")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<plane_sensor_node>(*this, id));
-    vrml97_node_type_impl<plane_sensor_node> & planeSensorNodeType =
-            static_cast<vrml97_node_type_impl<plane_sensor_node> &>(*type);
-    typedef vrml97_node_type_impl<plane_sensor_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<plane_sensor_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & planeSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             planeSensorNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &plane_sensor_node::process_set_autoOffset,
-                node_field_ptr_ptr(new node_field_ptr_impl<plane_sensor_node, sfbool>
-                                    (&plane_sensor_node::autoOffset)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &plane_sensor_node::auto_offset_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &plane_sensor_node::auto_offset_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &plane_sensor_node::auto_offset_)));
         } else if (*interface == supportedInterfaces[1]) {
             planeSensorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &plane_sensor_node::process_set_enabled,
-                node_field_ptr_ptr(new node_field_ptr_impl<plane_sensor_node, sfbool>
-                                    (&plane_sensor_node::enabled_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &plane_sensor_node::enabled_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &plane_sensor_node::enabled_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &plane_sensor_node::enabled_)));
         } else if (*interface == supportedInterfaces[2]) {
             planeSensorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &plane_sensor_node::process_set_maxPosition,
-                node_field_ptr_ptr(new node_field_ptr_impl<plane_sensor_node, sfvec2f>
-                                    (&plane_sensor_node::maxPosition)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec2f> >(
+                        &plane_sensor_node::max_position_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec2f> >(
+                        &plane_sensor_node::max_position_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec2f> >(
+                        &plane_sensor_node::max_position_)));
         } else if (*interface == supportedInterfaces[3]) {
             planeSensorNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &plane_sensor_node::process_set_minPosition,
-                node_field_ptr_ptr(new node_field_ptr_impl<plane_sensor_node, sfvec2f>
-                                    (&plane_sensor_node::minPosition)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec2f> >(
+                        &plane_sensor_node::min_position_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec2f> >(
+                        &plane_sensor_node::min_position_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec2f> >(
+                        &plane_sensor_node::min_position_)));
         } else if (*interface == supportedInterfaces[4]) {
             planeSensorNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &plane_sensor_node::process_set_offset,
-                node_field_ptr_ptr(new node_field_ptr_impl<plane_sensor_node, sfvec3f>
-                                    (&plane_sensor_node::offset)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(
+                        &plane_sensor_node::offset_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &plane_sensor_node::offset_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &plane_sensor_node::offset_)));
         } else if (*interface == supportedInterfaces[5]) {
             planeSensorNodeType.add_eventout(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<plane_sensor_node, sfbool>
-                                    (&plane_sensor_node::active)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &plane_sensor_node::is_active_emitter_)));
         } else if (*interface == supportedInterfaces[6]) {
             planeSensorNodeType.add_eventout(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<plane_sensor_node, sfvec3f>
-                                    (&plane_sensor_node::trackPoint)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfvec3f_emitter>(
+                        &plane_sensor_node::track_point_changed_emitter_)));
         } else if (*interface == supportedInterfaces[7]) {
             planeSensorNodeType.add_eventout(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<plane_sensor_node, sfvec3f>
-                                    (&plane_sensor_node::translation)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfvec3f_emitter>(
+                        &plane_sensor_node::translation_changed_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -10935,51 +11865,69 @@ plane_sensor_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfbool plane_sensor_node::autoOffset
+ * @var exposedfield<sfbool> plane_sensor_node::auto_offset_
  *
  * @brief autoOffset exposedField.
  */
 
 /**
- * @var sfbool plane_sensor_node::enabled_
+ * @var exposedfield<sfbool> plane_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var sfvec2f plane_sensor_node::maxPosition
+ * @var exposedfield<sfvec2f> plane_sensor_node::max_position_
  *
  * @brief maxPosition exposedField.
  */
 
 /**
- * @var sfvec2f plane_sensor_node::minPosition
+ * @var exposedfield<sfvec2f> plane_sensor_node::min_position_
  *
  * @brief minPosition exposedField.
  */
 
 /**
- * @var sfvec3f plane_sensor_node::offset
+ * @var exposedfield<sfvec3f> plane_sensor_node::offset_
  *
  * @brief offset exposedField.
  */
 
 /**
- * @var sfbool plane_sensor_node::active
+ * @var sfbool plane_sensor_node::is_active_
  *
- * @brief isActive eventOut.
+ * @brief isActive eventOut value.
  */
 
 /**
- * @var sfvec3f plane_sensor_node::trackPoint
+ * @var sfbool_emitter plane_sensor_node::is_active_emitter_
  *
- * @brief trackPoint_changed eventOut.
+ * @brief isActive eventOut emitter.
  */
 
 /**
- * @var sfvec3f plane_sensor_node::translation
+ * @var sfvec3f plane_sensor_node::track_point_changed_
  *
- * @brief translation_changed eventOut.
+ * @brief trackPoint_changed eventOut value.
+ */
+
+/**
+ * @var sfvec3f_emitter plane_sensor_node::track_point_changed_emitter_
+ *
+ * @brief trackPoint_changed eventOut emitter.
+ */
+
+/**
+ * @var sfvec3f plane_sensor_node::translation_changed_
+ *
+ * @brief translation_changed eventOut value.
+ */
+
+/**
+ * @var sfvec3f_emitter plane_sensor_node::translation_changed_emitter_
+ *
+ * @brief translation_changed eventOut emitter.
  */
 
 /**
@@ -11010,12 +11958,15 @@ plane_sensor_node::plane_sensor_node(const node_type & type,
                          const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
-    autoOffset(true),
-    enabled_(true),
-    maxPosition(vec2f(-1.0, -1.0)),
-    minPosition(vec2f(0.0, 0.0)),
-    offset(vec3f(0.0, 0.0, 0.0)),
-    active(false)
+    auto_offset_(*this, true),
+    enabled_(*this, true),
+    max_position_(*this, vec2f(-1.0, -1.0)),
+    min_position_(*this, vec2f(0.0, 0.0)),
+    offset_(*this, vec3f(0.0, 0.0, 0.0)),
+    is_active_(false),
+    is_active_emitter_(this->is_active_),
+    translation_changed_emitter_(this->translation_changed_),
+    track_point_changed_emitter_(this->track_point_changed_)
 {
     this->node::modified(true);
 }
@@ -11045,7 +11996,7 @@ plane_sensor_node * plane_sensor_node::to_plane_sensor() const
  * @param context   a rendering context.
  */
 void plane_sensor_node::do_render_child(openvrml::viewer & viewer,
-                               const rendering_context context)
+                                        const rendering_context context)
 {
     //
     // Store the ModelView matrix which is calculated at the time of rendering
@@ -11058,11 +12009,11 @@ void plane_sensor_node::do_render_child(openvrml::viewer & viewer,
  * @todo The local coords are computed for one instance; do we need to convert
  *       @p p to local coords for each instance (USE) of the sensor?
  */
-void plane_sensor_node::activate(double timeStamp, bool isActive, double * p)
+void plane_sensor_node::activate(double timestamp, bool isActive, double * p)
 {
     // Become active
-    if (isActive && !this->active.value) {
-        this->active.value = isActive;
+    if (isActive && !this->is_active_.value) {
+        this->is_active_.value = isActive;
 
         vec3f V(static_cast<float>(p[0]),
                 static_cast<float>(p[1]),
@@ -11070,18 +12021,18 @@ void plane_sensor_node::activate(double timeStamp, bool isActive, double * p)
         this->activationMatrix = this->modelview.inverse();
         V *= this->activationMatrix;
         this->activationPoint.value = V;
-        this->emit_event("isActive", this->active, timeStamp);
+        node::emit_event(this->is_active_emitter_, timestamp);
     }
 
     // Become inactive
-    else if (!isActive && this->active.value) {
-        this->active.value = isActive;
-        this->emit_event("isActive", this->active, timeStamp);
+    else if (!isActive && this->is_active_.value) {
+        this->is_active_.value = isActive;
+        node::emit_event(this->is_active_emitter_, timestamp);
 
         // auto offset
-        if (this->autoOffset.value) {
-            this->offset = this->translation;
-            this->emit_event("offset_changed", this->offset, timeStamp);
+        if (this->auto_offset_.sfbool::value) {
+            this->offset_.sfvec3f::value = this->translation_changed_.value;
+            node::emit_event(this->offset_, timestamp);
         }
     }
 
@@ -11091,35 +12042,40 @@ void plane_sensor_node::activate(double timeStamp, bool isActive, double * p)
                 static_cast<float>(p[1]),
                 static_cast<float>(p[2]));
         V *= this->activationMatrix;
-        this->trackPoint.value = V;
-        this->emit_event("trackPoint_changed", this->trackPoint, timeStamp);
+        this->track_point_changed_.value = V;
+        node::emit_event(this->track_point_changed_emitter_, timestamp);
 
-        vec3f t(V[0] - this->activationPoint.value.x() + this->offset.value.x(),
-                V[1] - this->activationPoint.value.y() + this->offset.value.y(),
+        vec3f t(V[0] - this->activationPoint.value.x()
+                + this->offset_.sfvec3f::value.x(),
+                V[1] - this->activationPoint.value.y()
+                + this->offset_.sfvec3f::value.y(),
                 0.0);
 
-        if (this->minPosition.value.x() == this->maxPosition.value.x() ) {
-            t.x(this->minPosition.value.x());
-        } else if (this->minPosition.value.x() < this->maxPosition.value.x()) {
-            if (t.x() < this->minPosition.value.x()) {
-                t.x(this->minPosition.value.x());
-            } else if (t.x() > this->maxPosition.value.x()) {
-                t.x(this->maxPosition.value.x());
+        const vec2f & min_pos = this->min_position_.sfvec2f::value;
+        const vec2f & max_pos = this->max_position_.sfvec2f::value;
+
+        if (min_pos.x() == max_pos.x()) {
+            t.x(min_pos.x());
+        } else if (min_pos.x() < max_pos.x()) {
+            if (t.x() < min_pos.x()) {
+                t.x(min_pos.x());
+            } else if (t.x() > max_pos.x()) {
+                t.x(max_pos.x());
             }
         }
 
-        if (this->minPosition.value.y() == this->maxPosition.value.y()) {
-            t.y(this->minPosition.value.y());
-        } else if (this->minPosition.value.y() < this->maxPosition.value.y()) {
-            if (t.y() < this->minPosition.value.y()) {
-                t.y(this->minPosition.value.y());
-            } else if (t.y() > this->maxPosition.value.y()) {
-                t.y(this->maxPosition.value.y());
+        if (min_pos.y() == max_pos.y()) {
+            t.y(min_pos.y());
+        } else if (min_pos.y() < max_pos.y()) {
+            if (t.y() < min_pos.y()) {
+                t.y(min_pos.y());
+            } else if (t.y() > max_pos.y()) {
+                t.y(max_pos.y());
             }
         }
 
-        this->translation.value = t;
-        this->emit_event("translation_changed", this->translation, timeStamp);
+        this->translation_changed_.value = t;
+        node::emit_event(this->translation_changed_emitter_, timestamp);
     }
 }
 
@@ -11130,90 +12086,7 @@ void plane_sensor_node::activate(double timeStamp, bool isActive, double * p)
  */
 bool plane_sensor_node::enabled() const
 {
-    return this->enabled_.value;
-}
-
-/**
- * @brief set_autoOffset eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void plane_sensor_node::process_set_autoOffset(const field_value & value,
-                                        const double timestamp)
-    throw (std::bad_cast)
-{
-    this->autoOffset = dynamic_cast<const sfbool &>(value);
-    this->node::modified(true);
-    this->emit_event("autoOffset_changed", this->autoOffset, timestamp);
-}
-
-/**
- * @brief set_enabled eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void plane_sensor_node::process_set_enabled(const field_value & value,
-                                     const double timestamp)
-    throw (std::bad_cast)
-{
-    this->enabled_ = dynamic_cast<const sfbool &>(value);
-    this->node::modified(true);
-    this->emit_event("enabled_changed", this->enabled_, timestamp);
-}
-
-/**
- * @brief set_maxPosition eventIn handler.
- *
- * @param value     an sfvec2f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec2f.
- */
-void plane_sensor_node::process_set_maxPosition(const field_value & value,
-                                         const double timestamp)
-    throw (std::bad_cast)
-{
-    this->maxPosition = dynamic_cast<const sfvec2f &>(value);
-    this->node::modified(true);
-    this->emit_event("maxPosition_changed", this->maxPosition, timestamp);
-}
-
-/**
- * @brief set_minPosition eventIn handler.
- *
- * @param value     an sfvec2f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec2f.
- */
-void plane_sensor_node::process_set_minPosition(const field_value & value,
-                                         const double timestamp)
-        throw (std::bad_cast) {
-    this->minPosition = dynamic_cast<const sfvec2f &>(value);
-    this->node::modified(true);
-    this->emit_event("minPosition_changed", this->minPosition, timestamp);
-}
-
-/**
- * @brief set_offset eventIn handler.
- *
- * @param value     an sfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void plane_sensor_node::process_set_offset(const field_value & value,
-                                    const double timestamp)
-        throw (std::bad_cast) {
-    this->offset = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("offset_changed", this->offset, timestamp);
+    return this->enabled_.sfbool::value;
 }
 
 
@@ -11256,69 +12129,133 @@ point_light_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "ambientIntensity"),
-        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "attenuation"),
-        node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "color"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "intensity"),
-        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "location"),
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "on"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "radius")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "attenuation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "intensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "location"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "on"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "radius")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<point_light_node>(*this, id));
-    vrml97_node_type_impl<point_light_node> & pointLightNodeType =
-            static_cast<vrml97_node_type_impl<point_light_node> &>(*type);
-    typedef vrml97_node_type_impl<point_light_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<point_light_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & pointLightNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             pointLightNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &point_light_node::process_set_ambientIntensity,
-                node_field_ptr_ptr(new node_field_ptr_impl<point_light_node, sffloat>
-                                    (&point_light_node::ambientIntensity)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(
+                        &point_light_node::ambient_intensity_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &point_light_node::ambient_intensity_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &point_light_node::ambient_intensity_)));
         } else if (*interface == supportedInterfaces[1]) {
             pointLightNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &point_light_node::process_set_attenuation,
-                node_field_ptr_ptr(new node_field_ptr_impl<point_light_node, sfvec3f>
-                                    (&point_light_node::attenuation)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(
+                        &point_light_node::attenuation_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &point_light_node::attenuation_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &point_light_node::attenuation_)));
         } else if (*interface == supportedInterfaces[2]) {
             pointLightNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &point_light_node::process_set_color,
-                node_field_ptr_ptr(new node_field_ptr_impl<point_light_node, sfcolor>
-                                    (&point_light_node::color_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfcolor> >(
+                        &point_light_node::color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfcolor> >(
+                        &point_light_node::color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfcolor> >(
+                        &point_light_node::color_)));
         } else if (*interface == supportedInterfaces[3]) {
             pointLightNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &point_light_node::process_set_intensity,
-                node_field_ptr_ptr(new node_field_ptr_impl<point_light_node, sffloat>
-                                    (&point_light_node::intensity_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(
+                        &point_light_node::intensity_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &point_light_node::intensity_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &point_light_node::intensity_)));
         } else if (*interface == supportedInterfaces[4]) {
             pointLightNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &point_light_node::process_set_location,
-                node_field_ptr_ptr(new node_field_ptr_impl<point_light_node, sfvec3f>
-                                    (&point_light_node::location)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(
+                        &point_light_node::location_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &point_light_node::location_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &point_light_node::location_)));
         } else if (*interface == supportedInterfaces[5]) {
             pointLightNodeType.add_exposedfield(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                &point_light_node::process_set_on,
-                node_field_ptr_ptr(new node_field_ptr_impl<point_light_node, sfbool>
-                                    (&point_light_node::on_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &point_light_node::on_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &point_light_node::on_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &point_light_node::on_)));
         } else if (*interface == supportedInterfaces[6]) {
             pointLightNodeType.add_exposedfield(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                &point_light_node::process_set_radius,
-                node_field_ptr_ptr(new node_field_ptr_impl<point_light_node, sffloat>
-                                    (&point_light_node::radius)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(
+                        &point_light_node::radius_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &point_light_node::radius_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &point_light_node::radius_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -11339,19 +12276,19 @@ point_light_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfvec3f point_light_node::attenuation
+ * @var exposedfield<sfvec3f> point_light_node::attenuation_
  *
  * @brief attenuation exposedField.
  */
 
 /**
- * @var sfvec3f point_light_node::location
+ * @var exposedfield<sfvec3f> point_light_node::location_
  *
  * @brief location exposedField.
  */
 
 /**
- * @var sffloat point_light_node::radius
+ * @var exposedfield<sffloat> point_light_node::radius_
  *
  * @brief radius exposedField.
  */
@@ -11366,9 +12303,9 @@ point_light_node::point_light_node(const node_type & type,
                        const scope_ptr & scope):
     node(type, scope),
     abstract_light_node(type, scope),
-    attenuation(vec3f(1.0, 0.0, 0.0)),
-    location(vec3f(0.0, 0.0, 0.0)),
-    radius(100)
+    attenuation_(*this, vec3f(1.0, 0.0, 0.0)),
+    location_(*this, vec3f(0.0, 0.0, 0.0)),
+    radius_(*this, 100)
 {}
 
 /**
@@ -11401,13 +12338,13 @@ point_light_node* point_light_node::to_point_light() const
  */
 void point_light_node::renderScoped(openvrml::viewer & viewer)
 {
-    if (this->on_.value && this->radius.value > 0.0) {
-        viewer.insert_point_light(this->ambientIntensity.value,
-                                  this->attenuation.value,
-                                  this->color_.value,
-                                  this->intensity_.value,
-                                  this->location.value,
-                                  this->radius.value);
+    if (this->on_.sfbool::value && this->radius_.sffloat::value > 0.0) {
+        viewer.insert_point_light(this->ambient_intensity_.sffloat::value,
+                                  this->attenuation_.sfvec3f::value,
+                                  this->color_.sfcolor::value,
+                                  this->intensity_.sffloat::value,
+                                  this->location_.sfvec3f::value,
+                                  this->radius_.sffloat::value);
     }
     this->node::modified(false);
 }
@@ -11419,7 +12356,8 @@ void point_light_node::renderScoped(openvrml::viewer & viewer)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void point_light_node::do_initialize(const double timestamp) throw (std::bad_alloc)
+void point_light_node::do_initialize(const double timestamp)
+    throw (std::bad_alloc)
 {
     assert(this->scene());
     this->scene()->browser.add_scoped_light(*this);
@@ -11434,57 +12372,6 @@ void point_light_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
     this->scene()->browser.remove_scoped_light(*this);
-}
-
-/**
- * @brief set_attenuation eventIn handler.
- *
- * @param value     an sfvec3f.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void point_light_node::process_set_attenuation(const field_value & value,
-                                        const double timestamp)
-    throw (std::bad_cast)
-{
-    this->attenuation = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("attenuation_changed", this->attenuation, timestamp);
-}
-
-/**
- * @brief set_location eventIn handler.
- *
- * @param value     an sfvec3f.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void point_light_node::process_set_location(const field_value & value,
-                                     const double timestamp)
-    throw (std::bad_cast)
-{
-    this->location = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("location_changed", this->location, timestamp);
-}
-
-/**
- * @brief set_radius eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void point_light_node::process_set_radius(const field_value & value,
-                                   const double timestamp)
-    throw (std::bad_cast)
-{
-    this->radius = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("radius_changed", this->radius, timestamp);
 }
 
 
@@ -11527,29 +12414,47 @@ point_set_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "color"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "coord")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<point_set_node>(*this, id));
-    vrml97_node_type_impl<point_set_node> & pointSetNodeType =
-            static_cast<vrml97_node_type_impl<point_set_node> &>(*type);
-    typedef vrml97_node_type_impl<point_set_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<point_set_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & pointSetNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             pointSetNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &point_set_node::process_set_color,
-                node_field_ptr_ptr(new node_field_ptr_impl<point_set_node, sfnode>
-                                    (&point_set_node::color)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &point_set_node::color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &point_set_node::color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &point_set_node::color_)));
         } else if (*interface == supportedInterfaces[1]) {
             pointSetNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &point_set_node::process_set_coord,
-                node_field_ptr_ptr(new node_field_ptr_impl<point_set_node, sfnode>
-                                    (&point_set_node::coord)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &point_set_node::coord_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &point_set_node::coord_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &point_set_node::coord_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -11570,13 +12475,13 @@ point_set_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfnode point_set_node::color
+ * @var exposedfield<sfnode> point_set_node::color_
  *
  * @brief color exposedField.
  */
 
 /**
- * @var sfnode point_set_node::coord
+ * @var exposedfield<sfnode> point_set_node::coord_
  *
  * @brief coord exposedField.
  */
@@ -11591,12 +12496,14 @@ point_set_class::create_type(const std::string & id,
  * @brief Construct.
  *
  * @param type  the node_type associated with the node.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
 point_set_node::point_set_node(const node_type & type,
                    const scope_ptr & scope):
     node(type, scope),
-    abstract_geometry_node(type, scope)
+    abstract_geometry_node(type, scope),
+    color_(*this),
+    coord_(*this)
 {
     this->bounding_volume_dirty(true);
 }
@@ -11615,9 +12522,11 @@ point_set_node::~point_set_node() throw ()
  */
 bool point_set_node::modified() const
 {
-    return (modified()
-            || (this->color.value && this->color.value->modified())
-            || (this->coord.value && this->coord.value->modified()));
+    return modified()
+        || (this->color_.sfnode::value
+            && this->color_.sfnode::value->modified())
+        || (this->coord_.sfnode::value
+            && this->coord_.sfnode::value->modified());
 }
 
 /**
@@ -11641,21 +12550,26 @@ point_set_node::do_render_geometry(openvrml::viewer & viewer,
     }
 
     openvrml::coordinate_node * const coordinateNode =
-        node_cast<openvrml::coordinate_node *>(this->coord.value.get());
+        node_cast<openvrml::coordinate_node *>(
+            this->coord_.sfnode::value.get());
     const vector<vec3f> & coord = coordinateNode
                                 ? coordinateNode->point()
                                 : vector<vec3f>();
 
     openvrml::color_node * const colorNode =
-        node_cast<openvrml::color_node *>(this->color.value.get());
+        node_cast<openvrml::color_node *>(this->color_.sfnode::value.get());
     const vector<openvrml::color> & color = colorNode
                                           ? colorNode->color()
                                           : vector<openvrml::color>();
 
     viewer::object_t obj = viewer.insert_point_set(coord, color);
 
-    if (this->color.value) { this->color.value->modified(false); }
-    if (this->coord.value) { this->coord.value->modified(false); }
+    if (this->color_.sfnode::value) {
+        this->color_.sfnode::value->modified(false);
+    }
+    if (this->coord_.sfnode::value) {
+        this->coord_.sfnode::value->modified(false);
+    }
 
     return obj;
 }
@@ -11667,7 +12581,8 @@ void point_set_node::recalcBSphere()
 {
     this->bsphere = bounding_sphere();
     openvrml::coordinate_node * const coordinateNode =
-        node_cast<openvrml::coordinate_node *>(this->coord.value.get());
+        node_cast<openvrml::coordinate_node *>(
+            this->coord_.sfnode::value.get());
     if (coordinateNode) {
         const std::vector<vec3f> & coord = coordinateNode->point();
         for(std::vector<vec3f>::const_iterator vec(coord.begin());
@@ -11691,42 +12606,6 @@ const bounding_volume & point_set_node::bounding_volume() const
     return this->bsphere;
 }
 
-/**
- * @brief set_color eventIn handler.
- *
- * @param value     an sfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void point_set_node::process_set_color(const field_value & value,
-                                       const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->color = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("color_changed", this->color, timestamp);
-}
-
-/**
- * @brief set_coord eventIn handler.
- *
- * @param value     an sfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void point_set_node::process_set_coord(const field_value & value,
-                                       const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->coord = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("coord_changed", this->coord, timestamp);
-}
-
 
 /**
  * @class position_interpolator_class
@@ -11739,8 +12618,8 @@ void point_set_node::process_set_coord(const field_value & value,
  *
  * @param browser the browser associated with this node_class.
  */
-position_interpolator_class::position_interpolator_class(
-    openvrml::browser & browser):
+position_interpolator_class::
+position_interpolator_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
@@ -11782,39 +12661,58 @@ position_interpolator_class::create_type(const std::string & id,
                       field_value::sfvec3f_id,
                       "value_changed")
     };
-    const node_type_ptr
-        type(new vrml97_node_type_impl<position_interpolator_node>(*this, id));
-    vrml97_node_type_impl<position_interpolator_node> & positionInterpolatorNodeType =
-            static_cast<vrml97_node_type_impl<position_interpolator_node> &>(*type);
-    typedef vrml97_node_type_impl<position_interpolator_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<position_interpolator_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & positionInterpolatorNodeType =
+        static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            positionInterpolatorNodeType
-                    .add_eventin(supportedInterfaces[0].field_type,
-                                supportedInterfaces[0].id,
-                                &position_interpolator_node::process_set_fraction);
+            positionInterpolatorNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    position_interpolator_node::set_fraction_listener>(
+                        &position_interpolator_node::set_fraction_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
             positionInterpolatorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &position_interpolator_node::process_set_key,
-                node_field_ptr_ptr(new node_field_ptr_impl<position_interpolator_node, mffloat>
-                                    (&position_interpolator_node::key)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mffloat> >(
+                        &position_interpolator_node::key_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mffloat> >(
+                        &position_interpolator_node::key_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mffloat> >(
+                        &position_interpolator_node::key_)));
         } else if (*interface == supportedInterfaces[2]) {
             positionInterpolatorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &position_interpolator_node::process_set_keyValue,
-                node_field_ptr_ptr(new node_field_ptr_impl<position_interpolator_node, mfvec3f>
-                                    (&position_interpolator_node::keyValue)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mfvec3f> >(
+                        &position_interpolator_node::key_value_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfvec3f> >(
+                        &position_interpolator_node::key_value_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mfvec3f> >(
+                        &position_interpolator_node::key_value_)));
         } else if (*interface == supportedInterfaces[3]) {
             positionInterpolatorNodeType.add_eventout(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<position_interpolator_node, sfvec3f>
-                                    (&position_interpolator_node::value)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfvec3f_emitter>(
+                        &position_interpolator_node::value_changed_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -11835,23 +12733,106 @@ position_interpolator_class::create_type(const std::string & id,
  */
 
 /**
- * @var mffloat position_interpolator_node::key
+ * @class position_interpolator_node::set_fraction_listener
+ *
+ * @brief set_fraction eventIn handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  position_interpolator_node.
+ */
+position_interpolator_node::set_fraction_listener::
+set_fraction_listener(position_interpolator_node & node):
+    sffloat_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+position_interpolator_node::set_fraction_listener::~set_fraction_listener()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param fraction  fraction.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+position_interpolator_node::set_fraction_listener::
+process_event(const sffloat & fraction, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        using std::vector;
+
+        position_interpolator_node & node =
+            dynamic_cast<position_interpolator_node &>(this->node);
+
+        const vector<float> & key = node.key_.mffloat::value;
+        const vector<vec3f> & key_value = node.key_value_.mfvec3f::value;
+
+        vector<float>::size_type n = key.size() - 1;
+        if (fraction.value < key[0]) {
+            node.value_changed_.value = key_value[0];
+        } else if (fraction.value > key[n]) {
+            node.value_changed_.value = key_value[n];
+        } else {
+            // should cache the last index used...
+            for (vector<float>::size_type i = 0; i < n; ++i) {
+                if (key[i] <= fraction.value && fraction.value <= key[i + 1]) {
+                    const vec3f & v1 = key_value[i];
+                    const vec3f & v2 = key_value[i + 1];
+
+                    const float f =
+                        (fraction.value - key[i]) / (key[i + 1] - key[i]);
+                    node.value_changed_.value = v1 + f * (v2 - v1);
+                    break;
+                }
+            }
+        }
+
+        // Send the new value
+        node::emit_event(node.value_changed_emitter_, timestamp);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var position_interpolator_node::set_fraction_listener position_interpolator_node::set_fraction_listener_
+ *
+ * @brief set_fraction eventIn handler.
+ */
+
+/**
+ * @var exposedfield<mffloat> position_interpolator_node::key_
  *
  * @brief key exposedField.
  */
 
 /**
- * @var mfvec3f position_interpolator_node::keyValue
+ * @var exposedfield<mfvec3f> position_interpolator_node::key_value_
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var sfvec3f position_interpolator_node::value
+ * @var sfvec3f position_interpolator_node::value_changed_
  *
- * @brief value_changed eventOut.
+ * @brief value_changed eventOut value.
  */
 
+/**
+ * @var sfvec3f_emitter position_interpolator_node::value_changed_emitter_
+ *
+ * @brief value_changed eventOut emitter.
+ */
 
 /**
  * @brief Construct.
@@ -11859,10 +12840,15 @@ position_interpolator_class::create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-position_interpolator_node::position_interpolator_node(const node_type & type,
-                                           const scope_ptr & scope):
+position_interpolator_node::position_interpolator_node(
+    const node_type & type,
+    const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope)
+    abstract_child_node(type, scope),
+    set_fraction_listener_(*this),
+    key_(*this),
+    key_value_(*this),
+    value_changed_emitter_(this->value_changed_)
 {}
 
 /**
@@ -11870,86 +12856,6 @@ position_interpolator_node::position_interpolator_node(const node_type & type,
  */
 position_interpolator_node::~position_interpolator_node() throw ()
 {}
-
-/**
- * @brief set_fraction eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void
-position_interpolator_node::process_set_fraction(const field_value & value,
-                                                 const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    using std::vector;
-
-    float f = dynamic_cast<const sffloat &>(value).value;
-
-    vector<float>::size_type n = this->key.value.size() - 1;
-    if (f < this->key.value[0]) {
-        this->value.value = this->keyValue.value[0];
-    } else if (f > this->key.value[n]) {
-        this->value.value = this->keyValue.value[n];
-    } else {
-        // should cache the last index used...
-        for (vector<float>::size_type i = 0; i < n; ++i) {
-            if (this->key.value[i] <= f && f <= this->key.value[i + 1]) {
-                const vec3f & v1 = this->keyValue.value[i];
-                const vec3f & v2 = this->keyValue.value[i + 1];
-
-                f = (f - this->key.value[i])
-                    / (this->key.value[i + 1] - this->key.value[i]);
-                const vec3f valueVec(v1.x() + f * (v2.x() - v1.x()),
-                                     v1.y() + f * (v2.y() - v1.y()),
-                                     v1.z() + f * (v2.z() - v1.z()));
-                this->value.value = valueVec;
-                break;
-            }
-        }
-    }
-
-    // Send the new value
-    this->emit_event("value_changed", this->value, timestamp);
-}
-
-/**
- * @brief set_key eventIn handler.
- *
- * @param value     an mffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void position_interpolator_node::process_set_key(const field_value & value,
-                                                 const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->key = dynamic_cast<const mffloat &>(value);
-    this->emit_event("key_changed", this->key, timestamp);
-}
-
-/**
- * @brief set_keyValue field mutator.
- *
- * @param value     an mfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfvec3f.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void
-position_interpolator_node::process_set_keyValue(const field_value & value,
-                                                 const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->keyValue = dynamic_cast<const mfvec3f &>(value);
-    this->emit_event("keyValue_changed", this->keyValue, timestamp);
-}
 
 
 /**
@@ -11992,72 +12898,113 @@ proximity_sensor_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "center"),
-        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "size"),
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
-        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
-        node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "position_changed"),
-        node_interface(node_interface::eventout_id, field_value::sfrotation_id, "orientation_changed"),
-        node_interface(node_interface::eventout_id, field_value::sftime_id, "enterTime"),
-        node_interface(node_interface::eventout_id, field_value::sftime_id, "exitTime")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "size"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "position_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfrotation_id,
+                       "orientation_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "enterTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "exitTime")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<proximity_sensor_node>(*this, id));
-    vrml97_node_type_impl<proximity_sensor_node> & proximitySensorNodeType =
-            static_cast<vrml97_node_type_impl<proximity_sensor_node> &>(*type);
-    typedef vrml97_node_type_impl<proximity_sensor_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<proximity_sensor_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & proximitySensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             proximitySensorNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &proximity_sensor_node::process_set_center,
-                node_field_ptr_ptr(new node_field_ptr_impl<proximity_sensor_node, sfvec3f>
-                                    (&proximity_sensor_node::center)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(&proximity_sensor_node::center_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &proximity_sensor_node::center_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &proximity_sensor_node::center_)));
         } else if (*interface == supportedInterfaces[1]) {
             proximitySensorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &proximity_sensor_node::process_set_size,
-                node_field_ptr_ptr(new node_field_ptr_impl<proximity_sensor_node, sfvec3f>
-                                    (&proximity_sensor_node::size)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(&proximity_sensor_node::size_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &proximity_sensor_node::size_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &proximity_sensor_node::size_)));
         } else if (*interface == supportedInterfaces[2]) {
             proximitySensorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &proximity_sensor_node::process_set_enabled,
-                node_field_ptr_ptr(new node_field_ptr_impl<proximity_sensor_node, sfbool>
-                                    (&proximity_sensor_node::enabled)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &proximity_sensor_node::enabled_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &proximity_sensor_node::enabled_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &proximity_sensor_node::enabled_)));
         } else if (*interface == supportedInterfaces[3]) {
             proximitySensorNodeType.add_eventout(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<proximity_sensor_node, sfbool>
-                                    (&proximity_sensor_node::active)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &proximity_sensor_node::is_active_emitter_)));
         } else if (*interface == supportedInterfaces[4]) {
             proximitySensorNodeType.add_eventout(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<proximity_sensor_node, sfvec3f>
-                                    (&proximity_sensor_node::position)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfvec3f_emitter>(
+                        &proximity_sensor_node::position_changed_emitter_)));
         } else if (*interface == supportedInterfaces[5]) {
             proximitySensorNodeType.add_eventout(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<proximity_sensor_node, sfrotation>
-                                    (&proximity_sensor_node::orientation)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfrotation_emitter>(
+                        &proximity_sensor_node::orientation_changed_emitter_)));
         } else if (*interface == supportedInterfaces[6]) {
             proximitySensorNodeType.add_eventout(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<proximity_sensor_node, sftime>
-                                    (&proximity_sensor_node::enterTime)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &proximity_sensor_node::enter_time_emitter_)));
         } else if (*interface == supportedInterfaces[7]) {
             proximitySensorNodeType.add_eventout(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<proximity_sensor_node, sftime>
-                                    (&proximity_sensor_node::exitTime)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &proximity_sensor_node::exit_time_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -12078,51 +13025,81 @@ proximity_sensor_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfvec3f proximity_sensor_node::center
+ * @var exposedfield<sfvec3f> proximity_sensor_node::center_
  *
  * @brief center exposedField.
  */
 
 /**
- * @var sfbool proximity_sensor_node::enabled
+ * @var exposedfield<sfbool> proximity_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var sfvec3f proximity_sensor_node::size
+ * @var exposedfield<sfvec3f> proximity_sensor_node::size_
  *
  * @brief size exposedField.
  */
 
 /**
- * @var sfbool proximity_sensor_node::active
+ * @var sfbool proximity_sensor_node::is_active_
  *
- * @brief isActive eventOut.
+ * @brief isActive eventOut value.
  */
 
 /**
- * @var sfvec3f proximity_sensor_node::position
+ * @var sfbool_emitter proximity_sensor_node::is_active_emitter_
  *
- * @brief position_changed eventOut.
+ * @brief isActive eventOut emitter.
  */
 
 /**
- * @var sfvec3f proximity_sensor_node::orientation
+ * @var sfvec3f proximity_sensor_node::position_changed_
  *
- * @brief orientation_changed eventOut.
+ * @brief position_changed eventOut value.
  */
 
 /**
- * @var sftime proximity_sensor_node::enterTime
+ * @var sfvec3f_emitter proximity_sensor_node::position_changed_emitter_
  *
- * @brief enterTime eventOut.
+ * @brief position_changed eventOut emitter.
  */
 
 /**
- * @var sftime proximity_sensor_node::exitTime
+ * @var sfrotation proximity_sensor_node::orientation_changed_
  *
- * @brief exitTime eventOut.
+ * @brief orientation_changed eventOut value.
+ */
+
+/**
+ * @var sfrotation proximity_sensor_node::orientation_changed_emitter_
+ *
+ * @brief orientation_changed eventOut emitter.
+ */
+
+/**
+ * @var sftime proximity_sensor_node::enter_time_
+ *
+ * @brief enterTime eventOut value.
+ */
+
+/**
+ * @var sftime_emitter proximity_sensor_node::enter_time_emitter_
+ *
+ * @brief enterTime eventOut emitter.
+ */
+
+/**
+ * @var sftime proximity_sensor_node::exit_time_
+ *
+ * @brief exitTime eventOut value.
+ */
+
+/**
+ * @var sftime_emitter proximity_sensor_node::exit_time_emitter_
+ *
+ * @brief exitTime eventOut emitter.
  */
 
 /**
@@ -12135,13 +13112,17 @@ proximity_sensor_node::proximity_sensor_node(const node_type & type,
                                              const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
-    center(vec3f(0.0, 0.0, 0.0)),
-    enabled(true),
-    size(vec3f(0.0, 0.0, 0.0)),
-    active(false),
-    position(vec3f(0.0, 0.0, 0.0)),
-    enterTime(0.0),
-    exitTime(0.0)
+    center_(*this, vec3f(0.0, 0.0, 0.0)),
+    enabled_(*this, true),
+    size_(*this, vec3f(0.0, 0.0, 0.0)),
+    is_active_(false),
+    is_active_emitter_(this->is_active_),
+    position_changed_emitter_(this->position_changed_),
+    orientation_changed_emitter_(this->orientation_changed_),
+    enter_time_(0.0),
+    enter_time_emitter_(this->enter_time_),
+    exit_time_(0.0),
+    exit_time_emitter_(this->exit_time_)
 {
     this->node::modified(true);
 }
@@ -12178,11 +13159,11 @@ proximity_sensor_node::~proximity_sensor_node() throw ()
 void proximity_sensor_node::do_render_child(openvrml::viewer & viewer,
                                    const rendering_context context)
 {
-    if (this->enabled.value
-            && this->size.value.x() > 0.0
-            && this->size.value.y() > 0.0
-            && this->size.value.z() > 0.0
-            && viewer.mode() == viewer::draw_mode) {
+    if (this->enabled_.sfbool::value
+        && this->size_.sfvec3f::value.x() > 0.0
+        && this->size_.sfvec3f::value.y() > 0.0
+        && this->size_.sfvec3f::value.z() > 0.0
+        && viewer.mode() == viewer::draw_mode) {
         using openvrml_::fabs;
         using openvrml_::fless_equal;
 
@@ -12193,103 +13174,52 @@ void proximity_sensor_node::do_render_child(openvrml::viewer & viewer,
         mat4f MV = context.matrix();
         MV = MV.inverse();
         x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
-        bool inside = fless_equal<float>()(fabs(x - this->center.value.x()),
-                                           0.5f * this->size.value.x())
-                   && fless_equal<float>()(fabs(y - this->center.value.y()),
-                                           0.5f * this->size.value.y())
-                   && fless_equal<float>()(fabs(z - this->center.value.z()),
-                                           0.5f * this->size.value.z());
-        bool wasIn = this->active.value;
+        bool inside = fless_equal<float>()(fabs(x - this->center_.sfvec3f::value.x()),
+                                           0.5f * this->size_.sfvec3f::value.x())
+            && fless_equal<float>()(fabs(y - this->center_.sfvec3f::value.y()),
+                                    0.5f * this->size_.sfvec3f::value.y())
+            && fless_equal<float>()(fabs(z - this->center_.sfvec3f::value.z()),
+                                    0.5f * this->size_.sfvec3f::value.z());
+        bool wasIn = this->is_active_.value;
 
         // Check if viewer has entered the box
         if (inside && ! wasIn) {
-            this->active.value = true;
-            this->emit_event("isActive", this->active, timeNow.value);
+            this->is_active_.value = true;
+            node::emit_event(this->is_active_emitter_, timeNow.value);
 
-            this->enterTime = timeNow;
-            this->emit_event("enterTime", this->enterTime, timeNow.value);
+            this->enter_time_ = timeNow;
+            node::emit_event(this->enter_time_emitter_, timeNow.value);
         }
 
         // Check if viewer has left the box
         else if (wasIn && !inside) {
-            this->active.value = false;
-            this->emit_event("isActive", this->active, timeNow.value);
+            this->is_active_.value = false;
+            node::emit_event(this->is_active_emitter_, timeNow.value);
 
-            this->exitTime = timeNow;
-            this->emit_event("exitTime", this->exitTime, timeNow.value);
+            this->exit_time_ = timeNow;
+            node::emit_event(this->exit_time_emitter_, timeNow.value);
         }
 
         // Check for movement within the box
         if (wasIn || inside) {
-            if (position.value != vec3f(x, y, z)) {
-                this->position.value = vec3f(x, y, z);
-                this->emit_event("position_changed", this->position,
+            if (this->position_changed_.value != vec3f(x, y, z)) {
+                this->position_changed_.value = vec3f(x, y, z);
+                node::emit_event(this->position_changed_emitter_,
                                  timeNow.value);
             }
 
             vec3f trans, scale, shear;
             rotation orientation;
             MV.transformation(trans, orientation, scale, shear);
-            if (this->orientation.value != orientation) {
-                this->orientation.value = orientation;
-                this->emit_event("orientation_changed", this->orientation,
+            if (this->orientation_changed_.value != orientation) {
+                this->orientation_changed_.value = orientation;
+                node::emit_event(this->orientation_changed_emitter_,
                                  timeNow.value);
             }
         }
     } else {
         this->node::modified(false);
     }
-}
-
-/**
- * @brief set_center eventIn handler.
- *
- * @param value     an sfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void proximity_sensor_node::process_set_center(const field_value & value,
-                                               const double timestamp)
-    throw (std::bad_cast)
-{
-    this->center = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("center_changed", this->center, timestamp);
-}
-
-/**
- * @brief set_size eventIn handler.
- *
- * @param value     an sfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void proximity_sensor_node::process_set_size(const field_value & value,
-                                             const double timestamp)
-    throw (std::bad_cast)
-{
-    this->size = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("size_changed", this->size, timestamp);
-}
-
-/**
- * @brief set_enabled eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p sfbool is not an value.
- */
-void proximity_sensor_node::process_set_enabled(const field_value & value,
-                                                const double timestamp)
-    throw (std::bad_cast)
-{
-    this->enabled = dynamic_cast<const sfbool &>(value);
-    this->node::modified(true);
-    this->emit_event("enabled_changed", this->enabled, timestamp);
 }
 
 
@@ -12304,8 +13234,8 @@ void proximity_sensor_node::process_set_enabled(const field_value & value,
  *
  * @param browser the browser associated with this node_class.
  */
-scalar_interpolator_class::scalar_interpolator_class(
-    openvrml::browser & browser):
+scalar_interpolator_class::
+scalar_interpolator_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
@@ -12334,42 +13264,70 @@ scalar_interpolator_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::sffloat_id, "set_fraction"),
-        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "key"),
-        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "keyValue"),
-        node_interface(node_interface::eventout_id, field_value::sffloat_id, "value_changed")
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "value_changed")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<scalar_interpolator_node>(*this, id));
-    vrml97_node_type_impl<scalar_interpolator_node> & scalarInterpolatorNodeType =
-            static_cast<vrml97_node_type_impl<scalar_interpolator_node> &>(*type);
-    typedef vrml97_node_type_impl<scalar_interpolator_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<scalar_interpolator_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & scalarInterpolatorNodeType =
+        static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            scalarInterpolatorNodeType
-                    .add_eventin(supportedInterfaces[0].field_type,
-                                supportedInterfaces[0].id,
-                                &scalar_interpolator_node::process_set_fraction);
+            scalarInterpolatorNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    scalar_interpolator_node::set_fraction_listener>(
+                        &scalar_interpolator_node::set_fraction_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
             scalarInterpolatorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &scalar_interpolator_node::process_set_key,
-                node_field_ptr_ptr(new node_field_ptr_impl<scalar_interpolator_node, mffloat>
-                                    (&scalar_interpolator_node::key)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mffloat> >(&scalar_interpolator_node::key_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mffloat> >(
+                        &scalar_interpolator_node::key_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mffloat> >(
+                        &scalar_interpolator_node::key_)));
         } else if (*interface == supportedInterfaces[2]) {
             scalarInterpolatorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &scalar_interpolator_node::process_set_keyValue,
-                node_field_ptr_ptr(new node_field_ptr_impl<scalar_interpolator_node, mffloat>
-                                    (&scalar_interpolator_node::keyValue)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mffloat> >(
+                        &scalar_interpolator_node::key_value_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mffloat> >(
+                        &scalar_interpolator_node::key_value_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mffloat> >(
+                        &scalar_interpolator_node::key_value_)));
         } else if (*interface == supportedInterfaces[3]) {
             scalarInterpolatorNodeType.add_eventout(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<scalar_interpolator_node, sffloat>
-                                    (&scalar_interpolator_node::value)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sffloat_emitter>(
+                        &scalar_interpolator_node::value_changed_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -12390,21 +13348,104 @@ scalar_interpolator_class::create_type(const std::string & id,
  */
 
 /**
- * @var mffloat scalar_interpolator_node::key
+ * @class scalar_interpolator_node::set_fraction_listener
+ *
+ * @brief set_fraction eventIn handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  scalar_interpolator_node.
+ */
+scalar_interpolator_node::set_fraction_listener::
+set_fraction_listener(scalar_interpolator_node & node):
+    sffloat_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+scalar_interpolator_node::set_fraction_listener::~set_fraction_listener()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param fraction  fraction.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+scalar_interpolator_node::set_fraction_listener::
+process_event(const sffloat & fraction, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        using std::vector;
+
+        scalar_interpolator_node & node =
+            dynamic_cast<scalar_interpolator_node &>(this->node);
+
+        const vector<float> & key = node.key_.mffloat::value;
+        const vector<float> & key_value = node.key_value_.mffloat::value;
+
+        vector<float>::size_type n = key.size() - 1;
+        if (fraction.value < key[0]) {
+            node.value_changed_.value = key_value[0];
+        } else if (fraction.value > key[n]) {
+            node.value_changed_.value = key_value[n];
+        } else {
+            for (vector<float>::size_type i = 0; i < n; ++i) {
+                if (key[i] <= fraction.value && fraction.value <= key[i + 1]) {
+                    float v1 = key_value[i];
+                    float v2 = key_value[i + 1];
+
+                    const float f =
+                        (fraction.value - key[i]) / (key[i + 1] - key[i]);
+                    node.value_changed_.value = v1 + f * (v2 - v1);
+                    break;
+                }
+            }
+        }
+
+        // Send the new value
+        node::emit_event(node.value_changed_emitter_, timestamp);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var scalar_interpolator_node::set_fraction_listener scalar_interpolator_node::set_fraction_listener_
+ *
+ * @brief set_fraction eventIn handler.
+ */
+
+/**
+ * @var exposedfield<mffloat> scalar_interpolator_node::key_
  *
  * @brief key exposedField.
  */
 
 /**
- * @var mffloat scalar_interpolator_node::keyValue
+ * @var exposedfield<mffloat> scalar_interpolator_node::key_value_
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var sffloat scalar_interpolator_node::value
+ * @var sffloat scalar_interpolator_node::value_changed_
  *
- * @brief value_changed eventOut.
+ * @brief value_changed eventOut value.
+ */
+
+/**
+ * @var sffloat_emitter scalar_interpolator_node::value_changed_emitter_
+ *
+ * @brief value_changed eventOut emitter.
  */
 
 /**
@@ -12416,7 +13457,11 @@ scalar_interpolator_class::create_type(const std::string & id,
 scalar_interpolator_node::scalar_interpolator_node(const node_type & type,
                                                    const scope_ptr & scope):
     node(type, scope),
-    abstract_child_node(type, scope)
+    abstract_child_node(type, scope),
+    set_fraction_listener_(*this),
+    key_(*this),
+    key_value_(*this),
+    value_changed_emitter_(this->value_changed_)
 {}
 
 /**
@@ -12424,80 +13469,6 @@ scalar_interpolator_node::scalar_interpolator_node(const node_type & type,
  */
 scalar_interpolator_node::~scalar_interpolator_node() throw ()
 {}
-
-/**
- * @brief set_fraction eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void scalar_interpolator_node::process_set_fraction(const field_value & value,
-                                                    const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    using std::vector;
-
-    float f = dynamic_cast<const sffloat &>(value).value;
-
-    vector<float>::size_type n = this->key.value.size() - 1;
-    if (f < this->key.value[0]) {
-        this->value.value = this->keyValue.value[0];
-    } else if (f > this->key.value[n]) {
-        this->value.value = this->keyValue.value[n];
-    } else {
-        for (vector<float>::size_type i = 0; i < n; ++i) {
-            if (this->key.value[i] <= f && f <= this->key.value[i + 1]) {
-                float v1 = this->keyValue.value[i];
-                float v2 = this->keyValue.value[i + 1];
-
-                f = (f - this->key.value[i]) / (this->key.value[i + 1]
-                        - this->key.value[i]);
-                this->value.value = v1 + f * (v2 - v1);
-                break;
-            }
-        }
-    }
-
-    // Send the new value
-    this->emit_event("value_changed", this->value, timestamp);
-}
-
-/**
- * @brief set_key eventIn handler.
- *
- * @param value     an mffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void scalar_interpolator_node::process_set_key(const field_value & value,
-                                               const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->key = dynamic_cast<const mffloat &>(value);
-    this->emit_event("key_changed", this->key, timestamp);
-}
-
-/**
- * @brief set_keyValue field mutator.
- *
- * @param value     an mffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void scalar_interpolator_node::process_set_keyValue(const field_value & value,
-                                                    const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->keyValue = dynamic_cast<const mffloat &>(value);
-    this->emit_event("keyValue_changed", this->keyValue, timestamp);
-}
 
 
 /**
@@ -12539,29 +13510,47 @@ shape_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "appearance"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "geometry")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "appearance"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "geometry")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<shape_node>(*this, id));
-    vrml97_node_type_impl<shape_node> & shapeNodeType =
-            static_cast<vrml97_node_type_impl<shape_node> &>(*type);
-    typedef vrml97_node_type_impl<shape_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<shape_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & shapeNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             shapeNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &shape_node::process_set_appearance,
-                node_field_ptr_ptr(new node_field_ptr_impl<shape_node, sfnode>
-                                    (&shape_node::appearance)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &shape_node::appearance_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &shape_node::appearance_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &shape_node::appearance_)));
         } else if (*interface == supportedInterfaces[1]) {
             shapeNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &shape_node::process_set_geometry,
-                node_field_ptr_ptr(new node_field_ptr_impl<shape_node, sfnode>
-                                    (&shape_node::geometry)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &shape_node::geometry_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &shape_node::geometry_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &shape_node::geometry_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -12582,13 +13571,13 @@ shape_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfnode shape_node::appearance
+ * @var exposedfield<sfnode> shape_node::appearance_
  *
  * @brief appearance exposedField.
  */
 
 /**
- * @var sfnode shape_node::geometry
+ * @var exposedfield<sfnode> shape_node::geometry_
  *
  * @brief geometry exposedField.
  */
@@ -12609,10 +13598,11 @@ shape_class::create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope     the scope to which the node belongs.
  */
-shape_node::shape_node(const node_type & type,
-             const scope_ptr & scope):
+shape_node::shape_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
+    appearance_(*this),
+    geometry_(*this),
     viewerObject(0)
 {}
 
@@ -12632,9 +13622,11 @@ shape_node::~shape_node() throw ()
  */
 bool shape_node::modified() const
 {
-    return (modified()
-            || (this->geometry.value && this->geometry.value->modified())
-            || (this->appearance.value && this->appearance.value->modified()));
+    return modified()
+        || (this->geometry_.sfnode::value
+            && this->geometry_.sfnode::value->modified())
+        || (this->appearance_.sfnode::value
+            && this->appearance_.sfnode::value->modified());
 }
 
 /**
@@ -12651,7 +13643,8 @@ void shape_node::do_render_child(openvrml::viewer & viewer,
         this->viewerObject = 0;
     }
 
-    geometry_node * g = node_cast<geometry_node *>(this->geometry.value.get());
+    geometry_node * g =
+        node_cast<geometry_node *>(this->geometry_.sfnode::value.get());
 
     if (this->viewerObject) {
         viewer.insert_reference(this->viewerObject);
@@ -12665,7 +13658,7 @@ void shape_node::do_render_child(openvrml::viewer & viewer,
 
             openvrml::appearance_node * appearance =
                 node_cast<openvrml::appearance_node *>(
-                    this->appearance.value.get());
+                    this->appearance_.sfnode::value.get());
             if (!picking && appearance) {
                 appearance->render_appearance(viewer, context);
 
@@ -12684,8 +13677,8 @@ void shape_node::do_render_child(openvrml::viewer & viewer,
         g->render_geometry(viewer, context);
 
         viewer.end_object();
-    } else if (this->appearance.value) {
-        this->appearance.value->modified(false);
+    } else if (this->appearance_.sfnode::value) {
+        this->appearance_.sfnode::value->modified(false);
     }
     this->node::modified(false);
 }
@@ -12701,47 +13694,11 @@ const bounding_volume & shape_node::bounding_volume() const
     // just pass off to the geometry's getbvolume() method
     //
     const openvrml::bounding_volume & result =
-        this->geometry.value
-        ? this->geometry.value->bounding_volume()
+        this->geometry_.sfnode::value
+        ? this->geometry_.sfnode::value->bounding_volume()
         : this->node::bounding_volume();
     const_cast<shape_node *>(this)->bounding_volume_dirty(false);
     return result;
-}
-
-/**
- * @brief set_appearance eventIn handler.
- *
- * @param value     an sfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void shape_node::process_set_appearance(const field_value & value,
-                                        const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->appearance = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("appearance_changed", this->appearance, timestamp);
-}
-
-/**
- * @brief set_geometry eventIn handler.
- *
- * @param value     an sfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void shape_node::process_set_geometry(const field_value & value,
-                                      const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->geometry = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("geometry_changed", this->geometry, timestamp);
 }
 
 
@@ -12774,8 +13731,8 @@ sound_class::~sound_class() throw ()
  *
  * @return a node_type_ptr to a node_type capable of creating Sound nodes.
  *
- * @exception unsupported_interface  if @p interfaces includes an interface not
- *                              supported by sound_class.
+ * @exception unsupported_interface if @p interfaces includes an interface not
+ *                                  supported by sound_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
@@ -12784,92 +13741,169 @@ sound_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "direction"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "intensity"),
-        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "location"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "maxBack"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "maxFront"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "minBack"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "minFront"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "priority"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "source"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "spatialize")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "direction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "intensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "location"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "maxBack"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "maxFront"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "minBack"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "minFront"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "priority"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "source"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "spatialize")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<sound_node>(*this, id));
-    vrml97_node_type_impl<sound_node> & soundNodeType =
-            static_cast<vrml97_node_type_impl<sound_node> &>(*type);
-    typedef vrml97_node_type_impl<sound_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<sound_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & soundNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             soundNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &sound_node::process_set_direction,
-                node_field_ptr_ptr(new node_field_ptr_impl<sound_node, sfvec3f>
-                                    (&sound_node::direction)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(&sound_node::direction_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &sound_node::direction_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &sound_node::direction_)));
         } else if (*interface == supportedInterfaces[1]) {
             soundNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &sound_node::process_set_intensity,
-                node_field_ptr_ptr(new node_field_ptr_impl<sound_node, sffloat>
-                                    (&sound_node::intensity)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(&sound_node::intensity_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &sound_node::intensity_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &sound_node::intensity_)));
         } else if (*interface == supportedInterfaces[2]) {
             soundNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &sound_node::process_set_location,
-                node_field_ptr_ptr(new node_field_ptr_impl<sound_node, sfvec3f>
-                                    (&sound_node::location)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(&sound_node::location_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &sound_node::location_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &sound_node::location_)));
         } else if (*interface == supportedInterfaces[3]) {
             soundNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &sound_node::process_set_maxBack,
-                node_field_ptr_ptr(new node_field_ptr_impl<sound_node, sffloat>
-                                    (&sound_node::maxBack)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(&sound_node::max_back_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &sound_node::max_back_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &sound_node::max_back_)));
         } else if (*interface == supportedInterfaces[4]) {
             soundNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &sound_node::process_set_maxFront,
-                node_field_ptr_ptr(new node_field_ptr_impl<sound_node, sffloat>
-                                    (&sound_node::maxFront)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(&sound_node::max_front_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &sound_node::max_front_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &sound_node::max_front_)));
         } else if (*interface == supportedInterfaces[5]) {
             soundNodeType.add_exposedfield(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                &sound_node::process_set_minBack,
-                node_field_ptr_ptr(new node_field_ptr_impl<sound_node, sffloat>
-                                    (&sound_node::minBack)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(&sound_node::min_back_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &sound_node::min_back_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &sound_node::min_back_)));
         } else if (*interface == supportedInterfaces[6]) {
             soundNodeType.add_exposedfield(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                &sound_node::process_set_minFront,
-                node_field_ptr_ptr(new node_field_ptr_impl<sound_node, sffloat>
-                                    (&sound_node::minFront)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(&sound_node::min_front_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &sound_node::min_front_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &sound_node::min_front_)));
         } else if (*interface == supportedInterfaces[7]) {
             soundNodeType.add_exposedfield(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                &sound_node::process_set_priority,
-                node_field_ptr_ptr(new node_field_ptr_impl<sound_node, sffloat>
-                                    (&sound_node::priority)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(&sound_node::priority_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &sound_node::priority_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &sound_node::priority_)));
         } else if (*interface == supportedInterfaces[8]) {
             soundNodeType.add_exposedfield(
                 supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
-                &sound_node::process_set_source,
-                node_field_ptr_ptr(new node_field_ptr_impl<sound_node, sfnode>
-                                    (&sound_node::source)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfnode> >(
+                        &sound_node::source_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfnode> >(
+                        &sound_node::source_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfnode> >(
+                        &sound_node::source_)));
         } else if (*interface == supportedInterfaces[9]) {
             soundNodeType.add_field(
                 supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<sound_node, sfbool>
-                                    (&sound_node::spatialize)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfbool>(
+                        &sound_node::spatialize_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -12890,61 +13924,61 @@ sound_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfvec3f sound_node::direction
+ * @var exposedfield<sfvec3f> sound_node::direction_
  *
  * @brief direction exposedField.
  */
 
 /**
- * @var sffloat sound_node::intensity
+ * @var exposedfield<sffloat> sound_node::intensity_
  *
  * @brief intensity exposedField.
  */
 
 /**
- * @var sfvec3f sound_node::location
+ * @var exposedfield<sfvec3f> sound_node::location_
  *
  * @brief location exposedField.
  */
 
 /**
- * @var sffloat sound_node::maxBack
+ * @var exposedfield<sffloat> sound_node::max_back_
  *
  * @brief maxBack exposedField.
  */
 
 /**
- * @var sffloat sound_node::maxFront
+ * @var exposedfield<sffloat> sound_node::max_front_
  *
  * @brief maxFront exposedField.
  */
 
 /**
- * @var sffloat sound_node::minBack
+ * @var exposedfield<sffloat> sound_node::min_back_
  *
  * @brief minBack exposedField.
  */
 
 /**
- * @var sffloat sound_node::minFront
+ * @var exposedfield<sffloat> sound_node::min_front_
  *
  * @brief minFront exposedField.
  */
 
 /**
- * @var sffloat sound_node::priority
+ * @var exposedfield<sffloat> sound_node::priority_
  *
  * @brief priority exposedField.
  */
 
 /**
- * @var sfnode sound_node::source
+ * @var exposedfield<sfnode> sound_node::source_
  *
  * @brief source exposedField.
  */
 
 /**
- * @var sfbool sound_node::spatialize
+ * @var sfbool sound_node::spatialize_
  *
  * @brief spatialize field.
  */
@@ -12953,19 +13987,21 @@ sound_class::create_type(const std::string & id,
  * @brief Construct.
  *
  * @param type  the node_type associated with the instance.
- * @param scope     the scope associated with the instance.
+ * @param scope the scope associated with the instance.
  */
-sound_node::sound_node(const node_type & type,
-                       const scope_ptr & scope):
+sound_node::sound_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
-    direction(vec3f(0, 0, 1)),
-    intensity(1),
-    maxBack(10),
-    maxFront(10),
-    minBack(1),
-    minFront(1),
-    spatialize(true)
+    direction_(*this, vec3f(0, 0, 1)),
+    intensity_(*this, 1.0f),
+    location_(*this),
+    max_back_(*this, 10.0f),
+    max_front_(*this, 10.0f),
+    min_back_(*this, 1.0f),
+    min_front_(*this, 1.0f),
+    priority_(*this),
+    source_(*this),
+    spatialize_(true)
 {}
 
 /**
@@ -12984,162 +14020,10 @@ void sound_node::do_render_child(openvrml::viewer & viewer,
                         const rendering_context context)
 {
     // If this clip has been modified, update the internal data
-    if (this->source.value && this->source.value->modified()) {
+    if (this->source_.sfnode::value
+        && this->source_.sfnode::value->modified()) {
 //        this->source.value->render(viewer, context);
     }
-}
-
-/**
- * @brief set_direction eventIn handler.
- *
- * @param value     an sfvec3f.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void sound_node::process_set_direction(const field_value & value,
-                                       const double timestamp)
-    throw (std::bad_cast)
-{
-    this->direction = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("direction_changed", this->direction, timestamp);
-}
-
-/**
- * @brief set_intensity eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void sound_node::process_set_intensity(const field_value & value,
-                                       const double timestamp)
-    throw (std::bad_cast)
-{
-    this->intensity = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("intensity_changed", this->intensity, timestamp);
-}
-
-/**
- * @brief set_location eventIn handler.
- *
- * @param value     an sfvec3f.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void sound_node::process_set_location(const field_value & value,
-                                      const double timestamp)
-    throw (std::bad_cast)
-{
-    this->location = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("location_changed", this->location, timestamp);
-}
-
-/**
- * @brief set_maxBack eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void sound_node::process_set_maxBack(const field_value & value,
-                                     const double timestamp)
-    throw (std::bad_cast)
-{
-    this->maxBack = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("maxBack_changed", this->maxBack, timestamp);
-}
-
-/**
- * @brief set_maxFront eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void sound_node::process_set_maxFront(const field_value & value,
-                                      const double timestamp)
-    throw (std::bad_cast)
-{
-    this->maxFront = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("maxFront_changed", this->maxFront, timestamp);
-}
-
-/**
- * @brief set_minBack eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void sound_node::process_set_minBack(const field_value & value,
-                                     const double timestamp)
-    throw (std::bad_cast)
-{
-    this->minBack = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("minBack_changed", this->minBack, timestamp);
-}
-
-/**
- * @brief set_minFront eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void sound_node::process_set_minFront(const field_value & value,
-                                      const double timestamp)
-    throw (std::bad_cast)
-{
-    this->minFront = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("minFront_changed", this->minFront, timestamp);
-}
-
-/**
- * @brief set_priority eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void sound_node::process_set_priority(const field_value & value,
-                                      const double timestamp)
-    throw (std::bad_cast)
-{
-    this->priority = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("priority_changed", this->priority, timestamp);
-}
-
-/**
- * @brief set_source eventIn handler.
- *
- * @param value     an sfnode.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfnode.
- */
-void sound_node::process_set_source(const field_value & value,
-                                    const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->source = dynamic_cast<const sfnode &>(value);
-    this->node::modified(true);
-    this->emit_event("source_changed", this->source, timestamp);
 }
 
 
@@ -13176,24 +14060,29 @@ sphere_class::~sphere_class() throw ()
  *                              supported by sphere_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr sphere_class::create_type(const std::string & id,
-                                          const node_interface_set & interfaces)
+const node_type_ptr
+sphere_class::create_type(const std::string & id,
+                          const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
-    static const node_interface supportedInterface =
-            node_interface(node_interface::field_id, field_value::sffloat_id, "radius");
-    const node_type_ptr type(new vrml97_node_type_impl<sphere_node>(*this, id));
-    vrml97_node_type_impl<sphere_node> & spereNodeType =
-            static_cast<vrml97_node_type_impl<sphere_node> &>(*type);
-    typedef vrml97_node_type_impl<sphere_node>::node_field_ptr_ptr node_field_ptr_ptr;
+    static const node_interface supportedInterface(node_interface::field_id,
+                                                   field_value::sffloat_id,
+                                                   "radius");
+
+    typedef vrml97_node_type_impl<sphere_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & spereNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterface) {
             spereNodeType.add_field(
                 supportedInterface.field_type,
                 supportedInterface.id,
-                node_field_ptr_ptr(new node_field_ptr_impl<sphere_node, sffloat>
-                                    (&sphere_node::radius)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sffloat>(
+                        &sphere_node::radius)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -13231,8 +14120,7 @@ const node_type_ptr sphere_class::create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-sphere_node::sphere_node(const node_type & type,
-               const scope_ptr & scope):
+sphere_node::sphere_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
     abstract_geometry_node(type, scope),
     radius(1.0)
@@ -13301,70 +14189,106 @@ sphere_sensor_class::~sphere_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating SphereSensor nodes.
+ * @return a node_type_ptr to a node_type capable of creating SphereSensor
+ *         nodes.
  *
- * @exception unsupported_interface  if @p interfaces includes an interface not
- *                              supported by sphere_sensor_class.
+ * @exception unsupported_interface if @p interfaces includes an interface not
+ *                                  supported by sphere_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
 sphere_sensor_class::create_type(const std::string & id,
-                              const node_interface_set & interfaces)
+                                 const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "autoOffset"),
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "offset"),
-        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
-        node_interface(node_interface::eventout_id, field_value::sfrotation_id, "rotation_changed"),
-        node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "autoOffset"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "offset"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfrotation_id,
+                       "rotation_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "trackPoint_changed")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<sphere_sensor_node>(*this, id));
-    vrml97_node_type_impl<sphere_sensor_node> & sphereSensorNodeType =
-            static_cast<vrml97_node_type_impl<sphere_sensor_node> &>(*type);
-    typedef vrml97_node_type_impl<sphere_sensor_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<sphere_sensor_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & sphereSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             sphereSensorNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &sphere_sensor_node::process_set_autoOffset,
-                node_field_ptr_ptr(new node_field_ptr_impl<sphere_sensor_node, sfbool>
-                                    (&sphere_sensor_node::autoOffset)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &sphere_sensor_node::auto_offset_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &sphere_sensor_node::auto_offset_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &sphere_sensor_node::auto_offset_)));
         } else if (*interface == supportedInterfaces[1]) {
             sphereSensorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &sphere_sensor_node::process_set_enabled,
-                node_field_ptr_ptr(new node_field_ptr_impl<sphere_sensor_node, sfbool>
-                                    (&sphere_sensor_node::enabled)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &sphere_sensor_node::enabled_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &sphere_sensor_node::enabled_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &sphere_sensor_node::enabled_)));
         } else if (*interface == supportedInterfaces[2]) {
             sphereSensorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &sphere_sensor_node::process_set_offset,
-                node_field_ptr_ptr(new node_field_ptr_impl<sphere_sensor_node, sfrotation>
-                                    (&sphere_sensor_node::offset)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfrotation> >(&sphere_sensor_node::offset_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfrotation> >(
+                        &sphere_sensor_node::offset_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    exposedfield<sfrotation> >(&sphere_sensor_node::offset_)));
         } else if (*interface == supportedInterfaces[3]) {
             sphereSensorNodeType.add_eventout(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<sphere_sensor_node, sfbool>
-                                    (&sphere_sensor_node::active)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &sphere_sensor_node::is_active_emitter_)));
         } else if (*interface == supportedInterfaces[4]) {
             sphereSensorNodeType.add_eventout(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<sphere_sensor_node, sfrotation>
-                                    (&sphere_sensor_node::rotation)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfrotation_emitter>(
+                        &sphere_sensor_node::rotation_changed_emitter_)));
         } else if (*interface == supportedInterfaces[5]) {
             sphereSensorNodeType.add_eventout(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<sphere_sensor_node, sfvec3f>
-                                    (&sphere_sensor_node::trackPoint)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfvec3f_emitter>(
+                        &sphere_sensor_node::track_point_changed_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -13385,39 +14309,57 @@ sphere_sensor_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfbool sphere_sensor_node::autoOffset
+ * @var exposedfield<sfbool> sphere_sensor_node::auto_offset_
  *
  * @brief autoOffset exposedField.
  */
 
 /**
- * @var sfbool sphere_sensor_node::enabled
+ * @var exposedfield<sfbool> sphere_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var sfrotation sphere_sensor_node::offset
+ * @var exposedfield<sfrotation> sphere_sensor_node::offset_
  *
  * @brief offset exposedField.
  */
 
 /**
- * @var sfbool sphere_sensor_node::active
+ * @var sfbool sphere_sensor_node::is_active_
  *
- * @brief isActive eventOut.
+ * @brief isActive eventOut value.
  */
 
 /**
- * @var sfrotation sphere_sensor_node::rotation
+ * @var sfbool_emitter sphere_sensor_node::is_active_emitter_
  *
- * @brief rotation_changed eventOut.
+ * @brief isActive eventOut emitter.
  */
 
 /**
- * @var sfvec3f sphere_sensor_node::trackPoint
+ * @var sfrotation sphere_sensor_node::rotation_changed_
+ *
+ * @brief rotation_changed eventOut value.
+ */
+
+/**
+ * @var sfrotation_emitter sphere_sensor_node::rotation_changed_emitter_
+ *
+ * @brief rotation_changed eventOut emitter.
+ */
+
+/**
+ * @var sfvec3f sphere_sensor_node::track_point_changed_
  *
  * @brief trackPoint_changed eventOut.
+ */
+
+/**
+ * @var sfvec3f_emitter sphere_sensor_node::track_point_changed_emitter_
+ *
+ * @brief trackPoint_changed eventOut emitter.
  */
 
 /**
@@ -13445,13 +14387,16 @@ sphere_sensor_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 sphere_sensor_node::sphere_sensor_node(const node_type & type,
-                           const scope_ptr & scope):
+                                       const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
-    autoOffset(true),
-    enabled(true),
-    offset(openvrml::rotation(0.0, 1.0, 0.0, 0.0)),
-    active(false)
+    auto_offset_(*this, true),
+    enabled_(*this, true),
+    offset_(*this, openvrml::rotation(0.0, 1.0, 0.0, 0.0)),
+    is_active_(false),
+    is_active_emitter_(this->is_active_),
+    rotation_changed_emitter_(this->rotation_changed_),
+    track_point_changed_emitter_(this->track_point_changed_)
 {
     this->node::modified(true);
 }
@@ -13479,7 +14424,7 @@ sphere_sensor_node * sphere_sensor_node::to_sphere_sensor() const
  * @param context   a rendering context.
  */
 void sphere_sensor_node::do_render_child(openvrml::viewer & viewer,
-                                const rendering_context context)
+                                         const rendering_context context)
 {
     //
     // Store the ModelView matrix which is calculated at the time of rendering
@@ -13495,16 +14440,16 @@ void sphere_sensor_node::do_render_child(openvrml::viewer & viewer,
  * depressed and a drag operation has been initiated. The sensor is deactivated
  * when the button is released at the end of the operation.
  *
- * @param timeStamp the current time.
+ * @param timestamp the current time.
  * @param isActive  @c true if the drag operation is in progress; @c false
  *                  otherwise.
  * @param p         the pointing device position.
  */
-void sphere_sensor_node::activate(double timeStamp, bool isActive, double * p)
+void sphere_sensor_node::activate(double timestamp, bool isActive, double * p)
 {
     // Become active
-    if (isActive && !this->active.value) {
-        this->active.value = isActive;
+    if (isActive && !this->is_active_.value) {
+        this->is_active_.value = isActive;
 
         // set activation point in world coords
         const vec3f floatVec(static_cast<float>(p[0]),
@@ -13512,7 +14457,9 @@ void sphere_sensor_node::activate(double timeStamp, bool isActive, double * p)
                              static_cast<float>(p[2]));
         this->activationPoint.value = floatVec;
 
-        if (this->autoOffset.value) { this->rotation = this->offset; }
+        if (this->auto_offset_.sfbool::value) {
+            this->rotation_changed_ = this->offset_;
+        }
 
         // calculate the center of the object in world coords
         vec3f V;
@@ -13521,17 +14468,17 @@ void sphere_sensor_node::activate(double timeStamp, bool isActive, double * p)
         this->centerPoint.value = V;
 
         // send message
-        this->emit_event("isActive", this->active, timeStamp);
+        node::emit_event(this->is_active_emitter_, timestamp);
     }
     // Become inactive
-    else if (!isActive && this->active.value) {
-        this->active.value = isActive;
-        this->emit_event("isActive", this->active, timeStamp);
+    else if (!isActive && this->is_active_.value) {
+        this->is_active_.value = isActive;
+        node::emit_event(this->is_active_emitter_, timestamp);
 
         // save auto offset of rotation
-        if (this->autoOffset.value) {
-            this->offset = this->rotation;
-            this->emit_event("offset_changed", this->offset, timeStamp);
+        if (this->auto_offset_.sfbool::value) {
+            this->offset_.sfrotation::value = this->rotation_changed_.value;
+            node::emit_event(this->offset_, timestamp);
         }
     }
     // Tracking
@@ -13542,15 +14489,20 @@ void sphere_sensor_node::activate(double timeStamp, bool isActive, double * p)
                 static_cast<float>(p[2]));
         mat4f M = this->modelview.inverse();
         V = V * M;
-        this->trackPoint.value = V;
-        this->emit_event("trackPoint_changed", this->trackPoint, timeStamp);
+        this->track_point_changed_.value = V;
+        node::emit_event(this->track_point_changed_emitter_, timestamp);
 
         vec3f V2(static_cast<float>(p[0]),
                  static_cast<float>(p[1]),
                  static_cast<float>(p[2]));
         vec3f tempv = V2 - this->centerPoint.value;
         vec3f dir1(tempv);
-        float dist = dir1.length(); // get the length of the pre-normalized vector
+
+        //
+        // Get the length of the pre-normalized vector.
+        //
+        const float dist = dir1.length();
+
         dir1 = dir1.normalize();
         tempv = this->activationPoint.value - this->centerPoint.value;
         vec3f dir2(tempv);
@@ -13561,12 +14513,12 @@ void sphere_sensor_node::activate(double timeStamp, bool isActive, double * p)
         cx = cx.normalize();
 
         openvrml::rotation newRot(cx, dist * float(acos(dir1.dot(dir2))));
-        if (this->autoOffset.value) {
-            newRot = newRot * this->offset.value;
+        if (this->auto_offset_.sfbool::value) {
+            newRot = newRot * this->offset_.sfrotation::value;
         }
-        this->rotation.value = newRot;
+        this->rotation_changed_.value = newRot;
 
-        this->emit_event("rotation_changed", this->rotation, timeStamp);
+        node::emit_event(this->rotation_changed_emitter_, timestamp);
     }
 }
 
@@ -13577,55 +14529,7 @@ void sphere_sensor_node::activate(double timeStamp, bool isActive, double * p)
  */
 bool sphere_sensor_node::isEnabled() const throw ()
 {
-    return this->enabled.value;
-}
-
-/**
- * @brief set_autoOffset eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void sphere_sensor_node::process_set_autoOffset(const field_value & value,
-                                                const double timestamp)
-    throw (std::bad_cast)
-{
-    this->autoOffset = dynamic_cast<const sfbool &>(value);
-    this->emit_event("autoOffset_changed", this->autoOffset, timestamp);
-}
-
-/**
- * @brief set_enabled eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void sphere_sensor_node::process_set_enabled(const field_value & value,
-                                             const double timestamp)
-    throw (std::bad_cast)
-{
-    this->enabled = dynamic_cast<const sfbool &>(value);
-    this->emit_event("enabled_changed", this->enabled, timestamp);
-}
-
-/**
- * @brief set_offset eventIn handler.
- *
- * @param value     an sfrotation value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfrotation.
- */
-void sphere_sensor_node::process_set_offset(const field_value & value,
-                                            const double timestamp)
-    throw (std::bad_cast)
-{
-    this->offset = dynamic_cast<const sfrotation &>(value);
-    this->emit_event("offset_changed", this->offset, timestamp);
+    return this->enabled_.sfbool::value;
 }
 
 
@@ -13669,112 +14573,183 @@ spot_light_class::create_type(const std::string & id,
 {
     static const node_interface supportedInterfaces[] = {
         node_interface(node_interface::exposedfield_id,
-                      field_value::sffloat_id,
-                      "ambientIntensity"),
+                       field_value::sffloat_id,
+                       "ambientIntensity"),
         node_interface(node_interface::exposedfield_id,
-                      field_value::sfvec3f_id,
-                      "attenuation"),
+                       field_value::sfvec3f_id,
+                       "attenuation"),
         node_interface(node_interface::exposedfield_id,
-                      field_value::sffloat_id,
-                      "beamWidth"),
+                       field_value::sffloat_id,
+                       "beamWidth"),
         node_interface(node_interface::exposedfield_id,
-                      field_value::sfcolor_id,
-                      "color"),
+                       field_value::sfcolor_id,
+                       "color"),
         node_interface(node_interface::exposedfield_id,
-                      field_value::sffloat_id,
-                      "cutOffAngle"),
+                       field_value::sffloat_id,
+                       "cutOffAngle"),
         node_interface(node_interface::exposedfield_id,
-                      field_value::sfvec3f_id,
-                      "direction"),
+                       field_value::sfvec3f_id,
+                       "direction"),
         node_interface(node_interface::exposedfield_id,
-                      field_value::sffloat_id,
-                      "intensity"),
+                       field_value::sffloat_id,
+                       "intensity"),
         node_interface(node_interface::exposedfield_id,
-                      field_value::sfvec3f_id,
-                      "location"),
+                       field_value::sfvec3f_id,
+                       "location"),
         node_interface(node_interface::exposedfield_id,
-                      field_value::sfbool_id,
-                      "on"),
+                       field_value::sfbool_id,
+                       "on"),
         node_interface(node_interface::exposedfield_id,
-                      field_value::sffloat_id,
-                      "radius")
+                       field_value::sffloat_id,
+                       "radius")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<spot_light_node>(*this, id));
-    vrml97_node_type_impl<spot_light_node> & spotLightNodeType =
-            static_cast<vrml97_node_type_impl<spot_light_node> &>(*type);
-    typedef vrml97_node_type_impl<spot_light_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<spot_light_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & spotLightNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &spot_light_node::process_set_ambientIntensity,
-                node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sffloat>
-                                    (&spot_light_node::ambientIntensity)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(
+                        &spot_light_node::ambient_intensity_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &spot_light_node::ambient_intensity_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &spot_light_node::ambient_intensity_)));
         } else if (*interface == supportedInterfaces[1]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &spot_light_node::process_set_attenuation,
-                node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sfvec3f>
-                                    (&spot_light_node::attenuation)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(
+                        &spot_light_node::attenuation_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &spot_light_node::attenuation_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &spot_light_node::attenuation_)));
         } else if (*interface == supportedInterfaces[2]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &spot_light_node::process_set_beamWidth,
-                node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sffloat>
-                                    (&spot_light_node::beamWidth)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(
+                        &spot_light_node::beam_width_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &spot_light_node::beam_width_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &spot_light_node::beam_width_)));
         } else if (*interface == supportedInterfaces[3]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &spot_light_node::process_set_color,
-                node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sfcolor>
-                                    (&spot_light_node::color_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfcolor> >(
+                        &spot_light_node::color_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfcolor> >(
+                        &spot_light_node::color_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfcolor> >(
+                        &spot_light_node::color_)));
         } else if (*interface == supportedInterfaces[4]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &spot_light_node::process_set_cutOffAngle,
-                node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sffloat>
-                                    (&spot_light_node::cutOffAngle)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(
+                        &spot_light_node::cut_off_angle_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &spot_light_node::cut_off_angle_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &spot_light_node::cut_off_angle_)));
         } else if (*interface == supportedInterfaces[5]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                &spot_light_node::process_set_direction,
-                node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sfvec3f>
-                                    (&spot_light_node::direction)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(
+                        &spot_light_node::direction_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &spot_light_node::direction_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &spot_light_node::direction_)));
         } else if (*interface == supportedInterfaces[6]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                &spot_light_node::process_set_intensity,
-                node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sffloat>
-                                    (&spot_light_node::intensity_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(
+                        &spot_light_node::intensity_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &spot_light_node::intensity_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &spot_light_node::intensity_)));
         } else if (*interface == supportedInterfaces[7]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                &spot_light_node::process_set_location,
-                node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sfvec3f>
-                                    (&spot_light_node::location)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(
+                        &spot_light_node::location_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &spot_light_node::location_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &spot_light_node::location_)));
         } else if (*interface == supportedInterfaces[8]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
-                &spot_light_node::process_set_on,
-                node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sfbool>
-                                    (&spot_light_node::on_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &spot_light_node::on_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &spot_light_node::on_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &spot_light_node::on_)));
         } else if (*interface == supportedInterfaces[9]) {
             spotLightNodeType.add_exposedfield(
                 supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
-                &spot_light_node::process_set_radius,
-                node_field_ptr_ptr(new node_field_ptr_impl<spot_light_node, sffloat>
-                                    (&spot_light_node::radius)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(
+                        &spot_light_node::radius_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &spot_light_node::radius_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &spot_light_node::radius_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -13795,37 +14770,37 @@ spot_light_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfvec3f spot_light_node::attenuation
+ * @var exposedfield<sfvec3f> spot_light_node::attenuation_
  *
  * @brief attenuation exposedField.
  */
 
 /**
- * @var sffloat spot_light_node::beamWidth
+ * @var expoosedfield<sffloat> spot_light_node::beam_width_
  *
  * @brief beamWidth exposedField.
  */
 
 /**
- * @var sffloat spot_light_node::cutOffAngle
+ * @var exposedfield<sffloat> spot_light_node::cut_off_angle_
  *
  * @brief cutOffAngle exposedField.
  */
 
 /**
- * @var sfvec3f spot_light_node::direction
+ * @var exposedfield<sfvec3f> spot_light_node::direction_
  *
  * @brief direction exposedField.
  */
 
 /**
- * @var sfvec3f spot_light_node::location
+ * @var exposedfield<sfvec3f> spot_light_node::location_
  *
  * @brief location exposedField.
  */
 
 /**
- * @var sffloat spot_light_node::radius
+ * @var exposedfield<sffloat> spot_light_node::radius_
  *
  * @brief radius exposedField.
  */
@@ -13840,12 +14815,12 @@ spot_light_node::spot_light_node(const node_type & type,
                                  const scope_ptr & scope):
     node(type, scope),
     abstract_light_node(type, scope),
-    attenuation(vec3f(1.0, 0.0, 0.0)),
-    beamWidth(1.570796f),
-    cutOffAngle(0.785398f),
-    direction(vec3f(0.0, 0.0, -1.0)),
-    location(vec3f(0.0, 0.0, 0.0)),
-    radius(100)
+    attenuation_(*this, vec3f(1.0, 0.0, 0.0)),
+    beam_width_(*this, 1.570796f),
+    cut_off_angle_(*this, 0.785398f),
+    direction_(*this, vec3f(0.0, 0.0, -1.0)),
+    location_(*this, vec3f(0.0, 0.0, 0.0)),
+    radius_(*this, 100)
 {}
 
 /**
@@ -13878,16 +14853,16 @@ spot_light_node * spot_light_node::to_spot_light() const
  */
 void spot_light_node::renderScoped(openvrml::viewer & viewer)
 {
-    if (this->on_.value && this->radius.value > 0.0) {
-        viewer.insert_spot_light(this->ambientIntensity.value,
-                                 this->attenuation.value,
-                                 this->beamWidth.value,
-                                 this->color_.value,
-                                 this->cutOffAngle.value,
-                                 this->direction.value,
-                                 this->intensity_.value,
-                                 this->location.value,
-                                 this->radius.value);
+    if (this->on_.sfbool::value && this->radius_.sffloat::value > 0.0) {
+        viewer.insert_spot_light(this->ambient_intensity_.sffloat::value,
+                                 this->attenuation_.sfvec3f::value,
+                                 this->beam_width_.sffloat::value,
+                                 this->color_.sfcolor::value,
+                                 this->cut_off_angle_.sffloat::value,
+                                 this->direction_.sfvec3f::value,
+                                 this->intensity_.sffloat::value,
+                                 this->location_.sfvec3f::value,
+                                 this->radius_.sffloat::value);
     }
     this->node::modified(false);
 }
@@ -13915,108 +14890,6 @@ void spot_light_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
     this->scene()->browser.remove_scoped_light(*this);
-}
-
-/**
- * @brief set_attenuation eventIn handler.
- *
- * @param value     an sfvec3f.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void spot_light_node::process_set_attenuation(const field_value & value,
-                                              const double timestamp)
-    throw (std::bad_cast)
-{
-    this->attenuation = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("attenuation_changed", this->attenuation, timestamp);
-}
-
-/**
- * @brief set_beamWidth eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void spot_light_node::process_set_beamWidth(const field_value & value,
-                                            const double timestamp)
-    throw (std::bad_cast)
-{
-    this->beamWidth = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("beamWidth_changed", this->beamWidth, timestamp);
-}
-
-/**
- * @brief set_cutOffAngle eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void spot_light_node::process_set_cutOffAngle(const field_value & value,
-                                              const double timestamp)
-    throw (std::bad_cast)
-{
-    this->cutOffAngle = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("cutOffAngle_changed", this->cutOffAngle, timestamp);
-}
-
-/**
- * @brief set_direction eventIn handler.
- *
- * @param value     an sfvec3f.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void spot_light_node::process_set_direction(const field_value & value,
-                                            const double timestamp)
-    throw (std::bad_cast)
-{
-    this->direction = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("direction_changed", this->direction, timestamp);
-}
-
-/**
- * @brief set_location eventIn handler.
- *
- * @param value     an sfvec3f.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void spot_light_node::process_set_location(const field_value & value,
-                                           const double timestamp)
-    throw (std::bad_cast)
-{
-    this->location = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("location_changed", this->location, timestamp);
-}
-
-/**
- * @brief set_radius eventIn handler.
- *
- * @param value     an sffloat.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void spot_light_node::process_set_radius(const field_value & value,
-                                         const double timestamp)
-    throw (std::bad_cast)
-{
-    this->radius = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("radius_changed", this->radius, timestamp);
 }
 
 
@@ -14066,26 +14939,43 @@ switch_class::create_type(const std::string & id,
                       field_value::sfint32_id,
                       "whichChoice")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<switch_node>(*this, id));
-    vrml97_node_type_impl<switch_node> & switchNodeType =
-            static_cast<vrml97_node_type_impl<switch_node> &>(*type);
-    typedef vrml97_node_type_impl<switch_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<switch_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & switchNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             switchNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &switch_node::process_set_choice,
-                node_field_ptr_ptr(new node_field_ptr_impl<switch_node, mfnode>
-                                    (&switch_node::choice)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    switch_node::choice_exposedfield>(&switch_node::choice_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    switch_node::choice_exposedfield>(&switch_node::choice_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    switch_node::choice_exposedfield>(&switch_node::choice_)));
         } else if (*interface == supportedInterfaces[1]) {
             switchNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &switch_node::process_set_whichChoice,
-                node_field_ptr_ptr(new node_field_ptr_impl<switch_node, sfint32>
-                                    (&switch_node::whichChoice)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    switch_node::which_choice_exposedfield>(
+                        &switch_node::which_choice_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    switch_node::which_choice_exposedfield>(
+                        &switch_node::which_choice_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    switch_node::which_choice_exposedfield>(
+                        &switch_node::which_choice_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -14106,13 +14996,111 @@ switch_class::create_type(const std::string & id,
  */
 
 /**
- * @var mfnode switch_node::choice
+ * @class switch_node::choice_exposedfield
+ *
+ * @brief choice exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  switch_node.
+ */
+switch_node::choice_exposedfield::choice_exposedfield(switch_node & node):
+    exposedfield<mfnode>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+switch_node::choice_exposedfield::~choice_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param choice    choice nodes.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void switch_node::choice_exposedfield::do_process_event(const mfnode & choice,
+                                                        const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        switch_node & node = dynamic_cast<switch_node &>(this->node);
+
+        const size_t which_choice = size_t(node.which_choice_.sfint32::value);
+        assert(!node.children_.value.empty());
+        node.children_.value[0] =
+            (which_choice >= 0
+             && which_choice < node.choice_.mfnode::value.size())
+            ? node.choice_.mfnode::value[which_choice]
+            : node_ptr(0);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class switch_node::which_choice_exposedfield
+ *
+ * @brief choice exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  switch_node.
+ */
+switch_node::which_choice_exposedfield::
+which_choice_exposedfield(switch_node & node):
+    exposedfield<sfint32>(node, -1)
+{}
+
+/**
+ * @brief Destroy.
+ */
+switch_node::which_choice_exposedfield::~which_choice_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param which_choice  choice nodes.
+ * @param timestamp     the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+switch_node::which_choice_exposedfield::
+do_process_event(const sfint32 & which_choice,
+                 const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        switch_node & node = dynamic_cast<switch_node &>(this->node);
+
+        assert(!node.children_.value.empty());
+        node.children_.value[0] =
+            (which_choice.value >= 0
+             && which_choice.value < node.choice_.mfnode::value.size())
+            ? node.choice_.mfnode::value[which_choice.value]
+            : node_ptr(0);
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var switch_node::choice_exposedfield switch_node::choice_
  *
  * @brief choice exposedField.
  */
 
 /**
- * @var sfint32 switch_node::whichChoice
+ * @var switch_node::which_choice_exposedfield switch_node::which_choice_
  *
  * @brief whichChoice exposedField.
  */
@@ -14135,13 +15123,13 @@ switch_class::create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-switch_node::switch_node(const node_type & type,
-               const scope_ptr & scope):
+switch_node::switch_node(const node_type & type, const scope_ptr & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
     grouping_node(type, scope),
-    whichChoice(-1),
+    choice_(*this),
+    which_choice_(*this),
     children_(1)
 {
     this->bounding_volume_dirty(true);
@@ -14161,10 +15149,10 @@ switch_node::~switch_node() throw () {}
 bool switch_node::modified() const {
     if (this->node::modified()) { return true; }
 
-    long w = this->whichChoice.value;
+    long w = this->which_choice_.sfint32::value;
 
-    return (w >= 0 && size_t(w) < this->choice.value.size()
-            && this->choice.value[w]->modified());
+    return w >= 0 && size_t(w) < this->choice_.mfnode::value.size()
+        && this->choice_.mfnode::value[w]->modified();
 }
 
 /**
@@ -14238,58 +15226,15 @@ void switch_node::activate(double time, bool isOver, bool isActive, double *p)
 void switch_node::recalcBSphere()
 {
     this->bsphere = bounding_sphere();
-    long w = this->whichChoice.value;
-    if (w >= 0 && size_t(w) < this->choice.value.size()) {
-        const node_ptr & node = this->choice.value[w];
+    long w = this->which_choice_.sfint32::value;
+    if (w >= 0 && size_t(w) < this->choice_.mfnode::value.size()) {
+        const node_ptr & node = this->choice_.mfnode::value[w];
         if (node) {
             const openvrml::bounding_volume & ci_bv = node->bounding_volume();
             this->bsphere.extend(ci_bv);
         }
     }
     this->bounding_volume_dirty(false);
-}
-
-/**
- * @brief set_choice eventIn handler.
- *
- * @param value     an mfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void switch_node::process_set_choice(const field_value & value,
-                                     const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->choice = dynamic_cast<const mfnode &>(value);
-    const size_t whichChoice = size_t(this->whichChoice.value);
-    this->children_.value[0] = (whichChoice < this->choice.value.size())
-                             ? this->choice.value[whichChoice]
-                             : node_ptr(0);
-    this->node::modified(true);
-    this->emit_event("choice_changed", this->choice, timestamp);
-}
-
-/**
- * @brief set_whichChoice eventIn handler.
- *
- * @param value     an sfint32 value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfint32.
- */
-void switch_node::process_set_whichChoice(const field_value & value,
-                                          const double timestamp)
-    throw (std::bad_cast)
-{
-    this->whichChoice = dynamic_cast<const sfint32 &>(value);
-    const size_t whichChoice = size_t(this->whichChoice.value);
-    this->children_.value[0] = (whichChoice < this->choice.value.size())
-                             ? this->choice.value[whichChoice]
-                             : node_ptr(0);
-    this->node::modified(true);
-    this->emit_event("whichChoice_changed", this->whichChoice, timestamp);
 }
 
 
@@ -14369,40 +15314,72 @@ text_class::create_type(const std::string & id,
                        field_value::sffloat_id,
                        "maxExtent")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<text_node>(*this, id));
-    vrml97_node_type_impl<text_node> & textNodeType =
-        static_cast<vrml97_node_type_impl<text_node> &>(*type);
-    typedef vrml97_node_type_impl<text_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<text_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & textNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             textNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &text_node::process_set_string,
-                node_field_ptr_ptr(new node_field_ptr_impl<text_node, mfstring>
-                                    (&text_node::string)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    text_node::string_exposedfield>(&text_node::string_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<text_node::string_exposedfield>(
+                        &text_node::string_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    text_node::string_exposedfield>(&text_node::string_)));
         } else if (*interface == supportedInterfaces[1]) {
             textNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &text_node::process_set_fontStyle,
-                node_field_ptr_ptr(new node_field_ptr_impl<text_node, sfnode>
-                                    (&text_node::fontStyle)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    text_node::font_style_exposedfield>(
+                        &text_node::font_style_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    text_node::font_style_exposedfield>(
+                        &text_node::font_style_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    text_node::font_style_exposedfield>(
+                        &text_node::font_style_)));
         } else if (*interface == supportedInterfaces[2]) {
             textNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &text_node::process_set_length,
-                node_field_ptr_ptr(new node_field_ptr_impl<text_node, mffloat>
-                                    (&text_node::length)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    text_node::length_exposedfield>(&text_node::length_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<text_node::length_exposedfield>(
+                        &text_node::length_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    text_node::length_exposedfield>(&text_node::length_)));
         } else if (*interface == supportedInterfaces[3]) {
             textNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &text_node::process_set_maxExtent,
-                node_field_ptr_ptr(new node_field_ptr_impl<text_node, sffloat>
-                                    (&text_node::maxExtent)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    text_node::max_extent_exposedfield>(
+                        &text_node::max_extent_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    text_node::max_extent_exposedfield>(
+                        &text_node::max_extent_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    text_node::max_extent_exposedfield>(
+                        &text_node::max_extent_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -14423,25 +15400,194 @@ text_class::create_type(const std::string & id,
  */
 
 /**
- * @var mfstring text_node::string
+ * @class text_node::string_exposedfield
+ *
+ * @brief string exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  text_node.
+ */
+text_node::string_exposedfield::string_exposedfield(text_node & node):
+    exposedfield<mfstring>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+text_node::string_exposedfield::~string_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param string    text strings.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void text_node::string_exposedfield::do_process_event(const mfstring & string,
+                                                      const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        text_node & node = dynamic_cast<text_node &>(this->node);
+        node.update_ucs4();
+        node.update_geometry();
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class text_node::font_style_exposedfield
+ *
+ * @brief fontStyle exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  text_node.
+ */
+text_node::font_style_exposedfield::font_style_exposedfield(text_node & node):
+    exposedfield<sfnode>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+text_node::font_style_exposedfield::~font_style_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param font_style    text strings.
+ * @param timestamp     the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+text_node::font_style_exposedfield::do_process_event(const sfnode & font_style,
+                                                     const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        text_node & node = dynamic_cast<text_node &>(this->node);
+        node.update_ucs4();
+        node.update_geometry();
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class text_node::length_exposedfield
+ *
+ * @brief length exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  text_node.
+ */
+text_node::length_exposedfield::length_exposedfield(text_node & node):
+    exposedfield<mffloat>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+text_node::length_exposedfield::~length_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param length    length of the text strings.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void text_node::length_exposedfield::do_process_event(const mffloat & length,
+                                                      const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        text_node & node = dynamic_cast<text_node &>(this->node);
+        node.update_geometry();
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class text_node::max_extent_exposedfield
+ *
+ * @brief maxExtent exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  text_node.
+ */
+text_node::max_extent_exposedfield::max_extent_exposedfield(text_node & node):
+    exposedfield<sffloat>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+text_node::max_extent_exposedfield::~max_extent_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param max_extent    maximum extent of the text strings.
+ * @param timestamp     the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+text_node::max_extent_exposedfield::
+do_process_event(const sffloat & max_extent,
+                 const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        text_node & node = dynamic_cast<text_node &>(this->node);
+        node.update_geometry();
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var text_node::string_exposedfield text_node::string_
  *
  * @brief string exposedField.
  */
 
 /**
- * @var sfnode text_node::fontStyle
+ * @var text_node::font_style_exposedfield text_node::font_style_
  *
  * @brief fontStyle exposedField.
  */
 
 /**
- * @var mffloat text_node::length
+ * @var text_node::length_exposedfield text_node::length_
  *
  * @brief length exposedField.
  */
 
 /**
- * @var sffloat text_node::maxExtent
+ * @var text_node::max_extent_exposedfield text_node::max_extent_
  *
  * @brief maxExtent exposedField.
  */
@@ -14936,6 +16082,10 @@ text_node::text_node(const node_type & type,
                      const scope_ptr & scope):
     node(type, scope),
     abstract_geometry_node(type, scope),
+    string_(*this),
+    font_style_(*this),
+    length_(*this),
+    max_extent_(*this),
     face(0)
 {}
 
@@ -14953,8 +16103,9 @@ text_node::~text_node() throw ()
  */
 bool text_node::modified() const
 {
-    return (this->node::modified()
-            || (this->fontStyle.value && this->fontStyle.value->modified()));
+    return this->node::modified()
+        || (this->font_style_.sfnode::value
+            && this->font_style_.sfnode::value->modified());
 }
 
 /**
@@ -14976,7 +16127,9 @@ viewer::object_t text_node::do_render_geometry(openvrml::viewer & viewer,
                             std::vector<int32>(), // normalIndex
                             this->text_geometry_.tex_coord,
                             std::vector<int32>()); // texCoordIndex
-    if (this->fontStyle.value) { this->fontStyle.value->modified(false); }
+    if (this->font_style_.sfnode::value) {
+        this->font_style_.sfnode::value->modified(false);
+    }
     return retval;
 }
 
@@ -15010,83 +16163,6 @@ void text_node::do_shutdown(const double timestamp) throw ()
 }
 
 /**
- * @brief set_string eventIn handler.
- *
- * @param value     an mfstring value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfstring.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void text_node::process_set_string(const field_value & value,
-                             const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->string = dynamic_cast<const mfstring &>(value);
-    this->update_ucs4();
-    this->update_geometry();
-    this->node::modified(true);
-    this->emit_event("string_changed", this->string, timestamp);
-}
-
-/**
- * @brief set_fontStyle eventIn handler.
- *
- * @param value     an sfnode value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfnode.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void text_node::process_set_fontStyle(const field_value & value,
-                                const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->fontStyle = dynamic_cast<const sfnode &>(value);
-    this->update_face();
-    this->update_geometry();
-    this->node::modified(true);
-    this->emit_event("fontStyle_changed", this->fontStyle, timestamp);
-}
-
-/**
- * @brief set_length eventIn handler.
- *
- * @param value     an mffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void text_node::process_set_length(const field_value & value,
-                             const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->length = dynamic_cast<const mffloat &>(value);
-    this->update_geometry();
-    this->node::modified(true);
-    this->emit_event("length_changed", this->length, timestamp);
-}
-
-/**
- * @brief set_maxExtent eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void text_node::process_set_maxExtent(const field_value & value,
-                                const double timestamp) throw (std::bad_cast)
-{
-    this->maxExtent = dynamic_cast<const sffloat &>(value);
-    this->update_geometry();
-    this->node::modified(true);
-    this->emit_event("maxExtent_changed", this->maxExtent, timestamp);
-}
-
-/**
  * @brief Called when @a string changes to update the UCS-4 text.
  *
  * @exception std::bad_alloc    if memory allocation fails.
@@ -15095,13 +16171,13 @@ void text_node::update_ucs4() throw (std::bad_alloc)
 {
 # ifdef OPENVRML_ENABLE_TEXT_NODE
     this->ucs4_string.clear();
-    this->ucs4_string.resize(this->string.value.size());
+    this->ucs4_string.resize(this->string_.mfstring::value.size());
 
-    for (size_t i = 0; i < this->string.value.size(); ++i) {
+    for (size_t i = 0; i < this->string_.mfstring::value.size(); ++i) {
         using std::string;
         using std::vector;
 
-        const string & element = this->string.value[i];
+        const string & element = this->string_.mfstring::value[i];
 
         vector<FcChar32> & ucs4Element = this->ucs4_string[i];
 
@@ -15303,7 +16379,8 @@ void text_node::update_face() throw (std::bad_alloc)
     string style;
 
     openvrml::font_style_node * const fontStyle =
-        node_cast<openvrml::font_style_node *>(this->fontStyle.value.get());
+        node_cast<openvrml::font_style_node *>(
+            this->font_style_.sfnode::value.get());
     if (fontStyle) {
         if (!fontStyle->family().empty()) {
             family = fontStyle->family();
@@ -15611,7 +16688,8 @@ void text_node::update_geometry() throw (std::bad_alloc)
     float size = 1.0;
     float spacing = 1.0;
     openvrml::font_style_node * fontStyle =
-        node_cast<openvrml::font_style_node *>(this->fontStyle.value.get());
+        node_cast<openvrml::font_style_node *>(
+            this->font_style_.sfnode::value.get());
     if (fontStyle) {
         horizontal = fontStyle->horizontal();
         if (!fontStyle->justify().empty()) {
@@ -15769,9 +16847,10 @@ void text_node::update_geometry() throw (std::bad_alloc)
         //
         // Scale to length.
         //
-        const float length = (line < this->length.value.size())
-                           ? this->length.value[line]
-                           : 0.0;
+        const float length =
+            (line < this->length_.mffloat::value.size())
+            ? this->length_.mffloat::value[line]
+            : 0.0;
         if (length > 0.0) {
             const float currentLength = lineGeometry.xMax - lineGeometry.xMin;
             for (size_t i = 0; i < lineGeometry.coord.size(); ++i) {
@@ -15834,9 +16913,10 @@ void text_node::update_geometry() throw (std::bad_alloc)
     //
     // Scale to maxExtent.
     //
-    const float maxExtent = (this->maxExtent.value > 0.0)
-                          ? this->maxExtent.value
-                          : 0.0;
+    const float maxExtent =
+        (this->max_extent_.sffloat::value > 0.0)
+        ? this->max_extent_.sffloat::value
+        : 0.0;
     if (maxExtent > 0.0) {
         const float currentMaxExtent = geometryXMax - geometryXMin;
         if (currentMaxExtent > maxExtent) {
@@ -15865,17 +16945,21 @@ void text_node::update_geometry() throw (std::bad_alloc)
         }
     } else if (justify[1] == "MIDDLE") {
         if (horizontal) {
-            yOffset = ((size * spacing * this->string.value.size()) / 2.0f)
+            yOffset = ((size * spacing
+                        * this->string_.mfstring::value.size()) / 2.0f)
                       - (size * spacing);
         } else {
-            xOffset = ((size * spacing * this->string.value.size()) / 2.0f)
+            xOffset = ((size * spacing
+                        * this->string_.mfstring::value.size()) / 2.0f)
                       - (size * spacing);
         }
     } else if (justify[1] == "END") {
         if (horizontal) {
-            yOffset = size * spacing * (this->string.value.size() - 1);
+            yOffset = size * spacing
+                * (this->string_.mfstring::value.size() - 1);
         } else {
-            xOffset = size * spacing * (this->string.value.size() - 1);
+            xOffset = size * spacing
+                * (this->string_.mfstring::value.size() - 1);
         }
     }
     for (size_t i = 0; i < newGeometry.coord.size(); ++i) {
@@ -15920,8 +17004,8 @@ void text_node::update_geometry() throw (std::bad_alloc)
  *
  * @param browser the browser associated with this node_class.
  */
-texture_coordinate_class::texture_coordinate_class(
-    openvrml::browser & browser):
+texture_coordinate_class::
+texture_coordinate_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
@@ -15953,22 +17037,28 @@ texture_coordinate_class::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id,
                       field_value::mfvec2f_id,
                       "point");
-    const node_type_ptr
-        type(new vrml97_node_type_impl<texture_coordinate_node>(*this, id));
-    vrml97_node_type_impl<texture_coordinate_node> & textureCoordinateNodeType =
-            static_cast<vrml97_node_type_impl<texture_coordinate_node> &>(*type);
-    typedef vrml97_node_type_impl<texture_coordinate_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<texture_coordinate_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & textureCoordinateNodeType =
+        static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterface) {
             textureCoordinateNodeType.add_exposedfield(
                 supportedInterface.field_type,
                 supportedInterface.id,
-                &texture_coordinate_node::process_set_point,
-                node_field_ptr_ptr(new node_field_ptr_impl<texture_coordinate_node,
-                                                     mfvec2f>
-                                (&texture_coordinate_node::point_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<mfvec2f> >(&texture_coordinate_node::point_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<mfvec2f> >(
+                        &texture_coordinate_node::point_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<mfvec2f> >(
+                        &texture_coordinate_node::point_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -15989,7 +17079,7 @@ texture_coordinate_class::create_type(const std::string & id,
  */
 
 /**
- * @var mfvec2f texture_coordinate_node::point_
+ * @var exposedfield<mfvec2f> texture_coordinate_node::point_
  *
  * @brief point exposedField.
  */
@@ -15997,14 +17087,15 @@ texture_coordinate_class::create_type(const std::string & id,
 /**
  * @brief Construct.
  *
- * @param type      the node_type associated with the instance.
- * @param scope         the scope that the new node will belong to.
+ * @param type  the node_type associated with the instance.
+ * @param scope the scope that the new node will belong to.
  */
 texture_coordinate_node::texture_coordinate_node(const node_type & type,
                                                  const scope_ptr & scope):
     node(type, scope),
     abstract_base(type, scope),
-    openvrml::texture_coordinate_node(type, scope)
+    openvrml::texture_coordinate_node(type, scope),
+    point_(*this)
 {}
 
 /**
@@ -16019,25 +17110,7 @@ texture_coordinate_node::~texture_coordinate_node() throw () {}
  */
 const std::vector<vec2f> & texture_coordinate_node::point() const throw ()
 {
-    return this->point_.value;
-}
-
-/**
- * @brief set_point eventIn handler.
- *
- * @param value     an array of vectors representing points.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an mfvec2f.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void texture_coordinate_node::process_set_point(const field_value & value,
-                                                const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    this->point_ = dynamic_cast<const mfvec2f &>(value);
-    this->node::modified(true);
-    this->emit_event("point_changed", this->point_, timestamp);
+    return this->point_.mfvec2f::value;
 }
 
 
@@ -16071,7 +17144,7 @@ texture_transform_class::~texture_transform_class() throw ()
  * @return a node_type_ptr to a node_type capable of creating TextureTransform
  *      nodes.
  *
- * @exception unsupported_interface  if @p interfaces includes an interface not
+ * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by texture_transform_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
@@ -16081,45 +17154,82 @@ texture_transform_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "center"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "rotation"),
-        node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "scale"),
-        node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "translation")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "rotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "scale"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "translation")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<texture_transform_node>(*this, id));
-    vrml97_node_type_impl<texture_transform_node> & textureTransformNodeType =
-            static_cast<vrml97_node_type_impl<texture_transform_node> &>(*type);
-    typedef vrml97_node_type_impl<texture_transform_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<texture_transform_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & textureTransformNodeType =
+        static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             textureTransformNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &texture_transform_node::process_set_center,
-                node_field_ptr_ptr(new node_field_ptr_impl<texture_transform_node, sfvec2f>
-                                    (&texture_transform_node::center)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec2f> >(&texture_transform_node::center_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec2f> >(
+                        &texture_transform_node::center_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec2f> >(
+                        &texture_transform_node::center_)));
         } else if (*interface == supportedInterfaces[1]) {
             textureTransformNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &texture_transform_node::process_set_rotation,
-                node_field_ptr_ptr(new node_field_ptr_impl<texture_transform_node, sffloat>
-                                    (&texture_transform_node::rotation)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(
+                        &texture_transform_node::rotation_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &texture_transform_node::rotation_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &texture_transform_node::rotation_)));
         } else if (*interface == supportedInterfaces[2]) {
             textureTransformNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &texture_transform_node::process_set_scale,
-                node_field_ptr_ptr(new node_field_ptr_impl<texture_transform_node, sfvec2f>
-                                    (&texture_transform_node::scale)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec2f> >(&texture_transform_node::scale_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec2f> >(
+                        &texture_transform_node::scale_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec2f> >(
+                        &texture_transform_node::scale_)));
         } else if (*interface == supportedInterfaces[3]) {
             textureTransformNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &texture_transform_node::process_set_translation,
-                node_field_ptr_ptr(new node_field_ptr_impl<texture_transform_node, sfvec2f>
-                                    (&texture_transform_node::translation)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec2f> >(
+                        &texture_transform_node::translation_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec2f> >(
+                        &texture_transform_node::translation_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec2f> >(
+                        &texture_transform_node::translation_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -16140,25 +17250,25 @@ texture_transform_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfvec2f texture_transform_node::center
+ * @var exposedfield<sfvec2f> texture_transform_node::center_
  *
  * @brief center exposedField.
  */
 
 /**
- * @var sffloat texture_transform_node::rotation
+ * @var exposedfield<sffloat> texture_transform_node::rotation_
  *
  * @brief rotation exposedField.
  */
 
 /**
- * @var sfvec2f texture_transform_node::scale
+ * @var exposedfield<sfvec2f> texture_transform_node::scale_
  *
  * @brief scale exposedField.
  */
 
 /**
- * @var sfvec2f texture_transform_node::translation
+ * @var exposedfield<sfvec2f> texture_transform_node::translation_
  *
  * @brief translation exposedField.
  */
@@ -16174,10 +17284,10 @@ texture_transform_node::texture_transform_node(const node_type & type,
     node(type, scope),
     abstract_base(type, scope),
     openvrml::texture_transform_node(type, scope),
-    center(vec2f(0.0, 0.0)),
-    rotation(0.0),
-    scale(vec2f(1.0, 1.0)),
-    translation(vec2f(0.0, 0.0))
+    center_(*this, vec2f(0.0, 0.0)),
+    rotation_(*this, 0.0),
+    scale_(*this, vec2f(1.0, 1.0)),
+    translation_(*this, vec2f(0.0, 0.0))
 {}
 
 /**
@@ -16196,78 +17306,10 @@ void
 texture_transform_node::do_render_texture_transform(viewer & v,
                                                     rendering_context context)
 {
-    v.set_texture_transform(this->center.value,
-                            this->rotation.value,
-                            this->scale.value,
-                            this->translation.value);
-}
-
-/**
- * @brief set_center eventIn handler.
- *
- * @param value     an sfvec2f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec2f.
- */
-void texture_transform_node::process_set_center(const field_value & value,
-                                                const double timestamp)
-    throw (std::bad_cast)
-{
-    this->center = dynamic_cast<const sfvec2f &>(value);
-    this->node::modified(true);
-    this->emit_event("center_changed", this->center, timestamp);
-}
-
-/**
- * @brief set_rotation eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sffloat.
- */
-void texture_transform_node::process_set_rotation(const field_value & value,
-                                                  const double timestamp)
-    throw (std::bad_cast)
-{
-    this->rotation = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("rotation_changed", this->rotation, timestamp);
-}
-
-/**
- * @brief set_scale eventIn handler.
- *
- * @param value     an sfvec2f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec2f.
- */
-void texture_transform_node::process_set_scale(const field_value & value,
-                                               const double timestamp)
-    throw (std::bad_cast)
-{
-    this->scale = dynamic_cast<const sfvec2f &>(value);
-    this->node::modified(true);
-    this->emit_event("scale_changed", this->scale, timestamp);
-}
-
-/**
- * @brief set_translation eventIn handler.
- *
- * @param value     an sfvec2f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec2f.
- */
-void texture_transform_node::process_set_translation(const field_value & value,
-                                                     const double timestamp)
-    throw (std::bad_cast)
-{
-    this->translation = dynamic_cast<const sfvec2f &>(value);
-    this->node::modified(true);
-    this->emit_event("translation_changed", this->translation, timestamp);
+    v.set_texture_transform(this->center_.sfvec2f::value,
+                            this->rotation_.sffloat::value,
+                            this->scale_.sfvec2f::value,
+                            this->translation_.sfvec2f::value);
 }
 
 
@@ -16339,12 +17381,10 @@ time_sensor_class::create_type(const std::string & id,
                        "time")
     };
 
-    typedef time_sensor_node node_t;
     typedef vrml97_node_type_impl<time_sensor_node> node_type_t;
 
     const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & timeSensorNodeType = static_cast<node_type_t &>(*type);
-    typedef node_type_t::node_field_ptr_ptr node_field_ptr_ptr;
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
          ++interface) {
@@ -16352,61 +17392,100 @@ time_sensor_class::create_type(const std::string & id,
             timeSensorNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &time_sensor_node::process_set_cycleInterval,
-                node_field_ptr_ptr(
-                    new node_type_t::sftime_ptr(&node_t::cycleInterval)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    time_sensor_node::set_cycle_interval_listener>(
+                        &time_sensor_node::set_cycle_interval_listener_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sftime>(
+                        &time_sensor_node::cycle_interval_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &time_sensor_node::cycle_interval_changed_emitter_)));
         } else if (*interface == supportedInterfaces[1]) {
             timeSensorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &time_sensor_node::process_set_enabled,
-                node_field_ptr_ptr(
-                    new node_type_t::sfbool_ptr(&node_t::enabled)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    time_sensor_node::enabled_exposedfield>(
+                        &time_sensor_node::enabled_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    time_sensor_node::enabled_exposedfield>(
+                        &time_sensor_node::enabled_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    time_sensor_node::enabled_exposedfield>(
+                        &time_sensor_node::enabled_)));
         } else if (*interface == supportedInterfaces[2]) {
             timeSensorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &time_sensor_node::process_set_loop,
-                node_field_ptr_ptr(
-                    new node_type_t::sfbool_ptr(&node_t::loop)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &time_sensor_node::loop_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &time_sensor_node::loop_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &time_sensor_node::loop_)));
         } else if (*interface == supportedInterfaces[3]) {
             timeSensorNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &time_sensor_node::process_set_startTime,
-                node_field_ptr_ptr(
-                    new node_type_t::sftime_ptr(&node_t::startTime)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    time_sensor_node::set_start_time_listener>(
+                        &time_sensor_node::set_start_time_listener_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sftime>(
+                        &time_sensor_node::start_time_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &time_sensor_node::start_time_changed_emitter_)));
         } else if (*interface == supportedInterfaces[4]) {
             timeSensorNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &time_sensor_node::process_set_stopTime,
-                node_field_ptr_ptr(
-                    new node_type_t::sftime_ptr(&node_t::stopTime)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sftime> >(
+                        &time_sensor_node::stop_time_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sftime> >(
+                        &time_sensor_node::stop_time_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sftime> >(
+                        &time_sensor_node::stop_time_)));
         } else if (*interface == supportedInterfaces[5]) {
             timeSensorNodeType.add_eventout(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(
-                    new node_type_t::sftime_ptr(&node_t::cycleTime)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &time_sensor_node::cycle_time_emitter_)));
         } else if (*interface == supportedInterfaces[6]) {
             timeSensorNodeType.add_eventout(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(
-                    new node_type_t::sffloat_ptr(&node_t::fraction)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sffloat_emitter>(
+                        &time_sensor_node::fraction_changed_emitter_)));
         } else if (*interface == supportedInterfaces[7]) {
             timeSensorNodeType.add_eventout(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(
-                    new node_type_t::sfbool_ptr(&node_t::active)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &time_sensor_node::is_active_emitter_)));
         } else if (*interface == supportedInterfaces[8]) {
             timeSensorNodeType.add_eventout(
                 supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
-                node_field_ptr_ptr(
-                    new node_type_t::sftime_ptr(&node_t::time)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &time_sensor_node::time_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -16427,57 +17506,278 @@ time_sensor_class::create_type(const std::string & id,
  */
 
 /**
- * @var sftime time_sensor_node::cycleInterval
+ * @class time_sensor_node::set_cycle_interval_listener
  *
- * @brief cycleInterval exposedField.
+ * @brief set_cycleInterval eventIn handler.
  */
 
 /**
- * @var sfbool time_sensor_node::enabled
+ * @brief Construct.
+ *
+ * @param node  time_sensor_node.
+ */
+time_sensor_node::set_cycle_interval_listener::
+set_cycle_interval_listener(time_sensor_node & node):
+    sftime_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+time_sensor_node::set_cycle_interval_listener::~set_cycle_interval_listener()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param cycle_interval    cycleInterval.
+ * @param timestamp         the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+time_sensor_node::set_cycle_interval_listener::
+process_event(const sftime & cycle_interval, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        time_sensor_node & node = dynamic_cast<time_sensor_node &>(this->node);
+
+        if (!node.is_active_.value) {
+            node.cycle_interval_ = cycle_interval;
+            node.lastTime = timestamp;
+            node::emit_event(node.cycle_interval_changed_emitter_, timestamp);
+        }
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class time_sensor_node::enabled_exposedfield
+ *
+ * @brief enabled exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  time_sensor_node.
+ */
+time_sensor_node::enabled_exposedfield::
+enabled_exposedfield(time_sensor_node & node):
+    exposedfield<sfbool>(node, true)
+{}
+
+/**
+ * @brief Destroy.
+ */
+time_sensor_node::enabled_exposedfield::~enabled_exposedfield()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param enabled   enabled state.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+time_sensor_node::enabled_exposedfield::
+do_process_event(const sfbool & enabled, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        time_sensor_node & node = dynamic_cast<time_sensor_node &>(this->node);
+
+        if (enabled.value != node.is_active_.value) {
+            if (node.is_active_.value) {
+                using openvrml_::fequal;
+
+                //
+                // Was active; shutdown.
+                //
+                double cycleInt = node.cycle_interval_.value;
+                double f = (cycleInt > 0.0)
+                    ? fmod(node.time_.value - node.start_time_.value, cycleInt)
+                    : 0.0;
+
+                // Fraction of cycle message
+                node.fraction_changed_.value =
+                    float(fequal<double>()(f, 0.0) ? 1.0 : (f / cycleInt));
+            } else {
+                //
+                // Was inactive; startup.
+                //
+                node.cycle_time_.value = timestamp;
+                node::emit_event(node.cycle_time_emitter_, timestamp);
+
+                // Fraction of cycle message
+                node.fraction_changed_.value = 0.0;
+            }
+            node.time_.value = timestamp;
+            node::emit_event(node.time_emitter_, timestamp);
+            node::emit_event(node.fraction_changed_emitter_, timestamp);
+            node.is_active_ = enabled;
+            node::emit_event(node.is_active_emitter_, timestamp);
+        }
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class time_sensor_node::set_start_time_listener
+ *
+ * @brief set_startTime eventIn handler.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  time_sensor_node.
+ */
+time_sensor_node::set_start_time_listener::
+set_start_time_listener(time_sensor_node & node):
+    sftime_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+time_sensor_node::set_start_time_listener::~set_start_time_listener()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param start_time    startTime.
+ * @param timestamp     the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+time_sensor_node::set_start_time_listener::
+process_event(const sftime & start_time, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        time_sensor_node & node = dynamic_cast<time_sensor_node &>(this->node);
+
+        if (!node.is_active_.value) {
+            node.start_time_ = start_time;
+            node.lastTime = timestamp;
+            node::emit_event(node.start_time_changed_emitter_, timestamp);
+        }
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var time_sensor_node::set_cycle_interval_listener time_sensor_node::set_cycle_interval_listener_
+ *
+ * @brief set_cycleInterval eventIn handler.
+ */
+
+/**
+ * @var sftime time_sensor_node::cycle_interval_
+ *
+ * @brief cycleInterval exposedField value.
+ */
+
+/**
+ * @var sftime_emitter time_sensor_node::cycle_interval_changed_emitter_
+ *
+ * @brief cycleInterval_changed event emitter.
+ */
+
+/**
+ * @var enabled_exposedfield time_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var sfbool time_sensor_node::loop
+ * @var exposedfield<sfbool> time_sensor_node::loop_
  *
  * @brief loop exposedField.
  */
 
 /**
- * @var sftime time_sensor_node::startTime
+ * @var time_sensor_node::set_start_time_listener time_sensor_node::set_start_time_listener_
  *
- * @brief startTime exposedField.
+ * @brief set_startTime event handler.
  */
 
 /**
- * @var sftime time_sensor_node::stopTime
+ * @var sftime time_sensor_node::start_time_
+ *
+ * @brief startTime exposedField value.
+ */
+
+/**
+ * @var sftime_emitter time_sensor_node::start_time_changed_emitter_
+ *
+ * @brief startTime_changed event emitter.
+ */
+
+/**
+ * @var exposedfield<sftime> time_sensor_node::stop_time_
  *
  * @brief stopTime exposedField.
  */
 
 /**
- * @var sftime time_sensor_node::cycleTime
+ * @var sftime time_sensor_node::cycle_time_
  *
- * @brief cycleTime eventOut.
+ * @brief cycleTime eventOut value.
  */
 
 /**
- * @var sffloat time_sensor_node::fraction
+ * @var sftime_emitter time_sensor_node::cycle_time_emitter_
  *
- * @brief fraction_changed eventOut.
+ * @brief cycleTime eventOut emitter.
  */
 
 /**
- * @var sfbool time_sensor_node::active
+ * @var sffloat time_sensor_node::fraction_changed_
  *
- * @brief isActive eventOut.
+ * @brief fraction_changed eventOut value.
  */
 
 /**
- * @var sftime time_sensor_node::time
+ * @var sffloat_emitter time_sensor_node::fraction_changed_emitter_
  *
- * @brief time eventOut.
+ * @brief fraction_changed eventOut emitter.
+ */
+
+/**
+ * @var sfbool time_sensor_node::is_active_
+ *
+ * @brief isActive eventOut value.
+ */
+
+/**
+ * @var sfbool_emitter time_sensor_node::is_active_emitter_
+ *
+ * @brief isActive eventOut emitter.
+ */
+
+/**
+ * @var sftime time_sensor_node::time_
+ *
+ * @brief time eventOut value.
+ */
+
+/**
+ * @var sftime_emitter time_sensor_node::time_emitter_
+ *
+ * @brief time eventOut emitter.
  */
 
 /**
@@ -16496,12 +17796,20 @@ time_sensor_node::time_sensor_node(const node_type & type,
                                    const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
-    cycleInterval(1.0),
-    enabled(true),
-    loop(false),
-    startTime(0.0),
-    stopTime(0.0),
-    active(false),
+    set_cycle_interval_listener_(*this),
+    cycle_interval_(1.0),
+    cycle_interval_changed_emitter_(this->cycle_interval_),
+    enabled_(*this),
+    loop_(*this, false),
+    set_start_time_listener_(*this),
+    start_time_(0.0),
+    start_time_changed_emitter_(this->start_time_),
+    stop_time_(*this, 0.0),
+    cycle_time_emitter_(this->cycle_time_),
+    fraction_changed_emitter_(this->fraction_changed_),
+    is_active_(false),
+    is_active_emitter_(this->is_active_),
+    time_emitter_(this->time_),
     lastTime(-1.0)
 {}
 
@@ -16533,85 +17841,89 @@ void time_sensor_node::update(const double currentTime)
 {
     sftime timeNow(currentTime);
 
-    if (this->enabled.value) {
+    if (this->enabled_.sfbool::value) {
         if (this->lastTime > timeNow.value) { this->lastTime = timeNow.value; }
 
         // Become active at startTime if either the valid stopTime hasn't
         // passed or we are looping.
-        if (!this->active.value
-                && this->startTime.value <= timeNow.value
-                && this->startTime.value >= this->lastTime
-                && ((this->stopTime.value < this->startTime.value
-                    || this->stopTime.value > timeNow.value)
-                    || this->loop.value)) {
-            this->active.value = true;
+        if (!this->is_active_.value
+            && this->start_time_.value <= timeNow.value
+            && this->start_time_.value >= this->lastTime
+            && ((this->stop_time_.sftime::value < this->start_time_.value
+                 || this->stop_time_.sftime::value > timeNow.value)
+                || this->loop_.sfbool::value)) {
 
             // Start at first tick >= startTime
-            this->emit_event("isActive", this->active, timeNow.value);
-            this->emit_event("time", timeNow, timeNow.value);
-            this->emit_event("fraction_changed", sffloat(0.0), timeNow.value);
-            this->emit_event("cycleTime", timeNow, timeNow.value);
+            this->is_active_.value = true;
+            node::emit_event(this->is_active_emitter_, timeNow.value);
+            this->time_.value = timeNow.value;
+            node::emit_event(this->time_emitter_, timeNow.value);
+            this->fraction_changed_.value = 0.0;
+            node::emit_event(this->fraction_changed_emitter_, timeNow.value);
+            this->cycle_time_.value = timeNow.value;
+            node::emit_event(this->cycle_time_emitter_, timeNow.value);
         }
 
         // Running (active and enabled)
-        else if (this->active.value) {
+        else if (this->is_active_.value) {
             using openvrml_::fequal;
             using openvrml_::fless_equal;
 
-            double f, cycleInt = this->cycleInterval.value;
+            double f, cycleInt = this->cycle_interval_.value;
             bool deactivate = false;
 
             // Are we done? Choose min of stopTime or start + single cycle.
-            if ((this->stopTime.value > this->startTime.value
-                        && fless_equal<double>()(this->stopTime.value,
-                                                 timeNow.value))
-                    || (!this->loop.value
-                        && fless_equal<double>()(this->startTime.value
-                                                 + cycleInt,
-                                                 timeNow.value))) {
-                this->active.value = false;
+            if ((this->stop_time_.sftime::value > this->start_time_.value
+                 && fless_equal<double>()(this->stop_time_.sftime::value,
+                                          timeNow.value))
+                || (!this->loop_.sfbool::value
+                    && fless_equal<double>()(this->start_time_.value
+                                             + cycleInt,
+                                             timeNow.value))) {
+                this->is_active_.value = false;
 
                 // Must respect stopTime/cycleInterval exactly
-                if (this->startTime.value + cycleInt < this->stopTime.value) {
-                    timeNow = sftime(this->startTime.value + cycleInt);
+                if (this->start_time_.value + cycleInt
+                    < this->stop_time_.sftime::value) {
+                    timeNow = sftime(this->start_time_.value + cycleInt);
                 } else {
-                    timeNow = this->stopTime;
+                    timeNow = this->stop_time_;
                 }
 
                 deactivate = true;
             }
 
-            f = (cycleInt > 0.0 && timeNow.value > this->startTime.value)
-              ? fmod(timeNow.value - this->startTime.value, cycleInt)
+            f = (cycleInt > 0.0 && timeNow.value > this->start_time_.value)
+              ? fmod(timeNow.value - this->start_time_.value, cycleInt)
               : 0.0;
 
             fequal<double> feq;
 
             // Fraction of cycle message
-            sffloat fraction_changed(feq(f, 0.0)
-                                     ? 1.0f
-                                     : float(f / cycleInt));
-            this->emit_event("fraction_changed",
-                             fraction_changed,
-                             timeNow.value);
+            this->fraction_changed_.value = feq(f, 0.0)
+                                 ? 1.0f
+                                 : float(f / cycleInt);
+            node::emit_event(this->fraction_changed_emitter_, timeNow.value);
 
             // Current time message
-            this->emit_event("time", timeNow, timeNow.value);
+            this->time_.value = timeNow.value;
+            node::emit_event(this->time_emitter_, timeNow.value);
 
             // End of cycle message (this may miss cycles...)
-            if (feq(fraction_changed.value, 1.0)) {
-                this->emit_event("cycleTime", timeNow, timeNow.value);
+            if (feq(this->fraction_changed_.value, 1.0)) {
+                this->cycle_time_.value = timeNow.value;
+                node::emit_event(this->cycle_time_emitter_, timeNow.value);
             }
 
             if (deactivate) {
-                this->emit_event("isActive", this->active, timeNow.value);
+                node::emit_event(this->is_active_emitter_, timeNow.value);
             }
         }
 
         // Tell the scene this node needs quick updates while it is active.
         // Should check whether time, fraction_changed eventOuts are
         // being used, and set delta to cycleTime if not...
-        if (this->active.value) {
+        if (this->is_active_.value) {
             this->type.node_class.browser.delta(0.0);
         }
         this->lastTime = currentTime;
@@ -16643,124 +17955,6 @@ void time_sensor_node::do_shutdown(const double timestamp) throw ()
     this->scene()->browser.remove_time_sensor(*this);
 }
 
-/**
- * @brief set_cycleInterval eventIn handler.
- *
- * @param value     an sftime value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sftime.
- */
-void time_sensor_node::process_set_cycleInterval(const field_value & value,
-                                                 const double timestamp)
-    throw (std::bad_cast)
-{
-    if (!this->active.value) {
-        this->cycleInterval = dynamic_cast<const sftime &>(value);
-        this->lastTime = timestamp;
-        this->emit_event("cycleInterval_changed", this->cycleInterval,
-                        timestamp);
-    }
-}
-
-/**
- * @brief set_enabled eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void time_sensor_node::process_set_enabled(const field_value & value,
-                                           const double timestamp)
-    throw (std::bad_cast)
-{
-    this->enabled = dynamic_cast<const sfbool &>(value);
-    if (this->enabled.value != this->active.value) {
-        if (this->active.value) {
-            using openvrml_::fequal;
-
-            //
-            // Was active; shutdown.
-            //
-            double cycleInt = this->cycleInterval.value;
-            double f = (cycleInt > 0.0)
-                     ? fmod(this->time.value - this->startTime.value, cycleInt)
-                     : 0.0;
-
-            // Fraction of cycle message
-            this->fraction.value =
-                float(fequal<double>()(f, 0.0) ? 1.0 : (f / cycleInt));
-        } else {
-            //
-            // Was inactive; startup.
-            //
-            this->cycleTime.value = timestamp;
-            this->emit_event("cycleTime", this->cycleTime, timestamp);
-
-            // Fraction of cycle message
-            this->fraction.value = 0.0;
-        }
-        this->time.value = timestamp;
-        this->emit_event("time", this->time, timestamp);
-        this->emit_event("fraction_changed", this->fraction, timestamp);
-        this->active = this->enabled;
-        this->emit_event("isActive", this->active, timestamp);
-    }
-    this->emit_event("enabled_changed", this->enabled, timestamp);
-}
-
-/**
- * @brief set_loop eventIn handler.
- *
- * @param value    an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void time_sensor_node::process_set_loop(const field_value & value,
-                                        const double timestamp)
-    throw (std::bad_cast)
-{
-    this->loop = dynamic_cast<const sfbool &>(value);
-    this->emit_event("loop_changed", this->loop, timestamp);
-}
-
-/**
- * @brief set_startTime eventIn handler.
- *
- * @param value     an sftime value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sftime.
- */
-void time_sensor_node::process_set_startTime(const field_value & value,
-                                             const double timestamp)
-    throw (std::bad_cast)
-{
-    if (!this->active.value) {
-        this->startTime = dynamic_cast<const sftime &>(value);
-        this->lastTime = timestamp;
-        this->emit_event("startTime_changed", this->startTime, timestamp);
-    }
-}
-
-/**
- * @brief set_stopTime eventIn handler.
- *
- * @param value     an sftime value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sftime.
- */
-void time_sensor_node::process_set_stopTime(const field_value & value,
-                                            const double timestamp)
-    throw (std::bad_cast)
-{
-    this->stopTime = dynamic_cast<const sftime &>(value);
-    this->emit_event("stopTime_changed", this->stopTime, timestamp);
-}
-
 
 /**
  * @class touch_sensor_class
@@ -16789,9 +17983,10 @@ touch_sensor_class::~touch_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating TouchSensor nodes.
+ * @return a node_type_ptr to a node_type capable of creating TouchSensor
+ *         nodes.
  *
- * @exception unsupported_interface  if @p interfaces includes an interface not
+ * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by touch_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
@@ -16823,55 +18018,69 @@ touch_sensor_class::create_type(const std::string & id,
                       field_value::sftime_id,
                       "touchTime")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<touch_sensor_node>(*this, id));
-    vrml97_node_type_impl<touch_sensor_node> & touchSensorNodeType =
-            static_cast<vrml97_node_type_impl<touch_sensor_node> &>(*type);
-    typedef vrml97_node_type_impl<touch_sensor_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<touch_sensor_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & touchSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             touchSensorNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &touch_sensor_node::process_set_enabled,
-                node_field_ptr_ptr(new node_field_ptr_impl<touch_sensor_node, sfbool>
-                                    (&touch_sensor_node::enabled_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &touch_sensor_node::enabled_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &touch_sensor_node::enabled_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &touch_sensor_node::enabled_)));
         } else if (*interface == supportedInterfaces[1]) {
             touchSensorNodeType.add_eventout(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<touch_sensor_node, sfvec3f>
-                                    (&touch_sensor_node::hitNormal)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfvec3f_emitter>(
+                        &touch_sensor_node::hit_normal_changed_emitter_)));
         } else if (*interface == supportedInterfaces[2]) {
             touchSensorNodeType.add_eventout(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<touch_sensor_node, sfvec3f>
-                                    (&touch_sensor_node::hitPoint)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfvec3f_emitter>(
+                        &touch_sensor_node::hit_point_changed_emitter_)));
         } else if (*interface == supportedInterfaces[3]) {
             touchSensorNodeType.add_eventout(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<touch_sensor_node, sfvec2f>
-                                    (&touch_sensor_node::hitTexCoord)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfvec2f_emitter>(
+                        &touch_sensor_node::hit_tex_coord_changed_emitter_)));
         } else if (*interface == supportedInterfaces[4]) {
             touchSensorNodeType.add_eventout(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<touch_sensor_node, sfbool>
-                                    (&touch_sensor_node::active)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &touch_sensor_node::is_active_emitter_)));
         } else if (*interface == supportedInterfaces[5]) {
             touchSensorNodeType.add_eventout(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<touch_sensor_node, sfbool>
-                                    (&touch_sensor_node::over)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &touch_sensor_node::is_over_emitter_)));
         } else if (*interface == supportedInterfaces[6]) {
             touchSensorNodeType.add_eventout(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<touch_sensor_node, sftime>
-                                    (&touch_sensor_node::touchTime)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &touch_sensor_node::touch_time_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -16892,45 +18101,81 @@ touch_sensor_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfbool touch_sensor_node::enabled_
+ * @var exposedfield<sfbool> touch_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var sfvec3f touch_sensor_node::hitNormal
+ * @var sfvec3f touch_sensor_node::hit_normal_changed_
  *
- * @brief hitNormal_changed eventOut.
+ * @brief hitNormal_changed eventOut value.
  */
 
 /**
- * @var sfvec3f touch_sensor_node::hitPoint
+ * @var sfvec3f_emitter touch_sensor_node::hit_normal_changed_emitter_
  *
- * @brief hitPoint_changed eventOut.
+ * @brief hitNormal_changed eventOut emitter.
  */
 
 /**
- * @var sfvec2f touch_sensor_node::hitTexCoord
+ * @var sfvec3f touch_sensor_node::hit_point_changed_
  *
- * @brief hitTexCoord_changed eventOut.
+ * @brief hitPoint_changed eventOut value.
  */
 
 /**
- * @var sfbool touch_sensor_node::active
+ * @var sfvec3f_emitter touch_sensor_node::hit_point_changed_emitter_
  *
- * @brief isActive eventOut.
+ * @brief hitPoint_changed eventOut emitter.
  */
 
 /**
- * @var sfbool touch_sensor_node::over
+ * @var sfvec2f touch_sensor_node::hit_tex_coord_changed_
  *
- * @brief isOver eventOut.
+ * @brief hitTexCoord_changed eventOut value.
  */
 
 /**
- * @var sftime touch_sensor_node::touchTime
+ * @var sfvec2f_emitter touch_sensor_node::hit_tex_coord_changed_emitter_
  *
- * @brief touchTime eventOut.
+ * @brief hitTexCoord_changed eventOut emitter.
+ */
+
+/**
+ * @var sfbool touch_sensor_node::is_active_
+ *
+ * @brief isActive eventOut value.
+ */
+
+/**
+ * @var sfbool_emitter touch_sensor_node::is_active_emitter_
+ *
+ * @brief isActive eventOut emitter.
+ */
+
+/**
+ * @var sfbool touch_sensor_node::is_over_
+ *
+ * @brief isOver eventOut value.
+ */
+
+/**
+ * @var sfbool_emitter touch_sensor_node::is_over_emitter_
+ *
+ * @brief isOver eventOut emitter.
+ */
+
+/**
+ * @var sftime touch_sensor_node::touch_time_
+ *
+ * @brief touchTime eventOut value.
+ */
+
+/**
+ * @var sftime_emitter touch_sensor_node::touch_time_emitter_
+ *
+ * @brief touchTime eventOut emitter.
  */
 
 /**
@@ -16943,10 +18188,16 @@ touch_sensor_node::touch_sensor_node(const node_type & type,
                                      const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
-    enabled_(true),
-    active(false),
-    over(false),
-    touchTime(0.0)
+    enabled_(*this, true),
+    hit_normal_changed_emitter_(this->hit_normal_changed_),
+    hit_point_changed_emitter_(this->hit_point_changed_),
+    hit_tex_coord_changed_emitter_(this->hit_tex_coord_changed_),
+    is_active_(false),
+    is_active_emitter_(this->is_active_),
+    is_over_(false),
+    is_over_emitter_(this->is_over_),
+    touch_time_(0.0),
+    touch_time_emitter_(this->touch_time_)
 {
     this->node::modified(true);
 }
@@ -16970,22 +18221,22 @@ touch_sensor_node* touch_sensor_node::to_touch_sensor() const
 /**
  * @todo Doesn't compute the xxx_changed eventOuts yet...
  */
-void touch_sensor_node::activate(double timeStamp, bool isOver, bool isActive,
+void touch_sensor_node::activate(double timestamp, bool isOver, bool isActive,
                                  double *)
 {
-    if (isOver && !isActive && this->active.value) {
-        this->touchTime.value = timeStamp;
-        this->emit_event("touchTime", this->touchTime, timeStamp);
+    if (isOver && !isActive && this->is_active_.value) {
+        this->touch_time_.value = timestamp;
+        node::emit_event(this->touch_time_emitter_, timestamp);
     }
 
-    if (isOver != this->over.value) {
-        this->over.value = isOver;
-        this->emit_event("isOver", this->over, timeStamp);
+    if (isOver != this->is_over_.value) {
+        this->is_over_.value = isOver;
+        node::emit_event(this->is_over_emitter_, timestamp);
     }
 
-    if (isActive != this->active.value) {
-        this->active.value = isActive;
-        this->emit_event("isActive", this->active, timeStamp);
+    if (isActive != this->is_active_.value) {
+        this->is_active_.value = isActive;
+        node::emit_event(this->is_active_emitter_, timestamp);
     }
     // if (isOver && any routes from eventOuts)
     //   generate xxx_changed eventOuts...
@@ -16998,23 +18249,7 @@ void touch_sensor_node::activate(double timeStamp, bool isOver, bool isActive,
  */
 bool touch_sensor_node::enabled() const
 {
-    return this->enabled_.value;
-}
-
-/**
- * @brief set_enabled eventIn handler.
- *
- * @param value    an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void touch_sensor_node::process_set_enabled(const field_value & value,
-                                            const double timestamp)
-    throw (std::bad_cast)
-{
-    this->enabled_ = dynamic_cast<const sfbool &>(value);
-    this->emit_event("enabled_changed", this->enabled_, timestamp);
+    return this->enabled_.sfbool::value;
 }
 
 
@@ -17088,75 +18323,140 @@ transform_class::create_type(const std::string & id,
                        field_value::sfvec3f_id,
                        "bboxSize")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<transform_node>(*this, id));
-    vrml97_node_type_impl<transform_node> & transformNodeType =
-        static_cast<vrml97_node_type_impl<transform_node> &>(*type);
-    typedef vrml97_node_type_impl<transform_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<transform_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & transformNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            transformNodeType.add_eventin(supportedInterfaces[0].field_type,
-                                      supportedInterfaces[0].id,
-                                      &transform_node::process_addChildren);
+            transformNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    transform_node::add_children_listener>(
+                        &transform_node::add_children_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
-            transformNodeType.add_eventin(supportedInterfaces[1].field_type,
-                                      supportedInterfaces[1].id,
-                                      &transform_node::process_removeChildren);
+            transformNodeType.add_eventin(
+                supportedInterfaces[1].field_type,
+                supportedInterfaces[1].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    transform_node::remove_children_listener>(
+                        &transform_node::remove_children_listener_)));
         } else if (*interface == supportedInterfaces[2]) {
             transformNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &transform_node::process_set_center,
-                node_field_ptr_ptr(new node_field_ptr_impl<transform_node, sfvec3f>
-                                    (&transform_node::center)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    transform_node::center_exposedfield>(
+                        &transform_node::center_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    transform_node::center_exposedfield>(
+                        &transform_node::center_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    transform_node::center_exposedfield>(
+                        &transform_node::center_)));
         } else if (*interface == supportedInterfaces[3]) {
             transformNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &transform_node::process_set_children,
-                node_field_ptr_ptr(new node_field_ptr_impl<transform_node, mfnode>
-                                    (&transform_node::children_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    transform_node::children_exposedfield>(
+                        &transform_node::children_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    transform_node::children_exposedfield>(
+                        &transform_node::children_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    transform_node::children_exposedfield>(
+                        &transform_node::children_)));
         } else if (*interface == supportedInterfaces[4]) {
             transformNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &transform_node::process_set_rotation,
-                node_field_ptr_ptr(new node_field_ptr_impl<transform_node, sfrotation>
-                                    (&transform_node::rotation)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    transform_node::rotation_exposedfield>(
+                        &transform_node::rotation_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    transform_node::rotation_exposedfield>(
+                        &transform_node::rotation_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    transform_node::rotation_exposedfield>(
+                        &transform_node::rotation_)));
         } else if (*interface == supportedInterfaces[5]) {
             transformNodeType.add_exposedfield(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                &transform_node::process_set_scale,
-                node_field_ptr_ptr(new node_field_ptr_impl<transform_node, sfvec3f>
-                                    (&transform_node::scale)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    transform_node::scale_exposedfield>(
+                        &transform_node::scale_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    transform_node::scale_exposedfield>(
+                        &transform_node::scale_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    transform_node::scale_exposedfield>(
+                        &transform_node::scale_)));
         } else if (*interface == supportedInterfaces[6]) {
             transformNodeType.add_exposedfield(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                &transform_node::process_set_scaleOrientation,
-                node_field_ptr_ptr(new node_field_ptr_impl<transform_node, sfrotation>
-                                    (&transform_node::scaleOrientation)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    transform_node::scale_orientation_exposedfield>(
+                        &transform_node::scale_orientation_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    transform_node::scale_orientation_exposedfield>(
+                        &transform_node::scale_orientation_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    transform_node::scale_orientation_exposedfield>(
+                        &transform_node::scale_orientation_)));
         } else if (*interface == supportedInterfaces[7]) {
             transformNodeType.add_exposedfield(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                &transform_node::process_set_translation,
-                node_field_ptr_ptr(new node_field_ptr_impl<transform_node, sfvec3f>
-                                    (&transform_node::translation)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    transform_node::translation_exposedfield>(
+                        &transform_node::translation_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    transform_node::translation_exposedfield>(
+                        &transform_node::translation_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    transform_node::translation_exposedfield>(
+                        &transform_node::translation_)));
         } else if (*interface == supportedInterfaces[8]) {
             transformNodeType.add_field(
                 supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<transform_node, sfvec3f>
-                                    (&transform_node::bboxCenter)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(
+                        &transform_node::bbox_center_)));
         } else if (*interface == supportedInterfaces[9]) {
             transformNodeType.add_field(
                 supportedInterfaces[9].field_type,
                 supportedInterfaces[9].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<transform_node, sfvec3f>
-                                (&transform_node::bboxSize)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfvec3f>(
+                        &transform_node::bbox_size_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -17177,31 +18477,251 @@ transform_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfvec3f transform_node::center
+ * @class transform_node::center_exposedfield
+ *
+ * @brief center exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  transform_node.
+ */
+transform_node::center_exposedfield::
+center_exposedfield(transform_node & node):
+    exposedfield<sfvec3f>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+transform_node::center_exposedfield::~center_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param center    center.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+transform_node::center_exposedfield::do_process_event(const sfvec3f & center,
+                                                      const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        transform_node & node = dynamic_cast<transform_node &>(this->node);
+        node.bounding_volume_dirty(true);
+        node.transform_dirty = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class transform_node::rotation_exposedfield
+ *
+ * @brief rotation exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  transform_node.
+ */
+transform_node::rotation_exposedfield::
+rotation_exposedfield(transform_node & node):
+    exposedfield<sfrotation>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+transform_node::rotation_exposedfield::~rotation_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param rotation  rotation.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+transform_node::rotation_exposedfield::
+do_process_event(const sfrotation & rotation, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        transform_node & node = dynamic_cast<transform_node &>(this->node);
+        node.bounding_volume_dirty(true);
+        node.transform_dirty = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class transform_node::scale_exposedfield
+ *
+ * @brief scale exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  transform_node.
+ */
+transform_node::scale_exposedfield::scale_exposedfield(transform_node & node):
+    exposedfield<sfvec3f>(node, vec3f(1.0f, 1.0f, 1.0f))
+{}
+
+/**
+ * @brief Destroy.
+ */
+transform_node::scale_exposedfield::~scale_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param scale     scale.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+transform_node::scale_exposedfield::do_process_event(const sfvec3f & scale,
+                                                     const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        transform_node & node = dynamic_cast<transform_node &>(this->node);
+        node.bounding_volume_dirty(true);
+        node.transform_dirty = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class transform_node::scale_orientation_exposedfield
+ *
+ * @brief scaleOrientation exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  transform_node.
+ */
+transform_node::scale_orientation_exposedfield::
+scale_orientation_exposedfield(transform_node & node):
+    exposedfield<sfrotation>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+transform_node::scale_orientation_exposedfield::
+~scale_orientation_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param scale_orientation scaleOrientation.
+ * @param timestamp         the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+transform_node::scale_orientation_exposedfield::
+do_process_event(const sfrotation & scale_orientation, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        transform_node & node = dynamic_cast<transform_node &>(this->node);
+        node.bounding_volume_dirty(true);
+        node.transform_dirty = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class transform_node::translation_exposedfield
+ *
+ * @brief translation exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  transform_node.
+ */
+transform_node::translation_exposedfield::
+translation_exposedfield(transform_node & node):
+    exposedfield<sfvec3f>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+transform_node::translation_exposedfield::~translation_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param translation     translation.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+transform_node::translation_exposedfield::
+do_process_event(const sfvec3f & translation, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        transform_node & node = dynamic_cast<transform_node &>(this->node);
+        node.bounding_volume_dirty(true);
+        node.transform_dirty = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var transform_node::center_exposedfield transform_node::center_
  *
  * @brief center exposedField.
  */
 
 /**
- * @var sfrotation transform_node::rotation
+ * @var transform_node::rotation_exposedfield transform_node::rotation_
  *
  * @brief rotation exposedField.
  */
 
 /**
- * @var sfvec3f transform_node::scale
+ * @var transform_node::scale_exposedfield transform_node::scale_
  *
  * @brief scale exposedField.
  */
 
 /**
- * @var sfrotation transform_node::scaleOrientation
+ * @var transform_node::scale_orientation_exposedfield transform_node::scale_orientation_
  *
  * @brief scaleOrientation exposedField.
  */
 
 /**
- * @var sfvec3f transform_node::translation
+ * @var transform_node::translation_exposedfield transform_node::translation_
  *
  * @brief translation exposedField.
  */
@@ -17237,11 +18757,11 @@ transform_node::transform_node(const node_type & type,
     grouping_node(type, scope),
     group_node(type, scope),
     openvrml::transform_node(type, scope),
-    center(vec3f(0.0, 0.0, 0.0)),
-    rotation(openvrml::rotation(0.0, 0.0, 1.0, 0.0)),
-    scale(vec3f(1.0, 1.0, 1.0)),
-    scaleOrientation(openvrml::rotation(0.0, 0.0, 1.0, 0.0)),
-    translation(vec3f(0.0, 0.0, 0.0)),
+    center_(*this),
+    rotation_(*this),
+    scale_(*this),
+    scale_orientation_(*this),
+    translation_(*this),
     transform_dirty(true),
     xformObject(0)
 {
@@ -17274,7 +18794,7 @@ const mat4f & transform_node::transform() const throw ()
  * @param context   the rendering context.
  */
 void transform_node::do_render_child(openvrml::viewer & viewer,
-                            rendering_context context)
+                                     rendering_context context)
 {
     if (context.cull_flag != bounding_volume::inside) {
         assert(dynamic_cast<const bounding_sphere *>
@@ -17295,9 +18815,7 @@ void transform_node::do_render_child(openvrml::viewer & viewer,
         }
     }
 
-    mat4f LM = this->transform();
-    mat4f new_LM = context.matrix();
-    new_LM = LM * new_LM;
+    mat4f new_LM = this->transform_ * context.matrix();
     context.matrix(new_LM);
 
     if (this->xformObject && modified()) {
@@ -17307,7 +18825,7 @@ void transform_node::do_render_child(openvrml::viewer & viewer,
 
     if (this->xformObject) {
         viewer.insert_reference(this->xformObject);
-    } else if (!this->children_.value.empty()) {
+    } else if (!this->children_.mfnode::value.empty()) {
         this->xformObject = viewer.begin_object(this->id().c_str());
 
         // Apply transforms
@@ -17339,8 +18857,8 @@ const bounding_volume & transform_node::bounding_volume() const
 void transform_node::recalc_bsphere()
 {
     this->bsphere = bounding_sphere();
-    for (size_t i = 0; i < this->children_.value.size(); ++i) {
-        const node_ptr & node = this->children_.value[i];
+    for (size_t i = 0; i < this->children_.mfnode::value.size(); ++i) {
+        const node_ptr & node = this->children_.mfnode::value[i];
         if (node) {
             const openvrml::bounding_volume & ci_bv = node->bounding_volume();
             this->bsphere.extend(ci_bv);
@@ -17361,110 +18879,14 @@ void transform_node::recalc_bsphere()
 void transform_node::update_transform() const throw ()
 {
     if (this->transform_dirty) {
-        this->transform_ = mat4f::transformation(this->translation.value,
-                                                 this->rotation.value,
-                                                 this->scale.value,
-                                                 this->scaleOrientation.value,
-                                                 this->center.value);
+        this->transform_ =
+            mat4f::transformation(this->translation_.sfvec3f::value,
+                                  this->rotation_.sfrotation::value,
+                                  this->scale_.sfvec3f::value,
+                                  this->scale_orientation_.sfrotation::value,
+                                  this->center_.sfvec3f::value);
         this->transform_dirty = false;
     }
-}
-
-/**
- * @brief set_center eventIn handler.
- *
- * @param value     an sfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void transform_node::process_set_center(const field_value & value,
-                                        const double timestamp)
-    throw (std::bad_cast)
-{
-    this->center = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->bounding_volume_dirty(true);
-    this->transform_dirty = true;
-    this->emit_event("center_changed", this->center, timestamp);
-}
-
-/**
- * @brief set_rotation eventIn handler.
- *
- * @param value     an sfrotation value.
- * @param timestamp     the current time.
- *
- * @exception std::bad_cast if @p value is not an sfrotation.
- */
-void transform_node::process_set_rotation(const field_value & value,
-                                          const double timestamp)
-    throw (std::bad_cast)
-{
-    this->rotation = dynamic_cast<const sfrotation &>(value);
-    this->node::modified(true);
-    this->bounding_volume_dirty(true);
-    this->transform_dirty = true;
-    this->emit_event("rotation_changed", this->rotation, timestamp);
-}
-
-/**
- * @brief set_scale eventIn handler.
- *
- * @param value     an sfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void transform_node::process_set_scale(const field_value & value,
-                                       const double timestamp)
-    throw (std::bad_cast)
-{
-    this->scale = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->bounding_volume_dirty(true);
-    this->transform_dirty = true;
-    this->emit_event("scale_changed", this->scale, timestamp);
-}
-
-/**
- * @brief set_scaleOrientation eventIn handler.
- *
- * @param value     an sfrotation value.
- * @param timestamp     the current time.
- *
- * @exception std::bad_cast if @p value is not an sfrotation.
- */
-void transform_node::process_set_scaleOrientation(const field_value & value,
-                                                  const double timestamp)
-    throw (std::bad_cast)
-{
-    this->scaleOrientation = dynamic_cast<const sfrotation &>(value);
-    this->node::modified(true);
-    this->bounding_volume_dirty(true);
-    this->transform_dirty = true;
-    this->emit_event("scaleOrientation_changed",
-                     this->scaleOrientation,
-                     timestamp);
-}
-
-/**
- * @brief set_translation eventIn handler.
- *
- * @param value     an sfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void transform_node::process_set_translation(const field_value & value,
-                                             const double timestamp)
-    throw (std::bad_cast)
-{
-    this->translation = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->bounding_volume_dirty(true);
-    this->transform_dirty = true;
-    this->emit_event("translation_changed", this->translation, timestamp);
 }
 
 
@@ -17565,16 +18987,16 @@ void viewpoint_class::bind(viewpoint_node & viewpoint, const double timestamp)
     if (!this->bound_nodes.empty()) {
         viewpoint_node & current =
                 dynamic_cast<viewpoint_node &>(*this->bound_nodes.back());
-        current.bound.value = false;
-        current.emit_event("isBound", current.bound, timestamp);
+        current.is_bound_.value = false;
+        node::emit_event(current.is_bound_emitter_, timestamp);
     }
 
     //
     // Push the node to the top of the stack, and have it send isBound TRUE.
     //
     this->bound_nodes.push_back(&viewpoint);
-    viewpoint.bound.value = true;
-    viewpoint.emit_event("isBound", viewpoint.bound, timestamp);
+    viewpoint.is_bound_.value = true;
+    node::emit_event(viewpoint.is_bound_emitter_, timestamp);
 
     this->browser.active_viewpoint(viewpoint);
 }
@@ -17593,15 +19015,16 @@ void viewpoint_class::unbind(viewpoint_node & viewpoint,
         std::find(this->bound_nodes.begin(), this->bound_nodes.end(),
                   &viewpoint);
     if (pos != this->bound_nodes.end()) {
-        viewpoint.bound.value = false;
-        viewpoint.emit_event("isBound", viewpoint.bound, timestamp);
+        viewpoint.is_bound_.value = false;
+        node::emit_event(viewpoint.is_bound_emitter_, timestamp);
 
         if (pos == this->bound_nodes.end() - 1
                 && this->bound_nodes.size() > 1) {
             viewpoint_node & newActive =
-                    dynamic_cast<viewpoint_node &>(**(this->bound_nodes.end() - 2));
-            newActive.bound.value = true;
-            newActive.emit_event("isBound", newActive.bound, timestamp);
+                dynamic_cast<viewpoint_node &>(
+                    **(this->bound_nodes.end() - 2));
+            newActive.is_bound_.value = true;
+            node::emit_event(newActive.is_bound_emitter_, timestamp);
 
             this->browser.active_viewpoint(viewpoint);
         } else {
@@ -17623,7 +19046,15 @@ void viewpoint_class::initialize(openvrml::viewpoint_node * initial_viewpoint,
 {
     if (!initial_viewpoint) { initial_viewpoint = this->first; }
     if (initial_viewpoint) {
-        initial_viewpoint->process_event("set_bind", sfbool(true), timestamp);
+        try {
+            event_listener & listener =
+                this->first->event_listener("set_bind");
+            assert(dynamic_cast<sfbool_listener *>(&listener));
+            static_cast<sfbool_listener &>(listener)
+                .process_event(sfbool(true), timestamp);
+        } catch (unsupported_interface & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+        }
     }
 }
 
@@ -17671,65 +19102,100 @@ viewpoint_class::create_type(const std::string & id,
                       "isBound")
     };
 
-    typedef viewpoint_node node_t;
     typedef vrml97_node_type_impl<viewpoint_node> node_type_t;
 
     const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & viewpointNodeType = static_cast<node_type_t &>(*type);
-    typedef node_type_t::node_field_ptr_ptr node_field_ptr_ptr;
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
          ++interface) {
         if (*interface == supportedInterfaces[0]) {
-            viewpointNodeType.add_eventin(supportedInterfaces[0].field_type,
-                                          supportedInterfaces[0].id,
-                                          &node_t::process_set_bind);
+            viewpointNodeType.add_eventin(
+                supportedInterfaces[0].field_type,
+                supportedInterfaces[0].id,
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    viewpoint_node::set_bind_listener>(
+                        &viewpoint_node::set_bind_listener_)));
         } else if (*interface == supportedInterfaces[1]) {
             viewpointNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &viewpoint_node::process_set_fieldOfView,
-                node_field_ptr_ptr(
-                    new node_type_t::sffloat_ptr(&node_t::fieldOfView)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sffloat> >(&viewpoint_node::field_of_view_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sffloat> >(
+                        &viewpoint_node::field_of_view_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sffloat> >(
+                        &viewpoint_node::field_of_view_)));
         } else if (*interface == supportedInterfaces[2]) {
             viewpointNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &viewpoint_node::process_set_jump,
-                node_field_ptr_ptr(
-                    new node_type_t::sfbool_ptr(&node_t::jump)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &viewpoint_node::jump_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &viewpoint_node::jump_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &viewpoint_node::jump_)));
         } else if (*interface == supportedInterfaces[3]) {
             viewpointNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                &viewpoint_node::process_set_orientation,
-                node_field_ptr_ptr(
-                    new node_type_t::sfrotation_ptr(&node_t::orientation_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    viewpoint_node::orientation_exposedfield>(
+                        &viewpoint_node::orientation_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    viewpoint_node::orientation_exposedfield>(
+                        &viewpoint_node::orientation_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    viewpoint_node::orientation_exposedfield>(
+                        &viewpoint_node::orientation_)));
         } else if (*interface == supportedInterfaces[4]) {
             viewpointNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                &viewpoint_node::process_set_position,
-                node_field_ptr_ptr(
-                    new node_type_t::sfvec3f_ptr(&node_t::position_)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    viewpoint_node::position_exposedfield>(
+                        &viewpoint_node::position_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<
+                    viewpoint_node::position_exposedfield>(
+                        &viewpoint_node::position_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<
+                    viewpoint_node::position_exposedfield>(
+                        &viewpoint_node::position_)));
         } else if (*interface == supportedInterfaces[5]) {
             viewpointNodeType.add_field(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(
-                    new node_type_t::sfstring_ptr(&node_t::description_)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfstring>(
+                        &viewpoint_node::description_)));
         } else if (*interface == supportedInterfaces[6]) {
             viewpointNodeType.add_eventout(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(
-                    new node_type_t::sftime_ptr(&node_t::bindTime)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &viewpoint_node::bind_time_emitter_)));
         } else if (*interface == supportedInterfaces[7]) {
             viewpointNodeType.add_eventout(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(
-                    new node_type_t::sfbool_ptr(&node_t::bound)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &viewpoint_node::is_bound_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -17750,25 +19216,164 @@ viewpoint_class::create_type(const std::string & id,
  */
 
 /**
- * @var sffloat viewpoint_node::fieldOfView
+ * @class viewpoint_node::set_bind_listener
+ *
+ * @brief set_bind eventIn listener.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node viewpoint_node.
+ */
+viewpoint_node::set_bind_listener::set_bind_listener(viewpoint_node & node):
+    sfbool_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+viewpoint_node::set_bind_listener::~set_bind_listener() throw ()
+{}
+
+/**
+ * @brief Process an event.
+ *
+ * @param value     event value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void viewpoint_node::set_bind_listener::process_event(const sfbool & value,
+                                                       const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        viewpoint_node & node = dynamic_cast<viewpoint_node &>(this->node);
+        viewpoint_class & node_class =
+            static_cast<viewpoint_class &>(node.type.node_class);
+        if (value.value) {
+            node_class.bind(node, timestamp);
+        } else {
+            node_class.unbind(node, timestamp);
+        }
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class viewpoint_node::orientation_exposedfield
+ *
+ * @brief orientation exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node viewpoint_node.
+ */
+viewpoint_node::orientation_exposedfield::
+orientation_exposedfield(viewpoint_node & node):
+    exposedfield<sfrotation>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+viewpoint_node::orientation_exposedfield::~orientation_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process an event.
+ *
+ * @param orientation   orientation.
+ * @param timestamp     the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+viewpoint_node::orientation_exposedfield::
+do_process_event(const sfrotation & orientation, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        viewpoint_node & node = dynamic_cast<viewpoint_node &>(this->node);
+        node.final_transformation_dirty = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @class viewpoint_node::position_exposedfield
+ *
+ * @brief position exposedField implementation.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node viewpoint_node.
+ */
+viewpoint_node::position_exposedfield::
+position_exposedfield(viewpoint_node & node):
+    exposedfield<sfvec3f>(node, vec3f(0.0f, 0.0f, 10.0f))
+{}
+
+/**
+ * @brief Destroy.
+ */
+viewpoint_node::position_exposedfield::~position_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process an event.
+ *
+ * @param position  position.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+viewpoint_node::position_exposedfield::
+do_process_event(const sfvec3f & position, const double timestamp)
+    throw (std::bad_alloc)
+{
+    try {
+        viewpoint_node & node = dynamic_cast<viewpoint_node &>(this->node);
+        node.final_transformation_dirty = true;
+    } catch (std::bad_cast & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    }
+}
+
+/**
+ * @var viewpoint_node::set_bind_listener viewpoint_node::set_bind_listener_
+ *
+ * @brief set_bind eventIn handler.
+ */
+
+/**
+ * @var exposedfield<sffloat> viewpoint_node::field_of_view_
  *
  * @brief fieldOfView exposedField.
  */
 
 /**
- * @var sfbool viewpoint_node::jump
+ * @var exposedfield<sfbool> viewpoint_node::jump_
  *
  * @brief jump exposedField.
  */
 
 /**
- * @var sfrotation viewpoint_node::orientation_
+ * @var viewpoint_node::orientation_exposedfield viewpoint_node::orientation_
  *
  * @brief orientation exposedField.
  */
 
 /**
- * @var sfvec3f viewpoint_node::position_
+ * @var viewpoint_node::position_exposedfield viewpoint_node::position_
  *
  * @brief position exposedField.
  */
@@ -17780,15 +19385,27 @@ viewpoint_class::create_type(const std::string & id,
  */
 
 /**
- * @var sfbool viewpoint_node::bound
+ * @var sfbool viewpoint_node::is_bound_
  *
- * @brief isBound eventOut.
+ * @brief isBound eventOut value.
  */
 
 /**
- * @var sftime viewpoint_node::bindTime
+ * @var sfbool_emitter viewpoint_node::is_bound_emitter_
  *
- * @brief bindTime eventOut.
+ * @brief isBound eventOut emitter.
+ */
+
+/**
+ * @var sftime viewpoint_node::bind_time_
+ *
+ * @brief bindTime eventOut value.
+ */
+
+/**
+ * @var sftime_emitter viewpoint_node::bind_time_emitter_
+ *
+ * @brief bindTime eventOut emitter.
  */
 
 /**
@@ -17834,12 +19451,13 @@ viewpoint_node::viewpoint_node(const node_type & type,
     child_node(type, scope),
     abstract_base(type, scope),
     openvrml::viewpoint_node(type, scope),
-    fieldOfView(DEFAULT_FIELD_OF_VIEW),
-    jump(true),
-    orientation_(rotation(0.0, 0.0, 1.0, 0.0)),
-    position_(vec3f(0.0, 0.0, 10.0)),
-    bound(false),
-    bindTime(0),
+    set_bind_listener_(*this),
+    field_of_view_(*this, DEFAULT_FIELD_OF_VIEW),
+    jump_(*this, true),
+    orientation_(*this),
+    position_(*this),
+    is_bound_emitter_(this->is_bound_),
+    bind_time_emitter_(this->bind_time_),
     final_transformation_dirty(true)
 {}
 
@@ -17901,7 +19519,7 @@ const std::string & viewpoint_node::description() const throw ()
  */
 float viewpoint_node::field_of_view() const throw ()
 {
-    return this->fieldOfView.value;
+    return this->field_of_view_.sffloat::value;
 }
 
 /**
@@ -17990,104 +19608,6 @@ void viewpoint_node::do_shutdown(const double timestamp) throw ()
 }
 
 /**
- * @brief set_bind eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfbool value.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void viewpoint_node::process_set_bind(const field_value & value,
-                                      const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
-{
-    const sfbool & bind = dynamic_cast<const sfbool &>(value);
-    assert(dynamic_cast<viewpoint_class *>(&this->type.node_class));
-    viewpoint_class & nodeClass =
-        static_cast<viewpoint_class &>(this->type.node_class);
-    if (bind.value) {
-        nodeClass.bind(*this, timestamp);
-    } else {
-        nodeClass.unbind(*this, timestamp);
-    }
-}
-
-/**
- * @brief set_fieldOfView eventIn handler.
- *
- * @param value     an sffloat value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sffloat value.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void viewpoint_node::process_set_fieldOfView(const field_value & value,
-                                             const double timestamp)
-    throw (std::bad_cast)
-{
-    this->fieldOfView = dynamic_cast<const sffloat &>(value);
-    this->node::modified(true);
-    this->emit_event("fieldOfView_changed", this->fieldOfView, timestamp);
-}
-
-/**
- * @brief set_jump eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfbool value.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void viewpoint_node::process_set_jump(const field_value & value,
-                                      const double timestamp)
-    throw (std::bad_cast)
-{
-    this->jump = dynamic_cast<const sfbool &>(value);
-    this->node::modified(true);
-    this->emit_event("jump_changed", this->jump, timestamp);
-}
-
-/**
- * @brief set_orientation eventIn handler.
- *
- * @param value     an sfrotation value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfrotation value.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void viewpoint_node::process_set_orientation(const field_value & value,
-                                             const double timestamp)
-    throw (std::bad_cast)
-{
-    this->orientation_ = dynamic_cast<const sfrotation &>(value);
-    this->node::modified(true);
-    this->final_transformation_dirty = true;
-    this->emit_event("orientation_changed", this->orientation_, timestamp);
-}
-
-/**
- * @brief set_position eventIn handler.
- *
- * @param value     an sfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast     if @p value is not an sfvec3f value.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void viewpoint_node::process_set_position(const field_value & value,
-                                          const double timestamp)
-    throw (std::bad_cast)
-{
-    this->position_ = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->final_transformation_dirty = true;
-    this->emit_event("position_changed", this->position_, timestamp);
-}
-
-/**
  * @brief Update @a final_transformation.
  *
  * If @a final_transformation_dirty is @c true, update @a final_transformation
@@ -18099,11 +19619,12 @@ void viewpoint_node::update_final_transformation() const throw ()
         static const vec3f scale(1.0, 1.0, 1.0);
         static const rotation scaleOrientation;
         static const vec3f center;
-        const mat4f & t = mat4f::transformation(this->position_.value,
-                                                this->orientation_.value,
-                                                scale,
-                                                scaleOrientation,
-                                                center);
+        const mat4f & t =
+            mat4f::transformation(this->position_.sfvec3f::value,
+                                  this->orientation_.sfrotation::value,
+                                  scale,
+                                  scaleOrientation,
+                                  center);
         this->final_transformation = t * this->parent_transform;
         this->final_transformation_dirty = false;
     }
@@ -18170,12 +19691,10 @@ visibility_sensor_class::create_type(const std::string & id,
                        "isActive")
     };
 
-    typedef visibility_sensor_node node_t;
     typedef vrml97_node_type_impl<visibility_sensor_node> node_type_t;
 
     const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & visibilitySensorNodeType = static_cast<node_type_t &>(*type);
-    typedef node_type_t::node_field_ptr_ptr node_field_ptr_ptr;
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
          ++interface) {
@@ -18183,41 +19702,62 @@ visibility_sensor_class::create_type(const std::string & id,
             visibilitySensorNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                &visibility_sensor_node::process_set_center,
-                node_field_ptr_ptr(
-                    new node_type_t::sfvec3f_ptr(&node_t::center)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(&visibility_sensor_node::center_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &visibility_sensor_node::center_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &visibility_sensor_node::center_)));
         } else if (*interface == supportedInterfaces[1]) {
             visibilitySensorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                &visibility_sensor_node::process_set_enabled,
-                node_field_ptr_ptr(
-                    new node_type_t::sfbool_ptr(&node_t::enabled)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<exposedfield<sfbool> >(
+                        &visibility_sensor_node::enabled_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfbool> >(
+                        &visibility_sensor_node::enabled_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfbool> >(
+                        &visibility_sensor_node::enabled_)));
         } else if (*interface == supportedInterfaces[2]) {
             visibilitySensorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
-                &visibility_sensor_node::process_set_size,
-                node_field_ptr_ptr(
-                    new node_type_t::sfvec3f_ptr(&node_t::size)));
+                node_type_t::event_listener_ptr_ptr(
+                    new node_type_t::event_listener_ptr<
+                    exposedfield<sfvec3f> >(&visibility_sensor_node::size_)),
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<exposedfield<sfvec3f> >(
+                        &visibility_sensor_node::size_)),
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<exposedfield<sfvec3f> >(
+                        &visibility_sensor_node::size_)));
         } else if (*interface == supportedInterfaces[3]) {
             visibilitySensorNodeType.add_eventout(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(
-                    new node_type_t::sftime_ptr(&node_t::enterTime)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &visibility_sensor_node::enter_time_emitter_)));
         } else if (*interface == supportedInterfaces[4]) {
             visibilitySensorNodeType.add_eventout(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(
-                    new node_type_t::sftime_ptr(&node_t::exitTime)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sftime_emitter>(
+                        &visibility_sensor_node::exit_time_emitter_)));
         } else if (*interface == supportedInterfaces[5]) {
             visibilitySensorNodeType.add_eventout(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(
-                    new node_type_t::sfbool_ptr(&node_t::active)));
+                node_type_t::event_emitter_ptr_ptr(
+                    new node_type_t::event_emitter_ptr<sfbool_emitter>(
+                        &visibility_sensor_node::is_active_emitter_)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -18238,39 +19778,57 @@ visibility_sensor_class::create_type(const std::string & id,
  */
 
 /**
- * @var visibility_sensor_node::center
+ * @var exposedfield<sfvec3f> visibility_sensor_node::center_
  *
  * @brief center exposedField.
  */
 
 /**
- * @var visibility_sensor_node::enabled
+ * @var exposedfield<sfbool> visibility_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var visibility_sensor_node::size
+ * @var exposedfield<sfvec3f> visibility_sensor_node::size_
  *
  * @brief size exposedField.
  */
 
 /**
- * @var visibility_sensor_node::active
+ * @var sfbool visibility_sensor_node::is_active_
  *
- * @brief isActive eventOut.
+ * @brief isActive eventOut value.
  */
 
 /**
- * @var visibility_sensor_node::enterTime
+ * @var sfbool_emitter visibility_sensor_node::is_active_emitter_
  *
- * @brief enterTime eventOut.
+ * @brief isActive eventOut emitter.
  */
 
 /**
- * @var visibility_sensor_node::exitTime
+ * @var sftime visibility_sensor_node::enter_time_
  *
- * @brief exitTime eventOut.
+ * @brief enterTime eventOut value.
+ */
+
+/**
+ * @var sftime_emitter visibility_sensor_node::enter_time_emitter_
+ *
+ * @brief enterTime eventOut emitter.
+ */
+
+/**
+ * @var sftime visibility_sensor_node::exit_time_
+ *
+ * @brief exitTime eventOut value.
+ */
+
+/**
+ * @var sftime_emitter visibility_sensor_node::exit_time_emitter_
+ *
+ * @brief exitTime eventOut emitter.
  */
 
 /**
@@ -18283,12 +19841,15 @@ visibility_sensor_node::visibility_sensor_node(const node_type & type,
                                                const scope_ptr & scope):
     node(type, scope),
     abstract_child_node(type, scope),
-    center(vec3f(0.0, 0.0, 0.0)),
-    enabled(true),
-    size(vec3f(0.0, 0.0, 0.0)),
-    active(false),
-    enterTime(0.0),
-    exitTime(0.0)
+    center_(*this, vec3f(0.0, 0.0, 0.0)),
+    enabled_(*this, true),
+    size_(*this, vec3f(0.0, 0.0, 0.0)),
+    is_active_(false),
+    is_active_emitter_(this->is_active_),
+    enter_time_(0.0),
+    enter_time_emitter_(this->enter_time_),
+    exit_time_(0.0),
+    exit_time_emitter_(this->exit_time_)
 {
     this->node::modified(true);
 }
@@ -18302,17 +19863,21 @@ visibility_sensor_node::~visibility_sensor_node() throw ()
 /**
  * @brief Generate visibility events.
  *
- * This is in a render() method since the it needs to be computed
- * with respect to the accumulated transformations above it in the
- * scene graph. Move to update() when xforms are accumulated in Groups...
+ * @todo This is in a render() method since the it needs to be computed with
+ *       respect to the accumulated transformations above it in the scene
+ *       graph. Move to update() when xforms are accumulated in Groups...
+ *
+ * @param viewer    viewer.
+ * @param context   rendering_context.
  */
 void visibility_sensor_node::do_render_child(openvrml::viewer & viewer,
                                              const rendering_context context)
 {
-    if (this->enabled.value) {
+    if (this->enabled_.sfbool::value) {
         sftime timeNow(browser::current_time());
-        vec3f xyz[2] = { this->center.value,
-                         this->center.value + this->size.value };
+        vec3f xyz[2] = { this->center_.sfvec3f::value,
+                         this->center_.sfvec3f::value
+                         + this->size_.sfvec3f::value };
 
         // hack: enclose box in a sphere...
         viewer.transform_points(2, &xyz[0]);
@@ -18321,7 +19886,7 @@ void visibility_sensor_node::do_render_child(openvrml::viewer & viewer,
         // Was the sphere visible last time through? How does this work
         // for USE'd nodes? I need a way for each USE to store whether
         // it was active.
-        bool wasIn = this->active.value;
+        bool wasIn = this->is_active_.value;
 
         // Is the sphere visible? ...
         bool inside = xyz[0].z() < 0.0; // && z > - scene->visLimit()
@@ -18344,75 +19909,24 @@ void visibility_sensor_node::do_render_child(openvrml::viewer & viewer,
 
         // Just became visible
         if (inside && !wasIn) {
-            this->active.value = true;
-            this->emit_event("isActive", this->active, timeNow.value);
+            this->is_active_.value = true;
+            node::emit_event(this->is_active_emitter_, timeNow.value);
 
-            this->enterTime = timeNow;
-            this->emit_event("enterTime", this->enterTime, timeNow.value);
+            this->enter_time_ = timeNow;
+            node::emit_event(this->enter_time_emitter_, timeNow.value);
         }
 
         // Check if viewer has left the box
         else if (wasIn && !inside) {
-            this->active.value = false;
-            this->emit_event("isActive", this->active, timeNow.value);
+            this->is_active_.value = false;
+            node::emit_event(this->is_active_emitter_, timeNow.value);
 
-            this->exitTime = timeNow;
-            this->emit_event("exitTime", this->exitTime, timeNow.value);
+            this->exit_time_ = timeNow;
+            node::emit_event(this->exit_time_emitter_, timeNow.value);
         }
     } else {
         this->node::modified(false);
     }
-}
-
-/**
- * @brief set_center eventIn handler.
- *
- * @param value     an sfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void visibility_sensor_node::process_set_center(const field_value & value,
-                                                const double timestamp)
-    throw (std::bad_cast)
-{
-    this->center = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("center_changed", this->center, timestamp);
-}
-
-/**
- * @brief set_enabled eventIn handler.
- *
- * @param value     an sfbool value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfbool.
- */
-void visibility_sensor_node::process_set_enabled(const field_value & value,
-                                                 double timestamp)
-    throw (std::bad_cast)
-{
-    this->enabled = dynamic_cast<const sfbool &>(value);
-    this->node::modified(true);
-    this->emit_event("enabled_changed", this->enabled, timestamp);
-}
-
-/**
- * @brief set_size eventIn handler.
- *
- * @param value     an sfvec3f value.
- * @param timestamp the current time.
- *
- * @exception std::bad_cast if @p value is not an sfvec3f.
- */
-void visibility_sensor_node::process_set_size(const field_value & value,
-                                              const double timestamp)
-    throw (std::bad_cast)
-{
-    this->size = dynamic_cast<const sfvec3f &>(value);
-    this->node::modified(true);
-    this->emit_event("size_changed", this->size, timestamp);
 }
 
 
@@ -18467,21 +19981,23 @@ world_info_class::create_type(const std::string & id,
 
     const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & worldInfoNodeType = static_cast<node_type_t &>(*type);
-    typedef node_type_t::node_field_ptr_ptr node_field_ptr_ptr;
     for (node_interface_set::const_iterator interface(interfaces.begin());
-         interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             worldInfoNodeType.add_field(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                node_field_ptr_ptr(
-                    new node_type_t::mfstring_ptr(&world_info_node::info)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<mfstring>(
+                        &world_info_node::info)));
         } else if (*interface == supportedInterfaces[1]) {
             worldInfoNodeType.add_field(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                node_field_ptr_ptr(
-                    new node_type_t::sfstring_ptr(&world_info_node::title)));
+                node_type_t::field_ptr_ptr(
+                    new node_type_t::field_ptr<sfstring>(
+                        &world_info_node::title)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }

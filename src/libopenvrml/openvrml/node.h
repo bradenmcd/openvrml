@@ -78,16 +78,24 @@ namespace openvrml {
         return !(lhs == rhs);
     }
 
+    std::ostream & operator<<(std::ostream & out,
+                              const node_interface & interface);
+    std::istream & operator>>(std::istream & in, node_interface & interface);
+
     class node_type;
 
     class unsupported_interface : public std::runtime_error {
     public:
-        explicit unsupported_interface(const std::string & message);
+        explicit unsupported_interface(const std::string & message) throw ();
+        explicit unsupported_interface(const node_interface & interface)
+            throw ();
         unsupported_interface(const node_type & type,
-                              const std::string & interface_id);
+                              const std::string & interface_id)
+            throw ();
         unsupported_interface(const node_type & type,
                               node_interface::type_id interface_type,
-                              const std::string & interface_id);
+                              const std::string & interface_id)
+            throw ();
         virtual ~unsupported_interface() throw ();
     };
 
@@ -108,20 +116,22 @@ namespace openvrml {
         typedef std::set<node_interface, id_less>::const_iterator
             const_iterator;
 
-        void add(const node_interface & interface)
+        const const_iterator add(const node_interface & interface)
             throw (std::invalid_argument, std::bad_alloc);
-        const_iterator begin() const throw ();
-        const_iterator end() const throw ();
-        const_iterator find(const std::string & id) const throw ();
+        const const_iterator begin() const throw ();
+        const const_iterator end() const throw ();
+        const const_iterator find(const std::string & id) const throw ();
     };
 
-    inline node_interface_set::const_iterator node_interface_set::begin() const
+    inline const node_interface_set::const_iterator
+    node_interface_set::begin() const
         throw ()
     {
         return this->interfaces.begin();
     }
 
-    inline node_interface_set::const_iterator node_interface_set::end() const
+    inline const node_interface_set::const_iterator
+    node_interface_set::end() const
         throw ()
     {
         return this->interfaces.end();
@@ -179,8 +189,7 @@ namespace openvrml {
     };
 
 
-    class field_value_type_mismatch :
-        public std::runtime_error {
+    class field_value_type_mismatch : public std::runtime_error {
     public:
         field_value_type_mismatch();
         virtual ~field_value_type_mismatch() throw ();
@@ -255,39 +264,32 @@ namespace openvrml {
         friend transform_node * node_cast<transform_node *>(node * n) throw ();
         friend viewpoint_node * node_cast<viewpoint_node *>(node * n) throw ();
 
-    public:
-        class route {
-        public:
-            const std::string from_eventout;
-            const node_ptr to_node;
-            const std::string to_eventin;
-
-            route(const std::string & from_eventout, const node_ptr & to_node,
-                  const std::string & to_eventin);
-            route(const route & route);
-        };
-
-        typedef std::list<route> routes_t;
-
-        struct polled_eventout_value {
-            const field_value_ptr value;
-            bool modified;
-
-            polled_eventout_value();
-            polled_eventout_value(const field_value_ptr & value,
-                                  bool modified);
-        };
+        friend class exposedfield<sfbool>;
+        friend class exposedfield<sfcolor>;
+        friend class exposedfield<sffloat>;
+        friend class exposedfield<sfimage>;
+        friend class exposedfield<sfint32>;
+        friend class exposedfield<sfnode>;
+        friend class exposedfield<sfrotation>;
+        friend class exposedfield<sfstring>;
+        friend class exposedfield<sftime>;
+        friend class exposedfield<sfvec2f>;
+        friend class exposedfield<sfvec3f>;
+        friend class exposedfield<mfcolor>;
+        friend class exposedfield<mffloat>;
+        friend class exposedfield<mfint32>;
+        friend class exposedfield<mfnode>;
+        friend class exposedfield<mfrotation>;
+        friend class exposedfield<mfstring>;
+        friend class exposedfield<mftime>;
+        friend class exposedfield<mfvec2f>;
+        friend class exposedfield<mfvec3f>;
 
     private:
         scope_ptr scope_;
         openvrml::scene * scene_;
         bool modified_;
         bool bounding_volume_dirty_;
-        routes_t routes_;
-
-        typedef std::map<std::string, polled_eventout_value *>
-            eventout_is_map_t;
-        eventout_is_map_t eventout_is_map;
 
     public:
         const node_type & type;
@@ -303,10 +305,6 @@ namespace openvrml {
 
         std::ostream & print(std::ostream & out, size_t indent) const;
 
-        void add_eventout_is(const std::string & eventout_id,
-                             polled_eventout_value & eventout_value)
-            throw (unsupported_interface, std::bad_alloc);
-
         void initialize(openvrml::scene & scene, double timestamp)
             throw (std::bad_alloc);
 
@@ -314,12 +312,10 @@ namespace openvrml {
             throw (unsupported_interface);
         void field(const std::string & id, const field_value & value)
             throw (unsupported_interface, std::bad_cast, std::bad_alloc);
-        void process_event(const std::string & id, const field_value & value,
-                           double timestamp)
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
-        const field_value & eventout(const std::string & id) const
+        openvrml::event_listener & event_listener(const std::string & id)
             throw (unsupported_interface);
-
+        openvrml::event_emitter & event_emitter(const std::string & id)
+            throw (unsupported_interface);
         void shutdown(double timestamp) throw ();
 
         virtual vrml97_node::anchor_node * to_anchor() const;
@@ -344,24 +340,12 @@ namespace openvrml {
         virtual void bounding_volume_dirty(bool f);
         virtual bool bounding_volume_dirty() const;
 
-        void add_route(const std::string & from_eventout,
-                       const node_ptr & to_node,
-                       const std::string & to_eventin)
-            throw (unsupported_interface, field_value_type_mismatch);
-        void delete_route(const std::string & from_eventout,
-                          const node_ptr & to_node,
-                          const std::string & to_eventin)
-            throw ();
-
-        const routes_t & routes() const;
-
     protected:
         node(const node_type & type, const scope_ptr & scope) throw ();
 
-        void emit_event(const std::string & id,
-                        const field_value & value,
-                        double timestamp)
-            throw (std::bad_cast, std::bad_alloc);
+        static void emit_event(openvrml::event_emitter & emitter,
+                               double timestamp)
+            throw (std::bad_alloc);
 
     private:
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
@@ -371,12 +355,11 @@ namespace openvrml {
             throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
         virtual const field_value & do_field(const std::string & id) const
             throw (unsupported_interface) = 0;
-        virtual void do_process_event(const std::string & id,
-                                      const field_value & value,
-                                      double timestamp)
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
-        virtual const field_value &
-        do_eventout(const std::string & id) const
+        virtual openvrml::event_listener &
+        do_event_listener(const std::string & id)
+            throw (unsupported_interface) = 0;
+        virtual openvrml::event_emitter &
+        do_event_emitter(const std::string & id)
             throw (unsupported_interface) = 0;
         virtual void do_shutdown(double timestamp) throw ();
 
@@ -408,19 +391,15 @@ namespace openvrml {
         return this->scene_;
     }
 
-    inline bool operator==(const node::route & lhs, const node::route & rhs)
-        throw ()
-    {
-        return lhs.from_eventout == rhs.from_eventout
-            && lhs.to_node == rhs.to_node
-            && lhs.to_eventin == rhs.to_eventin;
-    }
 
-    inline bool operator!=(const node::route & lhs, const node::route & rhs)
-        throw ()
-    {
-        return !(lhs == rhs);
-    }
+    void add_route(node & from, const std::string & eventout,
+                   node & to, const std::string & eventin)
+        throw (std::bad_alloc, unsupported_interface,
+               field_value_type_mismatch);
+
+    void delete_route(node & from, const std::string & eventout,
+                      node & to, const std::string & eventin)
+        throw ();
 
     template <>
     inline script_node * node_cast<script_node *>(node * n) throw ()

@@ -2,8 +2,8 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
-// Copyright (C) 2001  Braden McDaniel
+// Copyright 1998  Chris Morley
+// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@
 # ifndef OPENVRML_SCRIPT_H
 #   define OPENVRML_SCRIPT_H
 
+#   include <boost/scoped_ptr.hpp>
 #   include <openvrml/node.h>
 
 namespace openvrml {
@@ -61,18 +62,41 @@ namespace openvrml {
     class script_node : public child_node {
     public:
         typedef std::map<std::string, field_value_ptr> field_value_map_t;
-        typedef std::map<std::string, polled_eventout_value>
-            eventout_value_map_t;
+
+        class eventout : boost::noncopyable {
+            script_node & node_;
+            boost::scoped_ptr<field_value> value_;
+            bool modified_;
+            boost::scoped_ptr<openvrml::event_emitter> emitter_;
+
+        public:
+            eventout(field_value::type_id type, script_node & node)
+                throw (std::bad_alloc);
+
+            const field_value & value() const throw ();
+            void value(const field_value & val)
+                throw (std::bad_alloc, std::bad_cast);
+
+            bool modified() const throw ();
+
+            openvrml::event_emitter & emitter() throw ();
+
+            void emit_event(double timestamp) throw (std::bad_alloc);
+        };
+
+        typedef boost::shared_ptr<eventout> eventout_ptr;
+        typedef std::map<std::string, eventout_ptr> eventout_map_t;
 
     private:
         class script_node_type : public node_type {
             node_interface_set interfaces_;
 
         public:
-            script_node_type(script_node_class & class_);
+            explicit script_node_type(script_node_class & class_);
             virtual ~script_node_type() throw ();
 
-            void add_interface(const node_interface & interface)
+            const node_interface_set::const_iterator
+            add_interface(const node_interface & interface)
                 throw (std::invalid_argument);
 
             virtual const node_interface_set & interfaces() const throw ();
@@ -82,12 +106,66 @@ namespace openvrml {
 
         friend class script_node_type;
 
+        template <typename FieldValue>
+        class script_event_listener : public field_value_listener<FieldValue> {
+            const std::string id;
+
+        public:
+            script_event_listener(const std::string & id, script_node & node);
+            virtual ~script_event_listener() throw ();
+
+            virtual void process_event(const FieldValue & value,
+                                       double timestamp)
+                throw (std::bad_alloc);
+        };
+
+        typedef script_event_listener<sfbool> sfbool_listener;
+        typedef script_event_listener<sfcolor> sfcolor_listener;
+        typedef script_event_listener<sffloat> sffloat_listener;
+        typedef script_event_listener<sfimage> sfimage_listener;
+        typedef script_event_listener<sfint32> sfint32_listener;
+        typedef script_event_listener<sfnode> sfnode_listener;
+        typedef script_event_listener<sfrotation> sfrotation_listener;
+        typedef script_event_listener<sfstring> sfstring_listener;
+        typedef script_event_listener<sftime> sftime_listener;
+        typedef script_event_listener<sfvec2f> sfvec2f_listener;
+        typedef script_event_listener<sfvec3f> sfvec3f_listener;
+        typedef script_event_listener<mfcolor> mfcolor_listener;
+        typedef script_event_listener<mffloat> mffloat_listener;
+        typedef script_event_listener<mfint32> mfint32_listener;
+        typedef script_event_listener<mfnode> mfnode_listener;
+        typedef script_event_listener<mfrotation> mfrotation_listener;
+        typedef script_event_listener<mfstring> mfstring_listener;
+        typedef script_event_listener<mftime> mftime_listener;
+        typedef script_event_listener<mfvec2f> mfvec2f_listener;
+        typedef script_event_listener<mfvec3f> mfvec3f_listener;
+
+        static std::auto_ptr<openvrml::event_listener>
+        create_listener(field_value::type_id type, const std::string & id,
+                        script_node & node)
+            throw (std::bad_alloc);
+
+        class set_url_listener_t : public openvrml::mfstring_listener {
+        public:
+            explicit set_url_listener_t(script_node & node);
+            virtual ~set_url_listener_t() throw ();
+
+            virtual void process_event(const mfstring & value,
+                                       double timestamp)
+                throw (std::bad_alloc);
+        };
+
         script_node_type type;
         sfbool direct_output;
         sfbool must_evaluate;
+        set_url_listener_t set_url_listener;
         mfstring url_;
+        mfstring_emitter url_changed_emitter;
         field_value_map_t field_value_map_;
-        eventout_value_map_t eventout_value_map_;
+        typedef boost::shared_ptr<openvrml::event_listener> event_listener_ptr;
+        typedef std::map<std::string, event_listener_ptr> event_listener_map_t;
+        event_listener_map_t event_listener_map;
+        eventout_map_t eventout_map_;
         script * script_;
         int events_received;
 
@@ -96,24 +174,20 @@ namespace openvrml {
             throw ();
         virtual ~script_node() throw ();
 
-        void url(const mfstring & value, double timestamp);
-        const mfstring & url() const;
-
-        void add_eventin(field_value::type_id type, const std::string & id)
+        const node_interface_set::const_iterator
+        add_eventin(field_value::type_id type, const std::string & id)
             throw (std::invalid_argument, std::bad_alloc);
-        void add_eventout(field_value::type_id type, const std::string & id)
+        const node_interface_set::const_iterator
+        add_eventout(field_value::type_id type, const std::string & id)
             throw (std::invalid_argument, std::bad_alloc);
-        void add_field(const std::string & id,
-                       const field_value_ptr & default_val)
+        const node_interface_set::const_iterator
+        add_field(const std::string & id, const field_value_ptr & default_val)
             throw (std::invalid_argument, std::bad_alloc);
 
         void update(double current_time);
 
-        void eventout(const std::string & id, const field_value & value)
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
-
         const field_value_map_t & field_value_map() const throw ();
-        const eventout_value_map_t & eventout_value_map() const throw ();
+        const eventout_map_t & eventout_map() const throw ();
 
     private:
         script * create_script();
@@ -131,16 +205,43 @@ namespace openvrml {
             throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         virtual const field_value & do_field(const std::string & id) const
             throw (unsupported_interface);
-        virtual void do_process_event(const std::string & id,
-                                      const field_value & value,
-                                      double timestamp)
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
-        virtual const field_value &
-        do_eventout(const std::string & id) const
+        virtual openvrml::event_listener &
+        do_event_listener(const std::string & id)
+            throw (unsupported_interface);
+        virtual openvrml::event_emitter &
+        do_event_emitter(const std::string & id)
             throw (unsupported_interface);
         virtual void do_shutdown(double timestamp) throw ();
         virtual void do_render_child(viewer & v, rendering_context context);
     };
+
+    template <typename FieldValue>
+    script_node::script_event_listener<FieldValue>::script_event_listener(
+        const std::string & id,
+        script_node & node):
+        field_value_listener<FieldValue>(node),
+        id(id)
+    {}
+
+    template <typename FieldValue>
+    script_node::script_event_listener<FieldValue>::~script_event_listener()
+        throw ()
+    {}
+
+    template <typename FieldValue>
+    void script_node::script_event_listener<FieldValue>::process_event(
+        const FieldValue & value,
+        const double timestamp)
+        throw (std::bad_alloc)
+    {
+        assert(dynamic_cast<openvrml::script_node *>(&this->node));
+        openvrml::script_node & script_node =
+            dynamic_cast<openvrml::script_node &>(this->node);
+        if (script_node.script_) {
+            script_node.script_->process_event(this->id, value, timestamp);
+        }
+        ++script_node.events_received;
+    }
 
     inline const script_node::field_value_map_t &
     script_node::field_value_map() const throw ()
@@ -148,10 +249,10 @@ namespace openvrml {
         return this->field_value_map_;
     }
 
-    inline const script_node::eventout_value_map_t &
-    script_node::eventout_value_map() const throw ()
+    inline const script_node::eventout_map_t &
+    script_node::eventout_map() const throw ()
     {
-        return this->eventout_value_map_;
+        return this->eventout_map_;
     }
 }
 

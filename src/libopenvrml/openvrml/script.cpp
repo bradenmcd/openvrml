@@ -2,8 +2,8 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
-// Copyright (C) 2001  Braden McDaniel
+// Copyright 1998  Chris Morley
+// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -142,9 +142,138 @@ const node_type_ptr script_node_class::create_type(const std::string &,
  */
 
 /**
- * @typedef script_node::eventout_value_map_t
+ * @class script_node::eventout
  *
- * @brief A std::map that keys eventOut values on their eventOut name.
+ * @brief An event_emitter along with the emitted value.
+ */
+
+/**
+ * @var script_node & script_node::eventout::node_
+ *
+ * @brief The containing script_node.
+ */
+
+/**
+ * @var boost::scoped_ptr<field_value> script_node::eventout::value_
+ *
+ * @brief The value.
+ */
+
+/**
+ * @var bool script_node::eventout::modified_
+ *
+ * @brief Flag to indicate whether @a value_ has been modified.
+ */
+
+/**
+ * @var boost::scoped_ptr<openvrml::event_emitter> script_node::eventout::emitter_
+ *
+ * @brief Event emitter.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param type  field value type identifier.
+ * @param node  script_node.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+script_node::eventout::eventout(const field_value::type_id type,
+                                script_node & node)
+    throw (std::bad_alloc):
+    node_(node),
+    value_(field_value::create(type)),
+    modified_(false),
+    emitter_(openvrml::event_emitter::create(*this->value_))
+{}
+
+/**
+ * @brief The value that will be sent from the eventOut.
+ *
+ * @return the value that will be sent from the eventOut.
+ */
+const field_value & script_node::eventout::value() const throw ()
+{
+    return *this->value_;
+}
+
+/**
+ * @brief Set the value that will be sent from the eventOut.
+ *
+ * After calling this function, modified will return @c true until emit_event
+ * is called.
+ *
+ * @param val   field value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_cast     if @p val is not the correct type.
+ */
+void script_node::eventout::value(const field_value & val)
+    throw (std::bad_alloc, std::bad_cast)
+{
+    if (this->value_->type() == field_value::sfnode_id) {
+        this->node_
+            .assign_with_self_ref_check(dynamic_cast<const sfnode &>(val),
+                                        static_cast<sfnode &>(*this->value_));
+    } else if (this->value_->type() == field_value::mfnode_id) {
+        this->node_
+            .assign_with_self_ref_check(dynamic_cast<const mfnode &>(val),
+                                        static_cast<mfnode &>(*this->value_));
+    } else {
+        this->value_->assign(val); // Throws std::bad_alloc, std::bad_cast.
+    }
+    this->modified_ = true;
+}
+
+/**
+ * @brief Whether the value has been modified.
+ *
+ * @return @c true if the value has been changed since emit_event was last
+ *         called; @c false otherwise.
+ */
+bool script_node::eventout::modified() const throw ()
+{
+    return this->modified_;
+}
+
+/**
+ * @brief The event_emitter associated with the eventout.
+ *
+ * @return the event_emitter associated with the eventout.
+ */
+event_emitter & script_node::eventout::emitter() throw ()
+{
+    return *this->emitter_;
+}
+
+/**
+ * @brief Cause the contained event_emitter to emit an event.
+ *
+ * Events should be emitted from Script nodes by calling this function instead
+ * of passing the event_emitter directly to node::emit_event.
+ *
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void script_node::eventout::emit_event(const double timestamp)
+    throw (std::bad_alloc)
+{
+    node::emit_event(*this->emitter_, timestamp);
+    this->modified_ = false;
+}
+
+/**
+ * @typedef script_node::eventout_ptr
+ *
+ * @brief Reference-counted smart pointer to an eventout.
+ */
+
+/**
+ * @typedef script_node::eventout_map_t
+ *
+ * @brief Map of eventout instances.
  */
 
 /**
@@ -199,11 +328,11 @@ script_node::script_node_type::~script_node_type() throw ()
  * @exception std::invalid_argument if the script_node_type already has an
  *                                  interface that conflicts with @p interface.
  */
-void
+const node_interface_set::const_iterator
 script_node::script_node_type::add_interface(const node_interface & interface)
     throw (std::invalid_argument)
 {
-    this->interfaces_.add(interface);
+    return this->interfaces_.add(interface);
 }
 
 /**
@@ -251,27 +380,49 @@ script_node::script_node_type::create_node(const scope_ptr & scope) const
              this->interfaces_.begin();
          interface != this->interfaces_.end();
          ++interface) {
-        if (interface->type == node_interface::field_id) {
-            std::auto_ptr<field_value> value =
-                field_value::create(interface->field_type);
-            const field_value_map_t::value_type
-                entry(interface->id, field_value_ptr(value));
-            const bool succeeded =
-                scriptNode.field_value_map_.insert(entry).second;
+        using std::auto_ptr;
+        using std::make_pair;
+
+        bool succeeded;
+
+        auto_ptr<openvrml::event_listener> listener;
+        auto_ptr<field_value> value;
+        switch (interface->type) {
+        case node_interface::eventin_id:
+            listener = create_listener(interface->field_type,
+                                       interface->id,
+                                       scriptNode);
+            succeeded = scriptNode.event_listener_map
+                .insert(make_pair(interface->id,
+                                  event_listener_ptr(listener))).second;
             assert(succeeded);
-        } else if (interface->type == node_interface::eventout_id) {
-            std::auto_ptr<field_value> value =
-                field_value::create(interface->field_type);
-            const polled_eventout_value eventout_value =
-                polled_eventout_value(field_value_ptr(value), false);
-            const eventout_value_map_t::value_type
-                entry(interface->id, eventout_value);
-            const bool succeeded =
-                scriptNode.eventout_value_map_.insert(entry).second;
+            break;
+        case node_interface::eventout_id:
+            succeeded = scriptNode.eventout_map_
+                .insert(make_pair(interface->id,
+                                  eventout_ptr(
+                                      new eventout(interface->field_type,
+                                                   scriptNode))))
+                .second;
             assert(succeeded);
+            break;
+        case node_interface::field_id:
+            value = field_value::create(interface->field_type);
+            succeeded = scriptNode.field_value_map_
+                .insert(make_pair(interface->id, field_value_ptr(value)))
+                .second;
+            assert(succeeded);
+            break;
+        case node_interface::exposedfield_id:
+            //
+            // The only exposedField is url, and we don't need to do anything
+            // for it.
+            //
+            break;
+        default:
+            assert(false);
         }
     }
-
     return node;
 }
 
@@ -280,6 +431,296 @@ script_node::script_node_type::create_node(const scope_ptr & scope) const
  *
  * @brief Type information object.
  */
+
+/**
+ * @class script_node::script_event_listener
+ *
+ * @brief Event listener.
+ */
+
+/**
+ * @var template <typename FieldValue> const std::string script_node::script_event_listener<FieldValue>::id
+ *
+ * @brief eventIn identifier.
+ */
+
+/**
+ * @fn template <typename FieldValue> script_node::script_event_listener<FieldValue>::script_event_listener(const std::string & id, script_node & node)
+ *
+ * @brief Construct.
+ *
+ * @param id    eventIn identifier.
+ * @param node  script_node.
+ */
+
+/**
+ * @fn template <typename FieldValue> script_node::script_event_listener<FieldValue>::~script_event_listener() throw ()
+ *
+ * @brief Destroy.
+ */
+
+/**
+ * @fn template <typename FieldValue> script_node::script_event_listener<FieldValue>::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ *
+ * @brief Process an event.
+ *
+ * @param value     event value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+
+/**
+ * @typedef script_node::sfbool_listener
+ *
+ * @brief sfbool event listener.
+ */
+
+/**
+ * @typedef script_node::sfcolor_listener
+ *
+ * @brief sfcolor event listener.
+ */
+
+/**
+ * @typedef script_node::sffloat_listener
+ *
+ * @brief sffloat event listener.
+ */
+
+/**
+ * @typedef script_node::sfimage_listener
+ *
+ * @brief sfimage event listener.
+ */
+
+/**
+ * @typedef script_node::sfint32_listener
+ *
+ * @brief sfint32 event listener.
+ */
+
+/**
+ * @typedef script_node::sfnode_listener
+ *
+ * @brief sfnode event listener.
+ */
+
+/**
+ * @typedef script_node::sfrotation_listener
+ *
+ * @brief sfrotation event listener.
+ */
+
+/**
+ * @typedef script_node::sfstring_listener
+ *
+ * @brief sfstring event listener.
+ */
+
+/**
+ * @typedef script_node::sftime_listener
+ *
+ * @brief sftime event listener.
+ */
+
+/**
+ * @typedef script_node::sfvec2f_listener
+ *
+ * @brief sfvec2f event listener.
+ */
+
+/**
+ * @typedef script_node::sfvec3f_listener
+ *
+ * @brief sfvec3f event listener.
+ */
+
+/**
+ * @typedef script_node::mfcolor_listener
+ *
+ * @brief mfcolor event listener.
+ */
+
+/**
+ * @typedef script_node::mffloat_listener
+ *
+ * @brief mffloat event listener.
+ */
+
+/**
+ * @typedef script_node::mfint32_listener
+ *
+ * @brief mfint32 event listener.
+ */
+
+/**
+ * @typedef script_node::mfnode_listener
+ *
+ * @brief mfnode event listener.
+ */
+
+/**
+ * @typedef script_node::mfrotation_listener
+ *
+ * @brief mfrotation event listener.
+ */
+
+/**
+ * @typedef script_node::mfstring_listener
+ *
+ * @brief mfstring event listener.
+ */
+
+/**
+ * @typedef script_node::mftime_listener
+ *
+ * @brief mftime event listener.
+ */
+
+/**
+ * @typedef script_node::mfvec2f_listener
+ *
+ * @brief mfvec2f event listener.
+ */
+
+/**
+ * @typedef script_node::mfvec3f_listener
+ *
+ * @brief mfvec3f event listener.
+ */
+
+/**
+ * @brief Create a Script node event listener.
+ *
+ * @param type  the type of listener to create.
+ * @param id    eventIn identifier.
+ * @param node  the containing script_node.
+ *
+ * @return a Script node event listener.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<event_listener>
+script_node::create_listener(const field_value::type_id type,
+                             const std::string & id,
+                             script_node & node)
+    throw (std::bad_alloc)
+{
+    std::auto_ptr<openvrml::event_listener> listener;
+    switch (type) {
+    case field_value::sfbool_id:
+        listener.reset(new sfbool_listener(id, node));
+        break;
+    case field_value::sfcolor_id:
+        listener.reset(new sfcolor_listener(id, node));
+        break;
+    case field_value::sffloat_id:
+        listener.reset(new sffloat_listener(id, node));
+        break;
+    case field_value::sfimage_id:
+        listener.reset(new sfimage_listener(id, node));
+        break;
+    case field_value::sfint32_id:
+        listener.reset(new sfint32_listener(id, node));
+        break;
+    case field_value::sfnode_id:
+        listener.reset(new sfnode_listener(id, node));
+        break;
+    case field_value::sfstring_id:
+        listener.reset(new sfstring_listener(id, node));
+        break;
+    case field_value::sfrotation_id:
+        listener.reset(new sfrotation_listener(id, node));
+        break;
+    case field_value::sftime_id:
+        listener.reset(new sftime_listener(id, node));
+        break;
+    case field_value::sfvec2f_id:
+        listener.reset(new sfvec2f_listener(id, node));
+        break;
+    case field_value::sfvec3f_id:
+        listener.reset(new sfvec3f_listener(id, node));
+        break;
+    case field_value::mfcolor_id:
+        listener.reset(new mfcolor_listener(id, node));
+        break;
+    case field_value::mffloat_id:
+        listener.reset(new mffloat_listener(id, node));
+        break;
+    case field_value::mfint32_id:
+        listener.reset(new mfint32_listener(id, node));
+        break;
+    case field_value::mfnode_id:
+        listener.reset(new mfnode_listener(id, node));
+        break;
+    case field_value::mfstring_id:
+        listener.reset(new mfstring_listener(id, node));
+        break;
+    case field_value::mfrotation_id:
+        listener.reset(new mfrotation_listener(id, node));
+        break;
+    case field_value::mftime_id:
+        listener.reset(new mftime_listener(id, node));
+        break;
+    case field_value::mfvec2f_id:
+        listener.reset(new mfvec2f_listener(id, node));
+        break;
+    case field_value::mfvec3f_id:
+        listener.reset(new mfvec3f_listener(id, node));
+        break;
+    default:
+        assert(false);
+    }
+    return listener;
+}
+
+/**
+ * @class script_node::set_url_listener_t
+ *
+ * @brief set_url event listener.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  a reference to the containing script_node.
+ */
+script_node::set_url_listener_t::set_url_listener_t(script_node & node):
+    openvrml::mfstring_listener(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+script_node::set_url_listener_t::~set_url_listener_t() throw ()
+{}
+
+/**
+ * @brief Process an event.
+ *
+ * @param value     new url value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void script_node::set_url_listener_t::process_event(const mfstring & value,
+                                                    const double timestamp)
+    throw (std::bad_alloc)
+{
+    assert(dynamic_cast<openvrml::script_node *>(&this->node));
+    openvrml::script_node & script_node =
+        dynamic_cast<openvrml::script_node &>(this->node);
+    delete script_node.script_;
+    script_node.script_ = 0;
+    script_node.url_ = value;
+    script_node.do_initialize(timestamp);
+
+    //
+    // url is an exposedField.
+    //
+    node::emit_event(script_node.url_changed_emitter, timestamp);
+}
 
 /**
  * @var script_node::script_node_type script_node::type
@@ -311,9 +752,21 @@ script_node::script_node_type::create_node(const scope_ptr & scope) const
  */
 
 /**
+ * @var script_node::set_url_listener_t script_node::set_url_listener
+ *
+ * @brief set_url eventIn handler.
+ */
+
+/**
  * @var mfstring script_node::url_
  *
  * @brief url exposedField.
+ */
+
+/**
+ * @var mfstring_emitter script_node::url_changed_emitter
+ *
+ * @brief url_changed eventOut emitter.
  */
 
 /**
@@ -323,9 +776,27 @@ script_node::script_node_type::create_node(const scope_ptr & scope) const
  */
 
 /**
- * @var script_node::eventout_value_map_t script_node::eventout_value_map_
+ * @typedef script_node::event_listener_ptr
  *
- * @brief Maps user-defined eventOut names to their values.
+ * @brief Reference-counted smart pointer to an event_listener.
+ */
+
+/**
+ * @typedef script_node::event_listener_map_t
+ *
+ * @brief Map of event listeners.
+ */
+
+/**
+ * @var script_node::event_listener_map_t script_node::event_listener_map
+ *
+ * @brief Map of event listeners.
+ */
+
+/**
+ * @var script_node::eventout_map_t script_node::eventout_map_
+ *
+ * @brief Map of eventout instances.
  */
 
 /**
@@ -355,6 +826,8 @@ script_node::script_node(script_node_class & class_,
     type(class_),
     direct_output(false),
     must_evaluate(false),
+    set_url_listener(*this),
+    url_changed_emitter(this->url_),
     script_(0),
     events_received(0)
 {}
@@ -368,46 +841,52 @@ script_node::~script_node() throw ()
 }
 
 /**
- * @brief set_url eventIn handler.
- *
- * @param value     new value.
- * @param timestamp the current time.
- */
-void script_node::url(const mfstring & value, const double timestamp)
-{
-    delete this->script_;
-    this->script_ = 0;
-    this->url_ = value;
-    this->do_initialize(timestamp);
-
-    //
-    // url is an exposedField.
-    //
-    this->emit_event("url_changed", this->url_, timestamp);
-}
-
-/**
- * @brief url exposedField.
- *
- * @return the current value of the url exposedField.
- */
-const mfstring & script_node::url() const
-{
-    return this->url_;
-}
-
-/**
  * @brief Add an eventIn.
  *
  * @param type  value type.
  * @param id    identifier.
+ *
+ * @return a const_iterator to the node_interface added to the node's
+ *         node_type.
+ *
+ * @exception std::invalid_argument if the node already has an interface @p id.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
-void script_node::add_eventin(const field_value::type_id type,
-                              const std::string & id)
+const node_interface_set::const_iterator
+script_node::add_eventin(const field_value::type_id type,
+                         const std::string & id)
     throw (std::invalid_argument, std::bad_alloc)
 {
+    using std::auto_ptr;
+    using std::pair;
+    using std::invalid_argument;
+    using openvrml_::scope_guard;
+    using openvrml_::make_obj_guard;
+    typedef void (event_listener_map_t::* erase_mem_fun_t)
+        (event_listener_map_t::iterator);
+
+    auto_ptr<openvrml::event_listener> listener =
+        create_listener(type, id, *this);
+
+    event_listener_map_t::value_type value(id, event_listener_ptr(listener));
+    pair<event_listener_map_t::iterator, bool> insert_result =
+        this->event_listener_map.insert(value);
+    scope_guard guard =
+        make_obj_guard(
+            this->event_listener_map,
+            static_cast<erase_mem_fun_t>(&event_listener_map_t::erase),
+            insert_result.first);
+    if (!insert_result.second) {
+        throw invalid_argument("Interface already defined.");
+    }
+
     const node_interface interface(node_interface::eventin_id, type, id);
-    this->type.add_interface(interface);
+    node_interface_set::const_iterator result =
+        this->type.add_interface(interface);
+
+    guard.dismiss();
+
+    return result;
 }
 
 /**
@@ -416,22 +895,35 @@ void script_node::add_eventin(const field_value::type_id type,
  * @param type  value type.
  * @param id    identifier.
  */
-void script_node::add_eventout(const field_value::type_id type,
-                               const std::string & id)
+const node_interface_set::const_iterator
+script_node::add_eventout(const field_value::type_id type,
+                          const std::string & id)
     throw (std::invalid_argument, std::bad_alloc)
 {
-    const node_interface interface(node_interface::eventout_id, type, id);
-    this->type.add_interface(interface);
+    using std::pair;
+    using std::invalid_argument;
+    using openvrml_::scope_guard;
+    using openvrml_::make_obj_guard;
+    typedef void (eventout_map_t::* erase_mem_fun_t)(eventout_map_t::iterator);
+    const eventout_map_t::value_type
+        value(id, eventout_ptr(new eventout(type, *this)));
+    pair<eventout_map_t::iterator, bool> insert_result =
+        this->eventout_map_.insert(value);
+    scope_guard guard =
+        make_obj_guard(this->eventout_map_,
+                       static_cast<erase_mem_fun_t>(&eventout_map_t::erase),
+                       insert_result.first);
+    if (!insert_result.second) {
+        throw invalid_argument("Interface already defined.");
+    }
 
-    //
-    // eventOut value.
-    //
-    std::auto_ptr<field_value> value = field_value::create(type);
-    const polled_eventout_value eventout_value =
-        polled_eventout_value(field_value_ptr(value), 0.0);
-    eventout_value_map_t::value_type entry(id, eventout_value);
-    const bool succeeded = this->eventout_value_map_.insert(entry).second;
-    assert(succeeded);
+    const node_interface interface(node_interface::eventout_id, type, id);
+    node_interface_set::const_iterator result =
+        this->type.add_interface(interface);
+
+    guard.dismiss();
+
+    return result;
 }
 
 /**
@@ -440,21 +932,37 @@ void script_node::add_eventout(const field_value::type_id type,
  * @param id            identifier.
  * @param default_val   default value.
  */
-void script_node::add_field(const std::string & id,
-                            const field_value_ptr & default_val)
+const node_interface_set::const_iterator
+script_node::add_field(const std::string & id,
+                       const field_value_ptr & default_val)
     throw (std::invalid_argument, std::bad_alloc)
 {
-    const node_interface interface(node_interface::field_id,
-                                   default_val->type(),
-                                   id);
-    this->type.add_interface(interface);
-
+    using std::pair;
+    using std::invalid_argument;
+    using openvrml_::scope_guard;
+    using openvrml_::make_obj_guard;
+    typedef void (field_value_map_t::* erase_mem_fun_t)
+        (field_value_map_t::iterator);
     //
     // field value.
     //
     const field_value_map_t::value_type value(id, default_val);
-    const bool succeeded = this->field_value_map_.insert(value).second;
-    assert(succeeded);
+    pair<field_value_map_t::iterator, bool> insert_result =
+        this->field_value_map_.insert(value);
+    scope_guard guard =
+        make_obj_guard(this->field_value_map_,
+                       static_cast<erase_mem_fun_t>(&field_value_map_t::erase),
+                       insert_result.first);
+
+    const node_interface interface(node_interface::field_id,
+                                   default_val->type(),
+                                   id);
+    const node_interface_set::const_iterator result =
+        this->type.add_interface(interface);
+
+    guard.dismiss();
+
+    return result;
 }
 
 /**
@@ -484,15 +992,30 @@ void script_node::update(const double current_time)
     //
     // For each modified eventOut, send an event.
     //
-    for (eventout_value_map_t::iterator itr
-             = this->eventout_value_map_.begin();
-         itr != this->eventout_value_map_.end(); ++itr) {
-        if (itr->second.modified) {
-            this->emit_event(itr->first, *itr->second.value, current_time);
-            itr->second.modified = false;
+    for (eventout_map_t::iterator eventout = this->eventout_map_.begin();
+         eventout != this->eventout_map_.end();
+         ++eventout) {
+        if (eventout->second->modified()) {
+            eventout->second->emit_event(current_time);
         }
     }
 }
+
+/**
+ * @fn const script_node::field_value_map_t & script_node::field_value_map() const throw ()
+ *
+ * @brief Field value map accessor.
+ *
+ * @return the field value map.
+ */
+
+/**
+ * @fn const script_node::eventout_map_t & script_node::eventout_map() const throw ()
+ *
+ * @brief eventOut map accessor.
+ *
+ * @return the eventOut map.
+ */
 
 /**
  * @brief Special assignment function to take into account the fact that
@@ -596,11 +1119,11 @@ void script_node::do_initialize(const double timestamp) throw (std::bad_alloc)
     //
     // For each modified eventOut, send an event.
     //
-    for (eventout_value_map_t::iterator itr(this->eventout_value_map_.begin());
-            itr != this->eventout_value_map_.end(); ++itr) {
-        if (itr->second.modified) {
-            this->emit_event(itr->first, *itr->second.value, timestamp);
-            itr->second.modified = false;
+    for (eventout_map_t::iterator eventout = this->eventout_map_.begin();
+         eventout != this->eventout_map_.end();
+         ++eventout) {
+        if (eventout->second->modified()) {
+            eventout->second->emit_event(timestamp);
         }
     }
 }
@@ -674,92 +1197,65 @@ const field_value & script_node::do_field(const std::string & id) const
 }
 
 /**
- * @brief Process an event.
+ * @brief Get an event listener.
  *
- * @param id        eventIn identifier.
- * @param value     event value.
- * @param timestamp current time.
+ * This method is called by node::event_listener. Subclasses must implement
+ * this method.
  *
- * @exception unsupported_interface if the Script node has no eventIn @p id.
- * @exception std::bad_cast         if @p value is not the correct type.
- * @exception std::bad_alloc        if memory allocation fails.
+ * @param id    eventIn identifier.
+ *
+ * @return the event listener.
+ *
+ * @exception unsupported_interface if the node has no eventIn @p id.
  */
-void script_node::do_process_event(const std::string & id,
-                                   const field_value & value,
-                                   const double timestamp)
-    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+event_listener & script_node::do_event_listener(const std::string & id)
+    throw (unsupported_interface)
 {
-    if (!this->type.has_eventin(id)) {
-        throw unsupported_interface("Script node has no eventIn \"" + id
-                                   + "\".");
-    }
-
-    if (!this->script_) { return; }
-
     if (id == "url" || id == "set_url") {
-        this->url(dynamic_cast<const mfstring &>(value), timestamp);
+        return this->set_url_listener;
     } else {
-        //
-        // Hand the event off to script code.
-        //
-        this->script_->process_event(id, value, timestamp);
-
-        //
-        // For each modified eventOut, emit an event.
-        //
-        for (eventout_value_map_t::iterator itr =
-                 this->eventout_value_map_.begin();
-             itr != this->eventout_value_map_.end();
-             ++itr) {
-            if (itr->second.modified) {
-                this->emit_event(itr->first, *itr->second.value, timestamp);
-                itr->second.modified = false;
-            }
+        event_listener_map_t::iterator pos;
+        const event_listener_map_t::iterator end =
+            this->event_listener_map.end();
+        if ((pos = this->event_listener_map.find(id)) != end) {
+            return *pos->second;
+        } else if ((pos = this->event_listener_map.find("set_" + id)) != end) {
+            return *pos->second;
         }
-        ++this->events_received;
     }
-
-    //
-    // Script nodes shouldn't generate redraws.
-    //
-    this->modified(false);
+    throw unsupported_interface(this->type, id);
 }
 
 /**
- * @brief Set the value of one of the node's eventOuts.
+ * @brief Get an event emitter.
  *
- * This method is intended to be used by scripting language bindings to
- * set the value of eventOuts in response to script code.
+ * This method is called by node::event_emitter.
  *
  * @param id    eventOut identifier.
- * @param value value.
  *
- * @exception unsupported_interface if the script_node has no eventOut @p id.
- * @exception std::bad_cast         if @p value is the wrong type.
- * @exception std::bad_alloc        if memory allocation fails.
+ * @return the event emitter.
+ *
+ * @exception unsupported_interface if the node has no eventOut @p id.
  */
-void script_node::eventout(const std::string & id, const field_value & value)
-    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+event_emitter & script_node::do_event_emitter(const std::string & id)
+    throw (unsupported_interface)
 {
-    const eventout_value_map_t::iterator itr =
-        this->eventout_value_map_.find(id);
-    if (itr == this->eventout_value_map_.end()) {
-        throw unsupported_interface("Script node has no eventOut \"" + id
-                                    + "\".");
-    }
-
-    if (itr->second.value->type() == field_value::sfnode_id) {
-        this->assign_with_self_ref_check(
-            dynamic_cast<const sfnode &>(value),
-            static_cast<sfnode &>(*itr->second.value));
-    } else if (itr->second.value->type() == field_value::mfnode_id) {
-        this->assign_with_self_ref_check(
-            dynamic_cast<const mfnode &>(value),
-            static_cast<mfnode &>(*itr->second.value));
+    openvrml::event_emitter * result = 0;
+    if (id == "url" || id == "url_changed") {
+        result = &this->url_changed_emitter;
     } else {
-        itr->second.value->assign(value); // Throws std::bad_cast.
+        eventout_map_t::iterator pos;
+        const eventout_map_t::iterator end = this->eventout_map_.end();
+        if ((pos = this->eventout_map_.find(id)) != end) {
+            result = &pos->second->emitter();
+        } else if ((pos = this->eventout_map_.find(id + "_changed")) != end) {
+            result = &pos->second->emitter();
+        } else {
+            throw unsupported_interface(this->type, id);
+        }
     }
-    itr->second.modified = true;
+    assert(result);
+    return *result;
 }
 
 /**
@@ -777,28 +1273,6 @@ void script_node::eventout(const std::string & id, const field_value & value)
  *
  * @return the eventOut value map.
  */
-
-/**
- * @brief Called by node::eventout to get an eventOut value.
- *
- * @param id    eventOut identifier.
- *
- * @return the eventOut value.
- *
- * @exception unsupported_interface if the script_node has no eventOut @p id.
- */
-const field_value & script_node::do_eventout(const std::string & id) const
-    throw (unsupported_interface)
-{
-    if (id == "url" || id == "url_changed") { return this->url_; }
-    field_value_map_t::const_iterator itr;
-    if ((itr = this->field_value_map_.find(id)) != this->field_value_map_.end()
-        || (itr = this->field_value_map_.find(id + "_changed"))
-            != this->field_value_map_.end()) {
-        return *itr->second;
-    }
-    throw unsupported_interface("Script has no eventOut \"" + id + "\".");
-}
 
 /**
  * @brief Called by node::shutdown.
@@ -1783,14 +2257,14 @@ void script::activate(const double timeStamp, const std::string & fname,
         //
         // Check to see if any eventOuts need to be sent.
         //
-        for (script_node::eventout_value_map_t::const_iterator itr =
-                 this->node.eventout_value_map().begin();
-             itr != this->node.eventout_value_map().end();
-             ++itr) {
-            assert(itr->second.value);
+        for (script_node::eventout_map_t::const_iterator eventout =
+                 this->node.eventout_map().begin();
+             eventout != this->node.eventout_map().end();
+             ++eventout) {
+            assert(eventout->second);
             jsval val;
             if (!JS_LookupProperty(this->cx, globalObj,
-                                   itr->first.c_str(), &val)) {
+                                   eventout->first.c_str(), &val)) {
                 throw std::bad_alloc();
             }
             assert(val != JSVAL_VOID);
@@ -1799,11 +2273,13 @@ void script::activate(const double timeStamp, const std::string & fname,
                     static_cast<field_data *>
                         (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
                 if (fieldData->changed) {
-                    std::auto_ptr<field_value> fieldValue =
-                        createFieldValueFromJsval(this->cx, val,
-                                                  itr->second.value->type());
-                    itr->second.value->assign(*fieldValue);
-                    this->node.eventout(itr->first, *itr->second.value);
+                    using std::auto_ptr;
+                    auto_ptr<field_value> fieldValue =
+                        createFieldValueFromJsval(
+                            this->cx,
+                            val,
+                            eventout->second->value().type());
+                    eventout->second->value(*fieldValue);
                     fieldData->changed = false;
                 }
             }
@@ -2038,8 +2514,10 @@ jsval script::vrmlFieldToJSVal(const field_value & fieldValue) throw ()
 
 // Must assign the proper type to eventOuts
 
-JSBool eventOut_setProperty(JSContext * const cx, JSObject * const obj,
-                            const jsval id, jsval * const val)
+JSBool eventOut_setProperty(JSContext * const cx,
+                            JSObject * const obj,
+                            const jsval id,
+                            jsval * const val)
     throw ()
 {
     JSString * const str = JS_ValueToString(cx, id);
@@ -2072,14 +2550,16 @@ JSBool eventOut_setProperty(JSContext * const cx, JSObject * const obj,
 
         auto_ptr<field_value> fieldValue =
             createFieldValueFromJsval(cx, *val, field_type_id);
-        scriptNode.eventout(eventId, *fieldValue);
+        const script_node::eventout_map_t::const_iterator eventout =
+            scriptNode.eventout_map().find(eventId);
+        assert(eventout != scriptNode.eventout_map().end());
+        eventout->second->value(*fieldValue);
     } catch (bad_conversion & ex) {
         JS_ReportError(cx, ex.what());
     } catch (std::bad_alloc &) {
         JS_ReportOutOfMemory(cx);
         return JS_FALSE;
     }
-
     return JS_TRUE;
 }
 
@@ -2212,19 +2692,20 @@ void script::defineFields() throw (std::bad_alloc)
         }
     }
 
-    {
-        script_node::eventout_value_map_t::const_iterator itr;
-        for (itr = this->node.eventout_value_map().begin();
-             itr != this->node.eventout_value_map().end();
-             ++itr) {
-            assert(itr->second.value);
-            jsval val = vrmlFieldToJSVal(*itr->second.value);
-            if (!JS_DefineProperty(this->cx, globalObj,
-                                   itr->first.c_str(), val,
-			           0, eventOut_setProperty, // getter, setter
-			           JSPROP_PERMANENT)) {
-                throw std::bad_alloc();
-            }
+    for (script_node::eventout_map_t::const_iterator eventout =
+             this->node.eventout_map().begin();
+         eventout != this->node.eventout_map().end();
+         ++eventout) {
+        assert(eventout->second);
+        jsval val = vrmlFieldToJSVal(eventout->second->value());
+        if (!JS_DefineProperty(this->cx,
+                               globalObj,
+                               eventout->first.c_str(),
+                               val,
+                               0,                    // getter
+                               eventOut_setProperty, // setter
+                               JSPROP_PERMANENT)) {
+            throw std::bad_alloc();
         }
     }
 }
@@ -2780,7 +3261,7 @@ JSBool addRoute(JSContext * const cx,
     const char * const toEventIn = JS_GetStringBytes(arg3_str);
 
     try {
-        fromNode->value->add_route(fromEventOut, toNode->value, toEventIn);
+        add_route(*fromNode->value, fromEventOut, *toNode->value, toEventIn);
     } catch (std::runtime_error & ex) {
         JS_ReportError(cx, ex.what());
         return JS_FALSE;
@@ -2837,7 +3318,7 @@ JSBool deleteRoute(JSContext * const cx,
     if (!arg3_str) { return JS_FALSE; }
     const char * const toEventIn = JS_GetStringBytes(arg3_str);
 
-    fromNode->value->delete_route(fromEventOut, toNode->value, toEventIn);
+    delete_route(*fromNode->value, fromEventOut, *toNode->value, toEventIn);
 
     *rval = JSVAL_VOID;
     return JS_TRUE;
@@ -3593,8 +4074,8 @@ JSBool SFNode::getProperty(JSContext * const cx,
 
         try {
             const char * eventOut = JS_GetStringBytes(JSVAL_TO_STRING(id));
-            const field_value & fieldVal = thisNode.value->eventout(eventOut);
-            *vp = script.vrmlFieldToJSVal(fieldVal);
+            event_emitter & emitter = thisNode.value->event_emitter(eventOut);
+            *vp = script.vrmlFieldToJSVal(emitter.value);
         } catch (unsupported_interface & ex) {}
     }
     return JS_TRUE;

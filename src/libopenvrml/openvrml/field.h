@@ -24,9 +24,12 @@
 #   define OPENVRML_FIELD_H
 
 #   include <memory>
+#   include <set>
 #   include <stdexcept>
 #   include <string>
 #   include <typeinfo>
+#   include <boost/cast.hpp>
+#   include <boost/concept_check.hpp>
 #   include <boost/shared_ptr.hpp>
 #   include <openvrml/basetypes.h>
 #   include <openvrml/node_ptr.h>
@@ -93,6 +96,25 @@ namespace openvrml {
                               field_value::type_id type_id);
     std::istream & operator>>(std::istream & out,
                               field_value::type_id & type_id);
+
+
+    template <typename T>
+    struct FieldValueConcept {
+        void constraints()
+        {
+            boost::function_requires<boost::DefaultConstructibleConcept<T> >();
+            boost::function_requires<boost::CopyConstructibleConcept<T> >();
+            boost::function_requires<boost::AssignableConcept<T> >();
+            boost::function_requires<boost::EqualityComparableConcept<T> >();
+
+            field_value * base_ptr;
+            static_cast<T *>(base_ptr); // Make sure T inherits field_value.
+
+            typename T::value_type v = fv.value;
+        }
+
+        T fv;
+    };
 
 
     class sfbool : public field_value {
@@ -480,7 +502,11 @@ namespace openvrml {
     template <typename InputIterator>
     mfcolor::mfcolor(InputIterator first, InputIterator last):
         value(first, last)
-    {}
+    {
+        using boost::function_requires;
+        using boost::InputIteratorConcept;
+        function_requires<InputIteratorConcept<InputIterator> >();
+    }
 
     inline bool operator==(const mfcolor & lhs, const mfcolor & rhs) throw ()
     {
@@ -523,7 +549,11 @@ namespace openvrml {
     template <typename InputIterator>
     mffloat::mffloat(InputIterator first, InputIterator last):
         value(first, last)
-    {}
+    {
+        using boost::function_requires;
+        using boost::InputIteratorConcept;
+        function_requires<InputIteratorConcept<InputIterator> >();
+    }
 
     inline bool operator==(const mffloat & lhs, const mffloat & rhs) throw ()
     {
@@ -565,7 +595,11 @@ namespace openvrml {
     template <typename InputIterator>
     mfint32::mfint32(InputIterator first, InputIterator last):
         value(first, last)
-    {}
+    {
+        using boost::function_requires;
+        using boost::InputIteratorConcept;
+        function_requires<InputIteratorConcept<InputIterator> >();
+    }
 
     inline bool operator==(const mfint32 & lhs, const mfint32 & rhs) throw ()
     {
@@ -608,7 +642,11 @@ namespace openvrml {
     template <typename InputIterator>
     mfnode::mfnode(InputIterator first, InputIterator last):
         value(first, last)
-    {}
+    {
+        using boost::function_requires;
+        using boost::InputIteratorConcept;
+        function_requires<InputIteratorConcept<InputIterator> >();
+    }
 
     inline bool operator==(const mfnode & lhs, const mfnode & rhs) throw ()
     {
@@ -651,7 +689,11 @@ namespace openvrml {
     template <typename InputIterator>
     mfrotation::mfrotation(InputIterator first, InputIterator last):
         value(first, last)
-    {}
+    {
+        using boost::function_requires;
+        using boost::InputIteratorConcept;
+        function_requires<InputIteratorConcept<InputIterator> >();
+    }
 
     inline bool operator==(const mfrotation & lhs, const mfrotation & rhs)
         throw ()
@@ -696,7 +738,11 @@ namespace openvrml {
     template <typename InputIterator>
     mfstring::mfstring(InputIterator first, InputIterator last):
         value(first, last)
-    {}
+    {
+        using boost::function_requires;
+        using boost::InputIteratorConcept;
+        function_requires<InputIteratorConcept<InputIterator> >();
+    }
 
     inline bool operator==(const mfstring & lhs, const mfstring & rhs) throw ()
     {
@@ -739,7 +785,11 @@ namespace openvrml {
     template <typename InputIterator>
     mftime::mftime(InputIterator first, InputIterator last):
         value(first, last)
-    {}
+    {
+        using boost::function_requires;
+        using boost::InputIteratorConcept;
+        function_requires<InputIteratorConcept<InputIterator> >();
+    }
 
     inline bool operator==(const mftime & lhs, const mftime & rhs) throw ()
     {
@@ -782,7 +832,11 @@ namespace openvrml {
     template <typename InputIterator>
     mfvec2f::mfvec2f(InputIterator first, InputIterator last):
         value(first, last)
-    {}
+    {
+        using boost::function_requires;
+        using boost::InputIteratorConcept;
+        function_requires<InputIteratorConcept<InputIterator> >();
+    }
 
     inline bool operator==(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
     {
@@ -825,7 +879,11 @@ namespace openvrml {
     template <typename InputIterator>
     mfvec3f::mfvec3f(InputIterator first, InputIterator last):
         value(first, last)
-    {}
+    {
+        using boost::function_requires;
+        using boost::InputIteratorConcept;
+        function_requires<InputIteratorConcept<InputIterator> >();
+    }
 
     inline bool operator==(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
     {
@@ -836,6 +894,232 @@ namespace openvrml {
     {
         return lhs.value != rhs.value;
     }
+
+
+    class event_listener {
+    public:
+        openvrml::node & node;
+
+        virtual ~event_listener() throw () = 0;
+
+    protected:
+        explicit event_listener(openvrml::node & node) throw ();
+
+    private:
+        // Not copyable.
+        event_listener(const event_listener &);
+        event_listener & operator=(const event_listener &);
+    };
+
+
+    template <typename FieldValue>
+    class field_value_listener : public event_listener {
+        BOOST_CLASS_REQUIRE(FieldValue, openvrml, FieldValueConcept);
+
+    public:
+        virtual ~field_value_listener() throw () = 0;
+        virtual void process_event(const FieldValue & value, double timestamp)
+            throw (std::bad_alloc) = 0;
+
+    protected:
+        explicit field_value_listener(openvrml::node & node) throw ();
+    };
+
+    template <typename FieldValue>
+    field_value_listener<FieldValue>::field_value_listener(
+        openvrml::node & node)
+        throw ():
+        event_listener(node)
+    {}
+
+    template <typename FieldValue>
+    field_value_listener<FieldValue>::~field_value_listener() throw ()
+    {}
+
+    typedef field_value_listener<sfbool> sfbool_listener;
+    typedef field_value_listener<sfcolor> sfcolor_listener;
+    typedef field_value_listener<sffloat> sffloat_listener;
+    typedef field_value_listener<sfimage> sfimage_listener;
+    typedef field_value_listener<sfint32> sfint32_listener;
+    typedef field_value_listener<sfnode> sfnode_listener;
+    typedef field_value_listener<sfrotation> sfrotation_listener;
+    typedef field_value_listener<sfstring> sfstring_listener;
+    typedef field_value_listener<sftime> sftime_listener;
+    typedef field_value_listener<sfvec2f> sfvec2f_listener;
+    typedef field_value_listener<sfvec3f> sfvec3f_listener;
+    typedef field_value_listener<mfcolor> mfcolor_listener;
+    typedef field_value_listener<mffloat> mffloat_listener;
+    typedef field_value_listener<mfint32> mfint32_listener;
+    typedef field_value_listener<mfnode> mfnode_listener;
+    typedef field_value_listener<mfrotation> mfrotation_listener;
+    typedef field_value_listener<mfstring> mfstring_listener;
+    typedef field_value_listener<mftime> mftime_listener;
+    typedef field_value_listener<mfvec2f> mfvec2f_listener;
+    typedef field_value_listener<mfvec3f> mfvec3f_listener;
+
+
+    class event_emitter {
+        friend class node;
+
+    public:
+        typedef std::set<event_listener *> listener_set;
+
+        static std::auto_ptr<event_emitter> create(const field_value & value)
+            throw (std::bad_alloc);
+
+        const field_value & value;
+
+        virtual ~event_emitter() throw () = 0;
+
+        const listener_set & listeners() const throw ();
+
+    protected:
+        listener_set listeners_;
+        double last_time;
+
+        explicit event_emitter(const field_value & value) throw ();
+
+    private:
+        // Not copyable.
+        event_emitter(const event_emitter &);
+        event_emitter & operator=(const event_emitter &);
+
+        virtual void emit_event(double timestamp) throw (std::bad_alloc) = 0;
+    };
+
+
+    template <typename FieldValue>
+    class field_value_emitter : public event_emitter {
+        BOOST_CLASS_REQUIRE(FieldValue, openvrml, FieldValueConcept);
+
+    public:
+        explicit field_value_emitter(const FieldValue & value) throw ();
+        virtual ~field_value_emitter() throw ();
+
+        bool add(field_value_listener<FieldValue> & listener)
+            throw (std::bad_alloc);
+        bool remove(field_value_listener<FieldValue> & listener) throw ();
+
+    private:
+        virtual void emit_event(double timestamp) throw (std::bad_alloc);
+    };
+
+    template <typename FieldValue>
+    inline field_value_emitter<FieldValue>::field_value_emitter(
+        const FieldValue & value)
+        throw ():
+        event_emitter(value)
+    {}
+
+    template <typename FieldValue>
+    inline field_value_emitter<FieldValue>::~field_value_emitter() throw ()
+    {}
+
+    template <typename FieldValue>
+    void field_value_emitter<FieldValue>::emit_event(const double timestamp)
+        throw (std::bad_alloc)
+    {
+        for (typename listener_set::iterator listener =
+                 this->listeners_.begin();
+             listener != this->listeners_.end();
+             ++listener) {
+            using boost::polymorphic_downcast;
+            assert(*listener);
+            polymorphic_downcast<field_value_listener<FieldValue> *>(*listener)
+                ->process_event(
+                    *polymorphic_downcast<const FieldValue *>(&this->value),
+                    timestamp);
+        }
+    }
+
+    template <typename FieldValue>
+    inline bool
+    field_value_emitter<FieldValue>::
+    add(field_value_listener<FieldValue> & listener) throw (std::bad_alloc)
+    {
+        return this->listeners_.insert(&listener).second;
+    }
+
+    template <typename FieldValue>
+    inline bool
+    field_value_emitter<FieldValue>::
+    remove(field_value_listener<FieldValue> & listener) throw ()
+    {
+        return (this->listeners_.erase(&listener) > 0);
+    }
+
+    typedef field_value_emitter<sfbool> sfbool_emitter;
+    typedef field_value_emitter<sfcolor> sfcolor_emitter;
+    typedef field_value_emitter<sffloat> sffloat_emitter;
+    typedef field_value_emitter<sfimage> sfimage_emitter;
+    typedef field_value_emitter<sfint32> sfint32_emitter;
+    typedef field_value_emitter<sfnode> sfnode_emitter;
+    typedef field_value_emitter<sfrotation> sfrotation_emitter;
+    typedef field_value_emitter<sfstring> sfstring_emitter;
+    typedef field_value_emitter<sftime> sftime_emitter;
+    typedef field_value_emitter<sfvec2f> sfvec2f_emitter;
+    typedef field_value_emitter<sfvec3f> sfvec3f_emitter;
+    typedef field_value_emitter<mfcolor> mfcolor_emitter;
+    typedef field_value_emitter<mffloat> mffloat_emitter;
+    typedef field_value_emitter<mfint32> mfint32_emitter;
+    typedef field_value_emitter<mfnode> mfnode_emitter;
+    typedef field_value_emitter<mfrotation> mfrotation_emitter;
+    typedef field_value_emitter<mfstring> mfstring_emitter;
+    typedef field_value_emitter<mftime> mftime_emitter;
+    typedef field_value_emitter<mfvec2f> mfvec2f_emitter;
+    typedef field_value_emitter<mfvec3f> mfvec3f_emitter;
+
+
+    template <typename FieldValue>
+    class exposedfield : public FieldValue,
+                         public field_value_listener<FieldValue>,
+                         public field_value_emitter<FieldValue> {
+    public:
+        exposedfield(openvrml::node & node,
+                     const typename FieldValue::value_type & value =
+                     typename FieldValue::value_type());
+        virtual ~exposedfield() throw ();
+
+        virtual void process_event(const FieldValue & value, double timestamp)
+            throw (std::bad_alloc);
+
+    private:
+        virtual void do_process_event(const FieldValue & value,
+                                      double timestamp)
+            throw (std::bad_alloc);
+    };
+
+    template <typename FieldValue>
+    inline exposedfield<FieldValue>::exposedfield(
+        openvrml::node & node,
+        const typename FieldValue::value_type & value):
+        FieldValue(value),
+        field_value_listener<FieldValue>(node),
+        field_value_emitter<FieldValue>(static_cast<FieldValue &>(*this))
+    {}
+
+    template <typename FieldValue>
+    inline exposedfield<FieldValue>::~exposedfield() throw ()
+    {}
+
+    template <typename FieldValue>
+    inline void
+    exposedfield<FieldValue>::process_event(const FieldValue & value,
+                                            const double timestamp)
+        throw (std::bad_alloc)
+    {
+        static_cast<FieldValue &>(*this) = value;
+        this->do_process_event(value, timestamp);
+        this->node.modified(true);
+        node::emit_event(*this, timestamp);
+    }
+
+    template <typename FieldValue>
+    inline void
+    exposedfield<FieldValue>::do_process_event(const FieldValue & value,
+                                               const double timestamp)
+        throw (std::bad_alloc)
+    {}
 }
 
 namespace std {

@@ -2,7 +2,8 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
+// Copyright 1998  Chris Morley
+// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -33,7 +34,9 @@
 # else
 #   include <sys/time.h>
 # endif
-# include <boost/lexical_cast.hpp>
+# include <boost/cast.hpp>
+# include <boost/shared_ptr.hpp>
+# include <boost/utility.hpp>
 # include "private.h"
 # include "browser.h"
 # include "doc.h"
@@ -44,157 +47,6 @@
 
 namespace openvrml {
 
-    class NodeInterfaceTypeMismatch : public std::runtime_error {
-    public:
-        NodeInterfaceTypeMismatch(node_interface::type_id lhs,
-                                  node_interface::type_id rhs);
-        virtual ~NodeInterfaceTypeMismatch() throw ();
-    };
-
-    class ProtoNode : public node {
-        friend class ProtoNodeClass;
-        friend class Vrml97Parser;
-
-    public:
-        struct ImplNodeInterface {
-            openvrml::node & node;
-            std::string interfaceId;
-
-            ImplNodeInterface(openvrml::node & node,
-                              const std::string & interfaceId);
-        };
-        typedef std::multimap<std::string, ImplNodeInterface> ISMap;
-        typedef std::map<std::string, field_value_ptr> FieldValueMap;
-        typedef std::map<std::string, polled_eventout_value> EventOutValueMap;
-
-        ISMap isMap;
-
-    private:
-        FieldValueMap unISdFieldValueMap;
-        EventOutValueMap eventOutValueMap;
-        std::vector<node_ptr> implNodes;
-
-    public:
-        explicit ProtoNode(const node_type & nodeType) throw (std::bad_alloc);
-        ProtoNode(const node_type & nodeType,
-                  const scope_ptr & scope,
-                  const ProtoNode & node) throw (std::bad_alloc);
-        virtual ~ProtoNode() throw ();
-
-        const std::vector<node_ptr> & getImplNodes() const throw ();
-
-        void addRootNode(const node_ptr & node) throw (std::bad_alloc);
-        void addIS(node & implNode,
-                   const std::string & implNodeInterfaceId,
-                   const std::string & protoInterfaceId)
-            throw (unsupported_interface, NodeInterfaceTypeMismatch,
-                   field_value_type_mismatch, std::bad_alloc);
-
-        void update(double time);
-
-        virtual vrml97_node::anchor_node * to_anchor() const;
-        virtual vrml97_node::audio_clip_node * to_audio_clip() const;
-        virtual vrml97_node::cylinder_sensor_node * to_cylinder_sensor() const;
-        virtual vrml97_node::abstract_light_node * to_light() const;
-        virtual vrml97_node::movie_texture_node * to_movie_texture() const;
-        virtual vrml97_node::navigation_info_node * to_navigation_info() const;
-        virtual vrml97_node::plane_sensor_node * to_plane_sensor() const;
-        virtual vrml97_node::point_light_node * to_point_light() const;
-        virtual vrml97_node::sphere_sensor_node * to_sphere_sensor() const;
-        virtual vrml97_node::spot_light_node * to_spot_light() const;
-        virtual vrml97_node::time_sensor_node * to_time_sensor() const;
-        virtual vrml97_node::touch_sensor_node * to_touch_sensor() const;
-
-    private:
-        virtual void do_initialize(double timestamp) throw (std::bad_alloc);
-        virtual void do_field(const std::string & id,
-                                 const field_value & value)
-                throw (unsupported_interface, std::bad_cast, std::bad_alloc);
-        virtual const field_value & do_field(const std::string & id) const
-                throw (unsupported_interface);
-        virtual void do_process_event(const std::string & id,
-                                      const field_value & value,
-                                      double timestamp)
-                throw (unsupported_interface, std::bad_cast, std::bad_alloc);
-        virtual const field_value &
-        do_eventout(const std::string & id) const
-            throw (unsupported_interface);
-        virtual void do_shutdown(double timestamp) throw ();
-
-        virtual script_node * to_script() throw ();
-        virtual appearance_node * to_appearance() throw ();
-        virtual child_node * to_child() throw ();
-        virtual color_node * to_color() throw ();
-        virtual coordinate_node * to_coordinate() throw ();
-        virtual font_style_node * to_font_style() throw () ;
-        virtual geometry_node * to_geometry() throw ();
-        virtual material_node * to_material() throw ();
-        virtual normal_node * to_normal() throw ();
-        virtual sound_source_node * to_sound_source() throw ();
-        virtual texture_node * to_texture() throw ();
-        virtual texture_coordinate_node * to_texture_coordinate() throw ();
-        virtual texture_transform_node * to_texture_transform() throw ();
-        virtual transform_node * to_transform() throw ();
-        virtual viewpoint_node * to_viewpoint() throw ();
-    };
-
-
-    class ProtoNodeClass : public node_class {
-        friend class ProtoNode;
-        friend class Vrml97Parser;
-
-    public:
-        class ProtoNodeType : public node_type {
-            node_interface_set nodeInterfaces;
-
-        public:
-            ProtoNodeType(ProtoNodeClass & nodeClass, const std::string & id)
-                throw (unsupported_interface, std::bad_alloc);
-            virtual ~ProtoNodeType() throw ();
-
-            virtual const node_interface_set & interfaces() const throw ();
-            virtual const node_ptr create_node(const scope_ptr & scope) const
-                throw (std::bad_alloc);
-
-            void addInterface(const node_interface & interface)
-                throw (std::invalid_argument, std::bad_alloc);
-        };
-
-        friend class ProtoNodeType;
-
-    private:
-        typedef std::map<std::string, field_value_ptr> DefaultValueMap;
-
-        ProtoNodeType protoNodeType;
-        DefaultValueMap defaultValueMap;
-        ProtoNode protoNode;
-
-    public:
-        explicit ProtoNodeClass(openvrml::browser & browser) throw ();
-        virtual ~ProtoNodeClass() throw ();
-
-        void addEventIn(field_value::type_id, const std::string & id)
-            throw (std::invalid_argument, std::bad_alloc);
-        void addEventOut(field_value::type_id, const std::string & id)
-            throw (std::invalid_argument, std::bad_alloc);
-        void addExposedField(const std::string & id,
-                             const field_value_ptr & defaultValue)
-            throw (std::invalid_argument, std::bad_alloc);
-        void addField(const std::string & id,
-                      const field_value_ptr & defaultValue)
-            throw (std::invalid_argument, std::bad_alloc);
-        void addRootNode(const node_ptr & node) throw (std::bad_alloc);
-        void addIS(node & implNode,
-                   const std::string & implNodeInterfaceId,
-                   const std::string & protoInterfaceId)
-            throw (unsupported_interface, NodeInterfaceTypeMismatch,
-                   field_value_type_mismatch, std::bad_alloc);
-
-        virtual const node_type_ptr create_type(const std::string & id,
-                                              const node_interface_set &)
-            throw (unsupported_interface, std::bad_alloc);
-    };
-
     class Vrml97RootScope : public scope {
     public:
         Vrml97RootScope(const browser & browser,
@@ -202,7 +54,2142 @@ namespace openvrml {
             throw (std::bad_alloc);
         virtual ~Vrml97RootScope() throw ();
     };
+
+    class proto_node_class : public node_class {
+    public:
+        class is_target {
+        public:
+            node * impl_node;
+            std::string impl_node_interface;
+
+            is_target(node & impl_node,
+                      const std::string & impl_node_interface);
+        };
+
+        typedef std::multimap<std::string, is_target> is_map_t;
+
+        class route {
+        public:
+            node * from;
+            std::string eventout;
+            node * to;
+            std::string eventin;
+
+            route(node & from, const std::string & eventout,
+                  node & to, const std::string & eventin);
+        };
+
+        typedef std::vector<route> routes_t;
+
+        typedef std::map<std::string, boost::shared_ptr<field_value> >
+        default_value_map_t;
+
+    private:
+        node_interface_set interfaces;
+        default_value_map_t default_value_map;
+        std::vector<node_ptr> impl_nodes;
+        routes_t routes;
+        is_map_t is_map;
+
+        class proto_node_type : public node_type {
+            node_interface_set interfaces_;
+
+        public:
+            proto_node_type(proto_node_class & node_class,
+                            const std::string & id,
+                            const node_interface_set & interfaces)
+                throw (unsupported_interface, std::bad_alloc);
+            virtual ~proto_node_type() throw ();
+
+            virtual const node_interface_set & interfaces() const throw ();
+            virtual const node_ptr create_node(const scope_ptr & scope) const
+                throw (std::bad_alloc);
+        };
+
+
+        class proto_node : public node {
+            scope_ptr proto_scope;
+            std::vector<node_ptr> impl_nodes;
+
+            template <typename FieldValue>
+            class proto_eventin : public field_value_listener<FieldValue> {
+                typedef std::set<field_value_listener<FieldValue> *>
+                    listeners;
+                listeners listeners_;
+
+            public:
+                typedef FieldValue field_value_type;
+                typedef field_value_listener<FieldValue> event_listener_type;
+
+                explicit proto_eventin(proto_node & node);
+                virtual ~proto_eventin() throw ();
+                virtual void process_event(const FieldValue & value,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+
+                bool is(event_listener_type & listener) throw (std::bad_alloc);
+            };
+
+            static boost::shared_ptr<openvrml::event_listener>
+            create_eventin(field_value::type_id, proto_node & node)
+                throw (std::bad_alloc);
+
+            static bool
+            eventin_is(field_value::type_id field_type,
+                       openvrml::event_listener & impl_eventin,
+                       openvrml::event_listener & interface_eventin)
+                throw (std::bad_alloc);
+
+            template <typename FieldValue>
+            class proto_eventout : public field_value_emitter<FieldValue> {
+            protected:
+                class listener_t : public field_value_listener<FieldValue> {
+                    proto_eventout & emitter;
+                    proto_node & node;
+
+                public:
+                    FieldValue value;
+
+                    explicit listener_t(proto_eventout & emitter,
+                                        proto_node & node,
+                                        const FieldValue & initial_value);
+                    virtual ~listener_t() throw ();
+
+                    virtual void process_event(const FieldValue & value,
+                                               double timestamp)
+                        throw (std::bad_alloc);
+                } listener;
+
+            public:
+                typedef FieldValue field_value_type;
+                typedef field_value_emitter<FieldValue> event_emitter_type;
+                typedef field_value_listener<FieldValue> event_listener_type;
+
+                proto_eventout(
+                    proto_node & node,
+                    const FieldValue & initial_value = FieldValue());
+                virtual ~proto_eventout() throw ();
+
+                bool is(event_emitter_type & emitter) throw (std::bad_alloc);
+            };
+
+            static boost::shared_ptr<openvrml::event_emitter>
+            create_eventout(field_value::type_id, proto_node & node)
+                throw (std::bad_alloc);
+
+            static bool
+            eventout_is(field_value::type_id field_type,
+                        openvrml::event_emitter & impl_eventout,
+                        openvrml::event_emitter & interface_eventout)
+                throw (std::bad_alloc);
+
+            template <typename FieldValue>
+            class proto_exposedfield : public proto_eventin<FieldValue>,
+                                       public proto_eventout<FieldValue> {
+            public:
+                proto_exposedfield(proto_node & node,
+                                   const FieldValue & initial_value);
+                virtual ~proto_exposedfield() throw ();
+
+                virtual void process_event(const FieldValue & value,
+                                           double timestamp)
+                    throw (std::bad_alloc);
+            };
+
+            static boost::shared_ptr<openvrml::event_listener>
+            create_exposedfield(const field_value & initial_value,
+                                proto_node & node)
+                throw (std::bad_alloc);
+
+            typedef boost::shared_ptr<openvrml::event_listener> eventin_ptr;
+            typedef std::map<std::string, eventin_ptr> eventin_map_t;
+            eventin_map_t eventin_map;
+
+            typedef boost::shared_ptr<openvrml::event_emitter> eventout_ptr;
+            typedef std::map<std::string, eventout_ptr> eventout_map_t;
+            eventout_map_t eventout_map;
+
+        public:
+            proto_node(const node_type & type, const scope_ptr & scope)
+                throw (std::bad_alloc);
+            virtual ~proto_node() throw ();
+
+        private:
+            virtual void do_initialize(double timestamp)
+                throw (std::bad_alloc);
+
+            virtual const field_value & do_field(const std::string & id) const
+                throw (unsupported_interface);
+            virtual void do_field(const std::string & id,
+                                  const field_value & value)
+                throw (unsupported_interface, std::bad_cast, std::bad_alloc);
+            virtual openvrml::event_listener &
+            do_event_listener(const std::string & id)
+                throw (unsupported_interface);
+            virtual openvrml::event_emitter &
+            do_event_emitter(const std::string & id)
+                throw (unsupported_interface);
+
+            virtual void do_shutdown(double timestamp) throw ();
+
+            virtual script_node * to_script() throw ();
+            virtual appearance_node * to_appearance() throw ();
+            virtual child_node * to_child() throw ();
+            virtual color_node * to_color() throw ();
+            virtual coordinate_node * to_coordinate() throw ();
+            virtual font_style_node * to_font_style() throw () ;
+            virtual geometry_node * to_geometry() throw ();
+            virtual grouping_node * to_grouping() throw ();
+            virtual material_node * to_material() throw ();
+            virtual normal_node * to_normal() throw ();
+            virtual sound_source_node * to_sound_source() throw ();
+            virtual texture_node * to_texture() throw ();
+            virtual texture_coordinate_node * to_texture_coordinate() throw ();
+            virtual texture_transform_node * to_texture_transform() throw ();
+            virtual transform_node * to_transform() throw ();
+            virtual viewpoint_node * to_viewpoint() throw ();
+        };
+
+    public:
+        proto_node_class(openvrml::browser & browser,
+                         const node_interface_set & interfaces,
+                         const default_value_map_t & default_value_map,
+                         const std::vector<node_ptr> & impl_nodes,
+                         const is_map_t & is_map,
+                         const routes_t & routes);
+        virtual ~proto_node_class() throw ();
+
+        virtual const node_type_ptr
+        create_type(const std::string & id,
+                    const node_interface_set & interfaces)
+            throw (unsupported_interface, std::bad_alloc);
+    };
+} // namespace openvrml
+
+
+
+
+namespace openvrml {
+
+/**
+ * @brief Construct.
+ *
+ * @param impl_node             a node in the PROTO implementation.
+ * @param impl_node_interface   an interface of @p impl_node.
+ */
+proto_node_class::
+is_target::is_target(node & impl_node,
+                     const std::string & impl_node_interface):
+    impl_node(&impl_node),
+    impl_node_interface(impl_node_interface)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param from      event source node.
+ * @param eventout  eventOut of @p from.
+ * @param to        event destination node.
+ * @param eventin   eventIn of @p to.
+ */
+proto_node_class::route::route(node & from,
+                               const std::string & eventout,
+                               node & to,
+                               const std::string & eventin):
+    from(&from),
+    eventout(eventout),
+    to(&to),
+    eventin(eventin)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param node_class    the proto_node_class that spawned the proto_node_type.
+ * @param id            node_type identifier.
+ * @param interfaces    a subset of the interfaces supported by the
+ *                      @p node_class.
+ *
+ * @exception unsupported_interface if an interface in @p interfaces is not
+ *                                  supported by the @p node_class.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+proto_node_class::
+proto_node_type::proto_node_type(proto_node_class & node_class,
+                                 const std::string & id,
+                                 const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc):
+    node_type(node_class, id)
+{
+    using std::find;
+    using std::invalid_argument;
+    for (node_interface_set::const_iterator interface = interfaces.begin();
+         interface != interfaces.end();
+         ++interface) {
+        node_interface_set::const_iterator pos =
+            find(node_class.interfaces.begin(), node_class.interfaces.end(),
+                 *interface);
+        if (pos == node_class.interfaces.end()) {
+            throw unsupported_interface(*interface);
+        }
+        try {
+            //
+            // Throws std::invalid_argument, std::bad_alloc.
+            //
+            this->interfaces_.add(*interface);
+        } catch (invalid_argument & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+        }
+    }
 }
+
+/**
+ * @brief Destroy.
+ */
+proto_node_class::proto_node_type::~proto_node_type() throw ()
+{}
+
+/**
+ * @brief Interfaces.
+ *
+ * @return the interfaces.
+ */
+const node_interface_set &
+proto_node_class::proto_node_type::interfaces() const throw ()
+{
+    return this->interfaces_;
+}
+
+const node_ptr
+proto_node_class::proto_node_type::create_node(const scope_ptr & scope) const
+    throw (std::bad_alloc)
+{
+    return node_ptr(new proto_node(*this, scope));
+}
+
+/**
+ * @class proto_node_class::proto_node::proto_eventin
+ *
+ * @brief PROTO eventIn handler class template.
+ */
+
+/**
+ * @typedef proto_node_class::proto_node::proto_eventin::listeners
+ *
+ * @brief Set of event listeners.
+ */
+
+/**
+ * @var proto_node_class::proto_node::proto_eventin::listeners proto_node_class::proto_node::proto_eventin::listeners_
+ *
+ * @brief Set of event listeners to which events are delegated for processing.
+ */
+
+/**
+ * @typedef proto_node_class::proto_node::proto_eventin::field_value_type
+ *
+ * @brief Field value type.
+ */
+
+/**
+ * @typedef proto_node_class::proto_node::proto_eventin::event_listener_type
+ *
+ * @brief Type of event listeners to which the instance delegates.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  proto_node.
+ */
+template <typename FieldValue>
+proto_node_class::proto_node::proto_eventin<FieldValue>::
+proto_eventin(proto_node & node):
+    field_value_listener<FieldValue>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+template <typename FieldValue>
+proto_node_class::proto_node::proto_eventin<FieldValue>::~proto_eventin()
+    throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param value     field value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+template <typename FieldValue>
+void
+proto_node_class::proto_node::proto_eventin<FieldValue>::
+process_event(const FieldValue & value, const double timestamp)
+    throw (std::bad_alloc)
+{
+    for (typename listeners::const_iterator listener =
+             this->listeners_.begin();
+         listener != this->listeners_.end();
+         ++listener) {
+        (*listener)->process_event(value, timestamp);
+    }
+}
+
+/**
+ * @brief Add a listener to delegate to. Corresponds to an IS statement.
+ *
+ * @param listener  an event_listener to delegate to.
+ *
+ * @return @c true if @p listener is added successfully; @c false otherwise (if
+ *         it already exists in the list of delegates).
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+template <typename FieldValue>
+bool
+proto_node_class::proto_node::proto_eventin<FieldValue>::
+is(event_listener_type & listener)
+    throw (std::bad_alloc)
+{
+    return this->listeners_.insert(&listener).second;
+}
+
+/**
+ * @brief Factory function for proto_eventin<FieldValue> instances.
+ *
+ * @param type  field_value::type_id.
+ * @param node  proto_node.
+ *
+ * @return a boost::shared_ptr to a proto_eventout<FieldValue> instance.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+boost::shared_ptr<event_listener>
+proto_node_class::proto_node::create_eventin(const field_value::type_id type,
+                                             proto_node & node)
+    throw (std::bad_alloc)
+{
+    boost::shared_ptr<openvrml::event_listener> result;
+    switch (type) {
+    case field_value::sfbool_id:
+        result.reset(new proto_eventin<sfbool>(node));
+        break;
+    case field_value::sfcolor_id:
+        result.reset(new proto_eventin<sfcolor>(node));
+        break;
+    case field_value::sffloat_id:
+        result.reset(new proto_eventin<sffloat>(node));
+        break;
+    case field_value::sfimage_id:
+        result.reset(new proto_eventin<sfimage>(node));
+        break;
+    case field_value::sfint32_id:
+        result.reset(new proto_eventin<sfint32>(node));
+        break;
+    case field_value::sfnode_id:
+        result.reset(new proto_eventin<sfnode>(node));
+        break;
+    case field_value::sfrotation_id:
+        result.reset(new proto_eventin<sfrotation>(node));
+        break;
+    case field_value::sfstring_id:
+        result.reset(new proto_eventin<sfstring>(node));
+        break;
+    case field_value::sftime_id:
+        result.reset(new proto_eventin<sftime>(node));
+        break;
+    case field_value::sfvec2f_id:
+        result.reset(new proto_eventin<sfvec2f>(node));
+        break;
+    case field_value::sfvec3f_id:
+        result.reset(new proto_eventin<sfvec3f>(node));
+        break;
+    case field_value::mfcolor_id:
+        result.reset(new proto_eventin<mfcolor>(node));
+        break;
+    case field_value::mffloat_id:
+        result.reset(new proto_eventin<mffloat>(node));
+        break;
+    case field_value::mfint32_id:
+        result.reset(new proto_eventin<mfint32>(node));
+        break;
+    case field_value::mfnode_id:
+        result.reset(new proto_eventin<mfnode>(node));
+        break;
+    case field_value::mfrotation_id:
+        result.reset(new proto_eventin<mfrotation>(node));
+        break;
+    case field_value::mfstring_id:
+        result.reset(new proto_eventin<mfstring>(node));
+        break;
+    case field_value::mftime_id:
+        result.reset(new proto_eventin<mftime>(node));
+        break;
+    case field_value::mfvec2f_id:
+        result.reset(new proto_eventin<mfvec2f>(node));
+        break;
+    case field_value::mfvec3f_id:
+        result.reset(new proto_eventin<mfvec3f>(node));
+        break;
+    default:
+        assert(false);
+        break;
+    }
+    assert(result.get());
+    return result;
+}
+
+/**
+ * @brief Create an IS mapping between an event_listener in the PROTO
+ *        implementation and an event_listener in the PROTO interface.
+ *
+ * @param field_type        field value type of the concrete listeners.
+ * @param impl_eventin      event_listener of a node in the PROTO
+ *                          implementation.
+ * @param interface_eventin event_listener from the PROTO interface.
+ *
+ * @return @c true if the IS mapping is established successfully; @c false
+ *         otherwise (i.e., if the mapping already exists).
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+bool
+proto_node_class::proto_node::
+eventin_is(const field_value::type_id field_type,
+           openvrml::event_listener & impl_eventin,
+           openvrml::event_listener & interface_eventin)
+    throw (std::bad_alloc)
+{
+    using boost::polymorphic_downcast;
+    bool succeeded;
+    switch (field_type) {
+    case field_value::sfbool_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<sfbool> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<sfbool_listener *>(&impl_eventin));
+        break;
+    case field_value::sfcolor_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<sfcolor> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<sfcolor_listener *>(&impl_eventin));
+        break;
+    case field_value::sffloat_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<sffloat> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<sffloat_listener *>(&impl_eventin));
+        break;
+    case field_value::sfimage_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<sfimage> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<sfimage_listener *>(&impl_eventin));
+        break;
+    case field_value::sfint32_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<sfint32> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<sfint32_listener *>(&impl_eventin));
+        break;
+    case field_value::sfnode_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<sfnode> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<sfnode_listener *>(&impl_eventin));
+        break;
+    case field_value::sfrotation_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<sfrotation> *>(
+                &interface_eventin)
+            ->is(*polymorphic_downcast<sfrotation_listener *>(&impl_eventin));
+        break;
+    case field_value::sfstring_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<sfstring> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<sfstring_listener *>(&impl_eventin));
+        break;
+    case field_value::sftime_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<sftime> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<sftime_listener *>(&impl_eventin));
+        break;
+    case field_value::sfvec2f_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<sfvec2f> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<sfvec2f_listener *>(&impl_eventin));
+        break;
+    case field_value::sfvec3f_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<sfvec3f> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<sfvec3f_listener *>(&impl_eventin));
+        break;
+    case field_value::mfcolor_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<mfcolor> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<mfcolor_listener *>(&impl_eventin));
+        break;
+    case field_value::mffloat_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<mffloat> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<mffloat_listener *>(&impl_eventin));
+        break;
+    case field_value::mfint32_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<mfint32> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<mfint32_listener *>(&impl_eventin));
+        break;
+    case field_value::mfnode_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<mfnode> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<mfnode_listener *>(&impl_eventin));
+        break;
+    case field_value::mfrotation_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<mfrotation> *>(
+                &interface_eventin)
+            ->is(*polymorphic_downcast<mfrotation_listener *>(&impl_eventin));
+        break;
+    case field_value::mfstring_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<mfstring> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<mfstring_listener *>(&impl_eventin));
+        break;
+    case field_value::mftime_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<mftime> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<mftime_listener *>(&impl_eventin));
+        break;
+    case field_value::mfvec2f_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<mfvec2f> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<mfvec2f_listener *>(&impl_eventin));
+        break;
+    case field_value::mfvec3f_id:
+        succeeded =
+            polymorphic_downcast<proto_eventin<mfvec3f> *>(&interface_eventin)
+            ->is(*polymorphic_downcast<mfvec3f_listener *>(&impl_eventin));
+        break;
+    default:
+        assert(false);
+        break;
+    }
+    return succeeded;
+}
+
+/**
+ * @class proto_node_class::proto_node::proto_eventout
+ *
+ * @brief PROTO eventOut handler class template.
+ */
+
+/**
+ * @class proto_node_class::proto_node::proto_eventout::listener_t
+ *
+ * @brief Listens for events emitted from nodes in the PROTO implementation
+ *        in order to propagate them out of the PROTO instance.
+ */
+
+/**
+ * @var proto_node_class::proto_node::proto_eventout & proto_node_class::proto_node::proto_eventout::listener_t::emitter
+ *
+ * @brief Reference to the outer proto_eventout class.
+ *
+ * @todo It's annoying that we need to carry this around.  Should investigate
+ *       the possibility of promoting all this stuff to proto_eventout and have
+ *       proto_eventout privately inherit field_value_listener<FieldValue>.
+ */
+
+/**
+ * @var proto_node_class::proto_node & proto_node_class::proto_node::proto_eventout::listener_t::node
+ *
+ * @brief Reference to the proto_node instance.
+ */
+
+/**
+ * @var FieldValue proto_node_class::proto_node::proto_eventout::listener_t::value
+ *
+ * @brief The value of the most recently emitted event.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param emitter       proto_eventout.
+ * @param node          proto_node.
+ * @param initial_value initial value (used for exposedFields).
+ */
+template <typename FieldValue>
+proto_node_class::proto_node::proto_eventout<FieldValue>::listener_t::
+listener_t(proto_eventout & emitter,
+           proto_node & node,
+           const FieldValue & initial_value):
+    field_value_listener<FieldValue>(node),
+    emitter(emitter),
+    node(node),
+    value(initial_value)
+{}
+
+/**
+ * @brief Destroy.
+ */
+template <typename FieldValue>
+proto_node_class::proto_node::proto_eventout<FieldValue>::listener_t::
+~listener_t() throw ()
+{}
+
+/**
+ * @brief Process event.
+ *
+ * @param value     new value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+template<typename FieldValue>
+void
+proto_node_class::proto_node::proto_eventout<FieldValue>::listener_t::
+process_event(const FieldValue & value, const double timestamp)
+    throw (std::bad_alloc)
+{
+    if (timestamp > this->emitter.last_time) {
+        this->value = value;
+        node::emit_event(this->emitter, timestamp);
+    }
+}
+
+/**
+ * @var proto_node_class::proto_node::proto_eventout::listener_t proto_node_class::proto_node::proto_eventout::listener
+ *
+ * @brief Listens for events emitted from nodes in the PROTO implementation
+ *        in order to propagate them out of the PROTO instance.
+ */
+
+/**
+ * @typedef proto_node_class::proto_node::proto_eventout<FieldValue>::field_value_type
+ *
+ * @brief Field value type.
+ */
+
+/**
+ * @typedef proto_node_class::proto_node::proto_eventout<FieldValue>::event_emitter_type
+ *
+ * @brief Event emitter type.
+ */
+
+/**
+ * @typedef proto_node_class::proto_node::proto_eventout<FieldValue>::event_listener_type
+ *
+ * @brief Event listener type.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node          proto_node.
+ * @param initial_value initial value.  This is used by
+ *                      proto_exposedfield<FieldValue>
+ */
+template <typename FieldValue>
+proto_node_class::proto_node::proto_eventout<FieldValue>::
+proto_eventout(proto_node & node, const FieldValue & initial_value):
+    field_value_emitter<FieldValue>(this->listener.value),
+    listener(*this, node, initial_value)
+{}
+
+/**
+ * @brief Destroy.
+ */
+template <typename FieldValue>
+proto_node_class::proto_node::proto_eventout<FieldValue>::~proto_eventout()
+    throw ()
+{}
+
+/**
+ * @brief Create an IS mapping.
+ *
+ * @param emitter   the event_emitter from a node in the PROTO implementation.
+ *
+ * @return @c true if the IS mapping is created successfully; @c false
+ *         otherwise (i.e., if it already exists).
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+template <typename FieldValue>
+bool
+proto_node_class::proto_node::proto_eventout<FieldValue>::
+is(event_emitter_type & emitter) throw (std::bad_alloc)
+{
+    return emitter.add(this->listener);
+}
+
+/**
+ * @brief Factory function for proto_eventout<FieldValue> instances.
+ *
+ * @param type  field_value::type_id.
+ * @param node  proto_node.
+ *
+ * @return a boost::shared_ptr to a proto_eventout<FieldValue> instance.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+boost::shared_ptr<event_emitter>
+proto_node_class::proto_node::create_eventout(const field_value::type_id type,
+                                              proto_node & node)
+    throw (std::bad_alloc)
+{
+    boost::shared_ptr<openvrml::event_emitter> result;
+    switch (type) {
+    case field_value::sfbool_id:
+        result.reset(new proto_eventout<sfbool>(node));
+        break;
+    case field_value::sfcolor_id:
+        result.reset(new proto_eventout<sfcolor>(node));
+        break;
+    case field_value::sffloat_id:
+        result.reset(new proto_eventout<sffloat>(node));
+        break;
+    case field_value::sfimage_id:
+        result.reset(new proto_eventout<sfimage>(node));
+        break;
+    case field_value::sfint32_id:
+        result.reset(new proto_eventout<sfint32>(node));
+        break;
+    case field_value::sfnode_id:
+        result.reset(new proto_eventout<sfnode>(node));
+        break;
+    case field_value::sfrotation_id:
+        result.reset(new proto_eventout<sfrotation>(node));
+        break;
+    case field_value::sfstring_id:
+        result.reset(new proto_eventout<sfstring>(node));
+        break;
+    case field_value::sftime_id:
+        result.reset(new proto_eventout<sftime>(node));
+        break;
+    case field_value::sfvec2f_id:
+        result.reset(new proto_eventout<sfvec2f>(node));
+        break;
+    case field_value::sfvec3f_id:
+        result.reset(new proto_eventout<sfvec3f>(node));
+        break;
+    case field_value::mfcolor_id:
+        result.reset(new proto_eventout<mfcolor>(node));
+        break;
+    case field_value::mffloat_id:
+        result.reset(new proto_eventout<mffloat>(node));
+        break;
+    case field_value::mfint32_id:
+        result.reset(new proto_eventout<mfint32>(node));
+        break;
+    case field_value::mfnode_id:
+        result.reset(new proto_eventout<mfnode>(node));
+        break;
+    case field_value::mfrotation_id:
+        result.reset(new proto_eventout<mfrotation>(node));
+        break;
+    case field_value::mfstring_id:
+        result.reset(new proto_eventout<mfstring>(node));
+        break;
+    case field_value::mftime_id:
+        result.reset(new proto_eventout<mftime>(node));
+        break;
+    case field_value::mfvec2f_id:
+        result.reset(new proto_eventout<mfvec2f>(node));
+        break;
+    case field_value::mfvec3f_id:
+        result.reset(new proto_eventout<mfvec3f>(node));
+        break;
+    default:
+        assert(false);
+        break;
+    }
+    assert(result.get());
+    return result;
+}
+
+/**
+ * @brief Create an IS mapping between an event_emitter in the PROTO
+ *        implementation and an event_emitter in the PROTO interface.
+ *
+ * @param field_type            field value type of the concrete emitters.
+ * @param impl_eventout         event_emitter of a node in the PROTO
+ *                              implementation.
+ * @param interface_eventout    event_emitter from the PROTO interface.
+ *
+ * @return @c true if the IS mapping is established successfully; @c false
+ *         otherwise (i.e., if the mapping already exists).
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+bool
+proto_node_class::proto_node::
+eventout_is(const field_value::type_id field_type,
+            openvrml::event_emitter & impl_eventout,
+            openvrml::event_emitter & interface_eventout)
+    throw (std::bad_alloc)
+{
+    using boost::polymorphic_downcast;
+    bool succeeded;
+    switch (field_type) {
+    case field_value::sfbool_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<sfbool> *>(&interface_eventout)
+            ->is(*polymorphic_downcast<sfbool_emitter *>(&impl_eventout));
+        break;
+    case field_value::sfcolor_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<sfcolor> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<sfcolor_emitter *>(&impl_eventout));
+        break;
+    case field_value::sffloat_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<sffloat> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<sffloat_emitter *>(&impl_eventout));
+        break;
+    case field_value::sfimage_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<sfimage> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<sfimage_emitter *>(&impl_eventout));
+        break;
+    case field_value::sfint32_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<sfint32> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<sfint32_emitter *>(&impl_eventout));
+        break;
+    case field_value::sfnode_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<sfnode> *>(&interface_eventout)
+            ->is(*polymorphic_downcast<sfnode_emitter *>(&impl_eventout));
+        break;
+    case field_value::sfrotation_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<sfrotation> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<sfrotation_emitter *>(&impl_eventout));
+        break;
+    case field_value::sfstring_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<sfstring> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<sfstring_emitter *>(&impl_eventout));
+        break;
+    case field_value::sftime_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<sftime> *>(&interface_eventout)
+            ->is(*polymorphic_downcast<sftime_emitter *>(&impl_eventout));
+        break;
+    case field_value::sfvec2f_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<sfvec2f> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<sfvec2f_emitter *>(&impl_eventout));
+        break;
+    case field_value::sfvec3f_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<sfvec3f> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<sfvec3f_emitter *>(&impl_eventout));
+        break;
+    case field_value::mfcolor_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<mfcolor> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<mfcolor_emitter *>(&impl_eventout));
+        break;
+    case field_value::mffloat_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<mffloat> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<mffloat_emitter *>(&impl_eventout));
+        break;
+    case field_value::mfint32_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<mfint32> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<mfint32_emitter *>(&impl_eventout));
+        break;
+    case field_value::mfnode_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<mfnode> *>(&interface_eventout)
+            ->is(*polymorphic_downcast<mfnode_emitter *>(&impl_eventout));
+        break;
+    case field_value::mfrotation_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<mfrotation> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<mfrotation_emitter *>(&impl_eventout));
+        break;
+    case field_value::mfstring_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<mfstring> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<mfstring_emitter *>(&impl_eventout));
+        break;
+    case field_value::mftime_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<mftime> *>(&interface_eventout)
+            ->is(*polymorphic_downcast<mftime_emitter *>(&impl_eventout));
+        break;
+    case field_value::mfvec2f_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<mfvec2f> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<mfvec2f_emitter *>(&impl_eventout));
+        break;
+    case field_value::mfvec3f_id:
+        succeeded =
+            polymorphic_downcast<proto_eventout<mfvec3f> *>(
+                &interface_eventout)
+            ->is(*polymorphic_downcast<mfvec3f_emitter *>(&impl_eventout));
+        break;
+    default:
+        assert(false);
+        break;
+    }
+    return succeeded;
+}
+
+/**
+ * @class proto_node_class::proto_node::proto_exposedfield
+ *
+ * @brief PROTO exposedField handler class template.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node          proto_node.
+ * @param initial_value initial value.
+ */
+template <typename FieldValue>
+proto_node_class::proto_node::proto_exposedfield<FieldValue>::
+proto_exposedfield(proto_node & node, const FieldValue & initial_value):
+    proto_eventin<FieldValue>(node),
+    proto_eventout<FieldValue>(node, initial_value)
+{}
+
+/**
+ * @brief Destroy.
+ */
+template <typename FieldValue>
+proto_node_class::proto_node::proto_exposedfield<FieldValue>::
+~proto_exposedfield() throw ()
+{}
+
+/**
+ * @brief Process an event.
+ *
+ * @param value     event value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+template <typename FieldValue>
+void
+proto_node_class::proto_node::proto_exposedfield<FieldValue>::
+process_event(const FieldValue & value, const double timestamp)
+    throw (std::bad_alloc)
+{
+    this->listener.value = value;
+    node::emit_event(*this, timestamp);
+}
+
+/**
+ * @brief Factory function for proto_exposedfield<FieldValue> instances.
+ *
+ * @param type  field_value::type_id.
+ * @param node  proto_node.
+ *
+ * @return a boost::shared_ptr to a proto_exposedfield<FieldValue> instance.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+boost::shared_ptr<event_listener>
+proto_node_class::proto_node::
+create_exposedfield(const field_value & initial_value,
+                    proto_node & node)
+    throw (std::bad_alloc)
+{
+    using boost::polymorphic_downcast;
+    boost::shared_ptr<openvrml::event_listener> result;
+    switch (initial_value.type()) {
+    case field_value::sfbool_id:
+        result.reset(
+            new proto_exposedfield<sfbool>(
+                node,
+                *polymorphic_downcast<const sfbool *>(&initial_value)));
+        break;
+    case field_value::sfcolor_id:
+        result.reset(
+            new proto_exposedfield<sfcolor>(
+                node,
+                *polymorphic_downcast<const sfcolor *>(&initial_value)));
+        break;
+    case field_value::sffloat_id:
+        result.reset(
+            new proto_exposedfield<sffloat>(
+                node,
+                *polymorphic_downcast<const sffloat *>(&initial_value)));
+        break;
+    case field_value::sfimage_id:
+        result.reset(
+            new proto_exposedfield<sfimage>(
+                node,
+                *polymorphic_downcast<const sfimage *>(&initial_value)));
+        break;
+    case field_value::sfint32_id:
+        result.reset(
+            new proto_exposedfield<sfint32>(
+                node,
+                *polymorphic_downcast<const sfint32 *>(&initial_value)));
+        break;
+    case field_value::sfnode_id:
+        result.reset(
+            new proto_exposedfield<sfnode>(
+                node,
+                *polymorphic_downcast<const sfnode *>(&initial_value)));
+        break;
+    case field_value::sfrotation_id:
+        result.reset(
+            new proto_exposedfield<sfrotation>(
+                node,
+                *polymorphic_downcast<const sfrotation *>(&initial_value)));
+        break;
+    case field_value::sfstring_id:
+        result.reset(
+            new proto_exposedfield<sfstring>(
+                node,
+                *polymorphic_downcast<const sfstring *>(&initial_value)));
+        break;
+    case field_value::sftime_id:
+        result.reset(
+            new proto_exposedfield<sftime>(
+                node,
+                *polymorphic_downcast<const sftime *>(&initial_value)));
+        break;
+    case field_value::sfvec2f_id:
+        result.reset(
+            new proto_exposedfield<sfvec2f>(
+                node,
+                *polymorphic_downcast<const sfvec2f *>(&initial_value)));
+        break;
+    case field_value::sfvec3f_id:
+        result.reset(
+            new proto_exposedfield<sfvec3f>(
+                node,
+                *polymorphic_downcast<const sfvec3f *>(&initial_value)));
+        break;
+    case field_value::mfcolor_id:
+        result.reset(
+            new proto_exposedfield<mfcolor>(
+                node,
+                *polymorphic_downcast<const mfcolor *>(&initial_value)));
+        break;
+    case field_value::mffloat_id:
+        result.reset(
+            new proto_exposedfield<mffloat>(
+                node,
+                *polymorphic_downcast<const mffloat *>(&initial_value)));
+        break;
+    case field_value::mfint32_id:
+        result.reset(
+            new proto_exposedfield<mfint32>(
+                node,
+                *polymorphic_downcast<const mfint32 *>(&initial_value)));
+        break;
+    case field_value::mfnode_id:
+        result.reset(
+            new proto_exposedfield<mfnode>(
+                node,
+                *polymorphic_downcast<const mfnode *>(&initial_value)));
+        break;
+    case field_value::mfrotation_id:
+        result.reset(
+            new proto_exposedfield<mfrotation>(
+                node,
+                *polymorphic_downcast<const mfrotation *>(&initial_value)));
+        break;
+    case field_value::mfstring_id:
+        result.reset(
+            new proto_exposedfield<mfstring>(
+                node,
+                *polymorphic_downcast<const mfstring *>(&initial_value)));
+        break;
+    case field_value::mftime_id:
+        result.reset(
+            new proto_exposedfield<mftime>(
+                node,
+                *polymorphic_downcast<const mftime *>(&initial_value)));
+        break;
+    case field_value::mfvec2f_id:
+        result.reset(
+            new proto_exposedfield<mfvec2f>(
+                node,
+                *polymorphic_downcast<const mfvec2f *>(&initial_value)));
+        break;
+    case field_value::mfvec3f_id:
+        result.reset(
+            new proto_exposedfield<mfvec3f>(
+                node,
+                *polymorphic_downcast<const mfvec3f *>(&initial_value)));
+        break;
+    default:
+        assert(false);
+    }
+    assert(result.get());
+    return result;
+}
+
+namespace {
+
+    class node_path_element {
+    public:
+        std::vector<node_ptr>::size_type index;
+        std::string field_id;
+
+        node_path_element();
+    };
+
+    node_path_element::node_path_element():
+        index(0)
+    {}
+
+    typedef std::list<node_path_element> node_path_t;
+
+    class path_getter {
+        const node & objective;
+        node_path_t & node_path;
+        bool found;
+
+    public:
+        path_getter(const node & objective, node_path_t & node_path) throw ();
+
+        void get_path_from(const node_ptr & node) throw (std::bad_alloc);
+        void get_path_from(const std::vector<node_ptr> & nodes)
+            throw (std::bad_alloc);
+
+    private:
+        // Not copyable.
+        path_getter(const path_getter &);
+        path_getter & operator=(const path_getter &);
+
+        void traverse_children(node & n) throw (std::bad_alloc);
+    };
+
+    path_getter::path_getter(const node & objective, node_path_t & node_path)
+        throw ():
+        objective(objective),
+        node_path(node_path),
+        found(false)
+    {}
+
+    void path_getter::get_path_from(const node_ptr & node)
+        throw (std::bad_alloc)
+    {
+# ifndef NDEBUG
+        size_t initial_size = this->node_path.size();
+# endif
+        if (node) {
+            this->node_path.push_back(node_path_element());
+            if (node.get() == &objective) {
+                this->found = true;
+                return;
+            }
+            this->traverse_children(*node);
+            if (!this->found) { this->node_path.pop_back(); }
+        }
+        assert(this->node_path.size() == initial_size);
+    }
+
+    void path_getter::get_path_from(const std::vector<node_ptr> & nodes)
+        throw (std::bad_alloc)
+    {
+        this->node_path.push_back(node_path_element());
+        node_path_element & back = this->node_path.back();
+        while (back.index < nodes.size()) {
+            assert(&back == &this->node_path.back());
+            if (nodes[back.index].get() == &this->objective) {
+                this->found = true;
+                return;
+            }
+            if (nodes[back.index].get()) {
+                this->traverse_children(*nodes[back.index]);
+            }
+            //
+            // We need to bail early to avoid incrementing the counter.
+            //
+            if (this->found) { return; }
+            ++back.index;
+        }
+        if (!this->found) { this->node_path.pop_back(); }
+    }
+
+    void path_getter::traverse_children(node & n) throw (std::bad_alloc)
+    {
+        const node_interface_set & interfaces = n.type.interfaces();
+        node_path_element & back = this->node_path.back();
+        for (node_interface_set::const_iterator interface = interfaces.begin();
+             !this->found && interface != interfaces.end();
+             ++interface) {
+            assert(&back == &this->node_path.back());
+            if (interface->type == node_interface::field_id
+                || interface->type == node_interface::exposedfield_id) {
+                if (interface->field_type == field_value::sfnode_id) {
+                    back.field_id = interface->id;
+                    try {
+                        const sfnode & value =
+                            static_cast<const sfnode &>(
+                                n.field(interface->id));
+                        this->get_path_from(value.value);
+                    } catch (unsupported_interface & ex) {
+                        OPENVRML_PRINT_EXCEPTION_(ex);
+                    }
+                } else if (interface->field_type == field_value::mfnode_id) {
+                    back.field_id = interface->id;
+                    try {
+                        const mfnode & value =
+                            static_cast<const mfnode &>(
+                                n.field(interface->id));
+                        this->get_path_from(value.value);
+                    } catch (unsupported_interface & ex) {
+                        OPENVRML_PRINT_EXCEPTION_(ex);
+                    }
+                }
+            }
+        }
+    }
+
+    const node_path_t get_path(const std::vector<node_ptr> & root,
+                               const node & objective)
+        throw (std::bad_alloc)
+    {
+        node_path_t path;
+        path_getter(objective, path).get_path_from(root);
+        return path;
+    }
+
+    node * resolve_node_path(const node_path_t & path,
+                             const std::vector<node_ptr> & root)
+    {
+        using boost::next;
+        using boost::prior;
+        assert(!path.empty());
+        node * result = root[path.front().index].get();
+        const node_path_t::const_iterator before_end = prior(path.end());
+        for (node_path_t::const_iterator path_element = path.begin();
+             path_element != before_end;
+             ++path_element) {
+            assert(result);
+            try {
+                const field_value & field_val =
+                    result->field(path_element->field_id);
+                const field_value::type_id type = field_val.type();
+                if (type == field_value::sfnode_id) {
+                    result =
+                        static_cast<const sfnode &>(field_val).value.get();
+                } else if (type == field_value::mfnode_id) {
+                    result = static_cast<const mfnode &>(field_val)
+                        .value[next(path_element)->index].get();
+                }
+            } catch (unsupported_interface & ex) {
+                OPENVRML_PRINT_EXCEPTION_(ex);
+            }
+        }
+        return result;
+    }
+}
+
+/**
+ * @brief Construct.
+ *
+ * @param type  node_type.
+ * @param scope scope.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+proto_node_class::proto_node::proto_node(const node_type & type,
+                                         const scope_ptr & scope)
+    throw (std::bad_alloc):
+    node(type, scope),
+    proto_scope(scope)
+{
+    class field_value_cloner {
+        const scope_ptr & target_scope;
+        std::set<node *> traversed_nodes;
+
+    public:
+        explicit field_value_cloner(const scope_ptr & target_scope):
+            target_scope(target_scope)
+        {
+            assert(target_scope);
+        }
+
+        void clone_field_value(const field_value & src, field_value & dest)
+            throw (std::bad_alloc)
+        {
+            assert(src.type() == dest.type());
+            const field_value::type_id type = src.type();
+            if (type == field_value::sfnode_id) {
+                this->clone_sfnode(static_cast<const sfnode &>(src),
+                                   static_cast<sfnode &>(dest));
+            } else if (type == field_value::mfnode_id) {
+                this->clone_mfnode(static_cast<const mfnode &>(src),
+                                   static_cast<mfnode &>(dest));
+            } else {
+                //
+                // Do a shallow copy for other types.
+                //
+                dest.assign(src);
+            }
+        }
+
+    protected:
+        const node_ptr clone_node(const node_ptr & n)
+            throw (std::bad_alloc)
+        {
+            using std::set;
+
+            assert(this->target_scope);
+
+            node_ptr result;
+
+            if (!n) { return result; }
+
+            const bool already_traversed =
+                (this->traversed_nodes.find(n.get())
+                 != this->traversed_nodes.end());
+
+            if (already_traversed) {
+                result.reset(this->target_scope->find_node(n->id()));
+                assert(result);
+            } else {
+                result = n->type.create_node(this->target_scope);
+                if (!n->id().empty()) { result->id(n->id()); }
+
+                const node_interface_set & interfaces = n->type.interfaces();
+                for (node_interface_set::const_iterator interface =
+                         interfaces.begin();
+                     interface != interfaces.end();
+                     ++interface) {
+                    using std::string;
+                    const node_interface::type_id type = interface->type;
+                    const string & id = interface->id;
+                    if (type == node_interface::exposedfield_id
+                        || type == node_interface::field_id) {
+                        using std::auto_ptr;
+                        auto_ptr<field_value> val =
+                            field_value::create(interface->field_type);
+                        assert(val->type() == n->field(id).type());
+                        this->clone_field_value(n->field(id), *val);
+                        result->field(id, *val);
+                    }
+                }
+            }
+            return result;
+        }
+
+    private:
+        void clone_sfnode(const sfnode & src, sfnode & dest)
+            throw (std::bad_alloc)
+        {
+            dest.value = this->clone_node(src.value);
+        }
+
+        void clone_mfnode(const mfnode & src, mfnode & dest)
+            throw (std::bad_alloc)
+        {
+            using std::swap;
+            using std::vector;
+            mfnode result(src.value.size());
+            for (vector<node_ptr>::size_type i = 0;
+                 i < src.value.size();
+                 ++i) {
+                result.value[i] = this->clone_node(src.value[i]);
+            }
+            swap(dest, result);
+        }
+    };
+
+    //
+    // Clone the implementation nodes.
+    //
+    class proto_impl_cloner : public field_value_cloner {
+        const std::vector<node_ptr> & source_nodes;
+
+    public:
+        proto_impl_cloner(const std::vector<node_ptr> & source_nodes,
+                          const scope_ptr & target_scope):
+            field_value_cloner(target_scope),
+            source_nodes(source_nodes)
+        {}
+
+        const std::vector<node_ptr> clone() throw (std::bad_alloc)
+        {
+            using std::vector;
+
+            vector<node_ptr> result(this->source_nodes.size());
+
+            for (vector<node_ptr>::size_type i = 0;
+                 i < this->source_nodes.size();
+                 ++i) {
+                result[i] = this->clone_node(this->source_nodes[i]);
+                assert(result[i]);
+            }
+            return result;
+        }
+    };
+
+    proto_node_class & node_class =
+        static_cast<proto_node_class &>(type.node_class);
+
+    this->impl_nodes = proto_impl_cloner(node_class.impl_nodes,
+                                         this->proto_scope).clone();
+
+    //
+    // Initialize any IS'd fields and exposedFields.
+    //
+    for (default_value_map_t::const_iterator default_value =
+             node_class.default_value_map.begin();
+         default_value != node_class.default_value_map.end();
+         ++default_value) {
+        using std::pair;
+        const pair<is_map_t::iterator, is_map_t::iterator> range =
+            node_class.is_map.equal_range(default_value->first);
+        for (is_map_t::iterator is = range.first; is != range.second; ++is) {
+            using std::auto_ptr;
+            auto_ptr<field_value> val =
+                field_value::create(default_value->second->type());
+            field_value_cloner(this->proto_scope)
+                .clone_field_value(*default_value->second, *val);
+            node_path_t path_to_is_target;
+            assert(!node_class.impl_nodes.empty());
+            path_getter(*is->second.impl_node, path_to_is_target)
+                .get_path_from(node_class.impl_nodes);
+            assert(!path_to_is_target.empty());
+            node * const is_target = resolve_node_path(path_to_is_target,
+                                                       this->impl_nodes);
+            assert(is_target);
+            try {
+                is_target->field(is->second.impl_node_interface, *val);
+            } catch (unsupported_interface & ex) {
+                OPENVRML_PRINT_EXCEPTION_(ex);
+            } catch (std::bad_cast & ex) {
+                OPENVRML_PRINT_EXCEPTION_(ex);
+            }
+        }
+    }
+
+    //
+    // Establish routes.
+    //
+    for (routes_t::const_iterator route = node_class.routes.begin();
+         route != node_class.routes.end();
+         ++route) {
+        // XXX
+        // XXX It would be better to store the node_paths along with the
+        // XXX route instead of rebuilding them every time we instantiate
+        // XXX the PROTO.
+        // XXX
+        node_path_t path_to_from;
+        assert(!node_class.impl_nodes.empty());
+        path_getter(*route->from, path_to_from)
+            .get_path_from(node_class.impl_nodes);
+        assert(!path_to_from.empty());
+        node * const from_node = resolve_node_path(path_to_from,
+                                                   this->impl_nodes);
+        assert(from_node);
+
+        node_path_t path_to_to;
+        path_getter(*route->to, path_to_to)
+            .get_path_from(node_class.impl_nodes);
+        node * const to_node = resolve_node_path(path_to_to, this->impl_nodes);
+        assert(to_node);
+
+        try {
+            add_route(*from_node, route->eventout, *to_node, route->eventin);
+        } catch (unsupported_interface & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+        } catch (field_value_type_mismatch & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+        }
+    }
+
+    //
+    // Add eventIns, eventOuts, exposedFields.
+    //
+    for (node_interface_set::const_iterator interface =
+             node_class.interfaces.begin();
+         interface != node_class.interfaces.end();
+         ++interface) {
+        using boost::shared_ptr;
+        using boost::dynamic_pointer_cast;
+        using std::pair;
+        bool succeeded;
+        shared_ptr<openvrml::event_listener> interface_eventin;
+        shared_ptr<openvrml::event_emitter> interface_eventout;
+        pair<is_map_t::iterator, is_map_t::iterator> is_range;
+        default_value_map_t::const_iterator default_value;
+        switch (interface->type) {
+        case node_interface::eventin_id:
+            interface_eventin = create_eventin(interface->field_type, *this);
+            is_range = node_class.is_map.equal_range(interface->id);
+            for (is_map_t::const_iterator is_mapping = is_range.first;
+                 is_mapping != is_range.second;
+                 ++is_mapping) {
+                assert(is_mapping->second.impl_node);
+                node_path_t path_to_impl_node;
+                path_getter(*is_mapping->second.impl_node, path_to_impl_node)
+                    .get_path_from(node_class.impl_nodes);
+                node * impl_node = resolve_node_path(path_to_impl_node,
+                                                     this->impl_nodes);
+                assert(impl_node);
+                const std::string & impl_node_interface =
+                    is_mapping->second.impl_node_interface;
+                try {
+                    openvrml::event_listener & impl_eventin =
+                        impl_node->event_listener(impl_node_interface);
+                    succeeded = eventin_is(interface->field_type,
+                                           impl_eventin,
+                                           *interface_eventin);
+                    assert(succeeded);
+                } catch (unsupported_interface & ex) {
+                    OPENVRML_PRINT_EXCEPTION_(ex);
+                }
+            }
+            succeeded = this->eventin_map
+                .insert(make_pair(interface->id, interface_eventin)).second;
+            assert(succeeded);
+            break;
+        case node_interface::eventout_id:
+            interface_eventout = create_eventout(interface->field_type, *this);
+            is_range = node_class.is_map.equal_range(interface->id);
+            for (is_map_t::const_iterator is_mapping = is_range.first;
+                 is_mapping != is_range.second;
+                 ++is_mapping) {
+                assert(is_mapping->second.impl_node);
+                node_path_t path_to_impl_node;
+                path_getter(*is_mapping->second.impl_node, path_to_impl_node)
+                    .get_path_from(node_class.impl_nodes);
+                node * impl_node = resolve_node_path(path_to_impl_node,
+                                                     this->impl_nodes);
+                assert(impl_node);
+                const std::string & impl_node_interface =
+                    is_mapping->second.impl_node_interface;
+                try {
+                    openvrml::event_emitter & impl_eventout =
+                        impl_node->event_emitter(impl_node_interface);
+                    succeeded = eventout_is(interface->field_type,
+                                            impl_eventout,
+                                            *interface_eventout);
+                    assert(succeeded);
+                } catch (unsupported_interface & ex) {
+                    OPENVRML_PRINT_EXCEPTION_(ex);
+                }
+            }
+            succeeded = this->eventout_map
+                .insert(make_pair(interface->id, interface_eventout)).second;
+            assert(succeeded);
+            break;
+        case node_interface::exposedfield_id:
+            // XXX
+            // XXX This is wrong. We don't want the default value here, we
+            // XXX want the initial value. However, we don't have the initial
+            // XXX value in the constructor because of the wonky way we use
+            // XXX the field setters to initialize nodes.
+            // XXX
+            default_value = node_class.default_value_map.find(interface->id);
+            assert(default_value != node_class.default_value_map.end());
+            interface_eventin = create_exposedfield(*default_value->second,
+                                                    *this);
+            interface_eventout =
+                dynamic_pointer_cast<openvrml::event_emitter>(
+                    interface_eventin);
+            is_range = node_class.is_map.equal_range(interface->id);
+            for (is_map_t::const_iterator is_mapping = is_range.first;
+                 is_mapping != is_range.second;
+                 ++is_mapping) {
+                assert(is_mapping->second.impl_node);
+                node_path_t path_to_impl_node;
+                path_getter(*is_mapping->second.impl_node, path_to_impl_node)
+                    .get_path_from(node_class.impl_nodes);
+                node * impl_node = resolve_node_path(path_to_impl_node,
+                                                     this->impl_nodes);
+                assert(impl_node);
+                const std::string & impl_node_interface =
+                    is_mapping->second.impl_node_interface;
+                try {
+                    openvrml::event_listener & impl_eventin =
+                        impl_node->event_listener(impl_node_interface);
+                    succeeded = eventin_is(interface->field_type,
+                                           impl_eventin,
+                                           *interface_eventin);
+                    assert(succeeded);
+                    openvrml::event_emitter & impl_eventout =
+                        impl_node->event_emitter(impl_node_interface);
+                    succeeded = eventout_is(interface->field_type,
+                                            impl_eventout,
+                                            *interface_eventout);
+                    assert(succeeded);
+                } catch (unsupported_interface & ex) {
+                    OPENVRML_PRINT_EXCEPTION_(ex);
+                }
+            }
+            succeeded = this->eventin_map
+                .insert(make_pair(interface->id, interface_eventin)).second;
+            assert(succeeded);
+            succeeded = this->eventout_map
+                .insert(make_pair(interface->id, interface_eventout)).second;
+            assert(succeeded);
+            break;
+        case node_interface::field_id:
+            break;
+        default:
+            assert(false);
+        }
+    }
+}
+
+/**
+ * @brief Destroy.
+ */
+proto_node_class::proto_node::~proto_node() throw ()
+{}
+
+/**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void proto_node_class::proto_node::do_initialize(const double timestamp)
+    throw (std::bad_alloc)
+{
+    using std::vector;
+    for (vector<node_ptr>::const_iterator node = this->impl_nodes.begin();
+         node != impl_nodes.end();
+         ++node) {
+        (*node)->initialize(*this->scene(), timestamp);
+    }
+}
+
+/**
+ * @brief Field accessor implementation.
+ *
+ * @param id    field identifier.
+ *
+ * @exception unsupported_interface if the node has no field @p id.
+ *
+ * @todo Make this function handle exposedFields.
+ */
+const field_value &
+proto_node_class::proto_node::do_field(const std::string & id) const
+    throw (unsupported_interface)
+{
+    //
+    // First, we need to find the implementation node that the field is
+    // IS'd to.  For the accessor, we don't care if there's more than one.
+    //
+    proto_node_class & node_class =
+        static_cast<proto_node_class &>(this->type.node_class);
+    is_map_t::iterator is_mapping = node_class.is_map.find(id);
+    if (is_mapping != node_class.is_map.end()) {
+        //
+        // Get the path to the implementation node.
+        //
+        assert(is_mapping->second.impl_node);
+        assert(!is_mapping->second.impl_node_interface.empty());
+        node_path_t path;
+        path_getter(*is_mapping->second.impl_node, path)
+            .get_path_from(node_class.impl_nodes);
+
+        //
+        // Resolve the path against this instance's implementation nodes.
+        //
+        node * const impl_node = resolve_node_path(path, this->impl_nodes);
+
+        //
+        // Set the field value for the implementation node.
+        //
+        return impl_node->field(is_mapping->second.impl_node_interface);
+    } else {
+        //
+        // If there are no IS mappings for the field, then return the
+        // default value.
+        //
+        default_value_map_t::iterator default_value =
+            node_class.default_value_map.find(id);
+        if (default_value == node_class.default_value_map.end()) {
+            throw unsupported_interface(this->type, id);
+        }
+        return *default_value->second;
+    }
+}
+
+/**
+ * @brief Field mutator implementation.
+ *
+ * If no fields of implementation nodes are mapped to the PROTO field, this
+ * function is a no-op.
+ *
+ * If this function throws an exception, the node is left in an unknown state.
+ *
+ * @param id    field identifier.
+ * @param value new field value.
+ *
+ * @exception unsupported_interface if the node has no field @p id.
+ * @exception std::bad_cast         if @p value is the wrong type.
+ * @exception std::bad_alloc        if memory allocation fails.
+ *
+ * @todo Make this function handle exposedFields.
+ */
+void proto_node_class::proto_node::do_field(const std::string & id,
+                                            const field_value & value)
+    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+{
+    using std::pair;
+
+    //
+    // First, we need to find the implementation node(s) that the field is
+    // IS'd to.
+    //
+    proto_node_class & node_class =
+        static_cast<proto_node_class &>(this->type.node_class);
+    const pair<is_map_t::iterator, is_map_t::iterator> range =
+        node_class.is_map.equal_range(id);
+    for (is_map_t::iterator is_mapping = range.first;
+         is_mapping != range.second;
+         ++is_mapping) {
+        //
+        // Get the path to the implementation node.
+        //
+        assert(is_mapping->second.impl_node);
+        assert(!is_mapping->second.impl_node_interface.empty());
+        node_path_t path;
+        path_getter(*is_mapping->second.impl_node, path)
+            .get_path_from(node_class.impl_nodes);
+
+        //
+        // Resolve the path against this instance's implementation nodes.
+        //
+        node * const impl_node = resolve_node_path(path, this->impl_nodes);
+
+        //
+        // Set the field value for the implementation node.
+        //
+        impl_node->field(is_mapping->second.impl_node_interface, value);
+    }
+}
+
+/**
+ * @brief event_listener accessor implementation.
+ *
+ * @param id    eventIn identifier.
+ *
+ * @return the event_listener for the eventIn @p id.
+ *
+ * @exception unsupported_interface if the node has no eventIn @p id.
+ */
+event_listener &
+proto_node_class::proto_node::do_event_listener(const std::string & id)
+    throw (unsupported_interface)
+{
+    eventin_map_t::iterator pos = this->eventin_map.find(id);
+    if (pos == this->eventin_map.end()) {
+        throw unsupported_interface(this->type,
+                                    node_interface::eventin_id,
+                                    id);
+    }
+    return *pos->second;
+}
+
+/**
+ * @brief event_emitter accessor implementation.
+ *
+ * @param id    eventOut identifier.
+ *
+ * @return the event_emitter for the eventOut @p id.
+ *
+ * @exception unsupported_interface if the node has no eventOut @p id.
+ */
+event_emitter &
+proto_node_class::proto_node::do_event_emitter(const std::string & id)
+    throw (unsupported_interface)
+{
+    eventout_map_t::iterator pos = this->eventout_map.find(id);
+    if (pos == this->eventout_map.end()) {
+        throw unsupported_interface(this->type,
+                                    node_interface::eventout_id,
+                                    id);
+    }
+    return *pos->second;
+}
+
+/**
+ * @brief Initialize.
+ *
+ * @param timestamp the current time.
+ */
+void proto_node_class::proto_node::do_shutdown(const double timestamp) throw ()
+{
+    using std::vector;
+    for (vector<node_ptr>::const_iterator node = this->impl_nodes.begin();
+         node != impl_nodes.end();
+         ++node) {
+        (*node)->shutdown(timestamp);
+    }
+}
+
+/**
+ * @brief Cast to a script_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a script_node, or 0 otherwise.
+ */
+script_node * proto_node_class::proto_node::to_script() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<script_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to an appearance_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      an appearance_node, or 0 otherwise.
+ */
+appearance_node * proto_node_class::proto_node::to_appearance() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<appearance_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a child_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a child_node, or 0 otherwise.
+ */
+child_node * proto_node_class::proto_node::to_child() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<child_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a color_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a color_node, or 0 otherwise.
+ */
+color_node * proto_node_class::proto_node::to_color() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<color_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a coordinate_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a coordinate_node, or 0 otherwise.
+ */
+coordinate_node * proto_node_class::proto_node::to_coordinate() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<coordinate_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a font_style_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a font_style_node, or 0 otherwise.
+ */
+font_style_node * proto_node_class::proto_node::to_font_style() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<font_style_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a geometry_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a geometry_node, or 0 otherwise.
+ */
+geometry_node * proto_node_class::proto_node::to_geometry() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<geometry_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a grouping_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a geometry_node, or 0 otherwise.
+ */
+grouping_node * proto_node_class::proto_node::to_grouping() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<grouping_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a material_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a material_node, or 0 otherwise.
+ */
+material_node * proto_node_class::proto_node::to_material() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<material_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a normal_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a normal_node, or 0 otherwise.
+ */
+normal_node * proto_node_class::proto_node::to_normal() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<normal_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a sound_source_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a sound_source_node, or 0 otherwise.
+ */
+sound_source_node * proto_node_class::proto_node::to_sound_source() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<sound_source_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a texture_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a texture_node, or 0 otherwise.
+ */
+texture_node * proto_node_class::proto_node::to_texture() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<texture_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a texture_coordinate_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a texture_coordinate_node, or 0 otherwise.
+ */
+texture_coordinate_node *
+proto_node_class::proto_node::to_texture_coordinate() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<texture_coordinate_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a texture_transform_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a texture_transform_node, or 0 otherwise.
+ */
+texture_transform_node *
+proto_node_class::proto_node::to_texture_transform() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<texture_transform_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a transform_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a transform_node, or 0 otherwise.
+ */
+transform_node * proto_node_class::proto_node::to_transform() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<transform_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Cast to a viewpoint_node.
+ *
+ * @return a pointer to the first node in the implementation if that node is
+ *      a viewpoint_node, or 0 otherwise.
+ */
+viewpoint_node * proto_node_class::proto_node::to_viewpoint() throw ()
+{
+    assert(!this->impl_nodes.empty());
+    assert(this->impl_nodes[0]);
+    return node_cast<viewpoint_node *>(this->impl_nodes[0].get());
+}
+
+/**
+ * @brief Construct.
+ *
+ * @param browser
+ * @param interfaces
+ * @param default_value_map
+ * @param impl_nodes
+ * @param is_map
+ * @param routes
+ */
+proto_node_class::
+proto_node_class(openvrml::browser & browser,
+                 const node_interface_set & interfaces,
+                 const default_value_map_t & default_value_map,
+                 const std::vector<node_ptr> & impl_nodes,
+                 const is_map_t & is_map,
+                 const routes_t & routes):
+    node_class(browser),
+    interfaces(interfaces),
+    default_value_map(default_value_map),
+    impl_nodes(impl_nodes),
+    is_map(is_map),
+    routes(routes)
+{}
+
+proto_node_class::~proto_node_class() throw ()
+{}
+
+const node_type_ptr
+proto_node_class::create_type(const std::string & id,
+                              const node_interface_set & interfaces)
+    throw (unsupported_interface, std::bad_alloc)
+{
+    return node_type_ptr(new proto_node_type(*this, id, interfaces));
+}
+
+} // namespace openvrml
 
 //
 // Including a .cpp file is strange, but it's exactly what we want to do here.
@@ -271,7 +2258,12 @@ private:
     virtual const field_value & do_eventout(const std::string & id) const
         throw ();
 
-    virtual void do_render_child(viewer & v, rendering_context context);
+    virtual openvrml::event_listener &
+    do_event_listener(const std::string & id)
+        throw (unsupported_interface);
+    virtual openvrml::event_emitter &
+    do_event_emitter(const std::string & id)
+        throw (unsupported_interface);
 };
 
 
@@ -656,6 +2648,16 @@ browser::browser(std::ostream & out, std::ostream & err)
 }
 
 /**
+ * @internal
+ *
+ * @fn browser::browser(const browser &)
+ *
+ * @brief Construct a copy.
+ *
+ * Not implemented. browser is not copyable.
+ */
+
+/**
  * @brief Destructor.
  */
 browser::~browser() throw ()
@@ -673,9 +2675,18 @@ browser::~browser() throw ()
     assert(this->timers.empty());
     assert(this->audio_clips.empty());
     assert(this->movies.empty());
-    assert(this->proto_node_list.empty());
     this->node_class_map.clear();
 }
+
+/**
+ * @internal
+ *
+ * @fn browser &browser::operator=(const browser &)
+ *
+ * @brief Assign.
+ *
+ * Not implemented. browser is not copyable.
+ */
 
 /**
  * @brief Get the root nodes for the browser.
@@ -978,7 +2989,6 @@ void browser::load_url(const std::vector<std::string> & url,
     assert(this->timers.empty());
     assert(this->audio_clips.empty());
     assert(this->movies.empty());
-    assert(this->proto_node_list.empty());
     this->node_class_map.clear();
 
     //
@@ -1014,13 +3024,20 @@ void browser::load_url(const std::vector<std::string> & url,
     //
     if (!this->navigation_infos.empty()) {
         assert(this->navigation_infos.front());
-        this->navigation_infos.front()
-                ->process_event("set_bind", sfbool(true), now);
+        event_listener & listener =
+            navigation_infos.front()->event_listener("set_bind");
+        assert(dynamic_cast<sfbool_listener *>(&listener));
+        static_cast<sfbool_listener &>(listener)
+            .process_event(sfbool(true), now);
     }
 
     if (this->active_viewpoint_
         != node_cast<viewpoint_node *>(this->default_viewpoint.get())) {
-        this->active_viewpoint_->process_event("set_bind", sfbool(true), now);
+        event_listener & listener =
+            this->active_viewpoint_->event_listener("set_bind");
+        assert(dynamic_cast<sfbool_listener *>(&listener));
+        static_cast<sfbool_listener &>(listener)
+            .process_event(sfbool(true), now);
     }
 
     this->modified(true);
@@ -1317,6 +3334,17 @@ namespace {
     private:
         double time;
     };
+
+    template <typename FieldValue>
+    void process_event(event_listener & listener,
+                       const field_value & value,
+                       const double timestamp)
+    {
+        assert(dynamic_cast<field_value_listener<FieldValue> *>(&listener));
+        assert(dynamic_cast<const FieldValue *>(&value));
+        static_cast<field_value_listener<FieldValue> &>(listener)
+            .process_event(static_cast<const FieldValue &>(value), timestamp);
+    }
 }
 
 /**
@@ -1359,20 +3387,77 @@ bool browser::update(double current_time)
     std::for_each(this->scripts.begin(), this->scripts.end(),
                   UpdatePolledNode_<script_node *>(current_time));
 
-    //
-    // Update each of the prototype instances.
-    //
-    std::for_each(this->proto_node_list.begin(), this->proto_node_list.end(),
-                  UpdatePolledNode_<ProtoNode *>(current_time));
-
     // Pass along events to their destinations
     while (this->first_event != this->last_event) {
         event * const e = &this->event_mem[this->first_event];
         this->first_event = (this->first_event + 1) % max_events;
 
-        e->to_node->process_event(e->to_eventin, *e->value, e->timestamp);
+        event_listener & listener = e->to_node->event_listener(e->to_eventin);
+        switch (e->value->type()) {
+        case field_value::sfbool_id:
+            process_event<sfbool>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfcolor_id:
+            process_event<sfcolor>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sffloat_id:
+            process_event<sffloat>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfimage_id:
+            process_event<sfimage>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfint32_id:
+            process_event<sfint32>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfnode_id:
+            process_event<sfnode>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfrotation_id:
+            process_event<sfrotation>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfstring_id:
+            process_event<sfstring>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sftime_id:
+            process_event<sftime>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfvec2f_id:
+            process_event<sfvec2f>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfvec3f_id:
+            process_event<sfvec3f>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfcolor_id:
+            process_event<mfcolor>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mffloat_id:
+            process_event<mffloat>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfint32_id:
+            process_event<mfint32>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfnode_id:
+            process_event<mfnode>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfrotation_id:
+            process_event<mfrotation>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfstring_id:
+            process_event<mfstring>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mftime_id:
+            process_event<mftime>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfvec2f_id:
+            process_event<mfvec2f>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfvec3f_id:
+            process_event<mfvec3f>(listener, *e->value, e->timestamp);
+            break;
+        default:
+            assert(false);
+        }
 
-        // this needs to change if event values are shared...
         delete e->value;
     }
 
@@ -1725,38 +3810,6 @@ void browser::remove_script(script_node & script) {
 }
 
 /**
- * @brief Add a PROTO instance to the browser.
- *
- * @param node  a PROTO instance.
- *
- * @pre @p node is not in the list of prototype instances for the browser.
- */
-void browser::add_proto(ProtoNode & node) {
-    using std::find;
-    assert(find(this->proto_node_list.begin(), this->proto_node_list.end(),
-                &node)
-           == this->proto_node_list.end());
-    this->proto_node_list.push_back(&node);
-}
-
-/**
- * @brief Remove a PROTO instance from the browser.
- *
- * @param node  the PROTO instance to remove.
- *
- * @pre @p node exists in the browser's list of prototype instances.
- */
-void browser::remove_proto(ProtoNode & node) {
-    assert(!this->proto_node_list.empty());
-    typedef std::list<ProtoNode *> proto_node_list_t;
-    const proto_node_list_t::iterator end = this->proto_node_list.end();
-    const proto_node_list_t::iterator pos =
-            std::find(this->proto_node_list.begin(), end, &node);
-    assert(pos != end);
-    this->proto_node_list.erase(pos);
-}
-
-/**
  * @brief Add a TimeSensor node to the browser.
  *
  * @param timer a TimeSensor node.
@@ -2069,6 +4122,22 @@ scene::scene(openvrml::browser & browser,
 }
 
 /**
+ * @fn scene::scene(const scene &)
+ *
+ * @brief Not implemented.
+ *
+ * scene is not copyable.
+ */
+
+/**
+ * @fn scene & scene::operator=(const scene &)
+ *
+ * @brief Not implemented.
+ *
+ * scene is not copyable.
+ */
+
+/**
  * @brief Initialize the scene.
  *
  * @param timestamp the current time.
@@ -2205,1366 +4274,6 @@ void scene::shutdown(const double timestamp) throw ()
 }
 
 
-NodeInterfaceTypeMismatch::
-NodeInterfaceTypeMismatch(const node_interface::type_id lhs,
-                          const node_interface::type_id rhs):
-    std::runtime_error(boost::lexical_cast<std::string>(lhs)
-                       + " cannot be mapped to "
-                       + boost::lexical_cast<std::string>(rhs))
-{}
-
-NodeInterfaceTypeMismatch::~NodeInterfaceTypeMismatch() throw ()
-{}
-
-
-/**
- * @class ProtoNode
- *
- * @brief A prototype node instance.
- *
- * An archetypal ProtoNode is constructed in the process of parsing a @c PROTO,
- * and stored in the ProtoNodeClass. Calls to @c ProtoNodeType::createNode
- * return a clone of the archetypal instance.
- */
-
-/**
- * @var ProtoNode::ProtoNodeClass
- *
- * @brief Class object for ProtoNode instances.
- */
-
-/**
- * @var ProtoNode::Vrml97Parser
- *
- * @brief VRML97 parser (generated by ANTLR).
- */
-
-/**
- * @internal
- *
- * @struct ProtoNode::ImplNodeInterface
- *
- * @brief Used for @c IS event propagation.
- */
-
-/**
- * @var Node & ProtoNode::ImplNodeInterface::node
- *
- * @brief A reference to a node in the prototype implementation.
- */
-
-/**
- * @var std::string ProtoNode::ImplNodeInterface::interfaceId
- *
- * @brief An interface of @a node.
- */
-
-/**
- * @brief Constructor.
- *
- * @param node          a reference to a node in the prototype implementation.
- * @param interfaceId   an interface of @p node.
- */
-ProtoNode::
-ImplNodeInterface::ImplNodeInterface(openvrml::node & node,
-                                     const std::string & interfaceId):
-    node(node),
-    interfaceId(interfaceId)
-{}
-
-namespace {
-
-    struct add_eventout_value_ : std::unary_function<node_interface, void> {
-        add_eventout_value_(ProtoNode::EventOutValueMap & eventOutValueMap):
-            eventOutValueMap(&eventOutValueMap)
-        {}
-
-        void operator()(const node_interface & interface) const
-        {
-            if (interface.type == node_interface::eventout_id) {
-                std::auto_ptr<field_value> value =
-                    field_value::create(interface.field_type);
-                const node::polled_eventout_value eventOutValue =
-                    node::polled_eventout_value(field_value_ptr(value), 0.0);
-                const ProtoNode::EventOutValueMap::value_type
-                    entry(interface.id, eventOutValue);
-                const bool succeeded =
-                    this->eventOutValueMap->insert(entry).second;
-                assert(succeeded);
-            } else if (interface.type == node_interface::exposedfield_id) {
-                std::auto_ptr<field_value> value =
-                    field_value::create(interface.field_type);
-                const node::polled_eventout_value eventOutValue =
-                    node::polled_eventout_value(field_value_ptr(value), 0.0);
-                const ProtoNode::EventOutValueMap::value_type
-                    entry(interface.id + "_changed", eventOutValue);
-                const bool succeeded =
-                    this->eventOutValueMap->insert(entry).second;
-                assert(succeeded);
-            }
-        }
-
-    private:
-        ProtoNode::EventOutValueMap * eventOutValueMap;
-    };
-}
-
-/**
- * @brief Constructor.
- *
- * @param nodeType  the NodeType associated with the node.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-ProtoNode::ProtoNode(const node_type & nodeType) throw (std::bad_alloc):
-    node(nodeType, scope_ptr())
-{}
-
-/**
- * @brief Construct a prototype instance.
- *
- * @param nodeType  the type object for the new ProtoNode instance.
- * @param scope     the scope the new node belongs to.
- * @param node      the ProtoNode to clone when creating the instance.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-ProtoNode::ProtoNode(const node_type & nodeType,
-                     const scope_ptr & scope,
-                     const ProtoNode & n)
-    throw (std::bad_alloc):
-    node(nodeType, scope)
-{
-    assert(!n.implNodes.empty());
-    assert(n.implNodes[0]);
-
-    //
-    // For each exposedField and eventOut in the prototype interface, add
-    // a value to the eventOutValueMap.
-    //
-    // Note: We don't want to copy node's EventOutValueMap, since the values
-    // in that map should be per-instance.
-    //
-    const node_interface_set & interfaces = this->type.interfaces();
-    std::for_each(interfaces.begin(), interfaces.end(),
-                  add_eventout_value_(this->eventOutValueMap));
-
-    //
-    // Cloning the nodes is a two-step process. First, we clone the actual
-    // node instances. Second, we traverse the node tree again cloning the
-    // routes.
-    //
-    class ProtoImplCloner {
-        std::set<node *> traversedNodes;
-        const ProtoNode * protoDef;
-        ProtoNode * protoInstance;
-
-    public:
-        ProtoImplCloner():
-            protoDef(0),
-            protoInstance(0)
-        {}
-
-        void clone(const ProtoNode & protoDef,
-                   ProtoNode & protoInstance)
-            throw (std::bad_alloc)
-        {
-            assert(this->traversedNodes.empty());
-            assert(!this->protoDef);
-            assert(!this->protoInstance);
-
-            this->protoDef = &protoDef;
-            this->protoInstance = &protoInstance;
-            const std::vector<node_ptr> & protoDefImplNodes =
-                    protoDef.getImplNodes();
-            for (std::vector<node_ptr>::const_iterator node =
-                    protoDefImplNodes.begin();
-                    node != protoDefImplNodes.end(); ++node) {
-                const node_ptr newNode =
-                        this->cloneNode(*node, protoInstance.scope());
-                assert(newNode);
-                protoInstance.addRootNode(newNode);
-            }
-            this->protoDef = 0;
-            this->protoInstance = 0;
-            this->traversedNodes.clear();
-        }
-
-    private:
-        const sfnode cloneFieldValue(const sfnode & node,
-                                     const scope_ptr & targetScope)
-            throw (std::bad_alloc)
-        {
-            return sfnode(this->cloneNode(node.value, targetScope));
-        }
-
-        const mfnode cloneFieldValue(const mfnode & nodes,
-                                     const scope_ptr & targetScope)
-            throw (std::bad_alloc)
-        {
-            mfnode result(nodes.value.size());
-            for (size_t i = 0; i < nodes.value.size(); ++i) {
-                result.value[i] = this->cloneNode(nodes.value[i], targetScope);
-            }
-            return result;
-        }
-
-        const node_ptr cloneNode(const node_ptr & n,
-                                const scope_ptr & targetScope)
-            throw (std::bad_alloc)
-        {
-            assert(targetScope);
-
-            node_ptr result(0);
-
-            if (!n) { return result; }
-
-            std::set<node *>::iterator pos =
-                this->traversedNodes.find(n.get());
-            const bool alreadyTraversed = (pos != this->traversedNodes.end());
-
-            if (alreadyTraversed) {
-                result.reset(targetScope->find_node(n->id()));
-                assert(result);
-            } else {
-                result = n->type.create_node(targetScope);
-                if (!n->id().empty()) { result->id(n->id()); }
-
-                //
-                // Any IS mappings for this node?
-                //
-                for (ProtoNode::ISMap::const_iterator isMapEntry =
-                        this->protoDef->isMap.begin();
-                        isMapEntry != this->protoDef->isMap.end();
-                        ++isMapEntry) {
-                    if (&isMapEntry->second.node == n.get()) {
-                        try {
-                            this->protoInstance
-                                    ->addIS(*result,
-                                            isMapEntry->second.interfaceId,
-                                            isMapEntry->first);
-                        } catch (std::bad_alloc &) {
-                            throw;
-                        } catch (std::runtime_error & ex) {
-                            OPENVRML_PRINT_EXCEPTION_(ex);
-                            assert(false);
-                        }
-                    }
-                }
-
-                const node_interface_set & interfaces = n->type.interfaces();
-                for (node_interface_set::const_iterator interface =
-                        interfaces.begin();
-                        interface != interfaces.end();
-                        ++interface) {
-                    try {
-                        if (interface->type == node_interface::exposedfield_id
-                                || interface->type
-                                    == node_interface::field_id) {
-                            if (interface->field_type
-                                    == field_value::sfnode_id) {
-                                const sfnode & value =
-                                        static_cast<const sfnode &>
-                                            (n->field(interface->id));
-                                result->field(interface->id,
-                                              this->cloneFieldValue(value,
-                                                                 targetScope));
-                            } else if (interface->field_type
-                                    == field_value::mfnode_id) {
-                                const mfnode & value =
-                                    static_cast<const mfnode &>
-                                        (n->field(interface->id));
-                                result->field(interface->id,
-                                              this->cloneFieldValue(value,
-                                                                 targetScope));
-                            } else {
-                                result->field(interface->id,
-                                              n->field(interface->id));
-                            }
-                        }
-                    } catch (std::bad_alloc) {
-                        throw;
-                    } catch (std::runtime_error & ex) {
-                        OPENVRML_PRINT_EXCEPTION_(ex);
-                    }
-                }
-            }
-            return result;
-        }
-    } protoImplCloner;
-
-    protoImplCloner.clone(n, *this);
-
-    class RouteCopyTraverser : public node_traverser {
-        const openvrml::scope & targetScope;
-
-    public:
-        RouteCopyTraverser(const openvrml::scope & targetScope):
-            targetScope(targetScope)
-        {}
-
-        virtual ~RouteCopyTraverser() throw ()
-        {}
-
-    private:
-        virtual void on_entering(node & n)
-        {
-            const std::string & fromNodeId = n.id();
-            if (!fromNodeId.empty()) {
-                node * const fromNode =
-                    this->targetScope.find_node(fromNodeId);
-                assert(fromNode);
-                const node::routes_t & routes = n.routes();
-                for (node::routes_t::const_iterator route = routes.begin();
-                        route != routes.end(); ++route) {
-                    const std::string & toNodeId = route->to_node->id();
-                    const node_ptr
-                        toNode(this->targetScope.find_node(toNodeId));
-                    assert(toNode);
-                    fromNode->add_route(route->from_eventout,
-                                        toNode,
-                                        route->to_eventin);
-                }
-            }
-        }
-    };
-
-    RouteCopyTraverser(*scope).traverse(n.getImplNodes());
-
-    //
-    // Finally, we initialize the implementation using the PROTO's default
-    // field values.
-    //
-    class NodeFieldCloner {
-        std::set<node *> traversedNodes;
-
-    public:
-        const sfnode clone(const sfnode & node,
-                           const scope_ptr & targetScope)
-            throw (std::bad_alloc)
-        {
-            assert(this->traversedNodes.empty());
-            const sfnode result = this->cloneFieldValue(node, targetScope);
-            this->traversedNodes.clear();
-            return result;
-        }
-
-        const mfnode clone(const mfnode & nodes,
-                           const scope_ptr & targetScope)
-            throw (std::bad_alloc)
-        {
-            assert(this->traversedNodes.empty());
-            const mfnode result = this->cloneFieldValue(nodes, targetScope);
-            this->traversedNodes.clear();
-            return result;
-        }
-
-    private:
-        const sfnode cloneFieldValue(const sfnode & node,
-                                     const scope_ptr & targetScope)
-            throw (std::bad_alloc)
-        {
-            return sfnode(this->cloneNode(node.value, targetScope));
-        }
-
-        const mfnode cloneFieldValue(const mfnode & nodes,
-                                     const scope_ptr & targetScope)
-            throw (std::bad_alloc)
-        {
-            mfnode result(nodes.value.size());
-            for (size_t i = 0; i < nodes.value.size(); ++i) {
-                result.value[i] = this->cloneNode(nodes.value[i], targetScope);
-            }
-            return result;
-        }
-
-        const node_ptr cloneNode(const node_ptr & node,
-                                const scope_ptr & targetScope)
-            throw (std::bad_alloc)
-        {
-            assert(targetScope);
-
-            node_ptr result(0);
-
-            if (!node) { return result; }
-
-            std::set<openvrml::node *>::iterator pos =
-                    this->traversedNodes.find(node.get());
-            const bool alreadyTraversed = (pos != this->traversedNodes.end());
-
-            if (alreadyTraversed) {
-                result.reset(targetScope->find_node(node->id()));
-                assert(result);
-            } else {
-                result = node->type.create_node(targetScope);
-                if (!node->id().empty()) { result->id(node->id()); }
-
-                const node_interface_set & interfaces =
-                    node->type.interfaces();
-                for (node_interface_set::const_iterator interface =
-                        interfaces.begin();
-                        interface != interfaces.end();
-                        ++interface) {
-                    try {
-                        if (interface->type == node_interface::exposedfield_id
-                                || interface->type
-                                    == node_interface::field_id) {
-                            if (interface->field_type
-                                    == field_value::sfnode_id) {
-                                const sfnode & value =
-                                    static_cast<const sfnode &>
-                                        (node->field(interface->id));
-                                result->field(interface->id,
-                                              this->cloneFieldValue(value,
-                                                                 targetScope));
-                            } else if (interface->field_type
-                                    == field_value::mfnode_id) {
-                                const mfnode & value =
-                                    static_cast<const mfnode &>
-                                        (node->field(interface->id));
-                                result->field(interface->id,
-                                              this->cloneFieldValue(value,
-                                                                 targetScope));
-                            } else {
-                                result->field(interface->id,
-                                              node->field(interface->id));
-                            }
-                        }
-                    } catch (std::bad_alloc) {
-                        throw;
-                    } catch (std::runtime_error & ex) {
-                        OPENVRML_PRINT_EXCEPTION_(ex);
-                    }
-                }
-            }
-
-            return result;
-        }
-    } nodeCloner;
-
-    typedef ProtoNodeClass::DefaultValueMap DefaultValueMap;
-    DefaultValueMap & defaultValueMap =
-        static_cast<ProtoNodeClass &>(nodeType.node_class).defaultValueMap;
-    const scope_ptr & protoScope = this->implNodes[0]->scope();
-
-    for (DefaultValueMap::const_iterator i(defaultValueMap.begin());
-            i != defaultValueMap.end(); ++i) {
-        //
-        // Node field values need to be cloned; everything else we can just
-        // copy.
-        //
-        field_value_ptr fieldValue;
-        const field_value::type_id type = i->second->type();
-        if (type == field_value::sfnode_id) {
-            const sfnode & node = static_cast<const sfnode &>(*i->second);
-            fieldValue.reset(new sfnode(nodeCloner.clone(node, protoScope)));
-        } else if (type == field_value::mfnode_id) {
-            const mfnode & nodes = static_cast<const mfnode &>(*i->second);
-            fieldValue.reset(new mfnode(nodeCloner.clone(nodes, protoScope)));
-        } else {
-            fieldValue = i->second;
-        }
-
-        const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
-                this->isMap.equal_range(i->first);
-        for (ISMap::iterator j(rangeItrs.first); j != rangeItrs.second; ++j) {
-            j->second.node.field(j->second.interfaceId, *fieldValue);
-        }
-
-        //
-        // If we have a field that isn't IS'd to anything in the
-        // implementation, we need to store it's value specially.
-        //
-        if (this->type.has_field(i->first)
-                && rangeItrs.second == rangeItrs.first) {
-            FieldValueMap::value_type value(i->first, fieldValue);
-            const bool succeeded =
-                    this->unISdFieldValueMap.insert(value).second;
-            assert(succeeded);
-        }
-    }
-}
-
-/**
- * @brief Destructor.
- */
-ProtoNode::~ProtoNode() throw ()
-{}
-
-/**
- * @brief Cast to a script_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a script_node, or 0 otherwise.
- */
-script_node * ProtoNode::to_script() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<script_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to an appearance_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      an appearance_node, or 0 otherwise.
- */
-appearance_node * ProtoNode::to_appearance() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<appearance_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a child_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a child_node, or 0 otherwise.
- */
-child_node * ProtoNode::to_child() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<child_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a color_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a color_node, or 0 otherwise.
- */
-color_node * ProtoNode::to_color() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<color_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a coordinate_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a coordinate_node, or 0 otherwise.
- */
-coordinate_node * ProtoNode::to_coordinate() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<coordinate_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a font_style_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a font_style_node, or 0 otherwise.
- */
-font_style_node * ProtoNode::to_font_style() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<font_style_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a geometry_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a geometry_node, or 0 otherwise.
- */
-geometry_node * ProtoNode::to_geometry() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<geometry_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a material_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a material_node, or 0 otherwise.
- */
-material_node * ProtoNode::to_material() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<material_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a normal_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a normal_node, or 0 otherwise.
- */
-normal_node * ProtoNode::to_normal() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<normal_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a sound_source_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a sound_source_node, or 0 otherwise.
- */
-sound_source_node * ProtoNode::to_sound_source() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<sound_source_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a texture_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a texture_node, or 0 otherwise.
- */
-texture_node * ProtoNode::to_texture() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<texture_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a texture_coordinate_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a texture_coordinate_node, or 0 otherwise.
- */
-texture_coordinate_node * ProtoNode::to_texture_coordinate() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<texture_coordinate_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a texture_transform_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a texture_transform_node, or 0 otherwise.
- */
-texture_transform_node * ProtoNode::to_texture_transform() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<texture_transform_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a transform_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a transform_node, or 0 otherwise.
- */
-transform_node * ProtoNode::to_transform() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<transform_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Cast to a viewpoint_node.
- *
- * @return a pointer to the first node in the implementation if that node is
- *      a viewpoint_node, or 0 otherwise.
- */
-viewpoint_node * ProtoNode::to_viewpoint() throw ()
-{
-    assert(!this->implNodes.empty());
-    assert(this->implNodes[0]);
-    return node_cast<viewpoint_node *>(this->implNodes[0].get());
-}
-
-/**
- * @brief Get the implementation nodes.
- *
- * @return the implementation Nodes
- */
-const std::vector<node_ptr> & ProtoNode::getImplNodes() const throw ()
-{
-    return this->implNodes;
-}
-
-/**
- * @brief Add a root node to the prototype definition.
- */
-void ProtoNode::addRootNode(const node_ptr & node) throw (std::bad_alloc)
-{
-    assert(node);
-    this->implNodes.push_back(node);
-}
-
-/**
- * @brief Add an IS mapping to the prototype definition.
- *
- * @param implNode              a node in the protoype implementation.
- * @param implNodeInterfaceId   an interface of @p implNode.
- * @param protoInterfaceId      an interface of the prototype.
- *
- * @exception unsupported_interface      if @p implNode has no interface
- *                                      @p implNodeInterfaceId, or if the
- *                                      prototype has no interface
- *                                      @p protoInterfaceId.
- * @exception NodeInterfaceTypeMismatch if the two interface types are
- *                                      incompatible.
- * @exception field_value_type_mismatch if the field types of the interfaces
- *                                      are not identical.
- * @exception std::bad_alloc            if memory allocation fails.
- *
- * @see http://www.web3d.org/technicalinfo/specifications/vrml97/part1/concepts.html#Table4.4
- *
- * @todo Rewrite this method. Check for interface type, field type, agreement
- *      here and throw exceptions on failure.
- */
-void ProtoNode::addIS(node & implNode,
-                      const std::string & implNodeInterfaceId,
-                      const std::string & protoInterfaceId)
-    throw (unsupported_interface, NodeInterfaceTypeMismatch,
-           field_value_type_mismatch, std::bad_alloc)
-{
-    using std::find_if;
-    using std::pair;
-
-    //
-    // Make sure the IS is legitimate. First, get the interface type of the
-    // implementation node's interface.
-    //
-    const node_interface_set::const_iterator implNodeInterface =
-        implNode.type.interfaces().find(implNodeInterfaceId);
-    if (implNodeInterface == implNode.type.interfaces().end()) {
-        throw unsupported_interface(implNode.type, implNodeInterfaceId);
-    }
-
-    //
-    // The rhs of the IS mapping must be an *exact* match for one of the
-    // PROTO's interfaces; so, we don't use node_interface_set::findInterface.
-    //
-    const node_interface_set & protoInterfaces = this->type.interfaces();
-    const node_interface_set::const_iterator protoInterface =
-            find_if(protoInterfaces.begin(), protoInterfaces.end(),
-                    interface_id_equals_(protoInterfaceId));
-    if (protoInterface == protoInterfaces.end()) {
-        throw unsupported_interface(this->type, protoInterfaceId);
-    }
-
-    //
-    // Make sure the interface types agree.
-    //
-    if (implNodeInterface->type != node_interface::exposedfield_id
-            && implNodeInterface->type != protoInterface->type) {
-        throw NodeInterfaceTypeMismatch(implNodeInterface->type,
-                                        protoInterface->type);
-    }
-
-    //
-    // Make sure the field value types agree.
-    //
-    if (implNodeInterface->field_type != protoInterface->field_type) {
-        throw field_value_type_mismatch();
-    }
-
-    //
-    // Add the IS.
-    //
-    const ImplNodeInterface implNodeInterfaceRef(implNode,
-                                                 implNodeInterfaceId);
-    const ISMap::value_type value(protoInterfaceId, implNodeInterfaceRef);
-    this->isMap.insert(value);
-
-    if (protoInterface->type == node_interface::eventout_id) {
-        EventOutValueMap::iterator pos =
-                this->eventOutValueMap.find(protoInterfaceId);
-        if (pos == this->eventOutValueMap.end()) {
-            pos = this->eventOutValueMap.find(protoInterfaceId + "_changed");
-        }
-        assert(pos != this->eventOutValueMap.end());
-        implNode.add_eventout_is(implNodeInterfaceId, pos->second);
-    }
-}
-
-void ProtoNode::update(const double currentTime) {
-    //
-    // For each modified eventOut, send an event.
-    //
-    for (EventOutValueMap::iterator itr = eventOutValueMap.begin();
-            itr != eventOutValueMap.end(); ++itr) {
-        if (itr->second.modified) {
-            this->emit_event(itr->first, *itr->second.value, currentTime);
-            itr->second.modified = false;
-        }
-    }
-}
-
-/**
- * @brief Initialize.
- *
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void ProtoNode::do_initialize(const double timestamp) throw (std::bad_alloc)
-{
-    assert(this->scene());
-
-    for (size_t i = 0; i < this->implNodes.size(); ++i) {
-        assert(this->implNodes[i]);
-        this->implNodes[i]->initialize(*this->scene(), timestamp);
-    }
-
-    this->scene()->browser.add_proto(*this);
-}
-
-void ProtoNode::do_field(const std::string & id, const field_value & value)
-    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
-{
-    const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
-            this->isMap.equal_range(id);
-    for (ISMap::iterator itr(rangeItrs.first);
-         itr != rangeItrs.second;
-         ++itr) {
-        itr->second.node.field(itr->second.interfaceId, value);
-    }
-
-    if (rangeItrs.second == rangeItrs.first) {
-        //
-        // The field hasn't been IS'd to anything.  If it's an exposedField,
-        // the value is in eventOutValueMap; if it's a field, the value is in
-        // unISdFieldValueMap.
-        //
-        const node_interface_set & interfaces = this->type.interfaces();
-        const node_interface_set::const_iterator interface =
-            interfaces.find(id);
-        if (interface == interfaces.end()) {
-            throw unsupported_interface(this->type,
-                                        node_interface::field_id,
-                                        id);
-        }
-        if (interface->type == node_interface::exposedfield_id) {
-            assert(this->eventOutValueMap.find(id + "_changed")
-                    != this->eventOutValueMap.end());
-            this->eventOutValueMap[id + "_changed"].value->assign(value);
-        } else if (interface->type == node_interface::field_id) {
-            assert(this->unISdFieldValueMap.find(id)
-                    != this->unISdFieldValueMap.end());
-            this->unISdFieldValueMap[id]->assign(value);
-        } else {
-            throw unsupported_interface(this->type,
-                                        node_interface::field_id,
-                                        id);
-        }
-    }
-}
-
-const field_value & ProtoNode::do_field(const std::string & id) const
-    throw (unsupported_interface)
-{
-    //
-    // This is a little wierd: what should getField mean for a PROTO-based
-    // node? We pick the first node in the IS-map and call getField on it.
-    //
-    const ISMap::const_iterator pos = this->isMap.find(id);
-    if (pos == this->isMap.end()) {
-        //
-        // The field may exist for the node, but not be IS'd to anything.
-        //
-        // There are two possibilities...
-        //
-        if (this->type.has_exposedfield(id)) {
-            //
-            // If the field is really an exposedField then we need to grab the
-            // value from the eventOutValueMap.
-            //
-            const EventOutValueMap::const_iterator pos =
-                    this->eventOutValueMap.find(id + "_changed");
-            assert(pos != this->eventOutValueMap.end());
-            assert(pos->second.value);
-            return *pos->second.value;
-        } else {
-            //
-            // Otherwise, if we are dealing with a non-exposed field...
-            //
-            const FieldValueMap::const_iterator pos =
-                    this->unISdFieldValueMap.find(id);
-            if (pos == this->unISdFieldValueMap.end()) {
-                throw unsupported_interface(this->type.id
-                                            + " node has no field \"" + id
-                                            + "\".");
-            }
-            assert(pos->second);
-            return *pos->second;
-        }
-    }
-    return pos->second.node.field(pos->second.interfaceId);
-}
-
-namespace {
-
-    /**
-     * @internal
-     */
-    struct DispatchEvent_ :
-            std::unary_function<ProtoNode::ISMap::value_type, void> {
-        DispatchEvent_(const field_value & value, const double timestamp):
-            value(&value),
-            timestamp(timestamp)
-        {}
-
-        void operator()(const ProtoNode::ISMap::value_type & value) const
-        {
-            value.second.node.process_event(value.second.interfaceId,
-                                            *this->value,
-                                            this->timestamp);
-        }
-
-    private:
-        const field_value * value;
-        double timestamp;
-    };
-}
-
-void ProtoNode::do_process_event(const std::string & id,
-                                 const field_value & value,
-                                 const double timestamp)
-    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
-{
-    const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
-            this->isMap.equal_range(id);
-    if (rangeItrs.first == this->isMap.end()) {
-        throw unsupported_interface(this->type,
-                                    node_interface::eventin_id,
-                                    id);
-    }
-    std::for_each(rangeItrs.first, rangeItrs.second,
-                  DispatchEvent_(value, timestamp));
-
-    //
-    // Emit events.
-    //
-    for (EventOutValueMap::iterator itr(this->eventOutValueMap.begin());
-            itr != this->eventOutValueMap.end(); ++itr) {
-        if (itr->second.modified) {
-            this->emit_event(itr->first, *itr->second.value, timestamp);
-            itr->second.modified = false;
-        }
-    }
-}
-
-const field_value & ProtoNode::do_eventout(const std::string & id) const
-        throw (unsupported_interface) {
-    //
-    // If we have a real eventOut (not an exposedField) ...
-    //
-    {
-        const EventOutValueMap::const_iterator pos =
-                this->eventOutValueMap.find(id);
-        if (pos != this->eventOutValueMap.end()) { return *pos->second.value; }
-    }
-
-    //
-    // If the above code doesn't find anything, see if we have an exposedField.
-    //
-    // XXX I don't think this covers the case where more than one exposedField
-    // XXX in the implementation is IS'd to the same exposedField in the
-    // XXX interface.
-    //
-    {
-        const ISMap::const_iterator pos = this->isMap.find(id);
-        if (pos == this->isMap.end()) {
-            throw unsupported_interface(this->type.id + " node has no "
-                                        + "eventOut \"" + id + "\".");
-        }
-        return pos->second.node.eventout(id);
-    }
-}
-
-/**
- * @brief Shut down.
- *
- * @param timestamp the current time.
- */
-void ProtoNode::do_shutdown(const double timestamp) throw ()
-{
-    assert(this->scene());
-    this->scene()->browser.remove_proto(*this);
-
-    for (size_t i = 0; i < this->implNodes.size(); ++i) {
-        assert(this->implNodes[i]);
-        this->implNodes[i]->shutdown(timestamp);
-    }
-}
-
-vrml97_node::anchor_node * ProtoNode::to_anchor() const
-{
-    return this->implNodes[0]->to_anchor();
-}
-
-vrml97_node::audio_clip_node * ProtoNode::to_audio_clip() const
-{
-    return this->implNodes[0]->to_audio_clip();
-}
-
-vrml97_node::cylinder_sensor_node * ProtoNode::to_cylinder_sensor() const
-{
-    return this->implNodes[0]->to_cylinder_sensor();
-}
-
-vrml97_node::abstract_light_node * ProtoNode::to_light() const
-{
-    return this->implNodes[0]->to_light();
-}
-
-vrml97_node::movie_texture_node * ProtoNode::to_movie_texture() const
-{
-    return this->implNodes[0]->to_movie_texture();
-}
-
-vrml97_node::navigation_info_node * ProtoNode::to_navigation_info() const
-{
-    return this->implNodes[0]->to_navigation_info();
-}
-
-vrml97_node::plane_sensor_node * ProtoNode::to_plane_sensor() const
-{
-    return this->implNodes[0]->to_plane_sensor();
-}
-
-vrml97_node::point_light_node * ProtoNode::to_point_light() const
-{
-    return this->implNodes[0]->to_point_light();
-}
-
-vrml97_node::sphere_sensor_node * ProtoNode::to_sphere_sensor() const
-{
-    return this->implNodes[0]->to_sphere_sensor();
-}
-
-vrml97_node::spot_light_node * ProtoNode::to_spot_light() const
-{
-    return this->implNodes[0]->to_spot_light();
-}
-
-vrml97_node::time_sensor_node * ProtoNode::to_time_sensor() const
-{
-    return this->implNodes[0]->to_time_sensor();
-}
-
-vrml97_node::touch_sensor_node * ProtoNode::to_touch_sensor() const
-{
-    return this->implNodes[0]->to_touch_sensor();
-}
-
-
-/**
- * @internal
- *
- * @class ProtoNodeClass
- *
- * @brief Class object for ProtoNode instances.
- *
- * ProtoNodeClass instances are created and initialized when a PROTO definition
- * is read by the parser. Initialization consists of various calls to
- * addEventIn, addEventOut, addExposedField, addField, addRootNode, and addIS,
- * after which the ProtoNodeClass instance is added to the implementation
- * repository. Once the browser has started running, it is not appropriate to
- * call those methods.
- */
-
-/**
- * @internal
- *
- * @class ProtoNodeClass::ProtoNodeType
- *
- * @brief Type information object for ProtoNode instances.
- */
-
-/**
- * @var ProtoNodeClass::ProtoNodeType::nodeInterfaces
- *
- * @brief The list of interfaces supported by a node of this type.
- */
-
-/**
- * @brief Constructor.
- */
-ProtoNodeClass::ProtoNodeType::ProtoNodeType(ProtoNodeClass & nodeClass,
-                                             const std::string & id)
-    throw (unsupported_interface, std::bad_alloc):
-    node_type(nodeClass, id)
-{}
-
-/**
- * @brief Destructor.
- */
-ProtoNodeClass::ProtoNodeType::~ProtoNodeType() throw ()
-{}
-
-/**
- * @brief Get the list of interfaces.
- *
- * @return the list of interfaces for nodes of this type.
- */
-const node_interface_set & ProtoNodeClass::ProtoNodeType::interfaces() const
-    throw ()
-{
-    return this->nodeInterfaces;
-}
-
-/**
- * @brief Create a Node of this type.
- *
- * @return a node_ptr to a new Node.
- */
-const node_ptr
-ProtoNodeClass::ProtoNodeType::create_node(const scope_ptr & scope) const
-    throw (std::bad_alloc)
-{
-    return node_ptr(new ProtoNode(*this, scope,
-                                  static_cast<ProtoNodeClass &>
-                                  (this->node_class).protoNode));
-}
-
-/**
- * @brief Add an interface.
- */
-void
-ProtoNodeClass::ProtoNodeType::addInterface(const node_interface & interface)
-    throw (std::invalid_argument, std::bad_alloc)
-{
-    this->nodeInterfaces.add(interface);
-}
-
-/**
- * @var ProtoNodeClass::ProtoNodeType ProtoNodeClass::protoNodeType
- *
- * @brief This NodeType includes the full set of
- *      @link node_interface node_interfaces@endlink supported by the
- *      ProtoNodeClass.
- *
- * A ProtoNodeType instance is used for this instead of a node_interface_set as
- * a matter of convenience: we need to give @a protoNode a NodeType object.
- */
-
-/**
- * @var std::map<std::string, field_value_ptr> ProtoNodeClass::defaultValueMap
- *
- * @brief A map containing the default values for fields and exposedFields for
- *      the PROTO.
- */
-
-/**
- * @var ProtoNode ProtoNodeClass::protoNode
- *
- * @brief The prototype object. New nodes are created by copying this object.
- */
-
-/**
- * @brief Constructor.
- *
- * @param browser the browser associated with this node_class.
- */
-ProtoNodeClass::ProtoNodeClass(openvrml::browser & browser) throw ():
-    node_class(browser),
-    protoNodeType(*this, ""),
-    protoNode(protoNodeType)
-{}
-
-/**
- * @brief Destructor.
- */
-ProtoNodeClass::~ProtoNodeClass() throw ()
-{}
-
-/**
- * @brief Add an eventIn.
- *
- * @param type  the data type for the eventIn.
- * @param id    the name of the eventIn.
- *
- * @exception std::invalid_argument if an interface named @p id is already
- *                                  defined for the prototype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-void ProtoNodeClass::addEventIn(const field_value::type_id type,
-                                const std::string & id)
-        throw (std::invalid_argument, std::bad_alloc) {
-    const node_interface interface(node_interface::eventin_id, type, id);
-    this->protoNodeType.addInterface(interface);
-}
-
-/**
- * @brief Add an eventOut.
- *
- * @param type  the data type for the eventOut.
- * @param id    the name of the eventOut.
- *
- * @exception std::invalid_argument if an interface named @p id is already
- *                                  defined for the prototype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-void ProtoNodeClass::addEventOut(const field_value::type_id type,
-                                 const std::string & id)
-        throw (std::invalid_argument, std::bad_alloc) {
-    const node_interface interface(node_interface::eventout_id, type, id);
-    this->protoNodeType.addInterface(interface);
-
-    //
-    // Add a value to the ProtoNode's eventOutValueMap.
-    //
-    std::auto_ptr<field_value> value =
-        field_value::create(interface.field_type);
-    const node::polled_eventout_value eventOutValue =
-        node::polled_eventout_value(field_value_ptr(value), false);
-    const ProtoNode::EventOutValueMap::value_type
-        entry(interface.id, eventOutValue);
-    const bool succeeded =
-        this->protoNode.eventOutValueMap.insert(entry).second;
-    assert(succeeded);
-}
-
-/**
- * @brief Add an exposedField.
- *
- * @param id            the name of the exposedField.
- * @param defaultValue  the default value for the exposedField.
- *
- * @exception std::invalid_argument if an interface named @p id is already
- *                                  defined for the prototype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-void ProtoNodeClass::addExposedField(const std::string & id,
-                                     const field_value_ptr & defaultValue)
-    throw (std::invalid_argument, std::bad_alloc)
-{
-    const node_interface
-        interface(node_interface::exposedfield_id, defaultValue->type(), id);
-    this->protoNodeType.addInterface(interface);
-    {
-        const DefaultValueMap::value_type value(id, defaultValue);
-        const bool succeeded = this->defaultValueMap.insert(value).second;
-        assert(succeeded);
-    }
-
-    //
-    // Add a value to the ProtoNode's eventOutValueMap.
-    //
-    {
-        std::auto_ptr<field_value> value =
-            field_value::create(interface.field_type);
-        const node::polled_eventout_value eventOutValue =
-            node::polled_eventout_value(field_value_ptr(value), 0.0);
-        const ProtoNode::EventOutValueMap::value_type
-            entry(interface.id + "_changed", eventOutValue);
-        const bool succeeded =
-            this->protoNode.eventOutValueMap.insert(entry).second;
-        assert(succeeded);
-    }
-}
-
-/**
- * @brief Add a field.
- *
- * @param id            the name of the field.
- * @param defaultValue  the default value for the field.
- *
- * @exception std::invalid_argument if an interface named @p id is already
- *                                  defined for the prototype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-void ProtoNodeClass::addField(const std::string & id,
-                              const field_value_ptr & defaultValue)
-    throw (std::invalid_argument, std::bad_alloc)
-{
-    const node_interface
-            interface(node_interface::field_id, defaultValue->type(), id);
-    this->protoNodeType.addInterface(interface);
-    const DefaultValueMap::value_type value(id, defaultValue);
-    const bool succeeded = this->defaultValueMap.insert(value).second;
-    assert(succeeded);
-}
-
-/**
- * @brief Add a root node to the prototype definition.
- *
- * @param node  a node_ptr to a non-NULL node.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void ProtoNodeClass::addRootNode(const node_ptr & node) throw (std::bad_alloc)
-{
-    this->protoNode.addRootNode(node);
-}
-
-/**
- * @brief Add an IS mapping to the prototype definition.
- *
- * @param implNode              a node in the protoype implementation.
- * @param implNodeInterfaceId   an interface of @p implNode.
- * @param protoInterfaceId      an interface of the prototype.
- *
- * @exception unsupported_interface     if @p implNode has no interface
- *                                      @p implNodeInterfaceId, or if the
- *                                      prototype has no interface
- *                                      @p protoInterfaceId.
- * @exception NodeInterfaceTypeMismatch if the two interface types are
- *                                      incompatible.
- * @exception field_value_type_mismatch if the field types of the interfaces
- *                                      are not identical.
- * @exception std::bad_alloc            if memory allocation fails.
- */
-void ProtoNodeClass::addIS(node & implNode,
-                           const std::string & implNodeInterfaceId,
-                           const std::string & protoInterfaceId)
-    throw (unsupported_interface, NodeInterfaceTypeMismatch,
-           field_value_type_mismatch, std::bad_alloc)
-{
-    this->protoNode.addIS(implNode, implNodeInterfaceId, protoInterfaceId);
-}
-
-namespace {
-    struct AddInterface_ : std::unary_function<node_interface, void> {
-        AddInterface_(ProtoNodeClass::ProtoNodeType & protoNodeType):
-                protoNodeType(&protoNodeType) {}
-
-        void operator()(const node_interface & interface) const {
-            protoNodeType->addInterface(interface);
-        }
-
-    private:
-        ProtoNodeClass::ProtoNodeType * protoNodeType;
-    };
-}
-/**
- * @brief Create a new NodeType.
- */
-const node_type_ptr
-ProtoNodeClass::create_type(const std::string & id,
-                            const node_interface_set & interfaces)
-    throw (unsupported_interface, std::bad_alloc)
-{
-    const node_type_ptr nodeType(new ProtoNodeType(*this, id));
-    try {
-        std::for_each(interfaces.begin(), interfaces.end(),
-                      AddInterface_(static_cast<ProtoNodeType &>(*nodeType)));
-    } catch (unsupported_interface &) {
-        throw;
-    } catch (std::invalid_argument & ex) {
-        throw unsupported_interface(ex.what());
-    }
-    return nodeType;
-}
-
-
 /**
  * @internal
  *
@@ -3617,1469 +4326,1662 @@ Vrml97RootScope::Vrml97RootScope(const browser & browser,
     const browser::node_class_map_t & nodeClassMap = browser.node_class_map;
     browser::node_class_map_t::const_iterator pos;
 
-    //
-    // Anchor node
-    //
-    static const node_interface anchorInterfaces[] = {
-        node_interface(node_interface::eventin_id,
-                       field_value::mfnode_id,
-                       "addChildren"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfnode_id,
-                       "removeChildren"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "children"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "description"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "parameter"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "url"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxCenter"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxSize")
-    };
-    static const vrml97_node_interface_set_
-            anchorInterfaceSet(anchorInterfaces, anchorInterfaces + 8);
-    pos = nodeClassMap.find("urn:X-openvrml:node:Anchor");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("Anchor", anchorInterfaceSet));
+    try {
+        //
+        // Anchor node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "addChildren"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "removeChildren"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfnode_id,
+                               "children"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfstring_id,
+                               "description"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "parameter"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "url"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxCenter"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxSize")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 8);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Anchor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Anchor", interface_set));
+        }
 
-    //
-    // Appearance node
-    //
-    static const node_interface appearanceInterfaces[] = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "material"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "texture"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "textureTransform")
-    };
-    static const vrml97_node_interface_set_
-            appearanceInterfaceSet(appearanceInterfaces,
-                                   appearanceInterfaces + 3);
-    pos = nodeClassMap.find("urn:X-openvrml:node:Appearance");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("Appearance",
-                                            appearanceInterfaceSet));
+        //
+        // Appearance node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "material"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "texture"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "textureTransform")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 3);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Appearance");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Appearance",
+                                                    interface_set));
+        }
 
-    //
-    // AudioClip node
-    //
-    static const node_interface audioClipInterfaces[] = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "description"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "loop"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "pitch"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sftime_id,
-                       "startTime"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sftime_id,
-                       "stopTime"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "url"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "duration_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isActive")
-    };
-    static const vrml97_node_interface_set_
-            audioClipInterfaceSet(audioClipInterfaces,
-                                  audioClipInterfaces + 8);
-    pos = nodeClassMap.find("urn:X-openvrml:node:AudioClip");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("AudioClip",
-                                            audioClipInterfaceSet));
+        //
+        // AudioClip node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfstring_id,
+                               "description"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "loop"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "pitch"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sftime_id,
+                               "startTime"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sftime_id,
+                               "stopTime"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "url"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sftime_id,
+                               "duration_changed"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isActive")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 8);
+            pos = nodeClassMap.find("urn:X-openvrml:node:AudioClip");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("AudioClip",
+                                                    interface_set));
+        }
 
-    //
-    // Background node
-    //
-    static const node_interface backgroundInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::sfbool_id, "set_bind"),
-        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "groundAngle"),
-        node_interface(node_interface::exposedfield_id, field_value::mfcolor_id, "groundColor"),
-        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "backUrl"),
-        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "bottomUrl"),
-        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "frontUrl"),
-        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "leftUrl"),
-        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "rightUrl"),
-        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "topUrl"),
-        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "skyAngle"),
-        node_interface(node_interface::exposedfield_id, field_value::mfcolor_id, "skyColor"),
-        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
-    };
-    static const vrml97_node_interface_set_
-            backgroundInterfaceSet(backgroundInterfaces,
-                                  backgroundInterfaces + 12);
-    pos = nodeClassMap.find("urn:X-openvrml:node:Background");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("Background",
-                                              backgroundInterfaceSet));
+        //
+        // Background node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::sfbool_id,
+                               "set_bind"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mffloat_id,
+                               "groundAngle"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfcolor_id,
+                               "groundColor"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "backUrl"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "bottomUrl"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "frontUrl"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "leftUrl"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "rightUrl"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "topUrl"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mffloat_id,
+                               "skyAngle"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfcolor_id,
+                               "skyColor"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isBound")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 12);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Background");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Background",
+                                                    interface_set));
+        }
 
-    //
-    // Billboard node
-    //
-    static const node_interface billboardInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::mfnode_id, "addChildren"),
-        node_interface(node_interface::eventin_id, field_value::mfnode_id, "removeChildren"),
-        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "axisOfRotation"),
-        node_interface(node_interface::exposedfield_id, field_value::mfnode_id, "children"),
-        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
-        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
-    };
-    static const vrml97_node_interface_set_
-            billboardInterfaceSet(billboardInterfaces,
-                                  billboardInterfaces + 6);
-    pos = nodeClassMap.find("urn:X-openvrml:node:Billboard");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("Billboard",
-                                              billboardInterfaceSet));
+        //
+        // Billboard node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "addChildren"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "removeChildren"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "axisOfRotation"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfnode_id,
+                               "children"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxCenter"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxSize")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 6);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Billboard");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Billboard",
+                                                    interface_set));
+        }
 
-    //
-    // Box node
-    //
-    static const node_interface boxInterface =
-            node_interface(node_interface::field_id, field_value::sfvec3f_id, "size");
-    static const vrml97_node_interface_set_
-            boxInterfaceSet(&boxInterface, &boxInterface + 1);
-    pos = nodeClassMap.find("urn:X-openvrml:node:Box");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("Box", boxInterfaceSet));
+        //
+        // Box node
+        //
+        {
+            static const node_interface interface =
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "size");
+            static const vrml97_node_interface_set_
+                interface_set(&interface, &interface + 1);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Box");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Box", interface_set));
+        }
 
-    //
-    // Collision node
-    //
-    static const node_interface collisionInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::mfnode_id, "addChildren"),
-        node_interface(node_interface::eventin_id, field_value::mfnode_id, "removeChildren"),
-        node_interface(node_interface::exposedfield_id, field_value::mfnode_id, "children"),
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "collide"),
-        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
-        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize"),
-        node_interface(node_interface::field_id, field_value::sfnode_id, "proxy"),
-        node_interface(node_interface::eventout_id, field_value::sftime_id, "collideTime")
-    };
-    static const vrml97_node_interface_set_
-        collisionInterfaceSet(collisionInterfaces, collisionInterfaces + 8);
-    pos = nodeClassMap.find("urn:X-openvrml:node:Collision");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("Collision",
-                                              collisionInterfaceSet));
+        //
+        // Collision node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "addChildren"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "removeChildren"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfnode_id,
+                               "children"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "collide"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxCenter"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxSize"),
+                node_interface(node_interface::field_id,
+                               field_value::sfnode_id,
+                               "proxy"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sftime_id,
+                               "collideTime")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 8);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Collision");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Collision",
+                                                    interface_set));
+        }
 
-    //
-    // Color node
-    //
-    static const node_interface colorInterface =
-        node_interface(node_interface::exposedfield_id,
-                      field_value::mfcolor_id,
-                      "color");
-    static const vrml97_node_interface_set_
-            colorInterfaceSet(&colorInterface, &colorInterface + 1);
-    pos = nodeClassMap.find("urn:X-openvrml:node:Color");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("Color", colorInterfaceSet));
+        //
+        // Color node
+        //
+        {
+            static const node_interface interface =
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfcolor_id,
+                               "color");
+            static const vrml97_node_interface_set_
+                interface_set(&interface, &interface + 1);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Color");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Color", interface_set));
+        }
 
-    //
-    // ColorInterpolator node
-    //
-    static const node_interface colorInterpolatorInterfaces[] = {
-        node_interface(node_interface::eventin_id,
-                      field_value::sffloat_id,
-                      "set_fraction"),
-        node_interface(node_interface::exposedfield_id,
-                      field_value::mffloat_id,
-                      "key"),
-        node_interface(node_interface::exposedfield_id,
-                      field_value::mfcolor_id,
-                      "keyValue"),
-        node_interface(node_interface::eventout_id,
-                      field_value::sfcolor_id,
-                      "value_changed")
-    };
-    static const vrml97_node_interface_set_
-            colorInterpolatorInterfaceSet(colorInterpolatorInterfaces,
-                                          colorInterpolatorInterfaces + 4);
-    pos = nodeClassMap.find("urn:X-openvrml:node:ColorInterpolator");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("ColorInterpolator",
-                                              colorInterpolatorInterfaceSet));
+        //
+        // ColorInterpolator node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::sffloat_id,
+                               "set_fraction"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mffloat_id,
+                               "key"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfcolor_id,
+                               "keyValue"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfcolor_id,
+                               "value_changed")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 4);
+            pos = nodeClassMap.find("urn:X-openvrml:node:ColorInterpolator");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ColorInterpolator",
+                                                    interface_set));
+        }
 
-    //
-    // Cone node
-    //
-    static const node_interface coneInterfaces[] = {
-        node_interface(node_interface::field_id, field_value::sffloat_id, "bottomRadius"),
-        node_interface(node_interface::field_id, field_value::sffloat_id, "height"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "side"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "bottom")
-    };
-    static const vrml97_node_interface_set_
-            coneInterfaceSet(coneInterfaces, coneInterfaces + 4);
-    pos = nodeClassMap.find("urn:X-openvrml:node:Cone");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("Cone", coneInterfaceSet));
+        //
+        // Cone node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::field_id,
+                               field_value::sffloat_id,
+                               "bottomRadius"),
+                node_interface(node_interface::field_id,
+                               field_value::sffloat_id,
+                               "height"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "side"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "bottom")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 4);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Cone");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Cone", interface_set));
+        }
 
-    //
-    // Coordinate node
-    //
-    static const node_interface coordinateInterface =
-            node_interface(node_interface::exposedfield_id, field_value::mfvec3f_id, "point");
-    static const vrml97_node_interface_set_
-            coordinateInterfaceSet(&coordinateInterface,
-                                   &coordinateInterface + 1);
-    pos = nodeClassMap.find("urn:X-openvrml:node:Coordinate");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("Coordinate",
-                                              coordinateInterfaceSet));
+        //
+        // Coordinate node
+        //
+        {
+            static const node_interface interface =
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfvec3f_id,
+                               "point");
+            static const vrml97_node_interface_set_
+                interface_set(&interface, &interface + 1);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Coordinate");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Coordinate",
+                                                    interface_set));
+        }
 
-    //
-    // CoordinateInterpolator node
-    //
-    static const node_interface coordinateInterpolatorInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::sffloat_id, "set_fraction"),
-        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "key"),
-        node_interface(node_interface::exposedfield_id, field_value::mfvec3f_id, "keyValue"),
-        node_interface(node_interface::eventout_id, field_value::mfvec3f_id, "value_changed")
-    };
-    static const vrml97_node_interface_set_
-            coordinateInterpolatorInterfaceSet(coordinateInterpolatorInterfaces,
-                                               coordinateInterpolatorInterfaces + 4);
-    pos = nodeClassMap.find("urn:X-openvrml:node:CoordinateInterpolator");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("CoordinateInterpolator",
-                                              coordinateInterpolatorInterfaceSet));
+        //
+        // CoordinateInterpolator node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::sffloat_id,
+                               "set_fraction"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mffloat_id,
+                               "key"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfvec3f_id,
+                               "keyValue"),
+                node_interface(node_interface::eventout_id,
+                               field_value::mfvec3f_id,
+                               "value_changed")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 4);
+            pos = nodeClassMap
+                .find("urn:X-openvrml:node:CoordinateInterpolator");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("CoordinateInterpolator",
+                                                    interface_set));
+        }
 
-    //
-    // Cylinder node
-    //
-    static const node_interface cylinderInterfaces[] = {
-        node_interface(node_interface::field_id, field_value::sfbool_id, "bottom"),
-        node_interface(node_interface::field_id, field_value::sffloat_id, "height"),
-        node_interface(node_interface::field_id, field_value::sffloat_id, "radius"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "side"),
-        node_interface(node_interface::field_id, field_value::sfbool_id, "top")
-    };
-    static const vrml97_node_interface_set_
-            cylinderInterfaceSet(cylinderInterfaces, cylinderInterfaces + 5);
-    pos = nodeClassMap.find("urn:X-openvrml:node:Cylinder");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("Cylinder",
-                                              cylinderInterfaceSet));
+        //
+        // Cylinder node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "bottom"),
+                node_interface(node_interface::field_id,
+                               field_value::sffloat_id,
+                               "height"),
+                node_interface(node_interface::field_id,
+                               field_value::sffloat_id,
+                               "radius"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "side"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "top")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 5);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Cylinder");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Cylinder",
+                                                    interface_set));
+        }
 
-    //
-    // CylinderSensor node
-    //
-    static const node_interface cylinderSensorInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "autoOffset"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "diskAngle"),
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "maxAngle"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "minAngle"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "offset"),
-        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
-        node_interface(node_interface::eventout_id, field_value::sfrotation_id, "rotation_changed"),
-        node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed")
-    };
-    static const vrml97_node_interface_set_
-            cylinderSensorInterfaceSet(cylinderSensorInterfaces,
-                                       cylinderSensorInterfaces + 9);
-    pos = nodeClassMap.find("urn:X-openvrml:node:CylinderSensor");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("CylinderSensor",
-                                              cylinderSensorInterfaceSet));
+        //
+        // CylinderSensor node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "autoOffset"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "diskAngle"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "enabled"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "maxAngle"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "minAngle"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "offset"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isActive"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfrotation_id,
+                               "rotation_changed"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfvec3f_id,
+                               "trackPoint_changed")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 9);
+            pos = nodeClassMap.find("urn:X-openvrml:node:CylinderSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("CylinderSensor",
+                                                    interface_set));
+        }
 
-    //
-    // DirectionalLight node
-    //
-    static const node_interface directionalLightInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "ambientIntensity"),
-        node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "color"),
-        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "direction"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "intensity"),
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "on")
-    };
-    static const vrml97_node_interface_set_
-            directionalLightInterfaceSet(directionalLightInterfaces,
-                                         directionalLightInterfaces + 5);
-    pos = nodeClassMap.find("urn:X-openvrml:node:DirectionalLight");
-    assert(pos != nodeClassMap.end());
-    this->add_type(pos->second->create_type("DirectionalLight",
-                                              directionalLightInterfaceSet));
+        //
+        // DirectionalLight node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "ambientIntensity"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfcolor_id,
+                               "color"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "direction"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "intensity"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "on")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 5);
+            pos = nodeClassMap.find("urn:X-openvrml:node:DirectionalLight");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("DirectionalLight",
+                                                    interface_set));
+        }
 
-    //
-    // ElevationGrid node
-    //
-    {
-        static const node_interface node_interfaces[] = {
-            node_interface(node_interface::eventin_id,
-                           field_value::mffloat_id,
-                           "set_height"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfnode_id,
-                           "color"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfnode_id,
-                           "normal"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfnode_id,
-                           "texCoord"),
-            node_interface(node_interface::field_id,
-                           field_value::mffloat_id,
-                           "height"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "ccw"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "colorPerVertex"),
-            node_interface(node_interface::field_id,
-                           field_value::sffloat_id,
-                           "creaseAngle"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "normalPerVertex"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "solid"),
-            node_interface(node_interface::field_id,
-                           field_value::sfint32_id,
-                           "xDimension"),
-            node_interface(node_interface::field_id,
-                           field_value::sffloat_id,
-                           "xSpacing"),
-            node_interface(node_interface::field_id,
-                           field_value::sfint32_id,
-                           "zDimension"),
-            node_interface(node_interface::field_id,
-                           field_value::sffloat_id,
-                           "zSpacing")
-        };
-        static const vrml97_node_interface_set_
-            node_interface_set(node_interfaces, node_interfaces + 14);
-        pos = nodeClassMap.find("urn:X-openvrml:node:ElevationGrid");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("ElevationGrid",
-                                                node_interface_set));
-    }
+        //
+        // ElevationGrid node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mffloat_id,
+                               "set_height"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "color"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "normal"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "texCoord"),
+                node_interface(node_interface::field_id,
+                               field_value::mffloat_id,
+                               "height"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "ccw"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "colorPerVertex"),
+                node_interface(node_interface::field_id,
+                               field_value::sffloat_id,
+                               "creaseAngle"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "normalPerVertex"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "solid"),
+                node_interface(node_interface::field_id,
+                               field_value::sfint32_id,
+                               "xDimension"),
+                node_interface(node_interface::field_id,
+                               field_value::sffloat_id,
+                               "xSpacing"),
+                node_interface(node_interface::field_id,
+                               field_value::sfint32_id,
+                               "zDimension"),
+                node_interface(node_interface::field_id,
+                               field_value::sffloat_id,
+                               "zSpacing")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 14);
+            pos = nodeClassMap.find("urn:X-openvrml:node:ElevationGrid");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ElevationGrid",
+                                                    interface_set));
+        }
 
-    //
-    // Extrusion node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id,
-                           field_value::mfvec2f_id,
-                           "set_crossSection"),
-            node_interface(node_interface::eventin_id,
-                           field_value::mfrotation_id,
-                           "set_orientation"),
-            node_interface(node_interface::eventin_id,
-                           field_value::mfvec2f_id,
-                           "set_scale"),
-            node_interface(node_interface::eventin_id,
-                           field_value::mfvec3f_id,
-                           "set_spine"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "beginCap"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "ccw"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "convex"),
-            node_interface(node_interface::field_id,
-                           field_value::sffloat_id,
-                           "creaseAngle"),
-            node_interface(node_interface::field_id,
-                           field_value::mfvec2f_id,
-                           "crossSection"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "endCap"),
-            node_interface(node_interface::field_id,
-                           field_value::mfrotation_id,
-                           "orientation"),
-            node_interface(node_interface::field_id,
-                           field_value::mfvec2f_id,
-                           "scale"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "solid"),
-            node_interface(node_interface::field_id,
-                           field_value::mfvec3f_id,
-                           "spine")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 14);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Extrusion");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Extrusion",
-                                                  nodeInterfaceSet));
-    }
+        //
+        // Extrusion node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mfvec2f_id,
+                               "set_crossSection"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfrotation_id,
+                               "set_orientation"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfvec2f_id,
+                               "set_scale"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfvec3f_id,
+                               "set_spine"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "beginCap"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "ccw"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "convex"),
+                node_interface(node_interface::field_id,
+                               field_value::sffloat_id,
+                               "creaseAngle"),
+                node_interface(node_interface::field_id,
+                               field_value::mfvec2f_id,
+                               "crossSection"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "endCap"),
+                node_interface(node_interface::field_id,
+                               field_value::mfrotation_id,
+                               "orientation"),
+                node_interface(node_interface::field_id,
+                               field_value::mfvec2f_id,
+                               "scale"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "solid"),
+                node_interface(node_interface::field_id,
+                               field_value::mfvec3f_id,
+                               "spine")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 14);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Extrusion");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Extrusion",
+                                                    interface_set));
+        }
 
-    //
-    // Fog node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id,
-                           field_value::sfbool_id,
-                           "set_bind"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfcolor_id,
-                           "color"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfstring_id,
-                           "fogType"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sffloat_id,
-                           "visibilityRange"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sfbool_id,
-                           "isBound")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Fog");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Fog", nodeInterfaceSet));
-    }
+        //
+        // Fog node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::sfbool_id,
+                               "set_bind"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfcolor_id,
+                               "color"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfstring_id,
+                               "fogType"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "visibilityRange"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isBound")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 5);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Fog");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Fog", interface_set));
+        }
 
-    //
-    // FontStyle node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::field_id,
-                           field_value::mfstring_id,
-                           "family"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "horizontal"),
-            node_interface(node_interface::field_id,
-                           field_value::mfstring_id,
-                           "justify"),
-            node_interface(node_interface::field_id,
-                           field_value::sfstring_id,
-                           "language"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "leftToRight"),
-            node_interface(node_interface::field_id,
-                           field_value::sffloat_id,
-                           "size"),
-            node_interface(node_interface::field_id,
-                           field_value::sffloat_id,
-                           "spacing"),
-            node_interface(node_interface::field_id,
-                           field_value::sfstring_id,
-                           "style"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "topToBottom")
-        };
-        static const vrml97_node_interface_set_
-            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
-        pos = nodeClassMap.find("urn:X-openvrml:node:FontStyle");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("FontStyle",
-                                                nodeInterfaceSet));
-    }
+        //
+        // FontStyle node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::field_id,
+                               field_value::mfstring_id,
+                               "family"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "horizontal"),
+                node_interface(node_interface::field_id,
+                               field_value::mfstring_id,
+                               "justify"),
+                node_interface(node_interface::field_id,
+                               field_value::sfstring_id,
+                               "language"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "leftToRight"),
+                node_interface(node_interface::field_id,
+                               field_value::sffloat_id,
+                               "size"),
+                node_interface(node_interface::field_id,
+                               field_value::sffloat_id,
+                               "spacing"),
+                node_interface(node_interface::field_id,
+                               field_value::sfstring_id,
+                               "style"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "topToBottom")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 9);
+            pos = nodeClassMap.find("urn:X-openvrml:node:FontStyle");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("FontStyle",
+                                                    interface_set));
+        }
 
-    //
-    // Group node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id,
-                           field_value::mfnode_id,
-                           "addChildren"),
-            node_interface(node_interface::eventin_id,
-                           field_value::mfnode_id,
-                           "removeChildren"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::mfnode_id,
-                           "children"),
-            node_interface(node_interface::field_id,
-                           field_value::sfvec3f_id,
-                           "bboxCenter"),
-            node_interface(node_interface::field_id,
-                           field_value::sfvec3f_id,
-                           "bboxSize")
-        };
-        static const vrml97_node_interface_set_
-            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Group");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Group",
-                                                nodeInterfaceSet));
-    }
+        //
+        // Group node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "addChildren"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "removeChildren"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfnode_id,
+                               "children"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxCenter"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxSize")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 5);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Group");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Group",
+                                                    interface_set));
+        }
 
-    //
-    // ImageTexture node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                           field_value::mfstring_id,
-                           "url"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "repeatS"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "repeatT")
-        };
-        static const vrml97_node_interface_set_
-            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
-        pos = nodeClassMap.find("urn:X-openvrml:node:ImageTexture");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("ImageTexture",
-                                                nodeInterfaceSet));
-    }
+        //
+        // ImageTexture node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "url"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "repeatS"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "repeatT")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 3);
+            pos = nodeClassMap.find("urn:X-openvrml:node:ImageTexture");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ImageTexture",
+                                                    interface_set));
+        }
 
-    //
-    // IndexedFaceSet node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id,
-                           field_value::mfint32_id,
-                           "set_colorIndex"),
-            node_interface(node_interface::eventin_id,
-                           field_value::mfint32_id,
-                           "set_coordIndex"),
-            node_interface(node_interface::eventin_id,
-                           field_value::mfint32_id,
-                           "set_normalIndex"),
-            node_interface(node_interface::eventin_id,
-                           field_value::mfint32_id,
-                           "set_texCoordIndex"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfnode_id,
-                           "color"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfnode_id,
-                           "coord"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfnode_id,
-                           "normal"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfnode_id,
-                           "texCoord"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "ccw"),
-            node_interface(node_interface::field_id,
-                           field_value::mfint32_id,
-                           "colorIndex"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "colorPerVertex"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "convex"),
-            node_interface(node_interface::field_id,
-                           field_value::mfint32_id,
-                           "coordIndex"),
-            node_interface(node_interface::field_id,
-                           field_value::sffloat_id,
-                           "creaseAngle"),
-            node_interface(node_interface::field_id,
-                           field_value::mfint32_id,
-                           "normalIndex"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "normalPerVertex"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "solid"),
-            node_interface(node_interface::field_id,
-                           field_value::mfint32_id,
-                           "texCoordIndex")
-        };
-        static const vrml97_node_interface_set_
-            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 18);
-        pos = nodeClassMap.find("urn:X-openvrml:node:IndexedFaceSet");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("IndexedFaceSet",
-                                                nodeInterfaceSet));
-    }
+        //
+        // IndexedFaceSet node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mfint32_id,
+                               "set_colorIndex"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfint32_id,
+                               "set_coordIndex"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfint32_id,
+                               "set_normalIndex"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfint32_id,
+                               "set_texCoordIndex"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "color"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "coord"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "normal"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "texCoord"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "ccw"),
+                node_interface(node_interface::field_id,
+                               field_value::mfint32_id,
+                               "colorIndex"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "colorPerVertex"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "convex"),
+                node_interface(node_interface::field_id,
+                               field_value::mfint32_id,
+                               "coordIndex"),
+                node_interface(node_interface::field_id,
+                               field_value::sffloat_id,
+                               "creaseAngle"),
+                node_interface(node_interface::field_id,
+                               field_value::mfint32_id,
+                               "normalIndex"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "normalPerVertex"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "solid"),
+                node_interface(node_interface::field_id,
+                               field_value::mfint32_id,
+                               "texCoordIndex")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 18);
+            pos = nodeClassMap.find("urn:X-openvrml:node:IndexedFaceSet");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("IndexedFaceSet",
+                                                    interface_set));
+        }
 
-    //
-    // IndexedLineSet node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id,
-                          field_value::mfint32_id,
-                          "set_colorIndex"),
-            node_interface(node_interface::eventin_id,
-                          field_value::mfint32_id,
-                          "set_coordIndex"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfnode_id,
-                          "color"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfnode_id,
-                          "coord"),
-            node_interface(node_interface::field_id,
-                          field_value::mfint32_id,
-                          "colorIndex"),
-            node_interface(node_interface::field_id,
-                          field_value::sfbool_id,
-                          "colorPerVertex"),
-            node_interface(node_interface::field_id,
-                          field_value::mfint32_id,
-                          "coordIndex")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
-        pos = nodeClassMap.find("urn:X-openvrml:node:IndexedLineSet");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("IndexedLineSet",
-                                                  nodeInterfaceSet));
-    }
+        //
+        // IndexedLineSet node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mfint32_id,
+                               "set_colorIndex"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfint32_id,
+                               "set_coordIndex"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "color"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "coord"),
+                node_interface(node_interface::field_id,
+                               field_value::mfint32_id,
+                               "colorIndex"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "colorPerVertex"),
+                node_interface(node_interface::field_id,
+                               field_value::mfint32_id,
+                               "coordIndex")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 7);
+            pos = nodeClassMap.find("urn:X-openvrml:node:IndexedLineSet");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("IndexedLineSet",
+                                                    interface_set));
+        }
 
-    //
-    // Inline node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "url"),
-            node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
-            node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Inline");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Inline", nodeInterfaceSet));
-    }
+        //
+        // Inline node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "url"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxCenter"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxSize")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 3);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Inline");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Inline", interface_set));
+        }
 
-    //
-    // LOD node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::mfnode_id, "level"),
-            node_interface(node_interface::field_id, field_value::sfvec3f_id, "center"),
-            node_interface(node_interface::field_id, field_value::mffloat_id, "range")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
-        pos = nodeClassMap.find("urn:X-openvrml:node:LOD");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("LOD", nodeInterfaceSet));
-    }
+        //
+        // LOD node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfnode_id,
+                               "level"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "center"),
+                node_interface(node_interface::field_id,
+                               field_value::mffloat_id,
+                               "range")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 3);
+            pos = nodeClassMap.find("urn:X-openvrml:node:LOD");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("LOD", interface_set));
+        }
 
-    //
-    // Material node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "ambientIntensity"),
-            node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "diffuseColor"),
-            node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "emissiveColor"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "shininess"),
-            node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "specularColor"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "transparency")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Material");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Material",
-                                                  nodeInterfaceSet));
-    }
+        //
+        // Material node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "ambientIntensity"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfcolor_id,
+                               "diffuseColor"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfcolor_id,
+                               "emissiveColor"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "shininess"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfcolor_id,
+                               "specularColor"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "transparency")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 6);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Material");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Material",
+                                                    interface_set));
+        }
 
-    //
-    // MovieTexture node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfbool_id,
-                           "loop"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sffloat_id,
-                           "speed"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sftime_id,
-                           "startTime"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sftime_id,
-                           "stopTime"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::mfstring_id,
-                           "url"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "repeatS"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "repeatT"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sftime_id,
-                           "duration_changed"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sfbool_id,
-                           "isActive")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
-        pos = nodeClassMap.find("urn:X-openvrml:node:MovieTexture");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("MovieTexture",
-                                                nodeInterfaceSet));
-    }
+        //
+        // MovieTexture node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "loop"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "speed"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sftime_id,
+                               "startTime"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sftime_id,
+                               "stopTime"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "url"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "repeatS"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "repeatT"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sftime_id,
+                               "duration_changed"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isActive")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 9);
+            pos = nodeClassMap.find("urn:X-openvrml:node:MovieTexture");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("MovieTexture",
+                                                    interface_set));
+        }
 
-    //
-    // NavigationInfo node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id,
-                           field_value::sfbool_id,
-                           "set_bind"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::mffloat_id,
-                           "avatarSize"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfbool_id,
-                           "headlight"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sffloat_id,
-                           "speed"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::mfstring_id,
-                           "type"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sffloat_id,
-                           "visibilityLimit"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sfbool_id,
-                           "isBound")
-        };
-        static const vrml97_node_interface_set_
-            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
-        pos = nodeClassMap.find("urn:X-openvrml:node:NavigationInfo");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("NavigationInfo",
-                                                nodeInterfaceSet));
-    }
+        //
+        // NavigationInfo node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::sfbool_id,
+                               "set_bind"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mffloat_id,
+                               "avatarSize"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "headlight"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "speed"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "type"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "visibilityLimit"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isBound")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 7);
+            pos = nodeClassMap.find("urn:X-openvrml:node:NavigationInfo");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("NavigationInfo",
+                                                    interface_set));
+        }
 
-    //
-    // Normal node
-    //
-    {
-        static const node_interface nodeInterface =
-            node_interface(node_interface::exposedfield_id,
-                           field_value::mfvec3f_id,
-                           "vector");
-        static const vrml97_node_interface_set_
-            nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Normal");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Normal",
-                                                nodeInterfaceSet));
-    }
+        //
+        // Normal node
+        //
+        {
+            static const node_interface interface =
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfvec3f_id,
+                               "vector");
+            static const vrml97_node_interface_set_
+                interface_set(&interface, &interface + 1);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Normal");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Normal",
+                                                    interface_set));
+        }
 
-    //
-    // NormalInterpolator node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id,
-                           field_value::sffloat_id,
-                           "set_fraction"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::mffloat_id,
-                           "key"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::mfvec3f_id,
-                           "keyValue"),
-            node_interface(node_interface::eventout_id,
-                           field_value::mfvec3f_id,
-                           "value_changed")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
-        pos = nodeClassMap.find("urn:X-openvrml:node:NormalInterpolator");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("NormalInterpolator",
-                                                  nodeInterfaceSet));
-    }
+        //
+        // NormalInterpolator node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::sffloat_id,
+                               "set_fraction"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mffloat_id,
+                               "key"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfvec3f_id,
+                               "keyValue"),
+                node_interface(node_interface::eventout_id,
+                               field_value::mfvec3f_id,
+                               "value_changed")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 4);
+            pos = nodeClassMap.find("urn:X-openvrml:node:NormalInterpolator");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("NormalInterpolator",
+                                                    interface_set));
+        }
 
-    //
-    // OrientationInterpolator node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id,
-                          field_value::sffloat_id,
-                          "set_fraction"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::mffloat_id,
-                          "key"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::mfrotation_id,
-                          "keyValue"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sfrotation_id,
-                          "value_changed")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
-        pos = nodeClassMap.find("urn:X-openvrml:node:OrientationInterpolator");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("OrientationInterpolator",
-                                                  nodeInterfaceSet));
-    }
+        //
+        // OrientationInterpolator node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::sffloat_id,
+                               "set_fraction"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mffloat_id,
+                               "key"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfrotation_id,
+                               "keyValue"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfrotation_id,
+                               "value_changed")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 4);
+            pos = nodeClassMap
+                .find("urn:X-openvrml:node:OrientationInterpolator");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("OrientationInterpolator",
+                                                    interface_set));
+        }
 
-    //
-    // PixelTexture node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfimage_id,
-                          "image"),
-            node_interface(node_interface::field_id,
-                          field_value::sfbool_id,
-                          "repeatS"),
-            node_interface(node_interface::field_id,
-                          field_value::sfbool_id,
-                          "repeatT")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
-        pos = nodeClassMap.find("urn:X-openvrml:node:PixelTexture");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("PixelTexture",
-                                                  nodeInterfaceSet));
-    }
+        //
+        // PixelTexture node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfimage_id,
+                               "image"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "repeatS"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "repeatT")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 3);
+            pos = nodeClassMap.find("urn:X-openvrml:node:PixelTexture");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PixelTexture",
+                                                    interface_set));
+        }
 
-    //
-    // PlaneSensor node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "autoOffset"),
-            node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
-            node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "maxPosition"),
-            node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "minPosition"),
-            node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "offset"),
-            node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
-            node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed"),
-            node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "translation_changed")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
-        pos = nodeClassMap.find("urn:X-openvrml:node:PlaneSensor");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("PlaneSensor",
-                                                  nodeInterfaceSet));
-    }
+        //
+        // PlaneSensor node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "autoOffset"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "enabled"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec2f_id,
+                               "maxPosition"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec2f_id,
+                               "minPosition"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "offset"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isActive"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfvec3f_id,
+                               "trackPoint_changed"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfvec3f_id,
+                               "translation_changed")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 8);
+            pos = nodeClassMap.find("urn:X-openvrml:node:PlaneSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PlaneSensor",
+                                                    interface_set));
+        }
 
-    //
-    // PointLight node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "ambientIntensity"),
-            node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "attenuation"),
-            node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "color"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "intensity"),
-            node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "location"),
-            node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "on"),
-            node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "radius")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
-        pos = nodeClassMap.find("urn:X-openvrml:node:PointLight");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("PointLight",
-                                                  nodeInterfaceSet));
-    }
+        //
+        // PointLight node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "ambientIntensity"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "attenuation"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfcolor_id,
+                               "color"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "intensity"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "location"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "on"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "radius")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 7);
+            pos = nodeClassMap.find("urn:X-openvrml:node:PointLight");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PointLight",
+                                                    interface_set));
+        }
 
-    //
-    // PointSet node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfnode_id,
-                           "color"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfnode_id,
-                           "coord")
-        };
-        static const vrml97_node_interface_set_
-            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
-        pos = nodeClassMap.find("urn:X-openvrml:node:PointSet");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("PointSet",
-                                                nodeInterfaceSet));
-    }
+        //
+        // PointSet node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "color"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "coord")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 2);
+            pos = nodeClassMap.find("urn:X-openvrml:node:PointSet");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PointSet",
+                                                    interface_set));
+        }
 
-    //
-    // PositionInterpolator node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id,
-                          field_value::sffloat_id,
-                          "set_fraction"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::mffloat_id,
-                          "key"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::mfvec3f_id,
-                          "keyValue"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sfvec3f_id,
-                          "value_changed")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
-        pos = nodeClassMap.find("urn:X-openvrml:node:PositionInterpolator");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("PositionInterpolator",
-                                                  nodeInterfaceSet));
-    }
+        //
+        // PositionInterpolator node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::sffloat_id,
+                               "set_fraction"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mffloat_id,
+                               "key"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfvec3f_id,
+                               "keyValue"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfvec3f_id,
+                               "value_changed")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 4);
+            pos = nodeClassMap
+                .find("urn:X-openvrml:node:PositionInterpolator");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PositionInterpolator",
+                                                    interface_set));
+        }
 
-    //
-    // ProximitySensor node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfvec3f_id,
-                           "center"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfvec3f_id,
-                           "size"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfbool_id,
-                           "enabled"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sfbool_id,
-                           "isActive"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sfvec3f_id,
-                           "position_changed"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sfrotation_id,
-                           "orientation_changed"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sftime_id,
-                           "enterTime"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sftime_id,
-                           "exitTime")
-        };
-        static const vrml97_node_interface_set_
-            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
-        pos = nodeClassMap.find("urn:X-openvrml:node:ProximitySensor");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("ProximitySensor",
-                                                nodeInterfaceSet));
-    }
+        //
+        // ProximitySensor node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "center"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "size"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "enabled"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isActive"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfvec3f_id,
+                               "position_changed"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfrotation_id,
+                               "orientation_changed"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sftime_id,
+                               "enterTime"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sftime_id,
+                               "exitTime")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 8);
+            pos = nodeClassMap.find("urn:X-openvrml:node:ProximitySensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ProximitySensor",
+                                                    interface_set));
+        }
 
-    //
-    // ScalarInterpolator node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id,
-                           field_value::sffloat_id,
-                           "set_fraction"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::mffloat_id,
-                           "key"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::mffloat_id,
-                           "keyValue"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sffloat_id,
-                           "value_changed")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
-        pos = nodeClassMap.find("urn:X-openvrml:node:ScalarInterpolator");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("ScalarInterpolator",
-                                                nodeInterfaceSet));
-    }
+        //
+        // ScalarInterpolator node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::sffloat_id,
+                               "set_fraction"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mffloat_id,
+                               "key"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mffloat_id,
+                               "keyValue"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sffloat_id,
+                               "value_changed")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 4);
+            pos = nodeClassMap.find("urn:X-openvrml:node:ScalarInterpolator");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ScalarInterpolator",
+                                                    interface_set));
+        }
 
-    //
-    // Shape node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfnode_id,
-                           "appearance"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfnode_id,
-                           "geometry")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Shape");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Shape", nodeInterfaceSet));
-    }
+        //
+        // Shape node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "appearance"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "geometry")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 2);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Shape");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Shape", interface_set));
+        }
 
-    //
-    // Sound node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfvec3f_id,
-                           "direction"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sffloat_id,
-                           "intensity"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfvec3f_id,
-                           "location"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sffloat_id,
-                           "maxBack"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sffloat_id,
-                           "maxFront"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sffloat_id,
-                           "minBack"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sffloat_id,
-                           "minFront"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sffloat_id,
-                           "priority"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfnode_id,
-                           "source"),
-            node_interface(node_interface::field_id,
-                           field_value::sfbool_id,
-                           "spatialize")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Sound");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Sound", nodeInterfaceSet));
-    }
+        //
+        // Sound node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "direction"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "intensity"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "location"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "maxBack"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "maxFront"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "minBack"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "minFront"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "priority"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "source"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "spatialize")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 10);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Sound");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Sound", interface_set));
+        }
 
-    //
-    // Sphere node
-    //
-    {
-        static const node_interface nodeInterface =
+        //
+        // Sphere node
+        //
+        {
+            static const node_interface interface =
                 node_interface(node_interface::field_id,
                                field_value::sffloat_id,
                                "radius");
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Sphere");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Sphere", nodeInterfaceSet));
-    }
+            static const vrml97_node_interface_set_
+                interface_set(&interface, &interface + 1);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Sphere");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Sphere", interface_set));
+        }
 
-    //
-    // SphereSensor node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfbool_id,
-                           "autoOffset"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfbool_id,
-                           "enabled"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sffloat_id,
-                           "offset"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sfbool_id,
-                           "isActive"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sfrotation_id,
-                           "rotation_changed"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sfvec3f_id,
-                           "trackPoint_changed")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
-        pos = nodeClassMap.find("urn:X-openvrml:node:SphereSensor");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("SphereSensor",
-                                                nodeInterfaceSet));
-    }
-
-    //
-    // SpotLight node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sffloat_id,
-                          "ambientIntensity"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfvec3f_id,
-                          "attenuation"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sffloat_id,
-                          "beamWidth"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfcolor_id,
-                          "color"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sffloat_id,
-                          "cutOffAngle"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfvec3f_id,
-                          "direction"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sffloat_id,
-                          "intensity"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfvec3f_id,
-                          "location"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfbool_id,
-                          "on"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sffloat_id,
-                          "radius")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
-        pos = nodeClassMap.find("urn:X-openvrml:node:SpotLight");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("SpotLight",
-                                                nodeInterfaceSet));
-    }
-
-    //
-    // Switch node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                          field_value::mfnode_id,
-                          "choice"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfint32_id,
-                          "whichChoice")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Switch");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Switch", nodeInterfaceSet));
-    }
-
-    //
-    // Text node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                          field_value::mfstring_id,
-                          "string"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfnode_id,
-                          "fontStyle"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::mffloat_id,
-                          "length"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sffloat_id,
-                          "maxExtent")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Text");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Text", nodeInterfaceSet));
-    }
-
-    //
-    // TextureCoordinate node
-    //
-    {
-        static const node_interface nodeInterface =
+        //
+        // SphereSensor node
+        //
+        {
+            static const node_interface interfaces[] = {
                 node_interface(node_interface::exposedfield_id,
-                              field_value::mfvec2f_id,
-                              "point");
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
-        pos = nodeClassMap.find("urn:X-openvrml:node:TextureCoordinate");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("TextureCoordinate",
-                                                nodeInterfaceSet));
-    }
+                               field_value::sfbool_id,
+                               "autoOffset"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "enabled"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "offset"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isActive"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfrotation_id,
+                               "rotation_changed"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfvec3f_id,
+                               "trackPoint_changed")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 6);
+            pos = nodeClassMap.find("urn:X-openvrml:node:SphereSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("SphereSensor",
+                                                    interface_set));
+        }
 
-    //
-    // TextureTransform node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfvec2f_id,
-                           "center"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sffloat_id,
-                           "rotation"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfvec2f_id,
-                           "scale"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfvec2f_id,
-                           "translation")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
-        pos = nodeClassMap.find("urn:X-openvrml:node:TextureTransform");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("TextureTransform",
-                                                nodeInterfaceSet));
-    }
+        //
+        // SpotLight node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "ambientIntensity"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "attenuation"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "beamWidth"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfcolor_id,
+                               "color"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "cutOffAngle"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "direction"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "intensity"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "location"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "on"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "radius")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 10);
+            pos = nodeClassMap.find("urn:X-openvrml:node:SpotLight");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("SpotLight",
+                                                    interface_set));
+        }
 
-    //
-    // TimeSensor node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sftime_id,
-                           "cycleInterval"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfbool_id,
-                           "enabled"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfbool_id,
-                           "loop"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sftime_id,
-                           "startTime"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sftime_id,
-                           "stopTime"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sftime_id,
-                           "cycleTime"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sffloat_id,
-                           "fraction_changed"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sfbool_id,
-                           "isActive"),
-            node_interface(node_interface::eventout_id,
-                           field_value::sftime_id,
-                           "time")
-        };
-        static const vrml97_node_interface_set_
-            nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
-        pos = nodeClassMap.find("urn:X-openvrml:node:TimeSensor");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("TimeSensor",
-                                                nodeInterfaceSet));
-    }
+        //
+        // Switch node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfnode_id,
+                               "choice"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfint32_id,
+                               "whichChoice")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 2);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Switch");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Switch", interface_set));
+        }
 
-    //
-    // TouchSensor node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfbool_id,
-                          "enabled"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sfvec3f_id,
-                          "hitNormal_changed"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sfvec3f_id,
-                          "hitPoint_changed"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sfvec2f_id,
-                          "hitTexCoord_changed"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sfbool_id,
-                          "isActive"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sfbool_id,
-                          "isOver"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sftime_id,
-                          "touchTime")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
-        pos = nodeClassMap.find("urn:X-openvrml:node:TouchSensor");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("TouchSensor",
-                                                  nodeInterfaceSet));
-    }
+        //
+        // Text node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfstring_id,
+                               "string"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "fontStyle"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mffloat_id,
+                               "length"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "maxExtent")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 4);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Text");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Text", interface_set));
+        }
 
-    //
-    // Transform node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id,
-                           field_value::mfnode_id,
-                           "addChildren"),
-            node_interface(node_interface::eventin_id,
-                           field_value::mfnode_id,
-                           "removeChildren"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfvec3f_id,
-                           "center"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::mfnode_id,
-                           "children"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfrotation_id,
-                           "rotation"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfvec3f_id,
-                           "scale"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfrotation_id,
-                           "scaleOrientation"),
-            node_interface(node_interface::exposedfield_id,
-                           field_value::sfvec3f_id,
-                           "translation"),
-            node_interface(node_interface::field_id,
-                           field_value::sfvec3f_id,
-                           "bboxCenter"),
-            node_interface(node_interface::field_id,
-                           field_value::sfvec3f_id,
-                           "bboxSize")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Transform");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Transform",
-                                                  nodeInterfaceSet));
-    }
+        //
+        // TextureCoordinate node
+        //
+        {
+            static const node_interface interface =
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfvec2f_id,
+                               "point");
+            static const vrml97_node_interface_set_
+                interface_set(&interface, &interface + 1);
+            pos = nodeClassMap.find("urn:X-openvrml:node:TextureCoordinate");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("TextureCoordinate",
+                                                    interface_set));
+        }
 
-    //
-    // Viewpoint node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::eventin_id,
-                          field_value::sfbool_id,
-                          "set_bind"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sffloat_id,
-                          "fieldOfView"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfbool_id, "jump"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfrotation_id,
-                          "orientation"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfvec3f_id,
-                          "position"),
-            node_interface(node_interface::field_id,
-                          field_value::sfstring_id,
-                          "description"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sftime_id,
-                          "bindTime"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sfbool_id,
-                          "isBound")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
-        pos = nodeClassMap.find("urn:X-openvrml:node:Viewpoint");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("Viewpoint",
-                                                  nodeInterfaceSet));
-    }
+        //
+        // TextureTransform node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec2f_id,
+                               "center"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "rotation"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec2f_id,
+                               "scale"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec2f_id,
+                               "translation")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 4);
+            pos = nodeClassMap.find("urn:X-openvrml:node:TextureTransform");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("TextureTransform",
+                                                    interface_set));
+        }
 
-    //
-    // VisibilitySensor node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfvec3f_id,
-                          "center"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfbool_id,
-                          "enabled"),
-            node_interface(node_interface::exposedfield_id,
-                          field_value::sfvec3f_id,
-                          "size"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sftime_id,
-                          "enterTime"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sftime_id,
-                          "exitTime"),
-            node_interface(node_interface::eventout_id,
-                          field_value::sfbool_id,
-                          "isActive")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
-        pos = nodeClassMap.find("urn:X-openvrml:node:VisibilitySensor");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("VisibilitySensor",
-                                                nodeInterfaceSet));
-    }
+        //
+        // TimeSensor node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sftime_id,
+                               "cycleInterval"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "enabled"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "loop"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sftime_id,
+                               "startTime"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sftime_id,
+                               "stopTime"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sftime_id,
+                               "cycleTime"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sffloat_id,
+                               "fraction_changed"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isActive"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sftime_id,
+                               "time")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 9);
+            pos = nodeClassMap.find("urn:X-openvrml:node:TimeSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("TimeSensor",
+                                                    interface_set));
+        }
 
-    //
-    // WorldInfo node
-    //
-    {
-        static const node_interface nodeInterfaces[] = {
-            node_interface(node_interface::field_id,
-                           field_value::mfstring_id,
-                           "info"),
-            node_interface(node_interface::field_id,
-                           field_value::sfstring_id,
-                           "title")
-        };
-        static const vrml97_node_interface_set_
-                nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
-        pos = nodeClassMap.find("urn:X-openvrml:node:WorldInfo");
-        assert(pos != nodeClassMap.end());
-        this->add_type(pos->second->create_type("WorldInfo",
-                                                nodeInterfaceSet));
+        //
+        // TouchSensor node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "enabled"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfvec3f_id,
+                               "hitNormal_changed"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfvec3f_id,
+                               "hitPoint_changed"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfvec2f_id,
+                               "hitTexCoord_changed"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isActive"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isOver"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sftime_id,
+                               "touchTime")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 7);
+            pos = nodeClassMap.find("urn:X-openvrml:node:TouchSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("TouchSensor",
+                                                    interface_set));
+        }
+
+        //
+        // Transform node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "addChildren"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "removeChildren"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "center"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfnode_id,
+                               "children"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfrotation_id,
+                               "rotation"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "scale"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfrotation_id,
+                               "scaleOrientation"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "translation"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxCenter"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxSize")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 10);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Transform");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Transform",
+                                                    interface_set));
+        }
+
+        //
+        // Viewpoint node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::sfbool_id,
+                               "set_bind"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sffloat_id,
+                               "fieldOfView"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "jump"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfrotation_id,
+                               "orientation"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "position"),
+                node_interface(node_interface::field_id,
+                               field_value::sfstring_id,
+                               "description"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sftime_id,
+                               "bindTime"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isBound")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 8);
+            pos = nodeClassMap.find("urn:X-openvrml:node:Viewpoint");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Viewpoint",
+                                                    interface_set));
+        }
+
+        //
+        // VisibilitySensor node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "center"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfbool_id,
+                               "enabled"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "size"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sftime_id,
+                               "enterTime"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sftime_id,
+                               "exitTime"),
+                node_interface(node_interface::eventout_id,
+                               field_value::sfbool_id,
+                               "isActive")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 6);
+            pos = nodeClassMap.find("urn:X-openvrml:node:VisibilitySensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("VisibilitySensor",
+                                                    interface_set));
+        }
+
+        //
+        // WorldInfo node
+        //
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::field_id,
+                               field_value::mfstring_id,
+                               "info"),
+                node_interface(node_interface::field_id,
+                               field_value::sfstring_id,
+                               "title")
+            };
+            static const vrml97_node_interface_set_
+                interface_set(interfaces, interfaces + 2);
+            pos = nodeClassMap.find("urn:X-openvrml:node:WorldInfo");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("WorldInfo",
+                                                    interface_set));
+        }
+    } catch (std::invalid_argument & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
     }
 }
 
@@ -5212,8 +6114,22 @@ DefaultViewpoint::do_eventout(const std::string & id) const throw ()
     return value;
 }
 
-void DefaultViewpoint::do_render_child(viewer & v, rendering_context context)
-{}
+event_listener & DefaultViewpoint::do_event_listener(const std::string & id)
+    throw (unsupported_interface)
+{
+    assert(false);
+    throw unsupported_interface(this->type, id);
+    return *static_cast<openvrml::event_listener *>(0);
+}
+
+event_emitter &
+DefaultViewpoint::do_event_emitter(const std::string & id)
+    throw (unsupported_interface)
+{
+    assert(false);
+    throw unsupported_interface(this->type, id);
+    return *static_cast<openvrml::event_emitter *>(0);
+}
 
 
 namespace {

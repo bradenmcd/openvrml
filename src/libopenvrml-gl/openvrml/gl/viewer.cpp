@@ -3843,8 +3843,10 @@ void viewer::handleKey(int key)
             if (pos != viewpoints.end()) {
                 ++pos;
                 if (pos == viewpoints.end()) { pos = viewpoints.begin(); }
-                (*pos)->process_event("set_bind", sfbool(true),
-                                      browser::current_time());
+                event_listener & listener = (*pos)->event_listener("set_bind");
+                assert(dynamic_cast<sfbool_listener *>(&listener));
+                static_cast<sfbool_listener &>(listener)
+                    .process_event(sfbool(true), browser::current_time());
             }
         }
         this->post_redraw();
@@ -3864,8 +3866,10 @@ void viewer::handleKey(int key)
                     pos = viewpoints.end();
                 }
                 --pos;
-                (*pos)->process_event("set_bind", sfbool(true),
-                                      browser::current_time());
+                event_listener & listener = (*pos)->event_listener("set_bind");
+                assert(dynamic_cast<sfbool_listener *>(&listener));
+                static_cast<sfbool_listener &>(listener)
+                    .process_event(sfbool(true), browser::current_time());
             }
         }
         this->post_redraw();

@@ -101,7 +101,7 @@ namespace openvrml ANTLR_LBRACE
 #line 102 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
 {
-#line 598 "Vrml97Parser.g"
+#line 599 "Vrml97Parser.g"
 
 public:
     Vrml97Parser(antlr::TokenStream & lexer, const std::string & uri):
@@ -143,101 +143,132 @@ public:
 	public: void statement(
 		openvrml::browser & browser,
           std::vector<node_ptr> & nodes,
-          const openvrml::scope_ptr & scope
+          const scope_ptr & scope
 	);
-	public: openvrml::node_ptr  nodeStatement(
-		openvrml::browser & browser,
-              const openvrml::scope_ptr & scope
+	public: node_ptr  nodeStatement(
+		openvrml::browser & browser, const scope_ptr & scope
 	);
 	public: void protoStatement(
-		openvrml::browser & browser,
-               const openvrml::scope_ptr & scope
+		openvrml::browser & browser, const scope_ptr & scope
 	);
 	public: void routeStatement(
 		const openvrml::scope & scope
 	);
-	public: openvrml::node_ptr  node(
+	public: node_ptr  node(
 		openvrml::browser & browser,
-     const openvrml::scope_ptr & scope,
+     const scope_ptr & scope,
      const std::string & nodeId
 	);
 	public: void externproto(
 		openvrml::browser & browser, const openvrml::scope_ptr & scope
 	);
 	public: void proto(
-		openvrml::browser & browser,
-      const openvrml::scope_ptr & scope
+		openvrml::browser & browser, const scope_ptr & scope
 	);
 	public: void protoInterfaceDeclaration(
-		const openvrml::scope_ptr & scope,
-                          openvrml::ProtoNodeClass & proto
+		
+    openvrml::browser & browser,
+    const scope_ptr & scope,
+    node_interface_set & interfaces,
+    proto_node_class::default_value_map_t & default_value_map
+
 	);
 	public: void protoBody(
-		const openvrml::scope_ptr & scope,
-          openvrml::ProtoNodeClass & proto
+		openvrml::browser & browser,
+          const scope_ptr & scope,
+          const node_interface_set & interfaces,
+          std::vector<node_ptr> & impl_nodes,
+          proto_node_class::is_map_t & is_map,
+          proto_node_class::routes_t & routes
 	);
-	public: openvrml::node_interface::type_id  eventInterfaceType();
+	public: node_interface::type_id  eventInterfaceType();
 	public: openvrml::field_value::type_id  fieldType();
-	public: openvrml::node_interface::type_id  fieldInterfaceType();
+	public: node_interface::type_id  fieldInterfaceType();
 	public: openvrml::field_value_ptr  fieldValue(
 		openvrml::browser & browser,
            const openvrml::scope_ptr & scope,
            openvrml::field_value::type_id ft
 	);
-	public: openvrml::node_ptr  protoNodeStatement(
-		openvrml::ProtoNodeClass & proto,
-                   const openvrml::scope_ptr & scope
+	public: node_ptr  protoNodeStatement(
+		openvrml::browser & browser,
+                   const openvrml::scope_ptr & scope,
+                   const node_interface_set & proto_interfaces,
+                   proto_node_class::is_map_t & is_map,
+                   proto_node_class::routes_t & routes
 	);
 	public: void protoBodyStatement(
-		openvrml::ProtoNodeClass & proto,
-                   const openvrml::scope_ptr & scope
+		openvrml::browser & browser,
+                   const scope_ptr & scope,
+                   const node_interface_set & interfaces,
+                   std::vector<node_ptr> & impl_nodes,
+                   proto_node_class::is_map_t & is_map,
+                   proto_node_class::routes_t & routes
 	);
-	public: openvrml::node_ptr  protoNode(
-		openvrml::ProtoNodeClass & proto,
-          const openvrml::scope_ptr & scope,
+	public: void protoRouteStatement(
+		const openvrml::scope & scope,
+                    proto_node_class::routes_t & routes
+	);
+	public: node_ptr  protoNode(
+		openvrml::browser & browser,
+          const scope_ptr & scope,
+          const node_interface_set & proto_interfaces,
+          proto_node_class::is_map_t & is_map,
+          proto_node_class::routes_t & routes,
           const std::string & nodeId
 	);
 	public: void externInterfaceDeclaration(
 		openvrml::node_interface_set & interfaces
 	);
-	public: openvrml::mfstring  externprotoUrlList();
-	public: openvrml::node_interface::type_id  interfaceType();
+	public: mfstring  externprotoUrlList();
+	public: node_interface::type_id  interfaceType();
 	public: std::string  stringValue();
 	public: void nodeBodyElement(
-		const openvrml::scope_ptr & scope,
-                openvrml::node & node
+		const scope_ptr & scope, openvrml::node & node
 	);
 	public: void scriptInterfaceDeclaration(
-		const openvrml::scope_ptr & scope,
-                           openvrml::script_node & node
+		const scope_ptr & scope, script_node & node
 	);
 	public: void scriptFieldInterfaceDeclaration(
-		const openvrml::scope_ptr & scope,
-                                openvrml::script_node & node
+		const scope_ptr & scope, script_node & node
 	);
 	public: void protoNodeBodyElement(
-		openvrml::ProtoNodeClass & proto,
-                     const openvrml::scope_ptr & scope,
+		openvrml::browser & browser,
+                     const scope_ptr & scope,
+                     const node_interface_set & proto_interfaces,
+                     proto_node_class::is_map_t & is_map,
+                     proto_node_class::routes_t & routes,
                      openvrml::node & node
 	);
 	public: void protoScriptInterfaceDeclaration(
-		openvrml::ProtoNodeClass & proto,
+		openvrml::browser & browser,
                                 const openvrml::scope_ptr & scope,
+                                const node_interface_set & proto_interfaces,
+                                proto_node_class::is_map_t & is_map,
+                                proto_node_class::routes_t & routes,
                                 openvrml::script_node & node
 	);
-	public: openvrml::field_value_ptr  protoFieldValue(
-		openvrml::ProtoNodeClass & proto,
-                const openvrml::scope_ptr & scope,
-                openvrml::field_value::type_id ft
+	public: field_value_ptr  protoFieldValue(
+		openvrml::browser & browser,
+                const scope_ptr & scope,
+                const node_interface_set & proto_interfaces,
+                proto_node_class::is_map_t & is_map,
+                proto_node_class::routes_t & routes,
+                const field_value::type_id ft
 	);
 	public: void isStatement(
-		openvrml::ProtoNodeClass & proto, openvrml::node & node,
-            std::string const & nodeInterfaceId
+		const node_interface_set & proto_interfaces,
+            proto_node_class::is_map_t & is_map,
+            openvrml::node & node,
+            const node_interface & impl_node_interface
 	);
 	public: void protoScriptFieldInterfaceDeclaration(
-		openvrml::ProtoNodeClass & proto,
-                                     const openvrml::scope_ptr & scope,
-                                     openvrml::script_node & node
+		
+    openvrml::browser & browser,
+    const scope_ptr & scope,
+    const node_interface_set & proto_interfaces,
+    proto_node_class::is_map_t & is_map,
+    proto_node_class::routes_t & routes,
+    script_node & node
 	);
 	public: openvrml::field_value_ptr  nodeFieldValue(
 		openvrml::browser & browser,
@@ -247,10 +278,13 @@ public:
 	public: openvrml::field_value_ptr  nonNodeFieldValue(
 		openvrml::field_value::type_id ft
 	);
-	public: openvrml::field_value_ptr  protoNodeFieldValue(
-		openvrml::ProtoNodeClass & proto,
-                    const openvrml::scope_ptr & scope,
-                    openvrml::field_value::type_id ft
+	public: field_value_ptr  protoNodeFieldValue(
+		openvrml::browser & browser,
+                    const scope_ptr & scope,
+                    const node_interface_set & proto_interfaces,
+                    proto_node_class::is_map_t & is_map,
+                    proto_node_class::routes_t & routes,
+                    field_value::type_id ft
 	);
 	public: openvrml::field_value_ptr  sfBoolValue();
 	public: openvrml::field_value_ptr  sfColorValue();
@@ -265,7 +299,7 @@ public:
 	public: openvrml::field_value_ptr  mfColorValue();
 	public: openvrml::field_value_ptr  mfFloatValue();
 	public: openvrml::field_value_ptr  mfInt32Value();
-	public: openvrml::field_value_ptr  mfRotationValue();
+	public: field_value_ptr  mfRotationValue();
 	public: openvrml::field_value_ptr  mfStringValue();
 	public: openvrml::field_value_ptr  mfTimeValue();
 	public: openvrml::field_value_ptr  mfVec2fValue();
@@ -278,13 +312,19 @@ public:
 		openvrml::browser & browser,
             const openvrml::scope_ptr & scope
 	);
-	public: openvrml::field_value_ptr  protoSfNodeValue(
-		openvrml::ProtoNodeClass & proto,
-                 const openvrml::scope_ptr & scope
+	public: field_value_ptr  protoSfNodeValue(
+		openvrml::browser & browser,
+                 const scope_ptr & scope,
+                 const node_interface_set & proto_interfaces,
+                 proto_node_class::is_map_t & is_map,
+                 proto_node_class::routes_t & routes
 	);
-	public: openvrml::field_value_ptr  protoMfNodeValue(
-		openvrml::ProtoNodeClass & proto,
-                 const openvrml::scope_ptr & scope
+	public: field_value_ptr  protoMfNodeValue(
+		openvrml::browser & browser,
+                 const scope_ptr & scope,
+                 const node_interface_set & proto_interfaces,
+                 proto_node_class::is_map_t & is_map,
+                 proto_node_class::routes_t & routes
 	);
 	public: bool  boolValue();
 	public: void colorValue(
@@ -347,6 +387,8 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_15;
 	static const unsigned long _tokenSet_16_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_16;
+	static const unsigned long _tokenSet_17_data_[];
+	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_17;
 };
 
 #endif /*INC_Vrml97Parser_hpp_*/

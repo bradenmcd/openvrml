@@ -1,3 +1,29 @@
+2004-01-27 Braden McDaniel  <braden@endoframe.com>
+
+	Rearchitected event propagation.  Instead of resolving the event
+	name during each propagation, that resolution now happens only
+	when a ROUTE is established.  And rather than queueing every
+	event, event propagation now occurs immediately whenever it can.
+
+	* doc/Doxyfile.in:  Added BOOST_CLASS_REQUIRE(a,b,c) to
+	PREDEFINED.
+	* src/libopenvrml/openvrml/ScriptJDK.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/field.cpp
+	* src/libopenvrml/openvrml/field.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/private.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
 2004-01-26 Braden McDaniel  <braden@endoframe.com>
 
 	Turned off Antlr's defaultErrorHandler for "protoFieldValue".

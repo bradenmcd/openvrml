@@ -37,9 +37,9 @@ namespace openvrml {
  *
  * @brief Exception to indicate that a node interface is not supported.
  *
- * This exception is thrown by node::field and node::process_event to
- * indicate that the node doesn't support the interface through which the
- * caller is trying to modify the node. It is also thrown by
+ * This exception is thrown by node::field, node::event_listener, and
+ * node::event_emitter to indicate that the node doesn't support the interface
+ * through which the caller is trying to modify the node. It is also thrown by
  * node_class::create_type if the class object doesn't support an interface
  * specified in the node_interface_set given to that method.
  */
@@ -49,8 +49,20 @@ namespace openvrml {
  *
  * @param message   An informative error message.
  */
-unsupported_interface::unsupported_interface(const std::string & message):
+unsupported_interface::unsupported_interface(const std::string & message)
+    throw ():
     std::runtime_error(message)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param interface a node_interface.
+ */
+unsupported_interface::unsupported_interface(const node_interface & interface)
+    throw ():
+    std::runtime_error("Unsupported interface \""
+                       + boost::lexical_cast<std::string>(interface) + "\".")
 {}
 
 /**
@@ -60,7 +72,8 @@ unsupported_interface::unsupported_interface(const std::string & message):
  * @param interface_id  the name of the interface that is not available.
  */
 unsupported_interface::unsupported_interface(const node_type & type,
-                                             const std::string & interface_id):
+                                             const std::string & interface_id)
+    throw ():
     std::runtime_error(type.id + " has no interface \"" + interface_id + '"')
 {}
 
@@ -74,7 +87,8 @@ unsupported_interface::unsupported_interface(const node_type & type,
 unsupported_interface::unsupported_interface(
     const node_type & type,
     const node_interface::type_id interface_type,
-    const std::string & interface_id):
+    const std::string & interface_id)
+    throw ():
     std::runtime_error(type.id + " has no "
                        + boost::lexical_cast<std::string>(interface_type)
                        + " \"" + interface_id + '"')
@@ -306,17 +320,24 @@ node_interface::node_interface(const type_id type,
  *
  * @param interface a node_interface.
  *
- * @exception std::invalid argument if @p nodeInterface conflicts with an interface
- *                              already in the node_interface_set.
+ * @exception std::invalid_argument if @p node_interface conflicts with an
+ *                                  interface already in the
+ *                                  node_interface_set.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-void node_interface_set::add(const node_interface & interface)
+const node_interface_set::const_iterator
+node_interface_set::add(const node_interface & interface)
     throw (std::invalid_argument, std::bad_alloc)
 {
-    if (!this->interfaces.insert(interface).second) {
+    using std::pair;
+    using std::set;
+    pair<set<node_interface>::iterator, bool> result =
+        this->interfaces.insert(interface);
+    if (!result.second) {
         throw std::invalid_argument("Interface conflicts with an interface "
                                     "already in this set.");
     }
+    return result.first;
 }
 
 /**
@@ -379,10 +400,41 @@ namespace {
  * @return a const_iterator to the interface, or node_interface_set::end if no
  *      interface is found.
  */
-node_interface_set::const_iterator
+const node_interface_set::const_iterator
 node_interface_set::find(const std::string & id) const throw ()
 {
     return std::find_if(this->begin(), this->end(), interface_id_matches_(id));
+}
+
+/**
+ * @relates node_interface
+ *
+ * @brief Stream output.
+ *
+ * @param out       output stream.
+ * @param interface node_interface.
+ *
+ * @return @p out.
+ */
+std::ostream & operator<<(std::ostream & out, const node_interface & interface)
+{
+    return out << interface.type << ' ' << interface.field_type << ' '
+               << interface.id;
+}
+
+/**
+ * @relates node_interface
+ *
+ * @brief Stream input.
+ *
+ * @param in        input stream.
+ * @param interface node_interface.
+ *
+ * @return @p in.
+ */
+std::istream & operator<<(std::istream & in, node_interface & interface)
+{
+    return in >> interface.type >> interface.field_type >> interface.id;
 }
 
 
@@ -516,7 +568,9 @@ namespace {
         const std::string & id;
 
     public:
-        IsEventIn_(const std::string & id): id(id) {}
+        explicit IsEventIn_(const std::string & id):
+            id(id)
+        {}
 
         bool operator()(const node_interface & nodeInterface) const
         {
@@ -742,129 +796,6 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
- * @class node::route
- *
- * @brief A route from one node to another through which events propagate.
- */
-
-/**
- * @var const std::string node::route::from_eventout
- *
- * @brief The name of the eventOut the route is coming from.
- */
-
-/**
- * @var const node_ptr node::route::to_node
- *
- * @brief The node the route is going to.
- */
-
-/**
- * @var const std::string node::route::to_eventin
- *
- * @brief The name of the eventIn on @a to_node that the route is going to.
- */
-
-/**
- * @brief Constructor.
- *
- * @param from_eventout the name of the eventOut the route is coming from.
- * @param to_node       the node the route is going to.
- * @param to_eventin    the name of an eventIn on @p toNode that the route is
- *                      going to.
- */
-node::route::route(const std::string & from_eventout,
-                   const node_ptr & to_node, const std::string & to_eventin):
-    from_eventout(from_eventout),
-    to_node(to_node),
-    to_eventin(to_eventin)
-{}
-
-/**
- * @brief Copy constructor.
- *
- * @param route the route to copy.
- */
-node::route::route(const route & route):
-    from_eventout(route.from_eventout),
-    to_node(route.to_node),
-    to_eventin(route.to_eventin)
-{}
-
-/**
- * @fn bool operator==(const node::route & lhs, const node::route & rhs)
- *
- * @relatesalso node::route
- *
- * @brief Compare two @link node::route routes@endlink for equality.
- *
- * @param lhs   a route.
- * @param rhs   a route.
- *
- * @return @c true if the @link node::route routes@endlink are identical,
- *         @c false otherwise.
- */
-
-/**
- * @fn bool operator!=(const node::route & lhs, const node::route & rhs)
- *
- * @relatesalso node::route
- *
- * @brief Compare two @link node::route routes@endlink for inequality.
- *
- * @param lhs   a route.
- * @param rhs   a route.
- *
- * @return @c true if the @link node::route routes@endlink are not identical,
- *         @c false otherwise.
- */
-
-/**
- * @typedef node::routes_t
- *
- * @brief list of @link node::route routes@endlink.
- */
-
-/**
- * @struct node::polled_eventout_value
- *
- * @brief Simple struct for use in implementing nodes that are polled for
- *      pending events.
- */
-
-/**
- * @var const field_value_ptr node::polled_eventout_value::value
- *
- * @brief The value.
- */
-
-/**
- * @var bool node::polled_eventout_value::modified
- *
- * @brief A flag to indicate whether the eventOut has been modified.
- */
-
-/**
- * @brief Construct.
- */
-node::polled_eventout_value::polled_eventout_value():
-    modified(false)
-{}
-
-/**
- * @brief Construct.
- *
- * @param value     the value.
- * @param modified  a flag to indicate whether the eventOut has been modified.
- */
-node::polled_eventout_value::polled_eventout_value(
-    const field_value_ptr & value,
-    const bool modified):
-    value(value),
-    modified(modified)
-{}
-
-/**
  * @internal
  *
  * @var scope_ptr node::scope_
@@ -898,38 +829,6 @@ node::polled_eventout_value::polled_eventout_value(
  * @brief Indicate whether the node's cached bounding volume needs updating.
  *
  * @see node::bounding_volume_dirty
- */
-
-/**
- * @internal
- *
- * @var node::routes_t node::routes_
- *
- * @brief @link node::route routes@endlink from the node.
- */
-
-/**
- * @internal
- *
- * @typedef node::eventout_is_map_t
- *
- * @brief map of eventOut identifiers to
- *        @link node::polled_eventout_value polled_eventout_values@endlink.
- */
-
-/**
- * @internal
- *
- * @var node::eventout_is_map_t node::eventout_is_map
- *
- * @brief map of eventOut identifiers to
- *        @link node::polled_eventout_value polled_eventout_values@endlink.
- *
- * This is an ugly artifact of the PROTO implementation. When an eventOut of
- * a node in a PROTO definition is IS'd to an eventOut in the PROTO definition,
- * an entry is added to this map. When emitting an event, the node checks to
- * see if any entries in the map need updating, thereby propagating the event
- * out of the PROTO instance.
  */
 
 /**
@@ -1048,30 +947,6 @@ const std::string & node::id() const throw ()
  */
 
 /**
- * @brief Add a polled eventOut value.
- *
- * Used internally by the PROTO implementation.
- *
- * @param eventout_id    eventOut name.
- * @param eventout_value a polled_eventout_value.
- *
- * @exception unsupported_interface if the node has no eventOut @p eventout_id.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-void node::add_eventout_is(const std::string & eventout_id,
-                           polled_eventout_value & eventout_value)
-    throw (unsupported_interface, std::bad_alloc)
-{
-    if (!this->type.has_eventout(eventout_id)) {
-        throw unsupported_interface(this->type,
-                                    node_interface::eventout_id,
-                                    eventout_id);
-    }
-    const eventout_is_map_t::value_type value(eventout_id, &eventout_value);
-    this->eventout_is_map.insert(value);
-}
-
-/**
  * @brief Initialize the node.
  *
  * This method works recursively, initializing any child nodes to the same
@@ -1179,62 +1054,30 @@ const field_value & node::field(const std::string & id) const
  */
 
 /**
- * @brief Process an event.
+ * @brief Get an event listener.
  *
- * @param id        the name of the eventIn to which the event is being sent.
- * @param value     the new value.
- * @param timestamp the current time.
+ * @param id    an eventIn identifier.
  *
- * @exception unsupported_interface if the node has no eventIn named @p id.
- * @exception std::bad_cast         if @p value is not the correct type.
- * @exception std::bad_alloc        if memory allocation fails.
+ * @exception unsupported_interface  if the node has no eventIn @p id.
  */
-void node::process_event(const std::string & id,
-                         const field_value & value,
-                         const double timestamp)
-    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
-{
-    this->do_process_event(id, value, timestamp);
-}
-
-/**
- * @fn void node::do_process_event(const std::string & id, const field_value & value, double timestamp) throw (unsupported_interface, std::bad_cast, std::bad_alloc)
- *
- * @brief Called by node::process_event.
- *
- * @param id        eventIn identifier.
- * @param value     event value.
- * @param timestamp the current time.
- *
- * @exception unsupported_interface if the node has no eventIn @p id.
- * @exception std::bad_cast         if @p value is not the correct time.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-
-/**
- * @brief Generalized eventOut accessor.
- *
- * @param id    the name of the eventOut.
- *
- * @exception unsupported_interface if the node has no eventOut named @p id.
- */
-const field_value & node::eventout(const std::string & id) const
+event_listener & node::event_listener(const std::string & id)
     throw (unsupported_interface)
 {
-    return this->do_eventout(id);
+    return this->do_event_listener(id);
 }
 
 /**
- * @fn const field_value & node::do_eventout(const std::string & id) const throw (unsupported_interface)
+ * @brief Get an event emitter.
  *
- * @brief Called by node::eventout.
+ * @param id    an eventOut identifier.
  *
- * @param id    eventOut identifier.
- *
- * @return the last value sent from the eventOut.
- *
- * @exception unsupported_interface if the node has no eventOut @p id.
+ * @exception unsupported_interface  if the node has no eventOut @p id.
  */
+event_emitter & node::event_emitter(const std::string & id)
+    throw (unsupported_interface)
+{
+    return this->do_event_emitter(id);
+}
 
 /**
  * @brief Shut down the node.
@@ -1601,96 +1444,6 @@ vrml97_node::touch_sensor_node * node::to_touch_sensor() const
 }
 
 /**
- * @brief Add a route from an eventOut of this node to an eventIn of another
- *      node.
- *
- * If the route being added already exists, this method has no effect.
- *
- * @param from_eventout an eventOut of the node.
- * @param to_node       a node.
- * @param to_eventin    an eventIn of @p to_node.
- *
- * @exception unsupported_interface     if the node has no eventOut
- *                                      @p from_eventout; or if @p to_node has
- *                                      no eventIn @p to_eventin.
- * @exception field_value_type_mismatch if @p from_eventout and @p to_eventin
- *                                      have different field value types.
- *
- * @pre @p to_node is not null.
- */
-void node::add_route(const std::string & from_eventout,
-                     const node_ptr & to_node,
-                     const std::string & to_eventin)
-    throw (unsupported_interface, field_value_type_mismatch)
-{
-    assert(to_node);
-
-    const field_value::type_id from_interface_type =
-        this->type.has_eventout(from_eventout);
-    if (from_interface_type == field_value::invalid_type_id) {
-        throw unsupported_interface(this->type,
-                                    node_interface::eventout_id,
-                                    from_eventout);
-    }
-
-    const field_value::type_id to_interface_type =
-        to_node->type.has_eventin(to_eventin);
-    if (to_interface_type == field_value::invalid_type_id) {
-        throw unsupported_interface(to_node->type,
-                                    node_interface::eventin_id,
-                                    to_eventin);
-    }
-
-    if (from_interface_type != to_interface_type) {
-        throw field_value_type_mismatch();
-    }
-
-    const route r(from_eventout, to_node, to_eventin);
-
-    //
-    // Is this route already here?
-    //
-    const routes_t::iterator pos =
-        std::find(this->routes_.begin(), this->routes_.end(), r);
-
-    //
-    // If not, add it.
-    //
-    if (pos == this->routes_.end()) { this->routes_.push_back(r); }
-}
-
-
-/**
- * @brief Remove a route from an eventOut of this node to an eventIn of another
- *      node.
- *
- * If no such route exists, this method has no effect.
- *
- * @param from_eventout an eventOut of the node.
- * @param to_node       a node.
- * @param to_eventin    an eventIn of @p to_node.
- */
-void node::delete_route(const std::string & from_eventout,
-                        const node_ptr & to_node,
-                        const std::string & to_eventin) throw ()
-{
-    const routes_t::iterator pos =
-        std::find(this->routes_.begin(), this->routes_.end(),
-                  route(from_eventout, to_node, to_eventin));
-    if (pos != this->routes_.end()) { this->routes_.erase(pos); }
-}
-
-/**
- * @brief Get the routes from this node.
- *
- * @return an std::vector of Routes from this node.
- */
-const node::routes_t & node::routes() const
-{
-    return this->routes_;
-}
-
-/**
  * @brief Set the modified flag.
  *
  * Indicates the node needs to be revisited for rendering.
@@ -1783,30 +1536,18 @@ bool node::bounding_volume_dirty() const
 }
 
 /**
- * @brief Send an event from this node.
+ * @brief Emit an event.
+ *
+ * @param emitter   an event_emitter.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void node::emit_event(const std::string & id,
-                      const field_value & value,
+void node::emit_event(openvrml::event_emitter & emitter,
                       const double timestamp)
-    throw (std::bad_cast, std::bad_alloc)
+    throw (std::bad_alloc)
 {
-    assert(this->scene());
-    eventout_is_map_t::const_iterator pos = this->eventout_is_map.find(id);
-    if (pos != this->eventout_is_map.end()) {
-        pos->second->value->assign(value);
-        pos->second->modified = true;
-    }
-
-    for (routes_t::const_iterator itr = this->routes_.begin();
-            itr != this->routes_.end(); ++itr) {
-        if (id == itr->from_eventout) {
-            field_value * const event_value = value.clone().release();
-            this->scene()->browser.queue_event(timestamp,
-                                               event_value,
-                                               itr->to_node,
-                                               itr->to_eventin);
-        }
-    }
+    emitter.emit_event(timestamp);
 }
 
 namespace {
@@ -1887,6 +1628,36 @@ void node::do_initialize(const double timestamp) throw (std::bad_alloc)
 {}
 
 /**
+ * @fn event_listener & node::do_event_listener(const std::string & id) throw (unsupported_interface)
+ *
+ * @brief Get an event listener.
+ *
+ * This method is called by node::event_listener. Subclasses must implement
+ * this method.
+ *
+ * @param id    eventIn identifier.
+ *
+ * @return the event listener.
+ *
+ * @exception unsupported_interface if the node has no eventIn @p id.
+ */
+
+/**
+ * @fn event_emitter & node::do_event_emitter(const std::string & id) throw (unsupported_interface)
+ *
+ * @brief Get an event emitter.
+ *
+ * This method is called by node::event_emitter. Subclasses must implement this
+ * method.
+ *
+ * @param id    eventOut identifier.
+ *
+ * @return the event emitter.
+ *
+ * @exception unsupported_interface if the node has no eventOut @p id.
+ */
+
+/**
  * @brief node subclass-specific shut down.
  *
  * This method is called by node::shutdown. Subclasses of node should
@@ -1899,6 +1670,213 @@ void node::do_initialize(const double timestamp) throw (std::bad_alloc)
  */
 void node::do_shutdown(const double timestamp) throw ()
 {}
+
+namespace {
+    template <typename FieldValue>
+    void add_listener(event_emitter & emitter, event_listener & listener)
+        throw (std::bad_alloc, std::bad_cast)
+    {
+        static_cast<field_value_emitter<FieldValue> &>(emitter)
+            .add(dynamic_cast<field_value_listener<FieldValue> &>(listener));
+    }
+}
+
+/**
+ * @brief Add a route from an eventOut of this node to an eventIn of another
+ *      node.
+ *
+ * If the route being added already exists, this method has no effect.
+ *
+ * @param from_eventout an eventOut of the node.
+ * @param to_node       a node.
+ * @param to_eventin    an eventIn of @p to_node.
+ *
+ * @exception unsupported_interface     if the node has no eventOut
+ *                                      @p from_eventout; or if @p to_node has
+ *                                      no eventIn @p to_eventin.
+ * @exception field_value_type_mismatch if @p from_eventout and @p to_eventin
+ *                                      have different field value types.
+ *
+ * @pre @p to_node is not null.
+ */
+void add_route(node & from_node,
+               const std::string & from_eventout,
+               node & to_node,
+               const std::string & to_eventin)
+    throw (std::bad_alloc, unsupported_interface, field_value_type_mismatch)
+{
+    using std::bad_cast;
+
+    event_emitter & emitter = from_node.event_emitter(from_eventout);
+    event_listener & listener = to_node.event_listener(to_eventin);
+    try {
+        switch (emitter.value.type()) {
+        case field_value::sfbool_id:
+            add_listener<sfbool>(emitter, listener);
+            break;
+        case field_value::sfcolor_id:
+            add_listener<sfcolor>(emitter, listener);
+            break;
+        case field_value::sffloat_id:
+            add_listener<sffloat>(emitter, listener);
+            break;
+        case field_value::sfimage_id:
+            add_listener<sfimage>(emitter, listener);
+            break;
+        case field_value::sfint32_id:
+            add_listener<sfint32>(emitter, listener);
+            break;
+        case field_value::sfnode_id:
+            add_listener<sfnode>(emitter, listener);
+            break;
+        case field_value::sfrotation_id:
+            add_listener<sfrotation>(emitter, listener);
+            break;
+        case field_value::sfstring_id:
+            add_listener<sfstring>(emitter, listener);
+            break;
+        case field_value::sftime_id:
+            add_listener<sftime>(emitter, listener);
+            break;
+        case field_value::sfvec2f_id:
+            add_listener<sfvec2f>(emitter, listener);
+            break;
+        case field_value::sfvec3f_id:
+            add_listener<sfvec3f>(emitter, listener);
+            break;
+        case field_value::mfcolor_id:
+            add_listener<mfcolor>(emitter, listener);
+            break;
+        case field_value::mffloat_id:
+            add_listener<mffloat>(emitter, listener);
+            break;
+        case field_value::mfint32_id:
+            add_listener<mfint32>(emitter, listener);
+            break;
+        case field_value::mfnode_id:
+            add_listener<mfnode>(emitter, listener);
+            break;
+        case field_value::mfrotation_id:
+            add_listener<mfrotation>(emitter, listener);
+            break;
+        case field_value::mfstring_id:
+            add_listener<mfstring>(emitter, listener);
+            break;
+        case field_value::mftime_id:
+            add_listener<mftime>(emitter, listener);
+            break;
+        case field_value::mfvec2f_id:
+            add_listener<mfvec2f>(emitter, listener);
+            break;
+        case field_value::mfvec3f_id:
+            add_listener<mfvec3f>(emitter, listener);
+            break;
+        }
+    } catch (const bad_cast &) {
+        throw field_value_type_mismatch();
+    }
+}
+
+namespace {
+    template <typename FieldValue>
+    void remove_listener(event_emitter & emitter, event_listener & listener)
+        throw (std::bad_cast)
+    {
+        static_cast<field_value_emitter<FieldValue> &>(emitter).remove(
+            dynamic_cast<field_value_listener<FieldValue> &>(listener));
+    }
+}
+
+/**
+ * @brief Remove a route from an eventOut of this node to an eventIn of another
+ *      node.
+ *
+ * If no such route exists, this method has no effect.
+ *
+ * @param from_eventout an eventOut of the node.
+ * @param to_node       a node.
+ * @param to_eventin    an eventIn of @p to_node.
+ */
+void delete_route(node & from_node,
+                  const std::string & from_eventout,
+                  node & to_node,
+                  const std::string & to_eventin)
+    throw ()
+{
+    using std::bad_cast;
+
+    event_emitter & emitter = from_node.event_emitter(from_eventout);
+    event_listener & listener = to_node.event_listener(to_eventin);
+
+    try {
+        switch (emitter.value.type()) {
+        case field_value::sfbool_id:
+            remove_listener<sfbool>(emitter, listener);
+            break;
+        case field_value::sfcolor_id:
+            remove_listener<sfcolor>(emitter, listener);
+            break;
+        case field_value::sffloat_id:
+            remove_listener<sffloat>(emitter, listener);
+            break;
+        case field_value::sfimage_id:
+            remove_listener<sfimage>(emitter, listener);
+            break;
+        case field_value::sfint32_id:
+            remove_listener<sfint32>(emitter, listener);
+            break;
+        case field_value::sfnode_id:
+            remove_listener<sfnode>(emitter, listener);
+            break;
+        case field_value::sfrotation_id:
+            remove_listener<sfrotation>(emitter, listener);
+            break;
+        case field_value::sfstring_id:
+            remove_listener<sfstring>(emitter, listener);
+            break;
+        case field_value::sftime_id:
+            remove_listener<sftime>(emitter, listener);
+            break;
+        case field_value::sfvec2f_id:
+            remove_listener<sfvec2f>(emitter, listener);
+            break;
+        case field_value::sfvec3f_id:
+            remove_listener<sfvec3f>(emitter, listener);
+            break;
+        case field_value::mfcolor_id:
+            remove_listener<mfcolor>(emitter, listener);
+            break;
+        case field_value::mffloat_id:
+            remove_listener<mffloat>(emitter, listener);
+            break;
+        case field_value::mfint32_id:
+            remove_listener<mfint32>(emitter, listener);
+            break;
+        case field_value::mfnode_id:
+            remove_listener<mfnode>(emitter, listener);
+            break;
+        case field_value::mfrotation_id:
+            remove_listener<mfrotation>(emitter, listener);
+            break;
+        case field_value::mfstring_id:
+            remove_listener<mfstring>(emitter, listener);
+            break;
+        case field_value::mftime_id:
+            remove_listener<mftime>(emitter, listener);
+            break;
+        case field_value::mfvec2f_id:
+            remove_listener<mfvec2f>(emitter, listener);
+            break;
+        case field_value::mfvec3f_id:
+            remove_listener<mfvec3f>(emitter, listener);
+            break;
+        }
+    } catch (const bad_cast &) {
+        //
+        // Do nothing.  If route removal fails, we don't care.
+        //
+    }
+}
 
 
 /**
