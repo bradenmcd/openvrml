@@ -2521,7 +2521,7 @@ Viewer::Object ViewerOpenGL::insertText(FontFace & fface,
        glFrontFace(fVector->getOrientation() ? GL_CW : GL_CCW );
        TextData td = {cwidth,cheight};
        glNormal3f(0.0,0.0,1.0);
-       this->insertTextTess(this->tesselator, *fVector, td);
+       insertTextTess(this->tesselator, *fVector, td);
        if(fface.getHorizontal())
         stepx = fVector->getHoriadvance();
        else

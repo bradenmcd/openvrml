@@ -14,6 +14,10 @@
         * models/TestJSAI.java: Add tests for MFNode, MFRotation, MFTime,
           MFVec2f and MFVec3f.
 
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: insertTextTess
+          is now declared in unnamed namespace so cannot be used as
+          method call on object.
+
 2002-11-04  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
