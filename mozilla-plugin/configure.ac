@@ -21,9 +21,6 @@ mozlibdir=`$PKG_CONFIG --variable=libdir mozilla-plugin`
 AC_ARG_VAR([XPIDL], [Mozilla XPCOM IDL compiler])
 AC_ARG_VAR([XPIDLFLAGS], [Mozilla XPCOM IDL compiler flags])
 AC_PATH_PROG([XPIDL], [xpidl], , [${mozlibdir}])
-if test -z "$XPIDL"; then
-  AC_MSG_FAILURE([xpidl not found])
-fi
 mozidldir="$mozprefix/share/idl/mozilla-$mozversion"
 MOZILLA_XPIDLFLAGS="-I $mozidldir"
 AC_SUBST([MOZILLA_XPIDLFLAGS])
@@ -32,6 +29,9 @@ PKG_CHECK_MODULES([GTKGLEXT], [gtkglext-1.0], , [have_gtkglext=no])
 if test "X$enable_mozilla_plugin" != "Xno"; then
   if test "X$have_mozilla_plugin" = "Xno"; then
     AC_MSG_FAILURE([Mozilla plug-in development headers are required to build the Mozilla plug-in.])
+  fi
+  if test -z "$XPIDL"; then
+    AC_MSG_FAILURE([xpidl is required to build the Mozilla plug-in])
   fi
   if test "X$have_gtkglext" = "Xno"; then
     AC_MSG_FAILURE([GtkGLExt is required to build the Mozilla plug-in])

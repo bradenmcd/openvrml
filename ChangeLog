@@ -1,3 +1,8 @@
+2004-12-14 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/configure.ac:  Don't fail when xpidl isn't
+	found when configured with --disable-mozilla-plugin.
+
 2004-12-13 Braden McDaniel  <braden@endoframe.com>
 
 	Define NDEBUG for Release configuration in the Visual C++ 7.1
