@@ -261,9 +261,6 @@ Conformance
 isn't there yet, but much of the spec is supported, and OpenVRML will
 continue to get better.
 
-   Detailed results of testing LookAt against the NIST VRML97 Test Suite
-can be found in the file `conformance.html'.
-
 
 System-specific notes
 =====================

@@ -1,5 +1,4 @@
 docdir = $(datadir)/doc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
-doc_DATA = conformance.html
 
 EXTRA_DIST = $(doc_DATA) Doxyfile.in openvrml.css doxygen-header doxygen-footer
 

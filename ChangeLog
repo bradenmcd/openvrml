@@ -1,3 +1,8 @@
+2002-06-16  Braden McDaniel  <braden@endoframe.com>
+
+        * README, doc/Makefile.am: Removed "conformance.html" from the
+          distribution. It needs updating.
+
 2002-06-15  Braden McDaniel  <braden@endoframe.com>
 
         * Updated libopenvrml library version to 2:0:0.
