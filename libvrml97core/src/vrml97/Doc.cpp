@@ -62,16 +62,20 @@ void Doc::seturl(const char *url, Doc *relative)
   d_url = 0;
 
   if (url)
-    {
+  {
       const char *path = "";
 
       if ( relative && ! isAbsolute(url) )
-	path = relative->urlPath();
+	    path = relative->urlPath();
 
       d_url = new char[strlen(path) + strlen(url) + 1];
       strcpy(d_url, path);
-      strcat(d_url, url);
-    }
+      
+      if (strlen(url)>2 && url[0] == '.' && url[1] == '/')
+        strcat(d_url, url+2); // skip "./"
+      else
+        strcat(d_url, url);
+  }
 }
 
 
@@ -288,9 +292,11 @@ char* decodePath(const char* path)
 
 char* Doc::convertCommonToMacPath( char *fn, int nfn )
 {
-  // Note that this function assumes fullpaths only
-  // (Local filepaths should have been converted to URLs in
-  //  MacLookat)
+  /* Note that only full paths can be use on the Mac to
+     retrieve files correctly, so this function assumes
+     that the viewer, e.g. Lookat, has provided VrmlScene with
+     a file path in the form of a URL (optionally without the protocol
+     if it is a local path) */
   
   static char macfn[256];
   
@@ -309,20 +315,15 @@ char* Doc::convertCommonToMacPath( char *fn, int nfn )
     }
     else {
       if ( fn[i] == '.' ) {
-        if ( (i+1 < nfn) && (fn[i+1] == '/') )
-          // skip "./" in the filepath
-          i=i+1;
+         if ( (i+2 < nfn) && (fn[i+1] == '.') && (fn[i+2] == '/') ) {
+           // replace "../" with an extra :
+           macfn[macfnpos] = COLON;
+           macfnpos++;
+           i=i+2;
+        }
         else {
-          if ( (i+2 < nfn) && (fn[i+1] == '.') && (fn[i+2] == '/') ) {
-             // replace "../" with an extra :
-             macfn[macfnpos] = COLON;
-             macfnpos++;
-             i=i+2;
-          }
-          else {
-            macfn[macfnpos] = fn[i];
-            macfnpos++;
-          }
+          macfn[macfnpos] = fn[i];
+          macfnpos++;
         }
       } 
       else {
