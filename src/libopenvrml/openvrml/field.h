@@ -410,7 +410,7 @@ namespace openvrml {
         explicit mfcolor(std::vector<color>::size_type n = 0,
                          const color & value = color())
             throw (std::bad_alloc);
-        explicit mfcolor(const value_type & value)
+        explicit mfcolor(const std::vector<color> & value)
             throw (std::bad_alloc);
         template <typename InputIterator>
         mfcolor(InputIterator first, InputIterator last);
