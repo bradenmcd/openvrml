@@ -308,19 +308,22 @@ void ViewerOpenGL::initialize()
   d_GLinitialized = true;
 }
 
-// Call this after each frame for debugging...
-static void checkErrors(const char * s)
-{
-  GLenum glerr;
-  while ((glerr = glGetError()) != GL_NO_ERROR) {
-#ifdef macintosh
-    if (glerr != 1285) // This avoids automatic switching between SW and HW
-                       // renderers being continuously reported as an error
-#endif
-      theSystem->error("GL ERROR: %s %s\n", s, gluErrorString(glerr));
- }
-}
+namespace {
 
+    // Call this after each frame for debugging...
+    void checkErrors(const char * s)
+    {
+        GLenum glerr;
+        while ((glerr = glGetError()) != GL_NO_ERROR) {
+# ifdef macintosh
+            if (glerr != 1285) // This avoids automatic switching between SW and
+                               // HW renderers being continuously reported as an
+                               // error
+# endif
+            theSystem->error("GL ERROR: %s %s\n", s, gluErrorString(glerr));
+        }
+    }
+}
 
 
 //
@@ -463,19 +466,20 @@ void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
   M = M.multLeft(tmp);
 }
 
-// Generate a normal from 3 indexed points.
+namespace {
+    // Generate a normal from 3 indexed points.
+    void indexFaceNormal(const int i1,
+                         const int i2,
+                         const int i3,
+                         const float * const p,
+                         float * N)
+    {
+        float V1[3], V2[3];
 
-static void indexFaceNormal(int i1,
-                            int i2,
-                            int i3,
-                            const float * p,
-                            float *N)
-{
-  float V1[3], V2[3];
-
-  Vdiff( V1, &p[i2], &p[i3] );
-  Vdiff( V2, &p[i2], &p[i1] );
-  Vcross( N, V1, V2 );
+        Vdiff(V1, &p[i2], &p[i3]);
+        Vdiff(V2, &p[i2], &p[i1]);
+        Vcross(N, V1, V2);
+    }
 }
 
 //
@@ -1089,51 +1093,44 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
   return (Object) glid;
 }
 
-// Compute a normal at vert i,j of an ElevationGrid.
+namespace {
 
-static void elevationVertexNormal(int i, int j,
-                                  int nx, int nz,
-                                  float dx, float dz,
-                                  const float * height,
-                                  float N[])
-{
-  float Vx[3], Vz[3];
+    // Compute a normal at vert i,j of an ElevationGrid.
 
-  if (i > 0 && i < nx-1)
+    void elevationVertexNormal(const int i, const int j,
+                               const int nx, const int nz,
+                               const float dx, const float dz,
+                               const float * const height,
+                               float N[])
     {
-      Vx[0] = 2.0 * dx;
-      Vx[1] = *(height+1) - *(height-1);
-    }
-  else if (i == 0)
-    {
-      Vx[0] = dx;
-      Vx[1] = *(height+1) - *(height);
-    }
-  else
-    {
-      Vx[0] = dx;
-      Vx[1] = *(height) - *(height-1);
-    }
-  Vx[2] = 0.0;
+        float Vx[3], Vz[3];
 
-  Vz[0] = 0.0;
-  if (j > 0 && j < nz-1)
-    {
-      Vz[1] = *(height+nx) - *(height-nx);
-      Vz[2] = 2.0 * dz;
-    }
-  else if (j == 0)
-    {
-      Vz[1] = *(height+nx) - *(height);
-      Vz[2] = dz;
-    }
-  else
-    {
-      Vz[1] = *(height) - *(height-nx);
-      Vz[2] = dz;
-    }
+        if (i > 0 && i < nx - 1) {
+            Vx[0] = 2.0 * dx;
+            Vx[1] = *(height + 1) - *(height - 1);
+        } else if (i == 0) {
+            Vx[0] = dx;
+            Vx[1] = *(height + 1) - *(height);
+        } else {
+            Vx[0] = dx;
+            Vx[1] = *(height) - *(height - 1);
+        }
+        Vx[2] = 0.0;
 
-  Vcross( N, Vz, Vx );
+        Vz[0] = 0.0;
+        if (j > 0 && j < nz - 1) {
+            Vz[1] = *(height + nx) - *(height - nx);
+            Vz[2] = 2.0 * dz;
+        } else if (j == 0) {
+            Vz[1] = *(height+nx) - *(height);
+            Vz[2] = dz;
+        } else {
+            Vz[1] = *(height) - *(height - nx);
+            Vz[2] = dz;
+        }
+
+        Vcross(N, Vz, Vx);
+    }
 }
 
 
@@ -1264,51 +1261,52 @@ Viewer::Object ViewerOpenGL::insertElevationGrid(unsigned int mask,
 }
 
 
-#if GLU_VERSION_1_2
+# ifdef GLU_VERSION_1_2
 
 // Tesselator callback
 
-#if _WIN32
-# define WINAPI __stdcall
-#else
-# define WINAPI
-#endif
+#   if defined(__CYGWIN__) || defined(__MINGW32__)
+#     define OPENVRML_GL_CALLBACK_ __attribute__ ((__stdcall__))
+#   elif defined (_WIN32)
+#     define OPENVRML_GL_CALLBACK_ APIENTRY
+#   else
+#     define OPENVRML_GL_CALLBACK_
+#   endif
 extern "C" {
-    typedef GLvoid (WINAPI *TessCB)();
+    typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)();
 }
 
+namespace {
 
-// Extrusion cap tessellation for non-convex shapes
+    // Extrusion cap tessellation for non-convex shapes
 
-typedef struct {
-  const float * c;                        // coordinates array [nVerts * 3]
-  const float * crossSection;                // crossSection coordinates [nCrossSection * 2]
-  float tcDeltaU, tcDeltaV;
-  float tcScaleU, tcScaleV;
-  int vOffset;
-  float N[3];                        // Normal
-} TessExtrusion;
+    struct TessExtrusion {
+        const float * c; // coordinates array [nVerts * 3]
+        const float * crossSection; // crossSection coordinates [nCrossSection * 2]
+        float tcDeltaU, tcDeltaV;
+        float tcScaleU, tcScaleV;
+        int vOffset;
+        float N[3]; // Normal
+    };
 
-static void WINAPI tessExtrusionBegin( GLenum type, void *pdata )
-{
-  TessExtrusion *p = (TessExtrusion *)pdata;
-  glBegin( type );
-  glNormal3fv( &p->N[0] );
+    void OPENVRML_GL_CALLBACK_ tessExtrusionBegin(const GLenum type, void * const pdata)
+    {
+        TessExtrusion * const p = static_cast<TessExtrusion *>(pdata);
+        glBegin(type);
+        glNormal3fv(&p->N[0]);
+    }
+
+    void OPENVRML_GL_CALLBACK_ tessExtrusionVertex(void * const vdata, void * const pdata)
+    {
+        const int j = reinterpret_cast<int>(vdata);
+        TessExtrusion * const p = static_cast<TessExtrusion *>(pdata);
+
+        glTexCoord2f((p->crossSection[2 * j] - p->tcDeltaU) * p->tcScaleU,
+                     (p->crossSection[2 * j + 1] - p->tcDeltaV) * p->tcScaleV);
+        glVertex3fv(&(p->c[3 * (j + p->vOffset)]));
+    }
 }
-
-
-static void WINAPI tessExtrusionVertex( void *vdata, void *pdata )
-{
-  int j = (int)vdata;
-  TessExtrusion *p = (TessExtrusion *)pdata;
-
-  glTexCoord2f( (p->crossSection[2*j] - p->tcDeltaU) * p->tcScaleU,
-                (p->crossSection[2*j+1] - p->tcDeltaV) * p->tcScaleV );
-  glVertex3fv( &(p->c[3 * (j + p->vOffset)]) );
-}
-
-#endif
-
+# endif
 
 void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
                                         size_t nSpine,
@@ -1807,26 +1805,25 @@ Viewer::Object ViewerOpenGL::insertPointSet(size_t npoints,
   return (Object) glid;
 }
 
-//
-
-static void computeBounds(size_t npoints, const float * points, float * bounds)
-{
-  bounds[0] = bounds[1] = points[0]; // xmin, xmax
-  bounds[2] = bounds[3] = points[1]; // ymin, ymax
-  bounds[4] = bounds[5] = points[2]; // zmin, zmax
-
-  for (size_t i=1; i<npoints; ++i)
+namespace {
+    
+    void computeBounds(size_t npoints, const float * points, float * bounds)
     {
-      points += 3;
-      if (points[0] < bounds[0])      bounds[0] = points[0];
-      else if (points[0] > bounds[1]) bounds[1] = points[0];
-      if (points[1] < bounds[2])      bounds[2] = points[1];
-      else if (points[1] > bounds[3]) bounds[3] = points[1];
-      if (points[2] < bounds[4])      bounds[4] = points[2];
-      else if (points[2] > bounds[5]) bounds[5] = points[2];
+        bounds[0] = bounds[1] = points[0]; // xmin, xmax
+        bounds[2] = bounds[3] = points[1]; // ymin, ymax
+        bounds[4] = bounds[5] = points[2]; // zmin, zmax
+
+        for (size_t i = 1; i<npoints; ++i) {
+            points += 3;
+            if (points[0] < bounds[0])      bounds[0] = points[0];
+            else if (points[0] > bounds[1]) bounds[1] = points[0];
+            if (points[1] < bounds[2])      bounds[2] = points[1];
+            else if (points[1] > bounds[3]) bounds[3] = points[1];
+            if (points[2] < bounds[4])      bounds[4] = points[2];
+            else if (points[2] > bounds[5]) bounds[5] = points[2];
+        }
     }
 }
-
 
 void
 texGenParams( float bounds[],        // xmin,xmax, ymin,ymax, zmin,zmax
@@ -1986,7 +1983,7 @@ namespace {
 
 namespace {
 
-    void WINAPI tessShellBegin(GLenum type, void * pdata)
+    void OPENVRML_GL_CALLBACK_ tessShellBegin(GLenum type, void * pdata)
     {
         ShellData * s = static_cast<ShellData *>(pdata);
         float N[3];
@@ -2021,7 +2018,7 @@ namespace {
           }
     }
 
-    void WINAPI tessShellVertex(void * vdata, void * pdata)
+    void OPENVRML_GL_CALLBACK_ tessShellVertex(void * vdata, void * pdata)
     {
         int i = int(vdata);
         ShellData * s = static_cast<ShellData *>(pdata);
@@ -2307,12 +2304,12 @@ namespace {
          float cwidth,cheight; // width and height of a character
     };
 
-    void WINAPI tessTextBegin(GLenum type)
+    void OPENVRML_GL_CALLBACK_ tessTextBegin(GLenum type)
     {
         glBegin(type);
     }
 
-    void WINAPI tessTextVertex(void * vdata, void * pdata)
+    void OPENVRML_GL_CALLBACK_ tessTextVertex(void * vdata, void * pdata)
     {
         float v[3];
         Vertex* td = static_cast<Vertex *>(vdata);
@@ -2328,12 +2325,12 @@ namespace {
         glVertex3fv(v);
     }
 
-    void WINAPI tessTextError(GLenum error_code)
+    void OPENVRML_GL_CALLBACK_ tessTextError(GLenum error_code)
     {
         std::cout << "Error in tessellation" << gluErrorString(error_code) << std::endl;
     }
 
-    void WINAPI tessTextCombine(GLdouble coords[3], void * vertex_data[4],
+    void OPENVRML_GL_CALLBACK_ tessTextCombine(GLdouble coords[3], void * vertex_data[4],
                                 GLfloat weight[4], void ** outdata)
     {
         Vertex* vertex = new Vertex;

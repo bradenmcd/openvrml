@@ -6,6 +6,9 @@
         * src/lookat/Makefile.am: Updated obsolete substitutions
           JAVA_CFLAGS, JAVA_LIBS to JNI_CFLAGS, JNI_LIBS.
 
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Fixed Win32
+          calling convention stuff on GL callbacks for Cygwin, MinGW.
+
 2002-11-11  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/ScriptJDK.cpp: Fix bugs in
