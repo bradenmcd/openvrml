@@ -67,14 +67,14 @@ Requires:       SDL >= 1.2
 %description -n lookat
 SDL-based VRML viewer.
 
-%package mozilla
-Summary:        VRML browser plug-in for Mozilla.
+%package mozilla-plugin
+Summary:        VRML browser plug-in for Mozilla-based browsers.
 Group:          Applications/Internet
 License:        GPL
 Requires:       %{name}-gl = %{version}
 Requires:       gtkglext >= 1.0.0
-%description mozilla
-VRML browser plug-in for Mozilla.
+%description mozilla-plugin
+VRML browser plug-in for Mozilla-based browsers.
 
 %prep
 %setup
@@ -122,7 +122,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/lookat
 %{_datadir}/pixmaps/lookat.xpm
 
-%files mozilla
+%files mozilla-plugin
 %doc AUTHORS COPYING ChangeLog NEWS README THANKS
 %{_libdir}/mozilla/plugins/openvrml.so
 %{_libdir}/mozilla/plugins/openvrml.xpt
@@ -130,6 +130,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Nov 26 2004  Braden McDaniel  <braden@endoframe.com>
+- Changed Mozilla plug-in RPM name to openvrml-mozilla-plugin.
+- Refer to the plug-in in comments as "for Mozilla-based browsers" rather than
+  "for Mozilla".
+
 * Sun Nov 21 2004  Braden McDaniel  <braden@endoframe.com>
 - Changed openvrml-gl-devel dependency on XFree86-devel to xorg-X11-devel.
 - Removed openvrml-mozilla dependency on mozilla.  Other browsers (e.g.,

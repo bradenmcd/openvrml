@@ -1,5 +1,11 @@
 2004-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	* openvrml.spec.in:  Changed Mozilla plug-in RPM name to
+	openvrml-mozilla-plugin; refer to the plug-in in comments as
+	"for Mozilla-based browsers" rather than "for Mozilla".
+
+2004-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/Makefile.am:  Install the plug-in in
 	$(libdir)/mozilla/plugins, not $(prefix)/mozilla/plugins.
 
