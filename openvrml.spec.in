@@ -62,7 +62,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %files 
-%doc AUTHORS COPYING.LIB ChangeLog MPL-1.1.txt NEWS README TODO
+%doc AUTHORS COPYING.LIB ChangeLog MPL-1.1.txt NEWS README THANKS TODO
 %doc doc/conformance.html
 %{prefix}/lib/libvrml97.so.*
 %{prefix}/share/aclocal/vrml97.m4
