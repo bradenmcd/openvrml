@@ -44,9 +44,6 @@ libvrml97_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ @PNG_LIBS@
 
 lib_LTLIBRARIES = libvrml97.la 
 
-BUILT_SOURCES = Vrml97Parser.cpp Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp \
-Vrml97ParserTokenTypes.txt vrml97parser.hpp
-
 Vrml97Parser.cpp Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp \
 Vrml97ParserTokenTypes.txt: vrml97parser.g Vrml97TokenTypes.txt
 	$(JAVA) antlr.Tool $<
