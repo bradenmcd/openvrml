@@ -28,7 +28,7 @@
 
 namespace OpenVRML {
 
-    class VrmlFrustum;
+    class frustum;
     class axis_aligned_bounding_box;
     class bounding_sphere;
     class mat4f;
@@ -45,7 +45,7 @@ namespace OpenVRML {
         virtual void maximize() = 0;
         virtual bool maximized() const = 0;
         virtual intersection
-        intersect_frustum(const VrmlFrustum & frustum) const = 0;
+        intersect_frustum(const OpenVRML::frustum & frustum) const = 0;
         virtual void extend(const bounding_volume & b) = 0;
         virtual void extend(const vec3f & p) = 0;
         virtual void extend(const axis_aligned_bounding_box & b) = 0;
@@ -67,7 +67,7 @@ namespace OpenVRML {
         void reset();
 
         virtual intersection
-        intersect_frustum(const VrmlFrustum & frustum) const;
+        intersect_frustum(const OpenVRML::frustum & frustum) const;
 
         virtual void extend(const bounding_volume & b);
         virtual void extend(const vec3f & p);
@@ -93,7 +93,7 @@ namespace OpenVRML {
     public:
         virtual ~axis_aligned_bounding_box();
         virtual intersection
-        intersect_frustum(const VrmlFrustum & frustum) const;
+        intersect_frustum(const OpenVRML::frustum & frustum) const;
         virtual void extend(const bounding_volume & b);
         virtual void extend(const vec3f & p);
         virtual void extend(const axis_aligned_bounding_box & b);

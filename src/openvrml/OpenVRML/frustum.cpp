@@ -25,12 +25,12 @@
 
 # include "private.h"
 # include "basetypes.h"
-# include "VrmlFrustum.h"
+# include "frustum.h"
 
 namespace OpenVRML {
 
 /**
- * @class VrmlFrustum
+ * @class frustum
  *
  * @brief A view frustum.
  *
@@ -45,31 +45,31 @@ namespace OpenVRML {
  */
 
 /**
- * @var VrmlFrustum::fovy
+ * @var frustum::fovy
  *
  * @brief Vertical field of view.
  */
 
 /**
- * @var VrmlFrustum::fovx
+ * @var frustum::fovx
  *
  * @brief Horizontal field of view.
  */
 
 /**
- * @var VrmlFrustum::z_near
+ * @var frustum::z_near
  *
  * @brief Distance to the near clipping plane.
  */
 
 /**
- * @var VrmlFrustum::z_far
+ * @var frustum::z_far
  *
  * @brief Distance to the far clipping plane.
  */
 
 /**
- * @var VrmlFrustum::left_plane
+ * @var frustum::left_plane
  *
  * @brief Left (looking down -z) side clip plane.
  *
@@ -79,38 +79,38 @@ namespace OpenVRML {
  */
 
 /**
- * @brief Constructs a default frustum.
+ * @brief Construct a default frustum.
  *
  * fovy, fovx, near and far all get set to -1.
  */
-VrmlFrustum::VrmlFrustum() {
-    fovy = -1;
-    fovx = -1;
-    z_near = -1;
-    z_far = -1;
-}
+frustum::frustum():
+    fovy(-1),
+    fovx(-1),
+    z_near(-1),
+    z_far(-1)
+{}
 
 /**
- * @brief Constructs and initializes a frustum.
+ * @brief Construct and initialize a frustum.
  *
  * The field of view should be less than 180 degrees. Extreme aspect ratios
  * are unlikely to work well. The near and far plane distances are always
  * positive (think distance, not position). anear must be less than afar.
  * This is supposed to look like gluPerspective.
  *
- * @param afovy vertical field of view in degrees
- * @param aaspect ratio of view width to height (not the ratio of
- *                the horizontal to vertial field-of-views)
- * @param anear distance to near clip plane
- * @param afar distance to far clip plane
+ * @param fovy      vertical field of view in degrees.
+ * @param aspect    ratio of view width to height (not the ratio of
+ *                  the horizontal to vertial field-of-views).
+ * @param near      distance to near clip plane.
+ * @param far       distance to far clip plane.
  *
  */
-VrmlFrustum::VrmlFrustum(float afovy, float aaspect, double anear, double afar) {
-    fovy = (afovy / 360.0) * 2.0 * pi;
-    float cy = (float)tan(fovy/2.0);
-    fovx = 2.0*atan(cy*aaspect);
-    z_near = anear;
-    z_far = afar;
+frustum::frustum(float fovy, float aspect, double near, double far):
+    fovy((fovy / 360.0) * 2.0 * pi),
+    fovx(2.0 * atan(float(tan(this->fovy / 2.0)) * aspect)),
+    z_near(near),
+    z_far(far)
+{
     update();
 }
 
@@ -119,7 +119,7 @@ VrmlFrustum::VrmlFrustum(float afovy, float aaspect, double anear, double afar) 
  *
  * The plane equations are derived from the other members.
  */
-void VrmlFrustum::update()
+void frustum::update()
 {
     // figure out the corners of the near clipping plane, then use the
     // vectors from the eyepoint to the four corners to figure out the

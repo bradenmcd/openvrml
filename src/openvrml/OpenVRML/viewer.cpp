@@ -458,14 +458,14 @@ viewer::intersect_view_volume(const bounding_volume & bvolume) const
  * for debugging and stuff since it might not be valid in some
  * implementations
  */
-const VrmlFrustum & viewer::frustum() const
+const frustum & viewer::frustum() const
 {
     return this->frustum_;
 }
 
-void viewer::frustum(const VrmlFrustum & afrust)
+void viewer::frustum(const OpenVRML::frustum & frustum)
 {
-    this->frustum_ = afrust;
+    this->frustum_ = frustum;
 }
 
 } // namespace OpenVRML

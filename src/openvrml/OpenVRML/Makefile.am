@@ -49,7 +49,7 @@ libopenvrml_la_SOURCES = \
         browser.cpp \
         viewer.cpp \
         VrmlRenderContext.cpp \
-        VrmlFrustum.cpp \
+        frustum.cpp \
         vrml97node.cpp
 
 libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/src/libantlr.la
@@ -76,7 +76,7 @@ OpenVRMLinclude_HEADERS = \
         browser.h \
         viewer.h \
         VrmlRenderContext.h \
-        VrmlFrustum.h \
+        frustum.h \
         vrml97node.h
 
 noinst_HEADERS = \

@@ -1,3 +1,33 @@
+2003-06-02  Braden McDaniel  <braden@endoframe.com>
+
+	Applied naming convention changes: VrmlFrustum -> frustum.
+
+	* src/openvrml/OpenVRML/frustum.cpp:  Added file.  Replaces
+	VrmlFrustum.cpp.
+	* src/openvrml/OpenVRML/frustum.h:  Added file.  Replaces
+	VrmlFrustum.h.
+	* src/openvrml/OpenVRML/VrmlFrustum.cpp:  Removed file.
+	* src/openvrml/OpenVRML/VrmlFrustum.h:  Removed file.
+	* src/openvrml/OpenVRML/Makefile.am:  Replaced VrmlFrustum.cpp,
+	VrmlFrustum.h with frustum.cpp, frustum.h.
+	* src/openvrml/OpenVRML/bounding_volume.cpp
+	(bounding_volume::intersect_frustum):  Changes associated with
+	naming convention changes to frustum.
+	* src/openvrml/OpenVRML/bounding_volume.h
+	(bounding_volume::intersect_frustum):  Changes associated with
+	naming convention changes to frustum.
+	* src/openvrml/OpenVRML/viewer.cpp (viewer::frustum):  Changes
+	associated with naming convention changes to frustum.
+	* src/openvrml/OpenVRML/viewer.h (viewer::frustum):  Changes
+	associated with naming convention changes to frustum.
+	* src/openvrml/OpenVRML/vrml97node.cpp (Viewpoint::getFrustum):
+	Removed unused, unimplemented function.
+	* src/openvrml/OpenVRML/vrml97node.h (Viewpoint::getFrustum):
+	Removed unused, unimplemented function.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp
+	(ViewerOpenGL::set_viewpoint):  Changes associated with naming
+	convention changes to frustum.
+
 2003-06-01  Braden McDaniel  <braden@endoframe.com>
 
 	Removed Mac OS 9-specific #ifdefs.  It is not at all likely that

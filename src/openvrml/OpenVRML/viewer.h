@@ -25,7 +25,7 @@
 #   include <stddef.h>
 #   include <vector>
 #   include <OpenVRML/bounding_volume.h>
-#   include <OpenVRML/VrmlFrustum.h>
+#   include <OpenVRML/frustum.h>
 
 namespace OpenVRML {
 
@@ -34,7 +34,7 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE viewer {
     protected:
-        VrmlFrustum frustum_;
+        OpenVRML::frustum frustum_;
 
     public:
         enum {
@@ -194,8 +194,8 @@ namespace OpenVRML {
         // thses yet. there's a default implementation in any case, so you
         // shouldn't have to worry about it.
         //
-        virtual const VrmlFrustum& frustum() const;
-        virtual void frustum(const VrmlFrustum & afrust);
+        virtual const OpenVRML::frustum& frustum() const;
+        virtual void frustum(const OpenVRML::frustum & f);
 
         virtual bounding_volume::intersection
         intersect_view_volume(const bounding_volume & bvolume) const;

@@ -19,14 +19,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef VRMLFRUSTUM_H
-#define VRMLFRUSTUM_H
+# ifndef OPENVRML_FRUSTUM_H
+#   define OPENVRML_FRUSTUM_H
 
-#include "common.h"
+#   include <OpenVRML/common.h>
 
 namespace OpenVRML {
 
-    class OPENVRML_SCOPE VrmlFrustum {
+    class OPENVRML_SCOPE frustum {
     public:
         float fovy;
         float fovx;
@@ -37,12 +37,12 @@ namespace OpenVRML {
         float top_plane[4];
         float bot_plane[4];
 
-        VrmlFrustum();
-        VrmlFrustum(float afovy, float aaspect, double anear, double afar);
+        frustum();
+        frustum(float fovy, float aspect, double near, double far);
 
     private:
         void update();
     };
 }
 
-#endif // VRMLFRUSTUM_H
+# endif // OPENVRML_FRUSTUM_H

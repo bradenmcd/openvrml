@@ -2632,8 +2632,6 @@ namespace OpenVRML {
             const sfrotation & orientation() const;
             const sfvec3f & position() const;
 
-            void getFrustum(VrmlFrustum& frust) const; // get a copy
-
         private:
             virtual void do_initialize(double timestamp) throw ();
             virtual void do_relocate() throw (std::bad_alloc);

@@ -44,7 +44,6 @@
 # include <OpenVRML/browser.h>
 # include <OpenVRML/vrml97node.h>
 # include <OpenVRML/bounding_volume.h>
-# include <OpenVRML/VrmlFrustum.h>
 
 # include "ViewerOpenGL.h"
 
@@ -2990,8 +2989,7 @@ void ViewerOpenGL::set_viewpoint(const vec3f & position,
                : 30000.0;
     gluPerspective(field_of_view, aspect, znear, zfar);
 
-    VrmlFrustum frust(field_of_view, aspect, znear, zfar);
-    this->frustum(frust);
+    this->frustum(OpenVRML::frustum(field_of_view, aspect, znear, zfar));
 
     glMatrixMode(GL_MODELVIEW);
 

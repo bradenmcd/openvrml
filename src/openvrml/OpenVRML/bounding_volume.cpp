@@ -23,7 +23,7 @@
 # include "private.h"
 # include "bounding_volume.h"
 # include "field.h"
-# include "VrmlFrustum.h"
+# include "frustum.h"
 
 namespace OpenVRML {
 
@@ -96,7 +96,7 @@ bounding_volume::~bounding_volume() {}
  */
 
 /**
- * @fn bounding_volume::intersection bounding_volume::intersect_frustum(const VrmlFrustum & frustum) const
+ * @fn bounding_volume::intersection bounding_volume::intersect_frustum(const OpenVRML::frustum & frustum) const
  *
  * @brief Intersect this bvolume with a frustum.
  *
@@ -262,7 +262,7 @@ namespace {
 }
 
 bounding_volume::intersection
-bounding_sphere::intersect_frustum(const VrmlFrustum & frustum) const
+bounding_sphere::intersect_frustum(const OpenVRML::frustum & frustum) const
 {
     if (this->maximized()) { return bounding_volume::partial; }
     if (this->radius_ == -1.0f) { return bounding_volume::partial; } // ???
@@ -607,7 +607,8 @@ axis_aligned_bounding_box::~axis_aligned_bounding_box() {}
  * @todo Implement me!
  */
 bounding_volume::intersection
-axis_aligned_bounding_box::intersect_frustum(const VrmlFrustum & frustum) const
+axis_aligned_bounding_box::intersect_frustum(
+    const OpenVRML::frustum & frustum) const
 {
     return bounding_volume::partial;
 }

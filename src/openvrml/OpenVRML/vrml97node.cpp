@@ -16157,14 +16157,6 @@ float Viewpoint::field_of_view() const throw ()
 }
 
 /**
- * @todo Implement me!
- */
-void Viewpoint::getFrustum(VrmlFrustum& frust) const
-{
-    // XXX Implement me!
-}
-
-/**
  * @brief orientation accessor.
  *
  * @return the orientation.
