@@ -1,5 +1,11 @@
 2004-01-19 Braden McDaniel  <braden@endoframe.com>
 
+	Set DETAILS_AT_TOP to YES.
+
+	* doc/Doxyfile.in
+
+2004-01-19 Braden McDaniel  <braden@endoframe.com>
+
 	Added doc-comment for "scope_ptr".
 
 	* src/libopenvrml/openvrml/scope.cpp
