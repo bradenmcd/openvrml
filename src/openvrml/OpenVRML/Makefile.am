@@ -167,7 +167,7 @@ OpenVRMLinclude_HEADERS = \
         VrmlSFColor.h \
         VrmlSFFloat.h \
         VrmlSFImage.h \
-        VrmlSFInt.h \
+        VrmlSFInt32.h \
         VrmlSFNode.h \
 	VrmlSFRotation.h \
         VrmlSFString.h \
