@@ -51,17 +51,23 @@ libvrml97js_la_SOURCES = \
 	prmjtime.c
 
 noinst_HEADERS = \
+	jsarena.h \
 	jsarray.h \
 	jsatom.h \
 	jsbool.h \
+	jsbit.h \
+	jsclist.h \
 	jsconfig.h \
-	jscpucfg.h \
 	jscntxt.h \
+	jscpucfg.h \
 	jsdate.h \
+	jsdbgapi.h \
+	jsdtoa.h \
 	jsemit.h \
 	jsexn.h \
 	jsfun.h \
 	jsgc.h \
+	jshash.h \
 	jsinterp.h \
 	jslibmath.h \
 	jslock.h \
@@ -69,23 +75,18 @@ noinst_HEADERS = \
 	jsnum.h \
 	jsobj.h \
 	jsopcode.h \
-	jsparse.h \
-	jsarena.h \
-	jsclist.h \
-	jsdtoa.h \
-	jshash.h \
 	jsosdep.h \
+	jsparse.h \
 	jsprvtd.h \
+        jsprf.h \
 	jsregexp.h \
 	jsscan.h \
 	jsscope.h \
 	jsscript.h \
-	jsstr.h \
-	jsxdrapi.h \
-	jsdbgapi.h \
-	jsbit.h \
-	jscpucfg.h \
 	jsstddef.h \
+	jsstr.h \
+        jsutil.h \
+	jsxdrapi.h \
 	prmjtime.h \
 	resource.h \
 	jsopcode.tbl \
@@ -112,10 +113,10 @@ jsautocfg.h: jscpucfg
 EXTRA_DIST = jsmath.c
 
 jsmath.o jsmath.lo: jsmath.c
-	$(top_srcdir)/libtool $(CC) $(CFLAGS) $(DEFS) -c $<
+	$(LIBTOOL) $(CC) $(CFLAGS) $(DEFS) -c $<
 
 jsmathprelinked.lo: jsmath.lo jsmath.o
-	$(top_srcdir)/libtool --mode=link $(LD) $(reload_flag) -o $@ $< ./fdlibm/libfdm.la
+	$(LIBTOOL) --mode=link $(LD) $(reload_flag) -o $@ $< ./fdlibm/libfdm.la
 
 libvrml97js_la_LIBADD = jsmathprelinked.lo
 

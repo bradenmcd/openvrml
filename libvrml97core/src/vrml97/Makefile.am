@@ -16,7 +16,7 @@ endif
 
 INCLUDES = -I$(top_srcdir)/libvrml97js/src
 CXXFLAGS = -Wall -O2 $(DEBUG_CXXFLAGS) @JPEG_CFLAGS@ @PNG_CFLAGS@
-LDFLAGS = -version-info @LIBVRML97_SO_VERSION@ @JPEG_LIBS@ @PNG_LIBS@ -L$../../../libvrml97js/src/vrml97js -lvrml97js
+LDFLAGS = -version-info @LIBVRML97_SO_VERSION@ @JPEG_LIBS@ @PNG_LIBS@
 LFLAGS = -Ls
 YFLAGS = -d
 
