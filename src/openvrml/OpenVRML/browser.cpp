@@ -863,7 +863,7 @@ const std::string Browser::getWorldURI() const throw (std::bad_alloc) {
 void Browser::replaceWorld(const std::vector<NodePtr> & nodes) {}
 
 namespace {
-    typedef std::map<std::string, NodeClassPtr> NodeClassMap;
+    typedef std::map<std::string, node_class_ptr> NodeClassMap;
 
     struct InitNodeClass : std::unary_function<void, NodeClassMap::value_type> {
         explicit InitNodeClass(viewpoint_node * initialViewpoint,
@@ -1064,111 +1064,111 @@ void Browser::createVrmlFromURI(const std::vector<std::string> & uri,
 void Browser::initNodeClassMap() {
     using namespace Vrml97Node;
     this->nodeClassMap["urn:X-openvrml:node:Anchor"] =
-            NodeClassPtr(new AnchorClass(*this));
+            node_class_ptr(new AnchorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Appearance"] =
-            NodeClassPtr(new AppearanceClass(*this));
+            node_class_ptr(new AppearanceClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:AudioClip"] =
-            NodeClassPtr(new AudioClipClass(*this));
+            node_class_ptr(new AudioClipClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Background"] =
-            NodeClassPtr(new BackgroundClass(*this));
+            node_class_ptr(new BackgroundClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Billboard"] =
-            NodeClassPtr(new BillboardClass(*this));
+            node_class_ptr(new BillboardClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Box"] =
-            NodeClassPtr(new BoxClass(*this));
+            node_class_ptr(new BoxClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Collision"] =
-            NodeClassPtr(new CollisionClass(*this));
+            node_class_ptr(new CollisionClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Color"] =
-            NodeClassPtr(new ColorClass(*this));
+            node_class_ptr(new ColorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:ColorInterpolator"] =
-            NodeClassPtr(new ColorInterpolatorClass(*this));
+            node_class_ptr(new ColorInterpolatorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Cone"] =
-            NodeClassPtr(new ConeClass(*this));
+            node_class_ptr(new ConeClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Coordinate"] =
-            NodeClassPtr(new CoordinateClass(*this));
+            node_class_ptr(new CoordinateClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:CoordinateInterpolator"] =
-            NodeClassPtr(new CoordinateInterpolatorClass(*this));
+            node_class_ptr(new CoordinateInterpolatorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Cylinder"] =
-            NodeClassPtr(new CylinderClass(*this));
+            node_class_ptr(new CylinderClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:CylinderSensor"] =
-            NodeClassPtr(new CylinderSensorClass(*this));
+            node_class_ptr(new CylinderSensorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:DirectionalLight"] =
-            NodeClassPtr(new DirectionalLightClass(*this));
+            node_class_ptr(new DirectionalLightClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:ElevationGrid"] =
-            NodeClassPtr(new ElevationGridClass(*this));
+            node_class_ptr(new ElevationGridClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Extrusion"] =
-            NodeClassPtr(new ExtrusionClass(*this));
+            node_class_ptr(new ExtrusionClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Fog"] =
-            NodeClassPtr(new FogClass(*this));
+            node_class_ptr(new FogClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:FontStyle"] =
-            NodeClassPtr(new FontStyleClass(*this));
+            node_class_ptr(new FontStyleClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Group"] =
-            NodeClassPtr(new GroupClass(*this));
+            node_class_ptr(new GroupClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:ImageTexture"] =
-            NodeClassPtr(new ImageTextureClass(*this));
+            node_class_ptr(new ImageTextureClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:IndexedFaceSet"] =
-            NodeClassPtr(new IndexedFaceSetClass(*this));
+            node_class_ptr(new IndexedFaceSetClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:IndexedLineSet"] =
-            NodeClassPtr(new IndexedLineSetClass(*this));
+            node_class_ptr(new IndexedLineSetClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Inline"] =
-            NodeClassPtr(new InlineClass(*this));
+            node_class_ptr(new InlineClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:LOD"] =
-            NodeClassPtr(new LODClass(*this));
+            node_class_ptr(new LODClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Material"] =
-            NodeClassPtr(new MaterialClass(*this));
+            node_class_ptr(new MaterialClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:MovieTexture"] =
-            NodeClassPtr(new MovieTextureClass(*this));
+            node_class_ptr(new MovieTextureClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:NavigationInfo"] =
-            NodeClassPtr(new NavigationInfoClass(*this));
+            node_class_ptr(new NavigationInfoClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Normal"] =
-            NodeClassPtr(new NormalClass(*this));
+            node_class_ptr(new NormalClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:NormalInterpolator"] =
-            NodeClassPtr(new NormalInterpolatorClass(*this));
+            node_class_ptr(new NormalInterpolatorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:OrientationInterpolator"] =
-            NodeClassPtr(new OrientationInterpolatorClass(*this));
+            node_class_ptr(new OrientationInterpolatorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:PixelTexture"] =
-            NodeClassPtr(new PixelTextureClass(*this));
+            node_class_ptr(new PixelTextureClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:PlaneSensor"] =
-            NodeClassPtr(new PlaneSensorClass(*this));
+            node_class_ptr(new PlaneSensorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:PointLight"] =
-            NodeClassPtr(new PointLightClass(*this));
+            node_class_ptr(new PointLightClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:PointSet"] =
-            NodeClassPtr(new PointSetClass(*this));
+            node_class_ptr(new PointSetClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:PositionInterpolator"] =
-            NodeClassPtr(new PositionInterpolatorClass(*this));
+            node_class_ptr(new PositionInterpolatorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:ProximitySensor"] =
-            NodeClassPtr(new ProximitySensorClass(*this));
+            node_class_ptr(new ProximitySensorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:ScalarInterpolator"] =
-            NodeClassPtr(new ScalarInterpolatorClass(*this));
+            node_class_ptr(new ScalarInterpolatorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Shape"] =
-            NodeClassPtr(new ShapeClass(*this));
+            node_class_ptr(new ShapeClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Sound"] =
-            NodeClassPtr(new SoundClass(*this));
+            node_class_ptr(new SoundClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Sphere"] =
-            NodeClassPtr(new SphereClass(*this));
+            node_class_ptr(new SphereClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:SphereSensor"] =
-            NodeClassPtr(new SphereSensorClass(*this));
+            node_class_ptr(new SphereSensorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:SpotLight"] =
-            NodeClassPtr(new SpotLightClass(*this));
+            node_class_ptr(new SpotLightClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Switch"] =
-            NodeClassPtr(new SwitchClass(*this));
+            node_class_ptr(new SwitchClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Text"] =
-            NodeClassPtr(new TextClass(*this));
+            node_class_ptr(new TextClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:TextureCoordinate"] =
-            NodeClassPtr(new TextureCoordinateClass(*this));
+            node_class_ptr(new TextureCoordinateClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:TextureTransform"] =
-            NodeClassPtr(new TextureTransformClass(*this));
+            node_class_ptr(new TextureTransformClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:TimeSensor"] =
-            NodeClassPtr(new TimeSensorClass(*this));
+            node_class_ptr(new TimeSensorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:TouchSensor"] =
-            NodeClassPtr(new TouchSensorClass(*this));
+            node_class_ptr(new TouchSensorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Transform"] =
-            NodeClassPtr(new TransformClass(*this));
+            node_class_ptr(new TransformClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:Viewpoint"] =
-            NodeClassPtr(new ViewpointClass(*this));
+            node_class_ptr(new ViewpointClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:VisibilitySensor"] =
-            NodeClassPtr(new VisibilitySensorClass(*this));
+            node_class_ptr(new VisibilitySensorClass(*this));
     this->nodeClassMap["urn:X-openvrml:node:WorldInfo"] =
-            NodeClassPtr(new WorldInfoClass(*this));
+            node_class_ptr(new WorldInfoClass(*this));
 }
 
 /**

@@ -42,7 +42,7 @@ libopenvrml_la_SOURCES = \
         node.cpp \
         nodeptr.cpp \
         nodetypeptr.cpp \
-        nodeclassptr.cpp \
+        node_class_ptr.cpp \
         bvolume.cpp \
         script.cpp \
         ScriptJDK.cpp \
@@ -70,7 +70,7 @@ OpenVRMLinclude_HEADERS = \
         node.h \
         nodeptr.h \
         nodetypeptr.h \
-        nodeclassptr.h \
+        node_class_ptr.h \
         bvolume.h \
         script.h \
         browser.h \

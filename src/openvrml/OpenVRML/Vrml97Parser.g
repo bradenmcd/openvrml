@@ -670,7 +670,7 @@ protoStatement[OpenVRML::Browser & browser,
 proto[OpenVRML::Browser & browser,
       const OpenVRML::ScopePtr & scope]
 {
-    NodeClassPtr nodeClass;
+    node_class_ptr nodeClass;
     ScopePtr protoScope;
 }
     : KEYWORD_PROTO id:ID {

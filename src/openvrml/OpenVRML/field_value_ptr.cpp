@@ -101,6 +101,8 @@ field_value_ptr::field_value_ptr(const field_value_ptr & ptr) throw ():
  * @brief Assignment operator.
  *
  * @param ptr
+ *
+ * @return a reference to the field_value_ptr.
  */
 field_value_ptr & field_value_ptr::operator=(const field_value_ptr & ptr)
     throw ()

@@ -921,7 +921,7 @@ void Vrml97Parser::proto(
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
 #line 670 "Vrml97Parser.g"
 	
-	NodeClassPtr nodeClass;
+	node_class_ptr nodeClass;
 	ScopePtr protoScope;
 	
 #line 928 "Vrml97Parser.cpp"

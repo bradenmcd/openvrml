@@ -25,9 +25,9 @@
 #   include <stddef.h>
 #   include <list>
 #   include <map>
-#   include "common.h"
-#   include "nodeclassptr.h"
-#   include "script.h"
+#   include <OpenVRML/common.h>
+#   include <OpenVRML/node_class_ptr.h>
+#   include <OpenVRML/script.h>
 
 namespace OpenVRML {
 
@@ -61,7 +61,7 @@ namespace OpenVRML {
     private:
         std::auto_ptr<NullNodeClass> nullNodeClass;
         std::auto_ptr<NullNodeType> nullNodeType;
-        typedef std::map<std::string, NodeClassPtr> NodeClassMap;
+        typedef std::map<std::string, node_class_ptr> NodeClassMap;
         NodeClassMap nodeClassMap;
         ScriptNodeClass scriptNodeClass;
         Scene * scene;
