@@ -7,47 +7,47 @@
 //  This needs a major clean up...
 //
 
-# ifdef HAVE_CONFIG_H
-#   include <config.h>
-# endif
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-# include <stdio.h>
-# include <string.h>
+#include <stdio.h>
+#include <string.h>
 
-# ifdef _WIN32
-#   include <strstrea.h>
-# else
-#   include <strstream.h>
-# endif
+#ifdef _WIN32
+#include <strstrea.h>
+#else
+#include <strstream.h>
+#endif
 
 
-# include "ScriptJS.h"
-# include "doc2.hpp"
-# include "MathUtils.h"
-# include "System.h"
-# include "VrmlNodeScript.h"
-# include "VrmlNamespace.h"
-# include "VrmlNodeType.h"
-# include "VrmlScene.h"
-# include "VrmlSFBool.h"
-# include "VrmlSFColor.h"
-# include "VrmlSFFloat.h"
-# include "VrmlSFImage.h"
-# include "VrmlSFInt.h"
-# include "VrmlSFNode.h"
-# include "VrmlSFRotation.h"
-# include "VrmlSFString.h"
-# include "VrmlSFTime.h"
-# include "VrmlSFVec2f.h"
-# include "VrmlSFVec3f.h"
-# include "VrmlMFColor.h"
-# include "VrmlMFFloat.h"
-# include "VrmlMFInt.h"
-# include "VrmlMFNode.h"
-# include "VrmlMFRotation.h"
-# include "VrmlMFString.h"
-# include "VrmlMFVec2f.h"
-# include "VrmlMFVec3f.h"
+#include "ScriptJS.h"
+#include "doc2.hpp"
+#include "MathUtils.h"
+#include "System.h"
+#include "VrmlNodeScript.h"
+#include "VrmlNamespace.h"
+#include "VrmlNodeType.h"
+#include "VrmlScene.h"
+#include "VrmlSFBool.h"
+#include "VrmlSFColor.h"
+#include "VrmlSFFloat.h"
+#include "VrmlSFImage.h"
+#include "VrmlSFInt.h"
+#include "VrmlSFNode.h"
+#include "VrmlSFRotation.h"
+#include "VrmlSFString.h"
+#include "VrmlSFTime.h"
+#include "VrmlSFVec2f.h"
+#include "VrmlSFVec3f.h"
+#include "VrmlMFColor.h"
+#include "VrmlMFFloat.h"
+#include "VrmlMFInt.h"
+#include "VrmlMFNode.h"
+#include "VrmlMFRotation.h"
+#include "VrmlMFString.h"
+#include "VrmlMFVec2f.h"
+#include "VrmlMFVec3f.h"
 
 // This is nominally a private include but I want to subclass Arrays...
 # include "vrml97js/jsarray.h"
@@ -56,9 +56,9 @@
 # define MAX_HEAP_BYTES 4L * 1024L * 1024L
 # define STACK_CHUNK_BYTES 4024L
 
-# ifndef NDEBUG
-#   define SCRIPTJS_DEBUG
-# endif
+#ifndef NDEBUG
+#define SCRIPTJS_DEBUG
+#endif
 
 JSRuntime  *ScriptJS::rt = 0;	// Javascript runtime singleton object
 int ScriptJS::nInstances = 0;	// Number of distinct script objects
