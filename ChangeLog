@@ -21,6 +21,8 @@
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: checkError
           should take a const char *.
 
+        * configure.ac, README: Updated version to 0.12.3.
+
 2002-06-20  Braden McDaniel  <braden@endoframe.com>
 
         * m4/gl.m4: AC_REQUIRE([AC_PATH_XTRA]) and add the X CFLAGS and
