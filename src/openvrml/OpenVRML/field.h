@@ -425,6 +425,8 @@ namespace OpenVRML {
             throw ();
         size_t getLength() const throw ();
         void setLength(size_t length) throw (std::bad_alloc);
+        void addElement(SFColor::ConstArrayReference value)
+            throw (std::bad_alloc);
         void insertElement(size_t index, SFColor::ConstArrayReference value)
             throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
@@ -453,6 +455,7 @@ namespace OpenVRML {
         void setElement(size_t index, float value) throw ();
         size_t getLength() const throw ();
         void setLength(size_t length) throw (std::bad_alloc);
+        void addElement(float value) throw (std::bad_alloc);
         void insertElement(size_t index, float value) throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
 
@@ -480,6 +483,7 @@ namespace OpenVRML {
         void setElement(size_t index, long value) throw ();
         size_t getLength() const throw ();
         void setLength(size_t length) throw (std::bad_alloc);
+        void addElement(long value) throw (std::bad_alloc);
         void insertElement(size_t index, long value) throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
 
@@ -510,6 +514,7 @@ namespace OpenVRML {
         bool exists(const Node & node) const;
         bool addNode(const NodePtr & node);
         bool removeNode(const Node & node);
+        void addElement(const NodePtr & node) throw (std::bad_alloc);
         void insertElement(size_t index, const NodePtr & node)
             throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
@@ -543,6 +548,8 @@ namespace OpenVRML {
             throw ();
         size_t getLength() const throw ();
         void setLength(size_t length) throw (std::bad_alloc);
+        void addElement(SFRotation::ConstArrayReference value)
+            throw (std::bad_alloc);
         void insertElement(size_t index, SFRotation::ConstArrayReference value)
             throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
@@ -573,6 +580,7 @@ namespace OpenVRML {
             throw (std::bad_alloc);
         size_t getLength() const throw ();
         void setLength(const size_t length) throw (std::bad_alloc);
+        void addElement(const std::string & value) throw (std::bad_alloc);
         void insertElement(size_t index, const std::string & value)
             throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
@@ -601,6 +609,7 @@ namespace OpenVRML {
         void setElement(size_t index, double value) throw ();
         size_t getLength() const throw ();
         void setLength(size_t length) throw (std::bad_alloc);
+        void addElement(double value) throw (std::bad_alloc);
         void insertElement(size_t index, double value) throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
 
@@ -631,6 +640,8 @@ namespace OpenVRML {
             throw ();
         size_t getLength() const throw ();
         void setLength(size_t length) throw (std::bad_alloc);
+        void addElement(SFVec2f::ConstArrayReference value)
+            throw (std::bad_alloc);
         void insertElement(size_t index, SFVec2f::ConstArrayReference value)
             throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
@@ -662,7 +673,9 @@ namespace OpenVRML {
             throw ();
         size_t getLength() const throw ();
         void setLength(size_t length) throw (std::bad_alloc);
-        void insertElement(size_t index, SFVec3f::ConstArrayReference data)
+        void addElement(SFVec3f::ConstArrayReference value)
+            throw (std::bad_alloc);
+        void insertElement(size_t index, SFVec3f::ConstArrayReference value)
             throw (std::bad_alloc);
         void removeElement(size_t index) throw ();
 

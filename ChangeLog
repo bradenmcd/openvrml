@@ -13,6 +13,10 @@
         * src/openvrml/OpenVRML/script.cpp:  Fixed bug in JavaScript
           SFRotation constructor that takes two vectors.
 
+        * src/openvrml/OpenVRML/field.h,
+          src/openvrml/OpenVRML/field.cpp:  Added addElement methods to
+          MF* classes.
+
 2002-11-19  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/MathUtils.cpp,

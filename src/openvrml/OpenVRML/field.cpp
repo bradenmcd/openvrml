@@ -2493,9 +2493,10 @@ namespace {
     
     template <typename ElementType, size_t ArraySize>
     class array_vector {
-        ElementType (*data_)[ArraySize];
+        static const size_t min_capacity = 1;
         size_t size_;
         size_t capacity_;
+        ElementType (*data_)[ArraySize];
 
     public:
         enum {_ArraySize = ArraySize};
@@ -2515,15 +2516,15 @@ namespace {
         typedef ptrdiff_t difference_type;
 
         explicit array_vector(size_type size = 0):
-            data_(new ElementType[size][ArraySize]),
             size_(size),
-            capacity_(size)
+            capacity_((size > min_capacity) ? size : min_capacity),
+            data_(new ElementType[capacity_][ArraySize])
         {}
 
         array_vector(size_type size, const_reference value):
-            data_(new ElementType[size][ArraySize]),
             size_(size),
-            capacity_(size)
+            capacity_((size > min_capacity) ? size : min_capacity),
+            data_(new ElementType[capacity_][ArraySize])
         {
             for (iterator i(this->begin()); i != this->end(); ++i) {
                 std::copy(value, value + ArraySize, *i);
@@ -2531,9 +2532,9 @@ namespace {
         }
 
         array_vector(const_iterator begin, const_iterator end):
-            data_(new ElementType[end - begin][ArraySize]),
             size_(end - begin),
-            capacity_(end - begin)
+            capacity_((size_ > min_capacity) ? size_ : min_capacity),
+            data_(new ElementType[capacity_][ArraySize])
         {
             for (iterator i(begin), j(this->begin()); i != end; ++i, ++j) {
                 std::copy(*i, *i + ArraySize, *j);
@@ -2541,9 +2542,9 @@ namespace {
         }
 
         array_vector(const array_vector & av):
-            data_(new ElementType[av.size_][ArraySize]),
             size_(av.size_),
-            capacity_(av.capacity_)
+            capacity_(av.capacity_),
+            data_(new ElementType[av.capacity_][ArraySize])
         {
             const_iterator i(av.begin());
             iterator j(this->begin());
@@ -2602,8 +2603,8 @@ namespace {
         {
             if (this->capacity_ < size) {
                 delete [] this->data_;
-                this->data = new value_type[size];
-                this->capacity = size;
+                this->capacity_ = size;
+                this->data = new value_type[this->capacity_];
             }
             for (iterator i(begin), j(this->begin()); i != end; ++i, ++j) {
                 std::copy(*i, *i + ArraySize, *j);
@@ -2613,15 +2614,16 @@ namespace {
 
         void assign(const_iterator begin, const_iterator end)
         {
-            if (this->capacity_ < end - begin) {
+            const size_t size = end - begin;
+            if (this->capacity_ < size) {
                 delete [] this->data_;
-                this->data = new value_type[end - begin];
-                this->capacity = end - begin;
+                this->capacity_ = size;
+                this->data = new value_type[this->capacity_];
             }
             for (iterator i(begin), j(this->begin()); i != end; ++i, ++j) {
                 std::copy(*i, *i + ArraySize, *j);
             }
-            this->size_ = end - begin;
+            this->size_ = size;
         }
 
         void swap(array_vector & av) throw ()
@@ -2695,22 +2697,22 @@ namespace {
 
         const_reverse_iterator rbegin() const
         {
-            return std::reverse_iterator(this->end());
+            return std::const_reverse_iterator(this->end());
         }
 
         reverse_iterator rbegin()
         {
-            return std::const_reverse_iterator(this->end());
+            return std::reverse_iterator(this->end());
         }
 
         const_reverse_iterator rend() const
         {
-            return std::reverse_iterator(this->begin());
+            return std::const_reverse_iterator(this->begin());
         }
 
         reverse_iterator rend()
         {
-            return std::const_reverse_iterator(this->end());
+            return std::reverse_iterator(this->begin());
         }
 
         iterator insert(iterator pos, const_reference value)
@@ -2961,6 +2963,19 @@ void MFColor::setLength(size_t length) throw (std::bad_alloc)
 }
 
 /**
+ * @brief Add an element to the end of the sequence.
+ *
+ * @param value the value to add.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void MFColor::addElement(SFColor::ConstArrayReference value)
+    throw (std::bad_alloc)
+{
+    static_cast<ColorVec *>(this->values)->push_back(value);
+}
+
+/**
  * @brief Insert an element into the sequence.
  *
  * @param index the index where the new @p value should be inserted.
@@ -3126,6 +3141,19 @@ void MFFloat::setLength(const size_t length) throw (std::bad_alloc)
 }
 
 /**
+ * @brief Add an element to the end of the sequence.
+ *
+ * @param value the value to add.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void MFFloat::addElement(const float value)
+    throw (std::bad_alloc)
+{
+    this->values.push_back(value);
+}
+
+/**
  * @brief Insert an element into the sequence.
  *
  * @param index the index where the new @p value should be inserted.
@@ -3280,9 +3308,21 @@ size_t MFInt32::getLength() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void MFInt32::setLength(size_t length) throw (std::bad_alloc)
+void MFInt32::setLength(const size_t length) throw (std::bad_alloc)
 {
     this->values.resize(length);
+}
+
+/**
+ * @brief Add an element to the end of the sequence.
+ *
+ * @param value the value to add.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void MFInt32::addElement(const long value) throw (std::bad_alloc)
+{
+    this->values.push_back(value);
 }
 
 /**
@@ -3307,7 +3347,7 @@ void MFInt32::insertElement(const size_t index, const long value)
  * @todo Right now this fails silently if @p index is out of range. We should
  *      either fail with an assertion or throw std::out_of_range.
  */
-void MFInt32::removeElement(size_t index) throw ()
+void MFInt32::removeElement(const size_t index) throw ()
 {
     this->values.erase(this->values.begin() + index);
 }
@@ -3511,6 +3551,18 @@ bool MFNode::removeNode(const Node & node)
 }
 
 /**
+ * @brief Add an element to the end of the sequence.
+ *
+ * @param node  the node to add.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void MFNode::addElement(const NodePtr & node) throw (std::bad_alloc)
+{
+    this->nodes.push_back(node);
+}
+
+/**
  * @brief Insert an element into the sequence.
  *
  * @param index the index where the new @p node should be inserted.
@@ -3711,6 +3763,19 @@ void MFRotation::setLength(size_t length) throw (std::bad_alloc)
 }
 
 /**
+ * @brief Add an element to the end of the sequence.
+ *
+ * @param value the value to add.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void MFRotation::addElement(SFRotation::ConstArrayReference value)
+    throw (std::bad_alloc)
+{
+    static_cast<RotationVec *>(this->values)->push_back(value);
+}
+
+/**
  * @brief Insert an element into the sequence.
  *
  * @param index the index where the new @p value should be inserted.
@@ -3903,6 +3968,18 @@ void MFString::setLength(const size_t length) throw (std::bad_alloc)
 }
 
 /**
+ * @brief Add an element to the end of the sequence.
+ *
+ * @param value the value to add.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void MFString::addElement(const std::string & value) throw (std::bad_alloc)
+{
+    this->values.push_back(value);
+}
+
+/**
  * @brief Insert an element into the sequence.
  *
  * @param index the index where the new @p value should be inserted.
@@ -4060,6 +4137,18 @@ size_t MFTime::getLength() const throw ()
 void MFTime::setLength(const size_t length) throw (std::bad_alloc)
 {
     this->values.resize(length);
+}
+
+/**
+ * @brief Add an element to the end of the sequence.
+ *
+ * @param value the value to add.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void MFTime::addElement(const double value) throw (std::bad_alloc)
+{
+    this->values.push_back(value);
 }
 
 /**
@@ -4256,6 +4345,19 @@ void MFVec2f::setLength(size_t length) throw (std::bad_alloc) {
 }
 
 /**
+ * @brief Add an element to the end of the sequence.
+ *
+ * @param value the value to add.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void MFVec2f::addElement(SFVec2f::ConstArrayReference value)
+    throw (std::bad_alloc)
+{
+    static_cast<Vec2fVec *>(this->values)->push_back(value);
+}
+
+/**
  * @brief Insert an element into the sequence.
  *
  * @param index the index where the new @p value should be inserted.
@@ -4449,6 +4551,19 @@ size_t MFVec3f::getLength() const throw ()
  */
 void MFVec3f::setLength(size_t length) throw (std::bad_alloc) {
     static_cast<Vec3fVec *>(this->values)->resize(length);
+}
+
+/**
+ * @brief Add an element to the end of the sequence.
+ *
+ * @param value the value to add.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void MFVec3f::addElement(SFVec3f::ConstArrayReference value)
+    throw (std::bad_alloc)
+{
+    static_cast<Vec3fVec *>(this->values)->push_back(value);
 }
 
 /**
