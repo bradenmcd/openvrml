@@ -1,3 +1,9 @@
+2005-01-22 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(text_node::update_ucs4):  Check whether the UTF-8 string is
+	well-formed before calling FcUtf8ToUcs4.
+
 2005-01-16 Braden McDaniel  <braden@endoframe.com>
 
 	Don't set rotation axis component-wise in the parser.
