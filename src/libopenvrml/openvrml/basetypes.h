@@ -383,8 +383,8 @@ namespace openvrml {
         mat4f & operator*=(float scalar) throw ();
         mat4f & operator*=(const mat4f & mat) throw ();
 
-        float (&operator[](size_t index) throw ())[4];
-        const float (&operator[](size_t index) const throw ())[4];
+        float (&operator[](const size_t index) throw ())[4];
+        const float (&operator[](const size_t index) const throw ())[4];
 
         void transformation(vec3f & t, openvrml::rotation & r, vec3f & s) const
             throw ();

@@ -1,5 +1,10 @@
 2004-01-30 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/basetypes.h:  Workaround for an
+	apparent parser bug in cl 13.10.3077.
+
+2004-01-30 Braden McDaniel  <braden@endoframe.com>
+
 	Fixes to make cl 13.10.3077 happy.
 
 	* src/libopenvrml/openvrml/browser.cpp
