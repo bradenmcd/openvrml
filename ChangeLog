@@ -1,6 +1,21 @@
+2000-09-05  Christopher St. John <cstjohn@acm.org>
+
+	* gifread.cpp, jpgread.cpp, mpgread.cpp, pngread.cpp Modified to
+	load textures using OpenGL convention of origin in lower left hand
+	corner instead of upper left. Old image loader code used regular
+	convention and then munged the texture coordinates to turn them
+	back right side up, which led to non-conformant behavior when
+	scaling using a texture transform node. (see bug# 109952) The
+	fixes were easy, but what about 3rd party loaders?
+
+	* ViewerOpenGL.cpp, Viewer.cpp Changed the texture coordinate
+	generation code to match the new loader code. Fixes also improve
+	(but maybe don't totally fix) several other texture coord problems
+	including bug #'s 110035, 111335, 111343.
+	
 2000-08-27  Christopher St. John <cstjohn@acm.org>
 
-	* ViewerOpenGL.cpp Changed the default znear in setViewpoint()
+	* ViewerOpenGL.cpp Changed the default zfar in setViewpoint()
 	from 1000 to 30,000. This helps with, but doesn't really properly
 	fix, conformance bugs #'s 111350, 111338, 111339, 111340. It might
 	also cause problems with z-precision, likely to show up as
