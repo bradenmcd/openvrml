@@ -3,7 +3,8 @@ docdir = $(datadir)/doc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
 DOCUMENTATION_FILES = \
         doxygen-header \
         doxygen-footer \
-        index.doc
+        index.doc \
+        conformance.doc
 
 DOCUMENTED_SOURCE_FILES = \
         $(top_srcdir)/src/libopenvrml/openvrml/basetypes.cpp \

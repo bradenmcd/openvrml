@@ -1,5 +1,14 @@
 2004-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	Backed out incomplete change to remove conformance test results
+	table from the generated documentation (from 2004-07-06).
+
+	* doc/Doxyfile.in
+	* doc/Makefile.am
+	* doc/doxygen-header
+
+2004-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	Incremented library version numbers for imminent 0.15.0 release.
 
 	* src/libopenvrml/Makefile.am
