@@ -12,9 +12,6 @@ METROWERKS_PROJECT_FILES = \
         macos/LibVRML97.mcp.xml \
         macos/LibVRML97.prefix \
         macos/LibVRML97.rsrc.hqx \
-        macos/parser/Vrml97Parser.cpp \
-        macos/parser/Vrml97Parser.hpp \
-        macos/parser/VRML97ParserTokenTypes.hpp \
         macos/sys/types.h
 
 VISUALCPP_PROJECT_FILES = \
