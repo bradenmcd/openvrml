@@ -126,10 +126,6 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\Route.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\src\openvrml\OpenVRML\ScriptJDK.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\ScriptObject.h
 # End Source File
 # Begin Source File
@@ -305,19 +301,6 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\MathUtils.cpp
 # Begin Source File
 
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\Route.cpp
-
-!IF  "$(CFG)" == "openvrmlcore - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "openvrmlcore - Win32 Debug"
-
-# ADD CPP /w /W0
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\src\openvrml\OpenVRML\ScriptJDK.cpp
 
 !IF  "$(CFG)" == "openvrmlcore - Win32 Release"
 
