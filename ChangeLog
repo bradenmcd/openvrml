@@ -1,3 +1,12 @@
+2003-11-16  Braden McDaniel  <braden@endoframe.com>
+
+	* openvrml.spec.in:  Removed glut/glut-devel dependency from
+	openvrml-gl/openvrml-gl-devel packages.  Added glut dependency
+	to lookat package.  Changed openvrml-gl's XFree86 dependency to
+	XFree86-Mesa-libGLU; changed minimum version of XFree86 from 4.2
+	to 4.3.  Removed unused ARCH_FLAGS variable from "configure"
+	invocation.  Added _smp_mflags macro to invocation of make.
+
 2003-11-13  Braden McDaniel  <braden@endoframe.com>
 
 	Updated library version numbers.
