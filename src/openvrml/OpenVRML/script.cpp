@@ -759,11 +759,17 @@ namespace {
         const long MAX_HEAP_BYTES = 4L * 1024L * 1024L;
         const long STACK_CHUNK_BYTES = 4024L;
 
+        class BadConversion : public std::runtime_error {
+        public:
+            BadConversion(const std::string & msg): runtime_error(msg) {}
+        };
+        
         void initVrmlClasses(JSContext * cx, JSObject * obj);
         JSBool floatsToJSArray(size_t numFloats, const float * floats,
                                JSContext * cx, jsval * rval);
         FieldValue * createFieldValueFromJsval(JSContext * cx, jsval val,
-				             FieldValue::Type fieldType);
+				             FieldValue::Type fieldType)
+                throw (BadConversion, std::bad_alloc);
         char * objToEventOut(JSContext * cx, JSObject * obj);
         void checkEventOut(JSContext * cx, JSObject * obj,
                            const FieldValue & val);
@@ -877,7 +883,8 @@ namespace {
                                   bool protect, JSContext * cx, JSObject * obj,
                                   jsval * rval) throw ();
             static OpenVRML::SFColor * createFromJSObject(JSContext * cx,
-                                                          JSObject * obj);
+                                                          JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
             
         private:
             static JSBool construct(JSContext * cx, JSObject * obj,
@@ -908,7 +915,8 @@ namespace {
                                   jsval * rval)
                     throw ();
             static OpenVRML::SFImage * createFromJSObject(JSContext * cx,
-                                                          JSObject * obj);
+                                                          JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
             
         private:
             static JSBool construct(JSContext * cx, JSObject * obj,
@@ -932,7 +940,8 @@ namespace {
                                   JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
             static OpenVRML::SFNode * createFromJSObject(JSContext * cx,
-                                                         JSObject * obj);
+                                                         JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
             static JSBool construct(JSContext * cx, JSObject * obj,
                                     uintN argc, jsval * argv, jsval *) throw ();
             static JSBool initObject(JSContext * cx, JSObject * obj,
@@ -954,7 +963,8 @@ namespace {
                                   jsval * rval)
                     throw ();
             static OpenVRML::SFRotation * createFromJSObject(JSContext * cx,
-                                                             JSObject * obj);
+                                                             JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
         
         private:
             static JSBool construct(JSContext * cx, JSObject * obj,
@@ -996,7 +1006,8 @@ namespace {
                                   jsval * rval)
                     throw ();
             static OpenVRML::SFVec2f * createFromJSObject(JSContext * cx,
-                                                          JSObject * obj);
+                                                          JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
         
         private:
             static JSBool constructor(JSContext * cx, JSObject * obj,
@@ -1043,7 +1054,8 @@ namespace {
                                   jsval * rval)
                     throw ();
             static OpenVRML::SFVec3f * createFromJSObject(JSContext * cx,
-                                                          JSObject * obj);
+                                                          JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
         
         private:
             static JSBool constructor(JSContext * cx, JSObject * obj,
@@ -1176,7 +1188,8 @@ namespace {
                                   bool protect, JSContext * cx, JSObject * obj,
                                   jsval * rval) throw ();
             static OpenVRML::MFColor * createFromJSObject(JSContext * cx,
-                                                          JSObject * obj);
+                                                          JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
         };
         
         class MFFloat : public MFJSDouble<MFFloat> {
@@ -1187,7 +1200,8 @@ namespace {
                                   bool protect, JSContext * cx, JSObject * obj,
                                   jsval * rval) throw ();
             static OpenVRML::MFFloat * createFromJSObject(JSContext * cx,
-                                                          JSObject * obj);
+                                                          JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
         };
         
         class MFInt32 : public MField {
@@ -1199,7 +1213,8 @@ namespace {
                                   bool protect, JSContext * cx, JSObject * obj,
                                   jsval * rval) throw ();
             static OpenVRML::MFInt32 * createFromJSObject(JSContext * cx,
-                                                          JSObject * obj);
+                                                          JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
 
         private:
             static JSBool construct(JSContext * cx, JSObject * obj,
@@ -1230,7 +1245,8 @@ namespace {
                                   JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
             static OpenVRML::MFNode * createFromJSObject(JSContext * cx,
-                                                         JSObject * obj);
+                                                         JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
 
         private:
             static JSBool construct(JSContext * cx, JSObject * obj,
@@ -1257,7 +1273,8 @@ namespace {
                                   bool protect, JSContext * cx, JSObject * obj,
                                   jsval * rval) throw ();
             static OpenVRML::MFRotation * createFromJSObject(JSContext * cx,
-                                                             JSObject * obj);
+                                                             JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
         };
         
         class MFString : public MField {
@@ -1270,7 +1287,8 @@ namespace {
                                   bool protect, JSContext * cx, JSObject * obj,
                                   jsval * rval) throw ();
             static OpenVRML::MFString * createFromJSObject(JSContext * cx,
-                                                           JSObject * obj);
+                                                           JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
 
         private:
             static JSBool construct(JSContext * cx, JSObject * obj,
@@ -1296,7 +1314,8 @@ namespace {
                                   JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
             static OpenVRML::MFTime * createFromJSObject(JSContext * cx,
-                                                         JSObject * obj);
+                                                         JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
         };
         
         class MFVec2f : public MFJSObject<MFVec2f> {
@@ -1308,7 +1327,8 @@ namespace {
                                   bool protect, JSContext * cx, JSObject * obj,
                                   jsval * rval) throw ();
             static OpenVRML::MFVec2f * createFromJSObject(JSContext * cx,
-                                                          JSObject * obj);
+                                                          JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
         };
         
         class MFVec3f : public MFJSObject<MFVec3f> {
@@ -1320,7 +1340,8 @@ namespace {
                                   bool protect, JSContext * cx, JSObject * obj,
                                   jsval * rval) throw ();
             static OpenVRML::MFVec3f * createFromJSObject(JSContext * cx,
-                                                          JSObject * obj);
+                                                          JSObject * obj)
+                    throw (BadConversion, std::bad_alloc);
         };
 
         JSRuntime * Script::rt = 0; // Javascript runtime singleton object
@@ -1721,11 +1742,10 @@ namespace {
                 std::auto_ptr<FieldValue>
                         fieldValue(createFieldValueFromJsval(cx, *val, fieldType));
                 scriptNode.setEventOut(eventId, *fieldValue);
-            } catch (std::exception & ex) { // should be bad_alloc
+            } catch (BadConversion & ex) {
+                cout << ex.what() << endl;
+            } catch (std::bad_alloc & ex) {
                 OPENVRML_PRINT_EXCEPTION_(ex);
-                return JS_FALSE;
-            } catch (...) {
-                assert(false);
                 return JS_FALSE;
             }
 
@@ -1763,11 +1783,11 @@ namespace {
                 std::auto_ptr<FieldValue>
                         fieldValue(createFieldValueFromJsval(cx, *val, fieldType));
                 scriptNode.setField(fieldId, *fieldValue);
-            } catch (std::exception & ex) { // should be bad_alloc
-                OPENVRML_PRINT_EXCEPTION_(ex);
+            } catch (BadConversion & ex) {
+                cout << ex.what() << endl;
                 return JS_FALSE;
-            } catch (...) {
-                assert(false);
+            } catch (std::bad_alloc & ex) {
+                OPENVRML_PRINT_EXCEPTION_(ex);
                 return JS_FALSE;
             }
 
@@ -1968,22 +1988,30 @@ namespace {
         /**
          * @brief Convert a jsval to a (new) FieldValue.
          */
-        FieldValue * createFieldValueFromJsval(JSContext * cx, jsval v,
-                                        FieldValue::Type expectType) {
+        FieldValue *
+                createFieldValueFromJsval(JSContext * const cx, const jsval v,
+                                          const FieldValue::Type expectType)
+                throw (BadConversion, std::bad_alloc) {
             switch (expectType) {
             case FieldValue::sfbool:
                 {
-                    assert(JSVAL_IS_BOOLEAN(v));
+                    if (!JSVAL_IS_BOOLEAN(v)) {
+                        throw BadConversion("Boolean value expected.");
+                    }
                     return new SFBool(JSVAL_TO_BOOLEAN(v));
                 }
                 
             case FieldValue::sfcolor:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return SFColor::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
             case FieldValue::sffloat:
                 {
-                    assert(JSVAL_IS_NUMBER(v));
+                    if (!JSVAL_IS_NUMBER(v)) {
+                        throw BadConversion("Numeric value expected.");
+                    }
                     jsdouble sffloatDouble;
                     JS_ValueToNumber(cx, v, &sffloatDouble);
                     return new SFFloat(sffloatDouble);
@@ -1991,25 +2019,35 @@ namespace {
             
             case FieldValue::sfint32:
                 {
-                    assert(JSVAL_IS_INT(v));
+                    if (!JSVAL_IS_INT(v)) {
+                        throw BadConversion("Integer value expected.");
+                    }
                     return new SFInt32(JSVAL_TO_INT(v));
                 }
             
             case FieldValue::sfimage:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return SFImage::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
             case FieldValue::sfnode:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return SFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
             case FieldValue::sfrotation:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return SFRotation::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
             case FieldValue::sfstring:
                 {
-                    assert(JSVAL_IS_STRING(v));
+                    if (!JSVAL_IS_STRING(v)) {
+                        throw BadConversion("String value expected.");
+                    }
                     JSString * const jsstring = JSVAL_TO_STRING(v);
                     //
                     // Is the null check here really necessary? Perhaps this
@@ -2022,54 +2060,78 @@ namespace {
             
             case FieldValue::sftime:
                 {
-                    assert(JSVAL_IS_NUMBER(v));
+                    if (!JSVAL_IS_NUMBER(v)) {
+                        throw BadConversion("Numeric value expected.");
+                    }
                     jsdouble sftimeDouble;
                     JS_ValueToNumber(cx, v, &sftimeDouble);
                     return new SFTime(sftimeDouble);
                 }
             
             case FieldValue::sfvec2f:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return SFVec2f::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
             case FieldValue::sfvec3f:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return SFVec3f::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
             case FieldValue::mfcolor:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return MFColor::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
                 
             case FieldValue::mffloat:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return MFFloat::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
             case FieldValue::mfint32:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return MFInt32::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
             case FieldValue::mfnode:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return MFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
 
             case FieldValue::mfrotation:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return MFRotation::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
 
             case FieldValue::mfstring:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return MFString::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
             case FieldValue::mftime:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return MFTime::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
             
             case FieldValue::mfvec2f:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return MFVec2f::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
 
             case FieldValue::mfvec3f:
-                assert(JSVAL_IS_OBJECT(v));
+                if (!JSVAL_IS_OBJECT(v)) {
+                    throw BadConversion("Object expected.");
+                }
                 return MFVec3f::createFromJSObject(cx, JSVAL_TO_OBJECT(v));
 
             default:
@@ -2620,8 +2682,11 @@ namespace {
         }
 
         OpenVRML::SFColor * SFColor::createFromJSObject(JSContext * const cx,
-                                                        JSObject * const obj) {
-            assert(JS_InstanceOf(cx, obj, &SFColor::jsclass, 0));
+                                                        JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
+            if (!JS_InstanceOf(cx, obj, &SFColor::jsclass, 0)) {
+                throw BadConversion("SFColor object expected.");
+            }
             const SFData * const sfdata =
                 static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
@@ -2843,8 +2908,11 @@ namespace {
         }
         
         OpenVRML::SFImage * SFImage::createFromJSObject(JSContext * const cx,
-                                                        JSObject * const obj) {
-            assert(JS_InstanceOf(cx, obj, &SFImage::jsclass, 0));
+                                                        JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
+            if (!JS_InstanceOf(cx, obj, &SFImage::jsclass, 0)) {
+                throw BadConversion("SFImage object expected.");
+            }
             const SFData * const sfdata =
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
@@ -3065,8 +3133,11 @@ namespace {
         }
 
         OpenVRML::SFNode * SFNode::createFromJSObject(JSContext * const cx,
-                                                      JSObject * const obj) {
-            assert(JS_InstanceOf(cx, obj, &SFNode::jsclass, 0));
+                                                      JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
+            if (!JS_InstanceOf(cx, obj, &SFNode::jsclass, 0)) {
+                throw BadConversion("SFNode object expected.");
+            }
             const SFData * const sfdata =
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
@@ -3203,10 +3274,15 @@ namespace {
             
 	    // convert vp to field, send eventIn to node
             FieldValue::Type expectType;
+            FieldValue * fieldValue;
             if ((expectType = nodePtr->nodeType.hasEventIn(eventInId))) {
-                FieldValue * const fieldValue =
-                        createFieldValueFromJsval(cx, *vp, expectType);
-                if (!fieldValue) {
+                try {
+                    fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
+                } catch (BadConversion & ex) {
+                    cout << ex.what() << endl;
+                    return JS_FALSE;
+                } catch (std::bad_alloc & ex) {
+                    OPENVRML_PRINT_EXCEPTION_(ex);
                     return JS_FALSE;
                 }
                 // This should only happen if directOutput is set...
@@ -3220,11 +3296,15 @@ namespace {
                         .queueEvent(s_timeStamp, fieldValue, nodePtr,
                                     eventInId);
             } else if (expectType = nodePtr->nodeType.hasField(eventInId)) {
-	        FieldValue * const fieldValue =
-		        createFieldValueFromJsval(cx, *vp, expectType);
-		if (!fieldValue) {
-		    return JS_FALSE;
-		}
+                try {
+                    fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
+                } catch (BadConversion & ex) {
+                    cout << ex.what() << endl;
+                    return JS_FALSE;
+                } catch (std::bad_alloc & ex) {
+                    OPENVRML_PRINT_EXCEPTION_(ex);
+                    return JS_FALSE;
+                }
 		// This should only happen if directOutput is set...
 
 		// the timestamp should be stored as a global property and
@@ -3306,8 +3386,11 @@ namespace {
 
         OpenVRML::SFRotation *
                 SFRotation::createFromJSObject(JSContext * const cx,
-                                               JSObject * const obj) {
-            assert(JS_InstanceOf(cx, obj, &SFRotation::jsclass, 0));
+                                               JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
+            if (!JS_InstanceOf(cx, obj, &SFRotation::jsclass, 0)) {
+                throw BadConversion("SFRotation object expected.");
+            }
             const SFData * const sfdata =
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
@@ -3887,8 +3970,11 @@ namespace {
         }
 
         OpenVRML::SFVec2f * SFVec2f::createFromJSObject(JSContext * const cx,
-                                                        JSObject * const obj) {
-            assert(JS_InstanceOf(cx, obj, &SFVec2f::jsclass, 0));
+                                                        JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
+            if (!JS_InstanceOf(cx, obj, &SFVec2f::jsclass, 0)) {
+                throw BadConversion("SFVec2f object expected.");
+            }
             const SFData * const sfdata =
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
@@ -4360,8 +4446,11 @@ namespace {
         }
 
         OpenVRML::SFVec3f * SFVec3f::createFromJSObject(JSContext * const cx,
-                                                        JSObject * const obj) {
-            assert(JS_InstanceOf(cx, obj, &SFVec3f::jsclass, 0));
+                                                        JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
+            if (!JS_InstanceOf(cx, obj, &SFVec3f::jsclass, 0)) {
+                throw BadConversion("SFVec3f object expected.");
+            }
             const SFData * const sfdata =
                     static_cast<SFData *>(JS_GetPrivate(cx, obj));
             assert(sfdata);
@@ -5413,10 +5502,14 @@ namespace {
         JSClass & MFColor::sfjsclass = SFColor::jsclass;
         
         OpenVRML::MFColor * MFColor::createFromJSObject(JSContext * const cx,
-                                                        JSObject * const obj) {
+                                                        JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
             assert(cx);
             assert(obj);
-            assert(JS_InstanceOf(cx, obj, &MFColor::jsclass, 0));
+            
+            if (!JS_InstanceOf(cx, obj, &MFColor::jsclass, 0)) {
+                throw BadConversion("MFColor object expected.");
+            }
             
             MField::MFData * const mfdata =
                     static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
@@ -5521,10 +5614,14 @@ namespace {
         }
 
         OpenVRML::MFFloat * MFFloat::createFromJSObject(JSContext * const cx,
-                                                        JSObject * const obj) {
+                                                        JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
             assert(cx);
             assert(obj);
-            assert(JS_InstanceOf(cx, obj, &MFFloat::jsclass, 0));
+            
+            if (!JS_InstanceOf(cx, obj, &MFFloat::jsclass, 0)) {
+                throw BadConversion("MFFloat object expected.");
+            }
             MField::MFData * const mfdata =
                     static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -5604,10 +5701,14 @@ namespace {
         }
 
         OpenVRML::MFInt32 * MFInt32::createFromJSObject(JSContext * const cx,
-                                                        JSObject * const obj) {
+                                                        JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
             assert(cx);
             assert(obj);
-            assert(JS_InstanceOf(cx, obj, &MFInt32::jsclass, 0));
+            
+            if (!JS_InstanceOf(cx, obj, &MFInt32::jsclass, 0)) {
+                throw BadConversion("MFInt32 object expected.");
+            }
             MField::MFData * const mfdata =
                     static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -5882,8 +5983,14 @@ namespace {
         }
 
         OpenVRML::MFNode * MFNode::createFromJSObject(JSContext * const cx,
-                                                      JSObject * const obj) {
-            assert(JS_InstanceOf(cx, obj, &MFNode::jsclass, 0));
+                                                      JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
+            assert(cx);
+            assert(obj);
+            
+            if (!JS_InstanceOf(cx, obj, &MFNode::jsclass, 0)) {
+                throw BadConversion("MFNode object expected.");
+            }
             MField::MFData * const mfdata =
                     static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -6134,8 +6241,14 @@ namespace {
 
         OpenVRML::MFRotation *
                 MFRotation::createFromJSObject(JSContext * const cx,
-                                               JSObject * const obj) {
-            assert(JS_InstanceOf(cx, obj, &MFRotation::jsclass, 0));
+                                               JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
+            assert(cx);
+            assert(obj);
+            
+            if (!JS_InstanceOf(cx, obj, &MFRotation::jsclass, 0)) {
+                throw BadConversion("MFRotation object expected.");
+            }
             MField::MFData * const mfdata =
                     static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -6230,8 +6343,14 @@ namespace {
         }
 
         OpenVRML::MFString * MFString::createFromJSObject(JSContext * const cx,
-                                                          JSObject * const obj) {
-            assert(JS_InstanceOf(cx, obj, &MFString::jsclass, 0));
+                                                          JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
+            assert(cx);
+            assert(obj);
+            
+            if (!JS_InstanceOf(cx, obj, &MFString::jsclass, 0)) {
+                throw BadConversion("MFString object expected.");
+            }
             MField::MFData * const mfdata =
                     static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -6504,8 +6623,14 @@ namespace {
         }
 
         OpenVRML::MFTime * MFTime::createFromJSObject(JSContext * const cx,
-                                                      JSObject * const obj) {
-            assert(JS_InstanceOf(cx, obj, &MFTime::jsclass, 0));
+                                                      JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
+            assert(cx);
+            assert(obj);
+            
+            if (!JS_InstanceOf(cx, obj, &MFTime::jsclass, 0)) {
+                throw BadConversion("MFTime object expected.");
+            }
             MField::MFData * const mfdata =
                     static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -6563,8 +6688,13 @@ namespace {
         }
 
         OpenVRML::MFVec2f * MFVec2f::createFromJSObject(JSContext * const cx,
-                                                        JSObject * const obj) {
-            assert(JS_InstanceOf(cx, obj, &MFVec2f::jsclass, 0));
+                                                        JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
+            assert(cx);
+            assert(obj);
+            if (!JS_InstanceOf(cx, obj, &MFVec2f::jsclass, 0)) {
+                throw BadConversion("MFVec2f object expected.");
+            }
             MField::MFData * const mfdata =
                     static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -6633,10 +6763,13 @@ namespace {
         }
         
         OpenVRML::MFVec3f * MFVec3f::createFromJSObject(JSContext * const cx,
-                                                        JSObject * const obj) {
+                                                        JSObject * const obj)
+                throw (BadConversion, std::bad_alloc) {
             assert(cx);
             assert(obj);
-            assert(JS_InstanceOf(cx, obj, &MFVec3f::jsclass, 0));
+            if (!JS_InstanceOf(cx, obj, &MFVec3f::jsclass, 0)) {
+                throw BadConversion("MFVec3f object expected.");
+            }
             MField::MFData * const mfdata =
                     static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);

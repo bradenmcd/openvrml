@@ -3,6 +3,11 @@
         * Document --with-gl and --with-glut configure options in
           README.
 
+        * Fixed bug in the JavaScript binding where an incompatible
+          conversion from a JavaScript value to an OpenVRML::FieldValue
+          value was causing an assertion failure. We now report an error
+          to stdout.
+
 2002-05-17  Braden McDaniel  <braden@endoframe.com>
 
         * Enable building without OpenGL and GLUT.
