@@ -60,7 +60,7 @@ GLUT-based VRML viewer.
 
 
 %build
-./configure $ARCH_FLAGS --prefix=%{prefix} --without-jdk CPPFLAGS="-I/usr/include/mozilla-1.0.0/js" CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-L/usr/lib/mozilla-1.0.0"
+./configure $ARCH_FLAGS --prefix=%{prefix} --without-jdk --without-doxygen CPPFLAGS="-I/usr/include/mozilla-1.0.0/js" CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-L/usr/lib/mozilla-1.0.0"
 make
 
 
@@ -71,7 +71,6 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 %files 
 %doc AUTHORS COPYING COPYING.LIB ChangeLog NEWS README THANKS
-%doc doc/conformance.html
 %{prefix}/lib/libopenvrml.so.*
 %{prefix}/lib/pkgconfig/openvrml.pc
 
@@ -97,6 +96,10 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Sun Jun 30 2002  Braden McDaniel  <braden@endoframe.com>
+- configure --without-doxygen.
+- Removed "doc/conformance.html" from %doc.
+
 * Sat Jun 15 2002  Braden McDaniel  <braden@endoframe.com>
 - Use CPPFLAGS and LDFLAGS for Mozilla 1.0.0 when running configure.
 - Require Mozilla 1.0.0.

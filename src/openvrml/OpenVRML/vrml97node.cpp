@@ -4,24 +4,21 @@
 // Copyright (C) 1998  Chris Morley
 // Copyright (C) 1999  Kumaran Santhanam
 // Copyright (C) 2001  Braden McDaniel
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
-#if defined(_WIN32) && !defined(__CYGWIN__)
-#include <winconfig.h>
-#endif
+//
 
 # include <errno.h>
 # include "vrml97node.h"
@@ -64,18 +61,18 @@ namespace {
         virtual const FieldValue & getEventOutValue(const Node & node,
                                                     const std::string & id) const
                 throw (UnsupportedInterface) = 0;
-    
+
     protected:
         Vrml97NodeType(NodeClass & nodeClass, const std::string & id);
     };
-    
+
     Vrml97NodeType::Vrml97NodeType(NodeClass & nodeClass,
                                    const std::string & id):
             NodeType(nodeClass, id) {}
-    
+
     Vrml97NodeType::~Vrml97NodeType() throw () {}
-    
-    
+
+
     template <typename NodeT>
         class NodeFieldPtr {
         public:
@@ -86,23 +83,18 @@ namespace {
 
     template <typename NodeT>
         NodeFieldPtr<NodeT>::~NodeFieldPtr() {}
-    
-    
+
+
     template <typename NodeT, typename ConcreteFieldValue>
         class NodeFieldPtrImpl : public NodeFieldPtr<NodeT> {
             ConcreteFieldValue NodeT::* itsPtr;
 
         public:
-            NodeFieldPtrImpl(ConcreteFieldValue NodeT::* ptr);
+            NodeFieldPtrImpl(ConcreteFieldValue NodeT::* ptr): itsPtr(ptr) {}
             virtual ~NodeFieldPtrImpl();
             virtual FieldValue & dereference(NodeT &);
             virtual const FieldValue & dereference(const NodeT &);
         };
-
-    template <typename NodeT, typename ConcreteFieldValue>
-        NodeFieldPtrImpl<NodeT, ConcreteFieldValue>::
-                NodeFieldPtrImpl(ConcreteFieldValue NodeT::* ptr):
-                itsPtr(ptr) {}
 
     template <typename NodeT, typename ConcreteFieldValue>
         NodeFieldPtrImpl<NodeT, ConcreteFieldValue>::~NodeFieldPtrImpl() {}
@@ -125,7 +117,7 @@ namespace {
         public:
             typedef OpenVRML_::SharedPtr<NodeFieldPtr<NodeT> > NodeFieldPtrPtr;
             typedef void (NodeT::* EventInHandlerPtr)(const FieldValue &, double);
-        
+
         private:
             NodeInterfaceSet interfaces;
             typedef std::map<std::string, EventInHandlerPtr> EventInHandlerMap;
@@ -170,9 +162,9 @@ namespace {
                     throw (UnsupportedInterface);
 
             virtual const NodeInterfaceSet & getInterfaces() const throw ();
-            
+
             virtual const NodePtr createNode() const throw (std::bad_alloc);
-        
+
         private:
             void setFieldValueImpl(NodeT & node, const std::string & id,
                                    const FieldValue &) const
@@ -231,7 +223,7 @@ namespace {
                 throw (UnsupportedInterface, std::bad_alloc) {
             const NodeInterface interface(NodeInterface::exposedField, type, id);
             this->interfaces.add(interface);
-            
+
             bool succeeded;
             {
                 const EventInHandlerMap::value_type value("set_" + id,
@@ -296,7 +288,7 @@ namespace {
             this->dispatchEventInImpl(dynamic_cast<NodeT &>(node), id, value,
                                       timestamp);
         }
-    
+
     template <typename NodeT>
         const FieldValue & Vrml97NodeTypeImpl<NodeT>::
                 getEventOutValue(const Node & node,
@@ -345,7 +337,7 @@ namespace {
             }
             return itr->second->dereference(node);
         }
-        
+
     template <typename NodeT>
         void Vrml97NodeTypeImpl<NodeT>::
                 dispatchEventInImpl(NodeT & node,
@@ -364,7 +356,7 @@ namespace {
             }
             (node.*(itr->second))(value, timestamp);
         }
-    
+
     template <typename NodeT>
         const FieldValue & Vrml97NodeTypeImpl<NodeT>::
                 getEventOutValueImpl(const NodeT & node,
@@ -381,7 +373,7 @@ namespace {
             return itr->second->dereference(node);
         }
 }
-    
+
 /**
  * @class AbstractBase
  *
@@ -573,7 +565,7 @@ bool AbstractIndexedSet::isModified() const {
             || (this->coord.get() && this->coord.get()->isModified()));
 }
 
-void AbstractIndexedSet::updateModified(NodePath & path) {
+void AbstractIndexedSet::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->color.get()) { this->color.get()->updateModified(path); }
@@ -1183,7 +1175,7 @@ bool Appearance::isModified() const {
                 && this->textureTransform.get()->isModified()));
 }
 
-void Appearance::updateModified(NodePath& path) {
+void Appearance::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->material.get()) {
@@ -1214,7 +1206,7 @@ void Appearance::clearFlags() {
 void Appearance::render(Viewer * const viewer, const VrmlRenderContext rc) {
     MaterialNode * const material = this->material.get()
                                   ? this->material.get()->toMaterial()
-                                  : 0;  
+                                  : 0;
     TextureNode * const texture = this->texture.get()
                                 ? this->texture.get()->toTexture()
                                 : 0;
@@ -1250,7 +1242,7 @@ void Appearance::render(Viewer * const viewer, const VrmlRenderContext rc) {
 
         texture->render(viewer, rc);
     }
-    
+
     clearModified();
 }
 
@@ -1811,8 +1803,8 @@ namespace {
 
             // Have to load it
             if (!tex[thisIndex].tryURLs(urls, relative)) {
-                cerr << "Error: couldn't read Background texture from URL "
-                     << urls << endl;
+                std::cerr << "Error: couldn't read Background texture from URL "
+                          << urls << std::endl;
             } else if ( tex[thisIndex].pixels() && tex[thisIndex].nc() ) {
                 //
                 // The texture needs to be scaled.
@@ -1895,7 +1887,7 @@ void Background::renderBindable(Viewer * const viewer) {
             if (whc[3 * i + 0] > 0 && whc[3 * i + 1] > 0 && whc[3 * i + 2] > 0
                     && pixels[i]) { ++nPix; }
         }
-      
+
         this->viewerObject =
                 viewer->insertBackground(this->groundAngle.getLength(),
                                          this->groundAngle.get(),
@@ -2301,11 +2293,11 @@ void Billboard::inverseTransform(VrmlMatrix & m)
   Node *parentTransform = getParentTransform();
   if (parentTransform)
     parentTransform->inverseTransform(m);
-}        
+}
 
 /**
  * Calculate bb transformation matrix. Store it in M.
- * Here we are dealing with VrmlMatrix format (Matrices are stored 
+ * Here we are dealing with VrmlMatrix format (Matrices are stored
  * in row-major order).
  *
  * @param t_arg a pointer to a Billboard node.
@@ -2314,7 +2306,6 @@ void Billboard::inverseTransform(VrmlMatrix & m)
  */
 void Billboard::billboard_to_matrix(const Billboard* t_arg,
                                     const VrmlMatrix & L_MV, VrmlMatrix& M) {
-    Billboard * t = (Billboard*)t_arg; // argh.
     VrmlMatrix MV = L_MV.affine_inverse();
 
     // Viewer position in local coordinate system
@@ -2330,7 +2321,7 @@ void Billboard::billboard_to_matrix(const Billboard* t_arg,
         //
         SFVec3f Y(MV[1][0], MV[1][1], MV[1][2]);
         SFVec3f NY = Y.normalize();
-        
+
         // get x-vector from the cross product of Viewer's
         // up vector and billboard-to-viewer vector.
         SFVec3f X = NY.cross(NVP);
@@ -2344,10 +2335,10 @@ void Billboard::billboard_to_matrix(const Billboard* t_arg,
 
         // Plane defined by the axisOfRotation and billboard-to-viewer vector
         SFVec3f X = Y.cross(VP).normalize();
-        
+
         // Get Z axis vector from cross product of X and Y
         SFVec3f Z = X.cross(Y);
-        
+
         // Transform Z axis vector of current coordinate system to new
         // coordinate system.
         float nz[3];
@@ -3251,7 +3242,7 @@ void CoordinateInterpolator::processSet_fraction(const FieldValue & sffloat,
         // Reserve enough space for the new value
         this->value.set(nCoords, 0);
 
-        for (int i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             if (this->key.getElement(i) <= f
                     && f <= this->key.getElement(i + 1)) {
                 const float * v1 = this->keyValue.getElement(i * nCoords);
@@ -3591,11 +3582,11 @@ void CylinderSensor::activate(double timeStamp, bool isActive, double *p) {
     using OpenVRML_::pi;
     using OpenVRML_::pi_2;
     using OpenVRML_::fpequal;
-    
+
     // Become active
     if (isActive && !this->active.get()) {
         this->active.set(isActive);
-     
+
         // set activation point in local coords
         float Vec[3] = { p[0], p[1], p[2] };
         this->activationMatrix = getMVMatrix().affine_inverse();
@@ -3643,7 +3634,7 @@ void CylinderSensor::activate(double timeStamp, bool isActive, double *p) {
         if (disk.get()) {
             radius = 1.0;
         } else {
-            radius = dir1.length();    // get the radius 
+            radius = dir1.length();    // get the radius
         }
         dir1 = dir1.normalize();
         SFVec3f dir2(this->activationPoint.getX(), 0,
@@ -3666,7 +3657,7 @@ void CylinderSensor::activate(double timeStamp, bool isActive, double *p) {
             }
         }
         rotation_val.set(rot);
-        this->rotation = SFRotation(0, 1, 0, rot);         
+        this->rotation = SFRotation(0, 1, 0, rot);
 
         this->emitEvent("rotation_changed", this->rotation, timeStamp);
     }
@@ -3763,16 +3754,16 @@ void CylinderSensor::processSet_offset(const FieldValue & sffloat,
 }
 
 /**
- * Get the modelview matrix (M). 
+ * Get the modelview matrix (M).
  *
- * @return modelview matrix. 
+ * @return modelview matrix.
  */
 const VrmlMatrix & CylinderSensor::getMVMatrix() const { return this->M; }
 
 /**
  * Sets the modelview matrix (M).
  *
- * @param M_in  a modelview matrix. 
+ * @param M_in  a modelview matrix.
  */
 void CylinderSensor::setMVMatrix(const VrmlMatrix & M_in) {
     this->M = M_in;
@@ -4097,7 +4088,7 @@ bool ElevationGrid::isModified() const {
             || (this->texCoord.get() && this->texCoord.get()->isModified()));
 }
 
-void ElevationGrid::updateModified(NodePath & path) {
+void ElevationGrid::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->color.get()) { this->color.get()->updateModified(path); }
@@ -4402,7 +4393,7 @@ Extrusion::Extrusion(const NodeType & type):
         Node(type), AbstractGeometry(type), beginCap(true),
         ccw(true), convex(true), creaseAngle(0),
         crossSection(5, extrusionDefaultCrossSection_),
-        endCap(true), orientation(1, extrusionDefaultRotation_), 
+        endCap(true), orientation(1, extrusionDefaultRotation_),
         scale(1, extrusionDefaultScale_),
         solid(true), spine(2, extrusionDefaultSpine_) {}
 
@@ -4416,7 +4407,7 @@ Viewer::Object Extrusion::insertGeometry(Viewer * const viewer,
     Viewer::Object obj = 0;
     if (this->crossSection.getLength() > 0
             && this->spine.getLength() > 1) {
-        
+
         unsigned int optMask = 0;
         if (this->ccw.get())        { optMask |= Viewer::MASK_CCW; }
         if (this->convex.get())     { optMask |= Viewer::MASK_CONVEX; }
@@ -5064,13 +5055,13 @@ void Group::processSet_children(const FieldValue & mfnode,
                                 const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     this->children = dynamic_cast<const MFNode &>(mfnode);
-    
+
     for (size_t i = 0; i < this->children.getLength(); ++i) {
         if (children.getElement(i)) {
             children.getElement(i)->accumulateTransform(this->parentTransform);
         }
     }
-    
+
     this->setModified();
     this->setBVolumeDirty(true);
     this->emitEvent("children_changed", this->children, timestamp);
@@ -5080,7 +5071,7 @@ Group * Group::toGroup() const { return const_cast<Group *>(this); }
 
 bool Group::isModified() const {
     if (this->d_modified) { return true; }
-    
+
     for (size_t i = 0; i < this->children.getLength(); ++i) {
         if (this->children.getElement(i)->isModified()) {
             return true;
@@ -5162,7 +5153,7 @@ void Group::renderNoCull(Viewer * viewer, VrmlRenderContext rc) {
                         && kid->toSphereSensor()->isEnabled())) {
                 if (++nSensors == 1) { viewer->setSensitive(this); }
             }
-        }          
+        }
 
         // Do the rest of the children (except the scene-level lights)
         for (i = 0; i<n; ++i) {
@@ -5219,7 +5210,7 @@ void Group::activate(double time, bool isOver, bool isActive, double *p) {
                 && kid->toSphereSensor()->isEnabled()) {
             kid->toSphereSensor()->activate(time, isActive, p);
         }
-    }          
+    }
 }
 
 /**
@@ -5232,7 +5223,7 @@ void Group::activate(double time, bool isOver, bool isActive, double *p) {
  */
 void Group::setChildren(const MFNode & children) {
     const size_t currentLength = this->children.getLength();
-    
+
     for (size_t i = 0; i < children.getLength(); ++i) {
         const NodePtr & child = children.getElement(i);
 # if 0
@@ -5251,9 +5242,9 @@ void Group::setChildren(const MFNode & children) {
                 child->nodeType.id.c_str(), this->nodeType.id.c_str());
         }
     }
-    
+
     this->children = children;
-    
+
     if (currentLength != this->children.getLength()) {
         //??eventOut( d_scene->timeNow(), "children_changed", d_children );
         setModified();
@@ -5273,16 +5264,16 @@ void Group::setChildren(const MFNode & children) {
 void Group::addChildren(const MFNode & children) {
     size_t nNow = this->children.getLength();
     size_t n = children.getLength();
-    
+
     for (size_t i = 0; i < n; ++i) {
         const NodePtr & child = children.getElement(i);
 # if 0
         ProtoNode * p = 0;
         if (child && (child->toChild()
                 || ((p = dynamic_cast<ProtoNode *>(child.get()))
-                    && p->getImplNodes().getLength() == 0))) 
+                    && p->getImplNodes().getLength() == 0)))
 # else
-        if (child && child->toChild()) 
+        if (child && child->toChild())
 # endif
         {
             this->children.addNode(child);
@@ -5293,7 +5284,7 @@ void Group::addChildren(const MFNode & children) {
                 child->nodeType.id.c_str(), this->nodeType.id.c_str());
         }
     }
-    
+
     if (nNow != this->children.getLength()) {
         //??eventOut( d_scene->timeNow(), "children_changed", d_children );
         setModified();
@@ -5303,13 +5294,13 @@ void Group::addChildren(const MFNode & children) {
 
 void Group::removeChildren(const MFNode & children) {
     const size_t oldLength = this->children.getLength();
-    
+
     for (size_t i = 0; i < children.getLength(); ++i) {
         if (children.getElement(i)) {
             this->children.removeNode(*children.getElement(i));
         }
     }
-    
+
     if (oldLength != this->children.getLength()) {
         //??eventOut( d_scene->timeNow(), "children_changed", d_children );
         setModified();
@@ -5327,7 +5318,7 @@ void Group::removeChildren() {
             this->children.removeNode(*this->children.getElement(i - 1));
         }
     }
-    
+
     setModified();
     this->setBVolumeDirty(true);
 }
@@ -5489,7 +5480,7 @@ void ImageTexture::render(Viewer *viewer, VrmlRenderContext rc) {
             int i, j;
             for (i = 0; i < nSizes; ++i) { if (w < sizes[i]) { break; } }
             for (j = 0; j < nSizes; ++j) { if (h < sizes[j]) { break; } }
-            
+
             if (i > 0 && j > 0) {
                 // Always scale images down in size and reuse the same pixel
                 // memory. This can cause some ugliness...
@@ -5778,7 +5769,7 @@ void IndexedFaceSet::clearFlags() {
 Viewer::Object IndexedFaceSet::insertGeometry(Viewer * const viewer,
                                               VrmlRenderContext rc) {
     Viewer::Object obj = 0;
-    
+
     if (rc.getDrawBSpheres()) {
         const BSphere* bs = (BSphere*)this->getBVolume();
         viewer->drawBSphere(*bs, 4);
@@ -5802,7 +5793,7 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer * const viewer,
             ntci = this->texCoordIndex.getLength();
             if (ntci) { tci = this->texCoordIndex.get(); }
         }
-        
+
         // check #tc is consistent with #coords/max texCoordIndex...
         if (tci && ntci < this->coordIndex.getLength()) {
             theSystem->error("IndexedFaceSet: not enough texCoordIndex values (there should be at least as many as coordIndex values).\n");
@@ -5810,19 +5801,19 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer * const viewer,
             tci = 0;
             ntci = 0;
         }
-        
+
         // check #colors is consistent with colorPerVtx, colorIndex...
         ColorNode * const colorNode = this->color.get()
                                     ? this->color.get()->toColor()
                                     : 0;
         if (colorNode) {
             const MFColor & c = colorNode->getColor();
-            
+
             color = &c.getElement(0)[0];
             nci = this->colorIndex.getLength();
             if (nci) { ci = this->colorIndex.get(); }
         }
-        
+
         // check #normals is consistent with normalPerVtx, normalIndex...
         if (this->normal.get()) {
             const MFVec3f & n = this->normal.get()->toNormal()->getVector();
@@ -5830,7 +5821,7 @@ Viewer::Object IndexedFaceSet::insertGeometry(Viewer * const viewer,
             nni = this->normalIndex.getLength();
             if (nni) { ni = this->normalIndex.get(); }
         }
-        
+
         unsigned int optMask = 0;
         if (this->ccw.get()) {
             optMask |= Viewer::MASK_CCW;
@@ -6235,7 +6226,7 @@ void Inline::load() {
                 using std::equal;
                 using std::string;
                 const string urnScheme("urn:");
-                const string & uri(this->url.getElement(i));
+                const string & uri = this->url.getElement(i);
                 if (i < n - 1
                         && !equal(uri.begin(), uri.begin() + urnScheme.length(),
                                   urnScheme.begin())) {
@@ -6393,7 +6384,7 @@ bool LOD::isModified() const {
  * selected? to be safe: check them all. this potentially means some
  * extra work, but it's a lot easier to reason about.
  */
-void LOD::updateModified(NodePath & path) {
+void LOD::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     for (size_t i = 0; i < this->level.getLength(); ++i) {
@@ -6434,7 +6425,7 @@ void LOD::render(Viewer *viewer, VrmlRenderContext rc) {
             break;
         }
     }
-    
+
     // Should choose an "optimal" level...
     if (this->range.getLength() == 0) { i = this->level.getLength() - 1; }
 
@@ -6470,7 +6461,7 @@ void LOD::recalcBSphere() {
     // some sort of trick where we reset the bsphere during render, but
     // that seems like overkill unless this simpler method proves to be
     // a bottleneck.
-    // 
+    //
     // hmm: just thought of a problem: one of the uses of the lod is to
     // switch in delayed-load inlines. this would necessarily switch
     // them in all at once. live with it for now.
@@ -6919,11 +6910,11 @@ void MovieTexture::update(const double currentTime) {
     if (isModified()) {
         if (this->image) {
             const char * imageUrl = this->image->url();
-            int imageLen = strlen(imageUrl);
-            int i, nUrls = this->url.getLength();
+            size_t imageLen = strlen(imageUrl);
+            size_t i, nUrls = this->url.getLength();
             for (i = 0; i < nUrls; ++i) {
                 size_t len = this->url.getElement(i).length();
-                
+
                 if (this->url.getElement(i) == imageUrl
                         || (imageLen > len
                             && this->url.getElement(i)
@@ -6948,11 +6939,11 @@ void MovieTexture::update(const double currentTime) {
                    : this->nodeType.nodeClass.scene.urlDoc();
         this->image = new Image;
         if (!this->image->tryURLs(this->url, rel)) {
-            cerr << "Error: couldn't read MovieTexture from URL " << this->url
-                 << endl;
+            std::cerr << "Error: couldn't read MovieTexture from URL "
+                      << this->url << std::endl;
         }
-        
-        
+
+
         int nFrames = this->image->nFrames();
         this->duration = SFTime((nFrames >= 0) ? double(nFrames) : double(-1));
         this->emitEvent("duration_changed", this->duration, currentTime);
@@ -7010,14 +7001,14 @@ void MovieTexture::update(const double currentTime) {
  */
 void MovieTexture::render(Viewer * const viewer, VrmlRenderContext rc) {
     if (!this->image || this->frame < 0) { return; }
-    
+
     unsigned char * pix = this->image->pixels(this->frame);
-    
+
     if (this->frame != this->lastFrame && this->texObject) {
         viewer->removeTextureObject(this->texObject);
         this->texObject = 0;
     }
-    
+
     if (!pix) {
         this->frame = -1;
     } else if (this->texObject) {
@@ -7031,7 +7022,7 @@ void MovieTexture::render(Viewer * const viewer, VrmlRenderContext rc) {
         int i, j;
         for (i = 0; i < nSizes; ++i) { if (w < sizes[i]) { break; } }
         for (j = 0; j < nSizes; ++j) { if (h < sizes[j]) { break; } }
-        
+
         if (i > 0 && j > 0) {
             // Always scale images down in size and reuse the same pixel memory.
             if (w != sizes[i - 1] || h != sizes[j - 1]) {
@@ -7280,9 +7271,9 @@ namespace {
  * @param type  the NodeType associated with the node instance.
  */
 NavigationInfo::NavigationInfo(const NodeType & type):
-        Node(type), AbstractChild(type), headlight(true), speed(1.0),
-        visibilityLimit(0.0), bound(false), avatarSize(3, avatarSize_),
-        type(2, type_) {
+        Node(type), AbstractChild(type), avatarSize(3, avatarSize_),
+        headlight(true), speed(1.0), type(2, type_), visibilityLimit(0.0),
+        bound(false) {
     this->nodeType.nodeClass.scene.addNavigationInfo(*this);
 }
 
@@ -7632,7 +7623,7 @@ void NormalInterpolator::processSet_fraction(const FieldValue & sffloat,
                                              const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     using OpenVRML_::fptolerance;
-    
+
     float f = dynamic_cast<const SFFloat &>(sffloat).get();
 
     int nNormals = this->keyValue.getLength() / this->key.getLength();
@@ -7837,7 +7828,7 @@ void OrientationInterpolator::processSet_fraction(const FieldValue & sffloat,
                                                   const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     using OpenVRML_::pi;
-    
+
     float f = dynamic_cast<const SFFloat &>(sffloat).get();
 
     int n = this->key.getLength() - 1;
@@ -8034,7 +8025,7 @@ void PixelTexture::render(Viewer * const viewer, VrmlRenderContext rc) {
             this->texObject = 0;
         }
     }
-    
+
     if (this->image.getPixels()) {
         if (this->texObject) {
             viewer->insertTextureReference(this->texObject,
@@ -8048,10 +8039,10 @@ void PixelTexture::render(Viewer * const viewer, VrmlRenderContext rc) {
             int i, j;
             for (i = 0; i < nSizes; ++i) { if (w < sizes[i]) { break; } }
             for (j = 0; j < nSizes; ++j) { if (h < sizes[j]) { break; } }
-            
+
             if (i > 0 && j > 0) {
                 // Always scale images down in size and reuse the same pixel memory.
-                
+
                 // What if we had multiple renderers serving the same scene, and
                 // the renderers had different requirements for rescaling the
                 // image? I think it would be better to keep the rescaled image
@@ -8065,14 +8056,14 @@ void PixelTexture::render(Viewer * const viewer, VrmlRenderContext rc) {
                     std::copy(this->image.getPixels(),
                               this->image.getPixels() + numBytes,
                               pixels);
-    
+
                     viewer->scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
                                          this->image.getComponents(), pixels);
                     this->image.set(sizes[i - 1], sizes[j - 1],
                                     this->image.getComponents(), pixels);
                     delete [] pixels;
                 }
-                
+
                 this->texObject =
                         viewer->insertTexture(this->image.getWidth(),
                                               this->image.getHeight(),
@@ -8084,7 +8075,7 @@ void PixelTexture::render(Viewer * const viewer, VrmlRenderContext rc) {
             }
         }
     }
-    
+
     clearModified();
 }
 
@@ -8250,8 +8241,8 @@ const NodeTypePtr
  */
 PlaneSensor::PlaneSensor(const NodeType & type):
         Node(type), AbstractChild(type), autoOffset(true), enabled(true),
-        maxPosition(-1.0, -1.0), active(false), minPosition(0.0, 0.0),
-        offset(0.0, 0.0, 0.0), parentTransform(0) {
+        maxPosition(-1.0, -1.0), minPosition(0.0, 0.0), offset(0.0, 0.0, 0.0),
+        active(false), parentTransform(0) {
     this->setModified();
 }
 
@@ -8283,7 +8274,7 @@ void PlaneSensor::render(Viewer* v, VrmlRenderContext rc) {
 
 /**
  * @todo This is not correct. The local coords are computed for one instance,
- * need to convert p to local coords for each instance (DEF/USE) of the 
+ * need to convert p to local coords for each instance (DEF/USE) of the
  * sensor...
  */
 void PlaneSensor::activate(double timeStamp, bool isActive, double * p) {
@@ -8348,9 +8339,9 @@ void PlaneSensor::activate(double timeStamp, bool isActive, double * p) {
 }
 
 /**
- * @brief Get the modelview matrix. 
+ * @brief Get the modelview matrix.
  *
- * @return modelview matrix in VrmlMatrix format. 
+ * @return modelview matrix in VrmlMatrix format.
  */
 const VrmlMatrix & PlaneSensor::getMVMatrix() const {
     return this->M;
@@ -8359,7 +8350,7 @@ const VrmlMatrix & PlaneSensor::getMVMatrix() const {
 /**
  * @brief Sets the modelview matrix.
  *
- * @param M_in a modelview matrix in VrmlMatrix format. 
+ * @param M_in a modelview matrix in VrmlMatrix format.
  */
 void PlaneSensor::setMVMatrix(const VrmlMatrix & M_in) {
     this->M = M_in;
@@ -8740,7 +8731,7 @@ bool PointSet::isModified() const {
             || (this->coord.get() && this->coord.get()->isModified()));
 }
 
-void PointSet::updateModified(NodePath & path) {
+void PointSet::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->color.get()) { this->color.get()->updateModified(path); }
@@ -9143,7 +9134,7 @@ ProximitySensor::~ProximitySensor() throw () {}
 
 /**
  * Generate proximity events. If necessary, events prior to the current
- * time are generated due to interpolation of enterTimes and exitTimes. 
+ * time are generated due to interpolation of enterTimes and exitTimes.
  * The timestamp should never be increased.
  *
  * This is in a render() method since the it needs the viewer position
@@ -9184,11 +9175,11 @@ void ProximitySensor::render(Viewer *viewer, VrmlRenderContext rc) {
         if (inside && ! wasIn) {
             this->active.set(true);
             this->emitEvent("isActive", this->active, timeNow.get());
-            
+
             this->enterTime = timeNow;
             this->emitEvent("enterTime", this->enterTime, timeNow.get());
         }
-        
+
         // Check if viewer has left the box
         else if (wasIn && !inside) {
             this->active.set(false);
@@ -9209,8 +9200,6 @@ void ProximitySensor::render(Viewer *viewer, VrmlRenderContext rc) {
                                 timeNow.get());
             }
 
-            float xyzr[4];
-//            viewer->getOrientation(xyzr);
             SFVec3f trans, scale, shear;
             SFRotation orientation;
             MV.getTransform(trans, orientation, scale, shear);
@@ -9561,7 +9550,7 @@ void Shape::render(Viewer * const viewer, VrmlRenderContext rc) {
         viewer->removeObject(this->viewerObject);
         this->viewerObject = 0;
     }
-    
+
     GeometryNode * g = this->geometry.get()
                      ? this->geometry.get()->toGeometry()
                      : 0;
@@ -9570,17 +9559,17 @@ void Shape::render(Viewer * const viewer, VrmlRenderContext rc) {
         viewer->insertReference(this->viewerObject);
     } else if (g) {
         this->viewerObject = viewer->beginObject(this->getId().c_str());
-        
+
         // Don't care what color it is if we are picking
         bool picking = (Viewer::RENDER_MODE_PICK == viewer->getRenderMode());
         if (!picking) {
             int nTexComponents = 0;
-            
+
             if (!picking && this->appearance.get()
                     && this->appearance.get()->toAppearance()) {
                 AppearanceNode * a = this->appearance.get()->toAppearance();
                 a->render(viewer, rc);
-                
+
                 if (a->getTexture().get()
                         && a->getTexture().get()->toTexture()) {
                     nTexComponents = a->getTexture().get()->toTexture()
@@ -9594,9 +9583,9 @@ void Shape::render(Viewer * const viewer, VrmlRenderContext rc) {
             // hack for opengl material mode
             viewer->setMaterialMode(nTexComponents, g->getColor());
         }
-        
+
         g->render(viewer, rc);
-        
+
         viewer->endObject();
     } else if (this->appearance.get()) {
         this->appearance.get()->clearModified();
@@ -9799,7 +9788,7 @@ Sound::Sound(const NodeType & type):
  */
 Sound::~Sound() throw () {}
 
-void Sound::updateModified(NodePath & path) {
+void Sound::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->source.get()) { this->source.get()->updateModified(path); }
@@ -10176,19 +10165,19 @@ void SphereSensor::activate(double timeStamp, bool isActive, double *p) {
     // Become active
     if (isActive && !this->active.get()) {
         this->active.set(isActive);
-        
+
         // set activation point in world coords
         const float floatVec[3] = { p[0], p[1], p[2] };
         this->activationPoint.set(floatVec);
-        
+
         if (this->autoOffset.get()) { this->rotation = this->offset; }
-        
+
         // calculate the center of the object in world coords
         float V[3] = { 0.0, 0.0, 0.0 };
         VrmlMatrix M = getMVMatrix().affine_inverse();
         M.multVecMatrix(V , V);
         this->centerPoint.set(V);
-        
+
         // send message
         this->emitEvent("isActive", this->active, timeStamp);
     }
@@ -10211,7 +10200,7 @@ void SphereSensor::activate(double timeStamp, bool isActive, double *p) {
         M.multVecMatrix( V , V );
         this->trackPoint.set(V);
         this->emitEvent("trackPoint_changed", this->trackPoint, timeStamp);
-        
+
         float V2[3] = { p[0], p[1], p[2] };
         float tempv[3];
         Vdiff(tempv, V2, this->centerPoint.get());
@@ -10221,32 +10210,32 @@ void SphereSensor::activate(double timeStamp, bool isActive, double *p) {
         Vdiff(tempv, this->activationPoint.get(), this->centerPoint.get());
         SFVec3f dir2(tempv);
         dir2 = dir2.normalize();
-        
+
         Vcross(tempv, dir1.get(), dir2.get());
         SFVec3f cx(tempv);
-        cx = cx.normalize();     
+        cx = cx.normalize();
 
         SFRotation newRot(cx, dist * acos(dir1.dot(dir2)));
         if (this->autoOffset.get()) {
             newRot = newRot.multiply(this->offset);
         }
         this->rotation = newRot;
-        
+
         this->emitEvent("rotation_changed", this->rotation, timeStamp);
     }
 }
 
 /**
- * @brief Get the modelview matrix. 
+ * @brief Get the modelview matrix.
  *
- * @return modelview matrix in VrmlMatrix format. 
+ * @return modelview matrix in VrmlMatrix format.
  */
 const VrmlMatrix & SphereSensor::getMVMatrix() const { return this->M; }
 
 /**
  * @brief Sets the modelview matrix.
  *
- * @param M_in a modelview matrix in VrmlMatrix format. 
+ * @param M_in a modelview matrix in VrmlMatrix format.
  */
 void SphereSensor::setMVMatrix(const VrmlMatrix & M_in) { this->M = M_in; }
 
@@ -10668,7 +10657,7 @@ bool Switch::isModified() const {
 
     long w = this->whichChoice.get();
 
-    return (w >= 0 && w < this->choice.getLength()
+    return (w >= 0 && size_t(w) < this->choice.getLength()
             && this->choice.getElement(w)->isModified());
 }
 
@@ -10677,7 +10666,7 @@ bool Switch::isModified() const {
 // all. note that the original isModified() just tested the current
 // one. keep that in mind, and change it back when confirmed safe.
 //
-void Switch::updateModified(NodePath & path) {
+void Switch::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     for (size_t i = 0; i < this->choice.getLength(); ++i) {
@@ -10698,7 +10687,7 @@ void Switch::clearFlags() {
  */
 void Switch::render(Viewer * const viewer, const VrmlRenderContext rc) {
     long w = this->whichChoice.get();
-    if (w >= 0 && w < this->choice.getLength()) {
+    if (w >= 0 && size_t(w) < this->choice.getLength()) {
         this->choice.getElement(w)->render(viewer, rc);
     }
     clearModified();
@@ -10719,7 +10708,7 @@ const BVolume* Switch::getBVolume() const {
 void Switch::recalcBSphere() {
     this->bsphere.reset();
     long w = this->whichChoice.get();
-    if (w >= 0 && w < this->choice.getLength()) {
+    if (w >= 0 && size_t(w) < this->choice.getLength()) {
         const BVolume * ci_bv = this->choice.getElement(w)->getBVolume();
         if (ci_bv) { this->bsphere.extend(*ci_bv); }
     }
@@ -10896,7 +10885,7 @@ bool Text::isModified() const {
             || (this->fontStyle.get() && this->fontStyle.get()->isModified()));
 }
 
-void Text::updateModified(NodePath& path) {
+void Text::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->fontStyle.get()) { this->fontStyle.get()->updateModified(path); }
@@ -10917,9 +10906,9 @@ Viewer::Object Text::insertGeometry(Viewer *viewer, VrmlRenderContext rc) {
         std::copy(currentString.begin(), currentString.end(), strs[i]);
         strs[i][currentString.length()] = '\0';
     }
-    
+
     Viewer::Object retval(0);
-    
+
     int justify[2] = { 1, 1 };
     SFFloat size(1.0);
     FontStyleNode * f = 0;
@@ -10937,10 +10926,10 @@ Viewer::Object Text::insertGeometry(Viewer *viewer, VrmlRenderContext rc) {
         size = f->getSize();
     }
     retval = viewer->insertText(justify, size.get(), this->string.getLength(), strs);
-    
+
     for (i = 0; i < this->string.getLength(); i++) { delete [] strs[i]; }
     delete [] strs;
-    
+
     return retval;
 }
 
@@ -11567,7 +11556,7 @@ TimeSensor* TimeSensor::toTimeSensor() const { return (TimeSensor*) this; }
 void TimeSensor::update(const double currentTime) {
     using OpenVRML_::fpzero;
     using OpenVRML_::fpequal;
-    
+
     SFTime timeNow(currentTime);
 
     if (this->enabled.get()) {
@@ -11691,7 +11680,7 @@ void TimeSensor::processSet_enabled(const FieldValue & sfbool,
                                     const double timestamp)
         throw (std::bad_cast) {
     using OpenVRML_::fpzero;
-    
+
     // Shutdown if set_enabled FALSE is received when active
     this->enabled = dynamic_cast<const SFBool &>(sfbool);
     if (!this->active.get() && !this->enabled.get()) {
@@ -12241,7 +12230,7 @@ void Transform::render(Viewer * const viewer, VrmlRenderContext rc) {
 
         // Apply transforms
 // Why to do again matrix computation in GL side? when this matrix is available
-// here. 
+// here.
 //      viewer->setTransform(d_center.get(),
 //               d_rotation.get(),
 //               d_scale.get(),
@@ -12293,7 +12282,7 @@ void Transform::inverseTransform(Viewer * viewer) {
                            this->translation.get());
     Node * parentTransform = getParentTransform();
     if (parentTransform) { parentTransform->inverseTransform(viewer); }
-} 
+}
 
 /**
  * @brief Get the inverse of the transformation applied by the Transform node
@@ -12311,7 +12300,7 @@ void Transform::inverseTransform(VrmlMatrix & m) {
     m = m.multLeft(M);
     Node * parentTransform = getParentTransform();
     if (parentTransform) { parentTransform->inverseTransform(m); }
-}        
+}
 
 /**
  * @brief Get the bounding volume.
@@ -13075,7 +13064,7 @@ VisibilitySensor::~VisibilitySensor() throw () {}
  */
 void VisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc) {
     using OpenVRML_::fpzero;
-    
+
     if (this->enabled.get()) {
         SFTime timeNow( theSystem->time() );
         float xyz[2][3];

@@ -40,6 +40,12 @@ namespace OpenVRML {
         public:
             enum { MAX_LIGHTS = 8 };
 
+            enum LightType {
+                LIGHT_UNUSED,
+                LIGHT_DIRECTIONAL,
+                LIGHT_POSITIONAL
+            };
+            
             ViewerOpenGL(VrmlScene & scene);
             virtual ~ViewerOpenGL();
 
@@ -365,7 +371,6 @@ namespace OpenVRML {
             double d_selectZ;		// window Z coord of last selection
 
             // Lights
-            typedef enum { LIGHT_UNUSED, LIGHT_DIRECTIONAL, LIGHT_POSITIONAL } LightType;
             typedef struct lightinfo {
               LightType lightType;
               int nestingLevel;

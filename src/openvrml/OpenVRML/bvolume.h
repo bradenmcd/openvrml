@@ -85,7 +85,7 @@ namespace OpenVRML {
         float getRadius() const;
         void setRadius(float r);
 
-        virtual std::ostream & dump(std::ostream & ostr) const;
+        virtual std::ostream & dump(std::ostream & out) const;
     };
 
 
@@ -102,7 +102,7 @@ namespace OpenVRML {
         virtual void setMAX();
         virtual void orthoTransform(const VrmlMatrix & M);
         virtual void transform(const VrmlMatrix & M);
-        virtual std::ostream & dump(std::ostream & ostr) const;
+        virtual std::ostream & dump(std::ostream & out) const;
     };
 }
 
