@@ -4,7 +4,7 @@ AM_CPPFLAGS = \
         -I$(mozincludedir)
 AM_CXXFLAGS = @MOZILLA_PLUGIN_CFLAGS@ @GTKGLEXT_CFLAGS@
 
-idldir = $(datadir)/idl/@PACKAGE_NAME@-@PACKAGE_VERSION@
+idldir = $(datadir)/idl/openvrml-@PACKAGE_VERSION@
 
 if ENABLE_MOZILLA_PLUGIN
 mozplugins_LTLIBRARIES = openvrml.la
