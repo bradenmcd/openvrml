@@ -273,7 +273,7 @@ namespace OpenVRML {
             throw (UnsupportedInterface, std::bad_alloc);
 
         void initialize(Scene & scene, double timestamp) throw (std::bad_alloc);
-        void relocate() throw ();
+        void relocate() throw (std::bad_alloc);
 
         void setField(const std::string & id, const FieldValue & value)
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);

@@ -15910,14 +15910,14 @@ void Viewpoint::do_initialize(const double timestamp) throw ()
 namespace {
 
     struct AccumulateTransform : std::unary_function<const Node *, void> {
-        AccumulateTransform(VrmlMatrix & transform):
+        explicit AccumulateTransform(VrmlMatrix & transform) throw ():
             transform(&transform)
         {}
 
         void operator()(const Node * node) const throw ()
         {
             assert(node);
-            const TransformNode * transformNode = node->toTransform();
+            const TransformNode * const transformNode = node->toTransform();
             if (transformNode) {
                 *this->transform =
                     this->transform->multLeft(transformNode->getTransform());
@@ -15937,7 +15937,7 @@ namespace {
 void Viewpoint::do_relocate() throw (std::bad_alloc)
 {
     assert(this->getScene());
-    NodePath path = this->getScene()->browser.findNode(*this);
+    const NodePath path = this->getScene()->browser.findNode(*this);
     this->parentTransform = VrmlMatrix();
     std::for_each(path.begin(), path.end(),
                   AccumulateTransform(this->parentTransform));
@@ -16065,7 +16065,7 @@ void Viewpoint::updateFinalTransformation() const throw ()
                        scale,
                        scaleOrientation,
                        center);
-        this->finalTransformation = parentTransform.multLeft(t);
+        this->finalTransformation = this->parentTransform.multLeft(t);
         this->finalTransformationDirty = false;
     }
 }

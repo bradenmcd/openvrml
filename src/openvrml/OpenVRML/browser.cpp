@@ -740,26 +740,31 @@ namespace {
                 visitor(&visitor)
             {}
 
-            void operator()(const NodeInterface & interface) const
+            void operator()(const NodeInterface & interface) const throw ()
             {
                 if (interface.type == NodeInterface::field
                         || interface.type == NodeInterface::exposedField) {
-                    if (interface.fieldType == FieldValue::sfnode) {
-                        const SFNode & value =
-                                static_cast<const SFNode &>
-                                    (this->node->getField(interface.id));
-                        if (value.get()) {
-                            value.get()->accept(*this->visitor);
-                        }
-                    } else if (interface.fieldType == FieldValue::mfnode) {
-                        const MFNode & children =
-                                static_cast<const MFNode &>
-                                    (this->node->getField(interface.id));
-                        for (size_t i = 0; i < children.getLength(); ++i) {
-                            if (children.getElement(i)) {
-                                children.getElement(i)->accept(*this->visitor);
+                    try {
+                        if (interface.fieldType == FieldValue::sfnode) {
+                            const SFNode & value =
+                                    static_cast<const SFNode &>
+                                        (this->node->getField(interface.id));
+                            if (value.get()) {
+                                value.get()->accept(*this->visitor);
+                            }
+                        } else if (interface.fieldType == FieldValue::mfnode) {
+                            const MFNode & children =
+                                    static_cast<const MFNode &>
+                                        (this->node->getField(interface.id));
+                            for (size_t i = 0; i < children.getLength(); ++i) {
+                                if (children.getElement(i)) {
+                                    children.getElement(i)
+                                            ->accept(*this->visitor);
+                                }
                             }
                         }
+                    } catch (std::runtime_error & ex) {
+                        OPENVRML_PRINT_EXCEPTION_(ex);
                     }
                 }
             }
@@ -776,9 +781,9 @@ namespace {
         explicit FindNodeVisitor(const Node & node) throw ();
         virtual ~FindNodeVisitor() throw ();
 
-        const NodePath findIn(const MFNode & nodes);
+        const NodePath findIn(const MFNode & nodes) throw (std::bad_alloc);
 
-        virtual void visit(Node & node);
+        virtual void visit(Node & node) throw (std::bad_alloc);
     };
 
     FindNodeVisitor::FindNodeVisitor(const Node & node) throw ():
@@ -789,35 +794,46 @@ namespace {
     {}
 
     const NodePath FindNodeVisitor::findIn(const MFNode & nodes)
+        throw (std::bad_alloc)
     {
         assert(path.empty());
         for (size_t i = 0; i < nodes.getLength(); ++i) {
             if (nodes.getElement(i)) {
                 Node & element = *nodes.getElement(i);
                 element.accept(*this);
-                if (!path.empty() && path.back() == this->objectiveNode) {
-                    break;
-                }
+                if (!path.empty()) { break; }
             }
         }
         return this->path;
     }
 
-    void FindNodeVisitor::visit(Node & node)
+    void FindNodeVisitor::visit(Node & node) throw (std::bad_alloc)
     {
-        this->path.push_back(&node);
+        using std::for_each;
+
+        ProtoNode * const protoNode = dynamic_cast<ProtoNode *>(&node);
+        this->path.push_back(protoNode
+                             ? protoNode->getImplNodes().getElement(0).get()
+                             : &node);
+
         if (&node != this->objectiveNode) {
-            const NodeInterfaceSet * interfaces = 0;
-            ProtoNode * protoNode = dynamic_cast<ProtoNode *>(&node);
             if (protoNode) {
-                interfaces = &protoNode->getImplNodes().getElement(0)
-                                ->nodeType.getInterfaces();
+                const NodeInterfaceSet & interfaces =
+                        protoNode->getImplNodes().getElement(0)
+                            ->nodeType.getInterfaces();
+                for_each(interfaces.begin(), interfaces.end(),
+                         VisitNodes(*protoNode->getImplNodes().getElement(0),
+                                    *this));
             } else {
-                interfaces = &node.nodeType.getInterfaces();
+                const NodeInterfaceSet & interfaces =
+                        node.nodeType.getInterfaces();
+                for_each(interfaces.begin(), interfaces.end(),
+                         VisitNodes(node, *this));
             }
-            assert(interfaces);
-            std::for_each(interfaces->begin(), interfaces->end(),
-                          VisitNodes(node, *this));
+            assert(!this->path.empty());
+            if (this->path.back() != this->objectiveNode) {
+                this->path.pop_back();
+            }
         }
     }
 }
@@ -1078,7 +1094,7 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
             }
         }
     }
-    
+
     //
     // Initialize the NodeClasses.
     //

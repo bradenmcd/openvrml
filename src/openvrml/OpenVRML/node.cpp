@@ -1132,12 +1132,77 @@ void Node::initialize(Scene & scene, const double timestamp)
  * @brief Called when the node is relocated to a new position in the scene
  *      graph.
  *
- * This function delegates to the virtual function do_relocate. relocate 
+ * This function delegates to the virtual function do_relocate. relocate
  * should be called by eventIn handlers that receive nodes.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void Node::relocate() throw ()
+void Node::relocate() throw (std::bad_alloc)
 {
-    this->do_relocate();
+    class RelocateVisitor : public NodeVisitor {
+        Node & rootNode;
+
+    public:
+        explicit RelocateVisitor(Node & rootNode) throw ():
+            rootNode(rootNode)
+        {}
+
+        virtual ~RelocateVisitor() throw ()
+        {}
+
+        void relocate() throw (std::bad_alloc)
+        {
+            this->rootNode.do_relocate();
+            this->visitChildren(this->rootNode);
+        }
+
+        virtual void visit(Node & node) throw (std::bad_alloc)
+        {
+            if (&node == &this->rootNode) { return; }
+
+            node.do_relocate();
+            this->visitChildren(node);
+        }
+
+    private:
+        // Noncopyable.
+        RelocateVisitor(const RelocateVisitor &);
+        RelocateVisitor & operator=(const RelocateVisitor &);
+
+        void visitChildren(Node & node) throw (std::bad_alloc)
+        {
+            const NodeInterfaceSet & interfaces = node.nodeType.getInterfaces();
+            for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
+                    interface != interfaces.end(); ++interface) {
+                if (interface->type == NodeInterface::exposedField
+                        || interface->type == NodeInterface::field) {
+                    if (interface->fieldType == FieldValue::sfnode) {
+                        assert(dynamic_cast<const SFNode *>
+                               (&node.getField(interface->id)));
+                        const SFNode & sfnode =
+                                static_cast<const SFNode &>
+                                    (node.getField(interface->id));
+                        if (sfnode.get()) {
+                            sfnode.get()->accept(*this);
+                        }
+                    } else if (interface->fieldType == FieldValue::mfnode) {
+                        assert(dynamic_cast<const MFNode *>
+                               (&node.getField(interface->id)));
+                        const MFNode & mfnode =
+                                static_cast<const MFNode &>
+                                    (node.getField(interface->id));
+                        for (size_t i = 0; i < mfnode.getLength(); ++i) {
+                            if (mfnode.getElement(i)) {
+                                mfnode.getElement(i)->accept(*this);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    RelocateVisitor(*this).relocate();
 }
 
 /**

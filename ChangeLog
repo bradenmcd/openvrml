@@ -1,3 +1,11 @@
+2003-02-17  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/vrml97node.cpp:  Fixed bug in
+          Browser::findNode.
+          
+
 2003-02-15  Braden McDaniel  <braden@endoframe.com>
 
         * src/lookat/lookat.cpp, src/openvrml/OpenVRML/browser.cpp,
