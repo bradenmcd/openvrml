@@ -63,8 +63,6 @@ namespace OpenVRML {
     };
     
     
-    class Doc;
-
     class OPENVRML_SCOPE ScriptNode : public ChildNode {
     public:
         typedef std::map<std::string, FieldValuePtr> FieldValueMap;

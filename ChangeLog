@@ -20,6 +20,9 @@
           fontconfig-devel, freetype-devel.  Added Requires for
           fontconfig, freetype.  Updated configure arguments.
 
+        * src/openvrml/OpenVRML/script.h:  Removed obsolete declaration
+          of Doc class.
+
 2002-12-09  Braden McDaniel  <braden@endoframe.com>
 
         * README, configure.ac, java/Makefile.am, java/vrml/Makefile.am,
