@@ -4,9 +4,9 @@ Release:        1
 Summary:        VRML support library. 
 Copyright:      LGPL
 Group:          System Environment/Libraries
-Packager:       The OpenVRML Development Team <openvrml-develop@sourceforge.net>
+Packager:       The OpenVRML Development Team <openvrml-develop@lists.sourceforge.net>
 Source:         http://download.sourceforge.net/openvrml/%{name}-%{version}.tar.gz
-URL:            http://openvrml.sourceforge.net
+URL:            http://openvrml.org
 Prefix:         /usr
 BuildRoot:      /var/tmp/%{name}-%{version}-root
 
@@ -64,7 +64,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %files 
-%doc AUTHORS COPYING.LIB ChangeLog MPL-1.1.txt NEWS README THANKS
+%doc AUTHORS COPYING COPYING.LIB ChangeLog MPL-1.1.txt NEWS README THANKS
 %doc doc/conformance.html
 %{prefix}/lib/libopenvrml.so.*
 %{prefix}/share/aclocal/vrml.m4
@@ -91,6 +91,11 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Wed Jun 6 2001  Braden McDaniel  <braden@endoframe.com>
+- Added COPYING to %doc.
+- Changed URL to <http://openvrml.org>
+- Corrected packager e-mail address.
+
 * Thu Jan 25 2001  Braden McDaniel  <braden@endoframe.com>
 - Fixed location of lookat icon in %files section for lookat
 - Added Mesa >= 3.2 as a requirement for openvrml-gl.
