@@ -2294,8 +2294,7 @@ void ViewerOpenGL::setMaterial(float ambientIntensity,
   glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess*128);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 
-  if (ambientIntensity == 0. &&
-      diffuse[0] == 0. && diffuse[1] == 0. && diffuse[2] == 0. &&
+  if (diffuse[0] == 0. && diffuse[1] == 0. && diffuse[2] == 0. &&
       specularColor[0] == 0. && specularColor[1] == 0. && specularColor[2] == 0.)
     {
       glDisable(GL_LIGHTING);
@@ -2305,7 +2304,7 @@ void ViewerOpenGL::setMaterial(float ambientIntensity,
   else
     {
       glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emission);
-      glColor4fv( emission );
+      glColor4fv( diffuse );
     }
 }
 
