@@ -88,10 +88,9 @@ your system, you may need to add arguments to the CPPFLAGS and LDFLAGS
 variables when running `configure'. See INSTALL for details.
 
 Most of OpenVRML's dependencies are either commonplace or easy to obtain
-for POSIX systems.  Windows and Macintosh users may encounter additional
-difficulty compiling some of these dependencies, so compiled versions
-are provided for convenience:
-     <http://openvrml.org/dist/macos_required_libs.sit>
+for POSIX systems.  Windows users may encounter additional difficulty
+compiling some of these dependencies, so compiled versions are provided
+for convenience:
      <http://openvrml.org/dist/win32_required_libs.zip>
 
  * ANTLR
@@ -282,43 +281,6 @@ Conformance
    OpenVRML aspires to full conformance to the VRML97 specification. It
 isn't there yet, but much of the spec is supported, and OpenVRML will
 continue to get better.
-
-
-System-specific notes
-=====================
-
- * X11 colormap flashing on 8-bit displays
-
-   If you are having trouble with colormap flashing on an 8-bit display,
-   try restarting your X server (e.g., log out and back in in an xdm
-   environment) and running "xstdcmap -default" BEFORE running anything
-   else.
-
- * Compiling on Irix
-   
-   OpenVRML cannot currently be compiled with the SGI C++ compiler.  It
-   can be compiled with gcc 2.95, but to prevent a runtime error libGLU
-   must also be compiled with gcc 2.95 since gcc and the MIPSPro
-   compiler have different ABIs. The source code to the SGI OpenGL
-   sample implementation (which includes the GLU library) can be found
-   here:
-     <ftp://oss.sgi.com/projects/ogl-sample/download/>
-
- * Using helper applications on the Macintosh
-   
-   A creator code should be supplied in
-   `libvrml97core/macos/LibVRML97.prefix' to enable InternetConfig to
-   pass non-VRML anchors to helper applications.  The supplied prefix
-   files assumes that you are building MacLookat (code vrVW).
-
- * Initializing VrmlScene on the Macintosh
-   
-   VrmlScene should be initialised with either a URL or a Unix-style
-   filepath starting with "///" (instead of "/").  This is consistent
-   with Mac file URLs of the form "file:///".  This means that if you
-   want to open local files using a Mac file dialog then you need to
-   retrieve the full path of the selected file, prepend ///, and
-   replace colons with slashes before passing it to VrmlScene.
 
 
 Bug reports
