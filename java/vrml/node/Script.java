@@ -23,45 +23,80 @@ package vrml.node;
 import vrml.Event;
 import vrml.Field;
 import vrml.BaseNode;
+import vrml.InvalidFieldException;
+import vrml.InvalidEventOutException;
+import vrml.InvalidEventInException;
 
+/**
+ * This is the general Script class, to be subclassed by all scripts.
+ * Note that the provided methods allow the script author to explicitly
+ * throw tailored exceptions in case something goes wrong in the
+ * script.
+ */
 public abstract class Script extends BaseNode
-{ 
+{
   static
   {
     System.loadLibrary("openvrml");
   }
 
-  // This method is called before any event is generated
+  /**
+   * This method is called before any event is generated.
+   */
   public void initialize() { }
 
-  // Get a Field by name.
-  //   Throws an InvalidFieldException if fieldName isn't a valid
-  //   field name for a node of this type.
-  protected native final Field getField(String fieldName);
+  /**
+   * Get a Field by name.
+   *
+   * @param fieldName Name of field to retrieve.
+   * @return Field with given name.
+   * @throws InvalidFieldException Invalid field name specified.
+   */
+  protected native final Field getField(String fieldName)
+    throws InvalidFieldException;
 
-  // Get an EventOut by name.
-  //   Throws an InvalidEventOutException if eventOutName isn't a valid
-  //   eventOut name for a node of this type.
-  protected native final Field getEventOut(String eventOutName);
+  /**
+   * Get an EventOut by name.
+   *
+   * @param eventOutName Name of eventOut to retrieve.
+   * @return Field representing eventOut with given name.
+   * @throws InvalidEventOutException Invalid eventOut name specified.
+   */
+  protected native final Field getEventOut(String eventOutName)
+    throws InvalidEventOutException;
 
-  // Get an EventIn by name.
-  //   Throws an InvalidEventInException if eventInName isn't a valid
-  //   eventIn name for a node of this type.
-  protected native final Field getEventIn(String eventInName);
+  /**
+   * Get an EventIn by name.
+   *
+   * @param eventInName Name of eventIn to retrieve.
+   * @return Field representing eventIn with given name.
+   * @throws InvalidEventInException Invalid eventIn name specified.
+   */
+  protected native final Field getEventIn(String eventInName)
+    throws InvalidEventInException;
 
-  // processEvents() is called automatically when the script receives 
-  //   some set of events. It shall not be called directly except by its subclass.
-  //   count indicates the number of events delivered.
+  /**
+   * Called automatically when the script receives some set of events.
+   * It should not be called directly except by its subclass.
+   *
+   * @param count Number of events delivered.
+   * @param events Array of events to process.
+   */ 
   public void processEvents(int count, Event events[]) { }
 
-  // processEvent() is called automatically when the script receives 
-  // an event. 
+  /**
+   * Called automatically when the script receives an event.
+   */ 
   public void processEvent(Event event) { }
 
-  // eventsProcessed() is called after every invocation of processEvents().
+  /**
+   * Called after every invocation of processEvents().
+   */
   public void eventsProcessed() { }
 
-  // shutdown() is called when this Script node is deleted.
+  /**
+   * Called when the Script node is deleted.
+   */
   public void shutdown() { }
 
   public native String toString();

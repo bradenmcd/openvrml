@@ -20,9 +20,27 @@
 
 package vrml;
 
+/**
+ * Parent class of all MFields.
+ */
 public abstract class MField extends Field
 {
+  /**
+   * Number of elements contained in the MField.
+   *
+   * @return Number of elements.
+   */
   public abstract int getSize();
+
+  /**
+   * Removes all fields from the MField.
+   */
   public abstract void clear();
+
+  /**
+   * Deletes a field from the MField.
+   *
+   * @param Index of field to delete.
+   */
   public abstract void delete(int index);
 }

@@ -23,23 +23,44 @@ package vrml.node;
 import vrml.BaseNode;
 import vrml.Field;
 import vrml.ConstField;
+import vrml.InvalidEventInException;
+import vrml.InvalidEventOutException;
+import vrml.InvalidExposedFieldException;
 
+/**
+ * The general node class.
+ */
 public abstract class Node extends BaseNode
 { 
-   // Get an EventIn by name. Return value is write-only.
-   // Throws an InvalidEventInException if eventInName isn't a valid
-   // eventIn name for a node of this type.
-   public native final Field getEventIn(String eventInName);
+   /**
+    * Get an EventIn by name. Return value is write-only.
+    *
+    * @param eventInName Name of eventIn to retrieve.
+    * @return Write-only eventIn field.
+    * @throws InvalidEventInException Invalid eventIn name specified.
+    */
+   public native final Field getEventIn(String eventInName)
+     throws InvalidEventInException;
 
-   // Get an EventOut by name. Return value is read-only.
-   // Throws an InvalidEventOutException if eventOutName isn't a valid
-   // eventOut name for a node of this type.
-   public native final ConstField getEventOut(String eventOutName);
+   /**
+    * Get an EventOut by name. Return value is read-only.
+    *
+    * @param eventOutName Name of eventOut to retrieve.
+    * @return Read-only eventOut field.
+    * @throws InvalidEventOutException Invalid eventOut name specified.
+    */
+   public native final ConstField getEventOut(String eventOutName)
+     throws InvalidEventOutException;
 
-   // Get an exposed field by name. 
-   // Throws an InvalidExposedFieldException if exposedFieldName isn't a valid
-   // exposedField name for a node of this type.
-   public native final Field getExposedField(String exposedFieldName);
+   /**
+    * Get an exposed field by name. 
+    *
+    * @param exposedFieldName Name of exposedField to retrieve.
+    * @return Exposed field specified by name.
+    * @throws InvalidExposedFieldException if exposedField name is invalid.
+    */
+   public native final Field getExposedField(String exposedFieldName)
+     throws InvalidExposedFieldException;
 
    public native String toString();
 }
