@@ -57,6 +57,11 @@ namespace OpenVRML {
     
     bool operator==(const NodeInterface & rhs, const NodeInterface & lhs);
     
+    inline bool operator!=(const NodeInterface & rhs,
+                           const NodeInterface & lhs) {
+        return !(rhs == lhs);
+    }
+    
     
     class OPENVRML_SCOPE NodeInterfaceSet {
         struct IdLess :

@@ -12,6 +12,8 @@
         * Microsoft Visual C++ 6.0 doesn't like aggregates with members
           of class type.
 
+        * Provide operator!= for OpenVRML::NodeInterface.
+
 2002-05-14  Braden McDaniel  <braden@endoframe.com>
 
         * Partial Inline node support.
