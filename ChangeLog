@@ -1,6 +1,7 @@
 2001-05-23  Michael Louka <michael.louka@hrp.no>
 
-        * Updated ViewerOpenGL.cpp to compile on Mac OS X.
+        * Updated ViewerOpenGL.cpp, ViewerGlut.cpp, and lookat.cpp
+	  to compile on Mac OS X.
 
 2001-05-23  Braden McDaniel <braden@endoframe.com>
 
