@@ -90,24 +90,4 @@ void axis_aligned_bbox(float M[4][4], float *min, float *max)
 	 max[0] = newbox[4]; max[1] = newbox[5]; max[2] = newbox[6];
 }
 
-/*
- *  Given quaternion, compute axis and angle.
- */
-void quat_to_axis(const float q[4], float axisAngle[4])
-{
-    const float val = acos(q[3]);
-    if (fpzero(val)) {
-        axisAngle[0] = 0.0;
-        axisAngle[1] = 1.0;
-        axisAngle[2] = 0.0;
-        axisAngle[3] = 0.0;
-    } else {
-        axisAngle[0] = q[0] / sin(val);
-        axisAngle[1] = q[1] / sin(val);
-        axisAngle[2] = q[2] / sin(val);
-        axisAngle[3] = 2 * val;
-        normalize(&axisAngle[0]);
-    }
-}                 
-
 } // namespace OpenVRML

@@ -443,7 +443,7 @@ namespace OpenVRML {
         std::vector<float> values;
 
     public:
-        explicit MFFloat(size_t length = 0, float const * numbers = 0)
+        explicit MFFloat(size_t length = 0, float const * values = 0)
             throw (std::bad_alloc);
         virtual ~MFFloat() throw ();
 

@@ -611,65 +611,61 @@ BSphere::isMAX() const
 
 
 
-void
-BSphere::orthoTransform(const VrmlMatrix & M)
+void BSphere::orthoTransform(const VrmlMatrix & M)
 {
-  if (this->isMAX())
-    return;
-  if (this->r == -1)
-    return;
-  // ortho is easy: since we know it's uniform scaling, we can just
-  // scale the radius and translate the center, and we're done.
-  float new_c[3];
-  float old_c[3];
-  old_c[0] = c[0];
-  old_c[1] = c[1];
-  old_c[2] = c[2];
-  M.multVecMatrix(old_c,new_c);
-  c[0] = new_c[0];
-  c[1] = new_c[1];
-  c[2] = new_c[2];
+    using OpenVRML_::length;
 
-  // uniform scale means we can pick any of the scale elements? wait:
-  // can we really do this?
-  float tmp_r[3] = { M[0][0], M[1][0], M[2][0] };
-  float new_r = Vlength(tmp_r);
-  r = new_r*r;
+    if (this->isMAX()) { return; }
+    if (this->r == -1) { return; }
+    // ortho is easy: since we know it's uniform scaling, we can just
+    // scale the radius and translate the center, and we're done.
+    float new_c[3];
+    float old_c[3];
+    old_c[0] = c[0];
+    old_c[1] = c[1];
+    old_c[2] = c[2];
+    M.multVecMatrix(old_c, new_c);
+    c[0] = new_c[0];
+    c[1] = new_c[1];
+    c[2] = new_c[2];
+
+    // uniform scale means we can pick any of the scale elements? wait:
+    // can we really do this?
+    float tmp_r[3] = { M[0][0], M[1][0], M[2][0] };
+    float new_r = length(tmp_r);
+    this->r *= new_r;
 }
 
 
-void
-BSphere::transform(const VrmlMatrix & M)
+void BSphere::transform(const VrmlMatrix & M)
 {
-  if (this->isMAX())
-    return;
-  if (this->r == -1)
-    return;
-  float new_c[3];
-  float old_c[3];
-  old_c[0] = c[0];
-  old_c[1] = c[1];
-  old_c[2] = c[2];
-  M.multVecMatrix(old_c,new_c);
-  c[0] = new_c[0];
-  c[1] = new_c[1];
-  c[2] = new_c[2];
+    using OpenVRML_::length;
 
-  float x_scale_v[3] = { M[0][0], M[1][0], M[2][0] };
-  float y_scale_v[3] = { M[0][1], M[1][1], M[2][1] };
-  float z_scale_v[3] = { M[0][2], M[1][2], M[2][2] };
+    if (this->isMAX()) { return; }
+    if (this->r == -1) { return; }
+    float new_c[3];
+    float old_c[3];
+    old_c[0] = c[0];
+    old_c[1] = c[1];
+    old_c[2] = c[2];
+    M.multVecMatrix(old_c, new_c);
+    c[0] = new_c[0];
+    c[1] = new_c[1];
+    c[2] = new_c[2];
 
-  float scale_x = Vlength(x_scale_v);
-  float scale_y = Vlength(y_scale_v);
-  float scale_z = Vlength(z_scale_v);
+    float x_scale_v[3] = { M[0][0], M[1][0], M[2][0] };
+    float y_scale_v[3] = { M[0][1], M[1][1], M[2][1] };
+    float z_scale_v[3] = { M[0][2], M[1][2], M[2][2] };
 
-  float max_scale = scale_x;
-  if (scale_y > max_scale)
-    max_scale = scale_y;
-  if (scale_z > max_scale)
-    max_scale = scale_z;
+    float scale_x = length(x_scale_v);
+    float scale_y = length(y_scale_v);
+    float scale_z = length(z_scale_v);
 
-  r = max_scale*r;
+    float max_scale = scale_x;
+    if (scale_y > max_scale) { max_scale = scale_y; }
+    if (scale_z > max_scale) { max_scale = scale_z; }
+
+    this->r *= max_scale;
 }
 
 

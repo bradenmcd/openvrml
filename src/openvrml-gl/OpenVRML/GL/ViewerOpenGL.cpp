@@ -90,6 +90,15 @@ namespace {
         return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
     }
 
+    inline void normalize(float vec[3]) {
+        const float len = float(length(vec));
+        if (!fpzero(len)) {
+            vec[0] /= len;
+            vec[1] /= len;
+            vec[2] /= len;
+        }
+    }
+
     void matrix_to_glmatrix(const float M[4][4], float GLM[16]) {
         GLM[0]  = M[0][0];
         GLM[1]  = M[1][0];
@@ -1470,9 +1479,9 @@ namespace {
             v2[1] = spine[3*(i+1)+1] - spine[3*(i)+1];
             v2[2] = spine[3*(i+1)+2] - spine[3*(i)+2];
             Vcross(v1, v2, v1);
-            if (Vlength(v1) != 0.0) {
+            if (length(v1) != 0.0) {
                 spineStraight = false;
-                Vnorm(v1);
+                normalize(v1);
                 Vset(lastZ, v1);
                 break;
             }
@@ -1485,7 +1494,7 @@ namespace {
             V2[1] = spine[3*(nSpine-1)+1] - spine[1];
             V2[2] = spine[3*(nSpine-1)+2] - spine[2];
             Vcross( V3, V2, V1 );
-            double len = Vlength(V3);
+            double len = length(V3);
             if (len != 0.0) {                // Not aligned with Y axis
                 Vscale(V3, 1.0/len);
 
@@ -1553,11 +1562,11 @@ namespace {
                 Vdiff(S1, &spine[s1i2], &spine[si1]);
                 Vdiff(S2, &spine[s2i2], &spine[si1]);
 
-                Vnorm(Yscp);
+                normalize(Yscp);
                 Vset(lastZ, Zscp);        // Save last Zscp
                 Vcross(Zscp, S2, S1);
 
-                float VlenZ = Vlength(Zscp);
+                float VlenZ = length(Zscp);
                 if (VlenZ == 0.0) {
                     Vset(Zscp, lastZ);
                 } else {
@@ -1876,6 +1885,9 @@ namespace {
         size_t ni; const long * i; // number of indices, index pointer
     };
 
+    /**
+     * @internal
+     */
     struct ShellData {
         unsigned int mask;
         const float * points;
@@ -3283,6 +3295,28 @@ ViewerOpenGL::rot(float x, float y, float z, float a)
                      this->d_rotationMatrix[0]);
 
   wsPostRedraw();
+}
+
+namespace {
+    /*
+     *  Given quaternion, compute axis and angle.
+     */
+    void quat_to_axis(const float q[4], float axisAngle[4])
+    {
+        const float val = acos(q[3]);
+        if (fpzero(val)) {
+            axisAngle[0] = 0.0;
+            axisAngle[1] = 1.0;
+            axisAngle[2] = 0.0;
+            axisAngle[3] = 0.0;
+        } else {
+            axisAngle[0] = q[0] / sin(val);
+            axisAngle[1] = q[1] / sin(val);
+            axisAngle[2] = q[2] / sin(val);
+            axisAngle[3] = 2 * val;
+            normalize(&axisAngle[0]);
+        }
+    }                 
 }
 
 void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)

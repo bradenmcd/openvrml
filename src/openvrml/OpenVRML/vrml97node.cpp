@@ -51,6 +51,9 @@ namespace Vrml97Node {
 
 namespace {
 
+    /**
+     * @internal
+     */
     class Vrml97NodeType : public NodeType {
     public:
         virtual ~Vrml97NodeType() throw () = 0;
@@ -1791,6 +1794,9 @@ bool BackgroundClass::hasFirst() const throw ()
  * @brief Push a Background on the top of the bound node stack.
  *
  * @param background    the node to bind.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 void BackgroundClass::bind(Background & background, const double timestamp)
     throw (std::bad_alloc)
@@ -1833,6 +1839,7 @@ void BackgroundClass::bind(Background & background, const double timestamp)
  * @brief Remove a Background from the bound node stack.
  *
  * @param background    the node to unbind.
+ * @param timestamp     the current time.
  */
 void BackgroundClass::unbind(Background & background, const double timestamp)
     throw ()
@@ -2740,11 +2747,13 @@ Viewer::Object Box::insertGeometry(Viewer * const viewer,
  */
 const BVolume * Box::getBVolume() const
 {
+    using OpenVRML_::length;
+    
     if (this->isBVolumeDirty()) {
         const float corner[3] = { this->size.getX() / 2.0f,
                                   this->size.getY() / 2.0f,
                                   this->size.getZ() / 2.0f };
-        float r = Vlength(corner);
+        float r = length(corner);
         ((Box*)this)->bsphere.setRadius(r);
         ((Box*)this)->setBVolumeDirty(false); // logical const
     }
@@ -4880,12 +4889,12 @@ FogClass::FogClass(Browser & browser):
 FogClass::~FogClass() throw () {}
 
 /**
- * @brief Set the first Background node in the world.
+ * @brief Set the first Fog node in the world.
  *
- * The first Background node in the world is used as the initial background.
+ * The first Fog node in the world is used for the initial fog.
  * This method is used by Fog::initializeImpl.
  *
- * @param background    a Background node.
+ * @param fog   a Fog node.
  */
 void FogClass::setFirst(Fog & fog) throw ()
 {
@@ -4907,7 +4916,8 @@ bool FogClass::hasFirst() const throw ()
 /**
  * @brief Push a Fog on the top of the bound node stack.
  *
- * @param fog   the node to bind.
+ * @param fog       the node to bind.
+ * @param timestamp the current time.
  */
 void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
 {
@@ -4947,7 +4957,8 @@ void FogClass::bind(Fog & fog, const double timestamp) throw (std::bad_alloc)
 /**
  * @brief Remove a Fog from the bound node stack.
  *
- * @param fog   the node to unbind.
+ * @param fog       the node to unbind.
+ * @param timestamp the current time.
  */
 void FogClass::unbind(Fog & fog, const double timestamp) throw ()
 {

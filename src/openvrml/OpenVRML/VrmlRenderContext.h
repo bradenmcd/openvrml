@@ -34,7 +34,8 @@ namespace OpenVRML {
 
     public:
         VrmlRenderContext();
-        VrmlRenderContext(BVolume::Intersection acull_flag, VrmlMatrix & aM);
+        VrmlRenderContext(BVolume::Intersection cull_flag,
+                          VrmlMatrix & modelview);
 
         // Use compiler-generated copy-ctor, dtor, operator=.
 

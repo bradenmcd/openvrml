@@ -1,3 +1,19 @@
+2002-11-19  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/MathUtils.cpp,
+          src/openvrml/OpenVRML/MathUtils.h,
+          src/openvrml/OpenVRML/Viewer.cpp,
+          src/openvrml/OpenVRML/VrmlFrustum.cpp,
+          src/openvrml/OpenVRML/VrmlMatrix.cpp,
+          src/openvrml/OpenVRML/VrmlRenderContext.h,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/bvolume.cpp,
+          src/openvrml/OpenVRML/field.cpp, src/openvrml/OpenVRML/field.h
+          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: Doc-comment
+          fix-ups.
+
 2002-11-14  Braden McDaniel  <braden@endoframe.com>
 
         * m4/jpeg.m4, m4/png.m4, m4/zlib.m4: Fixed problem with macros

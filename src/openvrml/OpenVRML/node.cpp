@@ -2,21 +2,21 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
@@ -58,7 +58,8 @@ UnsupportedInterface::UnsupportedInterface(const std::string & message):
 /**
  * @brief Constructor.
  *
- * @param message   An informative error message.
+ * @param nodeType      the node type.
+ * @param interfaceId   the name of the interface that is not available.
  */
 UnsupportedInterface::UnsupportedInterface(const NodeType & nodeType,
                                            const std::string & interfaceId):
@@ -68,7 +69,9 @@ UnsupportedInterface::UnsupportedInterface(const NodeType & nodeType,
 /**
  * @brief Constructor.
  *
- * @param message   An informative error message.
+ * @param nodeType      the node type.
+ * @param interfaceType the type of the interface that is not available.
+ * @param interfaceId   the name of the interface that is not available.
  */
 UnsupportedInterface::UnsupportedInterface(const NodeType & nodeType,
                                            const NodeInterface::Type interfaceType,
@@ -96,6 +99,36 @@ UnsupportedInterface::~UnsupportedInterface() throw ()
  * @enum NodeInterface::Type
  *
  * @brief Identify the type of interface.
+ */
+
+/**
+ * @var NodeInterface::Type NodeInterface::invalidType
+ *
+ * @brief Used to indicate an invalid or unknown interface type.
+ */
+
+/**
+ * @var NodeInterface::Type NodeInterface::eventIn
+ *
+ * @brief An eventIn.
+ */
+
+/**
+ * @var NodeInterface::Type NodeInterface::eventOut
+ *
+ * @brief An eventOut.
+ */
+
+/**
+ * @var NodeInterface::Type NodeInterface::exposedField
+ *
+ * @brief An exposedField.
+ */
+
+/**
+ * @var NodeInterface::Type NodeInterface::field
+ *
+ * @brief A field.
  */
 
 namespace {
@@ -147,7 +180,7 @@ std::istream & operator>>(std::istream & in, NodeInterface::Type & type)
 
     string interfaceTypeId;
     in >> interfaceTypeId;
-    
+
     static const char * const * const begin =
             nodeInterfaceTypeId_ + NodeInterface::eventIn;
     static const char * const * const end =
@@ -289,6 +322,10 @@ void NodeInterfaceSet::add(const NodeInterface & nodeInterface)
  */
 
 namespace {
+
+    /**
+     * @internal
+     */
     struct InterfaceIdMatches_ :
             std::unary_function<OpenVRML::NodeInterface, bool> {
         explicit InterfaceIdMatches_(const std::string & interfaceId):
@@ -299,7 +336,7 @@ namespace {
         {
             static const char eventInPrefix[] = "set_";
             static const char eventOutSuffix[] = "_changed";
-            
+
             return interface.id == *this->interfaceId
                 || (interface.type == NodeInterface::exposedField
                     && (eventInPrefix + interface.id == *this->interfaceId
@@ -373,9 +410,9 @@ NodeClass::~NodeClass() throw () {}
  * root Scene. It is called after the individual node instances have been
  * initialized, and before the world starts running.
  *
- * @param viewer    the Viewer to render to.
+ * @param time  the current time.
  */
-void NodeClass::initialize(const double timestamp) throw ()
+void NodeClass::initialize(const double time) throw ()
 {}
 
 /**
@@ -449,10 +486,10 @@ namespace {
     struct IsEventIn_ : public std::unary_function<NodeInterface, bool> {
     private:
         const std::string & id;
-    
+
     public:
         IsEventIn_(const std::string & id): id(id) {}
-    
+
         bool operator()(const NodeInterface & nodeInterface) const {
             return (nodeInterface.type == NodeInterface::eventIn
                         && (this->id == nodeInterface.id
@@ -490,10 +527,10 @@ namespace {
     struct IsEventOut_ : public std::unary_function<NodeInterface, bool> {
     private:
         const std::string & id;
-    
+
     public:
         IsEventOut_(const std::string & id): id(id) {}
-    
+
         bool operator()(const NodeInterface & nodeInterface) const {
             return (nodeInterface.type == NodeInterface::eventOut
                         && (this->id == nodeInterface.id
@@ -531,10 +568,10 @@ namespace {
     struct IsExposedField_ : public std::unary_function<NodeInterface, bool> {
     private:
         const std::string & id;
-    
+
     public:
         IsExposedField_(const std::string & id): id(id) {}
-    
+
         bool operator()(const NodeInterface & nodeInterface) const {
             return nodeInterface.type == NodeInterface::exposedField
                     && this->id == nodeInterface.id;
@@ -568,10 +605,10 @@ namespace {
     struct IsField_ : public std::unary_function<NodeInterface, bool> {
     private:
         const std::string & id;
-    
+
     public:
         IsField_(const std::string & id): id(id) {}
-    
+
         bool operator()(const NodeInterface & nodeInterface) const {
             return nodeInterface.type == NodeInterface::field
                     && this->id == nodeInterface.id;
@@ -681,7 +718,7 @@ FieldValueTypeMismatch::~FieldValueTypeMismatch() throw ()
  */
 Node::Route::Route(const std::string & fromEventOut,
                    const NodePtr & toNode, const std::string & toEventIn):
-        fromEventOut(fromEventOut), toNode(toNode), 
+        fromEventOut(fromEventOut), toNode(toNode),
 	toEventIn(toEventIn) {}
 
 /**
@@ -689,7 +726,7 @@ Node::Route::Route(const std::string & fromEventOut,
  *
  * @param route the Route to copy.
  */
-Node::Route::Route(const Route & route): fromEventOut(route.fromEventOut), 
+Node::Route::Route(const Route & route): fromEventOut(route.fromEventOut),
 	toNode(route.toNode), toEventIn(route.toEventIn) {}
 
 /**
@@ -779,14 +816,14 @@ Node::Node(const NodeType & type, const ScopePtr & scope):
 typedef std::map<std::string, Node *> NamedNodeMap;
 
 namespace {
-    
+
     struct NodeIs_ : std::unary_function<NamedNodeMap::value_type, bool> {
         NodeIs_(const Node & node): node(&node) {}
-        
+
         bool operator()(const NamedNodeMap::value_type & value) const {
             return value.second == this->node;
         }
-        
+
     private:
         const Node * node;
     };
@@ -821,7 +858,7 @@ Node::~Node() throw () {
  * <p>The fact that the @a visited flag is set <em>before</em> the
  * node is actually visited is an important detail. Even though scene
  * graphs should not have cycles, nodes can be self-referencing: a field
- * of a Script node can legally @c USE the Script node. (This does not pose 
+ * of a Script node can legally @c USE the Script node. (This does not pose
  * a problem for rendering since nodes in a Script node's fields are not part
  * of the transformation hierarchy.)
  *
@@ -936,7 +973,7 @@ void Node::initialize(Scene & scene, const double timestamp)
     if (!this->scene) {
         this->scene = &scene;
         this->initializeImpl(timestamp);
-        
+
         const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
         for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
                 interface != interfaces.end(); ++interface) {
@@ -1312,13 +1349,13 @@ void Node::addRoute(const std::string & fromEventOut,
                     const NodePtr & toNode,
                     const std::string & toEventIn) {
     const Route route(fromEventOut, toNode, toEventIn);
-    
+
     //
     // Is this route already here?
     //
     const RouteList::iterator pos =
             std::find(this->routes.begin(), this->routes.end(), route);
-    
+
     //
     // If not, add it.
     //
@@ -1353,7 +1390,7 @@ const Node::RouteList & Node::getRoutes() const {
  */
 void Node::setModified() {
     this->d_modified = true;
-    this->nodeType.nodeClass.browser.setModified(); 
+    this->nodeType.nodeClass.browser.setModified();
 }
 
 bool Node::isModified() const { return this->d_modified; }
@@ -1483,7 +1520,7 @@ void Node::setBVolume(const BVolume & v) {
     // XXX Implement me!
 }
 
-/** 
+/**
  * Indicate that a node's bounding volume needs to be recalculated
  * (or not). If a node's bvolume is invalid, then the bvolumes of
  * all that node's ancestors are also invalid. Normally, the node
@@ -1536,12 +1573,9 @@ void Node::render(Viewer* v, VrmlRenderContext rc)
  * pointer is used by getParentTransform. Grouping nodes need to
  * redefine this, the default implementation does nothing.
  *
- * @param p parent node. can be null.
- *
- * @deprecated This routine will go away once parent pointers
- *      are implemented.
+ * @param parent    the parent node.
  */
-void Node::accumulateTransform(Node *) {}
+void Node::accumulateTransform(Node * parent) {}
 
 /**
  * @brief Get the nearest ancestor node that affects the modelview transform.
@@ -1584,7 +1618,7 @@ void Node::emitEvent(const std::string & id, const FieldValue & value,
         pos->second->value->assign(value);
         pos->second->modified = true;
     }
-    
+
     for (RouteList::const_iterator itr = this->routes.begin();
             itr != this->routes.end(); ++itr) {
         if (id == itr->fromEventOut) {
@@ -1597,16 +1631,16 @@ void Node::emitEvent(const std::string & id, const FieldValue & value,
 
 namespace {
     const short indentIncrement_ = 4;
-    
+
     class PrintField_ : public std::unary_function<NodeInterface, void> {
         const Node & node;
         std::ostream & out;
         const size_t indent;
-    
+
     public:
         PrintField_(const Node & node, std::ostream & out, const size_t indent):
                 node(node), out(out), indent(indent) {}
-        
+
         void operator()(const NodeInterface & interface) const {
             if (interface.type == NodeInterface::exposedField
                     || interface.type == NodeInterface::field) {

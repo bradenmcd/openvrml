@@ -32,6 +32,8 @@
 namespace OpenVRML {
 
 /**
+ * @relates FieldValue
+ *
  * @brief Stream output.
  *
  * @param out           an output stream.

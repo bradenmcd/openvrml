@@ -2179,6 +2179,9 @@ const MFNode ProtoNode::NodeFieldCloneVisitor::clone(const MFNode & mfnode)
 
 namespace {
 
+    /**
+     * @internal
+     */
     struct CloneFieldValue_ : std::unary_function<NodeInterface, void> {
         CloneFieldValue_(NodeVisitor & visitor,
                          std::stack<NodePtr> & rootNodeStack,
@@ -3219,6 +3222,9 @@ const FieldValue & ProtoNode::getFieldImpl(const std::string & id) const
 
 namespace {
 
+    /**
+     * @internal
+     */
     struct DispatchEvent_ :
             std::unary_function<ProtoNode::ISMap::value_type, void> {
         DispatchEvent_(const FieldValue & value, const double timestamp):
@@ -3656,6 +3662,9 @@ namespace {
         }
     };
     
+    /**
+     * @internal
+     */
     class Vrml97NodeInterfaceSet_ : public NodeInterfaceSet {
     public:
         Vrml97NodeInterfaceSet_(const NodeInterface * const begin,

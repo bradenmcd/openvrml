@@ -36,12 +36,14 @@ using namespace OpenVRML_;
  */
 
 /**
+ * @relates VrmlMatrix
+ *
  * @brief Equality comparison operator.
  *
  * All componenents must match exactly.
  *
- * @param lhs   a VrmlMatrix.
- * @param rhs   a VrmlMatrix.
+ * @param lhs   a matrix.
+ * @param rhs   a matrix.
  */
 bool operator==(const VrmlMatrix & lhs, const VrmlMatrix & rhs) {
     return std::equal(&lhs.matrix[0][0], &lhs.matrix[0][0] + 16,
@@ -51,10 +53,12 @@ bool operator==(const VrmlMatrix & lhs, const VrmlMatrix & rhs) {
 /**
  * @fn bool operator!=(const VrmlMatrix & lhs, const VrmlMatrix & rhs)
  *
+ * @relates VrmlMatrix
+ *
  * @brief Inequality comparison operator.
  *
- * @param lhs   a VrmlMatrix.
- * @param rhs   a VrmlMatrix.
+ * @param lhs   a matrix.
+ * @param rhs   a matrix.
  */
 
 /**

@@ -224,23 +224,17 @@ Viewer::~Viewer() {}
  * @brief Insert a sphere into a display list.
  */
 
-
 /**
- * @fn Viewer::Object Viewer::insertText(FontFace & fface, 
- *                                       size_t strarraysize, 
- *                                       const std::string * string
- *                                       size_t lsize, const float length[], 
- *                                       float maxextent)
- *                
+ * @fn Viewer::Object Viewer::insertText(FontFace & fface, size_t strarraysize, const std::string * stringsize_t lsize, const float length[], float maxextent)
  *
  * @brief Insert text into a display list.
  *
- * @param ftface FontFace object
- * @param strarraysize size of string array
- * @param string pointer to string array
- * @param lsize size of length array
- * @param length length array for the length of each text string
- * @param maxextent maxextent of all text strings
+ * @param ftface        FontFace object
+ * @param strarraysize  size of string array
+ * @param string        pointer to string array
+ * @param lsize         size of length array
+ * @param length        length array for the length of each text string
+ * @param maxextent     maxextent of all text strings
  */
 
 /**
@@ -262,17 +256,20 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn Viewer::Object Viewer::insertReference(Obect existingObject)
+ * @fn Viewer::Object Viewer::insertReference(Object existingObject)
  *
  * @brief Insert a reference to an existing object into a display list.
  */
 
 /**
- * @fn void MatrixMultiply(const float M[4][4])
+ * @fn void Viewer::transform(const VrmlMatrix & mat)
  *
- * @brief Multiply current ModelView Matrix with Given Matrix M
+ * @brief Transform the modelview.
  *
- * @param M matrix in VrmlMatrix format (Same as OGL)
+ * Multiply the current modelview matrix by @p mat; the result is the new
+ * modelview matrix.
+ *
+ * @param mat matrix in VrmlMatrix format (Same as OGL)
  */
 
 /**
@@ -309,14 +306,14 @@ BVolume::Intersection Viewer::intersectViewVolume(const BVolume & bvolume) const
 }
 
 /**
- * @fn void Viewer::drawBSphere(const BSphere & bs, int flag)
+ * @fn void Viewer::drawBSphere(const BSphere & bs, BVolume::Intersection intersection)
  *
  * Draw a bounding sphere. Used for debugging view culling. Probably
  * should be drawBVolume and handle aaboxes as well.
  *
- * @param bs    a bounding sphere; if max, will not be drawn
- * @param flag  one of the bvolume intersection test constants, or 4
- *              to draw in unique way. (useful for debugging)
+ * @param bs            a bounding sphere; if max, will not be drawn
+ * @param intersection  one of the bvolume intersection test constants, or 4
+ *                      to draw in unique way. (useful for debugging)
  */
 
 

@@ -118,7 +118,10 @@ VrmlFrustum::VrmlFrustum(float afovy, float aaspect, double anear, double afar) 
  *
  * The plane equations are derived from the other members.
  */
-void VrmlFrustum::update() {
+void VrmlFrustum::update()
+{
+    using OpenVRML_::normalize;
+
     // figure out the corners of the near clipping plane, then use the
     // vectors from the eyepoint to the four corners to figure out the
     // plane equations. the diagram shows how to get the x and z
@@ -143,12 +146,12 @@ void VrmlFrustum::update() {
     // (finish the diagram later)
     //
 
-    float cy = (float)tan(fovy/2.0);
-    float cx = (float)tan(fovx/2.0);
+    float cy = float(tan(fovy / 2.0));
+    float cx = float(tan(fovx / 2.0));
 
-    float NL = -z_near*cx;
+    float NL = -z_near * cx;
     float NR = -NL;
-    float NT =  z_near*cy;
+    float NT =  z_near * cy;
     float NB = -NT;
 
     float tmp0[3];
@@ -163,7 +166,7 @@ void VrmlFrustum::update() {
     tmp1[2] = -z_near;
 
     Vcross(left_plane, tmp0, tmp1);
-    Vnorm(left_plane);
+    normalize(left_plane);
     left_plane[3] = 0;
 
     right_plane[0] = -left_plane[0];
@@ -180,7 +183,7 @@ void VrmlFrustum::update() {
     tmp1[2] = -z_near;
 
     Vcross(top_plane, tmp0, tmp1);
-    Vnorm(top_plane);
+    normalize(top_plane);
     top_plane[3] = 0;
 
     bot_plane[0] = 0;
