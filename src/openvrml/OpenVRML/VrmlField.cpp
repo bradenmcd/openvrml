@@ -2513,6 +2513,7 @@ VrmlMFRotation & VrmlMFRotation::operator=(const VrmlMFRotation & mfrotation) {
  * @param index
  */
 const float * VrmlMFRotation::operator[](size_t index) const {
+    assert(index * 4 < this->d_data->d_n);
     return this->d_data->d_v + (index * 4);
 }
 
@@ -2701,10 +2702,22 @@ char const * VrmlMFString::operator[](size_t index) const
     return d_v[index];
 }
 
+ostream& VrmlMFString::print(ostream& os) const
+{
+  int n = getLength();
+
+  if (n != 1) os << '[';
+  for (int i=0; i<n; ++i)
+    os << '\"' << (d_v[i]) << "\" ";
+  if (n != 1) os << ']';
+
+  return os;
+}
+
 
 /**
  * @class VrmlMFTime
- * Encapsulates a MFTime.
+ * @brief Encapsulates a MFTime.
  */
 # include "VrmlMFTime.h"
 
@@ -2712,228 +2725,483 @@ char const * VrmlMFString::operator[](size_t index) const
 // Reference-counted double data
 //
 class VrmlMFTime::DData {
-    public:
-        DData(size_t = 0);
-        ~DData();
-        
-        DData * ref();
-        void deref();
-        
-        unsigned int refs;      // number of VrmlMFTime objects using this data
-        size_t size;            // size of d_v
-        double * const data;    // data vector
-        
-    private:
-        //
-        // This class is not copyable. Copy ctor and operator= are declared
-        // private and not defined.
-        //
-        DData(DData const &);
-        DData & operator=(DData const &);
+public:
+    DData(size_t = 0);
+    ~DData();
+
+    DData * ref();
+    void deref();
+
+    unsigned int refs;      // number of VrmlMFTime objects using this data
+    size_t size;            // size of d_v
+    double * const data;    // data vector
+
+private:
+    //
+    // This class is not copyable. Copy ctor and operator= are declared
+    // private and not defined.
+    //
+    DData(DData const &);
+    DData & operator=(DData const &);
 };
 
-VrmlMFTime::DData::DData(size_t size)
-  : refs(1), size(size), data(size > 0 ? new double[size] : 0)
-{}
+VrmlMFTime::DData::DData(size_t size): refs(1), size(size),
+        data(size > 0 ? new double[size] : 0) {}
 
-VrmlMFTime::DData::~DData()
-{
+VrmlMFTime::DData::~DData() {
     delete [] data;
 }
 
-VrmlMFTime::DData * VrmlMFTime::DData::ref()
-{
+VrmlMFTime::DData * VrmlMFTime::DData::ref() {
     ++refs;
     return this;
 }
 
-void VrmlMFTime::DData::deref()
-{
+void VrmlMFTime::DData::deref() {
     if (--refs == 0) {
         delete this;
     }
 }
 
-VrmlMFTime::VrmlMFTime()
-  : d_data(new DData(0))
-{}
-
-VrmlMFTime::VrmlMFTime(double t)
-  : d_data(new DData(1))
-{
-    d_data->data[0] = t;
+/**
+ * @brief Construct from a single time time value.
+ *
+ * @param time
+ */
+VrmlMFTime::VrmlMFTime(double time): d_data(new DData(1)) {
+    d_data->data[0] = time;
 }
 
-VrmlMFTime::VrmlMFTime(size_t size, double const * v)
-  : d_data(new DData(size))
-{
-    if (v) {
-        std::copy(v, v + size, d_data->data);
+/**
+ * @brief Construct from an array of time values.
+ *
+ * @param length the number of time values in the passed array
+ * @param times a pointer to an array of time values
+ */
+VrmlMFTime::VrmlMFTime(size_t length, const double * times):
+        d_data(new DData(length)) {
+    if (times) {
+        std::copy(times, times + length, this->d_data->data);
     }
 }
 
-VrmlMFTime::VrmlMFTime(VrmlMFTime const & c)
-  : d_data(c.d_data->ref())
+/**
+ * @brief Copy constructor.
+ *
+ * @param mftime the object to copy
+ */
+VrmlMFTime::VrmlMFTime(const VrmlMFTime & mftime): d_data(mftime.d_data->ref())
 {}
 
-VrmlMFTime::~VrmlMFTime()
-{
-    d_data->deref();
+/**
+ * @brief Destructor.
+ */
+VrmlMFTime::~VrmlMFTime() {
+    this->d_data->deref();
 }
 
-VrmlMFTime & VrmlMFTime::operator=(VrmlMFTime const & c)
-{
-    if (this != &c) {
+/**
+ * @brief Assignment operator.
+ *
+ * @param mftime the object to copy into this one
+ */
+VrmlMFTime & VrmlMFTime::operator=(const VrmlMFTime & mftime) {
+    if (this != &mftime) {
         d_data->deref();
-        d_data = c.d_data->ref();
+        d_data = mftime.d_data->ref();
     }
     return *this;
 }
 
-void VrmlMFTime::set(size_t size, double const * v)
-{
-    d_data->deref();
-    d_data = new DData(size);
-    if (v) {
-        std::copy(v, v + size, d_data->data);
-    }
-}
-
-double const * VrmlMFTime::get() const
-{
-    return d_data->data;
-}
-
-double const & VrmlMFTime::operator[](size_t index) const
-{
-    assert(index >= 0 && index < d_data->size);
-    
+/**
+ * @brief Array element dereference operator (const version).
+ *
+ * @param index
+ */
+double VrmlMFTime::operator[](size_t index) const {
+    assert(index < d_data->size);
     return d_data->data[index];
 }
 
-size_t VrmlMFTime::getLength() const
-{
+/**
+ * @brief Array element dereference operator (non-const version).
+ *
+ * @param index
+ */
+double & VrmlMFTime::operator[](size_t index) {
+    assert(index < d_data->size);
+    return d_data->data[index];
+}
+
+/**
+ * @brief Get value.
+ *
+ * @return a pointer to a double array
+ */
+const double * VrmlMFTime::get() const {
+    return this->d_data->data;
+}
+
+/**
+ * @brief Set value.
+ *
+ * @param length the number of time values
+ * @param times a pointer to a double array
+ */
+void VrmlMFTime::set(size_t length, const double * times) {
+    this->d_data->deref();
+    this->d_data = new DData(length);
+    if (times) {
+        std::copy(times, times + length, this->d_data->data);
+    }
+}
+
+/**
+ * @brief Get the length.
+ *
+ * @return the number of float values
+ */
+size_t VrmlMFTime::getLength() const {
     return d_data->size;
 }
 
-VrmlField * VrmlMFTime::clone() const
-{
+/**
+ * @brief Set the length.
+ *
+ * If the new length is greater than the current length, the additional values
+ * are initialized to the default (0.0). If the new length is less
+ * than the current length, the array is truncated.
+ *
+ * @param length new length
+ */
+void VrmlMFTime::setLength(size_t length) {
+    DData * const newData = new DData(length);
+    if (length > this->d_data->size) {
+        std::copy(this->d_data->data, this->d_data->data + this->d_data->size,
+                  newData->data);
+        std::fill(newData->data + this->d_data->size, newData->data + length,
+                  0.0f);
+    } else {
+        std::copy(this->d_data->data, this->d_data->data + length,
+                  newData->data);
+    }
+    this->d_data->deref();
+    this->d_data = newData;
+}
+
+VrmlField * VrmlMFTime::clone() const {
     return new VrmlMFTime(*this);
 }
 
-VrmlField::VrmlFieldType VrmlMFTime::fieldType() const
-{
+VrmlField::VrmlFieldType VrmlMFTime::fieldType() const {
     return MFTIME;
 }
 
-ostream & VrmlMFTime::print(ostream & os) const
-{
+ostream & VrmlMFTime::print(ostream & os) const {
     return mfdprint(os, get(), getLength(), 1);
 }
 
 
 /**
  * @class VrmlMFVec2f
- * Encapsulates a MFVec2f.
+ *
+ * @brief Encapsulates an MFVec2f.
  */
 #include "VrmlMFVec2f.h"
 
-VrmlMFVec2f::VrmlMFVec2f() : d_data(new FData(0)) {}
+class VrmlMFVec2f::FData {			// reference counted float data
+public:
+  FData(size_t n=0) : d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
+  ~FData() { delete [] d_v; }
 
-VrmlMFVec2f::VrmlMFVec2f(float x, float y) : d_data(new FData(2))
-{ d_data->d_v[0] = x; d_data->d_v[1] = y; }
+  FData *ref() { ++d_refs; return this; }
+  void deref() { if (--d_refs == 0) delete this; }
 
-VrmlMFVec2f::VrmlMFVec2f(size_t n, const float * v) : d_data(new FData(2*n))
-{
-  if (v) memcpy(d_data->d_v, v, 2*n*sizeof(float));
+  size_t d_refs;			// number of objects using this data
+  size_t d_n;			// size (in floats) of d_v
+  float *d_v;			// data vector
+};
+
+/**
+ * @brief Construct from a single vector value.
+ *
+ * @param x the <var>x</var>-component
+ * @param y the <var>y</var>-component
+ */
+VrmlMFVec2f::VrmlMFVec2f(float x, float y): d_data(new FData(2)) {
+    this->d_data->d_v[0] = x;
+    this->d_data->d_v[1] = y;
 }
 
-VrmlMFVec2f::VrmlMFVec2f(const VrmlMFVec2f &source) :
-  d_data(source.d_data->ref()) 
-{}
+/**
+ * @brief Construct from an array of vector values.
+ *
+ * @param length the number of vector values in the passed array
+ * @param vecs a pointer to an array of vector values
+ */
+VrmlMFVec2f::VrmlMFVec2f(size_t length, const float * vecs):
+        d_data(new FData(length * 2)) {
+    if (vecs) {
+        std::copy(vecs, vecs + (length * 2), this->d_data->d_v);
+    }
+}
 
+/**
+ * @brief Copy constructor.
+ *
+ * @param mfvec2f the object to copy
+ */
+VrmlMFVec2f::VrmlMFVec2f(const VrmlMFVec2f & mfvec2f):
+        d_data(mfvec2f.d_data->ref()) {}
+
+/**
+ * @brief Destructor.
+ */
 VrmlMFVec2f::~VrmlMFVec2f() { d_data->deref(); }
 
-void VrmlMFVec2f::set(size_t n, const float * v)
-{
-  d_data->deref();
-  d_data = new FData(2*n);
-  if (v) memcpy(d_data->d_v, v, 2*n*sizeof(float));
+/**
+ * @brief Assignment operator.
+ *
+ * @param mfvec2f the object to copy into this one
+ */
+VrmlMFVec2f & VrmlMFVec2f::operator=(const VrmlMFVec2f & mfvec2f) {
+    if (this != &mfvec2f) {
+        this->d_data->deref();
+        this->d_data = mfvec2f.d_data->ref();
+    }
+    return *this;
 }
 
-VrmlMFVec2f& VrmlMFVec2f::operator=(const VrmlMFVec2f& rhs)
-{
-  if (this != &rhs) {
-    d_data->deref();
-    d_data = rhs.d_data->ref();
-  }
-  return *this;
+/**
+ * @brief Array element dereference operator.
+ *
+ * @param index
+ */
+const float * VrmlMFVec2f::operator[](size_t index) const {
+    assert((index * 2) < this->d_data->d_n);
+    return (this->d_data->d_v + (index * 2));
+}
+
+/**
+ * @brief Get the vector values.
+ *
+ * @return a pointer to an array of 2-D vector values
+ */
+const float * VrmlMFVec2f::get() const {
+    return this->d_data->d_v;
+}
+
+/**
+ * @brief Set the vector values.
+ *
+ * @param length the number of vector values in the passed array
+ * @param vecs a pointer to an array of 2-D vector values
+ */
+void VrmlMFVec2f::set(size_t length, const float * vecs) {
+    length *= 2;
+    this->d_data->deref();
+    this->d_data = new FData(length);
+    if (vecs) {
+        std::copy(vecs, vecs + length, this->d_data->d_v);
+    }
+}
+
+/**
+ * @brief Get the length.
+ *
+ * @return the number of vector values
+ */
+size_t VrmlMFVec2f::getLength() const {
+    return (this->d_data->d_n / 2);
+}
+
+/**
+ * @brief Set the length.
+ *
+ * If the new length is smaller than the current length, the array is
+ * truncated. If the new length is greater than the current length, the
+ * new values are initialized to the default vector (0, 0).
+ *
+ * @param length the new length
+ */
+void VrmlMFVec2f::setLength(size_t length) {
+    length *= 2;
+    FData * const newData = new FData(length);
+    if (length > this->d_data->d_n) {
+        std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
+                  newData->d_v);
+        std::fill(newData->d_v + this->d_data->d_n, newData->d_v + length,
+                  0.0f);
+    } else {
+        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
+    }
+    this->d_data->deref();
+    this->d_data = newData;
 }
 
 VrmlField *VrmlMFVec2f::clone() const { return new VrmlMFVec2f(*this); }
 
 VrmlField::VrmlFieldType VrmlMFVec2f::fieldType() const { return MFVEC2F; }
 
+ostream& VrmlMFVec2f::print(ostream& os) const
+{ return mffprint(os, get(), getLength(), 2); }
+
 
 /**
  * @class VrmlMFVec3f
- * Encapsulates a MFVec3f.
+ *
+ * @brief Encapsulates an MFVec3f.
  */
 #include "VrmlMFVec3f.h"
 
+class VrmlMFVec3f::FData {			// reference counted float data
+public:
+  FData(size_t n=0) : d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
+  ~FData() { delete [] d_v; }
 
-VrmlMFVec3f::VrmlMFVec3f(size_t n) : d_data(new FData(n)) {}
+  FData *ref() { ++d_refs; return this; }
+  void deref() { if (--d_refs == 0) delete this; }
 
-VrmlMFVec3f::VrmlMFVec3f(float x, float y, float z) : d_data(new FData(3))
-{ d_data->d_v[0] = x; d_data->d_v[1] = y; d_data->d_v[2] = z; }
+  size_t d_refs;			// number of objects using this data
+  size_t d_n;			// size (in floats) of d_v
+  float *d_v;			// data vector
+};
 
-VrmlMFVec3f::VrmlMFVec3f(size_t n, const float * v) : d_data(new FData(3*n))
-{
-  if (v) memcpy(d_data->d_v, v, 3*n*sizeof(float));
+/**
+ * @brief Construct from a single vector value.
+ *
+ * @param x the <var>x</var>-component
+ * @param y the <var>y</var>-component
+ * @param z the <var>z</var>-component
+ */
+VrmlMFVec3f::VrmlMFVec3f(float x, float y, float z): d_data(new FData(3)) {
+    this->d_data->d_v[0] = x;
+    this->d_data->d_v[1] = y;
+    this->d_data->d_v[2] = z;
 }
 
-VrmlMFVec3f::VrmlMFVec3f(const VrmlMFVec3f &source) :
-  d_data(source.d_data->ref()) 
-{}
+/**
+ * @brief Construct from an array of vector values.
+ *
+ * @param length the number of vector values in the passed array
+ * @param vecs a pointer to an array of vector values
+ */
+VrmlMFVec3f::VrmlMFVec3f(size_t length, const float * vecs):
+        d_data(new FData(length * 3)) {
+    if (vecs) {
+        std::copy(vecs, vecs + (length * 3), this->d_data->d_v);
+    }
+}
 
+/**
+ * @brief Copy constructor.
+ *
+ * @param mfvec3f the object to copy
+ */
+VrmlMFVec3f::VrmlMFVec3f(const VrmlMFVec3f & mfvec3f):
+        d_data(mfvec3f.d_data->ref()) {}
+
+/**
+ * @brief Destructor.
+ */
 VrmlMFVec3f::~VrmlMFVec3f() { d_data->deref(); }
 
-
-void VrmlMFVec3f::set(size_t n, const float * v)
-{
-  d_data->deref();
-  d_data = new FData(3*n);
-  if (v) memcpy(d_data->d_v, v, 3*n*sizeof(float));
+/**
+ * @brief Assignment operator.
+ *
+ * @param mfvec3f the object to copy into this one
+ */
+VrmlMFVec3f& VrmlMFVec3f::operator=(const VrmlMFVec3f & mfvec3f) {
+    if (this != &mfvec3f) {
+        this->d_data->deref();
+        this->d_data = mfvec3f.d_data->ref();
+    }
+    return *this;
 }
 
-VrmlMFVec3f& VrmlMFVec3f::operator=(const VrmlMFVec3f& rhs)
-{
-  if (this != &rhs) {
-    d_data->deref();
-    d_data = rhs.d_data->ref();
-  }
-  return *this;
+/**
+ * @brief Array element dereference operator (const version).
+ *
+ * @param index
+ */
+const float * VrmlMFVec3f::operator[](size_t index) const {
+    assert((index * 3) < this->d_data->d_n);
+    return (this->d_data->d_v + (index * 3));
+}
+
+/**
+ * @brief Array element dereference operator (non-const version).
+ *
+ * @param index
+ */
+float * VrmlMFVec3f::operator[](size_t index) {
+    assert((index * 3) < this->d_data->d_n);
+    return (this->d_data->d_v + (index * 3));
+}
+
+/**
+ * @brief Get the vector values.
+ *
+ * @return a pointer to an array of 3-D vector values
+ */
+const float * VrmlMFVec3f::get() const {
+    return this->d_data->d_v;
+}
+
+/**
+ * @brief Set the vector values.
+ *
+ * @param length the number of vector values in the passed array
+ * @param vecs a pointer to an array of 3-D vector values
+ */
+void VrmlMFVec3f::set(size_t length, const float * vecs) {
+    length *= 3;
+    this->d_data->deref();
+    this->d_data = new FData(length);
+    if (vecs) {
+        std::copy(vecs, vecs + length, this->d_data->d_v);
+    }
+}
+
+/**
+ * @brief Get the length.
+ *
+ * @return the number of vector values
+ */
+size_t VrmlMFVec3f::getLength() const {
+    return (this->d_data->d_n / 3);
+}
+
+/**
+ * @brief Set the length.
+ *
+ * If the new length is smaller than the current length, the array is
+ * truncated. If the new length is greater than the current length, the
+ * new values are initialized to the default vector (0, 0, 0).
+ *
+ * @param length the new length
+ */
+void VrmlMFVec3f::setLength(size_t length) {
+    length *= 3;
+    FData * const newData = new FData(length);
+    if (length > this->d_data->d_n) {
+        std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
+                  newData->d_v);
+        std::fill(newData->d_v + this->d_data->d_n, newData->d_v + length,
+                  0.0f);
+    } else {
+        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData->d_v);
+    }
+    this->d_data->deref();
+    this->d_data = newData;
 }
 
 VrmlField *VrmlMFVec3f::clone() const { return new VrmlMFVec3f(*this); }
 
 VrmlField::VrmlFieldType VrmlMFVec3f::fieldType() const { return MFVEC3F; }
 
-const float * VrmlMFVec3f::get() const {
-    return this->d_data->d_v;
-}
-
-float * VrmlMFVec3f::get() {
-    return this->d_data->d_v;
-}
-
-const float * VrmlMFVec3f::operator[](size_t index) const {
-    return (this->d_data->d_v + (index * 3));
-}
-
-float * VrmlMFVec3f::operator[](size_t index) {
-    return (this->d_data->d_v + (index * 3));
-}
+ostream& VrmlMFVec3f::print(ostream& os) const
+{ return mffprint(os, get(), getLength(), 3); }
 
 // Generic MF float and double print functions
 
@@ -2987,24 +3255,6 @@ namespace {
 }
 
 
-ostream& VrmlMFVec2f::print(ostream& os) const
-{ return mffprint(os, get(), getLength(), 2); }
-
-ostream& VrmlMFVec3f::print(ostream& os) const
-{ return mffprint(os, get(), getLength(), 3); }
-
-
-ostream& VrmlMFString::print(ostream& os) const
-{
-  int n = getLength();
-
-  if (n != 1) os << '[';
-  for (int i=0; i<n; ++i)
-    os << '\"' << (d_v[i]) << "\" ";
-  if (n != 1) os << ']';
-
-  return os;
-}
 
 
 // Define the const and non-const generic and specific safe downcast methods

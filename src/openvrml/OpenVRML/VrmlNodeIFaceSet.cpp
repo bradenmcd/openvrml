@@ -317,7 +317,7 @@ void VrmlNodeIFaceSet::recalcBSphere()
   // changes). motto: always do it the simple way first...
   //
   VrmlMFVec3f &coord = d_coord.get()->toCoordinate()->coordinate();
-  float* p = coord.get();
+  const float* p = coord.get();
   int n = coord.getLength();
   d_bsphere.reset();
   d_bsphere.enclose(p, n);

@@ -16,65 +16,41 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
+
 #ifndef VRMLMFVEC3F_H
 #define VRMLMFVEC3F_H
 
 #include "VrmlField.h"
 
-//
-// It would be nice to somehow incorporate the reference counting
-// into a base class (VrmlMField) or make a VrmlMField template...
-// There is no support for copy-on-write, so if you modify an element
-// of the data vector, all objects that share that data will see the
-// change.
-//
-
 class VrmlMFVec3f : public VrmlField {
-private:
-
-  class FData {			// reference counted float data
-  public:
-    FData(int n=0) : d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
-    ~FData() { delete [] d_v; }
-
-    FData *ref() { ++d_refs; return this; }
-    void deref() { if (--d_refs == 0) delete this; }
-
-    int d_refs;			// number of objects using this data
-    int d_n;			// size (in floats) of d_v
-    float *d_v;			// data vector
-  };
-
-  FData *d_data;		// Vec3f data
-
 public:
+    VrmlMFVec3f(float x, float y, float z);
+    explicit VrmlMFVec3f(size_t length = 0, const float * vecs = 0);
+    VrmlMFVec3f(const VrmlMFVec3f & mfvec3f);
 
-  VrmlMFVec3f(size_t n = 0);
-  VrmlMFVec3f(float x, float y, float z);
-  VrmlMFVec3f(size_t n, const float * v);
-  VrmlMFVec3f(const VrmlMFVec3f &source);
+    ~VrmlMFVec3f();
 
-  ~VrmlMFVec3f();
+    VrmlMFVec3f & operator=(const VrmlMFVec3f & mfvec3f);
 
-  // Assignment.
-  void set(size_t n, const float * v);
-  VrmlMFVec3f& operator=(const VrmlMFVec3f& rhs);
+    const float * operator[](size_t index) const;
+    float * operator[](size_t index);
 
-  virtual VrmlField *clone() const;
+    const float * get() const;
+    void set(size_t length, const float * vecs);
 
-  virtual VrmlFieldType fieldType() const;
-  virtual const VrmlMFVec3f* toMFVec3f() const;
-  virtual VrmlMFVec3f* toMFVec3f();
+    size_t getLength() const;
+    void setLength(size_t length);
 
-  virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual ostream& print(ostream& os) const;
+    virtual const VrmlMFVec3f* toMFVec3f() const;
+    virtual VrmlMFVec3f* toMFVec3f();
 
-  size_t getLength() const		{ return d_data->d_n/3; } // # of vec3fs
-  float * get();
-  const float * get() const;
-  const float * operator[](size_t index) const;
-  float * operator[](size_t index);
-
+private:
+    class FData;
+    FData * d_data;
 };
 
 #endif // VRMLMFVEC3F_H

@@ -16,63 +16,40 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
+
 #ifndef VRMLMFVEC2F_H
 #define VRMLMFVEC2F_H
 
 #include "VrmlField.h"
 
-//
-// It would be nice to somehow incorporate the reference counting
-// into a base class (VrmlMField) or make a VrmlMField template...
-// There is no support for copy-on-write, so if you modify an element
-// of the data vector, all objects that share that data will see the
-// change.
-//
-
 class VrmlMFVec2f : public VrmlField {
-private:
-
-  class FData {			// reference counted float data
-  public:
-    FData(int n=0) : d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
-    ~FData() { delete [] d_v; }
-
-    FData *ref() { ++d_refs; return this; }
-    void deref() { if (--d_refs == 0) delete this; }
-
-    int d_refs;			// number of objects using this data
-    int d_n;			// size (in floats) of d_v
-    float *d_v;			// data vector
-  };
-
-  FData *d_data;		// Vec2f data
-
 public:
+    VrmlMFVec2f(float x, float y);
+    explicit VrmlMFVec2f(size_t length = 0, const float * vecs = 0);
+    VrmlMFVec2f(const VrmlMFVec2f & mfvec2f);
 
-  VrmlMFVec2f();
-  VrmlMFVec2f(float x, float y);
-  VrmlMFVec2f(size_t n, const float * v);
-  VrmlMFVec2f(const VrmlMFVec2f &source);
+    ~VrmlMFVec2f();
 
-  ~VrmlMFVec2f();
+    VrmlMFVec2f & operator=(const VrmlMFVec2f & mfvec2f);
 
-  // Assignment.
-  void set(size_t n, const float * v);
-  VrmlMFVec2f& operator=(const VrmlMFVec2f& rhs);
+    const float * operator[](size_t index) const;
+    
+    const float * get() const;
+    void set(size_t length, const float * vecs);
 
-  virtual VrmlField *clone() const;
+    size_t getLength() const;
+    void setLength(size_t length);
 
-  virtual VrmlFieldType fieldType() const;
-  virtual const VrmlMFVec2f* toMFVec2f() const;
-  virtual VrmlMFVec2f* toMFVec2f();
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual ostream& print(ostream& os) const;
+    virtual const VrmlMFVec2f* toMFVec2f() const;
+    virtual VrmlMFVec2f* toMFVec2f();
 
-  virtual ostream& print(ostream& os) const;
-
-  size_t getLength() const		{ return d_data->d_n/2; } // # of vec2fs
-  const float * get() const		{ return d_data->d_v; }
-  const float * operator[](size_t index)	{ return &d_data->d_v[2*index]; }
-
+private:
+    class FData;
+    FData * d_data;
 };
 
 #endif // VRMLMFVEC2F_H

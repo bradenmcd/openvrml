@@ -96,8 +96,8 @@ void VrmlNodeCoordinateInt::eventIn(double timeStamp,
 	}
       float f = fieldValue->toSFFloat()->get();
 
-      int nCoords = d_keyValue.getLength() / d_key.getLength();
-      int n = d_key.getLength() - 1;
+      size_t nCoords = d_keyValue.getLength() / d_key.getLength();
+      size_t n = d_key.getLength() - 1;
 
       if (f < d_key[0])
 	{
@@ -117,15 +117,14 @@ void VrmlNodeCoordinateInt::eventIn(double timeStamp,
 	      {
 		const float * v1 = d_keyValue[i*nCoords];
 		const float * v2 = d_keyValue[(i+1)*nCoords];
-		float * x = d_value.get();
 
 		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
 
-		for (int j=0; j<nCoords; ++j)
+		for (size_t j = 0; j < nCoords; ++j)
 		  {
-		    *x++ = v1[0] + f * (v2[0] - v1[0]);
-		    *x++ = v1[1] + f * (v2[1] - v1[1]);
-		    *x++ = v1[2] + f * (v2[2] - v1[2]);
+		    this->d_value[j][0] = v1[0] + f * (v2[0] - v1[0]);
+		    this->d_value[j][1] = v1[1] + f * (v2[1] - v1[1]);
+		    this->d_value[j][2] = v1[2] + f * (v2[2] - v1[2]);
 		    v1 += 3;
 		    v2 += 3;
 		  }

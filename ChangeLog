@@ -1,3 +1,15 @@
+2001-01-01  Braden McDaniel  <braden@endoframe.com>
+
+        * Doxygen comments for VrmlMFTime, VrmlMFVec2f, and VrmlMFVec3f.
+        
+        * Added setLength() method to VrmlMFTime.
+        
+        * Added setLength() method to VrmlSFVec2f; consolidated default
+          constructor.
+        
+        * Added setLength() method to VrmlSFVec3f; consolidated default
+          constructor; removed non-const get() method.
+
 2000-12-31  Braden McDaniel  <braden@endoframe.com>
 
         * VrmlMFRotation API improvements: moved refcounted inner class

@@ -25,31 +25,34 @@
 # include <stddef.h>
 
 class VrmlMFTime : public VrmlField {
-    public:
-        VrmlMFTime();
-        VrmlMFTime(double);
-        VrmlMFTime(size_t, double const *);
-        VrmlMFTime(VrmlMFTime const &);
-        
-        ~VrmlMFTime();
-        
-        VrmlMFTime & operator=(VrmlMFTime const &);
-        
-        void set(size_t, double const *);
-        double const * get() const;
-        double const & operator[](size_t) const;
-        size_t getLength() const;
-        
-        //
-        // Override from VrmlField
-        //
-        ostream & print(ostream &) const;
-        VrmlField * clone() const;
-        VrmlFieldType fieldType() const;
-        
-    private:
-        class DData;
-        DData * d_data;
+public:
+    explicit VrmlMFTime(double time);
+    explicit VrmlMFTime(size_t length = 0, const double * times = 0);
+    VrmlMFTime(const VrmlMFTime & mftime);
+
+    ~VrmlMFTime();
+
+    VrmlMFTime & operator=(const VrmlMFTime & mftime);
+
+    double operator[](size_t index) const;
+    double & operator[](size_t index);
+
+    const double * get() const;
+    void set(size_t length, const double * times);
+
+    size_t getLength() const;
+    void setLength(size_t length);
+
+    //
+    // Override from VrmlField
+    //
+    ostream & print(ostream &) const;
+    VrmlField * clone() const;
+    VrmlFieldType fieldType() const;
+
+private:
+    class DData;
+    DData * d_data;
 };
 
 # endif

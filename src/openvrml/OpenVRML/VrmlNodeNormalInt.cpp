@@ -120,7 +120,6 @@ void VrmlNodeNormalInt::eventIn(double timeStamp,
 	      {
 		float *v1 = d_keyValue[i*nNormals];
 		float *v2 = d_keyValue[(i+1)*nNormals];
-		float *x = d_value.get();
 
 		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
 
@@ -128,9 +127,6 @@ void VrmlNodeNormalInt::eventIn(double timeStamp,
 		// Contributed by S. K. Bose. (bose@garuda.barc.ernet.in)
 		for (int j=0; j<nNormals; ++j)
 		  {
-		    //*x++ = v1[0] + f * (v2[0] - v1[0]);
-		    //*x++ = v1[1] + f * (v2[1] - v1[1]);
-		    //*x++ = v1[2] + f * (v2[2] - v1[2]);
                     float alpha, beta;
                     float dotval = v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
                     if ((dotval+1.0) > FPTOLERANCE) // Vectors are opposite
@@ -154,9 +150,9 @@ void VrmlNodeNormalInt::eventIn(double timeStamp,
 			alpha = 1.0 -f;
 			beta = f;
 		      }
-                    *x++ = alpha * v1[0] + beta * v2[0];
-                    *x++ = alpha * v1[1] + beta * v2[1];
-                    *x++ = alpha * v1[2] + beta * v2[2];
+                    this->d_value[j][0] = alpha * v1[0] + beta * v2[0];
+                    this->d_value[j][1] = alpha * v1[1] + beta * v2[1];
+                    this->d_value[j][2] = alpha * v1[2] + beta * v2[2];
 
 		    v1 += 3;
 		    v2 += 3;
