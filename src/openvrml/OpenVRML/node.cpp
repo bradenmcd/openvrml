@@ -995,7 +995,6 @@ void Node::addEventOutIS(const std::string & eventOutId,
                          PolledEventOutValue & eventOutValue)
     throw (UnsupportedInterface, std::bad_alloc)
 {
-    
     if (!this->nodeType.hasEventOut(eventOutId)) {
         throw UnsupportedInterface(this->nodeType,
                                    NodeInterface::eventOut,
@@ -1067,19 +1066,27 @@ void Node::initialize(Scene & scene, const double timestamp)
  */
 void Node::relocate() throw (std::bad_alloc)
 {
+    typedef void (Node::* Do_relocate)();
+
     class RelocateTraverser : public NodeTraverser {
+        Do_relocate do_relocate;
+
     public:
+        explicit RelocateTraverser(const Do_relocate do_relocate) throw ():
+            do_relocate(do_relocate)
+        {}
+
         virtual ~RelocateTraverser() throw ()
         {}
 
     private:
         virtual void onEntering(Node & node) throw (std::bad_alloc)
         {
-            node.do_relocate();
+            (node.*this->do_relocate)();
         }
     };
 
-    RelocateTraverser().traverse(*this);
+    RelocateTraverser(&Node::do_relocate).traverse(*this);
 }
 
 /**

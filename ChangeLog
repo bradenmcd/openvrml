@@ -10,6 +10,11 @@
         * src/openvrml/OpenVRML/node.h:  NodeTraverser::operator= must
           return a reference.
 
+        * src/openvrml/OpenVRML/node.cpp:  cl 13.00.9466 doesn't like
+          a class in a member function definition referring to private
+          members of the outer class.  So use a pointer-to-member
+          instead.
+
 2003-03-12  Braden McDaniel  <braden@endoframe.com>
 
         * src/lookat/lookat.cpp, src/openvrml/OpenVRML/ScriptJDK.cpp,
