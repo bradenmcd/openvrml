@@ -13,6 +13,10 @@
           Viewer::MatrixMultiply with Viewer::transform; Viewer::transform
           simply takes a VrmlMatrix instead of a float[4][4].
 
+        * src/openvrml/OpenVRML/vrml97node.cpp: Fixed goofiness in
+          TimeSensor::processSet_enabled. Route from a TimeSensor's
+          isActive to its set_enabled was causing an infinite loop.
+
 2002-10-17  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,

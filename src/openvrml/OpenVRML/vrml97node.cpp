@@ -12289,30 +12289,35 @@ void TimeSensor::processSet_enabled(const FieldValue & sfbool,
 {
     using OpenVRML_::fpzero;
 
-    // Shutdown if set_enabled FALSE is received when active
     this->enabled = dynamic_cast<const SFBool &>(sfbool);
-    if (!this->active.get() && !this->enabled.get()) {
-        this->active.set(false);
+    if (this->enabled.get() != this->active.get()) {
+        if (this->active.get()) {
+            //
+            // Was active; shutdown.
+            //
+            double cycleInt = this->cycleInterval.get();
+            double f = (cycleInt > 0.0)
+                     ? fmod(this->time.get() - this->startTime.get(), cycleInt)
+                     : 0.0;
 
-        // Send relevant eventOuts (continuous ones first)
+            // Fraction of cycle message
+            this->fraction.set(fpzero(f) ? 1.0 : (f / cycleInt));
+        } else {
+            //
+            // Was inactive; startup.
+            //
+            this->cycleTime.set(timestamp);
+            this->emitEvent("cycleTime", this->cycleTime, timestamp);
+
+            // Fraction of cycle message
+            this->fraction.set(0.0);
+        }
         this->time.set(timestamp);
         this->emitEvent("time", this->time, timestamp);
-
-        double f;
-        double cycleInt = this->cycleInterval.get();
-        if (cycleInt > 0.0) {
-            f = fmod(this->time.get() - this->startTime.get(), cycleInt);
-        } else {
-            f = 0.0;
-        }
-
-        // Fraction of cycle message
-        this->fraction.set(fpzero(f) ? 1.0 : (f / cycleInt));
-
         this->emitEvent("fraction_changed", this->fraction, timestamp);
+        this->active = this->enabled;
         this->emitEvent("isActive", this->active, timestamp);
     }
-
     this->emitEvent("enabled_changed", this->enabled, timestamp);
 }
 
