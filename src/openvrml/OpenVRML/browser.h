@@ -114,7 +114,7 @@ namespace OpenVRML {
         const std::string getWorldURI() const throw (std::bad_alloc);
         void replaceWorld(const MFNode & nodes);
         virtual void loadURI(const MFString & uri, const MFString & parameter)
-                throw (std::bad_alloc);
+            throw (std::bad_alloc);
         virtual void setDescription(const std::string & description);
         const MFNode createVrmlFromStream(std::istream & in);
         void createVrmlFromURI(const MFString & uri,
@@ -175,8 +175,7 @@ namespace OpenVRML {
         size_t nViewpoints();
         void getViewpoint(size_t index,
                           std::string & name, std::string & description);
-        void setViewpoint(const std::string & name,
-                          const std::string & description);
+        void setViewpoint(const std::string & name);
         void setViewpoint(size_t);
 
         void addScopedLight(Vrml97Node::AbstractLight &);

@@ -1591,23 +1591,18 @@ void Browser::getViewpoint(const size_t nvp, std::string & name,
 /**
  * @brief Bind to a specific Viewpoint.
  *
- * @param name          the name of the Viewpoint to bind to.
- * @param description   the description of the Viewpoint to bind to.
+ * @param name  the nodeId of the Viewpoint to bind to.
  *
- * This method will only bind to a Viewpoint if both @p name and @p description
- * match the name and description of the Viewpoint. If no such Viewpoint is
- * available, this method has no effect.
+ * This method will bind to a Viewpoint with the nodeId @p name. If no such
+ * Viewpoint is available, this method has no effect.
  */
-void Browser::setViewpoint(const std::string & name,
-                             const std::string & description) {
-    std::list<Node *>::iterator i = this->d_viewpoints.begin();
-    for (; i != this->d_viewpoints.end(); ++i) {
-        if (name == (*i)->getId()
-                && description == (*i)->toViewpoint()->getDescription().get()) {
-            Vrml97Node::Viewpoint * const vp = (*i)->toViewpoint();
-            if (vp) {
-                vp->processEvent("set_bind", SFBool(true), theSystem->time());
-            }
+void Browser::setViewpoint(const std::string & name)
+{
+    for (std::list<Node *>::iterator i = this->d_viewpoints.begin();
+            i != this->d_viewpoints.end(); ++i) {
+        if (name == (*i)->getId()) {
+            assert((*i)->toViewpoint());
+            (*i)->processEvent("set_bind", SFBool(true), theSystem->time());
             return;
         }
     }
@@ -2113,6 +2108,15 @@ void Scene::render(Viewer & viewer, VrmlRenderContext context) {
  * This method simply resolves any relative references in @p uri and calls
  * Browser::loadURI.
  *
+ * @note There are a couple of edge cases here where we are probably doing the
+ *      wrong thing:
+ *       - If there is a URI in the list of the form "#NodeId" and it is not the
+ *         first URI in the list, this URI will be loaded as if it were a new
+ *         world rather than as a Viewpoint that should simply be bound.
+ *       - If the first URI in the list is of the form "#NodeId" and no
+ *         Viewpoint named "NodeId" exists in the scene, this method will not
+ *         try any subsequent URIs in the list.
+ *
  * @param uri       an array of URIs. Per VRML97 convention, the first resource
  *                  in the sequence that can be reached will be loaded into the
  *                  Browser.
@@ -2125,21 +2129,29 @@ void Scene::render(Viewer & viewer, VrmlRenderContext context) {
  *      invalid. Should this throw InvalidURI?
  */
 void Scene::loadURI(const MFString & uri, const MFString & parameter)
-        throw (std::bad_alloc) {
-    MFString absoluteURIs(uri.getLength());
-    for (size_t i = 0; i < absoluteURIs.getLength(); ++i) {
-        try {
-            const URI uriElement(uri.getElement(i));
-            const std::string value =
-                uriElement.getScheme().empty()
-                    ? uriElement.resolveAgainst(URI(this->getURI()))
-                    : uriElement;
-            absoluteURIs.setElement(i, value);
-        } catch (InvalidURI & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
+    throw (std::bad_alloc)
+{
+    if (uri.getLength() > 0 && uri.getElement(0)[0] == '#') {
+        //
+        // If the first element in uri is a Viewpoint name, bind the Viewpoint.
+        //
+        this->browser.setViewpoint(uri.getElement(0).substr(1));
+    } else {
+        MFString absoluteURIs(uri.getLength());
+        for (size_t i = 0; i < absoluteURIs.getLength(); ++i) {
+            try {
+                const URI uriElement(uri.getElement(i));
+                const std::string value =
+                    uriElement.getScheme().empty()
+                        ? uriElement.resolveAgainst(URI(this->getURI()))
+                        : uriElement;
+                absoluteURIs.setElement(i, value);
+            } catch (InvalidURI & ex) {
+                OPENVRML_PRINT_EXCEPTION_(ex);
+            }
         }
+        this->browser.loadURI(absoluteURIs, parameter);
     }
-    this->browser.loadURI(absoluteURIs, parameter);
 }
 
 /**
