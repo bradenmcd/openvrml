@@ -108,10 +108,19 @@ void VrmlNodeTimeSensor::update( VrmlSFTime &inTime )
 {
   VrmlSFTime timeNow( inTime );
 
+  //printf("VrmlNodeTimeSensor %s ::update( enabled %d, active %d, loop %d )\n",
+  //name(), d_enabled.get(), d_isActive.get(), d_loop.get() );
+
   if (d_enabled.get())
     {
       if ( d_lastTime > inTime.get() )
 	d_lastTime = inTime.get();
+
+      // print the results of the tests for activation
+      //printf(" startTime <= timeNow: %d\n", d_startTime.get() <= timeNow.get() );
+      //printf(" startTime >= d_lastTime: %d\n", d_startTime.get() >= d_lastTime );
+      //printf(" stopTime < startTime: %d\n", d_stopTime.get() < d_startTime.get() );
+      //printf(" stopTime > timeNow: %d\n", d_stopTime.get() > timeNow.get() );
 
       // Become active at startTime if either the valid stopTime hasn't
       // passed or we are looping.
@@ -188,7 +197,6 @@ void VrmlNodeTimeSensor::update( VrmlSFTime &inTime )
       d_lastTime = inTime.get();
 
     }
-
 }
 
 // Ignore set_cycleInterval & set_startTime when active, deactivate
@@ -202,7 +210,7 @@ void VrmlNodeTimeSensor::eventIn(double timeStamp,
   if ( strncmp(eventName, "set_", 4) == 0 )
     eventName += 4;
 
-  theSystem->debug("TimeSensor.%s eventIn %s\n", name(), origEventName);
+  //theSystem->debug("TimeSensor.%s eventIn %s\n", name(), origEventName);
 
   // Ignore set_cycleInterval & set_startTime when active
   if ( strcmp(eventName,"cycleInterval") == 0 ||
@@ -210,6 +218,7 @@ void VrmlNodeTimeSensor::eventIn(double timeStamp,
     {
       if (! d_isActive.get())
 	{
+	  d_lastTime = timeStamp;
 	  setField(eventName, *fieldValue);
 	  char eventOutName[256];
 	  strcpy(eventOutName, eventName);
@@ -244,6 +253,7 @@ void VrmlNodeTimeSensor::eventIn(double timeStamp,
 	}
 
       eventOut(timeStamp, "enabled_changed", *fieldValue);
+
     }
 
   // Let the generic code handle the rest.
