@@ -1,18 +1,18 @@
-LibVRML97 library version 0.8.2, January, 2000
-Copyright (C) 1998,1999,2000 Chris Morley <cmorley@vermontel.net>
+OpenVRML library version 0.9.0, November, 2000
+Copyright (C) 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
 Portions Copyright SGI and others
 
-Available from <URL:http://www.openvrml.org/modules/libvrml97.html>
+Available from <URL:http://openvrml.sourceforge.net>
 
 See the NEWS file for a list of changes in this release.
 See the TODO file for a list of things we are planning to implement for future
 releases.
 
 
-What is LibVRML97?
+What is OpenVRML?
 ==================
 
-LibVRML97 is a portable C++ class library for reading and displaying VRML97
+OpenVRML is a portable C++ class library for reading and displaying VRML97
 files.  This distribution includes Lookat, a sample viewer program that uses
 GLUT.
 
@@ -20,14 +20,14 @@ GLUT.
 How can I use it?
 =================
 
-The code is copyrighted, but is provided free of charge for any purpose.  Refer
-to the file COPYING for details.
+This code is Free Software available under the terms of the Lesser General
+Public License.  Refer to the file COPYING for details.
 
 
 What else do I need?
 ====================
 
-LibVRML97 requires zlib, libpng, libjpeg, OpenGL/Mesa, and GLUT to build.  If
+OpenVRML requires zlib, libpng, libjpeg, OpenGL/Mesa, and GLUT to build.  If
 any of these are not already present on your system, first consult your
 operating system vendor for packages tailored to your particular operating
 system/distribution.  Failing that, consult the following URLs:
@@ -45,11 +45,11 @@ Installation
 Refer to the file INSTALL for detailed installation instructions.
 
 
-What VRML97 nodes are supported by the VRML97 library?
+What VRML97 nodes are supported by OpenVRML?
 ======================================================
 
 Details of the implementation status of each node can be found in NODES.  All of
-the static geometry is supported except generation of per vertex normals.  Text/
+the static geometry is supported except generation of per-vertex normals.  Text/
 FontStyle node support is very limited.
 
 Unimplemented:  drag sensors (CylinderSensor, PlaneSensor, and 
@@ -69,13 +69,9 @@ card with 24-bit color.  Tell your boss I said so.
 Bug reports
 ===========
 
-Please send bug reports to the LibVRML97 mailing list,
-<URL:http://www.egroups.com/group/libvrml97/>.  The code does not attempt to
-validate the input--it expects proper syntax in many places.  Although I would
-prefer the code to handle input errors gracefully, less priority will be given
-to bugs resulting from invalid inputs.  Please run one of the VRML syntax
-checkers on your file before submitting a bug report.
-
+Please send bug reports to the OpenVRML mailing list,
+openvrml-develop@sourceforge.net.  Subscription instructions are at
+<http://lists.sourceforge.net/mailman/listinfo/openvrml-develop>.
 
 Design
 ======
