@@ -17,6 +17,13 @@
         * src/openvrml-gl/OpenVRML/GL/Makefile.am:  Removed unnecessary
           compiler flags.
 
+        * Makefile.am, NEWS, configure.ac, ide-projects/Makefile.am,
+          java/Makefile.am, java/vrml/Makefile.am,
+          java/vrml/field/Makefile.am, java/vrml/node/Makefile.am,
+          src/openvrml/OpenVRML/Makefile.am,
+          src/openvrml-gl/OpenVRML/GL/Makefile.am:  Merged changes from
+          0.12.5 release.  (Better late than never.)
+
 2002-12-18  Braden McDaniel  <braden@endoframe.com>
 
         * m4/Makefile.am, m4/ftflib.m4:  Removed obsolete macro.

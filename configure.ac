@@ -173,6 +173,7 @@ AC_SUBST([OPENVRML_PKG_REQUIRES])
 AC_OUTPUT([Makefile \
 doc/Makefile \
 m4/Makefile \
+ide-projects/Makefile \
 models/Makefile \
 models/audio/Makefile \
 models/textures/Makefile \
