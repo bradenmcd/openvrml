@@ -2,6 +2,9 @@
 
         * Removed obsolete #undef's in `acconfig.h'.
 
+        * Added private macro for outputting exception messages in debug
+          mode.
+
 2001-07-24  Braden McDaniel  <braden@endoframe.com>
 
         * Added Joerg Scheurich's warbird game to the sample worlds.
