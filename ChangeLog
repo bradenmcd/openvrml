@@ -1,3 +1,8 @@
+2000-06-27  Michael Louka <Michael.Louka@hrp.no>
+
+  * Rewrote VrmlNodeAnchor::activate() so that relative URLs to non-VRML
+    data are handled correctly.
+    
 2000-06-27  Braden McDaniel <braden@endoframe.com>
 
         * Changed build scripts to use JavaScript 1.5 RC1 (SpiderMonkey).
