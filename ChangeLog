@@ -1,3 +1,8 @@
+2002-08-31  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/nodeptr.cpp: Fixed bug in NodePtr::reset
+          when 0 is passed as the argument.
+
 2002-08-29  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * java/vrml/BaseNode.java,

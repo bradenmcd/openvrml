@@ -73,12 +73,14 @@ void OpenVRML::NodePtr::reset(Node * node) {
         return;
     }
     this->dispose();
-    std::pair<CountMap::iterator, bool>
-            result(countMap.insert(CountMap::value_type(node, 1)));
-    assert(result.first->first == node);
-    this->countPtr = &*result.first;
-    if (!result.second) { // The node already exists in the table.
-        ++this->countPtr->second;
+    if (node) {
+        std::pair<CountMap::iterator, bool>
+                result(countMap.insert(CountMap::value_type(node, 1)));
+        assert(result.first->first == node);
+        this->countPtr = &*result.first;
+        if (!result.second) { // The node already exists in the table.
+            ++this->countPtr->second;
+        }
     }
 }
 
