@@ -4,8 +4,8 @@ Release:        1
 Summary:        VRML support library. 
 Copyright:      LGPL
 Group:          System Environment/Libraries
-Packager:       The OpenVRML Development Team <openvrml-develop@lists.sourceforge.net>
-Source:         http://download.sourceforge.net/openvrml/%{name}-%{version}.tar.gz
+Packager:       The OpenVRML Development Team <openvrml-develop@lists.sf.net>
+Source:         http://download.sf.net/openvrml/%{name}-%{version}.tar.gz
 URL:            http://openvrml.org
 Prefix:         /usr
 BuildRoot:      /var/tmp/%{name}-%{version}-root
@@ -64,7 +64,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %files 
-%doc AUTHORS COPYING COPYING.LIB ChangeLog MPL-1.1.txt NEWS README THANKS
+%doc AUTHORS COPYING COPYING.LIB ChangeLog NEWS README THANKS
 %doc doc/conformance.html
 %{prefix}/lib/libopenvrml.so.*
 %{prefix}/share/aclocal/vrml.m4
@@ -91,6 +91,10 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Fri Jun 29 2001  Braden McDaniel  <braden@endoframe.com>
+- Removed MPL-1.1.txt from %doc. File nolonger distributed.
+- Prefer the shorter "sf.net" to "sourceforge.net".
+
 * Wed Jun 6 2001  Braden McDaniel  <braden@endoframe.com>
 - Added COPYING to %doc.
 - Changed URL to <http://openvrml.org>
