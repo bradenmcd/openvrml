@@ -49,7 +49,7 @@
 <PROJECT>
     <TARGETLIST>
         <TARGET>
-            <NAME>openvrmlcore</NAME>
+            <NAME>OpenVRMLcore</NAME>
             <SETTINGLIST>
 
                 <!-- Settings for "Source Trees" panel -->
@@ -251,7 +251,7 @@
                 <SETTING><NAME>Linker</NAME><VALUE>MacOS PPC Linker</VALUE></SETTING>
                 <SETTING><NAME>PreLinker</NAME><VALUE></VALUE></SETTING>
                 <SETTING><NAME>PostLinker</NAME><VALUE></VALUE></SETTING>
-                <SETTING><NAME>Targetname</NAME><VALUE>openvrmlcore</VALUE></SETTING>
+                <SETTING><NAME>Targetname</NAME><VALUE>OpenVRMLcore</VALUE></SETTING>
                 <SETTING><NAME>OutputDirectory</NAME>
                     <SETTING><NAME>Path</NAME><VALUE>:</VALUE></SETTING>
                     <SETTING><NAME>PathFormat</NAME><VALUE>MacOS</VALUE></SETTING>
@@ -880,7 +880,7 @@
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>Äéh</VALUE></SETTING>
+                    <SETTING><VALUE>	gˆ</VALUE></SETTING>
                     <SETTING><VALUE></VALUE></SETTING>
                 </SETTING>
 
@@ -2425,14 +2425,14 @@
     </TARGETLIST>
 
     <TARGETORDER>
-        <ORDEREDTARGET><NAME>openvrmlcore</NAME></ORDEREDTARGET>
+        <ORDEREDTARGET><NAME>OpenVRMLcore</NAME></ORDEREDTARGET>
     </TARGETORDER>
 
     <GROUPLIST>
         <GROUP><NAME>Source</NAME>
             <GROUP><NAME>openvrmlcore</NAME>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2440,7 +2440,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2448,7 +2448,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2456,7 +2456,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2464,7 +2464,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2472,7 +2472,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2480,7 +2480,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2488,7 +2488,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2496,7 +2496,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2504,7 +2504,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2512,7 +2512,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2520,7 +2520,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2528,7 +2528,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2536,7 +2536,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2544,7 +2544,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2552,7 +2552,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2560,7 +2560,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2568,7 +2568,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2576,7 +2576,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2584,7 +2584,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2592,7 +2592,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2600,7 +2600,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2608,7 +2608,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2616,7 +2616,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2624,7 +2624,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2632,7 +2632,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2640,7 +2640,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2648,7 +2648,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2656,7 +2656,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2664,7 +2664,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2672,7 +2672,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2680,7 +2680,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2688,7 +2688,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2696,7 +2696,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2704,7 +2704,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2712,7 +2712,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2720,7 +2720,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2728,7 +2728,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2736,7 +2736,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2744,7 +2744,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2752,7 +2752,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2760,7 +2760,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2768,7 +2768,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2776,7 +2776,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2784,7 +2784,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2792,7 +2792,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2800,7 +2800,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2808,7 +2808,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2816,7 +2816,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2824,7 +2824,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2832,7 +2832,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2840,7 +2840,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2848,7 +2848,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2856,7 +2856,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2864,7 +2864,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2872,7 +2872,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2880,7 +2880,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2888,7 +2888,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2896,7 +2896,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2904,7 +2904,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2912,7 +2912,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2920,7 +2920,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2928,7 +2928,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2936,7 +2936,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2944,7 +2944,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2952,7 +2952,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2960,7 +2960,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2968,7 +2968,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2976,7 +2976,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2984,7 +2984,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -2992,7 +2992,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3000,7 +3000,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3008,7 +3008,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3016,7 +3016,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3024,7 +3024,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3032,7 +3032,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3040,7 +3040,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3048,7 +3048,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3056,7 +3056,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3064,7 +3064,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3072,7 +3072,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3080,7 +3080,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3088,7 +3088,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3096,7 +3096,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::src:openvrml:OpenVRML:</ACCESSPATH>
@@ -3108,7 +3108,7 @@
         <GROUP><NAME>Libraries</NAME>
             <GROUP><NAME>ANTLR Library</NAME>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>:</ACCESSPATH>
@@ -3118,7 +3118,7 @@
             </GROUP>
             <GROUP><NAME>Supporting Libraries</NAME>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::::libjpeg:</ACCESSPATH>
@@ -3126,7 +3126,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::::libpng:</ACCESSPATH>
@@ -3134,7 +3134,7 @@
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::::zlib:</ACCESSPATH>
@@ -3144,7 +3144,7 @@
             </GROUP>
             <GROUP><NAME>InternetConfig (weak import)</NAME>
                 <FILEREF>
-                    <TARGETNAME>openvrmlcore</TARGETNAME>
+                    <TARGETNAME>OpenVRMLcore</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::::InternetConfig:</ACCESSPATH>

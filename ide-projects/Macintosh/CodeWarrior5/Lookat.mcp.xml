@@ -771,9 +771,9 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>	ù5∞</VALUE></SETTING>
-                    <SETTING><VALUE>	%8</VALUE></SETTING>
-                    <SETTING><VALUE>9ö@</VALUE></SETTING>
+                    <SETTING><VALUE></VALUE></SETTING>
+                    <SETTING><VALUE>	gà</VALUE></SETTING>
+                    <SETTING><VALUE></VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
@@ -1202,30 +1202,32 @@
 
     <GROUPLIST>
         <GROUP><NAME>Source</NAME>
-            <FILEREF>
-                <TARGETNAME>Lookat</TARGETNAME>
-                <PATHTYPE>PathRelative</PATHTYPE>
-                <PATHROOT>Project</PATHROOT>
-                <ACCESSPATH>::::src:lookat:</ACCESSPATH>
-                <PATH>:lookat.cpp</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>Lookat</TARGETNAME>
-                <PATHTYPE>PathRelative</PATHTYPE>
-                <PATHROOT>Project</PATHROOT>
-                <ACCESSPATH>::::src:lookat:</ACCESSPATH>
-                <PATH>:ViewerGlut.cpp</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>Lookat</TARGETNAME>
-                <PATHTYPE>PathRelative</PATHTYPE>
-                <PATHROOT>Project</PATHROOT>
-                <ACCESSPATH>:</ACCESSPATH>
-                <PATH>:OpenVRML.rsrc</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
+            <GROUP><NAME>lookat</NAME>
+                <FILEREF>
+                    <TARGETNAME>Lookat</TARGETNAME>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::::src:lookat:</ACCESSPATH>
+                    <PATH>:lookat.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <TARGETNAME>Lookat</TARGETNAME>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>::::src:lookat:</ACCESSPATH>
+                    <PATH>:ViewerGlut.cpp</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <TARGETNAME>Lookat</TARGETNAME>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>Project</PATHROOT>
+                    <ACCESSPATH>:</ACCESSPATH>
+                    <PATH>:OpenVRML.rsrc</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+            </GROUP>
         </GROUP>
         <GROUP><NAME>Libraries</NAME>
             <GROUP><NAME>OpenVRML Library</NAME>

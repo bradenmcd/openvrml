@@ -753,10 +753,9 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>œop</VALUE></SETTING>
-                    <SETTING><VALUE>ÛÜø</VALUE></SETTING>
-                    <SETTING><VALUE>
-ð]ð</VALUE></SETTING>
+                    <SETTING><VALUE></VALUE></SETTING>
+                    <SETTING><VALUE>	gˆ</VALUE></SETTING>
+                    <SETTING><VALUE></VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
@@ -945,7 +944,7 @@
 
     <GROUPLIST>
         <GROUP><NAME>Source</NAME>
-            <GROUP><NAME>libvrml97gl</NAME>
+            <GROUP><NAME>openvrml97gl</NAME>
                 <FILEREF>
                     <TARGETNAME>OpenVRMLgl</TARGETNAME>
                     <PATHTYPE>PathRelative</PATHTYPE>
@@ -964,23 +963,25 @@
                 </FILEREF>
             </GROUP>
         </GROUP>
-        <GROUP><NAME>OpenGL Stubs</NAME>
-            <FILEREF>
-                <TARGETNAME>OpenVRMLgl</TARGETNAME>
-                <PATHTYPE>PathRelative</PATHTYPE>
-                <PATHROOT>CodeWarrior</PATHROOT>
-                <ACCESSPATH>:::OpenGL SDK:Libraries:</ACCESSPATH>
-                <PATH>:OpenGLUtilityStub</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>OpenVRMLgl</TARGETNAME>
-                <PATHTYPE>PathRelative</PATHTYPE>
-                <PATHROOT>CodeWarrior</PATHROOT>
-                <ACCESSPATH>:::OpenGL SDK:Libraries:</ACCESSPATH>
-                <PATH>:OpenGLLibraryStub</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
+        <GROUP><NAME>Libraries</NAME>
+            <GROUP><NAME>OpenGL Stubs</NAME>
+                <FILEREF>
+                    <TARGETNAME>OpenVRMLgl</TARGETNAME>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>CodeWarrior</PATHROOT>
+                    <ACCESSPATH>:::OpenGL SDK:Libraries:</ACCESSPATH>
+                    <PATH>:OpenGLUtilityStub</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+                <FILEREF>
+                    <TARGETNAME>OpenVRMLgl</TARGETNAME>
+                    <PATHTYPE>PathRelative</PATHTYPE>
+                    <PATHROOT>CodeWarrior</PATHROOT>
+                    <ACCESSPATH>:::OpenGL SDK:Libraries:</ACCESSPATH>
+                    <PATH>:OpenGLLibraryStub</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
+            </GROUP>
         </GROUP>
     </GROUPLIST>
 
