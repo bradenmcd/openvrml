@@ -146,6 +146,10 @@ else
   AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
             [Defined if Script node JavaScript support is enabled.])
   GRE_PATH=`$PKG_CONFIG --libs-only-L mozilla-js | sed -e 's/^-L//' -e 's/ *$//'`
+  if test -n "${OPENVRML_RPATH}" -a -n "${GRE_PATH}"; then
+    OPENVRML_RPATH=":${OPENVRML_RPATH}"
+  fi
+  OPENVRML_RPATH="${GRE_PATH}${OPENVRML_RPATH}"
 fi
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
@@ -166,6 +170,10 @@ else
   fi
   AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVA], [1],
             [Defined if Script node Java support is enabled.])
+  if test -n "${OPENVRML_RPATH}" -a -n "${JDK_LIBRARY_PATH}"; then
+    OPENVRML_RPATH=":${OPENVRML_RPATH}"
+  fi
+  OPENVRML_RPATH="${JDK_LIBRARY_PATH}${OPENVRML_RPATH}"
 fi
 AC_SUBST([JNI_CFLAGS])
 AC_SUBST([JNI_LIBS])
@@ -196,7 +204,6 @@ if test "X$enable_lookat" != "Xno"; then
   if test "X$no_glut" = "Xyes"; then
     AC_MSG_ERROR([glut is required for lookat])
   fi
-  AC_CONFIG_FILES([src/lookat/lookat], [chmod +x src/lookat/lookat])
 fi
 AM_CONDITIONAL([ENABLE_LOOKAT],
                [test "X$enable_lookat" != "Xno" -a "X$no_glut" != "Xyes"])
@@ -205,5 +212,6 @@ AM_CONDITIONAL([ENABLE_LOOKAT],
 # Optional dependencies (substituted in the pkg-config metadata files).
 #
 AC_SUBST([OPENVRML_PKG_REQUIRES])
+AC_SUBST([OPENVRML_RPATH])
 
 AC_OUTPUT
