@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 libvrml97core.lib libvrml97gl.lib opengl32.lib glu32.lib glut32.lib zlib.lib libpng.lib libjpeg.lib wsock32.lib /nologo /subsystem:console /machine:I386
+# ADD LINK32 ../../libvrml97core/win32/release/libvrml97core.lib ../../libvrml97gl/win32/release/libvrml97gl.lib opengl32.lib glu32.lib glut32.lib zlib.lib libpng.lib libjpeg.lib wsock32.lib /nologo /subsystem:console /machine:I386
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "lookat - Win32 Debug"
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 libvrml97core.lib libvrml97gl.lib opengl32.lib glu32.lib zlib.lib libjpeg.lib libpng.lib wsock32.lib glut32.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"libcid.lib" /nodefaultlib:"libcd.lib" /pdbtype:sept
+# ADD LINK32 ../../libvrml97core/win32/debug/libvrml97core.lib ../../libvrml97gl/win32/debug/libvrml97gl.lib opengl32.lib glu32.lib zlib.lib libjpeg.lib libpng.lib wsock32.lib glut32.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"libcid.lib" /nodefaultlib:"libcd.lib" /pdbtype:sept
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -110,17 +110,7 @@ SOURCE=..\src\lookat.cpp
 # Begin Source File
 
 SOURCE=..\src\ViewerGlut.cpp
-
-!IF  "$(CFG)" == "lookat - Win32 Release"
-
 # ADD CPP /I "..\..\libvrml97core\src" /I "..\..\libvrml97gl\src"
-
-!ELSEIF  "$(CFG)" == "lookat - Win32 Debug"
-
-# ADD CPP /I "..\..\libvrml97core\src" /I "..\..\libvrml97gl\src"
-
-!ENDIF 
-
 # End Source File
 # End Group
 # Begin Group "Include files"
