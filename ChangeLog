@@ -1,3 +1,8 @@
+2003-11-08  Braden McDaniel  <braden@endoframe.com>
+
+	* src/lookat/Makefile.am:  Removed lingering obsolete reference
+	to JNI_CFLAGS.
+
 2003-11-07  Braden McDaniel  <braden@endoframe.com>
 
 	Enabled build of Script node Java binding by default.
