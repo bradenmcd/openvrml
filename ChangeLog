@@ -1,5 +1,13 @@
 2004-03-11 Braden McDaniel  <braden@endoframe.com>
 
+	Fixed "free" of stack memory.
+
+	* src/libopenvrml/openvrml/doc.cpp
+	* src/libopenvrml/openvrml/system.cpp
+	* src/libopenvrml/openvrml/system.h
+
+2004-03-11 Braden McDaniel  <braden@endoframe.com>
+
 	Removed unused node_interface_id_equals function object.
 
 	* src/libopenvrml/openvrml/node.cpp

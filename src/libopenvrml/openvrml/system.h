@@ -38,7 +38,7 @@ namespace openvrml {
                               const mfstring & parameters);
         virtual int connect_socket( const char *host, int port );
         virtual const char *http_host(const char *url, int *port);
-        virtual const char *http_fetch( const char *url );
+        virtual const std::string http_fetch( const char *url );
         virtual void remove_file( const char *fn );
     };
 

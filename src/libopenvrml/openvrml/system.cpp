@@ -155,7 +155,7 @@ const char * system::http_host(const char * url, int * port)
 
 // This isn't particularly robust or complete...
 
-const char *system::http_fetch(const char * url)
+const std::string system::http_fetch(const char * url)
 {
     int port = 80;
     const char *hostname = this->http_host(url, &port);

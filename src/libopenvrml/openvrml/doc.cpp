@@ -373,48 +373,49 @@ const char * doc::local_path()
  */
 bool doc::filename(char * fn, int nfn)
 {
-  fn[0] = '\0';
+    using std::string;
 
-  char *e = 0, *s = const_cast<char *>(stripProtocol(url_));
+    fn[0] = '\0';
 
-  if ((e = strrchr(s,'#')) != 0)
-    *e = '\0';
+    string s = stripProtocol(this->url_);
+    char * e = 0;
 
-  const char *protocol = url_protocol();
+    if ((e = strrchr(s.c_str(),'#')) != 0) { *e = '\0'; }
 
-  // Get a local copy of http files
-  if (strcmp(protocol, "http") == 0)
-    {
-      if (tmpfile_)		// Already fetched it
-	s = tmpfile_;
-      else if ((s = const_cast<char *>(the_system->http_fetch(url_))))
-	{
-	  tmpfile_ = new char[strlen(s)+1];
-	  strcpy(tmpfile_, s);
-	  free(s);		// assumes tempnam or equiv...
-	  s = tmpfile_;
+    const char *protocol = url_protocol();
+
+    // Get a local copy of http files
+    if (strcmp(protocol, "http") == 0) {
+        if (tmpfile_) {
+            // Already fetched it
+            s = tmpfile_;
+        } else if (!(s = the_system->http_fetch(this->url_)).empty()) {
+            tmpfile_ = new char[s.length() + 1];
+            strcpy(tmpfile_, s.c_str());
+            s = tmpfile_;
 	}
     }
 
-  // Unrecognized protocol (need ftp here...)
-  else if (strcmp(protocol, "file") != 0)
-    s = 0;
+    // Unrecognized protocol (need ftp here...)
+    else if (strcmp(protocol, "file") != 0) {
+        s.clear();
+    }
 
 #ifdef _WIN32
   // Does not like "//C:" skip "// "
-   if(s)
-	   if(strlen(s)>2 && s[0] == '/' && s[1] == '/')s=s+2;
+    if (!s.empty()) {
+        if(s.length() > 2 && s[0] == '/' && s[1] == '/') { s = s.substr(2); }
+    }
 #endif
 
-  if (s)
-    {
-      strncpy( fn, s, nfn-1 );
-      fn[nfn-1] = '\0';
+    if (!s.empty()) {
+        strncpy(fn, s.c_str(), nfn - 1);
+        fn[nfn - 1] = '\0';
     }
 
-  if (e) *e = '#';
+    if (e) { *e = '#'; }
 
-  return s && *s;
+    return !s.empty();
 }
 
 /**
@@ -995,9 +996,9 @@ bool doc2::filename(char * fn, const size_t nfn) {
 
     fn[0] = '\0';
 
-    const char * s = 0;
+    string s;
 
-    const std::string protocol = this->url_protocol();
+    const string protocol = this->url_protocol();
 
     if (protocol == "file") {
 # ifdef _WIN32
@@ -1017,24 +1018,23 @@ bool doc2::filename(char * fn, const size_t nfn) {
         //
         if (this->tmpfile_) {    // Already fetched it
             s = this->tmpfile_;
-        } else if ((s = the_system->http_fetch(this->url_.c_str()))) {
-            tmpfile_ = new char[strlen(s)+1];
-            strcpy(tmpfile_, s);
-            free(const_cast<char *>(s));        // assumes tempnam or equiv...
+        } else if (!(s = the_system->http_fetch(this->url_.c_str())).empty()) {
+            tmpfile_ = new char[s.length() + 1];
+            strcpy(tmpfile_, s.c_str());
             s = tmpfile_;
         }
     }
     // Unrecognized protocol (need ftp here...)
     else {
-        s = 0;
+        s.clear();
     }
 
-    if (s) {
-        strncpy( fn, s, nfn-1 );
+    if (!s.empty()) {
+        strncpy(fn, s.c_str(), nfn - 1);
         fn[nfn-1] = '\0';
     }
 
-    return s && *s;
+    return !s.empty();
 }
 
 namespace {
