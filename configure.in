@@ -155,4 +155,5 @@ AC_OUTPUT(Makefile \
           src/openvrml-gl/OpenVRML/Makefile \
           src/openvrml-gl/OpenVRML/GL/Makefile \
           src/lookat/Makefile \
+          Doxyfile \
           openvrml.spec)

@@ -4,6 +4,9 @@
 
         * Declare GLUtesselator `extern "C"' in `ViewerOpenGL.h'.
 
+        * Added configuration file to generate documentation with
+          Doxygen.
+
 2000-12-17  Braden McDaniel  <braden@endoframe.com>
 
         * Updated ANTLR library version to 2.7.1.

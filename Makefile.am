@@ -9,7 +9,7 @@ VISUALC_PROJECT_FILES = \
         win32/libvrml97.dsw \
         win32/winconfig.h
 
-EXTRA_DIST = vrml.m4 vrml-gl.m4 openvrml.spec.in lookat.xpm \
+EXTRA_DIST = vrml.m4 vrml-gl.m4 Doxyfile.in openvrml.spec.in lookat.xpm \
 $(VISUALC_PROJECT_FILES)
 
 m4datadir = $(datadir)/aclocal
