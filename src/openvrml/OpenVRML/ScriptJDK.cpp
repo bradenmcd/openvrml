@@ -282,51 +282,51 @@ void ScriptJDK::activate( double timeStamp,
 
 extern "C" {
 
-static FieldValue* newField(FieldValue::FieldType fieldtype)
+static FieldValue* newField(FieldValue::Type fieldtype)
 {
   switch (fieldtype)
   {
-    case FieldValue::NO_FIELD:
+    case FieldValue::invalidType:
       return NULL;
-    case FieldValue::SFBOOL:
+    case FieldValue::sfbool:
       return new SFBool;
-    case FieldValue::SFCOLOR:
+    case FieldValue::sfcolor:
       return new SFColor;
-    case FieldValue::SFFLOAT:
+    case FieldValue::sffloat:
       return new SFFloat;
-    case FieldValue::SFIMAGE:
+    case FieldValue::sfimage:
       return new SFImage;
-    case FieldValue::SFINT32:
+    case FieldValue::sfint32:
       return new SFInt32;
-    case FieldValue::SFNODE:
+    case FieldValue::sfnode:
       return new SFNode;
-    case FieldValue::SFROTATION:
+    case FieldValue::sfrotation:
       return new SFRotation;
-    case FieldValue::SFSTRING:
+    case FieldValue::sfstring:
       return new SFString;
-    case FieldValue::SFTIME:
+    case FieldValue::sftime:
       return new SFTime;
-    case FieldValue::SFVEC2F:
+    case FieldValue::sfvec2f:
       return new SFVec2f;
-    case FieldValue::SFVEC3F:
+    case FieldValue::sfvec3f:
       return new SFVec3f;
-    case FieldValue::MFCOLOR:
+    case FieldValue::mfcolor:
       return new MFColor;
-    case FieldValue::MFFLOAT:
+    case FieldValue::mffloat:
       return new MFFloat;
-    case FieldValue::MFINT32:
+    case FieldValue::mfint32:
       return new MFInt32;
-    case FieldValue::MFNODE:
+    case FieldValue::mfnode:
       return new MFNode;
-    case FieldValue::MFROTATION:
+    case FieldValue::mfrotation:
       return new MFRotation;
-    case FieldValue::MFSTRING:
+    case FieldValue::mfstring:
       return new MFString;
-    case FieldValue::MFTIME:
+    case FieldValue::mftime:
       return new MFTime;
-    case FieldValue::MFVEC2F:
+    case FieldValue::mfvec2f:
       return new MFVec2f;
-    case FieldValue::MFVEC3F:
+    case FieldValue::mfvec3f:
       return new MFVec3f;
     default:
       return NULL;
@@ -347,7 +347,7 @@ JNIEXPORT jobject JNICALL Java_vrml_Field_clone
   // TODO: This method needs to be revisited  
   fid = getFid(env, obj, "FieldPtr", "I");
   pField = (FieldValue*) env->GetIntField(obj, fid);
-  szFieldType = pField->fieldTypeName();
+  szFieldType = pField->typeName();
   sprintf(clazzName, "vrml/field/%s", szFieldType);
   clazz = env->FindClass(clazzName);
   jCloneField = env->AllocObject(clazz);
@@ -3629,7 +3629,7 @@ JNIEXPORT jstring JNICALL Java_vrml_field_MFVec3f_toString
 JNIEXPORT jobject JNICALL Java_vrml_node_Script_getField
   (JNIEnv *env, jobject obj, jstring jstrFieldName)
 {
-  FieldValue::FieldType fieldType;
+  FieldValue::Type fieldType;
   const ScriptNode::ScriptField* scriptFieldPtr;
   const char *charFieldName = env->GetStringUTFChars(jstrFieldName, 0);
   std::string fieldName(charFieldName);
@@ -3638,7 +3638,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getField
   jobject Field;
 
   if ((fieldType = pScript->hasField(fieldName)) !=
-       FieldValue::NO_FIELD)
+       FieldValue::invalidType)
   {
     ScriptNode::FieldList& exposedFields = pScript->fields();
     for (ScriptNode::FieldList::const_iterator i(exposedFields.begin()); 
@@ -3650,7 +3650,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getField
 
     char clazzName[256];
     const FieldValue* temp = scriptFieldPtr->value;
-    sprintf(clazzName, "vrml/field/%s", temp->fieldTypeName());
+    sprintf(clazzName, "vrml/field/%s", temp->typeName());
     jclass clazz = env->FindClass(clazzName);
     Field = env->AllocObject(clazz);
     fid = getFid(env, Field, "FieldPtr", "I");
@@ -3672,7 +3672,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getField
 JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventOut
   (JNIEnv *env, jobject obj, jstring jstrEventOutName)
 {
-  FieldValue::FieldType eventOutType;
+  FieldValue::Type eventOutType;
   const ScriptNode::ScriptField* fieldPtr;
   char clazzName[256];
   jobject eventOut;
@@ -3683,7 +3683,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventOut
   ScriptNode* pScript = (ScriptNode*) env->GetIntField(obj, fid);
 
   if ((eventOutType = pScript->hasEventOut(eventOutName)) !=
-       FieldValue::NO_FIELD)
+       FieldValue::invalidType)
   {
     char clazzName[256];
     sprintf(clazzName, "vrml/field/%s", FieldValue::getFieldName(eventOutType));
@@ -3699,7 +3699,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventOut
     }
   }
   else if ((eventOutType = pScript->hasField(eventOutName)) !=
-            FieldValue::NO_FIELD)
+            FieldValue::invalidType)
   {
     char clazzName[256];
     sprintf(clazzName, "vrml/field/%s", FieldValue::getFieldName(eventOutType));
@@ -3732,7 +3732,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventOut
 JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventIn
   (JNIEnv *env, jobject obj, jstring jstrEventInName)
 {
-  FieldValue::FieldType eventInType;
+  FieldValue::Type eventInType;
   const ScriptNode::ScriptField* fieldPtr;
   jobject eventIn;
   jfieldID fid;
@@ -3743,7 +3743,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventIn
   fid = getFid(env, obj, "NodePtr", "I");
   ScriptNode* pScript = (ScriptNode*) env->GetIntField(obj, fid);
   if ((eventInType = pScript->hasEventIn(eventInName)) != 
-       FieldValue::NO_FIELD)
+       FieldValue::invalidType)
   {
     char clazzName[256];
     sprintf(clazzName, "vrml/field/%s", FieldValue::getFieldName(eventInType));
@@ -3762,7 +3762,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Script_getEventIn
   }
 
   else if ((eventInType = pScript->hasField(eventInName)) !=
-            FieldValue::NO_FIELD)
+            FieldValue::invalidType)
   {
     char clazzName[256];
     sprintf(clazzName, "vrml/field/%s", FieldValue::getFieldName(eventInType));
@@ -3848,7 +3848,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getEventIn
   } 
 
   char clazzName[256];
-  sprintf(clazzName, "vrml/field/%s", field->fieldTypeName());
+  sprintf(clazzName, "vrml/field/%s", field->typeName());
   jclass clazz = env->FindClass(clazzName);
   jobject eventIn = env->AllocObject(clazz);
   fid = env->GetFieldID(clazz, "FieldPtr", "I");;
@@ -3877,7 +3877,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getEventOut
   }
 
   char clazzName[256];
-  sprintf(clazzName, "vrml/field/%s", field->fieldTypeName());
+  sprintf(clazzName, "vrml/field/%s", field->typeName());
   jclass clazz = env->FindClass(clazzName);
   jobject eventOut = env->AllocObject(clazz);
   fid = env->GetFieldID(clazz, "FieldPtr", "I");;
@@ -3905,7 +3905,7 @@ JNIEXPORT jobject JNICALL Java_vrml_node_Node_getExposedField
   }
 
   char clazzName[256];
-  sprintf(clazzName, "vrml/field/%s", field->fieldTypeName());
+  sprintf(clazzName, "vrml/field/%s", field->typeName());
   jclass clazz = env->FindClass(clazzName);
   jobject exposedField = env->AllocObject(clazz);
   fid = env->GetFieldID(clazz, "FieldPtr", "I");;
@@ -3956,7 +3956,7 @@ JNIEXPORT jobject JNICALL Java_vrml_Event_getValue
   VrmlEvent* pEvent = (VrmlEvent*) env->GetIntField(obj, fid);
   const FieldValue* pField = pEvent->value();
   char clazzName[256];
-  sprintf(clazzName, "vrml/field/Const%s", pField->fieldTypeName());
+  sprintf(clazzName, "vrml/field/Const%s", pField->typeName());
   jclass clazz = env->FindClass(clazzName);
   jobject Field = env->AllocObject(clazz);
   fid = env->GetFieldID(clazz, "FieldPtr", "I");
