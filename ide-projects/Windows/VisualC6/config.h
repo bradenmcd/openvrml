@@ -23,30 +23,10 @@
 
 #define PACKAGE_VERSION  "openvrml-0.13.0"
 
-#define OPENVRML_HAVE_ZLIB
-#define OPENVRML_HAVE_LIBJPEG
-#define OPENVRML_HAVE_LIBPNG
-#define OPENVRML_HAVE_GLUT
-#define OPENVRML_HAVE_SPIDERMONKEY
-#define OPENVRML_HAVE_JNI
-#define OPENVRML_HAVE_FREETYPEFONTS
+#define OPENVRML_ENABLE_GZIP
+#define OPENVRML_ENABLE_IMAGETEXTURE_NODE  1
+#define OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT  1
+#define OPENVRML_ENABLE_SCRIPT_NODE_JAVA  1
+// #define OPENVRML_ENABLE_TEXT_NODE 
 
-#define FONTSDIR                 "c:/winnt/fonts"
-#define SERIFPLAIN               FONTSDIR"/times.ttf"
-#define SERIFBOLD                FONTSDIR"/timesbd.ttf"
-#define SERIFITALIC              FONTSDIR"/timesi.ttf"
-#define SERIFBOLDITALIC          FONTSDIR"/timesbi.ttf"
-#define SANSPLAIN                FONTSDIR"/arial.ttf"
-#define SANSBOLD                 FONTSDIR"/arialbd.ttf"
-#define SANSITALIC               FONTSDIR"/ariali.ttf"
-#define SANSBOLDITALIC           FONTSDIR"/arialbi.ttf"
-#define TYPEWRITERPLAIN          FONTSDIR"/cour.ttf"
-#define TYPEWRITERBOLD           FONTSDIR"/courbd.ttf"
-#define TYPEWRITERITALIC         FONTSDIR"/couri.ttf"
-#define TYPEWRITERBOLDITALIC     FONTSDIR"/courbi.ttf"
-
-#define OPENVRML_GL_H   <GL/gl.h>
-#define OPENVRML_GLU_H  <GL/glu.h>
-#define OPENVRML_GLUT_H <GL/glut.h>
-
-#endif	/* CONFIG_H */
+#endif   /* CONFIG_H */
