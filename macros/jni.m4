@@ -41,7 +41,7 @@ if test -n "${JAVA_HOME}"; then
     i*86) ov_arch_ldir="i386" ;;
     *)    AC_MSG_ERROR([Unsupported architecture for JDK.]) ;;
   esac
-  JNI_LIBS="-L${JAVA_HOME}/jre/lib/${ov_arch_ldir}/client"
+  JNI_LIBS="-L${JAVA_HOME}/jre/lib/${ov_arch_ldir}/client -L${JAVA_HOME}/jre/bin/classic"
 fi
 
 AC_LANG_PUSH(C)
@@ -64,4 +64,3 @@ fi
 AC_SUBST(JNI_CFLAGS)
 AC_SUBST(JNI_LIBS)
 ])
-
