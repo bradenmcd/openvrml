@@ -1,4 +1,7 @@
-ACLOCAL_AMFLAGS = -I ./m4 -I ./libvrml97core/m4 -I ./libvrml97gl/m4
+SUBDIRS = macros models libvrml97core libvrml97gl lookat
 
-SUBDIRS = m4 models libvrml97core libvrml97gl lookat
-EXTRA_DIST = NODES README.SOUND
+ACLOCAL_AMFLAGS = -I macros
+
+EXTRA_DIST = NODES README.SOUND vrml97.m4 vrml97gl.m4
+m4datadir = $(datadir)/aclocal
+m4data_DATA = vrml97.m4 vrml97gl.m4

@@ -1,4 +1,4 @@
-AC_DEFUN(VRML_CXX_BOOL,
+AC_DEFUN(OV_CXX_BOOL,
   [
     AC_MSG_CHECKING([if C++ compiler supports bool])
     

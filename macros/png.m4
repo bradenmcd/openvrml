@@ -1,9 +1,9 @@
 dnl
-dnl OVAL_PATH_PNG([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl OV_PATH_PNG([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
-AC_DEFUN(OVAL_PATH_PNG,
+AC_DEFUN(OV_PATH_PNG,
   [
-    AC_REQUIRE([OVAL_PATH_ZLIB])
+    AC_REQUIRE([OV_PATH_ZLIB])
     
     AC_ARG_WITH(png-prefix, [  --with-png-prefix=DIR   prefix where libpng is installed])
     

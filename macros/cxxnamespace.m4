@@ -1,4 +1,4 @@
-AC_DEFUN(VRML_CXX_BASIC_NAMESPACE,
+AC_DEFUN(OV_CXX_BASIC_NAMESPACE,
   [
     AC_MSG_CHECKING([if C++ compiler has basic namespace support])
     
@@ -35,9 +35,9 @@ AC_DEFUN(VRML_CXX_BASIC_NAMESPACE,
 )
 
 dnl
-dnl VRML_CXX_GLOBAL_USING([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl OV_CXX_GLOBAL_USING([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
-AC_DEFUN(VRML_CXX_GLOBAL_USING,
+AC_DEFUN(OV_CXX_GLOBAL_USING,
   [
     AC_MSG_CHECKING([if C++ compiler supports global-scope using declarations])
     
@@ -75,9 +75,9 @@ AC_DEFUN(VRML_CXX_GLOBAL_USING,
 )
 
 dnl
-dnl VRML_CXX_BLOCK_USING([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl OV_CXX_BLOCK_USING([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
-AC_DEFUN(VRML_CXX_BLOCK_USING,
+AC_DEFUN(OV_CXX_BLOCK_USING,
   [
     AC_MSG_CHECKING([if C++ compiler supports block-scope using declarations])
     
@@ -132,9 +132,9 @@ AC_DEFUN(VRML_CXX_BLOCK_USING,
 )
 
 dnl
-dnl VRML_CXX_UNNAMED_NAMESPACE([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl OV_CXX_UNNAMED_NAMESPACE([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
-AC_DEFUN(VRML_CXX_UNNAMED_NAMESPACE,
+AC_DEFUN(OV_CXX_UNNAMED_NAMESPACE,
   [
     AC_MSG_CHECKING([if C++ compiler supports unnamed namespaces])
     
@@ -171,15 +171,15 @@ AC_DEFUN(VRML_CXX_UNNAMED_NAMESPACE,
 )
 
 dnl
-dnl VRML_CXX_NAMESPACE([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl OV_CXX_NAMESPACE([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
-AC_DEFUN(VRML_CXX_NAMESPACE,
+AC_DEFUN(OV_CXX_NAMESPACE,
   [
     have_namespaces=yes
-    VRML_CXX_BASIC_NAMESPACE(, have_namespaces=no)
-    VRML_CXX_GLOBAL_USING(, have_namespaces=no)
-    VRML_CXX_BLOCK_USING(, have_namespaces=no)
-    VRML_CXX_UNNAMED_NAMESPACE(, have_namespaces=no)
+    OV_CXX_BASIC_NAMESPACE(, have_namespaces=no)
+    OV_CXX_GLOBAL_USING(, have_namespaces=no)
+    OV_CXX_BLOCK_USING(, have_namespaces=no)
+    OV_CXX_UNNAMED_NAMESPACE(, have_namespaces=no)
     
     if test "$have_namespaces" = yes ; then
       ifelse([$1], , :, [$1])

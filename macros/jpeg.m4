@@ -1,7 +1,7 @@
 dnl
-dnl OVAL_PATH_JPEG([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl OV_PATH_JPEG([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
-AC_DEFUN(OVAL_PATH_JPEG,
+AC_DEFUN(OV_PATH_JPEG,
   [
     AC_ARG_WITH(jpeg-prefix, [  --with-jpeg-prefix=DIR  prefix where libjpeg is installed])
     

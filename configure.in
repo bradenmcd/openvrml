@@ -83,28 +83,28 @@ fi
 dnl
 dnl Check for libjpeg
 dnl
-VRML_PATH_JPEG(, [libjpeg not found. Check 'config.log' for details.])
+OV_PATH_JPEG(, [libjpeg not found. Check 'config.log' for details.])
 
 dnl
 dnl Check for libpng, zlib
 dnl
-VRML_PATH_PNG(, [libpng or zlib not found. Check 'config.log' for details.])
+OV_PATH_PNG(, [libpng or zlib not found. Check 'config.log' for details.])
 
 dnl
 dnl Check for X, GL/Mesa, glut
 dnl
-VRMLGL_PATH_GLUT(, AC_MSG_ERROR([glut or one of its dependencies not found. See 'config.log' for details.]))
+OV_PATH_GLUT(, AC_MSG_ERROR([glut or one of its dependencies not found. See 'config.log' for details.]))
 
 dnl
 dnl Test for adequate namespace support in the C++ compiler
 dnl
-VRML_CXX_NAMESPACE(
+OV_CXX_NAMESPACE(
   ,
   no_cxx_namespaces=true
 )
 AM_CONDITIONAL(NO_CXX_NAMESPACES, test x$no_cxx_namespaces = xtrue)
 
-VRML_CXX_BOOL(
+OV_CXX_BOOL(
   ,
   AC_MSG_ERROR([Your C++ compiler does not have the required support for the 'bool' keyword. See 'config.log' for details.])
 )
@@ -152,7 +152,7 @@ AM_CONDITIONAL(AIX, test x$aix = xtrue)
 AM_CONDITIONAL(AIX4_3, test x$aix4_3 = xtrue)
 
 AC_OUTPUT(Makefile \
-          m4/Makefile \
+          macros/Makefile \
           models/Makefile \
           models/audio/Makefile \
           models/textures/Makefile \

@@ -1,13 +1,13 @@
 dnl
-dnl OVAL_PATH_GLUT([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl OV_PATH_GLUT([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
-AC_DEFUN(OVAL_PATH_GLUT,
+AC_DEFUN(OV_PATH_GLUT,
   [dnl
     dnl
     dnl Dependencies
     dnl
     AC_REQUIRE([AC_PATH_XTRA])
-    AC_REQUIRE([OVAL_PATH_GL])
+    AC_REQUIRE([OV_PATH_GL])
     
     if test "x$x_includes" = "x"; then
       X__Idir=""

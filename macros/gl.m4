@@ -1,7 +1,7 @@
 dnl
-dnl OVAL_PATH_GL([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl OV_PATH_GL([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
-AC_DEFUN(OVAL_PATH_GL,
+AC_DEFUN(OV_PATH_GL,
   [dnl
     dnl
     dnl Dependencies

@@ -1,7 +1,7 @@
 dnl
-dnl OVAL_PATH_ZLIB([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl OV_PATH_ZLIB([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
-AC_DEFUN(OVAL_PATH_ZLIB,
+AC_DEFUN(OV_PATH_ZLIB,
   [
     AC_ARG_WITH(zlib-prefix, [  --with-zlib-prefix=DIR  prefix where zlib is installed])
     
