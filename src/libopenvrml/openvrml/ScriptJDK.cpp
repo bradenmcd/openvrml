@@ -36,7 +36,6 @@
 #   include <algorithm>
 #   include <cstdio>
 #   include <cstring>
-#   include <strstream>
 #   include <sstream>
 
 #   include <vrml_Browser.h>
@@ -198,7 +197,7 @@ ScriptJDK::ScriptJDK(script_node & node,
     /* get the currently defined CLASSPATH env variable */
     char* classPath = getenv("CLASSPATH");
 
-    std::ostrstream appendedClassPath;
+    std::ostringstream appendedClassPath;
 
     appendedClassPath << "-Djava.class.path=."
 		      << PATH_SEPARATOR << classDir;
@@ -215,7 +214,8 @@ ScriptJDK::ScriptJDK(script_node & node,
 #endif
     appendedClassPath << std::ends;
 
-    options[0].optionString = appendedClassPath.str();
+    options[0].optionString =
+        const_cast<char *>(appendedClassPath.str().c_str());
     options[1].optionString = "-verbose:class,jni";
 #ifndef _WIN32
     options[2].optionString = "-Djava.library.path=" OPENVRML_LIBDIR_;
@@ -229,7 +229,6 @@ ScriptJDK::ScriptJDK(script_node & node,
 #endif
     /* Create the Java VM */
     res = JNI_CreateJavaVM(&d_jvm, (void**) &d_env, &vm_args);
-    appendedClassPath.rdbuf()->freeze(false);
 
     if (res < 0) {
       OPENVRML_PRINT_MESSAGE_("Can't create Java VM");
@@ -371,14 +370,13 @@ namespace {
      */
     jstring fieldToString(JNIEnv *env, jobject obj)
     {
-      std::ostrstream os;
-      field_value * field = getFieldValue(env, obj);
-      if (!field) return 0;
-      os << *field << std::ends;
-      char* szString = os.str();
-      jstring result = env->NewStringUTF(szString);
-      os.rdbuf()->freeze(0);
-      return result;
+        std::ostringstream os;
+        field_value * field = getFieldValue(env, obj);
+        if (!field) { return 0; }
+        os << *field << std::ends;
+        const char * str = os.str().c_str();
+        jstring result = env->NewStringUTF(str);
+        return result;
     }
 }
 
@@ -556,29 +554,27 @@ static field_value* newField(field_value::type_id fieldtype)
  *
  * @todo revisit this method
  */
-jobject JNICALL Java_vrml_Field_clone
-  (JNIEnv *env, jobject obj)
+jobject JNICALL Java_vrml_Field_clone(JNIEnv * env, jobject obj)
 {
-  // This method will fail if used on an eventOut (as the stored value is
-  // not a field_value*. It'll all fail as soon as anyone tries to use the
-  // field in any way as the flags aren't copied that indicate whether the
-  // field is an eventIn, eventOut or exposedField.
+    // This method will fail if used on an eventOut (as the stored value is
+    // not a field_value*. It'll all fail as soon as anyone tries to use the
+    // field in any way as the flags aren't copied that indicate whether the
+    // field is an eventIn, eventOut or exposedField.
 
-  jfieldID fid = getFid(env, obj, "FieldPtr", "I");
-  if (!fid) return 0;
-  field_value* field =
-    reinterpret_cast<field_value*>(env->GetIntField(obj, fid));
-  if (!field) return 0;
-  std::ostrstream os;
-  os << "vrml/field/" << field->type() << '\0';
-  jclass clazz = env->FindClass(os.str());
-  os.rdbuf()->freeze(false);
-  jobject jCloneField = env->AllocObject(clazz);
-  fid = env->GetFieldID(clazz, "FieldPtr", "I");
-  if (!fid) return 0;
-  field_value* cloneField = field->clone().release();
-  env->SetIntField(jCloneField, fid, reinterpret_cast<int>(cloneField));
-  return jCloneField;
+    jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+    if (!fid) { return 0; }
+    field_value* field =
+        reinterpret_cast<field_value*>(env->GetIntField(obj, fid));
+    if (!field) { return 0; }
+    std::ostringstream os;
+    os << "vrml/field/" << field->type() << std::ends;
+    jclass clazz = env->FindClass(os.str().c_str());
+    jobject jCloneField = env->AllocObject(clazz);
+    fid = env->GetFieldID(clazz, "FieldPtr", "I");
+    if (!fid) { return 0; }
+    field_value* cloneField = field->clone().release();
+    env->SetIntField(jCloneField, fid, reinterpret_cast<int>(cloneField));
+    return jCloneField;
 }
 
 /**
@@ -6596,53 +6592,49 @@ jstring JNICALL Java_vrml_field_MFVec3f_toString
  * @param jstrFieldName Name of desired exposed field
  * @return Exposed field object
  */
-jobject JNICALL Java_vrml_node_Script_getField
-  (JNIEnv *env, jobject obj, jstring jstrFieldName)
+jobject JNICALL Java_vrml_node_Script_getField(JNIEnv * env,
+                                               jobject obj,
+                                               jstring jstrFieldName)
 {
-  const char *charFieldName = env->GetStringUTFChars(jstrFieldName, 0);
-  std::string fieldName(charFieldName);
-  jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  if (!fid) return 0;
-  script_node* script =
-    reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
-  if (!script) return 0;
-  jobject Field;
+    const char * charFieldName = env->GetStringUTFChars(jstrFieldName, 0);
+    std::string fieldName(charFieldName);
+    jfieldID fid = getFid(env, obj, "NodePtr", "I");
+    if (!fid) { return 0; }
+    script_node* script =
+        reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
+    if (!script) { return 0; }
+    jobject Field;
 
-  script_node::field_value_map_t fieldMap = script->field_value_map();
-  script_node::field_value_map_t::iterator iter = fieldMap.find(fieldName);
+    script_node::field_value_map_t fieldMap = script->field_value_map();
+    script_node::field_value_map_t::iterator iter = fieldMap.find(fieldName);
 
-  if (iter != fieldMap.end())
-  {
-    // Then we've found the field
-    const field_value* fieldPtr = iter->second.get();
-    assert(fieldPtr);
-    std::ostrstream os;
-    os << "vrml/field/" << fieldPtr->type() << '\0';
-    jclass clazz = env->FindClass(os.str());
-    os.rdbuf()->freeze(false);
-    Field = env->AllocObject(clazz);
-    fid = getFid(env, Field, "FieldPtr", "I");
-    if (!fid) return 0;
-    env->SetIntField(Field, fid, reinterpret_cast<int>(fieldPtr));
-  }
-  else
-  {
-    jclass excClazz = env->FindClass("vrml/InvalidFieldException");
-    if (excClazz == 0)
-    {
-      // Can't find exception, just return
-      return 0;
+    if (iter != fieldMap.end()) {
+        // Then we've found the field
+        const field_value* fieldPtr = iter->second.get();
+        assert(fieldPtr);
+        std::ostringstream os;
+        os << "vrml/field/" << fieldPtr->type() << std::ends;
+        jclass clazz = env->FindClass(os.str().c_str());
+        Field = env->AllocObject(clazz);
+        fid = getFid(env, Field, "FieldPtr", "I");
+        if (!fid) { return 0; }
+        env->SetIntField(Field, fid, reinterpret_cast<int>(fieldPtr));
+    } else {
+        jclass excClazz = env->FindClass("vrml/InvalidFieldException");
+        if (!excClazz) {
+            // Can't find exception, just return
+            return 0;
+        }
+        // throw an exception as the given field doesn't exist
+        env->ThrowNew(excClazz, "Field not found");
+        return 0;
     }
-    // throw an exception as the given field doesn't exist
-    env->ThrowNew(excClazz, "Field not found");
-    return 0;
-  }
 
-  fid = getFid(env, Field,"isExposedField", "Z");
-  if (!fid) return 0;
-  env->SetBooleanField(Field, fid, true);
-  env->ReleaseStringUTFChars(jstrFieldName, charFieldName );
-  return Field;
+    fid = getFid(env, Field,"isExposedField", "Z");
+    if (!fid) { return 0; }
+    env->SetBooleanField(Field, fid, true);
+    env->ReleaseStringUTFChars(jstrFieldName, charFieldName);
+    return Field;
 }
 
 /**
@@ -6738,15 +6730,14 @@ jobject JNICALL Java_vrml_node_Script_getEventIn(JNIEnv * env,
                 bind2nd(node_interface_matches_eventin(), eventInName));
     if (interface != interfaces.end()) {
         // Then we've found the eventIn
-        field_value* fieldPtr = newField(interface->field_type);
+        field_value * fieldPtr = newField(interface->field_type);
         assert(fieldPtr);
-        std::ostrstream os;
-        os << "vrml/field/" << ftn[interface->field_type] << '\0';
-        jclass clazz = env->FindClass(os.str());
-        os.rdbuf()->freeze(false);
+        std::ostringstream os;
+        os << "vrml/field/" << ftn[interface->field_type];
+        jclass clazz = env->FindClass(os.str().c_str());
         eventIn = env->AllocObject(clazz);
         fid = getFid(env, eventIn, "FieldPtr", "I");
-        if (!fid) return 0;
+        if (!fid) { return 0; }
         env->SetIntField(eventIn, fid, reinterpret_cast<int>(fieldPtr));
     } else {
         jclass excClazz = env->FindClass("vrml/InvalidEventInException");
@@ -6773,19 +6764,18 @@ jobject JNICALL Java_vrml_node_Script_getEventIn(JNIEnv * env,
  * @param Script object.
  * @return String representation of Script object.
  */
-jstring JNICALL Java_vrml_node_Script_toString
-  (JNIEnv *env, jobject obj)
+jstring JNICALL Java_vrml_node_Script_toString(JNIEnv * env, jobject obj)
 {
-  std::ostrstream os;
-  jfieldID fid = getFid(env, obj, "NodePtr", "I");
-  if (!fid) return 0;
-  script_node* node = reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
-  if (!node) return 0;
-  os << *node << std::ends;
-  char* szString = os.str();
-  jstring result = env->NewStringUTF(szString);
-  os.rdbuf()->freeze(0);
-  return result;
+    std::ostringstream os;
+    jfieldID fid = getFid(env, obj, "NodePtr", "I");
+    if (!fid) { return 0; }
+    script_node* node =
+        reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
+    if (!node) { return 0; }
+    os << *node;
+    const char * str = os.str().c_str();
+    jstring result = env->NewStringUTF(str);
+    return result;
 }
 
 /**
@@ -6896,7 +6886,7 @@ jobject JNICALL Java_vrml_node_Node_getEventIn(JNIEnv * const env,
  * @param jstrEventOutName Name of the eventOut
  * @return EventOut field object
  *
- * @todo Implement me. Need to throw InvalidEventOutException 
+ * @todo Implement me. Need to throw InvalidEventOutException
  * if eventOut not present.
  */
 jobject JNICALL Java_vrml_node_Node_getEventOut
@@ -6935,7 +6925,7 @@ jobject JNICALL Java_vrml_node_Node_getEventOut
  * @param jstrEventOutName Name of the exposed field
  * @return Exposed field object
  *
- * @todo Implement me. Need to throw InvalidEventOutException 
+ * @todo Implement me. Need to throw InvalidEventOutException
  * if eventOut not present.
  */
 jobject JNICALL Java_vrml_node_Node_getExposedField
@@ -6977,14 +6967,13 @@ jobject JNICALL Java_vrml_node_Node_getExposedField
  */
 jstring JNICALL Java_vrml_node_Node_toString(JNIEnv * const env, jobject obj)
 {
-    std::ostrstream os;
+    std::ostringstream os;
     jfieldID fid = getFid(env, obj, "NodePtr", "I");
-    if (!fid) return 0;
+    if (!fid) { return 0; }
     node * n = reinterpret_cast<node*>(env->GetIntField(obj, fid));
     if (!n) { return 0; }
-    os << *n << std::ends;
-    jstring result = env->NewStringUTF(os.str());
-    os.rdbuf()->freeze(0);
+    os << *n;
+    jstring result = env->NewStringUTF(os.str().c_str());
     return result;
 }
 
@@ -7027,24 +7016,23 @@ jdouble JNICALL Java_vrml_Event_getTimeStamp(JNIEnv * env, jobject obj) {
  * @param obj Event object.
  * @return Changed field.
  */
-jobject JNICALL Java_vrml_Event_getValue
-  (JNIEnv *env, jobject obj)
+jobject JNICALL Java_vrml_Event_getValue(JNIEnv * env, jobject obj)
 {
-  jfieldID fid = getFid(env, obj, "EventPtr", "I");
-  if (!fid) return 0;
-  VrmlEvent* event = reinterpret_cast<VrmlEvent*>(env->GetIntField(obj, fid));
-  if (!event) return 0;
-  const field_value* field = event->value();
-  assert(field);
-  std::ostrstream os;
-  os << "vrml/field/Const" << field->type() << '\0';
-  jclass clazz = env->FindClass(os.str());
-  os.rdbuf()->freeze(false);
-  jobject jField = env->AllocObject(clazz);
-  fid = env->GetFieldID(clazz, "FieldPtr", "I");
-  if (!fid) return 0;
-  env->SetIntField(jField, fid, reinterpret_cast<int>(field));
-  return jField;
+    jfieldID fid = getFid(env, obj, "EventPtr", "I");
+    if (!fid) { return 0; }
+    VrmlEvent * event =
+        reinterpret_cast<VrmlEvent *>(env->GetIntField(obj, fid));
+    if (!event) { return 0; }
+    const field_value * field = event->value();
+    assert(field);
+    std::ostringstream os;
+    os << "vrml/field/Const" << field->type();
+    jclass clazz = env->FindClass(os.str().c_str());
+    jobject jField = env->AllocObject(clazz);
+    fid = env->GetFieldID(clazz, "FieldPtr", "I");
+    if (!fid) { return 0; }
+    env->SetIntField(jField, fid, reinterpret_cast<int>(field));
+    return jField;
 }
 
 /**

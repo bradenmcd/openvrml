@@ -1,3 +1,8 @@
+2004-07-03 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/ScriptJDK.cpp:  Eliminated use of
+	<strstream.h>.
+
 2004-06-01 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/Makefile.am:  Define GTK_DISABLE_DEPRECATED.
