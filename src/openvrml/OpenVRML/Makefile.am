@@ -43,17 +43,17 @@ libopenvrml_la_SOURCES = Doc.cpp doc2.cpp MathUtils.cpp dummysound.cpp \
 Image.cpp Audio.cpp System.cpp Viewer.cpp VrmlBVolume.cpp VrmlBSphere.cpp \
 VrmlAABox.cpp VrmlFrustum.cpp VrmlRenderContext.cpp field.cpp \
 VrmlNamespace.cpp VrmlNodeType.cpp VrmlNodePtr.cpp Route.cpp \
-VrmlNodeVisitor.cpp VrmlNode.cpp VrmlNodeProto.cpp ScriptObject.cpp \
-VrmlNodeScript.cpp VrmlScene.cpp vrml97node.cpp
+VrmlNodeVisitor.cpp VrmlNode.cpp VrmlNodeProto.cpp ScriptJDK.cpp \
+ScriptObject.cpp VrmlNodeScript.cpp VrmlScene.cpp vrml97node.cpp
 
 libopenvrml_la_LIBADD = Vrml97Parser.lo $(top_builddir)/lib/antlr/libantlr.la
 
 OpenVRMLincludedir = $(includedir)/OpenVRML
 OpenVRMLinclude_HEADERS = common.h Audio.h Doc.h Image.h MathUtils.h Route.h \
-ScriptObject.h System.h Viewer.h VrmlAABox.h VrmlBVolume.h VrmlBSphere.h \
-VrmlEvent.h VrmlFrustum.h field.h VrmlNamespace.h VrmlNodeProto.h \
-VrmlNodePtr.h VrmlNode.h VrmlNodeScript.h VrmlNodeType.h VrmlNodeVisitor.h \
-vrml97node.h VrmlRenderContext.h VrmlScene.h doc2.hpp
+ScriptJDK.h ScriptObject.h System.h Viewer.h VrmlAABox.h VrmlBVolume.h \
+VrmlBSphere.h VrmlEvent.h VrmlFrustum.h field.h VrmlNamespace.h \
+VrmlNodeProto.h VrmlNodePtr.h VrmlNode.h VrmlNodeScript.h VrmlNodeType.h \
+VrmlNodeVisitor.h vrml97node.h VrmlRenderContext.h VrmlScene.h doc2.hpp
 
 noinst_HEADERS = Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp private.h sound.h
 
