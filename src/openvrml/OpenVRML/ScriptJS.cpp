@@ -72,9 +72,9 @@
 #include "VrmlMFVec2f.h"
 #include "VrmlMFVec3f.h"
 
-#include <js/jsapi.h>
+#include <jsapi.h>
 // This is nominally a private include but I want to subclass Arrays...
-#include <js/jsarray.h>
+#include <jsarray.h>
 
 
 # define MAX_HEAP_BYTES 4L * 1024L * 1024L

@@ -1,5 +1,10 @@
 2004-12-10  Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml/OpenVRML/ScriptJS.cpp:  Adjusted #includes for
+	a SpiderMonkey library installed on the system.
+
+2004-12-10  Braden McDaniel  <braden@endoframe.com>
+
 	Removed SpiderMonkey from the distribution.  Use the version
 	distributed with Mozilla instead.
 
