@@ -4414,26 +4414,27 @@ JSBool SFNode::getProperty(JSContext * const cx,
                            jsval * const vp)
     throw ()
 {
-    if (JSVAL_IS_STRING(id)) {
-        assert(JS_GetPrivate(cx, obj));
-        const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-        assert(dynamic_cast<openvrml::sfnode *>(&sfdata.field_value()));
-        const openvrml::sfnode & thisNode =
-            static_cast<openvrml::sfnode &>(sfdata.field_value());
+    if (!JSVAL_IS_STRING(id)) { return JS_TRUE; }
 
-        if (!thisNode.value) { return JS_TRUE; }
+    assert(JS_GetPrivate(cx, obj));
+    const sfield::sfdata & sfdata =
+        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+    assert(dynamic_cast<openvrml::sfnode *>(&sfdata.field_value()));
+    const openvrml::sfnode & thisNode =
+        static_cast<openvrml::sfnode &>(sfdata.field_value());
 
-        assert(JS_GetContextPrivate(cx));
-        js_::script & script =
-            *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+    if (!thisNode.value) { return JS_TRUE; }
 
-        try {
-            const char * eventOut = JS_GetStringBytes(JSVAL_TO_STRING(id));
-            event_emitter & emitter = thisNode.value->event_emitter(eventOut);
-            *vp = script.vrmlFieldToJSVal(emitter.value());
-        } catch (unsupported_interface & ex) {}
-    }
+    assert(JS_GetContextPrivate(cx));
+    js_::script & script =
+        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
+
+    try {
+        const char * eventOut = JS_GetStringBytes(JSVAL_TO_STRING(id));
+        event_emitter & emitter = thisNode.value->event_emitter(eventOut);
+        *vp = script.vrmlFieldToJSVal(emitter.value());
+    } catch (unsupported_interface & ex) {}
+
     return JS_TRUE;
 }
 
@@ -6143,7 +6144,7 @@ JSBool MField::getElement(JSContext * const cx,
 
     if (JSVAL_IS_INT(id)
         && JSVAL_TO_INT(id) >= 0
-        && size_t(JSVAL_TO_INT(id)) >= mfdata->array.size()) {
+        && size_t(JSVAL_TO_INT(id)) < mfdata->array.size()) {
         *vp = mfdata->array[JSVAL_TO_INT(id)];
     }
     return JS_TRUE;

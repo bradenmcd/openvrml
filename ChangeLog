@@ -1,5 +1,10 @@
 2004-12-09 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/script.cpp (MField::getElement):
+	Fixed crash on an invalid index for a JavaScript MF* type.
+
+2004-12-09 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/script.cpp:  Consistently use
 	js_::script::sfnode_class.
 
