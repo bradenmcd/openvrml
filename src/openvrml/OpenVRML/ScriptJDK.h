@@ -32,7 +32,7 @@
 
 #include <jni.h>
 
-#include "VrmlField.h"
+#include "field.h"
 
 class VrmlNodeScript;
 class VrmlScene;
@@ -46,7 +46,7 @@ public:
 
   virtual void activate( double timeStamp,
 			 const char *fname,
-			 int argc,
+			 size_t argc,
 			 const VrmlField *argv[]);
 
   VrmlScene *browser();
@@ -63,8 +63,7 @@ protected:
 
   jclass d_class;
   jobject d_object;
-  jmethodID d_processEventsID, d_eventsProcessedID;
-
+  jmethodID d_processEventsID, d_processEventID, d_eventsProcessedID;
 };
 
 #endif // HAVE_JDK
