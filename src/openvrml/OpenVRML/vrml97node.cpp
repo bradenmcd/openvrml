@@ -1248,7 +1248,7 @@ void VrmlNodeBillboard::render(Viewer *viewer, VrmlRenderContext rc)
   VrmlMatrix LM;
   VrmlMatrix new_LM = rc.getMatrix();
   billboard_to_matrix(this,new_LM,LM);
-  new_LM = new_LM.MMleft(LM);
+  new_LM = new_LM.multLeft(LM);
   rc.setMatrix(new_LM);
 
 
@@ -6368,7 +6368,7 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
 
       float V[3] = { p[0], p[1], p[2] };
 	  VrmlMatrix M = getMVMatrix().affine_inverse();
-	  M.VecXMatrix(V,V);
+	  M.multVecMatrix(V,V);
       d_activationPoint.set(V);
       eventOut( timeStamp, "isActive", d_isActive );
     }
@@ -6392,7 +6392,7 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
     {
       float V[3] = { p[0], p[1], p[2] };
   	  VrmlMatrix M = getMVMatrix().affine_inverse();
-	  M.VecXMatrix(V,V);
+	  M.multVecMatrix(V,V);
       d_trackPoint.set(V);
       eventOut( timeStamp, "trackPoint_changed", d_trackPoint );
 
@@ -7937,7 +7937,7 @@ void VrmlNodeSphereSensor::activate( double timeStamp,
             // calculate the center of the object in world coords
         float V[3] = { 0.0, 0.0, 0.0 };
         VrmlMatrix M = getMVMatrix().affine_inverse();
-		M.VecXMatrix( V , V );
+		M.multVecMatrix( V , V );
         d_centerPoint.set(V);
         
             // send message
@@ -7962,7 +7962,7 @@ void VrmlNodeSphereSensor::activate( double timeStamp,
         // get local coord for touch point
         float V[3] = { p[0], p[1], p[2] };
         VrmlMatrix M = getMVMatrix().affine_inverse();
-		M.VecXMatrix( V , V );
+		M.multVecMatrix( V , V );
         d_trackPoint.set(V);
         eventOut( timeStamp, "trackPoint_changed", d_trackPoint );
         
@@ -8506,7 +8506,6 @@ Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer, VrmlRenderContext rc
         }
         size = f->size();
     }
-    
     retval = viewer->insertText(justify, size, d_string.getLength(), strs);
     
     for (i = 0; i < this->d_string.getLength(); i++) {
@@ -9346,7 +9345,7 @@ void VrmlNodeTransform::render(Viewer *viewer, VrmlRenderContext rc)
   synch_cached_matrix();
   this->getMatrix(LM);
   VrmlMatrix new_LM = rc.getMatrix();
-  new_LM = new_LM.MMleft(LM);
+  new_LM = new_LM.multLeft(LM);
   rc.setMatrix(new_LM);
 
   if ( d_xformObject && isModified() )
@@ -9459,7 +9458,7 @@ void VrmlNodeTransform::inverseTransform(VrmlMatrix & m)
   synch_cached_matrix();
   this->getMatrix(M);
   M = M.affine_inverse();
-  m = m.MMleft(M);
+  m = m.multLeft(M);
   VrmlNode *parentTransform = getParentTransform();
   if (parentTransform)
     parentTransform->inverseTransform(m);
@@ -9520,65 +9519,6 @@ VrmlNodeTransform::recalcBSphere()
 }
 #endif
 
-/**
- * calculate transformation matrix. Store it into M
- * Here we are dealing with VrmlMatrix format (Matrices are stored 
- * in row-major order), hence
- * we are doing premultiplication.
- * @param M gets a copy of the resulting transform
- */
-
-void VrmlNodeTransform::transform_to_matrix(const VrmlNodeTransform * t,
-                                            VrmlMatrix & M) {
-    VrmlMatrix temp;
-    M.makeIdentity();
-    if(!((t->d_translation[0] == 0.0)
-            && (t->d_translation[1] == 0.0)
-            && (t->d_translation[2] == 0.0))) {
-        temp.setTranslate(t->d_translation);
-        M = M.MMleft(temp);            // M = T * M   = T
-    }
-    if(!((t->d_center[0] == 0.0)
-            && (t->d_center[1] == 0.0)
-            && (t->d_center[2] == 0.0))) {
-        temp.setTranslate(t->d_center);
-        M = M.MMleft(temp);            // M = C * M   = C * T   
-    }
-    if(!((t->d_rotation.getX() == 0.0)
-            && (t->d_rotation.getY() == 0.0)
-            && (t->d_rotation.getZ() == 1.0)
-            && (t->d_rotation.getAngle() == 0.0))) {
-        temp.setRotate(t->d_rotation);
-        M = M.MMleft(temp);            // M = R * M    = R * C * T
-    }
-    if(!((t->d_scale[0] == 1.0)
-            && (t->d_scale[1] == 1.0)
-            && (t->d_scale[2] == 1.0))) {
-        if(!((t->d_scaleOrientation.getX() == 0.0)
-                && (t->d_scaleOrientation.getY() == 0.0)
-                && (t->d_scaleOrientation.getZ() == 1.0)
-                && (t->d_scaleOrientation.getAngle() == 0.0))) {
-            temp.setRotate(t->d_scaleOrientation);
-            M = M.MMleft(temp);            // M = SR * M    = SR * R * C * T 
-        }
-        temp.setScale(t->d_scale);
-        M = M.MMleft(temp);            // M = S * M     = S * SR * R * C * T
-        if(!((t->d_scaleOrientation.getX() == 0.0)
-                && (t->d_scaleOrientation.getY() == 0.0)
-                && (t->d_scaleOrientation.getZ() == 1.0)
-                && (t->d_scaleOrientation.getAngle() == 0.0))) {
-            temp.setRotate(t->d_scaleOrientation.inverse());
-            M = M.MMleft(temp);            // M = -SR * M   = -SR * S * SR * R * C * T
-        }
-    }
-    if(!((t->d_center[0] == 0.0)
-            && (t->d_center[1] == 0.0)
-            && (t->d_center[2] == 0.0))) {
-       temp.setTranslate(t->d_center.negate());
-       M = M.MMleft(temp);            // M = -C * M    =  -C * -SR * S * SR * R * C * T
-    }
-}
-
 
 // P' = T × C × R × SR × S × -SR × -C × P
 //
@@ -9590,8 +9530,7 @@ void
 VrmlNodeTransform::synch_cached_matrix()
 {
   if (M_dirty) {
-    transform_to_matrix(this,M);
-    //Mdump(cout, M);
+    M.setTransform(d_translation,d_rotation,d_scale,d_scaleOrientation,d_center);
     M_dirty = false;
   }
 }
@@ -9835,7 +9774,7 @@ void VrmlNodeViewpoint::getInverseMatrix(VrmlMatrix & M) const
   pos_vec[1] = -d_position.getY();
   pos_vec[2] = -d_position.getZ();
   M.setTranslate(pos_vec);
-  M = M.MMright(tmp);
+  M = M.multRight(tmp);
 
 }
 

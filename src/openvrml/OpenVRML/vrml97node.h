@@ -1968,7 +1968,6 @@ class OPENVRML_SCOPE VrmlNodeTransform : public VrmlNodeGroup {
 public:
     // Define the fields of Transform nodes
     static const NodeTypePtr defineType();
-    static void transform_to_matrix(const VrmlNodeTransform* t_arg,VrmlMatrix & M);
 
     VrmlNodeTransform(VrmlScene *);
     virtual ~VrmlNodeTransform();

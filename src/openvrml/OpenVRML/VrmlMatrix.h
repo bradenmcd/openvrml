@@ -39,13 +39,13 @@ class VrmlMatrix {
   public:
 
     // Default constructor
-    VrmlMatrix() {}
+    VrmlMatrix() {makeIdentity();}
 
     // Constructor wit a given all 16 elements in row-major order
-    VrmlMatrix(float a11, float a12, float a13, float a14,
-               float a21, float a22, float a23, float a24, 
-               float a31, float a32, float a33, float a34, 
-               float a41, float a42, float a43, float a44);
+    explicit VrmlMatrix(float a11, float a12, float a13, float a14,
+                        float a21, float a22, float a23, float a24, 
+                        float a31, float a32, float a33, float a34, 
+                        float a41, float a42, float a43, float a44);
 
     // Constructor from a 4x4 array of elements
     VrmlMatrix(const Matrix m);
@@ -54,11 +54,8 @@ class VrmlMatrix {
     operator float *() 	{ return &matrix[0][0]; }
 
     // To make it usual matrix 
-    float *       operator [](int i) 	   { return &matrix[i][0]; }
-    const float * operator [](int i) const  { return &matrix[i][0]; }
-
-    // returns reference to 4x4 array
-    operator Matrix &()    { return matrix; }
+    float        ( &operator [](int i))[4]; 	   
+    const float ( &operator [](int i) const)[4];  
 
     // Sets value from 4x4 array of elements
     VrmlMatrix &  operator =(const Matrix m);
@@ -67,10 +64,6 @@ class VrmlMatrix {
     // Sets value from a rotation
     VrmlMatrix &  operator =(const VrmlSFRotation &r)
     { setRotate(r); return *this; }
-
-
-    // Performs postmultiplication with another matrix
-    VrmlMatrix 	operator *=(const VrmlMatrix &m)	{ return MMright(m); }
 
     // Sets matrix to rotate by given rotation about axis/angle 
     void    setRotate(const float axisAngle[4]);
@@ -93,7 +86,6 @@ class VrmlMatrix {
     // Sets value with given 4x4 array of elements
     void     set(const Matrix );
 
-
     // Returns 4x4 array of elements
     void     get(Matrix m) const;
 
@@ -102,29 +94,33 @@ class VrmlMatrix {
 
     void     makeIdentity();
 
-   // Returns an identity matrix 
-    static VrmlMatrix   identity();
-
     // Multiplies matrix by given matrix on right or left
-    const VrmlMatrix  MMright(const VrmlMatrix &m);	
-    const VrmlMatrix  MMleft(const VrmlMatrix &m);	
+    const VrmlMatrix  multRight(const VrmlMatrix &m);	
+    const VrmlMatrix  multLeft(const VrmlMatrix &m);	
 
     // Return inverse of nonsingular affine matrix
     const VrmlMatrix affine_inverse() const;
 
+    // Return the transpose of matrix
+    const VrmlMatrix transpose() const;
+
     // Multiplies matrix by given column vector, giving vector result
-    void        MatrixXVec(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const;
-    void        MatrixXVec(const float src[3], float dst[3]) const;
+    void        multMatrixVec(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const;
+    void        multMatrixVec(const float src[3], float dst[3]) const;
 
    // Multiplies given row vector by matrix, giving vector result
-    void        VecXMatrix(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const;
-    void        VecXMatrix(const float src[3], float dst[3]) const;
+    void        multVecMatrix(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const;
+    void        multVecMatrix(const float src[3], float dst[3]) const;
+
+    // Set the matrix from translation, rotation, scale, scaleOrientation and center
+    void        setTransform(const VrmlSFVec3f & translation,
+                             const VrmlSFRotation & rotation,
+                             const VrmlSFVec3f & scale,
+                             const VrmlSFRotation & scaleOrientation,
+                             const VrmlSFVec3f & center);
 
     // Prints a formatted version of the matrix to the given output stream
        ostream& print(ostream& o);
-
-    // Binary multiplication of matrices
-    friend VrmlMatrix   operator *(const VrmlMatrix &m1, const VrmlMatrix &m2);
 
     // Equality comparison operator
     friend bool        operator ==(const VrmlMatrix &m1, const VrmlMatrix &m2);

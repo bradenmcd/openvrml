@@ -70,6 +70,7 @@ VrmlScene::VrmlScene(const std::string & sceneUrl,
         d_pendingScope(0), d_frameRate(0.0), d_firstEvent(0), d_lastEvent(0) {
     for (size_t i = 0; i < this->nodes.getLength(); ++i) {
         this->nodes.getElement(i)->addToScene(this, sceneUrl);
+        this->nodes.getElement(i)->accumulateTransform(0);
     }
 
     if (sceneUrl.length() > 0)
@@ -183,6 +184,7 @@ void VrmlScene::replaceWorld(VrmlMFNode & nodes, VrmlNamespace * ns,
     // Do this to set the relative URL
     for (size_t i = 0; i < this->nodes.getLength(); ++i) {
         nodes.getElement(i)->addToScene(this, this->d_url ? this->d_url->url() : 0);
+	    nodes.getElement(i)->accumulateTransform(0);
     }
     
     // Send initial set_binds to bindable nodes
@@ -836,13 +838,12 @@ void VrmlScene::render(Viewer *viewer)
   if(vp)
   {
    VrmlMatrix IM,NMAT;
-   IM.makeIdentity();
    vp->inverseTransform(IM);   // put back nested viewpoint. skb
    viewer->MatrixMultiply(IM.get());
    vp->getInverseMatrix(MV);
    viewer->getUserNavigation(NMAT);
-   MV = MV.MMleft(NMAT);
-   MV = MV.MMleft(IM);
+   MV = MV.multLeft(NMAT);
+   MV = MV.multLeft(IM);
   }
   else
   {
@@ -853,7 +854,7 @@ void VrmlScene::render(Viewer *viewer)
     VrmlMatrix NMAT;
     MV.setTranslate(t);
     viewer->getUserNavigation(NMAT);
-    MV = MV.MMleft(NMAT);
+    MV = MV.multLeft(NMAT);
   }     
 
   VrmlRenderContext rc(VrmlBVolume::BV_PARTIAL, MV);

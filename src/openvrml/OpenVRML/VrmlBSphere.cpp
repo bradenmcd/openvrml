@@ -470,7 +470,7 @@ VrmlBSphere::orthoTransform(const VrmlMatrix & M)
   old_c[0] = c[0];
   old_c[1] = c[1];
   old_c[2] = c[2];
-  M.VecXMatrix(old_c,new_c);
+  M.multVecMatrix(old_c,new_c);
   c[0] = new_c[0];
   c[1] = new_c[1];
   c[2] = new_c[2];
@@ -495,7 +495,7 @@ VrmlBSphere::transform(const VrmlMatrix & M)
   old_c[0] = c[0];
   old_c[1] = c[1];
   old_c[2] = c[2];
-  M.VecXMatrix(old_c,new_c);
+  M.multVecMatrix(old_c,new_c);
   c[0] = new_c[0];
   c[1] = new_c[1];
   c[2] = new_c[2];

@@ -1,3 +1,14 @@
+2001-10-15  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Change method names in VrmlMatrix as ECMAScript VrmlMatrix
+          definition.
+
+        * Incorporated changes as suggested by Braden (Thanks to Braden)
+
+        * As defined in ECMAScript definition, remove 
+          "transform_to_matrix" method from VrmlNodeTransform node and
+          put it in VrmlMatrix as "setTransform" method.
+
 2001-10-15  Thomas Flynn <tflynn@users.sourceforge.net>
 
         * Implemented Task 24920 (Use a standard container for routes)

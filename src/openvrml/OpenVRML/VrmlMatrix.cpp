@@ -309,18 +309,6 @@ VrmlMatrix::makeIdentity()
       matrix[i][j] = (i == j) ? 1.0 : 0.0;
 }
 
-/**
- * @brief Returns an identity matrix
- */
-
-VrmlMatrix
-VrmlMatrix::identity()    
-{
-    return VrmlMatrix(1.0, 0.0, 0.0, 0.0,
-                      0.0, 1.0, 0.0, 0.0,
-                      0.0, 0.0, 1.0, 0.0, 
-                      0.0, 0.0, 0.0, 1.0);
-}
 
 /**
  * @brief Postmultiplies matrix by given matrix on right 
@@ -329,7 +317,7 @@ VrmlMatrix::identity()
  */
 
 const VrmlMatrix 
-VrmlMatrix::MMright(const VrmlMatrix &m)
+VrmlMatrix::multRight(const VrmlMatrix &m)
 {
     // Trivial cases
     if (IS_IDENTITY(m))
@@ -373,7 +361,7 @@ VrmlMatrix::MMright(const VrmlMatrix &m)
  */
 
 const VrmlMatrix 
-VrmlMatrix::MMleft(const VrmlMatrix &m)
+VrmlMatrix::multLeft(const VrmlMatrix &m)
 {
     // Trivial cases
     if (IS_IDENTITY(m))
@@ -418,7 +406,7 @@ VrmlMatrix::MMleft(const VrmlMatrix &m)
  */
 
 void
-VrmlMatrix::MatrixXVec(const float src[3], float dst[3]) const
+VrmlMatrix::multMatrixVec(const float src[3], float dst[3]) const
 {
     float    x,y,z,w;
     
@@ -442,13 +430,13 @@ VrmlMatrix::MatrixXVec(const float src[3], float dst[3]) const
 
 
 void
-VrmlMatrix::MatrixXVec(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const
+VrmlMatrix::multMatrixVec(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const
 {
     float   sv[3],dv[3];
     sv[0] = src[0];
     sv[1] = src[1];
     sv[2] = src[2];
-    MatrixXVec(sv , dv);
+    multMatrixVec(sv , dv);
     dst[0] = dv[0];
     dst[1] = dv[1];
     dst[2] = dv[2];
@@ -461,7 +449,7 @@ VrmlMatrix::MatrixXVec(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const
  */
 
 void
-VrmlMatrix::VecXMatrix(const float src[3], float dst[3]) const
+VrmlMatrix::multVecMatrix(const float src[3], float dst[3]) const
 {
     float    x,y,z,w;
     
@@ -485,13 +473,13 @@ VrmlMatrix::VecXMatrix(const float src[3], float dst[3]) const
  */
 
 void
-VrmlMatrix::VecXMatrix(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const
+VrmlMatrix::multVecMatrix(const VrmlSFVec3f &src, VrmlSFVec3f &dst) const
 {
     float   sv[3],dv[3];
     sv[0] = src[0];
     sv[1] = src[1];
     sv[2] = src[2];
-    VecXMatrix(sv , dv);
+    multVecMatrix(sv , dv);
     dst[0] = dv[0];
     dst[1] = dv[1];
     dst[2] = dv[2];
@@ -613,21 +601,26 @@ VrmlMatrix::print(ostream& o)
   return o;
 }
 
-/**
- * @brief Binary multiplication of matrices 
- * @param left is left matrix object
- * @param right is the right matrix object
- * @output is the resultant matrix
+/*
+ * @brief To make it usual matrix (non-const)
  */
 
-VrmlMatrix
-operator *(const VrmlMatrix &left, const VrmlMatrix &right)
+float
+( & VrmlMatrix::operator [](int i))[4]
 {
-    VrmlMatrix m = left;
-    
-    m *= right;
-    
-    return m;
+   assert(i < 4);
+   return matrix[i]; 
+}
+
+/*
+ * @brief To make it usual matrix (const)
+ */
+
+const float
+( & VrmlMatrix::operator [](int i) const)[4]
+{
+   assert(i < 4);
+   return matrix[i]; 
 }
 
 /*
@@ -663,3 +656,78 @@ operator ==(const VrmlMatrix &m1, const VrmlMatrix &m2)
            );
 }
 
+
+/**
+ * @brief Set the matrix from  translation, rotation, scale,
+ * scaleOrientation and center
+ * @param in translation, rotation, scale, scaleOrientation and center as 
+ * specified in VrmlNodeTransform node
+ */
+void
+VrmlMatrix::setTransform(const VrmlSFVec3f & translation,
+                         const VrmlSFRotation & rotation,
+                         const VrmlSFVec3f & scale,
+                         const VrmlSFRotation & scaleOrientation,
+                         const VrmlSFVec3f & center)
+{
+    VrmlMatrix temp;
+	makeIdentity();
+    if(!((translation[0] == 0.0)
+            && (translation[1] == 0.0)
+            && (translation[2] == 0.0))) {
+        temp.setTranslate(translation);
+        *this = multLeft(temp);            // M = T * M   = T
+    }
+    if(!((center[0] == 0.0)
+            && (center[1] == 0.0)
+            && (center[2] == 0.0))) {
+        temp.setTranslate(center);
+        *this = multLeft(temp);            // M = C * M   = C * T   
+    }
+    if(!((rotation.getX() == 0.0)
+            && (rotation.getY() == 0.0)
+            && (rotation.getZ() == 1.0)
+            && (rotation.getAngle() == 0.0))) {
+        temp.setRotate(rotation);
+        *this = multLeft(temp);            // M = R * M    = R * C * T
+    }
+    if(!((scale[0] == 1.0)
+            && (scale[1] == 1.0)
+            && (scale[2] == 1.0))) {
+        if(!((scaleOrientation.getX() == 0.0)
+                && (scaleOrientation.getY() == 0.0)
+                && (scaleOrientation.getZ() == 1.0)
+                && (scaleOrientation.getAngle() == 0.0))) {
+            temp.setRotate(scaleOrientation);
+            *this = multLeft(temp);            // M = SR * M    = SR * R * C * T 
+        }
+        temp.setScale(scale);
+        *this = multLeft(temp);            // M = S * M     = S * SR * R * C * T
+        if(!((scaleOrientation.getX() == 0.0)
+                && (scaleOrientation.getY() == 0.0)
+                && (scaleOrientation.getZ() == 1.0)
+                && (scaleOrientation.getAngle() == 0.0))) {
+            temp.setRotate(scaleOrientation.inverse());
+            *this = multLeft(temp);            // M = -SR * M   = -SR * S * SR * R * C * T
+        }
+    }
+    if(!((center[0] == 0.0)
+            && (center[1] == 0.0)
+            && (center[2] == 0.0))) {
+       temp.setTranslate(center.negate());
+       *this = multLeft(temp);            // M = -C * M    =  -C * -SR * S * SR * R * C * T
+    }
+}
+
+/**
+ * Returns transpose of matrix
+ */
+
+const VrmlMatrix
+VrmlMatrix::transpose() const
+{
+   return VrmlMatrix(matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0],
+                     matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
+                     matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
+                     matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]);
+}
