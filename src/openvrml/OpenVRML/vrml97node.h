@@ -25,6 +25,7 @@
 
 #   include "common.h"
 #   include "field.h"
+#   include "nodetypeptr.h"
 #   include "VrmlNode.h"
 #   include "Viewer.h"
 #   include "Image.h"
@@ -35,7 +36,7 @@ public:
     virtual VrmlNodeChild * toChild() const;
 
 protected:
-    VrmlNodeChild(VrmlScene *);
+    VrmlNodeChild(const NodeType & nodeType, VrmlScene *);
     VrmlNodeChild(const VrmlNodeChild & node);
 };
 
@@ -50,7 +51,7 @@ public:
     virtual VrmlNodeGeometry * toGeometry() const;
 
 protected:
-    VrmlNodeGeometry(VrmlScene *);
+    VrmlNodeGeometry(const NodeType & nodeType, VrmlScene *);
 
     Viewer::Object d_viewerObject; // move to VrmlNode? ...
 };
@@ -87,9 +88,7 @@ public:
     const VrmlMFInt32 & getColorIndex() const;
 
 protected:
-    static VrmlNodeType *defineType(VrmlNodeType *t);
-
-    VrmlNodeIndexedSet(VrmlScene *);
+    VrmlNodeIndexedSet(const NodeType & nodeType, VrmlScene *);
 
     VrmlSFNode d_color;
     VrmlMFInt32 d_colorIndex;
@@ -104,7 +103,6 @@ class OPENVRML_SCOPE VrmlNodeLight : public VrmlNodeChild {
 public:
     virtual ~VrmlNodeLight();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
                           const VrmlField & fieldValue);
@@ -119,9 +117,7 @@ public:
     const float *getColor() const { return d_color.get(); }
 
 protected:
-    static VrmlNodeType * defineType(VrmlNodeType * = 0);
-
-    VrmlNodeLight(VrmlScene *);
+    VrmlNodeLight(const NodeType & nodeType, VrmlScene *);
 
     VrmlSFFloat d_ambientIntensity;
     VrmlSFColor d_color;
@@ -146,7 +142,7 @@ public:
       { d_scene = scene; d_relativeUrl.set( relativeUrl ); }
 
 protected:
-    VrmlNodeTexture(VrmlScene *s);
+    VrmlNodeTexture(const NodeType & nodeType, VrmlScene *s);
 
     VrmlSFString d_relativeUrl;
 };
@@ -155,12 +151,11 @@ protected:
 class OPENVRML_SCOPE VrmlNodeGroup : public VrmlNodeChild {
 public:
     // Define the fields of all built in group nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeGroup(VrmlScene *s = 0);
     virtual ~VrmlNodeGroup();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -197,6 +192,8 @@ public:
     const VrmlBVolume* getBVolume() const;
 
 protected:
+    VrmlNodeGroup(const NodeType & nodeType, VrmlScene * scene);
+
     VrmlSFVec3f d_bboxCenter;
     VrmlSFVec3f d_bboxSize;
     VrmlMFNode d_children;
@@ -223,14 +220,13 @@ class OPENVRML_SCOPE VrmlNodeAnchor : public VrmlNodeGroup {
     VrmlMFString d_url;
 
 public:
-    // Define the built in VrmlNodeType:: "Anchor"
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    // Define the built in NodeType:: "Anchor"
+    static const NodeTypePtr defineType();
 
     VrmlNodeAnchor(VrmlScene*);
     VrmlNodeAnchor(const VrmlNodeAnchor&);
     virtual ~VrmlNodeAnchor();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldName) const;
     virtual void setField(const std::string & fieldId,
@@ -253,13 +249,12 @@ public:
 
 class OPENVRML_SCOPE VrmlNodeAppearance : public VrmlNode {
 public:
-    // Define the built in VrmlNodeType:: "Appearance"
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    // Define the built in NodeType:: "Appearance"
+    static const NodeTypePtr defineType();
 
     VrmlNodeAppearance(VrmlScene *);
     virtual ~VrmlNodeAppearance();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -314,13 +309,12 @@ class OPENVRML_SCOPE VrmlNodeAudioClip : public VrmlNode {
 
 public:
     // Define the fields of AudioClip nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeAudioClip(VrmlScene *);
     VrmlNodeAudioClip(const VrmlNodeAudioClip&);
     virtual ~VrmlNodeAudioClip();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -361,12 +355,11 @@ class OPENVRML_SCOPE VrmlNodeBackground : public VrmlNodeChild {
 
 public:
     // Define the fields of Background nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeBackground(VrmlScene *);
     virtual ~VrmlNodeBackground();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -400,12 +393,11 @@ class OPENVRML_SCOPE VrmlNodeBillboard : public VrmlNodeGroup {
 
 public:
     // Define the fields of Billboard nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeBillboard(VrmlScene *);
     virtual ~VrmlNodeBillboard();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -430,12 +422,11 @@ class OPENVRML_SCOPE VrmlNodeBox : public VrmlNodeGeometry {
 
 public:
     // Define the fields of box nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeBox(VrmlScene *);
     virtual ~VrmlNodeBox();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void setField(const std::string & fieldId,
                           const VrmlField & fieldValue);
@@ -458,12 +449,11 @@ class OPENVRML_SCOPE VrmlNodeCollision : public VrmlNodeGroup {
 
 public:
     // Define the fields of Collision nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeCollision(VrmlScene *);
     virtual ~VrmlNodeCollision();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -490,12 +480,11 @@ class OPENVRML_SCOPE VrmlNodeColor : public VrmlNode {
 
 public:
     // Define the fields of Color nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeColor(VrmlScene *);
     virtual ~VrmlNodeColor();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -519,12 +508,11 @@ class OPENVRML_SCOPE VrmlNodeColorInt : public VrmlNodeChild {
 
 public:
     // Define the fields of ColorInt nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeColorInt( VrmlScene *scene = 0 );
     virtual ~VrmlNodeColorInt();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -544,12 +532,11 @@ class OPENVRML_SCOPE VrmlNodeCone : public VrmlNodeGeometry {
 
 public:
     // Define the fields of cone nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeCone(VrmlScene *);
     virtual ~VrmlNodeCone();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
 
     virtual ostream& printFields(ostream& os, int indent);
@@ -572,12 +559,11 @@ class OPENVRML_SCOPE VrmlNodeCoordinate : public VrmlNode {
 
 public:
     // Define the fields of Coordinate nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeCoordinate(VrmlScene *);
     virtual ~VrmlNodeCoordinate();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -601,12 +587,11 @@ class OPENVRML_SCOPE VrmlNodeCoordinateInt : public VrmlNodeChild {
 
 public:
     // Define the fields of CoordinateInt nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeCoordinateInt( VrmlScene *scene = 0);
     virtual ~VrmlNodeCoordinateInt();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -627,12 +612,11 @@ class OPENVRML_SCOPE VrmlNodeCylinder : public VrmlNodeGeometry {
 
 public:
     // Define the fields of cylinder nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeCylinder(VrmlScene *);
     virtual ~VrmlNodeCylinder();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void setField(const std::string & fieldId,
                           const VrmlField & fieldValue);
@@ -665,12 +649,11 @@ class OPENVRML_SCOPE VrmlNodeCylinderSensor : public VrmlNodeChild {
 
 public:
     // Define the fields of CylinderSensor nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeCylinderSensor( VrmlScene *scene = 0);
     virtual ~VrmlNodeCylinderSensor();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -691,12 +674,11 @@ class OPENVRML_SCOPE VrmlNodeDirLight : public VrmlNodeLight {
 
 public:
     // Define the fields of dirLight nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeDirLight(VrmlScene *);
     virtual ~VrmlNodeDirLight();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -728,12 +710,11 @@ class OPENVRML_SCOPE VrmlNodeElevationGrid : public VrmlNodeGeometry {
 
 public:
     // Define the fields of elevationGrid nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeElevationGrid(VrmlScene *);
     virtual ~VrmlNodeElevationGrid();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -808,12 +789,11 @@ class OPENVRML_SCOPE VrmlNodeExtrusion : public VrmlNodeGeometry {
 
 public:
     // Define the fields of extrusion nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeExtrusion(VrmlScene *);
     virtual ~VrmlNodeExtrusion();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void setField(const std::string & fieldId,
                           const VrmlField & fieldValue);
@@ -845,12 +825,11 @@ class OPENVRML_SCOPE VrmlNodeFog : public VrmlNodeChild {
 
 public:
     // Define the fields of Fog nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeFog(VrmlScene *);
     virtual ~VrmlNodeFog();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -883,12 +862,11 @@ class OPENVRML_SCOPE VrmlNodeFontStyle : public VrmlNode {
 
 public:
     // Define the fields of FontStyle nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeFontStyle(VrmlScene *);
     virtual ~VrmlNodeFontStyle();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void setField(const std::string & fieldId,
                           const VrmlField & fieldValue);
@@ -917,12 +895,11 @@ class OPENVRML_SCOPE VrmlNodeIFaceSet : public VrmlNodeIndexedSet {
 
 public:
     // Define the fields of indexed face set nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeIFaceSet(VrmlScene *);
     virtual ~VrmlNodeIFaceSet();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -968,12 +945,11 @@ private:
 class OPENVRML_SCOPE VrmlNodeILineSet : public VrmlNodeIndexedSet {
 public:
     // Define the fields of indexed line set nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeILineSet(VrmlScene *);
     virtual ~VrmlNodeILineSet();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
 
@@ -992,12 +968,11 @@ class OPENVRML_SCOPE VrmlNodeImageTexture : public VrmlNodeTexture {
 
 public:
     // Define the fields of ImageTexture nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeImageTexture(VrmlScene *);
     virtual ~VrmlNodeImageTexture();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1028,13 +1003,12 @@ class OPENVRML_SCOPE VrmlNodeInline : public VrmlNodeGroup {
     bool d_hasLoaded;
 
 public:
-    // Define the built in VrmlNodeType:: "Inline"
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    // Define the built in NodeType:: "Inline"
+    static const NodeTypePtr defineType();
 
     VrmlNodeInline(VrmlScene*);
     virtual ~VrmlNodeInline();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
 
     virtual VrmlNodeInline* toInline() const;
@@ -1063,12 +1037,11 @@ class OPENVRML_SCOPE VrmlNodeLOD : public VrmlNodeChild {
 
 public:
     // Define the fields of all built in LOD nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeLOD(VrmlScene *);
     virtual ~VrmlNodeLOD();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -1113,12 +1086,11 @@ class OPENVRML_SCOPE VrmlNodeMaterial : public VrmlNode {
 
 public:
     // Define the fields of Material nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeMaterial(VrmlScene *);
     virtual ~VrmlNodeMaterial();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1160,12 +1132,11 @@ class OPENVRML_SCOPE VrmlNodeMovieTexture : public VrmlNodeTexture {
 
 public:
     // Define the fields of MovieTexture nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeMovieTexture(VrmlScene *);
     virtual ~VrmlNodeMovieTexture();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1201,13 +1172,12 @@ class OPENVRML_SCOPE VrmlNodeNavigationInfo : public VrmlNodeChild {
     VrmlSFBool d_isBound;		// eventOut
 
 public:
-    // Define the built in VrmlNodeType:: "NavigationInfo"
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    // Define the built in NodeType:: "NavigationInfo"
+    static const NodeTypePtr defineType();
 
     VrmlNodeNavigationInfo(VrmlScene *scene);
     virtual ~VrmlNodeNavigationInfo();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1234,12 +1204,11 @@ class OPENVRML_SCOPE VrmlNodeNormal : public VrmlNode {
 
 public:
     // Define the fields of Normal nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeNormal(VrmlScene *);
     virtual ~VrmlNodeNormal();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1263,12 +1232,11 @@ class OPENVRML_SCOPE VrmlNodeNormalInt : public VrmlNodeChild {
 
 public:
     // Define the fields of NormalInt nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeNormalInt( VrmlScene *scene = 0);
     virtual ~VrmlNodeNormalInt();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1290,12 +1258,11 @@ class OPENVRML_SCOPE VrmlNodeOrientationInt : public VrmlNodeChild {
 
 public:
     // Define the fields of OrientationInt nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeOrientationInt( VrmlScene *scene = 0);
     virtual ~VrmlNodeOrientationInt();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1320,12 +1287,11 @@ class OPENVRML_SCOPE VrmlNodePixelTexture : public VrmlNodeTexture {
 
 public:
     // Define the fields of PixelTexture nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodePixelTexture(VrmlScene *);
     virtual ~VrmlNodePixelTexture();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1382,12 +1348,11 @@ class OPENVRML_SCOPE VrmlNodePlaneSensor : public VrmlNodeChild {
 
 public:
     // Define the fields of PlaneSensor nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodePlaneSensor( VrmlScene *scene = 0);
     virtual ~VrmlNodePlaneSensor();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1413,12 +1378,11 @@ class OPENVRML_SCOPE VrmlNodePointLight : public VrmlNodeLight {
 
 public:
     // Define the fields of pointLight nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodePointLight(VrmlScene *);
     virtual ~VrmlNodePointLight();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1447,12 +1411,11 @@ class OPENVRML_SCOPE VrmlNodePointSet : public VrmlNodeGeometry {
 
 public:
     // Define the fields of pointSet nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodePointSet(VrmlScene *);
     virtual ~VrmlNodePointSet();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -1494,12 +1457,11 @@ class OPENVRML_SCOPE VrmlNodePositionInt : public VrmlNodeChild {
 
 public:
     // Define the fields of PositionInt nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodePositionInt( VrmlScene *scene = 0);
     virtual ~VrmlNodePositionInt();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1530,12 +1492,11 @@ class OPENVRML_SCOPE VrmlNodeProximitySensor : public VrmlNodeChild {
 
 public:
     // Define the fields of ProximitySensor nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeProximitySensor( VrmlScene *scene = 0);
     virtual ~VrmlNodeProximitySensor();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1557,12 +1518,11 @@ class OPENVRML_SCOPE VrmlNodeScalarInt : public VrmlNodeChild {
 
 public:
     // Define the fields of ScalarInt nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeScalarInt( VrmlScene *scene = 0 );
     virtual ~VrmlNodeScalarInt();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1586,12 +1546,11 @@ class OPENVRML_SCOPE VrmlNodeShape : public VrmlNodeChild {
 
 public:
     // Define the fields of Shape nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeShape(VrmlScene *);
     virtual ~VrmlNodeShape();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -1634,12 +1593,11 @@ class OPENVRML_SCOPE VrmlNodeSound : public VrmlNodeChild {
 
 public:
     // Define the fields of Sound nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeSound( VrmlScene *scene = 0 );
     virtual ~VrmlNodeSound();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -1666,12 +1624,11 @@ public:
 class OPENVRML_SCOPE VrmlNodeSphere : public VrmlNodeGeometry {
 public:
     // Define the fields of sphere nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeSphere(VrmlScene *);
     virtual ~VrmlNodeSphere();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void setField(const std::string & fieldId,
                           const VrmlField & fieldValue);
@@ -1706,8 +1663,7 @@ class OPENVRML_SCOPE VrmlNodeSphereSensor : public VrmlNodeChild {
 
 public:
     // Define the fields of SphereSensor nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
-    virtual VrmlNodeType & nodeType() const;
+    static const NodeTypePtr defineType();
 
     VrmlNodeSphereSensor(VrmlScene *scene = 0);
     virtual ~VrmlNodeSphereSensor();
@@ -1737,12 +1693,11 @@ class OPENVRML_SCOPE VrmlNodeSpotLight : public VrmlNodeLight {
 
 public:
     // Define the fields of spotLight nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeSpotLight(VrmlScene *);
     virtual ~VrmlNodeSpotLight();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1776,12 +1731,11 @@ class OPENVRML_SCOPE VrmlNodeSwitch : public VrmlNodeChild {
 
 public:
     // Define the fields of all built in switch nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeSwitch(VrmlScene *);
     virtual ~VrmlNodeSwitch();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -1826,12 +1780,11 @@ class OPENVRML_SCOPE VrmlNodeText : public VrmlNodeGeometry {
 
 public:
     // Define the fields of text nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeText(VrmlScene *);
     virtual ~VrmlNodeText();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -1859,12 +1812,11 @@ class OPENVRML_SCOPE VrmlNodeTextureCoordinate : public VrmlNode {
 
 public:
     // Define the fields of TextureCoordinate nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeTextureCoordinate(VrmlScene *);
     virtual ~VrmlNodeTextureCoordinate();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1886,12 +1838,11 @@ class OPENVRML_SCOPE VrmlNodeTextureTransform : public VrmlNode {
 
 public:
     // Define the fields of TextureTransform nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeTextureTransform(VrmlScene *);
     virtual ~VrmlNodeTextureTransform();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1924,12 +1875,11 @@ class OPENVRML_SCOPE VrmlNodeTimeSensor : public VrmlNodeChild {
 
 public:
     // Define the fields of TimeSensor nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeTimeSensor( VrmlScene *scene = 0);
     virtual ~VrmlNodeTimeSensor();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -1968,12 +1918,11 @@ class OPENVRML_SCOPE VrmlNodeTouchSensor : public VrmlNodeChild {
 
 public:
     // Define the fields of TouchSensor nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeTouchSensor( VrmlScene *scene = 0);
     virtual ~VrmlNodeTouchSensor();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -2001,14 +1950,13 @@ class OPENVRML_SCOPE VrmlNodeTransform : public VrmlNodeGroup {
 
 public:
     // Define the fields of Transform nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
     static void transform_to_matrix(const VrmlNodeTransform* t_arg, int flag,
                                     double M[4][4]);
 
     VrmlNodeTransform(VrmlScene *);
     virtual ~VrmlNodeTransform();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -2054,12 +2002,11 @@ class OPENVRML_SCOPE VrmlNodeViewpoint : public VrmlNodeChild {
 
 public:
     // Define the fields of Viewpoint nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeViewpoint(VrmlScene *);
     virtual ~VrmlNodeViewpoint();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -2105,12 +2052,11 @@ class OPENVRML_SCOPE VrmlNodeVisibilitySensor : public VrmlNodeChild {
 
 public:
     // Define the fields of VisibilitySensor nodes
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    static const NodeTypePtr defineType();
 
     VrmlNodeVisibilitySensor( VrmlScene *scene = 0);
     virtual ~VrmlNodeVisibilitySensor();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual const VrmlField * getField(const std::string & fieldId) const;
     virtual void setField(const std::string & fieldId,
@@ -2127,13 +2073,12 @@ class OPENVRML_SCOPE VrmlNodeWorldInfo : public VrmlNodeChild {
     VrmlSFString d_title;
 
 public:
-    // Define the built in VrmlNodeType:: "WorldInfo"
-    static VrmlNodeType *defineType(VrmlNodeType *t = 0);
+    // Define the built in NodeType:: "WorldInfo"
+    static const NodeTypePtr defineType();
 
     VrmlNodeWorldInfo(VrmlScene *);
     virtual ~VrmlNodeWorldInfo();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void setField(const std::string & fieldId,
                           const VrmlField & fieldValue);

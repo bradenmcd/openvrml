@@ -27,7 +27,7 @@
 
 #include "common.h"
 #include "VrmlNode.h"
-#include "VrmlNodeType.h"
+#include "nodetype.h"
 #include "Viewer.h"
 #include "field.h"
 
@@ -35,11 +35,23 @@ class OPENVRML_SCOPE VrmlNodeProto : public VrmlNode {
 public:
     class NameValueRec;
 
-    VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene);
+private:
+    bool d_instantiated;
+    VrmlNamespace * d_scope;
+    VrmlMFNode implNodes;
+
+    std::list<NameValueRec *> d_fields;
+
+    class EventDispatch;
+    std::list<EventDispatch *> d_eventDispatch;
+
+    Viewer::Object d_viewerObject;
+
+public:
+    VrmlNodeProto(const NodeType & nodeDef, VrmlScene *scene);
     VrmlNodeProto(const VrmlNodeProto&);
     virtual ~VrmlNodeProto();
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldName) const;
@@ -115,33 +127,8 @@ public:
 
 private:
     const VrmlNodePtr firstNode() const;
-
-    // Instantiate the proto by cloning the node type implementation nodes.
     void instantiate();
-
-    // Find a field by name
     NameValueRec * findField(const std::string & fieldName) const;
-
-    VrmlNodeType *d_nodeType;	// Definition
-
-    bool d_instantiated;
-    VrmlNamespace *d_scope;	// Node type and name bindings
-
-    VrmlMFNode implNodes;		// Local copy of implementation nodes.
-
-    std::list<NameValueRec*> d_fields;	// Field values
-
-    // Dispatch eventIns from outside the PROTO to internal eventIns
-    struct EventDispatch {
-      std::string name;
-      VrmlNodeType::ISMap ismap;
-    };
-
-    typedef std::list<EventDispatch*> EventDispatchList;
-
-    EventDispatchList d_eventDispatch;
-
-    Viewer::Object d_viewerObject; // move to VrmlNode.h ? ...
 };
 
 #endif

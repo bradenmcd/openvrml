@@ -61,8 +61,8 @@ public:
     static const VrmlMFNode readString(char const * vrmlString,
                                        VrmlNamespace * ns);
 
-    static VrmlNodeType * readPROTO(const VrmlMFString & url,
-                                    const Doc2 * relative = 0);
+    static const NodeTypePtr readPROTO(const VrmlMFString & url,
+                                       const Doc2 * relative = 0);
 
     explicit VrmlScene(const std::string & url = std::string(),
                        const std::string & localCopy = std::string());

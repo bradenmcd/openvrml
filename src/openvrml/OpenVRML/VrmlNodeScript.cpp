@@ -38,7 +38,7 @@
 # endif
 # include "private.h"
 # include "VrmlNodeScript.h"
-# include "VrmlNodeType.h"
+# include "nodetype.h"
 # include "VrmlNodeVisitor.h"
 # include "VrmlNamespace.h"
 # include "ScriptObject.h"
@@ -57,50 +57,41 @@
  * @brief Represents a VRML Script node.
  */
 
-/**
- * Script factory. Add each Script to the scene for fast access.
- */
-static VrmlNode *creator( VrmlScene *scene ) 
-{
-  return new VrmlNodeScript(scene);
+namespace {
+    /**
+     * Script factory. Add each Script to the scene for fast access.
+     */
+    const VrmlNodePtr creator(VrmlScene * const scene) {
+        return VrmlNodePtr(new VrmlNodeScript(scene));
+    }
 }
 
-
-// Define the built in VrmlNodeType:: "Script" fields
+// Define the built in NodeType:: "Script" fields
 
 /**
- * Define the built in VrmlNodeType:: "Script" fields
+ * Define the built in NodeType:: "Script" fields
  */
-VrmlNodeType *VrmlNodeScript::defineType(VrmlNodeType *t)
-{
-  static VrmlNodeType *st = 0;
+const NodeTypePtr VrmlNodeScript::defineType(NodeTypePtr nodeType) {
+    static NodeTypePtr st(0);
 
-  if (! t)
-    {
-      if (st) return st;		// Only define the type once.
-      t = st = new VrmlNodeType("Script", creator);
-      t->reference();
+    if (!nodeType) {
+        if (st) {
+            return st; // Only define the type once.
+        }
+        st.reset(new NodeType("Script", creator));
+        nodeType = st;
     }
 
-  t->addExposedField("url", VrmlField::MFSTRING);
-  t->addField("directOutput", VrmlField::SFBOOL);
-  t->addField("mustEvaluate", VrmlField::SFBOOL);
+    nodeType->addExposedField("url", VrmlField::MFSTRING);
+    nodeType->addField("directOutput", VrmlField::SFBOOL);
+    nodeType->addField("mustEvaluate", VrmlField::SFBOOL);
 
-  return t;
+    return nodeType;
 }
 
-/**
- * Should subclass NodeType and have each Script maintain its own type...
- */
-VrmlNodeType & VrmlNodeScript::nodeType() const
-{
-    return *defineType(0);
-}
-
-
-VrmlNodeScript::VrmlNodeScript(VrmlScene * const scene): VrmlNodeChild(scene),
-        d_directOutput(false), d_mustEvaluate(false), d_script(0),
-        d_eventsReceived(0) {
+VrmlNodeScript::VrmlNodeScript(VrmlScene * const scene):
+        VrmlNodeChild(*defineType(), scene), d_directOutput(false),
+        d_mustEvaluate(false), d_script(0), d_eventsReceived(0) {
     if (this->d_scene) {
         this->d_scene->addScript(*this);
     }
@@ -3072,17 +3063,13 @@ namespace {
             
 	    // convert vp to field, send eventIn to node
             VrmlField::VrmlFieldType expectType;
-            if ((expectType = nodePtr->nodeType().hasEventIn(eventInId))) {
+            if ((expectType = nodePtr->type.hasEventIn(eventInId))) {
                 VrmlField * const fieldValue =
                         createVrmlFieldFromJsval(cx, *vp, expectType);
                 if (!fieldValue) {
                     return JS_FALSE;
                 }
                 // This should only happen if directOutput is set...
-//                    cout << "Script::node_setProperty sending " << eventIn
-//                         << " (" << (*f) << ") to "
-//                         << n->nodeType().getName() << "::"
-//                         << n->name() << endl;
 
 	        // the timestamp should be stored as a global property and
 	        // looked up via obj somehow...

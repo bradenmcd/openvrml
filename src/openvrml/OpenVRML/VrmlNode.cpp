@@ -36,7 +36,7 @@
 #include "VrmlNode.h"
 #include "Route.h"
 #include "VrmlNamespace.h"
-#include "VrmlNodeType.h"
+#include "nodetype.h"
 #include "VrmlScene.h"
 #include "MathUtils.h"
 #include "VrmlBVolume.h"
@@ -48,7 +48,7 @@
 # endif
 
 /*
- * Given a VrmlNodeType, add in the fields, exposedFields, eventIns
+ * Given a NodeType, add in the fields, exposedFields, eventIns
  * and eventOuts defined by the particular node implementation.
  * There's a great big method in VrmlNamespace that just calls
  * defineType for every built in node. Nodes that inherit from other
@@ -65,13 +65,14 @@
  * @see VrmlNamespace::defineBuiltins()
  */
 
-VrmlNode::VrmlNode(VrmlScene * scene): d_scene(scene), d_modified(false),
+VrmlNode::VrmlNode(const NodeType & type, VrmlScene * scene):
+        type(type), d_scene(scene), d_modified(false),
         visited(false), d_routes(0) {
   this->setBVolumeDirty(true);
 }
 
-VrmlNode::VrmlNode(const VrmlNode & node): id(node.id), d_scene(0),
-        d_modified(true), d_routes(0) {
+VrmlNode::VrmlNode(const VrmlNode & node): type(node.type), id(node.id),
+        d_scene(0), d_modified(true), d_routes(0) {
     this->setBVolumeDirty(true);
 }
 
@@ -622,7 +623,7 @@ void VrmlNode::eventIn(double timeStamp,
     }
 
     // Handle exposedFields 
-    if (nodeType().hasExposedField(basicEventName)) {
+    if (this->type.hasExposedField(basicEventName)) {
         this->setField(basicEventName, fieldValue);
         std::string eventOutName = basicEventName + "_changed";
         this->eventOut(timeStamp, eventOutName, fieldValue);
@@ -630,13 +631,13 @@ void VrmlNode::eventIn(double timeStamp,
     }
     
     // Handle set_field eventIn/field
-    else if (nodeType().hasEventIn(eventName)
-            && nodeType().hasField(basicEventName)) {
+    else if (this->type.hasEventIn(eventName)
+            && this->type.hasField(basicEventName)) {
         this->setField(basicEventName, fieldValue);
         this->setModified();
     } else
-        cerr << "Error: unhandled eventIn " << nodeType().getName()
-		    << "::" << this->id << "." << eventName << endl;
+        cerr << "Error: unhandled eventIn " << this->type.getId()
+             << "::" << this->id << "." << eventName << endl;
 }
 
 /**
@@ -688,7 +689,7 @@ ostream& VrmlNode::print(ostream& os, int indent) const
     os << "DEF " << this->id << " ";
   }
 
-  os << nodeType().getName() << " { ";
+  os << this->type.getId() << " { ";
 
   // cast away const-ness for now...
   VrmlNode *n = (VrmlNode*)this;
@@ -702,12 +703,12 @@ ostream& VrmlNode::print(ostream& os, int indent) const
 // This should probably generate an error...
 // Might be nice to make this non-virtual (each node would have
 // to provide a getField(const char* name) method and specify
-// default values in the addField(). The VrmlNodeType class would 
+// default values in the addField(). The NodeType class would 
 // have to make the fields list public.
 
 ostream& VrmlNode::printFields(ostream& os, int /*indent*/)
 {
-  os << "# Error: " << nodeType().getName()
+  os << "# Error: " << this->type.getId()
      << "::printFields unimplemented.\n";
   return os; 
 }
@@ -737,7 +738,7 @@ ostream& VrmlNode::printField(ostream& os,
  */
 void VrmlNode::setField(const std::string & fieldId, const VrmlField &) {
     theSystem->error("%s::setField: no such field (%s)",
-		     nodeType().getName().c_str(), fieldId.c_str());
+                     this->type.getId().c_str(), fieldId.c_str());
 }
 
 /**
@@ -751,7 +752,7 @@ void VrmlNode::setField(const std::string & fieldId, const VrmlField &) {
  */
 const VrmlField * VrmlNode::getField(const std::string & fieldId) const {
     theSystem->error("%s::getField: no such field (%s)\n",
-		     nodeType().getName().c_str(), fieldId.c_str());
+                     this->type.getId().c_str(), fieldId.c_str());
     return 0;
 }
 
@@ -774,9 +775,9 @@ const VrmlField * VrmlNode::getEventOut(const std::string & fieldName) const {
     }
     
     // Handle exposedFields 
-    if (nodeType().hasExposedField(basicFieldName)) {
+    if (this->type.hasExposedField(basicFieldName)) {
         return getField(basicFieldName);
-    } else if (nodeType().hasEventOut(fieldName)) {
+    } else if (this->type.hasEventOut(fieldName)) {
         return getField(fieldName);
     }
     return 0;

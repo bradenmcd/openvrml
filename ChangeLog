@@ -2,6 +2,12 @@
 
         * Some minor cleanup of VrmlScene.
 
+        * Changed name of "VrmlNodeType" class to "NodeType".
+
+        * Use a refcounting smart pointer for NodeTypes.
+
+        * Changed NodeType::getName() to ::getId().
+
 2001-08-22  Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Fixed typo in README.

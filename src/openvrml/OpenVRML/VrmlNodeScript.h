@@ -65,7 +65,7 @@ private:
 
 public:
     // Define the fields of Script nodes
-    static VrmlNodeType * defineType(VrmlNodeType * t = 0);
+    static const NodeTypePtr defineType(NodeTypePtr nodeType = NodeTypePtr(0));
 
     VrmlNodeScript(VrmlScene * scene = 0);
     VrmlNodeScript(const VrmlNodeScript &);
@@ -89,7 +89,6 @@ public:
     FieldList & fields() { return d_fields; }
     VrmlScene * browser() { return d_scene; }
 
-    virtual VrmlNodeType & nodeType() const;
     virtual bool accept(VrmlNodeVisitor & visitor);
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;

@@ -35,7 +35,7 @@
 class Route;
 class Viewer;
 class VrmlNamespace;
-class VrmlNodeType;
+class NodeType;
 class VrmlField;
 class VrmlScene;
 class VrmlNodeVisitor;
@@ -70,7 +70,7 @@ class VrmlNodePlaneSensor;
 class VrmlNodePointLight;
 class VrmlNodeScript;
 class VrmlNodeShape;
-class VrmlNodeSphere; //LarryD Mar 08/99
+class VrmlNodeSphere;
 class VrmlNodeSphereSensor;
 class VrmlNodeCylinderSensor;
 class VrmlNodeSound;
@@ -98,14 +98,13 @@ class OPENVRML_SCOPE VrmlNode {
     std::string id;
 
 public:
-    VrmlNode(VrmlScene * scene);
-    VrmlNode(const VrmlNode &);
+    const NodeType & type;
+
     virtual ~VrmlNode() = 0;
 
     const std::string & getId() const;
     void setId(const std::string & nodeId, VrmlNamespace * ns = 0);
 
-    virtual VrmlNodeType & nodeType() const = 0;
     virtual bool accept(VrmlNodeVisitor & visitor) = 0;
     virtual void resetVisitedFlag();
     virtual const VrmlField * getField(const std::string & fieldId) const;
@@ -228,6 +227,9 @@ public:
     VrmlScene *scene() { return d_scene; }
 
 protected:
+    VrmlNode(const NodeType & nodeType, VrmlScene * scene);
+    VrmlNode(const VrmlNode &);
+
     enum { INDENT_INCREMENT = 4 };
 
     // Send a named event from this node.
@@ -259,7 +261,7 @@ protected:
       d_##_f = (Vrml##_t &)fieldValue;\
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s).\n",\
-	    fieldValue.fieldTypeName(), #_f, nodeType().getName().c_str(), #_t);\
+	    fieldValue.fieldTypeName(), #_f, this->type.getId().c_str(), #_t);\
   }
 
 // For SFNode fields. Allow un-fetched EXTERNPROTOs to succeed...
@@ -271,7 +273,7 @@ protected:
       d_##_f = (VrmlSFNode &)fieldValue; \
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s).\n",\
-	    fieldValue.fieldTypeName(), #_f, nodeType().getName().c_str(), #_n);\
+	    fieldValue.fieldTypeName(), #_f, this->type.getId().c_str(), #_n);\
   }
 
 #define TRY_SFNODE_FIELD2(_f,_n1,_n2) \
@@ -283,7 +285,7 @@ protected:
       d_##_f = (VrmlSFNode &)fieldValue; \
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s or %s).\n",\
-	    fieldValue.fieldTypeName(), #_f, nodeType().getName().c_str(), #_n1, #_n2);\
+	    fieldValue.fieldTypeName(), #_f, this->type.getId().c_str(), #_n1, #_n2);\
   }
 
 

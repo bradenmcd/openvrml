@@ -24,7 +24,7 @@
 
 # include <stack>
 # include "VrmlNamespace.h"
-# include "VrmlNodeType.h"
+# include "nodetype.h"
 # include "VrmlNodeVisitor.h"
 # include "VrmlNode.h"
 # include "Route.h"
@@ -50,51 +50,30 @@
  */
 
 // This should at least be a sorted vector...
-std::list< VrmlNodeType* > VrmlNamespace::builtInList;
+std::list<NodeTypePtr> VrmlNamespace::builtInList;
 
 // Ref count of namespaces so builtins can be freed
 int VrmlNamespace::s_nNamespaces;
 
-VrmlNamespace::VrmlNamespace( VrmlNamespace *parent ) :
-  d_parent(parent)
-{
-  ++s_nNamespaces;
+VrmlNamespace::VrmlNamespace(VrmlNamespace * parent): d_parent(parent) {
+    ++s_nNamespaces;
 
-  // Initialize typeList with built in nodes
-  if (builtInList.size() == 0) defineBuiltIns();
-}
-
-VrmlNamespace::~VrmlNamespace()
-{
-  // Free typeList
-  std::list<VrmlNodeType*>::iterator i;
-  for (i = d_typeList.begin(); i != d_typeList.end(); ++i)
-    (*i)->dereference();
-
-  // Free builtins
-  if ( --s_nNamespaces == 0 )
-    {
-      for (i = builtInList.begin(); i != builtInList.end(); ++i)
-	(*i)->dereference();
-      builtInList.clear();
+    // Initialize typeList with built in nodes
+    if (builtInList.empty()) {
+        defineBuiltIns();
     }
 }
 
-
-//
-//  Built in nodes.
-//  This code replaces the reading of the "standardNodes.wrl" file
-//  of empty PROTOs so I don't need to carry that file around.
-//
-
-void
-VrmlNamespace::addBuiltIn( VrmlNodeType *type)
-{
-  builtInList.push_front( type->reference() );
+VrmlNamespace::~VrmlNamespace() {
+    // Free builtins
+    if ( --s_nNamespaces == 0 ) {
+        builtInList.clear();
+    }
 }
 
-
-
+void VrmlNamespace::addBuiltIn(const NodeTypePtr & nodeType) {
+    builtInList.push_front(nodeType);
+}
 
 void VrmlNamespace::defineBuiltIns()
 {
@@ -155,63 +134,70 @@ void VrmlNamespace::defineBuiltIns()
 }
 
 
-// A safer version for reading PROTOs from files.
-
-void
-VrmlNamespace::addNodeType( VrmlNodeType *type )
-{
-  if ( findType( type->getName() ) != NULL)
-    theSystem->warn("PROTO %s already defined\n", type->getName().c_str());
-  else
-    d_typeList.push_front( type->reference() );
+/**
+ * @brief Add a node type.
+ *
+ * Print an error message if the argument type is already defined.
+ *
+ * @param nodeType a NodeTypePtr
+ *
+ * @todo Throw std::invalid_argument if the argument type is already defined.
+ */
+void VrmlNamespace::addNodeType(const NodeTypePtr & nodeType) {
+    assert(!this->findType(nodeType->getId()));
+    this->d_typeList.push_front(nodeType);
 }
 
 /**
  * @brief Find a node type, given a type name. Returns NULL if type is
  *      not defined.
  */
-const VrmlNodeType * VrmlNamespace::findType(const std::string & name) const {
-  // Look through the PROTO stack:
-  const VrmlNodeType *nt = findPROTO(name);
-  if (nt) return nt;
-
-  // Look in parent scope for the type
-  if (d_parent)
-    return d_parent->findType( name );
-
-  // Look through the built ins
-  std::list<VrmlNodeType*>::iterator i;
-  for (i = builtInList.begin(); i != builtInList.end(); ++i)
-    {
-      nt = *i;
-      if (nt && name == nt->getName())
-	return nt;
+const NodeTypePtr VrmlNamespace::findType(const std::string & name) const {
+    // Look through the PROTO stack:
+    NodeTypePtr nt(findPROTO(name));
+    if (nt) {
+        return nt;
     }
-
-  return 0;
+    
+    // Look in parent scope for the type
+    if (d_parent) {
+        return d_parent->findType(name);
+    }
+    
+    // Look through the built ins
+    for (std::list<NodeTypePtr>::iterator i = builtInList.begin();
+            i != builtInList.end(); ++i) {
+        nt = *i;
+        assert(nt);
+        if (name == nt->getId()) {
+            return nt;
+        }
+    }
+    
+    return NodeTypePtr(0);
 }
 
 /**
  * @brief Find a nodeType, given a PROTO name.
  */
-const VrmlNodeType * VrmlNamespace::findPROTO(const std::string & name) const {
-    for (std::list<VrmlNodeType*>::const_iterator i(d_typeList.begin());
+const NodeTypePtr VrmlNamespace::findPROTO(const std::string & name) const {
+    for (std::list<NodeTypePtr>::const_iterator i(d_typeList.begin());
           i != d_typeList.end(); ++i) {
-        if (*i && name == (*i)->getName()) {
+        assert(*i);
+        if (name == (*i)->getId()) {
 	    return *i;
         }
     }
-    return 0;
+    return NodeTypePtr(0);
 }
 
 
-const VrmlNodeType *
-VrmlNamespace::firstType()
-{
-  // Top of the PROTO stack (should make sure it has an implementation...)
-  if (d_typeList.size() > 0)
-    return d_typeList.front()->reference();
-  return NULL;
+const NodeTypePtr VrmlNamespace::firstType() const {
+    // Top of the PROTO stack (should make sure it has an implementation...)
+    if (!this->d_typeList.empty()) {
+        return d_typeList.front();
+    }
+    return NodeTypePtr(0);
 }
 
 void
@@ -566,7 +552,7 @@ namespace {
         virtual void visit(VrmlNodeProto & node) {
             const VrmlNodePtr clonedNode(new VrmlNodeProto(node));
             clonedNode->addToScene(node.scene(),
-                                   clonedNode->nodeType().getActualUrl());
+                                   clonedNode->type.getActualUrl());
             this->rootNodeStack.push(clonedNode);
         }
         

@@ -24,16 +24,14 @@
 #include <list>
 #include "common.h"
 #include "field.h"
-
-class VrmlNode;
-class VrmlNodeType;
+#include "nodetypeptr.h"
 
 class OPENVRML_SCOPE VrmlNamespace {
-    static std::list< VrmlNodeType* > builtInList;
+    static std::list<NodeTypePtr> builtInList;
     static int s_nNamespaces;
 
     // Defined node types (PROTOs) for this namespace
-    std::list< VrmlNodeType* > d_typeList;
+    std::list<NodeTypePtr> d_typeList;
 
     // Defined node names for this namespace
     std::list<VrmlNodePtr> d_nameList;
@@ -42,13 +40,10 @@ class OPENVRML_SCOPE VrmlNamespace {
     VrmlNamespace *d_parent;
 
 public:
-    VrmlNamespace( VrmlNamespace *parent = 0 );
+    VrmlNamespace(VrmlNamespace * parent = 0);
     ~VrmlNamespace();
 
-
-    // addNodeType will print an error if the given type
-    // is already defined (spec says behavior is undefined).
-    void addNodeType(VrmlNodeType *);
+    void addNodeType(const NodeTypePtr & nodeType);
 
     // DEFd nodes add node names to the namespace.
     // Node names are only defined in the current name space. They
@@ -58,11 +53,11 @@ public:
     void addNodeName(const VrmlNodePtr &);
     void removeNodeName(const VrmlNode &);
 
-    const VrmlNodeType * findType(const std::string & name) const;
-    const VrmlNodeType * findPROTO(const std::string & name) const;
+    const NodeTypePtr findType(const std::string & name) const;
+    const NodeTypePtr findPROTO(const std::string & name) const;
 
     // Return the first node type in scope (default EXTERNPROTO implementation)
-    const VrmlNodeType *firstType();
+    const NodeTypePtr firstType() const;
 
     // Find a node by name.
     const VrmlNodePtr findNode(const std::string & name) const;
@@ -70,7 +65,7 @@ public:
     const VrmlMFNode cloneNodes(const VrmlMFNode & mfnode);
 
 private:
-    void addBuiltIn(VrmlNodeType *);
+    void addBuiltIn(const NodeTypePtr & nodeType);
     void defineBuiltIns();
 };
 

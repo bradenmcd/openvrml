@@ -24,12 +24,12 @@
  *
  * @brief A VrmlNodeProto object represents an instance of a PROTOd node.
  *
- * The definition of the PROTO is stored in a VrmlNodeType object;
+ * The definition of the PROTO is stored in a NodeType object;
  * the VrmlNodeProto object stores a local copy of the implementation
  * nodes.
  *
  * Instances of PROTOs clone the implementation nodes stored
- * in a VrmlNodeType object. The only tricky parts are to
+ * in a NodeType object. The only tricky parts are to
  * make sure ROUTEs are properly copied (the DEF name map is
  * not available) and that fields are copied properly (the
  * MF* guys currently share data & need to be made copy-on-
@@ -71,9 +71,15 @@ struct VrmlNodeProto::NameValueRec {
     VrmlField * value;
 };
 
-VrmlNodeProto::VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene) :
-  VrmlNode(scene),
-  d_nodeType(nodeDef->reference()),
+struct VrmlNodeProto::EventDispatch {
+    std::string name;
+    NodeType::ISMap ismap;
+};
+
+
+
+VrmlNodeProto::VrmlNodeProto(const NodeType & nodeDef, VrmlScene *scene) :
+  VrmlNode(nodeDef, scene),
   d_instantiated(false),
   d_scope(0),
   d_viewerObject(0)
@@ -82,8 +88,7 @@ VrmlNodeProto::VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene) :
 }
 
 VrmlNodeProto::VrmlNodeProto(const VrmlNodeProto &n) :
-  VrmlNode(0),
-  d_nodeType(n.nodeType().reference()),
+  VrmlNode(n),
   d_instantiated(false),
   d_scope(0),
   d_viewerObject(0)
@@ -105,9 +110,10 @@ VrmlNodeProto::~VrmlNodeProto() {
         delete *i;
     }
 
+    typedef std::list<EventDispatch *> EventDispatchList;
     for (EventDispatchList::iterator e(d_eventDispatch.begin());
             e != d_eventDispatch.end(); ++e) {
-        for (VrmlNodeType::ISMap::iterator j((*e)->ismap.begin());
+        for (NodeType::ISMap::iterator j((*e)->ismap.begin());
                 j != (*e)->ismap.end(); ++j) {
             delete *j;
         }
@@ -115,12 +121,6 @@ VrmlNodeProto::~VrmlNodeProto() {
     }
 
     delete d_scope;
-    d_nodeType->dereference();
-}
-
-VrmlNodeType & VrmlNodeProto::nodeType() const
-{
-    return *d_nodeType;
 }
 
 bool VrmlNodeProto::accept(VrmlNodeVisitor & visitor) {
@@ -156,31 +156,28 @@ VrmlNodeProto* VrmlNodeProto::toProto() const
 { return (VrmlNodeProto*) this; }
 
 
-// Instantiate a local copy of the implementation nodes.
-// EXTERNPROTOs are actually loaded here. We don't want
-// *references* (DEF/USE) to the nodes in the PROTO definition,
-// we need to actually clone new nodes...
-
+/**
+ * Instantiate a local copy of the implementation nodes. EXTERNPROTOs are
+ * actually loaded here. We don't want <em>references</em> (DEF/USE) to the
+ * nodes in the PROTO definition, we need to actually clone new nodes.
+ */
 void VrmlNodeProto::instantiate()
 {
-  //theSystem->debug("%s::%s instantiate\n", d_nodeType->getName(),
-  //name());
-
   if (this->implNodes.getLength() == 0)
     {
       d_scope = new VrmlNamespace();
 
       // Clone nodes
       this->implNodes =
-              d_scope->cloneNodes(this->d_nodeType->getImplementationNodes());
+              d_scope->cloneNodes(this->type.getImplementationNodes());
       
       // Collect eventIns coming from outside the PROTO.
       // A list of eventIns along with their maps to local
       // nodes/eventIns is constructed for each instance.
-      VrmlNodeType::FieldList &eventIns = d_nodeType->eventIns();
-      VrmlNodeType::FieldList::iterator ev;
-      const VrmlNodeType::ISMap * ismap;
-      VrmlNodeType::ISMap::const_iterator j;
+      const NodeType::FieldList & eventIns = this->type.eventIns();
+      NodeType::FieldList::const_iterator ev;
+      const NodeType::ISMap * ismap;
+      NodeType::ISMap::const_iterator j;
 
       for (ev = eventIns.begin(); ev != eventIns.end(); ++ev)
 	{
@@ -191,7 +188,7 @@ void VrmlNodeProto::instantiate()
 
 	  for (j = ismap->begin(); j != ismap->end(); ++j)
 	    {
-	      VrmlNodeType::NodeFieldRec *nf = new VrmlNodeType::NodeFieldRec;
+	      NodeType::NodeFieldRec *nf = new NodeType::NodeFieldRec;
 	      nf->node = d_scope->findNode((*j)->node->getId());
 	      nf->fieldName = (*j)->fieldName;
 	      ed->ismap.push_front(nf);
@@ -199,7 +196,7 @@ void VrmlNodeProto::instantiate()
 	}
 
       // Do the same for fields. Code duplication -- messy!
-      VrmlNodeType::FieldList &fields = d_nodeType->fields();
+      const NodeType::FieldList & fields = this->type.fields();
       for (ev = fields.begin(); ev != fields.end(); ++ev )
         {
           EventDispatch *ed = new EventDispatch;
@@ -208,7 +205,7 @@ void VrmlNodeProto::instantiate()
           d_eventDispatch.push_front(ed);
           for (j = ismap->begin(); j != ismap->end(); ++j)
             {
-              VrmlNodeType::NodeFieldRec *nf = new VrmlNodeType::NodeFieldRec;
+              NodeType::NodeFieldRec *nf = new NodeType::NodeFieldRec;
               nf->node = d_scope->findNode((*j)->node->getId());
               nf->fieldName = (*j)->fieldName;
               ed->ismap.push_front(nf);
@@ -218,7 +215,7 @@ void VrmlNodeProto::instantiate()
       // Distribute eventOuts. Each eventOut ROUTE is added
       // directly to the local nodes that have IS'd the PROTO
       // eventOut.
-      VrmlNodeType::FieldList &eventOuts = d_nodeType->eventOuts();
+      const NodeType::FieldList & eventOuts = this->type.eventOuts();
       for (Route *r = d_routes; r; r = r->getNext())
 	for (ev = eventOuts.begin(); ev != eventOuts.end(); ++ev)
 	  if ((*ev)->name == r->fromEventOut)
@@ -239,23 +236,12 @@ void VrmlNodeProto::instantiate()
       for (ifld = d_fields.begin(); ifld != d_fields.end(); ++ifld)
 	{
 	  VrmlField *value = (*ifld)->value;
-#ifdef VRML_NODE_PROTO_DEBUG
-	  cerr << d_nodeType->getName() << "::" << this->getId()
-	       << " setting IS field " << (*ifld)->name;
-	  // Too much stuff...
-	  //if (value) cerr << " to " << *value << endl;
-	  //else cerr << " to null\n";
-	  cerr << endl;
-#endif
 	  if (! value) continue;
-	  if ((ismap = d_nodeType->getFieldISMap( (*ifld)->name )) != 0)
-	    {
+          ismap = this->type.getFieldISMap((*ifld)->name);
+	  if (ismap) {
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
 		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->getId()));
-#ifdef VRML_NODE_PROTO_DEBUG
-		  cerr << " on " << n->getId() << "::" << (*j)->fieldName << endl;
-#endif
 		  if (n) n->setField( (*j)->fieldName, *value );
 		}
 	    }
@@ -278,7 +264,7 @@ void VrmlNodeProto::addToScene(VrmlScene * scene, const std::string & relUrl) {
 
     // ... and add the implementation nodes to the scene.
     if (this->implNodes.getLength() > 0) {
-        const std::string & rel = d_nodeType->getActualUrl();
+        const std::string & rel = this->type.getActualUrl();
         for (size_t i(0); i<this->implNodes.getLength(); ++i) {
             this->implNodes.getElement(i)
                   ->addToScene(scene, (rel.length() > 0) ? rel : relUrl);
@@ -320,7 +306,7 @@ ostream& VrmlNodeProto::printFields(ostream& os, int )
 const VrmlNodePtr VrmlNodeProto::firstNode() const {
     return (this->implNodes.getLength() > 0)
             ? this->implNodes.getElement(0)
-            : d_nodeType->firstNode();
+            : this->type.firstNode();
 }
 
 
@@ -502,10 +488,6 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
 void VrmlNodeProto::eventIn(double timeStamp,
 			    const std::string & eventName,
 			    const VrmlField & fieldValue) {
-//    cout << "eventIn " << this->nodeType().getName()
-//         << "::" << this->getName() << "." << eventName
-//         << " " << fieldValue << endl;
-
     if (!d_instantiated) {
         theSystem->debug("VrmlNodeProto::%s eventIn before instantiation\n",
                          this->getId().c_str());
@@ -520,14 +502,15 @@ void VrmlNodeProto::eventIn(double timeStamp,
         basicEventName = eventName;
     }
 
+    typedef std::list<EventDispatch *> EventDispatchList;
     for (EventDispatchList::iterator i(d_eventDispatch.begin());
             i != d_eventDispatch.end(); ++i) {
 //        cout << "basicEventName = " << basicEventName
 //             << ", eventName = " << eventName
 //             << ", (*i)->name = " << (*i)->name << endl;
         if (basicEventName == (*i)->name || eventName == (*i)->name) {
-            VrmlNodeType::ISMap * ismap = &(*i)->ismap;
-            for (VrmlNodeType::ISMap::iterator j(ismap->begin());
+            NodeType::ISMap * ismap = &(*i)->ismap;
+            for (NodeType::ISMap::iterator j(ismap->begin());
                     j != ismap->end(); ++j) {
 //                cout << "Relaying event." << endl;
                 (*j)->node->eventIn(timeStamp, (*j)->fieldName, fieldValue);
@@ -540,10 +523,11 @@ void VrmlNodeProto::eventIn(double timeStamp,
     this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
-
-VrmlNodeProto::NameValueRec * VrmlNodeProto::findField(
-                                                const std::string & fieldName)
-        const {
+/**
+ * Find a field by name.
+ */
+VrmlNodeProto::NameValueRec *
+        VrmlNodeProto::findField(const std::string & fieldName) const {
     for (std::list<NameValueRec *>::const_iterator i(d_fields.begin());
             i != d_fields.end(); ++i) {
         if (*i && (*i)->name == fieldName) {
@@ -553,9 +537,12 @@ VrmlNodeProto::NameValueRec * VrmlNodeProto::findField(
     return 0;
 }
 
-// Set the value of one of the node fields (creates the field if
-// it doesn't exist - is that necessary?...)
-
+/**
+ * Set the value of one of the node fields (creates the field if
+ * it doesn't exist).
+ *
+ * @todo Is it necessary to create the field if it doesn't exist?
+ */
 void VrmlNodeProto::setField(const std::string & fieldName,
 			     const VrmlField & fieldValue)
 {
@@ -581,7 +568,7 @@ const VrmlField *VrmlNodeProto::getField(const std::string & fieldName) const {
     if (nv) {
         return nv->value;
     }
-    return d_nodeType->fieldDefault(fieldName);
+    return this->type.fieldDefault(fieldName);
 }
 
 VrmlNodeLOD* VrmlNodeProto::toLOD() const

@@ -43,7 +43,7 @@
 #include "MathUtils.h"
 #include "Vrml97Parser.hpp"
 #include "VrmlNamespace.h"
-#include "VrmlNodeType.h"
+#include "nodetype.h"
 #include "VrmlRenderContext.h"
 
 // List of Scripts in the scene
@@ -442,8 +442,8 @@ VrmlMFNode * VrmlScene::readFunction(LoadCB cb, Doc2 * url, VrmlNamespace * ns)
 // This should read only PROTOs and return when the first/specified PROTO
 // is read...
 
-VrmlNodeType * VrmlScene::readPROTO(const VrmlMFString & urls,
-                                    const Doc2 * relative) {
+const NodeTypePtr VrmlScene::readPROTO(const VrmlMFString & urls,
+                                       const Doc2 * relative) {
     // This is a problem. The nodeType of the EXTERNPROTO has a namespace
     // that refers back to this namespace (protos), which will be invalid
     // after we exit this function. I guess it needs to be allocated and
@@ -451,8 +451,7 @@ VrmlNodeType * VrmlScene::readPROTO(const VrmlMFString & urls,
     //VrmlNamespace protos;
     VrmlNamespace * protos = new VrmlNamespace();  // leak...
     Doc2 urlDoc;
-    VrmlNodeType * def = 0;
-//    int i, n = urls->size();
+    NodeTypePtr def(0);
     
     for (size_t i(0); i < urls.getLength(); ++i) {
         theSystem->inform("Trying to read EXTERNPROTO from url '%s'\n",
@@ -464,9 +463,9 @@ VrmlNodeType * VrmlScene::readPROTO(const VrmlMFString & urls,
         // Grab the specified PROTO, or the first one.
         const char * whichProto = urlDoc.urlModifier();
         if (whichProto && *whichProto) {
-            def = (VrmlNodeType*) protos->findType( whichProto+1 );
+            def = protos->findType( whichProto+1 );
         } else {
-            def = (VrmlNodeType*) protos->firstType();
+            def = protos->firstType();
         }
         
         if (def) {
@@ -690,7 +689,7 @@ bool VrmlScene::update( double timeStamp )
       if (this != n->scene())
 	{
 	  theSystem->debug("VrmlScene::update: %s::%s is not in the scene graph yet.\n",
-			   n->nodeType().getName().c_str(), n->getId().c_str());
+                           n->type.getId().c_str(), n->getId().c_str());
 	  n->addToScene((VrmlScene*)this, urlDoc()->url() );
 	}
       n->eventIn(e->timeStamp, e->toEventIn, *e->value);

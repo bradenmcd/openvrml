@@ -30,7 +30,7 @@ class Doc2;
 class VrmlNamespace;
 class VrmlScene;
 
-class OPENVRML_SCOPE VrmlNodeType {
+class OPENVRML_SCOPE NodeType {
 public:
     struct NodeFieldRec {
         VrmlNodePtr node;
@@ -46,31 +46,28 @@ public:
     typedef std::list<ProtoField *> FieldList;
 
 private:
-    int d_refCount;
-    std::string name;
+    std::string id;
     VrmlNamespace * d_namespace;
     const VrmlMFString * d_url; // Where the EXTERNPROTO could be.
-    std::string actualUrl;	// The URL actually used.
+    mutable std::string actualUrl;	// The URL actually used.
     Doc2 *d_relative;
-    VrmlMFNode implNodes;
+    mutable VrmlMFNode implNodes;
     // Pointer to function to create instances
-    VrmlNode* (*d_creator)( VrmlScene* );	
+    const VrmlNodePtr (*d_creator)(VrmlScene *);	
     // Fields defined for this node type
-    FieldList d_eventIns;
-    FieldList d_eventOuts;
-    FieldList d_fields;
-    bool d_fieldsInitialized;
+    mutable FieldList d_eventIns;
+    mutable FieldList d_eventOuts;
+    mutable FieldList d_fields;
+    mutable bool d_fieldsInitialized;
 
 public:
-    VrmlNodeType(const std::string & name,
-	         VrmlNode* (*creator)(VrmlScene *scene) = 0);
-    ~VrmlNodeType();
+    NodeType(const std::string & id,
+	     const VrmlNodePtr (*creator)(VrmlScene *scene) = 0);
+    ~NodeType();
 
-    VrmlNodeType * reference();
-    void dereference();
-    VrmlNode * newNode(VrmlScene * scene = 0) const;
+    const VrmlNodePtr newNode(VrmlScene * scene = 0) const;
 
-    const std::string & getName() const;
+    const std::string & getId() const;
     VrmlNamespace * getScope() const;
     void setScope(VrmlNamespace & scope);
 
@@ -104,18 +101,18 @@ public:
 	       const std::string & implFieldName);
 
 
-    const VrmlMFNode & getImplementationNodes();
+    const VrmlMFNode & getImplementationNodes() const;
 
     const VrmlNodePtr firstNode() const;
 
     const ISMap * getFieldISMap(const std::string & fieldName) const;
 
-    FieldList &fields() { return d_fields; }
-    FieldList &eventIns() { return d_eventIns; }
-    FieldList &eventOuts() { return d_eventOuts; }
+    const FieldList & fields() const { return d_fields; }
+    const FieldList & eventIns() const { return d_eventIns; }
+    const FieldList & eventOuts() const { return d_eventOuts; }
 
 private:
-    void fetchImplementation();
+    void fetchImplementation() const;
     VrmlField::VrmlFieldType has(const FieldList &, const std::string & id) const;
 };
 
