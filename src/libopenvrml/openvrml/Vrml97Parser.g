@@ -23,6 +23,7 @@ header "post_include_hpp" {
 # include <memory>
 # include "field.h"
 # include "node_ptr.h"
+# include "field_value_ptr.h"
 # define ANTLR_LBRACE {
 # define ANTLR_RBRACE }
 
@@ -1366,7 +1367,7 @@ returns [openvrml::field_value_ptr fv]
     ;
 
 nonNodeFieldValue[openvrml::field_value::type_id ft]
-returns [openvrml::field_value_ptr fv = openvrml::field_value_ptr()]
+returns [openvrml::field_value_ptr fv = openvrml::field_value_ptr(0)]
 options { defaultErrorHandler=false; }
 {
     using openvrml::field_value;

@@ -26,15 +26,10 @@
 #   include <list>
 #   include <map>
 #   include <string>
-#   include <boost/shared_ptr.hpp>
+#   include <openvrml/node_type_ptr.h>
+#   include <openvrml/scope_ptr.h>
 
 namespace openvrml {
-
-    class node_type;
-    typedef boost::shared_ptr<node_type> node_type_ptr;
-
-    class scope;
-    typedef boost::shared_ptr<scope> scope_ptr;
 
     class scope {
         friend class node;

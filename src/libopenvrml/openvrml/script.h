@@ -23,6 +23,7 @@
 # ifndef OPENVRML_SCRIPT_H
 #   define OPENVRML_SCRIPT_H
 
+#   include <openvrml/field_value_ptr.h>
 #   include <openvrml/node.h>
 
 namespace openvrml {

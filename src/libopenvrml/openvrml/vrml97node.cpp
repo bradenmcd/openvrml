@@ -167,7 +167,7 @@ namespace {
         typedef node_field_ptr_impl<NodeT, mfvec2f> mfvec2f_ptr;
         typedef node_field_ptr_impl<NodeT, mfvec3f> mfvec3f_ptr;
 
-        typedef boost::shared_ptr<node_field_ptr<NodeT> >
+        typedef openvrml_::SharedPtr<node_field_ptr<NodeT> >
             node_field_ptr_ptr;
         typedef void (NodeT::* eventin_handler_ptr)
             (const openvrml::field_value &, double);
@@ -5545,22 +5545,32 @@ elevation_grid_node::insert_geometry(openvrml::viewer & viewer,
     if (!this->height.value.empty()) {
         using std::vector;
 
-        openvrml::color_node * const colorNode = this->color.value->to_color();
-        const vector<openvrml::color> & color = colorNode
-                                              ? colorNode->color()
-                                              : vector<openvrml::color>();
+        openvrml::color_node * const colorNode =
+            this->color.value
+            ? this->color.value->to_color()
+            : 0;
+        const vector<openvrml::color> & color =
+            colorNode
+            ? colorNode->color()
+            : vector<openvrml::color>();
 
         openvrml::normal_node * const normalNode =
-            this->normal.value->to_normal();
-        const vector<vec3f> & normal = normalNode
-                                     ? normalNode->vector()
-                                     : vector<vec3f>();
+            this->normal.value
+            ? this->normal.value->to_normal()
+            : 0;
+        const vector<vec3f> & normal =
+            normalNode
+            ? normalNode->vector()
+            : vector<vec3f>();
 
         openvrml::texture_coordinate_node * const texCoordNode =
-            this->texCoord.value->to_texture_coordinate();
-        const vector<vec2f> & texCoord = texCoordNode
-                                       ? texCoordNode->point()
-                                       : vector<vec2f>();
+            this->texCoord.value
+            ? this->texCoord.value->to_texture_coordinate()
+            : 0;
+        const vector<vec2f> & texCoord =
+            texCoordNode
+            ? texCoordNode->point()
+            : vector<vec2f>();
         // insert geometry
         unsigned int optMask = 0;
         if (this->ccw.value) {
@@ -6882,11 +6892,11 @@ group_class::create_type(const std::string & id,
  * @param scope the scope to which the node belongs.
  */
 group_node::group_node(const node_type & type,
-                       const scope_ptr & scope):
+             const scope_ptr & scope):
     node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
-    abstract_base(type, scope),
     bboxSize(vec3f(-1.0, -1.0, -1.0)),
     viewerObject(0)
 {
@@ -6909,24 +6919,18 @@ group_node::~group_node() throw ()
  *
  * @exception std::bad_cast     if @p value is not an mfnode.
  * @exception std::bad_alloc    if memory allocation fails.
- *
- * @todo This function should throw an exception if there is an attempt to
- *       add a node that is not a child_node.
  */
 void group_node::process_addChildren(const field_value & value,
-                                     const double timestamp)
+                                const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
     const mfnode & newChildren = dynamic_cast<const mfnode &>(value);
     size_t nNow = this->children_.value.size();
 
     for (size_t i = 0; i < newChildren.value.size(); ++i) {
-        const node_ptr & n = newChildren.value[i];
-        child_node * const child = n
-                                 ? n->to_child()
-                                 : 0;
-        if (child) {
-            this->children_.value.push_back(n);
+        const node_ptr & child = newChildren.value[i];
+        if (child && child->to_child()) {
+            this->children_.value.push_back(child);
             child->relocate();
         } else {
             OPENVRML_PRINT_MESSAGE_("Attempt to add a " + child->type.id
@@ -6951,7 +6955,7 @@ void group_node::process_addChildren(const field_value & value,
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void group_node::process_removeChildren(const field_value & value,
-                                        const double timestamp)
+                                   const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
     const mfnode & childrenToRemove = dynamic_cast<const mfnode &>(value);
@@ -6983,38 +6987,18 @@ void group_node::process_removeChildren(const field_value & value,
  *
  * @exception std::bad_cast     if @p value is not an mfnode.
  * @exception std::bad_alloc    if memory allocation fails.
- *
- * @todo This function should throw an exception if there is an element of
- *       @p value is not a child_node.
  */
 void group_node::process_set_children(const field_value & value,
-                                      const double timestamp)
+                                 const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    using std::swap;
-    using std::vector;
+    this->children_ = dynamic_cast<const mfnode &>(value);
 
-    const mfnode & new_children = dynamic_cast<const mfnode &>(value);
-    mfnode children(new_children.value.size());
-
-    for (vector<node_ptr>::size_type i = 0;
-         i < new_children.value.size();
-         ++i) {
-        const node_ptr & n = new_children.value[i];
-        child_node * const child = n
-                                 ? n->to_child()
-                                 : 0;
-        if (!n || child) {
-            children.value[i] = n;
-            if (child) { child->relocate(); }
-        } else {
-            OPENVRML_PRINT_MESSAGE_("Attempt to add a " + child->type.id
-                                    + " node as a child of a " + this->type.id
-                                    + " node.");
+    for (size_t i = 0; i < this->children_.value.size(); ++i) {
+        if (children_.value[i]) {
+            children_.value[i]->relocate();
         }
     }
-
-    swap(this->children_, children);
 
     this->node::modified(true);
     this->bounding_volume_dirty(true);
@@ -8261,8 +8245,8 @@ inline_class::create_type(const std::string & id,
 inline_node::inline_node(const node_type & type,
                          const scope_ptr & scope):
     node(type, scope),
-    child_node(type, scope),
     abstract_base(type, scope),
+    child_node(type, scope),
     grouping_node(type, scope),
     inlineScene(0),
     hasLoaded(false)
@@ -8510,8 +8494,8 @@ lod_class::create_type(const std::string & id,
 lod_node::lod_node(const node_type & type,
                    const scope_ptr & scope):
     node(type, scope),
-    child_node(type, scope),
     abstract_base(type, scope),
+    child_node(type, scope),
     grouping_node(type, scope),
     children_(1)
 {
@@ -14242,8 +14226,8 @@ switch_class::create_type(const std::string & id,
 switch_node::switch_node(const node_type & type,
                const scope_ptr & scope):
     node(type, scope),
-    child_node(type, scope),
     abstract_base(type, scope),
+    child_node(type, scope),
     grouping_node(type, scope),
     whichChoice(-1),
     children_(1)
@@ -17934,8 +17918,8 @@ namespace {
 viewpoint_node::viewpoint_node(const node_type & type,
                                const scope_ptr & scope):
     node(type, scope),
-    child_node(type, scope),
     abstract_base(type, scope),
+    child_node(type, scope),
     openvrml::viewpoint_node(type, scope),
     fieldOfView(DEFAULT_FIELD_OF_VIEW),
     jump(true),

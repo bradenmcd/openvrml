@@ -2137,9 +2137,7 @@ void scene::initialize(const double timestamp) throw (std::bad_alloc)
          ++node) {
         assert(*node);
         (*node)->initialize(*this, timestamp);
-        child_node * const child = (*node)->to_child();
-        assert(child);
-        child->relocate();
+        (*node)->relocate();
     }
 }
 
@@ -2376,7 +2374,7 @@ namespace {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 ProtoNode::ProtoNode(const node_type & nodeType) throw (std::bad_alloc):
-    node(nodeType, scope_ptr())
+    node(nodeType, scope_ptr(0))
 {}
 
 /**

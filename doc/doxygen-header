@@ -1,17 +1,16 @@
-<!doctype html public "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!doctype html public "-//W3C//DTD HTML 4.01 Transitional//EN"
+               "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
 <head>
 <title>$title</title>
 <meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
-<link rel="stylesheet" href="openvrml.css">
-<link rel="icon" href="../vrml-16.png">
-<link rel="start" href="http://openvrml.org/index.php" title="OpenVRML Home">
-<link rel="prev" href="http://openvrml.org/discussion.php" title="Discussion">
-<link rel="next" href="http://openvrml.org/links.php" title="Links">
-<link rel="contents" href="index.html" title="Documentation Main Page">
-<link rel="index" href="functions.html" title="OpenVRML Compound Members">
-<link rel="appendix" href="conformance.html" title="Conformance Test Results">
+<link rel="icon" href="../vrml-16">
+<link rel="start" href="http://openvrml.org/index" title="OpenVRML Home">
+<link rel="prev" href="http://openvrml.org/discussion" title="Discussion">
+<link rel="contents" href="index" title="Documentation Main Page">
+<link rel="index" href="functions" title="OpenVRML Compound Members">
+<link rel="appendix" href="conformance" title="Conformance Test Results">
 <style type="text/css">
 @import url("doxygen.css");
 @import url("http://openvrml.org/openvrml.css");
@@ -122,12 +121,11 @@ td.memItemLeft, td.memItemRight, td.mdescLeft, td.mdescRight {
 <body>
 <table class="sitenav">
   <tr>
-    <th><a href="http://openvrml.org/index.php" title="Home">Home</a></th>
-    <th><a href="http://openvrml.org/download.php" title="Download">Download</a></th>
-    <th><a href="http://openvrml.org/screenshots/index.php" title="Screen shots">Screen shots</a></th>
-    <th><a href="http://openvrml.org/discussion.php" title="Mailing lists and IRC">Discussion</a></th>
+    <th><a href="http://openvrml.org/index" title="Home">Home</a></th>
+    <th><a href="http://openvrml.org/download" title="Download">Download</a></th>
+    <th><a href="http://openvrml.org/screenshots/index" title="Screen shots">Screen shots</a></th>
+    <th><a href="http://openvrml.org/discussion" title="Mailing lists and IRC">Discussion</a></th>
     <th>Documentation</th>
-    <th><a href="http://openvrml.org/links.php" title="Links to related resources">Links</a></th>
   </tr>
 </table>
 <div class="body">
