@@ -806,8 +806,6 @@ matrix_to_glmatrix(double M[4][4], float GLM[16])
 
 void VrmlScene::render(Viewer *viewer)
 {
-  //cout << "VrmlScene::render()" << endl;
-
   if (d_newView)
     {
       viewer->resetUserNavigation();

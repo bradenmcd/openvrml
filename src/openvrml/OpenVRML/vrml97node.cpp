@@ -6652,21 +6652,12 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
       inverseTransform( d_activationMatrix );
       VM( V, d_activationMatrix, V );
       d_activationPoint.set(V);
-#if 0
-      theSystem->warn(" planesensor: activate at (%g %g %g)\n",
-		      p[0],p[1],p[2]);
-      theSystem->warn(" planesensor: local coord (%g %g %g)\n",
-		      V[0],V[1],V[2]);
-#endif
       eventOut( timeStamp, "isActive", d_isActive );
     }
 
   // Become inactive
   else if ( ! isActive && d_isActive.get() )
     {
-#if 0
-      theSystem->warn(" planesensor: deactivate\n");
-#endif
       d_isActive.set(isActive);
       eventOut( timeStamp, "isActive", d_isActive );
 

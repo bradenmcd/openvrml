@@ -626,18 +626,6 @@ void VrmlNode::eventIn(double timeStamp,
 		       const char *eventName,
 		       const VrmlField & fieldValue)
 {
-#ifdef VRML_NODE_DEBUG
-  cout << "eventIn "
-       << nodeType()->getName()
-       << "::"
-       << (name() ? name() : "")
-       << "."
-       << eventName
-       << " "
-       << *fieldValue
-       << endl;
-#endif
-
   // Strip set_ prefix
   const char *origEventName = eventName;
   if ( strncmp(eventName, "set_", 4) == 0 )
@@ -663,7 +651,7 @@ void VrmlNode::eventIn(double timeStamp,
 
   else
     cerr << "Error: unhandled eventIn " << nodeType().getName()
-		<< "::" << name() << "." << origEventName << endl;
+         << "::" << name() << "." << origEventName << endl;
 
 }
 
@@ -672,32 +660,13 @@ void VrmlNode::eventIn(double timeStamp,
 
 void VrmlNode::eventOut(double timeStamp,
 			const char *eventOut,
-			const VrmlField &fieldValue)
-{
-#ifdef VRML_NODE_DEBUG
-  fprintf(stderr,"%s::%s 0x%x eventOut %s\n",
-	  nodeType()->getName(), name(),
-	  (unsigned) this, eventOut);
-#endif	  
-
-  // Find routes from this eventOut
-  Route *r;
-  for (r=d_routes; r; r=r->next())
-    {
-      if (strcmp(eventOut, r->fromEventOut()) == 0)
-	{
-#ifdef VRML_NODE_DEBUG
-	  cerr << "  => "
-	       << r->toNode()->nodeType()->getName()
-	       << "::"
-	       << r->toNode()->name()
-	       << "."
-	       << r->toEventIn()
-	       << endl;
-#endif	  
-	  VrmlField *eventValue = fieldValue.clone();
-	  d_scene->queueEvent(timeStamp, eventValue,
-			      r->toNode(), r->toEventIn());
+			const VrmlField &fieldValue) {
+    // Find routes from this eventOut
+    for (Route * r = d_routes; r; r=r->next()) {
+        if (strcmp(eventOut, r->fromEventOut()) == 0) {
+	    VrmlField *eventValue = fieldValue.clone();
+	    d_scene->queueEvent(timeStamp, eventValue,
+			        r->toNode(), r->toEventIn());
 	}
     }
 }
