@@ -64,4 +64,5 @@ libfdm_la_SOURCES = \
 	s_rint.c s_scalbn.c s_signgam.c s_significand.c s_sin.c \
 	s_tan.c s_tanh.c
 
+JS_INCLUDE_HEADERS =
 noinst_HEADERS = fdlibm.h

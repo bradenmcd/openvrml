@@ -1,3 +1,35 @@
+#
+# This Makefile.am can be used either for building libjs as a convenience
+# library or as an installed library. This is dependent on substitutions made
+# during processing of the resulting Makefile.in by configure. The following
+# variables affect what happens:
+#
+# LIBJS
+#       should be "libjs.la" if installing the library; empty otherwise.
+#
+# NOINST_LIBJS
+#       should be "libjs.la" if building a helper library; empty otherwise.
+# 
+# JS_LIBRARY_VERSION
+#       libtool version number. This variable MUST NOT BE EMPTY, though its
+#       value doesn't matter when building a helper library.
+# 
+# JS_RPATH_FLAG
+#       For a convenience library, this MUST BE EMPTY. For an installed library
+#       it MUST be "-rpath {libdir}", where {libdir} is the directory in which
+#       the compiled library will be installed.
+# 
+# JS_INCLUDE_DIR
+#       path where the header files will be installed. Can be empty if no
+#       headers are being installed.
+# 
+# JS_INCLUDE_HEADERS
+#       the headers that will be installed. Should generally be empty (if
+#       building a convenience library and no js headers need to be installed)
+#       or "jsapi.h jsautocfg.h jscompat.h jslong.h jsotypes.h jsosdep.h 
+#       jspubtd.h jstypes.h".
+#
+
 SUBDIRS = fdlibm
 
 if DEBUG
@@ -6,16 +38,11 @@ else
   DEBUG_CPPFLAGS = -DNDEBUG
 endif
 
-UNIX_DEFS = -DXP_UNIX
-FREEBSD_DEFS = -DFREEBSD
 AIX_DEFS = -DAIX -DAIXV3
 AIX_4_3_DEFS = $(AIX_DEFS) -DAIX4_3
 
-AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(UNIX_DEFS)
+AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
 
-if FREEBSD
-  AM_CPPFLAGS = $(AM_CPPFLAGS) $(FREEBSD_DEFS)
-endif
 if AIX
   AM_CPPFLAGS = $(AM_CPPFLAGS) $(AIX_DEFS)
 endif
@@ -25,99 +52,36 @@ endif
 
 AM_CFLAGS = -Wall -Wno-format
 INCLUDES = -I.
-libjs_la_LDFLAGS = -version-info @JS_LIBRARY_VERSION@
 
 noinst_PROGRAMS = jscpucfg
 jscpucfg_SOURCES = jscpucfg.c
 
-lib_LTLIBRARIES = libjs.la
-libjs_la_SOURCES = \
-	jsapi.c	 \
-	jsarena.c \
-	jsarray.c \
-	jsatom.c \
-	jsbool.c \
-	jscntxt.c \
-	jsdate.c \
-	jsdbgapi.c \
-	jsdtoa.c \
-	jsemit.c \
-	jsexn.c \
-	jsfun.c \
-	jsgc.c \
-	jshash.c \
-	jsinterp.c \
-	jslock.c \
-	jslog2.c \
-	jslong.c \
-	jsnum.c \
-	jsobj.c \
-	jsopcode.c \
-	jsparse.c \
-	jsprf.c \
-	jsregexp.c \
-	jsscan.c \
-	jsscope.c \
-	jsscript.c \
-	jsstr.c \
-	jsutil.c \
-	jsxdrapi.c \
-	prmjtime.c
+lib_LTLIBRARIES = @LIBJS@
+noinst_LTLIBRARIES = @NOINST_LIBJS@
 
-noinst_HEADERS = \
-	jsarena.h \
-	jsarray.h \
-	jsatom.h \
-	jsbool.h \
-	jsbit.h \
-	jsclist.h \
-	jsconfig.h \
-	jscntxt.h \
-	jscpucfg.h \
-	jsdate.h \
-	jsdbgapi.h \
-	jsdtoa.h \
-	jsemit.h \
-	jsexn.h \
-	jsfun.h \
-	jsgc.h \
-	jshash.h \
-	jsinterp.h \
-	jslibmath.h \
-	jslock.h \
-	jsmath.h \
-	jsnum.h \
-	jsobj.h \
-	jsopcode.h \
-	jsosdep.h \
-	jsparse.h \
-	jsprvtd.h \
-        jsprf.h \
-	jsregexp.h \
-	jsscan.h \
-	jsscope.h \
-	jsscript.h \
-	jsstddef.h \
-	jsstr.h \
-        jsutil.h \
-	jsxdrapi.h \
-	prmjtime.h \
-	resource.h \
-	jsopcode.tbl \
-	js.msg \
-	jsshell.msg
+EXTRA_LTLIBRARIES = libjs.la
 
-jsincludedir = $(includedir)/vrml97js
+libjs_la_LDFLAGS = @JS_RPATH_FLAG@ -version-info @JS_LIBRARY_VERSION@
 
-jsinclude_HEADERS = \
-	jsapi.h \
-	jsautocfg.h \
-	jscompat.h \
-	jslong.h \
-	jsotypes.h \
-	jsosdep.h \
-	jspubtd.h \
-	jstypes.h
+libjs_la_SOURCES = jsapi.c jsarena.c jsarray.c jsatom.c jsbool.c jscntxt.c \
+jsdate.c jsdbgapi.c jsdtoa.c jsemit.c jsexn.c jsfun.c jsgc.c jshash.c \
+jsinterp.c jslock.c jslog2.c jslong.c jsnum.c jsobj.c jsopcode.c jsparse.c \
+jsprf.c jsregexp.c jsscan.c jsscope.c jsscript.c jsstr.c jsutil.c jsxdrapi.c \
+prmjtime.c
+
+noinst_HEADERS = jsarena.h jsarray.h jsatom.h jsbool.h jsbit.h jsclist.h \
+jsconfig.h jscntxt.h jscpucfg.h jsdate.h jsdbgapi.h jsdtoa.h jsemit.h jsexn.h \
+jsfun.h jsgc.h jshash.h jsinterp.h jslibmath.h jslock.h jsmath.h jsnum.h \
+jsobj.h jsopcode.h jsosdep.h jsparse.h jsprvtd.h jsprf.h jsregexp.h jsscan.h \
+jsscope.h jsscript.h jsstddef.h jsstr.h jsutil.h jsxdrapi.h prmjtime.h \
+resource.h jsopcode.tbl js.msg jsshell.msg
+
+jsincludedir = @JS_INCLUDE_DIR@
+
+include_HEADERS = @JS_INCLUDE_HEADERS@
+
+EXTRA_HEADERS = jsapi.h jsautocfg.h jscompat.h jslong.h jsotypes.h jsosdep.h \
+jspubtd.h jstypes.h
 
 BUILT_SOURCES = jsautocfg.h
 
@@ -130,9 +94,8 @@ jsmath.o jsmath.lo: jsmath.c
 	$(LTCOMPILE) -c $<
 
 jsmathprelinked.lo: jsmath.lo fdlibm/libfdm.la
-	$(LINK) $(reload_flag) $<
+	$(LINK) $<
 
 libjs_la_LIBADD = jsmathprelinked.lo
 
-CLEANFILES = jsmath.o jsmath.lo
 DISTCLEANFILES = jsautocfg.h
