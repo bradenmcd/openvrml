@@ -31,6 +31,10 @@ namespace {
             inline bool fpequal(const float a, const float b) {
                 return fpzero(a - b);
             }
+
+            inline double length(const float vec[3]) {
+                return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+            }
         }
     }
 }

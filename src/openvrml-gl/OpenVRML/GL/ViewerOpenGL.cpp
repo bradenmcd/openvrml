@@ -2868,15 +2868,15 @@ namespace {
                      float target[3],
                      float up[3])
     {
+        using OpenVRML_::GL_::fpequal;
+        using OpenVRML_::GL_::length;
+        
         // Graphics Gems, p 466. Convert between axis/angle and rotation matrix
-        double len = sqrt(orientation[0] * orientation[0]
-                            + orientation[1] * orientation[1]
-                            + orientation[2] * orientation[2]);
-        if (len > 0.0) {
-            orientation[0] /= len;
-            orientation[1] /= len;
-            orientation[2] /= len;
-        }
+        
+        //
+        // orientation axis should be normalized.
+        //
+        assert(fpequal(length(&orientation[0]), 1.0));
 
         double s = sin(orientation[3]);
         double c = cos(orientation[3]);
