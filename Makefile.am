@@ -1,4 +1,4 @@
-AUTOMAKE_OPTIONS = 1.6.1c foreign
+AUTOMAKE_OPTIONS = 1.6.2 foreign
 
 SUBDIRS = doc m4 models lib java src
 
