@@ -38,6 +38,9 @@ AC_ARG_WITH(spidermonkey, [  --with-spidermonkey     use SpiderMonkey (JavaScrip
 AC_ARG_WITH(jdk, [  --with-jdk              use the Java Development Kit (Java support)], ,
              [# Use the JDK by default.
               with_jdk=yes])
+AC_ARG_WITH(ftflib, [  --with-ftflib           use ftflib (required for font support)], ,
+            [# Use ftflib by default.
+             with_ftflib=yes])
 AC_ARG_WITH(doxygen, [  --with-doxygen          use Doxygen to generate documentation], ,
             [# Use Doxygen by default.
              with_doxygen=yes])
@@ -140,6 +143,23 @@ if test "X$with_jdk" = "Xyes"; then
 fi
 AM_CONDITIONAL([WITH_JDK], [test "X$with_jdk" = "Xyes"])
 
+#
+# Check for ftflib.
+#
+if test "X$with_ftflib" = "Xyes"; then
+  OV_CHECK_FONTS
+  if test "X$have_font" = "Xyes"; then 
+    OV_CHECK_FTFLIB
+    if test "X$no_ftflib" = "Xyes"; then
+      AC_MSG_ERROR([ftflib not found.])
+    else
+      AC_DEFINE([OPENVRML_HAVE_FREETYPEFONTS], , [Defined if ftflib is available and should be used.])
+    fi
+  else
+    AC_MSG_ERROR([At least SerifPlain, SansPlain and TypewriterPlain fonts must exist to support font. Check TrueType (*.ttf) or Type1 (*.pfa,*.pfb) in your system.])
+  fi
+fi
+    
 #
 # Check for Doxygen.
 #
