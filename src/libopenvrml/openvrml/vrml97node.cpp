@@ -1551,7 +1551,7 @@ void appearance_node::do_render_appearance(viewer & v,
             node_cast<openvrml::texture_transform_node *>(
                 this->texture_transform_.sfnode::value.get());
         if (texture_transform) {
-            texture_transform->render_texture_transform(v, context);
+            texture_transform->render_texture_transform(v);
         } else {
             static const vec2f center(0.0, 0.0);
             static const float rotation = 0.0;
@@ -1559,7 +1559,7 @@ void appearance_node::do_render_appearance(viewer & v,
             static const vec2f translation(0.0, 0.0);
             v.set_texture_transform(center, rotation, scale, translation);
         }
-        texture->render_texture(v, context);
+        texture->render_texture(v);
     }
 }
 
@@ -8056,13 +8056,11 @@ size_t image_texture_node::frames() const throw ()
 /**
  * @brief render_texture implementation.
  *
- * @param v         viewer.
- * @param context   rendering context.
+ * @param v viewer.
  *
  * @return object identifier for the inserted texture.
  */
-viewer::texture_object_t
-image_texture_node::do_render_texture(viewer & v, rendering_context context)
+viewer::texture_object_t image_texture_node::do_render_texture(viewer & v)
 {
     this->update_texture();
     return v.insert_texture(this->image_,
@@ -10317,13 +10315,11 @@ void movie_texture_node::do_shutdown(const double timestamp) throw ()
 /**
  * @brief render_texture implementation.
  *
- * @param v         viewer.
- * @param context   rendering context.
+ * @param v viewer.
  *
  * @return object identifier for the inserted texture.
  */
-viewer::texture_object_t
-movie_texture_node::do_render_texture(viewer & v, rendering_context context)
+viewer::texture_object_t movie_texture_node::do_render_texture(viewer & v)
 {
     if (!this->img_ || this->frame < 0) { return 0; }
 
@@ -11580,13 +11576,11 @@ size_t pixel_texture_node::frames() const throw ()
 /**
  * @brief render_texture implementation.
  *
- * @param v         viewer.
- * @param context   rendering context.
+ * @param v viewer.
  *
  * @return object identifier for the inserted texture.
  */
-viewer::texture_object_t
-pixel_texture_node::do_render_texture(viewer & v, rendering_context context)
+viewer::texture_object_t pixel_texture_node::do_render_texture(viewer & v)
 {
     return v.insert_texture(this->image_.sfimage::value,
                             this->repeat_s_.value,
@@ -17225,12 +17219,9 @@ texture_transform_node::~texture_transform_node() throw ()
 /**
  * @brief render_texture_transform implementation.
  *
- * @param v         viewer.
- * @param context   rendering context.
+ * @param v viewer.
  */
-void
-texture_transform_node::do_render_texture_transform(viewer & v,
-                                                    rendering_context context)
+void texture_transform_node::do_render_texture_transform(viewer & v)
 {
     v.set_texture_transform(this->center_.sfvec2f::value,
                             this->rotation_.sffloat::value,

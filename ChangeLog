@@ -1,3 +1,14 @@
+2004-03-23 Braden McDaniel  <braden@endoframe.com>
+
+	Removed rendering_context argument from
+	texture_node::render_texture and
+	texture_transform_node::render_texture_transform.
+
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
 2004-03-22 Braden McDaniel  <braden@endoframe.com>
 
 	Formatting improvements to the NIST test suite result table.

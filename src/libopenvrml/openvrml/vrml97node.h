@@ -1127,8 +1127,7 @@ namespace openvrml {
             virtual size_t frames() const throw ();
 
         private:
-            virtual viewer::texture_object_t
-            do_render_texture(viewer & v, rendering_context context);
+            virtual viewer::texture_object_t do_render_texture(viewer & v);
 
             void update_texture();
         };
@@ -1396,8 +1395,7 @@ namespace openvrml {
             virtual void do_initialize(double timestamp)
                 throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
-            virtual viewer::texture_object_t
-            do_render_texture(viewer & v, rendering_context context);
+            virtual viewer::texture_object_t do_render_texture(viewer & v);
         };
 
 
@@ -1582,8 +1580,7 @@ namespace openvrml {
             virtual size_t frames() const throw ();
 
         private:
-            virtual viewer::texture_object_t
-            do_render_texture(viewer & v, rendering_context context);
+            virtual viewer::texture_object_t do_render_texture(viewer & v);
         };
 
 
@@ -2221,8 +2218,7 @@ namespace openvrml {
             virtual ~texture_transform_node() throw ();
 
         private:
-            virtual void
-            do_render_texture_transform(viewer & v, rendering_context context);
+            virtual void do_render_texture_transform(viewer & v);
         };
 
 

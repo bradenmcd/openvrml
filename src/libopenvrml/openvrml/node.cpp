@@ -2894,13 +2894,11 @@ texture_node::~texture_node() throw ()
 /**
  * @brief Insert a texture into a viewer.
  *
- * @param v         viewer.
- * @param context   rendering context.
+ * @param v viewer.
  *
  * @return object identifier for the inserted texture.
  */
-viewer::texture_object_t
-texture_node::render_texture(viewer & v, rendering_context context)
+viewer::texture_object_t texture_node::render_texture(viewer & v)
 {
     if (this->texture_reference != 0 && this->modified()) {
         v.remove_texture_object(this->texture_reference);
@@ -2911,7 +2909,7 @@ texture_node::render_texture(viewer & v, rendering_context context)
         v.insert_texture_reference(this->texture_reference,
                                    this->image().comp());
     } else {
-        this->texture_reference = this->do_render_texture(v, context);
+        this->texture_reference = this->do_render_texture(v);
         this->modified(false);
     }
     return this->texture_reference;
@@ -2920,13 +2918,11 @@ texture_node::render_texture(viewer & v, rendering_context context)
 /**
  * @brief render_texture implementation.
  *
- * @param v         viewer.
- * @param context   rendering context.
+ * @param v viewer.
  *
  * @return object identifier for the inserted texture.
  */
-viewer::texture_object_t
-texture_node::do_render_texture(viewer & v, rendering_context context)
+viewer::texture_object_t texture_node::do_render_texture(viewer & v)
 {
     return 0;
 }
@@ -3052,26 +3048,20 @@ texture_transform_node::~texture_transform_node() throw ()
 /**
  * @brief Render the texture transform.
  *
- * @param v         viewer.
- * @param context   rendering context.
+ * @param v viewer.
  */
-void
-texture_transform_node::render_texture_transform(viewer & v,
-                                                 rendering_context context)
+void texture_transform_node::render_texture_transform(viewer & v)
 {
-    this->do_render_texture_transform(v, context);
+    this->do_render_texture_transform(v);
     this->modified(false);
 }
 
 /**
  * @brief Render the texture transform.
  *
- * @param v         viewer.
- * @param context   rendering context.
+ * @param v viewer.
  */
-void
-texture_transform_node::do_render_texture_transform(viewer & v,
-                                                    rendering_context context)
+void texture_transform_node::do_render_texture_transform(viewer & v)
 {}
 
 /**

@@ -756,8 +756,7 @@ namespace openvrml {
     public:
         virtual ~texture_node() throw () = 0;
 
-        viewer::texture_object_t render_texture(viewer & v,
-                                                rendering_context context);
+        viewer::texture_object_t render_texture(viewer & v);
 
         virtual const openvrml::image & image() const throw () = 0;
         virtual size_t frames() const throw () = 0;
@@ -770,8 +769,7 @@ namespace openvrml {
     private:
         virtual texture_node * to_texture() throw ();
 
-        virtual viewer::texture_object_t
-        do_render_texture(viewer & v, rendering_context context);
+        virtual viewer::texture_object_t do_render_texture(viewer & v);
     };
 
 
@@ -795,7 +793,7 @@ namespace openvrml {
     public:
         virtual ~texture_transform_node() throw () = 0;
 
-        void render_texture_transform(viewer & v, rendering_context context);
+        void render_texture_transform(viewer & v);
 
     protected:
         texture_transform_node(const node_type & type,
@@ -805,8 +803,7 @@ namespace openvrml {
     private:
         virtual texture_transform_node * to_texture_transform() throw ();
 
-        virtual void
-        do_render_texture_transform(viewer & v, rendering_context context);
+        virtual void do_render_texture_transform(viewer & v);
     };
 
 
