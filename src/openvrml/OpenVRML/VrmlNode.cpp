@@ -86,20 +86,13 @@ VrmlNode::~VrmlNode()
 {
   // Remove the node's name (if any) from the map...
   if (!this->id.empty())
-    {
-      if (d_scene && d_scene->scope())
-	d_scene->scope()->removeNodeName(*this);
-    }
+  {
+    if (d_scene && d_scene->scope())
+      d_scene->scope()->removeNodeName(*this);
+  }
 
   // Remove all routes from this node
-  Route *r = d_routes;
-  while (r)
-    {
-      Route * next = r->getNext();
-      delete r;
-      r = next;
-    }
-
+  d_routes.resize(0);
 }
 
 /**
@@ -294,23 +287,20 @@ void VrmlNode::addRoute(const std::string & fromEventOut,
   // Check to make sure fromEventOut and toEventIn are valid names...
   
   // Is this route already here?
-  Route *r;
-  for (r=d_routes; r; r=r->getNext())
-    {
-      if (toNode == r->toNode
-            && fromEventOut == r->fromEventOut
-            && toEventIn == r->toEventIn)
-	return;       // Ignore duplicate routes
-    }
+  RouteList::iterator i;
+
+  for (i = d_routes.begin(); i != d_routes.end(); ++i)
+  {
+    if (toNode == (*i)->toNode
+	&& fromEventOut == (*i)->fromEventOut
+	&& toEventIn == (*i)->toEventIn)
+      return;       // Ignore duplicate routes
+  }
 
   // Add route
-  r = new Route(fromEventOut, toNode, toEventIn);
-  if (d_routes)
-    {
-      r->setNext(d_routes);
-      d_routes->setPrev(r);
-    }
-  d_routes = r;
+  Route* r = new Route(fromEventOut, toNode, toEventIn);
+
+  d_routes.push_back(r);
 }
 
 
@@ -322,36 +312,25 @@ void VrmlNode::deleteRoute(const std::string & fromEventOut,
 			   const VrmlNodePtr & toNode,
 			   const std::string & toEventIn)
 {
-  Route *r;
-  for (r=d_routes; r; r=r->getNext())
-    {
-      if (toNode == r->toNode
-            && fromEventOut == r->fromEventOut
-            && toEventIn == r->toEventIn) {
-	  if (r->getPrev())
-            {
-	      r->getPrev()->setNext(r->getNext());
-            }
-          else
-            {
-              // point to new head of route list if deleting first route
-              d_routes = r->getNext();
-            }
+  RouteList::iterator i;
 
-	  if (r->getNext())
-	    r->getNext()->setPrev(r->getPrev());
-	  delete r;
-	  break;
-	}
+  for (i = d_routes.begin(); i != d_routes.end(); ++i)
+  {
+    if (toNode == (*i)->toNode
+	&& fromEventOut == (*i)->fromEventOut
+	&& toEventIn == (*i)->toEventIn)
+    {
+      i = d_routes.erase(i);
     }
+  }
 }
 
 /**
  * @brief Get the routes from this node.
  *
- * @return a pointer to the first Route in the list.
+ * @return an std::vector of Routes from this node.
  */
-Route * VrmlNode::getRoutes() {
+std::list<Route*> VrmlNode::getRoutes() {
     return this->d_routes;
 }
 
@@ -662,15 +641,19 @@ const VrmlMFNode VrmlNode::getChildren() const {
  */
 void VrmlNode::eventOut(double timeStamp, const std::string & id,
 			const VrmlField & fieldValue) {
-    // Find routes from this eventOut
-    for (Route * r = this->d_routes; r; r = r->getNext()) {
-        if (id == r->fromEventOut) {
-            VrmlField * eventValue = fieldValue.clone();
-            assert(this->d_scene);
-            this->d_scene->queueEvent(timeStamp, eventValue, r->toNode,
-                                      r->toEventIn);
-	}
+
+  RouteList::const_iterator i;
+
+  for (i = d_routes.begin(); i != d_routes.end(); ++i)
+  {
+    if (id == (*i)->fromEventOut)
+    {
+      VrmlField* eventValue = fieldValue.clone();
+      assert(this->d_scene);
+      this->d_scene->queueEvent(timeStamp, eventValue, (*i)->toNode,
+				(*i)->toEventIn);
     }
+  }
 }
 
 ostream& operator<<(ostream& os, const VrmlNode& f)

@@ -1061,13 +1061,19 @@ namespace {
             if (!fromNodeId.empty()) {
                 const VrmlNodePtr fromNode = this->ns.findNode(fromNodeId);
                 assert(fromNode);
-                for (Route * route = node.getRoutes(); route;
-                        route = route->getNext()) {
-                    const std::string & toNodeId = route->toNode->getId();
-                    assert(this->ns.findNode(toNodeId));
-                    fromNode->addRoute(route->fromEventOut,
-                            this->ns.findNode(toNodeId), route->toEventIn);
-                }
+		
+		VrmlNode::RouteList routes = node.getRoutes();
+
+		VrmlNode::RouteList::iterator i;
+		
+		for (i = routes.begin(); i != routes.end(); ++i)
+		{
+		  const std::string& toNodeId = (*i)->toNode->getId();
+		  assert(this->ns.findNode(toNodeId));
+		  fromNode->addRoute((*i)->fromEventOut,
+				     this->ns.findNode(toNodeId),
+				     (*i)->toEventIn);
+		}
             }
         }
         

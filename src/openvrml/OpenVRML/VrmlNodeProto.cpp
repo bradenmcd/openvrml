@@ -237,18 +237,25 @@ void VrmlNodeProto::instantiate()
       // directly to the local nodes that have IS'd the PROTO
       // eventOut.
       const NodeType::FieldList & eventOuts = this->type.eventOuts();
-      for (Route *r = d_routes; r; r = r->getNext())
+
+      RouteList::iterator i;
+
+      for (i = d_routes.begin(); i != d_routes.end(); ++i)
+      {
 	for (ev = eventOuts.begin(); ev != eventOuts.end(); ++ev)
-	  if ((*ev)->name == r->fromEventOut)
+	{
+	  if ((*ev)->name == (*i)->fromEventOut)
+	  {
+	    ismap = &(*ev)->thisIS;
+	    for (j = ismap->begin(); j != ismap->end(); ++j)
 	    {
-	      ismap = &(*ev)->thisIS;
-	      for (j = ismap->begin(); j != ismap->end(); ++j)
-		{
-		  const VrmlNodePtr & n = d_scope->findNode((*j)->node->getId());
-		  if (n)
-		    n->addRoute((*j)->fieldName, r->toNode, r->toEventIn);
-		}
+	      const VrmlNodePtr & n = d_scope->findNode((*j)->node->getId());
+	      if (n)
+		n->addRoute((*j)->fieldName, (*i)->toNode, (*i)->toEventIn);
 	    }
+	  }
+	}
+      }
 
       // Set IS'd field values in the implementation nodes to
       // the values specified in the instantiation.

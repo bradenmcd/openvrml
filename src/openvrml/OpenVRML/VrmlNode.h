@@ -25,6 +25,7 @@
 #include <iostream.h>
 #include <list>
 #include <string>
+#include <vector>
 #include <iostream.h>
 #include "common.h"
 #include "field.h"
@@ -100,6 +101,7 @@ class OPENVRML_SCOPE VrmlNode {
 
 public:
     const NodeType & type;
+    typedef std::list<Route *> RouteList;
 
     virtual ~VrmlNode() = 0;
 
@@ -207,8 +209,7 @@ public:
     // Delete a ROUTE from a field in this node
     void deleteRoute(const std::string & fromEventOut, const VrmlNodePtr & toNode, const std::string & toEventIn);
 
-    Route * getRoutes();
-
+    RouteList getRoutes();
 
     const VrmlField * getEventOut(const std::string & fieldName) const;
 
@@ -246,7 +247,7 @@ protected:
     bool visited;
 
     // Routes from this node (clean this up, add RouteList ...)
-    Route *d_routes;
+    RouteList d_routes;
 };
 
 
