@@ -1,7 +1,7 @@
 #
 # OpenVRML
 #
-# Copyright (C) 2001  S. K. bose
+# Copyright (C) 2001-2002  S. K. bose
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@
 ANTLRBINOUTDIR = .\bin
 INTDIR = $(ANTLRBINOUTDIR)
 ANTLRLIBDFIR = .\lib
-ANTLRSOURCE = ..\..\..\..\..\lib\antlr
+ANTLRSOURCE = .\
 
 help:
 	more < <<
@@ -36,12 +36,6 @@ where: [target] may be any one of the following ...
     antlr ........  builds ANTLR library 
     clean....... deletes all intermediate files
 
-
-    ---- makefile Author (bose@pavan.barc.ernet.in) notes ------------------
-         OpenVRML was originally written by Chris Morley
-	 (http://www.vermontel.net/~cmorley/. He has donated it 
-	 as a foundation for OVAL development and is currently 
-	 maintained at OVAL (http://openvrml.sourceforge.net.).
 
     This makefile suite built against MS Visual C++ 6.0 and tested on
     WindowsNT 4.0, Windows95, and Windows98.
