@@ -45,9 +45,9 @@ namespace openvrml {
                        const scope_ptr & parent = scope_ptr());
         virtual ~scope();
 
-        void add_type(const node_type_ptr & type);
-        const node_type_ptr find_type(const std::string & id) const;
-        const node_type_ptr first_type() const;
+        bool add_type(const node_type_ptr & type) throw (std::bad_alloc);
+        const node_type_ptr & find_type(const std::string & id) const;
+        const node_type_ptr & first_type() const;
         node * find_node(const std::string & id) const;
 
     private:

@@ -117,18 +117,25 @@ scope::~scope()
  *
  * @param type  a node_type_ptr
  *
- * @todo Throw std::invalid_argument if the argument type is already defined.
+ * @return @c true if @p type is successfully added to the scope; @c false
+ *         otherwise (if a node_type with the same id is already defined for
+ *         the scope).
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @pre @p type is not null.
  */
-void scope::add_type(const node_type_ptr & type)
+bool scope::add_type(const node_type_ptr & type) throw (std::bad_alloc)
 {
     assert(type);
-    assert(!this->find_type(type->id));
-    this->node_type_list.push_front(type);
+    if (this->find_type(type->id)) { return false; }
+    this->node_type_list.push_front(type); // Throws std::bad_alloc.
+    return true;
 }
 
 namespace {
     struct has_id_ : std::unary_function<node_type_ptr, bool> {
-        has_id_(const std::string & id):
+        explicit has_id_(const std::string & id):
             id(&id)
         {}
 
@@ -152,7 +159,7 @@ typedef std::list<node_type_ptr> node_type_list_t;
  * @brief Find a node type, given a type name. Returns 0 if type is
  *      not defined.
  */
-const node_type_ptr scope::find_type(const std::string & id) const {
+const node_type_ptr & scope::find_type(const std::string & id) const {
     //
     // Look through the types unique to this scope.
     //
@@ -164,9 +171,10 @@ const node_type_ptr scope::find_type(const std::string & id) const {
     //
     // Look in the parent scope for the type.
     //
+    static const node_type_ptr null;
     return this->parent
             ? this->parent->find_type(id)
-            : node_type_ptr(0);
+            : null;
 }
 
 /**
@@ -175,11 +183,12 @@ const node_type_ptr scope::find_type(const std::string & id) const {
  * @return the first node_type in the scope, or a null node_type_ptr if the
  *         scope has no node_types.
  */
-const node_type_ptr scope::first_type() const
+const node_type_ptr & scope::first_type() const
 {
+    static const node_type_ptr null;
     return !this->node_type_list.empty()
             ? this->node_type_list.front()
-            : node_type_ptr(0);
+            : null;
 }
 
 /**

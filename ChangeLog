@@ -1,5 +1,16 @@
 2003-09-18  Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp:  Track changes to
+	Vrml97Parser.g.
+	* src/libopenvrml/openvrml/Vrml97Parser.g:  Throw an
+	antlr::SemanticException when scope::add_type fails.
+	* src/libopenvrml/openvrml/scope.cpp:  Changed scope::find_type
+	and scope::first_type to return "const node_type_ptr &" instead
+	of "const node_type_ptr".  Changed scope::add_type to return
+	a boolean value to indicate success or failure.
+
+2003-09-18  Braden McDaniel  <braden@endoframe.com>
+
 	Changed node::id to return "const std::string &" instead of
 	"const std::string".
 

@@ -1,4 +1,4 @@
-// -*- Mode: Antlr; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: Antlr; antlr-language: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
 //
 // OpenVRML
 //
@@ -643,7 +643,9 @@ options { defaultErrorHandler=false; }
             assert(scope);
             n.reset(scope->find_node(id1->getText()));
             if (!n) {
-                throw SemanticException("Node \"" + id1->getText() + "\" has not been defined in this scope.",
+                throw SemanticException("Node \"" + id1->getText()
+                                        + "\" has not been defined in this "
+                                        "scope.",
                                         this->uri,
                                         id1->getLine(),
                                         id1->getColumn());
@@ -683,17 +685,18 @@ proto[openvrml::browser & browser,
                 // XXX we only *really* need this for SFNode and MFNode
                 // XXX fields/exposedFields.
                 scope_ptr interfaceDeclScope(new Vrml97RootScope(browser,
-                                                                this->uri));
+                                                                 this->uri));
             }
-            protoInterfaceDeclaration[interfaceDeclScope,
-                                      static_cast<ProtoNodeClass &>(*nodeClass)]
+            protoInterfaceDeclaration[
+                interfaceDeclScope,
+                static_cast<ProtoNodeClass &>(*nodeClass)]
         )* RBRACKET LBRACE protoBody[protoScope,
                                      static_cast<ProtoNodeClass &>(*nodeClass)]
         RBRACE
         {
             //
-            // Add the new NodeClass (prototype definition) to the browser's
-            // NodeClassMap.
+            // Add the new node_class (prototype definition) to the browser's
+            // node_class_map.
             //
             // First, construct the id for the node implementation.
             //
@@ -707,7 +710,7 @@ proto[openvrml::browser & browser,
             browser.node_class_map.insert(value);
 
             //
-            // PROTO's implicitly introduce a new node type as well...
+            // PROTOs implicitly introduce a new node type as well...
             //
             const node_interface_set & interfaces =
                 static_cast<ProtoNodeClass &>(*nodeClass)
@@ -716,7 +719,15 @@ proto[openvrml::browser & browser,
                 nodeClass->create_type(id->getText(), interfaces);
             assert(nodeType);
             assert(scope);
-            scope->add_type(nodeType);
+            if (!scope->add_type(nodeType)) {
+                using antlr::SemanticException;
+                throw SemanticException("Node type \"" + nodeType->id
+                                        + "\" has already been defined in "
+                                        "this scope.",
+                                        this->uri,
+                                        id->getLine(),
+                                        id->getColumn());
+            }
         }
     ;
 
@@ -849,14 +860,24 @@ externproto[openvrml::browser & browser, const openvrml::scope_ptr & scope]
                 }
             }
             //
-            // If we weren't able to create a NodeType, that means that we
-            // don't already have a NodeClass for the node. Currently we only
-            // support referring to existing NodeClasses with EXTERNPROTO;
-            // adding new NodeClasses via EXTERNPROTO is not supported. In
+            // If we weren't able to create a node_type, that means that we
+            // don't already have a node_class for the node. Currently we only
+            // support referring to existing node_classes with EXTERNPROTO;
+            // adding new node_classes via EXTERNPROTO is not supported. In
             // practice, this means that the ordinary way of using EXTERNPROTOs
             // in VRML worlds will fail.
             //
-            if (nodeType) { scope->add_type(nodeType); }
+            if (nodeType) {
+                if (!scope->add_type(nodeType)) {
+                    using antlr::SemanticException;
+                    throw SemanticException("Node type \"" + nodeType->id
+                                            + "\" has already been defined in "
+                                            " this scope.",
+                                            this->uri,
+                                            id->getLine(),
+                                            id->getColumn());
+                }
+            }
         }
     ;
 
