@@ -2526,9 +2526,6 @@ void Billboard::render(Viewer * const viewer, VrmlRenderContext rc)
         // Render children
         this->Group::render(viewer, rc);
 
-        LM = LM.affine_inverse();
-        viewer->MatrixMultiply(LM.get());
-
         viewer->endObject();
     }
 
@@ -12880,9 +12877,6 @@ void Transform::render(Viewer * const viewer, VrmlRenderContext rc)
         // Render children
         this->Group::renderNoCull(viewer, rc);
 
-        // Reverse transforms (for immediate mode/no matrix stack renderer)
-        M = M.affine_inverse();
-        viewer->MatrixMultiply(M.get());
         viewer->endObject();
     }
 

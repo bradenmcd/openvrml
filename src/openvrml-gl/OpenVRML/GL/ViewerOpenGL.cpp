@@ -98,6 +98,21 @@ namespace {
         GLM[14] = M[2][3];
         GLM[15] = M[3][3];
     }
+    
+    class GLCapabilities {
+    public:
+        GLint maxModelviewStackDepth;
+
+        GLCapabilities();
+    };
+    
+    GLCapabilities::GLCapabilities()
+    {
+        glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH,
+                      &this->maxModelviewStackDepth);
+    }
+
+    const GLCapabilities glCapabilities;
 }
 
 namespace OpenVRML {
@@ -115,6 +130,85 @@ namespace GL {
  * A window-system specific subclass needs to redefine the pure
  * virtual methods.
  */
+
+/**
+ * @class ViewerOpenGL::ModelviewMatrixStack
+ *
+ * @brief Encapsulates and extended modelview matrix stack.
+ *
+ * OpenGL requires that implementations have a modelview matrix stack with a
+ * maximum depth of only 32. Regardless of that, the maximum depth can be
+ * expected to vary between implementations, and we don't want nesting of
+ * Transform nodes in VRML worlds to be constrained by this limit.
+ *
+ * ModelviewMatrixStack uses the OpenGL modelview matrix stack until it fills
+ * up, at which point any additional matrices that spill over are pushed onto
+ * a conventional stack of @link VrmlMatrix VrmlMatrices@endlink.
+ */
+
+/**
+ * @var size_t ViewerOpenGL::ModelviewMatrixStack::size
+ *
+ * @brief The current stack depth.
+ */
+
+/**
+ * @var std::stack<VrmlMatrix> ViewerOpenGL::ModelviewMatrixStack::spillover
+ *
+ * @brief Any matrices that won't fit on the OpenGL modelview matrix stack get
+ *      pushed onto this stack.
+ */
+
+/**
+ * @brief Constructor.
+ */
+ViewerOpenGL::ModelviewMatrixStack::ModelviewMatrixStack():
+    size(0)
+{}
+
+/**
+ * @brief Push the current matrix onto the stack.
+ *
+ * @pre The current matrix is the modelview matrix.
+ */
+void ViewerOpenGL::ModelviewMatrixStack::push()
+{
+# ifndef NDEBUG
+    GLint matrixMode;
+    glGetIntegerv(GL_MATRIX_MODE, &matrixMode);
+# endif
+    assert(matrixMode == GL_MODELVIEW);
+    if (this->size == glCapabilities.maxModelviewStackDepth - 1) {
+        VrmlMatrix mat;
+        glGetFloatv(GL_MODELVIEW_MATRIX, &mat[0][0]);
+        this->spillover.push(mat);
+        glPopMatrix();
+    }
+    glPushMatrix();
+    ++this->size;
+}
+
+/**
+ * @brief Pop the current matrix off of the stack.
+ *
+ * @pre The current matrix is the modelview matrix.
+ */
+void ViewerOpenGL::ModelviewMatrixStack::pop()
+{
+# ifndef NDEBUG
+    GLint matrixMode;
+    glGetIntegerv(GL_MATRIX_MODE, &matrixMode);
+# endif
+    assert(matrixMode == GL_MODELVIEW);
+    glPopMatrix();
+    if (!this->spillover.empty()) {
+        glLoadMatrixf(&this->spillover.top()[0][0]);
+        this->spillover.pop();
+        glPushMatrix();
+    }
+    --this->size;
+}
+
 
 /**
  * @brief Construct a viewer for the specified Browser.
@@ -241,7 +335,7 @@ Viewer::Object ViewerOpenGL::beginObject(const char *,
     // Finish setup stuff before first object
     if (1 == ++this->d_nObjects) {
         // Finish specifying the view (postponed to make Background easier)
-        glPushMatrix();
+        this->modelviewMatrixStack.push();
         glTranslatef(this->d_zoom[0],
                      this->d_zoom[1],
                      this->d_zoom[2]); // M = M * T
@@ -260,7 +354,7 @@ Viewer::Object ViewerOpenGL::beginObject(const char *,
             ++this->d_lightInfo[i].nestingLevel;
         }
     }
-
+    this->modelviewMatrixStack.push();
     return 0;
 }
 
@@ -279,8 +373,10 @@ void ViewerOpenGL::endObject()
         }
     }
 
+    this->modelviewMatrixStack.pop();
+
     if (--this->d_nestedObjects == 0) {
-        glPopMatrix();
+        this->modelviewMatrixStack.pop();
     }
 }
 
@@ -418,7 +514,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_LIGHTING);
 
-        glPushMatrix();
+        this->modelviewMatrixStack.push();
 
         // Apply current view rotation
         glMultMatrixf(&this->d_rotationMatrix[0][0]);
@@ -641,7 +737,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
         }
 
         // Put everything back the way it was
-        glPopMatrix();
+        this->modelviewMatrixStack.pop();
 
         if (this->d_lit) { glEnable(GL_LIGHTING); }
         glEnable(GL_DEPTH_TEST);
@@ -3432,7 +3528,7 @@ void ViewerOpenGL::text2( int x, int y, float scale, char* text )
   gluOrtho2D(0, d_winWidth, 0, d_winHeight);
 
   glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
+  this->modelviewMatrixStack.push();
   glLoadIdentity();
 
   glPushAttrib(GL_ENABLE_BIT);
@@ -3448,7 +3544,7 @@ void ViewerOpenGL::text2( int x, int y, float scale, char* text )
 
   glPopAttrib();
 
-  glPopMatrix();
+  this->modelviewMatrixStack.pop();
   glMatrixMode(GL_PROJECTION);
   glPopMatrix();
   glMatrixMode(GL_MODELVIEW);
@@ -3477,12 +3573,12 @@ void ViewerOpenGL::text3(int *justify, float size, int n, const char * const *s)
       const char *textLine = s[i];
       if ( textLine )
 	{
-	  glPushMatrix();
+	  this->modelviewMatrixStack.push();
 	  glTranslatef(x, y, 0.0);
 	  glScalef(font_scale, font_scale, font_scale);
 	  while (*textLine)
 	    glutStrokeCharacter(GLUT_STROKE_ROMAN, *textLine++);
-	  glPopMatrix();
+	  this->modelviewMatrixStack.pop();
 	}
     }
 
@@ -3506,7 +3602,7 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs,
     glShadeModel(GL_FLAT);
     GLUquadricObj * sph = 0;
     glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
+    this->modelviewMatrixStack.push();
     const float * c = bs.getCenter();
     glTranslatef(c[0], c[1], c[2]);
     sph = gluNewQuadric();
@@ -3550,7 +3646,7 @@ void ViewerOpenGL::drawBSphere(const BSphere & bs,
         gluSphere(sph, bs.getRadius(), 8, 8);
     }
     gluDeleteQuadric(sph);
-    glPopMatrix();
+    this->modelviewMatrixStack.pop();
 }
 
 } // namespace GL
