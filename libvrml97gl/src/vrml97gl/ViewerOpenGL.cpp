@@ -42,18 +42,18 @@
 
 #define USE_TEXTURE_DISPLAY_LISTS 1
 
-namespace {
+// namespace {
 
-    const float FPTOLERANCE(1.0e-7);
+static const float FPTOLERANCE(1.0e-7);
 
-    bool FPZERO(double n);
-    bool FPEQUAL(double, double);
-    void Vnorm(float [3]);
-    float Vdot(const float [3], const float [3]);
-    void Vcross(float [3], const float [3], const float [3]);
-    void Vdiff(float [3], const float [3], const float [3]);
+static bool FPZERO(double n);
+static bool FPEQUAL(double, double);
+static void Vnorm(float [3]);
+static float Vdot(const float [3], const float [3]);
+static void Vcross(float [3], const float [3], const float [3]);
+static void Vdiff(float [3], const float [3], const float [3]);
 
-}
+// }
 
 //  Construct a viewer for the specified scene. I'm not happy with the
 //  mutual dependencies between VrmlScene/VrmlNodes and Viewers...
@@ -2977,45 +2977,45 @@ void ViewerOpenGL::text3(int *justify, float size, int n, const char **s)
 
 }
 
-namespace {
+// namespace {
     
-    bool FPZERO(double n) {
-        return (fabs(n) < FPTOLERANCE);
-    }
+static bool FPZERO(double n) {
+    return (fabs(n) < FPTOLERANCE);
+}
     
-    bool FPEQUAL(double a, double b) {
-        return FPZERO(a - b);
-    }
+static bool FPEQUAL(double a, double b) {
+    return FPZERO(a - b);
+}
     
-    void Vnorm(float V[3]) {
-        float vlen = static_cast<float>(sqrt((V[0] * V[0])
-                                            +(V[1] * V[1])
-                                            +(V[2] * V[2])));
-        if (! FPZERO(vlen)) {
-            V[0] /= vlen;
-            V[1] /= vlen;
-            V[2] /= vlen;
-        }
-    }
-
-    float Vdot(const float A[3], const float B[3]) {
-        return ((A[0] * B[0]) + (A[1] * B[1]) + (A[2] * B[2]));
-    }
-    
-    void Vcross(float V[3], const float A[3], const float B[3]) {
-        // Use temps so V can be A or B
-        float x ((A[1] * B[2]) - (A[2] * B[1]));
-        float y ((A[2] * B[0]) - (A[0] * B[2]));
-        float z ((A[0] * B[1]) - (A[1] * B[0]));
-        V[0] = x;
-        V[1] = y;
-        V[2] = z;
-    }
-
-    void Vdiff(float V[3], const float A[3], const float B[3]) {
-        V[0] = A[0] - B[0];
-        V[1] = A[1] - B[1];
-        V[2] = A[2] - B[2];
+static void Vnorm(float V[3]) {
+    float vlen = static_cast<float>(sqrt(  (V[0] * V[0])
+                                         + (V[1] * V[1])
+                                         + (V[2] * V[2])));
+    if (! FPZERO(vlen)) {
+        V[0] /= vlen;
+        V[1] /= vlen;
+        V[2] /= vlen;
     }
 }
+
+static float Vdot(const float A[3], const float B[3]) {
+    return ((A[0] * B[0]) + (A[1] * B[1]) + (A[2] * B[2]));
+}
+    
+static void Vcross(float V[3], const float A[3], const float B[3]) {
+    // Use temps so V can be A or B
+    float x ((A[1] * B[2]) - (A[2] * B[1]));
+    float y ((A[2] * B[0]) - (A[0] * B[2]));
+    float z ((A[0] * B[1]) - (A[1] * B[0]));
+    V[0] = x;
+    V[1] = y;
+    V[2] = z;
+}
+
+static void Vdiff(float V[3], const float A[3], const float B[3]) {
+    V[0] = A[0] - B[0];
+    V[1] = A[1] - B[1];
+    V[2] = A[2] - B[2];
+}
+// }
 

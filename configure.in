@@ -136,10 +136,10 @@ dnl AC_SUBST(VRMLGL_LIBS)
 dnl
 dnl Test for adequate namespace support in the C++ compiler
 dnl
-VRML_CXX_NAMESPACE(
-  ,
-  AC_MSG_ERROR([Your C++ compiler does not have sufficient support for namespaces. See 'config.log' for details.])
-)
+dnl VRML_CXX_NAMESPACE(
+dnl   ,
+dnl   AC_MSG_ERROR([Your C++ compiler does not have sufficient support for namespaces. See 'config.log' for details.])
+dnl )
 
 VRML_CXX_BOOL(
   ,
