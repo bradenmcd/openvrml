@@ -1,8 +1,6 @@
 JAVAROOT = $(top_builddir)/java
 
-if WITH_JDK
-javadir = $(datadir)/java/vrml/field
-noinst_JAVA = \
+JAVA_FILES = \
         SFBool.java \
         SFColor.java \
         SFFloat.java \
@@ -43,4 +41,10 @@ noinst_JAVA = \
         ConstMFTime.java \
         ConstMFVec2f.java \
         ConstMFVec3f.java
+
+if WITH_JDK
+javadir = $(datadir)/java/vrml/field
+noinst_JAVA = $(JAVA_FILES)
 endif
+
+EXTRA_DIST = $(JAVA_FILES)
