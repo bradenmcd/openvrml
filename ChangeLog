@@ -1,3 +1,7 @@
+2003-01-27  Thomas Flynn  <tflynn@users.sourceforge.net>
+
+        * doc/conformance.doc: Update conformance test results.
+
 2003-01-26  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/VrmlMatrix.cpp,

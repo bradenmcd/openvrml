@@ -7,13 +7,13 @@
   <TR>
     <TD>Total Number of Tests</TD><TD>796</TD>
   <TR>
-    <TD>Total Passed</TD><TD>544</TD>
+    <TD>Total Passed</TD><TD>558</TD>
   </TR>
   <TR>
-    <TD>Total Failed</TD><TD>236</TD>
+    <TD>Total Failed</TD><TD>221</TD>
   </TR>
   <TR>
-    <TD>Total Invalid</TD><TD>16</TD>
+    <TD>Total Invalid</TD><TD>17</TD>
   </TR>
 </TABLE>
 
@@ -31,9 +31,9 @@
     <TD>42
   <TR>
     <TD>Bindable Nodes (93)
-    <TD>41
-    <TD>40
-    <TD>12
+    <TD>53
+    <TD>27
+    <TD>13
   <TR>
     <TD>Geometric Properties (53)
     <TD>39
@@ -61,8 +61,8 @@
     <TD>31
   <TR>
     <TD>Sensors (81)
-    <TD>59
-    <TD>22
+    <TD>61
+    <TD>20
   <TR>
     <TD>Sounds (28)
     <TD>0
@@ -158,8 +158,8 @@
     <TD>4
   <TR>
     <TD>Fog
-    <TD>15
-    <TD>6
+    <TD>21
+    <TD>0
   <TR>
     <TD>FontStyle
     <TD>0
@@ -199,9 +199,9 @@
     <TD>4
   <TR>
     <TD>NavigationInfo
-    <TD>8
-    <TD>17
-    <TD>1
+    <TD>14
+    <TD>10
+    <TD>2
   <TR>
     <TD>Normal
     <TD>7
@@ -220,8 +220,8 @@
     <TD>7
   <TR>
     <TD>PlaneSensor
-    <TD>9
-    <TD>5
+    <TD>11
+    <TD>3
   <TR>
     <TD>PointLight
     <TD>24
@@ -364,19 +364,19 @@ For a detailed description of the purpose of each test please see the <A HREF="h
     <TD><TD><TD>12<TD>*<TD><TD>
   <TR>
     <TD><TD>FontStyle
-    <TD>1<TD><TD>*<TD>Failed! The font displayed in lookat does not look like SERIF.
+    <TD>1<TD><TD>*<TD>Failed! Fonts are fine but the green line for the axis appears white instead.
   <TR>
-    <TD><TD><TD>2<TD><TD>*<TD>Failed! All fonts (SERIF, SANS, TYPEWRITER) display the same.
+    <TD><TD><TD>2<TD><TD>*<TD>Failed! See previous.
   <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! Does not display with TYPEWRITER font.
+    <TD><TD><TD>3<TD><TD>*<TD>Failed! See previous.
   <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! The font displayed in lookat does not look like SERIF.
+    <TD><TD><TD>4<TD><TD>*<TD>Failed! See previous.
   <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed! Everything displays the same. Bold, italic, etc. don't seem to work.
+    <TD><TD><TD>5<TD><TD>*<TD>Failed! See previous.
   <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed! Partially funtioning, vertical text doesn't seem to work properly.
+    <TD><TD><TD>6<TD><TD>*<TD>Failed! Partially funtioning, vertical text doesn't seem to work properly and green line doesn't appear for axis.
   <TR>
-    <TD><TD><TD>7<TD><TD>*<TD>Failed! Javascript parsing error<BR>javascript: line 18: illegal character:<BR>'     justify     [\' + justifyMajor + '\ ,' + '\' + justifyMinor + '\]' +<BR>Possible NIST error
+    <TD><TD><TD>7<TD><TD>*<TD>Failed! Lookat dumps the following to the console on startup:<BR>TEXT_SCRIPT: 18: SyntaxError: illegal character<BR>../../../../src/openvrml/OpenVRML/script.cpp:1506: verification (ok) failed<BR>Possible NIST error
   <TR>
     <TD><TD>ImageTexture
     <TD>1<TD>*<TD><TD>
@@ -795,19 +795,19 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <TR>
     <TD><TD><TD>14<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>15<TD><TD>*<TD>Failed! Looks like the test passes but the text is overlapping all over the place so it's impossible to tell.
+    <TD><TD><TD>15<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>16<TD><TD>*<TD>Failed! See above.
+    <TD><TD><TD>16<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>17<TD><TD>*<TD>Failed! See above.
+    <TD><TD><TD>17<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>18<TD><TD>*<TD>Failed! See above.
+    <TD><TD><TD>18<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>19<TD><TD>*<TD>Failed! See above.
+    <TD><TD><TD>19<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>20<TD><TD>*<TD>Failed! See above.
+    <TD><TD><TD>20<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>21<TD>*<TD><TD>Text is incorrectly colored though.
+    <TD><TD><TD>21<TD>*<TD><TD>
   <TR>
     <TD><TD>NavigationInfo
     <TD>1<TD><TD>*<TD>Failed! Box does not turn red upon collision as it should.
@@ -826,7 +826,7 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <TR>
     <TD><TD><TD>8<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>9<TD><TD>*<TD>Failed! Current speed doesn't display at the bottom of lookat as it should. Console message says<BR>../../../../src/openvrml/OpenVRML/script.cpp:1600: verification (ok) failed
+    <TD><TD><TD>9<TD><TD><TD>INVALID TEST
   <TR>
     <TD><TD><TD>10<TD><TD>*<TD>Failed! Current speed doesn't get updated.
   <TR>
@@ -846,21 +846,21 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <TR>
     <TD><TD><TD>18<TD><TD><TD>INVALID TEST
   <TR>
-    <TD><TD><TD>19<TD><TD>*<TD>Failed! Cannot click on box.
+    <TD><TD><TD>19<TD><TD>*<TD>Failed! Cannot click on box. See SourceForge bug 626197.
   <TR>
     <TD><TD><TD>20<TD><TD>*<TD>Failed! Text doesn't appear when pushing itemss onto the stack. Appears fine when popping items off of the stack though.
   <TR>
-    <TD><TD><TD>21<TD><TD>*<TD>Failed! Timestamps do not appear. Lookat dumps the following message to the console:<BR>../../../../src/openvrml/OpenVRML/script.cpp:1539: verification (ok) failed
+    <TD><TD><TD>21<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>22<TD><TD>*<TD>Failed! See previous.
+    <TD><TD><TD>22<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>23<TD><TD>*<TD>Failed! See previous.
+    <TD><TD><TD>23<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>24<TD><TD>*<TD>Failed! See previous.
+    <TD><TD><TD>24<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>25<TD><TD>*<TD>Failed! See previous.
+    <TD><TD><TD>25<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>26<TD><TD>*<TD>Failed! See previous.
+    <TD><TD><TD>26<TD>*<TD><TD>
   <TR>
     <TD><TD>Viewpoint
     <TD>1<TD>*<TD><TD>
@@ -1290,13 +1290,13 @@ For a detailed description of the purpose of each test please see the <A HREF="h
     <TD><TD>Billboard
     <TD>1<TD>*<TD><TD>Incredibly processor intensive if you try to rotate though.
   <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>Text is not lined up properly though.
+    <TD><TD><TD>2<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>Text is not lined up properly though.
+    <TD><TD><TD>3<TD>*<TD><TD>
   <TR>
     <TD><TD><TD>4<TD><TD>*<TD>Failed! Initial view is incorrect.
   <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>Text is not lined up properly though.
+    <TD><TD><TD>5<TD>*<TD><TD>
   <TR>
     <TD><TD><TD>6<TD><TD>*<TD>Failed!
   <TR>
@@ -1765,9 +1765,9 @@ For a detailed description of the purpose of each test please see the <A HREF="h
     <TD><TD>PlaneSensor
     <TD>1<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>2<TD><TD>*<TD>Failed! Lookat loads the world from the URL but then dumps "Unreachable URI" to the console even though it did sucessfully download the 3K world.
+    <TD><TD><TD>2<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! See previous.
+    <TD><TD><TD>3<TD>*<TD><TD>
   <TR>
     <TD><TD><TD>4<TD>*<TD><TD>
   <TR>
@@ -1781,9 +1781,9 @@ For a detailed description of the purpose of each test please see the <A HREF="h
   <TR>
     <TD><TD><TD>9<TD>*<TD><TD>
   <TR>
-    <TD><TD><TD>10<TD><TD>*<TD>Failed! Aborted.
+    <TD><TD><TD>10<TD><TD>*<TD>Failed! Red sphere should appear on top of the box, not behind it.
   <TR>
-    <TD><TD><TD>11<TD><TD>*<TD>Failed! Aborted.
+    <TD><TD><TD>11<TD><TD>*<TD>Failed! Cannot drag box.
   <TR>
     <TD><TD><TD>12<TD>*<TD><TD>
   <TR>
