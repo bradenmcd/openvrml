@@ -102,19 +102,30 @@ NodeInterface::NodeInterface(const Type type, const FieldValue::Type fieldType,
         type(type), fieldType(fieldType), id(id) {}
 
 /**
+ * @fn bool operator==(const NodeInterface & lhs, const NodeInterface & rhs) throw ()
+ *
+ * @relates NodeInterface
+ *
  * @brief Compare for equality.
  *
- * @param rhs   a NodeInterface.
  * @param lhs   a NodeInterface.
+ * @param rhs   a NodeInterface.
  *
  * @return @c true if the two NodeInterfaces are equal, @c false otherwise.
  */
-bool operator==(const NodeInterface & rhs, const NodeInterface & lhs) {
-    return rhs.type == lhs.type
-            && rhs.fieldType == lhs.fieldType
-            && rhs.id == lhs.id;
-}
 
+/**
+ * @fn bool operator!=(const NodeInterface & lhs, const NodeInterface & rhs) throw ()
+ *
+ * @relates NodeInterface
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   a NodeInterface.
+ * @param rhs   a NodeInterface.
+ *
+ * @return @c true if the two NodeInterfaces are equal, @c false otherwise.
+ */
 
 /**
  * @class NodeInterfaceSet

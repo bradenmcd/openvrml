@@ -56,11 +56,18 @@ namespace OpenVRML {
                       const std::string & id);
     };
     
-    bool operator==(const NodeInterface & rhs, const NodeInterface & lhs);
+    inline bool operator==(const NodeInterface & lhs, const NodeInterface & rhs)
+        throw ()
+    {
+        return lhs.type == rhs.type
+                && lhs.fieldType == rhs.fieldType
+                && lhs.id == rhs.id;
+    }
     
-    inline bool operator!=(const NodeInterface & rhs,
-                           const NodeInterface & lhs) {
-        return !(rhs == lhs);
+    inline bool operator!=(const NodeInterface & lhs, const NodeInterface & rhs)
+        throw ()
+    {
+        return !(lhs == rhs);
     }
     
     
