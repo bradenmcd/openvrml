@@ -121,6 +121,19 @@ td.memItemLeft, td.memItemRight, td.mdescLeft, td.mdescRight {
   font-family: sans-serif;
   font-style: italic;
 }
+
+td.pass {
+  background-color: rgb(50%, 100%, 50%);
+}
+
+td.fail {
+  background-color: rgb(100%, 50%, 50%);
+}
+
+td.invalid {
+  background-color: rgb(75%, 75%, 75%);
+}
+
 </style>
 </head>
 <body>

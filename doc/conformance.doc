@@ -3,323 +3,325 @@
 
 @section summary Summary
 
-<TABLE>
-  <TR>
-    <TD>Total Number of Tests</TD><TD>796</TD>
-  <TR>
-    <TD>Total Passed</TD><TD>558</TD>
-  </TR>
-  <TR>
-    <TD>Total Failed</TD><TD>221</TD>
-  </TR>
-  <TR>
-    <TD>Total Invalid</TD><TD>17</TD>
-  </TR>
-</TABLE>
+<table>
+  <tr>
+    <td>Total Number of Tests</td><td>796</td>
+  </tr>
+  <tr>
+    <td>Total Passed</td><td>558</td>
+  </tr>
+  <tr>
+    <td>Total Failed</td><td>221</td>
+  </tr>
+  <tr>
+    <td>Total Invalid</td><td>17</td>
+  </tr>
+</table>
 
 @subsection group_summary Summary By Group
 
-<TABLE>
-  <TR>
-    <TD>Node Group
-    <TD>Pass
-    <TD>Fail
-    <TD>Invalid
-  <TR>
-    <TD>Appearance (186)
-    <TD>144
-    <TD>42
-  <TR>
-    <TD>Bindable Nodes (93)
-    <TD>53
-    <TD>27
-    <TD>13
-  <TR>
-    <TD>Geometric Properties (53)
-    <TD>39
-    <TD>14
-  <TR>
-    <TD>Geometry (113)
-    <TD>98
-    <TD>15
-  <TR>
-    <TD>Grouping Nodes (52)
-    <TD>38
-    <TD>11
-    <TD>3
-  <TR>
-    <TD>Interpolators (30)
-    <TD>20
-    <TD>10
-  <TR>
-    <TD>Lights (92)
-    <TD>70
-    <TD>22
-  <TR>
-    <TD>Misc (50)
-    <TD>19
-    <TD>31
-  <TR>
-    <TD>Sensors (81)
-    <TD>61
-    <TD>20
-  <TR>
-    <TD>Sounds (28)
-    <TD>0
-    <TD>28
-  <TR>
-    <TD>Special Groups (18)
-    <TD>16
-    <TD>1
-    <TD>1
-</TABLE>
+<table>
+  <tr>
+    <td>Node Group
+    <td>Pass
+    <td>Fail
+    <td>Invalid
+  <tr>
+    <td>Appearance (186)
+    <td>144
+    <td>42
+  <tr>
+    <td>Bindable Nodes (93)
+    <td>53
+    <td>27
+    <td>13
+  <tr>
+    <td>Geometric Properties (53)
+    <td>39
+    <td>14
+  <tr>
+    <td>Geometry (113)
+    <td>98
+    <td>15
+  <tr>
+    <td>Grouping Nodes (52)
+    <td>38
+    <td>11
+    <td>3
+  <tr>
+    <td>Interpolators (30)
+    <td>20
+    <td>10
+  <tr>
+    <td>Lights (92)
+    <td>70
+    <td>22
+  <tr>
+    <td>Misc (50)
+    <td>19
+    <td>31
+  <tr>
+    <td>Sensors (81)
+    <td>61
+    <td>20
+  <tr>
+    <td>Sounds (28)
+    <td>0
+    <td>28
+  <tr>
+    <td>Special Groups (18)
+    <td>16
+    <td>1
+    <td>1
+</table>
 
 @subsection node_summary Summary By Node
 
 <TABLE BORDER="1">
-  <TR>
+  <tr>
     <TH>Node
     <TH>Passed
     <TH>Failed
     <TH>Invalid
-  <TR>
-    <TD>Anchor
-    <TD>7
-    <TD>2
-    <TD>3
-  <TR>
-    <TD>Appearance
-    <TD>11
-    <TD>1
-  <TR>
-    <TD>AudioClip
-    <TD>0
-    <TD>19
-  <TR>
-    <TD>Background
-    <TD>8
-    <TD>7
-    <TD>8
-  <TR>
-    <TD>Billboard
-    <TD>4
-    <TD>2
-  <TR>
-    <TD>Box
-    <TD>6
-    <TD>0
-  <TR>
-    <TD>Color
-    <TD>15
-    <TD>6
-  <TR>
-    <TD>ColorInterpolator
-    <TD>4
-    <TD>1
-  <TR>
-    <TD>Collision
-    <TD>1
-    <TD>7
-  <TR>
-    <TD>Cone
-    <TD>8
-    <TD>0
-  <TR>
-    <TD>Coordinate
-    <TD>5
-    <TD>0
-  <TR>
-    <TD>CoordinateInterpolator
-    <TD>4
-    <TD>1
-  <TR>
-    <TD>Cylinder
-    <TD>9
-    <TD>0
-  <TR>
-    <TD>CylinderSensor
-    <TD>9
-    <TD>2
-  <TR>
-    <TD>DirectionalLight
-    <TD>18
-    <TD>10
-  <TR>
-    <TD>ElevationGrid
-    <TD>9
-    <TD>5
-  <TR>
-    <TD>EXTERNPROTO
-    <TD>0
-    <TD>18
-  <TR>
-    <TD>Extrusion
-    <TD>13
-    <TD>4
-  <TR>
-    <TD>Fog
-    <TD>21
-    <TD>0
-  <TR>
-    <TD>FontStyle
-    <TD>0
-    <TD>7
-  <TR>
-    <TD>Group
-    <TD>2
-    <TD>0
-  <TR>
-    <TD>ImageTexture
-    <TD>30
-    <TD>4
-  <TR>
-    <TD>IndexedFaceSet
-    <TD>20
-    <TD>1
-  <TR>
-    <TD>IndexedLineSet
-    <TD>9
-    <TD>1
-  <TR>
-    <TD>Inline
-    <TD>4
-    <TD>1
-    <TD>1
-  <TR>
-    <TD>LOD
-    <TD>6
-    <TD>0
-  <TR>
-    <TD>Material
-    <TD>22
-    <TD>7
-  <TR>
-    <TD>MovieTexture
-    <TD>35
-    <TD>4
-  <TR>
-    <TD>NavigationInfo
-    <TD>14
-    <TD>10
-    <TD>2
-  <TR>
-    <TD>Normal
-    <TD>7
-    <TD>2
-  <TR>
-    <TD>NormalInterpolator
-    <TD>4
-    <TD>1
-  <TR>
-    <TD>OrientationInterpolator
-    <TD>4
-    <TD>1
-  <TR>
-    <TD>PixelTexture
-    <TD>10
-    <TD>7
-  <TR>
-    <TD>PlaneSensor
-    <TD>11
-    <TD>3
-  <TR>
-    <TD>PointLight
-    <TD>24
-    <TD>5
-  <TR>
-    <TD>PointSet
-    <TD>4
-    <TD>1 
-  <TR>
-    <TD>PositionInterpolator
-    <TD>4
-    <TD>1
-  <TR>
-    <TD>PROTO
-    <TD>17
-    <TD>13
-  <TR>
-    <TD>ProximitySensor
-    <TD>9
-    <TD>1
-  <TR>
-    <TD>ScalarInterpolator
-    <TD>0
-    <TD>5
-  <TR>
-    <TD>Script ECMAScript
-    <TD>0
-    <TD>0
-  <TR>
-    <TD>Script Java
-    <TD>0
-    <TD>0
-  <TR>
-    <TD>Shape
-    <TD>4
-    <TD>1 
-  <TR>
-    <TD>Sound
-    <TD>0
-    <TD>9
-  <TR>
-    <TD>Sphere
-    <TD>6
-    <TD>0 
-  <TR>
-    <TD>SphereSensor
-    <TD>5
-    <TD>4
-  <TR>
-    <TD>SpotLight
-    <TD>28
-    <TD>7
-  <TR>
-    <TD>Switch
-    <TD>6
-    <TD>0
-  <TR>
-    <TD>Text
-    <TD>10
-    <TD>2
-  <TR>
-    <TD>TextureCoordinate
-    <TD>12
-    <TD>6
-  <TR>
-    <TD>TextureTransform
-    <TD>36
-    <TD>12
-  <TR>
-    <TD>TimeSensor
-    <TD>12
-    <TD>7
-  <TR>
-    <TD>TouchSensor
-    <TD>6
-    <TD>3
-  <TR>
-    <TD>Transform
-    <TD>24
-    <TD>0
-  <TR>
-    <TD>Viewpoint
-    <TD>10
-    <TD>10
-    <TD>3
-  <TR>
-    <TD>VisibilitySensor
-    <TD>9
-    <TD>0
-  <TR>
-    <TD>WorldInfo
-    <TD>2
-    <TD>0
-</TABLE>
+  <tr>
+    <td>Anchor
+    <td>7
+    <td>2
+    <td>3
+  <tr>
+    <td>Appearance
+    <td>11
+    <td>1
+  <tr>
+    <td>AudioClip
+    <td>0
+    <td>19
+  <tr>
+    <td>Background
+    <td>8
+    <td>7
+    <td>8
+  <tr>
+    <td>Billboard
+    <td>4
+    <td>2
+  <tr>
+    <td>Box
+    <td>6
+    <td>0
+  <tr>
+    <td>Color
+    <td>15
+    <td>6
+  <tr>
+    <td>ColorInterpolator
+    <td>4
+    <td>1
+  <tr>
+    <td>Collision
+    <td>1
+    <td>7
+  <tr>
+    <td>Cone
+    <td>8
+    <td>0
+  <tr>
+    <td>Coordinate
+    <td>5
+    <td>0
+  <tr>
+    <td>CoordinateInterpolator
+    <td>4
+    <td>1
+  <tr>
+    <td>Cylinder
+    <td>9
+    <td>0
+  <tr>
+    <td>CylinderSensor
+    <td>9
+    <td>2
+  <tr>
+    <td>DirectionalLight
+    <td>18
+    <td>10
+  <tr>
+    <td>ElevationGrid
+    <td>9
+    <td>5
+  <tr>
+    <td>EXTERNPROTO
+    <td>0
+    <td>18
+  <tr>
+    <td>Extrusion
+    <td>13
+    <td>4
+  <tr>
+    <td>Fog
+    <td>21
+    <td>0
+  <tr>
+    <td>FontStyle
+    <td>0
+    <td>7
+  <tr>
+    <td>Group
+    <td>2
+    <td>0
+  <tr>
+    <td>ImageTexture
+    <td>30
+    <td>4
+  <tr>
+    <td>IndexedFaceSet
+    <td>20
+    <td>1
+  <tr>
+    <td>IndexedLineSet
+    <td>9
+    <td>1
+  <tr>
+    <td>Inline
+    <td>4
+    <td>1
+    <td>1
+  <tr>
+    <td>LOD
+    <td>6
+    <td>0
+  <tr>
+    <td>Material
+    <td>22
+    <td>7
+  <tr>
+    <td>MovieTexture
+    <td>35
+    <td>4
+  <tr>
+    <td>NavigationInfo
+    <td>14
+    <td>10
+    <td>2
+  <tr>
+    <td>Normal
+    <td>7
+    <td>2
+  <tr>
+    <td>NormalInterpolator
+    <td>4
+    <td>1
+  <tr>
+    <td>OrientationInterpolator
+    <td>4
+    <td>1
+  <tr>
+    <td>PixelTexture
+    <td>10
+    <td>7
+  <tr>
+    <td>PlaneSensor
+    <td>11
+    <td>3
+  <tr>
+    <td>PointLight
+    <td>24
+    <td>5
+  <tr>
+    <td>PointSet
+    <td>4
+    <td>1
+  <tr>
+    <td>PositionInterpolator
+    <td>4
+    <td>1
+  <tr>
+    <td>PROTO
+    <td>17
+    <td>13
+  <tr>
+    <td>ProximitySensor
+    <td>9
+    <td>1
+  <tr>
+    <td>ScalarInterpolator
+    <td>0
+    <td>5
+  <tr>
+    <td>Script ECMAScript
+    <td>0
+    <td>0
+  <tr>
+    <td>Script Java
+    <td>0
+    <td>0
+  <tr>
+    <td>Shape
+    <td>4
+    <td>1
+  <tr>
+    <td>Sound
+    <td>0
+    <td>9
+  <tr>
+    <td>Sphere
+    <td>6
+    <td>0
+  <tr>
+    <td>SphereSensor
+    <td>5
+    <td>4
+  <tr>
+    <td>SpotLight
+    <td>28
+    <td>7
+  <tr>
+    <td>Switch
+    <td>6
+    <td>0
+  <tr>
+    <td>Text
+    <td>10
+    <td>2
+  <tr>
+    <td>TextureCoordinate
+    <td>12
+    <td>6
+  <tr>
+    <td>TextureTransform
+    <td>36
+    <td>12
+  <tr>
+    <td>TimeSensor
+    <td>12
+    <td>7
+  <tr>
+    <td>TouchSensor
+    <td>6
+    <td>3
+  <tr>
+    <td>Transform
+    <td>24
+    <td>0
+  <tr>
+    <td>Viewpoint
+    <td>10
+    <td>10
+    <td>3
+  <tr>
+    <td>VisibilitySensor
+    <td>9
+    <td>0
+  <tr>
+    <td>WorldInfo
+    <td>2
+    <td>0
+</table>
 
 @subsection notes Notes
 
-For a complete list of reasons why tests have been declared invalid see <A HREF="http://members.rogers.com/tflynn/nist-problems.html">my list</A>.
+For a complete list of reasons why tests have been declared invalid see
+<a href="http://members.rogers.com/tflynn/nist-problems.html">my list</a>.
 
 <HR>
 
@@ -327,1687 +329,1647 @@ For a complete list of reasons why tests have been declared invalid see <A HREF=
 
 For a detailed description of the purpose of each test please see the <A HREF="http://xsun.sdct.itl.nist.gov/~mkass/vts/html/vrml.html">NIST Vrml Test Suite Home Page.</A>
 
-<TABLE>
-  <TR>
-    <TD>Node<BR>Group
-    <TD>Node
-    <TD>Test<BR>Number
-    <TD>Passed
-    <TD>Failed
-    <TD>Comments
-  <TR>
-    <TD><B>Appearance</B>
-  <TR>
-    <TD><TD>Appearance
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD><TD>*<TD>Failed! The leftmost object is incorrectly colored blue. This is a test of preference of texture color over a geometry Color node in unlit geometry. This test passed in 0.10.1!
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD>FontStyle
-    <TD>1<TD><TD>*<TD>Failed! Fonts are fine but the green line for the axis appears white instead.
-  <TR>
-    <TD><TD><TD>2<TD><TD>*<TD>Failed! See previous.
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! See previous.
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! See previous.
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed! See previous.
-  <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed! Partially funtioning, vertical text doesn't seem to work properly and green line doesn't appear for axis.
-  <TR>
-    <TD><TD><TD>7<TD><TD>*<TD>Failed! Lookat dumps the following to the console on startup:<BR>TEXT_SCRIPT: 18: SyntaxError: illegal character<BR>../../../../src/openvrml/OpenVRML/script.cpp:1506: verification (ok) failed<BR>Possible NIST error
-  <TR>
-    <TD><TD>ImageTexture
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>13<TD><TD>*<TD>Failed! Texture mapping is incorrect.
-  <TR>
-    <TD><TD><TD>14<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>15<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>18<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>19<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>20<TD><TD>*<TD>Failed! Texture mapping is incorrect.
-  <TR>
-    <TD><TD><TD>21<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>22<TD><TD>*<TD>Failed! Texture mapping on extrusions faulty.
-  <TR>
-    <TD><TD><TD>23<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>24<TD><TD>*<TD>Failed! Texture mapping on extrusions faulty.
-  <TR>
-    <TD><TD><TD>25<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>26<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>27<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>28<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>29<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>30<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>31<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>32<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>33<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>34<TD>*<TD><TD>
-  <TR>
-    <TD><TD>Material
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD> 
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD><TD>*<TD>Failed! ElevationGrid is incorrectly colored blue.
-  <TR>
-    <TD><TD><TD>12<TD><TD>*<TD>Failed! ElevationGrid is incorrectly colored red.
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>15<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD><TD>*<TD>Failed! Colored white when should be red.
-  <TR>
-    <TD><TD><TD>18<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>19<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>20<TD><TD>*<TD>Failed! Text not visible behind nodes.
-  <TR>
-    <TD><TD><TD>21<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>22<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>23<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>24<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>25<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>26<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>27<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>28<TD><TD>*<TD>Failed! Transparency doesn't seem to be working.
-  <TR>
-    <TD><TD><TD>29<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD>MovieTexture
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD><TD>*<TD>Failed! MPEG audio not supported yet.
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! MPEG audio not supported yet.
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD><TD>*<TD>Failed! MovieTexture doesn't extend across three sides.
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>15<TD><TD>*<TD>Failed! Texture mapping is incorrect.
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>18<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>19<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>20<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>21<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>22<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>23<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>24<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>25<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>26<TD>*<TD><TD>.
-  <TR>
-    <TD><TD><TD>27<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>28<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>29<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>30<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>31<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>32<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>33<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>34<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>35<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>36<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>37<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>38<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>39<TD>*<TD><TD>
-  <TR>
-    <TD><TD>PixelTexture
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>Failed! All shapes are colored aqua when should be checkered red and black.
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed! Squares are incorrect size (not really close to expected) on the IndexedFaceSet.
-  <TR>
-    <TD><TD><TD>7<TD><TD>*<TD>Failed! Colors are reverse of expected on top of shape.
-  <TR>
-    <TD><TD><TD>8<TD><TD>*<TD>Failed! Front should be a solid color but instead is split into two colors.
-  <TR>
-    <TD><TD><TD>9<TD><TD>*<TD>Failed! Colors reverse of expected on front of model.
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD><TD>*<TD>Failed! Textures mapping is incorrect.
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed! Top view is messed up. Displays grainy(display driver problem?) and colors are backward.
-  <TR>
-    <TD><TD><TD>15<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD>TextureTransform
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>13<TD><TD>*<TD>Failed! Second and fourth columns are reverse of expected.
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed! See previous.
-  <TR>
-    <TD><TD><TD>15<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>18<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>19<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>20<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>21<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>22<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>23<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>24<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>25<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>26<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>27<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>28<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>29<TD><TD>*<TD>Failed! Textures are transformed the reverse of expected. For example, row 1 is what should be in row 5.
-  <TR>
-    <TD><TD><TD>30<TD><TD>*<TD>Failed! Same problem as previous test.
-  <TR>
-    <TD><TD><TD>31<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>32<TD><TD>*<TD>Failed! Top and bottom are reverse of expected on center shape.
-  <TR>
-    <TD><TD><TD>33<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>34<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>35<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>36<TD><TD>*<TD>Failed! Top view and Right view aren't correct.
-  <TR>
-    <TD><TD><TD>37<TD><TD>*<TD>Failed! The center geometry should appear all blue but one quarter of it appears yellow on the cone and cylinder.
-  <TR>
-    <TD><TD><TD>38<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>39<TD><TD>*<TD>Failed! PixelTexture mapped incorrectly on rear quarter of the center row of shapes.
-  <TR>
-    <TD><TD><TD>40<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>41<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>42<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>43<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>44<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>45<TD><TD>*<TD>Failed! Second and fourth row of shapes has the colors reversed.
-  <TR>
-    <TD><TD><TD>46<TD><TD>*<TD>Failed! Colors incorrect on second and fourth row of shapes.
-  <TR>
-    <TD><TD><TD>47<TD><TD>*<TD>Failed! Colors incorrect.
-  <TR>
-    <TD><TD><TD>48<TD><TD>*<TD>Failed! Incorrect coloring.
-  <TR>
-    <TD><B>Bindable Nodes</B>
-  <TR>
-    <TD><TD>Background
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD><TD><TD>INVALID TEST
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD><TD><TD>Failed! Console shows images are being downloaded but background does not get updated.
-  <TR>
-    <TD><TD><TD>9<TD><TD>*<TD>Failed! Nothing displays in lookat except text. See above.
-  <TR>
-    <TD><TD><TD>10<TD><TD>*<TD>Failed! Nothing displays in lookat except text. See above.
-  <TR>
-    <TD><TD><TD>11<TD><TD>*<TD>Failed! Nothing displays in lookat except text.
-  <TR>
-    <TD><TD><TD>12<TD><TD>*<TD>Failed! Nothing displays in lookat except text.
-  <TR>
-    <TD><TD><TD>13<TD><TD>*<TD>Failed! Nothing displays in lookat except text.
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed! Panorama works great except that there is a black panel instead of the second image.
-  <TR>
-    <TD><TD><TD>15<TD><TD><TD>INVALID TEST. PNG missing on server.
-  <TR>
-    <TD><TD><TD>16<TD><TD><TD>INVALID TEST. PNG missing on server.
-  <TR>
-    <TD><TD><TD>17<TD><TD><TD>INVALID TEST. PNG missing on server.
-  <TR>
-    <TD><TD><TD>18<TD><TD><TD>INVALID TEST. PNG missing on server.
-  <TR>
-    <TD><TD><TD>19<TD><TD><TD>INVALID TEST. PNG missing on server.
-  <TR>
-    <TD><TD><TD>20<TD><TD><TD>INVALID TEST. PNG missing on server.
-  <TR>
-    <TD><TD><TD>21<TD><TD><TD>INVALID TEST. PNG missing on server.
-  <TR>
-    <TD><TD><TD>22<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>23<TD>*<TD><TD>
-  <TR>
-    <TD><TD>Fog
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>15<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>18<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>19<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>20<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>21<TD>*<TD><TD>
-  <TR>
-    <TD><TD>NavigationInfo
-    <TD>1<TD><TD>*<TD>Failed! Box does not turn red upon collision as it should.
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed! Text does not display.
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD><TD><TD>INVALID TEST
-  <TR>
-    <TD><TD><TD>10<TD><TD>*<TD>Failed! Current speed doesn't get updated.
-  <TR>
-    <TD><TD><TD>11<TD><TD>*<TD>Failed! Current speed doesn't get updated.
-  <TR>
-    <TD><TD><TD>12<TD><TD>*<TD>Failed! Cube doesn't turn red on collision.
-  <TR>
-    <TD><TD><TD>13<TD><TD>*<TD>Failed! Cube doesn't turn red on collision.
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed! Cube doesn't turn red on collision.
-  <TR>
-    <TD><TD><TD>15<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD><TD>*<TD>Failed! Cube doesn't turn red on collision.
-  <TR>
-    <TD><TD><TD>18<TD><TD><TD>INVALID TEST
-  <TR>
-    <TD><TD><TD>19<TD><TD>*<TD>Failed! Cannot click on box. See SourceForge bug 626197.
-  <TR>
-    <TD><TD><TD>20<TD><TD>*<TD>Failed! Text doesn't appear when pushing itemss onto the stack. Appears fine when popping items off of the stack though.
-  <TR>
-    <TD><TD><TD>21<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>22<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>23<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>24<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>25<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>26<TD>*<TD><TD>
-  <TR>
-    <TD><TD>Viewpoint
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD><TD>*<TD>Failed! Current position does not display correctly. X-coord is not quite 0.
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! Current position does not display correctly. Z-coord is not quite 0.
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD><TD><TD>INVALID TEST
-  <TR>
-    <TD><TD><TD>8<TD><TD><TD>INVALID TEST
-  <TR>
-    <TD><TD><TD>9<TD><TD><TD>INVALID TEST
-  <TR>
-    <TD><TD><TD>10<TD><TD>*<TD>Failed! Lookat fails to load the URL of the Viewpoint. URL is defined as "http://xsun.sdct.itl.nist.gov/~mkass/vts/Bindable_Nodes/Viewpoint/jumpcut_loadworld.wrl#RearView" but lookat strips out the # and cannot load the URL.
-  <TR>
-    <TD><TD><TD>11<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>12<TD><TD>*<TD>Failed! Current position does not display correctly. X-coord is not quite 0.
-  <TR>
-    <TD><TD><TD>13<TD><TD>*<TD>Failed! Current position does not display correctly. Z-coord is not quite 0.
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed! See above. Indicating the box should not cause a jump to right viewpoint.
-  <TR>
-    <TD><TD><TD>15<TD><TD>*<TD>Failed! Nothing happens when pointing at the red box.
-  <TR>
-    <TD><TD><TD>16<TD><TD>*<TD>Failed! See previous.
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>18<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>19<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>20<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>21<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>22<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>23<TD>*<TD><TD>
-  <TR>
-    <TD><B>Geometric Properties</B>
-  <TR>
-    <TD><TD>Color
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! Colored grey instead of red on ElevationGrid.
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD><TD>*<TD>Failed! Colored grey instead of blue on ElevationGrid.
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD><TD>*<TD>Failed! No colors on ElevationGrid.
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed! No colors on ElevationGrid.
-  <TR>
-    <TD><TD><TD>15<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>18<TD><TD>*<TD>Failed! No colors on ElevationGrid.
-  <TR>
-    <TD><TD><TD>19<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>20<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>21<TD><TD>*<TD>Failed! No colors display.
-  <TR>
-    <TD><TD>Coordinate
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD>Normal
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD><TD>*<TD>Failed! Front left edge is colored differently than the rest of the shape.
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed! Not a straight line separating the two halves.
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD>TextureCoordinate
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>Failed! Displays in blue when it should be yellow.
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>Failed! Only one of the four quarters is correctly colored.
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>Failed! Incorrectly colored.
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>15<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>16<TD><TD>*<TD>Failed! Display in blue when it should be yellow.
-  <TR>
-    <TD><TD><TD>17<TD><TD>*<TD>Failed! Only one of the four quarters is colored correctly.
-  <TR>
-    <TD><TD><TD>18<TD><TD>*<TD>Failed! Colored incorrectly.
-  <TR>
-    <TD><B>Geometry</B>
-  <TR>
-    <TD><TD>Box
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD>Cone
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-   <TR>
-    <TD><TD>Cylinder
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD>ElevationGrid
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed! ElevationGrid is not colored as expected.
-  <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed! ElevationGrid is not colored as expected.
-  <TR>
-    <TD><TD><TD>7<TD><TD>*<TD>Failed! ElevationGrid is not colored as expected.
-  <TR>
-    <TD><TD><TD>8<TD><TD>*<TD>Failed! ElevationGrid is not colored as expected.
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>Failed! ElevationGrid is not colored as expected.
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD>*<TD><TD>
-  <TR>
-    <TD><TD>Extrusion
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD><TD>*<TD>Failed! Majority of the model was fine, problem with just one little part.
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>13<TD><TD>*<TD>Failed! Line through one of the Extrusion's for no apparent reason.
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed! Something is wrong on the right hand side of the top and bottom of the shape.
-  <TR>
-    <TD><TD><TD>15<TD><TD>*<TD>Failed! The lighting should be the same on both shapes.
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD>IndexedFaceSet
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed! Texture should be mapped over top of shape.
-  <TR>
-    <TD><TD><TD>15<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>18<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>19<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>20<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>21<TD>*<TD><TD>
-  <TR>
-    <TD><TD>IndexedLineSet
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD><TD>*<TD>Failed! Should be colored red.
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD>PointSet
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed! PointSet should be colored red, not white.
-  <TR>
-    <TD><TD>Shape
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed! Line should be colored red, not white.
-  <TR>
-    <TD><TD>Sphere
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD>Text
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD><TD>*<TD>Failed! Rightmost strings are not compressed.
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>Viewpoint is behind text though.
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD><TD>*<TD>Failed! Texture mapping is not correct.
-  <TR>
-    <TD><B>Grouping Nodes</B>
-  <TR>
-    <TD><TD>Anchor
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! Lookat tries to load new viewpoint from URL http://xsun.sdct.itl.nist.gov/~mkass/vts/Grouping_Nodes/Anchor/test-viewanchor.wrlnewview
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD><TD><TD>INVALID TEST
-  <TR>
-    <TD><TD><TD>7<TD><TD><TD>INVALID TEST
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD><TD>*<TD>Failed! First URL in list is invalid so lookat should use the second valid one but doesn't and just fails with the first.
-  <TR>
-    <TD><TD><TD>10<TD><TD><TD>INVALID TEST
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD>Billboard
-    <TD>1<TD>*<TD><TD>Incredibly processor intensive if you try to rotate though.
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! Initial view is incorrect.
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed!
-  <TR>
-    <TD><TD>Collision
-    <TD>1<TD><TD>*<TD>Failed! Can navigate right through the shapes.
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! Box does not change to red upon collision.
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! IndexedLineSet doesn't change color upon collision.
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed! IndexedLineSet doesn't change color upon collision.
-  <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed! Box does not change to red upon collision.
-  <TR>
-    <TD><TD><TD>7<TD><TD>*<TD>Failed! None of the spheres turn red upon collision as they should.
-  <TR>
-    <TD><TD><TD>8<TD><TD>*<TD>Failed! No color change on collision.
-  <TR>
-    <TD><TD>Group
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD>Transform
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>15<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>18<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>19<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>20<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>21<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>22<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>23<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>24<TD>*<TD><TD>
-  <TR>
-    <TD><B>Interpolators</B>
-  <TR>
-    <TD><TD>ColorInterpolator
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! Sphere on right should turn blue when mouse is over it, not black.
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD>CoordinateInterpolator
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! Nothing happens when moving over leftmost box.
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD>NormalInterpolator
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! Nothing happens when moving over leftmost box.
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD>OrientationInterpolator
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! Nothing happens when moving over leftmost box.
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD>PositionInterpolator
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! Nothing happens when indicating the leftmost shape.
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD>ScalarInterpolator
-    <TD>1<TD><TD>*<TD>Failed! Illumination doesn't change.
-  <TR>
-    <TD><TD><TD>2<TD><TD>*<TD>Failed! Illumination doesn't change.
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! Illumination doesn't change.
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! Nothing happens when indicating the leftmost shape.
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed! Illumination doesn't change.
-  <TR>
-    <TD><B>Lights</B>
-  <TR>
-    <TD><TD>DirectionalLight
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD><TD>*<TD>Failed! Light travels from right to left when should move from left to right.
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD><TD>*<TD>Failed! Light travels from rigth to left when should move from left to right.
-  <TR>
-    <TD><TD><TD>12<TD><TD>*<TD>Failed! Text doesn't appear.
-  <TR>
-    <TD><TD><TD>13<TD><TD>*<TD>Failed! Text doesn't appear.
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed! Text doesn't appear. Colour starts on the wrong side.
-  <TR>
-    <TD><TD><TD>15<TD><TD>*<TD>Failed! Text doesn't appear. Colour starts on the wrong side.
-  <TR>
-    <TD><TD><TD>16<TD><TD>*<TD>Failed! Beginning color of shapes should be black not green!
-  <TR>
-    <TD><TD><TD>17<TD><TD>*<TD>Failed! Text incorrect, beginning color of shapes should be black not green.
-  <TR>
-    <TD><TD><TD>18<TD><TD>*<TD>Failed! Lighting moves from right to left instead of left to right.
-  <TR>
-    <TD><TD><TD>19<TD><TD>*<TD>Failed! Text not viewable, same color as BG? + Lighting moves from right to left instead of left to right..
-  <TR>
-    <TD><TD><TD>20<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>21<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>22<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>23<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>24<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>25<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>26<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>27<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>28<TD>*<TD><TD>
-  <TR>
-    <TD><TD>PointLight
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! Only leftmost sphere should be lighted.
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed! Beginning color of shapes should be black not green!
-  <TR>
-    <TD><TD><TD>15<TD><TD>*<TD>Failed! Beginning color of shapes should be black not green.
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>18<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>19<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>20<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>21<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>22<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>23<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>24<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>25<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>26<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>27<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>28<TD><TD>*<TD>Failed! Test is beyond minimum conformance requirements though.
-  <TR>
-    <TD><TD><TD>29<TD><TD>*<TD>Failed! Test is beyond minimum conformance requirements though.
-  <TR>
-    <TD><TD>SpotLight
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! The lighting is wrong (backwards)
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>15<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>16<TD><TD>*<TD>Failed! Shapes should start colored black not green.
-  <TR>
-    <TD><TD><TD>17<TD><TD>*<TD>Failed! Shapes should start colored black not green.
-  <TR>
-    <TD><TD><TD>18<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>19<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>20<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>21<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>22<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>23<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>24<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>25<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>26<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>27<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>28<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>29<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>30<TD><TD>*<TD>Failed! Last figure of each set should not be illuminated. Test is beyond minimum conformance requirements though.
-  <TR>
-    <TD><TD><TD>31<TD><TD>*<TD>Failed! Last figure of each set should not be illuminated. Test is beyond minimum conformance requirements though.
-  <TR>
-    <TD><TD><TD>32<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>33<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>34<TD><TD>*<TD>Failed! Test is beyond minimum conformance requirements though.
-  <TR>
-    <TD><TD><TD>35<TD><TD>*<TD>Failed! Test is beyond minimum conformance requirements though.
-  <TR>
-    <TD><B>Misc</B>
-  <TR>
-    <TD><TD>EXTERNPROTO
-    <TD>1<TD><TD>*<TD>Failed! Assertion failure on console stating:<BR>lookat: ../../../../src/openvrml/OpenVRML/scope.cpp:71: void OpenVRML::Scope::addNodeType (const OpenVRML::NodeTypePtr &): Assertion `nodeType' failed.
-  <TR>
-    <TD><TD><TD>2<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>7<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>8<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>9<TD><TD>*<TD>Failed! Cannot select sphere.
-  <TR>
-    <TD><TD><TD>10<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>11<TD><TD>*<TD>Failed! Clicking on green sphere doesn't cause red sphere to appear as well.
-  <TR>
-    <TD><TD><TD>12<TD><TD>*<TD>Failed! Clicking on green sphere doesn't cause red sphere to appear as well.
-  <TR>
-    <TD><TD><TD>13<TD><TD>*<TD>Failed! Assertion failure on console stating:<BR>lookat: ../../../../src/openvrml/OpenVRML/scope.cpp:71: void OpenVRML::Scope::addNodeType (const OpenVRML::NodeTypePtr &): Assertion `nodeType' failed.
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>15<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>16<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>17<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>18<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD>PROTO
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7A<TD><TD>*<TD>Failed! Aborted.
-  <TR>
-    <TD><TD><TD>7B<TD><TD>*<TD>Failed! Background not blue, text doesn't change colors.
-  <TR>
-    <TD><TD><TD>7C<TD><TD>*<TD>Failed! Cone does not move.
-  <TR>
-    <TD><TD><TD>7D<TD><TD>*<TD>Failed! Nothing displays in lookat for this test. Some kind of lighting issue as if lighting is disable, the cylinder can be seen. Lookat seems to get into an infinite loop here as well...
-  <TR>
-    <TD><TD><TD>7E<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7F<TD><TD>*<TD>Failed! Segmentation fault.
-  <TR>
-    <TD><TD><TD>7G<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7H<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7I<TD><TD>*<TD>Failed! For some reason, when the PointSet shape on the left comes into view, the IndexedLineSet on the right turns into a PointSet as well!
-  <TR>
-    <TD><TD><TD>7J<TD><TD>*<TD>Failed! Nothing happens.
-  <TR>
-    <TD><TD><TD>7K<TD><TD>*<TD>Failed! Light should move around the shape but nothing appears to happen in lookat.
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD><TD>*<TD>Failed! Animation does not occur. Following messages are dumped to the console:<BR>line 226: eventIn cannot be mapped to field<BR>line 228: expecting "IS", found '{'<BR>line 232: expecting "IS", found '['<BR>line 236: expecting ], found '}'
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD><TD>*<TD>Failed! Nothing happens when clicking on the rings.
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>15<TD><TD>*<TD>Failed! Background does not change to indicated color.
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>18<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>19<TD><TD>*<TD>Failed! Only top-left sphere changes color.
-  <TR>
-    <TD><TD><TD>20<TD><TD>*<TD>Failed! Rightmost set of spheres does not animate properly.
-  <TR>
-    <TD><TD>Script ECMAScript<TD><TD><TD><TD>No Tests Defined by NIST!
-  <TR>
-    <TD><TD>Script Java<TD><TD><TD><TD>No Tests Defined by NIST!
-  <TR>
-    <TD><TD>WorldInfo
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><B>Sensors</B>
-  <TR>
-    <TD><TD>CylinderSensor
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed!
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD><TD>*<TD>Failed! PointLight is not activated.
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD>PlaneSensor
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD><TD>*<TD>Failed! Red sphere should appear on top of the box, not behind it.
-  <TR>
-    <TD><TD><TD>11<TD><TD>*<TD>Failed! Cannot drag box.
-  <TR>
-    <TD><TD><TD>12<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed! Can still rotate box but not drag.
-  <TR>
-    <TD><TD>ProximitySensor
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed! Something a little off here, sphere starts to change color but for some reason EXIT events are generated as fast as ENTER events.
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD>SphereSensor
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD><TD>*<TD>Failed! IndexedFaceSet should not rotate.
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! Aborted.
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed! Aborted.
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed! Aborted.
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD>TimeSensor
-    <TD>1<TD><TD>*<TD>Failed! Cannot click on sphere.
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed! Cannot click on sphere.
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed! Nothing happens after clicking on sphere.
-  <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD><TD>*<TD>Failed! Cannot click on sphere.
-  <TR>
-    <TD><TD><TD>9<TD><TD>*<TD>Failed! See above.
-  <TR>
-    <TD><TD><TD>10<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>11<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>12<TD><TD>*<TD>Failed! Cycle doesn't continue indefinitely.
-  <TR>
-    <TD><TD><TD>13<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>14<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>15<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>16<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>17<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>18<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>19<TD>*<TD><TD>
-  <TR>
-    <TD><TD>TouchSensor
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed! Smaller red sphere doesn't appear.
-  <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed! Lights do not come on.
-  <TR>
-    <TD><TD><TD>7<TD><TD>*<TD>Failed!
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><TD>VisibilitySensor
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>7<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>8<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>9<TD>*<TD><TD>
-  <TR>
-    <TD><B>Sounds</B>
-  <TR>
-    <TD><TD>AudioClip
-    <TD>1<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>2<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>7<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>8<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>9<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>10<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>11<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>12<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>13<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>14<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>15<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>16<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>17<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>18<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>19<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD>Sound
-    <TD>1<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>2<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>3<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>4<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>5<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>6<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>7<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>8<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><TD><TD>9<TD><TD>*<TD>Failed because sound support has been removed in the current build.
-  <TR>
-    <TD><B>Special Groups</B>
-  <TR>
-    <TD><TD>Inline
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>Text is screwed up though.
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>Failed! OpenVRML should ignore the first invalid URL and use the second but instead only attempts to load the first.
-  <TR>
-    <TD><TD><TD>4<TD><TD><TD>INVALID TEST
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD>LOD
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-  <TR>
-    <TD><TD>Switch
-    <TD>1<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>2<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>3<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>4<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>5<TD>*<TD><TD>
-  <TR>
-    <TD><TD><TD>6<TD>*<TD><TD>
-</TABLE>
+<table>
+  <tr>
+    <td>Node Group
+    <td>Node
+    <td>Test<br>Number
+    <td>Result
+    <td>Comments
+  <tr>
+    <td rowspan="186"><B>Appearance</B><td rowspan="12">Appearance<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="fail">-<td>Failed! The leftmost object is incorrectly colored blue. This is a test of preference of texture color over a geometry Color node in unlit geometry. This test passed in 0.10.1!
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td rowspan="7">FontStyle<td>1<td class="fail">-<td>Failed! Fonts are fine but the green line for the axis appears white instead.
+  <tr>
+    <td>2<td class="fail">-<td>Failed! See previous.
+  <tr>
+    <td>3<td class="fail">-<td>Failed! See previous.
+  <tr>
+    <td>4<td class="fail">-<td>Failed! See previous.
+  <tr>
+    <td>5<td class="fail">-<td>Failed! See previous.
+  <tr>
+    <td>6<td class="fail">-<td>Failed! Partially funtioning, vertical text doesn't seem to work properly and green line doesn't appear for axis.
+  <tr>
+    <td>7<td class="fail">-<td>Failed! Lookat dumps the following to the console on startup:<BR>TEXT_SCRIPT: 18: SyntaxError: illegal character<BR>../../../../src/openvrml/OpenVRML/script.cpp:1506: verification (ok) failed<BR>Possible NIST error
+  <tr>
+    <td rowspan="34">ImageTexture<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td>13<td class="fail">-<td>Failed! Texture mapping is incorrect.
+  <tr>
+    <td>14<td class="pass">+
+  <tr>
+    <td>15<td class="pass">+
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td>18<td class="pass">+
+  <tr>
+    <td>19<td class="pass">+
+  <tr>
+    <td>20<td class="fail">-<td>Failed! Texture mapping is incorrect.
+  <tr>
+    <td>21<td class="pass">+
+  <tr>
+    <td>22<td class="fail">-<td>Failed! Texture mapping on extrusions faulty.
+  <tr>
+    <td>23<td class="pass">+
+  <tr>
+    <td>24<td class="fail">-<td>Failed! Texture mapping on extrusions faulty.
+  <tr>
+    <td>25<td class="pass">+
+  <tr>
+    <td>26<td class="pass">+
+  <tr>
+    <td>27<td class="pass">+
+  <tr>
+    <td>28<td class="pass">+
+  <tr>
+    <td>29<td class="pass">+
+  <tr>
+    <td>30<td class="pass">+
+  <tr>
+    <td>31<td class="pass">+
+  <tr>
+    <td>32<td class="pass">+
+  <tr>
+    <td>33<td class="pass">+
+  <tr>
+    <td>34<td class="pass">+
+  <tr>
+    <td rowspan="29">Material<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="fail">-<td>Failed! ElevationGrid is incorrectly colored blue.
+  <tr>
+    <td>12<td class="fail">-<td>Failed! ElevationGrid is incorrectly colored red.
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="pass">+
+  <tr>
+    <td>15<td class="pass">+
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="fail">-<td>Failed! Colored white when should be red.
+  <tr>
+    <td>18<td class="pass">+
+  <tr>
+    <td>19<td class="pass">+
+  <tr>
+    <td>20<td class="fail">-<td>Failed! Text not visible behind nodes.
+  <tr>
+    <td>21<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>22<td class="pass">+
+  <tr>
+    <td>23<td class="pass">+
+  <tr>
+    <td>24<td class="pass">+
+  <tr>
+    <td>25<td class="pass">+
+  <tr>
+    <td>26<td class="pass">+
+  <tr>
+    <td>27<td class="pass">+
+  <tr>
+    <td>28<td class="fail">-<td>Failed! Transparency doesn't seem to be working.
+  <tr>
+    <td>29<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td rowspan="39">MovieTexture <td>1<td class="pass">+
+  <tr>
+    <td>2<td class="fail">-<td>Failed! MPEG audio not supported yet.
+  <tr>
+    <td>3<td class="fail">-<td>Failed! MPEG audio not supported yet.
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="fail">-<td>Failed! MovieTexture doesn't extend across three sides.
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="pass">+
+  <tr>
+    <td>15<td class="fail">-<td>Failed! Texture mapping is incorrect.
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td>18<td class="pass">+
+  <tr>
+    <td>19<td class="pass">+
+  <tr>
+    <td>20<td class="pass">+
+  <tr>
+    <td>21<td class="pass">+
+  <tr>
+    <td>22<td class="pass">+
+  <tr>
+    <td>23<td class="pass">+
+  <tr>
+    <td>24<td class="pass">+
+  <tr>
+    <td>25<td class="pass">+
+  <tr>
+    <td>26<td class="pass">+
+  <tr>
+    <td>27<td class="pass">+
+  <tr>
+    <td>28<td class="pass">+
+  <tr>
+    <td>29<td class="pass">+
+  <tr>
+    <td>30<td class="pass">+
+  <tr>
+    <td>31<td class="pass">+
+  <tr>
+    <td>32<td class="pass">+
+  <tr>
+    <td>33<td class="pass">+
+  <tr>
+    <td>34<td class="pass">+
+  <tr>
+    <td>35<td class="pass">+
+  <tr>
+    <td>36<td class="pass">+
+  <tr>
+    <td>37<td class="pass">+
+  <tr>
+    <td>38<td class="pass">+
+  <tr>
+    <td>39<td class="pass">+
+  <tr>
+    <td rowspan="17">PixelTexture<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+<td>Failed! All shapes are colored aqua when should be checkered red and black.
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="fail">-<td>Failed! Squares are incorrect size (not really close to expected) on the IndexedFaceSet.
+  <tr>
+    <td>7<td class="fail">-<td>Failed! Colors are reverse of expected on top of shape.
+  <tr>
+    <td>8<td class="fail">-<td>Failed! Front should be a solid color but instead is split into two colors.
+  <tr>
+    <td>9<td class="fail">-<td>Failed! Colors reverse of expected on front of model.
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="fail">-<td>Failed! Textures mapping is incorrect.
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="fail">-<td>Failed! Top view is messed up. Displays grainy(display driver problem?) and colors are backward.
+  <tr>
+    <td>15<td class="pass">+
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td rowspan="48">TextureTransform<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td>13<td class="fail">-<td>Failed! Second and fourth columns are reverse of expected.
+  <tr>
+    <td>14<td class="fail">-<td>Failed! See previous.
+  <tr>
+    <td>15<td class="pass">+
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td>18<td class="pass">+
+  <tr>
+    <td>19<td class="pass">+
+  <tr>
+    <td>20<td class="pass">+
+  <tr>
+    <td>21<td class="pass">+
+  <tr>
+    <td>22<td class="pass">+
+  <tr>
+    <td>23<td class="pass">+
+  <tr>
+    <td>24<td class="pass">+
+  <tr>
+    <td>25<td class="pass">+
+  <tr>
+    <td>26<td class="pass">+
+  <tr>
+    <td>27<td class="pass">+
+  <tr>
+    <td>28<td class="pass">+
+  <tr>
+    <td>29<td class="fail">-<td>Failed! Textures are transformed the reverse of expected. For example, row 1 is what should be in row 5.
+  <tr>
+    <td>30<td class="fail">-<td>Failed! Same problem as previous test.
+  <tr>
+    <td>31<td class="pass">+
+  <tr>
+    <td>32<td class="fail">-<td>Failed! Top and bottom are reverse of expected on center shape.
+  <tr>
+    <td>33<td class="pass">+
+  <tr>
+    <td>34<td class="pass">+
+  <tr>
+    <td>35<td class="pass">+
+  <tr>
+    <td>36<td class="fail">-<td>Failed! Top view and Right view aren't correct.
+  <tr>
+    <td>37<td class="fail">-<td>Failed! The center geometry should appear all blue but one quarter of it appears yellow on the cone and cylinder.
+  <tr>
+    <td>38<td class="pass">+
+  <tr>
+    <td>39<td class="fail">-<td>Failed! PixelTexture mapped incorrectly on rear quarter of the center row of shapes.
+  <tr>
+    <td>40<td class="pass">+
+  <tr>
+    <td>41<td class="pass">+
+  <tr>
+    <td>42<td class="pass">+
+  <tr>
+    <td>43<td class="pass">+
+  <tr>
+    <td>44<td class="pass">+
+  <tr>
+    <td>45<td class="fail">-<td>Failed! Second and fourth row of shapes has the colors reversed.
+  <tr>
+    <td>46<td class="fail">-<td>Failed! Colors incorrect on second and fourth row of shapes.
+  <tr>
+    <td>47<td class="fail">-<td>Failed! Colors incorrect.
+  <tr>
+    <td>48<td class="fail">-<td>Failed! Incorrect coloring.
+  <tr>
+    <td rowspan="93"><B>Bindable Nodes</B><td rowspan="23">Background<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="invalid">x<a href="#note1"><sup>1</sup></a>
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="fail">-<td>Failed! Console shows images are being downloaded but background does not get updated.
+  <tr>
+    <td>9<td class="fail">-<td>Failed! Nothing displays in lookat except text. See above.
+  <tr>
+    <td>10<td class="fail">-<td>Failed! Nothing displays in lookat except text. See above.
+  <tr>
+    <td>11<td class="fail">-<td>Failed! Nothing displays in lookat except text.
+  <tr>
+    <td>12<td class="fail">-<td>Failed! Nothing displays in lookat except text.
+  <tr>
+    <td>13<td class="fail">-<td>Failed! Nothing displays in lookat except text.
+  <tr>
+    <td>14<td class="fail">-<td>Failed! Panorama works great except that there is a black panel instead of the second image.
+  <tr>
+    <td>15<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+  <tr>
+    <td>16<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+  <tr>
+    <td>17<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+  <tr>
+    <td>18<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+  <tr>
+    <td>19<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+  <tr>
+    <td>20<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+  <tr>
+    <td>21<td class="invalid">x<a href="#note2"><sup>2</sup></a>
+  <tr>
+    <td>22<td class="pass">+
+  <tr>
+    <td>23<td class="pass">+
+  <tr>
+    <td rowspan="21">Fog<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="pass">+
+  <tr>
+    <td>15<td class="pass">+
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td>18<td class="pass">+
+  <tr>
+    <td>19<td class="pass">+
+  <tr>
+    <td>20<td class="pass">+
+  <tr>
+    <td>21<td class="pass">+
+  <tr>
+    <td rowspan="26">NavigationInfo<td>1<td class="fail">-<td>Failed! Box does not turn red upon collision as it should.
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="fail">-<td>Failed! Text does not display.
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="invalid">x<a href="#note3"><sup>3</sup></a>
+  <tr>
+    <td>10<td class="fail">-<td>Failed! Current speed doesn't get updated.
+  <tr>
+    <td>11<td class="fail">-<td>Failed! Current speed doesn't get updated.
+  <tr>
+    <td>12<td class="fail">-<td>Failed! Cube doesn't turn red on collision.
+  <tr>
+    <td>13<td class="fail">-<td>Failed! Cube doesn't turn red on collision.
+  <tr>
+    <td>14<td class="fail">-<td>Failed! Cube doesn't turn red on collision.
+  <tr>
+    <td>15<td class="pass">+
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="fail">-<td>Failed! Cube doesn't turn red on collision.
+  <tr>
+    <td>18<td class="invalid">x<a href="#note4"><sup>4</sup></a>
+  <tr>
+    <td>19<td class="fail">-<td>Failed! Cannot click on box. See SourceForge bug 626197.
+  <tr>
+    <td>20<td class="fail">-<td>Failed! Text doesn't appear when pushing itemss onto the stack. Appears fine when popping items off of the stack though.
+  <tr>
+    <td>21<td class="pass">+
+  <tr>
+    <td>22<td class="pass">+
+  <tr>
+    <td>23<td class="pass">+
+  <tr>
+    <td>24<td class="pass">+
+  <tr>
+    <td>25<td class="pass">+
+  <tr>
+    <td>26<td class="pass">+
+  <tr>
+    <td rowspan="23">Viewpoint<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="fail">-<td>Failed! Current position does not display correctly. X-coord is not quite 0.
+  <tr>
+    <td>3<td class="fail">-<td>Failed! Current position does not display correctly. Z-coord is not quite 0.
+  <tr>
+    <td>4<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="invalid">x<a href="#note5"><sup>5</sup></a>
+  <tr>
+    <td>8<td class="invalid">x<a href="#note6"><sup>6</sup></a>
+  <tr>
+    <td>9<td class="invalid">x<a href="#note6"><sup>6</sup></a>
+  <tr>
+    <td>10<td class="fail">-<td>Failed! Lookat fails to load the URL of the Viewpoint. URL is defined as "http://xsun.sdct.itl.nist.gov/~mkass/vts/Bindable_Nodes/Viewpoint/jumpcut_loadworld.wrl#RearView" but lookat strips out the # and cannot load the URL.
+  <tr>
+    <td>11<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>12<td class="fail">-<td>Failed! Current position does not display correctly. X-coord is not quite 0.
+  <tr>
+    <td>13<td class="fail">-<td>Failed! Current position does not display correctly. Z-coord is not quite 0.
+  <tr>
+    <td>14<td class="fail">-<td>Failed! See above. Indicating the box should not cause a jump to right viewpoint.
+  <tr>
+    <td>15<td class="fail">-<td>Failed! Nothing happens when pointing at the red box.
+  <tr>
+    <td>16<td class="fail">-<td>Failed! See previous.
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td>18<td class="pass">+
+  <tr>
+    <td>19<td class="pass">+
+  <tr>
+    <td>20<td class="pass">+
+  <tr>
+    <td>21<td class="pass">+
+  <tr>
+    <td>22<td class="pass">+
+  <tr>
+    <td>23<td class="pass">+
+  <tr>
+    <td rowspan="53"><B>Geometric Properties</B><td rowspan="21">Color<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="fail">-<td>Failed! Colored grey instead of red on ElevationGrid.
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="fail">-<td>Failed! Colored grey instead of blue on ElevationGrid.
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="fail">-<td>Failed! No colors on ElevationGrid.
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="fail">-<td>Failed! No colors on ElevationGrid.
+  <tr>
+    <td>15<td class="pass">+
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td>18<td class="fail">-<td>Failed! No colors on ElevationGrid.
+  <tr>
+    <td>19<td class="pass">+
+  <tr>
+    <td>20<td class="pass">+
+  <tr>
+    <td>21<td class="fail">-<td>Failed! No colors display.
+  <tr>
+    <td rowspan="5">Coordinate<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td rowspan="9">Normal<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="fail">-<td>Failed! Front left edge is colored differently than the rest of the shape.
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="fail">-<td>Failed! Not a straight line separating the two halves.
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td rowspan="18">TextureCoordinate<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+<td>Failed! Displays in blue when it should be yellow.
+  <tr>
+    <td>8<td class="pass">+<td>Failed! Only one of the four quarters is correctly colored.
+  <tr>
+    <td>9<td class="pass">+<td>Failed! Incorrectly colored.
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="pass">+
+  <tr>
+    <td>15<td class="pass">+
+  <tr>
+    <td>16<td class="fail">-<td>Failed! Display in blue when it should be yellow.
+  <tr>
+    <td>17<td class="fail">-<td>Failed! Only one of the four quarters is colored correctly.
+  <tr>
+    <td>18<td class="fail">-<td>Failed! Colored incorrectly.
+  <tr>
+    <td rowspan="113"><B>Geometry</B><td rowspan="6"><td>Box<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td rowspan="8">Cone<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+   <tr>
+    <td rowspan="9">Cylinder<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td rowspan="14">ElevationGrid<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="fail">-<td>Failed! ElevationGrid is not colored as expected.
+  <tr>
+    <td>6<td class="fail">-<td>Failed! ElevationGrid is not colored as expected.
+  <tr>
+    <td>7<td class="fail">-<td>Failed! ElevationGrid is not colored as expected.
+  <tr>
+    <td>8<td class="fail">-<td>Failed! ElevationGrid is not colored as expected.
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="pass">+<td>Failed! ElevationGrid is not colored as expected.
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="pass">+
+  <tr>
+    <td rowspan="17">Extrusion<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="fail">-<td>Failed! Majority of the model was fine, problem with just one little part.
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td>13<td class="fail">-<td>Failed! Line through one of the Extrusion's for no apparent reason.
+  <tr>
+    <td>14<td class="fail">-<td>Failed! Something is wrong on the right hand side of the top and bottom of the shape.
+  <tr>
+    <td>15<td class="fail">-<td>Failed! The lighting should be the same on both shapes.
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td rowspan="21">IndexedFaceSet<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="fail">-<td>Failed! Texture should be mapped over top of shape.
+  <tr>
+    <td>15<td class="pass">+
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td>18<td class="pass">+
+  <tr>
+    <td>19<td class="pass">+
+  <tr>
+    <td>20<td class="pass">+
+  <tr>
+    <td>21<td class="pass">+
+  <tr>
+    <td rowspan="10">IndexedLineSet<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="fail">-<td>Failed! Should be colored red.
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td rowspan="5">PointSet<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="fail">-<td>Failed! PointSet should be colored red, not white.
+  <tr>
+    <td rowspan="5">Shape<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="fail">-<td>Failed! Line should be colored red, not white.
+  <tr>
+    <td rowspan="6">Sphere<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td rowspan="12">Text<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="fail">-<td>Failed! Rightmost strings are not compressed.
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+<td>Viewpoint is behind text though.
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="fail">-<td>Failed! Texture mapping is not correct.
+  <tr>
+    <td rowspan="52"><B>Grouping Nodes</B><td rowspan="12">Anchor<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="fail">-<td>Failed! Lookat tries to load new viewpoint from URL http://xsun.sdct.itl.nist.gov/~mkass/vts/Grouping_Nodes/Anchor/test-viewanchor.wrlnewview
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="invalid">x<a href="#note7"><sup>7</sup></a>
+  <tr>
+    <td>7<td class="invalid">x<a href="#note8"><sup>8</sup></a>
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="fail">-<td>Failed! First URL in list is invalid so lookat should use the second valid one but doesn't and just fails with the first.
+  <tr>
+    <td>10<td class="invalid">x<a href="#note9"><sup>9</sup></a>
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td rowspan="6">Billboard<td>1<td class="pass">+<td>Incredibly processor intensive if you try to rotate though.
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="fail">-<td>Failed! Initial view is incorrect.
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="fail">-<td>Failed!
+  <tr>
+    <td rowspan="8">Collision<td>1<td class="fail">-<td>Failed! Can navigate right through the shapes.
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="fail">-<td>Failed! Box does not change to red upon collision.
+  <tr>
+    <td>4<td class="fail">-<td>Failed! IndexedLineSet doesn't change color upon collision.
+  <tr>
+    <td>5<td class="fail">-<td>Failed! IndexedLineSet doesn't change color upon collision.
+  <tr>
+    <td>6<td class="fail">-<td>Failed! Box does not change to red upon collision.
+  <tr>
+    <td>7<td class="fail">-<td>Failed! None of the spheres turn red upon collision as they should.
+  <tr>
+    <td>8<td class="fail">-<td>Failed! No color change on collision.
+  <tr>
+    <td rowspan="2">Group<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td rowspan="24">Transform<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="pass">+
+  <tr>
+    <td>15<td class="pass">+
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td>18<td class="pass">+
+  <tr>
+    <td>19<td class="pass">+
+  <tr>
+    <td>20<td class="pass">+
+  <tr>
+    <td>21<td class="pass">+
+  <tr>
+    <td>22<td class="pass">+
+  <tr>
+    <td>23<td class="pass">+
+  <tr>
+    <td>24<td class="pass">+
+  <tr>
+    <td rowspan="30"><B>Interpolators</B><td rowspan="5">ColorInterpolator<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="fail">-<td>Failed! Sphere on right should turn blue when mouse is over it, not black.
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td rowspan="5">CoordinateInterpolator<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="fail">-<td>Failed! Nothing happens when moving over leftmost box.
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td rowspan="5">NormalInterpolator<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="fail">-<td>Failed! Nothing happens when moving over leftmost box.
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td rowspan="5">OrientationInterpolator<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="fail">-<td>Failed! Nothing happens when moving over leftmost box.
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td rowspan="5">PositionInterpolator<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="fail">-<td>Failed! Nothing happens when indicating the leftmost shape.
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td rowspan="5">ScalarInterpolator<td>1<td class="fail">-<td>Failed! Illumination doesn't change.
+  <tr>
+    <td>2<td class="fail">-<td>Failed! Illumination doesn't change.
+  <tr>
+    <td>3<td class="fail">-<td>Failed! Illumination doesn't change.
+  <tr>
+    <td>4<td class="fail">-<td>Failed! Nothing happens when indicating the leftmost shape.
+  <tr>
+    <td>5<td class="fail">-<td>Failed! Illumination doesn't change.
+  <tr>
+    <td rowspan="92"><B>Lights</B><td rowspan="28">DirectionalLight<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="fail">-<td>Failed! Light travels from right to left when should move from left to right.
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="fail">-<td>Failed! Light travels from rigth to left when should move from left to right.
+  <tr>
+    <td>12<td class="fail">-<td>Failed! Text doesn't appear.
+  <tr>
+    <td>13<td class="fail">-<td>Failed! Text doesn't appear.
+  <tr>
+    <td>14<td class="fail">-<td>Failed! Text doesn't appear. Colour starts on the wrong side.
+  <tr>
+    <td>15<td class="fail">-<td>Failed! Text doesn't appear. Colour starts on the wrong side.
+  <tr>
+    <td>16<td class="fail">-<td>Failed! Beginning color of shapes should be black not green!
+  <tr>
+    <td>17<td class="fail">-<td>Failed! Text incorrect, beginning color of shapes should be black not green.
+  <tr>
+    <td>18<td class="fail">-<td>Failed! Lighting moves from right to left instead of left to right.
+  <tr>
+    <td>19<td class="fail">-<td>Failed! Text not viewable, same color as BG? + Lighting moves from right to left instead of left to right..
+  <tr>
+    <td>20<td class="pass">+
+  <tr>
+    <td>21<td class="pass">+
+  <tr>
+    <td>22<td class="pass">+
+  <tr>
+    <td>23<td class="pass">+
+  <tr>
+    <td>24<td class="pass">+
+  <tr>
+    <td>25<td class="pass">+
+  <tr>
+    <td>26<td class="pass">+
+  <tr>
+    <td>27<td class="pass">+
+  <tr>
+    <td>28<td class="pass">+
+  <tr>
+    <td rowspan="29">PointLight<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="fail">-<td>Failed! Only leftmost sphere should be lighted.
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="fail">-<td>Failed! Beginning color of shapes should be black not green!
+  <tr>
+    <td>15<td class="fail">-<td>Failed! Beginning color of shapes should be black not green.
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td>18<td class="pass">+
+  <tr>
+    <td>19<td class="pass">+
+  <tr>
+    <td>20<td class="pass">+
+  <tr>
+    <td>21<td class="pass">+
+  <tr>
+    <td>22<td class="pass">+
+  <tr>
+    <td>23<td class="pass">+
+  <tr>
+    <td>24<td class="pass">+
+  <tr>
+    <td>25<td class="pass">+
+  <tr>
+    <td>26<td class="pass">+
+  <tr>
+    <td>27<td class="pass">+
+  <tr>
+    <td>28<td class="fail">-<td>Failed! Test is beyond minimum conformance requirements though.
+  <tr>
+    <td>29<td class="fail">-<td>Failed! Test is beyond minimum conformance requirements though.
+  <tr>
+    <td rowspan="35">SpotLight<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="fail">-<td>Failed! The lighting is wrong (backwards)
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="pass">+
+  <tr>
+    <td>15<td class="pass">+
+  <tr>
+    <td>16<td class="fail">-<td>Failed! Shapes should start colored black not green.
+  <tr>
+    <td>17<td class="fail">-<td>Failed! Shapes should start colored black not green.
+  <tr>
+    <td>18<td class="pass">+
+  <tr>
+    <td>19<td class="pass">+
+  <tr>
+    <td>20<td class="pass">+
+  <tr>
+    <td>21<td class="pass">+
+  <tr>
+    <td>22<td class="pass">+
+  <tr>
+    <td>23<td class="pass">+
+  <tr>
+    <td>24<td class="pass">+
+  <tr>
+    <td>25<td class="pass">+
+  <tr>
+    <td>26<td class="pass">+
+  <tr>
+    <td>27<td class="pass">+
+  <tr>
+    <td>28<td class="pass">+
+  <tr>
+    <td>29<td class="pass">+
+  <tr>
+    <td>30<td class="fail">-<td>Failed! Last figure of each set should not be illuminated. Test is beyond minimum conformance requirements though.
+  <tr>
+    <td>31<td class="fail">-<td>Failed! Last figure of each set should not be illuminated. Test is beyond minimum conformance requirements though.
+  <tr>
+    <td>32<td class="pass">+
+  <tr>
+    <td>33<td class="pass">+
+  <tr>
+    <td>34<td class="fail">-<td>Failed! Test is beyond minimum conformance requirements though.
+  <tr>
+    <td>35<td class="fail">-<td>Failed! Test is beyond minimum conformance requirements though.
+  <tr>
+    <td rowspan="52"><B>Misc</B><td rowspan="18">EXTERNPROTO<td>1<td class="fail">-<td>Failed! Assertion failure on console stating:<BR>lookat: ../../../../src/openvrml/OpenVRML/scope.cpp:71: void OpenVRML::Scope::addNodeType (const OpenVRML::NodeTypePtr &): Assertion `nodeType' failed.
+  <tr>
+    <td>2<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>3<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>4<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>5<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>6<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>7<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>8<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>9<td class="fail">-<td>Failed! Cannot select sphere.
+  <tr>
+    <td>10<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>11<td class="fail">-<td>Failed! Clicking on green sphere doesn't cause red sphere to appear as well.
+  <tr>
+    <td>12<td class="fail">-<td>Failed! Clicking on green sphere doesn't cause red sphere to appear as well.
+  <tr>
+    <td>13<td class="fail">-<td>Failed! Assertion failure on console stating:<BR>lookat: ../../../../src/openvrml/OpenVRML/scope.cpp:71: void OpenVRML::Scope::addNodeType (const OpenVRML::NodeTypePtr &): Assertion `nodeType' failed.
+  <tr>
+    <td>14<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>15<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>16<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>17<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>18<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td rowspan="30">PROTO<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7A<td class="fail">-<td>Failed! Aborted.
+  <tr>
+    <td>7B<td class="fail">-<td>Failed! Background not blue, text doesn't change colors.
+  <tr>
+    <td>7C<td class="fail">-<td>Failed! Cone does not move.
+  <tr>
+    <td>7D<td class="fail">-<td>Failed! Nothing displays in lookat for this test. Some kind of lighting issue as if lighting is disable, the cylinder can be seen. Lookat seems to get into an infinite loop here as well...
+  <tr>
+    <td>7E<td class="pass">+
+  <tr>
+    <td>7F<td class="fail">-<td>Failed! Segmentation fault.
+  <tr>
+    <td>7G<td class="pass">+
+  <tr>
+    <td>7H<td class="pass">+
+  <tr>
+    <td>7I<td class="fail">-<td>Failed! For some reason, when the PointSet shape on the left comes into view, the IndexedLineSet on the right turns into a PointSet as well!
+  <tr>
+    <td>7J<td class="fail">-<td>Failed! Nothing happens.
+  <tr>
+    <td>7K<td class="fail">-<td>Failed! Light should move around the shape but nothing appears to happen in lookat.
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="fail">-<td>Failed! Animation does not occur. Following messages are dumped to the console:<BR>line 226: eventIn cannot be mapped to field<BR>line 228: expecting "IS", found '{'<BR>line 232: expecting "IS", found '['<BR>line 236: expecting ], found '}'
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="fail">-<td>Failed! Nothing happens when clicking on the rings.
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="pass">+
+  <tr>
+    <td>15<td class="fail">-<td>Failed! Background does not change to indicated color.
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td>18<td class="pass">+
+  <tr>
+    <td>19<td class="fail">-<td>Failed! Only top-left sphere changes color.
+  <tr>
+    <td>20<td class="fail">-<td>Failed! Rightmost set of spheres does not animate properly.
+  <tr>
+    <td>Script ECMAScript<td><td><td><td>No Tests Defined by NIST!
+  <tr>
+    <td>Script Java<td><td><td><td>No Tests Defined by NIST!
+  <tr>
+    <td rowspan="2">WorldInfo<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td rowspan="81"><B>Sensors</B><td rowspan="11">CylinderSensor<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="fail">-<td>Failed!
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="fail">-<td>Failed! PointLight is not activated.
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td rowspan="14">PlaneSensor<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="fail">-<td>Failed! Red sphere should appear on top of the box, not behind it.
+  <tr>
+    <td>11<td class="fail">-<td>Failed! Cannot drag box.
+  <tr>
+    <td>12<td class="pass">+
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="fail">-<td>Failed! Can still rotate box but not drag.
+  <tr>
+    <td rowspan="10">ProximitySensor<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="fail">-<td>Failed! Something a little off here, sphere starts to change color but for some reason EXIT events are generated as fast as ENTER events.
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td rowspan="9">SphereSensor<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="fail">-<td>Failed! IndexedFaceSet should not rotate.
+  <tr>
+    <td>3<td class="fail">-<td>Failed! Aborted.
+  <tr>
+    <td>4<td class="fail">-<td>Failed! Aborted.
+  <tr>
+    <td>5<td class="fail">-<td>Failed! Aborted.
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td rowspan="19">TimeSensor<td>1<td class="fail">-<td>Failed! Cannot click on sphere.
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="fail">-<td>Failed! Cannot click on sphere.
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="fail">-<td>Failed! Nothing happens after clicking on sphere.
+  <tr>
+    <td>6<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="fail">-<td>Failed! Cannot click on sphere.
+  <tr>
+    <td>9<td class="fail">-<td>Failed! See above.
+  <tr>
+    <td>10<td class="pass">+
+  <tr>
+    <td>11<td class="pass">+
+  <tr>
+    <td>12<td class="fail">-<td>Failed! Cycle doesn't continue indefinitely.
+  <tr>
+    <td>13<td class="pass">+
+  <tr>
+    <td>14<td class="pass">+
+  <tr>
+    <td>15<td class="pass">+
+  <tr>
+    <td>16<td class="pass">+
+  <tr>
+    <td>17<td class="pass">+
+  <tr>
+    <td>18<td class="pass">+
+  <tr>
+    <td>19<td class="pass">+
+  <tr>
+    <td rowspan="9">TouchSensor<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="fail">-<td>Failed! Smaller red sphere doesn't appear.
+  <tr>
+    <td>6<td class="fail">-<td>Failed! Lights do not come on.
+  <tr>
+    <td>7<td class="fail">-<td>Failed!
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td rowspan="9">VisibilitySensor<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td>7<td class="pass">+
+  <tr>
+    <td>8<td class="pass">+
+  <tr>
+    <td>9<td class="pass">+
+  <tr>
+    <td rowspan="28"><B>Sounds</B><td rowspan="19">AudioClip<td>1<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>2<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>3<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>4<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>5<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>6<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>7<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>8<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>9<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>10<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>11<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>12<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>13<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>14<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>15<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>16<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>17<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>18<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>19<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td rowspan="9">Sound<td>1<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>2<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>3<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>4<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>5<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>6<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>7<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>8<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td>9<td class="fail">-<td>Failed because sound support has been removed in the current build.
+  <tr>
+    <td rowspan="18"><B>Special Groups</B><td rowspan="6">Inline<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+<td>Text is screwed up though.
+  <tr>
+    <td>3<td class="fail">-<td>Failed! OpenVRML should ignore the first invalid URL and use the second but instead only attempts to load the first.
+  <tr>
+    <td>4<td class="invalid">x<a href="note10"><sup>10</sup></a>
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td rowspan="6">LOD<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+  <tr>
+    <td rowspan="6">Switch<td>1<td class="pass">+
+  <tr>
+    <td>2<td class="pass">+
+  <tr>
+    <td>3<td class="pass">+
+  <tr>
+    <td>4<td class="pass">+
+  <tr>
+    <td>5<td class="pass">+
+  <tr>
+    <td>6<td class="pass">+
+</table>
+
+
+<sup id="note1">1</sup> Test is invalid. Comments for world state, "THE
+SECOND BACKGROUND IS NOT FORCED TO BE THE ACTIVE BACKGROUND BY SENDING A TRUE
+EVENT TO IT, BUT BY SENDING A FALSE EVENT TO THE BACKGROUND AT THE TOP OF THE
+STACK." The problem is that the second background should @e never be bound
+unless a true event is sent to it as only the first background is bound by
+default. See comments on <a
+href="http://sourceforge.net/tracker/?func=detail&atid=107151&aid=210036&group_id=7151">
+Bug 210036</a> in SourceForge for more information.
+
+<sup id="note2">2</sup> PNG missing on server.
+
+<sup id="note3">3</sup> Test is for NavigationInfo node but there is no
+NavigationInfo node in the world! Comments for test indicate there should be
+one that sets the speed to 1 (comments also indicate there should be a
+Viewpoint node in the world too but that's also missing!)
+
+<sup id="note4">4</sup> url field of anchor should be "#Top_View" not
+"Top_View".
+
+<sup id="note5">5</sup> Improper Javascript code used in
+createVrmlFromString call. description property of VIEW1 Viewpoint needs to
+have the string properly escaped.
+
+<sup id="note6">6</sup> url field of anchor should be "#Top_View" not
+"Top_View". (Comment at top of test even says this is what the url should be!)
+
+<sup id="note7">7</sup> url field of anchor should be "#view2" not "view2".
+
+<sup id="note8">8</sup> url field of anchor should be "#view3" not "view3".
+
+<sup id="note9">9</sup> url field is hardcoded to point at an older location
+of the NIST VTS (autumn.ncsl.nist.gov) which refuses requests.
+
+<sup id="note10">10</sup> URL points to old server
+http://autumn.ncsl.nist.gov which no longer allows access. World should be
+updated to point at the current location of the NIST tests.
 
 */

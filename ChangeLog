@@ -1,5 +1,12 @@
 2004-03-22 Braden McDaniel  <braden@endoframe.com>
 
+	Formatting improvements to the NIST test suite result table.
+
+	* doc/conformance.doc
+	* doc/doxygen-header
+
+2004-03-22 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp
 	(point_set_node::modified, shape_node::modified):  Fixed
 	recursive call.
