@@ -686,6 +686,14 @@ FieldValueTypeMismatch::~FieldValueTypeMismatch() throw ()
 
 
 /**
+ * @typedef NodePath
+ *
+ * @brief A path to a node in the scene starting with one of the scene root
+ *      nodes and ending with the objective node.
+ */
+
+
+/**
  * @class Node
  *
  * @brief A node in the scene graph.

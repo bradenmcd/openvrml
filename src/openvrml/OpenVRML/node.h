@@ -22,6 +22,7 @@
 # ifndef OPENVRML_NODE_H
 #   define OPENVRML_NODE_H
 
+#   include <deque>
 #   include <iostream>
 #   include <list>
 #   include <set>
@@ -170,6 +171,9 @@ namespace OpenVRML {
     };
 
 
+    typedef std::deque<Node *> NodePath;
+
+
     class Scope;
     class VrmlMatrix;
     class NodeVisitor;
@@ -262,6 +266,8 @@ namespace OpenVRML {
         bool accept(NodeVisitor & visitor);
         void resetVisitedFlag() throw ();
 
+        void relocate() throw ();
+
         void addEventOutIS(const std::string & eventOut,
                            PolledEventOutValue & eventOutValue)
             throw (UnsupportedInterface, std::bad_alloc);
@@ -326,8 +332,6 @@ namespace OpenVRML {
         void setModified();
         void clearModified() { d_modified = false; }
         virtual bool isModified() const;
-        typedef std::list< Node* > NodePath;
-
 
         static void markPathModified(NodePath& path, bool mod, int flags = 0x003);
 

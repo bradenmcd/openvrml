@@ -2,6 +2,10 @@
 
         * src/openvrml/OpenVRML/node.h:  Made Node::visited private.
 
+        * src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h:
+          Moved NodePath typedef from Node class to OpenVRML namespace;
+          use a std::deque instead of a std::list.
+
 2002-12-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp:  Use newer
