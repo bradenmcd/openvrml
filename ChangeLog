@@ -1,5 +1,15 @@
 2005-01-09 Braden McDaniel  <braden@endoframe.com>
 
+	Fixed problem with an empty -rpath argument when configured with
+	--disable-script-node-javascript.
+
+	* configure.ac
+	* src/lookat/Makefile.am
+	* test/Makefile.am
+	* test/parse/Makefile.am
+
+2005-01-09 Braden McDaniel  <braden@endoframe.com>
+
 	Use fork/exec directly instead of using g_spawn_async.  For some
 	reason, g_spawn_async did not play well with reloading the plug-
 	in shortly after unloading it.
