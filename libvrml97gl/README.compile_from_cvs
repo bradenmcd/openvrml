@@ -1,0 +1,31 @@
+1. Run libtoolize:
+
+$ libtoolize --automake
+
+
+2. Run aclocal. You will need to tell it where to find the macros installed by
+   libvrml97core, as well as the macros in the local m4 subdirectory. This is
+   done with the '-I' switch. If you installed libvrml97core in the default
+   location (/usr/local), the command is:
+
+$ aclocal -I m4 -I /usr/local/share/aclocal
+
+
+3. Run automake:
+
+$ automake
+
+
+4. Run autoconf
+
+$ autoconf
+
+
+5. Run the generated configure script:
+
+$ ./configure
+
+
+6. Build it:
+
+$ make
