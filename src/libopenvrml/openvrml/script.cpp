@@ -3355,7 +3355,7 @@ JSBool SFImage::initObject(JSContext * const cx,
         }
 
         auto_ptr<openvrml::sfimage>
-            sfimage(new openvrml::sfimage(x, y, comp, &pixels[0]));
+            sfimage(new openvrml::sfimage(image(x, y, comp, pixels)));
         auto_ptr<sfdata> sfdata(new sfdata(sfimage.get()));
         sfimage.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -3389,13 +3389,13 @@ JSBool SFImage::getProperty(JSContext * const cx,
     if (JSVAL_IS_INT(id)) {
         switch (JSVAL_TO_INT(id)) {
         case 0:
-            *vp = INT_TO_JSVAL(thisImage.x());
+            *vp = INT_TO_JSVAL(thisImage.value.x());
             break;
         case 1:
-            *vp = INT_TO_JSVAL(thisImage.y());
+            *vp = INT_TO_JSVAL(thisImage.value.y());
             break;
         case 2:
-            *vp = INT_TO_JSVAL(thisImage.comp());
+            *vp = INT_TO_JSVAL(thisImage.value.comp());
             break;
         case 3: // *vp = convert pixels to MFInt...
         default: return JS_FALSE;

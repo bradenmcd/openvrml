@@ -1160,11 +1160,14 @@ void JNICALL Java_vrml_field_ConstSFImage_CreateObject
 
         if (pixels) {
             jbyte *pjb = env->GetByteArrayElements(pixels, 0);
-            sfi.reset(new sfimage(width, height, components,
-                                      (unsigned char *)pjb));
+            sfi.reset(new sfimage(image(width,
+                                        height,
+                                        components,
+                                        pjb,
+                                        pjb + (width * height * components))));
             env->ReleaseByteArrayElements(pixels, pjb, JNI_ABORT);
         } else {
-            sfi.reset(new sfimage(width, height, components, 0));
+            sfi.reset(new sfimage(image(width, height, components)));
         }
         env->SetIntField(obj, fid, reinterpret_cast<int>(sfi.release()));
     } catch (std::bad_alloc & ex) {
@@ -1190,7 +1193,7 @@ jint JNICALL Java_vrml_field_ConstSFImage_getWidth(JNIEnv *env, jobject obj)
 {
     sfimage* sfi = static_cast<sfimage*>(getFieldValue(env, obj));
     if (!sfi) return 0;
-    return static_cast<jint>(sfi->x());
+    return sfi->value.x();
 }
 
 /**
@@ -1204,7 +1207,7 @@ jint JNICALL Java_vrml_field_ConstSFImage_getHeight(JNIEnv *env, jobject obj)
 {
     sfimage* sfi = static_cast<sfimage*>(getFieldValue(env, obj));
     if (!sfi) return 0;
-    return static_cast<jint>(sfi->y());
+    return sfi->value.y();
 }
 
 /**
@@ -1219,7 +1222,7 @@ jint JNICALL Java_vrml_field_ConstSFImage_getComponents(JNIEnv * env,
 {
     sfimage* sfi = static_cast<sfimage*>(getFieldValue(env, obj));
     if (!sfi) return 0;
-    return static_cast<jint>(sfi->comp());
+    return sfi->value.comp();
 }
 
 /**
@@ -1233,10 +1236,13 @@ void JNICALL Java_vrml_field_ConstSFImage_getPixels(JNIEnv *env,
                                                     jobject obj,
                                                     jbyteArray pixels)
 {
+    using std::vector;
     sfimage* sfi = static_cast<sfimage*>(getFieldValue(env, obj));
     if (!sfi) return;
-    env->SetByteArrayRegion(pixels, 0, sfi->x() * sfi->y(),
-                            (jbyte*)sfi->array());
+    vector<jbyte> jbyte_pixels(sfi->value.array().begin(),
+                               sfi->value.array().end());
+    env->SetByteArrayRegion(pixels, 0, jbyte_pixels.size(),
+                            jbyte_pixels.empty() ? 0 : &jbyte_pixels[0]);
 }
 
 /**
@@ -1342,9 +1348,8 @@ void JNICALL Java_vrml_field_SFImage_setValue__III_3B(JNIEnv * env,
     sfimage* sfi = static_cast<sfimage*>(getFieldValue(env, obj));
     if (!sfi) return;
     jbyte *pjb = env->GetByteArrayElements(pixels, NULL);
-    sfi->set(static_cast<int>(width), static_cast<int>(height),
-             static_cast<int>(components),
-             (unsigned char *)pjb);
+    sfi->value = image(width, height, components,
+                       pjb, pjb + (width * height * components));
     env->ReleaseByteArrayElements(pixels, pjb, JNI_ABORT);
 }
 

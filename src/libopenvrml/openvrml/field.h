@@ -23,12 +23,10 @@
 # ifndef OPENVRML_FIELD_H
 #   define OPENVRML_FIELD_H
 
-#   include <iosfwd>
 #   include <memory>
 #   include <stdexcept>
 #   include <string>
 #   include <typeinfo>
-#   include <vector>
 #   include <boost/shared_ptr.hpp>
 #   include <openvrml/basetypes.h>
 #   include <openvrml/node_ptr.h>
@@ -188,25 +186,13 @@ namespace openvrml {
 
 
     class sfimage : public field_value {
-        size_t d_w, d_h, d_nc;
-        unsigned char * d_pixels; // nc bytes/pixel, lower left to upper right
-
     public:
-        sfimage() throw ();
-        sfimage(size_t x, size_t y, size_t comp,
-                const unsigned char * array = 0)
-            throw (std::bad_alloc);
-        sfimage(const sfimage &) throw (std::bad_alloc);
+        image value;
+
+        explicit sfimage(const image & value = image()) throw (std::bad_alloc);
         virtual ~sfimage() throw ();
 
-        sfimage & operator=(const sfimage & sfimage) throw (std::bad_alloc);
-
-        size_t x() const throw ();
-        size_t y() const throw ();
-        size_t comp() const throw ();
-        const unsigned char * array() const throw ();
-        void set(size_t x, size_t y, size_t comp,
-                 const unsigned char * array) throw (std::bad_alloc);
+        // Use compiler-defined copy constructor and operator=.
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
@@ -217,6 +203,16 @@ namespace openvrml {
     private:
         virtual void print(std::ostream & out) const;
     };
+
+    inline bool operator==(const sfimage & lhs, const sfimage & rhs) throw ()
+    {
+        return lhs.value == rhs.value;
+    }
+
+    inline bool operator!=(const sfimage & lhs, const sfimage & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
 
 
     class sfint32 : public field_value {

@@ -2608,4 +2608,305 @@ bool operator==(const quatf & lhs, const quatf & rhs) throw ()
  * @return @c true if @p lhs and @p rhs are not equal; @c false otherwise.
  */
 
+
+/**
+ * @class image
+ *
+ * @ingroup basetypes
+ *
+ * @brief Pixmap data.
+ *
+ * The first pixel in the @link image::array array@endlink is the lower left
+ * pixel and the last is the upper right pixel.  Pixel values are limited
+ * to 256 levels of intensity.  The elements of
+ * @link image::array array@endlink are bytes, with one byte per pixel
+ * component.  Thus the number of elements in the array is
+ * @p x * &p y * @p comp.
+ *
+ * A one-component image specifies one-byte greyscale values.  A two-component
+ * image specifies the intensity in the first byte and the alpha opacity in the
+ * second byte.  A three-component image specifies the red component in the
+ * first byte, followed by the green and blue components.  Four-component
+ * images specify the alpha opacity byte after red/green/blue.
+ */
+
+/**
+ * @var size_t image::x_
+ *
+ * @brief Pixels in the <var>x</var>-dimension.
+ */
+
+/**
+ * @var size_t image::y_
+ *
+ * @brief Pixels in the <var>y</var>-dimension.
+ */
+
+/**
+ * @var size_t image::comp_
+ *
+ * @brief Number of components.
+ */
+
+/**
+ * @var std::vector<int32> image::array_
+ *
+ * @brief Pixel data.
+ */
+
+/**
+ * @brief Construct.
+ */
+image::image() throw ()
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param x     pixels in the <var>x</var>-direction.
+ * @param y     pixels in the <var>y</var>-direction.
+ * @param comp  number of components.
+ */
+image::image(const size_t x,
+             const size_t y,
+             const size_t comp)
+    throw (std::bad_alloc):
+    x_(x),
+    y_(y),
+    comp_(comp),
+    array_(x * y * comp)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @pre @p array.size() <= @p x * @p y & @p comp.
+ *
+ * @param x     pixels in the <var>x</var>-direction.
+ * @param y     pixels in the <var>y</var>-direction.
+ * @param comp  number of components.
+ * @param array pixel data.
+ */
+image::image(const size_t x,
+             const size_t y,
+             const size_t comp,
+             const std::vector<unsigned char> & array)
+    throw (std::bad_alloc):
+    x_(x),
+    y_(y),
+    comp_(comp),
+    array_(array)
+{
+    assert(array.size() <= x * y * comp);
+}
+
+/**
+ * @fn template <typename InputIterator> image::image(size_t x, size_t y, size_t comp, InputIterator array_begin, InputIterator array_end) throw (std::bad_alloc)
+ *
+ * @brief Construct.
+ *
+ * @pre std::distance(@p array_begin, @p array_end) <= @p x * @p y * @p comp.
+ *
+ * @param x             pixels in the <var>x</var>-direction.
+ * @param y             pixels in the <var>y</var>-direction.
+ * @param comp          number of components.
+ * @param array_begin   pixel data begin iterator.
+ * @param array_end     pixel data end iterator.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+
+/**
+ * @fn size_t image::x() const throw ()
+ *
+ * @brief Pixels in the <var>x</var>-dimension.
+ *
+ * @return the number of pixels in the <var>x</var>-dimension.
+ */
+
+/**
+ * @brief Set the pixels in the <var>x</var>-dimension.
+ *
+ * @param value new value for the <var>x</var>-dimension.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void image::x(const size_t value) throw (std::bad_alloc)
+{
+    //
+    // Throws std::bad_alloc.
+    //
+    this->array_.resize(value * this->y_ * this->comp_);
+    this->x_ = value;
+}
+
+/**
+ * @fn size_t image::y() const throw ()
+ *
+ * @brief Pixels in the <var>y</var>-dimension.
+ *
+ * @return the number of pixels in the <var>y</var>-dimension.
+ */
+
+/**
+ * @brief Set the pixels in the <var>y</var>-dimension.
+ *
+ * @param value new value for the <var>x</var>-dimension.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void image::y(const size_t value) throw (std::bad_alloc)
+{
+    //
+    // Throws std::bad_alloc.
+    //
+    this->array_.resize(this->x_ * value * this->comp_);
+    this->y_ = value;
+}
+
+/**
+ * @brief Resize the <var>x</var>- and <var>y</var>-dimensions.
+ *
+ * @param x <var>x</var>-dimension.
+ * @param y <var>y</var>-dimension.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void image::resize(const size_t x, const size_t y) throw (std::bad_alloc)
+{
+    this->array_.resize(x * y * this->comp_); // Throws std::bad_alloc.
+    this->x_ = x;
+    this->y_ = y;
+}
+
+/**
+ * @fn size_t image::comp() const throw ()
+ *
+ * @brief Number of components.
+ *
+ * @return the number of components.
+ */
+
+/**
+ * @brief Set the number of components.
+ *
+ * @pre @p value <= 4
+ *
+ * @param value number of components.
+ */
+ void image::comp(const size_t value) throw (std::bad_alloc)
+{
+    assert(value <= 4);
+    this->array_.resize(this->x_ * this->y_ * value);
+    this->comp_ = value;
+}
+
+
+/**
+ * @fn const std::vector<unsigned char> & image::array() const throw ()
+ *
+ * @brief Pixel value array.
+ *
+ * @return the array of pixel values.
+ */
+
+/**
+ * @fn void image::array(const std::vector<unsigned char> & value) throw ()
+ *
+ * @brief Set the pixel value array.
+ *
+ * @pre @p value.size() <= (x() * y() * comp())
+ *
+ * @param value pixel value array.
+ */
+
+/**
+ * @fn template <typename InputIterator> void image::array(InputIterator begin, InputIterator end) throw ()
+ *
+ * @brief Set the pixel value array.
+ *
+ * @pre std::distance(@p begin, @p end) <= (x() * y() * comp())
+ *
+ * @param begin input iterator to the beginning of a sequence.
+ * @param end   input iterator to the end of the sequence (one past the last
+ *              element).
+ */
+
+/**
+ * @fn int32 image::pixel(size_t index) const throw ()
+ *
+ * @brief Pixel value.
+ *
+ * @pre @p index < x() * y()
+ *
+ * @param index pixel value index.
+ *
+ * @return the pixel value at @p index.
+ */
+
+/**
+ * @fn void image::pixel(size_t index, int32 value) throw ()
+ *
+ * @brief Set a pixel value.
+ *
+ * @pre @p index < x() * y()
+ *
+ * @param index pixel value index.
+ * @param value pixel value.
+ */
+
+/**
+ * @fn int32 image::pixel(size_t x, size_t y) const throw ()
+ *
+ * @brief Pixel value.
+ *
+ * @pre @p x < x(), @p y < y()
+ *
+ * @param x pixel value <var>x</var>- (column) index.
+ * @param y pixel value <var>y</var>- (row) index.
+ *
+ * @return the pixel value at (@p x, @p y).
+ */
+
+/**
+ * @fn void image::pixel(size_t x, size_t y, int32 value) throw ()
+ *
+ * @brief Set a pixel value.
+ *
+ * @pre @p x < x(), @p y < y()
+ *
+ * @param x     pixel value <var>x</var>- (column) index.
+ * @param y     pixel value <var>y</var>- (row) index.
+ * @param value pixel value.
+ */
+
+/**
+ * @relates image
+ *
+ * @brief Stream output.
+ *
+ * @param out   output stream.
+ * @param img   image.
+ */
+std::ostream & operator<<(std::ostream & out, const image & img)
+{
+    using std::vector;
+    using std::ios_base;
+    using std::dec;
+    using std::hex;
+
+    const ios_base::fmtflags save_flags = out.flags();
+    out << dec << img.x() << ' ' << img.y() << ' ' << img.comp() << hex;
+    for (size_t pixel_index = 0;
+         pixel_index < img.x() * img.y();
+         ++pixel_index) {
+        out << ' ' << "0x";
+        for (size_t component = 0; component < img.comp(); ++component) {
+            out << int(img.array()[pixel_index * img.comp() + component]);
+        }
+    }
+    out.flags(save_flags);
+    return out;
+}
+
 }

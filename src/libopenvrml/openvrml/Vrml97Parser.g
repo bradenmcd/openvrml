@@ -1504,41 +1504,33 @@ options { defaultErrorHandler=false; }
 sfImageValue returns [openvrml::field_value_ptr siv]
 options { defaultErrorHandler=false; }
 {
-    unsigned long w(0L), h(0L), com(0L), pixel(0L);
+    using antlr::SemanticException;
+    size_t x, y, comp;
+    int32 pixel;
+    size_t pixel_index = 0;
 }
-    : w=intValue h=intValue com=intValue
-        { std::vector<unsigned char> pixelVector; }
-        (
-            pixel=intValue
-            {
-                // need to confirm the cross-platform-ness of this, it
-                // looks kind of ugly but might in fact be ok. basically,
-                // we read the value as an integer, then strip off the
-                // bytes one by one.
-                for (int32 i = com - 1; i >= 0; i--) {
-                    const unsigned char component =
-                        static_cast<unsigned char>(pixel >> (8 * i) & 0xff);
-                    pixelVector.push_back(component);
+    :   x=intValue y=intValue comp=intValue {
+            image img(x, y, comp);
+        } (
+            pixel=intValue {
+                if (!(pixel_index < x * y)) {
+                    throw SemanticException("Too many pixel values for "
+                                            "SFImage.",
+                                            this->uri,
+                                            LT(1)->getLine(),
+                                            LT(1)->getColumn());
                 }
+                img.pixel(pixel_index++, pixel);
             }
-        )*
-        {
-            // if somebody gives us a really, really, really big
-            // pixeltexture, then we will crash. in the age of dos
-            // attacks, we have to assume that someone will feed us a
-            // too-big texture to see if we barf. good behavior
-            // would be to detect outsized w/h and bail. casting away
-            // the compiler warning is not helpful. there are other
-            // bigger bugs to fry, so I guess it's ok for now.
-            //
-            if (pixelVector.size() != (w * h * com)) {
-                throw antlr::SemanticException("Wrong number of pixel values "
-                                               "for SFImage.",
+        )* {
+            if (pixel_index != x * y) {
+                throw antlr::SemanticException("Insufficient pixel values for "
+                                               "SFImage.",
                                                this->uri,
                                                LT(1)->getLine(),
                                                LT(1)->getColumn());
             }
-            siv.reset(new sfimage(w, h, com, &pixelVector[0]));
+            siv.reset(new sfimage(img));
         }
     ;
 
@@ -1562,7 +1554,7 @@ options { defaultErrorHandler=false; }
     | LBRACKET (i=intValue { int32s.value.push_back(i); })* RBRACKET
     ;
 
-intValue returns [long val]
+intValue returns [int32 val]
 options { defaultErrorHandler=false; }
     :   i0:INTEGER      { std::istringstream(i0->getText()) >> val; }
     |  	i1:HEX_INTEGER  { std::istringstream(i1->getText()) >> val; }

@@ -715,133 +715,31 @@ field_value::type_id sffloat::type() const throw ()
  *
  * @ingroup fieldvalues
  *
- * A single uncompressed 2-dimensional pixel image. The first
- * hexadecimal value is the lower left pixel and the last value is the
- * upper right pixel.Pixel values are limited to 256 levels of
- * intensity. A one-component image specifies one-byte greyscale
- * values. A two-component image specifies the intensity in the first
- * (high) byte and the alpha opacity in the second (low) byte. A
- * three-component image specifies the red component in the first
- * (high) byte, followed by the green and blue components.
- * Four-component images specify the alpha opacity byte after
- * red/green/blue.
+ * @brief A pixmap.
  */
 
 /**
- * @var size_t sfimage::d_w
+ * @var image sfimage::value
  *
- * @brief Image width.
- */
-
-/**
- * @var size_t sfimage::d_h
- *
- * @brief Image height.
- */
-
-/**
- * @var size_t sfimage::d_nc
- *
- * @brief Number of components.
- */
-
-/**
- * @var unsigned char * sfimage::d_pixels
- *
- * @brief Pixel data.
+ * @brief Image data.
  */
 
 /**
  * Construct.
- */
-sfimage::sfimage() throw ():
-    d_w(0),
-    d_h(0),
-    d_nc(0),
-    d_pixels(0)
-{}
-
-/**
- * @brief Construct.
  *
- * Note that the pixels read from lower left to upper right, which
- * is a reflection around the y-axis from the "normal" convention.
- * <p>
- * Note also that width and height are specified in pixels, and a
- * pixel may be more than one byte wide. For example, an image with
- * a width and height of 16, and nc==3, would have a pixel array
- * w*h*nc = 16*16*3 = 768 bytes long. See the class intro above for
- * the interpretation of different pixel depths.
- *
- * @param x     width in pixels
- * @param y     height in pixels
- * @param comp  number of components/pixel (see above)
- * @param array the caller owns the bytes, so this ctr makes a copy
+ * @param value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-sfimage::sfimage(size_t x,
-                 size_t y,
-                 size_t comp,
-                 const unsigned char * array)
-    throw (std::bad_alloc):
-    d_w(x),
-    d_h(y),
-    d_nc(comp),
-    d_pixels(0L)
-{
-    const size_t nbytes = x * y * comp;
-    this->d_pixels = new unsigned char[nbytes];
-    std::copy(array, array + nbytes, this->d_pixels);
-}
-
-/**
- * @brief Copy constructor.
- *
- * @param sfimage the sfimage object to copy.
- *
- * @exception std::bad_alloc if memory allocation fails.
- */
-sfimage::sfimage(const sfimage & sfimage) throw (std::bad_alloc):
-    d_w(sfimage.d_w),
-    d_h(sfimage.d_h),
-    d_nc(sfimage.d_nc),
-    d_pixels(0)
-{
-    const size_t nbytes = sfimage.d_w * sfimage.d_h * sfimage.d_nc;
-    this->d_pixels = new unsigned char[nbytes];
-    std::copy(sfimage.d_pixels, sfimage.d_pixels + nbytes, this->d_pixels);
-}
+sfimage::sfimage(const image & value) throw (std::bad_alloc):
+    value(value)
+{}
 
 /**
  * @brief Destroy.
  */
 sfimage::~sfimage() throw ()
-{
-    delete [] d_pixels;
-}
-
-/**
- * @brief Assignment.
- *
- * @param sfimage the sfimage value to assign to the object.
- *
- * @exception std::bad_alloc if memory allocation fails.
- */
-sfimage & sfimage::operator=(const sfimage & sfimage) throw (std::bad_alloc)
-{
-    if (this != &sfimage) {
-        delete [] this->d_pixels;
-        this->d_w = this->d_h = this->d_nc = 0L;
-        const size_t nbytes = sfimage.d_w * sfimage.d_h * sfimage.d_nc;
-        this->d_pixels = new unsigned char[nbytes];
-        this->d_w = sfimage.d_w;
-        this->d_h = sfimage.d_h;
-        this->d_nc = sfimage.d_nc;
-        std::copy(sfimage.d_pixels, sfimage.d_pixels + nbytes, this->d_pixels);
-    }
-    return *this;
-}
+{}
 
 /**
  * @brief Print to an output stream.
@@ -850,18 +748,7 @@ sfimage & sfimage::operator=(const sfimage & sfimage) throw (std::bad_alloc)
  */
 void sfimage::print(std::ostream & out) const
 {
-    out << static_cast<unsigned int>(this->d_w) << " "
-        << static_cast<unsigned int>(this->d_h) << " "
-        << static_cast<unsigned int>(this->d_nc);
-
-    size_t np = d_w * d_h;
-    unsigned char * p = d_pixels;
-
-    for (size_t i = 0; i < np; ++i) {
-        unsigned int pixval = 0;
-        for (size_t j=0; j<d_nc; ++j) { pixval = (pixval << 8) | *p++; }
-        out << " " << pixval;
-    }
+    out << this->value;
 }
 
 /**
@@ -902,70 +789,6 @@ field_value::type_id sfimage::type() const throw ()
     return field_value::sfimage_id;
 }
 
-/**
- * @brief Get the image width.
- *
- * @return the image width
- */
-size_t sfimage::x() const throw ()
-{
-    return this->d_w;
-}
-
-/**
- * @brief Get the image height.
- *
- * @return the image height
- */
-size_t sfimage::y() const throw ()
-{
-    return this->d_h;
-}
-
-/**
- * @brief Get the number of components.
- *
- * @return the number of components
- */
-size_t sfimage::comp() const throw ()
-{
-    return this->d_nc;
-}
-
-/**
- * @brief Get the pixel data.
- *
- * @return a pointer to the array of pixel data.
- */
-const unsigned char * sfimage::array() const throw ()
-{
-    return this->d_pixels;
-}
-
-/**
- * @brief Set the image.
- *
- * @param x     width in pixels
- * @param y     height in pixels
- * @param comp  number of components
- * @param array array of (width * height * components) bytes comprising the
- *              image data.
- */
-void sfimage::set(const size_t x,
-                  const size_t y,
-                  const size_t comp,
-                  const unsigned char * array)
-    throw (std::bad_alloc)
-{
-    delete this->d_pixels;
-
-    this->d_w = x;
-    this->d_h = y;
-    this->d_nc = comp;
-
-    this->d_pixels = new unsigned char[x * y * comp];
-    std::copy(array, array + (x * y * comp), this->d_pixels);
-}
 
 /**
  * @class sfint32

@@ -1,5 +1,21 @@
 2003-11-18  Braden McDaniel  <braden@endoframe.com>
 
+	Added image basic type.
+
+	* src/libopenvrml/openvrml/ScriptJDK.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/basetypes.h
+	* src/libopenvrml/openvrml/field.cpp
+	* src/libopenvrml/openvrml/field.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
+2003-11-18  Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  On second thought,
 	use boost::scoped_ptr to manage gl_capabilities singleton.
 

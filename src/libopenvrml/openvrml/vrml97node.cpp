@@ -10666,7 +10666,7 @@ pixel_texture_node::~pixel_texture_node() throw ()
  */
 size_t pixel_texture_node::components() const throw ()
 {
-    return this->image.comp();
+    return this->image.value.comp();
 }
 
 /**
@@ -10676,7 +10676,7 @@ size_t pixel_texture_node::components() const throw ()
  */
 size_t pixel_texture_node::width() const throw ()
 {
-    return this->image.x();
+    return this->image.value.x();
 }
 
 /**
@@ -10686,7 +10686,7 @@ size_t pixel_texture_node::width() const throw ()
  */
 size_t pixel_texture_node::height() const throw ()
 {
-    return this->image.y();
+    return this->image.value.y();
 }
 
 /**
@@ -10706,7 +10706,9 @@ size_t pixel_texture_node::frames() const throw ()
  */
 const unsigned char * pixel_texture_node::pixels() const throw ()
 {
-    return this->image.array();
+    return this->image.value.array().empty()
+        ? 0
+        : &this->image.value.array()[0];
 }
 
 /**
@@ -10720,15 +10722,16 @@ const unsigned char * pixel_texture_node::pixels() const throw ()
 viewer::texture_object_t
 pixel_texture_node::do_render_texture(viewer & v, rendering_context context)
 {
-    return this->image.array()
-        ? v.insert_texture(this->image.x(),
-                           this->image.y(),
-                           this->image.comp(),
+    std::cout << this->image << std::endl;
+    return this->image.value.array().empty()
+        ? 0
+        : v.insert_texture(this->image.value.x(),
+                           this->image.value.y(),
+                           this->image.value.comp(),
                            this->repeatS.value,
                            this->repeatT.value,
-                           this->image.array(),
-                           true)
-        : 0;
+                           &this->image.value.array()[0],
+                           true);
 }
 
 /**

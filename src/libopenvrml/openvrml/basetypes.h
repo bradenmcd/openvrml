@@ -28,8 +28,11 @@
 #   include <cstddef>
 #   include <algorithm>
 #   include <iosfwd>
+#   include <vector>
 #   include <sys/types.h>
 #   include <openvrml/common.h>
+
+#   include <iostream>
 
 namespace openvrml {
 
@@ -823,6 +826,146 @@ namespace openvrml {
     }
 
     std::ostream & operator<<(std::ostream & out, const quatf & quat);
+
+
+    class image {
+        size_t x_;
+        size_t y_;
+        size_t comp_;
+        std::vector<unsigned char> array_;
+
+    public:
+        image() throw ();
+        image(size_t x, size_t y, size_t comp) throw (std::bad_alloc);
+        image(size_t x, size_t y, size_t comp,
+              const std::vector<unsigned char> & array) throw (std::bad_alloc);
+        template <typename InputIterator>
+        image(size_t x, size_t y, size_t comp,
+              InputIterator array_begin, InputIterator array_end)
+            throw (std::bad_alloc);
+
+        // Use compiler-defined operator= and copy constructor.
+
+        size_t x() const throw ();
+        void x(size_t value) throw (std::bad_alloc);
+
+        size_t y() const throw ();
+        void y(size_t value) throw (std::bad_alloc);
+
+        void resize(size_t x, size_t y) throw (std::bad_alloc);
+
+        size_t comp() const throw ();
+        void comp(size_t value) throw (std::bad_alloc);
+
+        const std::vector<unsigned char> & array() const throw ();
+        void array(const std::vector<unsigned char> & value) throw ();
+        template <typename InputIterator>
+        void array(InputIterator begin, InputIterator end) throw ();
+
+        int32 pixel(size_t index) const throw ();
+        void pixel(size_t index, int32 value) throw ();
+        int32 pixel(size_t x, size_t y) const throw ();
+        void pixel(size_t x, size_t y, int32 value) throw ();
+    };
+
+    bool operator==(const image & lhs, const image & rhs) throw ();
+
+    inline bool operator!=(const image & lhs, const image & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
+    template <typename InputIterator>
+    image::image(const size_t x,
+                 const size_t y,
+                 const size_t comp,
+                 InputIterator array_begin,
+                 InputIterator array_end)
+        throw (std::bad_alloc):
+        x_(x),
+        y_(y),
+        comp_(comp),
+        array_(array_begin, array_end)
+    {
+        using std::iterator_traits;
+        using std::distance;
+        typedef typename iterator_traits<InputIterator>::difference_type
+            difference_type;
+        assert(distance(array_begin, array_end)
+               <= difference_type(x * y * comp));
+    }
+
+    inline size_t image::x() const throw ()
+    {
+        return this->x_;
+    }
+
+    inline size_t image::y() const throw ()
+    {
+        return this->y_;
+    }
+
+    inline size_t image::comp() const throw ()
+    {
+        return this->comp_;
+    }
+
+    inline const std::vector<unsigned char> & image::array() const throw ()
+    {
+        return this->array_;
+    }
+
+    inline void image::array(const std::vector<unsigned char> & value) throw ()
+    {
+        assert(value.size() <= (this->x_ * this->y_ * this->comp_));
+        std::copy(value.begin(), value.end(), this->array_.begin());
+    }
+
+    template <typename InputIterator>
+    void image::array(InputIterator begin, InputIterator end) throw ()
+    {
+        assert(std::distance(begin, end) <= this->x_ * this->y_ * this->comp_);
+        std::copy(begin, end, this->array_.begin());
+    }
+
+    inline int32 image::pixel(const size_t index) const throw ()
+    {
+        assert(index < this->x_ * this->y_);
+        int32 retval = 0x00000000;
+        for (size_t component = this->comp_, i = index * this->comp_;
+             component > 0;
+             --component, ++i) {
+            retval |= int32(this->array_[i]) << (8 * component);
+        }
+        return retval;
+    }
+
+    inline void image::pixel(const size_t index, const int32 value) throw ()
+    {
+        assert(index < this->x_ * this->y_);
+        std::cout << std::hex << value << std::endl;
+        for (size_t component = this->comp_, i = index * this->comp_;
+             component > 0;
+             --component, ++i) {
+            this->array_[i] = (value >> (8 * (component - 1))) & 0x000000ff;
+            std::cout << int(this->array_[i]) << std::endl;
+        }
+    }
+
+    inline int32 image::pixel(const size_t x, const size_t y) const throw ()
+    {
+        assert((x * y) < this->array_.size());
+        return this->pixel(y * this->x_ + x);
+    }
+
+    inline void image::pixel(const size_t x, const size_t y, const int32 value)
+        throw ()
+    {
+        assert((x * y) < this->array_.size());
+        return this->pixel(y * this->x_ + x, value);
+    }
+
+    std::ostream & operator<<(std::ostream & out, const image & img);
 
 } // namespace openvrml
 

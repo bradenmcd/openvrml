@@ -292,7 +292,7 @@ public:
 	);
 	public: float  colorComponent();
 	public: float  floatValue();
-	public: long  intValue();
+	public: int32  intValue();
 	public: void rotationValue(
 		rotation & r
 	);
