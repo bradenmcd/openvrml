@@ -2,6 +2,9 @@
 
         * m4/Makefile.am, m4/ftflib.m4:  Removed obsolete macro.
 
+        * src/openvrml/OpenVRML/vrml97node.cpp:  Apply font size to
+          glyphs.
+
 2002-12-18  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Shift ide-projects/Windows/VisualC6/tplib/antlr/Makefile.vc6

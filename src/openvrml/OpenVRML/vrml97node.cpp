@@ -13233,8 +13233,8 @@ void Text::updateGeometry() throw (std::bad_alloc)
                                                          0,
                                                          0 };
                 const float glyphScale = (this->face->bbox.yMax > 0.0)
-                                       ? 1.0f / this->face->bbox.yMax
-                                       : 1.0;
+                                       ? size / this->face->bbox.yMax
+                                       : size;
                 GlyphContours_ glyphContours(glyphScale);
                 assert(glyph->format == ft_glyph_format_outline);
                 const FT_OutlineGlyph outlineGlyph =
