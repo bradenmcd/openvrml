@@ -45,7 +45,7 @@
  * @param creator a factory function for creating nodes of this type.
  */
 NodeType::NodeType(const std::string & id,
-                   const VrmlNodePtr (*creator)(VrmlScene *)):
+                   const VrmlNodePtr (*creator)(VrmlScene *const)):
         id(id), d_namespace(0), d_url(0), d_relative(0), d_creator(creator),
         d_fieldsInitialized(false) {}
 
@@ -313,7 +313,7 @@ const VrmlMFNode & NodeType::getImplementationNodes() const {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      const VrmlNodePtr & n((*j)->node);
+	      const VrmlNodePtr & n = (*j)->node;
 	      if (n->getId().empty())
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
@@ -333,7 +333,7 @@ const VrmlMFNode & NodeType::getImplementationNodes() const {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      const VrmlNodePtr & n((*j)->node);
+	      const VrmlNodePtr & n = (*j)->node;
 	      if (n->getId().empty())
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);
@@ -347,7 +347,7 @@ const VrmlMFNode & NodeType::getImplementationNodes() const {
 	  ISMap::iterator j;
 	  for (j = ismap.begin(); j != ismap.end(); ++j)
 	    {
-	      const VrmlNodePtr & n((*j)->node);
+	      const VrmlNodePtr & n = (*j)->node;
 	      if (n->getId().empty())
 		{
 		  sprintf(buf,"#%lx", (unsigned long) n);

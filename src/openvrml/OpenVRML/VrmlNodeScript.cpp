@@ -31,6 +31,7 @@
 # include <assert.h>
 # include <memory>
 # include <vector>
+# include <algorithm>
 # if defined(_WIN32) && !defined(__CYGWIN__)
 #   include <strstrea.h>
 # else

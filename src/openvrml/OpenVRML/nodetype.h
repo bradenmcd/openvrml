@@ -53,7 +53,7 @@ private:
     Doc2 *d_relative;
     mutable VrmlMFNode implNodes;
     // Pointer to function to create instances
-    const VrmlNodePtr (*d_creator)(VrmlScene *);	
+    const VrmlNodePtr (*d_creator)(VrmlScene *const);	
     // Fields defined for this node type
     mutable FieldList d_eventIns;
     mutable FieldList d_eventOuts;
@@ -62,7 +62,7 @@ private:
 
 public:
     NodeType(const std::string & id,
-	     const VrmlNodePtr (*creator)(VrmlScene *scene) = 0);
+	     const VrmlNodePtr (*creator)(VrmlScene *const scene) = 0);
     ~NodeType();
 
     const VrmlNodePtr newNode(VrmlScene * scene = 0) const;

@@ -8347,7 +8347,7 @@ Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer, VrmlRenderContext rc
     char * * strs = new char *[this->d_string.getLength()];
     size_t i;
     for (i = 0; i < this->d_string.getLength(); ++i) {
-        const std::string & currentString(this->d_string.getElement(i));
+        const std::string & currentString = this->d_string.getElement(i);
         strs[i] = new char[currentString.length() + 1];
         std::copy(currentString.begin(), currentString.end(), strs[i]);
         strs[i][currentString.length()] = '\0';

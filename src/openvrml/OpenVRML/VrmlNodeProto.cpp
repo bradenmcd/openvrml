@@ -244,7 +244,7 @@ void VrmlNodeProto::instantiate()
 	      ismap = &(*ev)->thisIS;
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
-		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->getId()));
+		  const VrmlNodePtr & n = d_scope->findNode((*j)->node->getId());
 		  if (n)
 		    n->addRoute((*j)->fieldName, r->toNode, r->toEventIn);
 		}
@@ -262,7 +262,7 @@ void VrmlNodeProto::instantiate()
 	  if (ismap) {
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
-		  const VrmlNodePtr & n(d_scope->findNode((*j)->node->getId()));
+		  const VrmlNodePtr & n = d_scope->findNode((*j)->node->getId());
 		  if (n) n->setField( (*j)->fieldName, *value );
 		}
 	    }

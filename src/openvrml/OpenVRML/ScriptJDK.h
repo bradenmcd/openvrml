@@ -24,6 +24,10 @@
 #include "config.h"
 #endif
 
+# if defined(_WIN32) && !defined(__CYGWIN__)
+#   include <winconfig.h>
+# endif
+
 #ifdef OPENVRML_HAVE_JAVA
 //
 //  Java (via Sun JDK) Script class

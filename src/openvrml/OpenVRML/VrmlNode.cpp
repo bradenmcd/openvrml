@@ -634,8 +634,8 @@ void VrmlNode::eventIn(double timeStamp,
         this->setField(basicEventName, fieldValue);
         this->setModified();
     } else
-        cerr << "Error: unhandled eventIn " << this->type.getId()
-             << "::" << this->id << "." << eventName << endl;
+        cerr << "Error: unhandled eventIn " << this->type.getId().c_str()
+		<< "::" << this->id.c_str() << "." << eventName.c_str() << endl;
 }
 
 /**
@@ -684,10 +684,10 @@ ostream& VrmlNode::print(ostream& os, int indent) const
     os << ' ';
 
   if (!this->id.empty()) {
-    os << "DEF " << this->id << " ";
+    os << "DEF " << this->id.c_str() << " ";
   }
 
-  os << this->type.getId() << " { ";
+  os << this->type.getId().c_str() << " { ";
 
   // cast away const-ness for now...
   VrmlNode *n = (VrmlNode*)this;
@@ -706,7 +706,7 @@ ostream& VrmlNode::print(ostream& os, int indent) const
 
 ostream& VrmlNode::printFields(ostream& os, int /*indent*/)
 {
-  os << "# Error: " << this->type.getId()
+  os << "# Error: " << this->type.getId().c_str()
      << "::printFields unimplemented.\n";
   return os; 
 }

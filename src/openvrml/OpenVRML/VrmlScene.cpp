@@ -69,6 +69,7 @@ VrmlScene::VrmlScene(const std::string & sceneUrl,
         d_pendingScope(0), d_frameRate(0.0), d_firstEvent(0), d_lastEvent(0) {
     for (size_t i = 0; i < this->nodes.getLength(); ++i) {
         this->nodes.getElement(i)->addToScene(this, sceneUrl);
+
     }
 
     if (sceneUrl.length() > 0)
@@ -177,7 +178,8 @@ void VrmlScene::replaceWorld(VrmlMFNode & nodes, VrmlNamespace * ns,
     flushEvents();
     
     this->nodes = nodes;
-    
+
+  
     // Do this to set the relative URL
     for (size_t i = 0; i < this->nodes.getLength(); ++i) {
         nodes.getElement(i)->addToScene(this, this->d_url ? this->d_url->url() : 0);
@@ -235,9 +237,9 @@ bool VrmlScene::load(const std::string & url, const std::string & localCopy) {
     // scene if this format is used.
     VrmlSFBool flag(true);
     if (url[0] == '#') {
-        const VrmlNodePtr & vp(d_namespace
+        const VrmlNodePtr & vp = d_namespace
                                     ? d_namespace->findNode(url.substr(1))
-                                    : VrmlNodePtr(0));
+                                    : VrmlNodePtr(0);
         
         // spec: ignore if named viewpoint not found
         if (vp) {

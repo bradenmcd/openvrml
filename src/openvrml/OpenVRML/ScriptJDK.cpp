@@ -28,6 +28,10 @@
 #include <config.h>
 #endif
 
+# if defined(_WIN32) && !defined(__CYGWIN__)
+#   include <winconfig.h>
+# endif
+
 #ifdef OPENVRML_HAVE_JAVA
 #include "ScriptJDK.h"
 
@@ -93,8 +97,11 @@ ScriptJDK::ScriptJDK( VrmlNodeScript *node,
 		      << PATH_SEPARATOR << "/usr/local/share/java/vrml.jar" 
 #endif
 		      << ends;
-
+#ifdef _WIN32
+    appendedClassPath.rdbuf()->freeze(false);
+#else
     appendedClassPath.freeze(false);
+#endif
 
     options[0].optionString = appendedClassPath.str();
     options[1].optionString = "-verbose:class";

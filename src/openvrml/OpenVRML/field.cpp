@@ -1479,7 +1479,7 @@ void VrmlSFString::set(const std::string & value) {
 }
 
 ostream& VrmlSFString::print(ostream& os) const
-{ return (os << '\"' << this->value << '\"'); }
+{ return (os << '\"' << this->value.c_str() << '\"'); }
 
 VrmlField *VrmlSFString::clone() const { return new VrmlSFString(*this); }
 
@@ -2911,7 +2911,7 @@ ostream& VrmlMFString::print(ostream& os) const
 
   if (n != 1) os << '[';
   for (int i=0; i<n; ++i)
-    os << '\"' << (this->values[i]) << "\" ";
+    os << '\"' << (this->values[i]).c_str() << "\" ";
   if (n != 1) os << ']';
 
   return os;

@@ -1,3 +1,17 @@
+2001-09-20  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * If all "iostreams" are converted to standard "iostreams" 
+          template classes (STL) that manipulate standard streams,then 
+          it gives error in constructor of "ifstream" class (doc2.cpp)
+          "no appropriate default constructor available" (Is this 
+          problem with VC6++ STL ?). To get rid of this, "c_str()" of
+          std::string is used where this string is directed to iostreams.
+
+        * Fix other compile problems for WIN32 port.
+
+        * Applied patch #446396 from Henri Manson to include "ScriptJDK" 
+          into the WIN32 build.
+
 2001-09-16 Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Add missing class (Event.java) into the build.
