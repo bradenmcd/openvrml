@@ -95,14 +95,26 @@ dnl
 AC_DEFINE(XP_UNIX, ,[JavaScript requires this])
 
 dnl
-dnl JavaScript doesn't include config.h, so we have to use automake conditionals
+dnl JavaScript doesn't include config.h, so we have to use automake
+dnl conditionals.
 dnl
 case "$target" in
+  *-aix*)
+    aix=true
+    case `uname -r` in
+      *4.3*)
+        aix4_3=true
+        AC_DEFINE(AIX4_3, ,[needed by jsotypes.h])
+        ;;
+    esac
+    ;;
   *-freebsd*)
     freebsd=true
     ;;
 esac
 AM_CONDITIONAL(FREEBSD, test x$freebsd = xtrue)
+AM_CONDITIONAL(AIX, test x$aix = xtrue)
+AM_CONDITIONAL(AIX4_3, test x$aix4_3 = xtrue)
 
 AC_OUTPUT(Makefile \
           m4/Makefile \

@@ -7,7 +7,12 @@ DEBUG_CFLAGS = -DNDEBUG
 endif
 
 if FREEBSD
-DEFS += -DFREEBSD
+  DEFS += -DFREEBSD
+elif AIX
+  DEFS += -DAIX -DAIXV3
+  if AIX4_3
+    DEFS += -DAIX4_3
+  endif
 endif
 
 CFLAGS = -Wall -Wno-format -O2 $(DEBUG_CFLAGS) -DXP_UNIX
