@@ -54,6 +54,7 @@ noinst_LTLIBRARIES = libantlr.la
 libantlr_la_LDFLAGS = -avoid-version
 
 libantlr_la_SOURCES = \
+        src/ANTLRUtil.cpp \
         src/ASTFactory.cpp \
         src/ASTNULLType.cpp \
         src/ASTRefCount.cpp \

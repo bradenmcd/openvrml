@@ -1,3 +1,10 @@
+2004-01-30 Braden McDaniel  <braden@endoframe.com>
+
+	* lib/antlr/GNUmakefile.am:  Added ANTLRUtil.cpp to be built
+	and included in libantlr, as well as the distribution.
+	Interesting that its absence has not been noticed until now; it
+	appears to be nonessential.
+
 2004-01-29 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/private.h:  Added implementation of
