@@ -36,8 +36,8 @@ public:
   virtual const VrmlSFFloat* toSFFloat() const;
   virtual VrmlSFFloat* toSFFloat();
 
-  float get(void) const		{ return d_value; }
-  void set(float value)		{ d_value = value; }
+  float get() const;
+  void set(float value);
 
 private:
   float d_value;

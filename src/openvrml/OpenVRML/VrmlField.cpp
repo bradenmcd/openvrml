@@ -101,7 +101,8 @@ VrmlField::VrmlFieldType VrmlField::fieldType(char const *type) {
 }
 
 /**
- * Return the type name of a field
+ * Get the type name of a field.
+ * @return the (C-style) string name of this Field object's type.
  */
 char const * VrmlField::fieldTypeName() const {
     assert((sizeof(ftn) / sizeof(char *)) >=
@@ -542,6 +543,10 @@ void VrmlSFColor::getHSV(float hsv[3]) const {
  */
 #include "VrmlSFFloat.h"
 
+/**
+ * Constructor.
+ * @param value initial value
+ */
 VrmlSFFloat::VrmlSFFloat(float value) : d_value(value) {}
 
 ostream& VrmlSFFloat::print(ostream& os) const
@@ -551,6 +556,21 @@ VrmlField *VrmlSFFloat::clone() const { return new VrmlSFFloat(d_value); }
 
 VrmlField::VrmlFieldType VrmlSFFloat::fieldType() const { return SFFLOAT; }
 
+/**
+ * Get value.
+ * @return the SFFloat value
+ */
+float VrmlSFFloat::get() const {
+    return this->d_value;
+}
+
+/**
+ * Set value.
+ * @param value the new value
+ */
+void VrmlSFFloat::set(float value) {
+    this->d_value = value;
+}
 
 /**
  * @class VrmlSFImage
@@ -1732,31 +1752,37 @@ const VrmlSFVec3f VrmlSFVec3f::subtract(const VrmlSFVec3f & vec) const {
 
 /**
  * @class VrmlMFColor
+ * Encapsulates a MFColor.
  */
-
 #include "VrmlMFColor.h"
 
-VrmlMFColor::VrmlMFColor() : d_data(new FData(0)) {}
+class VrmlMFColor::FData {			// reference counted float data
+public:
+  FData(int n=0) : d_refs(1), d_n(n), d_v(n > 0 ? new float[n] : 0) {}
+  ~FData() { delete [] d_v; }
+
+  FData *ref() { ++d_refs; return this; }
+  void deref() { if (--d_refs == 0) delete this; }
+
+  int d_refs;			// number of objects using this data
+  int d_n;			// size (in floats) of d_v
+  float *d_v;			// data vector
+};
 
 VrmlMFColor::VrmlMFColor(float r, float g, float b) : d_data(new FData(3))
 { d_data->d_v[0] = r; d_data->d_v[1] = g; d_data->d_v[2] = b; }
 
-VrmlMFColor::VrmlMFColor(int n, float const * v) : d_data(new FData(3*n))
-{
-  if (v) memcpy(d_data->d_v, v, 3*n*sizeof(float));
+VrmlMFColor::VrmlMFColor(size_t length, float const * colors):
+        d_data(new FData(length * 3)) {
+    if (colors) {
+        std::copy(colors, colors + (length * 3), this->d_data->d_v);
+    }
 }
 
-VrmlMFColor::VrmlMFColor(const VrmlMFColor &source) : d_data(source.d_data->ref())
-{}
+VrmlMFColor::VrmlMFColor(const VrmlMFColor & mfColor):
+        d_data(mfColor.d_data->ref()) {}
 
 VrmlMFColor::~VrmlMFColor() { d_data->deref(); }
-
-void VrmlMFColor::set(size_t n, const float * v)
-{
-  d_data->deref();
-  d_data = new FData(3*n);
-  if (v) memcpy(d_data->d_v, v, 3*n*sizeof(float));
-}
 
 VrmlMFColor& VrmlMFColor::operator=(const VrmlMFColor& rhs)
 {
@@ -1767,13 +1793,50 @@ VrmlMFColor& VrmlMFColor::operator=(const VrmlMFColor& rhs)
   return *this;
 }
 
+const float * VrmlMFColor::get() const {
+    return this->d_data->d_v;
+}
+
+void VrmlMFColor::set(size_t length, const float * colors) {
+    this->d_data->deref();
+    this->d_data = new FData(length * 3);
+    if (colors) {
+        std::copy(colors, colors + (length * 3), this->d_data->d_v);
+    } else {
+        this->setLength(length);
+    }
+}
+
+size_t VrmlMFColor::getLength() const {
+    return (this->d_data->d_n / 3);
+}
+
+void VrmlMFColor::setLength(size_t length) {
+    FData * const newData = new FData(length * 3);
+    if (length > this->d_data->d_n) {
+        std::copy(this->d_data->d_v, this->d_data->d_v + this->d_data->d_n,
+                  newData);
+        std::fill_n(newData + this->d_data->d_n, newData + (length * 3), 0.0);
+    } else {
+        std::copy(this->d_data->d_v, this->d_data->d_v + length, newData);
+    }
+    this->d_data->deref();
+    this->d_data = newData;
+}
+
+const float * VrmlMFColor::operator[](size_t index) const {
+    return (this->d_data->d_v + (index * 3));
+}
+
 VrmlField *VrmlMFColor::clone() const { return new VrmlMFColor(*this); }
 
 VrmlField::VrmlFieldType VrmlMFColor::fieldType() const { return MFCOLOR; }
 
 
-// MFFloat
-
+/**
+ * @class VrmlMFFloat
+ * Encapsulates a MFFloat.
+ */
 #include "VrmlMFFloat.h"
 
 VrmlMFFloat::VrmlMFFloat() : d_data(new FData(0)) 
@@ -1812,10 +1875,11 @@ VrmlField *VrmlMFFloat::clone() const	{ return new VrmlMFFloat(*this); }
 VrmlField::VrmlFieldType VrmlMFFloat::fieldType() const { return MFFLOAT; }
 
 
-// MFInt
-
+/**
+ * @class VrmlMFInt32
+ * Encapsulates a MFInt32.
+ */
 #include "VrmlMFInt32.h"
-
 
 VrmlMFInt32::VrmlMFInt32() : d_data(new IData(0)) 
 {}
@@ -1890,9 +1954,10 @@ ostream& VrmlMFInt32::print(ostream& os) const
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-//  VrmlMFNode
-//
+/**
+ * @class VrmlMFNode
+ * Encapsulates a MFNode.
+ */
 #include "VrmlMFNode.h"
 
 VrmlMFNode::VrmlMFNode()
@@ -2014,10 +2079,10 @@ void VrmlMFNode::removeNode(VrmlNode * n)
 }
 
 
-
-
-// MFRotation
-
+/**
+ * @class VrmlMFRotation
+ * Encapsulates a MFRotation.
+ */
 #include "VrmlMFRotation.h"
 
 VrmlMFRotation::VrmlMFRotation() : d_data(new FData(0))
@@ -2058,10 +2123,11 @@ VrmlField *VrmlMFRotation::clone() const { return new VrmlMFRotation(*this); }
 VrmlField::VrmlFieldType VrmlMFRotation::fieldType() const { return MFROTATION; }
 
 
-// MFString
-
+/**
+ * @class VrmlMFString
+ * Encapsulates a MFString.
+ */
 #include "VrmlMFString.h"
-
 
 VrmlMFString::VrmlMFString()
   : d_v(0), d_allocated(0), d_size(0)
@@ -2175,10 +2241,10 @@ char const * VrmlMFString::operator[](size_t index) const
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-// VrmlMFTime
-//
-
+/**
+ * @class VrmlMFTime
+ * Encapsulates a MFTime.
+ */
 # include "VrmlMFTime.h"
 
 //
@@ -2305,10 +2371,10 @@ ostream & VrmlMFTime::print(ostream & os) const
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-// VrmlMFVec2f
-//
-
+/**
+ * @class VrmlMFVec2f
+ * Encapsulates a MFVec2f.
+ */
 #include "VrmlMFVec2f.h"
 
 VrmlMFVec2f::VrmlMFVec2f() : d_data(new FData(0)) {}
@@ -2348,8 +2414,10 @@ VrmlField *VrmlMFVec2f::clone() const { return new VrmlMFVec2f(*this); }
 VrmlField::VrmlFieldType VrmlMFVec2f::fieldType() const { return MFVEC2F; }
 
 
-// MFVec3f
-
+/**
+ * @class VrmlMFVec3f
+ * Encapsulates a MFVec3f.
+ */
 #include "VrmlMFVec3f.h"
 
 
