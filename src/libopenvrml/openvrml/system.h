@@ -25,12 +25,13 @@
 #   include <cstddef>
 #   include <string>
 #   include <openvrml/common.h>
+#   include <boost/utility.hpp>
 
 namespace openvrml {
 
     class mfstring;
 
-    class system {
+    class system : boost::noncopyable {
     public:
         virtual bool load_url(const std::string & url,
                               const mfstring & parameters);

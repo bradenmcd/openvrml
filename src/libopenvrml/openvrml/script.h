@@ -29,7 +29,7 @@ namespace openvrml {
 
     class script_node;
 
-    class script {
+    class script : boost::noncopyable {
     public:
         virtual ~script() = 0;
         virtual void initialize(double timestamp) = 0;
@@ -43,11 +43,6 @@ namespace openvrml {
         script_node & node;
 
         script(script_node & node);
-
-    private:
-        // non-copyable
-        script(const script &);
-        script & operator=(const script &);
     };
 
 

@@ -24,6 +24,7 @@
 
 #   include <cstddef>
 #   include <vector>
+#   include <boost/utility.hpp>
 #   include <openvrml/bounding_volume.h>
 #   include <openvrml/frustum.h>
 
@@ -32,7 +33,7 @@ namespace openvrml {
     class node;
     class browser;
 
-    class viewer {
+    class viewer : boost::noncopyable {
     protected:
         openvrml::frustum frustum_;
 
@@ -203,11 +204,6 @@ namespace openvrml {
 
     protected:
         explicit viewer(openvrml::browser & browser);
-
-    private:
-        // non-copyable
-        viewer(const viewer &);
-        viewer & operator=(const viewer &);
     };
 }
 

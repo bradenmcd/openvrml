@@ -26,13 +26,14 @@
 #   include <string>
 #   include <vector>
 #   include <openvrml/common.h>
+#   include <boost/utility.hpp>
 
 namespace openvrml {
 
     class doc;
     class doc2;
 
-    class img {
+    class img : boost::noncopyable {
         doc * url_;
         size_t w_, h_, nc_, nframes_;
         unsigned char * pixels_;

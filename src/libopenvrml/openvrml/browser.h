@@ -43,7 +43,7 @@ namespace openvrml {
     class null_node_class;
     class null_node_type;
 
-    class browser {
+    class browser : boost::noncopyable {
         friend class Vrml97Parser;
         friend class ProtoNodeClass;
         friend class Vrml97RootScope;
@@ -190,10 +190,6 @@ namespace openvrml {
         void bindable_remove(bind_stack_t & stack, const node_ptr & node);
 
     private:
-        // Not copyable.
-        browser(const browser &);
-        browser & operator=(const browser &);
-
         void init_node_class_map();
     };
 
@@ -219,7 +215,7 @@ namespace openvrml {
     };
 
 
-    class scene {
+    class scene : boost::noncopyable {
         std::vector<node_ptr> nodes_;
         std::string url_;
 
@@ -240,11 +236,6 @@ namespace openvrml {
                       const std::vector<std::string> & parameter)
                 throw (std::bad_alloc);
         void shutdown(double timestamp) throw ();
-
-    private:
-        // Noncopyable.
-        scene(const scene &);
-        scene & operator=(const scene &);
     };
 
     inline const std::vector<node_ptr> & scene::nodes() const throw()

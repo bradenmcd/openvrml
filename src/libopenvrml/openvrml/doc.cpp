@@ -98,16 +98,6 @@ doc::doc(const std::string & url, const doc2 * relative):
 }
 
 /**
- * @internal
- *
- * @fn doc::doc(const doc &)
- *
- * @brief Not implemented.
- *
- * doc is not copyable.
- */
-
-/**
  * @brief Destructor.
  */
 doc::~doc()
@@ -119,16 +109,6 @@ doc::~doc()
         delete [] this->tmpfile_;
     }
 }
-
-/**
- * @internal
- *
- * @fn doc & doc::operator=(const doc &)
- *
- * @brief Not implemented.
- *
- * doc is not copyable.
- */
 
 namespace {
     const char * stripProtocol(const char *url)
@@ -766,21 +746,14 @@ namespace {
  *                  absolute URL.
  */
 doc2::doc2(const std::string & url, const doc2 * relative):
-        tmpfile_(0), istm_(0), ostm_(0) {
+    tmpfile_(0),
+    istm_(0),
+    ostm_(0)
+{
     if (!url.empty()) {
         this->seturl(url, relative);
     }
 }
-
-/**
- * @internal
- *
- * @fn doc2::doc2(const doc2 &)
- *
- * @brief Not implemented.
- *
- * doc2 is not copyable.
- */
 
 /**
  * @brief Destructor.
@@ -794,16 +767,6 @@ doc2::~doc2()
         delete [] tmpfile_;
     }
 }
-
-/**
- * @internal
- *
- * @fn doc2 & doc2::operator=(const doc2 &)
- *
- * @brief Not implemented.
- *
- * doc2 is not copyable.
- */
 
 namespace {
     const std::string stripProtocol(const std::string & url) {

@@ -27,6 +27,7 @@
 #   include <map>
 #   include <string>
 #   include <boost/shared_ptr.hpp>
+#   include <boost/utility.hpp>
 
 namespace openvrml {
 
@@ -36,7 +37,7 @@ namespace openvrml {
     class scope;
     typedef boost::shared_ptr<scope> scope_ptr;
 
-    class scope {
+    class scope : boost::noncopyable {
         friend class node;
 
         std::list<node_type_ptr> node_type_list;
@@ -54,11 +55,6 @@ namespace openvrml {
         const node_type_ptr & find_type(const std::string & id) const;
         const node_type_ptr & first_type() const;
         node * find_node(const std::string & id) const;
-
-    private:
-        // Not copyable.
-        scope(const scope &);
-        scope & operator=(const scope &);
     };
 }
 

@@ -26,12 +26,13 @@
 #   include <iosfwd>
 #   include <string>
 #   include <openvrml/common.h>
+#   include <boost/utility.hpp>
 
 namespace openvrml {
 
     class doc2;
 
-    class doc {
+    class doc : boost::noncopyable {
         char * url_;
         std::ostream * out_;
         FILE * fp_;
@@ -63,14 +64,10 @@ namespace openvrml {
         std::ostream & output_stream();
 
     private:
-        // Non-copyable.
-        doc(doc const &);
-        doc & operator=(doc const &);
-
         bool filename(char * fn, int nfn);
     };
 
-    class doc2 {
+    class doc2 : boost::noncopyable {
         std::string url_;
         char * tmpfile_;            // Local copy of http: files
         std::istream * istm_;
@@ -97,10 +94,6 @@ namespace openvrml {
         std::ostream & output_stream();
 
     private:
-        // Non-copyable.
-        doc2(const doc2 &);
-        doc2 & operator=(const doc2 &);
-
         bool filename(char * fn, size_t nfn);
     };
 }

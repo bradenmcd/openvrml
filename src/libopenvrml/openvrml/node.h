@@ -30,6 +30,7 @@
 #   include <stdexcept>
 #   include <utility>
 #   include <boost/shared_ptr.hpp>
+#   include <boost/utility.hpp>
 #   include <openvrml/field.h>
 #   include <openvrml/viewer.h>
 #   include <openvrml/rendering_context.h>
@@ -132,7 +133,7 @@ namespace openvrml {
     class node_type;
     typedef boost::shared_ptr<node_type> node_type_ptr;
 
-    class node_class {
+    class node_class : boost::noncopyable {
     public:
         openvrml::browser & browser;
 
@@ -152,7 +153,7 @@ namespace openvrml {
     typedef boost::shared_ptr<node_class> node_class_ptr;
 
 
-    class node_type {
+    class node_type : boost::noncopyable {
     public:
         openvrml::node_class & node_class;
         const std::string id;
@@ -229,7 +230,7 @@ namespace openvrml {
     template <typename To>
     To node_cast(node * n) throw ();
 
-    class node {
+    class node : boost::noncopyable {
         friend std::ostream & operator<<(std::ostream & out, const node & n);
         friend script_node * node_cast<script_node *>(node * n) throw ();
         friend appearance_node * node_cast<appearance_node *>(node * n)
@@ -363,10 +364,6 @@ namespace openvrml {
             throw (std::bad_cast, std::bad_alloc);
 
     private:
-        // Not copyable.
-        node(const node &);
-        node & operator=(const node &);
-
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
 
         virtual void do_field(const std::string & id,
@@ -834,7 +831,7 @@ namespace openvrml {
     };
 
 
-    class node_traverser {
+    class node_traverser : boost::noncopyable {
         std::set<node *> traversed_nodes;
         bool halt;
 
@@ -850,10 +847,6 @@ namespace openvrml {
         void halt_traversal() throw ();
 
     private:
-        // Noncopyable.
-        node_traverser(const node_traverser &);
-        node_traverser & operator=(const node_traverser &);
-
         virtual void on_entering(node & n);
         virtual void on_leaving(node & n);
 

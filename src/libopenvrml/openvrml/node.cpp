@@ -952,16 +952,6 @@ node::node(const node_type & type, const scope_ptr & scope) throw ():
     type(type)
 {}
 
-/**
- * @internal
- *
- * @fn node::node(const node &)
- *
- * @brief Construct a copy.
- *
- * Not implemented. node is not copyable.
- */
-
 namespace {
 
     /**
@@ -1008,16 +998,6 @@ node::~node() throw ()
         if (pos != end) { this->scope_->named_node_map.erase(pos); }
     }
 }
-
-/**
- * @internal
- *
- * @fn node & node::operator=(const node &)
- *
- * @brief Assign.
- *
- * Not implemented. node is not copyable.
- */
 
 /**
  * @brief Set the name of the node.
@@ -3195,26 +3175,10 @@ node_traverser::node_traverser() throw (std::bad_alloc):
 {}
 
 /**
- * @fn node_traverser::node_traverser(const node_traverser &)
- *
- * @brief Not implemented.
- *
- * node_traverser is not copyable.
- */
-
-/**
  * @brief Destroy.
  */
 node_traverser::~node_traverser() throw ()
 {}
-
-/**
- * @fn node_traverser& node_traverser::operator=(const node_traverser &)
- *
- * @brief Not implemented.
- *
- * node_traverser is not copyable.
- */
 
 /**
  * @brief Traverse a node.

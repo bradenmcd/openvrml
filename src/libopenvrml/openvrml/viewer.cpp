@@ -125,25 +125,9 @@ viewer::viewer(openvrml::browser & browser):
 {}
 
 /**
- * @fn viewer::viewer(const viewer &)
- *
- * @brief Not implemented.
- *
- * viewer is not copyable.
- */
-
-/**
  * @brief Destroy.
  */
 viewer::~viewer() {}
-
-/**
- * @fn viewer & viewer::operator=(const viewer &)
- *
- * @brief Not implemented.
- *
- * viewer is not copyable.
- */
 
 /**
  * @fn viewer::rendering_mode viewer::mode()

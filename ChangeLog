@@ -1,3 +1,22 @@
+2004-01-22 Braden McDaniel  <braden@endoframe.com>
+
+	Express noncopyability by inheriting "boost::noncopyable".
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/doc.cpp
+	* src/libopenvrml/openvrml/doc.h
+	* src/libopenvrml/openvrml/img.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/scope.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+	* src/libopenvrml/openvrml/system.h
+	* src/libopenvrml/openvrml/viewer.cpp
+	* src/libopenvrml/openvrml/viewer.h
+
 2004-01-20 Braden McDaniel  <braden@endoframe.com>
 
 	Use boost::lexical_cast.

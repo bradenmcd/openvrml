@@ -106,10 +106,6 @@ namespace openvrml {
         virtual vrml97_node::touch_sensor_node * to_touch_sensor() const;
 
     private:
-        // Not copyable.
-        ProtoNode(const ProtoNode &);
-        ProtoNode & operator=(const ProtoNode &);
-
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
         virtual void do_field(const std::string & id,
                                  const field_value & value)
@@ -660,16 +656,6 @@ browser::browser(std::ostream & out, std::ostream & err)
 }
 
 /**
- * @internal
- *
- * @fn browser::browser(const browser &)
- *
- * @brief Construct a copy.
- *
- * Not implemented. browser is not copyable.
- */
-
-/**
  * @brief Destructor.
  */
 browser::~browser() throw ()
@@ -690,16 +676,6 @@ browser::~browser() throw ()
     assert(this->proto_node_list.empty());
     this->node_class_map.clear();
 }
-
-/**
- * @internal
- *
- * @fn browser &browser::operator=(const browser &)
- *
- * @brief Assign.
- *
- * Not implemented. browser is not copyable.
- */
 
 /**
  * @brief Get the root nodes for the browser.
@@ -2091,22 +2067,6 @@ scene::scene(openvrml::browser & browser,
         break;
     }
 }
-
-/**
- * @fn scene::scene(const scene &)
- *
- * @brief Not implemented.
- *
- * scene is not copyable.
- */
-
-/**
- * @fn scene & scene::operator=(const scene &)
- *
- * @brief Not implemented.
- *
- * scene is not copyable.
- */
 
 /**
  * @brief Initialize the scene.

@@ -58,22 +58,10 @@ script::script(script_node & node):
 {}
 
 /**
- * @fn script::script(const script &)
- *
- * @brief Non-copyable. Copy constructor declared but not defined.
- */
-
-/**
  * @brief Destroy.
  */
 script::~script()
 {}
-
-/**
- * @fn script & script::operator=(const script &)
- *
- * @brief Non-copyable. Assignment operator declared but not defined.
- */
 
 /**
  * @fn void script::initialize(double timestamp)
@@ -1043,7 +1031,7 @@ namespace Browser {
 // the object, if any, and whether or not the object corresponds to
 // an eventOut.
 //
-class field_data {
+class field_data : boost::noncopyable {
 public:
     bool changed;
 
@@ -1051,11 +1039,6 @@ public:
 
 protected:
     field_data();
-
-private:
-    // Noncopyable.
-    field_data(const field_data &);
-    field_data & operator=(const field_data &);
 };
 
 class sfield {

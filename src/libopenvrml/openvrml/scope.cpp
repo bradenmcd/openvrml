@@ -95,26 +95,10 @@ scope::scope(const std::string & id, const scope_ptr & parent):
 {}
 
 /**
- * @fn scope::scope(const scope &)
- *
- * @brief Not implemented.
- *
- * scopes are not copyable.
- */
-
-/**
  * @brief Destroy.
  */
 scope::~scope()
 {}
-
-/**
- * @fn scope & scope::operator=(const scope &)
- *
- * @brief Not implemented.
- *
- * scopes are not copyable.
- */
 
 /**
  * @brief Add a node type.
@@ -210,4 +194,3 @@ node * scope::find_node(const std::string & id) const
 }
 
 } // namespace openvrml
-
