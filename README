@@ -90,6 +90,7 @@ Dependencies
 check to see if they are provided by your operating system vendor.
 If not, consult the URIs below.
 
+     Boost                  <http://boost.org>
      zlib                   <http://www.gzip.org/zlib/index.html>
      libpng                 <http://www.libpng.org/pub/png/libpng.html>
      libjpeg                <http://www.ijg.org>
@@ -102,7 +103,7 @@ If not, consult the URIs below.
      Doxygen                <http://doxygen.org>
 
    OpenVRML can be built with reduced functionality to avoid many of
-these dependencies.  See the following section, "configure options",
+these dependencies.  See the following section, "'configure' options",
 for details.
 
    Most of OpenVRML's dependencies are either commonplace or easy to
@@ -112,8 +113,8 @@ are provided for convenience:
      <http://openvrml.org/dist/win32_required_libs_and_includes.zip>
 
 
-configure options
-=================
+"configure" options
+===================
 
    OpenVRML's build configuration script accepts a number of arguments
 that modify what features are built and/or what packages OpenVRML
