@@ -25,8 +25,11 @@
 #include <string.h>	 /* memset */
 
 #include <sys/types.h>   /* to make netinet/in.h happy */
+#ifndef macintosh
 #include <netinet/in.h>  /* for htonl */
-
+#else
+#define	htonl(x)	(x)
+#endif
 
 static const int FRAMES_PER_ALLOC = 100;
 
