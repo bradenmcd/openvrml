@@ -1,3 +1,14 @@
+2004-04-03 Braden McDaniel  <braden@endoframe.com>
+
+	Changed frustrum constructor argument names from "near", "far",
+	to "z_near", "z_far".  For some reason, the fact that "near" and
+	"far" are keywords that meant something back when cl was a
+	16-bit compiler means that modern cl does not generate correct
+	code when they are used as identifiers.
+
+	* src/libopenvrml/openvrml/frustum.cpp
+	* src/libopenvrml/openvrml/frustum.h
+
 2004-04-02 Braden McDaniel  <braden@endoframe.com>
 
 	Set the default drawing color (i.e., in the absence of a Color

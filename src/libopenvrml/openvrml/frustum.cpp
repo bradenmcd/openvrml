@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 2000  Christopher K. St. John
+// Copyright 2000  Christopher K. St. John
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -119,15 +119,15 @@ frustum::frustum():
  * @param fovy      vertical field of view in degrees.
  * @param aspect    ratio of view width to height (not the ratio of
  *                  the horizontal to vertial field-of-views).
- * @param near      distance to near clip plane.
- * @param far       distance to far clip plane.
+ * @param z_near    distance to near clip plane.
+ * @param z_far     distance to far clip plane.
  *
  */
-frustum::frustum(float fovy, float aspect, double near, double far):
+frustum::frustum(float fovy, float aspect, double z_near, double z_far):
     fovy(float((fovy / 360.0) * 2.0 * pi)),
     fovx(float(2.0 * atan(float(tan(this->fovy / 2.0)) * aspect))),
-    z_near(near),
-    z_far(far)
+    z_near(z_near),
+    z_far(z_far)
 {
     update();
 }

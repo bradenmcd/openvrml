@@ -65,7 +65,7 @@ Requires:       %{name}-gl = %{version}
 Requires:       mozilla = %(rpm -q mozilla --qf='%%{version}')
 Requires:       SDL >= 1.2
 %description -n lookat
-GLUT-based VRML viewer.
+SDL-based VRML viewer.
 
 
 %prep
@@ -73,7 +73,7 @@ GLUT-based VRML viewer.
 
 
 %build
-./configure --prefix=%{prefix} CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
+./configure --prefix=%{prefix} CPPFLAGS="-DNDEBUG" CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
 make %{?_smp_mflags}
 
 
