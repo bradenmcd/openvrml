@@ -1,3 +1,7 @@
+2004-11-01 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac:  Removed reference to regex library Makefile.in.
+
 2004-10-29 Braden McDaniel  <braden@endoframe.com>
 
 	Use Spirit to parse URIs instead of regular expressions.
