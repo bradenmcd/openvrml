@@ -43,6 +43,8 @@ namespace openvrml {
         std::map<node *, size_t>::value_type * count_ptr;
 
     public:
+        static const node_ptr self;
+
         explicit node_ptr(node * node = 0) throw (std::bad_alloc);
         node_ptr(const node_ptr & ptr) throw ();
         ~node_ptr() throw ();
@@ -84,6 +86,7 @@ namespace openvrml {
 
     inline node & node_ptr::operator*() const throw ()
     {
+        assert(*this != node_ptr::self);
         assert(this->count_ptr);
         assert(this->count_ptr->first);
         return *this->count_ptr->first;
@@ -91,6 +94,7 @@ namespace openvrml {
 
     inline node * node_ptr::operator->() const throw ()
     {
+        assert(*this != node_ptr::self);
         assert(this->count_ptr);
         assert(this->count_ptr->first);
         return this->count_ptr->first;
@@ -98,6 +102,7 @@ namespace openvrml {
 
     inline node * node_ptr::get() const throw ()
     {
+        assert(*this != node_ptr::self);
         return this->count_ptr ? this->count_ptr->first : 0;
     }
 

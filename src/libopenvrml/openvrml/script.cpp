@@ -963,10 +963,16 @@ script_node::script_node(script_node_class & class_,
          interface != interfaces.end();
          ++interface) {
         using std::invalid_argument;
+        using std::auto_ptr;
+        using std::pair;
+        using std::string;
         using boost::shared_ptr;
+        using boost::polymorphic_downcast;
         shared_ptr<openvrml::event_listener> listener;
         shared_ptr<eventout> eventout;
         initial_value_map::const_iterator initial_value;
+        pair<string, field_value_ptr> field_value;
+        auto_ptr<openvrml::field_value> cloned_field_value;
         bool succeeded;
         switch (interface->type) {
         case node_interface::eventin_id:
@@ -988,7 +994,46 @@ script_node::script_node(script_node_class & class_,
                 throw invalid_argument("Missing initial value for field \""
                                        + interface->id + "\".");
             }
-            succeeded = this->field_value_map_.insert(*initial_value).second;
+            cloned_field_value = initial_value->second->clone();
+            field_value = make_pair(initial_value->first,
+                                    field_value_ptr(cloned_field_value));
+            //
+            // Account for self-references.
+            //
+            // Replace instances of node_ptr::self with a real reference to
+            // the current script_node.
+            //
+            // After making the assignment, we must decrement the node_ptr's
+            // count because a Script node self-reference must not be an owning
+            // pointer. See the assign_with_self_ref_check functions for more
+            // information.
+            //
+            if (interface->field_type == openvrml::field_value::sfnode_id) {
+                sfnode & sfnode_field_value =
+                    *polymorphic_downcast<sfnode *>(field_value.second.get());
+                if (sfnode_field_value.value == node_ptr::self) {
+                    sfnode_field_value.value.reset(this);
+                    assert(sfnode_field_value.value.count_ptr->second > 0);
+                    --sfnode_field_value.value.count_ptr->second;
+                }
+            } else if (interface->field_type
+                       == openvrml::field_value::mfnode_id) {
+                mfnode & mfnode_field_value =
+                    *polymorphic_downcast<mfnode *>(field_value.second.get());
+                using std::vector;
+                for (vector<node_ptr>::iterator node =
+                         mfnode_field_value.value.begin();
+                     node != mfnode_field_value.value.end();
+                     ++node) {
+                    if (*node == node_ptr::self) {
+                        node->reset(this);
+                        assert(node->count_ptr->second > 0);
+                        --node->count_ptr->second;
+                    }
+                }
+            }
+
+            succeeded = this->field_value_map_.insert(field_value).second;
             break;
         case node_interface::exposedfield_id:
             throw invalid_argument("Script cannot support user-defined "
@@ -1398,7 +1443,7 @@ script * script_node::create_script()
                 || std::equal(vrmlscriptScheme, vrmlscriptScheme + 11,
                               this->url_.value[i].begin())) {
             return new js_::script(*this,
-                                           this->url_.value[i].substr(11));
+                                   this->url_.value[i].substr(11));
         }
 # endif
 
@@ -2092,6 +2137,7 @@ script::script(openvrml::script_node & node, const std::string & source)
     openvrml::script(node),
     cx(0)
 {
+    std::cout << source << std::endl;
 
     //
     // Initialize the runtime.

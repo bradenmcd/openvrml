@@ -551,7 +551,7 @@ void Vrml97Parser::statement(
 	case KEYWORD_DEF:
 	case KEYWORD_USE:
 	{
-		node=nodeStatement(browser, scope);
+		node=nodeStatement(browser, scope, std::string());
 #line 634 "Vrml97Parser.g"
 		
 		//
@@ -581,11 +581,13 @@ void Vrml97Parser::statement(
 }
 
 node_ptr  Vrml97Parser::nodeStatement(
-	openvrml::browser & browser, const scope_ptr & scope
+	openvrml::browser & browser,
+              const scope_ptr & scope,
+              const std::string & script_node_id
 ) {
 #line 644 "Vrml97Parser.g"
 	node_ptr n;
-#line 589 "Vrml97Parser.cpp"
+#line 591 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
@@ -603,21 +605,28 @@ node_ptr  Vrml97Parser::nodeStatement(
 		match(KEYWORD_USE);
 		id1 = LT(1);
 		match(ID);
-#line 649 "Vrml97Parser.g"
+#line 650 "Vrml97Parser.g"
 		
+		if (id1->getText() == script_node_id) {
+		//
+		// Script node self-reference.
+		//
+		n = node_ptr::self;
+		} else {
 		using antlr::SemanticException;
 		assert(scope);
 		n.reset(scope->find_node(id1->getText()));
 		if (!n) {
 		throw SemanticException("Node \"" + id1->getText()
-		+ "\" has not been defined in this "
-		"scope.",
+		+ "\" has not been defined in "
+		+ "this scope.",
 		this->uri,
 		id1->getLine(),
 		id1->getColumn());
 		}
+		}
 		
-#line 621 "Vrml97Parser.cpp"
+#line 630 "Vrml97Parser.cpp"
 		break;
 	}
 	case ID:
@@ -675,7 +684,7 @@ void Vrml97Parser::routeStatement(
 	match(PERIOD);
 	eventin_id = LT(1);
 	match(ID);
-#line 983 "Vrml97Parser.g"
+#line 1009 "Vrml97Parser.g"
 	
 	using std::runtime_error;
 	using antlr::SemanticException;
@@ -716,20 +725,20 @@ void Vrml97Parser::routeStatement(
 	from_node_id->getColumn());
 	}
 	
-#line 720 "Vrml97Parser.cpp"
+#line 729 "Vrml97Parser.cpp"
 }
 
 node_ptr  Vrml97Parser::node(
 	openvrml::browser & browser,
      const scope_ptr & scope,
-     const std::string & nodeId
+     const std::string & node_id
 ) {
-#line 1108 "Vrml97Parser.g"
+#line 1134 "Vrml97Parser.g"
 	node_ptr n;
-#line 730 "Vrml97Parser.cpp"
+#line 739 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  scriptId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  nodeTypeId = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1108 "Vrml97Parser.g"
+#line 1134 "Vrml97Parser.g"
 	
 	using antlr::SemanticException;
 	
@@ -737,7 +746,7 @@ node_ptr  Vrml97Parser::node(
 	node_interface_set interfaces;
 	node_type_ptr nodeType;
 	
-#line 741 "Vrml97Parser.cpp"
+#line 750 "Vrml97Parser.cpp"
 	
 	try {      // for error handling
 		if (((LA(1) == ID))&&( !LT(1)->getText().compare("Script") )) {
@@ -765,7 +774,8 @@ node_ptr  Vrml97Parser::node(
 					scriptInterfaceDeclaration(browser,
                                          scope,
                                          interfaces,
-                                         initial_values);
+                                         initial_values,
+                                         node_id);
 					break;
 				}
 				default:
@@ -777,20 +787,20 @@ node_ptr  Vrml97Parser::node(
 			_loop32:;
 			} // ( ... )*
 			match(RBRACE);
-#line 1129 "Vrml97Parser.g"
+#line 1156 "Vrml97Parser.g"
 			
 			n.reset(new script_node(browser.script_node_class_,
 			scope,
 			interfaces,
 			initial_values));
-			if (!nodeId.empty()) { n->id(nodeId); }
+			if (!node_id.empty()) { n->id(node_id); }
 			
-#line 789 "Vrml97Parser.cpp"
+#line 799 "Vrml97Parser.cpp"
 		}
 		else if ((LA(1) == ID)) {
 			nodeTypeId = LT(1);
 			match(ID);
-#line 1136 "Vrml97Parser.g"
+#line 1163 "Vrml97Parser.g"
 			
 			nodeType = scope->find_type(nodeTypeId->getText());
 			if (!nodeType) {
@@ -802,7 +812,7 @@ node_ptr  Vrml97Parser::node(
 			}
 			
 			
-#line 806 "Vrml97Parser.cpp"
+#line 816 "Vrml97Parser.cpp"
 			match(LBRACE);
 			{ // ( ... )*
 			for (;;) {
@@ -820,13 +830,13 @@ node_ptr  Vrml97Parser::node(
 			_loop34:;
 			} // ( ... )*
 			match(RBRACE);
-#line 1150 "Vrml97Parser.g"
+#line 1177 "Vrml97Parser.g"
 			
 			n = node_ptr(nodeType->create_node(scope, initial_values));
 			
-			if (!nodeId.empty()) { n->id(nodeId); }
+			if (!node_id.empty()) { n->id(node_id); }
 			
-#line 830 "Vrml97Parser.cpp"
+#line 840 "Vrml97Parser.cpp"
 		}
 		else {
 			throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
@@ -834,17 +844,7 @@ node_ptr  Vrml97Parser::node(
 		
 	}
 	catch (std::invalid_argument & ex) {
-#line 1157 "Vrml97Parser.g"
-		
-		throw SemanticException(ex.what(),
-		this->uri,
-		LT(1)->getLine(),
-		LT(1)->getColumn());
-		
-#line 845 "Vrml97Parser.cpp"
-	}
-	catch (unsupported_interface & ex) {
-#line 1163 "Vrml97Parser.g"
+#line 1184 "Vrml97Parser.g"
 		
 		throw SemanticException(ex.what(),
 		this->uri,
@@ -853,8 +853,18 @@ node_ptr  Vrml97Parser::node(
 		
 #line 855 "Vrml97Parser.cpp"
 	}
+	catch (unsupported_interface & ex) {
+#line 1190 "Vrml97Parser.g"
+		
+		throw SemanticException(ex.what(),
+		this->uri,
+		LT(1)->getLine(),
+		LT(1)->getColumn());
+		
+#line 865 "Vrml97Parser.cpp"
+	}
 	catch (std::bad_cast & ex) {
-#line 1169 "Vrml97Parser.g"
+#line 1196 "Vrml97Parser.g"
 		
 		throw SemanticException("Incorrect value type for field or "
 		"exposedField.",
@@ -862,7 +872,7 @@ node_ptr  Vrml97Parser::node(
 		LT(1)->getLine(),
 		LT(1)->getColumn());
 		
-#line 866 "Vrml97Parser.cpp"
+#line 876 "Vrml97Parser.cpp"
 	}
 	return n;
 }
@@ -871,13 +881,13 @@ void Vrml97Parser::externproto(
 	openvrml::browser & browser, const openvrml::scope_ptr & scope
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 894 "Vrml97Parser.g"
+#line 920 "Vrml97Parser.g"
 	
 	openvrml::node_interface_set interfaces;
 	openvrml::mfstring urlList;
 	openvrml::node_type_ptr nodeType;
 	
-#line 881 "Vrml97Parser.cpp"
+#line 891 "Vrml97Parser.cpp"
 	
 	match(KEYWORD_EXTERNPROTO);
 	id = LT(1);
@@ -897,7 +907,7 @@ void Vrml97Parser::externproto(
 	} // ( ... )*
 	match(RBRACKET);
 	urlList=externprotoUrlList();
-#line 903 "Vrml97Parser.g"
+#line 929 "Vrml97Parser.g"
 	
 	for (size_t i = 0; i < urlList.value.size(); ++i) {
 		browser::node_class_map_t::const_iterator pos =
@@ -928,14 +938,14 @@ void Vrml97Parser::externproto(
 	}
 	}
 	
-#line 932 "Vrml97Parser.cpp"
+#line 942 "Vrml97Parser.cpp"
 }
 
 void Vrml97Parser::proto(
 	openvrml::browser & browser, const scope_ptr & scope
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 675 "Vrml97Parser.g"
+#line 683 "Vrml97Parser.g"
 	
 	using std::vector;
 	
@@ -945,16 +955,16 @@ void Vrml97Parser::proto(
 	proto_node_class::is_map_t is_map;
 	proto_node_class::routes_t routes;
 	
-#line 949 "Vrml97Parser.cpp"
+#line 959 "Vrml97Parser.cpp"
 	
 	match(KEYWORD_PROTO);
 	id = LT(1);
 	match(ID);
-#line 686 "Vrml97Parser.g"
+#line 694 "Vrml97Parser.g"
 	
 	scope_ptr proto_scope(new openvrml::scope(id->getText(), scope));
 	
-#line 958 "Vrml97Parser.cpp"
+#line 968 "Vrml97Parser.cpp"
 	match(LBRACKET);
 	{ // ( ... )*
 	for (;;) {
@@ -981,7 +991,7 @@ void Vrml97Parser::proto(
                          is_map,
                          routes);
 	match(RBRACE);
-#line 698 "Vrml97Parser.g"
+#line 706 "Vrml97Parser.g"
 	
 	node_class_ptr node_class(new proto_node_class(browser,
 	interfaces,
@@ -1019,7 +1029,7 @@ void Vrml97Parser::proto(
 	id->getColumn());
 	}
 	
-#line 1023 "Vrml97Parser.cpp"
+#line 1033 "Vrml97Parser.cpp"
 }
 
 void Vrml97Parser::protoInterfaceDeclaration(
@@ -1032,7 +1042,7 @@ void Vrml97Parser::protoInterfaceDeclaration(
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 737 "Vrml97Parser.g"
+#line 745 "Vrml97Parser.g"
 	
 	using antlr::SemanticException;
 	
@@ -1040,7 +1050,7 @@ void Vrml97Parser::protoInterfaceDeclaration(
 	field_value::type_id ft;
 	field_value_ptr fv;
 	
-#line 1044 "Vrml97Parser.cpp"
+#line 1054 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_EVENTIN:
@@ -1050,7 +1060,7 @@ void Vrml97Parser::protoInterfaceDeclaration(
 		ft=fieldType();
 		id0 = LT(1);
 		match(ID);
-#line 751 "Vrml97Parser.g"
+#line 759 "Vrml97Parser.g"
 		
 		const node_interface interface(it, ft, id0->getText());
 		const bool succeeded = interfaces.insert(interface).second;
@@ -1066,7 +1076,7 @@ void Vrml97Parser::protoInterfaceDeclaration(
 		id0->getColumn());
 		}
 		
-#line 1070 "Vrml97Parser.cpp"
+#line 1080 "Vrml97Parser.cpp"
 		break;
 	}
 	case KEYWORD_EXPOSEDFIELD:
@@ -1076,7 +1086,7 @@ void Vrml97Parser::protoInterfaceDeclaration(
 		ft=fieldType();
 		id1 = LT(1);
 		match(ID);
-#line 767 "Vrml97Parser.g"
+#line 775 "Vrml97Parser.g"
 		
 		//
 		// The field value declaration should have access to the node
@@ -1085,9 +1095,9 @@ void Vrml97Parser::protoInterfaceDeclaration(
 		const scope_ptr field_decl_scope(
 		new scope(proto_id + '.' + id1->getText(), outer_scope));
 		
-#line 1089 "Vrml97Parser.cpp"
-		fv=fieldValue(browser, field_decl_scope, ft);
-#line 775 "Vrml97Parser.g"
+#line 1099 "Vrml97Parser.cpp"
+		fv=fieldValue(browser, field_decl_scope, ft, std::string());
+#line 783 "Vrml97Parser.g"
 		
 		assert(fv);
 		
@@ -1108,7 +1118,7 @@ void Vrml97Parser::protoInterfaceDeclaration(
 		default_value_map.insert(make_pair(id1->getText(), fv)).second;
 		assert(succeeded);
 		
-#line 1112 "Vrml97Parser.cpp"
+#line 1122 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -1126,7 +1136,7 @@ void Vrml97Parser::protoBody(
           proto_node_class::is_map_t & is_map,
           proto_node_class::routes_t & routes
 ) {
-#line 809 "Vrml97Parser.g"
+#line 817 "Vrml97Parser.g"
 	
 	assert(scope);
 	assert(impl_nodes.empty());
@@ -1135,7 +1145,7 @@ void Vrml97Parser::protoBody(
 	
 	node_ptr n;
 	
-#line 1139 "Vrml97Parser.cpp"
+#line 1149 "Vrml97Parser.cpp"
 	
 	{ // ( ... )*
 	for (;;) {
@@ -1149,13 +1159,18 @@ void Vrml97Parser::protoBody(
 	}
 	_loop15:;
 	} // ( ... )*
-	n=protoNodeStatement(browser, scope, interfaces, is_map, routes);
-#line 826 "Vrml97Parser.g"
+	n=protoNodeStatement(browser,
+                                 scope,
+                                 interfaces,
+                                 is_map,
+                                 routes,
+                                 std::string());
+#line 839 "Vrml97Parser.g"
 	
 	assert(n);
 	impl_nodes.push_back(n);
 	
-#line 1159 "Vrml97Parser.cpp"
+#line 1174 "Vrml97Parser.cpp"
 	{ // ( ... )*
 	for (;;) {
 		if ((_tokenSet_0.member(LA(1)))) {
@@ -1176,25 +1191,25 @@ void Vrml97Parser::protoBody(
 }
 
 node_interface::type_id  Vrml97Parser::eventInterfaceType() {
-#line 797 "Vrml97Parser.g"
+#line 805 "Vrml97Parser.g"
 	node_interface::type_id it;
-#line 1182 "Vrml97Parser.cpp"
+#line 1197 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_EVENTIN:
 	{
 		match(KEYWORD_EVENTIN);
-#line 799 "Vrml97Parser.g"
+#line 807 "Vrml97Parser.g"
 		it = node_interface::eventin_id;
-#line 1190 "Vrml97Parser.cpp"
+#line 1205 "Vrml97Parser.cpp"
 		break;
 	}
 	case KEYWORD_EVENTOUT:
 	{
 		match(KEYWORD_EVENTOUT);
-#line 800 "Vrml97Parser.g"
+#line 808 "Vrml97Parser.g"
 		it = node_interface::eventout_id;
-#line 1198 "Vrml97Parser.cpp"
+#line 1213 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -1206,175 +1221,175 @@ node_interface::type_id  Vrml97Parser::eventInterfaceType() {
 }
 
 openvrml::field_value::type_id  Vrml97Parser::fieldType() {
-#line 1516 "Vrml97Parser.g"
+#line 1558 "Vrml97Parser.g"
 	openvrml::field_value::type_id ft =
          openvrml::field_value::invalid_type_id;
-#line 1213 "Vrml97Parser.cpp"
-#line 1516 "Vrml97Parser.g"
+#line 1228 "Vrml97Parser.cpp"
+#line 1558 "Vrml97Parser.g"
 	
 	using openvrml::field_value;
 	
-#line 1218 "Vrml97Parser.cpp"
+#line 1233 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case FIELDTYPE_MFCOLOR:
 	{
 		match(FIELDTYPE_MFCOLOR);
-#line 1523 "Vrml97Parser.g"
+#line 1565 "Vrml97Parser.g"
 		ft = field_value::mfcolor_id;
-#line 1226 "Vrml97Parser.cpp"
+#line 1241 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_MFFLOAT:
 	{
 		match(FIELDTYPE_MFFLOAT);
-#line 1524 "Vrml97Parser.g"
+#line 1566 "Vrml97Parser.g"
 		ft = field_value::mffloat_id;
-#line 1234 "Vrml97Parser.cpp"
+#line 1249 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_MFINT32:
 	{
 		match(FIELDTYPE_MFINT32);
-#line 1525 "Vrml97Parser.g"
+#line 1567 "Vrml97Parser.g"
 		ft = field_value::mfint32_id;
-#line 1242 "Vrml97Parser.cpp"
+#line 1257 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_MFNODE:
 	{
 		match(FIELDTYPE_MFNODE);
-#line 1526 "Vrml97Parser.g"
+#line 1568 "Vrml97Parser.g"
 		ft = field_value::mfnode_id;
-#line 1250 "Vrml97Parser.cpp"
+#line 1265 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_MFROTATION:
 	{
 		match(FIELDTYPE_MFROTATION);
-#line 1527 "Vrml97Parser.g"
+#line 1569 "Vrml97Parser.g"
 		ft = field_value::mfrotation_id;
-#line 1258 "Vrml97Parser.cpp"
+#line 1273 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_MFSTRING:
 	{
 		match(FIELDTYPE_MFSTRING);
-#line 1528 "Vrml97Parser.g"
+#line 1570 "Vrml97Parser.g"
 		ft = field_value::mfstring_id;
-#line 1266 "Vrml97Parser.cpp"
+#line 1281 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_MFTIME:
 	{
 		match(FIELDTYPE_MFTIME);
-#line 1529 "Vrml97Parser.g"
+#line 1571 "Vrml97Parser.g"
 		ft = field_value::mftime_id;
-#line 1274 "Vrml97Parser.cpp"
+#line 1289 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_MFVEC2F:
 	{
 		match(FIELDTYPE_MFVEC2F);
-#line 1530 "Vrml97Parser.g"
+#line 1572 "Vrml97Parser.g"
 		ft = field_value::mfvec2f_id;
-#line 1282 "Vrml97Parser.cpp"
+#line 1297 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_MFVEC3F:
 	{
 		match(FIELDTYPE_MFVEC3F);
-#line 1531 "Vrml97Parser.g"
+#line 1573 "Vrml97Parser.g"
 		ft = field_value::mfvec3f_id;
-#line 1290 "Vrml97Parser.cpp"
+#line 1305 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_SFBOOL:
 	{
 		match(FIELDTYPE_SFBOOL);
-#line 1532 "Vrml97Parser.g"
+#line 1574 "Vrml97Parser.g"
 		ft = field_value::sfbool_id;
-#line 1298 "Vrml97Parser.cpp"
+#line 1313 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_SFCOLOR:
 	{
 		match(FIELDTYPE_SFCOLOR);
-#line 1533 "Vrml97Parser.g"
+#line 1575 "Vrml97Parser.g"
 		ft = field_value::sfcolor_id;
-#line 1306 "Vrml97Parser.cpp"
+#line 1321 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_SFFLOAT:
 	{
 		match(FIELDTYPE_SFFLOAT);
-#line 1534 "Vrml97Parser.g"
+#line 1576 "Vrml97Parser.g"
 		ft = field_value::sffloat_id;
-#line 1314 "Vrml97Parser.cpp"
+#line 1329 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_SFIMAGE:
 	{
 		match(FIELDTYPE_SFIMAGE);
-#line 1535 "Vrml97Parser.g"
+#line 1577 "Vrml97Parser.g"
 		ft = field_value::sfimage_id;
-#line 1322 "Vrml97Parser.cpp"
+#line 1337 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_SFINT32:
 	{
 		match(FIELDTYPE_SFINT32);
-#line 1536 "Vrml97Parser.g"
+#line 1578 "Vrml97Parser.g"
 		ft = field_value::sfint32_id;
-#line 1330 "Vrml97Parser.cpp"
+#line 1345 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_SFNODE:
 	{
 		match(FIELDTYPE_SFNODE);
-#line 1537 "Vrml97Parser.g"
+#line 1579 "Vrml97Parser.g"
 		ft = field_value::sfnode_id;
-#line 1338 "Vrml97Parser.cpp"
+#line 1353 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_SFROTATION:
 	{
 		match(FIELDTYPE_SFROTATION);
-#line 1538 "Vrml97Parser.g"
+#line 1580 "Vrml97Parser.g"
 		ft = field_value::sfrotation_id;
-#line 1346 "Vrml97Parser.cpp"
+#line 1361 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_SFSTRING:
 	{
 		match(FIELDTYPE_SFSTRING);
-#line 1539 "Vrml97Parser.g"
+#line 1581 "Vrml97Parser.g"
 		ft = field_value::sfstring_id;
-#line 1354 "Vrml97Parser.cpp"
+#line 1369 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_SFTIME:
 	{
 		match(FIELDTYPE_SFTIME);
-#line 1540 "Vrml97Parser.g"
+#line 1582 "Vrml97Parser.g"
 		ft = field_value::sftime_id;
-#line 1362 "Vrml97Parser.cpp"
+#line 1377 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_SFVEC2F:
 	{
 		match(FIELDTYPE_SFVEC2F);
-#line 1541 "Vrml97Parser.g"
+#line 1583 "Vrml97Parser.g"
 		ft = field_value::sfvec2f_id;
-#line 1370 "Vrml97Parser.cpp"
+#line 1385 "Vrml97Parser.cpp"
 		break;
 	}
 	case FIELDTYPE_SFVEC3F:
 	{
 		match(FIELDTYPE_SFVEC3F);
-#line 1542 "Vrml97Parser.g"
+#line 1584 "Vrml97Parser.g"
 		ft = field_value::sfvec3f_id;
-#line 1378 "Vrml97Parser.cpp"
+#line 1393 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -1386,25 +1401,25 @@ openvrml::field_value::type_id  Vrml97Parser::fieldType() {
 }
 
 node_interface::type_id  Vrml97Parser::fieldInterfaceType() {
-#line 803 "Vrml97Parser.g"
+#line 811 "Vrml97Parser.g"
 	node_interface::type_id it;
-#line 1392 "Vrml97Parser.cpp"
+#line 1407 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_FIELD:
 	{
 		match(KEYWORD_FIELD);
-#line 805 "Vrml97Parser.g"
+#line 813 "Vrml97Parser.g"
 		it = node_interface::field_id;
-#line 1400 "Vrml97Parser.cpp"
+#line 1415 "Vrml97Parser.cpp"
 		break;
 	}
 	case KEYWORD_EXPOSEDFIELD:
 	{
 		match(KEYWORD_EXPOSEDFIELD);
-#line 806 "Vrml97Parser.g"
+#line 814 "Vrml97Parser.g"
 		it = node_interface::exposedfield_id;
-#line 1408 "Vrml97Parser.cpp"
+#line 1423 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -1418,19 +1433,20 @@ node_interface::type_id  Vrml97Parser::fieldInterfaceType() {
 openvrml::field_value_ptr  Vrml97Parser::fieldValue(
 	openvrml::browser & browser,
            const openvrml::scope_ptr & scope,
-           openvrml::field_value::type_id ft
+           const openvrml::field_value::type_id ft,
+           const std::string & node_id
 ) {
-#line 1545 "Vrml97Parser.g"
+#line 1587 "Vrml97Parser.g"
 	openvrml::field_value_ptr fv;
-#line 1426 "Vrml97Parser.cpp"
-#line 1545 "Vrml97Parser.g"
+#line 1442 "Vrml97Parser.cpp"
+#line 1587 "Vrml97Parser.g"
 	
 	using openvrml::field_value;
 	
-#line 1431 "Vrml97Parser.cpp"
+#line 1447 "Vrml97Parser.cpp"
 	
 	if (((_tokenSet_3.member(LA(1))))&&( (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) )) {
-		fv=nodeFieldValue(browser, scope, ft);
+		fv=nodeFieldValue(browser, scope, ft, node_id);
 	}
 	else if ((_tokenSet_4.member(LA(1)))) {
 		fv=nonNodeFieldValue(ft);
@@ -1447,18 +1463,19 @@ node_ptr  Vrml97Parser::protoNodeStatement(
                    const openvrml::scope_ptr & scope,
                    const node_interface_set & proto_interfaces,
                    proto_node_class::is_map_t & is_map,
-                   proto_node_class::routes_t & routes
+                   proto_node_class::routes_t & routes,
+                   const std::string & script_node_id
 ) {
-#line 859 "Vrml97Parser.g"
+#line 877 "Vrml97Parser.g"
 	node_ptr n;
-#line 1455 "Vrml97Parser.cpp"
+#line 1472 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 859 "Vrml97Parser.g"
+#line 877 "Vrml97Parser.g"
 	
 	using antlr::SemanticException;
 	
-#line 1462 "Vrml97Parser.cpp"
+#line 1479 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_DEF:
@@ -1479,19 +1496,26 @@ node_ptr  Vrml97Parser::protoNodeStatement(
 		match(KEYWORD_USE);
 		id1 = LT(1);
 		match(ID);
-#line 875 "Vrml97Parser.g"
+#line 894 "Vrml97Parser.g"
 		
+		if (id1->getText() == script_node_id) {
+		//
+		// Script node self-reference.
+		//
+		n = node_ptr::self;
+		} else {
 		n.reset(scope->find_node(id1->getText()));
 		if (!n) {
 		throw SemanticException("Node \"" + id1->getText()
-		+ "\" has not been defined in this "
-		+ "scope.",
+		+ "\" has not been defined in "
+		+ "this scope.",
 		this->uri,
 		id1->getLine(),
 		id1->getColumn());
 		}
+		}
 		
-#line 1495 "Vrml97Parser.cpp"
+#line 1519 "Vrml97Parser.cpp"
 		break;
 	}
 	case ID:
@@ -1520,27 +1544,32 @@ void Vrml97Parser::protoBodyStatement(
                    proto_node_class::is_map_t & is_map,
                    proto_node_class::routes_t & routes
 ) {
-#line 838 "Vrml97Parser.g"
+#line 851 "Vrml97Parser.g"
 	
 	assert(scope);
 	assert(impl_nodes.size() == 1);
 	
 	node_ptr n;
 	
-#line 1531 "Vrml97Parser.cpp"
+#line 1555 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
 	case KEYWORD_DEF:
 	case KEYWORD_USE:
 	{
-		n=protoNodeStatement(browser, scope, interfaces, is_map, routes);
-#line 851 "Vrml97Parser.g"
+		n=protoNodeStatement(browser,
+                             scope,
+                             interfaces,
+                             is_map,
+                             routes,
+                             std::string());
+#line 869 "Vrml97Parser.g"
 		
 		assert(n);
 		impl_nodes.push_back(n);
 		
-#line 1544 "Vrml97Parser.cpp"
+#line 1573 "Vrml97Parser.cpp"
 		break;
 	}
 	case KEYWORD_EXTERNPROTO:
@@ -1582,7 +1611,7 @@ void Vrml97Parser::protoRouteStatement(
 	match(PERIOD);
 	eventin_id = LT(1);
 	match(ID);
-#line 1030 "Vrml97Parser.g"
+#line 1056 "Vrml97Parser.g"
 	
 	using std::runtime_error;
 	using antlr::SemanticException;
@@ -1659,7 +1688,7 @@ void Vrml97Parser::protoRouteStatement(
 	*to_node, eventin_id->getText());
 	routes.push_back(r);
 	
-#line 1663 "Vrml97Parser.cpp"
+#line 1692 "Vrml97Parser.cpp"
 }
 
 node_ptr  Vrml97Parser::protoNode(
@@ -1668,14 +1697,14 @@ node_ptr  Vrml97Parser::protoNode(
           const node_interface_set & proto_interfaces,
           proto_node_class::is_map_t & is_map,
           proto_node_class::routes_t & routes,
-          const std::string & nodeId
+          const std::string & node_id
 ) {
-#line 1285 "Vrml97Parser.g"
+#line 1321 "Vrml97Parser.g"
 	node_ptr n;
-#line 1676 "Vrml97Parser.cpp"
+#line 1705 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  scriptId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  nodeTypeId = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1285 "Vrml97Parser.g"
+#line 1321 "Vrml97Parser.g"
 	
 	using antlr::SemanticException;
 	
@@ -1684,7 +1713,7 @@ node_ptr  Vrml97Parser::protoNode(
 	is_list is_mappings;
 	node_type_ptr nodeType;
 	
-#line 1688 "Vrml97Parser.cpp"
+#line 1717 "Vrml97Parser.cpp"
 	
 	{
 	if (((LA(1) == ID))&&( !LT(1)->getText().compare("Script") )) {
@@ -1718,6 +1747,7 @@ node_ptr  Vrml97Parser::protoNode(
                                                   proto_interfaces,
                                                   is_map,
                                                   routes,
+                                                  node_id,
                                                   interfaces,
                                                   initial_values,
                                                   is_mappings);
@@ -1732,20 +1762,20 @@ node_ptr  Vrml97Parser::protoNode(
 		_loop41:;
 		} // ( ... )*
 		match(RBRACE);
-#line 1319 "Vrml97Parser.g"
+#line 1356 "Vrml97Parser.g"
 		
 		n.reset(new script_node(browser.script_node_class_,
 		scope,
 		interfaces,
 		initial_values));
-		if (!nodeId.empty()) { n->id(nodeId); }
+		if (!node_id.empty()) { n->id(node_id); }
 		
-#line 1744 "Vrml97Parser.cpp"
+#line 1774 "Vrml97Parser.cpp"
 	}
 	else if ((LA(1) == ID)) {
 		nodeTypeId = LT(1);
 		match(ID);
-#line 1327 "Vrml97Parser.g"
+#line 1364 "Vrml97Parser.g"
 		
 		nodeType = scope->find_type(nodeTypeId->getText());
 		if (!nodeType) {
@@ -1756,7 +1786,7 @@ node_ptr  Vrml97Parser::protoNode(
 		nodeTypeId->getColumn());
 		}
 		
-#line 1760 "Vrml97Parser.cpp"
+#line 1790 "Vrml97Parser.cpp"
 		match(LBRACE);
 		{ // ( ... )*
 		for (;;) {
@@ -1778,19 +1808,19 @@ node_ptr  Vrml97Parser::protoNode(
 		_loop43:;
 		} // ( ... )*
 		match(RBRACE);
-#line 1344 "Vrml97Parser.g"
+#line 1381 "Vrml97Parser.g"
 		
 		n = nodeType->create_node(scope, initial_values);
-		if (!nodeId.empty()) { n->id(nodeId); }
+		if (!node_id.empty()) { n->id(node_id); }
 		
-#line 1787 "Vrml97Parser.cpp"
+#line 1817 "Vrml97Parser.cpp"
 	}
 	else {
 		throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
 	}
 	
 	}
-#line 1348 "Vrml97Parser.g"
+#line 1385 "Vrml97Parser.g"
 	
 	for (is_list::const_iterator is_mapping = is_mappings.begin();
 	is_mapping != is_mappings.end();
@@ -1800,7 +1830,7 @@ node_ptr  Vrml97Parser::protoNode(
 	is_target(*n, is_mapping->first)));
 	}
 	
-#line 1804 "Vrml97Parser.cpp"
+#line 1834 "Vrml97Parser.cpp"
 	return n;
 }
 
@@ -1808,7 +1838,7 @@ void Vrml97Parser::externInterfaceDeclaration(
 	openvrml::node_interface_set & interfaces
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 935 "Vrml97Parser.g"
+#line 961 "Vrml97Parser.g"
 	
 	using openvrml::node_interface;
 	using openvrml::field_value;
@@ -1816,13 +1846,13 @@ void Vrml97Parser::externInterfaceDeclaration(
 	node_interface::type_id it(node_interface::invalid_type_id);
 	field_value::type_id ft(field_value::invalid_type_id);
 	
-#line 1820 "Vrml97Parser.cpp"
+#line 1850 "Vrml97Parser.cpp"
 	
 	it=interfaceType();
 	ft=fieldType();
 	id = LT(1);
 	match(ID);
-#line 944 "Vrml97Parser.g"
+#line 970 "Vrml97Parser.g"
 	
 	const node_interface interface(it, ft, id->getText());
 	bool succeeded = interfaces.insert(interface).second;
@@ -1838,29 +1868,29 @@ void Vrml97Parser::externInterfaceDeclaration(
 	id->getColumn());
 	}
 	
-#line 1842 "Vrml97Parser.cpp"
+#line 1872 "Vrml97Parser.cpp"
 }
 
 mfstring  Vrml97Parser::externprotoUrlList() {
-#line 967 "Vrml97Parser.g"
+#line 993 "Vrml97Parser.g"
 	mfstring urlList;
-#line 1848 "Vrml97Parser.cpp"
-#line 967 "Vrml97Parser.g"
+#line 1878 "Vrml97Parser.cpp"
+#line 993 "Vrml97Parser.g"
 	
 	using std::string;
 	using openvrml::mfstring;
 	
 	string s;
 	
-#line 1856 "Vrml97Parser.cpp"
+#line 1886 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case STRING:
 	{
 		s=stringValue();
-#line 975 "Vrml97Parser.g"
+#line 1001 "Vrml97Parser.g"
 		urlList.value.push_back(s);
-#line 1864 "Vrml97Parser.cpp"
+#line 1894 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -1870,9 +1900,9 @@ mfstring  Vrml97Parser::externprotoUrlList() {
 		for (;;) {
 			if ((LA(1) == STRING)) {
 				s=stringValue();
-#line 976 "Vrml97Parser.g"
+#line 1002 "Vrml97Parser.g"
 				urlList.value.push_back(s);
-#line 1876 "Vrml97Parser.cpp"
+#line 1906 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop27;
@@ -1893,9 +1923,9 @@ mfstring  Vrml97Parser::externprotoUrlList() {
 }
 
 node_interface::type_id  Vrml97Parser::interfaceType() {
-#line 961 "Vrml97Parser.g"
+#line 987 "Vrml97Parser.g"
 	node_interface::type_id interface_type;
-#line 1899 "Vrml97Parser.cpp"
+#line 1929 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_EVENTIN:
@@ -1919,14 +1949,14 @@ node_interface::type_id  Vrml97Parser::interfaceType() {
 }
 
 std::string  Vrml97Parser::stringValue() {
-#line 1915 "Vrml97Parser.g"
+#line 1989 "Vrml97Parser.g"
 	std::string str;
-#line 1925 "Vrml97Parser.cpp"
+#line 1955 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  s = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
 	s = LT(1);
 	match(STRING);
-#line 1918 "Vrml97Parser.g"
+#line 1992 "Vrml97Parser.g"
 	
 	using std::string;
 	const string & token_text(s->getText());
@@ -1945,7 +1975,7 @@ std::string  Vrml97Parser::stringValue() {
 	}
 	}
 	
-#line 1949 "Vrml97Parser.cpp"
+#line 1979 "Vrml97Parser.cpp"
 	return str;
 }
 
@@ -1956,7 +1986,7 @@ void Vrml97Parser::nodeBodyElement(
                 initial_value_map & initial_values
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1177 "Vrml97Parser.g"
+#line 1204 "Vrml97Parser.g"
 	
 	using std::find_if;
 	using std::bind2nd;
@@ -1964,14 +1994,14 @@ void Vrml97Parser::nodeBodyElement(
 	field_value::type_id ft = field_value::invalid_type_id;
 	field_value_ptr fv;
 	
-#line 1968 "Vrml97Parser.cpp"
+#line 1998 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
 	{
 		id = LT(1);
 		match(ID);
-#line 1189 "Vrml97Parser.g"
+#line 1216 "Vrml97Parser.g"
 		
 		node_interface_set::const_iterator interface =
 		find_if(interfaces.begin(), interfaces.end(),
@@ -1992,9 +2022,9 @@ void Vrml97Parser::nodeBodyElement(
 		}
 		ft = interface->field_type;
 		
-#line 1996 "Vrml97Parser.cpp"
-		fv=fieldValue(b, scope, ft);
-#line 1208 "Vrml97Parser.g"
+#line 2026 "Vrml97Parser.cpp"
+		fv=fieldValue(b, scope, ft, std::string());
+#line 1235 "Vrml97Parser.g"
 		
 		assert(fv);
 		const bool succeeded =
@@ -2007,7 +2037,7 @@ void Vrml97Parser::nodeBodyElement(
 		id->getColumn());
 		}
 		
-#line 2011 "Vrml97Parser.cpp"
+#line 2041 "Vrml97Parser.cpp"
 		break;
 	}
 	case KEYWORD_ROUTE:
@@ -2032,16 +2062,17 @@ void Vrml97Parser::scriptInterfaceDeclaration(
 	browser & b,
                            const scope_ptr & scope,
                            node_interface_set & interfaces,
-                           initial_value_map & initial_values
+                           initial_value_map & initial_values,
+                           const std::string & node_id
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1224 "Vrml97Parser.g"
+#line 1251 "Vrml97Parser.g"
 	
 	using antlr::SemanticException;
 	node_interface::type_id it(node_interface::invalid_type_id);
 	field_value::type_id ft(field_value::invalid_type_id);
 	
-#line 2045 "Vrml97Parser.cpp"
+#line 2076 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_EVENTIN:
@@ -2051,7 +2082,7 @@ void Vrml97Parser::scriptInterfaceDeclaration(
 		ft=fieldType();
 		id = LT(1);
 		match(ID);
-#line 1234 "Vrml97Parser.g"
+#line 1262 "Vrml97Parser.g"
 		
 		const node_interface interface(it, ft, id->getText());
 		const bool succeeded = interfaces.insert(interface).second;
@@ -2067,12 +2098,16 @@ void Vrml97Parser::scriptInterfaceDeclaration(
 		id->getColumn());
 		}
 		
-#line 2071 "Vrml97Parser.cpp"
+#line 2102 "Vrml97Parser.cpp"
 		break;
 	}
 	case KEYWORD_FIELD:
 	{
-		scriptFieldInterfaceDeclaration(b, scope, interfaces, initial_values);
+		scriptFieldInterfaceDeclaration(b,
+                                      scope,
+                                      interfaces,
+                                      initial_values,
+                                      node_id);
 		break;
 	}
 	default:
@@ -2086,10 +2121,11 @@ void Vrml97Parser::scriptFieldInterfaceDeclaration(
 	browser & b,
                                 const scope_ptr & scope,
                                 node_interface_set & interfaces,
-                                initial_value_map & initial_values
+                                initial_value_map & initial_values,
+                                const std::string & script_node_id
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1252 "Vrml97Parser.g"
+#line 1284 "Vrml97Parser.g"
 	
 	using std::find_if;
 	using antlr::SemanticException;
@@ -2097,14 +2133,17 @@ void Vrml97Parser::scriptFieldInterfaceDeclaration(
 	field_value::type_id ft = field_value::invalid_type_id;
 	field_value_ptr fv;
 	
-#line 2101 "Vrml97Parser.cpp"
+#line 2137 "Vrml97Parser.cpp"
 	
 	match(KEYWORD_FIELD);
 	ft=fieldType();
 	id = LT(1);
 	match(ID);
-	fv=fieldValue(b, scope, ft);
-#line 1264 "Vrml97Parser.g"
+	fv=fieldValue(b,
+                                                       scope,
+                                                       ft,
+                                                       script_node_id);
+#line 1300 "Vrml97Parser.g"
 	
 	assert(fv);
 	bool succeeded =
@@ -2124,7 +2163,7 @@ void Vrml97Parser::scriptFieldInterfaceDeclaration(
 	.second;
 	assert(succeeded);
 	
-#line 2128 "Vrml97Parser.cpp"
+#line 2167 "Vrml97Parser.cpp"
 }
 
 void Vrml97Parser::protoNodeBodyElement(
@@ -2138,21 +2177,21 @@ void Vrml97Parser::protoNodeBodyElement(
                      is_list & is_mappings
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  interface_id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1359 "Vrml97Parser.g"
+#line 1396 "Vrml97Parser.g"
 	
 	using std::string;
 	using antlr::SemanticException;
 	
 	field_value_ptr fv;
 	
-#line 2149 "Vrml97Parser.cpp"
+#line 2188 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
 	{
 		interface_id = LT(1);
 		match(ID);
-#line 1374 "Vrml97Parser.g"
+#line 1411 "Vrml97Parser.g"
 		
 		const node_interface_set::const_iterator impl_node_interface =
 		find_interface(node_interfaces, interface_id->getText());
@@ -2164,7 +2203,7 @@ void Vrml97Parser::protoNodeBodyElement(
 		interface_id->getColumn());
 		}
 		
-#line 2168 "Vrml97Parser.cpp"
+#line 2207 "Vrml97Parser.cpp"
 		{
 		if (((_tokenSet_5.member(LA(1))))&&(impl_node_interface->type == node_interface::field_id
             || impl_node_interface->type == node_interface::exposedfield_id)) {
@@ -2187,8 +2226,9 @@ void Vrml97Parser::protoNodeBodyElement(
                                    proto_interfaces,
                                    is_map,
                                    routes,
-                                   impl_node_interface->field_type);
-#line 1392 "Vrml97Parser.g"
+                                   impl_node_interface->field_type,
+                                   std::string());
+#line 1430 "Vrml97Parser.g"
 				
 				assert(fv);
 				bool succeeded =
@@ -2196,7 +2236,7 @@ void Vrml97Parser::protoNodeBodyElement(
 				make_pair(interface_id->getText(), fv)).second;
 				assert(succeeded);
 				
-#line 2200 "Vrml97Parser.cpp"
+#line 2240 "Vrml97Parser.cpp"
 				break;
 			}
 			case KEYWORD_IS:
@@ -2245,18 +2285,19 @@ void Vrml97Parser::protoScriptInterfaceDeclaration(
                                 const node_interface_set & proto_interfaces,
                                 proto_node_class::is_map_t & is_map,
                                 proto_node_class::routes_t & routes,
+                                const std::string & script_node_id,
                                 node_interface_set & interfaces,
                                 initial_value_map & initial_values,
                                 is_list & is_mappings
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1416 "Vrml97Parser.g"
+#line 1454 "Vrml97Parser.g"
 	
 	using antlr::SemanticException;
 	node_interface::type_id it;
 	field_value::type_id ft;
 	
-#line 2260 "Vrml97Parser.cpp"
+#line 2301 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_EVENTIN:
@@ -2266,7 +2307,7 @@ void Vrml97Parser::protoScriptInterfaceDeclaration(
 		ft=fieldType();
 		id = LT(1);
 		match(ID);
-#line 1430 "Vrml97Parser.g"
+#line 1469 "Vrml97Parser.g"
 		
 		const node_interface interface(it, ft, id->getText());
 		const bool succeeded = interfaces.insert(interface).second;
@@ -2282,7 +2323,7 @@ void Vrml97Parser::protoScriptInterfaceDeclaration(
 		id->getColumn());
 		}
 		
-#line 2286 "Vrml97Parser.cpp"
+#line 2327 "Vrml97Parser.cpp"
 		{
 		switch ( LA(1)) {
 		case KEYWORD_IS:
@@ -2318,6 +2359,7 @@ void Vrml97Parser::protoScriptInterfaceDeclaration(
                                              routes,
                                              interfaces,
                                              initial_values,
+                                             script_node_id,
                                              is_mappings);
 		break;
 	}
@@ -2334,11 +2376,12 @@ field_value_ptr  Vrml97Parser::protoFieldValue(
                 const node_interface_set & proto_interfaces,
                 proto_node_class::is_map_t & is_map,
                 proto_node_class::routes_t & routes,
-                const field_value::type_id ft
+                const field_value::type_id ft,
+                const std::string & script_node_id
 ) {
-#line 1558 "Vrml97Parser.g"
+#line 1601 "Vrml97Parser.g"
 	field_value_ptr fv;
-#line 2342 "Vrml97Parser.cpp"
+#line 2385 "Vrml97Parser.cpp"
 	
 	if (((_tokenSet_3.member(LA(1))))&&( (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) )) {
 		fv=protoNodeFieldValue(browser,
@@ -2346,18 +2389,19 @@ field_value_ptr  Vrml97Parser::protoFieldValue(
                                proto_interfaces,
                                is_map,
                                routes,
-                               ft);
-#line 1572 "Vrml97Parser.g"
+                               ft,
+                               script_node_id);
+#line 1617 "Vrml97Parser.g"
 		
 		assert(fv);
 		
-#line 2355 "Vrml97Parser.cpp"
+#line 2399 "Vrml97Parser.cpp"
 	}
 	else if ((_tokenSet_4.member(LA(1)))) {
 		fv=nonNodeFieldValue(ft);
-#line 1575 "Vrml97Parser.g"
+#line 1620 "Vrml97Parser.g"
 		assert(fv);
-#line 2361 "Vrml97Parser.cpp"
+#line 2405 "Vrml97Parser.cpp"
 	}
 	else {
 		throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
@@ -2375,12 +2419,12 @@ void Vrml97Parser::isStatement(
 	match(KEYWORD_IS);
 	id = LT(1);
 	match(ID);
-#line 1410 "Vrml97Parser.g"
+#line 1448 "Vrml97Parser.g"
 	
 	is_mappings.insert(make_pair(impl_node_interface_id,
 	id->getText()));
 	
-#line 2384 "Vrml97Parser.cpp"
+#line 2428 "Vrml97Parser.cpp"
 }
 
 void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
@@ -2392,22 +2436,23 @@ void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
     proto_node_class::routes_t & routes,
     node_interface_set & interfaces,
     initial_value_map & initial_values,
+    const std::string & script_node_id,
     is_list & is_mappings
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1455 "Vrml97Parser.g"
+#line 1495 "Vrml97Parser.g"
 	
 	field_value::type_id ft;
 	field_value_ptr fv;
 	bool succeeded;
 	
-#line 2405 "Vrml97Parser.cpp"
+#line 2450 "Vrml97Parser.cpp"
 	
 	match(KEYWORD_FIELD);
 	ft=fieldType();
 	id = LT(1);
 	match(ID);
-#line 1470 "Vrml97Parser.g"
+#line 1511 "Vrml97Parser.g"
 	
 	succeeded =
 	interfaces.insert(node_interface(node_interface::field_id,
@@ -2424,7 +2469,7 @@ void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
 	id->getColumn());
 	}
 	
-#line 2428 "Vrml97Parser.cpp"
+#line 2473 "Vrml97Parser.cpp"
 	{
 	switch ( LA(1)) {
 	case LBRACKET:
@@ -2444,21 +2489,22 @@ void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
                                proto_interfaces,
                                is_map,
                                routes,
-                               ft);
-#line 1491 "Vrml97Parser.g"
+                               ft,
+                               script_node_id);
+#line 1533 "Vrml97Parser.g"
 		
 		assert(fv);
 		succeeded = initial_values.insert(make_pair(id->getText(), fv))
 		.second;
 		assert(succeeded);
 		
-#line 2456 "Vrml97Parser.cpp"
+#line 2502 "Vrml97Parser.cpp"
 		break;
 	}
 	case KEYWORD_IS:
 	{
 		isStatement(id->getText(), is_mappings);
-#line 1497 "Vrml97Parser.g"
+#line 1539 "Vrml97Parser.g"
 		
 		using std::auto_ptr;
 		using boost::shared_ptr;
@@ -2475,7 +2521,7 @@ void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
 		.second;
 		assert(succeeded);
 		
-#line 2479 "Vrml97Parser.cpp"
+#line 2525 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -2489,22 +2535,23 @@ void Vrml97Parser::protoScriptFieldInterfaceDeclaration(
 openvrml::field_value_ptr  Vrml97Parser::nodeFieldValue(
 	openvrml::browser & browser,
                const openvrml::scope_ptr & scope,
-               openvrml::field_value::type_id ft
+               openvrml::field_value::type_id ft,
+               const std::string & script_node_id
 ) {
-#line 1604 "Vrml97Parser.g"
+#line 1649 "Vrml97Parser.g"
 	openvrml::field_value_ptr fv;
-#line 2497 "Vrml97Parser.cpp"
-#line 1604 "Vrml97Parser.g"
+#line 2544 "Vrml97Parser.cpp"
+#line 1649 "Vrml97Parser.g"
 	
 	using openvrml::field_value;
 	
-#line 2502 "Vrml97Parser.cpp"
+#line 2549 "Vrml97Parser.cpp"
 	
 	if (((_tokenSet_6.member(LA(1))))&&( ft == field_value::sfnode_id )) {
-		fv=sfNodeValue(browser, scope);
+		fv=sfNodeValue(browser, scope, script_node_id);
 	}
 	else if ((_tokenSet_7.member(LA(1)))) {
-		fv=mfNodeValue(browser, scope);
+		fv=mfNodeValue(browser, scope, script_node_id);
 	}
 	else {
 		throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
@@ -2516,14 +2563,14 @@ openvrml::field_value_ptr  Vrml97Parser::nodeFieldValue(
 openvrml::field_value_ptr  Vrml97Parser::nonNodeFieldValue(
 	openvrml::field_value::type_id ft
 ) {
-#line 1578 "Vrml97Parser.g"
+#line 1623 "Vrml97Parser.g"
 	openvrml::field_value_ptr fv = openvrml::field_value_ptr();
-#line 2522 "Vrml97Parser.cpp"
-#line 1578 "Vrml97Parser.g"
+#line 2569 "Vrml97Parser.cpp"
+#line 1623 "Vrml97Parser.g"
 	
 	using openvrml::field_value;
 	
-#line 2527 "Vrml97Parser.cpp"
+#line 2574 "Vrml97Parser.cpp"
 	
 	if (((LA(1) == KEYWORD_FALSE || LA(1) == KEYWORD_TRUE))&&( ft == field_value::sfbool_id )) {
 		fv=sfBoolValue();
@@ -2592,17 +2639,27 @@ field_value_ptr  Vrml97Parser::protoNodeFieldValue(
                     const node_interface_set & proto_interfaces,
                     proto_node_class::is_map_t & is_map,
                     proto_node_class::routes_t & routes,
-                    field_value::type_id ft
+                    field_value::type_id ft,
+                    const std::string & script_node_id
 ) {
-#line 1616 "Vrml97Parser.g"
+#line 1663 "Vrml97Parser.g"
 	field_value_ptr fv;
-#line 2600 "Vrml97Parser.cpp"
+#line 2648 "Vrml97Parser.cpp"
 	
 	if (((_tokenSet_6.member(LA(1))))&&( ft == field_value::sfnode_id )) {
-		fv=protoSfNodeValue(browser, scope, proto_interfaces, is_map, routes);
+		fv=protoSfNodeValue(browser,
+                                scope,
+                                proto_interfaces,
+                                is_map, routes,
+                                script_node_id);
 	}
 	else if ((_tokenSet_7.member(LA(1)))) {
-		fv=protoMfNodeValue(browser, scope, proto_interfaces, is_map, routes);
+		fv=protoMfNodeValue(browser,
+                            scope,
+                            proto_interfaces,
+                            is_map,
+                            routes,
+                            script_node_id);
 	}
 	else {
 		throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
@@ -2612,82 +2669,82 @@ field_value_ptr  Vrml97Parser::protoNodeFieldValue(
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfBoolValue() {
-#line 1629 "Vrml97Parser.g"
+#line 1686 "Vrml97Parser.g"
 	openvrml::field_value_ptr sbv;
-#line 2618 "Vrml97Parser.cpp"
-#line 1629 "Vrml97Parser.g"
+#line 2675 "Vrml97Parser.cpp"
+#line 1686 "Vrml97Parser.g"
 	
 	bool val(false);
 	
-#line 2623 "Vrml97Parser.cpp"
+#line 2680 "Vrml97Parser.cpp"
 	
 	val=boolValue();
-#line 1634 "Vrml97Parser.g"
+#line 1691 "Vrml97Parser.g"
 	sbv.reset(new sfbool(val));
-#line 2628 "Vrml97Parser.cpp"
+#line 2685 "Vrml97Parser.cpp"
 	return sbv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfColorValue() {
-#line 1643 "Vrml97Parser.g"
+#line 1700 "Vrml97Parser.g"
 	openvrml::field_value_ptr scv;
-#line 2635 "Vrml97Parser.cpp"
-#line 1643 "Vrml97Parser.g"
+#line 2692 "Vrml97Parser.cpp"
+#line 1700 "Vrml97Parser.g"
 	
 	color c;
 	
-#line 2640 "Vrml97Parser.cpp"
+#line 2697 "Vrml97Parser.cpp"
 	
 	colorValue(c);
-#line 1648 "Vrml97Parser.g"
+#line 1705 "Vrml97Parser.g"
 	scv.reset(new sfcolor(c));
-#line 2645 "Vrml97Parser.cpp"
+#line 2702 "Vrml97Parser.cpp"
 	return scv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfFloatValue() {
-#line 1691 "Vrml97Parser.g"
+#line 1748 "Vrml97Parser.g"
 	openvrml::field_value_ptr sfv;
-#line 2652 "Vrml97Parser.cpp"
-#line 1691 "Vrml97Parser.g"
+#line 2709 "Vrml97Parser.cpp"
+#line 1748 "Vrml97Parser.g"
 	
 	float f;
 	
-#line 2657 "Vrml97Parser.cpp"
+#line 2714 "Vrml97Parser.cpp"
 	
 	f=floatValue();
-#line 1696 "Vrml97Parser.g"
+#line 1753 "Vrml97Parser.g"
 	sfv.reset(new sffloat(f));
-#line 2662 "Vrml97Parser.cpp"
+#line 2719 "Vrml97Parser.cpp"
 	return sfv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfImageValue() {
-#line 1717 "Vrml97Parser.g"
+#line 1774 "Vrml97Parser.g"
 	openvrml::field_value_ptr siv;
-#line 2669 "Vrml97Parser.cpp"
-#line 1717 "Vrml97Parser.g"
+#line 2726 "Vrml97Parser.cpp"
+#line 1774 "Vrml97Parser.g"
 	
 	using antlr::SemanticException;
 	size_t x, y, comp;
 	int32 pixel;
 	size_t pixel_index = 0;
 	
-#line 2677 "Vrml97Parser.cpp"
+#line 2734 "Vrml97Parser.cpp"
 	
 	x=intValue();
 	y=intValue();
 	comp=intValue();
-#line 1725 "Vrml97Parser.g"
+#line 1782 "Vrml97Parser.g"
 	
 	image img(x, y, comp);
 	
-#line 2686 "Vrml97Parser.cpp"
+#line 2743 "Vrml97Parser.cpp"
 	{ // ( ... )*
 	for (;;) {
 		if ((LA(1) == INTEGER || LA(1) == HEX_INTEGER)) {
 			pixel=intValue();
-#line 1728 "Vrml97Parser.g"
+#line 1785 "Vrml97Parser.g"
 			
 			if (!(pixel_index < x * y)) {
 			throw SemanticException("Too many pixel values for "
@@ -2698,7 +2755,7 @@ openvrml::field_value_ptr  Vrml97Parser::sfImageValue() {
 			}
 			img.pixel(pixel_index++, pixel);
 			
-#line 2702 "Vrml97Parser.cpp"
+#line 2759 "Vrml97Parser.cpp"
 		}
 		else {
 			goto _loop73;
@@ -2707,7 +2764,7 @@ openvrml::field_value_ptr  Vrml97Parser::sfImageValue() {
 	}
 	_loop73:;
 	} // ( ... )*
-#line 1738 "Vrml97Parser.g"
+#line 1795 "Vrml97Parser.g"
 	
 	if (pixel_index != x * y) {
 	throw antlr::SemanticException("Insufficient pixel values for "
@@ -2718,124 +2775,124 @@ openvrml::field_value_ptr  Vrml97Parser::sfImageValue() {
 	}
 	siv.reset(new sfimage(img));
 	
-#line 2722 "Vrml97Parser.cpp"
+#line 2779 "Vrml97Parser.cpp"
 	return siv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfInt32Value() {
-#line 1750 "Vrml97Parser.g"
+#line 1807 "Vrml97Parser.g"
 	openvrml::field_value_ptr siv;
-#line 2729 "Vrml97Parser.cpp"
-#line 1750 "Vrml97Parser.g"
+#line 2786 "Vrml97Parser.cpp"
+#line 1807 "Vrml97Parser.g"
 	
 	long i;
 	
-#line 2734 "Vrml97Parser.cpp"
+#line 2791 "Vrml97Parser.cpp"
 	
 	i=intValue();
-#line 1755 "Vrml97Parser.g"
+#line 1812 "Vrml97Parser.g"
 	siv.reset(new sfint32(i));
-#line 2739 "Vrml97Parser.cpp"
+#line 2796 "Vrml97Parser.cpp"
 	return siv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfRotationValue() {
-#line 1852 "Vrml97Parser.g"
+#line 1926 "Vrml97Parser.g"
 	openvrml::field_value_ptr srv;
-#line 2746 "Vrml97Parser.cpp"
-#line 1852 "Vrml97Parser.g"
+#line 2803 "Vrml97Parser.cpp"
+#line 1926 "Vrml97Parser.g"
 	rotation r;
-#line 2749 "Vrml97Parser.cpp"
+#line 2806 "Vrml97Parser.cpp"
 	
 	rotationValue(r);
-#line 1855 "Vrml97Parser.g"
+#line 1929 "Vrml97Parser.g"
 	srv.reset(new sfrotation(r));
-#line 2754 "Vrml97Parser.cpp"
+#line 2811 "Vrml97Parser.cpp"
 	return srv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfStringValue() {
-#line 1897 "Vrml97Parser.g"
+#line 1971 "Vrml97Parser.g"
 	openvrml::field_value_ptr ssv;
-#line 2761 "Vrml97Parser.cpp"
-#line 1897 "Vrml97Parser.g"
+#line 2818 "Vrml97Parser.cpp"
+#line 1971 "Vrml97Parser.g"
 	std::string s;
-#line 2764 "Vrml97Parser.cpp"
+#line 2821 "Vrml97Parser.cpp"
 	
 	s=stringValue();
-#line 1900 "Vrml97Parser.g"
+#line 1974 "Vrml97Parser.g"
 	ssv.reset(new sfstring(s));
-#line 2769 "Vrml97Parser.cpp"
+#line 2826 "Vrml97Parser.cpp"
 	return ssv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfTimeValue() {
-#line 1938 "Vrml97Parser.g"
+#line 2012 "Vrml97Parser.g"
 	openvrml::field_value_ptr stv;
-#line 2776 "Vrml97Parser.cpp"
-#line 1938 "Vrml97Parser.g"
+#line 2833 "Vrml97Parser.cpp"
+#line 2012 "Vrml97Parser.g"
 	double t(0.0);
-#line 2779 "Vrml97Parser.cpp"
+#line 2836 "Vrml97Parser.cpp"
 	
 	t=doubleValue();
-#line 1941 "Vrml97Parser.g"
+#line 2015 "Vrml97Parser.g"
 	stv.reset(new sftime(t));
-#line 2784 "Vrml97Parser.cpp"
+#line 2841 "Vrml97Parser.cpp"
 	return stv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfVec2fValue() {
-#line 1961 "Vrml97Parser.g"
+#line 2035 "Vrml97Parser.g"
 	openvrml::field_value_ptr svv;
-#line 2791 "Vrml97Parser.cpp"
-#line 1961 "Vrml97Parser.g"
+#line 2848 "Vrml97Parser.cpp"
+#line 2035 "Vrml97Parser.g"
 	vec2f v;
-#line 2794 "Vrml97Parser.cpp"
+#line 2851 "Vrml97Parser.cpp"
 	
 	vec2fValue(v);
-#line 1964 "Vrml97Parser.g"
+#line 2038 "Vrml97Parser.g"
 	svv.reset(new sfvec2f(v));
-#line 2799 "Vrml97Parser.cpp"
+#line 2856 "Vrml97Parser.cpp"
 	return svv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::sfVec3fValue() {
-#line 1988 "Vrml97Parser.g"
+#line 2062 "Vrml97Parser.g"
 	openvrml::field_value_ptr svv;
-#line 2806 "Vrml97Parser.cpp"
-#line 1988 "Vrml97Parser.g"
+#line 2863 "Vrml97Parser.cpp"
+#line 2062 "Vrml97Parser.g"
 	
 	vec3f v;
 	
-#line 2811 "Vrml97Parser.cpp"
+#line 2868 "Vrml97Parser.cpp"
 	
 	vec3fValue(v);
-#line 1993 "Vrml97Parser.g"
+#line 2067 "Vrml97Parser.g"
 	svv.reset(new sfvec3f(v));
-#line 2816 "Vrml97Parser.cpp"
+#line 2873 "Vrml97Parser.cpp"
 	return svv;
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfColorValue() {
-#line 1651 "Vrml97Parser.g"
+#line 1708 "Vrml97Parser.g"
 	openvrml::field_value_ptr mcv =
             openvrml::field_value_ptr(new mfcolor);
-#line 2824 "Vrml97Parser.cpp"
-#line 1651 "Vrml97Parser.g"
+#line 2881 "Vrml97Parser.cpp"
+#line 1708 "Vrml97Parser.g"
 	
 	color c;
 	mfcolor & colors = static_cast<mfcolor &>(*mcv);
 	
-#line 2830 "Vrml97Parser.cpp"
+#line 2887 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		colorValue(c);
-#line 1659 "Vrml97Parser.g"
+#line 1716 "Vrml97Parser.g"
 		colors.value.push_back(c);
-#line 2839 "Vrml97Parser.cpp"
+#line 2896 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -2845,9 +2902,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfColorValue() {
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				colorValue(c);
-#line 1660 "Vrml97Parser.g"
+#line 1717 "Vrml97Parser.g"
 				colors.value.push_back(c);
-#line 2851 "Vrml97Parser.cpp"
+#line 2908 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop63;
@@ -2868,25 +2925,25 @@ openvrml::field_value_ptr  Vrml97Parser::mfColorValue() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfFloatValue() {
-#line 1699 "Vrml97Parser.g"
+#line 1756 "Vrml97Parser.g"
 	openvrml::field_value_ptr mfv =
             openvrml::field_value_ptr(new mffloat);
-#line 2875 "Vrml97Parser.cpp"
-#line 1699 "Vrml97Parser.g"
+#line 2932 "Vrml97Parser.cpp"
+#line 1756 "Vrml97Parser.g"
 	
 	float f;
 	mffloat & floats = static_cast<mffloat &>(*mfv);
 	
-#line 2881 "Vrml97Parser.cpp"
+#line 2938 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		f=floatValue();
-#line 1707 "Vrml97Parser.g"
+#line 1764 "Vrml97Parser.g"
 		floats.value.push_back(f);
-#line 2890 "Vrml97Parser.cpp"
+#line 2947 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -2896,9 +2953,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfFloatValue() {
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				f=floatValue();
-#line 1708 "Vrml97Parser.g"
+#line 1765 "Vrml97Parser.g"
 				floats.value.push_back(f);
-#line 2902 "Vrml97Parser.cpp"
+#line 2959 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop69;
@@ -2919,25 +2976,25 @@ openvrml::field_value_ptr  Vrml97Parser::mfFloatValue() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfInt32Value() {
-#line 1758 "Vrml97Parser.g"
+#line 1815 "Vrml97Parser.g"
 	openvrml::field_value_ptr miv =
             openvrml::field_value_ptr(new mfint32);
-#line 2926 "Vrml97Parser.cpp"
-#line 1758 "Vrml97Parser.g"
+#line 2983 "Vrml97Parser.cpp"
+#line 1815 "Vrml97Parser.g"
 	
 	long i;
 	mfint32 & int32s = static_cast<mfint32 &>(*miv);
 	
-#line 2932 "Vrml97Parser.cpp"
+#line 2989 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case HEX_INTEGER:
 	{
 		i=intValue();
-#line 1766 "Vrml97Parser.g"
+#line 1823 "Vrml97Parser.g"
 		int32s.value.push_back(i);
-#line 2941 "Vrml97Parser.cpp"
+#line 2998 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -2947,9 +3004,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfInt32Value() {
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == HEX_INTEGER)) {
 				i=intValue();
-#line 1767 "Vrml97Parser.g"
+#line 1824 "Vrml97Parser.g"
 				int32s.value.push_back(i);
-#line 2953 "Vrml97Parser.cpp"
+#line 3010 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop77;
@@ -2970,24 +3027,24 @@ openvrml::field_value_ptr  Vrml97Parser::mfInt32Value() {
 }
 
 field_value_ptr  Vrml97Parser::mfRotationValue() {
-#line 1858 "Vrml97Parser.g"
+#line 1932 "Vrml97Parser.g"
 	field_value_ptr mrv = field_value_ptr(new mfrotation);
-#line 2976 "Vrml97Parser.cpp"
-#line 1858 "Vrml97Parser.g"
+#line 3033 "Vrml97Parser.cpp"
+#line 1932 "Vrml97Parser.g"
 	
 	rotation r;
 	mfrotation & rotations = static_cast<mfrotation &>(*mrv);
 	
-#line 2982 "Vrml97Parser.cpp"
+#line 3039 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		rotationValue(r);
-#line 1865 "Vrml97Parser.g"
+#line 1939 "Vrml97Parser.g"
 		rotations.value.push_back(r);
-#line 2991 "Vrml97Parser.cpp"
+#line 3048 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -2997,9 +3054,9 @@ field_value_ptr  Vrml97Parser::mfRotationValue() {
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				rotationValue(r);
-#line 1866 "Vrml97Parser.g"
+#line 1940 "Vrml97Parser.g"
 				rotations.value.push_back(r);
-#line 3003 "Vrml97Parser.cpp"
+#line 3060 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop90;
@@ -3020,24 +3077,24 @@ field_value_ptr  Vrml97Parser::mfRotationValue() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfStringValue() {
-#line 1903 "Vrml97Parser.g"
+#line 1977 "Vrml97Parser.g"
 	openvrml::field_value_ptr msv =
          openvrml::field_value_ptr(new mfstring);
-#line 3027 "Vrml97Parser.cpp"
-#line 1903 "Vrml97Parser.g"
+#line 3084 "Vrml97Parser.cpp"
+#line 1977 "Vrml97Parser.g"
 	
 	std::string s;
 	mfstring & strings = static_cast<mfstring &>(*msv);
 	
-#line 3033 "Vrml97Parser.cpp"
+#line 3090 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case STRING:
 	{
 		s=stringValue();
-#line 1911 "Vrml97Parser.g"
+#line 1985 "Vrml97Parser.g"
 		strings.value.push_back(s);
-#line 3041 "Vrml97Parser.cpp"
+#line 3098 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -3047,9 +3104,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfStringValue() {
 		for (;;) {
 			if ((LA(1) == STRING)) {
 				s=stringValue();
-#line 1912 "Vrml97Parser.g"
+#line 1986 "Vrml97Parser.g"
 				strings.value.push_back(s);
-#line 3053 "Vrml97Parser.cpp"
+#line 3110 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop95;
@@ -3070,24 +3127,24 @@ openvrml::field_value_ptr  Vrml97Parser::mfStringValue() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfTimeValue() {
-#line 1944 "Vrml97Parser.g"
+#line 2018 "Vrml97Parser.g"
 	openvrml::field_value_ptr mtv = openvrml::field_value_ptr(new mftime);
-#line 3076 "Vrml97Parser.cpp"
-#line 1944 "Vrml97Parser.g"
+#line 3133 "Vrml97Parser.cpp"
+#line 2018 "Vrml97Parser.g"
 	
 	double t;
 	mftime & times = static_cast<mftime &>(*mtv);
 	
-#line 3082 "Vrml97Parser.cpp"
+#line 3139 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		t=doubleValue();
-#line 1951 "Vrml97Parser.g"
+#line 2025 "Vrml97Parser.g"
 		times.value.push_back(t);
-#line 3091 "Vrml97Parser.cpp"
+#line 3148 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -3097,9 +3154,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfTimeValue() {
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				t=doubleValue();
-#line 1952 "Vrml97Parser.g"
+#line 2026 "Vrml97Parser.g"
 				times.value.push_back(t);
-#line 3103 "Vrml97Parser.cpp"
+#line 3160 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop100;
@@ -3120,25 +3177,25 @@ openvrml::field_value_ptr  Vrml97Parser::mfTimeValue() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfVec2fValue() {
-#line 1967 "Vrml97Parser.g"
+#line 2041 "Vrml97Parser.g"
 	openvrml::field_value_ptr mvv =
          openvrml::field_value_ptr(new mfvec2f);
-#line 3127 "Vrml97Parser.cpp"
-#line 1967 "Vrml97Parser.g"
+#line 3184 "Vrml97Parser.cpp"
+#line 2041 "Vrml97Parser.g"
 	
 	vec2f v;
 	mfvec2f & vec2fs = static_cast<mfvec2f &>(*mvv);
 	
-#line 3133 "Vrml97Parser.cpp"
+#line 3190 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		vec2fValue(v);
-#line 1975 "Vrml97Parser.g"
+#line 2049 "Vrml97Parser.g"
 		vec2fs.value.push_back(v);
-#line 3142 "Vrml97Parser.cpp"
+#line 3199 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -3148,9 +3205,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfVec2fValue() {
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				vec2fValue(v);
-#line 1976 "Vrml97Parser.g"
+#line 2050 "Vrml97Parser.g"
 				vec2fs.value.push_back(v);
-#line 3154 "Vrml97Parser.cpp"
+#line 3211 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop105;
@@ -3171,25 +3228,25 @@ openvrml::field_value_ptr  Vrml97Parser::mfVec2fValue() {
 }
 
 openvrml::field_value_ptr  Vrml97Parser::mfVec3fValue() {
-#line 1996 "Vrml97Parser.g"
+#line 2070 "Vrml97Parser.g"
 	openvrml::field_value_ptr mvv =
          openvrml::field_value_ptr(new mfvec3f);
-#line 3178 "Vrml97Parser.cpp"
-#line 1996 "Vrml97Parser.g"
+#line 3235 "Vrml97Parser.cpp"
+#line 2070 "Vrml97Parser.g"
 	
 	vec3f v;
 	mfvec3f & vec3fs = static_cast<mfvec3f &>(*mvv);
 	
-#line 3184 "Vrml97Parser.cpp"
+#line 3241 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		vec3fValue(v);
-#line 2004 "Vrml97Parser.g"
+#line 2078 "Vrml97Parser.g"
 		vec3fs.value.push_back(v);
-#line 3193 "Vrml97Parser.cpp"
+#line 3250 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -3199,9 +3256,9 @@ openvrml::field_value_ptr  Vrml97Parser::mfVec3fValue() {
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				vec3fValue(v);
-#line 2005 "Vrml97Parser.g"
+#line 2079 "Vrml97Parser.g"
 				vec3fs.value.push_back(v);
-#line 3205 "Vrml97Parser.cpp"
+#line 3262 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop110;
@@ -3223,34 +3280,37 @@ openvrml::field_value_ptr  Vrml97Parser::mfVec3fValue() {
 
 openvrml::field_value_ptr  Vrml97Parser::sfNodeValue(
 	openvrml::browser & browser,
-            const openvrml::scope_ptr & scope
+            const openvrml::scope_ptr & scope,
+            const std::string & script_node_id
 ) {
-#line 1780 "Vrml97Parser.g"
+#line 1837 "Vrml97Parser.g"
 	openvrml::field_value_ptr snv;
-#line 3231 "Vrml97Parser.cpp"
-#line 1780 "Vrml97Parser.g"
+#line 3289 "Vrml97Parser.cpp"
+#line 1837 "Vrml97Parser.g"
 	
 	openvrml::node_ptr n;
 	
-#line 3236 "Vrml97Parser.cpp"
+#line 3294 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
 	case KEYWORD_DEF:
 	case KEYWORD_USE:
 	{
-		n=nodeStatement(browser, scope);
-#line 1787 "Vrml97Parser.g"
+		n=nodeStatement(browser, scope, script_node_id);
+#line 1845 "Vrml97Parser.g"
+		
 		snv.reset(new sfnode(n));
-#line 3246 "Vrml97Parser.cpp"
+		
+#line 3306 "Vrml97Parser.cpp"
 		break;
 	}
 	case KEYWORD_NULL:
 	{
 		match(KEYWORD_NULL);
-#line 1788 "Vrml97Parser.g"
+#line 1848 "Vrml97Parser.g"
 		snv.reset(new sfnode);
-#line 3254 "Vrml97Parser.cpp"
+#line 3314 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -3263,27 +3323,30 @@ openvrml::field_value_ptr  Vrml97Parser::sfNodeValue(
 
 openvrml::field_value_ptr  Vrml97Parser::mfNodeValue(
 	openvrml::browser & browser,
-            const openvrml::scope_ptr & scope
+            const openvrml::scope_ptr & scope,
+            const std::string & script_node_id
 ) {
-#line 1810 "Vrml97Parser.g"
+#line 1875 "Vrml97Parser.g"
 	openvrml::field_value_ptr mnv = openvrml::field_value_ptr(new mfnode);
-#line 3271 "Vrml97Parser.cpp"
-#line 1810 "Vrml97Parser.g"
+#line 3332 "Vrml97Parser.cpp"
+#line 1875 "Vrml97Parser.g"
 	
 	openvrml::node_ptr n;
 	mfnode & nodes = static_cast<mfnode &>(*mnv);
 	
-#line 3277 "Vrml97Parser.cpp"
+#line 3338 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
 	case KEYWORD_DEF:
 	case KEYWORD_USE:
 	{
-		n=nodeStatement(browser, scope);
-#line 1818 "Vrml97Parser.g"
+		n=nodeStatement(browser, scope, script_node_id);
+#line 1884 "Vrml97Parser.g"
+		
 		if (n) { nodes.value.push_back(n); }
-#line 3287 "Vrml97Parser.cpp"
+		
+#line 3350 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -3292,12 +3355,12 @@ openvrml::field_value_ptr  Vrml97Parser::mfNodeValue(
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == ID || LA(1) == KEYWORD_DEF || LA(1) == KEYWORD_USE)) {
-				n=nodeStatement(browser, scope);
-#line 1820 "Vrml97Parser.g"
+				n=nodeStatement(browser, scope, script_node_id);
+#line 1888 "Vrml97Parser.g"
 				
 				if (n) { nodes.value.push_back(n); }
 				
-#line 3301 "Vrml97Parser.cpp"
+#line 3364 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop83;
@@ -3322,38 +3385,44 @@ field_value_ptr  Vrml97Parser::protoSfNodeValue(
                  const scope_ptr & scope,
                  const node_interface_set & proto_interfaces,
                  proto_node_class::is_map_t & is_map,
-                 proto_node_class::routes_t & routes
+                 proto_node_class::routes_t & routes,
+                 const std::string & script_node_id
 ) {
-#line 1791 "Vrml97Parser.g"
+#line 1851 "Vrml97Parser.g"
 	field_value_ptr snv;
-#line 3330 "Vrml97Parser.cpp"
-#line 1791 "Vrml97Parser.g"
+#line 3394 "Vrml97Parser.cpp"
+#line 1851 "Vrml97Parser.g"
 	
 	node_ptr n;
 	
-#line 3335 "Vrml97Parser.cpp"
+#line 3399 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
 	case KEYWORD_DEF:
 	case KEYWORD_USE:
 	{
-		n=protoNodeStatement(browser, scope, proto_interfaces, is_map, routes);
-#line 1802 "Vrml97Parser.g"
+		n=protoNodeStatement(browser,
+                             scope,
+                             proto_interfaces,
+                             is_map,
+                             routes,
+                             script_node_id);
+#line 1867 "Vrml97Parser.g"
 		
 		snv.reset(new sfnode(n));
 		
-#line 3347 "Vrml97Parser.cpp"
+#line 3416 "Vrml97Parser.cpp"
 		break;
 	}
 	case KEYWORD_NULL:
 	{
 		match(KEYWORD_NULL);
-#line 1805 "Vrml97Parser.g"
+#line 1870 "Vrml97Parser.g"
 		
 		snv.reset(new sfnode);
 		
-#line 3357 "Vrml97Parser.cpp"
+#line 3426 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -3369,29 +3438,35 @@ field_value_ptr  Vrml97Parser::protoMfNodeValue(
                  const scope_ptr & scope,
                  const node_interface_set & proto_interfaces,
                  proto_node_class::is_map_t & is_map,
-                 proto_node_class::routes_t & routes
+                 proto_node_class::routes_t & routes,
+                 const std::string & script_node_id
 ) {
-#line 1826 "Vrml97Parser.g"
+#line 1894 "Vrml97Parser.g"
 	field_value_ptr mnv = field_value_ptr(new mfnode);
-#line 3377 "Vrml97Parser.cpp"
-#line 1826 "Vrml97Parser.g"
+#line 3447 "Vrml97Parser.cpp"
+#line 1894 "Vrml97Parser.g"
 	
 	node_ptr n;
 	mfnode & nodes = static_cast<mfnode &>(*mnv);
 	
-#line 3383 "Vrml97Parser.cpp"
+#line 3453 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
 	case KEYWORD_DEF:
 	case KEYWORD_USE:
 	{
-		n=protoNodeStatement(browser, scope, proto_interfaces, is_map, routes);
-#line 1838 "Vrml97Parser.g"
+		n=protoNodeStatement(browser,
+                             scope,
+                             proto_interfaces,
+                             is_map,
+                             routes,
+                             script_node_id);
+#line 1911 "Vrml97Parser.g"
 		
 		if (n) { nodes.value.push_back(n); }
 		
-#line 3395 "Vrml97Parser.cpp"
+#line 3470 "Vrml97Parser.cpp"
 		break;
 	}
 	case LBRACKET:
@@ -3404,12 +3479,13 @@ field_value_ptr  Vrml97Parser::protoMfNodeValue(
                                  scope,
                                  proto_interfaces,
                                  is_map,
-                                 routes);
-#line 1846 "Vrml97Parser.g"
+                                 routes,
+                                 script_node_id);
+#line 1920 "Vrml97Parser.g"
 				
 				if (n) { nodes.value.push_back(n); }
 				
-#line 3413 "Vrml97Parser.cpp"
+#line 3489 "Vrml97Parser.cpp"
 			}
 			else {
 				goto _loop86;
@@ -3430,25 +3506,25 @@ field_value_ptr  Vrml97Parser::protoMfNodeValue(
 }
 
 bool  Vrml97Parser::boolValue() {
-#line 1637 "Vrml97Parser.g"
+#line 1694 "Vrml97Parser.g"
 	bool val = false;
-#line 3436 "Vrml97Parser.cpp"
+#line 3512 "Vrml97Parser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_TRUE:
 	{
 		match(KEYWORD_TRUE);
-#line 1639 "Vrml97Parser.g"
+#line 1696 "Vrml97Parser.g"
 		val = true;
-#line 3444 "Vrml97Parser.cpp"
+#line 3520 "Vrml97Parser.cpp"
 		break;
 	}
 	case KEYWORD_FALSE:
 	{
 		match(KEYWORD_FALSE);
-#line 1640 "Vrml97Parser.g"
+#line 1697 "Vrml97Parser.g"
 		val = false;
-#line 3452 "Vrml97Parser.cpp"
+#line 3528 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -3462,29 +3538,29 @@ bool  Vrml97Parser::boolValue() {
 void Vrml97Parser::colorValue(
 	color & c
 ) {
-#line 1663 "Vrml97Parser.g"
+#line 1720 "Vrml97Parser.g"
 	
 	float r, g, b;
 	
-#line 3470 "Vrml97Parser.cpp"
+#line 3546 "Vrml97Parser.cpp"
 	
 	r=colorComponent();
 	g=colorComponent();
 	b=colorComponent();
-#line 1668 "Vrml97Parser.g"
+#line 1725 "Vrml97Parser.g"
 	c.r(r);
 	c.g(g);
 	c.b(b);
-#line 3479 "Vrml97Parser.cpp"
+#line 3555 "Vrml97Parser.cpp"
 }
 
 float  Vrml97Parser::colorComponent() {
-#line 1676 "Vrml97Parser.g"
+#line 1733 "Vrml97Parser.g"
 	float val = 0.0f;
-#line 3485 "Vrml97Parser.cpp"
+#line 3561 "Vrml97Parser.cpp"
 	
 	val=floatValue();
-#line 1678 "Vrml97Parser.g"
+#line 1735 "Vrml97Parser.g"
 	
 	if (val < 0.0 || val > 1.0) {
 	this->reportWarning("Color component values must be from 0 to "
@@ -3496,14 +3572,14 @@ float  Vrml97Parser::colorComponent() {
 	}
 	}
 	
-#line 3500 "Vrml97Parser.cpp"
+#line 3576 "Vrml97Parser.cpp"
 	return val;
 }
 
 float  Vrml97Parser::floatValue() {
-#line 1711 "Vrml97Parser.g"
+#line 1768 "Vrml97Parser.g"
 	float val;
-#line 3507 "Vrml97Parser.cpp"
+#line 3583 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  f0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  f1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
@@ -3512,18 +3588,18 @@ float  Vrml97Parser::floatValue() {
 	{
 		f0 = LT(1);
 		match(REAL);
-#line 1713 "Vrml97Parser.g"
+#line 1770 "Vrml97Parser.g"
 		std::istringstream(f0->getText()) >> val;
-#line 3518 "Vrml97Parser.cpp"
+#line 3594 "Vrml97Parser.cpp"
 		break;
 	}
 	case INTEGER:
 	{
 		f1 = LT(1);
 		match(INTEGER);
-#line 1714 "Vrml97Parser.g"
+#line 1771 "Vrml97Parser.g"
 		std::istringstream(f1->getText()) >> val;
-#line 3527 "Vrml97Parser.cpp"
+#line 3603 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -3535,9 +3611,9 @@ float  Vrml97Parser::floatValue() {
 }
 
 int32  Vrml97Parser::intValue() {
-#line 1770 "Vrml97Parser.g"
+#line 1827 "Vrml97Parser.g"
 	int32 val;
-#line 3541 "Vrml97Parser.cpp"
+#line 3617 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  i0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  i1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
@@ -3546,22 +3622,22 @@ int32  Vrml97Parser::intValue() {
 	{
 		i0 = LT(1);
 		match(INTEGER);
-#line 1772 "Vrml97Parser.g"
+#line 1829 "Vrml97Parser.g"
 		
 		std::istringstream(i0->getText()) >> val;
 		
-#line 3554 "Vrml97Parser.cpp"
+#line 3630 "Vrml97Parser.cpp"
 		break;
 	}
 	case HEX_INTEGER:
 	{
 		i1 = LT(1);
 		match(HEX_INTEGER);
-#line 1775 "Vrml97Parser.g"
+#line 1832 "Vrml97Parser.g"
 		
 		std::istringstream(i1->getText()) >> std::hex >> val;
 		
-#line 3565 "Vrml97Parser.cpp"
+#line 3641 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -3575,18 +3651,18 @@ int32  Vrml97Parser::intValue() {
 void Vrml97Parser::rotationValue(
 	rotation & r
 ) {
-#line 1872 "Vrml97Parser.g"
+#line 1946 "Vrml97Parser.g"
 	
 	using openvrml_::fequal;
 	float x, y, z, angle;
 	
-#line 3584 "Vrml97Parser.cpp"
+#line 3660 "Vrml97Parser.cpp"
 	
 	x=floatValue();
 	y=floatValue();
 	z=floatValue();
 	angle=floatValue();
-#line 1878 "Vrml97Parser.g"
+#line 1952 "Vrml97Parser.g"
 	
 	r.x(x);
 	r.y(y);
@@ -3604,13 +3680,13 @@ void Vrml97Parser::rotationValue(
 	}
 	}
 	
-#line 3608 "Vrml97Parser.cpp"
+#line 3684 "Vrml97Parser.cpp"
 }
 
 double  Vrml97Parser::doubleValue() {
-#line 1955 "Vrml97Parser.g"
+#line 2029 "Vrml97Parser.g"
 	double val = 0.0;
-#line 3614 "Vrml97Parser.cpp"
+#line 3690 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  d0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  d1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
@@ -3619,18 +3695,18 @@ double  Vrml97Parser::doubleValue() {
 	{
 		d0 = LT(1);
 		match(REAL);
-#line 1957 "Vrml97Parser.g"
+#line 2031 "Vrml97Parser.g"
 		std::istringstream(d0->getText()) >> val;
-#line 3625 "Vrml97Parser.cpp"
+#line 3701 "Vrml97Parser.cpp"
 		break;
 	}
 	case INTEGER:
 	{
 		d1 = LT(1);
 		match(INTEGER);
-#line 1958 "Vrml97Parser.g"
+#line 2032 "Vrml97Parser.g"
 		std::istringstream(d1->getText()) >> val;
-#line 3634 "Vrml97Parser.cpp"
+#line 3710 "Vrml97Parser.cpp"
 		break;
 	}
 	default:
@@ -3644,37 +3720,37 @@ double  Vrml97Parser::doubleValue() {
 void Vrml97Parser::vec2fValue(
 	vec2f & v
 ) {
-#line 1979 "Vrml97Parser.g"
+#line 2053 "Vrml97Parser.g"
 	
 	float x, y;
 	
-#line 3652 "Vrml97Parser.cpp"
+#line 3728 "Vrml97Parser.cpp"
 	
 	x=floatValue();
 	y=floatValue();
-#line 1984 "Vrml97Parser.g"
+#line 2058 "Vrml97Parser.g"
 	v.x(x);
 	v.y(y);
-#line 3659 "Vrml97Parser.cpp"
+#line 3735 "Vrml97Parser.cpp"
 }
 
 void Vrml97Parser::vec3fValue(
 	vec3f & v
 ) {
-#line 2008 "Vrml97Parser.g"
+#line 2082 "Vrml97Parser.g"
 	
 	float x, y, z;
 	
-#line 3669 "Vrml97Parser.cpp"
+#line 3745 "Vrml97Parser.cpp"
 	
 	x=floatValue();
 	y=floatValue();
 	z=floatValue();
-#line 2013 "Vrml97Parser.g"
+#line 2087 "Vrml97Parser.g"
 	v.x(x);
 	v.y(y);
 	v.z(z);
-#line 3678 "Vrml97Parser.cpp"
+#line 3754 "Vrml97Parser.cpp"
 }
 
 void Vrml97Parser::initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory )

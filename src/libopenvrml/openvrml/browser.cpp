@@ -1426,16 +1426,20 @@ namespace {
         virtual ~field_value_cloner()
         {}
 
-        void clone_field_value(const field_value & src, field_value & dest)
+        void clone_field_value(const node_ptr & src_node,
+                               const field_value & src,
+                               field_value & dest)
             throw (std::bad_alloc)
         {
             assert(src.type() == dest.type());
             const field_value::type_id type = src.type();
             if (type == field_value::sfnode_id) {
-                this->clone_sfnode(static_cast<const sfnode &>(src),
+                this->clone_sfnode(src_node,
+                                   static_cast<const sfnode &>(src),
                                    static_cast<sfnode &>(dest));
             } else if (type == field_value::mfnode_id) {
-                this->clone_mfnode(static_cast<const mfnode &>(src),
+                this->clone_mfnode(src_node,
+                                   static_cast<const mfnode &>(src),
                                    static_cast<mfnode &>(dest));
             } else {
                 //
@@ -1481,7 +1485,7 @@ namespace {
                         auto_ptr<field_value> val =
                             field_value::create(interface->field_type);
                         assert(val->type() == n->field(id).type());
-                        this->clone_field_value(n->field(id), *val);
+                        this->clone_field_value(n, n->field(id), *val);
                         bool succeeded =
                             initial_values.insert(
                                 make_pair(id, shared_ptr<field_value>(val)))
@@ -1496,13 +1500,19 @@ namespace {
             return result;
         }
 
-        void clone_sfnode(const sfnode & src, sfnode & dest)
+        void clone_sfnode(const node_ptr & src_node,
+                          const sfnode & src,
+                          sfnode & dest)
             throw (std::bad_alloc)
         {
-            dest.value = this->clone_node(src.value);
+            dest.value = (src.value == src_node)
+                       ? node_ptr::self
+                       : this->clone_node(src.value);
         }
 
-        void clone_mfnode(const mfnode & src, mfnode & dest)
+        void clone_mfnode(const node_ptr & src_node,
+                          const mfnode & src,
+                          mfnode & dest)
             throw (std::bad_alloc)
         {
             using std::swap;
@@ -1511,7 +1521,9 @@ namespace {
             for (vector<node_ptr>::size_type i = 0;
                  i < src.value.size();
                  ++i) {
-                result.value[i] = this->clone_node(src.value[i]);
+                result.value[i] = (src.value[i] == src_node)
+                                ? node_ptr::self
+                                : this->clone_node(src.value[i]);
             }
             swap(dest, result);
         }
@@ -1670,7 +1682,7 @@ namespace {
                         }
 
                         assert(src_val);
-                        this->clone_field_value(*src_val, *dest_val);
+                        this->clone_field_value(n, *src_val, *dest_val);
 
                         bool succeeded =
                             initial_values.insert(

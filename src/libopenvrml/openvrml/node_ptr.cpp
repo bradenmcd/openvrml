@@ -52,6 +52,82 @@ namespace {
  * @brief Pointer to an entry in count_map.
  */
 
+namespace {
+
+    class self_ref_node : public node {
+    public:
+        self_ref_node();
+        virtual ~self_ref_node() throw ();
+
+    private:
+        virtual const field_value & do_field(const std::string & id) const
+            throw (unsupported_interface);
+        virtual openvrml::event_listener &
+        do_event_listener(const std::string & id)
+            throw (unsupported_interface);
+        virtual openvrml::event_emitter &
+        do_event_emitter(const std::string & id)
+            throw (unsupported_interface);
+    };
+
+    //
+    // Since nothing should ever actually use the self_ref_node instance,
+    // there's no need to go to the trouble to give it a valid node_type.
+    //
+    char not_remotely_a_node_type;
+    self_ref_node::self_ref_node():
+        node(reinterpret_cast<const node_type &>(not_remotely_a_node_type),
+             scope_ptr())
+    {}
+
+    self_ref_node::~self_ref_node() throw ()
+    {}
+
+    const field_value & self_ref_node::do_field(const std::string & id) const
+        throw (unsupported_interface)
+    {
+        static const sfbool val;
+        return val;
+    }
+
+    event_listener & self_ref_node::do_event_listener(const std::string & id)
+        throw (unsupported_interface)
+    {
+        class dummy_listener : public sfbool_listener {
+        public:
+            dummy_listener(self_ref_node & n):
+                sfbool_listener(n)
+            {}
+
+            virtual ~dummy_listener() throw ()
+            {}
+
+            virtual void process_event(const sfbool & value, double timestamp)
+                throw (std::bad_alloc)
+            {}
+        };
+
+        static dummy_listener listener(*this);
+        return listener;
+    }
+
+    event_emitter & self_ref_node::do_event_emitter(const std::string & id)
+        throw (unsupported_interface)
+    {
+        sfbool val;
+        static sfbool_emitter emitter(val);
+        return emitter;
+    }
+}
+
+/**
+ * @brief Special value used when initializing a script_node.
+ *
+ * One should never attempt to dereference this value. It is useful only
+ * for comparison.
+ */
+const node_ptr node_ptr::self(new self_ref_node);
+
 /**
  * @brief Construct.
  *

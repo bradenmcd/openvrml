@@ -631,7 +631,7 @@ options { defaultErrorHandler=false; }
         node_ptr node;
         node_type_ptr nodeType;
     }
-    : node=nodeStatement[browser, scope] {
+    : node=nodeStatement[browser, scope, std::string()] {
             //
             // If we are unable to parse a node, node will be null.
             //
@@ -641,22 +641,30 @@ options { defaultErrorHandler=false; }
     | routeStatement[*scope]
     ;
 
-nodeStatement[openvrml::browser & browser, const scope_ptr & scope]
+nodeStatement[openvrml::browser & browser,
+              const scope_ptr & scope,
+              const std::string & script_node_id]
 returns [node_ptr n]
 options { defaultErrorHandler=false; }
     :   KEYWORD_DEF id0:ID n=node[browser, scope, id0->getText()]
-    |   KEYWORD_USE id1:ID
-        {
-            using antlr::SemanticException;
-            assert(scope);
-            n.reset(scope->find_node(id1->getText()));
-            if (!n) {
-                throw SemanticException("Node \"" + id1->getText()
-                                        + "\" has not been defined in this "
-                                        "scope.",
-                                        this->uri,
-                                        id1->getLine(),
-                                        id1->getColumn());
+    |   KEYWORD_USE id1:ID {
+            if (id1->getText() == script_node_id) {
+                //
+                // Script node self-reference.
+                //
+                n = node_ptr::self;
+            } else {
+                using antlr::SemanticException;
+                assert(scope);
+                n.reset(scope->find_node(id1->getText()));
+                if (!n) {
+                    throw SemanticException("Node \"" + id1->getText()
+                                            + "\" has not been defined in "
+                                            + "this scope.",
+                                            this->uri,
+                                            id1->getLine(),
+                                            id1->getColumn());
+                }
             }
         }
     |   n=node[browser, scope, std::string()]
@@ -772,7 +780,7 @@ options { defaultErrorHandler=false; }
             const scope_ptr field_decl_scope(
                 new scope(proto_id + '.' + id1->getText(), outer_scope));
         }
-        fv=fieldValue[browser, field_decl_scope, ft] {
+        fv=fieldValue[browser, field_decl_scope, ft, std::string()] {
             assert(fv);
 
             const node_interface interface(it, ft, id1->getText());
@@ -822,7 +830,12 @@ options { defaultErrorHandler=false; }
     node_ptr n;
 }
     :   (protoStatement[browser, scope])*
-            n=protoNodeStatement[browser, scope, interfaces, is_map, routes]
+            n=protoNodeStatement[browser,
+                                 scope,
+                                 interfaces,
+                                 is_map,
+                                 routes,
+                                 std::string()]
         {
             assert(n);
             impl_nodes.push_back(n);
@@ -848,7 +861,12 @@ options { defaultErrorHandler=false; }
 
     node_ptr n;
 }
-    :   n=protoNodeStatement[browser, scope, interfaces, is_map, routes] {
+    :   n=protoNodeStatement[browser,
+                             scope,
+                             interfaces,
+                             is_map,
+                             routes,
+                             std::string()] {
             assert(n);
             impl_nodes.push_back(n);
         }
@@ -860,7 +878,8 @@ protoNodeStatement[openvrml::browser & browser,
                    const openvrml::scope_ptr & scope,
                    const node_interface_set & proto_interfaces,
                    proto_node_class::is_map_t & is_map,
-                   proto_node_class::routes_t & routes]
+                   proto_node_class::routes_t & routes,
+                   const std::string & script_node_id]
 returns [node_ptr n]
 options { defaultErrorHandler=false; }
 {
@@ -873,14 +892,21 @@ options { defaultErrorHandler=false; }
                                        routes,
                                        id0->getText()]
     |   KEYWORD_USE id1:ID {
-            n.reset(scope->find_node(id1->getText()));
-            if (!n) {
-                throw SemanticException("Node \"" + id1->getText()
-                                        + "\" has not been defined in this "
-                                        + "scope.",
-                                        this->uri,
-                                        id1->getLine(),
-                                        id1->getColumn());
+            if (id1->getText() == script_node_id) {
+                //
+                // Script node self-reference.
+                //
+                n = node_ptr::self;
+            } else {
+                n.reset(scope->find_node(id1->getText()));
+                if (!n) {
+                    throw SemanticException("Node \"" + id1->getText()
+                                            + "\" has not been defined in "
+                                            + "this scope.",
+                                            this->uri,
+                                            id1->getLine(),
+                                            id1->getColumn());
+                }
             }
         }
     |   n=protoNode[browser,
@@ -1107,7 +1133,7 @@ options { defaultErrorHandler=false; }
 
 node[openvrml::browser & browser,
      const scope_ptr & scope,
-     const std::string & nodeId]
+     const std::string & node_id]
 returns [node_ptr n]
 options { defaultErrorHandler = false; }
 {
@@ -1125,13 +1151,14 @@ options { defaultErrorHandler = false; }
             | scriptInterfaceDeclaration[browser,
                                          scope,
                                          interfaces,
-                                         initial_values]
+                                         initial_values,
+                                         node_id]
         )* RBRACE {
             n.reset(new script_node(browser.script_node_class_,
                                     scope,
                                     interfaces,
                                     initial_values));
-            if (!nodeId.empty()) { n->id(nodeId); }
+            if (!node_id.empty()) { n->id(node_id); }
         }
     | nodeTypeId:ID {
             nodeType = scope->find_type(nodeTypeId->getText());
@@ -1150,7 +1177,7 @@ options { defaultErrorHandler = false; }
         RBRACE {
             n = node_ptr(nodeType->create_node(scope, initial_values));
 
-            if (!nodeId.empty()) { n->id(nodeId); }
+            if (!node_id.empty()) { n->id(node_id); }
         }
     ;
     exception
@@ -1205,7 +1232,7 @@ options { defaultErrorHandler=false; }
                                         id->getColumn());
             }
             ft = interface->field_type;
-        } fv=fieldValue[b, scope, ft] {
+        } fv=fieldValue[b, scope, ft, std::string()] {
             assert(fv);
             const bool succeeded =
                 initial_values.insert(make_pair(id->getText(), fv)).second;
@@ -1224,7 +1251,8 @@ options { defaultErrorHandler=false; }
 scriptInterfaceDeclaration[browser & b,
                            const scope_ptr & scope,
                            node_interface_set & interfaces,
-                           initial_value_map & initial_values]
+                           initial_value_map & initial_values,
+                           const std::string & node_id]
 options { defaultErrorHandler=false; }
 {
     using antlr::SemanticException;
@@ -1246,13 +1274,18 @@ options { defaultErrorHandler=false; }
                                         id->getColumn());
             }
         }
-    | scriptFieldInterfaceDeclaration[b, scope, interfaces, initial_values]
+    | scriptFieldInterfaceDeclaration[b,
+                                      scope,
+                                      interfaces,
+                                      initial_values,
+                                      node_id]
     ;
 
 scriptFieldInterfaceDeclaration[browser & b,
                                 const scope_ptr & scope,
                                 node_interface_set & interfaces,
-                                initial_value_map & initial_values]
+                                initial_value_map & initial_values,
+                                const std::string & script_node_id]
 options { defaultErrorHandler=false; }
 {
     using std::find_if;
@@ -1261,7 +1294,10 @@ options { defaultErrorHandler=false; }
     field_value::type_id ft = field_value::invalid_type_id;
     field_value_ptr fv;
 }
-    : KEYWORD_FIELD ft=fieldType id:ID fv=fieldValue[b, scope, ft] {
+    :   KEYWORD_FIELD ft=fieldType id:ID fv=fieldValue[b,
+                                                       scope,
+                                                       ft,
+                                                       script_node_id] {
             assert(fv);
             bool succeeded =
                 interfaces.insert(node_interface(node_interface::field_id,
@@ -1287,7 +1323,7 @@ protoNode[openvrml::browser & browser,
           const node_interface_set & proto_interfaces,
           proto_node_class::is_map_t & is_map,
           proto_node_class::routes_t & routes,
-          const std::string & nodeId]
+          const std::string & node_id]
 returns [node_ptr n]
 options { defaultErrorHandler=false; }
 {
@@ -1313,6 +1349,7 @@ options { defaultErrorHandler=false; }
                                                   proto_interfaces,
                                                   is_map,
                                                   routes,
+                                                  node_id,
                                                   interfaces,
                                                   initial_values,
                                                   is_mappings]
@@ -1321,7 +1358,7 @@ options { defaultErrorHandler=false; }
                                         scope,
                                         interfaces,
                                         initial_values));
-                if (!nodeId.empty()) { n->id(nodeId); }
+                if (!node_id.empty()) { n->id(node_id); }
             }
 
         | nodeTypeId:ID {
@@ -1343,7 +1380,7 @@ options { defaultErrorHandler=false; }
                                          initial_values,
                                          is_mappings])* RBRACE {
                 n = nodeType->create_node(scope, initial_values);
-                if (!nodeId.empty()) { n->id(nodeId); }
+                if (!node_id.empty()) { n->id(node_id); }
             }
         ) {
             for (is_list::const_iterator is_mapping = is_mappings.begin();
@@ -1389,7 +1426,8 @@ options { defaultErrorHandler=false; }
                                    proto_interfaces,
                                    is_map,
                                    routes,
-                                   impl_node_interface->field_type] {
+                                   impl_node_interface->field_type,
+                                   std::string()] {
                     assert(fv);
                     bool succeeded =
                         initial_values.insert(
@@ -1418,6 +1456,7 @@ protoScriptInterfaceDeclaration[openvrml::browser & browser,
                                 const node_interface_set & proto_interfaces,
                                 proto_node_class::is_map_t & is_map,
                                 proto_node_class::routes_t & routes,
+                                const std::string & script_node_id,
                                 node_interface_set & interfaces,
                                 initial_value_map & initial_values,
                                 is_list & is_mappings]
@@ -1449,6 +1488,7 @@ options { defaultErrorHandler=false; }
                                              routes,
                                              interfaces,
                                              initial_values,
+                                             script_node_id,
                                              is_mappings]
     ;
 
@@ -1460,6 +1500,7 @@ protoScriptFieldInterfaceDeclaration[
     proto_node_class::routes_t & routes,
     node_interface_set & interfaces,
     initial_value_map & initial_values,
+    const std::string & script_node_id,
     is_list & is_mappings]
 options { defaultErrorHandler=false; }
 {
@@ -1488,7 +1529,8 @@ options { defaultErrorHandler=false; }
                                proto_interfaces,
                                is_map,
                                routes,
-                               ft] {
+                               ft,
+                               script_node_id] {
                 assert(fv);
                 succeeded = initial_values.insert(make_pair(id->getText(), fv))
                     .second;
@@ -1544,14 +1586,15 @@ options { defaultErrorHandler=false; }
 
 fieldValue[openvrml::browser & browser,
            const openvrml::scope_ptr & scope,
-           openvrml::field_value::type_id ft]
+           const openvrml::field_value::type_id ft,
+           const std::string & node_id]
 returns [openvrml::field_value_ptr fv]
 options { defaultErrorHandler=false; }
 {
     using openvrml::field_value;
 }
     : { (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) }?
-        fv=nodeFieldValue[browser, scope, ft]
+        fv=nodeFieldValue[browser, scope, ft, node_id]
     | fv=nonNodeFieldValue[ft]
     ;
 
@@ -1560,7 +1603,8 @@ protoFieldValue[openvrml::browser & browser,
                 const node_interface_set & proto_interfaces,
                 proto_node_class::is_map_t & is_map,
                 proto_node_class::routes_t & routes,
-                const field_value::type_id ft]
+                const field_value::type_id ft,
+                const std::string & script_node_id]
 returns [field_value_ptr fv]
 options { defaultErrorHandler=false; }
     : { (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) }?
@@ -1569,7 +1613,8 @@ options { defaultErrorHandler=false; }
                                proto_interfaces,
                                is_map,
                                routes,
-                               ft] {
+                               ft,
+                               script_node_id] {
             assert(fv);
         }
     | fv=nonNodeFieldValue[ft] { assert(fv); }
@@ -1603,14 +1648,16 @@ options { defaultErrorHandler=false; }
 
 nodeFieldValue[openvrml::browser & browser,
                const openvrml::scope_ptr & scope,
-               openvrml::field_value::type_id ft]
+               openvrml::field_value::type_id ft,
+               const std::string & script_node_id]
 returns [openvrml::field_value_ptr fv]
 options { defaultErrorHandler=false; }
 {
     using openvrml::field_value;
 }
-    : { ft == field_value::sfnode_id }? fv=sfNodeValue[browser, scope]
-    | fv=mfNodeValue[browser, scope]
+    :   { ft == field_value::sfnode_id }?
+            fv=sfNodeValue[browser, scope, script_node_id]
+    |   fv=mfNodeValue[browser, scope, script_node_id]
     ;
 
 protoNodeFieldValue[openvrml::browser & browser,
@@ -1618,12 +1665,22 @@ protoNodeFieldValue[openvrml::browser & browser,
                     const node_interface_set & proto_interfaces,
                     proto_node_class::is_map_t & is_map,
                     proto_node_class::routes_t & routes,
-                    field_value::type_id ft]
+                    field_value::type_id ft,
+                    const std::string & script_node_id]
 returns [field_value_ptr fv]
 options { defaultErrorHandler=false; }
     :   { ft == field_value::sfnode_id }?
-        fv=protoSfNodeValue[browser, scope, proto_interfaces, is_map, routes]
-    |   fv=protoMfNodeValue[browser, scope, proto_interfaces, is_map, routes]
+            fv=protoSfNodeValue[browser,
+                                scope,
+                                proto_interfaces,
+                                is_map, routes,
+                                script_node_id]
+    |   fv=protoMfNodeValue[browser,
+                            scope,
+                            proto_interfaces,
+                            is_map,
+                            routes,
+                            script_node_id]
     ;
 
 sfBoolValue returns [openvrml::field_value_ptr sbv]
@@ -1778,28 +1835,36 @@ options { defaultErrorHandler=false; }
     ;
 
 sfNodeValue[openvrml::browser & browser,
-            const openvrml::scope_ptr & scope]
+            const openvrml::scope_ptr & scope,
+            const std::string & script_node_id]
 returns [openvrml::field_value_ptr snv]
 options { defaultErrorHandler=false; }
 {
     openvrml::node_ptr n;
 }
-    : n=nodeStatement[browser, scope] { snv.reset(new sfnode(n)); }
-    | KEYWORD_NULL                    { snv.reset(new sfnode); }
+    :   n=nodeStatement[browser, scope, script_node_id] {
+            snv.reset(new sfnode(n));
+        }
+    |   KEYWORD_NULL { snv.reset(new sfnode); }
     ;
 
 protoSfNodeValue[openvrml::browser & browser,
                  const scope_ptr & scope,
                  const node_interface_set & proto_interfaces,
                  proto_node_class::is_map_t & is_map,
-                 proto_node_class::routes_t & routes]
+                 proto_node_class::routes_t & routes,
+                 const std::string & script_node_id]
 returns [field_value_ptr snv]
 options { defaultErrorHandler=false; }
 {
     node_ptr n;
 }
-    :   n=protoNodeStatement[browser, scope, proto_interfaces, is_map, routes]
-        {
+    :   n=protoNodeStatement[browser,
+                             scope,
+                             proto_interfaces,
+                             is_map,
+                             routes,
+                             script_node_id] {
             snv.reset(new sfnode(n));
         }
     |   KEYWORD_NULL {
@@ -1808,16 +1873,19 @@ options { defaultErrorHandler=false; }
     ;
 
 mfNodeValue[openvrml::browser & browser,
-            const openvrml::scope_ptr & scope]
+            const openvrml::scope_ptr & scope,
+            const std::string & script_node_id]
 returns [openvrml::field_value_ptr mnv = openvrml::field_value_ptr(new mfnode)]
 options { defaultErrorHandler=false; }
 {
     openvrml::node_ptr n;
     mfnode & nodes = static_cast<mfnode &>(*mnv);
 }
-    : n=nodeStatement[browser, scope] { if (n) { nodes.value.push_back(n); } }
-    | LBRACKET (
-            n=nodeStatement[browser, scope] {
+    :   n=nodeStatement[browser, scope, script_node_id] {
+            if (n) { nodes.value.push_back(n); }
+        }
+    |   LBRACKET (
+            n=nodeStatement[browser, scope, script_node_id] {
                 if (n) { nodes.value.push_back(n); }
             }
         )* RBRACKET
@@ -1827,15 +1895,20 @@ protoMfNodeValue[openvrml::browser & browser,
                  const scope_ptr & scope,
                  const node_interface_set & proto_interfaces,
                  proto_node_class::is_map_t & is_map,
-                 proto_node_class::routes_t & routes]
+                 proto_node_class::routes_t & routes,
+                 const std::string & script_node_id]
 returns [field_value_ptr mnv = field_value_ptr(new mfnode)]
 options { defaultErrorHandler=false; }
 {
     node_ptr n;
     mfnode & nodes = static_cast<mfnode &>(*mnv);
 }
-    :   n=protoNodeStatement[browser, scope, proto_interfaces, is_map, routes]
-        {
+    :   n=protoNodeStatement[browser,
+                             scope,
+                             proto_interfaces,
+                             is_map,
+                             routes,
+                             script_node_id] {
             if (n) { nodes.value.push_back(n); }
         }
     |   LBRACKET (
@@ -1843,7 +1916,8 @@ options { defaultErrorHandler=false; }
                                  scope,
                                  proto_interfaces,
                                  is_map,
-                                 routes] {
+                                 routes,
+                                 script_node_id] {
                 if (n) { nodes.value.push_back(n); }
             }
         )* RBRACKET
