@@ -1432,6 +1432,8 @@ texGenParams( float bounds[],	// xmin,xmax, ymin,ymax, zmin,zmax
   
   params[1] = 1.0 / params[1];
   params[3] = 1.0 / params[3];
+  printf(" texCoordParams axes[%d, %d], params %g, %g, %g, %g\n",
+	 axes[0], axes[1], params[0], params[1], params[2], params[3]);
 }
 
 
@@ -1513,7 +1515,7 @@ ViewerOpenGL::insertShellConvex( ShellData *s )
 	      float c0, c1;
 	      c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
 	      c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
-	      glTexCoord2f( c0, c1 );
+	      glTexCoord2f( c0, 1.0 - c1 );
 	    }
 
 	  glVertex3fv( v );
