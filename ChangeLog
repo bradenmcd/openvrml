@@ -1,3 +1,20 @@
+2001-10-05 Thomas Flynn <tflynn@users.sourceforge.net>
+
+	* Add java exception classes as specified in spec.
+
+	* Add javadoc comments to some classes.
+
+	* Update all java classes to match spec. (throw exceptions as
+	  needed, add toString to subclasses, implement Cloneable where
+	  required) 
+
+	* Add clone method to VrmlEvent.h
+
+	* Major updates to ScriptJDK.cpp. Add event propagation of eventOut
+	  fields (except for SFNode and MFNode). Implement most toString
+	  methods. Add any missing methods found in javah output.
+	  Other misc. changes.
+
 2001-10-04 S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * A New Class VrmlMatrix is implemented. Here the format
