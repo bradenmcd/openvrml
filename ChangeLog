@@ -7,6 +7,9 @@
           number: use the "antlr::SemanicException" constructor
           that takes a line number argument.
 
+        * Fixed crash in parser when an invalid field value was
+          encountered.
+
 2002-02-11  Braden McDaniel  <braden@endoframe.com>
 
         * Corrected incorrect application of patch from Frederic

@@ -1279,6 +1279,7 @@ returns [OpenVRML::FieldValue::Type ft = OpenVRML::FieldValue::invalidType]
 fieldValue[OpenVRML::VrmlNamespace & vrmlNamespace, const OpenVRML::Doc2 * doc,
            OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValue * fv = 0]
+options { defaultErrorHandler=false; }
         {
             using OpenVRML::FieldValue;
         }
@@ -1306,6 +1307,7 @@ returns [OpenVRML::FieldValue * fv = 0]
 
 nonNodeFieldValue[OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValue * fv = 0]
+options { defaultErrorHandler=false; }
         {
             using OpenVRML::FieldValue;
         }
@@ -1332,9 +1334,7 @@ returns [OpenVRML::FieldValue * fv = 0]
 nodeFieldValue[OpenVRML::VrmlNamespace & vrmlNamespace,
                const OpenVRML::Doc2 * doc, OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValue * fv = 0]
-options {
-    defaultErrorHandler=false;
-}
+options { defaultErrorHandler=false; }
         {
             using OpenVRML::FieldValue;
         }
@@ -1346,9 +1346,7 @@ protoNodeFieldValue[const OpenVRML::Doc2 * doc,
                     OpenVRML::NodeType & protoNodeType,
                     OpenVRML::FieldValue::Type ft]
 returns [OpenVRML::FieldValue * fv = 0]
-options {
-    defaultErrorHandler=false;
-}
+options { defaultErrorHandler=false; }
     :   { ft == OpenVRML::FieldValue::sfnode }?
             fv=protoSfNodeValue[doc, protoNodeType]
         {
@@ -1361,6 +1359,7 @@ options {
     ;
 
 sfBoolValue returns [OpenVRML::SFBool * sbv = new OpenVRML::SFBool()]
+options { defaultErrorHandler=false; }
         {
             bool val(false);
         }
@@ -1368,6 +1367,7 @@ sfBoolValue returns [OpenVRML::SFBool * sbv = new OpenVRML::SFBool()]
     ;
 
 boolValue returns [bool val]
+options { defaultErrorHandler=false; }
         {
             val = false;
         }
@@ -1376,6 +1376,7 @@ boolValue returns [bool val]
     ;
 
 sfColorValue returns [OpenVRML::SFColor * scv = new OpenVRML::SFColor()]
+options { defaultErrorHandler=false; }
         {
             float c[3];
         }
@@ -1386,6 +1387,7 @@ sfColorValue returns [OpenVRML::SFColor * scv = new OpenVRML::SFColor()]
     ;
 
 mfColorValue returns [OpenVRML::MFColor * mcv = new OpenVRML::MFColor()]
+options { defaultErrorHandler=false; }
         {
             float c[3];
         }
@@ -1411,6 +1413,7 @@ mfColorValue returns [OpenVRML::MFColor * mcv = new OpenVRML::MFColor()]
     ;
 
 colorValue[float c[3]]
+options { defaultErrorHandler=false; }
         {
             float r(0.0f), g(0.0f), b(0.0f);
         }
@@ -1427,10 +1430,12 @@ colorValue[float c[3]]
 // might be useful to issue a warning if a color component is not in [0, 1].
 //
 colorComponent returns [float val = 0.0f]
+options { defaultErrorHandler=false; }
     :   val=floatValue
     ;
 
 sfFloatValue returns [OpenVRML::SFFloat * sfv = new OpenVRML::SFFloat(0.0f)]
+options { defaultErrorHandler=false; }
         {
             float f(0.0f);
         }
@@ -1441,6 +1446,7 @@ sfFloatValue returns [OpenVRML::SFFloat * sfv = new OpenVRML::SFFloat(0.0f)]
     ;
 
 mfFloatValue returns [OpenVRML::MFFloat * mfv = new OpenVRML::MFFloat()]
+options { defaultErrorHandler=false; }
         {
             float f(0.0f);
         }
@@ -1464,11 +1470,13 @@ mfFloatValue returns [OpenVRML::MFFloat * mfv = new OpenVRML::MFFloat()]
     ;
 
 floatValue returns [float val = 0.0f]
+options { defaultErrorHandler=false; }
     :   f0:REAL     { val = atof(f0->getText().c_str()); }
     |   f1:INTEGER  { val = atof(f1->getText().c_str()); }
     ;
 
 sfImageValue returns [OpenVRML::SFImage * siv = new OpenVRML::SFImage()]
+options { defaultErrorHandler=false; }
         {
             unsigned long w(0L), h(0L), com(0L), pixel(0L);
         }
@@ -1506,6 +1514,7 @@ sfImageValue returns [OpenVRML::SFImage * siv = new OpenVRML::SFImage()]
     ;
 
 sfInt32Value returns [OpenVRML::SFInt32 * siv = new OpenVRML::SFInt32(0L)]
+options { defaultErrorHandler=false; }
         {
             long i(0L);
         }
@@ -1516,6 +1525,7 @@ sfInt32Value returns [OpenVRML::SFInt32 * siv = new OpenVRML::SFInt32(0L)]
     ;
 
 mfInt32Value returns [OpenVRML::MFInt32 * miv = new OpenVRML::MFInt32()]
+options { defaultErrorHandler=false; }
         {
             long i(0L);
         }
@@ -1539,6 +1549,7 @@ mfInt32Value returns [OpenVRML::MFInt32 * miv = new OpenVRML::MFInt32()]
     ;
 
 intValue returns [long val = 0]
+options { defaultErrorHandler=false; }
     :   i0:INTEGER { val = atol(i0->getText().c_str()); }
     |  	i1:HEX_INTEGER { val = strtol(i1->getText().c_str(), 0, 16); }
     ;
@@ -1618,6 +1629,7 @@ returns [OpenVRML::MFRotation * mrv = new OpenVRML::MFRotation()]
 // Issue a warning here if the vector isn't normalized.
 //
 rotationValue[float r[4]]
+options { defaultErrorHandler=false; }
     { float x(0.0f), y(0.0f), z(0.0f), rot(0.0f); }
     : x=floatValue y=floatValue z=floatValue rot=floatValue
         {
@@ -1639,11 +1651,13 @@ rotationValue[float r[4]]
     ;
 
 sfStringValue returns [OpenVRML::SFString * ssv = new OpenVRML::SFString()]
+options { defaultErrorHandler=false; }
     { std::string s; }
     : s=stringValue { *ssv = OpenVRML::SFString(s); }
     ;
 
 mfStringValue returns [OpenVRML::MFString * msv = new OpenVRML::MFString()]
+options { defaultErrorHandler=false; }
     { std::string s; }
     : s=stringValue { *msv = OpenVRML::MFString(1, &s); }
     | LBRACKET { std::vector<std::string> stringVector; }
@@ -1652,6 +1666,7 @@ mfStringValue returns [OpenVRML::MFString * msv = new OpenVRML::MFString()]
     ;
 
 stringValue returns [std::string str]
+options { defaultErrorHandler=false; }
     :   s:STRING
         {
             //
@@ -1665,11 +1680,13 @@ stringValue returns [std::string str]
     ;
 
 sfTimeValue returns [OpenVRML::SFTime * stv = new OpenVRML::SFTime(0.0)]
+options { defaultErrorHandler=false; }
     { double t(0.0); }
     : t=doubleValue { *stv = OpenVRML::SFTime(t); }
     ;
 
 mfTimeValue returns [OpenVRML::MFTime * mtv = new OpenVRML::MFTime()]
+options { defaultErrorHandler=false; }
     { double t(0.0); }
     : t=doubleValue { *mtv = MFTime(1, &t); }
     | LBRACKET { std::vector<double> doubleVector; }
@@ -1678,16 +1695,19 @@ mfTimeValue returns [OpenVRML::MFTime * mtv = new OpenVRML::MFTime()]
     ;
 
 doubleValue returns [double val = 0.0]
+options { defaultErrorHandler=false; }
     :   d0:REAL     { val = atof(d0->getText().c_str()); }
     |   d1:INTEGER  { val = atof(d1->getText().c_str()); }
     ;
 
 sfVec2fValue returns [OpenVRML::SFVec2f * svv = new OpenVRML::SFVec2f()]
+options { defaultErrorHandler=false; }
     { float v[2]; }
     : vec2fValue[v] { *svv = OpenVRML::SFVec2f(v[0], v[1]); }
     ;
 
 mfVec2fValue returns [OpenVRML::MFVec2f * mvv = new OpenVRML::MFVec2f()]
+options { defaultErrorHandler=false; }
     { float v[2]; }
     : vec2fValue[v] { *mvv = OpenVRML::MFVec2f(1, v); }
     | LBRACKET { std::vector<float> floatVector; }
@@ -1704,6 +1724,7 @@ mfVec2fValue returns [OpenVRML::MFVec2f * mvv = new OpenVRML::MFVec2f()]
     ;
 
 vec2fValue[float v[2]]
+options { defaultErrorHandler=false; }
         {
             float x(0.0f), y(0.0f);
         }
@@ -1715,6 +1736,7 @@ vec2fValue[float v[2]]
     ;
 
 sfVec3fValue returns [OpenVRML::SFVec3f * svv = new OpenVRML::SFVec3f()]
+options { defaultErrorHandler=false; }
         {
             float v[3];
         }
@@ -1725,6 +1747,7 @@ sfVec3fValue returns [OpenVRML::SFVec3f * svv = new OpenVRML::SFVec3f()]
     ;
 
 mfVec3fValue returns [OpenVRML::MFVec3f * mvv = new OpenVRML::MFVec3f()]
+options { defaultErrorHandler=false; }
         {
             float v[3];
         }
@@ -1750,6 +1773,7 @@ mfVec3fValue returns [OpenVRML::MFVec3f * mvv = new OpenVRML::MFVec3f()]
     ;
 
 vec3fValue[float v[3]]
+options { defaultErrorHandler=false; }
         {
             float x(0.0f), y(0.0f), z(0.0f);
         }

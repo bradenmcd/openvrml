@@ -314,12 +314,6 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_15;
 	static const unsigned long _tokenSet_16_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_16;
-	static const unsigned long _tokenSet_17_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_17;
-	static const unsigned long _tokenSet_18_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_18;
-	static const unsigned long _tokenSet_19_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_19;
 };
 
 #endif /*INC_Vrml97Parser_hpp_*/
