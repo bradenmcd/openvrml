@@ -26,12 +26,12 @@
 #include <config.h>
 #endif
 
-#include <math.h>         // tan(), M_PI (probably)
 #include <iostream.h>     // ostream for dump
+#include "private.h"
 #include "MathUtils.h"    // Vcross(), Vnorm(), etc
 #include "VrmlFrustum.h"
 
-
+using namespace OpenVRML_;
 
 VrmlFrustum::VrmlFrustum()
 {
@@ -47,7 +47,7 @@ VrmlFrustum::VrmlFrustum(float afovy, float aaspect, double anear, double afar)
 {
   //cout << "VrmlFrustum::VrmlFrustum(" << afovy << "," << aaspect;
   //cout << "," << anear << "," << afar << ")" << endl;
-  fovy = (afovy/360.0)*2.0*M_PI;
+  fovy = (afovy / 360.0) * 2.0 * PI;
   float cy = (float)tan(fovy/2.0);
   fovx = 2.0*atan(cy*aaspect);
   z_near = anear;
@@ -137,8 +137,8 @@ VrmlFrustum::dump(ostream& ostr) const
   ostr << "VrmlFrustum {" << endl;
   ostr << z_near << endl;
   ostr << z_far << endl;
-  ostr << fovx*(360.0/(M_PI*2.0)) << endl;
-  ostr << fovy*(360.0/(M_PI*2.0)) << endl;
+  ostr << fovx * (360.0 / (PI * 2.0)) << endl;
+  ostr << fovy * (360.0 / (PI * 2.0)) << endl;
   ostr << "}";
   return ostr;
 }

@@ -18,12 +18,24 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-const float FPTOLERANCE(1.0e-7);
+namespace {
+    namespace OpenVRML {
+        namespace GL_ {
 
-inline bool fpzero(float f) {
-    return (fabs(f) <= FPTOLERANCE);
-}
+            const double PI     = 3.14159265358979323846;
+            const double PI_2   = 1.57079632679489661923;
+            const double PI_4   = 0.78539816339744830962;
+            const double INV_PI = 0.31830988618379067154;
 
-inline bool fpequal(float a, float b) {
-    return fpzero(a - b);
+            const float FPTOLERANCE(1.0e-6);
+
+            inline bool fpzero(const float f) {
+                return (fabs(f) <= FPTOLERANCE);
+            }
+
+            inline bool fpequal(const float a, const float b) {
+                return fpzero(a - b);
+            }
+        }
+    }
 }

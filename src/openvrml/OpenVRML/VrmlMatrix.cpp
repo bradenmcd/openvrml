@@ -31,6 +31,8 @@
 #include "VrmlMatrix.h"
 # include "private.h"
 
+using namespace OpenVRML_;
+
 /**
  * Macro for checking is a matrix is idenity?
  */

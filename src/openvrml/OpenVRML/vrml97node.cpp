@@ -37,6 +37,8 @@
 # include "private.h"
 # include "MathUtils.h"
 
+using namespace OpenVRML_;
+
 /**
  * @class VrmlNodeChild
  *
@@ -5980,14 +5982,14 @@ void VrmlNodeOrientationInt::eventIn(double timeStamp,
           }
 
         // Interpolate angles via the shortest direction
-        if (fabs(r2 - r1) > M_PI)
+        if (fabs(r2 - r1) > PI)
           {
-            if (r2 > r1) r1 += 2.0 * M_PI;
-            else         r2 += 2.0 * M_PI;
+            if (r2 > r1) r1 += 2.0 * PI;
+            else         r2 += 2.0 * PI;
           }
         float angle = r1 + f * (r2 - r1);
-        if (angle >= 2.0 * M_PI) angle -= 2.0 * M_PI;
-        else if (angle < 0.0)    angle += 2.0 * M_PI;
+        if (angle >= 2.0 * PI) angle -= 2.0 * PI;
+        else if (angle < 0.0)    angle += 2.0 * PI;
         
         //printf(" %g between (%d,%d) [%g %g %g %g]\n", f, i, i+1,
         //x, y, z, r);

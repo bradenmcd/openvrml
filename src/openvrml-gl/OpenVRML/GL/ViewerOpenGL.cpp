@@ -68,6 +68,7 @@
 
 #define USE_TEXTURE_DISPLAY_LISTS 1
 
+using namespace OpenVRML::GL_;
 
 static void
 matrix_to_glmatrix(double M[4][4], float GLM[16])
@@ -441,7 +442,7 @@ void ViewerOpenGL::getBillboardTransformMatrix(float M[4][4],
      nz[0] = x[2]; nz[1] = y[2]; nz[2] = z[2];
 // calculate the angle by which the Z axis vector of current coordinate system
 // has to be rotated around the Y axis to new coordinate system.
-     float angle = acos(nz[2])*180/M_PI;
+     float angle = acos(nz[2]) * 180 / PI;
      if(nz[0] > 0) angle = -angle;
      glPushMatrix();
      glLoadIdentity();
@@ -577,7 +578,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
 
       // Sphere constants
       const int nCirc = 8;		// number of circumferential slices
-      const double cd = 2.0 * M_PI / nCirc;
+      const double cd = 2.0 * PI / nCirc;
 
       double heightAngle0, heightAngle1 = 0.0;
       const float *c0, *c1 = skyColor;
@@ -616,13 +617,13 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
 	}
 
       // Ground
-      heightAngle1 = M_PI;
+      heightAngle1 = PI;
       c1 = groundColor;
 
       for (size_t nGround=0; nGround<nGroundAngles; ++nGround)
 	{
 	  heightAngle0 = heightAngle1;
-	  heightAngle1 = M_PI - groundAngle[nGround];
+	  heightAngle1 = PI - groundAngle[nGround];
 	  c0 = c1;
 	  c1 += 3;
 
@@ -949,8 +950,8 @@ Viewer::Object ViewerOpenGL::insertCone(float h,
 	  glTexCoord2f( 0.5, 0.5 );
 	  glVertex3f( 0.0, - 0.5 * h, 0.0 );
 
-	  float angle = 0.5 * M_PI; // First v is at max x
-	  float aincr = 2.0 * M_PI / (float) nfacets;
+	  float angle = 0.5 * PI; // First v is at max x
+	  float aincr = 2.0 * PI / (float) nfacets;
 	  for (int i = 0; i < nfacets; ++i, angle+=aincr )
 	    {
 	      glTexCoord2f( 0.5*(1.0+sin( angle )),
@@ -1029,8 +1030,8 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 	  glTexCoord2f( 0.5, 0.5 );
 	  glVertex3f( 0.0, - 0.5 * h, 0.0 );
 
-	  float angle = 0.5 * M_PI; // First v is at max x
-	  float aincr = 2.0 * M_PI / (float) nfacets;
+	  float angle = 0.5 * PI; // First v is at max x
+	  float aincr = 2.0 * PI / (float) nfacets;
 	  for (int i = 0; i < nfacets; ++i, angle+=aincr)
 	    {
 	      glTexCoord2f( 0.5*(1.+sin( angle )),
@@ -1050,8 +1051,8 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 	  glTexCoord2f( 0.5, 0.5 );
 	  glVertex3f( 0.0, 0.5 * h, 0.0 );
 
-	  float angle = 0.75 * M_PI;
-	  float aincr = 2.0 * M_PI / (float) nfacets;
+	  float angle = 0.75 * PI;
+	  float aincr = 2.0 * PI / (float) nfacets;
 	  for (int i = nfacets-1; i >= 0; --i, angle+=aincr)
 	    {
 	      glTexCoord2f( 0.5*(1.+sin( angle )),
@@ -2204,7 +2205,7 @@ Viewer::Object ViewerOpenGL::insertSpotLight( float ambient,
   glLightf(light, GL_QUADRATIC_ATTENUATION, attenuation[2]);
 
   glLightfv(light, GL_SPOT_DIRECTION, direction);
-  glLightf(light, GL_SPOT_CUTOFF, cutOffAngle * 180.0 / M_PI);
+  glLightf(light, GL_SPOT_CUTOFF, cutOffAngle * 180.0 / PI);
   // The exponential dropoff is not right/spec compliant...
   glLightf(light, GL_SPOT_EXPONENT, beamWidth < cutOffAngle ? 1.0 : 0.0);
 
@@ -2529,7 +2530,7 @@ void ViewerOpenGL::setTextureTransform(const float center[2],
   if (center) glTranslatef(-center[0], -center[1], 0.0);
   if (scale) glScalef(scale[0], scale[1], 1.0);
   if (rotation != 0.0)
-    glRotatef(rotation * 180.0 / M_PI, 0.0, 0.0, 1.0);
+    glRotatef(rotation * 180.0 / PI, 0.0, 0.0, 1.0);
 
   if (center) glTranslatef(center[0], center[1], 0.0);
   if (translation) glTranslatef(translation[0], translation[1], 0.0);
@@ -2551,7 +2552,7 @@ void ViewerOpenGL::setTransform(const float center[3],
   glTranslatef(center[0], center[1], center[2]);
 
   if (! fpzero(rotation[3]) )
-    glRotatef(rotation[3] * 180.0 / M_PI,
+    glRotatef(rotation[3] * 180.0 / PI,
 	      rotation[0],
 	      rotation[1],
 	      rotation[2]);
@@ -2561,7 +2562,7 @@ void ViewerOpenGL::setTransform(const float center[3],
       ! fpequal(scale[2], 1.0) )
     {
       if (! fpzero(scaleOrientation[3]) )
-	glRotatef(scaleOrientation[3] * 180.0 / M_PI,
+	glRotatef(scaleOrientation[3] * 180.0 / PI,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
@@ -2569,7 +2570,7 @@ void ViewerOpenGL::setTransform(const float center[3],
       glScalef(scale[0], scale[1], scale[2]);
 
       if (! fpzero(scaleOrientation[3]) )
-	glRotatef(-scaleOrientation[3] * 180.0 / M_PI,
+	glRotatef(-scaleOrientation[3] * 180.0 / PI,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
@@ -2597,7 +2598,7 @@ void ViewerOpenGL::unsetTransform(const float center[3],
       ! fpequal(scale[2], 1.0) )
     {
       if (! fpzero(scaleOrientation[3]) )
-	glRotatef(scaleOrientation[3] * 180.0 / M_PI,
+	glRotatef(scaleOrientation[3] * 180.0 / PI,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
@@ -2605,14 +2606,14 @@ void ViewerOpenGL::unsetTransform(const float center[3],
       glScalef(1.0/scale[0], 1.0/scale[1], 1.0/scale[2]);
 
       if (! fpzero(scaleOrientation[3]) )
-	glRotatef(-scaleOrientation[3] * 180.0 / M_PI,
+	glRotatef(-scaleOrientation[3] * 180.0 / PI,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
     }
 
   if (! fpzero(rotation[3]) )
-    glRotatef(- rotation[3] * 180.0 / M_PI,
+    glRotatef(- rotation[3] * 180.0 / PI,
 	      rotation[0],
 	      rotation[1],
 	      rotation[2]);
@@ -2656,7 +2657,7 @@ void ViewerOpenGL::setViewpoint(const float *position,
   glMatrixMode( GL_PROJECTION );
   if (! d_selectMode) glLoadIdentity();
 
-  float field_of_view = fieldOfView * 180.0 / M_PI;
+  float field_of_view = fieldOfView * 180.0 / PI;
   float aspect = ((float) d_winWidth) / d_winHeight;
   float znear = (avatarSize > 0.0) ? (0.5 * avatarSize) : 0.01;
   float zfar = (visibilityLimit > 0.0) ? visibilityLimit : 30000.0;

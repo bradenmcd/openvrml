@@ -38,6 +38,8 @@
 #include "VrmlBSphere.h"
 #include "VrmlAABox.h"
 
+using namespace OpenVRML_;
+
 /**
  * @class Viewer
  *
@@ -63,7 +65,7 @@ void Viewer::computeCylinder(double height, double radius, int numFacets,
 
   // Compute coordinates, texture coordinates:
   for (i = 0; i < numFacets; ++i) {
-    angle = i * 2 * M_PI / numFacets;
+    angle = i * 2 * PI / numFacets;
     x = cos(angle);
     y = sin(angle);
     c[i][0] = radius * x;
@@ -321,11 +323,11 @@ void Viewer::computeSphere(double radius,
   // Compute coordinates, texture coordinates:
   for (i = 0; i < numLatLong; ++i) {
     /*y = 2.0 * ( ((double)i) / (numLatLong-1) ) - 1.0;*/
-    angle = ( i * M_PI / (numLatLong-1) ) - M_PI_2;
+    angle = ( i * PI / (numLatLong-1) ) - PI_2;
     y = sin( angle );
     r = sqrt( 1.0 - y*y );
     for (j = 0; j < numLatLong; ++j) {
-      angle = 2 * M_PI * ((double)j) / numLatLong;
+      angle = 2 * PI * ((double)j) / numLatLong;
       x = - sin(angle)*r;
       z = - cos(angle)*r;
       c[i*numLatLong+j][0] = radius * x;

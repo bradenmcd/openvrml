@@ -46,26 +46,34 @@
 #   include <assert.h>
 #   include <math.h>
 
-const float FPTOLERANCE(1.0e-6);
+namespace {
+    namespace OpenVRML_ {
+        
+        const double PI     = 3.14159265358979323846;
+        const double PI_2   = 1.57079632679489661923;
+        const double PI_4   = 0.78539816339744830962;
+        const double INV_PI = 0.31830988618379067154;
+        
+        const float FPTOLERANCE(1.0e-6);
 
-inline bool fpzero(const float f) {
-    return (fabs(f) <= FPTOLERANCE);
-}
+        inline bool fpzero(const float f) { return (fabs(f) <= FPTOLERANCE); }
 
-inline bool fpequal(const float a, const float b) {
-    return fpzero(a - b);
-}
+        inline bool fpequal(const float a, const float b) {
+            return fpzero(a - b);
+        }
 
-inline double length(const float vec[3]) {
-    return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
-}
+        inline double length(const float vec[3]) {
+            return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+        }
 
-inline void normalize(float vec[3]) {
-    const float len = static_cast<float>(length(vec));
-    if (!fpzero(len)) {
-        vec[0] /= len;
-        vec[1] /= len;
-        vec[2] /= len;
+        inline void normalize(float vec[3]) {
+            const float len = static_cast<float>(length(vec));
+            if (!fpzero(len)) {
+                vec[0] /= len;
+                vec[1] /= len;
+                vec[2] /= len;
+            }
+        }
     }
 }
 

@@ -22,6 +22,7 @@
 #include "private.h"
 #include <string.h>		// memcpy
 
+using namespace OpenVRML_;
 
 double Vlength( float V[3] )
 {

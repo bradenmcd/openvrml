@@ -1,19 +1,26 @@
 2001-10-12  Braden McDaniel  <braden@endoframe.com>
 
-        * A bit of finesse to get the ANTLR parser in an anonymous namespace
-          in the VrmlScene implementation.
+        * A bit of finesse to get the ANTLR parser in an anonymous
+          namespace in the VrmlScene implementation.
+
+        * Put contents of the private headers in private namespaces:
+          OpenVRML_ for libopenvrml and OpenVRML::GL_ for
+          libopenvrml-gl.
+
+        * Use our own constants for multiples of pi insteading depending
+          on M_PI, etc. (which are non-standard).
 
 2001-10-11  Braden McDaniel  <braden@endoframe.com>
 
         * Propagate events resulting from eventsProcessed().
 
-2001-10-07  Braden McDaniel  <braden@endoframe.com>
-
-        * Fixed a bug in SFVec3f construction in JavaScript.
-
 2001-10-09 Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Checkin fix for bug 210073.
+
+2001-10-07  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed a bug in SFVec3f construction in JavaScript.
 
 2001-10-05 Thomas Flynn <tflynn@users.sourceforge.net>
 

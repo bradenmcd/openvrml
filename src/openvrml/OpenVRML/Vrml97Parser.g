@@ -120,6 +120,8 @@ header "post_include_cpp" {
 # include "VrmlNodeScript.h"
 # include "private.h"
 
+using namespace OpenVRML_;
+
 namespace {
     bool isValidIdFirstChar(char);
     bool isValidIdRestChars(char);

@@ -28,6 +28,8 @@
 # include "field.h"
 # include "private.h"
 
+using namespace OpenVRML_;
+
 namespace {
     ::ostream & mffprint(::ostream &, float const * c, int n, int eltsize);
     ::ostream & mfdprint(::ostream &, double const * c, int n, int eltsize);

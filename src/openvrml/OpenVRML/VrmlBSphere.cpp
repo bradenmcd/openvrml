@@ -28,7 +28,7 @@
 #include "MathUtils.h"
 #include "field.h"
 
-
+using namespace OpenVRML_;
 
 VrmlBSphere::VrmlBSphere()
 {
