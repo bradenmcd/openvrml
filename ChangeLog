@@ -2,6 +2,12 @@
 
         * configure.ac:  Use AC_HELP_STRING for help strings.
 
+        * m4/ax_check_gl.m4, m4/ax_check_glut.m4,
+          src/lookat/ViewerGlut.cpp, src/lookat/lookat.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  Modified
+          GL detection macros to add configure option for Apple OpenGL
+          framework.
+
 2003-03-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,

@@ -22,7 +22,9 @@
 #   include <config.h>
 # endif
 
-# ifdef HAVE_OPENGL_GLUT_H
+# include <iostream>
+
+# if HAVE_APPLE_OPENGL_FRAMEWORK
 #   include <OpenGL/glut.h>
 # else
 #   include <GL/glut.h>
@@ -314,6 +316,7 @@ static void timer(int)
 
 void ViewerGlut::timerUpdate()
 {
+    std::cout << "ViewerGlut::timerUpdate" << std::endl;
   d_timerPending = false;
   update( 0.0 );
 }

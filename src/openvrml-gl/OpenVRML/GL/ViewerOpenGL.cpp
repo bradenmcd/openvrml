@@ -29,15 +29,11 @@
 #   include <wingdi.h>
 # endif
 
-# ifdef HAVE_OPENGL_GL_H
+# if HAVE_APPLE_OPENGL_FRAMEWORK
 #   include <OpenGL/gl.h>
-# else
-#   include <GL/gl.h>
-# endif
-
-# ifdef HAVE_OPENGL_GLU_H
 #   include <OpenGL/glu.h>
 # else
+#   include <GL/gl.h>
 #   include <GL/glu.h>
 # endif
 
