@@ -162,7 +162,7 @@ namespace OpenVRML {
     private:
         const bool inProtoDef;
         ISMap isMap;
-        FieldValueMap unISedFieldValueMap;
+        FieldValueMap unISdFieldValueMap;
         EventOutValueMap eventOutValueMap;
         MFNode implNodes;
 
@@ -2762,6 +2762,18 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
         for (ISMap::iterator j(rangeItrs.first); j != rangeItrs.second; ++j) {
             j->second.node.setField(j->second.interfaceId, *fieldValue);
         }
+        
+        //
+        // If we have a field that isn't IS'd to anything in the
+        // implementation, we need to store it's value specially.
+        //
+        if (this->nodeType.hasField(i->first)
+                && rangeItrs.second == rangeItrs.first) {
+            FieldValueMap::value_type value(i->first, fieldValue);
+            const bool succeeded =
+                    this->unISdFieldValueMap.insert(value).second;
+            assert(succeeded);
+        }
     }
 }
 
@@ -3143,7 +3155,8 @@ void ProtoNode::update(const double currentTime) {
  *
  * @param timestamp the current time.
  */
-void ProtoNode::initializeImpl(const double timestamp) throw () {
+void ProtoNode::initializeImpl(const double timestamp) throw ()
+{
     assert(this->getScene());
     
     for (size_t i = 0; i < this->implNodes.getLength(); ++i) {
@@ -3156,16 +3169,24 @@ void ProtoNode::initializeImpl(const double timestamp) throw () {
 
 void ProtoNode::setFieldImpl(const std::string & id,
                              const FieldValue & value)
-        throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_cast, std::bad_alloc)
+{
     const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
             this->isMap.equal_range(id);
     for (ISMap::iterator itr(rangeItrs.first); itr != rangeItrs.second; ++itr) {
         itr->second.node.setField(itr->second.interfaceId, value);
     }
+    
+    if (rangeItrs.second == rangeItrs.first) {
+        assert(this->unISdFieldValueMap.find(id)
+                != this->unISdFieldValueMap.end());
+        *this->unISdFieldValueMap[id] = value;
+    }
 }
 
 const FieldValue & ProtoNode::getFieldImpl(const std::string & id) const
-        throw (UnsupportedInterface) {
+    throw (UnsupportedInterface)
+{
     //
     // This is a little wierd: what should getField mean for a PROTO-based
     // node? We pick the first node in the IS-map and call getField on it.
@@ -3189,20 +3210,15 @@ const FieldValue & ProtoNode::getFieldImpl(const std::string & id) const
             return *pos->second.value;
         } else {
             //
-            // Otherwise, if we are dealing with a non-exposed field... Well,
-            // "otherwise" isn't so clear. If we saved the initial value of the
-            // field to return here, we'd end up carrying it around for the
-            // life of the PROTO instance. So, just return a reference to the
-            // default value for the field.
+            // Otherwise, if we are dealing with a non-exposed field...
             //
-            ProtoNodeClass & nodeClass =
-                    static_cast<ProtoNodeClass &>(this->nodeType.nodeClass);
-            const ProtoNodeClass::DefaultValueMap::const_iterator pos =
-                    nodeClass.defaultValueMap.find(id);
-            if (pos == nodeClass.defaultValueMap.end()) {
+            const FieldValueMap::const_iterator pos =
+                    this->unISdFieldValueMap.find(id);
+            if (pos == this->unISdFieldValueMap.end()) {
                 throw UnsupportedInterface(this->nodeType.id
                                        + " node has no field \"" + id + "\".");
             }
+            assert(pos->second);
             return *pos->second;
         }
     }
