@@ -1014,7 +1014,7 @@ void Anchor::activate() {
         }
 
         MFString urls(this->url.getLength(), tmp_url_array);
-        if (!this->nodeType.nodeClass.getScene().loadUrl(urls, this->parameter)) {
+        if (!this->nodeType.nodeClass.scene.loadUrl(urls, this->parameter)) {
             assert(this->url.getLength() > 0);
             theSystem->warn("Couldn't load URL %s\n",
                             this->url.getElement(0).c_str());
@@ -1409,7 +1409,7 @@ AudioClip::AudioClip(const NodeType & type):
         Node(type), AbstractBase(type), pitch(1.0), active(false),
         audio(0), url_modified(false), audio_index(0),
         audio_intensity(1.0), audio_fd(-1) {
-    this->nodeType.nodeClass.getScene().addAudioClip(*this);
+    this->nodeType.nodeClass.scene.addAudioClip(*this);
 }
 
 /**
@@ -1417,7 +1417,7 @@ AudioClip::AudioClip(const NodeType & type):
  */
 AudioClip::~AudioClip() throw () {
     delete this->audio;
-    this->nodeType.nodeClass.getScene().removeAudioClip(*this);
+    this->nodeType.nodeClass.scene.removeAudioClip(*this);
 }
 
 /**
@@ -1765,14 +1765,14 @@ const NodeTypePtr
 Background::Background(const NodeType & type):
         Node(type), AbstractChild(type), bound(false), viewerObject(0) {
     std::fill(this->texPtr, this->texPtr + 6, static_cast<Image *>(0));
-    this->nodeType.nodeClass.getScene().addBackground(*this);
+    this->nodeType.nodeClass.scene.addBackground(*this);
 }
 
 /**
  * @brief Destructor.
  */
 Background::~Background() throw () {
-    this->nodeType.nodeClass.getScene().removeBackground(*this);
+    this->nodeType.nodeClass.scene.removeBackground(*this);
     // remove d_viewerObject...
 }
 
@@ -1868,7 +1868,7 @@ void Background::renderBindable(Viewer * const viewer) {
             Doc2 relDoc(this->relativeUrl.get());
             Doc2 * const rel = !this->relativeUrl.get().empty()
                              ? &relDoc
-                             : this->nodeType.nodeClass.getScene().urlDoc();
+                             : this->nodeType.nodeClass.scene.urlDoc();
             this->texPtr[0] =
                     getTexture(this->backUrl, rel, this->tex, 0, viewer);
             this->texPtr[1] =
@@ -1923,7 +1923,7 @@ void Background::processSet_bind(const FieldValue & sfbool,
                                  const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     Background * current =
-            this->nodeType.nodeClass.getScene().bindableBackgroundTop();
+            this->nodeType.nodeClass.scene.bindableBackgroundTop();
     const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
 
     if (b.get()) {        // set_bind TRUE
@@ -1932,16 +1932,16 @@ void Background::processSet_bind(const FieldValue & sfbool,
                 current->bound.set(false);
                 current->emitEvent("isBound", current->bound, timestamp);
             }
-            this->nodeType.nodeClass.getScene().bindablePush(this);
+            this->nodeType.nodeClass.scene.bindablePush(this);
             this->bound.set(true);
             this->emitEvent("isBound", this->bound, timestamp);
         }
     } else {            // set_bind FALSE
-        this->nodeType.nodeClass.getScene().bindableRemove(this);
+        this->nodeType.nodeClass.scene.bindableRemove(this);
         if (this == current) {
             this->bound.set(false);
             this->emitEvent("isBound", this->bound, timestamp);
-            current = this->nodeType.nodeClass.getScene()
+            current = this->nodeType.nodeClass.scene
                         .bindableBackgroundTop();
             if (current) {
                 this->bound.set(true);
@@ -4595,13 +4595,13 @@ const NodeTypePtr FogClass::createType(const std::string & id,
 Fog::Fog(const NodeType & type):
         Node(type), AbstractChild(type), color(1.0, 1.0, 1.0),
         fogType("LINEAR"), visibilityRange(0.0), bound(false) {
-    this->nodeType.nodeClass.getScene().addFog(*this);
+    this->nodeType.nodeClass.scene.addFog(*this);
 }
 
 /**
  * @brief Destructor.
  */
-Fog::~Fog() throw () { this->nodeType.nodeClass.getScene().removeFog(*this); }
+Fog::~Fog() throw () { this->nodeType.nodeClass.scene.removeFog(*this); }
 
 Fog * Fog::toFog() const { return const_cast<Fog *>(this); }
 
@@ -4616,7 +4616,7 @@ Fog * Fog::toFog() const { return const_cast<Fog *>(this); }
  */
 void Fog::processSet_bind(const FieldValue & sfbool, const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
-    Fog * current = this->nodeType.nodeClass.getScene().bindableFogTop();
+    Fog * current = this->nodeType.nodeClass.scene.bindableFogTop();
     const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
 
     if (b.get()) {        // set_bind TRUE
@@ -4625,16 +4625,16 @@ void Fog::processSet_bind(const FieldValue & sfbool, const double timestamp)
                 current->bound.set(false);
                 current->emitEvent("isBound", current->bound, timestamp);
             }
-            this->nodeType.nodeClass.getScene().bindablePush(this);
+            this->nodeType.nodeClass.scene.bindablePush(this);
             this->bound.set(true);
             this->emitEvent("isBound", this->bound, timestamp);
         }
     } else {            // set_bind FALSE
-        this->nodeType.nodeClass.getScene().bindableRemove(this);
+        this->nodeType.nodeClass.scene.bindableRemove(this);
         if (this == current) {
             this->bound.set(false);
             this->emitEvent("isBound", this->bound, timestamp);
-            current = this->nodeType.nodeClass.getScene().bindableFogTop();
+            current = this->nodeType.nodeClass.scene.bindableFogTop();
             if (current) {
                 current->bound.set(true);
                 current->emitEvent("isBound", current->bound, timestamp);
@@ -5460,7 +5460,7 @@ void ImageTexture::render(Viewer *viewer, VrmlRenderContext rc) {
     if (!this->image && this->url.getLength() > 0) {
         const std::string relUrl = !this->d_relativeUrl.get().empty()
                                  ? this->d_relativeUrl.get()
-                                 : this->nodeType.nodeClass.getScene().urlDoc()->url();
+                                 : this->nodeType.nodeClass.scene.urlDoc()->url();
         Doc relDoc(relUrl, static_cast<Doc const *>(0));
         this->image = new Image;
         if (!this->image->tryURLs(this->url, &relDoc)) {
@@ -6214,15 +6214,15 @@ void Inline::load() {
     if (this->url.getLength() > 0) {
         VrmlNamespace * ns =
                 new Vrml97RootNamespace(this->nodeType.nodeClass
-                                        .getScene().nodeClassMap);
+                                        .scene.nodeClassMap);
         MFNode * kids = 0;
         Doc2 url;
         int i, n = this->url.getLength();
         for (i = 0; i < n; ++i) {
             url.seturl(this->url.getElement(i).c_str(),
-                       this->nodeType.nodeClass.getScene().urlDoc());
+                       this->nodeType.nodeClass.scene.urlDoc());
 
-            kids = this->nodeType.nodeClass.getScene().readWrl(&url, ns);
+            kids = this->nodeType.nodeClass.scene.readWrl(&url, ns);
             if (kids) {
                 break;
             } else {
@@ -6895,14 +6895,14 @@ const NodeTypePtr
 MovieTexture::MovieTexture(const NodeType & type):
         Node(type), AbstractTexture(type), loop(false), speed(1.0),
         image(0), frame(0), lastFrame(-1), lastFrameTime(-1.0), texObject(0) {
-    this->nodeType.nodeClass.getScene().addMovie(*this);
+    this->nodeType.nodeClass.scene.addMovie(*this);
 }
 
 /**
  * @brief Destructor.
  */
 MovieTexture::~MovieTexture() throw () {
-    this->nodeType.nodeClass.getScene().removeMovie(*this);
+    this->nodeType.nodeClass.scene.removeMovie(*this);
     delete this->image;
 }
 
@@ -6939,7 +6939,7 @@ void MovieTexture::update(const double currentTime) {
         Doc2 relDoc(this->d_relativeUrl.get());
         Doc2 * rel = !this->d_relativeUrl.get().empty()
                    ? &relDoc
-                   : this->nodeType.nodeClass.getScene().urlDoc();
+                   : this->nodeType.nodeClass.scene.urlDoc();
         this->image = new Image;
         if (!this->image->tryURLs(this->url, rel)) {
             cerr << "Error: couldn't read MovieTexture from URL " << this->url
@@ -6995,7 +6995,7 @@ void MovieTexture::update(const double currentTime) {
     if (this->active.get()) {
         double d = this->lastFrameTime + fabs(1 / this->speed.get())
                     - currentTime;
-        this->nodeType.nodeClass.getScene().setDelta(0.9 * d);
+        this->nodeType.nodeClass.scene.setDelta(0.9 * d);
     }
 }
 
@@ -7277,14 +7277,14 @@ NavigationInfo::NavigationInfo(const NodeType & type):
         Node(type), AbstractChild(type), headlight(true), speed(1.0),
         visibilityLimit(0.0), bound(false), avatarSize(3, avatarSize_),
         type(2, type_) {
-    this->nodeType.nodeClass.getScene().addNavigationInfo(*this);
+    this->nodeType.nodeClass.scene.addNavigationInfo(*this);
 }
 
 /**
  * @brief Destructor.
  */
 NavigationInfo::~NavigationInfo() throw () {
-    this->nodeType.nodeClass.getScene().removeNavigationInfo(*this);
+    this->nodeType.nodeClass.scene.removeNavigationInfo(*this);
 }
 
 NavigationInfo* NavigationInfo::toNavigationInfo() const
@@ -7320,7 +7320,7 @@ void NavigationInfo::processSet_bind(const FieldValue & sfbool,
                                      const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     NavigationInfo * current =
-            this->nodeType.nodeClass.getScene().bindableNavigationInfoTop();
+            this->nodeType.nodeClass.scene.bindableNavigationInfoTop();
     const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
 
     if (b.get()) {        // set_bind TRUE
@@ -7329,16 +7329,16 @@ void NavigationInfo::processSet_bind(const FieldValue & sfbool,
                 current->bound.set(false);
                 current->emitEvent("isBound", current->bound, timestamp);
             }
-            this->nodeType.nodeClass.getScene().bindablePush(this);
+            this->nodeType.nodeClass.scene.bindablePush(this);
             this->bound.set(true);
             this->emitEvent("isBound", this->bound, timestamp);
         }
     } else {            // set_bind FALSE
-        this->nodeType.nodeClass.getScene().bindableRemove(this);
+        this->nodeType.nodeClass.scene.bindableRemove(this);
         if (this == current) {
             this->bound.set(false);
             this->emitEvent("isBound", this->bound, timestamp);
-            current = this->nodeType.nodeClass.getScene()
+            current = this->nodeType.nodeClass.scene
                         .bindableNavigationInfoTop();
             if (current) {
                 current->bound.set(true);
@@ -8556,14 +8556,14 @@ const NodeTypePtr
 PointLight::PointLight(const NodeType & type):
         Node(type), AbstractLight(type), attenuation(1.0, 0.0, 0.0),
         location(0.0, 0.0, 0.0), radius(100) {
-    this->nodeType.nodeClass.getScene().addScopedLight(*this);
+    this->nodeType.nodeClass.scene.addScopedLight(*this);
 }
 
 /**
  * @brief Destructor.
  */
 PointLight::~PointLight() throw () {
-    this->nodeType.nodeClass.getScene().removeScopedLight(*this);
+    this->nodeType.nodeClass.scene.removeScopedLight(*this);
 }
 
 PointLight* PointLight::toPointLight() const
@@ -10430,14 +10430,14 @@ SpotLight::SpotLight(const NodeType & type):
         Node(type), AbstractLight(type), attenuation(1.0, 0.0, 0.0),
         beamWidth(1.570796), cutOffAngle(0.785398),
         direction(0.0, 0.0, -1.0), location(0.0, 0.0, 0.0), radius(100) {
-    this->nodeType.nodeClass.getScene().addScopedLight(*this);
+    this->nodeType.nodeClass.scene.addScopedLight(*this);
 }
 
 /**
  * @brief Destructor.
  */
 SpotLight::~SpotLight() throw () {
-    this->nodeType.nodeClass.getScene().removeScopedLight(*this);
+    this->nodeType.nodeClass.scene.removeScopedLight(*this);
 }
 
 SpotLight* SpotLight::toSpotLight() const
@@ -11529,14 +11529,14 @@ TimeSensor::TimeSensor(const NodeType & type):
         Node(type), AbstractChild(type), cycleInterval(1.0), enabled(true),
         loop(false), startTime(0.0), stopTime(0.0), active(false),
         lastTime(-1.0) {
-    this->nodeType.nodeClass.getScene().addTimeSensor(*this);
+    this->nodeType.nodeClass.scene.addTimeSensor(*this);
 }
 
 /**
  * @brief Destructor.
  */
 TimeSensor::~TimeSensor() throw () {
-    this->nodeType.nodeClass.getScene().removeTimeSensor(*this);
+    this->nodeType.nodeClass.scene.removeTimeSensor(*this);
 }
 
 /**
@@ -11630,9 +11630,9 @@ void TimeSensor::update(const double currentTime) {
         // being used, and set delta to cycleTime if not...
         if (this->active.get()) {
 #ifdef macintosh
-            this->nodeType.nodeClass.getScene().setDelta(0.001); //0.0 is too fast(!)
+            this->nodeType.nodeClass.scene.setDelta(0.001); //0.0 is too fast(!)
 #else
-            this->nodeType.nodeClass.getScene().setDelta(0.0);
+            this->nodeType.nodeClass.scene.setDelta(0.0);
 #endif
         }
         this->lastTime = currentTime;
@@ -12658,14 +12658,14 @@ Viewpoint::Viewpoint(const NodeType & type):
         fieldOfView(DEFAULT_FIELD_OF_VIEW), jump(true),
         orientation(0.0, 0.0, 1.0, 0.0), position(0.0, 0.0, 10.0),
         bound(false), bindTime(0), parentTransform(0) {
-    this->nodeType.nodeClass.getScene().addViewpoint(*this);
+    this->nodeType.nodeClass.scene.addViewpoint(*this);
 }
 
 /**
  * @brief Destructor.
  */
 Viewpoint::~Viewpoint() throw () {
-    this->nodeType.nodeClass.getScene().removeViewpoint(*this);
+    this->nodeType.nodeClass.scene.removeViewpoint(*this);
 }
 
 /**
@@ -12787,7 +12787,7 @@ void Viewpoint::processSet_bind(const FieldValue & sfbool,
                                 const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
     Viewpoint * current =
-            this->nodeType.nodeClass.getScene().bindableViewpointTop();
+            this->nodeType.nodeClass.scene.bindableViewpointTop();
     const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
     if (b.get()) {      // set_bind TRUE
         if (this != current) {
@@ -12795,7 +12795,7 @@ void Viewpoint::processSet_bind(const FieldValue & sfbool,
                 current->bound.set(false);
                 current->emitEvent("isBound", current->bound, timestamp);
             }
-            this->nodeType.nodeClass.getScene().bindablePush(this);
+            this->nodeType.nodeClass.scene.bindablePush(this);
             this->bound.set(true);
             this->emitEvent("isBound", this->bound, timestamp);
             const std::string & n = this->getId();
@@ -12809,12 +12809,12 @@ void Viewpoint::processSet_bind(const FieldValue & sfbool,
             }
         }
     } else {          // set_bind FALSE
-        this->nodeType.nodeClass.getScene().bindableRemove(this);
+        this->nodeType.nodeClass.scene.bindableRemove(this);
         if (this == current) {
             this->bound.set(false);
             this->emitEvent("isBound", this->bound, timestamp);
             current =
-                    this->nodeType.nodeClass.getScene().bindableViewpointTop();
+                    this->nodeType.nodeClass.scene.bindableViewpointTop();
             if (current) {
                 current->bound.set(true);
                 current->emitEvent("isBound", current->bound, timestamp);
@@ -13092,7 +13092,7 @@ void VisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc) {
         // Is the sphere visible? ...
         bool inside = xyz[0][2] < 0.0; // && z > - scene->visLimit()
         if (inside) {
-            NavigationInfo * ni = this->nodeType.nodeClass.getScene()
+            NavigationInfo * ni = this->nodeType.nodeClass.scene
                                     .bindableNavigationInfoTop();
             if (ni && !fpzero(ni->getVisibilityLimit())
                     && xyz[0][2] < -(ni->getVisibilityLimit())) {

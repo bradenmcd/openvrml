@@ -210,7 +210,7 @@ void NodeInterfaceSet::add(const NodeInterface & nodeInterface)
  *
  * @param scene the VrmlScene to be associated with the NodeClass.
  */
-NodeClass::NodeClass(VrmlScene & scene) throw (): scene(&scene) {}
+NodeClass::NodeClass(VrmlScene & scene) throw (): scene(scene) {}
 
 /**
  * @brief Destructor.
@@ -559,8 +559,8 @@ Node::Node(const NodeType & type):
 Node::~Node() throw () {
     // Remove the node's name (if any) from the map...
     if (!this->id.empty()) {
-        assert(this->nodeType.nodeClass.getScene().getScope());
-        this->nodeType.nodeClass.getScene().getScope()->removeNodeName(*this);
+        assert(this->nodeType.nodeClass.scene.getScope());
+        this->nodeType.nodeClass.scene.getScope()->removeNodeName(*this);
     }
 }
 
@@ -1052,7 +1052,7 @@ const Node::RouteList & Node::getRoutes() const {
  */
 void Node::setModified() {
     this->d_modified = true;
-    this->nodeType.nodeClass.getScene().setModified(); 
+    this->nodeType.nodeClass.scene.setModified(); 
 }
 
 bool Node::isModified() const { return this->d_modified; }
@@ -1186,7 +1186,7 @@ void Node::setBVolume(const BVolume & v) {
 void Node::setBVolumeDirty(bool f) {
     this->d_bvol_dirty = f;
     if (f) { // only if dirtying, not clearing
-        this->nodeType.nodeClass.getScene().d_flags_need_updating = true;
+        this->nodeType.nodeClass.scene.d_flags_need_updating = true;
     }
 }
 
@@ -1195,9 +1195,9 @@ void Node::setBVolumeDirty(bool f) {
  * recalculated.
  */
 bool Node::isBVolumeDirty() const {
-    if (this->nodeType.nodeClass.getScene().d_flags_need_updating) {
-        this->nodeType.nodeClass.getScene().updateFlags();
-        this->nodeType.nodeClass.getScene().d_flags_need_updating = false;
+    if (this->nodeType.nodeClass.scene.d_flags_need_updating) {
+        this->nodeType.nodeClass.scene.updateFlags();
+        this->nodeType.nodeClass.scene.d_flags_need_updating = false;
     }
     return this->d_bvol_dirty;
 }
@@ -1342,7 +1342,7 @@ void Node::emitEvent(const std::string & id, const FieldValue & value,
             itr != this->routes.end(); ++itr) {
         if (id == itr->fromEventOut) {
             FieldValue * const eventValue = value.clone();
-            this->nodeType.nodeClass.getScene()
+            this->nodeType.nodeClass.scene
                     .queueEvent(timestamp, eventValue,
                                 itr->toNode, itr->toEventIn);
         }

@@ -97,12 +97,10 @@ namespace OpenVRML {
     class VrmlScene;
     
     class OPENVRML_SCOPE NodeClass {
-        VrmlScene * scene;
-    
     public:
-        virtual ~NodeClass() throw () = 0;
+        VrmlScene & scene;
         
-        VrmlScene & getScene() const throw ();
+        virtual ~NodeClass() throw () = 0;
         
         virtual const NodeTypePtr
                 createType(const std::string & id,
@@ -112,10 +110,6 @@ namespace OpenVRML {
     protected:
         explicit NodeClass(VrmlScene & scene) throw ();
     };
-    
-    inline VrmlScene & NodeClass::getScene() const throw () {
-        return *this->scene;
-    }
     
     class OPENVRML_SCOPE NodeType {
     public:

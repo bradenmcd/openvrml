@@ -342,7 +342,7 @@ ScriptNode::ScriptNode(ScriptNodeClass & nodeClass):
         Node(this->scriptNodeType), ChildNode(this->scriptNodeType),
         scriptNodeType(nodeClass), directOutput(false), mustEvaluate(false),
         script(0), eventsReceived(0) {
-    this->nodeType.nodeClass.getScene().addScript(*this);
+    this->nodeType.nodeClass.scene.addScript(*this);
 }
 
 /**
@@ -352,7 +352,7 @@ ScriptNode::~ScriptNode() throw () {
     this->shutdown(theSystem->time());
 
     // removeScript ought to call shutdown...
-    this->nodeType.nodeClass.getScene().removeScript(*this);
+    this->nodeType.nodeClass.scene.removeScript(*this);
 
     delete script;
 }
@@ -735,7 +735,7 @@ Script * ScriptNode::createScript() {
 			this->url.getElement(i).end() - 6)))
 	{
 	  Doc2 *relative = 0;
-          relative = this->nodeType.nodeClass.getScene().urlDoc();
+          relative = this->nodeType.nodeClass.scene.urlDoc();
 	  Doc2 doc(this->url.getElement(i), relative);
 	  if ( doc.localName() ) {
 	    return new ScriptJDK(*this, doc.urlBase(), doc.localPath());
@@ -2134,7 +2134,7 @@ namespace {
 
                 const char * const name =
                         script->getScriptNode().nodeType.nodeClass
-                            .getScene().getName();
+                            .scene.getName();
                 *rval = STRING_TO_JSVAL(JS_InternString(cx, name));
                 return JS_TRUE;
             }
@@ -2147,7 +2147,7 @@ namespace {
 
                 const char * const version =
                         script->getScriptNode().nodeType.nodeClass
-                            .getScene().getVersion();
+                            .scene.getVersion();
                 *rval = STRING_TO_JSVAL(JS_InternString(cx, version));
                 return JS_TRUE;
             }
@@ -2167,7 +2167,7 @@ namespace {
 
                 *rval = DOUBLE_TO_JSVAL(JS_NewDouble(cx,
                             script->getScriptNode().nodeType.nodeClass
-                                .getScene().getFrameRate()));
+                                .scene.getFrameRate()));
                 return JS_TRUE;
             }
 
@@ -2179,9 +2179,9 @@ namespace {
 
                 const char * url = 0;
                 if (script->getScriptNode().nodeType.nodeClass
-                        .getScene().urlDoc()) {
+                        .scene.urlDoc()) {
                     url = script->getScriptNode().nodeType.nodeClass
-                            .getScene().urlDoc()->url();
+                            .scene.urlDoc()->url();
                 }
                 if (!url) {
                     url = "";
@@ -2231,7 +2231,7 @@ namespace {
                 assert(parameters.get());
                 
                 script->getScriptNode().nodeType.nodeClass
-                        .getScene().queueLoadUrl(*url, *parameters);
+                        .scene.queueLoadUrl(*url, *parameters);
                 return JS_TRUE;
             }
 
@@ -2262,7 +2262,7 @@ namespace {
                 
                 VrmlNamespace * ns = new VrmlNamespace(); // should be stored with nodes...
                 script->getScriptNode().nodeType.nodeClass
-                        .getScene().queueReplaceNodes(*nodes, *ns);
+                        .scene.queueReplaceNodes(*nodes, *ns);
                 
                 *rval = JSVAL_VOID;
                 return JS_TRUE;
@@ -2291,7 +2291,7 @@ namespace {
                 char *vrmlString = JS_GetStringBytes(str);
                 VrmlNamespace ns;
                 OpenVRML::MFNode kids(script->getScriptNode().nodeType.nodeClass
-                                      .getScene().readString(vrmlString, &ns));
+                                      .scene.readString(vrmlString, &ns));
 
                 if (kids.getLength() == 0) {
                     *rval = JSVAL_NULL;
@@ -2318,7 +2318,7 @@ namespace {
                 assert(script);
                 
                 Doc2 * relative = script->getScriptNode().nodeType.nodeClass
-                        .getScene().urlDoc();
+                        .scene.urlDoc();
                 
                 //
                 // Make sure our first argument (the URL) is an MFString.
@@ -2365,7 +2365,7 @@ namespace {
 	        VrmlNamespace ns;	// this is a problem...
 	        std::auto_ptr<OpenVRML::MFNode>
                         kids(script->getScriptNode().nodeType.nodeClass
-                                .getScene().readWrl(*url, relative, &ns));
+                                .scene.readWrl(*url, relative, &ns));
                 
                 if (!kids.get()) {
                     return JS_FALSE;
@@ -3113,7 +3113,7 @@ namespace {
 
             VrmlNamespace vrmlNamespace;
             const OpenVRML::MFNode nodes =
-                    script->getScriptNode().nodeType.nodeClass.getScene()
+                    script->getScriptNode().nodeType.nodeClass.scene
                         .readString(JS_GetStringBytes(str), &vrmlNamespace);
             //
             // Fail if the string does not produce exactly one node.
@@ -3216,7 +3216,7 @@ namespace {
 	        Script * const script = 
                         static_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
-                script->getScriptNode().nodeType.nodeClass.getScene()
+                script->getScriptNode().nodeType.nodeClass.scene
                         .queueEvent(s_timeStamp, fieldValue, nodePtr,
                                     eventInId);
             } else if (expectType = nodePtr->nodeType.hasField(eventInId)) {
@@ -3232,7 +3232,7 @@ namespace {
 		Script * const script = 
 		        static_cast<Script *>(JS_GetContextPrivate(cx));
 		assert(script);
-		script->getScriptNode().nodeType.nodeClass.getScene()
+		script->getScriptNode().nodeType.nodeClass.scene
                         .queueEvent(s_timeStamp, fieldValue, nodePtr,
                                     eventInId);
 	    }

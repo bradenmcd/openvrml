@@ -2,6 +2,9 @@
 
         * Enable building without OpenGL and GLUT.
 
+        * Make NodeClass::scene a public member instead of using an
+          accessor method.
+
 2002-05-16  Braden McDaniel  <braden@endoframe.com>
 
         * ScriptJDK.cpp: Updates to compile against JDK 1.4.

@@ -1034,7 +1034,7 @@ void Vrml97Parser::protoInterfaceDeclaration(
 			ft=fieldType();
 			id1 = LT(1);
 			match(ID);
-			fv=fieldValue(proto.getScene(), scope, doc, ft);
+			fv=fieldValue(proto.scene, scope, doc, ft);
 #line 711 "Vrml97Parser.g"
 			
 			assert(fv);
@@ -1085,7 +1085,7 @@ void Vrml97Parser::protoBody(
 		{
 		for (;;) {
 			if ((LA(1)==KEYWORD_EXTERNPROTO||LA(1)==KEYWORD_PROTO)) {
-				protoStatement(proto.getScene(), proto.protoNode.scope, doc);
+				protoStatement(proto.scene, proto.protoNode.scope, doc);
 			}
 			else {
 				goto _loop15;
@@ -1483,7 +1483,7 @@ void Vrml97Parser::protoBodyStatement(
 		case KEYWORD_EXTERNPROTO:
 		case KEYWORD_PROTO:
 		{
-			protoStatement(proto.getScene(), proto.protoNode.scope, doc);
+			protoStatement(proto.scene, proto.protoNode.scope, doc);
 			break;
 		}
 		case KEYWORD_ROUTE:
@@ -1529,7 +1529,7 @@ OpenVRML::NodePtr  Vrml97Parser::protoNode(
 		match(ID);
 #line 1047 "Vrml97Parser.g"
 		
-		n.reset(new ScriptNode(proto.getScene().scriptNodeClass));
+		n.reset(new ScriptNode(proto.scene.scriptNodeClass));
 		if (!nodeId.empty()) { n->setId(nodeId, &proto.protoNode.scope); }
 		
 		ScriptNode * const scriptNode = n->toScript();
@@ -1795,7 +1795,7 @@ void Vrml97Parser::nodeBodyElement(
 			}
 			
 #line 1798 "Vrml97Parser.cpp"
-			fv=fieldValue(node.nodeType.nodeClass.getScene(), scope, doc, ft);
+			fv=fieldValue(node.nodeType.nodeClass.scene, scope, doc, ft);
 #line 973 "Vrml97Parser.g"
 			
 			assert(fv);
@@ -1812,7 +1812,7 @@ void Vrml97Parser::nodeBodyElement(
 		case KEYWORD_EXTERNPROTO:
 		case KEYWORD_PROTO:
 		{
-			protoStatement(node.nodeType.nodeClass.getScene(), scope, doc);
+			protoStatement(node.nodeType.nodeClass.scene, scope, doc);
 			break;
 		}
 		default:
@@ -1914,7 +1914,7 @@ void Vrml97Parser::scriptFieldInterfaceDeclaration(
 		ft=fieldType();
 		id = LT(1);
 		match(ID);
-		fv=fieldValue(node.nodeType.nodeClass.getScene(), scope, doc, ft);
+		fv=fieldValue(node.nodeType.nodeClass.scene, scope, doc, ft);
 #line 1023 "Vrml97Parser.g"
 		
 		assert(fv);
@@ -1962,7 +1962,7 @@ void Vrml97Parser::protoNodeBodyElement(
 		case KEYWORD_EXTERNPROTO:
 		case KEYWORD_PROTO:
 		{
-			protoStatement(proto.getScene(), proto.protoNode.scope, doc);
+			protoStatement(proto.scene, proto.protoNode.scope, doc);
 			break;
 		}
 		default:

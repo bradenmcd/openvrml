@@ -708,7 +708,7 @@ protoInterfaceDeclaration[OpenVRML::VrmlNamespace & scope,
             }
         }
     | it=fieldInterfaceType ft=fieldType id1:ID
-        fv=fieldValue[proto.getScene(), scope, doc, ft] {
+        fv=fieldValue[proto.scene, scope, doc, ft] {
             assert(fv);
             try {
                 switch (it) {
@@ -744,7 +744,7 @@ protoBody[const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto]
 {
     OpenVRML::NodePtr n;
 }
-    : (protoStatement[proto.getScene(), proto.protoNode.scope, doc])*
+    : (protoStatement[proto.scene, proto.protoNode.scope, doc])*
         n=protoNodeStatement[doc, proto] { assert(n); proto.addRootNode(n); }
         (protoBodyStatement[doc, proto])*
     ;
@@ -754,7 +754,7 @@ protoBodyStatement[const OpenVRML::Doc2 * doc, OpenVRML::ProtoNodeClass & proto]
     OpenVRML::NodePtr n;
 }
     : n=protoNodeStatement[doc, proto] { assert(n); proto.addRootNode(n); }
-    | protoStatement[proto.getScene(), proto.protoNode.scope, doc]
+    | protoStatement[proto.scene, proto.protoNode.scope, doc]
     | routeStatement[proto.protoNode.scope]
     ;
 
@@ -970,12 +970,12 @@ nodeBodyElement[OpenVRML::VrmlNamespace & scope,
                 }
             }
         }
-        fv=fieldValue[node.nodeType.nodeClass.getScene(), scope, doc, ft] {
+        fv=fieldValue[node.nodeType.nodeClass.scene, scope, doc, ft] {
             assert(fv);
             node.setField(id->getText(), *fv);
         }
     |   routeStatement[scope]
-    |   protoStatement[node.nodeType.nodeClass.getScene(), scope, doc]
+    |   protoStatement[node.nodeType.nodeClass.scene, scope, doc]
     ;
 
 scriptInterfaceDeclaration[OpenVRML::VrmlNamespace & scope,
@@ -1020,7 +1020,7 @@ scriptFieldInterfaceDeclaration[OpenVRML::VrmlNamespace & scope,
     FieldValuePtr fv;
 }
     : KEYWORD_FIELD ft=fieldType id:ID
-        fv=fieldValue[node.nodeType.nodeClass.getScene(), scope, doc, ft] {
+        fv=fieldValue[node.nodeType.nodeClass.scene, scope, doc, ft] {
             assert(fv);
             if (node.nodeType.hasInterface(id->getText())
                     != FieldValue::invalidType) {
@@ -1045,7 +1045,7 @@ options { defaultErrorHandler=false; }
     NodeTypePtr nodeType;
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID {
-            n.reset(new ScriptNode(proto.getScene().scriptNodeClass));
+            n.reset(new ScriptNode(proto.scene.scriptNodeClass));
             if (!nodeId.empty()) { n->setId(nodeId, &proto.protoNode.scope); }
             
             ScriptNode * const scriptNode = n->toScript();
@@ -1102,7 +1102,7 @@ protoNodeBodyElement[const OpenVRML::Doc2 * doc,
         )
     | eventId:ID isStatement[proto, node, eventId->getText()]
     | routeStatement[proto.protoNode.scope]
-    | protoStatement[proto.getScene(), proto.protoNode.scope, doc]
+    | protoStatement[proto.scene, proto.protoNode.scope, doc]
     ;
 
 isStatement[OpenVRML::ProtoNodeClass & proto, OpenVRML::Node & node,

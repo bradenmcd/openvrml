@@ -433,7 +433,7 @@ ProtoNode::ProtoNode(const NodeType & nodeType, const ProtoNode & node):
     //
     // Add to the scene.
     //
-    this->nodeType.nodeClass.getScene().addProto(*this);
+    this->nodeType.nodeClass.scene.addProto(*this);
 }
 
 /**
@@ -443,7 +443,7 @@ ProtoNode::~ProtoNode() throw () {
     //
     // Remove from the scene.
     //
-    this->nodeType.nodeClass.getScene().removeProto(*this);
+    this->nodeType.nodeClass.scene.removeProto(*this);
 }
 
 /**

@@ -995,7 +995,6 @@ void VrmlScene::render(Viewer * viewer) {
     
     // Render the nodes
     for (size_t i = 0; i < this->nodes.getLength(); ++i) {
-        assert(this == &this->nodes.getElement(i)->nodeType.nodeClass.getScene());
         this->nodes.getElement(i)->render(viewer, rc);
     }
     

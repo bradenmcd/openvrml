@@ -4151,7 +4151,7 @@ jobject JNICALL Java_vrml_BaseNode_getBrowser
   jobject jBrowser = env->AllocObject(clazz);
   fid = getFid(env, jBrowser, "BrowserPtr", "I");
   env->SetIntField(jBrowser, fid,
-                   (int) &(pNode->nodeType.nodeClass.getScene()));
+                   (int) &(pNode->nodeType.nodeClass.scene));
   return jBrowser;
 }
 
