@@ -274,13 +274,13 @@ namespace {
  * to use this method. The "primordial" ScriptNode instance must be created
  * with a call to the ScriptNode constructor.
  */
-const NodePtr
+const node_ptr
 ScriptNode::ScriptNodeType::create_node(const ScopePtr & scope) const
     throw (std::bad_alloc)
 {
     ScriptNodeClass & scriptNodeClass =
         static_cast<ScriptNodeClass &>(this->_class);
-    const NodePtr node(new ScriptNode(scriptNodeClass, scope));
+    const node_ptr node(new ScriptNode(scriptNodeClass, scope));
     ScriptNode & scriptNode = dynamic_cast<ScriptNode &>(*node);
 
     //
@@ -504,7 +504,7 @@ void ScriptNode::assignWithSelfRefCheck(const sfnode & inval,
                                         sfnode & retval) const
     throw ()
 {
-    const NodePtr & oldNode = retval.value;
+    const node_ptr & oldNode = retval.value;
 
     //
     // About to relinquish ownership of a sfnode value. If the
@@ -514,8 +514,8 @@ void ScriptNode::assignWithSelfRefCheck(const sfnode & inval,
     // refcounted objects.
     //
     if (oldNode
-            && (dynamic_cast<ScriptNode *>(oldNode.countPtr->first) == this)) {
-        ++oldNode.countPtr->second;
+        && (dynamic_cast<ScriptNode *>(oldNode.count_ptr->first) == this)) {
+        ++oldNode.count_ptr->second;
     }
 
     retval = inval;
@@ -529,9 +529,9 @@ void ScriptNode::assignWithSelfRefCheck(const sfnode & inval,
     // because the reference it held to itself would prevent the
     // refcount from ever dropping to zero.
     //
-    const NodePtr & newNode = retval.value;
-    if (dynamic_cast<ScriptNode *>(newNode.countPtr->first) == this) {
-        --(newNode.countPtr->second);
+    const node_ptr & newNode = retval.value;
+    if (dynamic_cast<ScriptNode *>(newNode.count_ptr->first) == this) {
+        --(newNode.count_ptr->second);
     }
 }
 
@@ -539,22 +539,22 @@ void ScriptNode::assignWithSelfRefCheck(const mfnode & inval,
                                         mfnode & retval) const
     throw ()
 {
-    std::vector<NodePtr>::size_type i;
+    std::vector<node_ptr>::size_type i;
     for (i = 0; i < retval.value.size(); ++i) {
-        const NodePtr & oldNode = retval.value[i];
+        const node_ptr & oldNode = retval.value[i];
         if (oldNode
-            && (dynamic_cast<ScriptNode *>(oldNode.countPtr->first) == this)) {
-            ++oldNode.countPtr->second;
+            && (dynamic_cast<ScriptNode *>(oldNode.count_ptr->first) == this)) {
+            ++oldNode.count_ptr->second;
         }
     }
 
     retval = inval;
 
     for (i = 0; i < retval.value.size(); ++i) {
-        const NodePtr & newNode = retval.value[i];
+        const node_ptr & newNode = retval.value[i];
         if (newNode
-            && (dynamic_cast<ScriptNode *>(newNode.countPtr->first) == this)) {
-            --(newNode.countPtr->second);
+            && (dynamic_cast<ScriptNode *>(newNode.count_ptr->first) == this)) {
+            --(newNode.count_ptr->second);
         }
     }
 }
@@ -1011,7 +1011,7 @@ public:
     static JSClass jsclass;
 
     static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
-    static JSBool toJsval(const NodePtr & node,
+    static JSBool toJsval(const node_ptr & node,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<OpenVRML::sfnode>
@@ -1281,7 +1281,7 @@ public:
     static JSClass jsclass;
 
     static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
-    static JSBool toJsval(const std::vector<NodePtr> & nodes,
+    static JSBool toJsval(const std::vector<node_ptr> & nodes,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<OpenVRML::mfnode>
@@ -2494,7 +2494,7 @@ JSBool createVrmlFromString(JSContext * const cx,
         assert(script->getScriptNode().scene());
         OpenVRML::Browser & browser =
                 script->getScriptNode().scene()->browser;
-        const std::vector<NodePtr> nodes = browser.createVrmlFromStream(in);
+        const std::vector<node_ptr> nodes = browser.createVrmlFromStream(in);
 
         if (nodes.empty()) {
             *rval = JSVAL_NULL;
@@ -2554,7 +2554,7 @@ JSBool createVrmlFromURL(JSContext * const cx, JSObject *,
             sfnode(SFNode::createFromJSObject(cx,
                                         JSVAL_TO_OBJECT(argv[1])));
     assert(sfnode.get());
-    NodePtr node(sfnode->get());
+    node_ptr node(sfnode->get());
     if (!node) { return JS_FALSE; }
 
     //
@@ -3239,7 +3239,7 @@ JSObject * SFNode::initClass(JSContext * const cx, JSObject * const obj)
     return proto;
 }
 
-JSBool SFNode::toJsval(const NodePtr & node,
+JSBool SFNode::toJsval(const node_ptr & node,
                        JSContext * const cx,
                        JSObject * const obj,
                        jsval * const rval)
@@ -3323,7 +3323,7 @@ JSBool SFNode::initObject(JSContext * const cx, JSObject * const obj,
 
     assert(script->getScriptNode().scene());
     OpenVRML::Browser & browser = script->getScriptNode().scene()->browser;
-    std::vector<NodePtr> nodes;
+    std::vector<node_ptr> nodes;
     try {
         nodes = browser.createVrmlFromStream(in);
     } catch (InvalidVrml & ex) {
@@ -3400,7 +3400,7 @@ JSBool SFNode::setProperty(JSContext * const cx, JSObject * const obj,
     OpenVRML::sfnode & thisNode =
             static_cast<OpenVRML::sfnode &>(sfdata->getFieldValue());
 
-    NodePtr nodePtr = thisNode.value;
+    node_ptr nodePtr = thisNode.value;
 
     if (!nodePtr || !JSVAL_IS_STRING(id)) { return JS_FALSE; }
 
@@ -5820,7 +5820,7 @@ JSBool MFNode::initObject(JSContext * const cx, JSObject * const obj,
     return JS_TRUE;
 }
 
-JSBool MFNode::toJsval(const std::vector<NodePtr> & nodes,
+JSBool MFNode::toJsval(const std::vector<node_ptr> & nodes,
                        JSContext * const cx,
                        JSObject * const obj,
                        jsval * const rval)

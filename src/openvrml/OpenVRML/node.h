@@ -166,7 +166,7 @@ namespace OpenVRML {
             throw ();
 
         virtual const node_interface_set & interfaces() const throw () = 0;
-        virtual const NodePtr create_node(const ScopePtr & scope) const
+        virtual const node_ptr create_node(const ScopePtr & scope) const
             throw (std::bad_alloc) = 0;
 
     protected:
@@ -233,10 +233,10 @@ namespace OpenVRML {
         class route {
         public:
             const std::string from_eventout;
-            const NodePtr to_node;
+            const node_ptr to_node;
             const std::string to_eventin;
 
-            route(const std::string & from_eventout, const NodePtr & to_node,
+            route(const std::string & from_eventout, const node_ptr & to_node,
                   const std::string & to_eventin);
             route(const route & route);
         };
@@ -365,10 +365,10 @@ namespace OpenVRML {
         virtual bool bvolume_dirty() const;
 
         void add_route(const std::string & from_eventout,
-                       const NodePtr & toNode, const std::string & to_eventin)
+                       const node_ptr & toNode, const std::string & to_eventin)
             throw (unsupported_interface, field_value_type_mismatch);
         void delete_route(const std::string & from_eventout,
-                          const NodePtr & toNode,
+                          const node_ptr & toNode,
                           const std::string & to_eventin)
             throw ();
 
@@ -443,9 +443,9 @@ namespace OpenVRML {
         virtual const appearance_node * to_appearance() const throw ();
         virtual appearance_node * to_appearance() throw ();
 
-        virtual const NodePtr & material() const throw () = 0;
-        virtual const NodePtr & texture() const throw () = 0;
-        virtual const NodePtr & texture_transform() const throw () = 0;
+        virtual const node_ptr & material() const throw () = 0;
+        virtual const node_ptr & texture() const throw () = 0;
+        virtual const node_ptr & texture_transform() const throw () = 0;
 
     protected:
         appearance_node(const node_type & type, const ScopePtr & scope);
@@ -539,7 +539,7 @@ namespace OpenVRML {
         virtual const grouping_node * to_grouping() const throw ();
         virtual grouping_node * to_grouping() throw ();
 
-        virtual const std::vector<NodePtr> & children() const throw () = 0;
+        virtual const std::vector<node_ptr> & children() const throw () = 0;
         virtual void activate(double timestamp, bool over, bool active,
                               double *p) = 0;
 
@@ -684,8 +684,8 @@ namespace OpenVRML {
         virtual ~node_traverser() throw () = 0;
 
         void traverse(node & node);
-        void traverse(const NodePtr & node);
-        void traverse(const std::vector<NodePtr> & nodes);
+        void traverse(const node_ptr & node);
+        void traverse(const std::vector<node_ptr> & nodes);
 
     protected:
         void halt_traversal() throw ();

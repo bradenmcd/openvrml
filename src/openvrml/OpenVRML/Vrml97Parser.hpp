@@ -12,7 +12,7 @@
 
 # include <memory>
 # include "field.h"
-# include "nodeptr.h"
+# include "node_ptr.h"
 # include "field_value_ptr.h"
 # define ANTLR_LBRACE {
 # define ANTLR_RBRACE }
@@ -140,14 +140,14 @@ public:
 	}
 	public: void vrmlScene(
 		OpenVRML::Browser & browser,
-          std::vector<NodePtr> & nodes
+          std::vector<node_ptr> & nodes
 	);
 	public: void statement(
 		OpenVRML::Browser & browser,
-          std::vector<NodePtr> & nodes,
+          std::vector<node_ptr> & nodes,
           const OpenVRML::ScopePtr & scope
 	);
-	public: OpenVRML::NodePtr  nodeStatement(
+	public: OpenVRML::node_ptr  nodeStatement(
 		OpenVRML::Browser & browser,
               const OpenVRML::ScopePtr & scope
 	);
@@ -158,7 +158,7 @@ public:
 	public: void routeStatement(
 		const OpenVRML::Scope & scope
 	);
-	public: OpenVRML::NodePtr  node(
+	public: OpenVRML::node_ptr  node(
 		OpenVRML::Browser & browser,
      const OpenVRML::ScopePtr & scope,
      const std::string & nodeId
@@ -186,7 +186,7 @@ public:
            const OpenVRML::ScopePtr & scope,
            OpenVRML::field_value::type_id ft
 	);
-	public: OpenVRML::NodePtr  protoNodeStatement(
+	public: OpenVRML::node_ptr  protoNodeStatement(
 		OpenVRML::ProtoNodeClass & proto,
                    const OpenVRML::ScopePtr & scope
 	);
@@ -194,7 +194,7 @@ public:
 		OpenVRML::ProtoNodeClass & proto,
                    const OpenVRML::ScopePtr & scope
 	);
-	public: OpenVRML::NodePtr  protoNode(
+	public: OpenVRML::node_ptr  protoNode(
 		OpenVRML::ProtoNodeClass & proto,
           const OpenVRML::ScopePtr & scope,
           const std::string & nodeId

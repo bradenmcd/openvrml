@@ -91,7 +91,7 @@ namespace OpenVRML {
     private:
         FieldValueMap unISdFieldValueMap;
         EventOutValueMap eventOutValueMap;
-        std::vector<NodePtr> implNodes;
+        std::vector<node_ptr> implNodes;
 
     public:
         explicit ProtoNode(const node_type & nodeType) throw (std::bad_alloc);
@@ -100,9 +100,9 @@ namespace OpenVRML {
                   const ProtoNode & node) throw (std::bad_alloc);
         virtual ~ProtoNode() throw ();
 
-        const std::vector<NodePtr> & getImplNodes() const throw ();
+        const std::vector<node_ptr> & getImplNodes() const throw ();
 
-        void addRootNode(const NodePtr & node) throw (std::bad_alloc);
+        void addRootNode(const node_ptr & node) throw (std::bad_alloc);
         void addIS(node & implNode,
                    const std::string & implNodeInterfaceId,
                    const std::string & protoInterfaceId)
@@ -195,7 +195,7 @@ namespace OpenVRML {
             virtual ~ProtoNodeType() throw ();
 
             virtual const node_interface_set & interfaces() const throw ();
-            virtual const NodePtr create_node(const ScopePtr & scope) const
+            virtual const node_ptr create_node(const ScopePtr & scope) const
                 throw (std::bad_alloc);
 
             void addInterface(const node_interface & interface)
@@ -225,7 +225,7 @@ namespace OpenVRML {
         void addField(const std::string & id,
                       const field_value_ptr & defaultValue)
             throw (std::invalid_argument, std::bad_alloc);
-        void addRootNode(const NodePtr & node) throw (std::bad_alloc);
+        void addRootNode(const node_ptr & node) throw (std::bad_alloc);
         void addIS(node & implNode,
                    const std::string & implNodeInterfaceId,
                    const std::string & protoInterfaceId)
@@ -284,7 +284,7 @@ public:
     virtual ~NullNodeType() throw ();
 
     virtual const node_interface_set & interfaces() const throw ();
-    virtual const NodePtr create_node(const ScopePtr & scope) const throw ();
+    virtual const node_ptr create_node(const ScopePtr & scope) const throw ();
 };
 
 
@@ -540,7 +540,7 @@ InvalidVrml::~InvalidVrml() throw ()
  */
 
 /**
- * @var NodePtr Browser::Event::toNode
+ * @var node_ptr Browser::Event::toNode
  *
  * @brief The Node the event is going to.
  */
@@ -684,7 +684,7 @@ Browser::~Browser() throw ()
  *
  * @return the root nodes for the browser.
  */
-const std::vector<NodePtr> & Browser::getRootNodes() const throw ()
+const std::vector<node_ptr> & Browser::getRootNodes() const throw ()
 {
     assert(this->scene);
     return this->scene->getNodes();
@@ -860,7 +860,7 @@ const std::string Browser::getWorldURI() const throw (std::bad_alloc) {
 /**
  * @todo Implement me!
  */
-void Browser::replaceWorld(const std::vector<NodePtr> & nodes) {}
+void Browser::replaceWorld(const std::vector<node_ptr> & nodes) {}
 
 namespace {
     typedef std::map<std::string, node_class_ptr> NodeClassMap;
@@ -981,7 +981,7 @@ void Browser::loadURI(const std::vector<std::string> & uri,
     const string viewpointNodeId = URI(this->scene->getURI()).getFragment();
     if (!viewpointNodeId.empty()) {
         if (!this->scene->getNodes().empty()) {
-            const NodePtr & n = this->scene->getNodes()[0];
+            const node_ptr & n = this->scene->getNodes()[0];
             if (n) {
                 node * const vp = n->scope()->findNode(viewpointNodeId);
                 initialViewpoint = dynamic_cast<viewpoint_node *>(vp);
@@ -1039,8 +1039,8 @@ void Browser::setDescription(const std::string & description)
  * @exception InvalidVrml       if @p in has invalid VRML syntax.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-const std::vector<NodePtr> Browser::createVrmlFromStream(std::istream & in) {
-    std::vector<NodePtr> nodes;
+const std::vector<node_ptr> Browser::createVrmlFromStream(std::istream & in) {
+    std::vector<node_ptr> nodes;
     try {
         Vrml97Scanner scanner(in);
         Vrml97Parser parser(scanner, "");
@@ -1055,7 +1055,7 @@ const std::vector<NodePtr> Browser::createVrmlFromStream(std::istream & in) {
  * @todo Implement me!
  */
 void Browser::createVrmlFromURI(const std::vector<std::string> & uri,
-                                const NodePtr & node,
+                                const node_ptr & node,
                                 const std::string & event) {}
 
 /**
@@ -1208,7 +1208,7 @@ double Browser::getFrameRate() const { return this->d_frameRate; }
  * the oldest events get overwritten.
  */
 void Browser::queueEvent(double timeStamp, field_value * value,
-			   const NodePtr & toNode,
+			   const node_ptr & toNode,
 			   const std::string & toEventIn) {
     Event * e = &this->d_eventMem[this->d_lastEvent];
     e->timeStamp = timeStamp;
@@ -1488,8 +1488,8 @@ double Browser::getDelta() const { return this->d_deltaTime; }
  *
  * @return the top node of @p stack.
  */
-const NodePtr Browser::bindableTop(const BindStack & stack) {
-    return stack.empty() ? NodePtr(0) : stack.front();
+const node_ptr Browser::bindableTop(const BindStack & stack) {
+    return stack.empty() ? node_ptr(0) : stack.front();
 }
 
 /**
@@ -1498,7 +1498,7 @@ const NodePtr Browser::bindableTop(const BindStack & stack) {
  * @param stack the BindStack onto which to push @p node.
  * @param node  the Node to push onto @p stack.
  */
-void Browser::bindablePush(BindStack & stack, const NodePtr & node) {
+void Browser::bindablePush(BindStack & stack, const node_ptr & node) {
     bindableRemove( stack, node ); // Remove any existing reference
     stack.push_front(node);
     setModified();
@@ -1510,7 +1510,7 @@ void Browser::bindablePush(BindStack & stack, const NodePtr & node) {
  * @param stack the BindStack from which to remove @p node.
  * @param node  the Node to remove from @p stack.
  */
-void Browser::bindableRemove(BindStack & stack, const NodePtr & node) {
+void Browser::bindableRemove(BindStack & stack, const node_ptr & node) {
     const BindStack::iterator pos = std::find(stack.begin(), stack.end(), node);
     if (pos != stack.end()) {
         stack.erase(pos);
@@ -1568,7 +1568,7 @@ Vrml97Node::NavigationInfo * Browser::bindableNavigationInfoTop()
  * @param n a NavigationInfo node.
  */
 void Browser::bindablePush(Vrml97Node::NavigationInfo * n) {
-    bindablePush(d_navigationInfoStack, NodePtr(n));
+    bindablePush(d_navigationInfoStack, node_ptr(n));
 }
 
 /**
@@ -1578,7 +1578,7 @@ void Browser::bindablePush(Vrml97Node::NavigationInfo * n) {
  * @param n a NavigationInfo node.
  */
 void Browser::bindableRemove(Vrml97Node::NavigationInfo * n) {
-    bindableRemove(d_navigationInfoStack, NodePtr(n));
+    bindableRemove(d_navigationInfoStack, node_ptr(n));
 }
 
 /**
@@ -2024,7 +2024,7 @@ const std::string Scene::getURI() const throw (std::bad_alloc) {
  */
 void Scene::initialize(const double timestamp) throw (std::bad_alloc)
 {
-    for (std::vector<NodePtr>::iterator node(this->nodes.begin());
+    for (std::vector<node_ptr>::iterator node(this->nodes.begin());
             node != this->nodes.end(); ++node) {
         assert(*node);
         (*node)->initialize(*this, timestamp);
@@ -2039,7 +2039,7 @@ void Scene::initialize(const double timestamp) throw (std::bad_alloc)
  * @param context   a VrmlRenderContext.
  */
 void Scene::render(Viewer & viewer, VrmlRenderContext context) {
-    for (std::vector<NodePtr>::iterator node(this->nodes.begin());
+    for (std::vector<node_ptr>::iterator node(this->nodes.begin());
             node != this->nodes.end(); ++node) {
         assert(*node);
         (*node)->render(viewer, context);
@@ -2115,7 +2115,7 @@ void Scene::loadURI(const std::vector<std::string> & uri,
  */
 void Scene::shutdown(const double timestamp) throw ()
 {
-    for (std::vector<NodePtr>::iterator node(this->nodes.begin());
+    for (std::vector<node_ptr>::iterator node(this->nodes.begin());
             node != this->nodes.end(); ++node) {
         if (*node) { (*node)->shutdown(timestamp); }
     }
@@ -2323,12 +2323,12 @@ ProtoNode::ProtoNode(const node_type & nodeType,
 
             this->protoDef = &protoDef;
             this->protoInstance = &protoInstance;
-            const std::vector<NodePtr> & protoDefImplNodes =
+            const std::vector<node_ptr> & protoDefImplNodes =
                     protoDef.getImplNodes();
-            for (std::vector<NodePtr>::const_iterator node =
+            for (std::vector<node_ptr>::const_iterator node =
                     protoDefImplNodes.begin();
                     node != protoDefImplNodes.end(); ++node) {
-                const NodePtr newNode =
+                const node_ptr newNode =
                         this->cloneNode(*node, protoInstance.scope());
                 assert(newNode);
                 protoInstance.addRootNode(newNode);
@@ -2357,13 +2357,13 @@ ProtoNode::ProtoNode(const node_type & nodeType,
             return result;
         }
 
-        const NodePtr cloneNode(const NodePtr & n,
+        const node_ptr cloneNode(const node_ptr & n,
                                 const ScopePtr & targetScope)
             throw (std::bad_alloc)
         {
             assert(targetScope);
 
-            NodePtr result(0);
+            node_ptr result(0);
 
             if (!n) { return result; }
 
@@ -2465,7 +2465,7 @@ ProtoNode::ProtoNode(const node_type & nodeType,
                 for (node::routes_t::const_iterator route = routes.begin();
                         route != routes.end(); ++route) {
                     const std::string & toNodeId = route->to_node->id();
-                    const NodePtr
+                    const node_ptr
                         toNode(this->targetScope.findNode(toNodeId));
                     assert(toNode);
                     fromNode->add_route(route->from_eventout,
@@ -2525,13 +2525,13 @@ ProtoNode::ProtoNode(const node_type & nodeType,
             return result;
         }
 
-        const NodePtr cloneNode(const NodePtr & node,
+        const node_ptr cloneNode(const node_ptr & node,
                                 const ScopePtr & targetScope)
             throw (std::bad_alloc)
         {
             assert(targetScope);
 
-            NodePtr result(0);
+            node_ptr result(0);
 
             if (!node) { return result; }
 
@@ -3033,7 +3033,7 @@ viewpoint_node * ProtoNode::to_viewpoint() throw ()
  *
  * @return the implementation Nodes
  */
-const std::vector<NodePtr> & ProtoNode::getImplNodes() const throw ()
+const std::vector<node_ptr> & ProtoNode::getImplNodes() const throw ()
 {
     return this->implNodes;
 }
@@ -3041,7 +3041,7 @@ const std::vector<NodePtr> & ProtoNode::getImplNodes() const throw ()
 /**
  * @brief Add a root node to the prototype definition.
  */
-void ProtoNode::addRootNode(const NodePtr & node) throw (std::bad_alloc)
+void ProtoNode::addRootNode(const node_ptr & node) throw (std::bad_alloc)
 {
     assert(node);
     this->implNodes.push_back(node);
@@ -3469,13 +3469,13 @@ const node_interface_set & ProtoNodeClass::ProtoNodeType::interfaces() const
 /**
  * @brief Create a Node of this type.
  *
- * @return a NodePtr to a new Node.
+ * @return a node_ptr to a new Node.
  */
-const NodePtr
+const node_ptr
 ProtoNodeClass::ProtoNodeType::create_node(const ScopePtr & scope) const
     throw (std::bad_alloc)
 {
-    return NodePtr(new ProtoNode(*this, scope,
+    return node_ptr(new ProtoNode(*this, scope,
                                  static_cast<ProtoNodeClass &>(this->_class)
                                     .protoNode));
 }
@@ -3637,11 +3637,11 @@ void ProtoNodeClass::addField(const std::string & id,
 /**
  * @brief Add a root node to the prototype definition.
  *
- * @param node  a NodePtr to a non-NULL node.
+ * @param node  a node_ptr to a non-NULL node.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void ProtoNodeClass::addRootNode(const NodePtr & node) throw (std::bad_alloc) {
+void ProtoNodeClass::addRootNode(const node_ptr & node) throw (std::bad_alloc) {
     this->protoNode.addRootNode(node);
 }
 
@@ -4948,10 +4948,10 @@ const node_interface_set & NullNodeType::interfaces() const throw ()
     return interfaces;
 }
 
-const NodePtr NullNodeType::create_node(const ScopePtr & scope) const throw ()
+const node_ptr NullNodeType::create_node(const ScopePtr & scope) const throw ()
 {
     assert(false);
-    static const NodePtr node;
+    static const node_ptr node;
     return node;
 }
 

@@ -237,7 +237,7 @@ namespace OpenVRML {
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
 
-            virtual const std::vector<NodePtr> & children() const throw ();
+            virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timeStamp, bool isOver, bool isActive, double *p);
 
             void renderNoCull(Viewer & viewer, VrmlRenderContext context);
@@ -351,9 +351,9 @@ namespace OpenVRML {
             //
             // appearance_node implementation
             //
-            virtual const NodePtr & material() const throw ();
-            virtual const NodePtr & texture() const throw ();
-            virtual const NodePtr & texture_transform() const throw ();
+            virtual const node_ptr & material() const throw ();
+            virtual const node_ptr & texture() const throw ();
+            virtual const node_ptr & texture_transform() const throw ();
 
         private:
             //
@@ -1315,7 +1315,7 @@ namespace OpenVRML {
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             virtual Inline * to_inline() const;
 
-            virtual const std::vector<NodePtr> & children() const throw ();
+            virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 
@@ -1361,7 +1361,7 @@ namespace OpenVRML {
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             virtual const BVolume * bvolume() const;
 
-            virtual const std::vector<NodePtr> & children() const throw ();
+            virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 
@@ -2240,7 +2240,7 @@ namespace OpenVRML {
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             virtual const BVolume * bvolume() const;
 
-            virtual const std::vector<NodePtr> & children() const throw ();
+            virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 

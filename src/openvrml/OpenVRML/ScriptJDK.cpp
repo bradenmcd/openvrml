@@ -93,7 +93,7 @@
 #   include "System.h"
 #   include "script.h"
 #   include "browser.h"
-#   include "nodeptr.h"
+#   include "node_ptr.h"
 #   include "node.h"
 #   include "field.h"
 
@@ -1545,7 +1545,7 @@ void JNICALL Java_vrml_field_ConstSFNode_CreateObject(JNIEnv * env,
             node * baseNode =
                 reinterpret_cast<node *>(env->GetIntField(value, fid));
             if (!baseNode) return;
-            sfn.reset(new sfnode(NodePtr(baseNode)));
+            sfn.reset(new sfnode(node_ptr(baseNode)));
         }
 
         fid = getFid(env, obj, "FieldPtr", "I");
@@ -1637,7 +1637,7 @@ void JNICALL Java_vrml_field_SFNode_setValue__Lvrml_BaseNode_2(JNIEnv * env,
     jfieldID fid = getFid(env, value, "NodePtr", "I");
     if (!fid) { return; }
     node * const n = reinterpret_cast<node *>(env->GetIntField(value, fid));
-    sfn->value = NodePtr(n);
+    sfn->value = node_ptr(n);
 }
 
 /**
@@ -3785,13 +3785,13 @@ void JNICALL Java_vrml_field_ConstMFNode_getValue(JNIEnv * env,
 {
     mfnode * mfn = static_cast<mfnode*>(getFieldValue(env, obj));
     if (!mfn) { return; }
-    std::vector<NodePtr>::size_type arraySize = mfn->value.size();
+    std::vector<node_ptr>::size_type arraySize = mfn->value.size();
     jclass clazz = env->FindClass("vrml/node/Node");
     jobject jNode;
     jfieldID fid = env->GetFieldID(clazz, "NodePtr", "I");
     if (!fid) { return; }
 
-    for (std::vector<NodePtr>::size_type pos = 0; pos < arraySize; ++pos) {
+    for (std::vector<node_ptr>::size_type pos = 0; pos < arraySize; ++pos) {
         jNode = env->AllocObject(clazz);
         env->SetIntField(jNode, fid,
                          reinterpret_cast<int>(mfn->value[pos].get()));
@@ -3952,7 +3952,7 @@ void JNICALL Java_vrml_field_MFNode_set1Value__ILvrml_BaseNode_2(JNIEnv * env,
     node * const newNode =
         reinterpret_cast<node *>(env->GetIntField(value, fid));
     if (!newNode) { return; }
-    mfn->value[pos] = NodePtr(newNode);
+    mfn->value[pos] = node_ptr(newNode);
 }
 
 void JNICALL
@@ -3995,7 +3995,7 @@ void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_BaseNode_2(JNIEnv * env,
         reinterpret_cast<node *>(env->GetIntField(value, fid));
     if (!newNode) { return; }
     try {
-        mfn->value.push_back(NodePtr(newNode));
+        mfn->value.push_back(node_ptr(newNode));
     } catch (std::bad_alloc & ex) {
         env->ExceptionDescribe();
         env->ExceptionClear();
@@ -4075,7 +4075,7 @@ Java_vrml_field_MFNode_insertValue__ILvrml_BaseNode_2(JNIEnv * env,
         env->ThrowNew(exceptionClass, "index out of bounds");
     }
     try {
-        mfn->value.insert(mfn->value.begin() + index, NodePtr(newNode));
+        mfn->value.insert(mfn->value.begin() + index, node_ptr(newNode));
     } catch (std::bad_alloc & ex) {
         env->ExceptionDescribe();
         env->ExceptionClear();
@@ -7303,7 +7303,7 @@ void JNICALL Java_vrml_Browser_addRoute(JNIEnv * const env,
     str = env->GetStringUTFChars(toEventIn, 0);
     std::string eventIn(str);
     env->ReleaseStringUTFChars(toEventIn, str);
-    fromNode->add_route(eventOut, NodePtr(toNode), eventIn);
+    fromNode->add_route(eventOut, node_ptr(toNode), eventIn);
 }
 
 /**
@@ -7342,7 +7342,7 @@ void JNICALL Java_vrml_Browser_deleteRoute(JNIEnv * const env,
     str = env->GetStringUTFChars(toEventIn, 0);
     std::string eventIn(str);
     env->ReleaseStringUTFChars(toEventIn, str);
-    fromNode->delete_route(eventOut, NodePtr(toNode), eventIn);
+    fromNode->delete_route(eventOut, node_ptr(toNode), eventIn);
 }
 
 /**

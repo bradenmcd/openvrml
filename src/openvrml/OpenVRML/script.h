@@ -81,7 +81,7 @@ namespace OpenVRML {
                     throw (std::invalid_argument);
 
             virtual const node_interface_set & interfaces() const throw ();
-            virtual const NodePtr create_node(const ScopePtr & scope) const
+            virtual const node_ptr create_node(const ScopePtr & scope) const
                     throw (std::bad_alloc);
         };
 

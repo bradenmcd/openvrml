@@ -65,10 +65,10 @@ namespace OpenVRML {
         NodeClassMap nodeClassMap;
         ScriptNodeClass scriptNodeClass;
         Scene * scene;
-        NodePtr defaultViewpoint;
+        node_ptr defaultViewpoint;
         viewpoint_node * activeViewpoint;
         std::list<viewpoint_node *> viewpointList;
-        typedef std::list<NodePtr> BindStack;
+        typedef std::list<node_ptr> BindStack;
         BindStack d_navigationInfoStack;
         std::list<node *> d_navigationInfos;
         std::list<node *> d_scopedLights;
@@ -87,7 +87,7 @@ namespace OpenVRML {
         struct Event {
             double timeStamp;
             field_value * value;
-            NodePtr toNode;
+            node_ptr toNode;
             std::string toEventIn;
         };
 
@@ -110,7 +110,7 @@ namespace OpenVRML {
         Browser(std::ostream & out, std::ostream & err) throw (std::bad_alloc);
         virtual ~Browser() throw ();
 
-        const std::vector<NodePtr> & getRootNodes() const throw ();
+        const std::vector<node_ptr> & getRootNodes() const throw ();
         const node_path findNode(const node & node) const
             throw (std::bad_alloc);
         viewpoint_node & getActiveViewpoint() const throw ();
@@ -124,14 +124,14 @@ namespace OpenVRML {
         virtual const char * getVersion() const throw ();
         float getCurrentSpeed();
         const std::string getWorldURI() const throw (std::bad_alloc);
-        void replaceWorld(const std::vector<NodePtr> & nodes);
+        void replaceWorld(const std::vector<node_ptr> & nodes);
         virtual void loadURI(const std::vector<std::string> & uri,
                              const std::vector<std::string> & parameter)
             throw (std::bad_alloc);
         virtual void setDescription(const std::string & description);
-        const std::vector<NodePtr> createVrmlFromStream(std::istream & in);
+        const std::vector<node_ptr> createVrmlFromStream(std::istream & in);
         void createVrmlFromURI(const std::vector<std::string> & uri,
-                               const NodePtr & node,
+                               const node_ptr & node,
                                const std::string & event);
 
         void addWorldChangedCallback(SceneCB);
@@ -140,7 +140,7 @@ namespace OpenVRML {
 		            bool isOver, bool isActive, double *point );
 
         void queueEvent(double timeStamp, field_value * value,
-                        const NodePtr & toNode, const std::string & toEventIn);
+                        const node_ptr & toNode, const std::string & toEventIn);
 
         bool eventsPending();
 
@@ -188,9 +188,9 @@ namespace OpenVRML {
         bool headlightOn();
         void doCallbacks(CBReason reason);
 
-        const NodePtr bindableTop(const BindStack & stack);
-        void bindablePush(BindStack & stack, const NodePtr & node);
-        void bindableRemove(BindStack & stack, const NodePtr & node);
+        const node_ptr bindableTop(const BindStack & stack);
+        void bindablePush(BindStack & stack, const node_ptr & node);
+        void bindableRemove(BindStack & stack, const node_ptr & node);
 
     private:
         // Not copyable.
@@ -223,7 +223,7 @@ namespace OpenVRML {
 
 
     class OPENVRML_SCOPE Scene {
-        std::vector<NodePtr> nodes;
+        std::vector<node_ptr> nodes;
         std::string uri;
 
     public:
@@ -235,7 +235,7 @@ namespace OpenVRML {
             throw (InvalidVrml, std::bad_alloc);
 
         void initialize(double timestamp) throw (std::bad_alloc);
-        const std::vector<NodePtr> & getNodes() const throw ();
+        const std::vector<node_ptr> & getNodes() const throw ();
         const std::string getURI() const throw (std::bad_alloc);
         void render(Viewer & viewer, VrmlRenderContext context);
         void loadURI(const std::vector<std::string> & uri,
@@ -249,7 +249,7 @@ namespace OpenVRML {
         Scene & operator=(const Scene &);
     };
 
-    inline const std::vector<NodePtr> & Scene::getNodes() const throw()
+    inline const std::vector<node_ptr> & Scene::getNodes() const throw()
     {
         return this->nodes;
     }

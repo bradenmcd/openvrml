@@ -297,7 +297,7 @@ namespace {
             throw (unsupported_interface);
 
         virtual const node_interface_set & interfaces() const throw ();
-        virtual const NodePtr create_node(const ScopePtr & scope) const
+        virtual const node_ptr create_node(const ScopePtr & scope) const
             throw (std::bad_alloc);
 
     private:
@@ -451,11 +451,11 @@ namespace {
     }
 
     template <typename NodeT>
-    const NodePtr
+    const node_ptr
     Vrml97NodeTypeImpl<NodeT>::create_node(const ScopePtr & scope) const
         throw (std::bad_alloc)
     {
-        return NodePtr(new NodeT(*this, scope));
+        return node_ptr(new NodeT(*this, scope));
     }
 
     template <typename NodeT>
@@ -1494,7 +1494,7 @@ void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
  * @returns an sfnode object containing the Material node associated with
  *          this Appearance.
  */
-const NodePtr & Appearance::material() const throw ()
+const node_ptr & Appearance::material() const throw ()
 {
     return this->material_.value;
 }
@@ -1505,7 +1505,7 @@ const NodePtr & Appearance::material() const throw ()
  * @return an sfnode object containing the texture node associated with
  *         this Appearance.
  */
-const NodePtr & Appearance::texture() const throw ()
+const node_ptr & Appearance::texture() const throw ()
 {
     return this->texture_.value;
 }
@@ -1516,7 +1516,7 @@ const NodePtr & Appearance::texture() const throw ()
  * @return an sfnode object containing the TextureTransform node
  *         associated with this Appearance.
  */
-const NodePtr & Appearance::texture_transform() const throw ()
+const node_ptr & Appearance::texture_transform() const throw ()
 {
     return this->textureTransform.value;
 }
@@ -5822,7 +5822,7 @@ void Group::processAddChildren(const field_value & value,
     size_t nNow = this->children_.value.size();
 
     for (size_t i = 0; i < newChildren.value.size(); ++i) {
-        const NodePtr & child = newChildren.value[i];
+        const node_ptr & child = newChildren.value[i];
         if (child && child->to_child()) {
             this->children_.value.push_back(child);
             child->relocate();
@@ -5856,13 +5856,13 @@ void Group::processRemoveChildren(const field_value & value,
     const size_t oldLength = this->children_.value.size();
 
     for (size_t i = 0; i < childrenToRemove.value.size(); ++i) {
-        const NodePtr & node = childrenToRemove.value[i];
+        const node_ptr & node = childrenToRemove.value[i];
         if (node) {
             using std::remove;
             using std::vector;
-            const vector<NodePtr>::iterator begin =
+            const vector<node_ptr>::iterator begin =
                 this->children_.value.begin();
-            const vector<NodePtr>::iterator end = this->children_.value.end();
+            const vector<node_ptr>::iterator end = this->children_.value.end();
             this->children_.value.erase(remove(begin, end, node), end);
         }
     }
@@ -5977,7 +5977,7 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
         // Draw nodes that impact their siblings (DirectionalLights,
         // TouchSensors, any others? ...)
         for (i = 0; i < n; ++i) {
-          const NodePtr & kid = this->children_.value[i];
+          const node_ptr & kid = this->children_.value[i];
 
             if (kid->to_light()
                     && !(kid->to_point_light() || kid->to_spot_light())) {
@@ -5996,7 +5996,7 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
 
         // Do the rest of the children (except the scene-level lights)
         for (i = 0; i<n; ++i) {
-            const NodePtr & child = this->children_.value[i];
+            const node_ptr & child = this->children_.value[i];
             if (!(child->to_light()
 //                    || child->to_plane_sensor()
 //                    || child->to_cylinder_sensor()
@@ -6020,7 +6020,7 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
  *
  * @return the child nodes in the scene graph.
  */
-const std::vector<NodePtr> & Group::children() const throw ()
+const std::vector<node_ptr> & Group::children() const throw ()
 {
     return this->children_.value;
 }
@@ -6031,7 +6031,7 @@ const std::vector<NodePtr> & Group::children() const throw ()
 void Group::activate(double time, bool isOver, bool isActive, double *p)
 {
     for (size_t i = 0; i < this->children_.value.size(); ++i) {
-        const NodePtr & node = this->children_.value[i];
+        const node_ptr & node = this->children_.value[i];
         if (node) {
             if (node->to_touch_sensor()
                     && node->to_touch_sensor()->isEnabled()) {
@@ -6069,7 +6069,7 @@ void Group::recalcBSphere()
 {
     this->bsphere.reset();
     for (size_t i = 0; i < this->children_.value.size(); ++i) {
-        const NodePtr & node = this->children_.value[i];
+        const node_ptr & node = this->children_.value[i];
         if (node) {
             const BVolume * const ci_bv = node->bvolume();
             if (ci_bv) { this->bsphere.extend(*ci_bv); }
@@ -7020,9 +7020,9 @@ Inline * Inline::to_inline() const { return const_cast<Inline *>(this); }
  *
  * @return the child nodes in the scene graph.
  */
-const std::vector<NodePtr> & Inline::children() const throw ()
+const std::vector<node_ptr> & Inline::children() const throw ()
 {
-    static const std::vector<NodePtr> empty;
+    static const std::vector<node_ptr> empty;
     return this->inlineScene
             ? this->inlineScene->getNodes()
             : empty;
@@ -7033,9 +7033,9 @@ const std::vector<NodePtr> & Inline::children() const throw ()
  */
 void Inline::activate(double time, bool isOver, bool isActive, double *p)
 {
-    const std::vector<NodePtr> & children = this->children();
+    const std::vector<node_ptr> & children = this->children();
     for (size_t i = 0; i < children.size(); ++i) {
-        const NodePtr & node = children[i];
+        const node_ptr & node = children[i];
         if (node) {
             if (node->to_touch_sensor()
                     && node->to_touch_sensor()->isEnabled()) {
@@ -7295,7 +7295,7 @@ const BVolume * LOD::bvolume() const {
  *
  * @return the child nodes in the scene graph.
  */
-const std::vector<NodePtr> & LOD::children() const throw ()
+const std::vector<node_ptr> & LOD::children() const throw ()
 {
     return this->children_.value;
 }
@@ -7305,8 +7305,8 @@ const std::vector<NodePtr> & LOD::children() const throw ()
  */
 void LOD::activate(double time, bool isOver, bool isActive, double *p)
 {
-    const std::vector<NodePtr> & children = this->children();
-    const NodePtr & node = children[0];
+    const std::vector<node_ptr> & children = this->children();
+    const node_ptr & node = children[0];
     if (node) {
         if (node->to_touch_sensor() && node->to_touch_sensor()->isEnabled()) {
             node->to_touch_sensor()->activate(time, isOver, isActive, p);
@@ -7342,7 +7342,7 @@ void LOD::recalcBSphere() {
     // them in all at once. live with it for now.
     //
     for (size_t i = 0; i < this->level.value.size(); i++) {
-        const NodePtr & node = this->level.value[i];
+        const node_ptr & node = this->level.value[i];
         if (node) {
             const BVolume * ci_bv = node->bvolume();
             this->bsphere.extend(*ci_bv);
@@ -11106,7 +11106,7 @@ const BVolume* Shape::bvolume() const
     // just pass off to the geometry's getbvolume() method
     //
     const BVolume * r = 0;
-    const NodePtr & geom = this->geometry.value;
+    const node_ptr & geom = this->geometry.value;
     if (geom) { r = geom->bvolume(); }
     ((Shape*)this)->bvolume_dirty(false);
     return r;
@@ -12628,7 +12628,7 @@ const BVolume* Switch::bvolume() const {
  *
  * @return the child nodes in the scene graph.
  */
-const std::vector<NodePtr> & Switch::children() const throw ()
+const std::vector<node_ptr> & Switch::children() const throw ()
 {
     return this->children_.value;
 }
@@ -12638,8 +12638,8 @@ const std::vector<NodePtr> & Switch::children() const throw ()
  */
 void Switch::activate(double time, bool isOver, bool isActive, double *p)
 {
-    const std::vector<NodePtr> & children = this->children();
-    const NodePtr & node = children[0];
+    const std::vector<node_ptr> & children = this->children();
+    const node_ptr & node = children[0];
     if (node) {
         if (node->to_touch_sensor() && node->to_touch_sensor()->isEnabled()) {
             node->to_touch_sensor()->activate(time, isOver, isActive, p);
@@ -12663,7 +12663,7 @@ void Switch::recalcBSphere() {
     this->bsphere.reset();
     long w = this->whichChoice.value;
     if (w >= 0 && size_t(w) < this->choice.value.size()) {
-        const NodePtr & node = this->choice.value[w];
+        const node_ptr & node = this->choice.value[w];
         if (node) {
             const BVolume * ci_bv = node->bvolume();
             if (ci_bv) { this->bsphere.extend(*ci_bv); }
@@ -12689,7 +12689,7 @@ void Switch::processSet_choice(const field_value & value,
     const size_t whichChoice = size_t(this->whichChoice.value);
     this->children_.value[0] = (whichChoice < this->choice.value.size())
                              ? this->choice.value[whichChoice]
-                             : NodePtr(0);
+                             : node_ptr(0);
     this->node::modified(true);
     this->emit_event("choice_changed", this->choice, timestamp);
 }
@@ -12710,7 +12710,7 @@ void Switch::processSet_whichChoice(const field_value & value,
     const size_t whichChoice = size_t(this->whichChoice.value);
     this->children_.value[0] = (whichChoice < this->choice.value.size())
                              ? this->choice.value[whichChoice]
-                             : NodePtr(0);
+                             : node_ptr(0);
     this->node::modified(true);
     this->emit_event("whichChoice_changed", this->whichChoice, timestamp);
 }
@@ -15589,7 +15589,7 @@ void Transform::recalcBSphere()
 {
     this->bsphere.reset();
     for (size_t i = 0; i < this->children_.value.size(); ++i) {
-        const NodePtr & node = this->children_.value[i];
+        const node_ptr & node = this->children_.value[i];
         if (node) {
             const BVolume * ci_bv = node->bvolume();
             if (ci_bv) { this->bsphere.extend(*ci_bv); }

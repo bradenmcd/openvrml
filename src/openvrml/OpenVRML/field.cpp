@@ -1001,9 +1001,9 @@ field_value::type_id sfint32::type() const throw ()
 /**
  * @brief Constructor.
  *
- * @param node a NodePtr
+ * @param node a node_ptr
  */
-sfnode::sfnode(const NodePtr & node) throw ():
+sfnode::sfnode(const node_ptr & node) throw ():
     value(node)
 {}
 
@@ -2049,7 +2049,7 @@ void mfint32::print(std::ostream & out) const
  */
 
 /**
- * @var std::vector<NodePtr> mfnode::value
+ * @var std::vector<node_ptr> mfnode::value
  *
  * @brief Node references.
  */
@@ -2066,7 +2066,7 @@ void mfint32::print(std::ostream & out) const
  *
  * @post size is @p n. Every element is a copy of @p value.
  */
-mfnode::mfnode(const std::vector<NodePtr>::size_type n, const NodePtr & value)
+mfnode::mfnode(const std::vector<node_ptr>::size_type n, const node_ptr & value)
     throw (std::bad_alloc):
     value(n, value)
 {}
@@ -2140,7 +2140,7 @@ void mfnode::print(std::ostream & out) const
 {
     out << '[';
     if (this->value.size() > 1) {
-        for (std::vector<NodePtr>::const_iterator i(this->value.begin());
+        for (std::vector<node_ptr>::const_iterator i(this->value.begin());
                 i != this->value.end() - 1; ++i) {
             if (*i) { out << **i << ", "; }
         }

@@ -39,7 +39,7 @@ namespace OpenVRML {
  *
  * @brief Exception to indicate that a node interface is not supported.
  *
- * This exception is thrown by Node::setField and Node::processEvent to
+ * This exception is thrown by node::setField and node::processEvent to
  * indicate that the node doesn't support the interface through which the
  * caller is trying to modify the node. It is also thrown by
  * node_class::createType if the class object doesn't support an interface
@@ -270,7 +270,7 @@ node_interface::node_interface(const type_id type,
  * @brief A group of unique @link node_interface node_interfaces@endlink.
  *
  * node_interface_sets are used to construct new
- * @link NodeType NodeTypes@endlink. NodeType objects also expose their
+ * @link node_type node_types@endlink. node_type objects also expose their
  * interfaces as a node_interface_set. The interfaces in a node_interface_set
  * are guaranteed to be unique and non-conflicting.
  */
@@ -390,13 +390,13 @@ node_interface_set::find(const std::string & id) const throw ()
 /**
  * @class node_class
  *
- * @brief A class object for Node instances.
+ * @brief A class object for node instances.
  *
  * node_class can be thought of as a "supertype" of sorts. A given node
  * implementation can support as many node types as there are unique
  * combinations of the interfaces it supports. The most readily apparent
  * role of the node_class object for a node implementation is to serve as
- * a factory for these @link NodeType NodeTypes@endlink.
+ * a factory for these @link node_type node_types@endlink.
  */
 
 /**
@@ -408,7 +408,7 @@ node_interface_set::find(const std::string & id) const throw ()
 /**
  * @brief Constructor.
  *
- * A node_class is constructed using a Browser. All Node instances that share
+ * A node_class is constructed using a Browser. All node instances that share
  * a particular node_class "belong to" the Browser associated with the node_class.
  *
  * @param browser   the Browser to be associated with the node_class.
@@ -475,7 +475,7 @@ void node_class::render(Viewer & viewer) throw ()
 /**
  * @class node_type
  *
- * @brief Type information object for @link Node Nodes@endlink.
+ * @brief Type information object for @link node nodes@endlink.
  */
 
 /**
@@ -684,13 +684,13 @@ field_value::type_id node_type::has_field(const std::string & id) const
  */
 
 /**
- * @fn const NodePtr node_type::create_node(const ScopePtr & scope) const throw (std::bad_alloc)
+ * @fn const node_ptr node_type::create_node(const ScopePtr & scope) const throw (std::bad_alloc)
  *
- * @brief Create a new Node with this node_type.
+ * @brief Create a new node with this node_type.
  *
  * @param scope         the Scope that the new node should belong to.
  *
- * @return a NodePtr to a new Node.
+ * @return a node_ptr to a new node.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -744,7 +744,7 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
- * @var const NodePtr node::route::to_node
+ * @var const node_ptr node::route::to_node
  *
  * @brief The node the route is going to.
  */
@@ -764,7 +764,7 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  *                      going to.
  */
 node::route::route(const std::string & from_eventout,
-                   const NodePtr & to_node, const std::string & to_eventin):
+                   const node_ptr & to_node, const std::string & to_eventin):
     from_eventout(from_eventout),
     to_node(to_node),
     to_eventin(to_eventin)
@@ -817,7 +817,7 @@ node::route::route(const route & route):
  */
 
 /**
- * @var const field_value_ptr Node::polled_eventout_value::value
+ * @var const field_value_ptr node::polled_eventout_value::value
  *
  * @brief The value.
  */
@@ -851,19 +851,19 @@ node::polled_eventout_value::polled_eventout_value(
 /**
  * @var ScopePtr node::scope_
  *
- * @brief The Scope to which the Node belongs.
+ * @brief The Scope to which the node belongs.
  */
 
 /**
  * @var Scene * node::scene_
  *
- * @brief The Scene with which the Node is associated.
+ * @brief The Scene with which the node is associated.
  */
 
 /**
  * @var node::routes_t node::routes_
  *
- * @brief The list of routes from the Node.
+ * @brief The list of routes from the node.
  */
 
 /**
@@ -1015,7 +1015,7 @@ void node::add_eventout_is(const std::string & eventout_id,
  * @p scene and @p timestamp. If the node has already been initialized, this
  * method has no effect.
  *
- * @param scene     the Scene to which the Node will belong.
+ * @param scene     the Scene to which the node will belong.
  * @param timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
@@ -1588,7 +1588,7 @@ viewpoint_node * node::to_viewpoint() throw ()
 }
 
 
-// Safe node downcasts. These avoid the dangerous casts of Node* (esp in
+// Safe node downcasts. These avoid the dangerous casts of node* (esp in
 // presence of protos), but are ugly in that this class must know about all
 // the subclasses. These return 0 if the typecast is invalid.
 // Remember to also add new ones to NodeProto. Protos should
@@ -1638,7 +1638,7 @@ Vrml97Node::TouchSensor * node::to_touch_sensor() const { return 0; }
  * @pre @p to_node is not null.
  */
 void node::add_route(const std::string & from_eventout,
-                     const NodePtr & to_node,
+                     const node_ptr & to_node,
                      const std::string & to_eventin)
     throw (unsupported_interface, field_value_type_mismatch)
 {
@@ -1690,7 +1690,7 @@ void node::add_route(const std::string & from_eventout,
  * @param to_eventin    an eventIn of @p to_node.
  */
 void node::delete_route(const std::string & from_eventout,
-                        const NodePtr & to_node,
+                        const node_ptr & to_node,
                         const std::string & to_eventin) throw ()
 {
     const routes_t::iterator pos =
@@ -1942,7 +1942,7 @@ std::ostream & node::print(std::ostream & out, const size_t indent) const
  * @brief Stream output.
  *
  * @param out   output stream.
- * @param n     a Node.
+ * @param n     a node.
  *
  * @return @p out.
  */
@@ -1952,9 +1952,9 @@ std::ostream & operator<<(std::ostream & out, const node & n)
 }
 
 /**
- * @brief Node subclass-specific initialization.
+ * @brief node subclass-specific initialization.
  *
- * This method is called by node::initialize. Subclasses of Node should
+ * This method is called by node::initialize. Subclasses of node should
  * override this method for any subclass-specific initialization.
  *
  * The default implementation of this method does nothing.
@@ -1967,9 +1967,9 @@ void node::do_initialize(const double timestamp) throw (std::bad_alloc)
 {}
 
 /**
- * @brief Node subclass-specific relocation update.
+ * @brief node subclass-specific relocation update.
  *
- * This method is called by node::relocate. Subclasses of Node should override
+ * This method is called by node::relocate. Subclasses of node should override
  * this method for any subclass-specific updates that need to be performed
  * following relocation of a node to a new position in the scene graph (for
  * example, updating a NodePath).
@@ -1981,9 +1981,9 @@ void node::do_relocate() throw (std::bad_alloc)
 
 
 /**
- * @brief Node subclass-specific shut down.
+ * @brief node subclass-specific shut down.
  *
- * This method is called by node::shutdown. Subclasses of Node should
+ * This method is called by node::shutdown. Subclasses of node should
  * override this method for any subclass-specific shut down. Note that
  * this method cannot throw.
  *
@@ -2039,7 +2039,7 @@ appearance_node * appearance_node::to_appearance() throw ()
 }
 
 /**
- * @fn const NodePtr & appearance_node::material() const throw ()
+ * @fn const node_ptr & appearance_node::material() const throw ()
  *
  * @brief Get the material node associated with this appearance node.
  *
@@ -2047,7 +2047,7 @@ appearance_node * appearance_node::to_appearance() throw ()
  */
 
 /**
- * @fn const NodePtr & appearance_node::texture() const throw ()
+ * @fn const node_ptr & appearance_node::texture() const throw ()
  *
  * @brief Get the texture node associated with this appearance node.
  *
@@ -2055,7 +2055,7 @@ appearance_node * appearance_node::to_appearance() throw ()
  */
 
 /**
- * @fn const NodePtr & appearance_node::texture_transform() const throw ()
+ * @fn const node_ptr & appearance_node::texture_transform() const throw ()
  *
  * @brief Get the texture transform node associated with this appearance node.
  *
@@ -2434,7 +2434,7 @@ grouping_node * grouping_node::to_grouping() throw ()
 }
 
 /**
- * @fn const std::vector<NodePtr> & grouping_node::children() const throw ()
+ * @fn const std::vector<node_ptr> & grouping_node::children() const throw ()
  *
  * @brief Get the children in the scene graph.
  *
@@ -2975,16 +2975,16 @@ viewpoint_node * viewpoint_node::to_viewpoint() throw ()
 /**
  * @class node_traverser
  *
- * @brief Traverse the children of each Node in a Node hierarchy only once.
+ * @brief Traverse the children of each node in a node hierarchy only once.
  *
- * The NodeTraversal provides a generalized traversal mechanism that avoids
- * redundantly traversing branches of the Node hierarchy. If a Node occurs
- * multiple places in a branch, <b>the children of that Node will be visted in
+ * The node_traverser provides a generalized traversal mechanism that avoids
+ * redundantly traversing branches of the node hierarchy. If a node occurs
+ * multiple places in a branch, <b>the children of that node will be visted in
  * the traversal only once</b>.
  *
- * For each Node encountered in the traversal, node_traverser::performAction
+ * For each node encountered in the traversal, node_traverser::performAction
  * is called. Concrete subclasses of node_traverser implement this method in
- * order to perform some operation on each Node.
+ * order to perform some operation on each node.
  */
 
 /**
@@ -3050,11 +3050,11 @@ void node_traverser::traverse(node & n)
  * In addition to std::bad_alloc, this function throws any exception thrown
  * from onEntering or onLeaving.
  *
- * @param node  the root Node of the branch to traverse.
+ * @param node  the root node of the branch to traverse.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void node_traverser::traverse(const NodePtr & node)
+void node_traverser::traverse(const node_ptr & node)
 {
     assert(this->traversed_nodes.empty());
     try {
@@ -3080,17 +3080,17 @@ void node_traverser::traverse(const NodePtr & node)
  * event that this method throws.
  *
  * In addition to std::bad_alloc, this function throws any exception thrown
- * from onEntering or onLeaving.
+ * from on_entering or on_leaving.
  *
- * @param nodes  the root @link Node Nodes@endlink of the branch to traverse.
+ * @param nodes  the root @link node nodes@endlink of the branch to traverse.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void node_traverser::traverse(const std::vector<NodePtr> & nodes)
+void node_traverser::traverse(const std::vector<node_ptr> & nodes)
 {
     assert(this->traversed_nodes.empty());
     try {
-        for (std::vector<NodePtr>::const_iterator node(nodes.begin());
+        for (std::vector<node_ptr>::const_iterator node(nodes.begin());
                 node != nodes.end(); ++node) {
             if (*node) {
                 if (this->traversed_nodes.find(node->get())

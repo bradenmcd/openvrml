@@ -510,7 +510,7 @@ Vrml97Parser::Vrml97Parser(const ANTLR_USE_NAMESPACE(antlr)ParserSharedInputStat
 
 void Vrml97Parser::vrmlScene(
 	OpenVRML::Browser & browser,
-          std::vector<NodePtr> & nodes
+          std::vector<node_ptr> & nodes
 ) {
 #line 611 "Vrml97Parser.g"
 	
@@ -541,12 +541,12 @@ void Vrml97Parser::vrmlScene(
 
 void Vrml97Parser::statement(
 	OpenVRML::Browser & browser,
-          std::vector<NodePtr> & nodes,
+          std::vector<node_ptr> & nodes,
           const OpenVRML::ScopePtr & scope
 ) {
 #line 619 "Vrml97Parser.g"
 	
-	OpenVRML::NodePtr node;
+	OpenVRML::node_ptr node;
 	OpenVRML::node_type_ptr nodeType;
 	
 #line 553 "Vrml97Parser.cpp"
@@ -592,12 +592,12 @@ void Vrml97Parser::statement(
 	}
 }
 
-OpenVRML::NodePtr  Vrml97Parser::nodeStatement(
+OpenVRML::node_ptr  Vrml97Parser::nodeStatement(
 	OpenVRML::Browser & browser,
               const OpenVRML::ScopePtr & scope
 ) {
 #line 636 "Vrml97Parser.g"
-	OpenVRML::NodePtr n;
+	OpenVRML::node_ptr n;
 #line 602 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -708,7 +708,7 @@ void Vrml97Parser::routeStatement(
 		
 		using OpenVRML::field_value;
 		using OpenVRML::node;
-		using OpenVRML::NodePtr;
+		using OpenVRML::node_ptr;
 		using antlr::SemanticException;
 		
 		node * const fromNode = scope.findNode(fromNodeId->getText());
@@ -733,7 +733,7 @@ void Vrml97Parser::routeStatement(
 		
 		try {
 		fromNode->add_route(fromInterfaceId->getText(),
-		NodePtr(toNode), toInterfaceId->getText());
+		node_ptr(toNode), toInterfaceId->getText());
 		} catch (std::runtime_error & ex) {
 		throw SemanticException(ex.what(),
 		this->uri,
@@ -750,20 +750,20 @@ void Vrml97Parser::routeStatement(
 	}
 }
 
-OpenVRML::NodePtr  Vrml97Parser::node(
+OpenVRML::node_ptr  Vrml97Parser::node(
 	OpenVRML::Browser & browser,
      const OpenVRML::ScopePtr & scope,
      const std::string & nodeId
 ) {
 #line 940 "Vrml97Parser.g"
-	OpenVRML::NodePtr n;
+	OpenVRML::node_ptr n;
 #line 761 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  scriptId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  nodeTypeId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 #line 940 "Vrml97Parser.g"
 	
 	using OpenVRML::node_type_ptr;
-	using OpenVRML::NodePtr;
+	using OpenVRML::node_ptr;
 	using OpenVRML::ScriptNode;
 	using antlr::SemanticException;
 	
@@ -826,7 +826,7 @@ OpenVRML::NodePtr  Vrml97Parser::node(
 		nodeTypeId->getColumn());
 		}
 		
-		n = NodePtr(nodeType->create_node(scope));
+		n = node_ptr(nodeType->create_node(scope));
 		
 		if (!nodeId.empty()) { n->id(nodeId); }
 		
@@ -1106,7 +1106,7 @@ void Vrml97Parser::protoBody(
 ) {
 #line 791 "Vrml97Parser.g"
 	
-	OpenVRML::NodePtr n;
+	OpenVRML::node_ptr n;
 	
 #line 1112 "Vrml97Parser.cpp"
 	
@@ -1435,12 +1435,12 @@ OpenVRML::field_value_ptr  Vrml97Parser::fieldValue(
 	return fv;
 }
 
-OpenVRML::NodePtr  Vrml97Parser::protoNodeStatement(
+OpenVRML::node_ptr  Vrml97Parser::protoNodeStatement(
 	OpenVRML::ProtoNodeClass & proto,
                    const OpenVRML::ScopePtr & scope
 ) {
 #line 811 "Vrml97Parser.g"
-	OpenVRML::NodePtr n;
+	OpenVRML::node_ptr n;
 #line 1445 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -1496,7 +1496,7 @@ void Vrml97Parser::protoBodyStatement(
 ) {
 #line 801 "Vrml97Parser.g"
 	
-	OpenVRML::NodePtr n;
+	OpenVRML::node_ptr n;
 	
 #line 1502 "Vrml97Parser.cpp"
 	
@@ -1536,20 +1536,20 @@ void Vrml97Parser::protoBodyStatement(
 	}
 }
 
-OpenVRML::NodePtr  Vrml97Parser::protoNode(
+OpenVRML::node_ptr  Vrml97Parser::protoNode(
 	OpenVRML::ProtoNodeClass & proto,
           const OpenVRML::ScopePtr & scope,
           const std::string & nodeId
 ) {
 #line 1072 "Vrml97Parser.g"
-	OpenVRML::NodePtr n;
+	OpenVRML::node_ptr n;
 #line 1547 "Vrml97Parser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  scriptId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  nodeTypeId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 #line 1072 "Vrml97Parser.g"
 	
 	using OpenVRML::node_type_ptr;
-	using OpenVRML::NodePtr;
+	using OpenVRML::node_ptr;
 	using OpenVRML::ScriptNode;
 	using antlr::SemanticException;
 	
@@ -3145,7 +3145,7 @@ OpenVRML::field_value_ptr  Vrml97Parser::sfNodeValue(
 #line 3146 "Vrml97Parser.cpp"
 #line 1542 "Vrml97Parser.g"
 	
-	OpenVRML::NodePtr n;
+	OpenVRML::node_ptr n;
 	
 #line 3151 "Vrml97Parser.cpp"
 	
@@ -3192,7 +3192,7 @@ OpenVRML::field_value_ptr  Vrml97Parser::mfNodeValue(
 #line 3193 "Vrml97Parser.cpp"
 #line 1562 "Vrml97Parser.g"
 	
-	OpenVRML::NodePtr n;
+	OpenVRML::node_ptr n;
 	mfnode & nodes = static_cast<mfnode &>(*mnv);
 	
 #line 3199 "Vrml97Parser.cpp"
@@ -3255,7 +3255,7 @@ OpenVRML::field_value_ptr  Vrml97Parser::protoSfNodeValue(
 #line 3256 "Vrml97Parser.cpp"
 #line 1552 "Vrml97Parser.g"
 	
-	OpenVRML::NodePtr n;
+	OpenVRML::node_ptr n;
 	
 #line 3261 "Vrml97Parser.cpp"
 	
@@ -3302,7 +3302,7 @@ OpenVRML::field_value_ptr  Vrml97Parser::protoMfNodeValue(
 #line 3303 "Vrml97Parser.cpp"
 #line 1577 "Vrml97Parser.g"
 	
-	OpenVRML::NodePtr n;
+	OpenVRML::node_ptr n;
 	mfnode & nodes = static_cast<mfnode &>(*mnv);
 	
 #line 3309 "Vrml97Parser.cpp"

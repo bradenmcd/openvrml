@@ -30,7 +30,7 @@
 #   include <typeinfo>
 #   include <vector>
 #   include <OpenVRML/basetypes.h>
-#   include <OpenVRML/nodeptr.h>
+#   include <OpenVRML/node_ptr.h>
 
 namespace OpenVRML {
 
@@ -245,9 +245,9 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE sfnode : public field_value {
     public:
-        NodePtr value;
+        node_ptr value;
 
-        explicit sfnode(const NodePtr & node = NodePtr(0)) throw ();
+        explicit sfnode(const node_ptr & node = node_ptr(0)) throw ();
         virtual ~sfnode() throw ();
 
         // Use compiler-defined copy ctor and operator=.
@@ -544,10 +544,10 @@ namespace OpenVRML {
 
     class OPENVRML_SCOPE mfnode : public field_value {
     public:
-        std::vector<NodePtr> value;
+        std::vector<node_ptr> value;
 
-        explicit mfnode(std::vector<NodePtr>::size_type n = 0,
-                        const NodePtr & value = NodePtr())
+        explicit mfnode(std::vector<node_ptr>::size_type n = 0,
+                        const node_ptr & value = node_ptr())
             throw (std::bad_alloc);
         template <typename InputIterator>
         mfnode(InputIterator first, InputIterator last);

@@ -22,7 +22,7 @@
 header "post_include_hpp" {
 # include <memory>
 # include "field.h"
-# include "nodeptr.h"
+# include "node_ptr.h"
 # include "field_value_ptr.h"
 # define ANTLR_LBRACE {
 # define ANTLR_RBRACE }
@@ -609,7 +609,7 @@ private:
 }
 
 vrmlScene[OpenVRML::Browser & browser,
-          std::vector<NodePtr> & nodes]
+          std::vector<node_ptr> & nodes]
 {
     const ScopePtr scope(new Vrml97RootScope(browser, this->uri));
 }
@@ -617,10 +617,10 @@ vrmlScene[OpenVRML::Browser & browser,
     ;
 
 statement[OpenVRML::Browser & browser,
-          std::vector<NodePtr> & nodes,
+          std::vector<node_ptr> & nodes,
           const OpenVRML::ScopePtr & scope]
     {
-        OpenVRML::NodePtr node;
+        OpenVRML::node_ptr node;
         OpenVRML::node_type_ptr nodeType;
     }
     : node=nodeStatement[browser, scope] {
@@ -635,7 +635,7 @@ statement[OpenVRML::Browser & browser,
 
 nodeStatement[OpenVRML::Browser & browser,
               const OpenVRML::ScopePtr & scope]
-returns [OpenVRML::NodePtr n]
+returns [OpenVRML::node_ptr n]
 options { defaultErrorHandler=false; }
     :   KEYWORD_DEF id0:ID n=node[browser, scope, id0->getText()]
     |   KEYWORD_USE id1:ID
@@ -791,7 +791,7 @@ returns [OpenVRML::node_interface::type_id it =
 protoBody[const OpenVRML::ScopePtr & scope,
           OpenVRML::ProtoNodeClass & proto]
 {
-    OpenVRML::NodePtr n;
+    OpenVRML::node_ptr n;
 }
     : (protoStatement[proto.browser, scope])*
         n=protoNodeStatement[proto, scope] { assert(n); proto.addRootNode(n); }
@@ -801,7 +801,7 @@ protoBody[const OpenVRML::ScopePtr & scope,
 protoBodyStatement[OpenVRML::ProtoNodeClass & proto,
                    const OpenVRML::ScopePtr & scope]
 {
-    OpenVRML::NodePtr n;
+    OpenVRML::node_ptr n;
 }
     : n=protoNodeStatement[proto, scope] { assert(n); proto.addRootNode(n); }
     | protoStatement[proto.browser, scope]
@@ -810,7 +810,7 @@ protoBodyStatement[OpenVRML::ProtoNodeClass & proto,
 
 protoNodeStatement[OpenVRML::ProtoNodeClass & proto,
                    const OpenVRML::ScopePtr & scope]
-returns [OpenVRML::NodePtr n]
+returns [OpenVRML::node_ptr n]
 options { defaultErrorHandler=false; }
 {
     using antlr::SemanticException;
@@ -902,7 +902,7 @@ routeStatement[const OpenVRML::Scope & scope]
         {
             using OpenVRML::field_value;
             using OpenVRML::node;
-            using OpenVRML::NodePtr;
+            using OpenVRML::node_ptr;
             using antlr::SemanticException;
 
             node * const fromNode = scope.findNode(fromNodeId->getText());
@@ -927,7 +927,7 @@ routeStatement[const OpenVRML::Scope & scope]
 
             try {
                 fromNode->add_route(fromInterfaceId->getText(),
-                                    NodePtr(toNode), toInterfaceId->getText());
+                                    node_ptr(toNode), toInterfaceId->getText());
             } catch (std::runtime_error & ex) {
                 throw SemanticException(ex.what(),
                                         this->uri,
@@ -940,11 +940,11 @@ routeStatement[const OpenVRML::Scope & scope]
 node[OpenVRML::Browser & browser,
      const OpenVRML::ScopePtr & scope,
      const std::string & nodeId]
-returns [OpenVRML::NodePtr n]
+returns [OpenVRML::node_ptr n]
 options { defaultErrorHandler = false; }
 {
     using OpenVRML::node_type_ptr;
-    using OpenVRML::NodePtr;
+    using OpenVRML::node_ptr;
     using OpenVRML::ScriptNode;
     using antlr::SemanticException;
 
@@ -971,7 +971,7 @@ options { defaultErrorHandler = false; }
                                         nodeTypeId->getColumn());
             }
 
-            n = NodePtr(nodeType->create_node(scope));
+            n = node_ptr(nodeType->create_node(scope));
 
             if (!nodeId.empty()) { n->id(nodeId); }
         } LBRACE (nodeBodyElement[scope, *n])* RBRACE
@@ -1072,11 +1072,11 @@ scriptFieldInterfaceDeclaration[const OpenVRML::ScopePtr & scope,
 protoNode[OpenVRML::ProtoNodeClass & proto,
           const OpenVRML::ScopePtr & scope,
           const std::string & nodeId]
-returns [OpenVRML::NodePtr n]
+returns [OpenVRML::node_ptr n]
 options { defaultErrorHandler=false; }
 {
     using OpenVRML::node_type_ptr;
-    using OpenVRML::NodePtr;
+    using OpenVRML::node_ptr;
     using OpenVRML::ScriptNode;
     using antlr::SemanticException;
 
@@ -1543,7 +1543,7 @@ sfNodeValue[OpenVRML::Browser & browser,
             const OpenVRML::ScopePtr & scope]
 returns [OpenVRML::field_value_ptr snv]
 {
-    OpenVRML::NodePtr n;
+    OpenVRML::node_ptr n;
 }
     : n=nodeStatement[browser, scope] { snv.reset(new sfnode(n)); }
     | KEYWORD_NULL                    { snv.reset(new sfnode); }
@@ -1553,7 +1553,7 @@ protoSfNodeValue[OpenVRML::ProtoNodeClass & proto,
                  const OpenVRML::ScopePtr & scope]
 returns [OpenVRML::field_value_ptr snv]
 {
-    OpenVRML::NodePtr n;
+    OpenVRML::node_ptr n;
 }
     : n=protoNodeStatement[proto, scope] { snv.reset(new sfnode(n)); }
     | KEYWORD_NULL                       { snv.reset(new sfnode); }
@@ -1563,7 +1563,7 @@ mfNodeValue[OpenVRML::Browser & browser,
             const OpenVRML::ScopePtr & scope]
 returns [OpenVRML::field_value_ptr mnv = OpenVRML::field_value_ptr(new mfnode)]
 {
-    OpenVRML::NodePtr n;
+    OpenVRML::node_ptr n;
     mfnode & nodes = static_cast<mfnode &>(*mnv);
 }
     : n=nodeStatement[browser, scope] { if (n) { nodes.value.push_back(n); } }
@@ -1578,7 +1578,7 @@ protoMfNodeValue[OpenVRML::ProtoNodeClass & proto,
                  const OpenVRML::ScopePtr & scope]
 returns [OpenVRML::field_value_ptr mnv = OpenVRML::field_value_ptr(new mfnode)]
 {
-    OpenVRML::NodePtr n;
+    OpenVRML::node_ptr n;
     mfnode & nodes = static_cast<mfnode &>(*mnv);
 }
     : n=protoNodeStatement[proto, scope] {
