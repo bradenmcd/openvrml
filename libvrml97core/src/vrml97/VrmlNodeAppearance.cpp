@@ -29,7 +29,7 @@ VrmlNodeType *VrmlNodeAppearance::defineType(VrmlNodeType *t)
       t = st = new VrmlNodeType("Appearance", creator);
     }
 
-  VrmlNodeChild::defineType(t);	// Parent class
+  VrmlNode::defineType(t);	// Parent class
   t->addExposedField("material", VrmlField::SFNODE);
   t->addExposedField("texture", VrmlField::SFNODE);
   t->addExposedField("textureTransform", VrmlField::SFNODE);
@@ -41,7 +41,7 @@ VrmlNodeType *VrmlNodeAppearance::nodeType() const { return defineType(0); }
 
 
 VrmlNodeAppearance::VrmlNodeAppearance(VrmlScene *scene) :
-  VrmlNodeChild(scene)
+  VrmlNode(scene)
 {
 }
 
@@ -175,6 +175,6 @@ void VrmlNodeAppearance::setField(const char *fieldName,
   else if TRY_SFNODE_FIELD(texture, Texture)
   else if TRY_SFNODE_FIELD(textureTransform, TextureTransform)
   else
-    VrmlNodeChild::setField(fieldName, fieldValue);
+    VrmlNode::setField(fieldName, fieldValue);
 }
 

@@ -14,7 +14,7 @@
 class VrmlNodeType;
 class VrmlScene;
 
-class VrmlNodeAppearance : public VrmlNodeChild {
+class VrmlNodeAppearance : public VrmlNode {
 
 public:
 
