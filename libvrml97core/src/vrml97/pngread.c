@@ -88,8 +88,9 @@ static int pngreadstr( FILE *fp,
     }
  
   /* Set up the input control if you are using standard C streams */
+#if !defined(PNG_NO_STDIO)
   png_init_io(png_ptr, fp);
-
+#endif
   /* The call to png_read_info() gives us all of the information from the
    * PNG file before the first IDAT (image data chunk).  REQUIRED
    */
