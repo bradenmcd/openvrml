@@ -1,5 +1,13 @@
 2004-03-07 Braden McDaniel  <braden@endoframe.com>
 
+	Fixed uses of SemanticException to include URI, line number, and
+	column number information.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+
+2004-03-07 Braden McDaniel  <braden@endoframe.com>
+
 	Corrected SphereSensor "offset" exposedField type to
 	"SFRotation".
 

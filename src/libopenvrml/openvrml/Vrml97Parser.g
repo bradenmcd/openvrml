@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 2000  Braden N. McDaniel
+// Copyright 2000, 2001, 2003, 2004  Braden N. McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -1139,14 +1139,23 @@ options { defaultErrorHandler = false; }
     ;
     exception
     catch [std::invalid_argument & ex] {
-        throw SemanticException(ex.what());
+        throw SemanticException(ex.what(),
+                                this->uri,
+                                LT(1)->getLine(),
+                                LT(1)->getColumn());
     }
     catch [unsupported_interface & ex] {
-        throw SemanticException(ex.what());
+        throw SemanticException(ex.what(),
+                                this->uri,
+                                LT(1)->getLine(),
+                                LT(1)->getColumn());
     }
     catch [std::bad_cast & ex] {
         throw SemanticException("Incorrect value type for field or "
-                                "exposedField.");
+                                "exposedField.",
+                                this->uri,
+                                LT(1)->getLine(),
+                                LT(1)->getColumn());
     }
 
 nodeBodyElement[browser & b,
@@ -1186,7 +1195,10 @@ options { defaultErrorHandler=false; }
                 initial_values.insert(make_pair(id->getText(), fv)).second;
             if (!succeeded) {
                 throw SemanticException("Value for " + id->getText()
-                                        + " already declared.");
+                                        + " already declared.",
+                                        this->uri,
+                                        id->getLine(),
+                                        id->getColumn());
             }
         }
     |   routeStatement[*scope]
@@ -1377,11 +1389,6 @@ options { defaultErrorHandler=false; }
 isStatement[const std::string & impl_node_interface_id,
             is_list & is_mappings]
 options { defaultErrorHandler=false; }
-{
-    using std::string;
-    using boost::lexical_cast;
-    using antlr::SemanticException;
-}
     :   KEYWORD_IS id:ID {
             is_mappings.insert(make_pair(impl_node_interface_id,
                                          id->getText()));
