@@ -322,6 +322,8 @@ void ViewerOpenGL::resetUserNavigation()
 
   trackball(d_curquat, 0.0, 0.0, 0.0, 0.0);
   d_rotationChanged = true;
+  d_activeSensitive = 0;
+  d_overSensitive = 0;
   wsPostRedraw();
 }
 
@@ -2737,7 +2739,7 @@ void ViewerOpenGL::handleMouseDrag(int x, int y)
 }
 
 
-// Check for pickable objects. Should check whether d_nSensitive > 0...
+// Check for pickable objects.
 
 bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
 {
@@ -2849,6 +2851,14 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
     }
 
   bool wasActive = false;
+
+  // Sanity check. This can happen when the world gets replaced
+  // by clicking on an anchor - the current sensitive object goes
+  // away, but these variables are not reset.
+  if ( d_activeSensitive >= d_nSensitive )
+    d_activeSensitive = 0;
+  if ( d_overSensitive >= d_nSensitive )
+    d_overSensitive = 0;
 
   // An active sensitive object "grabs" the mouse until button released
   if (d_activeSensitive)
