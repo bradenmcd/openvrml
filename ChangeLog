@@ -1,3 +1,9 @@
+2004-12-02 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
+	(gtk_vrml_browser_get_type):  First try to look up the type from
+	glib's type registry.
+
 2004-11-30 Braden McDaniel  <braden@endoframe.com>
 
 	Made building the tests optional (via configure).
