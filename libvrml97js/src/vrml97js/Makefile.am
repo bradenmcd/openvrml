@@ -11,6 +11,7 @@ DEFS += -DFREEBSD
 endif
 
 CFLAGS = -Wall -Wno-format -O2 $(DEBUG_CFLAGS) -DXP_UNIX
+INCLUDES = -I.
 LDFLAGS = -version-info @LIBVRML97JS_SO_VERSION@
 
 noinst_PROGRAMS = jscpucfg
@@ -113,11 +114,12 @@ jsautocfg.h: jscpucfg
 EXTRA_DIST = jsmath.c
 
 jsmath.o jsmath.lo: jsmath.c
-	$(LIBTOOL) $(CC) $(CFLAGS) $(DEFS) -c $<
+	$(LTCOMPILE) -c $<
 
 jsmathprelinked.lo: jsmath.lo jsmath.o
 	$(LIBTOOL) --mode=link $(LD) $(reload_flag) -o $@ $< ./fdlibm/libfdm.la
 
 libvrml97js_la_LIBADD = jsmathprelinked.lo
 
-CLEANFILES = jsmath.o jsmath.lo jsautocfg.h
+CLEANFILES = jsmath.o jsmath.lo
+DISTCLEANFILES = jsautocfg.h

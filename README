@@ -34,7 +34,7 @@ any of these are not already present on your system, first consult your
 operating system vendor for packages tailored to your particular operating
 system/distribution.  Failing that, consult the following URLs:
 
-    zlib:       <URL:http://www.zlib.org>
+    zlib:       <URL:http://www.cdrom.com/pub/infozip/zlib/>
     libpng:     <URL:http://www.cdrom.com/pub/png/pngcode.html>
     libjpeg:    <URL:http://www.ijg.org>
     Mesa:       <URL:http://www.mesa3d.org>
