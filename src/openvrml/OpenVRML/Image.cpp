@@ -2,21 +2,21 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 //  Image.cpp
 //  The Image class is a format-independent API for loading textures.
@@ -24,10 +24,6 @@
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-
-#if defined(_WIN32) && !defined(__CYGWIN__)
-#include <winconfig.h>
 #endif
 
 #include "Image.h"
@@ -69,7 +65,7 @@
 #define	ReadOK(file,buffer,len)	(fread(buffer, len, 1, file) != 0)
 #define LM_to_uint(a,b)	(((b)<<8)|(a))
 namespace {
-    
+
     struct {
 	    unsigned int	Width;
 	    unsigned int	Height;
@@ -312,7 +308,7 @@ namespace {
     DoExtension(FILE *fd, int label)
     {
 	    static char	buf[256];
-	    char		*str;
+	    const char * str;
 
 	    switch (label) {
 	    case 0x01:		/* Plain Text Extension */
@@ -563,7 +559,7 @@ namespace {
 	      int interlace,
 	      int ignore)
     {
-	    unsigned char	c;	
+	    unsigned char	c;
 	    int		v;
 	    int		xpos = 0, ypos = 0, pass = 0;
 	    unsigned char	*image;
@@ -611,7 +607,7 @@ namespace {
 		    }
 
                     /* read in "upside down" because opengl says the
-                     * texture origin is lower left 
+                     * texture origin is lower left
                      */
 		    /* *(image_ptr+(ypos*len + xpos)) = (unsigned char)v; */
 		    *(image_ptr+((height-ypos-1)*len + xpos)) = (unsigned char)v;
@@ -717,7 +713,7 @@ namespace {
 # ifdef OPENVRML_HAVE_LIBPNG
 #   include <png.h>
 namespace {
-    
+
     double get_gamma_exp( void );
     int pngreadstr(FILE *fp,
 		   int *w, int *h, int *nc,
@@ -893,7 +889,7 @@ namespace {
 
 
       /* read in "upside down" because opengl says the
-       * texture origin is lower left 
+       * texture origin is lower left
        */
       /*for (row=0; row<(int)height; ++row)*/
       /*rows[row] = &pixels[row * bytes_per_row];*/
@@ -990,7 +986,7 @@ extern "C" {
 #   include <jpeglib.h>
 }
 namespace {
-    
+
     struct my_error_mgr {
       struct jpeg_error_mgr pub;	/* "public" fields */
 
@@ -1003,8 +999,7 @@ namespace {
      * Here's the routine that will replace the standard error_exit method:
      */
 
-    METHODDEF(void)
-    my_error_exit (j_common_ptr cinfo)
+    void my_error_exit(j_common_ptr cinfo)
     {
       /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
       my_error_ptr myerr = (my_error_ptr) cinfo->err;
@@ -1070,7 +1065,7 @@ namespace {
       while (cinfo.output_scanline < cinfo.output_height) {
         for (i=0; i<BUFFER_HEIGHT; ++i) {
           /* read in "upside down" because opengl says the
-           * texture origin is lower left 
+           * texture origin is lower left
            */
           int rrow = cinfo.output_height - row - 1;
           //buffer[i] = &pixels[bytes_per_line * (row + i)];
@@ -1095,17 +1090,17 @@ namespace {
 /*
  * Copyright (c) 1992 The Regents of the University of California.
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software and its
  * documentation for any purpose, without fee, and without written agreement is
  * hereby granted, provided that the above copyright notice and the following
  * two paragraphs appear in all copies of this software.
- * 
+ *
  * IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
  * DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
  * OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
  * CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
  * AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
@@ -1150,7 +1145,7 @@ namespace {
 					        pixel values flag.              */
       unsigned int forw_r_size;              /* Used for vector decoding.       */
       unsigned int forw_f;                   /* Used for vector decoding.       */
-      int full_pel_back_vector;          /* Back vectors specified in full 
+      int full_pel_back_vector;          /* Back vectors specified in full
 					        pixel values flag.              */
       unsigned int back_r_size;              /* Used in decoding.               */
       unsigned int back_f;                   /* Used in decoding.               */
@@ -1227,7 +1222,7 @@ namespace {
       int const_param_flag;		               /* Constrained parameter flag. */
       unsigned char intra_quant_matrix[8][8];      /* Quantization matrix for
 						      intracoded frames.         */
-      unsigned char non_intra_quant_matrix[8][8];  /* Quanitization matrix for 
+      unsigned char non_intra_quant_matrix[8][8];  /* Quanitization matrix for
 						      non intracoded frames.     */
     };
 
@@ -1316,7 +1311,7 @@ namespace {
     #define END_OF_BLOCK 62
     #define ESCAPE 61
 
-    /* Structure for an entry in the decoding table of 
+    /* Structure for an entry in the decoding table of
      * macroblock_address_increment */
     typedef struct {
       unsigned int value;       /* value for macroblock_address_increment */
@@ -1342,7 +1337,7 @@ namespace {
     /* Structure for an entry in the decoding table of motion vectors */
     typedef struct {
       int code;              /* value for motion_horizontal_forward_code,
-			      * motion_vertical_forward_code, 
+			      * motion_vertical_forward_code,
 			      * motion_horizontal_backward_code, or
 			      * motion_vertical_backward_code.
 			      */
@@ -1375,7 +1370,7 @@ namespace {
     /*
      * decoders.c
      *
-     * This file contains all the routines for Huffman decoding required in 
+     * This file contains all the routines for Huffman decoding required in
      * MPEG
      *
      */
@@ -1478,8 +1473,8 @@ namespace {
     {
       int i;
 
-      mb_type_P[0].mb_quant = mb_type_P[0].mb_motion_forward 
-        = mb_type_P[0].mb_motion_backward = mb_type_P[0].mb_pattern 
+      mb_type_P[0].mb_quant = mb_type_P[0].mb_motion_forward
+        = mb_type_P[0].mb_motion_backward = mb_type_P[0].mb_pattern
           = mb_type_P[0].mb_intra = MPG_ERROR;
       mb_type_P[0].num_bits = 0;
 
@@ -1513,8 +1508,8 @@ namespace {
     {
       int i;
 
-      mb_type_B[0].mb_quant = mb_type_B[0].mb_motion_forward 
-        = mb_type_B[0].mb_motion_backward = mb_type_B[0].mb_pattern 
+      mb_type_B[0].mb_quant = mb_type_B[0].mb_motion_forward
+        = mb_type_B[0].mb_motion_backward = mb_type_B[0].mb_pattern
           = mb_type_B[0].mb_intra = MPG_ERROR;
       mb_type_B[0].num_bits = 0;
 
@@ -1552,7 +1547,7 @@ namespace {
      * init_motion_vectors --
      *
      *	Initialize the VLC decoding table for the various motion
-     *      vectors, including motion_horizontal_forward_code, 
+     *      vectors, including motion_horizontal_forward_code,
      *      motion_vertical_forward_code, motion_horizontal_backward_code,
      *      and motion_vertical_backward_code.
      *
@@ -1598,11 +1593,11 @@ namespace {
      *	All the decoding tables will be filled accordingly.
      *
      * Side effects:
-     *	The corresponding global array for each decoding table 
+     *	The corresponding global array for each decoding table
      *      will be filled.
      *
      *--------------------------------------------------------------
-     */    
+     */
     static void MPEGInitTables(vb_entry *a, mb_type_entry *p, mb_type_entry *b,
 		        motion_vectors_entry *m)
     {
@@ -1632,7 +1627,7 @@ namespace {
      * The advantage of this method is that no data path contains more than one
      * multiplication; this allows a very simple and accurate implementation in
      * scaled fixed-point arithmetic, with a minimal number of shifts.
-     * 
+     *
      * I've made lots of modifications to attempt to take advantage of the
      * sparse nature of the DCT matrices we're getting.  Although the logic
      * is cumbersome, it's straightforward and the resulting code is much
@@ -2077,7 +2072,7 @@ namespace {
 		        z4 = d5 + d1;
 		        z5 = MULTIPLY(z3 + z4, FIX(1.175875602));
 
-		        tmp0 = MULTIPLY(d7, FIX(0.298631336)); 
+		        tmp0 = MULTIPLY(d7, FIX(0.298631336));
 		        tmp1 = MULTIPLY(d5, FIX(2.053119869));
 		        tmp2 = MULTIPLY(d3, FIX(3.072711026));
 		        tmp3 = MULTIPLY(d1, FIX(1.501321110));
@@ -2100,7 +2095,7 @@ namespace {
 		        z3 = d7 + d3;
 		        z5 = MULTIPLY(z3 + d5, FIX(1.175875602));
 
-		        tmp0 = MULTIPLY(d7, FIX(0.298631336)); 
+		        tmp0 = MULTIPLY(d7, FIX(0.298631336));
 		        tmp1 = MULTIPLY(d5, FIX(2.053119869));
 		        tmp2 = MULTIPLY(d3, FIX(3.072711026));
 		        z1 = MULTIPLY(d7, - FIX(0.899976223));
@@ -2125,7 +2120,7 @@ namespace {
 		        z4 = d5 + d1;
 		        z5 = MULTIPLY(z3 + z4, FIX(1.175875602));
 
-		        tmp0 = MULTIPLY(d7, FIX(0.298631336)); 
+		        tmp0 = MULTIPLY(d7, FIX(0.298631336));
 		        tmp1 = MULTIPLY(d5, FIX(2.053119869));
 		        tmp3 = MULTIPLY(d1, FIX(1.501321110));
 		        z1 = MULTIPLY(z1, - FIX(0.899976223));
@@ -2142,7 +2137,7 @@ namespace {
 		        tmp3 += z1 + z4;
 		    } else {
 		        /* d1 == 0, d3 == 0, d5 != 0, d7 != 0 */
-		        tmp0 = MULTIPLY(d7, - FIX(0.601344887)); 
+		        tmp0 = MULTIPLY(d7, - FIX(0.601344887));
 		        z1 = MULTIPLY(d7, - FIX(0.899976223));
 		        z3 = MULTIPLY(d7, - FIX(1.961570560));
 		        tmp1 = MULTIPLY(d5, - FIX(0.509795578));
@@ -2167,7 +2162,7 @@ namespace {
 		        z3 = d7 + d3;
 		        z5 = MULTIPLY(z3 + d1, FIX(1.175875602));
 
-		        tmp0 = MULTIPLY(d7, FIX(0.298631336)); 
+		        tmp0 = MULTIPLY(d7, FIX(0.298631336));
 		        tmp2 = MULTIPLY(d3, FIX(3.072711026));
 		        tmp3 = MULTIPLY(d1, FIX(1.501321110));
 		        z1 = MULTIPLY(z1, - FIX(0.899976223));
@@ -2186,7 +2181,7 @@ namespace {
 		        /* d1 == 0, d3 != 0, d5 == 0, d7 != 0 */
 		        z3 = d7 + d3;
 
-		        tmp0 = MULTIPLY(d7, - FIX(0.601344887)); 
+		        tmp0 = MULTIPLY(d7, - FIX(0.601344887));
 		        z1 = MULTIPLY(d7, - FIX(0.899976223));
 		        tmp2 = MULTIPLY(d3, FIX(0.509795579));
 		        z2 = MULTIPLY(d3, - FIX(2.562915447));
@@ -2206,7 +2201,7 @@ namespace {
 
 		        z1 = MULTIPLY(z1, FIX(0.275899379));
 		        z3 = MULTIPLY(d7, - FIX(1.961570560));
-		        tmp0 = MULTIPLY(d7, - FIX(1.662939224)); 
+		        tmp0 = MULTIPLY(d7, - FIX(1.662939224));
 		        z4 = MULTIPLY(d1, - FIX(0.390180644));
 		        tmp3 = MULTIPLY(d1, FIX(1.111140466));
 
@@ -2555,7 +2550,7 @@ namespace {
 		        z4 = d5 + d1;
 		        z5 = MULTIPLY(z3 + z4, FIX(1.175875602));
 
-		        tmp0 = MULTIPLY(d7, FIX(0.298631336)); 
+		        tmp0 = MULTIPLY(d7, FIX(0.298631336));
 		        tmp1 = MULTIPLY(d5, FIX(2.053119869));
 		        tmp2 = MULTIPLY(d3, FIX(3.072711026));
 		        tmp3 = MULTIPLY(d1, FIX(1.501321110));
@@ -2578,7 +2573,7 @@ namespace {
 		        z3 = d7 + d3;
 		        z5 = MULTIPLY(z3 + d5, FIX(1.175875602));
 
-		        tmp0 = MULTIPLY(d7, FIX(0.298631336)); 
+		        tmp0 = MULTIPLY(d7, FIX(0.298631336));
 		        tmp1 = MULTIPLY(d5, FIX(2.053119869));
 		        tmp2 = MULTIPLY(d3, FIX(3.072711026));
 		        z1 = MULTIPLY(d7, - FIX(0.899976223));
@@ -2603,7 +2598,7 @@ namespace {
 		        z4 = d5 + d1;
 		        z5 = MULTIPLY(z3 + z4, FIX(1.175875602));
 
-		        tmp0 = MULTIPLY(d7, FIX(0.298631336)); 
+		        tmp0 = MULTIPLY(d7, FIX(0.298631336));
 		        tmp1 = MULTIPLY(d5, FIX(2.053119869));
 		        tmp3 = MULTIPLY(d1, FIX(1.501321110));
 		        z1 = MULTIPLY(z1, - FIX(0.899976223));
@@ -2620,7 +2615,7 @@ namespace {
 		        tmp3 += z1 + z4;
 		    } else {
 		        /* d1 == 0, d3 == 0, d5 != 0, d7 != 0 */
-		        tmp0 = MULTIPLY(d7, - FIX(0.601344887)); 
+		        tmp0 = MULTIPLY(d7, - FIX(0.601344887));
 		        z1 = MULTIPLY(d7, - FIX(0.899976223));
 		        z3 = MULTIPLY(d7, - FIX(1.961570560));
 		        tmp1 = MULTIPLY(d5, - FIX(0.509795578));
@@ -2645,7 +2640,7 @@ namespace {
 		        z3 = d7 + d3;
 		        z5 = MULTIPLY(z3 + d1, FIX(1.175875602));
 
-		        tmp0 = MULTIPLY(d7, FIX(0.298631336)); 
+		        tmp0 = MULTIPLY(d7, FIX(0.298631336));
 		        tmp2 = MULTIPLY(d3, FIX(3.072711026));
 		        tmp3 = MULTIPLY(d1, FIX(1.501321110));
 		        z1 = MULTIPLY(z1, - FIX(0.899976223));
@@ -2664,7 +2659,7 @@ namespace {
 		        /* d1 == 0, d3 != 0, d5 == 0, d7 != 0 */
 		        z3 = d7 + d3;
 
-		        tmp0 = MULTIPLY(d7, - FIX(0.601344887)); 
+		        tmp0 = MULTIPLY(d7, - FIX(0.601344887));
 		        z1 = MULTIPLY(d7, - FIX(0.899976223));
 		        tmp2 = MULTIPLY(d3, FIX(0.509795579));
 		        z2 = MULTIPLY(d3, - FIX(2.562915447));
@@ -2684,7 +2679,7 @@ namespace {
 
 		        z1 = MULTIPLY(z1, FIX(0.275899379));
 		        z3 = MULTIPLY(d7, - FIX(1.961570560));
-		        tmp0 = MULTIPLY(d7, - FIX(1.662939224)); 
+		        tmp0 = MULTIPLY(d7, - FIX(1.662939224));
 		        z4 = MULTIPLY(d1, - FIX(0.390180644));
 		        tmp3 = MULTIPLY(d1, FIX(1.111140466));
 
@@ -2830,7 +2825,7 @@ namespace {
 
 
     void
-    j_rev_dct_sparse (data, pos) 
+    j_rev_dct_sparse (data, pos)
          DCTBLOCK data;
          int pos;
     {
@@ -3108,16 +3103,16 @@ namespace {
     unsigned char cropTbl[NUM_CROP_ENTRIES];
 
     /* Bit masks used by bit i/o operations. */
-    unsigned int nBitMask[] = { 0x00000000, 0x80000000, 0xc0000000, 0xe0000000, 
-			        0xf0000000, 0xf8000000, 0xfc000000, 0xfe000000, 
-			        0xff000000, 0xff800000, 0xffc00000, 0xffe00000, 
-			        0xfff00000, 0xfff80000, 0xfffc0000, 0xfffe0000, 
-			        0xffff0000, 0xffff8000, 0xffffc000, 0xffffe000, 
-			        0xfffff000, 0xfffff800, 0xfffffc00, 0xfffffe00, 
-			        0xffffff00, 0xffffff80, 0xffffffc0, 0xffffffe0, 
+    unsigned int nBitMask[] = { 0x00000000, 0x80000000, 0xc0000000, 0xe0000000,
+			        0xf0000000, 0xf8000000, 0xfc000000, 0xfe000000,
+			        0xff000000, 0xff800000, 0xffc00000, 0xffe00000,
+			        0xfff00000, 0xfff80000, 0xfffc0000, 0xfffe0000,
+			        0xffff0000, 0xffff8000, 0xffffc000, 0xffffe000,
+			        0xfffff000, 0xfffff800, 0xfffffc00, 0xfffffe00,
+			        0xffffff00, 0xffffff80, 0xffffffc0, 0xffffffe0,
 			        0xfffffff0, 0xfffffff8, 0xfffffffc, 0xfffffffe};
 
-    unsigned int bitMask[] = {  0xffffffff, 0x7fffffff, 0x3fffffff, 0x1fffffff, 
+    unsigned int bitMask[] = {  0xffffffff, 0x7fffffff, 0x3fffffff, 0x1fffffff,
 			        0x0fffffff, 0x07ffffff, 0x03ffffff, 0x01ffffff,
 			        0x00ffffff, 0x007fffff, 0x003fffff, 0x001fffff,
 			        0x000fffff, 0x0007ffff, 0x0003ffff, 0x0001ffff,
@@ -3126,16 +3121,16 @@ namespace {
 			        0x000000ff, 0x0000007f, 0x0000003f, 0x0000001f,
 			        0x0000000f, 0x00000007, 0x00000003, 0x00000001};
 
-    unsigned int rBitMask[] = { 0xffffffff, 0xfffffffe, 0xfffffffc, 0xfffffff8, 
-			        0xfffffff0, 0xffffffe0, 0xffffffc0, 0xffffff80, 
-			        0xffffff00, 0xfffffe00, 0xfffffc00, 0xfffff800, 
-			        0xfffff000, 0xffffe000, 0xffffc000, 0xffff8000, 
-			        0xffff0000, 0xfffe0000, 0xfffc0000, 0xfff80000, 
-			        0xfff00000, 0xffe00000, 0xffc00000, 0xff800000, 
-			        0xff000000, 0xfe000000, 0xfc000000, 0xf8000000, 
+    unsigned int rBitMask[] = { 0xffffffff, 0xfffffffe, 0xfffffffc, 0xfffffff8,
+			        0xfffffff0, 0xffffffe0, 0xffffffc0, 0xffffff80,
+			        0xffffff00, 0xfffffe00, 0xfffffc00, 0xfffff800,
+			        0xfffff000, 0xffffe000, 0xffffc000, 0xffff8000,
+			        0xffff0000, 0xfffe0000, 0xfffc0000, 0xfff80000,
+			        0xfff00000, 0xffe00000, 0xffc00000, 0xff800000,
+			        0xff000000, 0xfe000000, 0xfc000000, 0xf8000000,
 			        0xf0000000, 0xe0000000, 0xc0000000, 0x80000000};
 
-    unsigned int bitTest[] = {  0x80000000, 0x40000000, 0x20000000, 0x10000000, 
+    unsigned int bitTest[] = {  0x80000000, 0x40000000, 0x20000000, 0x10000000,
 			        0x08000000, 0x04000000, 0x02000000, 0x01000000,
 			        0x00800000, 0x00400000, 0x00200000, 0x00100000,
 			        0x00080000, 0x00040000, 0x00020000, 0x00010000,
@@ -3157,7 +3152,7 @@ namespace {
     motion_vectors_entry  motion_vectors[2048];
 
     /* Decoding table for coded_block_pattern */
-    coded_block_pattern_entry coded_block_pattern[512] = 
+    coded_block_pattern_entry coded_block_pattern[512] =
     { {(unsigned int)MPG_ERROR, 0}, {(unsigned int)MPG_ERROR, 0}, {39, 9}, {27, 9}, {59, 9}, {55, 9}, {47, 9}, {31, 9},
         {58, 8}, {58, 8}, {54, 8}, {54, 8}, {46, 8}, {46, 8}, {30, 8}, {30, 8},
         {57, 8}, {57, 8}, {53, 8}, {53, 8}, {45, 8}, {45, 8}, {29, 8}, {29, 8},
@@ -3167,116 +3162,116 @@ namespace {
         {41, 8}, {41, 8}, {21, 8}, {21, 8}, {49, 8}, {49, 8}, {13, 8}, {13, 8},
         {35, 8}, {35, 8}, {19, 8}, {19, 8}, {11, 8}, {11, 8}, {7, 8}, {7, 8},
         {34, 7}, {34, 7}, {34, 7}, {34, 7}, {18, 7}, {18, 7}, {18, 7}, {18, 7},
-        {10, 7}, {10, 7}, {10, 7}, {10, 7}, {6, 7}, {6, 7}, {6, 7}, {6, 7}, 
-        {33, 7}, {33, 7}, {33, 7}, {33, 7}, {17, 7}, {17, 7}, {17, 7}, {17, 7}, 
-        {9, 7}, {9, 7}, {9, 7}, {9, 7}, {5, 7}, {5, 7}, {5, 7}, {5, 7}, 
-        {63, 6}, {63, 6}, {63, 6}, {63, 6}, {63, 6}, {63, 6}, {63, 6}, {63, 6}, 
-        {3, 6}, {3, 6}, {3, 6}, {3, 6}, {3, 6}, {3, 6}, {3, 6}, {3, 6}, 
-        {36, 6}, {36, 6}, {36, 6}, {36, 6}, {36, 6}, {36, 6}, {36, 6}, {36, 6}, 
-        {24, 6}, {24, 6}, {24, 6}, {24, 6}, {24, 6}, {24, 6}, {24, 6}, {24, 6}, 
+        {10, 7}, {10, 7}, {10, 7}, {10, 7}, {6, 7}, {6, 7}, {6, 7}, {6, 7},
+        {33, 7}, {33, 7}, {33, 7}, {33, 7}, {17, 7}, {17, 7}, {17, 7}, {17, 7},
+        {9, 7}, {9, 7}, {9, 7}, {9, 7}, {5, 7}, {5, 7}, {5, 7}, {5, 7},
+        {63, 6}, {63, 6}, {63, 6}, {63, 6}, {63, 6}, {63, 6}, {63, 6}, {63, 6},
+        {3, 6}, {3, 6}, {3, 6}, {3, 6}, {3, 6}, {3, 6}, {3, 6}, {3, 6},
+        {36, 6}, {36, 6}, {36, 6}, {36, 6}, {36, 6}, {36, 6}, {36, 6}, {36, 6},
+        {24, 6}, {24, 6}, {24, 6}, {24, 6}, {24, 6}, {24, 6}, {24, 6}, {24, 6},
         {62, 5}, {62, 5}, {62, 5}, {62, 5}, {62, 5}, {62, 5}, {62, 5}, {62, 5},
         {62, 5}, {62, 5}, {62, 5}, {62, 5}, {62, 5}, {62, 5}, {62, 5}, {62, 5},
-        {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, 
-        {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, 
-        {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, 
-        {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, 
-        {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, 
-        {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, 
-        {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, 
-        {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, 
-        {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, 
-        {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, 
-        {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, 
-        {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, 
-        {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, 
-        {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, 
-        {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, 
-        {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, 
-        {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, 
-        {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, 
-        {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, 
-        {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, 
-        {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, 
-        {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, 
-        {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, 
-        {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, 
-        {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, 
-        {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, 
-        {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, 
-        {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, 
-        {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, 
-        {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, 
-        {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, 
-        {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, 
-        {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, 
+        {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5},
+        {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5},
+        {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5},
+        {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5}, {61, 5},
+        {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5},
+        {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5}, {1, 5},
+        {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5},
+        {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5}, {56, 5},
+        {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5},
+        {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5}, {52, 5},
+        {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5},
+        {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5}, {44, 5},
+        {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5},
+        {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5}, {28, 5},
+        {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5},
+        {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5}, {40, 5},
+        {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5},
+        {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5}, {20, 5},
+        {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5},
+        {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5}, {48, 5},
+        {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5},
+        {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5}, {12, 5},
+        {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4},
+        {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4},
+        {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4},
+        {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4}, {32, 4},
+        {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4},
+        {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4},
+        {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4},
+        {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4}, {16, 4},
+        {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4},
+        {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4},
+        {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4},
         {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4}, {8, 4},
         {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4},
-        {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, 
-        {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, 
         {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4},
-        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, 
-        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, 
-        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, 
-        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, 
-        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, 
-        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, 
-        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, 
+        {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4},
+        {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4},
+        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3},
+        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3},
+        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3},
+        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3},
+        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3},
+        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3},
+        {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3},
         {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}, {60, 3}
     };
 
     /* Decoding table for dct_dc_size_luminance */
     vb_entry dct_dc_size_luminance[128] =
-    {   {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, 
-        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, 
-        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, 
-        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, 
-        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, 
-        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, 
-        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, 
-        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, 
-        {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, 
-        {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, 
-        {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, 
-        {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, 
-        {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, 
-        {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, 
-        {5, 4}, {5, 4}, {5, 4}, {5, 4}, {5, 4}, {5, 4}, {5, 4}, {5, 4}, 
+    {   {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2},
+        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2},
+        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2},
+        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2},
+        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2},
+        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2},
+        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2},
+        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2},
+        {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3},
+        {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3}, {0, 3},
+        {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3},
+        {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3},
+        {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3},
+        {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3}, {4, 3},
+        {5, 4}, {5, 4}, {5, 4}, {5, 4}, {5, 4}, {5, 4}, {5, 4}, {5, 4},
         {6, 5}, {6, 5}, {6, 5}, {6, 5}, {7, 6}, {7, 6}, {8, 7}, {(unsigned int)MPG_ERROR, 0}
     };
 
     /* Decoding table for dct_dc_size_chrominance */
     vb_entry dct_dc_size_chrominance[256] =
-    { {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, 
-        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, 
-        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, 
-        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, 
-        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, 
-        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, 
-        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, 
-        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, 
-        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, 
-        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, 
-        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, 
-        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, 
-        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, 
-        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, 
-        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, 
-        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, 
-        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, 
-        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, 
-        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, 
-        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, 
-        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, 
-        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, 
-        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, 
-        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, 
-        {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, 
-        {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, 
-        {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, 
-        {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, 
-        {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, 
-        {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, 
-        {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, 
+    { {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2},
+        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2},
+        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2},
+        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2},
+        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2},
+        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2},
+        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2},
+        {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 2},
+        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2},
+        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2},
+        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2},
+        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2},
+        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2},
+        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2},
+        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2},
+        {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2}, {1, 2},
+        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2},
+        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2},
+        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2},
+        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2},
+        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2},
+        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2},
+        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2},
+        {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2},
+        {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3},
+        {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3},
+        {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3},
+        {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3}, {3, 3},
+        {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4},
+        {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4}, {4, 4},
+        {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5}, {5, 5},
         {6, 6}, {6, 6}, {6, 6}, {6, 6}, {7, 7}, {7, 7}, {8, 8}, {(unsigned int)MPG_ERROR, 0}
     };
 
@@ -3287,12 +3282,12 @@ namespace {
      *
      * get_more_data
      *
-     *	Called when buffer does not have sufficient data to 
+     *	Called when buffer does not have sufficient data to
      *      satisfy request for bits.
      *
      * Results:
      *      None really.
-     *  
+     *
      * Side effects:
      *	buf_length and buffer fields in curVidStream structure
      *      may be changed.
@@ -3347,7 +3342,7 @@ namespace {
 
           /* this can happen only if num_read<request; i.e. end of file reached */
           if (num_read_rounded < num_read)
-	    { 
+	    {
 	      num_read_rounded = 4*( num_read/4+1 );
 	      /* fill in with zeros */
 	      for (index=mark+num_read; index<mark+num_read_rounded; *(index++)=0)
@@ -3550,7 +3545,7 @@ namespace {
         if (state == 3)
           {
 	    /* Set buffer pointer back and reset length & bit offsets so
-	     * next bytes will be beginning of start code. 
+	     * next bytes will be beginning of start code.
 	     */
 
 	    m->bit_offset -= 24;
@@ -3798,7 +3793,7 @@ namespace {
       if ((m->picture.code_type == 2) || (m->picture.code_type == 3))
         {
           /* Parse off forward vector full pixel flag. */
-          m->picture.full_pel_forw_vector = get_bits1(m); 
+          m->picture.full_pel_forw_vector = get_bits1(m);
           data = get_bits3(m);	/* forw_r_code. */
 
           /* Decode forw_r_code into forw_r_size and forw_f. */
@@ -4570,7 +4565,7 @@ namespace {
      *--------------------------------------------------------------
      */
 
-    void 
+    void
     ComputeForwVector(MPEG *m, int *recon_right_for_ptr, int *recon_down_for_ptr)
     {
       Pict *picture;
@@ -4580,11 +4575,11 @@ namespace {
       mblock = &(m->mblock);
 
       ComputeVector(recon_right_for_ptr, recon_down_for_ptr,
-		    mblock->recon_right_for_prev, 
+		    mblock->recon_right_for_prev,
 		    mblock->recon_down_for_prev,
 		    picture->forw_f, picture->full_pel_forw_vector,
 		    mblock->motion_h_forw_code, mblock->motion_v_forw_code,
-		    mblock->motion_h_forw_r, mblock->motion_v_forw_r); 
+		    mblock->motion_h_forw_r, mblock->motion_v_forw_r);
     }
 
     /*
@@ -4605,7 +4600,7 @@ namespace {
      *--------------------------------------------------------------
      */
 
-    void 
+    void
     ComputeBackVector(MPEG *m, int *recon_right_back_ptr, int *recon_down_back_ptr)
     {
       Pict *picture;
@@ -4615,11 +4610,11 @@ namespace {
       mblock = &(m->mblock);
 
       ComputeVector(recon_right_back_ptr, recon_down_back_ptr,
-		    mblock->recon_right_back_prev, 
+		    mblock->recon_right_back_prev,
 		    mblock->recon_down_back_prev,
 		    picture->back_f, picture->full_pel_back_vector,
 		    mblock->motion_h_back_code, mblock->motion_v_back_code,
-		    mblock->motion_h_back_r, mblock->motion_v_back_r); 
+		    mblock->motion_h_back_r, mblock->motion_v_back_r);
     }
 
 
@@ -5548,224 +5543,224 @@ namespace {
 
     unsigned short int dct_coeff_tbl_0[256] =
     {
-    0xffff, 0xffff, 0xffff, 0xffff, 
-    0xffff, 0xffff, 0xffff, 0xffff, 
-    0xffff, 0xffff, 0xffff, 0xffff, 
-    0xffff, 0xffff, 0xffff, 0xffff, 
-    0x052f, 0x051f, 0x050f, 0x04ff, 
-    0x183f, 0x402f, 0x3c2f, 0x382f, 
-    0x342f, 0x302f, 0x2c2f, 0x7c1f, 
-    0x781f, 0x741f, 0x701f, 0x6c1f, 
-    0x028e, 0x028e, 0x027e, 0x027e, 
-    0x026e, 0x026e, 0x025e, 0x025e, 
-    0x024e, 0x024e, 0x023e, 0x023e, 
-    0x022e, 0x022e, 0x021e, 0x021e, 
-    0x020e, 0x020e, 0x04ee, 0x04ee, 
-    0x04de, 0x04de, 0x04ce, 0x04ce, 
-    0x04be, 0x04be, 0x04ae, 0x04ae, 
-    0x049e, 0x049e, 0x048e, 0x048e, 
-    0x01fd, 0x01fd, 0x01fd, 0x01fd, 
-    0x01ed, 0x01ed, 0x01ed, 0x01ed, 
-    0x01dd, 0x01dd, 0x01dd, 0x01dd, 
-    0x01cd, 0x01cd, 0x01cd, 0x01cd, 
-    0x01bd, 0x01bd, 0x01bd, 0x01bd, 
-    0x01ad, 0x01ad, 0x01ad, 0x01ad, 
-    0x019d, 0x019d, 0x019d, 0x019d, 
-    0x018d, 0x018d, 0x018d, 0x018d, 
-    0x017d, 0x017d, 0x017d, 0x017d, 
-    0x016d, 0x016d, 0x016d, 0x016d, 
-    0x015d, 0x015d, 0x015d, 0x015d, 
-    0x014d, 0x014d, 0x014d, 0x014d, 
-    0x013d, 0x013d, 0x013d, 0x013d, 
-    0x012d, 0x012d, 0x012d, 0x012d, 
-    0x011d, 0x011d, 0x011d, 0x011d, 
-    0x010d, 0x010d, 0x010d, 0x010d, 
-    0x282c, 0x282c, 0x282c, 0x282c, 
-    0x282c, 0x282c, 0x282c, 0x282c, 
-    0x242c, 0x242c, 0x242c, 0x242c, 
-    0x242c, 0x242c, 0x242c, 0x242c, 
-    0x143c, 0x143c, 0x143c, 0x143c, 
-    0x143c, 0x143c, 0x143c, 0x143c, 
-    0x0c4c, 0x0c4c, 0x0c4c, 0x0c4c, 
-    0x0c4c, 0x0c4c, 0x0c4c, 0x0c4c, 
-    0x085c, 0x085c, 0x085c, 0x085c, 
-    0x085c, 0x085c, 0x085c, 0x085c, 
-    0x047c, 0x047c, 0x047c, 0x047c, 
-    0x047c, 0x047c, 0x047c, 0x047c, 
-    0x046c, 0x046c, 0x046c, 0x046c, 
-    0x046c, 0x046c, 0x046c, 0x046c, 
-    0x00fc, 0x00fc, 0x00fc, 0x00fc, 
-    0x00fc, 0x00fc, 0x00fc, 0x00fc, 
-    0x00ec, 0x00ec, 0x00ec, 0x00ec, 
-    0x00ec, 0x00ec, 0x00ec, 0x00ec, 
-    0x00dc, 0x00dc, 0x00dc, 0x00dc, 
-    0x00dc, 0x00dc, 0x00dc, 0x00dc, 
-    0x00cc, 0x00cc, 0x00cc, 0x00cc, 
-    0x00cc, 0x00cc, 0x00cc, 0x00cc, 
-    0x681c, 0x681c, 0x681c, 0x681c, 
-    0x681c, 0x681c, 0x681c, 0x681c, 
-    0x641c, 0x641c, 0x641c, 0x641c, 
-    0x641c, 0x641c, 0x641c, 0x641c, 
-    0x601c, 0x601c, 0x601c, 0x601c, 
-    0x601c, 0x601c, 0x601c, 0x601c, 
-    0x5c1c, 0x5c1c, 0x5c1c, 0x5c1c, 
-    0x5c1c, 0x5c1c, 0x5c1c, 0x5c1c, 
-    0x581c, 0x581c, 0x581c, 0x581c, 
-    0x581c, 0x581c, 0x581c, 0x581c, 
+    0xffff, 0xffff, 0xffff, 0xffff,
+    0xffff, 0xffff, 0xffff, 0xffff,
+    0xffff, 0xffff, 0xffff, 0xffff,
+    0xffff, 0xffff, 0xffff, 0xffff,
+    0x052f, 0x051f, 0x050f, 0x04ff,
+    0x183f, 0x402f, 0x3c2f, 0x382f,
+    0x342f, 0x302f, 0x2c2f, 0x7c1f,
+    0x781f, 0x741f, 0x701f, 0x6c1f,
+    0x028e, 0x028e, 0x027e, 0x027e,
+    0x026e, 0x026e, 0x025e, 0x025e,
+    0x024e, 0x024e, 0x023e, 0x023e,
+    0x022e, 0x022e, 0x021e, 0x021e,
+    0x020e, 0x020e, 0x04ee, 0x04ee,
+    0x04de, 0x04de, 0x04ce, 0x04ce,
+    0x04be, 0x04be, 0x04ae, 0x04ae,
+    0x049e, 0x049e, 0x048e, 0x048e,
+    0x01fd, 0x01fd, 0x01fd, 0x01fd,
+    0x01ed, 0x01ed, 0x01ed, 0x01ed,
+    0x01dd, 0x01dd, 0x01dd, 0x01dd,
+    0x01cd, 0x01cd, 0x01cd, 0x01cd,
+    0x01bd, 0x01bd, 0x01bd, 0x01bd,
+    0x01ad, 0x01ad, 0x01ad, 0x01ad,
+    0x019d, 0x019d, 0x019d, 0x019d,
+    0x018d, 0x018d, 0x018d, 0x018d,
+    0x017d, 0x017d, 0x017d, 0x017d,
+    0x016d, 0x016d, 0x016d, 0x016d,
+    0x015d, 0x015d, 0x015d, 0x015d,
+    0x014d, 0x014d, 0x014d, 0x014d,
+    0x013d, 0x013d, 0x013d, 0x013d,
+    0x012d, 0x012d, 0x012d, 0x012d,
+    0x011d, 0x011d, 0x011d, 0x011d,
+    0x010d, 0x010d, 0x010d, 0x010d,
+    0x282c, 0x282c, 0x282c, 0x282c,
+    0x282c, 0x282c, 0x282c, 0x282c,
+    0x242c, 0x242c, 0x242c, 0x242c,
+    0x242c, 0x242c, 0x242c, 0x242c,
+    0x143c, 0x143c, 0x143c, 0x143c,
+    0x143c, 0x143c, 0x143c, 0x143c,
+    0x0c4c, 0x0c4c, 0x0c4c, 0x0c4c,
+    0x0c4c, 0x0c4c, 0x0c4c, 0x0c4c,
+    0x085c, 0x085c, 0x085c, 0x085c,
+    0x085c, 0x085c, 0x085c, 0x085c,
+    0x047c, 0x047c, 0x047c, 0x047c,
+    0x047c, 0x047c, 0x047c, 0x047c,
+    0x046c, 0x046c, 0x046c, 0x046c,
+    0x046c, 0x046c, 0x046c, 0x046c,
+    0x00fc, 0x00fc, 0x00fc, 0x00fc,
+    0x00fc, 0x00fc, 0x00fc, 0x00fc,
+    0x00ec, 0x00ec, 0x00ec, 0x00ec,
+    0x00ec, 0x00ec, 0x00ec, 0x00ec,
+    0x00dc, 0x00dc, 0x00dc, 0x00dc,
+    0x00dc, 0x00dc, 0x00dc, 0x00dc,
+    0x00cc, 0x00cc, 0x00cc, 0x00cc,
+    0x00cc, 0x00cc, 0x00cc, 0x00cc,
+    0x681c, 0x681c, 0x681c, 0x681c,
+    0x681c, 0x681c, 0x681c, 0x681c,
+    0x641c, 0x641c, 0x641c, 0x641c,
+    0x641c, 0x641c, 0x641c, 0x641c,
+    0x601c, 0x601c, 0x601c, 0x601c,
+    0x601c, 0x601c, 0x601c, 0x601c,
+    0x5c1c, 0x5c1c, 0x5c1c, 0x5c1c,
+    0x5c1c, 0x5c1c, 0x5c1c, 0x5c1c,
+    0x581c, 0x581c, 0x581c, 0x581c,
+    0x581c, 0x581c, 0x581c, 0x581c,
     };
 
-    unsigned short int dct_coeff_tbl_1[16] = 
+    unsigned short int dct_coeff_tbl_1[16] =
     {
-    0x00bb, 0x202b, 0x103b, 0x00ab, 
-    0x084b, 0x1c2b, 0x541b, 0x501b, 
-    0x009b, 0x4c1b, 0x481b, 0x045b, 
-    0x0c3b, 0x008b, 0x182b, 0x441b, 
+    0x00bb, 0x202b, 0x103b, 0x00ab,
+    0x084b, 0x1c2b, 0x541b, 0x501b,
+    0x009b, 0x4c1b, 0x481b, 0x045b,
+    0x0c3b, 0x008b, 0x182b, 0x441b,
     };
 
     unsigned short int dct_coeff_tbl_2[4] =
     {
-    0x4019, 0x1429, 0x0079, 0x0839, 
+    0x4019, 0x1429, 0x0079, 0x0839,
     };
 
-    unsigned short int dct_coeff_tbl_3[4] = 
+    unsigned short int dct_coeff_tbl_3[4] =
     {
-    0x0449, 0x3c19, 0x3819, 0x1029, 
+    0x0449, 0x3c19, 0x3819, 0x1029,
     };
 
-    unsigned short int dct_coeff_next[256] = 
+    unsigned short int dct_coeff_next[256] =
     {
-    0xffff, 0xffff, 0xffff, 0xffff, 
-    0xf7d5, 0xf7d5, 0xf7d5, 0xf7d5, 
-    0x0826, 0x0826, 0x2416, 0x2416, 
-    0x0046, 0x0046, 0x2016, 0x2016, 
-    0x1c15, 0x1c15, 0x1c15, 0x1c15, 
-    0x1815, 0x1815, 0x1815, 0x1815, 
-    0x0425, 0x0425, 0x0425, 0x0425, 
-    0x1415, 0x1415, 0x1415, 0x1415, 
-    0x3417, 0x0067, 0x3017, 0x2c17, 
-    0x0c27, 0x0437, 0x0057, 0x2817, 
-    0x0034, 0x0034, 0x0034, 0x0034, 
-    0x0034, 0x0034, 0x0034, 0x0034, 
-    0x1014, 0x1014, 0x1014, 0x1014, 
-    0x1014, 0x1014, 0x1014, 0x1014, 
-    0x0c14, 0x0c14, 0x0c14, 0x0c14, 
-    0x0c14, 0x0c14, 0x0c14, 0x0c14, 
-    0x0023, 0x0023, 0x0023, 0x0023, 
-    0x0023, 0x0023, 0x0023, 0x0023, 
-    0x0023, 0x0023, 0x0023, 0x0023, 
-    0x0023, 0x0023, 0x0023, 0x0023, 
-    0x0813, 0x0813, 0x0813, 0x0813, 
-    0x0813, 0x0813, 0x0813, 0x0813, 
-    0x0813, 0x0813, 0x0813, 0x0813, 
-    0x0813, 0x0813, 0x0813, 0x0813, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
-    0x0011, 0x0011, 0x0011, 0x0011, 
+    0xffff, 0xffff, 0xffff, 0xffff,
+    0xf7d5, 0xf7d5, 0xf7d5, 0xf7d5,
+    0x0826, 0x0826, 0x2416, 0x2416,
+    0x0046, 0x0046, 0x2016, 0x2016,
+    0x1c15, 0x1c15, 0x1c15, 0x1c15,
+    0x1815, 0x1815, 0x1815, 0x1815,
+    0x0425, 0x0425, 0x0425, 0x0425,
+    0x1415, 0x1415, 0x1415, 0x1415,
+    0x3417, 0x0067, 0x3017, 0x2c17,
+    0x0c27, 0x0437, 0x0057, 0x2817,
+    0x0034, 0x0034, 0x0034, 0x0034,
+    0x0034, 0x0034, 0x0034, 0x0034,
+    0x1014, 0x1014, 0x1014, 0x1014,
+    0x1014, 0x1014, 0x1014, 0x1014,
+    0x0c14, 0x0c14, 0x0c14, 0x0c14,
+    0x0c14, 0x0c14, 0x0c14, 0x0c14,
+    0x0023, 0x0023, 0x0023, 0x0023,
+    0x0023, 0x0023, 0x0023, 0x0023,
+    0x0023, 0x0023, 0x0023, 0x0023,
+    0x0023, 0x0023, 0x0023, 0x0023,
+    0x0813, 0x0813, 0x0813, 0x0813,
+    0x0813, 0x0813, 0x0813, 0x0813,
+    0x0813, 0x0813, 0x0813, 0x0813,
+    0x0813, 0x0813, 0x0813, 0x0813,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0xfbe1, 0xfbe1, 0xfbe1, 0xfbe1,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
+    0x0011, 0x0011, 0x0011, 0x0011,
     };
 
-    unsigned short int dct_coeff_first[256] = 
+    unsigned short int dct_coeff_first[256] =
     {
-    0xffff, 0xffff, 0xffff, 0xffff, 
-    0xf7d5, 0xf7d5, 0xf7d5, 0xf7d5, 
-    0x0826, 0x0826, 0x2416, 0x2416, 
-    0x0046, 0x0046, 0x2016, 0x2016, 
-    0x1c15, 0x1c15, 0x1c15, 0x1c15, 
-    0x1815, 0x1815, 0x1815, 0x1815, 
-    0x0425, 0x0425, 0x0425, 0x0425, 
-    0x1415, 0x1415, 0x1415, 0x1415, 
-    0x3417, 0x0067, 0x3017, 0x2c17, 
-    0x0c27, 0x0437, 0x0057, 0x2817, 
-    0x0034, 0x0034, 0x0034, 0x0034, 
-    0x0034, 0x0034, 0x0034, 0x0034, 
-    0x1014, 0x1014, 0x1014, 0x1014, 
-    0x1014, 0x1014, 0x1014, 0x1014, 
-    0x0c14, 0x0c14, 0x0c14, 0x0c14, 
-    0x0c14, 0x0c14, 0x0c14, 0x0c14, 
-    0x0023, 0x0023, 0x0023, 0x0023, 
-    0x0023, 0x0023, 0x0023, 0x0023, 
-    0x0023, 0x0023, 0x0023, 0x0023, 
-    0x0023, 0x0023, 0x0023, 0x0023, 
-    0x0813, 0x0813, 0x0813, 0x0813, 
-    0x0813, 0x0813, 0x0813, 0x0813, 
-    0x0813, 0x0813, 0x0813, 0x0813, 
-    0x0813, 0x0813, 0x0813, 0x0813, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0412, 0x0412, 0x0412, 0x0412, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
-    0x0010, 0x0010, 0x0010, 0x0010, 
+    0xffff, 0xffff, 0xffff, 0xffff,
+    0xf7d5, 0xf7d5, 0xf7d5, 0xf7d5,
+    0x0826, 0x0826, 0x2416, 0x2416,
+    0x0046, 0x0046, 0x2016, 0x2016,
+    0x1c15, 0x1c15, 0x1c15, 0x1c15,
+    0x1815, 0x1815, 0x1815, 0x1815,
+    0x0425, 0x0425, 0x0425, 0x0425,
+    0x1415, 0x1415, 0x1415, 0x1415,
+    0x3417, 0x0067, 0x3017, 0x2c17,
+    0x0c27, 0x0437, 0x0057, 0x2817,
+    0x0034, 0x0034, 0x0034, 0x0034,
+    0x0034, 0x0034, 0x0034, 0x0034,
+    0x1014, 0x1014, 0x1014, 0x1014,
+    0x1014, 0x1014, 0x1014, 0x1014,
+    0x0c14, 0x0c14, 0x0c14, 0x0c14,
+    0x0c14, 0x0c14, 0x0c14, 0x0c14,
+    0x0023, 0x0023, 0x0023, 0x0023,
+    0x0023, 0x0023, 0x0023, 0x0023,
+    0x0023, 0x0023, 0x0023, 0x0023,
+    0x0023, 0x0023, 0x0023, 0x0023,
+    0x0813, 0x0813, 0x0813, 0x0813,
+    0x0813, 0x0813, 0x0813, 0x0813,
+    0x0813, 0x0813, 0x0813, 0x0813,
+    0x0813, 0x0813, 0x0813, 0x0813,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0412, 0x0412, 0x0412, 0x0412,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
+    0x0010, 0x0010, 0x0010, 0x0010,
     };
 
     #define RUN_MASK 0xfc00
@@ -5895,15 +5890,15 @@ namespace {
      *
      *	Parse values for block structure from bitstream.
      *      n is an indication of the position of the block within
-     *      the macroblock (i.e. 0-5) and indicates the type of 
+     *      the macroblock (i.e. 0-5) and indicates the type of
      *      block (i.e. luminance or chrominance). Reconstructs
-     *      coefficients from values parsed and puts in 
+     *      coefficients from values parsed and puts in
      *      block.dct_recon array in vid stream structure.
      *      sparseFlag is set when the block contains only one
      *      coeffictient and is used by the IDCT.
      *
      * Results:
-     *	
+     *
      *
      * Side effects:
      *      Bit stream irreversibly parsed.
@@ -5941,7 +5936,7 @@ namespace {
 
         reconptr = DCT_recon[0];
 
-        /* 
+        /*
          * Hand coded version of memset that's a little faster...
          * Old call:
          *	memset((char *) DCT_recon, 0, 64*sizeof(short int));
@@ -5950,7 +5945,7 @@ namespace {
           INT32 *p;
           p = (INT32 *) reconptr;
 
-          p[0] = p[1] = p[2] = p[3] = p[4] = p[5] = p[6] = p[7] = p[8] = p[9] = 
+          p[0] = p[1] = p[2] = p[3] = p[4] = p[5] = p[6] = p[7] = p[8] = p[9] =
           p[10] = p[11] = p[12] = p[13] = p[14] = p[15] = p[16] = p[17] = p[18] =
           p[19] = p[20] = p[21] = p[22] = p[23] = p[24] = p[25] = p[26] = p[27] =
           p[28] = p[29] = p[30] = p[31] = 0;
@@ -6001,7 +5996,7 @@ namespace {
 	    if (n == 0) {
 	      coeff = diff << 3;
 	      if (m->mblock.mb_address -
-	          m->mblock.past_intra_addr > 1) 
+	          m->mblock.past_intra_addr > 1)
 	        coeff += 1024;
 	      else coeff += DCT_dc_y_past;
 	      DCT_dc_y_past = coeff;
@@ -6037,7 +6032,7 @@ namespace {
 	    if (n == 4) {
 	      coeff = diff << 3;
 	      if (m->mblock.mb_address -
-	          m->mblock.past_intra_addr > 1) 
+	          m->mblock.past_intra_addr > 1)
 	        coeff += 1024;
 	      else coeff += DCT_dc_cr_past;
 	      DCT_dc_cr_past = coeff;
@@ -6045,7 +6040,7 @@ namespace {
 	    } else {
 	      coeff = diff << 3;
 	      if (m->mblock.mb_address -
-	          m->mblock.past_intra_addr > 1) 
+	          m->mblock.past_intra_addr > 1)
 	        coeff += 1024;
 	      else coeff += DCT_dc_cb_past;
 	      DCT_dc_cb_past = coeff;
@@ -6099,12 +6094,12 @@ namespace {
 
           pos = zigzag_direct[i];
           if (level < 0) {
-	      coeff = (((level<<1) - 1) * qscale * 
-		       ((int) (niqmatrixptr[pos]))) >> 4; 
+	      coeff = (((level<<1) - 1) * qscale *
+		       ((int) (niqmatrixptr[pos]))) >> 4;
 	      coeff += (coeff & 1);
           } else {
-	      coeff = (((level<<1) + 1) * qscale * 
-		       ((int) (*(niqmatrixptr+pos)))) >> 4; 
+	      coeff = (((level<<1) + 1) * qscale *
+		       ((int) (*(niqmatrixptr+pos)))) >> 4;
 	      coeff -= (coeff & 1);
           }
           reconptr[pos] = coeff;
@@ -6122,12 +6117,12 @@ namespace {
 	      i = i+run+1;
 	      pos = zigzag_direct[i];
 	      if (level < 0) {
-	          coeff = (((level<<1) - 1) * qscale * 
-		           ((int) (niqmatrixptr[pos]))) >> 4; 
+	          coeff = (((level<<1) - 1) * qscale *
+		           ((int) (niqmatrixptr[pos]))) >> 4;
 	          coeff += (coeff & 1);
 	      } else {
-	          coeff = (((level<<1) + 1) * qscale * 
-		           ((int) (*(niqmatrixptr+pos)))) >> 4; 
+	          coeff = (((level<<1) + 1) * qscale *
+		           ((int) (*(niqmatrixptr+pos)))) >> 4;
 	          coeff -= (coeff & 1);
 	      }
 	      reconptr[pos] = coeff;
@@ -6149,10 +6144,10 @@ namespace {
       }
     }
 
-    #undef DCT_recon 
-    #undef DCT_dc_y_past 
-    #undef DCT_dc_cr_past 
-    #undef DCT_dc_cb_past 
+    #undef DCT_recon
+    #undef DCT_dc_y_past
+    #undef DCT_dc_cr_past
+    #undef DCT_dc_cb_past
 
     /*
      *--------------------------------------------------------------
@@ -6854,7 +6849,7 @@ bool Image::setURL(const char *url, Doc *relative)
 
   //  theSystem->debug("Image: trying to create Doc(%s, %s)\n",
   //		   url, relative ? relative->url() : "");
-  
+
   FILE *fp = d_url->fopen("rb");
 
   if (fp)
@@ -6884,7 +6879,7 @@ bool Image::setURL(const char *url, Doc *relative)
 
   if (! d_pixels)
 	  theSystem->error("Error: unable to read image file (%s).\n", url);
-	
+
   d_url->fclose();
   }
 
@@ -6905,7 +6900,7 @@ bool Image::setURL(const char *url, Doc2 *relative)
 
   //  theSystem->debug("Image: trying to create Doc(%s, %s)\n",
   //		   url, relative ? relative->url() : "");
-  
+
   FILE *fp = d_url->fopen("rb");
 
   if (fp)
@@ -6935,7 +6930,7 @@ bool Image::setURL(const char *url, Doc2 *relative)
 
       if (! d_pixels)
 	  theSystem->error("Error: unable to read image file (%s).\n", url);
-	
+
       d_url->fclose();
   }
 
@@ -6950,7 +6945,7 @@ bool Image::tryURLs(size_t nUrls, char const * const * urls, Doc * relative)
             break;
         }
     }
-    
+
     return i < nUrls;
 }
 
@@ -6962,7 +6957,7 @@ bool Image::tryURLs(size_t nUrls, char const * const * urls, Doc2 * relative)
             break;
         }
     }
-    
+
     return i < nUrls;
 }
 
@@ -6974,7 +6969,7 @@ bool Image::tryURLs(const MFString & urls, Doc * relative) {
             break;
         }
     }
-    
+
     return (i < urls.getLength());
 }
 
@@ -6986,7 +6981,7 @@ bool Image::tryURLs(const MFString & urls, Doc2 * relative) {
             break;
         }
     }
-    
+
     return (i < urls.getLength());
 }
 
@@ -6997,7 +6992,7 @@ const char *Image::url() { return d_url ? d_url->url() : 0; }
 
 static ImageFileType imageFileType(const char *url, FILE *)
 {
-  char *suffix = strrchr(url, '.');
+  const char * suffix = strrchr(url, '.');
   if (suffix) ++suffix;
 
   if (strcmp(suffix,"gif") == 0 ||

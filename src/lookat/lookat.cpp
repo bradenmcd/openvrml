@@ -54,96 +54,89 @@ ViewerGlut   *viewer = 0;
 static bool setTitleUrl = true;
 
 
-int
-main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
+    using std::cerr;
+    using std::cout;
+    using std::endl;
+    
 #if defined(__FreeBSD__)
-  fpsetmask(0);
+    fpsetmask(0);
 #endif
  
 #ifdef macintosh
-  SIOUXSettings.asktosaveonclose = 0;
-  argc = ccommand(&argv);
-  _fcreator = 'ttxt';
-  _ftype = 'TEXT';
+    SIOUXSettings.asktosaveonclose = 0;
+    argc = ccommand(&argv);
+    _fcreator = 'ttxt';
+    _ftype = 'TEXT';
 #endif
 
+    glutInitWindowSize(400, 320);
+    glutInit(&argc, argv);
 
-  glutInitWindowSize(400, 320);
-  glutInit( &argc, argv);
+    char * inputUrl = 0;
+    char * inputName = 0;
+    char * outputName = 0;
+    char * title = 0;
 
-  char *inputUrl = 0;
-  char *inputName = 0;
-  char *outputName = 0;
-  char *title = 0;
+    char usage[] = " file.wrl [outputfile]\n";
 
-  char usage[] = " file.wrl [outputfile]\n";
-
-  for (int i = 1; i < argc; ++i)
-    {
-      if (*argv[i] == '-')
-	{
-	  if (strcmp(argv[i], "-url") == 0)
-	    inputUrl = argv[++i];
-	  else if (strcmp(argv[i], "-notitle") == 0)
-	    setTitleUrl = false;
-	  else if (strcmp(argv[i], "-title") == 0)
-	    {
-	      setTitleUrl = false;
-	      title = argv[++i];
-	    }
-	  else
-	    {
-	      cerr << "Error: unrecognized option " << argv[i] << '\n';
-	      cerr << "Usage: " << argv[0] << usage << endl;
-	      exit(1);
-	    }
-	}
-      else if (! inputName)
-	inputName = argv[i];
-      else if (! outputName)
-	outputName = argv[i];
-      else
-	{
-	  cerr << "Usage: " << argv[0] << usage << endl;
-	  exit(1);
-	}
+    for (int i = 1; i < argc; ++i) {
+        if (*argv[i] == '-') {
+            if (strcmp(argv[i], "-url") == 0) {
+                inputUrl = argv[++i];
+            } else if (strcmp(argv[i], "-notitle") == 0) {
+                setTitleUrl = false;
+            } else if (strcmp(argv[i], "-title") == 0) {
+                setTitleUrl = false;
+                title = argv[++i];
+            } else {
+                cerr << "Error: unrecognized option " << argv[i] << '\n';
+                cerr << "Usage: " << argv[0] << usage << endl;
+                exit(EXIT_FAILURE);
+            }
+        } else if (! inputName) {
+            inputName = argv[i];
+        } else if (! outputName) {
+            outputName = argv[i];
+        } else {
+            cerr << "Usage: " << argv[0] << usage << endl;
+            exit(EXIT_FAILURE);
+        }
     }
 
-  if (! inputName)
-    {
-      if (inputUrl)
-	inputName = inputUrl;
-      else
-	inputName = inputUrl = "-";		// Read stdin
+    if (!inputName) {
+        if (inputUrl) {
+            inputName = inputUrl;
+        } else {
+            inputName = inputUrl = "-"; // Read stdin
+        }
     }
 
-  if (! inputUrl) inputUrl = inputName;
+    if (!inputUrl) { inputUrl = inputName; }
 
-  vrmlScene = new VrmlScene(inputUrl);
+    vrmlScene = new VrmlScene(inputUrl);
 
-  if (outputName)
-    {
-      cout << "  Saving scene to " << outputName << endl;
-      if (! vrmlScene->save(outputName))
-	cout << "\nError: couldn't write to " << outputName << endl;
+    if (outputName) {
+        cout << "  Saving scene to " << outputName << endl;
+        if (! vrmlScene->save(outputName)) {
+            cout << "\nError: couldn't write to " << outputName << endl;
+        }
     }
 
-  viewer = new ViewerGlut(*vrmlScene);
-  if (! viewer)
-    {
-      cerr << "\nError: couldn't create GLUT viewer.\n";
-      exit(1);
+    viewer = new ViewerGlut(*vrmlScene);
+    if (!viewer) {
+        cerr << "\nError: couldn't create GLUT viewer.\n";
+        exit(EXIT_FAILURE);
     }
 
-  if (title && *title) glutSetWindowTitle(title);
+    if (title && *title) { glutSetWindowTitle(title); }
 
-  vrmlScene->addWorldChangedCallback( worldChangedCB );
-  worldChangedCB( VrmlScene::REPLACE_WORLD );
-  viewer->update();
+    vrmlScene->addWorldChangedCallback( worldChangedCB );
+    worldChangedCB( VrmlScene::REPLACE_WORLD );
+    viewer->update();
 
-  glutMainLoop();
-  return 0;
+    glutMainLoop();
+    return EXIT_SUCCESS;
 }
 
 
@@ -188,7 +181,7 @@ static void buildViewpointMenu() {
     {
       glutSetMenu( vpmenu );
       for (int i=nvp; i>0; --i)
-	glutRemoveMenuItem( i );
+        glutRemoveMenuItem( i );
     }
   else
     {
@@ -209,18 +202,18 @@ static void buildViewpointMenu() {
   if (numberOfViewpoints > 0 )
     {
       for (int i = 0; i < numberOfViewpoints; i++) {
-	std::string name, description;
-	vrmlScene->getViewpoint(i, name, description);
-	if (description.length() > 0)
-	  glutAddMenuEntry(description.c_str(), i+1);
-	else if (name.length() > 0)
-	  glutAddMenuEntry(name.c_str(), i+1);
-	else
-	  {
-	    char buf[25];
-	    sprintf(buf,"Viewpoint %d", i+1);
-	    glutAddMenuEntry(buf, i+1);
-	  }
+        std::string name, description;
+        vrmlScene->getViewpoint(i, name, description);
+        if (description.length() > 0)
+          glutAddMenuEntry(description.c_str(), i+1);
+        else if (name.length() > 0)
+          glutAddMenuEntry(name.c_str(), i+1);
+        else
+          {
+            char buf[25];
+            sprintf(buf,"Viewpoint %d", i+1);
+            glutAddMenuEntry(buf, i+1);
+          }
       }
     }
 

@@ -77,7 +77,7 @@ namespace {
         static const int FIELDTYPE_MFVEC2F;
         static const int FIELDTYPE_MFVEC3F;
 
-        Vrml97Scanner(istream &);
+        Vrml97Scanner(std::istream &);
 
         virtual antlr::RefToken nextToken();
         
@@ -90,7 +90,7 @@ namespace {
         void _identifyFieldType(antlr::Token &);
         void _identifyTerminalSymbol(antlr::Token &);
 
-        istream &   _istm;
+        std::istream & _istm;
         size_t      _line;
         size_t      _col;
         int         _c;

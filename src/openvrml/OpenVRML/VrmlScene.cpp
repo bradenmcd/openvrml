@@ -2,39 +2,31 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
 
-# if defined(_WIN32) && !defined(__CYGWIN__)
-#   include <winconfig.h>
-# endif
-
 # include <errno.h>
 # include <stdio.h>
-# if defined(_WIN32) && !defined(__CYGWIN__)
-#   include <strstrea.h>
-# else
-#   include <strstream.h>
-# endif
 # include <algorithm>
 # include <stack>
+# include <strstream>
 # include "VrmlScene.h"
 # include "doc2.hpp"
 # include "Viewer.h"
@@ -69,7 +61,7 @@ namespace OpenVRML {
     class ProtoNode : public Node {
         friend class ProtoNodeClass;
         friend class Vrml97Parser;
-        
+
         class NodeCloneVisitor : public NodeVisitor {
             std::stack<NodePtr> rootNodeStack;
 
@@ -90,9 +82,9 @@ namespace OpenVRML {
             NodeCloneVisitor(const NodeCloneVisitor &);
             NodeCloneVisitor & operator=(const NodeCloneVisitor &);
         };
-        
+
         friend class NodeCloneVisitor;
-        
+
         class RouteCopyVisitor : public NodeVisitor {
             const ProtoNode & fromProtoNode;
             ProtoNode & toProtoNode;
@@ -111,14 +103,14 @@ namespace OpenVRML {
             RouteCopyVisitor(const RouteCopyVisitor &);
             RouteCopyVisitor & operator=(const RouteCopyVisitor &);
         };
-        
+
         friend class RouteCopyVisitor;
 
     public:
         struct ImplNodeInterface {
             Node & node;
             std::string interfaceId;
-            
+
             ImplNodeInterface(Node & node, const std::string & interfaceId);
         };
         typedef std::multimap<std::string, ImplNodeInterface> ISMap;
@@ -129,20 +121,20 @@ namespace OpenVRML {
         EventOutValueMap eventOutValueMap;
         VrmlNamespace scope;
         MFNode implNodes;
-        
+
     public:
         ProtoNode(const NodeType & nodeType, VrmlNamespace & parentScope);
         ProtoNode(const NodeType & nodeType, const ProtoNode & node);
         virtual ~ProtoNode() throw ();
-        
+
         void addRootNode(const NodePtr & node) throw (std::bad_alloc);
         void addIS(Node & implNode,
                    const std::string & implNodeInterfaceId,
                    const std::string & protoInterfaceId)
                 throw (std::invalid_argument, std::bad_alloc);
-        
+
         void update(double time);
-        
+
         virtual const ScriptNode * toScript() const throw ();
         virtual ScriptNode * toScript() throw ();
         virtual const AppearanceNode * toAppearance() const throw ();
@@ -171,7 +163,7 @@ namespace OpenVRML {
         virtual const TextureTransformNode * toTextureTransform() const
                 throw ();
         virtual TextureTransformNode * toTextureTransform() throw ();
-        
+
         virtual Vrml97Node::Anchor * toAnchor() const;
         virtual Vrml97Node::AudioClip * toAudioClip() const;
         virtual Vrml97Node::Background * toBackground() const;
@@ -189,35 +181,35 @@ namespace OpenVRML {
         virtual Vrml97Node::TimeSensor * toTimeSensor() const;
         virtual Vrml97Node::TouchSensor * toTouchSensor() const;
         virtual Vrml97Node::Viewpoint * toViewpoint() const;
-        
+
         virtual void render(Viewer *, VrmlRenderContext rc);
 
     private:
         // Not copyable.
         ProtoNode(const ProtoNode &);
         ProtoNode & operator=(const ProtoNode &);
-        
+
         virtual void setFieldImpl(const std::string & id,
                                   const FieldValue & value)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        
+
         virtual const FieldValue & getFieldImpl(const std::string & id) const
                 throw (UnsupportedInterface);
-        
+
         virtual void processEventImpl(const std::string & id,
                                       const FieldValue & value,
                                       double timestamp)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
-        
+
         virtual const FieldValue & getEventOutImpl(const std::string & id) const
                 throw (UnsupportedInterface);
     };
-    
-    
+
+
     class ProtoNodeClass : public NodeClass {
-        
+
         friend class Vrml97Parser;
-        
+
     public:
         class ProtoNodeType : public NodeType {
             NodeInterfaceSet nodeInterfaces;
@@ -229,16 +221,16 @@ namespace OpenVRML {
 
             virtual const NodeInterfaceSet & getInterfaces() const throw ();
             virtual const NodePtr createNode() const throw (std::bad_alloc);
-            
+
             void addInterface(const NodeInterface & interface)
                     throw (std::invalid_argument, std::bad_alloc);
         };
-        
+
         friend class ProtoNodeType;
 
     private:
         typedef std::map<std::string, FieldValuePtr> DefaultValueMap;
-        
+
         ProtoNodeType protoNodeType;
         DefaultValueMap defaultValueMap;
         ProtoNode protoNode;
@@ -246,7 +238,7 @@ namespace OpenVRML {
     public:
         ProtoNodeClass(VrmlScene & scene) throw ();
         virtual ~ProtoNodeClass() throw ();
-        
+
         void addEventIn(FieldValue::Type, const std::string & id)
                 throw (std::invalid_argument, std::bad_alloc);
         void addEventOut(FieldValue::Type, const std::string & id)
@@ -262,7 +254,7 @@ namespace OpenVRML {
                    const std::string & implNodeInterfaceId,
                    const std::string & protoInterfaceId)
                 throw (std::invalid_argument, std::bad_alloc);
-        
+
         virtual const NodeTypePtr createType(const std::string & id,
                                              const NodeInterfaceSet &)
                 throw (UnsupportedInterface, std::bad_alloc);
@@ -284,7 +276,7 @@ namespace OpenVRML {
 
 /**
  * @namespace OpenVRML
- * 
+ *
  * @brief The OpenVRML Runtime Library
  */
 namespace OpenVRML {
@@ -578,8 +570,22 @@ namespace OpenVRML {
  *
  * @c true if the bvolume dirty flag has been set on a node in the
  * scene graph, but has not yet been propegated to that node's
- * ancestors. 
+ * ancestors.
  */
+
+namespace {
+
+    struct InitializeScript_ : std::unary_function<ScriptNode *, void> {
+        InitializeScript_(double time): time(time) {}
+
+        void operator()(ScriptNode * const scriptNode) const {
+            scriptNode->initialize(time);
+        }
+
+    private:
+        double time;
+    };
+}
 
 /**
  * @brief Create a VrmlScene from a URI.
@@ -587,18 +593,18 @@ namespace OpenVRML {
  * @param url   a URI.
  */
 VrmlScene::VrmlScene(const std::string & url):
-        scriptNodeClass(*this), d_flags_need_updating(false),
+        scriptNodeClass(*this),
         d_url(new Doc2(url)), scope(0), d_modified(false), d_newView(false),
         d_deltaTime(DEFAULT_DELTA), d_pendingUrl(0), d_pendingParameters(0),
         d_pendingNodes(0), d_pendingScope(0), d_frameRate(0.0), d_firstEvent(0),
-        d_lastEvent(0) {
+        d_lastEvent(0), d_flags_need_updating(false) {
     this->initNodeClassMap();
     this->scope = new Vrml97RootNamespace(this->nodeClassMap);
 
     MFNode * newNodes = this->readWrl(this->d_url, this->scope);
     if (newNodes) {
         this->nodes = *newNodes;
-        
+
         for (size_t i = 0; i < this->nodes.getLength(); ++i) {
             this->nodes.getElement(i)->accumulateTransform(0);
         }
@@ -606,13 +612,13 @@ VrmlScene::VrmlScene(const std::string & url):
     delete newNodes;
 
     const double timeNow = theSystem->time();
-    
+
     //
     // Initialize Script nodes.
     //
     std::for_each(this->d_scripts.begin(), this->d_scripts.end(),
-                  std::bind2nd(std::mem_fun(&ScriptNode::initialize), timeNow));
-    
+                  InitializeScript_(timeNow));
+
     //
     // Send initial bind events to bindable nodes.
     //
@@ -621,24 +627,24 @@ VrmlScene::VrmlScene(const std::string & url):
         this->d_backgrounds.front()
                 ->processEvent("set_bind", SFBool(true), timeNow);
     }
-    
+
     if (!this->d_fogs.empty()) {
         assert(this->d_fogs.front());
         this->d_fogs.front()->processEvent("set_bind", SFBool(true), timeNow);
     }
-    
+
     if (!this->d_navigationInfos.empty()) {
         assert(this->d_navigationInfos.front());
         this->d_navigationInfos.front()
                 ->processEvent("set_bind", SFBool(true), timeNow);
     }
-    
+
     if (!this->d_viewpoints.empty()) {
         assert(this->d_viewpoints.front());
         this->d_viewpoints.front()
                 ->processEvent("set_bind", SFBool(true), timeNow);
     }
-    
+
     this->setModified();
     this->d_newView = true;		// Force resetUserNav
 }
@@ -681,7 +687,7 @@ const char * VrmlScene::getVersion() { return PACKAGE_VERSION; }
 void VrmlScene::initNodeClassMap() {
     this->nodeClassMap["urn:openvrml:node:Script"] =
             NodeClassPtr(new ScriptNodeClass(*this));
-    
+
     using namespace Vrml97Node;
     this->nodeClassMap["urn:X-openvrml:node:Anchor"] =
             NodeClassPtr(new AnchorClass(*this));
@@ -803,9 +809,7 @@ const MFNode & VrmlScene::getRootNodes() const throw () { return this->nodes; }
  */
 bool VrmlScene::loadUrl(const MFString & url,
                         const MFString & parameters) {
-    
-    size_t np = parameters.getLength();
-    
+
     // try each url until we find one we can handle
     size_t i(0);
     for (; i < url.getLength(); ++i) {
@@ -814,7 +818,7 @@ bool VrmlScene::loadUrl(const MFString & url,
         if (currentUrl.length() == 0) {
             continue;
         }
-        
+
 # if 0
         // #Viewpoint
         if (currentUrl[0] == '#') {
@@ -823,7 +827,7 @@ bool VrmlScene::loadUrl(const MFString & url,
             }
         }
 # endif
-        
+
         // Load .wrl's, or pass off to system
         else {
             // Check mime type...
@@ -854,7 +858,7 @@ bool VrmlScene::loadUrl(const MFString & url,
             }
         }
     }
-    
+
     return (i != url.getLength());  // true if we found a url that loaded
 }
 
@@ -898,7 +902,7 @@ MFNode * VrmlScene::readWrl(const MFString & urls, Doc2 * relative,
                             urls.getElement(i).c_str(), strerror(errno));
         }
     }
-    
+
     return 0;
 }
 
@@ -908,14 +912,14 @@ MFNode * VrmlScene::readWrl(const MFString & urls, Doc2 * relative,
  */
 MFNode * VrmlScene::readWrl(Doc2 * tryUrl, VrmlNamespace * ns) {
     MFNode * result = 0;
-    
+
     // Should verify MIME type...
-    istream & istm = tryUrl->inputStream();
+    std::istream & istm = tryUrl->inputStream();
     if (istm) {
-        
+
         Vrml97Scanner scanner(istm);
         Vrml97Parser parser(scanner);
-        
+
         //
         // If the caller is not interested in PROTO defs, use a local namespace.
         //
@@ -929,11 +933,11 @@ MFNode * VrmlScene::readWrl(Doc2 * tryUrl, VrmlNamespace * ns) {
         //
         VrmlNamespace nodeDefs;
         VrmlNamespace * rootNamespace = ns ? ns : &nodeDefs;
-        
+
         result = new MFNode();
         parser.vrmlScene(*this, *result, *rootNamespace, tryUrl);
     }
-    
+
     return result;
 }
 
@@ -948,22 +952,16 @@ const MFNode VrmlScene::readString(char const * vrmlString, VrmlNamespace * ns)
     // than a pointer?
     // -- Braden McDaniel <braden@endoframe.com> 1 Apr, 2000
     //
-    
+
     MFNode result;
-    
+
     if (vrmlString) {
-        istrstream istrstm(
-#ifdef _WIN32
-                           const_cast<char *>(vrmlString)
-#else
-                           vrmlString
-#endif
-                           );
+        std::istrstream istrstm(vrmlString);
         Vrml97Scanner scanner(istrstm);
         Vrml97Parser parser(scanner);
         parser.vrmlScene(*this, result, *ns, 0);
     }
-    
+
     return result;
 }
 
@@ -972,20 +970,18 @@ const MFNode VrmlScene::readString(char const * vrmlString, VrmlNamespace * ns)
  *
  * @todo Need to save the PROTOs/EXTERNPROTOs too...
  */
-bool VrmlScene::save(const char *url)
-{
-  bool success = false;
-  Doc2 save(url);
-  ostream &os = save.outputStream();
+bool VrmlScene::save(const char * url) {
+    Doc2 save(url);
+    std::ostream & out = save.outputStream();
 
-  if (os)
-    {
-      os << "#VRML V2.0 utf8\n";
-      os << this->nodes;
-      success = true;
+    bool success = false;
+    if (out) {
+        out << "#VRML V2.0 utf8\n";
+        out << this->nodes;
+        success = true;
     }
 
-  return success;
+    return success;
 }
 
 /**
@@ -1088,7 +1084,7 @@ void VrmlScene::flushEvents()
 
 /**
  * Called by the viewer when the cursor passes over, clicks, drags, or
- * releases a sensitive object (an Anchor or another grouping node with 
+ * releases a sensitive object (an Anchor or another grouping node with
  * an enabled TouchSensor child).
  */
 void VrmlScene::sensitiveEvent(Node * const n,
@@ -1127,6 +1123,18 @@ void VrmlScene::sensitiveEvent(Node * const n,
     }
 }
 
+namespace {
+    template <typename T>
+    struct UpdatePolledNode_ : std::unary_function<T, void> {
+        explicit UpdatePolledNode_(double time): time(time) {}
+
+        void operator()(T node) const { node->update(time); }
+
+    private:
+        double time;
+    };
+}
+
 /**
  * @brief Process events (update the scene).
  *
@@ -1136,9 +1144,9 @@ void VrmlScene::sensitiveEvent(Node * const n,
  */
 bool VrmlScene::update(double currentTime) {
     if (currentTime <= 0.0) { currentTime = theSystem->time(); }
-    
+
     d_deltaTime = DEFAULT_DELTA;
-    
+
     // Update each of the timers.
     std::list<Node *>::iterator i, end = this->d_timers.end();
     for (i = this->d_timers.begin(); i != end; ++i) {
@@ -1152,34 +1160,34 @@ bool VrmlScene::update(double currentTime) {
         Vrml97Node::AudioClip * c = (*i)->toAudioClip();
         if (c) { c->update(currentTime); }
     }
-    
+
     // Update each of the movies.
     end = this->d_movies.end();
     for (i = this->d_movies.begin(); i != end; ++i) {
         Vrml97Node::MovieTexture * m = (*i)->toMovieTexture();
         if (m) { m->update(currentTime); }
     }
-    
+
     //
     // Update each of the scripts.
     //
     std::for_each(this->d_scripts.begin(), this->d_scripts.end(),
-                  std::bind2nd(std::mem_fun(&ScriptNode::update), currentTime));
+                  UpdatePolledNode_<ScriptNode *>(currentTime));
 
     //
     // Update each of the prototype instances.
     //
     std::for_each(this->protoNodeList.begin(), this->protoNodeList.end(),
-                  std::bind2nd(std::mem_fun(&ProtoNode::update), currentTime));
-    
+                  UpdatePolledNode_<ProtoNode *>(currentTime));
+
     // Pass along events to their destinations
     while (this->d_firstEvent != this->d_lastEvent
             && !this->d_pendingUrl && !this->d_pendingNodes) {
         Event * const e = &this->d_eventMem[this->d_firstEvent];
         this->d_firstEvent = (this->d_firstEvent + 1) % MAXEVENTS;
-        
+
         e->toNode->processEvent(e->toEventIn, *e->value, e->timeStamp);
-        
+
         // this needs to change if event values are shared...
         delete e->value;
     }
@@ -1217,7 +1225,7 @@ void VrmlScene::render(Viewer * viewer) {
         viewer->resetUserNavigation();
         d_newView = false;
     }
-    
+
     // Default viewpoint parameters
     float position[3] = { 0.0, 0.0, 10.0 };
     float orientation[4] = { 0.0, 0.0, 1.0, 0.0 };
@@ -1232,7 +1240,7 @@ void VrmlScene::render(Viewer * viewer) {
                   orientation);
         field = vp->getFieldOfView().get();
     }
-    
+
     Vrml97Node::NavigationInfo * ni = bindableNavigationInfoTop();
     if (ni) {
         avatarSize = ni->getAvatarSize()[0];
@@ -1247,14 +1255,14 @@ void VrmlScene::render(Viewer * viewer) {
         float ambient = 0.3;
 
         viewer->insertDirLight(ambient, 1.0, rgb, xyz);
-    }                         
+    }
 
     // sets the viewpoint transformation
     //
     viewer->setViewpoint(position, orientation, field, avatarSize, visibilityLimit);
-    
+
     // Set background.
-    
+
     Vrml97Node::Background * bg = bindableBackgroundTop();
     if (bg) {
         // Should be transformed by the accumulated rotations above ...
@@ -1262,15 +1270,15 @@ void VrmlScene::render(Viewer * viewer) {
     } else {
         viewer->insertBackground(); // Default background
     }
-    
+
     // Fog
     Vrml97Node::Fog * f = bindableFogTop();
     if (f) {
         viewer->setFog(f->getColor(), f->getVisibilityRange(), f->getFogType().c_str());
     }
-    
+
     // Top level object
-    
+
     viewer->beginObject(0);
     //
     // Hack alert: Right now the rendering code uses the old-style
@@ -1300,8 +1308,8 @@ void VrmlScene::render(Viewer * viewer) {
         MV.setTranslate(t);
         viewer->getUserNavigation(NMAT);
         MV = MV.multLeft(NMAT);
-    }     
-    
+    }
+
     VrmlRenderContext rc(BVolume::BV_PARTIAL, MV);
     rc.setDrawBSpheres(true);
 
@@ -1311,17 +1319,17 @@ void VrmlScene::render(Viewer * viewer) {
         Vrml97Node::AbstractLight * x = (*li)->toLight();
         if (x) { x->renderScoped(viewer); }
     }
-    
+
     // Render the nodes
     for (size_t i = 0; i < this->nodes.getLength(); ++i) {
         this->nodes.getElement(i)->render(viewer, rc);
     }
-    
+
     viewer->endObject();
-    
+
     // This is actually one frame late...
     d_frameRate = viewer->getFrameRate();
-    
+
     clearModified();
 
     // If any events were generated during render (ugly...) do an update
@@ -1627,14 +1635,14 @@ void VrmlScene::nextViewpoint() {
         }
     }
 }
-  
+
 /**
  * @brief Bind to the previous Viewpoint in the list.
  */
 void VrmlScene::prevViewpoint() {
     Vrml97Node::Viewpoint *vp = bindableViewpointTop();
     std::list<Node *>::iterator i;
-    
+
     for (i = d_viewpoints.begin(); i != d_viewpoints.end(); ++i) {
         if (*i == vp) {
             if (i == d_viewpoints.begin()) {
@@ -1709,8 +1717,8 @@ void VrmlScene::setViewpoint(const std::string & name,
  */
 void VrmlScene::setViewpoint(size_t nvp) {
     std::list<Node *>::iterator i;
-    int j = 0;
-    
+    size_t j = 0;
+
     for (i = d_viewpoints.begin(); i != d_viewpoints.end(); ++i) {
         if (j == nvp) {
             Vrml97Node::Viewpoint * const vp = (*i)->toViewpoint();
@@ -1945,9 +1953,10 @@ ProtoNode::NodeCloneVisitor::~NodeCloneVisitor() {}
 void ProtoNode::NodeCloneVisitor::clone() {
     assert(this->fromProtoNode.implNodes.getElement(0));
     this->toProtoNode.implNodes.setLength(this->fromProtoNode.implNodes.getLength());
-    for (size_t i = 0; i < this->toProtoNode.implNodes.getLength(); ++i) {
+    size_t i;
+    for (i = 0; i < this->toProtoNode.implNodes.getLength(); ++i) {
         if (this->fromProtoNode.implNodes.getElement(i)) {
-            Node & childNode(*this->fromProtoNode.implNodes.getElement(i));
+            Node & childNode = *this->fromProtoNode.implNodes.getElement(i);
             if (!childNode.accept(*this)) {
                 assert(this->toProtoNode.scope.findNode(childNode.getId()));
                 this->rootNodeStack
@@ -1960,7 +1969,7 @@ void ProtoNode::NodeCloneVisitor::clone() {
     }
     assert(this->rootNodeStack.size() == 0);
 
-    for (size_t i = 0; i < this->fromProtoNode.implNodes.getLength(); ++i) {
+    for (i = 0; i < this->fromProtoNode.implNodes.getLength(); ++i) {
         assert(this->fromProtoNode.implNodes.getElement(i));
         this->fromProtoNode.implNodes.getElement(i)->resetVisitedFlag();
     }
@@ -1974,7 +1983,7 @@ namespace {
                          VrmlNamespace & scope, Node & fromNode, Node & toNode):
                 visitor(&visitor), rootNodeStack(&rootNodeStack), scope(&scope),
                 fromNode(&fromNode), toNode(&toNode) {}
-    
+
         void operator()(const NodeInterface & interface) const {
             if (interface.type == NodeInterface::field
                     || interface.type == NodeInterface::exposedField) {
@@ -1983,7 +1992,7 @@ namespace {
                             static_cast<const SFNode &>
                                 (this->fromNode->getField(interface.id));
                     if (value.get()) {
-                        Node & childNode(*value.get());
+                        Node & childNode = *value.get();
                         if (!childNode.accept(*this->visitor)) {
                             assert(this->scope->findNode(childNode.getId()));
                             this->rootNodeStack
@@ -2001,7 +2010,7 @@ namespace {
                     MFNode clonedChildren(children.getLength());
                     for (size_t i = 0; i < clonedChildren.getLength(); ++i) {
                         if (children.getElement(i)) {
-                            Node & childNode(*children.getElement(i));
+                            Node & childNode = *children.getElement(i);
                             if (!childNode.accept(*this->visitor)) {
                                 assert(this->scope->findNode(childNode.getId()));
                                 this->rootNodeStack
@@ -2062,7 +2071,7 @@ void ProtoNode::NodeCloneVisitor::visit(Node & node) {
     //
     // Copy the field values.
     //
-    const NodeInterfaceSet & interfaces(node.nodeType.getInterfaces());
+    const NodeInterfaceSet & interfaces = node.nodeType.getInterfaces();
     std::for_each(interfaces.begin(), interfaces.end(),
                   CloneFieldValue_(*this, this->rootNodeStack,
                                    this->toProtoNode.scope, node, *newNode));
@@ -2093,25 +2102,26 @@ ProtoNode::RouteCopyVisitor::RouteCopyVisitor(const ProtoNode & fromProtoNode,
  * @brief Copy the ROUTEs.
  */
 void ProtoNode::RouteCopyVisitor::copyRoutes() {
-    for (size_t i = 0; i < this->fromProtoNode.implNodes.getLength(); ++i) {
+	size_t i;
+    for (i = 0; i < this->fromProtoNode.implNodes.getLength(); ++i) {
         if (this->fromProtoNode.implNodes.getElement(i)) {
             this->fromProtoNode.implNodes.getElement(i)->accept(*this);
         }
     }
 
-    for (size_t i = 0; i < this->fromProtoNode.implNodes.getLength(); ++i) {
+    for (i = 0; i < this->fromProtoNode.implNodes.getLength(); ++i) {
         this->fromProtoNode.implNodes.getElement(i)->resetVisitedFlag();
     }
 }
 
 namespace {
-    
+
     struct AddRoute_ : std::unary_function<Node::Route, void> {
         AddRoute_(VrmlNamespace & scope, Node & fromNode):
                   scope(&scope), fromNode(&fromNode) {}
 
         void operator()(const Node::Route & route) const {
-            const std::string & toNodeId(route.toNode->getId());
+            const std::string & toNodeId = route.toNode->getId();
             assert(this->scope->findNode(toNodeId));
             fromNode->addRoute(route.fromEventOut,
                                NodePtr(this->scope->findNode(toNodeId)),
@@ -2141,7 +2151,7 @@ void ProtoNode::RouteCopyVisitor::visit(Node & node) {
     //
     // Visit the children.
     //
-    const MFNode & children(node.getChildren());
+    const MFNode & children = node.getChildren();
     for (size_t i = 0; i < children.getLength(); ++i) {
         if (children.getElement(i)) {
             children.getElement(i)->accept(*this);
@@ -2204,12 +2214,13 @@ namespace {
         case FieldValue::mfvec3f:       return FieldValuePtr(new MFVec3f);
         default: assert(false);
         }
+        return FieldValuePtr(0);
     }
-    
+
     struct AddEventOutValue_ : std::unary_function<NodeInterface, void> {
         AddEventOutValue_(ProtoNode::EventOutValueMap & eventOutValueMap):
                 eventOutValueMap(&eventOutValueMap) {}
-        
+
         void operator()(const NodeInterface & interface) const {
             if (interface.type == NodeInterface::eventOut) {
                 const Node::PolledEventOutValue
@@ -2229,7 +2240,7 @@ namespace {
                 assert(succeeded);
             }
         }
-        
+
     private:
         ProtoNode::EventOutValueMap * eventOutValueMap;
     };
@@ -2262,7 +2273,7 @@ ProtoNode::ProtoNode(const NodeType & nodeType, const ProtoNode & node):
         Node(nodeType), scope(node.scope.parent) {
     assert(node.implNodes.getLength() > 0);
     assert(node.implNodes.getElement(0));
-    
+
     //
     // For each exposedField and eventOut in the prototype interface, add
     // a value to the eventOutValueMap.
@@ -2270,10 +2281,10 @@ ProtoNode::ProtoNode(const NodeType & nodeType, const ProtoNode & node):
     // Note: We don't want to copy node's EventOutValueMap, since the values
     // in that map should be per-instance.
     //
-    const NodeInterfaceSet & interfaces(this->nodeType.getInterfaces());
+    const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
     std::for_each(interfaces.begin(), interfaces.end(),
                   AddEventOutValue_(this->eventOutValueMap));
-    
+
     //
     // Cloning the nodes is a two-step process. First, we clone the actual
     // node instances. Second, we traverse the node tree again cloning the
@@ -2281,7 +2292,7 @@ ProtoNode::ProtoNode(const NodeType & nodeType, const ProtoNode & node):
     //
     NodeCloneVisitor(node, *this).clone();
     RouteCopyVisitor(node, *this).copyRoutes();
-    
+
     //
     // Add to the scene.
     //
@@ -2634,7 +2645,7 @@ void ProtoNode::addIS(Node & implNode,
     const ImplNodeInterface implNodeInterface(implNode, implNodeInterfaceId);
     const ISMap::value_type value(protoInterfaceId, implNodeInterface);
     this->isMap.insert(value);
-    
+
     if (this->nodeType.hasEventOut(protoInterfaceId)) {
         EventOutValueMap::iterator pos =
                 this->eventOutValueMap.find(protoInterfaceId);
@@ -2685,7 +2696,7 @@ const FieldValue & ProtoNode::getFieldImpl(const std::string & id) const
 }
 
 namespace {
-    
+
     struct DispatchEvent_ :
             std::unary_function<ProtoNode::ISMap::value_type, void> {
         DispatchEvent_(const FieldValue & value, const double timestamp):
@@ -2706,7 +2717,7 @@ void ProtoNode::processEventImpl(const std::string & id,
                                  const FieldValue & value,
                                  const double timestamp)
         throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
-    const std::pair<ISMap::const_iterator, ISMap::const_iterator> rangeItrs =
+    const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
             this->isMap.equal_range(id);
     if (rangeItrs.first == this->isMap.end()) {
         throw UnsupportedInterface(this->nodeType.id + " node has no eventIn "
@@ -2714,7 +2725,7 @@ void ProtoNode::processEventImpl(const std::string & id,
     }
     std::for_each(rangeItrs.first, rangeItrs.second,
                   DispatchEvent_(value, timestamp));
-    
+
     //
     // Emit events.
     //
@@ -2737,7 +2748,7 @@ const FieldValue & ProtoNode::getEventOutImpl(const std::string & id) const
                 this->eventOutValueMap.find(id);
         if (pos != this->eventOutValueMap.end()) { return *pos->second.value; }
     }
-    
+
     //
     // If the above code doesn't find anything, see if we have an exposedField.
     //
@@ -2747,9 +2758,11 @@ const FieldValue & ProtoNode::getEventOutImpl(const std::string & id) const
     //
     {
         const ISMap::const_iterator pos = this->isMap.find(id);
-        if (pos != this->isMap.end()) {
-            return pos->second.node.getEventOut(id);
+        if (pos == this->isMap.end()) {
+            throw UnsupportedInterface(this->nodeType.id + " node has no "
+                                       "eventOut \"" + id + "\".");
         }
+        return pos->second.node.getEventOut(id);
     }
 }
 
@@ -2968,7 +2981,7 @@ void ProtoNodeClass::addEventOut(const FieldValue::Type type,
         throw (std::invalid_argument, std::bad_alloc) {
     const NodeInterface interface(NodeInterface::eventOut, type, id);
     this->protoNodeType.addInterface(interface);
-    
+
     //
     // Add a value to the ProtoNode's eventOutValueMap.
     //
@@ -3002,7 +3015,7 @@ void ProtoNodeClass::addExposedField(const std::string & id,
         const bool succeeded = this->defaultValueMap.insert(value).second;
         assert(succeeded);
     }
-    
+
     //
     // Add a value to the ProtoNode's eventOutValueMap.
     //
@@ -3069,11 +3082,11 @@ namespace {
     struct AddInterface_ : std::unary_function<NodeInterface, void> {
         AddInterface_(ProtoNodeClass::ProtoNodeType & protoNodeType):
                 protoNodeType(&protoNodeType) {}
-        
+
         void operator()(const NodeInterface & interface) const {
             protoNodeType->addInterface(interface);
         }
-    
+
     private:
         ProtoNodeClass::ProtoNodeType * protoNodeType;
     };

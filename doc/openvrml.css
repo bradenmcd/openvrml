@@ -14,6 +14,7 @@ body {
 }
 :link, :visited {
   border-bottom: dashed 1px;
+  text-decoration: none;
 }
 :link:hover, :visited:hover {
   border-bottom: solid 1px;
@@ -38,7 +39,6 @@ hr {
   background-color: red;
   color: red;
   height: 3px;
-  border-style: outset;
 }
 
 .sitenav, .body, .body th, .body td, .body caption {
@@ -46,12 +46,12 @@ hr {
 }
 
 .body, .body th, .body td, .body caption {
+  background-color: white;
+  color: black;
   line-height: 1.3em;
 }
 
 .body {
-  color: black;
-  background-color: white;
   padding: 1em;
 }
 
@@ -85,7 +85,6 @@ hr {
   background-color: black;
   color: rgb(85%, 85%, 85%);
   display: block;
-  color: white;
   margin: 0;
   border: 0;
   padding: 0.25em;

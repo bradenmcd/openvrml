@@ -1,3 +1,167 @@
+2002-07-01  Braden McDaniel  <braden@endoframe.com>
+
+        * configure.ac, README:  Incremented version to 0.12.4.
+
+        * m4/glut.m4:  Added "-lXmu" to libs needed by glut.
+
+        * NEWS:  Updates for 0.12.4 release.
+
+        * m4/gl.m4:  Fixed bug in libGL detection macro (missing comma).
+
+2002-06-30  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/doc2.cpp:  Use a reasonable value for
+          the buffer size for z::filebuf.
+
+        * NEWS:  Updates for 0.12.3 release.
+
+2002-06-29  Braden McDaniel  <braden@endoframe.com>
+
+        * README: Added documentation for --with-doxygen configure
+          option.
+
+2002-06-28  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/script.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp:  Fixes to build with
+          gcc 2.95.3.
+
+2002-06-25  Braden McDaniel  <braden@endoframe.com>
+
+        * private.h: Fixes to OPENVRML_VERIFY_ macro.
+
+        * ScriptJDK.cpp: Quelled some output about unimplemented
+          functions. (Use Doxygen @todo instead.)
+
+        * script.cpp: Utility methods to set up the JavaScript
+          environment should throw std::bad_alloc on failure rather than
+          return false.
+
+2002-06-22  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixes for compiling with Microsoft Visual C++ 6.0 sp5.
+
+2002-06-22  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed a bunch of warnings and errors flagged by the Intel C++
+          compiler.
+
+        * src/openvrml/OpenVRML/VrmlMatrix.cpp:  Fixed errors
+          dereferencing matrix values.
+
+        * src/openvrml/OpenVRML/Vrml97Parser.g,
+          src/openvrml/OpenVRML/Vrml97Parser.hpp,
+          src/openvrml/OpenVRML/Vrml97Parser.cpp:  Changed Vrml97Scanner
+          to use a std::istream rather than an istream.
+
+2002-06-21  Braden McDaniel  <braden@endoframe.com>
+
+        * doc/openvrml.css: Stylesheet fixes for consistency with Web
+          site.
+
+        * src/openvrml/OpenVRML/script.h,
+          src/openvrml/OpenVRML/script.cpp:  Reverted 2002-06-19 change
+          to ScriptNodeClass::createType exception specification.  This
+          problem has apparently been addressed with a patch to Sun
+          Forte update 2.
+
+        * m4/gl.m4, m4/glut.m4:  OV_CHECK_GL should *not* depend on
+          AM_PATH_XTRA; OV_CHECK_GLUT *should* depend on AM_PATH_XTRA.
+          Now, OV_CHECK_GLUT only adds X11 libs and cflags to the
+          GLUT_LIBS and GLUT_CFLAGS variables if X11 is present and
+          should be used.  But what about platforms where GLUT depends
+          on platform-specific GUI libraries (Mac, Windows)? 
+          OV_CHECK_GLUT may need to get a good deal smarter; OTOH, we
+          will eventually be eliminating the GLUT dependency altogether.
+
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp: checkError
+          should take a const char *.
+
+        * configure.ac, README: Updated version to 0.12.3.
+
+2002-06-20  Braden McDaniel  <braden@endoframe.com>
+
+        * m4/gl.m4: AC_REQUIRE([AC_PATH_XTRA]) and add the X CFLAGS and
+          LIBS to GL_CFLAGS and GL_LIBS.
+
+        * m4/glut.m4, src/lookat/Makefile.am,
+          src/openvrml-gl/OpenVRML/GL/Makefile.am: Add GL_CFLAGS and
+          GL_LIBS to GLUT_CFLAGS and GLUT_LIBS, respectively.
+
+        * configure.ac: Don't require X.
+
+        * m4/gl.m4: Nvidia's OpenGL links with pthreads.
+
+        * m4/glut.m4: Fix macro documentation to reflect
+          AC_SUBST([GLUT_CFLAGS]).
+
+        * src/openvrml/OpenVRML/Viewer.cpp,
+          src/openvrml/OpenVRML/VrmlScene.cpp,
+          src/openvrml/OpenVRML/bvolume.cpp,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/script.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp: Quell a bunch of
+          warnings from gcc -Wall.
+
+        * src/openvrml/OpenVRML/Makefile.am: Incremented libopenvrml
+          library version to 2:2:0.
+
+        * src/openvrml-gl/OpenVRML/GL/Makefile.am: Incremented
+          libopenvrml-gl library version to 3:0:0.
+
+        * NEWS: Updates for 0.12.2 release.
+
+        * INSTALL: Removed build instructions for Windows (Visual C++)
+          and Mac (CodeWarrior) since we are not presently distributing
+          project files for those compilers.
+
+2002-06-19  Braden McDaniel  <braden@endoframe.com>
+
+        * configure.ac, README: Incremented version number to 0.12.2.
+
+        * src/openvrml/OpenVRML/ScriptJDK.cpp: Use const_cast to blow
+          off const for JNI.
+
+        * src/openvrml/OpenVRML/doc2.cpp: Use const_cast to blow off
+          const in call to Doc2::stripProtocol in Doc2::filename.  This
+          means a call to Doc2::filename can modify Doc2::url_ as a side
+          effect.  This does not appear to be a desirable side effect;
+          but it is consistent with Doc.  And since this code will be
+          going away for 0.14, it's not worth spending a lot of time
+          ensuring it's correct.
+
+        * src/openvrml/OpenVRML/Image.cpp: const-correctness fix in
+          imageFileType.
+
+        * src/openvrml/OpenVRML/Image.cpp: Don't use METHODDEF macro
+          for my_error_exit (libjpeg error handler).  The macro just
+          expands to make the function "static", which is deprecated
+          (and unnecessary since the function is in an anonymous
+          namespace).
+
+        * src/openvrml/OpenVRML/field.h,
+          src/openvrml/OpenVRML/field.cpp: Provide typedefs for return
+          values of methods that return array references. This
+          circumvents a bug in Sun Forte 6 update 2.
+
+        * src/openvrml/OpenVRML/script.h,
+          src/openvrml/OpenVRML/script.cpp: Changed exception
+          specification for ScriptNodeClass::createType from nothrow to
+          match the exception specification for NodeClass::createType.
+          This circumvents a bug in Sun Forte 6 update 2.
+
+        * src/openvrml/OpenVRML/bvolume.cpp,
+          src/openvrml/OpenVRML/vrml97node.h: Avoid converting from
+          array references to pointers when we don't need to. Sun
+          Forte 6 update 2 is iffy on some conversions.
+
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: enum
+          ViewerOpenGL::LightType needs to be public.
+
+        * src/openvrml/OpenVRML/VrmlScene.cpp: In
+          ProtoNode::processEventImpl, non-const map<>equal_range
+          returns a std::pair of iterators, not const_iterators.
+
 2002-06-17  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.13.0.
@@ -11,6 +175,8 @@
           src/openvrml/OpenVRML/node.cpp,
           src/openvrml/OpenVRML/vrml97node.cpp: Removed vestigal
           '#include "proto.h"'.
+
+        * doc/openvrml.css: Changes for consistency with Web site.
 
 2002-06-16  Braden McDaniel  <braden@endoframe.com>
 

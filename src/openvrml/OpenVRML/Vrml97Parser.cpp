@@ -77,7 +77,7 @@ const int Vrml97Scanner::FIELDTYPE_MFTIME       (45);
 const int Vrml97Scanner::FIELDTYPE_MFVEC2F      (46);
 const int Vrml97Scanner::FIELDTYPE_MFVEC3F      (47);
 
-Vrml97Scanner::Vrml97Scanner(::istream & istm)
+Vrml97Scanner::Vrml97Scanner(std::istream & istm)
   : _istm(istm), _line(1), _col(0), _c(' '), _prevChar('\0'), _prevTokenType(0),
     _readTooMuch(false), _expectingFieldType(false)
 {}
