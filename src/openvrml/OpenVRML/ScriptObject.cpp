@@ -35,6 +35,7 @@
 
 # include <math.h>
 # include <string.h>
+# include <vector>
 # if defined(_WIN32) && !defined(__CYGWIN__)
 #   include <strstrea.h>
 # else
@@ -241,7 +242,7 @@ namespace {
                 using namespace Field;
                 JSBool construct(JSContext * cx, JSObject * obj,
                                  uintN argc, jsval * argv, jsval *) throw ();
-                JSBool initObject(JSContext * cx, JSObject * jsval,
+                JSBool initObject(JSContext * cx, JSObject * obj,
                                   uintN argc, jsval * argv) throw ();
                 JSBool getProperty(JSContext * cx, JSObject * obj,
                                    jsval id, jsval * vp) throw ();
@@ -782,21 +783,6 @@ namespace {
     // Convert a VrmlField value to a jsval, optionally protect from gc.
 
     jsval ScriptJS::vrmlFieldToJSVal(const VrmlField & f, const bool protect) {
-        using JavaScript_::SFColor;
-        using JavaScript_::SFImage;
-        using JavaScript_::SFNode;
-        using JavaScript_::SFRotation;
-        using JavaScript_::SFVec2f;
-        using JavaScript_::SFVec3f;
-        using JavaScript_::MFColor;
-        using JavaScript_::MFFloat;
-        using JavaScript_::MFInt32;
-        using JavaScript_::MFNode;
-        using JavaScript_::MFRotation;
-        using JavaScript_::MFString;
-        using JavaScript_::MFTime;
-        using JavaScript_::MFVec2f;
-        using JavaScript_::MFVec3f;
 
         jsval rval;
 
@@ -806,7 +792,7 @@ namespace {
             break;
 
         case VrmlField::SFCOLOR:
-            if (!SFColor::toJsval(static_cast<const VrmlSFColor &>(f), protect,
+            if (!JavaScript_::SFColor::toJsval(static_cast<const VrmlSFColor &>(f), protect,
                                  this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
@@ -822,7 +808,7 @@ namespace {
             }
 
         case VrmlField::SFIMAGE:
-            if (!SFImage::toJsval(static_cast<const VrmlSFImage &>(f), protect,
+            if (!JavaScript_::SFImage::toJsval(static_cast<const VrmlSFImage &>(f), protect,
                                  this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
@@ -832,14 +818,14 @@ namespace {
 	    return INT_TO_JSVAL(static_cast<const VrmlSFInt32 &>(f).get());
 
         case VrmlField::SFNODE:
-            if (!SFNode::toJsval(static_cast<const VrmlSFNode &>(f), protect,
+            if (!JavaScript_::SFNode::toJsval(static_cast<const VrmlSFNode &>(f), protect,
                                  this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
             break;
 
         case VrmlField::SFROTATION:
-            if (!SFRotation::toJsval(static_cast<const VrmlSFRotation &>(f), protect,
+            if (!JavaScript_::SFRotation::toJsval(static_cast<const VrmlSFRotation &>(f), protect,
                                      this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
@@ -864,77 +850,77 @@ namespace {
             }
 
         case VrmlField::SFVEC2F:
-            if (!SFVec2f::toJsval(static_cast<const VrmlSFVec2f &>(f), protect,
+            if (!JavaScript_::SFVec2f::toJsval(static_cast<const VrmlSFVec2f &>(f), protect,
                                   this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
             break;
 
         case VrmlField::SFVEC3F:
-            if (!SFVec3f::toJsval(static_cast<const VrmlSFVec3f &>(f), protect,
+            if (!JavaScript_::SFVec3f::toJsval(static_cast<const VrmlSFVec3f &>(f), protect,
                                   this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
             break;
 
         case VrmlField::MFCOLOR:
-            if (!MFColor::toJsval(static_cast<const VrmlMFColor &>(f), protect,
+            if (!JavaScript_::MFColor::toJsval(static_cast<const VrmlMFColor &>(f), protect,
                                   this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
             break;
 
         case VrmlField::MFFLOAT:
-            if (!MFFloat::toJsval(static_cast<const VrmlMFFloat &>(f), protect,
+            if (!JavaScript_::MFFloat::toJsval(static_cast<const VrmlMFFloat &>(f), protect,
                                   this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
             break;
 
         case VrmlField::MFINT32:
-            if (!MFInt32::toJsval(static_cast<const VrmlMFInt32 &>(f), protect,
+            if (!JavaScript_::MFInt32::toJsval(static_cast<const VrmlMFInt32 &>(f), protect,
                                   this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
             break;
 
         case VrmlField::MFNODE:
-            if (!MFNode::toJsval(static_cast<const VrmlMFNode &>(f), protect,
+            if (!JavaScript_::MFNode::toJsval(static_cast<const VrmlMFNode &>(f), protect,
                                   this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
             break;
 
         case VrmlField::MFROTATION:
-            if (!MFRotation::toJsval(static_cast<const VrmlMFRotation &>(f), protect,
+            if (!JavaScript_::MFRotation::toJsval(static_cast<const VrmlMFRotation &>(f), protect,
                                      this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
             break;
 
         case VrmlField::MFSTRING:
-            if (!MFString::toJsval(static_cast<const VrmlMFString &>(f), protect,
+            if (!JavaScript_::MFString::toJsval(static_cast<const VrmlMFString &>(f), protect,
                                    this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
             break;
 
         case VrmlField::MFTIME:
-            if (!MFTime::toJsval(static_cast<const VrmlMFTime &>(f), protect,
+            if (!JavaScript_::MFTime::toJsval(static_cast<const VrmlMFTime &>(f), protect,
                                  this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
             break;
 
         case VrmlField::MFVEC2F:
-            if (!MFVec2f::toJsval(static_cast<const VrmlMFVec2f &>(f), protect,
+            if (!JavaScript_::MFVec2f::toJsval(static_cast<const VrmlMFVec2f &>(f), protect,
                                   this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
             break;
 
         case VrmlField::MFVEC3F:
-            if (!MFVec3f::toJsval(static_cast<const VrmlMFVec3f &>(f), protect,
+            if (!JavaScript_::MFVec3f::toJsval(static_cast<const VrmlMFVec3f &>(f), protect,
                                   this->d_cx, this->d_globalObj, &rval)) {
                 rval = JSVAL_NULL;
             }
@@ -1909,7 +1895,6 @@ namespace {
         }
 
         namespace SFColor {
-
             JSObject * initClass(JSContext * const cx, JSObject * const obj)
                     throw () {
                 static JSPropertySpec properties[] =
@@ -1920,13 +1905,13 @@ namespace {
 
                 static JSFunctionSpec methods[] =
                         // name, func ptr, argc
-                        { { "setHSV", setHSV, 3, 0, 0 },
-                          { "getHSV", getHSV, 0, 0, 0 },
-                          { "toString", toString, 0, 0, 0 },
+				{ { "setHSV", SFColor::setHSV, 3, 0, 0 },
+				{ "getHSV", SFColor::getHSV, 0, 0, 0 },
+				{ "toString", SFColor::toString, 0, 0, 0 },
                           { 0, 0, 0, 0, 0 } };
 
                 return JS_InitClass(cx, obj, 0, &jsclass,
-                                    construct, 0, // constructor function, min arg count
+					SFColor::construct, 0, // constructor function, min arg count
                                     properties, methods,
                                     0, 0); // static properties and methods
             }
@@ -2085,11 +2070,11 @@ namespace {
 
                 static JSFunctionSpec methods[] =
                         // name, func ptr, argc
-                        { { "toString", toString, 0, 0, 0 },
+				{ { "toString", SFImage::toString, 0, 0, 0 },
                           { 0, 0, 0, 0, 0 } };
 
                 return JS_InitClass(cx, obj, 0, &jsclass,
-                                    construct, 0, // constructor function, min arg count
+                                    SFImage::construct, 0, // constructor function, min arg count
                                     properties, methods,
                                     0, 0); // static properties and methods
             }
@@ -2213,11 +2198,11 @@ namespace {
                     throw () {
                 static JSFunctionSpec methods[] =
                         // name, func ptr, argc
-                        { { "toString", toString, 0, 0, 0 },
+				{ { "toString", SFNode::toString, 0, 0, 0 },
                           { 0, 0, 0 } };
 
                 return JS_InitClass(cx, obj, 0, &jsclass,
-                                    construct, 1, // constructor function, min arg count
+                                    SFNode::construct, 1, // constructor function, min arg count
                                     0, methods, // instance properties, methods
                                     0, 0); // static properties and methods
             }
@@ -2405,17 +2390,17 @@ namespace {
 
                 static JSFunctionSpec methods[] =
                         // name, func ptr, argc
-                        { { "getAxis", getAxis, 0, 0, 0 },
-                          { "inverse", inverse, 0, 0, 0 },
-                          { "multiply", multiply, 1, 0, 0 },
-                          { "multVec", multVec, 1, 0, 0 },
-                          { "setAxis", setAxis, 1, 0, 0 },
-                          { "slerp", slerp, 2, 0, 0 },
-                          { "toString", toString, 0, 0, 0 },
+				{ { "getAxis", SFRotation::getAxis, 0, 0, 0 },
+                  { "inverse", SFRotation::inverse, 0, 0, 0 },
+                  { "multiply", SFRotation::multiply, 1, 0, 0 },
+                  { "multVec", SFRotation::multVec, 1, 0, 0 },
+                  { "setAxis", SFRotation::setAxis, 1, 0, 0 },
+                  { "slerp", SFRotation::slerp, 2, 0, 0 },
+				{ "toString",SFRotation::toString, 0, 0, 0 },
                           { 0, 0, 0, 0, 0 } };
 
                 return JS_InitClass(cx, obj, 0, &jsclass,
-                                    construct, 0, // constructor function, min arg count
+                                    SFRotation::construct, 0, // constructor function, min arg count
                                     properties, methods, // instance properties, methods
                                     0, 0); // static properties and methods
             }
@@ -2449,7 +2434,6 @@ namespace {
                 JSBool construct(JSContext * const cx, JSObject * const obj,
                                  const uintN argc, jsval * const argv, jsval *)
                         throw () {
-                    using JavaScript_::SFVec3f;
                     
                     jsdouble x = 0.0, y = 1.0, z = 0.0, angle = 0.0;
 
@@ -2481,7 +2465,7 @@ namespace {
                             }
                         } else if (JSVAL_IS_OBJECT(argv[0])) {
                             if (!JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
-                                               &SFVec3f::jsclass, 0)) {
+                                               &JavaScript_::SFVec3f::jsclass, 0)) {
                                 return JS_FALSE;
                             }
                             VrmlSFVec3f * const argVec1 =
@@ -2494,7 +2478,7 @@ namespace {
                                 if (JSVAL_IS_OBJECT(argv[1])) {
                                     if (!JS_InstanceOf(cx,
                                                        JSVAL_TO_OBJECT(argv[1]),
-                                                       &SFVec3f::jsclass, 0)) {
+                                                       &JavaScript_::SFVec3f::jsclass, 0)) {
                                         return JS_FALSE;
                                     }
                                     
@@ -2667,7 +2651,6 @@ namespace {
                 JSBool multVec(JSContext * const cx, JSObject * const obj,
                                const uintN argc, jsval * const argv,
 	                       jsval * const rval) {
-                    using JavaScript_::SFVec3f;
 
                     VrmlSFRotation *r1 = (VrmlSFRotation *)JS_GetPrivate( cx, obj );
                     VrmlSFVec3f *v2 = 0;
@@ -2676,10 +2659,10 @@ namespace {
                     // Verify that we have an SFVec3f arg && create a result
                     if (r1 && argc > 0 &&
                         JSVAL_IS_OBJECT(argv[0]) &&
-                        &SFVec3f::jsclass == JS_GetClass( JSVAL_TO_OBJECT(argv[0]) ) &&
+                        &JavaScript_::SFVec3f::jsclass == JS_GetClass( JSVAL_TO_OBJECT(argv[0]) ) &&
                         (v2 = (VrmlSFVec3f *)JS_GetPrivate( cx, JSVAL_TO_OBJECT(argv[0]))) &&
                         (((VrmlField*)v2)->fieldType() == VrmlField::SFVEC3F) &&
-                        (v3obj = JS_NewObject( cx, &SFVec3f::jsclass, 0,
+                        (v3obj = JS_NewObject( cx, &JavaScript_::SFVec3f::jsclass, 0,
 			                       JS_GetParent( cx, obj ) )) != 0)
                       {
                         VrmlSFVec3f *v3 = new VrmlSFVec3f;
@@ -2696,7 +2679,6 @@ namespace {
                 JSBool setAxis(JSContext * const cx, JSObject * const obj,
                                const uintN argc, jsval * const argv,
                                jsval * const rval) {
-                    using JavaScript_::SFVec3f;
 
                     VrmlSFRotation *r1 = (VrmlSFRotation *)JS_GetPrivate( cx, obj );
                     VrmlSFVec3f *v2 = 0;
@@ -2704,7 +2686,7 @@ namespace {
                     // Verify that we have an SFVec3f arg && create a result
                     if (r1 && argc > 0 &&
                         JSVAL_IS_OBJECT(argv[0]) &&
-                        &SFVec3f::jsclass == JS_GetClass( JSVAL_TO_OBJECT(argv[0]) ) &&
+                        &JavaScript_::SFVec3f::jsclass == JS_GetClass( JSVAL_TO_OBJECT(argv[0]) ) &&
                         (v2 = (VrmlSFVec3f *)JS_GetPrivate( cx, JSVAL_TO_OBJECT(argv[0]))) &&
                         (((VrmlField*)v2)->fieldType() == VrmlField::SFVEC3F) )
                       {
@@ -2755,19 +2737,19 @@ namespace {
 
                 static JSFunctionSpec methods[] =
                   /*    name          native          nargs    */
-                        { { "add", add, 1, 0, 0 },
-                          { "divide", divide, 1, 0, 0 },
-                          { "dot", dot, 1, 0, 0 },
-                          { "length", length, 0, 0, 0 },
-                          { "multiply", multiply, 1, 0, 0 },
-                          { "negate", negate, 0, 0, 0 },
-                          { "normalize", normalize, 0, 0, 0 },
-                          { "subtract", subtract, 1, 0, 0 },
-                          { "toString", toString, 0, 0, 0 },
+                        { { "add", SFVec2f::add, 1, 0, 0 },
+                          { "divide", SFVec2f::divide, 1, 0, 0 },
+                          { "dot", SFVec2f::dot, 1, 0, 0 },
+                          { "length", SFVec2f::length, 0, 0, 0 },
+                          { "multiply", SFVec2f::multiply, 1, 0, 0 },
+                          { "negate", SFVec2f::negate, 0, 0, 0 },
+                          { "normalize", SFVec2f::normalize, 0, 0, 0 },
+                          { "subtract", SFVec2f::subtract, 1, 0, 0 },
+                          { "toString", SFVec2f::toString, 0, 0, 0 },
                           { 0, 0, 0, 0, 0 } };
 
                 return JS_InitClass(cx, obj, 0, &jsclass,
-                                    constructor, 0, // constructor function, min arg count
+                                    SFVec2f::constructor, 0, // constructor function, min arg count
                                     properties, methods,
                                     0, 0); // static properties and methods
             }
@@ -3011,20 +2993,20 @@ namespace {
 
                 static JSFunctionSpec methods[] =
                   /*    name          native          nargs    */
-                        { { "add", add, 1, 0, 0 },
-                          { "cross", cross, 1, 0, 0 },
-                          { "divide", divide, 1, 0, 0 },
-                          { "dot", dot, 1, 0, 0 },
-                          { "length", length, 0, 0, 0 },
-                          { "multiply", multiply, 1, 0, 0 },
-                          { "negate", negate, 0, 0, 0 },
-                          { "normalize", normalize, 0, 0, 0 },
-                          { "subtract", subtract, 1, 0, 0 },
-                          { "toString", toString, 0, 0, 0 },
+                        { { "add", SFVec3f::add, 1, 0, 0 },
+                          { "cross", SFVec3f::cross, 1, 0, 0 },
+                          { "divide", SFVec3f::divide, 1, 0, 0 },
+                          { "dot", SFVec3f::dot, 1, 0, 0 },
+                          { "length", SFVec3f::length, 0, 0, 0 },
+                          { "multiply", SFVec3f::multiply, 1, 0, 0 },
+                          { "negate", SFVec3f::negate, 0, 0, 0 },
+                          { "normalize", SFVec3f::normalize, 0, 0, 0 },
+                          { "subtract", SFVec3f::subtract, 1, 0, 0 },
+                          { "toString", SFVec3f::toString, 0, 0, 0 },
                           { 0, 0, 0, 0, 0 } };
 
                 return JS_InitClass(cx, obj, 0, &jsclass,
-                                    constructor, 0, // constructor function, min arg count
+                                    SFVec3f::constructor, 0, // constructor function, min arg count
                                     properties, methods,
                                     0, 0); // static properties and methods
             }
@@ -3292,7 +3274,7 @@ namespace {
             delete array;
         }
 
-        MField::JsvalArray & MField::MFData::getArray() {
+		JavaScript_::MField::JsvalArray & MField::MFData::getArray() {
             return *this->array;
         }
 

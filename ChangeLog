@@ -1,3 +1,7 @@
+2001-06-15  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Fixed problems for "using-declaration" in ScriptObject.cpp.
+
 2001-06-14  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Fixes for object construction in several places in 
