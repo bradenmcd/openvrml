@@ -298,7 +298,7 @@ SDK, is in the folder that contains the OpenVRML CVS root folder, i.e.:
        - libpng
        - zlib
        - OpenVRML             <- CVS root
-         - libvrml97
+         - openvrml
            - ide-projects
            - src
            - lib
@@ -307,37 +307,26 @@ SDK, is in the folder that contains the OpenVRML CVS root folder, i.e.:
 3.2  Build order
 ================
 
-  The project files are located in `ide-projects/Macintosh/CodeWarrior5'.
+   The project file is located in `ide-projects/Macintosh/CodeWarrior5'.
   
-  Observe the following order when building OpenVRML.Lib and Lookat:
+   Observe the following order when building OpenVRML.Lib and Lookat:
 
-  1. Compile the `openVRMLgl.mcp' project.
+   1. Decode `OpenVRML.rsrc.hqx' (e.g., using Stuffit Expander).
 
-  2. Compile the `ImageReader.mcp' project.
+   2. Compile the `BuildAll.mcp' project.
 
-  3. Compile the `LibANTLR.mcp' project.
-
-  4. Compile the `OpenVRMLcore.mcp' project.
-
-  5. Compile the `Javascript.mcp' project.
-
-  6. Compile the `OpenVRML.mcp' project.
-  
-  7. Decode `OpenVRML.rsrc.hqx' (e.g., using Stuffit Expander).
-
-  8. Compile the `Lookat.mcp' project.
-
-   For steps 1 and 8, you will need to adjust the project access paths
+   For step 2, you will need to adjust the project access paths
 so that CodeWarrior can locate your OpenGL SDK files.  If you do not
 have the libjpeg, libpng, zlib and InternetConfig files in the default
 file structure described above then you will need to adjust the access
-paths for those for steps 2 and 4, too.
+paths for those too. CodeWarrior should report which files it is unable
+to locate.
 
-   NOTE:  If you have problems with the project files then create new
-   ones using the supplied XML files instead (using the
-   "Import Project..." command in CodeWarrior's "File" menu).
+   NOTE:  If you have problems with the project file then create new
+   one using the supplied XML file (BuildAll.mcp.xml) instead (using
+   the "Import Project..." command in CodeWarrior's "File" menu).
 
-   The final result should be a `OpenVRML.Lib' library
+   The final result should be an `OpenVRML.Lib' library
 and a simple GLUT-based viewer called `Lookat'.
 You can enter URLs (file or http) into the dialog box that appears when
 you start `Lookat' to choose which VRML files to view.
