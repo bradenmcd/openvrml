@@ -7423,47 +7423,86 @@ void MovieTexture::update(const double currentTime) {
                       << this->url << std::endl;
         }
 
-
         int nFrames = this->image->nFrames();
         this->duration = SFTime((nFrames >= 0) ? double(nFrames) : double(-1));
         this->emitEvent("duration_changed", this->duration, currentTime);
         this->frame = (this->speed.get() >= 0) ? 0 : nFrames-1;
+        // Set the last frame equal to the start time.
+        // This is needed to properly handle the case where the startTime
+        // and stopTime are set at runtime to the same value (spec says
+        // that a single loop should occur in this case...)
+        this->lastFrameTime = this->startTime.get();
     }
 
     // No pictures to show
     if (!this->image || this->image->nFrames() == 0) { return; }
 
-    // Become active at the first tick at or after startTime if either
-    // the valid stopTime hasn't passed or we are looping.
-    if (!this->active.get()
-            && this->startTime.get() <= currentTime
-            && this->startTime.get() >= this->lastFrameTime
-            && ((this->stopTime.get() <= this->startTime.get() // valid stopTime
-                || this->stopTime.get() > currentTime) // hasn't passed
-                || this->loop.get())) {
-        this->active.set(true);
-        this->emitEvent("isActive", this->active, currentTime);
-        this->lastFrameTime = currentTime;
-        this->frame = (this->speed.get() >= 0) ? 0 : this->image->nFrames() - 1;
-        setModified();
+    // See section 4.6.9 of the VRML97 spec for a detailed explanation
+    // of the logic here.
+    if (!this->active.get())
+    {
+      if (currentTime >= this->startTime.get())
+      {
+        if (currentTime >= this->stopTime.get())
+        {
+          if (this->startTime.get() >= this->stopTime.get())
+          {
+            if (this->loop.get())
+            {
+              this->active.set(true);
+              this->emitEvent("isActive", this->active, currentTime);
+              this->lastFrameTime = currentTime;
+              this->frame = (this->speed.get() >= 0) ? 0 :
+                               this->image->nFrames() - 1;
+              setModified();
+	    }
+            else if (this->startTime.get() > this->lastFrameTime)
+            {
+              this->active.set(true);
+              this->emitEvent("isActive", this->active, currentTime);
+              this->lastFrameTime = currentTime;
+              this->frame = (this->speed.get() >= 0) ? 0 :
+                               this->image->nFrames() - 1;
+              setModified();
+	    }
+	  }
+        }
+        else if (this->stopTime.get() > currentTime)
+        {
+          this->active.set(true);
+          this->emitEvent("isActive", this->active, currentTime);
+          this->lastFrameTime = currentTime;
+          this->frame = (this->speed.get() >= 0) ? 0 :
+                           this->image->nFrames() - 1;
+          setModified();
+        }
+      }
     }
 
     // Check whether stopTime has passed
     else if (this->active.get()
-            && ((this->stopTime.get() > this->startTime.get()
-                    && this->stopTime.get() <= currentTime)
-                || this->frame < 0)) {
+             && ((this->stopTime.get() > this->startTime.get()
+		  && this->stopTime.get() <= currentTime))
+             || ((this->frame < 0) && !this->loop.get())) {
         this->active.set(false);
         this->emitEvent("isActive", this->active, currentTime);
         setModified();
     }
+    else if (this->frame < 0 && this->loop.get())
+    {
+      // Reset frame to 0 to begin loop again.
+      this->frame = 0;
+    }
 
     // Check whether the frame should be advanced
     else if (this->active.get()
-            && this->lastFrameTime + fabs(1 / this->speed.get())
+             && this->lastFrameTime + fabs(1 / this->speed.get())
                 <= currentTime) {
-        if (this->speed.get() < 0.0) { --this->frame; }
-        else { ++this->frame; }
+        if (this->speed.get() < 0.0) 
+          --this->frame;
+        else 
+          ++this->frame;
+
         this->lastFrameTime = currentTime;
         setModified();
     }
