@@ -13,6 +13,9 @@
         * src/openvrml/OpenVRML/field.cpp: Added exception
           specifications to FieldValue classes and much Doxygen love.
 
+        * Doxyfile.in: Set EXTRACT_PRIVATE, HIDE_UNDOC_MEMBERS, and
+          HIDE_UNDOC_CLASSES to YES.
+
 2002-05-20  Braden McDaniel  <braden@endoframe.com>
 
         * Makefile.am, src/Makefile.am: Add optionally built
