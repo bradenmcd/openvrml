@@ -106,29 +106,6 @@ namespace {
             }
         };
 
-        template <typename Arg, typename Result>
-        struct unary_function_base : std::unary_function<Arg, Result> {
-            virtual ~unary_function_base() {}
-            virtual Result operator()(const Arg & arg) const = 0;
-        };
-
-        template <typename Arg, typename Result>
-        struct unary_function_wrapper : std::unary_function<Arg, Result> {
-
-            explicit unary_function_wrapper(
-                const unary_function_base<Arg, Result> & function):
-                function(&function)
-            {}
-
-            Result operator()(const Arg & arg) const
-            {
-                return (*this->function)(arg);
-            }
-
-        private:
-            const unary_function_base<Arg, Result> * function;
-        };
-
 
         class scope_guard_impl_base {
         protected:
