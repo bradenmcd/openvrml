@@ -7,6 +7,10 @@
 
         * src/openvrml/OpenVRML/field.cpp: Fixed const issue.
 
+        * src/openvrml/OpenVRML/script.cpp: Eliminated <strstream>
+          dependency; moved includes needed only by the JavaScript
+          binding to the conditionally compiled section.
+
 2002-09-23  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * src/openvrml/OpenVRML/field.cpp: VC++6.0 complains about

@@ -23,14 +23,7 @@
 #   include <config.h>
 # endif
 
-# include <math.h>
 # include <assert.h>
-# include <algorithm>
-# include <iostream>
-# include <memory>
-# include <sstream>
-# include <strstream>
-# include <vector>
 # include "private.h"
 # include "script.h"
 # include "scope.h"
@@ -714,6 +707,12 @@ const FieldValue & ScriptNode::getEventOutImpl(const std::string & id) const
 } // namespace OpenVRML
 
 # ifdef OPENVRML_HAVE_SPIDERMONKEY
+#   include <math.h>
+#   include <algorithm>
+#   include <iostream>
+#   include <memory>
+#   include <sstream>
+#   include <vector>
 #   include <jsapi.h>
 namespace {
 
@@ -2718,14 +2717,11 @@ JSBool SField::toString(JSContext * const cx, JSObject * const obj,
             static_cast<SFData *>(JS_GetPrivate(cx, obj));
     assert(sfdata);
 
-    std::ostrstream out;
-    out << sfdata->getFieldValue() << '\0';
-    const char * ss = out.str();
-    JSString * s = JS_NewStringCopyZ(cx, ss);
-    out.rdbuf()->freeze(false);
-    if (!s) { return JS_FALSE; }
-
-    *rval = STRING_TO_JSVAL(s);
+    std::ostringstream out;
+    out << sfdata->getFieldValue();
+    JSString * const jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
+    if (!jsstr) { return JS_FALSE; }
+    *rval = STRING_TO_JSVAL(jsstr);
     return JS_TRUE;
 }
 
@@ -5090,7 +5086,7 @@ JSBool MFJSObject<Subclass>::toString(JSContext * const cx,
     MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
     assert(mfdata);
 
-    std::ostrstream out;
+    std::ostringstream out;
     out << '[';
     for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
         assert(JSVAL_IS_OBJECT(mfdata->array[i]));
@@ -5103,15 +5099,8 @@ JSBool MFJSObject<Subclass>::toString(JSContext * const cx,
     }
     out << ']';
 
-    JSString * jsstr = JS_NewStringCopyZ(cx, out.str());
-
-    //
-    // Return ownership of the buffer to the ostrstream.
-    //
-    out.rdbuf()->freeze(false);
-
+    JSString * jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
     if (!jsstr) { return JS_FALSE; }
-
     *rval = STRING_TO_JSVAL(jsstr);
     return JS_TRUE;
 }
@@ -5330,7 +5319,7 @@ JSBool MFJSDouble<Subclass>::toString(JSContext * const cx,
     MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
     assert(mfdata);
 
-    std::ostrstream out;
+    std::ostringstream out;
     out << '[';
     for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
         assert(JSVAL_IS_DOUBLE(mfdata->array[i]));
@@ -5339,15 +5328,8 @@ JSBool MFJSDouble<Subclass>::toString(JSContext * const cx,
     }
     out << ']';
 
-    JSString * jsstr = JS_NewStringCopyZ(cx, out.str());
-
-    //
-    // Return ownership of the buffer to the ostrstream.
-    //
-    out.rdbuf()->freeze(false);
-
+    JSString * const jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
     if (!jsstr) { return JS_FALSE; }
-
     *rval = STRING_TO_JSVAL(jsstr);
     return JS_TRUE;
 }
@@ -5664,7 +5646,7 @@ JSBool MFInt32::toString(JSContext * const cx, JSObject * const obj,
     MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
     assert(mfdata);
 
-    std::ostrstream out;
+    std::ostringstream out;
     out << '[';
     for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
         out << JSVAL_TO_INT(mfdata->array[i]);
@@ -5672,15 +5654,8 @@ JSBool MFInt32::toString(JSContext * const cx, JSObject * const obj,
     }
     out << ']';
 
-    JSString * jsstr = JS_NewStringCopyZ(cx, out.str());
-
-    //
-    // Return ownership of the buffer to the ostrstream.
-    //
-    out.rdbuf()->freeze(false);
-
+    JSString * const jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
     if (!jsstr) { return JS_FALSE; }
-
     *rval = STRING_TO_JSVAL(jsstr);
     return JS_TRUE;
 }
@@ -5932,7 +5907,7 @@ JSBool MFNode::toString(JSContext * const cx, JSObject * const obj,
     MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
     assert(mfdata);
 
-    std::ostrstream out;
+    std::ostringstream out;
     out << '[';
     for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
         const SField::SFData * const sfdata =
@@ -5944,15 +5919,8 @@ JSBool MFNode::toString(JSContext * const cx, JSObject * const obj,
     }
     out << ']';
 
-    JSString * jsstr = JS_NewStringCopyZ(cx, out.str());
-
-    //
-    // Return ownership of the buffer to the ostrstream.
-    //
-    out.rdbuf()->freeze(false);
-
+    JSString * const jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
     if (!jsstr) { return JS_FALSE; }
-
     *rval = STRING_TO_JSVAL(jsstr);
     return JS_TRUE;
 }
@@ -6250,7 +6218,7 @@ JSBool MFString::toString(JSContext * const cx, JSObject * const obj,
     MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
     assert(mfdata);
 
-    std::ostrstream out;
+    std::ostringstream out;
     out << '[';
     for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
         assert(JSVAL_IS_STRING(mfdata->array[i]));
@@ -6261,15 +6229,8 @@ JSBool MFString::toString(JSContext * const cx, JSObject * const obj,
     }
     out << ']';
 
-    JSString * jsstr = JS_NewStringCopyZ(cx, out.str());
-
-    //
-    // Return ownership of the buffer to the ostrstream.
-    //
-    out.rdbuf()->freeze(false);
-
+    JSString * const jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
     if (!jsstr) { return JS_FALSE; }
-
     *rval = STRING_TO_JSVAL(jsstr);
     return JS_TRUE;
 }
