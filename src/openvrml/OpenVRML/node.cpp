@@ -806,9 +806,9 @@ Node::PolledEventOutValue::PolledEventOutValue(const FieldValuePtr & value,
  * @param scope the Scope associated with the instance.
  */
 Node::Node(const NodeType & type, const ScopePtr & scope):
-        nodeType(type),
         scope(scope),
         scene(0),
+        nodeType(type),
         d_modified(false),
         d_bvol_dirty(false),
         visited(false) {}
