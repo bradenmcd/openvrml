@@ -40,16 +40,12 @@ namespace OpenVRML {
         unsigned char **d_frame;
 
     public:
-        Image(const char *url = 0, Doc *relative = 0);
+        Image();
         ~Image();
 
-        bool setURL(const char *url, Doc *relative = 0);
-        bool setURL(const char *url, Doc2 *relative = 0);
+        bool setURL(const char * url, const Doc2 * relative = 0);
 
-        bool tryURLs(size_t nUrls, char const * const * urls, Doc *relative = 0);
-        bool tryURLs(size_t nUrls, char const * const * urls, Doc2 *relative = 0);
-        bool tryURLs(const MFString & urls, Doc * relative = 0);
-        bool tryURLs(const MFString & urls, Doc2 * relative = 0);
+        bool tryURLs(const MFString & urls, const Doc2 * relative = 0);
 
         const char *url();
 

@@ -5679,7 +5679,7 @@ void ImageTexture::render(Viewer *viewer, VrmlRenderContext rc) {
     // loaded just once... of course world authors should just DEF/USE
     // them...
     if (!this->image && this->url.getLength() > 0) {
-        Doc baseDoc(this->getScene()->getURI());
+        Doc2 baseDoc(this->getScene()->getURI());
         this->image = new Image;
         if (!this->image->tryURLs(this->url, &baseDoc)) {
             theSystem->error("Couldn't read ImageTexture from URL %s\n",

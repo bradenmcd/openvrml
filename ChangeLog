@@ -3,6 +3,11 @@
         * src/openvrml/OpenVRML/Doc.cpp: Fixed bug where relative URI
           paths were being corrupted in Doc::seturl.
 
+        * src/openvrml/OpenVRML/Image.cpp,
+          src/openvrml/OpenVRML/Image.h,
+          src/openvrml/OpenVRML/vrml97node.cpp: Removed unnecessary
+          methods from Image.
+
 2002-10-07  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp,
