@@ -6,7 +6,10 @@
 #ifndef _SCRIPTJDK_
 #define _SCRIPTJDK_
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+
 #if HAVE_JDK
 //
 //  Java (via Sun JDK) Script class
