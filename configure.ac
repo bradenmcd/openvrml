@@ -49,7 +49,7 @@ PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
 
 AX_CHECK_GLUT
 
-AC_ARG_VAR([DOXYGEN])
+AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
 AC_PATH_PROG([DOXYGEN], [doxygen])
 
 #

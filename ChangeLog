@@ -1,5 +1,9 @@
 2003-09-02  Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac:  Provide help text for DOXYGEN variable.
+
+2003-09-02  Braden McDaniel  <braden@endoframe.com>
+
 	Fixes for gcc 3.2.2.
 
 	* src/libopenvrml/openvrml/basetypes.cpp
