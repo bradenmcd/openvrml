@@ -717,10 +717,9 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>op</VALUE></SETTING>
-                    <SETTING><VALUE>Ϋάψ</VALUE></SETTING>
-                    <SETTING><VALUE>
-π]π</VALUE></SETTING>
+                    <SETTING><VALUE>\</VALUE></SETTING>
+                    <SETTING><VALUE>¶άψ</VALUE></SETTING>
+                    <SETTING><VALUE>Λ^</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
@@ -928,15 +927,6 @@
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::lib:js:</ACCESSPATH>
                     <PATH>:jsexn.c</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                    <FILEKIND>Text</FILEKIND>
-                    <FILEFLAGS></FILEFLAGS>
-                </FILE>
-                <FILE>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>::::lib:js:</ACCESSPATH>
-                    <PATH>:jsfile.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                     <FILEKIND>Text</FILEKIND>
                     <FILEFLAGS></FILEFLAGS>
@@ -1213,13 +1203,6 @@
                     <PATHTYPE>PathRelative</PATHTYPE>
                     <PATHROOT>Project</PATHROOT>
                     <ACCESSPATH>::::lib:js:</ACCESSPATH>
-                    <PATH>:jsfile.c</PATH>
-                    <PATHFORMAT>MacOS</PATHFORMAT>
-                </FILEREF>
-                <FILEREF>
-                    <PATHTYPE>PathRelative</PATHTYPE>
-                    <PATHROOT>Project</PATHROOT>
-                    <ACCESSPATH>::::lib:js:</ACCESSPATH>
                     <PATH>:jsfun.c</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
@@ -1459,14 +1442,6 @@
                 <PATHROOT>Project</PATHROOT>
                 <ACCESSPATH>::::lib:js:</ACCESSPATH>
                 <PATH>:jsexn.c</PATH>
-                <PATHFORMAT>MacOS</PATHFORMAT>
-            </FILEREF>
-            <FILEREF>
-                <TARGETNAME>JavaScript Library</TARGETNAME>
-                <PATHTYPE>PathRelative</PATHTYPE>
-                <PATHROOT>Project</PATHROOT>
-                <ACCESSPATH>::::lib:js:</ACCESSPATH>
-                <PATH>:jsfile.c</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
             <FILEREF>
