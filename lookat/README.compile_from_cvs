@@ -1,9 +1,4 @@
-1. Run libtoolize:
-
-$ libtoolize --automake
-
-
-2. Run aclocal. You will need to tell it where to find the macros installed by
+1. Run aclocal. You will need to tell it where to find the macros installed by
    libvrml97core and libvrml97gl. This is done with the '-I' switch. If you
    installed libvrml97core and libvrml97gl in the default location (/usr/local), the
    command is:
@@ -11,21 +6,21 @@ $ libtoolize --automake
 $ aclocal -I /usr/local/share/aclocal
 
 
-3. Run automake:
+2. Run automake:
 
 $ automake -a
 
 
-4. Run autoconf
+3. Run autoconf
 
 $ autoconf
 
 
-5. Run the generated configure script:
+4. Run the generated configure script:
 
 $ ./configure
 
 
-6. Build it:
+5. Build it:
 
 $ make

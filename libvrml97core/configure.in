@@ -33,8 +33,6 @@ AM_PROG_LIBTOOL
 dnl Now begin Checking for various libraries
 dnl ==================================================================
 
-
-dnl Test for libjpeg
 AC_CHECK_LIB(jpeg, jpeg_read_header, 
   AC_CHECK_HEADER(jpeglib.h,
     [
