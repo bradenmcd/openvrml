@@ -77,7 +77,7 @@ namespace openvrml {
         virtual ~script_node_class() throw ();
 
     private:
-        virtual const node_type_ptr
+        virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
             throw ();

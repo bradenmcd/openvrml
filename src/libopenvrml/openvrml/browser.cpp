@@ -63,7 +63,7 @@ namespace openvrml {
         virtual ~null_node_class() throw ();
 
     private:
-        virtual const node_type_ptr
+        virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
             throw ();
@@ -169,7 +169,7 @@ namespace {
             const routes_t & routes);
         virtual ~proto_node_class() throw ();
 
-        virtual const node_type_ptr
+        virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc);
@@ -2403,13 +2403,13 @@ namespace {
     proto_node_class::~proto_node_class() throw ()
     {}
 
-    const node_type_ptr
+    const boost::shared_ptr<node_type>
     proto_node_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        return node_type_ptr(new proto_node_type(*this, id, interfaces));
+        return boost::shared_ptr<node_type>(new proto_node_type(*this, id, interfaces));
     }
 
 
@@ -3595,111 +3595,111 @@ browser::node_class_map::node_class_map(browser & b)
 {
     using namespace vrml97_node;
     this->map_["urn:X-openvrml:node:Anchor"] =
-        node_class_ptr(new anchor_class(b));
+        boost::shared_ptr<node_class>(new anchor_class(b));
     this->map_["urn:X-openvrml:node:Appearance"] =
-        node_class_ptr(new appearance_class(b));
+        boost::shared_ptr<node_class>(new appearance_class(b));
     this->map_["urn:X-openvrml:node:AudioClip"] =
-        node_class_ptr(new audio_clip_class(b));
+        boost::shared_ptr<node_class>(new audio_clip_class(b));
     this->map_["urn:X-openvrml:node:Background"] =
-        node_class_ptr(new background_class(b));
+        boost::shared_ptr<node_class>(new background_class(b));
     this->map_["urn:X-openvrml:node:Billboard"] =
-        node_class_ptr(new billboard_class(b));
+        boost::shared_ptr<node_class>(new billboard_class(b));
     this->map_["urn:X-openvrml:node:Box"] =
-        node_class_ptr(new box_class(b));
+        boost::shared_ptr<node_class>(new box_class(b));
     this->map_["urn:X-openvrml:node:Collision"] =
-        node_class_ptr(new collision_class(b));
+        boost::shared_ptr<node_class>(new collision_class(b));
     this->map_["urn:X-openvrml:node:Color"] =
-        node_class_ptr(new color_class(b));
+        boost::shared_ptr<node_class>(new color_class(b));
     this->map_["urn:X-openvrml:node:ColorInterpolator"] =
-        node_class_ptr(new color_interpolator_class(b));
+        boost::shared_ptr<node_class>(new color_interpolator_class(b));
     this->map_["urn:X-openvrml:node:Cone"] =
-        node_class_ptr(new cone_class(b));
+        boost::shared_ptr<node_class>(new cone_class(b));
     this->map_["urn:X-openvrml:node:Coordinate"] =
-        node_class_ptr(new coordinate_class(b));
+        boost::shared_ptr<node_class>(new coordinate_class(b));
     this->map_["urn:X-openvrml:node:CoordinateInterpolator"] =
-        node_class_ptr(new coordinate_interpolator_class(b));
+        boost::shared_ptr<node_class>(new coordinate_interpolator_class(b));
     this->map_["urn:X-openvrml:node:Cylinder"] =
-        node_class_ptr(new cylinder_class(b));
+        boost::shared_ptr<node_class>(new cylinder_class(b));
     this->map_["urn:X-openvrml:node:CylinderSensor"] =
-        node_class_ptr(new cylinder_sensor_class(b));
+        boost::shared_ptr<node_class>(new cylinder_sensor_class(b));
     this->map_["urn:X-openvrml:node:DirectionalLight"] =
-        node_class_ptr(new directional_light_class(b));
+        boost::shared_ptr<node_class>(new directional_light_class(b));
     this->map_["urn:X-openvrml:node:ElevationGrid"] =
-        node_class_ptr(new elevation_grid_class(b));
+        boost::shared_ptr<node_class>(new elevation_grid_class(b));
     this->map_["urn:X-openvrml:node:Extrusion"] =
-        node_class_ptr(new extrusion_class(b));
+        boost::shared_ptr<node_class>(new extrusion_class(b));
     this->map_["urn:X-openvrml:node:Fog"] =
-        node_class_ptr(new fog_class(b));
+        boost::shared_ptr<node_class>(new fog_class(b));
     this->map_["urn:X-openvrml:node:FontStyle"] =
-        node_class_ptr(new font_style_class(b));
+        boost::shared_ptr<node_class>(new font_style_class(b));
     this->map_["urn:X-openvrml:node:Group"] =
-        node_class_ptr(new group_class(b));
+        boost::shared_ptr<node_class>(new group_class(b));
     this->map_["urn:X-openvrml:node:ImageTexture"] =
-        node_class_ptr(new image_texture_class(b));
+        boost::shared_ptr<node_class>(new image_texture_class(b));
     this->map_["urn:X-openvrml:node:IndexedFaceSet"] =
-        node_class_ptr(new indexed_face_set_class(b));
+        boost::shared_ptr<node_class>(new indexed_face_set_class(b));
     this->map_["urn:X-openvrml:node:IndexedLineSet"] =
-        node_class_ptr(new indexed_line_set_class(b));
+        boost::shared_ptr<node_class>(new indexed_line_set_class(b));
     this->map_["urn:X-openvrml:node:Inline"] =
-        node_class_ptr(new inline_class(b));
+        boost::shared_ptr<node_class>(new inline_class(b));
     this->map_["urn:X-openvrml:node:LOD"] =
-        node_class_ptr(new lod_class(b));
+        boost::shared_ptr<node_class>(new lod_class(b));
     this->map_["urn:X-openvrml:node:Material"] =
-        node_class_ptr(new material_class(b));
+        boost::shared_ptr<node_class>(new material_class(b));
     this->map_["urn:X-openvrml:node:MovieTexture"] =
-        node_class_ptr(new movie_texture_class(b));
+        boost::shared_ptr<node_class>(new movie_texture_class(b));
     this->map_["urn:X-openvrml:node:NavigationInfo"] =
-        node_class_ptr(new navigation_info_class(b));
+        boost::shared_ptr<node_class>(new navigation_info_class(b));
     this->map_["urn:X-openvrml:node:Normal"] =
-        node_class_ptr(new normal_class(b));
+        boost::shared_ptr<node_class>(new normal_class(b));
     this->map_["urn:X-openvrml:node:NormalInterpolator"] =
-        node_class_ptr(new normal_interpolator_class(b));
+        boost::shared_ptr<node_class>(new normal_interpolator_class(b));
     this->map_["urn:X-openvrml:node:OrientationInterpolator"] =
-        node_class_ptr(new orientation_interpolator_class(b));
+        boost::shared_ptr<node_class>(new orientation_interpolator_class(b));
     this->map_["urn:X-openvrml:node:PixelTexture"] =
-        node_class_ptr(new pixel_texture_class(b));
+        boost::shared_ptr<node_class>(new pixel_texture_class(b));
     this->map_["urn:X-openvrml:node:PlaneSensor"] =
-        node_class_ptr(new plane_sensor_class(b));
+        boost::shared_ptr<node_class>(new plane_sensor_class(b));
     this->map_["urn:X-openvrml:node:PointLight"] =
-        node_class_ptr(new point_light_class(b));
+        boost::shared_ptr<node_class>(new point_light_class(b));
     this->map_["urn:X-openvrml:node:PointSet"] =
-        node_class_ptr(new point_set_class(b));
+        boost::shared_ptr<node_class>(new point_set_class(b));
     this->map_["urn:X-openvrml:node:PositionInterpolator"] =
-        node_class_ptr(new position_interpolator_class(b));
+        boost::shared_ptr<node_class>(new position_interpolator_class(b));
     this->map_["urn:X-openvrml:node:ProximitySensor"] =
-        node_class_ptr(new proximity_sensor_class(b));
+        boost::shared_ptr<node_class>(new proximity_sensor_class(b));
     this->map_["urn:X-openvrml:node:ScalarInterpolator"] =
-        node_class_ptr(new scalar_interpolator_class(b));
+        boost::shared_ptr<node_class>(new scalar_interpolator_class(b));
     this->map_["urn:X-openvrml:node:Shape"] =
-        node_class_ptr(new shape_class(b));
+        boost::shared_ptr<node_class>(new shape_class(b));
     this->map_["urn:X-openvrml:node:Sound"] =
-        node_class_ptr(new sound_class(b));
+        boost::shared_ptr<node_class>(new sound_class(b));
     this->map_["urn:X-openvrml:node:Sphere"] =
-        node_class_ptr(new sphere_class(b));
+        boost::shared_ptr<node_class>(new sphere_class(b));
     this->map_["urn:X-openvrml:node:SphereSensor"] =
-        node_class_ptr(new sphere_sensor_class(b));
+        boost::shared_ptr<node_class>(new sphere_sensor_class(b));
     this->map_["urn:X-openvrml:node:SpotLight"] =
-        node_class_ptr(new spot_light_class(b));
+        boost::shared_ptr<node_class>(new spot_light_class(b));
     this->map_["urn:X-openvrml:node:Switch"] =
-        node_class_ptr(new switch_class(b));
+        boost::shared_ptr<node_class>(new switch_class(b));
     this->map_["urn:X-openvrml:node:Text"] =
-        node_class_ptr(new text_class(b));
+        boost::shared_ptr<node_class>(new text_class(b));
     this->map_["urn:X-openvrml:node:TextureCoordinate"] =
-        node_class_ptr(new texture_coordinate_class(b));
+        boost::shared_ptr<node_class>(new texture_coordinate_class(b));
     this->map_["urn:X-openvrml:node:TextureTransform"] =
-        node_class_ptr(new texture_transform_class(b));
+        boost::shared_ptr<node_class>(new texture_transform_class(b));
     this->map_["urn:X-openvrml:node:TimeSensor"] =
-        node_class_ptr(new time_sensor_class(b));
+        boost::shared_ptr<node_class>(new time_sensor_class(b));
     this->map_["urn:X-openvrml:node:TouchSensor"] =
-        node_class_ptr(new touch_sensor_class(b));
+        boost::shared_ptr<node_class>(new touch_sensor_class(b));
     this->map_["urn:X-openvrml:node:Transform"] =
-        node_class_ptr(new transform_class(b));
+        boost::shared_ptr<node_class>(new transform_class(b));
     this->map_["urn:X-openvrml:node:Viewpoint"] =
-        node_class_ptr(new viewpoint_class(b));
+        boost::shared_ptr<node_class>(new viewpoint_class(b));
     this->map_["urn:X-openvrml:node:VisibilitySensor"] =
-        node_class_ptr(new visibility_sensor_class(b));
+        boost::shared_ptr<node_class>(new visibility_sensor_class(b));
     this->map_["urn:X-openvrml:node:WorldInfo"] =
-        node_class_ptr(new world_info_class(b));
+        boost::shared_ptr<node_class>(new world_info_class(b));
 }
 
 /**
@@ -3723,7 +3723,8 @@ browser::node_class_map::operator=(const node_class_map & map)
 }
 
 namespace {
-    typedef std::map<std::string, node_class_ptr> node_class_map_t;
+    typedef std::map<std::string, boost::shared_ptr<node_class> >
+        node_class_map_t;
 
     struct init_node_class : std::unary_function<void,
                                                  node_class_map_t::value_type>
@@ -3773,9 +3774,9 @@ void browser::node_class_map::init(viewpoint_node * initial_viewpoint,
  *
  * @return the element in the node_class_map corresponding to @p id.
  */
-const node_class_ptr
+const boost::shared_ptr<node_class>
 browser::node_class_map::insert(const std::string & id,
-                                const node_class_ptr & node_class)
+                                const boost::shared_ptr<node_class> & node_class)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
     return this->map_.insert(make_pair(id, node_class)).first->second;
@@ -3789,13 +3790,13 @@ browser::node_class_map::insert(const std::string & id,
  * @return the <code>node_class</code> corresponding to @p id, or a null
  *         pointer if no such <code>node_class</code> exists in the map.
  */
-const node_class_ptr
+const boost::shared_ptr<node_class>
 browser::node_class_map::find(const std::string & id) const
 {
     const map_t::const_iterator pos = this->map_.find(id);
     return (pos != this->map_.end())
         ? pos->second
-        : node_class_ptr();
+        : boost::shared_ptr<node_class>();
 }
 
 namespace {
@@ -5814,7 +5815,7 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
     scope(uri)
 {
     const browser::node_class_map & node_class_map = browser.node_class_map_;
-    node_class_ptr node_class;
+    boost::shared_ptr<openvrml::node_class> node_class;
 
     try {
         //
@@ -7501,13 +7502,13 @@ null_node_class::null_node_class(openvrml::browser & browser) throw ():
 null_node_class::~null_node_class() throw ()
 {}
 
-const node_type_ptr
+const boost::shared_ptr<node_type>
 null_node_class::do_create_type(const std::string & id,
                                 const node_interface_set & interfaces) const
     throw ()
 {
     assert(false);
-    static const node_type_ptr nodeType;
+    static const boost::shared_ptr<node_type> nodeType;
     return nodeType;
 }
 

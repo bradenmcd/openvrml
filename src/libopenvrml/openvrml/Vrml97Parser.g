@@ -630,7 +630,7 @@ statement[openvrml::browser & browser,
 options { defaultErrorHandler=false; }
     {
         node_ptr node;
-        node_type_ptr nodeType;
+        boost::shared_ptr<node_type> nodeType;
     }
     : node=nodeStatement[browser, scope, std::string()] {
             //
@@ -693,7 +693,8 @@ options { defaultErrorHandler=false; }
     proto_node_class::routes_t routes;
 }
     :   KEYWORD_PROTO id:ID {
-            boost::shared_ptr<openvrml::scope> proto_scope(new openvrml::scope(id->getText(), scope));
+            boost::shared_ptr<openvrml::scope>
+                proto_scope(new openvrml::scope(id->getText(), scope));
         } LBRACKET (protoInterfaceDeclaration[browser,
                                               scope,
                                               id->getText(),
@@ -705,12 +706,13 @@ options { defaultErrorHandler=false; }
                          impl_nodes,
                          is_map,
                          routes] RBRACE {
-            node_class_ptr node_class(new proto_node_class(browser,
-                                                           interfaces,
-                                                           default_value_map,
-                                                           impl_nodes,
-                                                           is_map,
-                                                           routes));
+            boost::shared_ptr<openvrml::node_class>
+                node_class(new proto_node_class(browser,
+                                                interfaces,
+                                                default_value_map,
+                                                impl_nodes,
+                                                is_map,
+                                                routes));
             //
             // Add the new node_class (prototype definition) to the browser's
             // node_class_map.
@@ -727,7 +729,7 @@ options { defaultErrorHandler=false; }
             //
             // PROTOs implicitly introduce a new node type as well.
             //
-            const node_type_ptr node_type =
+            const boost::shared_ptr<node_type> node_type =
                 node_class->create_type(id->getText(), interfaces);
             assert(node_type);
             assert(scope);
@@ -924,13 +926,13 @@ options { defaultErrorHandler=false; }
 {
     openvrml::node_interface_set interfaces;
     openvrml::mfstring url_list;
-    openvrml::node_type_ptr node_type;
+    boost::shared_ptr<node_type> node_type;
 }
     : KEYWORD_EXTERNPROTO id:ID LBRACKET
         (externInterfaceDeclaration[interfaces])* RBRACKET
         url_list=externprotoUrlList {
             for (size_t i = 0; i < url_list.value.size(); ++i) {
-                node_class_ptr node_class =
+                boost::shared_ptr<openvrml::node_class> node_class =
                     browser.node_class_map_.find(url_list.value[i]);
                 if (node_class) {
                     node_type = node_class->create_type(id->getText(),
@@ -1143,7 +1145,7 @@ options { defaultErrorHandler = false; }
 
     initial_value_map initial_values;
     node_interface_set interfaces;
-    node_type_ptr nodeType;
+    boost::shared_ptr<node_type> nodeType;
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID LBRACE (
             nodeBodyElement[browser,
@@ -1335,7 +1337,7 @@ options { defaultErrorHandler=false; }
     initial_value_map initial_values;
     node_interface_set interfaces;
     is_list is_mappings;
-    node_type_ptr nodeType;
+    boost::shared_ptr<node_type> nodeType;
 }
     : (
             { !LT(1)->getText().compare("Script") }? scriptId:ID LBRACE (
@@ -1927,7 +1929,8 @@ options { defaultErrorHandler=false; }
     ;
 
 mfRotationValue
-returns [boost::shared_ptr<field_value> mrv = boost::shared_ptr<field_value>ge(new mfrotation)]
+returns [boost::shared_ptr<field_value> mrv =
+         boost::shared_ptr<field_value>(new mfrotation)]
 options { defaultErrorHandler=false; }
 {
     rotation r;

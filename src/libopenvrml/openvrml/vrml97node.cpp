@@ -1788,7 +1788,7 @@ anchor_class::~anchor_class() throw ()
  *                              supported by anchor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 anchor_class::do_create_type(const std::string & id,
                           const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -1822,7 +1822,7 @@ anchor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<anchor_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & anchorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
@@ -2054,14 +2054,14 @@ appearance_class::~appearance_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Appearance
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Appearance
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface
  *                                  not supported by appearance_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 appearance_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -2080,7 +2080,7 @@ appearance_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<appearance_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & appearanceNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
@@ -2332,13 +2332,13 @@ audio_clip_class::~audio_clip_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating AudioClip nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating AudioClip nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by audio_clip_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 audio_clip_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -2372,7 +2372,7 @@ audio_clip_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<audio_clip_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & audioClipNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
@@ -2889,13 +2889,13 @@ void background_class::do_render(viewer & v) const throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Background nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Background nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by background_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 background_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -2941,7 +2941,7 @@ background_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<background_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & backgroundNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -3811,13 +3811,13 @@ billboard_class::~billboard_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Billboard nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Billboard nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by billboard_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 billboard_class::do_create_type(const std::string & id,
                                 const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -3845,7 +3845,7 @@ billboard_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<billboard_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & billboardNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -4105,13 +4105,13 @@ box_class::~box_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Box nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Box nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by box_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 box_class::do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -4123,7 +4123,7 @@ box_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<box_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & boxNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -4246,13 +4246,13 @@ collision_class::~collision_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Collision nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Collision nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by collision_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 collision_class::do_create_type(const std::string & id,
                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -4286,7 +4286,7 @@ collision_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<collision_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & collisionNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -4468,13 +4468,13 @@ color_class::~color_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Color nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Color nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by color_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 color_class::do_create_type(const std::string & id,
                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -4486,7 +4486,7 @@ color_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<color_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & colorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -4588,14 +4588,14 @@ color_interpolator_class::~color_interpolator_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating ColorInterpolator
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating ColorInterpolator
  *      nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by color_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 color_interpolator_class::do_create_type(const std::string & id,
                                       const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -4617,7 +4617,7 @@ color_interpolator_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<color_interpolator_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & colorInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -4859,13 +4859,13 @@ cone_class::~cone_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Cone nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Cone nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by cone_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 cone_class::do_create_type(const std::string & id,
                         const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -4887,7 +4887,7 @@ cone_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<cone_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & coneNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
@@ -5031,13 +5031,13 @@ coordinate_class::~coordinate_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Coordinate nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Coordinate nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by coordinate_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 coordinate_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -5049,7 +5049,7 @@ coordinate_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<coordinate_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & coordinateNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -5152,14 +5152,14 @@ coordinate_interpolator_class::~coordinate_interpolator_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating
  *      CoordinateInterpolator nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by coordinate_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 coordinate_interpolator_class::do_create_type(
     const std::string & id,
     const node_interface_set & interfaces) const
@@ -5181,7 +5181,7 @@ coordinate_interpolator_class::do_create_type(
 
     typedef vrml97_node_type_impl<coordinate_interpolator_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & coordinateInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
@@ -5418,13 +5418,13 @@ cylinder_class::~cylinder_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Cylinder nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Cylinder nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by cylinder_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 cylinder_class::do_create_type(const std::string & id,
                             const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -5449,7 +5449,7 @@ cylinder_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<cylinder_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & cylinderNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
@@ -5609,14 +5609,14 @@ cylinder_sensor_class::~cylinder_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating CylinderSensor
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating CylinderSensor
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by cylinder_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 cylinder_sensor_class::do_create_type(const std::string & id,
                                    const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -5653,7 +5653,7 @@ cylinder_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<cylinder_sensor_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & cylinderSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -6067,14 +6067,14 @@ directional_light_class::~directional_light_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating DirectionalLight
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating DirectionalLight
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by directional_light_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 directional_light_class::do_create_type(const std::string & id,
                                      const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -6099,7 +6099,7 @@ directional_light_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<directional_light_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & directionalLightNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
@@ -6264,14 +6264,14 @@ elevation_grid_class::~elevation_grid_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating ElevationGrid
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating ElevationGrid
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by elevation_grid_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 elevation_grid_class::do_create_type(const std::string & id,
                                   const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -6323,7 +6323,7 @@ elevation_grid_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<elevation_grid_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & elevationGridNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -6743,13 +6743,13 @@ extrusion_class::~extrusion_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Extrusion nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Extrusion nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by extrusion_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 extrusion_class::do_create_type(const std::string & id,
                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -6801,7 +6801,7 @@ extrusion_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<extrusion_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & extrusionNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -7479,13 +7479,13 @@ void fog_class::do_render(viewer & v) const throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Fog nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Fog nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by fog_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 fog_class::do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -7510,7 +7510,7 @@ fog_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<fog_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & fogNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -7756,13 +7756,13 @@ font_style_class::~font_style_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating FontStyle nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating FontStyle nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by font_style_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 font_style_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -7799,7 +7799,7 @@ font_style_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<font_style_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & fontStyleNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -8095,13 +8095,13 @@ group_class::~group_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating group nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating group nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by group_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 group_class::do_create_type(const std::string & id,
                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -8126,7 +8126,7 @@ group_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<group_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & groupNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
             interface != interfaces.end(); ++interface) {
@@ -8661,14 +8661,14 @@ image_texture_class::~image_texture_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating ImageTexture
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating ImageTexture
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by image_texture_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 image_texture_class::
 do_create_type(const std::string & id,
                const node_interface_set & interfaces) const
@@ -8688,7 +8688,7 @@ do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<image_texture_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & imageTextureNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -8906,14 +8906,14 @@ indexed_face_set_class::~indexed_face_set_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating IndexedFaceSet
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating IndexedFaceSet
  *         nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by indexed_face_set_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 indexed_face_set_class::do_create_type(const std::string & id,
                                     const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -8977,7 +8977,7 @@ indexed_face_set_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<indexed_face_set_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & indexedFaceSetNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -9516,14 +9516,14 @@ indexed_line_set_class::~indexed_line_set_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating IndexedLineSet
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating IndexedLineSet
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by indexed_line_set_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 indexed_line_set_class::do_create_type(const std::string & id,
                                     const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -9554,7 +9554,7 @@ indexed_line_set_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<indexed_line_set_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & indexedLineSetNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -9732,13 +9732,13 @@ inline_class::~inline_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Inline nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Inline nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by inline_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 inline_class::do_create_type(const std::string & id,
                           const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -9757,7 +9757,7 @@ inline_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<inline_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & inlineNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -9974,13 +9974,13 @@ lod_class::~lod_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating LOD nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating LOD nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by lod_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 lod_class::do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -9999,7 +9999,7 @@ lod_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<lod_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & lodNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -10270,13 +10270,13 @@ material_class::~material_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Material nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Material nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by material_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 material_class::do_create_type(const std::string & id,
                             const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -10304,7 +10304,7 @@ material_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<material_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & materialNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -10561,14 +10561,14 @@ movie_texture_class::~movie_texture_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating MovieTexture
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating MovieTexture
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by movie_texture_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 movie_texture_class::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -10605,7 +10605,7 @@ movie_texture_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<movie_texture_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & movieTextureNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -11317,14 +11317,14 @@ do_initialize(openvrml::viewpoint_node * initial_viewpoint,
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating NavigationInfo
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating NavigationInfo
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by navigation_info_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 navigation_info_class::do_create_type(const std::string & id,
                                    const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -11354,7 +11354,7 @@ navigation_info_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<navigation_info_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & navigationInfoNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -11710,13 +11710,13 @@ normal_class::~normal_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Normal nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Normal nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by normal_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 normal_class::do_create_type(const std::string & id,
                           const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -11728,7 +11728,7 @@ normal_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<normal_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & normalNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -11829,14 +11829,14 @@ normal_interpolator_class::~normal_interpolator_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating
  *         NormalInterpolator nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by normal_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 normal_interpolator_class::do_create_type(const std::string & id,
                                        const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -11858,7 +11858,7 @@ normal_interpolator_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<normal_interpolator_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & normalInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -12113,14 +12113,14 @@ orientation_interpolator_class::~orientation_interpolator_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating
  *      OrientationInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by orientation_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 orientation_interpolator_class::
 do_create_type(const std::string & id,
             const node_interface_set & interfaces) const
@@ -12143,7 +12143,7 @@ do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<orientation_interpolator_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & orientationInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -12402,14 +12402,14 @@ pixel_texture_class::~pixel_texture_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating PixelTexture
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating PixelTexture
  *         nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by pixel_texture_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 pixel_texture_class::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -12428,7 +12428,7 @@ pixel_texture_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<pixel_texture_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & pixelTextureNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end(); ++interface) {
@@ -12559,14 +12559,14 @@ plane_sensor_class::~plane_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating PlaneSensor
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating PlaneSensor
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by plane_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 plane_sensor_class::do_create_type(const std::string & id,
                                 const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -12600,7 +12600,7 @@ plane_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<plane_sensor_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & planeSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -12971,13 +12971,13 @@ point_light_class::~point_light_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating PointLight nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating PointLight nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by point_light_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 point_light_class::do_create_type(const std::string & id,
                                const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -13008,7 +13008,7 @@ point_light_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<point_light_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & pointLightNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -13256,13 +13256,13 @@ point_set_class::~point_set_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating PointSet nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating PointSet nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by point_set_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 point_set_class::do_create_type(const std::string & id,
                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -13278,7 +13278,7 @@ point_set_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<point_set_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & pointSetNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -13496,14 +13496,14 @@ position_interpolator_class::~position_interpolator_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating
  *      PositionInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by position_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 position_interpolator_class::do_create_type(const std::string & id,
                                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -13525,7 +13525,7 @@ position_interpolator_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<position_interpolator_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & positionInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -13749,14 +13749,14 @@ proximity_sensor_class::~proximity_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating ProximitySensor
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating ProximitySensor
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by proximity_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 proximity_sensor_class::do_create_type(const std::string & id,
                                     const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -13790,7 +13790,7 @@ proximity_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<proximity_sensor_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & proximitySensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -14116,14 +14116,14 @@ scalar_interpolator_class::~scalar_interpolator_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating
  *      CoordinateInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CoordinateInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 scalar_interpolator_class::do_create_type(const std::string & id,
                                        const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -14145,7 +14145,7 @@ scalar_interpolator_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<scalar_interpolator_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & scalarInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -14366,13 +14366,13 @@ shape_class::~shape_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Shape nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Shape nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by shape_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 shape_class::do_create_type(const std::string & id,
                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -14388,7 +14388,7 @@ shape_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<shape_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & shapeNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -14619,13 +14619,13 @@ sound_class::~sound_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Sound nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Sound nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by sound_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 sound_class::do_create_type(const std::string & id,
                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -14665,7 +14665,7 @@ sound_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<sound_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & soundNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -14945,13 +14945,13 @@ sphere_class::~sphere_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Sphere nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Sphere nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by sphere_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 sphere_class::do_create_type(const std::string & id,
                           const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -14962,7 +14962,7 @@ sphere_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<sphere_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & spereNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -15083,14 +15083,14 @@ sphere_sensor_class::~sphere_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating SphereSensor
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating SphereSensor
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by sphere_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 sphere_sensor_class::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -15118,7 +15118,7 @@ sphere_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<sphere_sensor_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & sphereSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -15455,13 +15455,13 @@ spot_light_class::~spot_light_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating SpotLight nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating SpotLight nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by spot_light_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 spot_light_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -15501,7 +15501,7 @@ spot_light_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<spot_light_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & spotLightNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -15815,13 +15815,13 @@ switch_class::~switch_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Switch nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Switch nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by switch_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 switch_class::do_create_type(const std::string & id,
                           const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -15837,7 +15837,7 @@ switch_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<switch_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & switchNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -16189,13 +16189,13 @@ text_class::~text_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Text nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Text nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by text_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 text_class::do_create_type(const std::string & id,
                         const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
@@ -16217,7 +16217,7 @@ text_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<text_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & textNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -17944,14 +17944,14 @@ texture_coordinate_class::~texture_coordinate_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating TextureCoordinate
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating TextureCoordinate
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by texture_coordinate_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 texture_coordinate_class::do_create_type(const std::string & id,
                                       const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -17963,7 +17963,7 @@ texture_coordinate_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<texture_coordinate_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & textureCoordinateNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -18064,14 +18064,14 @@ texture_transform_class::~texture_transform_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating TextureTransform
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating TextureTransform
  *      nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by texture_transform_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 texture_transform_class::do_create_type(const std::string & id,
                                      const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -18093,7 +18093,7 @@ texture_transform_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<texture_transform_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & textureTransformNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -18260,13 +18260,13 @@ time_sensor_class::~time_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating TimeSensor nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating TimeSensor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by time_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 time_sensor_class::do_create_type(const std::string & id,
                                const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -18303,7 +18303,7 @@ time_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<time_sensor_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & timeSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -18910,14 +18910,14 @@ touch_sensor_class::~touch_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating TouchSensor
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating TouchSensor
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by touch_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 touch_sensor_class::do_create_type(const std::string & id,
                                 const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -18948,7 +18948,7 @@ touch_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<touch_sensor_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & touchSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -19208,13 +19208,13 @@ transform_class::~transform_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Transform nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Transform nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by transform_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 transform_class::do_create_type(const std::string & id,
                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -19254,7 +19254,7 @@ transform_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<transform_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & transformNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -20026,13 +20026,13 @@ viewpoint_class::do_initialize(openvrml::viewpoint_node * initial_viewpoint,
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating Viewpoint nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating Viewpoint nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by viewpoint_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 viewpoint_class::do_create_type(const std::string & id,
                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -20066,7 +20066,7 @@ viewpoint_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<viewpoint_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & viewpointNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -20636,14 +20636,14 @@ visibility_sensor_class::~visibility_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating VisibilitySensor
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating VisibilitySensor
  *      nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by visibility_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 visibility_sensor_class::do_create_type(const std::string & id,
                                      const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -20671,7 +20671,7 @@ visibility_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<visibility_sensor_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & visibilitySensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -20936,13 +20936,13 @@ world_info_class::~world_info_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating WorldInfo nodes.
+ * @return a boost::shared_ptr<node_type> to a node_type capable of creating WorldInfo nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by world_info_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 world_info_class::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -20958,7 +20958,7 @@ world_info_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<world_info_node> node_type_t;
 
-    const node_type_ptr type(new node_type_t(*this, id));
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & worldInfoNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();

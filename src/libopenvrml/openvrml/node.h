@@ -183,7 +183,6 @@ namespace openvrml {
     class browser;
     class viewpoint_node;
     class node_type;
-    typedef boost::shared_ptr<node_type> node_type_ptr;
 
     class node_class : boost::noncopyable {
         openvrml::browser * browser_;
@@ -195,7 +194,7 @@ namespace openvrml {
         void initialize(viewpoint_node * initial_viewpoint, double time)
             throw ();
         void render(viewer & v) const throw ();
-        const node_type_ptr
+        const boost::shared_ptr<node_type>
         create_type(const std::string & id,
                     const node_interface_set & interfaces)
             throw (unsupported_interface, std::bad_alloc);
@@ -208,13 +207,11 @@ namespace openvrml {
                                    double time)
             throw ();
         virtual void do_render(viewer & v) const throw ();
-        virtual const node_type_ptr
+        virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc) = 0;
     };
-
-    typedef boost::shared_ptr<node_class> node_class_ptr;
 
 
     typedef std::map<std::string, boost::shared_ptr<field_value> >

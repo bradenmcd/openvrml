@@ -126,7 +126,8 @@ namespace openvrml {
 
         class node_class_map {
             mutable boost::mutex mutex_;
-            typedef std::map<std::string, node_class_ptr> map_t;
+            typedef std::map<std::string, boost::shared_ptr<node_class> >
+                map_t;
             map_t map_;
 
         public:
@@ -135,9 +136,14 @@ namespace openvrml {
             node_class_map & operator=(const node_class_map & map);
 
             void init(viewpoint_node * initial_viewpoint, double timestamp);
-            const node_class_ptr insert(const std::string & id,
-                                        const node_class_ptr & node_class);
-            const node_class_ptr find(const std::string & id) const;
+
+            const boost::shared_ptr<node_class>
+            insert(const std::string & id,
+                   const boost::shared_ptr<node_class> & node_class);
+
+            const boost::shared_ptr<node_class>
+            find(const std::string & id) const;
+
             void render(viewer & v);
 
         private:

@@ -673,8 +673,7 @@ void node_class::do_render(viewer & v) const throw ()
  * @param interfaces    a <code>node_interface_set</code> containing the
  *                      interfaces for the new type.
  *
- * @return a <code>node_type_ptr</code> to the newly created
- *         <code>node_type</code>.
+ * @return a newly created <code>node_type</code>.
  *
  * @exception unsupported_interface if the <code>node_class</code> cannot
  *                                  support one of the
@@ -682,7 +681,7 @@ void node_class::do_render(viewer & v) const throw ()
  *                                  @p interfaces.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 node_class::create_type(const std::string & id,
                         const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -691,7 +690,7 @@ node_class::create_type(const std::string & id,
 }
 
 /**
- * @fn const node_type_ptr node_class::do_create_type(const std::string & id, const node_interface_set & interfaces) const throw (unsupported_interface, std::bad_alloc)
+ * @fn const boost::shared_ptr<node_type> node_class::do_create_type(const std::string & id, const node_interface_set & interfaces) const throw (unsupported_interface, std::bad_alloc)
  *
  * @brief Create a new <code>node_type</code>.
  *
@@ -699,8 +698,7 @@ node_class::create_type(const std::string & id,
  * @param interfaces    a <code>node_interface_set</code> containing the
  *                      interfaces for the new type.
  *
- * @return a <code>node_type_ptr</code> to the newly created
- *         <code>node_type</code>.
+ * @return a newly created <code>node_type</code>.
  *
  * @exception unsupported_interface if the <code>node_class</code> cannot
  *                                  support one of the
@@ -709,12 +707,6 @@ node_class::create_type(const std::string & id,
  * @exception std::bad_alloc        if memory allocation fails.
  *
  * @sa node_class::create_type
- */
-
-/**
- * @typedef node_class_ptr
- *
- * @brief A <code>boost::shared_ptr</code> to a <code>node_class</code>.
  */
 
 
@@ -857,12 +849,6 @@ node_type::create_node(const boost::shared_ptr<openvrml::scope> & scope,
  * @exception std::bad_cast         if a value in @p initial_values is the
  *                                  wrong type.
  * @exception std::bad_alloc        if memory allocation fails.
- */
-
-/**
- * @typedef node_type_ptr
- *
- * @brief A boost::shared_ptr to a node_type.
  */
 
 

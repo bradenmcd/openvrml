@@ -392,13 +392,13 @@ script_node_class::~script_node_class() throw ()
  * unlike other node implementations, cannot provide the implementation of
  * an @c EXTERNPROTO. It is an error to call this method.
  */
-const node_type_ptr
+const boost::shared_ptr<node_type>
 script_node_class::do_create_type(const std::string &,
                                   const node_interface_set &) const
     throw ()
 {
     assert(false);
-    return node_type_ptr();
+    return boost::shared_ptr<node_type>();
 }
 
 
