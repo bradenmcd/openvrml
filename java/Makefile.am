@@ -81,7 +81,7 @@ JNI_HFILES = \
         vrml_node_Script.h
 
 nodist_noinst_HEADERS = $(JNI_HFILES)
-CLEANFILES = script.jar
+CLEANFILES = script.jar $(JNI_HFILES)
 
 vrml_Browser.h: vrml/Browser.class
 	$(JAVAH) -classpath . vrml.Browser
