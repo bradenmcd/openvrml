@@ -124,10 +124,13 @@
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\browser.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\doc.cpp">
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\event.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\field.cpp">
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\exposedfield.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\field_value.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\frustum.cpp">
@@ -186,10 +189,13 @@
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\common.h">
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\doc.h">
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\event.h">
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\field.h">
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\exposedfield.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\field_value.h">
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\frustum.h">
@@ -211,9 +217,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\scope.h">
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\scope_ptr.h">
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\script.h">
