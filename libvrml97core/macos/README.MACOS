@@ -18,6 +18,8 @@ To build LibVRML and Lookat
    
    <http://w1.2691.telia.com/~u269100246/vr/mac/maclookat/libs_for_libvrml97_src.sit>
    
+   The libraries in the package above are ready built so you don't need to compile them.
+   
    Apple's OpenGL SDK is available from:
 
    <http://developer.apple.com/opengl/downloads.html>
