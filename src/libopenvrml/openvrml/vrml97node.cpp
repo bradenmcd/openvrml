@@ -241,9 +241,9 @@ namespace {
         class field_ptr :
             public ptr_to_polymorphic_mem_impl<openvrml::field_value,
                                                FieldMember,
-                                               node_type> {
+                                               NodeT> {
         public:
-            explicit field_ptr(FieldMember node_type::* ptr_to_mem);
+            explicit field_ptr(FieldMember NodeT::* ptr_to_mem);
         };
 
         typedef boost::shared_ptr<
@@ -257,7 +257,7 @@ namespace {
                                                node_type> {
         public:
             explicit event_listener_ptr(
-                EventListenerMember node_type::* ptr_to_mem);
+                EventListenerMember NodeT::* ptr_to_mem);
         };
 
         typedef boost::shared_ptr<
@@ -271,7 +271,7 @@ namespace {
                                                node_type> {
         public:
             explicit event_emitter_ptr(
-                EventEmitterMember node_type::* ptr_to_mem);
+                EventEmitterMember NodeT::* ptr_to_mem);
         };
 
     private:
@@ -341,28 +341,28 @@ namespace {
     template <typename NodeT>
     template <typename FieldMember>
     vrml97_node_type_impl<NodeT>::field_ptr<FieldMember>::
-    field_ptr(FieldMember node_type::* ptr_to_mem):
+    field_ptr(FieldMember NodeT::* ptr_to_mem):
         ptr_to_polymorphic_mem_impl<openvrml::field_value,
                                     FieldMember,
-                                    node_type>(ptr_to_mem)
+                                    NodeT>(ptr_to_mem)
     {}
 
     template <typename NodeT>
     template <typename EventListenerMember>
     vrml97_node_type_impl<NodeT>::event_listener_ptr<EventListenerMember>::
-    event_listener_ptr(EventListenerMember node_type::* ptr_to_mem):
+    event_listener_ptr(EventListenerMember NodeT::* ptr_to_mem):
         ptr_to_polymorphic_mem_impl<openvrml::event_listener,
                                     EventListenerMember,
-                                    node_type>(ptr_to_mem)
+                                    NodeT>(ptr_to_mem)
     {}
 
     template <typename NodeT>
     template <typename EventEmitterMember>
     vrml97_node_type_impl<NodeT>::event_emitter_ptr<EventEmitterMember>::
-    event_emitter_ptr(EventEmitterMember node_type::* ptr_to_mem):
+    event_emitter_ptr(EventEmitterMember NodeT::* ptr_to_mem):
         ptr_to_polymorphic_mem_impl<openvrml::event_emitter,
                                     EventEmitterMember,
-                                    node_type>(ptr_to_mem)
+                                    NodeT>(ptr_to_mem)
     {}
 
     template <typename NodeT>
@@ -520,7 +520,7 @@ namespace {
         typename field_value_map_t::iterator itr =
             this->field_value_map.find(id);
         if (itr == this->field_value_map.end()) {
-            throw unsupported_interface(node.openvrml::node::type,
+            throw unsupported_interface(node.type,
                                         node_interface::field_id,
                                         id);
         }
@@ -536,7 +536,7 @@ namespace {
         const typename field_value_map_t::const_iterator itr =
                 this->field_value_map.find(id);
         if (itr == this->field_value_map.end()) {
-            throw unsupported_interface(node.openvrml::node::type,
+            throw unsupported_interface(node.type,
                                         node_interface::field_id,
                                         id);
         }
@@ -556,7 +556,7 @@ namespace {
             this->event_listener_map.find(id);
         if (pos == end) { pos = this->event_listener_map.find("set_" + id); }
         if (pos == end) {
-            throw unsupported_interface(node.openvrml::node::type,
+            throw unsupported_interface(node.type,
                                         node_interface::eventin_id,
                                         id);
         }
@@ -578,7 +578,7 @@ namespace {
             pos = this->event_emitter_map.find(id + "_changed");
         }
         if (pos == end) {
-            throw unsupported_interface(node.openvrml::node::type,
+            throw unsupported_interface(node.type,
                                         node_interface::eventout_id,
                                         id);
         }
@@ -10257,9 +10257,9 @@ void movie_texture_node::update(const double time)
                               ? double(nFrames)
                               : -1.0;
         node::emit_event(this->duration_changed_, time);
-        this->frame = (this->speed_.value >= 0)
-                    ? 0
-                    : nFrames - 1;
+        this->frame = int((this->speed_.value >= 0)
+                          ? 0
+                          : nFrames - 1);
         // Set the last frame equal to the start time.
         // This is needed to properly handle the case where the startTime
         // and stopTime are set at runtime to the same value (spec says
@@ -10281,18 +10281,18 @@ void movie_texture_node::update(const double time)
                         this->active_.value = true;
                         node::emit_event(this->is_active_, time);
                         this->lastFrameTime = time;
-                        this->frame = (this->speed_.value >= 0)
-                                    ? 0
-                                    : this->img_->nframes() - 1;
+                        this->frame = int((this->speed_.value >= 0)
+                                          ? 0
+                                          : this->img_->nframes() - 1);
                         this->modified(true);
 	            } else if (this->start_time_.sftime::value
                                > this->lastFrameTime) {
                         this->active_.value = true;
                         node::emit_event(this->is_active_, time);
                         this->lastFrameTime = time;
-                        this->frame = (this->speed_.value >= 0)
-                                    ? 0
-                                    : this->img_->nframes() - 1;
+                        this->frame = int((this->speed_.value >= 0)
+                                          ? 0
+                                          : this->img_->nframes() - 1);
                         this->modified(true);
 	            }
 	        }
@@ -10300,9 +10300,9 @@ void movie_texture_node::update(const double time)
                 this->active_.value = true;
                 node::emit_event(this->is_active_, time);
                 this->lastFrameTime = time;
-                this->frame = (this->speed_.value >= 0)
-                            ? 0
-                            : this->img_->nframes() - 1;
+                this->frame = int((this->speed_.value >= 0)
+                                  ? 0
+                                  : this->img_->nframes() - 1);
                 this->modified(true);
             }
         }
@@ -15085,7 +15085,7 @@ do_process_event(const sfint32 & which_choice,
         assert(!node.children_.value.empty());
         node.children_.value[0] =
             (which_choice.value >= 0
-             && which_choice.value < node.choice_.mfnode::value.size())
+             && which_choice.value < int32(node.choice_.mfnode::value.size()))
             ? node.choice_.mfnode::value[which_choice.value]
             : node_ptr(0);
     } catch (std::bad_cast & ex) {

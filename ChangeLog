@@ -1,5 +1,13 @@
 2004-01-30 Braden McDaniel  <braden@endoframe.com>
 
+	Fixes to make cl 13.10.3077 happy.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
+2004-01-30 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node.cpp:  Consistently pass
 	comparator parameter to std::set.
 

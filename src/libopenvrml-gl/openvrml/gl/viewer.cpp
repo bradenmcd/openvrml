@@ -3306,8 +3306,8 @@ viewer::texture_object_t viewer::insert_texture(const image & img,
 
     if (img.array().empty()) { return 0; }
 
-    GLsizei width = img.x();
-    GLsizei height = img.y();
+    GLsizei width = GLsizei(img.x());
+    GLsizei height = GLsizei(img.y());
     const GLubyte * pixels = &img.array()[0];
 
     //
@@ -3332,8 +3332,8 @@ viewer::texture_object_t viewer::insert_texture(const image & img,
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         const GLint result = gluScaleImage(fmt[img.comp() - 1],
-                                           img.x(),
-                                           img.y(),
+                                           GLsizei(img.x()),
+                                           GLsizei(img.y()),
                                            GL_UNSIGNED_BYTE,
                                            &img.array()[0],
                                            width,
@@ -3381,7 +3381,7 @@ viewer::texture_object_t viewer::insert_texture(const image & img,
         static const GLint border = 0;
         glTexImage2D(GL_TEXTURE_2D,
                      level,
-                     img.comp(),
+                     GLint(img.comp()),
                      width,
                      height,
                      border,

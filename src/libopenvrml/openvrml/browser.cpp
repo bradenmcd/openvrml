@@ -56,6 +56,8 @@ namespace openvrml {
     };
 
     class proto_node_class : public node_class {
+        friend class proto_node;
+
     public:
         class is_target {
         public:
@@ -107,149 +109,6 @@ namespace openvrml {
         };
 
 
-        class proto_node : public node {
-            scope_ptr proto_scope;
-            std::vector<node_ptr> impl_nodes;
-
-            template <typename FieldValue>
-            class proto_eventin : public field_value_listener<FieldValue> {
-                typedef std::set<field_value_listener<FieldValue> *>
-                    listeners;
-                listeners listeners_;
-
-            public:
-                typedef FieldValue field_value_type;
-                typedef field_value_listener<FieldValue> event_listener_type;
-
-                explicit proto_eventin(proto_node & node);
-                virtual ~proto_eventin() throw ();
-                virtual void process_event(const FieldValue & value,
-                                           double timestamp)
-                    throw (std::bad_alloc);
-
-                bool is(event_listener_type & listener) throw (std::bad_alloc);
-            };
-
-            static boost::shared_ptr<openvrml::event_listener>
-            create_eventin(field_value::type_id, proto_node & node)
-                throw (std::bad_alloc);
-
-            static bool
-            eventin_is(field_value::type_id field_type,
-                       openvrml::event_listener & impl_eventin,
-                       openvrml::event_listener & interface_eventin)
-                throw (std::bad_alloc);
-
-            template <typename FieldValue>
-            class proto_eventout : public field_value_emitter<FieldValue> {
-            protected:
-                class listener_t : public field_value_listener<FieldValue> {
-                    proto_eventout & emitter;
-                    proto_node & node;
-
-                public:
-                    FieldValue value;
-
-                    explicit listener_t(proto_eventout & emitter,
-                                        proto_node & node,
-                                        const FieldValue & initial_value);
-                    virtual ~listener_t() throw ();
-
-                    virtual void process_event(const FieldValue & value,
-                                               double timestamp)
-                        throw (std::bad_alloc);
-                } listener;
-
-            public:
-                typedef FieldValue field_value_type;
-                typedef field_value_emitter<FieldValue> event_emitter_type;
-                typedef field_value_listener<FieldValue> event_listener_type;
-
-                proto_eventout(
-                    proto_node & node,
-                    const FieldValue & initial_value = FieldValue());
-                virtual ~proto_eventout() throw ();
-
-                bool is(event_emitter_type & emitter) throw (std::bad_alloc);
-            };
-
-            static boost::shared_ptr<openvrml::event_emitter>
-            create_eventout(field_value::type_id, proto_node & node)
-                throw (std::bad_alloc);
-
-            static bool
-            eventout_is(field_value::type_id field_type,
-                        openvrml::event_emitter & impl_eventout,
-                        openvrml::event_emitter & interface_eventout)
-                throw (std::bad_alloc);
-
-            template <typename FieldValue>
-            class proto_exposedfield : public proto_eventin<FieldValue>,
-                                       public proto_eventout<FieldValue> {
-            public:
-                proto_exposedfield(proto_node & node,
-                                   const FieldValue & initial_value);
-                virtual ~proto_exposedfield() throw ();
-
-                virtual void process_event(const FieldValue & value,
-                                           double timestamp)
-                    throw (std::bad_alloc);
-            };
-
-            static boost::shared_ptr<openvrml::event_listener>
-            create_exposedfield(const field_value & initial_value,
-                                proto_node & node)
-                throw (std::bad_alloc);
-
-            typedef boost::shared_ptr<openvrml::event_listener> eventin_ptr;
-            typedef std::map<std::string, eventin_ptr> eventin_map_t;
-            eventin_map_t eventin_map;
-
-            typedef boost::shared_ptr<openvrml::event_emitter> eventout_ptr;
-            typedef std::map<std::string, eventout_ptr> eventout_map_t;
-            eventout_map_t eventout_map;
-
-        public:
-            proto_node(const node_type & type, const scope_ptr & scope)
-                throw (std::bad_alloc);
-            virtual ~proto_node() throw ();
-
-        private:
-            virtual void do_initialize(double timestamp)
-                throw (std::bad_alloc);
-
-            virtual const field_value & do_field(const std::string & id) const
-                throw (unsupported_interface);
-            virtual void do_field(const std::string & id,
-                                  const field_value & value)
-                throw (unsupported_interface, std::bad_cast, std::bad_alloc);
-            virtual openvrml::event_listener &
-            do_event_listener(const std::string & id)
-                throw (unsupported_interface);
-            virtual openvrml::event_emitter &
-            do_event_emitter(const std::string & id)
-                throw (unsupported_interface);
-
-            virtual void do_shutdown(double timestamp) throw ();
-
-            virtual script_node * to_script() throw ();
-            virtual appearance_node * to_appearance() throw ();
-            virtual child_node * to_child() throw ();
-            virtual color_node * to_color() throw ();
-            virtual coordinate_node * to_coordinate() throw ();
-            virtual font_style_node * to_font_style() throw () ;
-            virtual geometry_node * to_geometry() throw ();
-            virtual grouping_node * to_grouping() throw ();
-            virtual material_node * to_material() throw ();
-            virtual normal_node * to_normal() throw ();
-            virtual sound_source_node * to_sound_source() throw ();
-            virtual texture_node * to_texture() throw ();
-            virtual texture_coordinate_node * to_texture_coordinate() throw ();
-            virtual texture_transform_node * to_texture_transform() throw ();
-            virtual transform_node * to_transform() throw ();
-            virtual viewpoint_node * to_viewpoint() throw ();
-        };
-
     public:
         proto_node_class(openvrml::browser & browser,
                          const node_interface_set & interfaces,
@@ -264,6 +123,153 @@ namespace openvrml {
                     const node_interface_set & interfaces)
             throw (unsupported_interface, std::bad_alloc);
     };
+
+    class proto_node : public node {
+        template <typename FieldValue>
+        class proto_eventin : public field_value_listener<FieldValue> {
+            typedef std::set<field_value_listener<FieldValue> *>
+                listeners;
+            listeners listeners_;
+
+        public:
+            typedef FieldValue field_value_type;
+            typedef field_value_listener<FieldValue> event_listener_type;
+
+            explicit proto_eventin(proto_node & node);
+            virtual ~proto_eventin() throw ();
+            virtual void process_event(const FieldValue & value,
+                                        double timestamp)
+                throw (std::bad_alloc);
+
+            bool is(event_listener_type & listener) throw (std::bad_alloc);
+        };
+
+        static boost::shared_ptr<openvrml::event_listener>
+        create_eventin(field_value::type_id, proto_node & node)
+            throw (std::bad_alloc);
+
+        static bool
+        eventin_is(field_value::type_id field_type,
+                    openvrml::event_listener & impl_eventin,
+                    openvrml::event_listener & interface_eventin)
+            throw (std::bad_alloc);
+
+        template <typename FieldValue>
+        class proto_eventout : public field_value_emitter<FieldValue> {
+        protected:
+            class listener_t : public field_value_listener<FieldValue> {
+                proto_eventout & emitter;
+                proto_node & node;
+
+            public:
+                FieldValue value;
+
+                explicit listener_t(proto_eventout & emitter,
+                                    proto_node & node,
+                                    const FieldValue & initial_value);
+                virtual ~listener_t() throw ();
+
+                virtual void process_event(const FieldValue & value,
+                                            double timestamp)
+                    throw (std::bad_alloc);
+            } listener;
+
+        public:
+            typedef FieldValue field_value_type;
+            typedef field_value_emitter<FieldValue> event_emitter_type;
+            typedef field_value_listener<FieldValue> event_listener_type;
+
+            proto_eventout(
+                proto_node & node,
+                const FieldValue & initial_value = FieldValue());
+            virtual ~proto_eventout() throw ();
+
+            bool is(event_emitter_type & emitter) throw (std::bad_alloc);
+
+        private:
+            double last_time() const { return this->event_emitter::last_time; }
+        };
+
+        static boost::shared_ptr<openvrml::event_emitter>
+        create_eventout(field_value::type_id, proto_node & node)
+            throw (std::bad_alloc);
+
+        static bool
+        eventout_is(field_value::type_id field_type,
+                    openvrml::event_emitter & impl_eventout,
+                    openvrml::event_emitter & interface_eventout)
+            throw (std::bad_alloc);
+
+        template <typename FieldValue>
+        class proto_exposedfield : public proto_eventin<FieldValue>,
+                                    public proto_eventout<FieldValue> {
+        public:
+            proto_exposedfield(proto_node & node,
+                                const FieldValue & initial_value);
+            virtual ~proto_exposedfield() throw ();
+
+            virtual void process_event(const FieldValue & value,
+                                        double timestamp)
+                throw (std::bad_alloc);
+        };
+
+        static boost::shared_ptr<openvrml::event_listener>
+        create_exposedfield(const field_value & initial_value,
+                            proto_node & node)
+            throw (std::bad_alloc);
+
+        scope_ptr proto_scope;
+        std::vector<node_ptr> impl_nodes;
+
+        typedef boost::shared_ptr<openvrml::event_listener> eventin_ptr;
+        typedef std::map<std::string, eventin_ptr> eventin_map_t;
+        eventin_map_t eventin_map;
+
+        typedef boost::shared_ptr<openvrml::event_emitter> eventout_ptr;
+        typedef std::map<std::string, eventout_ptr> eventout_map_t;
+        eventout_map_t eventout_map;
+
+    public:
+        proto_node(const node_type & type, const scope_ptr & scope)
+            throw (std::bad_alloc);
+        virtual ~proto_node() throw ();
+
+    private:
+        virtual void do_initialize(double timestamp)
+            throw (std::bad_alloc);
+
+        virtual const field_value & do_field(const std::string & id) const
+            throw (unsupported_interface);
+        virtual void do_field(const std::string & id,
+                                const field_value & value)
+            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
+        virtual openvrml::event_listener &
+        do_event_listener(const std::string & id)
+            throw (unsupported_interface);
+        virtual openvrml::event_emitter &
+        do_event_emitter(const std::string & id)
+            throw (unsupported_interface);
+
+        virtual void do_shutdown(double timestamp) throw ();
+
+        virtual script_node * to_script() throw ();
+        virtual appearance_node * to_appearance() throw ();
+        virtual child_node * to_child() throw ();
+        virtual color_node * to_color() throw ();
+        virtual coordinate_node * to_coordinate() throw ();
+        virtual font_style_node * to_font_style() throw () ;
+        virtual geometry_node * to_geometry() throw ();
+        virtual grouping_node * to_grouping() throw ();
+        virtual material_node * to_material() throw ();
+        virtual normal_node * to_normal() throw ();
+        virtual sound_source_node * to_sound_source() throw ();
+        virtual texture_node * to_texture() throw ();
+        virtual texture_coordinate_node * to_texture_coordinate() throw ();
+        virtual texture_transform_node * to_texture_transform() throw ();
+        virtual transform_node * to_transform() throw ();
+        virtual viewpoint_node * to_viewpoint() throw ();
+    };
+
 } // namespace openvrml
 
 
@@ -368,31 +374,31 @@ proto_node_class::proto_node_type::create_node(const scope_ptr & scope) const
 }
 
 /**
- * @class proto_node_class::proto_node::proto_eventin
+ * @class proto_node::proto_eventin
  *
  * @brief PROTO eventIn handler class template.
  */
 
 /**
- * @typedef proto_node_class::proto_node::proto_eventin::listeners
+ * @typedef proto_node::proto_eventin::listeners
  *
  * @brief Set of event listeners.
  */
 
 /**
- * @var proto_node_class::proto_node::proto_eventin::listeners proto_node_class::proto_node::proto_eventin::listeners_
+ * @var proto_node::proto_eventin::listeners proto_node::proto_eventin::listeners_
  *
  * @brief Set of event listeners to which events are delegated for processing.
  */
 
 /**
- * @typedef proto_node_class::proto_node::proto_eventin::field_value_type
+ * @typedef proto_node::proto_eventin::field_value_type
  *
  * @brief Field value type.
  */
 
 /**
- * @typedef proto_node_class::proto_node::proto_eventin::event_listener_type
+ * @typedef proto_node::proto_eventin::event_listener_type
  *
  * @brief Type of event listeners to which the instance delegates.
  */
@@ -403,8 +409,7 @@ proto_node_class::proto_node_type::create_node(const scope_ptr & scope) const
  * @param node  proto_node.
  */
 template <typename FieldValue>
-proto_node_class::proto_node::proto_eventin<FieldValue>::
-proto_eventin(proto_node & node):
+proto_node::proto_eventin<FieldValue>::proto_eventin(proto_node & node):
     field_value_listener<FieldValue>(node)
 {}
 
@@ -412,7 +417,7 @@ proto_eventin(proto_node & node):
  * @brief Destroy.
  */
 template <typename FieldValue>
-proto_node_class::proto_node::proto_eventin<FieldValue>::~proto_eventin()
+proto_node::proto_eventin<FieldValue>::~proto_eventin()
     throw ()
 {}
 
@@ -426,7 +431,7 @@ proto_node_class::proto_node::proto_eventin<FieldValue>::~proto_eventin()
  */
 template <typename FieldValue>
 void
-proto_node_class::proto_node::proto_eventin<FieldValue>::
+proto_node::proto_eventin<FieldValue>::
 process_event(const FieldValue & value, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -450,8 +455,7 @@ process_event(const FieldValue & value, const double timestamp)
  */
 template <typename FieldValue>
 bool
-proto_node_class::proto_node::proto_eventin<FieldValue>::
-is(event_listener_type & listener)
+proto_node::proto_eventin<FieldValue>::is(event_listener_type & listener)
     throw (std::bad_alloc)
 {
     return this->listeners_.insert(&listener).second;
@@ -468,8 +472,8 @@ is(event_listener_type & listener)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 boost::shared_ptr<event_listener>
-proto_node_class::proto_node::create_eventin(const field_value::type_id type,
-                                             proto_node & node)
+proto_node::create_eventin(const field_value::type_id type,
+                           proto_node & node)
     throw (std::bad_alloc)
 {
     boost::shared_ptr<openvrml::event_listener> result;
@@ -557,10 +561,9 @@ proto_node_class::proto_node::create_eventin(const field_value::type_id type,
  * @exception std::bad_alloc    if memory allocation fails.
  */
 bool
-proto_node_class::proto_node::
-eventin_is(const field_value::type_id field_type,
-           openvrml::event_listener & impl_eventin,
-           openvrml::event_listener & interface_eventin)
+proto_node::eventin_is(const field_value::type_id field_type,
+                       openvrml::event_listener & impl_eventin,
+                       openvrml::event_listener & interface_eventin)
     throw (std::bad_alloc)
 {
     using boost::polymorphic_downcast;
@@ -676,20 +679,20 @@ eventin_is(const field_value::type_id field_type,
 }
 
 /**
- * @class proto_node_class::proto_node::proto_eventout
+ * @class proto_node::proto_eventout
  *
  * @brief PROTO eventOut handler class template.
  */
 
 /**
- * @class proto_node_class::proto_node::proto_eventout::listener_t
+ * @class proto_node::proto_eventout::listener_t
  *
  * @brief Listens for events emitted from nodes in the PROTO implementation
  *        in order to propagate them out of the PROTO instance.
  */
 
 /**
- * @var proto_node_class::proto_node::proto_eventout & proto_node_class::proto_node::proto_eventout::listener_t::emitter
+ * @var proto_node::proto_eventout & proto_node::proto_eventout::listener_t::emitter
  *
  * @brief Reference to the outer proto_eventout class.
  *
@@ -699,13 +702,13 @@ eventin_is(const field_value::type_id field_type,
  */
 
 /**
- * @var proto_node_class::proto_node & proto_node_class::proto_node::proto_eventout::listener_t::node
+ * @var proto_node & proto_node::proto_eventout::listener_t::node
  *
  * @brief Reference to the proto_node instance.
  */
 
 /**
- * @var FieldValue proto_node_class::proto_node::proto_eventout::listener_t::value
+ * @var FieldValue proto_node::proto_eventout::listener_t::value
  *
  * @brief The value of the most recently emitted event.
  */
@@ -718,7 +721,7 @@ eventin_is(const field_value::type_id field_type,
  * @param initial_value initial value (used for exposedFields).
  */
 template <typename FieldValue>
-proto_node_class::proto_node::proto_eventout<FieldValue>::listener_t::
+proto_node::proto_eventout<FieldValue>::listener_t::
 listener_t(proto_eventout & emitter,
            proto_node & node,
            const FieldValue & initial_value):
@@ -732,8 +735,7 @@ listener_t(proto_eventout & emitter,
  * @brief Destroy.
  */
 template <typename FieldValue>
-proto_node_class::proto_node::proto_eventout<FieldValue>::listener_t::
-~listener_t() throw ()
+proto_node::proto_eventout<FieldValue>::listener_t::~listener_t() throw ()
 {}
 
 /**
@@ -746,37 +748,37 @@ proto_node_class::proto_node::proto_eventout<FieldValue>::listener_t::
  */
 template<typename FieldValue>
 void
-proto_node_class::proto_node::proto_eventout<FieldValue>::listener_t::
+proto_node::proto_eventout<FieldValue>::listener_t::
 process_event(const FieldValue & value, const double timestamp)
     throw (std::bad_alloc)
 {
-    if (timestamp > this->emitter.last_time) {
+    if (timestamp > this->emitter.last_time()) {
         this->value = value;
         node::emit_event(this->emitter, timestamp);
     }
 }
 
 /**
- * @var proto_node_class::proto_node::proto_eventout::listener_t proto_node_class::proto_node::proto_eventout::listener
+ * @var proto_node::proto_eventout::listener_t proto_node::proto_eventout::listener
  *
  * @brief Listens for events emitted from nodes in the PROTO implementation
  *        in order to propagate them out of the PROTO instance.
  */
 
 /**
- * @typedef proto_node_class::proto_node::proto_eventout<FieldValue>::field_value_type
+ * @typedef proto_node::proto_eventout<FieldValue>::field_value_type
  *
  * @brief Field value type.
  */
 
 /**
- * @typedef proto_node_class::proto_node::proto_eventout<FieldValue>::event_emitter_type
+ * @typedef proto_node::proto_eventout<FieldValue>::event_emitter_type
  *
  * @brief Event emitter type.
  */
 
 /**
- * @typedef proto_node_class::proto_node::proto_eventout<FieldValue>::event_listener_type
+ * @typedef proto_node::proto_eventout<FieldValue>::event_listener_type
  *
  * @brief Event listener type.
  */
@@ -789,7 +791,7 @@ process_event(const FieldValue & value, const double timestamp)
  *                      proto_exposedfield<FieldValue>
  */
 template <typename FieldValue>
-proto_node_class::proto_node::proto_eventout<FieldValue>::
+proto_node::proto_eventout<FieldValue>::
 proto_eventout(proto_node & node, const FieldValue & initial_value):
     field_value_emitter<FieldValue>(this->listener.value),
     listener(*this, node, initial_value)
@@ -799,8 +801,7 @@ proto_eventout(proto_node & node, const FieldValue & initial_value):
  * @brief Destroy.
  */
 template <typename FieldValue>
-proto_node_class::proto_node::proto_eventout<FieldValue>::~proto_eventout()
-    throw ()
+proto_node::proto_eventout<FieldValue>::~proto_eventout() throw ()
 {}
 
 /**
@@ -815,7 +816,7 @@ proto_node_class::proto_node::proto_eventout<FieldValue>::~proto_eventout()
  */
 template <typename FieldValue>
 bool
-proto_node_class::proto_node::proto_eventout<FieldValue>::
+proto_node::proto_eventout<FieldValue>::
 is(event_emitter_type & emitter) throw (std::bad_alloc)
 {
     return emitter.add(this->listener);
@@ -832,8 +833,7 @@ is(event_emitter_type & emitter) throw (std::bad_alloc)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 boost::shared_ptr<event_emitter>
-proto_node_class::proto_node::create_eventout(const field_value::type_id type,
-                                              proto_node & node)
+proto_node::create_eventout(const field_value::type_id type, proto_node & node)
     throw (std::bad_alloc)
 {
     boost::shared_ptr<openvrml::event_emitter> result;
@@ -921,10 +921,9 @@ proto_node_class::proto_node::create_eventout(const field_value::type_id type,
  * @exception std::bad_alloc    if memory allocation fails.
  */
 bool
-proto_node_class::proto_node::
-eventout_is(const field_value::type_id field_type,
-            openvrml::event_emitter & impl_eventout,
-            openvrml::event_emitter & interface_eventout)
+proto_node::eventout_is(const field_value::type_id field_type,
+                        openvrml::event_emitter & impl_eventout,
+                        openvrml::event_emitter & interface_eventout)
     throw (std::bad_alloc)
 {
     using boost::polymorphic_downcast;
@@ -1053,7 +1052,7 @@ eventout_is(const field_value::type_id field_type,
 }
 
 /**
- * @class proto_node_class::proto_node::proto_exposedfield
+ * @class proto_node::proto_exposedfield
  *
  * @brief PROTO exposedField handler class template.
  */
@@ -1065,7 +1064,7 @@ eventout_is(const field_value::type_id field_type,
  * @param initial_value initial value.
  */
 template <typename FieldValue>
-proto_node_class::proto_node::proto_exposedfield<FieldValue>::
+proto_node::proto_exposedfield<FieldValue>::
 proto_exposedfield(proto_node & node, const FieldValue & initial_value):
     proto_eventin<FieldValue>(node),
     proto_eventout<FieldValue>(node, initial_value)
@@ -1075,8 +1074,7 @@ proto_exposedfield(proto_node & node, const FieldValue & initial_value):
  * @brief Destroy.
  */
 template <typename FieldValue>
-proto_node_class::proto_node::proto_exposedfield<FieldValue>::
-~proto_exposedfield() throw ()
+proto_node::proto_exposedfield<FieldValue>::~proto_exposedfield() throw ()
 {}
 
 /**
@@ -1089,7 +1087,7 @@ proto_node_class::proto_node::proto_exposedfield<FieldValue>::
  */
 template <typename FieldValue>
 void
-proto_node_class::proto_node::proto_exposedfield<FieldValue>::
+proto_node::proto_exposedfield<FieldValue>::
 process_event(const FieldValue & value, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -1108,9 +1106,8 @@ process_event(const FieldValue & value, const double timestamp)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 boost::shared_ptr<event_listener>
-proto_node_class::proto_node::
-create_exposedfield(const field_value & initial_value,
-                    proto_node & node)
+proto_node::create_exposedfield(const field_value & initial_value,
+                                proto_node & node)
     throw (std::bad_alloc)
 {
     using boost::polymorphic_downcast;
@@ -1400,22 +1397,7 @@ namespace {
         }
         return result;
     }
-}
 
-/**
- * @brief Construct.
- *
- * @param type  node_type.
- * @param scope scope.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-proto_node_class::proto_node::proto_node(const node_type & type,
-                                         const scope_ptr & scope)
-    throw (std::bad_alloc):
-    node(type, scope),
-    proto_scope(scope)
-{
     class field_value_cloner {
         const scope_ptr & target_scope;
         std::set<node *> traversed_nodes;
@@ -1512,7 +1494,21 @@ proto_node_class::proto_node::proto_node(const node_type & type,
             swap(dest, result);
         }
     };
+}
 
+/**
+ * @brief Construct.
+ *
+ * @param type  node_type.
+ * @param scope scope.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+proto_node::proto_node(const node_type & type, const scope_ptr & scope)
+    throw (std::bad_alloc):
+    node(type, scope),
+    proto_scope(scope)
+{
     //
     // Clone the implementation nodes.
     //
@@ -1551,11 +1547,13 @@ proto_node_class::proto_node::proto_node(const node_type & type,
     //
     // Initialize any IS'd fields and exposedFields.
     //
+    typedef proto_node_class::default_value_map_t default_value_map_t;
     for (default_value_map_t::const_iterator default_value =
              node_class.default_value_map.begin();
          default_value != node_class.default_value_map.end();
          ++default_value) {
         using std::pair;
+        typedef proto_node_class::is_map_t is_map_t;
         const pair<is_map_t::iterator, is_map_t::iterator> range =
             node_class.is_map.equal_range(default_value->first);
         for (is_map_t::iterator is = range.first; is != range.second; ++is) {
@@ -1585,6 +1583,7 @@ proto_node_class::proto_node::proto_node(const node_type & type,
     //
     // Establish routes.
     //
+    typedef proto_node_class::routes_t routes_t;
     for (routes_t::const_iterator route = node_class.routes.begin();
          route != node_class.routes.end();
          ++route) {
@@ -1630,6 +1629,7 @@ proto_node_class::proto_node::proto_node(const node_type & type,
         bool succeeded;
         shared_ptr<openvrml::event_listener> interface_eventin;
         shared_ptr<openvrml::event_emitter> interface_eventout;
+        typedef proto_node_class::is_map_t is_map_t;
         pair<is_map_t::iterator, is_map_t::iterator> is_range;
         default_value_map_t::const_iterator default_value;
         switch (interface->type) {
@@ -1755,7 +1755,7 @@ proto_node_class::proto_node::proto_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-proto_node_class::proto_node::~proto_node() throw ()
+proto_node::~proto_node() throw ()
 {}
 
 /**
@@ -1765,8 +1765,7 @@ proto_node_class::proto_node::~proto_node() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void proto_node_class::proto_node::do_initialize(const double timestamp)
-    throw (std::bad_alloc)
+void proto_node::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     using std::vector;
     for (vector<node_ptr>::const_iterator node = this->impl_nodes.begin();
@@ -1785,8 +1784,7 @@ void proto_node_class::proto_node::do_initialize(const double timestamp)
  *
  * @todo Make this function handle exposedFields.
  */
-const field_value &
-proto_node_class::proto_node::do_field(const std::string & id) const
+const field_value & proto_node::do_field(const std::string & id) const
     throw (unsupported_interface)
 {
     //
@@ -1795,7 +1793,7 @@ proto_node_class::proto_node::do_field(const std::string & id) const
     //
     proto_node_class & node_class =
         static_cast<proto_node_class &>(this->type.node_class);
-    is_map_t::iterator is_mapping = node_class.is_map.find(id);
+    proto_node_class::is_map_t::iterator is_mapping = node_class.is_map.find(id);
     if (is_mapping != node_class.is_map.end()) {
         //
         // Get the path to the implementation node.
@@ -1820,7 +1818,7 @@ proto_node_class::proto_node::do_field(const std::string & id) const
         // If there are no IS mappings for the field, then return the
         // default value.
         //
-        default_value_map_t::iterator default_value =
+        proto_node_class::default_value_map_t::iterator default_value =
             node_class.default_value_map.find(id);
         if (default_value == node_class.default_value_map.end()) {
             throw unsupported_interface(this->type, id);
@@ -1846,8 +1844,7 @@ proto_node_class::proto_node::do_field(const std::string & id) const
  *
  * @todo Make this function handle exposedFields.
  */
-void proto_node_class::proto_node::do_field(const std::string & id,
-                                            const field_value & value)
+void proto_node::do_field(const std::string & id, const field_value & value)
     throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
     using std::pair;
@@ -1858,6 +1855,7 @@ void proto_node_class::proto_node::do_field(const std::string & id,
     //
     proto_node_class & node_class =
         static_cast<proto_node_class &>(this->type.node_class);
+    typedef proto_node_class::is_map_t is_map_t;
     const pair<is_map_t::iterator, is_map_t::iterator> range =
         node_class.is_map.equal_range(id);
     for (is_map_t::iterator is_mapping = range.first;
@@ -1894,7 +1892,7 @@ void proto_node_class::proto_node::do_field(const std::string & id,
  * @exception unsupported_interface if the node has no eventIn @p id.
  */
 event_listener &
-proto_node_class::proto_node::do_event_listener(const std::string & id)
+proto_node::do_event_listener(const std::string & id)
     throw (unsupported_interface)
 {
     eventin_map_t::iterator pos = this->eventin_map.find(id);
@@ -1915,8 +1913,7 @@ proto_node_class::proto_node::do_event_listener(const std::string & id)
  *
  * @exception unsupported_interface if the node has no eventOut @p id.
  */
-event_emitter &
-proto_node_class::proto_node::do_event_emitter(const std::string & id)
+event_emitter & proto_node::do_event_emitter(const std::string & id)
     throw (unsupported_interface)
 {
     eventout_map_t::iterator pos = this->eventout_map.find(id);
@@ -1933,7 +1930,7 @@ proto_node_class::proto_node::do_event_emitter(const std::string & id)
  *
  * @param timestamp the current time.
  */
-void proto_node_class::proto_node::do_shutdown(const double timestamp) throw ()
+void proto_node::do_shutdown(const double timestamp) throw ()
 {
     using std::vector;
     for (vector<node_ptr>::const_iterator node = this->impl_nodes.begin();
@@ -1949,7 +1946,7 @@ void proto_node_class::proto_node::do_shutdown(const double timestamp) throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a script_node, or 0 otherwise.
  */
-script_node * proto_node_class::proto_node::to_script() throw ()
+script_node * proto_node::to_script() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -1962,7 +1959,7 @@ script_node * proto_node_class::proto_node::to_script() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      an appearance_node, or 0 otherwise.
  */
-appearance_node * proto_node_class::proto_node::to_appearance() throw ()
+appearance_node * proto_node::to_appearance() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -1975,7 +1972,7 @@ appearance_node * proto_node_class::proto_node::to_appearance() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a child_node, or 0 otherwise.
  */
-child_node * proto_node_class::proto_node::to_child() throw ()
+child_node * proto_node::to_child() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -1988,7 +1985,7 @@ child_node * proto_node_class::proto_node::to_child() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a color_node, or 0 otherwise.
  */
-color_node * proto_node_class::proto_node::to_color() throw ()
+color_node * proto_node::to_color() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -2001,7 +1998,7 @@ color_node * proto_node_class::proto_node::to_color() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a coordinate_node, or 0 otherwise.
  */
-coordinate_node * proto_node_class::proto_node::to_coordinate() throw ()
+coordinate_node * proto_node::to_coordinate() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -2014,7 +2011,7 @@ coordinate_node * proto_node_class::proto_node::to_coordinate() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a font_style_node, or 0 otherwise.
  */
-font_style_node * proto_node_class::proto_node::to_font_style() throw ()
+font_style_node * proto_node::to_font_style() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -2027,7 +2024,7 @@ font_style_node * proto_node_class::proto_node::to_font_style() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a geometry_node, or 0 otherwise.
  */
-geometry_node * proto_node_class::proto_node::to_geometry() throw ()
+geometry_node * proto_node::to_geometry() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -2040,7 +2037,7 @@ geometry_node * proto_node_class::proto_node::to_geometry() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a geometry_node, or 0 otherwise.
  */
-grouping_node * proto_node_class::proto_node::to_grouping() throw ()
+grouping_node * proto_node::to_grouping() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -2053,7 +2050,7 @@ grouping_node * proto_node_class::proto_node::to_grouping() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a material_node, or 0 otherwise.
  */
-material_node * proto_node_class::proto_node::to_material() throw ()
+material_node * proto_node::to_material() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -2066,7 +2063,7 @@ material_node * proto_node_class::proto_node::to_material() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a normal_node, or 0 otherwise.
  */
-normal_node * proto_node_class::proto_node::to_normal() throw ()
+normal_node * proto_node::to_normal() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -2079,7 +2076,7 @@ normal_node * proto_node_class::proto_node::to_normal() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a sound_source_node, or 0 otherwise.
  */
-sound_source_node * proto_node_class::proto_node::to_sound_source() throw ()
+sound_source_node * proto_node::to_sound_source() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -2092,7 +2089,7 @@ sound_source_node * proto_node_class::proto_node::to_sound_source() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a texture_node, or 0 otherwise.
  */
-texture_node * proto_node_class::proto_node::to_texture() throw ()
+texture_node * proto_node::to_texture() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -2105,8 +2102,7 @@ texture_node * proto_node_class::proto_node::to_texture() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a texture_coordinate_node, or 0 otherwise.
  */
-texture_coordinate_node *
-proto_node_class::proto_node::to_texture_coordinate() throw ()
+texture_coordinate_node * proto_node::to_texture_coordinate() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -2119,8 +2115,7 @@ proto_node_class::proto_node::to_texture_coordinate() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a texture_transform_node, or 0 otherwise.
  */
-texture_transform_node *
-proto_node_class::proto_node::to_texture_transform() throw ()
+texture_transform_node * proto_node::to_texture_transform() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -2133,7 +2128,7 @@ proto_node_class::proto_node::to_texture_transform() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a transform_node, or 0 otherwise.
  */
-transform_node * proto_node_class::proto_node::to_transform() throw ()
+transform_node * proto_node::to_transform() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -2146,7 +2141,7 @@ transform_node * proto_node_class::proto_node::to_transform() throw ()
  * @return a pointer to the first node in the implementation if that node is
  *      a viewpoint_node, or 0 otherwise.
  */
-viewpoint_node * proto_node_class::proto_node::to_viewpoint() throw ()
+viewpoint_node * proto_node::to_viewpoint() throw ()
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
