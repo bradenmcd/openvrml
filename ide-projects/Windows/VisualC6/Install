@@ -19,9 +19,9 @@ set up the compiler using vcvars32.bat script that came with it.
  
   If you want to have PNG image support (libpng.lib), JPEG image support
   (libjpeg.lib), javascript support (js32.lib and js32.dll) and java
-  support (jvm.lib and jvm.dll), make sure that all these libraries are 
-  installed in your system. By default OpenVRML library is configured 
-  with all these support.
+  support (jvm.lib and jvm.dll, works only with dynamic OpenVRML lib), 
+  make sure that all these libraries are installed in your system. 
+  By default OpenVRML library is configured with all these support.
 
   If you use "nmake" utility to make this library, then you have options
   to select all these support selectively.
@@ -60,7 +60,9 @@ set up the compiler using vcvars32.bat script that came with it.
 
  jvm.lib and jvm.dll
           Download directly compressed file. It contains headers and
-          precompiled libs.
+          precompiled libs. Please note, you should not relocate 
+          "jvm.dll" from its original location. Otherwise there will
+          be problem on creation of "Java Virtual Machine".
 
  OpenGL/Mesa
           I have not tested with Mesa but I have used Opengl32.lib and
@@ -111,20 +113,34 @@ antlr 2.7.0
                to build the OpenVRML dll library and the Lookat program 
          using OpenVRML dll.
        By default it will make OpenVRML dynamic library with mozilla 
-   javascript,JNI,JPEG image and PNG image support. Options are there to 
-   support all these selectively by undefine the corresponding macro in
-   `ide-projects\Windows\VisualC6\winconfig.h`
+   javascript, JNI, JPEG image and PNG image support. Options are there to 
+   support all these selectively by undefined the corresponding macro in
+   `<openvrml>\ide-projects\Windows\VisualC6\winconfig.h`.Macros 
+   are, OPENVRML_HAVE_SPIDERMONKEY for javascript, OPENVRML_HAVE_JNI
+   for java, OPENVRML_HAVE_LIBJPEG for JPEG image support and  
+   OPENVRML_HAVE_LIBPNG for PNG image support.
 
        For example if you don't want javascript support in OpenVRML 
-   library, then edit `winconfig.h` in `ide-projects\Windows\VisualC6`
-   by undefine the macro OPENVRML_HAVE_SPIDERMONKEY and give the command
+   library, then edit `winconfig.h` in `<openvrml>\ide-projects\Windows
+   \VisualC6` by undefined the macro OPENVRML_HAVE_SPIDERMONKEY and give 
+   the command
          nmake /F Makefile.vc6 WITH_JAVASCRIPT=NO all
 
+       For java support (JNI), you should define the location of 
+   openvrml library (openvrml.dll) using the macro OPENVRML_LIBDIR_ in 
+   `<openvrml>\ide-projects\Windows\VisualC6\winconfig.h`. For example
+   #define OPENVRML_LIBDIR_ "c:/openvrml/ide-projects/Windows/VisualC6/lib"
+   By default it will look for in current working directory or system
+   directory.
+ 
+       Use Makefile.vc6 in '<openvrml>\java' to make all java support
+   classes in jar format (script.jar).
+ 
   b) Using MSVC++6 Projects (*.dsp) and workspace files (*.dsw) 
 
     MSVC++6 Projects (*.dsp) and workspace files (*.dsw) are included for
     openvrml and lookat. Workspace file for all openvrml is kept in 
-    'openvrml\ide-projects\Windows\VisualC6'. From here you can build 
+    '<openvrml>\ide-projects\Windows\VisualC6'. From here you can build 
     whole openvrml (openvrml.lib, openvrml.dll and libantlr).
     From here for building openvrml, you need to set Project->
     Set Active Project->openvrml and for lookat executable, you 
@@ -132,35 +148,55 @@ antlr 2.7.0
 
     Remember to set the include and library directories to point to 
     where you've installed OpenVRML's dependencies. You can have options
-    to support javascript,JNI,JPEG image and PNG image support selectively.
+    to support javascript, JNI, JPEG image and PNG image support selectively.
     By default all these are supported. If you don't want to support all 
-    these selectively then edit the file `ide-projects\Windows\VisualC6
-    \winconfig.h` and undefine the corresponding macro. Macros for 
-    javascript is OPENVRML_HAVE_SPIDERMONKEY, for java is OPENVRML_HAVE_
-    JNI, for JPEG image support is OPENVRML_HAVE_LIBJPEG and for PNG 
-    image support is OPENVRML_HAVE_LIBPNG.
+    these selectively then edit the file `<openvrml>\ide-projects\Windows
+    \VisualC6\winconfig.h` and undefined the corresponding macro. Macros 
+    are, OPENVRML_HAVE_SPIDERMONKEY for javascript, OPENVRML_HAVE_JNI
+    for java, OPENVRML_HAVE_LIBJPEG for JPEG image support and  
+    OPENVRML_HAVE_LIBPNG for PNG image support.
     Set include directories and library directories for GLUT, Zlib, 
     mozilla javascript (optional), java SDK (optional), PNG image 
     support (optional) and JPEG image support (optional) library 
     by Tools->Options->Directories in MSVC++6.
 
-    Individual workspace file for openvrmlcore is kept in 'openvrml\
+    For java support (JNI), you should define the location of openvrml 
+    library (openvrml.dll) using the macro OPENVRML_LIBDIR_ in 
+    `<openvrml>\ide-projects\Windows\VisualC6\winconfig.h`. For example
+    #define OPENVRML_LIBDIR_ "c:/openvrml/ide-projects/Windows/VisualC6/debug"
+    By default it will look for in current working directory or system
+    directory.
+
+       Use Makefile.vc6 in '<openvrml>\java' to make all java support
+    classes in jar format (script.jar) by
+          nmake /f Makefile.vc6 all
+    Please note that you should be in <openvrml>\java.
+
+    Individual workspace file for openvrmlcore is kept in '<openvrml>\
     ide-projects\Windows\VisualC6\openvrml-core' and for openvrmlgl is 
-    kept in 'openvrml\ide-projects\Windows\VisualC6\openvrml-gl'.
+    kept in '<openvrml>\ide-projects\Windows\VisualC6\openvrml-gl'.
 
     For building only antlr library (libantlr.lib), workspace file libantlr.dsw is
-    given in 'openvrml\ide-projects\Windows\VisualC6\tplib\antlr'.
+    given in '<openvrml>\ide-projects\Windows\VisualC6\tplib\antlr'.
 
 
 4) To execute lookat viewer
 
+   If you make openvrml library with OPENVRML_HAVE_JNI (java support) 
+   option then you should define CLASSPATH environment variable as 
+   <openvrml>\java (or <openvrml>\java\script.jar).
+
+   For java support you need to have "jvm.dll". You should not relocate
+   this in system area or in current working directory. You define
+   original location of jvm.dll to your PATH environment variable. 
+
    a) If you use Makefile.vc6
-       cd openvrml\ide-project\Windows\VisualC6\lookat\bin 
+       cd <openvrml>\ide-project\Windows\VisualC6\lookat\bin 
        lookat ..\..\..\..\..\models\orbit3.wrl
 
    b) If you use Projects and workspace
-        cd openvrml\ide-projects\Windows\VisualC6\lookat\Release (In release mode)
-        You may need to copy openvrml.dll (openvrml\ide-projects\Windows\VisualC6\
-        \Release), js32.dll, jvm.dll and glut32.dll here or these files
+        cd <openvrml>\ide-projects\Windows\VisualC6\lookat\Release (In release mode)
+        You may need to copy openvrml.dll (<openvrml>\ide-projects\Windows\VisualC6\
+        \Release), js32.dll and glut32.dll here or these files
         may be copied into system area (for example c:\WINNT\SYSTEM32 for NT). 
         lookat ..\..\..\..\..\models\orbit3.wrl 

@@ -139,11 +139,11 @@ $(BINOUTDIR) :
 
 CPP = cl.exe
 STATIC_CFLAGS = /nologo /MD /W0 /GX /O2 /D "WIN32" /D "_WINDOWS" \
-	/Fp"$(INTDIR)\lookat.pch" /YX /Fo"$(INTDIR)\\"\
+	/Fp"$(INTDIR)\lookat.pch" /Fo"$(INTDIR)\\"\
 	/Fd"$(INTDIR)\\" /FD /c
 
 DYNAMIC_CFLAGS = /nologo /MD /W0 /GX /O2 /D "WIN32" /D "_WINDOWS" /D "OPENVRML_DLL_IMPORT" \
-	/Fp"$(INTDIR)\lookat.pch" /YX /Fo"$(INTDIR)\\"\
+	/Fp"$(INTDIR)\lookat.pch" /Fo"$(INTDIR)\\"\
 	/Fd"$(INTDIR)\\" /FD /c
 
 O=.obj
@@ -176,10 +176,6 @@ copydll :
 !IF "$(WITH_JAVASCRIPT)" == "YES"
 	-@echo Copying js32.dll to $(MAKEDIR)\bin
  if exist $(MOZILLALIB_DIR)\js32.dll copy $(MOZILLALIB_DIR)\js32.dll $(BINOUTDIR)
-!ENDIF
-!IF "$(WITH_JNI)" == "YES"
-	-@echo Copying jvm.dll to $(MAKEDIR)\bin
- if exist $(JAVA_DIR)\jre\bin\classic\jvm.dll copy $(JAVA_DIR)\jre\bin\classic\jvm.dll $(BINOUTDIR)
 !ENDIF
 	-@echo Copying glut32.dll to $(MAKEDIR)\bin
  if exist $(GLUTLIB_DIR)\glut32.dll copy $(GLUTLIB_DIR)\glut32.dll $(BINOUTDIR)

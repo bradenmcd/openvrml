@@ -32,6 +32,7 @@ CORESOURCE = ..\..\..\src\openvrml\OpenVRML
 LIBINCLUDE = ..\..\..\lib
 GLSOURCE = ..\..\..\src\openvrml-gl\OpenVRML\Gl
 INCLUDECORE = ..\..\..\src\openvrml
+SCRIPTDIR = ..\..\..\java
 
 help:
 	more < <<
@@ -41,10 +42,16 @@ where: [target] may be any one of the following ...
     (default)... shows this text
     all         ........ builds OpenVRML dynamic-library and lookat executable
     all-static  ........ builds OpenVRML static-library and lookat executable
+                without java (JNI) support.You should undefine the macro
+                OPENVRML_HAVE_JNI in winconfig.h      
     openvrml-dynamic ... builds OpenVRML dynamic-library
-    openvrml-static  ... builds OpenVRML static-library  
+    openvrml-static  ... builds OpenVRML static-library without java(JNI)
+                 support. You should undefine the macro OPENVRML_HAVE_JNI
+                 in winconfig.h      
     core-dynamic........ builds OpenVRMLcore dynamic-library 
-    core-static ........ builds OpenVRMLcore static-library 
+    core-static ........ builds OpenVRMLcore static-library without java(JNI)
+                 support. You should undefine the macro OPENVRML_HAVE_JNI
+                 in winconfig.h      
     gl         ........  builds OpenVRMLgl static-library 
     ant         .......  builds antlr static-library
     clean        ....... deletes all intermediate files
@@ -278,7 +285,7 @@ LINKFLAGS = $(GLUTLIB_DIR)\glut32.lib opengl32.lib glu32.lib wsock32.lib\
 
 
 CFLAGS = /nologo /MD /W0 /GR /GX /O2 /D "WIN32" /D "_WINDOWS" \
-	/D DLL_EXPORT /Fp"$(INTDIR)\openvrml.pch" /YX /Fo"$(INTDIR)\\"\
+	/D DLL_EXPORT /Fp"$(INTDIR)\openvrml.pch" /Fo"$(INTDIR)\\"\
 	/Fd"$(INTDIR)\\" /FD /c /D "NDEBUG"
 
 PROMPT :
@@ -289,6 +296,11 @@ $(BINOUTDIR) :
 
 $(LIBDIR) : 
 	   if not exist $(LIBDIR) mkdir $(LIBDIR)
+
+NOJNI :
+!IF "$(WITH_JNI)" == "YES"
+WITH_JNI = NO
+!ENDIF
 
 # variables
 
@@ -323,12 +335,18 @@ clean :
   nmake /F Makefile.vc6 clean
   cd ../tplib/antlr
   nmake /F Makefile.vc6 clean
+!IF "$(WITH_JNI)" == "YES"
+  cd ../../../../../java
+  nmake /F Makefile.vc6 clean
+!endif
 
-all: openvrml-dynamic lookat-dynamic
+
+all: openvrml-dynamic lookat-dynamic script-jar
+
 all-static : openvrml-static lookat-static  
 
 openvrml-dynamic : $(LIBDIR) $(BINOUTDIR) $(LIBDIR)\openvrml.dll
-openvrml-static : $(LIBDIR)  $(LIBDIR)\openvrml.lib
+openvrml-static : NOJNI $(LIBDIR)  $(LIBDIR)\openvrml.lib
 
 $(LIBDIR)\openvrml.lib  :  core-static gl prompt
                    if exist $(LIBDIR) del /Q $(LIBDIR)
@@ -392,6 +410,12 @@ lookat-dynamic:
   GLUTLIB_DIR=$(GLUTLIB_DIR) lookat-dynamic
   cd $(MAKEDIR)
 
+script-jar:
+!IF "$(WITH_JNI)" == "YES"
+  cd $(SCRIPTDIR)
+  nmake /F Makefile.vc6 JDK_DIR=$(JAVA_DIR) all
+  cd $(MAKEDIR)
+!endif
 
 $(BINOUTDIR)\Audio.obj :  $(CORESOURCE)\Audio.cpp $(CORESOURCE)\Audio.h $(CORESOURCE)\Doc.h \
 						  $(CORESOURCE)\common.h $(CORESOURCE)\System.h	
@@ -440,7 +464,8 @@ $(BINOUTDIR)\script.obj : $(CORESOURCE)\script.cpp $(CORESOURCE)\script.h\
                               $(CORESOURCE)\VrmlScene.h\
                               $(CORESOURCE)\doc2.hpp\
                               $(CORESOURCE)\vrml97node.h\
-                              $(CORESOURCE)\ScriptJDK.h
+                              $(CORESOURCE)\ScriptJDK.h\
+                              .\winconfig.h
 					$(CPP) $(CFLAGS)\
 !IF "$(WITH_JAVASCRIPT)" == "YES"
 					   /I $(MOZILLALIB_DIR)\

@@ -82,7 +82,7 @@ $(GLLIBDIR) :
 
 CPP = cl.exe
 CFLAGS = /nologo /MD /W0 /GX /O2 /D "WIN32" /D "_WINDOWS" \
-	/Fp"$(INTDIR)\openvrmlgl.pch" /YX /Fo"$(INTDIR)\\"\
+	/Fp"$(INTDIR)\openvrmlgl.pch" /Fo"$(INTDIR)\\"\
 	/Fd"$(INTDIR)\\" /FD /c
 
 O=.obj

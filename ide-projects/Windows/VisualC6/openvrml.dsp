@@ -419,7 +419,7 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\script.cpp
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
-# ADD CPP /I ".\\" /D "XP_PC"
+# ADD CPP /w /W0 /I ".\\" /D "XP_PC"
 
 !ENDIF 
 
@@ -431,10 +431,12 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\ScriptJDK.cpp
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
 # ADD CPP /w /W0
+# SUBTRACT CPP /YX
 
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
 # ADD CPP /w /W0 /I ".\\" /D "DLL_EXPORT"
+# SUBTRACT CPP /YX
 
 !ENDIF 
 

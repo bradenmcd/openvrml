@@ -95,10 +95,12 @@ SOURCE="..\..\..\..\src\openvrml-gl\OpenVRML\Gl\ViewerOpenGL.cpp"
 !IF  "$(CFG)" == "openvrmlgl - Win32 Release"
 
 # ADD CPP /w /W0 /I "..\..\..\..\src\openvrml" /I "..\\"
+# SUBTRACT CPP /YX
 
 !ELSEIF  "$(CFG)" == "openvrmlgl - Win32 Debug"
 
 # ADD CPP /w /W0 /I "..\\"
+# SUBTRACT CPP /YX
 
 !ENDIF 
 

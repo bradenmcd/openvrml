@@ -144,7 +144,8 @@ where: [target] may be any one of the following ...
               this prior to execute nmake:
 
               set LIBTYPE=STATIC
-
+              It will make without java (JNI) support for static library.
+              You must undefine the macro OPENVRML_HAVE_JNI in winconfig.h
   
 
     ---- makefile Author (bose@pavan.barc.ernet.in) notes ------------------
@@ -217,6 +218,11 @@ ANTLRLIB_DIR = c:\User\antlr-2.7.0
 PROMPT :
       -@echo Making openvrmlcore library
 
+NOJNI :
+!IF "$(WITH_JNI)" == "YES"
+WITH_JNI = NO
+!ENDIF
+
 $(BINOUTDIR) : 
 	   if not exist $(BINOUTDIR) mkdir $(BINOUTDIR)
 
@@ -288,7 +294,7 @@ all : core
 
 core  : \
 !IF "$(LIBTYPE)" == "STATIC"  
-     prompt $(BINOUTDIR) $(LIBDIR) $(LIBDIR)\openvrmlcore.lib
+     prompt NOJNI $(BINOUTDIR) $(LIBDIR) $(LIBDIR)\openvrmlcore.lib
 !ELSE
      prompt $(BINOUTDIR) $(LIBDIR) $(LIBDIR)\openvrmlcore.dll
 !ENDIF
@@ -360,7 +366,8 @@ $(BINOUTDIR)\script.obj : $(SOURCE)\script.cpp $(SOURCE)\script.h\
                               $(SOURCE)\VrmlScene.h\
                               $(SOURCE)\doc2.hpp\
                               $(SOURCE)\vrml97node.h\
-                              $(SOURCE)\ScriptJDK.h
+                              $(SOURCE)\ScriptJDK.h\
+                              ..\winconfig.h
 					$(CPP) $(CFLAGS)\
 !IF "$(WITH_JAVASCRIPT)" == "YES"
 					   /I $(MOZILLALIB_DIR)\

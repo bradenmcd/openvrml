@@ -1,3 +1,9 @@
+2001-12-12  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Checkin Makefiles to add java support classes under windows.
+
+        * Update *.dsp and Makefiles to add java support.
+ 
 2001-12-10  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * Checkin patch 488262 to fix(?) relative URL issues with Inline 
