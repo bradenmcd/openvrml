@@ -16,7 +16,11 @@
 #include <config.h>
 #endif
 
+#ifdef macintosh
+#include <Viewer.h>
+#else
 #include <vrml97/Viewer.h>
+#endif
 
 // Use the stencil buffer to set the SHAPE mask.
 #define USE_STENCIL_SHAPE 0
@@ -211,6 +215,11 @@ public:
   virtual void redraw();
   void resize(int w, int h);
 
+  // user interaction
+  #ifdef macintosh /* in order to be able to send 'keys' from menus */
+  void handleKey(int);
+  #endif
+
   // Event types
   typedef enum {
     EVENT_KEY_DOWN,
@@ -292,7 +301,9 @@ private:
 
   // User interaction
   void step(float, float, float);
+  #ifndef macintosh
   void handleKey(int);
+  #endif
   void handleButton(EventInfo*);
   void handleMouseDrag(int, int);
 
