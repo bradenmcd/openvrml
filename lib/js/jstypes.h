@@ -30,6 +30,17 @@
  * and other provisions required by the GPL.  If you do not delete
  * the provisions above, a recipient may use your version of this
  * file under either the NPL or the GPL.
+ *
+ * This Original Code has been modified by IBM Corporation.
+ * Modifications made by IBM described herein are
+ * Copyright (c) International Business Machines
+ * Corporation, 2000
+ *
+ * Modifications to Mozilla code or documentation
+ * identified per MPL Section 3.3
+ *
+ * Date             Modified by     Description of modification
+ * 04/20/2000       IBM Corp.      OS/2 VisualAge build.
  */
 
 /*
@@ -71,8 +82,7 @@
 **
 **
 ***********************************************************************/
-
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#ifdef WIN32
 /* These also work for __MWERKS__ */
 #define JS_EXTERN_API(__type) extern _declspec(dllexport) __type
 #define JS_EXPORT_API(__type) _declspec(dllexport) __type
@@ -117,8 +127,8 @@
 #define JS_EXPORT_API(__type) __type
 #define JS_EXTERN_DATA(__type) extern __type
 #define JS_EXPORT_DATA(__type) __type
-#define JS_DLL_CALLBACK
-#define JS_STATIC_DLL_CALLBACK(__x) __x _Optlink
+#define JS_DLL_CALLBACK  _Optlink
+#define JS_STATIC_DLL_CALLBACK(__x) __x JS_DLL_CALLBACK
 
 #else /* Unix */
 
@@ -132,7 +142,7 @@
 
 #endif
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#ifdef _WIN32
 #  ifdef __MWERKS__
 #    define JS_IMPORT_API(__x)      __x
 #  else
@@ -142,7 +152,7 @@
 #    define JS_IMPORT_API(__x)      JS_EXPORT_API (__x)
 #endif
 
-#if defined(_WIN32) && !defined(__CYGWIN__)  && !defined(__MWERKS__)
+#if defined(_WIN32) && !defined(__MWERKS__)
 #    define JS_IMPORT_DATA(__x)      _declspec(dllimport) __x
 #else
 #    define JS_IMPORT_DATA(__x)     __x
@@ -165,7 +175,7 @@
 #define JS_FRIEND_API(t)    JS_PUBLIC_API(t)
 #define JS_FRIEND_DATA(t)   JS_PUBLIC_DATA(t)
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#ifdef _WIN32
 #   define JS_INLINE __inline
 #elif defined(__GNUC__)
 #   define JS_INLINE
