@@ -54,6 +54,11 @@ namespace OpenVRML {
             throw (std::bad_cast, std::bad_alloc) = 0;
         virtual Type type() const throw () = 0;
     
+    protected:
+        FieldValue() throw ();
+        FieldValue(const FieldValue & value) throw ();
+        FieldValue & operator=(const FieldValue & value) throw ();
+    
     private:
         virtual void print(std::ostream & out) const = 0;
     };

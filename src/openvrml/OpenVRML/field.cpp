@@ -187,10 +187,30 @@ std::ostream & operator<<(std::ostream & out, const FieldValue & fieldValue)
  */
 
 /**
+ * @brief Constructor.
+ */
+FieldValue::FieldValue() throw ()
+{}
+
+/**
+ * @brief Copy constructor.
+ */
+FieldValue::FieldValue(const FieldValue & value) throw ()
+{}
+
+/**
  * @brief Destructor.
  */
 FieldValue::~FieldValue() throw ()
 {}
+
+/**
+ * @brief Assignment operator.
+ */
+FieldValue & FieldValue::operator=(const FieldValue & value) throw ()
+{
+    return *this;
+}
 
 /**
  * @fn std::auto_ptr<FieldValue> FieldValue::clone() const throw (std::bad_alloc)
