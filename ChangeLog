@@ -9,6 +9,9 @@
         * src/openvrml/OpenVRML/node.h:  Removed relocate stuff
           (prematurely checked in by accident).
 
+        * src/openvrml/OpenVRML/node.cpp: Added doc-comment for
+          Node::getScope.
+
 2002-12-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp:  Use newer

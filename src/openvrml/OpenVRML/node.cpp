@@ -864,6 +864,38 @@ Node::~Node() throw () {
 }
 
 /**
+ * @brief Set the nodeId of the node.
+ *
+ * @param nodeId   the ID for the node.
+ */
+void Node::setId(const std::string & nodeId) {
+    assert(this->scope);
+    this->scope->namedNodeMap[nodeId] = this;
+}
+
+/**
+ * @brief Retrieve the nodeId of this node.
+ *
+ * @return the nodeId
+ */
+const std::string Node::getId() const {
+    using std::find_if;
+    assert(this->scope);
+    const NamedNodeMap::iterator end = this->scope->namedNodeMap.end();
+    const NamedNodeMap::iterator pos =
+            find_if(this->scope->namedNodeMap.begin(), end, NodeIs_(*this));
+    return (pos != end) ? pos->first : std::string();
+}
+
+/**
+ * @fn const ScopePtr & Node::getScope() const throw ()
+ *
+ * @brief Get the Scope to which the Node belongs.
+ *
+ * @return the Scope to which the Node belongs.
+ */
+
+/**
  * @brief Accept a visitor.
  *
  * If the node has not been visited, set the @a visited flag to @c true and
@@ -932,30 +964,6 @@ void Node::resetVisitedFlag() throw ()
             }
         }
     }
-}
-
-/**
- * @brief Set the nodeId of the node.
- *
- * @param nodeId   the ID for the node.
- */
-void Node::setId(const std::string & nodeId) {
-    assert(this->scope);
-    this->scope->namedNodeMap[nodeId] = this;
-}
-
-/**
- * @brief Retrieve the nodeId of this node.
- *
- * @return the nodeId
- */
-const std::string Node::getId() const {
-    using std::find_if;
-    assert(this->scope);
-    const NamedNodeMap::iterator end = this->scope->namedNodeMap.end();
-    const NamedNodeMap::iterator pos =
-            find_if(this->scope->namedNodeMap.begin(), end, NodeIs_(*this));
-    return (pos != end) ? pos->first : std::string();
 }
 
 /**
