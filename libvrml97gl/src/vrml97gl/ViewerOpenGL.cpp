@@ -1600,8 +1600,15 @@ ViewerOpenGL::insertShellConvex( ShellData *s )
     }
 
   // Watch out for no terminating -1 in face list
-  if (i > 1 && s->faces[i-1] >= 0) glEnd();
-
+  // two ways to break out:
+  //   i>0 && i==nfaces-1 && faces[i] == -1
+  //   i==nfaces
+  //
+  if (i>=s->nfaces) {
+    if (s->faces[i-1] >= 0) glEnd();
+  } else {
+    if (s->faces[i] >= 0) glEnd();
+  }
 }
 
 
