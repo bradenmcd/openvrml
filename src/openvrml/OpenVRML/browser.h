@@ -27,7 +27,6 @@
 #   include "common.h"
 #   include "nodeclassptr.h"
 #   include "script.h"
-#   include "vrml97node.h"
 
 namespace OpenVRML {
 

@@ -39,6 +39,7 @@
 # include "scope.h"
 # include "VrmlRenderContext.h"
 # include "script.h"
+# include "vrml97node.h"
 
 /**
  * @mainpage

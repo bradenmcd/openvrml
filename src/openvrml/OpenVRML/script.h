@@ -26,7 +26,7 @@
 #   include <string>
 #   include "common.h"
 #   include "fieldvalueptr.h"
-#   include "vrml97node.h"
+#   include "node.h"
 
 namespace OpenVRML {
 
