@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeFog.cpp
 
 #include "VrmlNodeFog.h"
@@ -53,7 +52,8 @@ VrmlNodeFog::VrmlNodeFog(VrmlScene *scene) :
   VrmlNodeChild(scene),
   d_color(1.0, 1.0, 1.0),
   d_fogType("LINEAR"),
-  d_visibilityRange(0.0)
+  d_visibilityRange(0.0),
+  d_isBound(false)
 {
   if (d_scene) d_scene->addFog(this);
 }
@@ -91,6 +91,8 @@ ostream& VrmlNodeFog::printFields(ostream& os, int indent)
 
   return os;
 }
+
+// Note that this method is not maintaining isBound.
 
 void VrmlNodeFog::eventIn(double timeStamp,
 			  const char *eventName,
@@ -135,6 +137,32 @@ void VrmlNodeFog::eventIn(double timeStamp,
     {
       VrmlNode::eventIn(timeStamp, eventName, fieldValue);
     }
+}
+
+// Get the value of a field or eventOut.
+// The isBound eventOut is only set when queried,
+// don't rely on it's value to be valid. This hoses
+// the const-ness of the method, of course :(
+
+const VrmlField *VrmlNodeFog::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "color" ) == 0 )
+    return &d_color;
+  else if ( strcmp( fieldName, "fogType" ) == 0 )
+    return &d_fogType;
+  else if ( strcmp( fieldName, "visibilityRange" ) == 0 )
+    return &d_visibilityRange;
+  
+  // eventOuts
+  else if ( strcmp( fieldName, "isBound" ) == 0 )
+    {
+      VrmlSFBool* isBound = (VrmlSFBool*) &(this->d_isBound);
+      isBound->set( d_scene->bindableFogTop() == this );
+      return isBound;
+    }
+
+  return VrmlNodeChild::getField(fieldName); // Parent class
 }
 
 // Set the value of one of the node fields.

@@ -2,7 +2,6 @@
 //  Vrml 97 library
 //  Copyright (C) 1998 Chris Morley
 //
-//  %W% %G%
 //  VrmlNodeFog.h
 
 #ifndef  _VRMLNODEFOG_
@@ -10,6 +9,7 @@
 
 #include "VrmlNodeChild.h"
 
+#include "VrmlSFBool.h"
 #include "VrmlSFColor.h"
 #include "VrmlSFFloat.h"
 #include "VrmlSFString.h"
@@ -39,6 +39,9 @@ public:
 		       const char *eventName,
 		       const VrmlField *fieldValue);
 
+  // Get a field or eventOut by name.
+  virtual const VrmlField *getField(const char *fieldName) const;
+  
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   float *color()		{ return d_color.get(); }
@@ -50,6 +53,8 @@ private:
   VrmlSFColor d_color;
   VrmlSFString d_fogType;
   VrmlSFFloat d_visibilityRange;
+
+  VrmlSFBool d_isBound;		// eventOut
 
 };
 
