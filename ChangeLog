@@ -1,3 +1,13 @@
+2005-01-09 Braden McDaniel  <braden@endoframe.com>
+
+	Use fork/exec directly instead of using g_spawn_async.  For some
+	reason, g_spawn_async did not play well with reloading the plug-
+	in shortly after unloading it.
+
+	* mozilla-plugin/src/openvrml.cpp
+	* mozilla-plugin/src/openvrml-player/Makefile.am:  No longer
+	link with GTK/Glib.
+
 2005-01-07 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp:  Removed some erroneously

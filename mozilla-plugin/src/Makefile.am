@@ -20,8 +20,7 @@ openvrml_la_SOURCES = openvrml.cpp
 openvrml_la_LDFLAGS = \
         -module -avoid-version \
         -R@mozlibdir@ \
-        @MOZILLA_PLUGIN_LIBS@ \
-        @GTK_LIBS@
+        @MOZILLA_PLUGIN_LIBS@
 
 EXTRA_DIST = $(openvrml_la_SOURCES)
 

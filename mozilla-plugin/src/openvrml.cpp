@@ -18,9 +18,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# include <memory>
+# include <cerrno>
 # include <iostream>
 # include <list>
+# include <memory>
 # include <stdexcept>
 # include <sys/wait.h>
 # include <boost/lexical_cast.hpp>
@@ -44,11 +45,9 @@
 # endif
 # include "openvrml.h"
 
-extern "C" {
-    void printerr_handler(const gchar * str);
-}
-
 namespace {
+
+    void printerr(const char * str);
 
     class PluginInstance : boost::noncopyable {
 	friend class ScriptablePeer;
@@ -57,7 +56,7 @@ namespace {
         GdkNativeWindow window;
         int x, y;
         int width, height;
-        GPid player_pid;
+        pid_t player_pid;
 	nsCOMPtr<VrmlBrowser> scriptablePeer;
 
     public:
@@ -215,14 +214,8 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
     nsresult rv;
     console_service = do_GetService(NS_CONSOLESERVICE_CONTRACTID, &rv);
     if (NS_FAILED(rv)) { return NPERR_GENERIC_ERROR; }
-    g_set_printerr_handler(printerr_handler);
 
     return NPP_Initialize();
-}
-
-void printerr_handler(const gchar * str)
-{
-    console_service->LogStringMessage(NS_ConvertUTF8toUTF16(str).get());
 }
 
 NPError NP_Shutdown()
@@ -1408,6 +1401,11 @@ void NPN_ForceRedraw(NPP instance)
 
 namespace {
 
+    void printerr(const char * str)
+    {
+        console_service->LogStringMessage(NS_ConvertUTF8toUTF16(str).get());
+    }
+
     ScriptablePeer::ScriptablePeer(PluginInstance & pluginInstance):
 	pluginInstance(pluginInstance)
     {
@@ -1619,7 +1617,6 @@ namespace {
     PluginInstance::~PluginInstance() throw ()
     {
         if (this->player_pid) {
-            g_spawn_close_pid(this->player_pid);
             kill(this->player_pid, SIGTERM);
             int status;
             int options = 0;
@@ -1641,57 +1638,46 @@ namespace {
             // The plug-in window is unchanged. Resize the window and exit.
             //
         } else {
-            using std::vector;
-            using std::string;
-            using boost::lexical_cast;
-
             this->window = reinterpret_cast<GdkNativeWindow>(window.window);
 
-            const char * exec_path = g_getenv("OPENVRML_PLAYER");
-            if (!exec_path) {
-                exec_path = OPENVRML_LIBEXECDIR_ "/openvrml-player";
-            }
-            vector<char> exec_path_vec(exec_path,
-                                       exec_path + strlen(exec_path) + 1);
+            this->player_pid = fork();
+            if (this->player_pid == 0) {
+                using std::vector;
+                using std::string;
+                using boost::lexical_cast;
 
-            string socket_id_arg =
-                "--gtk-socket-id=" + lexical_cast<string>(this->window);
-            const char * socket_id_arg_c_str = socket_id_arg.c_str();
-            vector<char> socket_id_arg_vec(
-                socket_id_arg_c_str,
-                socket_id_arg_c_str + socket_id_arg.length() + 1);
-
-            const char * uri_arg_c_str = this->initialURL.c_str();
-            vector<char> uri_arg_vec(
-                uri_arg_c_str,
-                uri_arg_c_str + this->initialURL.length() + 1);
-
-            char * argv[] = {
-                &exec_path_vec.front(),
-                &socket_id_arg_vec.front(),
-                &uri_arg_vec.front()
-            };
-
-            const gchar * working_directory = 0;
-            char ** envp = 0;
-            int flags = G_SPAWN_DO_NOT_REAP_CHILD
-                      | G_SPAWN_CHILD_INHERITS_STDIN;
-            GSpawnChildSetupFunc child_setup = 0;
-            gpointer user_data = 0;
-            GError * error = 0;
-            bool succeeded = g_spawn_async(working_directory,
-                                           argv,
-                                           envp,
-                                           GSpawnFlags(flags),
-                                           child_setup,
-                                           user_data,
-                                           &this->player_pid,
-                                           &error);
-            if (!succeeded) {
-                if (error) {
-                    g_printerr(error->message);
-                    g_error_free(error);
+                const char * exec_path = g_getenv("OPENVRML_PLAYER");
+                if (!exec_path) {
+                    exec_path = OPENVRML_LIBEXECDIR_ "/openvrml-player";
                 }
+                vector<char> exec_path_vec(exec_path,
+                                           exec_path + strlen(exec_path) + 1);
+
+                string socket_id_arg =
+                    "--gtk-socket-id=" + lexical_cast<string>(this->window);
+                const char * socket_id_arg_c_str = socket_id_arg.c_str();
+                vector<char> socket_id_arg_vec(
+                    socket_id_arg_c_str,
+                    socket_id_arg_c_str + socket_id_arg.length() + 1);
+
+                const char * uri_arg_c_str = this->initialURL.c_str();
+                vector<char> uri_arg_vec(
+                    uri_arg_c_str,
+                    uri_arg_c_str + this->initialURL.length() + 1);
+
+                char * argv[] = {
+                    &exec_path_vec.front(),
+                    &socket_id_arg_vec.front(),
+                    &uri_arg_vec.front(),
+                    0
+                };
+
+                int result = execv(argv[0], argv);
+                if (result < 0) {
+                    printerr(strerror(errno));
+                }
+            } else if (this->player_pid < 0) {
+                printerr(strerror(errno));
             }
         }
     }
