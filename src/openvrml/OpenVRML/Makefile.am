@@ -28,11 +28,11 @@ endif
 
 INCLUDES = -I$(top_srcdir)/lib $(JAVASCRIPT_INCLUDES)
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF)
-AM_CXXFLAGS = @JPEG_CFLAGS@ @PNG_CFLAGS@ @Z_CFLAGS@ @MOZJS_CFLAGS@
+AM_CXXFLAGS = @JPEG_CFLAGS@ @PNG_CFLAGS@ @Z_CFLAGS@ @MOZJS_CFLAGS@ @JAVA_CFLAGS@
 
 lib_LTLIBRARIES = libopenvrml.la 
 libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ \
-@PNG_LIBS@ @Z_LIBS@ @MOZJS_LIBS@
+@PNG_LIBS@ @Z_LIBS@ @MOZJS_LIBS@ @JAVA_LIBS@
 
 Vrml97Parser.o Vrml97Parser.lo: Vrml97Parser.cpp Vrml97Parser.hpp field.h \
 doc2.hpp VrmlNamespace.h nodetype.h VrmlNode.h System.h VrmlNodeScript.h \
