@@ -53,13 +53,21 @@ where: [target] may be any one of the following ...
 
 			 set GLUTLIB_DIR=C:\glut
 
-   ANTLRLIB_DIR  .................... - required to be defined as the path
-		   where your ANTLR is installed. Default path 
-		   is C:\User\antlr-2.7.0, however you may provide it as an 
-		   environment variable by doing something like this prior 
-		   to execute nmake:
+   HAVE_JAVA  .................... - If it is YES, 
+               then you must have java in your system and system will
+               generate C++ code from antlr grammar(Vrml97Parser.g). 
+               Otherwise it will take generated code(Vrml97Parser.cpp)
+               and create the library. Default is NO.
 
-			 set ANTLRLIB_DIR=C:\antlr
+
+   ANTLRLIB_DIR  .................... - required to be defined as the path
+               where your antlr is installed. If you define HAVE_JAVA=YES 
+               then you must give this path. Otherwise it is not needed. 
+               Default path is C:\User\antlr, however you may provide it 
+               as an environment variable by doing something like this 
+               prio to execute nmake:
+
+			 set ANTLRLIB_DIR=C:\antlr-2.7.0
 
 
 
@@ -132,7 +140,7 @@ core:
   cd ..\libvrml97core\win32
   nmake /F Makefile.win PNGLIB_DIR=$(PNGLIB_DIR)\
   ZLIB_DIR=$(ZLIB_DIR) JPEGLIB_DIR=$(JPEGLIB_DIR) \
-  ANTLRLIB_DIR=$(ANTLRLIB_DIR) core
+  ANTLRLIB_DIR=$(ANTLRLIB_DIR) HAVE_JAVA=$(HAVE_JAVA) core
   cd $(MAKEDIR)
 
 gl:
