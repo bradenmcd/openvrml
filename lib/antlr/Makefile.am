@@ -56,3 +56,5 @@ antlrinclude_HEADERS = $(ANTLR_HFILES)
 else
 noinst_HEADERS = $(ANTLR_HFILES)
 endif
+
+EXTRA_DIST = MacTokenStrmHiddenTknFltr.cpp MacTokenStrmHiddenTknFltr.hpp
