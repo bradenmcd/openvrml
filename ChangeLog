@@ -12,6 +12,8 @@
           char** to the 2D array of strings out of VrmlMFString.  This fixes
           <http://sourceforge.net/bugs/?func=detailbug&bug_id=116908&group_id=7151>.
 
+        * Cleaned up warnings in VrmlNodeAnchor.cpp.
+
 2000-11-16  S. K. Bose <bose@pavan.barc.ernet.in>
         
         * Changes in Makefile.win to include conditional generation

@@ -107,13 +107,16 @@ void VrmlNodeAnchor::activate()
       char** tmp_url_array = new char *[d_url.size()];
       
       for (size_t i = 0; i < d_url.size(); i++) {
-        tmp_url->seturl( d_url.get(i), &Doc2( d_relative.get(), NULL ));
+        Doc2 relDoc(d_relative.get());
+        tmp_url->seturl( d_url.get(i), &relDoc);
         tmp_url_array[i] = new char[ strlen(tmp_url->url()) + 1 ];
         strcpy(tmp_url_array[i], tmp_url->url());
       }
-
-      if (! d_scene->loadUrl( &VrmlMFString(d_url.size(), tmp_url_array), &d_parameter ))
+      
+      VrmlMFString urls(d_url.size(), tmp_url_array);
+      if (!d_scene->loadUrl(&urls, &d_parameter)) {
         theSystem->warn("Couldn't load URL %s\n", d_url[0]);
+      }
 
       for (size_t j = 0; j < d_url.size(); j++)
         delete [] tmp_url_array[j];
