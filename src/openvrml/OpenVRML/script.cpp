@@ -393,6 +393,7 @@ namespace {
                 new ScriptNode::ScriptField;
         scriptField->name = ename;
         scriptField->type = type;
+        scriptField->modified = false;
         switch (type) {
         case FieldValue::SFBOOL:
             scriptField->value = new SFBool();
