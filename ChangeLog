@@ -1,3 +1,8 @@
+2004-12-03 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/Makefile.am:  Remove generated documentation as part of
+	maintainer-clean.
+
 2004-12-02 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
