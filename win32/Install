@@ -1,3 +1,7 @@
+You need to install Microsoft Visual C++ version 6.0 or later. If you 
+want to use nmake utility that came with it, make sure that you have 
+set up the compiler using vcvars32.bat script that came with it.
+
 1) For making LibVRML97 What else do I need?
 
   LibVRML97 requires zlib, libpng, libjpeg, OpenGL/Mesa, GLUT and antlr to build. 
@@ -8,8 +12,21 @@
     Mesa:       <URL:http://www.mesa3d.org>
     GLUT:       <URL:http://reality.sgi.com/mjk_asd/glut3/>
     antlr:      <URL:http://www.ANTLR.org>  
-
-  Make sure you have java installed in your system.
+  
+  
+  If you want to generate C++ code from antlr grammar(Vrml97Parser.g), 
+  make sure you have java and antlr installed in your system. Otherwise generated
+  code (Vrml97Parser.cpp) will be used for making the library and for this 
+  purpose you don't need to download antlr and also you don't need to have
+  java. The generated code "Vrml97Parser.cpp" is included with the 
+  CVS download.
+ 
+  If you use "nmake" utility to make this library, then you have an option
+  to generate C++ code from antlr grammar or to use generated code directly.
+ 
+  If you use MSVC++6 Projects (*.dsp) and workspace file (*.dsw) to make this
+  library, this will always generate C++ code from the grammar. This means
+  you should have java and antlr installed in your system. 
 
 2) How to build third party libraries?
 
@@ -40,10 +57,10 @@
 
 
 antlr 2.7.0
-           Antlr has two parts, a java program that generates C++ code, and a
-           set of C++ utility classes. The utility classes are included with
-           the CVS download, but you will need to download and install the
-           antlr Java classes.  
+          Antlr has two parts, a java program that generates C++ code, and a
+          set of C++ utility classes. The utility classes are included with
+          the CVS download, but you will need to download and install the
+          antlr Java classes if you want to generate C++ code from grammar.  
 
 
 3) Installation using MSVC++6
@@ -57,7 +74,8 @@ antlr 2.7.0
 
    Use nmake utility provided by Microsoft. Before this you should see all
    executable files, include files and lib files of MSVC++6 are defined in 
-   path, include and lib environment variables respectively.
+   path, include and lib environment variables respectively or execute
+   vcvars32.bat script that came with MSVC++.
 
    For example 
    SET PATH=%PATH%;c:\Program Files\Microsoft Visual Studio\Vc98\bin;c:\Program Files
@@ -109,7 +127,7 @@ antlr 2.7.0
     directories for libvrml97core, libvrml97gl, GLUT, PNG, Zlib and JPEG library by 
     Tools->Options->Directories in MSVC++6.
 
-    Please note that I have faced undefined sysmbols problems while building
+    Please note that I have faced undefined symbols problems while building
     lookat at debug mode. It is recommended to make lookat and all libraries
     (libvrml97core.lib and libvrml97gl.lib) under release mode. For win32lookat 
     no such problem exist. You can build either in debug mode or in release
