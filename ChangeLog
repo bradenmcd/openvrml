@@ -1,5 +1,12 @@
 2003-06-04  Braden McDaniel  <braden@endoframe.com>
 
+	Cleaned up remaining "macintosh" #ifdef overlooked previously.
+
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h
+	(ViewerOpenGL::handleKey):  Removed #ifdef for Mac OS 9.
+
+2003-06-04  Braden McDaniel  <braden@endoframe.com>
+
 	Changed node_type::_class to node_type::node_class.
 
 	* src/openvrml/OpenVRML/Vrml97Parser.cpp:  Reflects changes to

@@ -349,9 +349,6 @@ namespace OpenVRML {
             void resize(int w, int h);
 
             // user interaction
-#ifdef macintosh /* in order to be able to send 'keys' from menus */
-            void handleKey(int);
-#endif
 
             void input( EventInfo *);
         };
