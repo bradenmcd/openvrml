@@ -1,0 +1,53 @@
+dnl
+dnl VRML_PATH_JPEG([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl
+AC_DEFUN(VRML_PATH_JPEG,
+  [
+    AC_ARG_WITH(jpeg-prefix,
+      [  --with-jpeg-prefix=DIR  pass '-IDIR/include' to cpp, '-LDIR/lib' to ld]
+    )
+    
+    if test -n "${with_jpeg_prefix}"; then
+      jpeg__Idir="-I${with_jpeg_prefix}/include"
+      jpeg__Ldir="-I${with_jpeg_prefix}/lib"
+    fi
+    
+    AC_LANG_SAVE
+    AC_LANG_C
+    
+    ac_save_LDFLAGS="${LFDLAGS}"
+    LDFLAGS="${LDFLAGS} ${jpeg__Ldir}"
+    
+    AC_CHECK_LIB(jpeg, jpeg_read_header,
+      [
+        ac_save_CPPFLAGS="${CPPFLAGS}"
+        CPPFLAGS="${CPPFLAGS} ${jpeg__Idir}"
+        AC_CHECK_HEADER(jpeglib.h,
+          [
+            have_jpeg=yes
+            JPEG_CFLAGS="${jpeg__Idir}"
+            JPEG_LIBS="${jpeg__Ldir} -ljpeg"
+          ],
+          have_jpeg=no
+        )
+        CPPFLAGS="${ac_save_CPPFLAGS}"
+      ],
+      have_jpeg=no
+    )
+    
+    LDFLAGS="${ac_save_LDFLAGS}"
+    
+    if test "X$have_jpeg" = "Xyes"; then
+      ifelse([$1], , :, [$1])
+    else
+      JPEG_CFLAGS=""
+      JPEG_LIBS=""
+      ifelse([$2], , :, [$2])
+    fi
+    
+    AC_LANG_RESTORE
+    
+    AC_SUBST(JPEG_CFLAGS)
+    AC_SUBST(JPEG_LIBS)
+  ]
+)

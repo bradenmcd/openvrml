@@ -37,6 +37,15 @@ AC_PROG_YACC
 AC_PROG_CXX
 AC_PROG_CXXCPP
 
+dnl
+dnl Check for libjpeg
+dnl
+VRML_PATH_JPEG(, [libjpeg not found. Check config.log for details.])
+
+dnl
+dnl Check for libpng, zlib
+dnl
+VRML_PATH_PNG(, [libpng or zlib not found. Check config.log for details.])
 
 dnl ZLIB
 dnl
@@ -45,9 +54,9 @@ dnl really like to have one of those nifty --with-zlib=path thingies.
 dnl until then, users can get around a compiled-but-not-installed zlib
 dnl by setting LD_LIBRARY_PATH, right?
 dnl
-AC_CHECK_LIB(z, zlibVersion, AC_MSG_RESULT([ok]), AC_MSG_ERROR([libz not found]))
-AC_CHECK_HEADER(zlib.h, AC_MSG_RESULT([ok]), AC_MSG_ERROR([zlib.h not found]))
-
+dnl AC_CHECK_LIB(z, zlibVersion, AC_MSG_RESULT([ok]), AC_MSG_ERROR([libz not found]))
+dnl AC_CHECK_HEADER(zlib.h, AC_MSG_RESULT([ok]), AC_MSG_ERROR([zlib.h not found]))
+dnl VRML_PATH_ZLIB(, [zlib not found. Check config.log for details.])
 
 
 dnl JPEG
@@ -60,9 +69,8 @@ dnl tries to add the library to the global list of libs needed to link
 dnl apps, but we don't want that, so stick in a spurious result message
 dnl to inhibit the default action.
 dnl
-AC_CHECK_LIB(jpeg, jpeg_read_header, AC_MSG_RESULT([ok]), AC_MSG_ERROR([libjpeg not found]))
-AC_CHECK_HEADER(jpeglib.h, AC_MSG_RESULT([ok]), AC_MSG_ERROR([jpeglib.h not found]))
-
+dnl AC_CHECK_LIB(jpeg, jpeg_read_header, AC_MSG_RESULT([ok]), AC_MSG_ERROR([libjpeg not found]))
+dnl AC_CHECK_HEADER(jpeglib.h, AC_MSG_RESULT([ok]), AC_MSG_ERROR([jpeglib.h not found]))
 
 
 dnl PNG
@@ -70,9 +78,8 @@ dnl
 dnl like libjpeg, libpng is required for the core build, but we don't
 dnl want to require that it be in a system directory.
 dnl
-AC_CHECK_LIB(png, png_read_info, AC_MSG_RESULT([ok]), AC_MSG_ERROR([libpng not found]))
-AC_CHECK_HEADER(png.h, AC_MSG_RESULT([ok]), AC_MSG_ERROR([png.h not found]))
-
+dnl AC_CHECK_LIB(png, png_read_info, AC_MSG_RESULT([ok]), AC_MSG_ERROR([libpng not found]))
+dnl AC_CHECK_HEADER(png.h, AC_MSG_RESULT([ok]), AC_MSG_ERROR([png.h not found]))
 
 
 dnl X Window System, X, GL/MESA, GLUT
