@@ -20,44 +20,47 @@
 //  Program to exercise the VrmlScene and ViewerGlut classes.
 //
 
-#if defined(__FreeBSD__)
-#include <floatingpoint.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
-#ifdef macintosh
-#include "console.h"
-#include "unix.h"
-#include "SIOUX.h"
-#endif
+# ifdef __FreeBSD__
+#   include <floatingpoint.h>
+# endif
 
-#include <stdio.h>
-#if defined (__MACH__) && defined(__APPLE__)
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
-#include <OpenVRML/doc2.hpp>
-#include <OpenVRML/System.h>
-#include <OpenVRML/VrmlScene.h>
+# ifdef macintosh
+#   include "console.h"
+#   include "unix.h"
+#   include "SIOUX.h"
+# endif
 
-#include "ViewerGlut.h"
+# include <stdio.h>
+# include OPENVRML_GLUT_H
+# include <OpenVRML/doc2.hpp>
+# include <OpenVRML/VrmlScene.h>
+
+# include "ViewerGlut.h"
 
 using OpenVRML::VrmlScene;
 using OpenVRML::Doc2;
 
-static void worldChangedCB(VrmlScene::CBReason);
-static void buildViewpointMenu();
-
-VrmlScene *vrmlScene = 0;
-ViewerGlut   *viewer = 0;
-
-static bool setTitleUrl = true;
-
+namespace {
+    VrmlScene * vrmlScene = 0;
+    ViewerGlut * viewer = 0;
+    
+    bool setTitleUrl = true;
+    
+    void onExit();
+    void worldChangedCB(VrmlScene::CBReason);
+    void buildViewpointMenu();
+}
 
 int main(int argc, char **argv) {
     using std::cerr;
     using std::cout;
     using std::endl;
+    
+    atexit(onExit);
     
 #if defined(__FreeBSD__)
     fpsetmask(0);
@@ -73,12 +76,12 @@ int main(int argc, char **argv) {
     glutInitWindowSize(400, 320);
     glutInit(&argc, argv);
 
-    char * inputUrl = 0;
-    char * inputName = 0;
-    char * outputName = 0;
-    char * title = 0;
+    const char * inputUrl = 0;
+    const char * inputName = 0;
+    const char * outputName = 0;
+    const char * title = 0;
 
-    char usage[] = " file.wrl [outputfile]\n";
+    const char * const usage = " file.wrl [outputfile]\n";
 
     for (int i = 1; i < argc; ++i) {
         if (*argv[i] == '-') {
@@ -136,87 +139,80 @@ int main(int argc, char **argv) {
     viewer->update();
 
     glutMainLoop();
-    return EXIT_SUCCESS;
 }
 
+namespace {
 
-static void worldChangedCB(const VrmlScene::CBReason reason)
-{
-  switch (reason)
-    {
-    case VrmlScene::DESTROY_WORLD:
-      delete viewer;
-      delete vrmlScene;
-      exit(0);
-      break;
-
-    case VrmlScene::REPLACE_WORLD:
-      if ( setTitleUrl ) {
-        Doc2 * urlDoc = vrmlScene->urlDoc();
-        const char * title = urlDoc ? urlDoc->urlBase() : 0;
-        if (title && *title) glutSetWindowTitle(title);
-      }
-      buildViewpointMenu();
-      break;
-    }
-}
-
-
-static void lookatViewpointMenu(int item) {
-  if ( item == 0 )
-    viewer->resetUserNavigation(); // ...
-  else
-    vrmlScene->setViewpoint(item-1);
-}
-
-
-static void buildViewpointMenu() {
-
-  static int  topmenu     = 0;
-  static int  vpmenu     = 0;
-  static int  nvp     = 0;
-  int numberOfViewpoints = 0;
-  
-  if ( vpmenu )
-    {
-      glutSetMenu( vpmenu );
-      for (int i=nvp; i>0; --i)
-        glutRemoveMenuItem( i );
-    }
-  else
-    {
-      topmenu = glutCreateMenu(0);
-      vpmenu = glutCreateMenu(lookatViewpointMenu);
-      glutSetMenu(topmenu);
-
-      glutAddSubMenu("Viewpoints", vpmenu);
-      glutAttachMenu(GLUT_RIGHT_BUTTON);
+    void onExit() {
+        delete vrmlScene;
+        delete viewer;
     }
 
-  glutSetMenu(vpmenu);
-  //glutAddMenuEntry( "Reset", 0 );
-  
-  numberOfViewpoints = vrmlScene->nViewpoints();
-  nvp = numberOfViewpoints;
+    void worldChangedCB(const VrmlScene::CBReason reason) {
+        switch (reason) {
+        case VrmlScene::DESTROY_WORLD:
+            exit(0);
+            break;
 
-  if (numberOfViewpoints > 0 )
-    {
-      for (int i = 0; i < numberOfViewpoints; i++) {
-        std::string name, description;
-        vrmlScene->getViewpoint(i, name, description);
-        if (description.length() > 0)
-          glutAddMenuEntry(description.c_str(), i+1);
-        else if (name.length() > 0)
-          glutAddMenuEntry(name.c_str(), i+1);
-        else
-          {
-            char buf[25];
-            sprintf(buf,"Viewpoint %d", i+1);
-            glutAddMenuEntry(buf, i+1);
-          }
-      }
+        case VrmlScene::REPLACE_WORLD:
+            if (setTitleUrl) {
+                Doc2 * urlDoc = vrmlScene->urlDoc();
+                const char * title = urlDoc ? urlDoc->urlBase() : 0;
+                if (title && *title) glutSetWindowTitle(title);
+            }
+            buildViewpointMenu();
+            break;
+        }
     }
 
-  //glutAttachMenuName(GLUT_RIGHT_BUTTON, "Viewpoints");
+    void lookatViewpointMenu(int item) {
+        if (item == 0) {
+            viewer->resetUserNavigation(); // ...
+        } else {
+            vrmlScene->setViewpoint(item - 1);
+        }
+    }
 
+    void buildViewpointMenu() {
+        static int topmenu = 0;
+        static int vpmenu = 0;
+        static int nvp = 0;
+        int numberOfViewpoints = 0;
+
+        if (vpmenu) {
+            glutSetMenu(vpmenu);
+            for (int i = nvp; i > 0; --i) { glutRemoveMenuItem(i); }
+        } else {
+            topmenu = glutCreateMenu(0);
+            vpmenu = glutCreateMenu(lookatViewpointMenu);
+            glutSetMenu(topmenu);
+
+            glutAddSubMenu("Viewpoints", vpmenu);
+            glutAttachMenu(GLUT_RIGHT_BUTTON);
+        }
+
+        glutSetMenu(vpmenu);
+        //glutAddMenuEntry( "Reset", 0 );
+
+        numberOfViewpoints = vrmlScene->nViewpoints();
+        nvp = numberOfViewpoints;
+
+        if (numberOfViewpoints > 0) {
+            for (int i = 0; i < numberOfViewpoints; i++) {
+                std::string name, description;
+                vrmlScene->getViewpoint(i, name, description);
+                if (description.length() > 0) {
+                    glutAddMenuEntry(description.c_str(), i + 1);
+                } else if (name.length() > 0) {
+                    glutAddMenuEntry(name.c_str(), i + 1);
+                } else {
+                    char buf[25];
+                    sprintf(buf,"Viewpoint %d", i + 1);
+                    glutAddMenuEntry(buf, i + 1);
+                }
+            }
+        }
+
+        //glutAttachMenuName(GLUT_RIGHT_BUTTON, "Viewpoints");
+    }
 }
