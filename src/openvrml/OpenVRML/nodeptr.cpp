@@ -19,7 +19,7 @@
 // 
 
 # include "nodeptr.h"
-# include "node.h"
+# include "browser.h"
 
 namespace OpenVRML {
 
@@ -103,6 +103,7 @@ void NodePtr::dispose() throw ()
     if (this->countPtr) {
         --this->countPtr->second;
         if (this->countPtr->second == 0) {
+            this->countPtr->first->shutdown(Browser::getCurrentTime());
             delete this->countPtr->first;
             countMap.erase(this->countPtr->first);
         }

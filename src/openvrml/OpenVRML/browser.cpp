@@ -729,10 +729,14 @@ namespace {
  * @todo Make this asynchronous.
  */
 void Browser::loadURI(const MFString & uri, const MFString & parameter)
-        throw (std::bad_alloc) {
+    throw (std::bad_alloc)
+{
+    const double now = Browser::getCurrentTime();
+
     //
     // Clear out the current Scene.
     //
+    this->scene->shutdown(now);
     delete this->scene;
     this->scene = 0;
     this->d_navigationInfoStack.clear();
@@ -747,8 +751,6 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     this->initNodeClassMap();
     this->scene = new Scene(*this, uri);
     
-    const double now = Browser::getCurrentTime();
-
     this->scene->initialize(now);
     std::for_each(this->nodeClassMap.begin(), this->nodeClassMap.end(),
                   InitNodeClass(now));
@@ -2085,6 +2087,23 @@ void Scene::loadURI(const MFString & uri, const MFString & parameter)
                 }
             }
             this->browser.loadURI(absoluteURIs, parameter);
+        }
+    }
+}
+
+/**
+ * @brief Shut down the nodes in the Scene.
+ *
+ * This function @b must be called before the Scene is destroyed.
+ *
+ * @param timestamp the current time.
+ */
+void Scene::shutdown(const double timestamp) throw ()
+{
+    for (size_t i = 0; i < this->nodes.getLength(); ++i) {
+        const NodePtr & node = this->nodes.getElement(i);
+        if (node) {
+            node->shutdown(timestamp);
         }
     }
 }

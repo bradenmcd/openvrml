@@ -239,6 +239,7 @@ namespace OpenVRML {
         
         void loadURI(const MFString & uri, const MFString & parameter)
                 throw (std::bad_alloc);
+        void shutdown(double timestamp) throw ();
     
     private:
         // Noncopyable.

@@ -1084,6 +1084,8 @@ void Node::addEventOutIS(const std::string & eventOutId,
  * @param timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @post @a scene points to @p scene.
  */
 void Node::initialize(Scene & scene, const double timestamp)
     throw (std::bad_alloc)
@@ -1186,6 +1188,52 @@ const FieldValue & Node::getEventOut(const std::string & id) const
     throw (UnsupportedInterface)
 {
     return this->do_getEventOut(id);
+}
+
+/**
+ * @brief Shut down the Node.
+ *
+ * This method works recursively, shutting down any child nodes. If the node
+ * has already been shut down, this method has no effect.
+ *
+ * @param timestamp the current time.
+ *
+ * @post @a scene is 0.
+ */
+void Node::shutdown(const double timestamp) throw ()
+{
+    if (this->scene) {
+        this->scene = 0;
+        this->do_shutdown(timestamp);
+
+        const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
+        for (NodeInterfaceSet::const_iterator interface(interfaces.begin());
+                interface != interfaces.end(); ++interface) {
+            if (interface->type == NodeInterface::exposedField
+                    || interface->type == NodeInterface::field) {
+                if (interface->fieldType == FieldValue::sfnode) {
+                    assert(dynamic_cast<const SFNode *>
+                           (&this->getField(interface->id)));
+                    const SFNode & sfnode = static_cast<const SFNode &>
+                                            (this->getField(interface->id));
+                    if (sfnode.get()) {
+                        sfnode.get()->shutdown(timestamp);
+                    }
+                } else if (interface->fieldType == FieldValue::mfnode) {
+                    assert(dynamic_cast<const MFNode *>
+                           (&this->getField(interface->id)));
+                    const MFNode & mfnode = static_cast<const MFNode &>
+                                            (this->getField(interface->id));
+                    for (size_t i = 0; i < mfnode.getLength(); ++i) {
+                        if (mfnode.getElement(i)) {
+                            mfnode.getElement(i)->shutdown(timestamp);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    assert(!this->scene);
 }
 
 /**
@@ -1958,8 +2006,7 @@ std::ostream & operator<<(std::ostream & out, const Node & node)
  * @brief Node subclass-specific initialization.
  *
  * This method is called by Node::initialize. Subclasses of Node should
- * override this method for any subclass-specific initialization. Note that
- * this method cannot throw.
+ * override this method for any subclass-specific initialization.
  *
  * The default implementation of this method does nothing.
  *
@@ -1968,6 +2015,21 @@ std::ostream & operator<<(std::ostream & out, const Node & node)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void Node::do_initialize(const double timestamp) throw (std::bad_alloc)
+{}
+
+
+/**
+ * @brief Node subclass-specific shut down.
+ *
+ * This method is called by Node::shutdown. Subclasses of Node should
+ * override this method for any subclass-specific shut down. Note that
+ * this method cannot throw.
+ *
+ * The default implementation of this method does nothing.
+ *
+ * @param timestamp the current time.
+ */
+void Node::do_shutdown(const double timestamp) throw ()
 {}
 
 

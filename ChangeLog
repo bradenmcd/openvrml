@@ -10,6 +10,15 @@
           System::time functionality to Browser::getCurrentTime
           function.
 
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/browser.h,
+          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/nodeptr.cpp,
+          src/openvrml/OpenVRML/script.cpp,
+          src/openvrml/OpenVRML/script.h,
+          src/openvrml/OpenVRML/vrml97node.cpp:  Added shutdown member
+          function to Node, Scene.
+
 2003-01-27  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * doc/conformance.doc: Update conformance test results.

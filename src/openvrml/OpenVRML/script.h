@@ -111,9 +111,7 @@ namespace OpenVRML {
                       const FieldValuePtr & defaultValue)
                 throw (std::invalid_argument, std::bad_alloc);
 
-        void initialize(double timestamp);
         void update(double timestamp);
-        void shutdown(double timestamp);
 
         void setEventOut(const std::string & id, const FieldValue & value)
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
@@ -142,6 +140,7 @@ namespace OpenVRML {
                 throw (UnsupportedInterface, std::bad_cast, std::bad_alloc);
         virtual const FieldValue & do_getEventOut(const std::string & id) const
                 throw (UnsupportedInterface);
+        virtual void do_shutdown(double timestamp) throw ();
     };
 
     inline const ScriptNode::FieldValueMap &

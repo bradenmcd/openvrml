@@ -362,7 +362,7 @@ void ScriptNode::setUrl(const MFString & value, const double timestamp)
     delete this->script;
     this->script = 0;
     this->url = value;
-    this->initialize(timestamp);
+    this->do_initialize(timestamp);
 
     //
     // url is an exposedField.
@@ -431,35 +431,6 @@ const ScriptNode * ScriptNode::toScript() const throw ()
 ScriptNode * ScriptNode::toScript() throw ()
 {
     return this;
-}
-
-void ScriptNode::initialize(const double timestamp)
-{
-    assert(!this->script);
-
-    this->eventsReceived = 0;
-    this->script = this->createScript();
-    if (this->script) {
-        this->script->initialize(timestamp);
-    }
-
-    //
-    // For each modified eventOut, send an event.
-    //
-    for (EventOutValueMap::iterator itr(this->eventOutValueMap.begin());
-            itr != this->eventOutValueMap.end(); ++itr) {
-        if (itr->second.modified) {
-            this->emitEvent(itr->first, *itr->second.value, timestamp);
-            itr->second.modified = false;
-        }
-    }
-}
-
-void ScriptNode::shutdown(const double timestamp)
-{
-    if (this->script) {
-        this->script->shutdown(timestamp);
-    }
 }
 
 void ScriptNode::update(const double currentTime)
@@ -558,7 +529,23 @@ void ScriptNode::do_initialize(const double timestamp) throw (std::bad_alloc)
 {
     assert(this->getScene());
     this->getScene()->browser.addScript(*this);
-    this->initialize(timestamp);
+
+    this->eventsReceived = 0;
+    this->script = this->createScript();
+    if (this->script) {
+        this->script->initialize(timestamp);
+    }
+
+    //
+    // For each modified eventOut, send an event.
+    //
+    for (EventOutValueMap::iterator itr(this->eventOutValueMap.begin());
+            itr != this->eventOutValueMap.end(); ++itr) {
+        if (itr->second.modified) {
+            this->emitEvent(itr->first, *itr->second.value, timestamp);
+            itr->second.modified = false;
+        }
+    }
 }
 
 /**
@@ -704,6 +691,11 @@ const FieldValue & ScriptNode::do_getEventOut(const std::string & id) const
         return *itr->second;
     }
     throw UnsupportedInterface("Script has no eventOut \"" + id + "\".");
+}
+
+void ScriptNode::do_shutdown(const double timestamp) throw ()
+{
+    if (this->script) { this->script->shutdown(timestamp); }
 }
 
 } // namespace OpenVRML

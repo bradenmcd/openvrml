@@ -281,6 +281,8 @@ namespace OpenVRML {
         const FieldValue & getEventOut(const std::string & id) const
             throw (UnsupportedInterface);
 
+        void shutdown(double timestamp) throw ();
+
         virtual const ScriptNode * toScript() const throw ();
         virtual ScriptNode * toScript() throw ();
         virtual const AppearanceNode * toAppearance() const throw ();
@@ -395,6 +397,7 @@ namespace OpenVRML {
             throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) = 0;
         virtual const FieldValue & do_getEventOut(const std::string & id) const
             throw (UnsupportedInterface) = 0;
+        virtual void do_shutdown(double timestamp) throw ();
     };
 
     inline const ScopePtr & Node::getScope() const throw ()

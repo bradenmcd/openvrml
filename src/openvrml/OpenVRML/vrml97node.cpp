@@ -6944,6 +6944,9 @@ void Inline::load() {
  *
  * @exception std::bad_cast     if @p mfstring is not an MFString.
  * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @todo Currently this only changes the field value; it does not load a new
+ *      Scene.
  */
 void Inline::processSet_url(const FieldValue & mfstring, const double timestamp)
         throw (std::bad_cast, std::bad_alloc) {
