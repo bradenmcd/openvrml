@@ -669,7 +669,7 @@ ScriptObject * VrmlNodeScript::createScript() {
         if (this->d_url.getElement(i).length() == 0) continue;
 
         // Get the protocol & mimetype...
-# ifdef OPENVRML_HAVE_JS
+# ifdef OPENVRML_HAVE_SPIDERMONKEY
         // Need to handle external .js files too...
         const char javascriptScheme[] = "javascript:";
         const char vrmlscriptScheme[] = "vrmlscript:";
@@ -682,7 +682,7 @@ ScriptObject * VrmlNodeScript::createScript() {
 	}
 # endif
 
-#ifdef OPENVRML_HAVE_JAVA
+#ifdef OPENVRML_HAVE_JNI
 	const char javaExtension1[] = ".class";
 	const char javaExtension2[] = ".CLASS";
 
@@ -711,7 +711,7 @@ ScriptObject * VrmlNodeScript::createScript() {
 
 namespace {
 
-# ifdef OPENVRML_HAVE_JS
+# ifdef OPENVRML_HAVE_SPIDERMONKEY
     namespace JavaScript_ {
 
         const long MAX_HEAP_BYTES = 4L * 1024L * 1024L;
@@ -6501,5 +6501,5 @@ namespace {
             return mfvec3f;
         }
     }
-# endif // OPENVRML_HAVE_JS
+# endif // OPENVRML_HAVE_SPIDERMONKEY
 }
