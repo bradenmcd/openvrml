@@ -2,6 +2,16 @@
 
         * Fixed viewpoint cockeyed-ness introduced by patch on 6 Dec.
 
+        * Changed name of `libvrml97' to `libopenvrml'.
+
+        * Changed installation location for libopenvrml headers to
+          `$(includedir)/OpenVRML'.
+
+        * Changed name of `libvrml97gl' to `libopenvrml-gl'.
+
+        * Changed installation location for libopenvrml-gl headers to
+          `$(includedir)/OpenVRML/GL'.
+
 2000-12-06  Braden McDaniel  <braden@endoframe.com>
 
         * Applied patch to fix

@@ -64,32 +64,33 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 %files 
 %doc AUTHORS COPYING.LIB ChangeLog MPL-1.1.txt NEWS README THANKS TODO
 %doc doc/conformance.html
-%{prefix}/lib/libvrml97.so.*
-%{prefix}/share/aclocal/vrml97.m4
+%{prefix}/lib/libopenvrml.so.*
+%{prefix}/share/aclocal/vrml.m4
 
 %files devel
-%{prefix}/include/vrml97.h
-%{prefix}/include/vrml97
-%{prefix}/lib/libvrml97.la
-%{prefix}/lib/libvrml97.a
-%{prefix}/lib/libvrml97.so
+%{prefix}/include/OpenVRML
+%{prefix}/lib/libopenvrml.la
+%{prefix}/lib/libopenvrml.a
+%{prefix}/lib/libopenvrml.so
 
 %files gl
-%{prefix}/lib/libvrml97gl.so.*
-%{prefix}/share/aclocal/vrml97gl.m4
+%{prefix}/lib/libopenvrml-gl.so.*
+%{prefix}/share/aclocal/vrml-gl.m4
 
 %files gl-devel
-%{prefix}/include/vrml97gl.h
-%{prefix}/include/vrml97gl
-%{prefix}/lib/libvrml97gl.la
-%{prefix}/lib/libvrml97gl.a
-%{prefix}/lib/libvrml97gl.so
+%{prefix}/include/OpenVRML/GL
+%{prefix}/lib/libopenvrml-gl.la
+%{prefix}/lib/libopenvrml-gl.a
+%{prefix}/lib/libopenvrml-gl.so
 
 %files -n lookat
 %{prefix}/bin/lookat
 
 
 %changelog
+* Fri Dec 8 2000  Braden McDaniel  <braden@endoframe.com>
+- Changes to reflect library name and header location changes.
+
 * Sun Dec 3 2000  Braden McDaniel  <braden@endoframe.com>
 - Removed README.SOUND from %doc
 

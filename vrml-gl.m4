@@ -6,17 +6,17 @@ AC_DEFUN(AM_PATH_VRMLGL,
     AC_REQUIRE([AM_PATH_VRML])
     
     dnl
-    dnl Test for libvrml97gl
+    dnl Test for libopenvrml-gl
     dnl
-    AC_MSG_CHECKING([for libvrml97gl])
+    AC_MSG_CHECKING([for libopenvrml-gl])
     AC_LANG_SAVE
     AC_LANG_CPLUSPLUS
     ac_save_CXXFLAGS="${CXXFLAGS}"
     ac_save_LIBS="$LIBS"
-    LIBS="-lvrml97gl ${VRML_LIBS} ${LIBS}"
+    LIBS="-lopenvrml-gl ${VRML_LIBS} ${LIBS}"
     CXXFLAGS="${VRML_CXXFLAGS} ${CXXFLAGS}"
     AC_TRY_LINK(
-      [ #include <vrml97gl/ViewerOpenGL.h> ],
+      [ #include <OpenVRML/GL/ViewerOpenGL.h> ],
       [ int x = ViewerOpenGL::MAX_LIGHTS; ],
       have_vrmlgl=yes,
       have_vrmlgl=no
@@ -28,7 +28,7 @@ AC_DEFUN(AM_PATH_VRMLGL,
     if test $have_vrmlgl = yes; then
       AC_MSG_RESULT([yes])
       VRMLGL_CXXFLAGS="${VRML_CXXFLAGS}"
-      VRMLGL_LIBS="-lvrml97gl ${VRML_LIBS}"
+      VRMLGL_LIBS="-lopenvrml-gl ${VRML_LIBS}"
       ifelse([$1], , :, [$1])
     else
       AC_MSG_RESULT([no])

@@ -1,4 +1,4 @@
-LIBRARY_VERSION = 2:0:0
+LIBRARY_VERSION = 0:0:0
 #                 | | |
 #          +------+ | +---+
 #          |        |     |
@@ -38,9 +38,9 @@ AM_CXXFLAGS = -Wall @JPEG_CFLAGS@ @PNG_CFLAGS@
 
 INCLUDES = -I./javascript
 
-libvrml97_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ @PNG_LIBS@
 
-lib_LTLIBRARIES = libvrml97.la 
+lib_LTLIBRARIES = libopenvrml.la 
+libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ @PNG_LIBS@
 
 vrml97scanner.o vrml97scanner.lo: vrml97scanner.cpp vrml97scanner.hpp
 	$(LTCXXCOMPILE) -c $<
@@ -57,7 +57,7 @@ VrmlMFTime.h VrmlMFVec2f.h VrmlMFVec3f.h
 ScriptJS.o ScriptJS.lo: ScriptJS.cpp ScriptJS.h
 	$(LTCXXCOMPILE) -c $<
 
-libvrml97_la_SOURCES = \
+libopenvrml_la_SOURCES = \
         Doc.cpp \
 	doc2.cpp \
 	MathUtils.cpp \
@@ -143,10 +143,10 @@ antlr-prelinked.lo: vrml97scanner.lo Vrml97Parser.lo antlr/libantlr.la
 scriptjs-prelinked.lo: ScriptJS.lo javascript/libjs.la
 	$(CXXLINK) $^
 
-libvrml97_la_LIBADD = antlr-prelinked.lo scriptjs-prelinked.lo
+libopenvrml_la_LIBADD = antlr-prelinked.lo scriptjs-prelinked.lo
 
-vrml97includedir = $(includedir)/vrml97
-vrml97include_HEADERS = \
+OpenVRMLincludedir = $(includedir)/OpenVRML
+OpenVRMLinclude_HEADERS = \
 	Audio.h \
 	Doc.h \
 	Image.h \

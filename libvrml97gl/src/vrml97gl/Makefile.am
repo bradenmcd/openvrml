@@ -1,4 +1,4 @@
-LIBRARY_VERSION = 0:2:0
+LIBRARY_VERSION = 0:0:0
 #                 | | |
 #          +------+ | +---+
 #          |        |     |
@@ -22,13 +22,13 @@ endif
 INCLUDES = -I$(top_srcdir)/libvrml97core/src
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
 AM_CXXFLAGS = -Wall @GLUT_CFLAGS@
-LDFLAGS = -version-info $(LIBRARY_VERSION) @GLUT_LIBS@
 
-lib_LTLIBRARIES = libvrml97gl.la
+lib_LTLIBRARIES = libopenvrml-gl.la
 
-vrml97glincludedir = $(includedir)/vrml97gl
-vrml97glinclude_HEADERS = ViewerOpenGL.h
+libopenvrml_gl_la_SOURCES = ViewerOpenGL.cpp OpenGLEvent.cpp
+libopenvrml_gl_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @GLUT_LIBS@
+
+OpenVRMLGLincludedir = $(includedir)/OpenVRML/GL
+OpenVRMLGLinclude_HEADERS = ViewerOpenGL.h
 
 noinst_HEADERS = OpenGLEvent.h
-
-libvrml97gl_la_SOURCES = ViewerOpenGL.cpp OpenGLEvent.cpp
