@@ -22,14 +22,49 @@ package vrml.field;
 
 import vrml.ConstField;
 
+/**
+ * Represents a read-only VRML SFVec2f field in Java.
+ */
 public class ConstSFVec2f extends ConstField
 {
+  /**
+   * Construct a new SFVec2f field in OpenVRML using the given values.
+   *
+   * @param x X-component
+   * @param y Y-component
+   */
   private native void CreateObject(float x, float y);
 
-  public ConstSFVec2f(float x, float y) { CreateObject(x, y); }
+  /**
+   * Construct a read-only SFVec2f field.
+   *
+   * @param x X-component
+   * @param y Y-component
+   */
+  public ConstSFVec2f(float x, float y)
+  {
+    CreateObject(x, y);
+  }
 
+  /**
+   * Get the X and Y values representing the SFVec2f.
+   *
+   * @param vec2s X and Y values representing the SFVec2f
+   */	
   public native void getValue(float vec2s[]);
+
+  /**
+   * Get the X-component of the vector.
+   *
+   * @return X-component of the vector
+   */
   public native float getX();
+
+  /**
+   * Get the Y-component of the vector.
+   *
+   * @return Y-component of the vector
+   */
   public native float getY();
 
   public native String toString();

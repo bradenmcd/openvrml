@@ -55,7 +55,7 @@ public class ConstMFFloat extends ConstMField
   /**
    * Retrieves the value of an MFFloat field.
    *
-   * @param Array of float values to be returned.
+   * @param values Array of float values to be returned.
    */
   public native void getValue(float values[]);
 

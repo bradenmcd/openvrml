@@ -22,20 +22,87 @@ package vrml.field;
 
 import vrml.Field;
 
+
+/**
+ * Represents a VRML SFVec2f field in Java.
+ */
 public class SFVec2f extends Field
 {
+  /**
+   * Construct a new SFVec2f field in OpenVRML using the given values.
+   *
+   * @param x X-component
+   * @param y Y-component
+   */
   private native void CreateObject(float x, float y);
 
-  public SFVec2f() { CreateObject(0f, 0f); }
-  public SFVec2f(float x, float y) { CreateObject(x, y); }
+  /**
+   * Construct a default SFVec2f field.
+   */
+  public SFVec2f()
+  {
+    CreateObject(0f, 0f);
+  }
 
+  /**
+   * Construct an SFVec2f field.
+   *
+   * @param x X-component
+   * @param y Y-component
+   */
+  public SFVec2f(float x, float y)
+  {
+    CreateObject(x, y);
+  }
+
+  /**
+   * Get the X and Y values representing the SFVec2f.
+   *
+   * @param vec2s X and Y values representing the SFVec2f
+   */	
   public native void getValue(float vec2s[]);
+
+  /**
+   * Get the X-component of the vector.
+   *
+   * @return X-component of the vector
+   */
   public native float getX();
+
+  /**
+   * Get the Y-component of the vector.
+   *
+   * @return Y-component of the vector
+   */
   public native float getY();
 
+  /**
+   * Set the value of an SFVec2f.
+   *
+   * @param vec2s X, Y value
+   */
   public native void setValue(float vec2s[]);
+
+  /**
+   * Set the value of SFVec2f with the given values.
+   *
+   * @param x X-component of vector
+   * @param y Y-component of vector
+   */
   public native void setValue(float x, float y);
+
+  /**
+   * Set the value of an SFVec2f using the given ConstSFVec2f.
+   *
+   * @param vec ConstSFVec3f to take X, Y values from.
+   */
   public native void setValue(ConstSFVec2f vec);
+
+  /**
+   * Set the value of an SFVec2f using the given SFVec2f.
+   *
+   * @param vec ConstSFVec3f to take X, Y values from.
+   */
   public native void setValue(SFVec2f vec);
 
   public native String toString();

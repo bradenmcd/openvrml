@@ -1,3 +1,17 @@
+2002-08-29  Thomas Flynn  <tflynn@users.sourceforge.net>
+
+        * java/vrml/BaseNode.java,
+          java/vrml/MField.java,
+          java/vrml/field/ConstMFColor.java,
+          java/vrml/field/ConstMFFloat.java,
+          java/vrml/field/ConstSFImage.java,
+          java/vrml/field/ConstSFVec2f.java,
+          java/vrml/field/ConstSFVec3f.java,
+          java/vrml/field/SFImage.java,
+          java/vrml/field/SFString.java,
+          java/vrml/field/SFVec2f.java,
+          java/vrml/field/SFVec3f.java: Update javadoc comments.
+
 2002-08-28  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp,

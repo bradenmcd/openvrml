@@ -22,17 +22,63 @@ package vrml.field;
 
 import vrml.Field;
 
+
+/**
+ * Represents a VRML SFString field in Java.
+ */
 public class SFString extends Field
 {
+  /**
+   * Construct a new SFString field in OpenVRML using the given string.
+   *
+   * @param value Initial value of SFString
+   */
   private native void CreateObject(String value);
 
-  public SFString() { CreateObject(null); }
-  public SFString(String s) { CreateObject(s); }
+  /**
+   * Construct a default SFString field.
+   */
+  public SFString()
+  {
+    CreateObject(null);
+  }
 
+  /**
+   * Construct an SFString field using the given value.
+   *
+   * @param s Initial value for SFString
+   */
+  public SFString(String s)
+  {
+    CreateObject(s);
+  }
+
+  /**
+   * Get the value of the SFString field.
+   *
+   * @return Value of SFString.
+   */
   public native String getValue();
 
+  /**
+   * Set the value of an SFString field.
+   *
+   * @param s Value to set field to.
+   */
   public native void setValue(String s);
+
+  /**
+   * Set the value of an SFString field using an existing ConstSFString.
+   *
+   * @param s Value to set field to.
+   */
   public native void setValue(ConstSFString s);
+
+  /**
+   * Set the value of an SFString field using an existing SFString.
+   *
+   * @param s Value to set field to.
+   */
   public native void setValue(SFString s);
 
   public native String toString();

@@ -84,7 +84,7 @@ public class SFImage extends Field
    * Get a 2-dimensional array of pixels representing the
    * SFImage.
    *
-   * @param 2-dimensional pixel array.
+   * @param pixels 2-dimensional pixel array.
    */
   public native void getPixels(byte pixels[]);
 

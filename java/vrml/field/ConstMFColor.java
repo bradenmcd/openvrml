@@ -78,14 +78,14 @@ public class ConstMFColor extends ConstMField
   /**
    * Retrieves the value of an MFColor field.
    *
-   * @param 2D array of sets of RGB values to be returned.
+   * @param colors 2D array of sets of RGB values to be returned.
    */
   public native void getValue(float colors[][]);
 
   /**
    * Retrieves the value of an MFColor field.
    *
-   * @param Array of sets of RGB values to be returned.
+   * @param colors Array of sets of RGB values to be returned.
    */
   public native void getValue(float colors[]);
 
