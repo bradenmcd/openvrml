@@ -2,7 +2,7 @@ OpenVRML library version 0.10.0, 21 January, 2001
 Copyright (C) 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
 Portions Copyright SGI and others
 
-Available from <http://openvrml.sourceforge.net>
+Available from <http://openvrml.org>
 
 See the `NEWS' file for a list of changes in this release.
 
@@ -78,8 +78,7 @@ reuse) under other terms is as follows:
 Required libraries
 ==================
 
-   OpenVRML requires zlib, libpng, libjpeg, SpiderMonkey (the
-mozilla.org JavaScript engine) OpenGL/Mesa, and GLUT to build.  If any
+   OpenVRML requires zlib, OpenGL/Mesa, and GLUT to build.  If any
 of these are not already present on your system, first consult your
 operating system vendor for packages tailored to your particular
 operating system/distribution.  Mac users can find the Apple OpenGL SDK
@@ -91,9 +90,6 @@ Michael Louka):
 
 Otherwise, consult the following URLs:
      zlib:          <http://www.info-zip.org/pub/infozip/zlib/>
-     libpng:        <http://www.libpng.org/pub/png/libpng.html>
-     libjpeg:       <http://www.ijg.org>
-     SpiderMonkey:  <http://www.mozilla.org/js/spidermonkey/>
      Mesa:          <http://www.mesa3d.org>
      GLUT:          <http://reality.sgi.com/mjk_asd/glut3/>
 
@@ -102,6 +98,90 @@ Otherwise, consult the following URLs:
 come with the distribution, and most users should never need to
 recompile the ANTLR source.  For those who do, ANTLR can be found here:
     <http://www.antlr.org>
+
+
+Optional features
+=================
+
+ * PNG image support
+   
+   libpng is required for PNG support in OpenVRML.  If libpng is not
+   already installed on your system, you can find it at
+   <http://www.libpng.org/pub/png/libpng.html>.  The GNU build includes
+   configuration options to either allow the build to locate libpng on
+   your system, or build without PNG support (if you don't have libpng
+   or don't want PNG support).  These arguments can be passed to
+   `configure':
+   
+   --with-png
+   --with-png=yes
+      Look in the default library and include paths for libpng.  This is
+      the default.
+   
+   --with-png=PREFIX
+      If libpng is not installed in the default library and include 
+      paths on your system, pass the prefix under which it is installed
+      as PREFIX.
+   
+   --without-png
+   --with-png=no
+      Build without PNG support.
+   
+   Other build systems should define HAVE_PNG when building OpenVRML
+   with PNG support.
+
+ * JPEG image support
+   
+   libjpeg is required for JPEG support in OpenVRML.  If libpng is not
+   already installed on your system, you can find it at
+   <http://www.ijg.org>.  The GNU build includes configuration options
+   to either allow the build to locate libjpeg on your system, or build
+   without JPEG support (if you don't have libjpeg or don't want JPEG
+   support).  These arguments can be passed to `configure':
+   
+   --with-jpeg
+   --with-jpeg=yes
+      Look in the default library and include paths for libjpeg.  This
+      is the default.
+   
+   --with-jpeg=PREFIX
+      If libjpeg is not installed in the default library and include 
+      paths on your system, pass the prefix under which it is installed
+      as PREFIX.
+   
+   --without-jpeg
+   --with-jpeg=no
+      Build without JPEG support.
+   
+   Other build systems should define HAVE_JPEG when building OpenVRML
+   with JPEG support.
+
+ * JavaScript support
+   
+   SpiderMonkey (libmozjs) is required for JavaScript support in
+   OpenVRML.  If SpiderMonkey is not already installed on your system,
+   you can find it at <http://www.mozilla.org/js/spidermonkey/>.  The
+   GNU build includes configuration options to either allow the build to
+   locate libmozjs on your system, or build without JavaScript support
+   (if you don't have SpiderMonkey or don't want JavaScript support).
+   These arguments can be passed to `configure':
+   
+   --with-javascript
+   --with-javascript=yes
+      Look in the default library and include paths for libmozjs.  This
+      is the default.
+   
+   --with-javascript=PREFIX
+      If libmozjs is not installed in the default library and include 
+      paths on your system, pass the prefix under which it is installed
+      as PREFIX.
+   
+   --without-javascript
+   --with-javascript=no
+      Build without JavaScript support.
+   
+   Other build systems should define HAVE_JAVASCRIPT when building
+   OpenVRML with JavaScript support.
 
 
 Installation
@@ -169,8 +249,7 @@ system:
      <http://sourceforge.net/bugs/?group_id=7151>
 
    Note that you will need to log into SourceForge before reporting a
-bug if you would like to be notified (via e-mail) when the bug's status
-is updated.
+bug.
 
 
 Mailing lists

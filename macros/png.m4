@@ -16,59 +16,82 @@ dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 dnl
-dnl OV_PATH_PNG([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl OV_PATH_LIBPNG([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
-AC_DEFUN(OV_PATH_PNG,
+dnl Adds `--with-libpng' option to the package. The argument to the option may
+dnl be `yes' (the default), `no', or a directory that is the prefix where libpng
+dnl is installed. If the argument is `yes' or a directory, ACTION-IF-FOUND is
+dnl executed if libpng can be located; otherwise, ACTION-IF-NOT-FOUND is
+dnl executed.
+dnl
+dnl If libpng is found and should be used, HAVE_LIBPNG is defined, and the
+dnl autoconf substitutions PNG_CFLAGS and PNG_LIBS are respectively set to
+dnl the compiler and linker flags required to use the library.  If libpng is
+dnl not available--either because `--without-libpng' has been specified, or
+dnl because the library cannot be found--the shell variable `no_libpng' is set
+dnl to `yes'; otherwise it is set to the empty string.
+dnl
+dnl ACTION-IF-NOT-FOUND is executed only if libpng is searched for and not
+dnl found. If the package is configured using `--without-libpng' (equivalent to
+dnl `--with-libpng=no'), ACTION-IF-NOT-FOUND will not be run.
+dnl
+AC_DEFUN(OV_PATH_LIBPNG,
   [
     AC_REQUIRE([OV_PATH_ZLIB])
     
-    AC_ARG_WITH(png, [  --with-png[=PREFIX]     libpng installed under PREFIX [default=yes]])
-    have_png=yes
-    if test "X$with_png" = "Xno"; then
-      have_png=no
+    PNG_CFLAGS=""
+    PNG_LIBS=""
+
+    AC_ARG_WITH(libpng, [  --with-libpng[=PREFIX]  libpng installed under PREFIX [default=yes]])
+    
+    if test "X$with_libpng" = "Xno"; then
+      no_libpng=yes
     else
-      if test -n "$with_png"; then
-        if test "X$with_png" != "Xyes"; then
-          png__Idir="-I${with_png}/include"
-          png__Ldir="-L${with_png}/lib"
+      AC_MSG_CHECKING([for libpng])
+      
+      if test -n "$with_libpng"; then
+        if test "X$with_libpng" != "Xyes"; then
+          libpng__Idir="-I${with_libpng}/include"
+          libpng__Ldir="-L${with_libpng}/lib"
         fi
       fi
     
-      PNG_CFLAGS=""
-      PNG_LIBS=""
-
       AC_LANG_SAVE
       AC_LANG_C
 
-      ac_save_LIBS="${LIBS}"
-      LIBS="${png__Ldir} ${Z_LIBS} ${LIBS}"
-      AC_CHECK_LIB(png, png_read_info,
+      ov_save_LIBS="${LIBS}"
+      LIBS="${libpng__Ldir} -lpng -lm ${Z_LIBS} ${LIBS}"
+      AC_TRY_LINK_FUNC(png_read_info,
         [
-          ac_save_CPPFLAGS="${CPPFLAGS}"
-          CPPFLAGS="${CPPFLAGS} ${png__Idir}"
-          AC_CHECK_HEADER(png.h,
+          ov_save_CPPFLAGS="${CPPFLAGS}"
+          CPPFLAGS="${CPPFLAGS} ${libpng__Idir}"
+          AC_TRY_CPP(
+            [ #include<png.h> ],
             [
-              have_png=yes
-              PNG_CFLAGS="${png__Idir} ${Z_CFLAGS}"
-              PNG_LIBS="${png__Ldir} -lpng ${Z_LIBS} -lm"
+              have_libpng=yes
+              PNG_CFLAGS="${libpng__Idir} ${Z_CFLAGS}"
+              PNG_LIBS="${libpng__Ldir} -lpng -lm ${Z_LIBS}"
             ],
-            have_png=no
+            have_libpng=no
           )
-          CPPFLAGS="${ac_save_CPPFLAGS}"
+          CPPFLAGS="${ov_save_CPPFLAGS}"
         ],
-        have_png=no,
-        -lm
+        have_libpng=no
       )
-      LIBS="${ac_save_LIBS}"
+      LIBS="${ov_save_LIBS}"
 
       AC_LANG_RESTORE
-    fi
-    
-    if test "X$have_png" = "Xyes"; then
-      AC_DEFINE(HAVE_PNG, , [defined if libpng is available and should be used])
-      ifelse([$1], , :, [$1])
-    else
-      ifelse([$2], , :, [$2])
+
+      if test "X$have_libpng" = "Xyes"; then
+        AC_MSG_RESULT([yes])
+        no_libpng=""
+        AC_DEFINE(HAVE_LIBPNG, , [defined if libpng is available and should be used])
+        ifelse([$1], , :, [$1])
+      else
+        AC_MSG_RESULT([no])
+        no_libpng=yes
+        ifelse([$2], , :, [$2])
+      fi
     fi
     
     AC_SUBST(PNG_CFLAGS)

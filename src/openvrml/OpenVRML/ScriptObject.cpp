@@ -49,7 +49,7 @@
 # include "VrmlNodeScript.h"
 # include "VrmlScene.h"
 
-# ifdef HAVE_JAVASCRIPT
+# ifdef HAVE_MOZJS
 #   include <mozilla/jsapi.h>
 namespace {
 
@@ -92,7 +92,7 @@ ScriptObject * ScriptObject::create(VrmlNodeScript & scriptNode,
         if (! url.getElement(i)) continue;
 
         // Get the protocol & mimetype...
-# ifdef HAVE_JAVASCRIPT
+# ifdef HAVE_MOZJS
         // Need to handle external .js files too...
         if (strncmp(url.getElement(i), "javascript:", 11) == 0 ||
 	    strncmp(url.getElement(i), "vrmlscript:", 11) == 0 )
@@ -124,7 +124,7 @@ ScriptObject * ScriptObject::create(VrmlNodeScript & scriptNode,
 
 namespace {
 
-# ifdef HAVE_JAVASCRIPT
+# ifdef HAVE_MOZJS
     namespace JavaScript_ {
 
         const long MAX_HEAP_BYTES = 4L * 1024L * 1024L;
@@ -4853,5 +4853,5 @@ namespace {
             return JS_TRUE;
         }
     }
-# endif // HAVE_JAVASCRIPT
+# endif // HAVE_MOZJS
 }

@@ -41,7 +41,7 @@ AC_PROG_CXXCPP
 dnl Checks for library functions.
 AC_CHECK_FUNCS(ftime getcwd gettimeofday mktime strdup strerror strstr)
 
-OV_CXX_BOOL(, AC_MSG_ERROR([Your C++ compiler does not have the required support for the 'bool' keyword. See 'config.log' for details.]))
+OV_CXX_BOOL(, AC_MSG_ERROR([Your C++ compiler does not have the required support for the 'bool' keyword.  See 'config.log' for details.]))
 OV_CXX_NAMESPACE(
   ,
   no_cxx_namespaces=true
@@ -51,18 +51,19 @@ AM_CONDITIONAL(NO_CXX_NAMESPACES, test x$no_cxx_namespaces = xtrue)
 OV_CXX_AUTO_PTR(, AC_MSG_ERROR([auto_ptr not found]))
 OV_CXX_HASH_MAP
 
-dnl
-dnl Check for libjpeg, libpng, zlib
-dnl
-OV_PATH_ZLIB(, AC_MSG_ERROR([zlib not found.]))
-OV_PATH_JPEG(, AC_MSG_WARN([Building without JPEG support.]))
-OV_PATH_PNG(, AC_MSG_WARN([Building without PNG support.]))
-OV_PATH_JAVASCRIPT(, AC_MSG_WARN([Building without JavaScript support.]))
+OV_PATH_ZLIB(, no_zlib=yes)
+if test "X$no_zlib" = "Xyes"; then
+  AC_MSG_ERROR([zlib not found.])
+fi
+
+OV_PATH_LIBJPEG(, AC_MSG_ERROR([libjpeg not found.  Use '--with-libjpeg=PREFIX' to locate the library or '--without-libjpeg' to build without JPEG support.]))
+OV_PATH_LIBPNG(, AC_MSG_ERROR([libpng not found.  Use '--with-libpng=PREFIX' to locate the library or '--without-libpng' to build without PNG support.]))
+OV_PATH_MOZJS(, AC_MSG_ERROR([SpiderMonkey (libmozjs) not found.  Use '--with-mozjs=PREFIX' to locate the library or '--without-mozjs' to build without JavaScript support.]))
 
 dnl
 dnl Check for X, GL/Mesa, glut
 dnl
-OV_PATH_GLUT(, AC_MSG_ERROR([glut or one of its dependencies not found. See 'config.log' for details.]))
+OV_PATH_GLUT(, AC_MSG_ERROR([glut or one of its dependencies not found.  See 'config.log' for details.]))
 
 
 dnl

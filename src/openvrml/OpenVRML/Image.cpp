@@ -714,7 +714,7 @@ namespace {
 //
 // PNG reader
 //
-# ifdef HAVE_PNG
+# ifdef HAVE_LIBPNG
 #   include <png.h>
 namespace {
     
@@ -983,7 +983,7 @@ namespace {
 //
 // JPEG reader
 //
-# ifdef HAVE_JPEG
+# ifdef HAVE_LIBJPEG
 #   include <setjmp.h>
 
 extern "C" {
@@ -6808,11 +6808,11 @@ typedef enum {
   ImageFile_UNKNOWN,
 
   ImageFile_GIF
-# ifdef HAVE_JPEG
+# ifdef HAVE_LIBJPEG
   , ImageFile_JPG
 # endif
   , ImageFile_MPG
-# ifdef HAVE_PNG
+# ifdef HAVE_LIBPNG
   , ImageFile_PNG
 # endif
 
@@ -6862,7 +6862,7 @@ bool Image::setURL(const char *url, Doc *relative)
 	      case ImageFile_GIF:
 	        d_pixels = gifread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
 	        break;
-# ifdef HAVE_JPEG
+# ifdef HAVE_LIBJPEG
 	      case ImageFile_JPG:
 	        d_pixels = jpgread(fp, &d_w, &d_h, &d_nc);
 	        break;
@@ -6870,7 +6870,7 @@ bool Image::setURL(const char *url, Doc *relative)
 	      case ImageFile_MPG:
 	        d_pixels = mpgread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
 	        break;
-# ifdef HAVE_PNG
+# ifdef HAVE_LIBPNG
 	      case ImageFile_PNG:
 	        d_pixels = pngread(fp, &d_w, &d_h, &d_nc);
 	        break;
@@ -6913,7 +6913,7 @@ bool Image::setURL(const char *url, Doc2 *relative)
 	      case ImageFile_GIF:
 	        d_pixels = gifread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
 	        break;
-# ifdef HAVE_JPEG
+# ifdef HAVE_LIBJPEG
 	      case ImageFile_JPG:
 	        d_pixels = jpgread(fp, &d_w, &d_h, &d_nc);
 	        break;
@@ -6921,7 +6921,7 @@ bool Image::setURL(const char *url, Doc2 *relative)
 	      case ImageFile_MPG:
 	        d_pixels = mpgread(fp, &d_w, &d_h, &d_nc, &d_nFrames, &d_frame);
 	        break;
-# ifdef HAVE_PNG
+# ifdef HAVE_LIBPNG
 	      case ImageFile_PNG:
 	        d_pixels = pngread(fp, &d_w, &d_h, &d_nc);
 	        break;
@@ -6988,7 +6988,7 @@ static ImageFileType imageFileType(const char *url, FILE *)
   if (strcmp(suffix,"gif") == 0 ||
       strcmp(suffix,"GIF") == 0)
     return ImageFile_GIF;
-# ifdef HAVE_JPEG
+# ifdef HAVE_LIBJPEG
   else if (strcmp(suffix,"jpg") == 0 ||
 	   strcmp(suffix,"JPG") == 0 ||
 	   strcmp(suffix,"jpeg") == 0 ||
@@ -7000,7 +7000,7 @@ static ImageFileType imageFileType(const char *url, FILE *)
 	   strcmp(suffix,"mpeg") == 0 ||
 	   strcmp(suffix,"MPEG") == 0)
     return ImageFile_MPG;
-# ifdef HAVE_PNG
+# ifdef HAVE_LIBPNG
   else if (strcmp(suffix,"png") == 0 ||
 	   strcmp(suffix,"PNG") == 0)
     return ImageFile_PNG;
