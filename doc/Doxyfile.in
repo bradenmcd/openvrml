@@ -63,7 +63,6 @@ WARN_LOGFILE           =
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = @srcdir@/index.doc \
-                         @srcdir@/conformance.doc \
                          @top_srcdir@/src/libopenvrml \
                          @top_srcdir@/src/libopenvrml-gl
 FILE_PATTERNS          = *.cpp \

@@ -1,3 +1,13 @@
+2004-07-06 Braden McDaniel  <braden@endoframe.com>
+
+	Cull conformance test table from the distribution in the
+	interest of making a release.  No time to update it at the
+	moment.
+
+	* doc/Doxyfile.in
+	* doc/Makefile.am
+	* doc/doxygen-header
+
 2004-07-03 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/ScriptJDK.cpp:  Eliminated use of

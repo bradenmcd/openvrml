@@ -5,7 +5,6 @@ EXTRA_DIST = \
         doxygen-header \
         doxygen-footer \
         index.doc \
-        conformance.doc \
         manual
 
 manual: html
