@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>		// free()
 #include <string.h>
+#include <algorithm>
 
 /************************************************************************
 	GIF File Reader
@@ -3306,7 +3307,7 @@ namespace {
 
       if (m->buf_length > 0)
         {
-          memcpy(m->buf_start, m->buffer, m->buf_length * 4);
+          std::copy(m->buffer, m->buffer + (m->buf_length * 4), m->buf_start);
           mark = (unsigned char *) (m->buf_start + m->buf_length);
         }
       else
