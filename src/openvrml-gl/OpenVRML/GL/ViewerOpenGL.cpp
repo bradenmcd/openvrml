@@ -43,6 +43,7 @@
 # include <OpenVRML/vrml97node.h>
 # include <OpenVRML/bvolume.h>
 # include <OpenVRML/VrmlFrustum.h>
+# include <OpenVRML/font.h>
 
 # include "ViewerOpenGL.h"
 # include "OpenGLEvent.h"
@@ -396,6 +397,7 @@ void ViewerOpenGL::endGeometry()
   glPopAttrib();
   glCullFace( GL_BACK );
   glShadeModel( GL_SMOOTH );
+  glFrontFace( GL_CCW );
 
   // if needed...
   glMatrixMode(GL_TEXTURE);
@@ -429,7 +431,7 @@ void ViewerOpenGL::resetUserNavigation()
 
 void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
 {
-  // The Matrix M should be an unit matrix
+  // The Matrix M should be a unit matrix
   VrmlMatrix tmp,rot(d_rotationMatrix);
   float pos_vec[3];
   pos_vec[0] = d_zoom[0];
@@ -2267,16 +2269,110 @@ Viewer::Object ViewerOpenGL::insertSphere(float radius)
 }
 
 
-// Not fully implemented... need font, extents
-
-Viewer::Object ViewerOpenGL::insertText(int *justify,
-                                        float size,
-                                        int n, char const * const * s)
+#ifdef OPENVRML_HAVE_FREETYPEFONTS
+#if GLU_VERSION_1_2
+static void WINAPI tessTextBegin( GLenum type )
 {
+  glBegin(type);
+}
+
+static void WINAPI tessTextVertex( void *vdata, void *pdata )
+{
+  float v[3];
+  Vertex* td = static_cast<Vertex *>(vdata);
+  ViewerOpenGL::TextData *t = static_cast<ViewerOpenGL::TextData *>(pdata);
+  float width = t->cwidth;
+  float height = t->cheight;
+  v[0] = td->V[0];
+  v[1] = td->V[1];
+  v[2] = 0.0;
+  float tx = fabs(v[0]/width);
+  float ty = fabs(v[1]/height);
+  glTexCoord2f(tx,ty);
+  glVertex3fv(v);
+}
+
+static void WINAPI tessTextError(GLenum error_code)
+{
+  std::cout << "Error in tessellation" << gluErrorString(error_code) << std::endl;
+}
+
+static void WINAPI tessTextCombine( GLdouble coords[3], void* vertex_data[4],
+                                    GLfloat weight[4], void** outdata)
+{
+  Vertex* vertex = new Vertex;
+  vertex->V[0] = coords[0];
+  vertex->V[1] = coords[1];
+  *outdata = vertex;
+}
+
+#endif
+#endif
+
+void ViewerOpenGL::insertTextTess(const FontVectoriser & fVector, TextData & tdata)
+{
+#ifdef OPENVRML_HAVE_FREETYPEFONTS 
+#if GLU_VERSION_1_2
+ 
+  if (! this->d_tess) this->d_tess = gluNewTess();
+  gluTessCallback(this->d_tess, GLU_TESS_BEGIN,
+                  reinterpret_cast<TessCB>(tessTextBegin));
+  gluTessCallback(this->d_tess, GLU_TESS_VERTEX_DATA,
+                  reinterpret_cast<TessCB>(tessTextVertex));
+  gluTessCallback(this->d_tess, GLU_TESS_END,
+                  reinterpret_cast<TessCB>(glEnd));
+  gluTessCallback(this->d_tess, GLU_TESS_ERROR,
+                  reinterpret_cast<TessCB>(tessTextError));
+  gluTessCallback(this->d_tess, GLU_TESS_COMBINE,
+                  reinterpret_cast<TessCB>(tessTextCombine));
+   int ncontours = fVector.getTotContours();
+   const Contour *contour_list = &fVector.getContourlist();
+   GLdouble vertex[3];
+   gluTessBeginPolygon(this->d_tess,&tdata);
+   for (size_t j = 0; j < ncontours; j++){
+     gluTessBeginContour(this->d_tess);
+     const Contour & contour= contour_list[j];
+     int size = contour.size();
+     for (int k = 0; k < size; k++){
+       const Vertex* ver = &contour[k];
+       vertex[0] = contour[k].V[0];
+       vertex[1] = contour[k].V[1];
+       vertex[2] = 0.0;
+       gluTessVertex(this->d_tess,vertex,(void *)ver);
+      }
+      gluTessEndContour(this->d_tess);
+   }
+   gluTessEndPolygon(this->d_tess);
+
+#endif              // GLU_VERSION_1_2
+#endif              // HAVE_OPENVRML_FREETYPEFONTS
+}
+
+/** 
+ * @class ViewerOpenGL::insertText
+ *                
+ * @brief Insert text into a display list.
+ *
+ * @param ftface FontFace object
+ * @param strarraysize size of string array
+ * @param string pointer to string array
+ * @param lsize size of length array
+ * @param length length array for the length of each text string
+ * @param maxextent maxextent of all text strings
+ */
+
+Viewer::Object ViewerOpenGL::insertText(FontFace & fface, 
+                                        size_t strarraysize, const std::string * string,
+                                        size_t lsize, const float length[], 
+                                        float maxExtent)
+{
+
   GLuint glid = 0;
 
+#ifdef OPENVRML_HAVE_FREETYPEFONTS
+
 #if USE_GEOMETRY_DISPLAY_LISTS
-  if (! d_selectMode)
+  if (! this->d_selectMode)
     {
       glid = glGenLists(1);
       glNewList( glid, GL_COMPILE_AND_EXECUTE );
@@ -2284,11 +2380,157 @@ Viewer::Object ViewerOpenGL::insertText(int *justify,
 #endif
 
   beginGeometry();
-
-  this->text3(justify, size, n, s);
-
+  glShadeModel( GL_FLAT );
+  glDisable( GL_CULL_FACE );
+  float x = 0.0, y = 0.0;
+  float nextLine;
+  float xmin,xmax,ymin,ymax;
+  float width,height;
+  GLfloat escalex = 1.0, escaley = 1.0;
+  int tlength=0, tindex = 0;
+  for (size_t j=0; j < strarraysize; ++j){
+   if(string[j].length() > 0){
+    if(string[j].length() > tlength){
+     tlength = string[j].length();
+     tindex = j;
+    }
+   }
+  }
+  fface.getBbox(string[tindex],xmin,ymin,xmax,ymax);
+  width = xmax - xmin;
+  height = ymax - ymin;
+  if (maxExtent != 0.0){
+   if(fface.getHorizontal()){
+    if(width > maxExtent)
+    escalex = maxExtent/width;
+   }
+   else {
+    if(height > maxExtent)
+    escaley = maxExtent/height;
+   }
+  }
+  for (size_t i=0; i < strarraysize; ++i) {
+    if ( string[i].length() > 0 ){
+     GLfloat transx = x, transy = y;
+     GLfloat scalex = 1.0, scaley = 1.0;
+     float cwidth,cheight;
+     int text_index = 0;
+     GLfloat stepx = 0.0, stepy = 0.0;
+     float advx = 0.0, advy = 0.0;
+     std::string text = string[i];
+     int slength = text.length();
+     fface.getBbox(text,xmin,ymin,xmax,ymax);
+     width = xmax - xmin;
+     height = ymax - ymin;
+     if(length && i < lsize && (length[i] != 0.0)){
+       if(fface.getHorizontal())
+         scalex = length[i]/width;
+       else 
+         scaley = length[i]/height;     
+     }
+     scalex = escalex * scalex;
+     scaley = escaley * scaley;
+     const std::string * justify = fface.getJustify();
+     if (fface.getHorizontal()) {
+       cwidth = width/slength;
+       cheight = height;
+       if (!fface.getLeftToRight())
+           text_index = slength - 1;
+       if ((justify[0] == "BEGIN" || justify[0] == "FIRST") && 
+           (!fface.getLeftToRight())) 
+           transx = x - width;
+       else if (justify[0] == "MIDDLE") 
+           transx = x - width/2.0;
+       else if (justify[0] == "END" && fface.getLeftToRight()) 
+           transx = x - width;
+           if (fface.getTopToBottom()) {
+             if (justify[1] == "BEGIN")
+               transy = y - height;
+             else if (justify[1] == "MIDDLE")
+               transy = y - height/2.0;
+           }
+           else {
+              if (justify[1] == "END")
+               transy = y - height;
+              else if (justify[1] == "MIDDLE")
+               transy = y - height/2.0;           
+           }
+     }
+     else {
+       cwidth = width;
+       cheight = height/slength;
+       if (fface.getTopToBottom())
+           text_index = slength - 1;
+       if ((justify[0] == "BEGIN" || justify[0] == "FIRST") && 
+           (fface.getTopToBottom())) 
+           transy = y - height;
+       else if (justify[0] == "MIDDLE") 
+           transy = y - height/2.0;
+       else if (justify[0] == "END" && !fface.getTopToBottom()) 
+           transy = y - height;
+           if (fface.getLeftToRight()) {
+             if (justify[1] == "END")
+               transx = x - width;
+             else if (justify[1] == "MIDDLE")
+               transx = x - width/2.0;
+           }
+           else {
+              if (justify[1] == "BEGIN" || justify[1] == "FIRST")
+               transx = x - width;
+             else if (justify[1] == "MIDDLE")
+               transx = x - height/2.0;           
+           }
+     }
+     this->modelviewMatrixStack.push();
+     glTranslatef(transx*scalex, transy*scaley, 0.0);
+     glScalef(scalex,scaley,1.0);
+     for (int j=0; j < slength; j++){
+     unsigned char ch = text[text_index];                   
+     const FontVectoriser *fVector = fface.getVectoriser(ch);
+     if(!fVector) return 0;
+     glFrontFace(fVector->getOrientation() ? GL_CW : GL_CCW );
+     ViewerOpenGL::TextData td = {cwidth,cheight};
+     glNormal3f(0.0,0.0,1.0);
+     this->insertTextTess(*fVector,td);
+     if(fface.getHorizontal()){
+       stepx = fVector->getHoriadvance();
+       if(fface.getLeftToRight())
+         text_index++;
+        else
+         text_index--;
+      }
+      else{
+       stepy = fVector->getVertadvance();
+       if(fface.getTopToBottom())
+         text_index--;
+       else
+         text_index++;
+      }
+      glTranslatef(stepx,stepy,0.0);
+      advx += stepx;
+      advy += stepy;
+     }
+     this->modelviewMatrixStack.pop();
+     }
+     if(fface.getHorizontal()){
+       nextLine = fface.getAdvanceHeight();
+       if(fface.getTopToBottom())
+         y-=nextLine;
+       else
+         y+=nextLine;
+    }
+    else {
+       nextLine = fface.getAdvanceWidth();
+       if(fface.getLeftToRight())
+        x+=nextLine;
+       else
+        x-=nextLine;
+    }
+   }
   endGeometry();
   if (glid) glEndList();
+
+#endif              // HAVE_OPENVRML_FREETYPEFONTS
 
   return (Object) glid;
 }
@@ -3403,7 +3645,7 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
   //      glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
 
         //
-        // make modelview as an unit matrix as this is taken care in the core side
+        // make modelview as a unit matrix as this is taken care in the core side
         // during render traversal.
         //
         for (int i = 0; i < 4; ++i) {
@@ -3543,41 +3785,6 @@ void ViewerOpenGL::text2( int x, int y, float scale, char* text )
   glMatrixMode(GL_PROJECTION);
   glPopMatrix();
   glMatrixMode(GL_MODELVIEW);
-# endif
-}
-
-void ViewerOpenGL::text3(int *justify, float size, int n, const char * const *s)
-{
-# ifdef OPENVRML_HAVE_GLUT
-  float font_scale = 0.005 * size;
-
-  glPushAttrib(GL_ENABLE_BIT);
-  glDisable(GL_LIGHTING);
-  glDisable(GL_TEXTURE_2D);
-
-  GLfloat x = 0.0, y = 0.0;
-
-  if (justify[0] < 0)
-    x -= strlen(s[0]);
-  else if (justify[0] == 0)
-    x -= 0.5 * strlen(s[0]);
-
-  float font_height = 1.0;
-  for (int i=0; i<n; ++i, y-=font_height)
-    {
-      const char *textLine = s[i];
-      if ( textLine )
-        {
-          this->modelviewMatrixStack.push();
-          glTranslatef(x, y, 0.0);
-          glScalef(font_scale, font_scale, font_scale);
-          while (*textLine)
-            glutStrokeCharacter(GLUT_STROKE_ROMAN, *textLine++);
-          this->modelviewMatrixStack.pop();
-        }
-    }
-
-  glPopAttrib();
 # endif
 }
 

@@ -66,6 +66,10 @@ namespace OpenVRML {
                 size_t nf, i;
             };
 
+            struct TextData {
+                 float cwidth,cheight; // width and height of a character
+            };
+
             // Event types
             enum EventType {
                 EVENT_KEY_DOWN,
@@ -191,11 +195,13 @@ namespace OpenVRML {
 
             // Text rendering
             void text2(int x, int y, float scale, char *text);
-            void text3(int *justify, float size, int n, const char * const * s);
 
             // IndexedFaceSet helpers
             void insertShellConvex(ShellData *);
             void insertShellTess(ShellData *);
+
+            // Text helpers
+            void insertTextTess(const FontVectoriser &, TextData &);
 
             // User interaction
             void step(float, float, float);
@@ -285,7 +291,11 @@ namespace OpenVRML {
 
             virtual Object insertSphere(float radius);
 
-            virtual Object insertText(int *, float, int n, char const * const * s);
+            virtual Object insertText(FontFace &  fface, 
+                                      size_t strarraysize, 
+                                      const std::string * string,
+                                      size_t lsize, const float length[], 
+                                      float maxextent);
 
             // Lights
             virtual Object insertDirLight(float a, float i, const float rgb[], const float xyz[]);
