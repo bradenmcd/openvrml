@@ -84,7 +84,6 @@ AC_DEFUN(OV_PATH_MOZJS,
       if test "X$have_mozjs" = "Xyes"; then
         AC_MSG_RESULT([yes])
         no_mozjs=""
-        AC_DEFINE(HAVE_MOZJS, , [defined if libmozjs is available and should be used])
         ifelse([$1], , :, [$1])
       else
         AC_MSG_RESULT([no])

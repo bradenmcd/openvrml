@@ -58,7 +58,10 @@ fi
 
 OV_PATH_LIBJPEG(, AC_MSG_ERROR([libjpeg not found.  Use '--with-libjpeg=PREFIX' to locate the library or '--without-libjpeg' to build without JPEG support.]))
 OV_PATH_LIBPNG(, AC_MSG_ERROR([libpng not found.  Use '--with-libpng=PREFIX' to locate the library or '--without-libpng' to build without PNG support.]))
-OV_PATH_MOZJS(, AC_MSG_ERROR([SpiderMonkey (libmozjs) not found.  Use '--with-mozjs=PREFIX' to locate the library or '--without-mozjs' to build without JavaScript support.]))
+OV_PATH_MOZJS(
+  AC_DEFINE(OPENVRML_HAVE_JS, , [defined if libmozjs is available and should be used]),
+  AC_MSG_ERROR([SpiderMonkey (libmozjs) not found.  Use '--with-mozjs=PREFIX' to locate the library or '--without-mozjs' to build without JavaScript support.])
+)
 
 dnl
 dnl Check for X, GL/Mesa, glut
