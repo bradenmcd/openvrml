@@ -1,5 +1,16 @@
 2004-12-29 Braden McDaniel  <braden@endoframe.com>
 
+	Updated package version to 0.15.4.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* mozilla-plugin/configure.ac
+
+2004-12-29 Braden McDaniel  <braden@endoframe.com>
+
 	* openvrml.spec.in:  Fixed name of xorg-x11-devel prerequisite
 	for the openvrml-gl-devel package.
 
