@@ -1,3 +1,9 @@
+2000-01-19  S. K. Bose <bose@pavan.barc.ernet.in>
+
+        * Incorporated additions in System.cpp to support "http" under windows 
+	  and also replaced "System::" with "theSystem->" to support virtual 
+          function-call mechanism.
+ 
 2000-01-16  Braden McDaniel <braden@endoframe.com>
 
         * Submissions from S. K. Bose <bose@pavan.barc.ernet.in>: Added "std::"
