@@ -2800,7 +2800,7 @@ namespace {
         iterator erase(iterator pos)
         {
             if (pos + 1 != this->end()) {
-                for (iterator i(pos + 1), j(pos); i != this->end(); ++i, ++i) {
+                for (iterator i(pos + 1), j(pos); i != this->end(); ++i, ++j) {
                     std::copy(*i, *i + ArraySize, *j);
                 }
             }
