@@ -1,3 +1,12 @@
+2003-08-28  Braden McDaniel  <braden@endoframe.com>
+
+	Style sheet modifications to accommodate changes to Doxygen.
+
+	* doc/Doxyfile:  Generate default style sheet.
+	* doc/doxygen-header:  Moved style sheet to <style> element included
+	in the generated documentation.
+	* doc/openvrml.css:  Removed file.
+
 2003-08-25  Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment improvements.
