@@ -8997,6 +8997,82 @@ const NodeTypePtr
  */
 
 /**
+ * @var PlaneSensor::PlaneSensorClass
+ *
+ * @brief Class object for PlaneSensor instances.
+ */
+
+/**
+ * @var SFBool PlaneSensor::autoOffset
+ *
+ * @brief autoOffset exposedField.
+ */
+
+/**
+ * @var SFBool PlaneSensor::enabled
+ *
+ * @brief enabled exposedField.
+ */
+
+/**
+ * @var SFVec2f PlaneSensor::maxPosition
+ *
+ * @brief maxPosition exposedField.
+ */
+
+/**
+ * @var SFVec2f PlaneSensor::minPosition
+ *
+ * @brief minPosition exposedField.
+ */
+
+/**
+ * @var SFVec3f PlaneSensor::offset
+ *
+ * @brief offset exposedField.
+ */
+
+/**
+ * @var SFBool PlaneSensor::active
+ *
+ * @brief isActive eventOut.
+ */
+
+/**
+ * @var SFVec3f PlaneSensor::trackPoint
+ *
+ * @brief trackPoint_changed eventOut.
+ */
+
+/**
+ * @var SFVec3f PlaneSensor::translation
+ *
+ * @brief translation_changed eventOut.
+ */
+
+/**
+ * @var SFVec3f PlaneSensor::activationPoint
+ *
+ * @brief The point at which the PlaneSensor was activated.
+ */
+
+/**
+ * @var Node * PlaneSensor::parentTransform
+ *
+ * @brief The parent Transform.
+ */
+
+/**
+ * @var VrmlMatrix PlaneSensor::activationMatrix
+ */
+
+/**
+ * @var VrmlMatrix PlaneSensor::modelview
+ *
+ * @brief The modelview matrix.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with the node.
@@ -9004,35 +9080,56 @@ const NodeTypePtr
  */
 PlaneSensor::PlaneSensor(const NodeType & nodeType,
                          const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        autoOffset(true),
-        enabled(true),
-        maxPosition(-1.0, -1.0),
-        minPosition(0.0, 0.0),
-        offset(0.0, 0.0, 0.0),
-        active(false),
-        parentTransform(0) {
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    autoOffset(true),
+    enabled(true),
+    maxPosition(-1.0, -1.0),
+    minPosition(0.0, 0.0),
+    offset(0.0, 0.0, 0.0),
+    active(false),
+    parentTransform(0)
+{
     this->setModified();
 }
 
 /**
  * @brief Destructor.
  */
-PlaneSensor::~PlaneSensor() throw () {}
+PlaneSensor::~PlaneSensor() throw ()
+{}
 
-PlaneSensor* PlaneSensor::toPlaneSensor() const
-{ return (PlaneSensor*) this; }
+/**
+ * @brief Cast to a PlaneSensor.
+ *
+ * @return a pointer to the PlaneSensor.
+ */
+PlaneSensor * PlaneSensor::toPlaneSensor() const
+{
+    return (PlaneSensor*) this;
+}
 
 /**
  * Cache a pointer to (one of the) parent transforms for converting
  * hits into local coords.
  */
-void PlaneSensor::accumulateTransform(Node * const parent) {
+void PlaneSensor::accumulateTransform(Node * const parent)
+{
     this->parentTransform = parent;
 }
 
-Node* PlaneSensor::getParentTransform() { return this->parentTransform; }
+/**
+ * @brief Get the nearest ancestor node that affects the modelview transform.
+ *
+ * Doesn't work for nodes with more than one parent.
+ *
+ * @return the nearest ancestor node that affects the modelview
+ *      transform.
+ */
+Node * PlaneSensor::getParentTransform()
+{
+    return this->parentTransform;
+}
 
 /**
  * @brief Render the node.
@@ -9056,7 +9153,8 @@ void PlaneSensor::render(Viewer & viewer, const VrmlRenderContext context)
  * need to convert p to local coords for each instance (DEF/USE) of the
  * sensor...
  */
-void PlaneSensor::activate(double timeStamp, bool isActive, double * p) {
+void PlaneSensor::activate(double timeStamp, bool isActive, double * p)
+{
     // Become active
     if (isActive && !this->active.get()) {
         this->active.set(isActive);
@@ -9230,9 +9328,10 @@ PointLightClass::~PointLightClass() throw () {}
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        PointLightClass::createType(const std::string & id,
-                                    const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+PointLightClass::createType(const std::string & id,
+                            const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation"),
@@ -9311,6 +9410,30 @@ const NodeTypePtr
  */
 
 /**
+ * @var PointLight::PointLightClass
+ *
+ * @brief Class object for PointLight instances.
+ */
+
+/**
+ * @var SFVec3f PointLight::attenuation
+ *
+ * @brief attenuation exposedField.
+ */
+
+/**
+ * @var SFVec3f PointLight::location
+ *
+ * @brief location exposedField.
+ */
+
+/**
+ * @var SFFloat PointLight::radius
+ *
+ * @brief radius exposedField.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param nodeType  the NodeType associated with the node instance.
@@ -9318,23 +9441,32 @@ const NodeTypePtr
  */
 PointLight::PointLight(const NodeType & nodeType,
                        const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractLight(nodeType, scope),
-        attenuation(1.0, 0.0, 0.0),
-        location(0.0, 0.0, 0.0),
-        radius(100) {}
+    Node(nodeType, scope),
+    AbstractLight(nodeType, scope),
+    attenuation(1.0, 0.0, 0.0),
+    location(0.0, 0.0, 0.0),
+    radius(100)
+{}
 
 /**
  * @brief Destructor.
  */
-PointLight::~PointLight() throw () {
+PointLight::~PointLight() throw ()
+{
     if (this->getScene()) {
         this->getScene()->browser.removeScopedLight(*this);
     }
 }
 
+/**
+ * @brief Cast to a PointLight.
+ *
+ * @return a pointer to the PointLight.
+ */
 PointLight* PointLight::toPointLight() const
-{ return (PointLight*) this; }
+{
+    return (PointLight*) this;
+}
 
 /**
  * @brief Render the scoped light.
@@ -9366,7 +9498,8 @@ void PointLight::renderScoped(Viewer * const viewer)
  *
  * @param timestamp the current time.
  */
-void PointLight::initializeImpl(const double timestamp) throw () {
+void PointLight::initializeImpl(const double timestamp) throw ()
+{
     assert(this->getScene());
     this->getScene()->browser.addScopedLight(*this);
 }
@@ -9381,7 +9514,8 @@ void PointLight::initializeImpl(const double timestamp) throw () {
  */
 void PointLight::processSet_attenuation(const FieldValue & sfvec3f,
                                         const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->attenuation = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->emitEvent("attenuation_changed", this->attenuation, timestamp);
@@ -9397,7 +9531,8 @@ void PointLight::processSet_attenuation(const FieldValue & sfvec3f,
  */
 void PointLight::processSet_location(const FieldValue & sfvec3f,
                                      const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->location = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->emitEvent("location_changed", this->location, timestamp);
@@ -9413,7 +9548,8 @@ void PointLight::processSet_location(const FieldValue & sfvec3f,
  */
 void PointLight::processSet_radius(const FieldValue & sffloat,
                                    const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->radius = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("radius_changed", this->radius, timestamp);
@@ -9432,12 +9568,14 @@ void PointLight::processSet_radius(const FieldValue & sffloat,
  * @param browser the Browser associated with this NodeClass.
  */
 PointSetClass::PointSetClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-PointSetClass::~PointSetClass() throw () {}
+PointSetClass::~PointSetClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -9453,7 +9591,8 @@ PointSetClass::~PointSetClass() throw () {}
  */
 const NodeTypePtr PointSetClass::createType(const std::string & id,
                                             const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "color"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "coord")
@@ -9523,15 +9662,17 @@ const NodeTypePtr PointSetClass::createType(const std::string & id,
  */
 PointSet::PointSet(const NodeType & nodeType,
                    const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractGeometry(nodeType, scope) {
+    Node(nodeType, scope),
+    AbstractGeometry(nodeType, scope)
+{
     this->setBVolumeDirty(true);
 }
 
 /**
  * @brief Destructor.
  */
-PointSet::~PointSet() throw () {}
+PointSet::~PointSet() throw ()
+{}
 
 /**
  * @brief Determine whether the node has been modified.
@@ -9539,7 +9680,8 @@ PointSet::~PointSet() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool PointSet::isModified() const {
+bool PointSet::isModified() const
+{
     return (d_modified
             || (this->color.get() && this->color.get()->isModified())
             || (this->coord.get() && this->coord.get()->isModified()));
@@ -9552,7 +9694,8 @@ bool PointSet::isModified() const {
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void PointSet::updateModified(NodePath & path, int flags) {
+void PointSet::updateModified(NodePath & path, int flags)
+{
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->color.get()) { this->color.get()->updateModified(path); }
@@ -9603,7 +9746,8 @@ Viewer::Object PointSet::insertGeometry(Viewer & viewer,
 /**
  * @brief Recalculate the bounding volume.
  */
-void PointSet::recalcBSphere() {
+void PointSet::recalcBSphere()
+{
     this->bsphere.reset();
     CoordinateNode * const coordinateNode = this->coord.get()
                                           ? this->coord.get()->toCoordinate()
@@ -9622,7 +9766,8 @@ void PointSet::recalcBSphere() {
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume* PointSet::getBVolume() const {
+const BVolume* PointSet::getBVolume() const
+{
     if (this->isBVolumeDirty()) {
         ((PointSet*)this)->recalcBSphere();
     }
@@ -9640,7 +9785,8 @@ const BVolume* PointSet::getBVolume() const {
  */
 void PointSet::processSet_color(const FieldValue & sfnode,
                                 const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->color = dynamic_cast<const SFNode &>(sfnode);
     this->setModified();
     this->emitEvent("color_changed", this->color, timestamp);
@@ -9657,7 +9803,8 @@ void PointSet::processSet_color(const FieldValue & sfnode,
  */
 void PointSet::processSet_coord(const FieldValue & sfnode,
                                 const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->coord = dynamic_cast<const SFNode &>(sfnode);
     this->setModified();
     this->emitEvent("coord_changed", this->coord, timestamp);
@@ -9676,12 +9823,14 @@ void PointSet::processSet_coord(const FieldValue & sfnode,
  * @param browser the Browser associated with this NodeClass.
  */
 PositionInterpolatorClass::PositionInterpolatorClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-PositionInterpolatorClass::~PositionInterpolatorClass() throw () {}
+PositionInterpolatorClass::~PositionInterpolatorClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -9693,13 +9842,14 @@ PositionInterpolatorClass::~PositionInterpolatorClass() throw () {}
  *      CoordinateInterpolator nodes.
  *
  * @exception UnsupportedInterface  if @p interfaces includes an interface not
- *                              supported by CoordinateInterpolatorClass.
+ *                                  supported by CoordinateInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr PositionInterpolatorClass::
-        createType(const std::string & id,
-                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+const NodeTypePtr
+PositionInterpolatorClass::createType(const std::string & id,
+                                      const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
         NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
@@ -9783,13 +9933,15 @@ const NodeTypePtr PositionInterpolatorClass::
  */
 PositionInterpolator::PositionInterpolator(const NodeType & nodeType,
                                            const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope) {}
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope)
+{}
 
 /**
  * @brief Destructor.
  */
-PositionInterpolator::~PositionInterpolator() throw () {}
+PositionInterpolator::~PositionInterpolator() throw ()
+{}
 
 /**
  * @brief set_fraction eventIn handler.
@@ -9802,7 +9954,8 @@ PositionInterpolator::~PositionInterpolator() throw () {}
  */
 void PositionInterpolator::processSet_fraction(const FieldValue & sffloat,
                                                const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     float f = dynamic_cast<const SFFloat &>(sffloat).get();
 
     int n = this->key.getLength() - 1;
@@ -9844,7 +9997,8 @@ void PositionInterpolator::processSet_fraction(const FieldValue & sffloat,
  */
 void PositionInterpolator::processSet_key(const FieldValue & mffloat,
                                           const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->key = dynamic_cast<const MFFloat &>(mffloat);
     this->emitEvent("key_changed", this->key, timestamp);
 }
@@ -9860,7 +10014,8 @@ void PositionInterpolator::processSet_key(const FieldValue & mffloat,
  */
 void PositionInterpolator::processSet_keyValue(const FieldValue & mfvec3f,
                                                const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->keyValue = dynamic_cast<const MFVec3f &>(mfvec3f);
     this->emitEvent("keyValue_changed", this->keyValue, timestamp);
 }
@@ -9878,12 +10033,14 @@ void PositionInterpolator::processSet_keyValue(const FieldValue & mfvec3f,
  * @param browser the Browser associated with this NodeClass.
  */
 ProximitySensorClass::ProximitySensorClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-ProximitySensorClass::~ProximitySensorClass() throw () {}
+ProximitySensorClass::~ProximitySensorClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -9899,9 +10056,10 @@ ProximitySensorClass::~ProximitySensorClass() throw () {}
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        ProximitySensorClass::createType(const std::string & id,
-                                         const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+ProximitySensorClass::createType(const std::string & id,
+                                 const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "center"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "size"),
@@ -10044,22 +10202,24 @@ const NodeTypePtr
  */
 ProximitySensor::ProximitySensor(const NodeType & nodeType,
                                  const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        center(0.0, 0.0, 0.0),
-        enabled(true),
-        size(0.0, 0.0, 0.0),
-        active(false),
-        position(0.0, 0.0, 0.0),
-        enterTime(0.0),
-        exitTime(0.0) {
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    center(0.0, 0.0, 0.0),
+    enabled(true),
+    size(0.0, 0.0, 0.0),
+    active(false),
+    position(0.0, 0.0, 0.0),
+    enterTime(0.0),
+    exitTime(0.0)
+{
     this->setModified();
 }
 
 /**
  * @brief Destructor.
  */
-ProximitySensor::~ProximitySensor() throw () {}
+ProximitySensor::~ProximitySensor() throw ()
+{}
 
 /**
  * @brief Render the node: generate proximity events.
@@ -10161,7 +10321,8 @@ void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
  */
 void ProximitySensor::processSet_center(const FieldValue & sfvec3f,
                                         const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->center = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->emitEvent("center_changed", this->center, timestamp);
@@ -10177,7 +10338,8 @@ void ProximitySensor::processSet_center(const FieldValue & sfvec3f,
  */
 void ProximitySensor::processSet_size(const FieldValue & sfvec3f,
                                       const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->size = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->emitEvent("size_changed", this->size, timestamp);
@@ -10193,7 +10355,8 @@ void ProximitySensor::processSet_size(const FieldValue & sfvec3f,
  */
 void ProximitySensor::processSet_enabled(const FieldValue & sfbool,
                                          double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->enabled = dynamic_cast<const SFBool &>(sfbool);
     this->setModified();
     this->emitEvent("enabled_changed", this->enabled, timestamp);
@@ -10212,12 +10375,14 @@ void ProximitySensor::processSet_enabled(const FieldValue & sfbool,
  * @param browser the Browser associated with this NodeClass.
  */
 ScalarInterpolatorClass::ScalarInterpolatorClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-ScalarInterpolatorClass::~ScalarInterpolatorClass() throw () {}
+ScalarInterpolatorClass::~ScalarInterpolatorClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -10232,10 +10397,11 @@ ScalarInterpolatorClass::~ScalarInterpolatorClass() throw () {}
  *                              supported by CoordinateInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr ScalarInterpolatorClass::
-        createType(const std::string & id,
-                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+const NodeTypePtr
+ScalarInterpolatorClass::createType(const std::string & id,
+                                    const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::eventIn, FieldValue::sffloat, "set_fraction"),
         NodeInterface(NodeInterface::exposedField, FieldValue::mffloat, "key"),
@@ -10339,7 +10505,8 @@ ScalarInterpolator::~ScalarInterpolator() throw ()
  */
 void ScalarInterpolator::processSet_fraction(const FieldValue & sffloat,
                                              const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     float f = dynamic_cast<const SFFloat &>(sffloat).get();
 
     int n = this->key.getLength() - 1;
@@ -10376,7 +10543,8 @@ void ScalarInterpolator::processSet_fraction(const FieldValue & sffloat,
  */
 void ScalarInterpolator::processSet_key(const FieldValue & mffloat,
                                         const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->key = dynamic_cast<const MFFloat &>(mffloat);
     this->emitEvent("key_changed", this->key, timestamp);
 }
@@ -10392,7 +10560,8 @@ void ScalarInterpolator::processSet_key(const FieldValue & mffloat,
  */
 void ScalarInterpolator::processSet_keyValue(const FieldValue & mffloat,
                                              const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->keyValue = dynamic_cast<const MFFloat &>(mffloat);
     this->emitEvent("keyValue_changed", this->keyValue, timestamp);
 }
@@ -10410,12 +10579,14 @@ void ScalarInterpolator::processSet_keyValue(const FieldValue & mffloat,
  * @param browser the Browser associated with this NodeClass.
  */
 ShapeClass::ShapeClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-ShapeClass::~ShapeClass() throw () {}
+ShapeClass::~ShapeClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -10431,7 +10602,8 @@ ShapeClass::~ShapeClass() throw () {}
  */
 const NodeTypePtr ShapeClass::createType(const std::string & id,
                                          const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "appearance"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sfnode, "geometry")
@@ -10524,7 +10696,8 @@ Shape::~Shape() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool Shape::isModified() const {
+bool Shape::isModified() const
+{
     return (d_modified
             || (this->geometry.get() && this->geometry.get()->isModified())
             || (this->appearance.get() && this->appearance.get()->isModified()));
@@ -10537,7 +10710,8 @@ bool Shape::isModified() const {
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void Shape::updateModified(NodePath & path, int flags) {
+void Shape::updateModified(NodePath & path, int flags)
+{
     if (this->isModified()) { markPathModified(path, true, flags); }
     path.push_front(this);
     if (this->appearance.get()) {
@@ -10609,7 +10783,8 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume* Shape::getBVolume() const {
+const BVolume* Shape::getBVolume() const
+{
     //
     // just pass off to the geometry's getbvolume() method
     //
@@ -10631,7 +10806,8 @@ const BVolume* Shape::getBVolume() const {
  */
 void Shape::processSet_appearance(const FieldValue & sfnode,
                                   const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->appearance = dynamic_cast<const SFNode &>(sfnode);
     this->setModified();
     this->emitEvent("appearance_changed", this->appearance, timestamp);
@@ -10648,7 +10824,8 @@ void Shape::processSet_appearance(const FieldValue & sfnode,
  */
 void Shape::processSet_geometry(const FieldValue & sfnode,
                                 const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->geometry = dynamic_cast<const SFNode &>(sfnode);
     this->setModified();
     this->emitEvent("geometry_changed", this->geometry, timestamp);
@@ -10667,12 +10844,14 @@ void Shape::processSet_geometry(const FieldValue & sfnode,
  * @param browser the Browser associated with this NodeClass.
  */
 SoundClass::SoundClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-SoundClass::~SoundClass() throw () {}
+SoundClass::~SoundClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -10688,7 +10867,8 @@ SoundClass::~SoundClass() throw () {}
  */
 const NodeTypePtr SoundClass::createType(const std::string & id,
                                          const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "direction"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "intensity"),
@@ -10863,20 +11043,22 @@ const NodeTypePtr SoundClass::createType(const std::string & id,
  */
 Sound::Sound(const NodeType & nodeType,
              const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        direction(0, 0, 1),
-        intensity(1),
-        maxBack(10),
-        maxFront(10),
-        minBack(1),
-        minFront(1),
-        spatialize(true) {}
+    Node(nodeType, scope),
+    AbstractChild(nodeType, scope),
+    direction(0, 0, 1),
+    intensity(1),
+    maxBack(10),
+    maxFront(10),
+    minBack(1),
+    minFront(1),
+    spatialize(true)
+{}
 
 /**
  * @brief Destructor.
  */
-Sound::~Sound() throw () {}
+Sound::~Sound() throw ()
+{}
 
 /**
  * @brief Propagate the bvolume dirty flag from children to parents.
@@ -10885,7 +11067,8 @@ Sound::~Sound() throw () {}
  * @param flags 1 indicates normal modified flag, 2 indicates the
  *              bvolume dirty flag, 3 indicates both.
  */
-void Sound::updateModified(NodePath & path, int flags) {
+void Sound::updateModified(NodePath & path, int flags)
+{
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->source.get()) { this->source.get()->updateModified(path); }
@@ -10915,7 +11098,9 @@ void Sound::render(Viewer & viewer, const VrmlRenderContext context)
  * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void Sound::processSet_direction(const FieldValue & sfvec3f,
-                                 const double timestamp) throw (std::bad_cast) {
+                                 const double timestamp)
+    throw (std::bad_cast)
+{
     this->direction = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->emitEvent("direction_changed", this->direction, timestamp);
@@ -10930,7 +11115,9 @@ void Sound::processSet_direction(const FieldValue & sfvec3f,
  * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void Sound::processSet_intensity(const FieldValue & sffloat,
-                                 const double timestamp) throw (std::bad_cast) {
+                                 const double timestamp)
+    throw (std::bad_cast)
+{
     this->intensity = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("intensity_changed", this->intensity, timestamp);
@@ -10945,7 +11132,9 @@ void Sound::processSet_intensity(const FieldValue & sffloat,
  * @exception std::bad_cast if @p sfvec3f is not an SFVec3f.
  */
 void Sound::processSet_location(const FieldValue & sfvec3f,
-                                const double timestamp) throw (std::bad_cast) {
+                                const double timestamp)
+    throw (std::bad_cast)
+{
     this->location = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->emitEvent("location_changed", this->location, timestamp);
@@ -10960,7 +11149,9 @@ void Sound::processSet_location(const FieldValue & sfvec3f,
  * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void Sound::processSet_maxBack(const FieldValue & sffloat,
-                               const double timestamp) throw (std::bad_cast) {
+                               const double timestamp)
+    throw (std::bad_cast)
+{
     this->maxBack = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("maxBack_changed", this->maxBack, timestamp);
@@ -10975,7 +11166,9 @@ void Sound::processSet_maxBack(const FieldValue & sffloat,
  * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void Sound::processSet_maxFront(const FieldValue & sffloat,
-                                const double timestamp) throw (std::bad_cast) {
+                                const double timestamp)
+    throw (std::bad_cast)
+{
     this->maxFront = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("maxFront_changed", this->maxFront, timestamp);
@@ -10990,7 +11183,9 @@ void Sound::processSet_maxFront(const FieldValue & sffloat,
  * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void Sound::processSet_minBack(const FieldValue & sffloat,
-                               const double timestamp) throw (std::bad_cast) {
+                               const double timestamp)
+    throw (std::bad_cast)
+{
     this->minBack = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("minBack_changed", this->minBack, timestamp);
@@ -11005,7 +11200,9 @@ void Sound::processSet_minBack(const FieldValue & sffloat,
  * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void Sound::processSet_minFront(const FieldValue & sffloat,
-                                const double timestamp) throw (std::bad_cast) {
+                                const double timestamp)
+    throw (std::bad_cast)
+{
     this->minFront = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("minFront_changed", this->minFront, timestamp);
@@ -11020,7 +11217,9 @@ void Sound::processSet_minFront(const FieldValue & sffloat,
  * @exception std::bad_cast if @p sffloat is not an SFFloat.
  */
 void Sound::processSet_priority(const FieldValue & sffloat,
-                                const double timestamp) throw (std::bad_cast) {
+                                const double timestamp)
+    throw (std::bad_cast)
+{
     this->priority = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("priority_changed", this->priority, timestamp);
@@ -11035,7 +11234,8 @@ void Sound::processSet_priority(const FieldValue & sffloat,
  * @exception std::bad_cast if @p sfnode is not an SFNode.
  */
 void Sound::processSet_source(const FieldValue & sfnode, double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->source = dynamic_cast<const SFNode &>(sfnode);
     this->setModified();
     this->emitEvent("source_changed", this->source, timestamp);
@@ -11054,12 +11254,14 @@ void Sound::processSet_source(const FieldValue & sfnode, double timestamp)
  * @param browser the Browser associated with this NodeClass.
  */
 SphereClass::SphereClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-SphereClass::~SphereClass() throw () {}
+SphereClass::~SphereClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -11075,7 +11277,8 @@ SphereClass::~SphereClass() throw () {}
  */
 const NodeTypePtr SphereClass::createType(const std::string & id,
                                           const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterface =
             NodeInterface(NodeInterface::field, FieldValue::sffloat, "radius");
     const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Sphere>(*this, id));
@@ -11129,16 +11332,18 @@ const NodeTypePtr SphereClass::createType(const std::string & id,
  */
 Sphere::Sphere(const NodeType & nodeType,
                const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractGeometry(nodeType, scope),
-        radius(1.0) {
+    Node(nodeType, scope),
+    AbstractGeometry(nodeType, scope),
+    radius(1.0)
+{
     this->setBVolumeDirty(true); // lazy calc of bvolumes
 }
 
 /**
  * @brief Destructor.
  */
-Sphere::~Sphere() throw () {}
+Sphere::~Sphere() throw ()
+{}
 
 /**
  * @brief Insert this geometry into @p viewer's display list.
@@ -11157,7 +11362,8 @@ Viewer::Object Sphere::insertGeometry(Viewer & viewer,
  *
  * @return the bounding volume associated with the node.
  */
-const BVolume * Sphere::getBVolume() const {
+const BVolume * Sphere::getBVolume() const
+{
     if (this->isBVolumeDirty()) {
         ((Sphere*)this)->bsphere.setRadius(this->radius.get());
         ((Node*)this)->setBVolumeDirty(false); // logical const
@@ -11178,12 +11384,14 @@ const BVolume * Sphere::getBVolume() const {
  * @param browser the Browser associated with this NodeClass.
  */
 SphereSensorClass::SphereSensorClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-SphereSensorClass::~SphereSensorClass() throw () {}
+SphereSensorClass::~SphereSensorClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -11198,9 +11406,10 @@ SphereSensorClass::~SphereSensorClass() throw () {}
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        SphereSensorClass::createType(const std::string & id,
-                                      const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+SphereSensorClass::createType(const std::string & id,
+                              const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "autoOffset"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sfbool, "enabled"),
@@ -11473,7 +11682,8 @@ bool SphereSensor::isEnabled() const throw ()
  */
 void SphereSensor::processSet_autoOffset(const FieldValue & sfbool,
                                          const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->autoOffset = dynamic_cast<const SFBool &>(sfbool);
     this->emitEvent("autoOffset_changed", this->autoOffset, timestamp);
 }
@@ -11488,7 +11698,8 @@ void SphereSensor::processSet_autoOffset(const FieldValue & sfbool,
  */
 void SphereSensor::processSet_enabled(const FieldValue & sfbool,
                                       const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->enabled = dynamic_cast<const SFBool &>(sfbool);
     this->emitEvent("enabled_changed", this->enabled, timestamp);
 }
@@ -11503,7 +11714,8 @@ void SphereSensor::processSet_enabled(const FieldValue & sfbool,
  */
 void SphereSensor::processSet_offset(const FieldValue & sfrotation,
                                      const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->offset = dynamic_cast<const SFRotation &>(sfrotation);
     this->emitEvent("offset_changed", this->offset, timestamp);
 }
@@ -11520,12 +11732,15 @@ void SphereSensor::processSet_offset(const FieldValue & sfrotation,
  *
  * @param browser the Browser associated with this NodeClass.
  */
-SpotLightClass::SpotLightClass(Browser & browser): NodeClass(browser) {}
+SpotLightClass::SpotLightClass(Browser & browser):
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-SpotLightClass::~SpotLightClass() throw () {}
+SpotLightClass::~SpotLightClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
@@ -11540,9 +11755,10 @@ SpotLightClass::~SpotLightClass() throw () {}
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const NodeTypePtr
-        SpotLightClass::createType(const std::string & id,
-                                   const NodeInterfaceSet & interfaces)
-        throw (UnsupportedInterface, std::bad_alloc) {
+SpotLightClass::createType(const std::string & id,
+                           const NodeInterfaceSet & interfaces)
+    throw (UnsupportedInterface, std::bad_alloc)
+{
     static const NodeInterface supportedInterfaces[] = {
         NodeInterface(NodeInterface::exposedField, FieldValue::sffloat, "ambientIntensity"),
         NodeInterface(NodeInterface::exposedField, FieldValue::sfvec3f, "attenuation"),
@@ -11694,19 +11910,21 @@ const NodeTypePtr
  */
 SpotLight::SpotLight(const NodeType & nodeType,
                      const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractLight(nodeType, scope),
-        attenuation(1.0, 0.0, 0.0),
-        beamWidth(1.570796),
-        cutOffAngle(0.785398),
-        direction(0.0, 0.0, -1.0),
-        location(0.0, 0.0, 0.0),
-        radius(100) {}
+    Node(nodeType, scope),
+    AbstractLight(nodeType, scope),
+    attenuation(1.0, 0.0, 0.0),
+    beamWidth(1.570796),
+    cutOffAngle(0.785398),
+    direction(0.0, 0.0, -1.0),
+    location(0.0, 0.0, 0.0),
+    radius(100)
+{}
 
 /**
  * @brief Destructor.
  */
-SpotLight::~SpotLight() throw () {
+SpotLight::~SpotLight() throw ()
+{
     if (this->getScene()) {
         this->getScene()->browser.removeScopedLight(*this);
     }
@@ -11755,7 +11973,8 @@ void SpotLight::renderScoped(Viewer * viewer)
  *
  * @param timestamp the current time.
  */
-void SpotLight::initializeImpl(const double timestamp) throw () {
+void SpotLight::initializeImpl(const double timestamp) throw ()
+{
     assert(this->getScene());
     this->getScene()->browser.addScopedLight(*this);
 }
@@ -11770,7 +11989,8 @@ void SpotLight::initializeImpl(const double timestamp) throw () {
  */
 void SpotLight::processSet_attenuation(const FieldValue & sfvec3f,
                                        const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->attenuation = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->emitEvent("attenuation_changed", this->attenuation, timestamp);
@@ -11786,7 +12006,8 @@ void SpotLight::processSet_attenuation(const FieldValue & sfvec3f,
  */
 void SpotLight::processSet_beamWidth(const FieldValue & sffloat,
                                      const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->beamWidth = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("beamWidth_changed", this->beamWidth, timestamp);
@@ -11802,7 +12023,8 @@ void SpotLight::processSet_beamWidth(const FieldValue & sffloat,
  */
 void SpotLight::processSet_cutOffAngle(const FieldValue & sffloat,
                                        const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->cutOffAngle = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("cutOffAngle_changed", this->cutOffAngle, timestamp);
@@ -11818,7 +12040,8 @@ void SpotLight::processSet_cutOffAngle(const FieldValue & sffloat,
  */
 void SpotLight::processSet_direction(const FieldValue & sfvec3f,
                                      const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->direction = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->emitEvent("direction_changed", this->direction, timestamp);
@@ -11834,7 +12057,8 @@ void SpotLight::processSet_direction(const FieldValue & sfvec3f,
  */
 void SpotLight::processSet_location(const FieldValue & sfvec3f,
                                     const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->location = dynamic_cast<const SFVec3f &>(sfvec3f);
     this->setModified();
     this->emitEvent("location_changed", this->location, timestamp);
@@ -11850,7 +12074,8 @@ void SpotLight::processSet_location(const FieldValue & sfvec3f,
  */
 void SpotLight::processSet_radius(const FieldValue & sffloat,
                                   const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->radius = dynamic_cast<const SFFloat &>(sffloat);
     this->setModified();
     this->emitEvent("radius_changed", this->radius, timestamp);
@@ -11869,12 +12094,14 @@ void SpotLight::processSet_radius(const FieldValue & sffloat,
  * @param browser the Browser associated with this NodeClass.
  */
 SwitchClass::SwitchClass(Browser & browser):
-        NodeClass(browser) {}
+    NodeClass(browser)
+{}
 
 /**
  * @brief Destructor.
  */
-SwitchClass::~SwitchClass() throw () {}
+SwitchClass::~SwitchClass() throw ()
+{}
 
 /**
  * @brief Create a NodeType.
