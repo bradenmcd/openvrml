@@ -57,9 +57,7 @@ namespace {
 
             double d_timeStamp;
 
-            JSContext * d_cx;
-            JSObject * d_globalObj;
-            JSObject * d_browserObj;
+            JSContext * cx;
 
         public:
             Script(VrmlNodeScript & scriptNode, const char * source)
@@ -74,7 +72,9 @@ namespace {
             jsval vrmlFieldToJSVal(const VrmlField & f, bool protect);
 
         private:
-            void defineFields();
+            bool initVrmlClasses() throw ();
+            bool defineBrowserObject() throw ();
+            bool defineFields() throw ();
         };
     }
 }
@@ -662,8 +662,7 @@ namespace {
 
         Script::Script(VrmlNodeScript & scriptNode, const char * source)
                 throw (std::bad_alloc):
-                ScriptObject(scriptNode), d_cx(0), d_globalObj(0),
-                d_browserObj(0) {
+                ScriptObject(scriptNode), cx(0) {
 
             //
             // Initialize the runtime.
@@ -677,61 +676,56 @@ namespace {
             //
             // Initialize the context for this Script object.
             //
-            if (!(this->d_cx = JS_NewContext(rt, STACK_CHUNK_BYTES))) {
+            if (!(this->cx = JS_NewContext(rt, STACK_CHUNK_BYTES))) {
                 throw std::bad_alloc();
             }
 
             //
             // Store a pointer to this Script object in the context.
             //
-            JS_SetContextPrivate(this->d_cx, this);
+            JS_SetContextPrivate(this->cx, this);
 
-            JS_SetErrorReporter(d_cx, ErrorReporter);
+            JS_SetErrorReporter(cx, ErrorReporter);
 
             // Define the global objects (builtins, Browser, SF*, MF*) ...
-            d_globalObj = JS_NewObject( d_cx, &Global::jsclass, 0, 0 );
-            JS_InitStandardClasses( d_cx, d_globalObj );
+            JSObject * const globalObj =
+                    JS_NewObject(this->cx, &Global::jsclass, 0, 0);
+            if (!globalObj) {
+                throw std::bad_alloc();
+            }
+            
+            if (!JS_InitStandardClasses(this->cx, globalObj)) {
+                throw std::bad_alloc();
+            }
 
             static JSFunctionSpec globalFunctions[] = {
                 { "print", Global::print, 0 },
                 { 0, 0, 0 }
             };
 
-            JS_DefineFunctions( d_cx, d_globalObj, globalFunctions );
+            JS_DefineFunctions( cx, globalObj, globalFunctions );
 
             // VRML-like TRUE, FALSE syntax
-            if (! JS_DefineProperty( d_cx, d_globalObj, "FALSE",
+            if (! JS_DefineProperty( cx, globalObj, "FALSE",
 			             BOOLEAN_TO_JSVAL(false), 0, 0,
 			             JSPROP_READONLY | JSPROP_PERMANENT ))
 	      theSystem->error("JS_DefineProp FALSE failed\n");
-            if (! JS_DefineProperty( d_cx, d_globalObj, "TRUE",
+            if (! JS_DefineProperty( cx, globalObj, "TRUE",
 			             BOOLEAN_TO_JSVAL(true), 0, 0,
 			             JSPROP_READONLY | JSPROP_PERMANENT ))
 	      theSystem->error("JS_DefineProp TRUE failed\n");
 
             // Browser object
-            static JSFunctionSpec browserFunctions[] =
-                    { { "getName", Browser::getName, 0 },
-                      { "getVersion", Browser::getVersion, 0 },
-                      { "getCurrentSpeed", Browser::getCurrentSpeed, 0 },
-                      { "getCurrentFrameRate", Browser::getCurrentFrameRate, 0 },
-                      { "getWorldURL", Browser::getWorldURL, 0 },
-                      { "replaceWorld", Browser::replaceWorld, 1 },
-                      { "createVrmlFromString", Browser::createVrmlFromString, 1 },
-                      { "createVrmlFromURL", Browser::createVrmlFromURL, 3 },
-                      { "addRoute", Browser::addRoute, 4 },
-                      { "deleteRoute", Browser::deleteRoute, 4 },
-                      { "loadURL", Browser::loadURL, 2 },
-                      { "setDescription", Browser::setDescription, 1 },
-                      { 0 } };
-            d_browserObj = JS_DefineObject( d_cx, d_globalObj, "Browser",
-				          &Browser::jsclass, 0, 0 );
-
-            if (! JS_DefineFunctions( d_cx, d_browserObj, browserFunctions ))
-	      theSystem->error("JS_DefineFunctions failed\n");
-
-            // Define SF*/MF* classes
-            initVrmlClasses(this->d_cx, this->d_globalObj);
+            if (!this->defineBrowserObject()) {
+                throw std::bad_alloc();
+            }
+                
+            //
+            // Define SF*/MF* classes.
+            //
+            if (!initVrmlClasses()) {
+                throw std::bad_alloc();
+            }
 
             // Define field/eventOut vars for this script
             defineFields();
@@ -741,7 +735,7 @@ namespace {
             uintN lineno = 0;
 
             jsval rval;
-            if (! JS_EvaluateScript( d_cx, d_globalObj, source, strlen(source),
+            if (! JS_EvaluateScript( cx, globalObj, source, strlen(source),
 			             filename, lineno, &rval))
 	      theSystem->error("JS_EvaluateScript failed\n");
             
@@ -749,7 +743,7 @@ namespace {
         }
 
         Script::~Script() {
-            JS_DestroyContext(this->d_cx);
+            JS_DestroyContext(this->cx);
             if (--nInstances == 0) {
                 JS_DestroyRuntime(rt);
                 rt = 0;
@@ -766,12 +760,14 @@ namespace {
          */
         void Script::activate(double timeStamp, const char * fname,
                               const size_t argc, const VrmlField * argv[]) {
-            assert(this->d_cx);
+            assert(this->cx);
 
             jsval fval, rval;
-
+            JSObject * const globalObj = JS_GetGlobalObject(this->cx);
+            assert(globalObj);
+            
             try {
-                if (!JS_LookupProperty(d_cx, d_globalObj, fname, &fval)) {
+                if (!JS_LookupProperty(cx, globalObj, fname, &fval)) {
                     throw std::bad_alloc();
                 }
 
@@ -794,7 +790,7 @@ namespace {
                 }
 
                 JSBool ok;
-                ok = JS_CallFunctionValue(d_cx, d_globalObj, fval, argc, jsargv, &rval);
+                ok = JS_CallFunctionValue(cx, globalObj, fval, argc, jsargv, &rval);
                 //
                 // What should we do at this point if a function call fails? For now,
                 // just print a message for a debug build.
@@ -809,7 +805,7 @@ namespace {
                 // Free up args
                 for (i = 0; i < argc; ++i) {
                     if (JSVAL_IS_GCTHING(jsargv[i])) {
-                        ok = JS_RemoveRoot(d_cx, JSVAL_TO_GCTHING(jsargv[i]));
+                        ok = JS_RemoveRoot(cx, JSVAL_TO_GCTHING(jsargv[i]));
                         assert(ok);
                     }
                 }
@@ -834,6 +830,8 @@ namespace {
         jsval Script::vrmlFieldToJSVal(const VrmlField & f, const bool protect) {
 
             jsval rval;
+            JSObject * const globalObj = JS_GetGlobalObject(this->cx);
+            assert(globalObj);
 
             switch (f.fieldType()) {
             case VrmlField::SFBOOL:
@@ -841,8 +839,8 @@ namespace {
                 break;
 
             case VrmlField::SFCOLOR:
-                if (!JavaScript_::SFColor::toJsval(static_cast<const VrmlSFColor &>(f), protect,
-                                     this->d_cx, this->d_globalObj, &rval)) {
+                if (!SFColor::toJsval(static_cast<const VrmlSFColor &>(f), protect,
+                                      this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
@@ -850,15 +848,15 @@ namespace {
             case VrmlField::SFFLOAT:
                 {
 	            jsdouble * const d =
-                            JS_NewDouble(d_cx, static_cast<const VrmlSFFloat &>(f).get());
-	            if (protect) JS_AddRoot( d_cx, d );
+                            JS_NewDouble(cx, static_cast<const VrmlSFFloat &>(f).get());
+	            if (protect) JS_AddRoot( cx, d );
 	            rval = DOUBLE_TO_JSVAL( d );
                     break;
                 }
 
             case VrmlField::SFIMAGE:
-                if (!JavaScript_::SFImage::toJsval(static_cast<const VrmlSFImage &>(f), protect,
-                                     this->d_cx, this->d_globalObj, &rval)) {
+                if (!SFImage::toJsval(static_cast<const VrmlSFImage &>(f), protect,
+                                      this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
@@ -867,110 +865,110 @@ namespace {
 	        return INT_TO_JSVAL(static_cast<const VrmlSFInt32 &>(f).get());
 
             case VrmlField::SFNODE:
-                if (!JavaScript_::SFNode::toJsval(static_cast<const VrmlSFNode &>(f), protect,
-                                     this->d_cx, this->d_globalObj, &rval)) {
+                if (!SFNode::toJsval(static_cast<const VrmlSFNode &>(f), protect,
+                                     this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
             case VrmlField::SFROTATION:
-                if (!JavaScript_::SFRotation::toJsval(static_cast<const VrmlSFRotation &>(f), protect,
-                                         this->d_cx, this->d_globalObj, &rval)) {
+                if (!SFRotation::toJsval(static_cast<const VrmlSFRotation &>(f), protect,
+                                         this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
             case VrmlField::SFSTRING:
                 {
-	            JSString * s = JS_NewStringCopyZ(d_cx,
+	            JSString * s = JS_NewStringCopyZ(cx,
                                             static_cast<const VrmlSFString &>(f).get());
-	            if (protect) JS_AddRoot( d_cx, s );
+	            if (protect) JS_AddRoot( cx, s );
 	            rval = STRING_TO_JSVAL(s);
                     break;
                 }
 
             case VrmlField::SFTIME:
                 {
-	            jsdouble *d = JS_NewDouble(d_cx,
+	            jsdouble *d = JS_NewDouble(cx,
                                             static_cast<const VrmlSFTime &>(f).get());
-	            if (protect) JS_AddRoot( d_cx, d );
+	            if (protect) JS_AddRoot( cx, d );
 	            rval = DOUBLE_TO_JSVAL(d);
                     break;
                 }
 
             case VrmlField::SFVEC2F:
-                if (!JavaScript_::SFVec2f::toJsval(static_cast<const VrmlSFVec2f &>(f), protect,
-                                      this->d_cx, this->d_globalObj, &rval)) {
+                if (!SFVec2f::toJsval(static_cast<const VrmlSFVec2f &>(f), protect,
+                                      this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
             case VrmlField::SFVEC3F:
-                if (!JavaScript_::SFVec3f::toJsval(static_cast<const VrmlSFVec3f &>(f), protect,
-                                      this->d_cx, this->d_globalObj, &rval)) {
+                if (!SFVec3f::toJsval(static_cast<const VrmlSFVec3f &>(f), protect,
+                                      this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
             case VrmlField::MFCOLOR:
-                if (!JavaScript_::MFColor::toJsval(static_cast<const VrmlMFColor &>(f), protect,
-                                      this->d_cx, this->d_globalObj, &rval)) {
+                if (!MFColor::toJsval(static_cast<const VrmlMFColor &>(f), protect,
+                                      this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
             case VrmlField::MFFLOAT:
-                if (!JavaScript_::MFFloat::toJsval(static_cast<const VrmlMFFloat &>(f), protect,
-                                      this->d_cx, this->d_globalObj, &rval)) {
+                if (!MFFloat::toJsval(static_cast<const VrmlMFFloat &>(f), protect,
+                                      this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
             case VrmlField::MFINT32:
-                if (!JavaScript_::MFInt32::toJsval(static_cast<const VrmlMFInt32 &>(f), protect,
-                                      this->d_cx, this->d_globalObj, &rval)) {
+                if (!MFInt32::toJsval(static_cast<const VrmlMFInt32 &>(f), protect,
+                                      this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
             case VrmlField::MFNODE:
-                if (!JavaScript_::MFNode::toJsval(static_cast<const VrmlMFNode &>(f), protect,
-                                      this->d_cx, this->d_globalObj, &rval)) {
+                if (!MFNode::toJsval(static_cast<const VrmlMFNode &>(f), protect,
+                                     this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
             case VrmlField::MFROTATION:
-                if (!JavaScript_::MFRotation::toJsval(static_cast<const VrmlMFRotation &>(f), protect,
-                                         this->d_cx, this->d_globalObj, &rval)) {
+                if (!MFRotation::toJsval(static_cast<const VrmlMFRotation &>(f), protect,
+                                         this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
             case VrmlField::MFSTRING:
-                if (!JavaScript_::MFString::toJsval(static_cast<const VrmlMFString &>(f), protect,
-                                       this->d_cx, this->d_globalObj, &rval)) {
+                if (!MFString::toJsval(static_cast<const VrmlMFString &>(f), protect,
+                                       this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
             case VrmlField::MFTIME:
-                if (!JavaScript_::MFTime::toJsval(static_cast<const VrmlMFTime &>(f), protect,
-                                     this->d_cx, this->d_globalObj, &rval)) {
+                if (!MFTime::toJsval(static_cast<const VrmlMFTime &>(f), protect,
+                                     this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
             case VrmlField::MFVEC2F:
-                if (!JavaScript_::MFVec2f::toJsval(static_cast<const VrmlMFVec2f &>(f), protect,
-                                      this->d_cx, this->d_globalObj, &rval)) {
+                if (!MFVec2f::toJsval(static_cast<const VrmlMFVec2f &>(f), protect,
+                                      this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
 
             case VrmlField::MFVEC3F:
-                if (!JavaScript_::MFVec3f::toJsval(static_cast<const VrmlMFVec3f &>(f), protect,
-                                      this->d_cx, this->d_globalObj, &rval)) {
+                if (!MFVec3f::toJsval(static_cast<const VrmlMFVec3f &>(f), protect,
+                                      this->cx, globalObj, &rval)) {
                     rval = JSVAL_NULL;
                 }
                 break;
@@ -987,9 +985,7 @@ namespace {
         // Must assign the proper type to eventOuts
 
         JSBool eventOut_setProperty(JSContext * const cx, JSObject * const obj,
-                                    const jsval id, jsval * const val) {
-            using JavaScript_::createVrmlFieldFromJsval;
-
+                                    const jsval id, jsval * const val) throw () {
             JSString *str = JS_ValueToString(cx, id);
             if (! str) return JS_FALSE;
             const char *eventName = JS_GetStringBytes(str);
@@ -1004,22 +1000,30 @@ namespace {
 
             VrmlNodeScript & scriptNode = script->getScriptNode();
 
-            // Validate the type
-            VrmlField::VrmlFieldType t = scriptNode.hasEventOut(eventName);
-            if (! t) return JS_FALSE;
+            const VrmlField::VrmlFieldType fieldType =
+                    scriptNode.hasEventOut(eventName);
+            //
+            // If this assertion is false, the we accidentally gave an object
+            // that doesn't correspond to an eventOut this setter!
+            //
+            assert(fieldType != VrmlField::NO_FIELD);
 
             // Convert to a vrmlField and set the eventOut value
-            VrmlField *f = createVrmlFieldFromJsval( cx, *val, t );
-            if (! f)
-              {
-                theSystem->error("Error: invalid type in assignment to eventOut %s\n",
-	                eventName );
+            try {
+                std::auto_ptr<VrmlField>
+                        fieldValue(createVrmlFieldFromJsval(cx, *val, fieldType));
+                scriptNode.setEventOut(eventName, *fieldValue);
+            } catch (std::exception & ex) { // should be bad_alloc
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
-              }
+            } catch (...) {
+                assert(false);
+                return JS_FALSE;
+            }
 
-            scriptNode.setEventOut(eventName, *f);
-            if (f) delete f;
-
+/* Why is this code here if it's also in             
             // Don't overwrite the property value.
             if (JSVAL_IS_OBJECT(*val) &&
                 JSVAL_TO_OBJECT(*val) != 0 &&
@@ -1027,52 +1031,108 @@ namespace {
 			             PRIVATE_TO_JSVAL((long int)eventName),
 			             0, 0, JSPROP_READONLY | JSPROP_PERMANENT ))
               theSystem->error("JS_DefineProp _eventOut failed\n");
+*/
 
             return JS_TRUE;
         }
+        
+        //
+        // Initialize SF*/MF* types.
+        //
+        bool Script::initVrmlClasses() throw () {
+            JSObject * const globalObj = JS_GetGlobalObject(this->cx);
+            assert(globalObj);
+            return (SFColor::initClass(this->cx, globalObj)
+                    && SFImage::initClass(this->cx, globalObj)
+                    && SFNode::initClass(this->cx, globalObj)
+                    && SFRotation::initClass(this->cx, globalObj)
+                    && SFVec2f::initClass(this->cx, globalObj)
+                    && SFVec3f::initClass(this->cx, globalObj)
+                    && MFColor::initClass(this->cx, globalObj)
+                    && MFFloat::initClass(this->cx, globalObj)
+                    && MFInt32::initClass(this->cx, globalObj)
+                    && MFNode::initClass(this->cx, globalObj)
+                    && MFRotation::initClass(this->cx, globalObj)
+                    && MFVec2f::initClass(this->cx, globalObj)
+                    && MFVec3f::initClass(this->cx, globalObj));
+        }
+        
+        //
+        // Define the Browser object.
+        //
+        bool Script::defineBrowserObject() throw () {
+            
+            JSObject * const globalObj = JS_GetGlobalObject(this->cx);
+            assert(globalObj);
+            
+            static JSFunctionSpec methods[] =
+                    { { "getName", Browser::getName, 0 },
+                      { "getVersion", Browser::getVersion, 0 },
+                      { "getCurrentSpeed", Browser::getCurrentSpeed, 0 },
+                      { "getCurrentFrameRate", Browser::getCurrentFrameRate, 0 },
+                      { "getWorldURL", Browser::getWorldURL, 0 },
+                      { "replaceWorld", Browser::replaceWorld, 1 },
+                      { "createVrmlFromString", Browser::createVrmlFromString, 1 },
+                      { "createVrmlFromURL", Browser::createVrmlFromURL, 3 },
+                      { "addRoute", Browser::addRoute, 4 },
+                      { "deleteRoute", Browser::deleteRoute, 4 },
+                      { "loadURL", Browser::loadURL, 2 },
+                      { "setDescription", Browser::setDescription, 1 },
+                      { 0 } };
+            
+            JSObject * const browserObj =
+                    JS_DefineObject(this->cx, globalObj,
+                                    "Browser", &Browser::jsclass, 0, 0);
+            if (!browserObj) {
+                return false;
+            }
 
-
+            if (!JS_DefineFunctions(this->cx, browserObj, methods)) {
+                return false;
+            }
+        }
+        
+        //
         // Define objects corresponding to fields/eventOuts
-
-        void Script::defineFields()
-        {
-          VrmlNodeScript::FieldList::iterator i, end = this->scriptNode.fields().end();
-          for (i = this->scriptNode.fields().begin(); i!=end; ++i)
-            {
-              jsval val = vrmlFieldToJSVal(*(*i)->value, false);
-        #ifdef SCRIPTJS_DEBUG
-              if ( (*i)->value )
-	        cout << "field " << (*i)->name << " value "
-	             << *((*i)->value) << endl;
-              else
-	        cout << "field " << (*i)->name << " <no value>\n";
-        #endif
-              if (! JS_DefineProperty( d_cx, d_globalObj, (*i)->name, val,
-			               //getter, setter, ...
-			               0, 0,
-			               JSPROP_PERMANENT ))
-	        theSystem->error("JS_DefineProp %s failed\n", (*i)->name );
+        //
+        bool Script::defineFields() throw () {
+            JSObject * const globalObj = JS_GetGlobalObject(this->cx);
+            assert(globalObj);
+            
+            VrmlNodeScript::FieldList::iterator i;
+            for (i = this->scriptNode.fields().begin();
+                    i != this->scriptNode.fields().end(); ++i) {
+                jsval val = vrmlFieldToJSVal(*(*i)->value, false);
+                if (!JS_DefineProperty(this->cx, globalObj, (*i)->name, val,
+                                       //getter, setter, ...
+                                       0, 0,
+                                       JSPROP_PERMANENT )) {
+                    return false;
+                }
             }
 
-          end = this->scriptNode.eventOuts().end();
-          for (i = this->scriptNode.eventOuts().begin(); i!=end; ++i)
-            {
-              assert((*i)->value);
-              jsval val = vrmlFieldToJSVal(*(*i)->value, false);
-              if (JSVAL_IS_OBJECT(val) &&
-	          JSVAL_TO_OBJECT(val) != 0 &&
-	          ! JS_DefineProperty( d_cx, JSVAL_TO_OBJECT(val), "_eventOut",
-			               PRIVATE_TO_JSVAL((long int)((*i)->name)),
-			               0, 0, JSPROP_READONLY | JSPROP_PERMANENT ))
-	        theSystem->error("JS_DefineProp _eventOut failed\n");
+            for (i = this->scriptNode.eventOuts().begin();
+                    i != this->scriptNode.eventOuts().end(); ++i) {
+                assert((*i)->value);
+                jsval val = vrmlFieldToJSVal(*(*i)->value, false);
+                if (JSVAL_IS_OBJECT(val)
+                        && JSVAL_TO_OBJECT(val)
+                        && !JS_DefineProperty(this->cx, JSVAL_TO_OBJECT(val),
+                                              "_eventOut",
+                                              PRIVATE_TO_JSVAL(reinterpret_cast<long>((*i)->name)),
+			                      0, 0, JSPROP_READONLY | JSPROP_PERMANENT))
+	          theSystem->error("JS_DefineProp _eventOut failed\n");
 
-              if (! JS_DefineProperty( d_cx, d_globalObj, (*i)->name, val,
-			               //getter, setter
-			               0, eventOut_setProperty,
-			               JSPROP_PERMANENT ))
-	        theSystem->error("JS_DefineProp %s failed\n", (*i)->name );
+                if (!JS_DefineProperty(this->cx, globalObj, (*i)->name, val,
+			               0, eventOut_setProperty, //getter, setter
+			               JSPROP_PERMANENT)) {
+# ifndef NDEBUG
+                    cerr << "Attempt to define \"" << (*i)->name
+                         << "\" on global object failed." << endl;
+# endif
+                    return false;
+                }
             }
-
         }
 
 
@@ -1111,56 +1171,6 @@ namespace {
             theSystem->error("\n");
         }
 
-        void initVrmlClasses(JSContext * const cx, JSObject * const obj) {
-
-            using namespace JavaScript_;
-
-            if (!SFColor::initClass(cx, obj))
-              theSystem->error("JS_InitClass SFColor failed\n");
-
-            if (!SFImage::initClass(cx, obj))
-              theSystem->error("JS_InitClass SFImage failed\n");
-
-            if (!SFNode::initClass(cx, obj))
-              theSystem->error("JS_InitClass SFNode failed\n");
-
-            if (!SFRotation::initClass(cx, obj))
-              theSystem->error("JS_InitClass SFRotation failed\n");
-
-            if (!SFVec2f::initClass(cx, obj))
-              theSystem->error("JS_InitClass SFVec2f failed\n");
-
-            if (!SFVec3f::initClass(cx, obj))
-              theSystem->error("JS_InitClass SFVec3f failed\n");
-
-            if (!MFColor::initClass(cx, obj))
-              theSystem->error("JS_InitClass MFColor failed\n");
-
-            if (!MFFloat::initClass(cx, obj))
-              theSystem->error("JS_InitClass MFFloat failed\n");
-            
-            if (!MFInt32::initClass(cx, obj))
-              theSystem->error("JS_InitClass MFInt32 failed\n");
-            
-            if (!MFNode::initClass(cx, obj))
-              theSystem->error("JS_InitClass MFNode failed\n");
-
-            if (!MFRotation::initClass(cx, obj))
-              theSystem->error("JS_InitClass MFRotation failed\n");
-
-            if (!MFString::initClass(cx, obj))
-              theSystem->error("JS_InitClass MFString failed\n");
-
-            if (!MFTime::initClass(cx, obj))
-              theSystem->error("JS_InitClass MFTime failed\n");
-
-            if (!MFVec2f::initClass(cx, obj))
-              theSystem->error("JS_InitClass MFVec2f failed\n");
-
-            if (!MFVec3f::initClass(cx, obj))
-              theSystem->error("JS_InitClass MFVec3f failed\n");
-        }
-        
         JSBool floatsToJSArray(const size_t numFloats, const float * floats,
                                JSContext * const cx, jsval * const rval) {
             static const size_t MAX_FIXED = 20;

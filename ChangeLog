@@ -9,6 +9,10 @@
           needs to be refactored before we can see a significant size
           savings.
 
+        * In the JavaScript Script class, got rid of instance variables
+          for the global object and the Browser object. The latter was
+          never used; the former can be obtained from the context.
+
 2001-06-20  Braden McDaniel <braden@endoframe.com>
 
         * In the JavaScript API implementation, store the pointer to the
