@@ -3,6 +3,11 @@
 	* configure.ac:  SpiderMonkey doesn't need the top-level Mozilla
 	include directory.
 
+2005-01-26 Braden McDaniel  <braden@endoframe.com>
+
+	* openvrml.spec.in:  configure with --disable-script-node-java.
+	The Script node Java binding is not currently usable.
+
 2005-01-24 Braden McDaniel  <braden@endoframe.com>
 
 	Mozilla pkg-config metadata files do not reliably add the top-
