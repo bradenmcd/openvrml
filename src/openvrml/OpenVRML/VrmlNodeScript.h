@@ -98,7 +98,7 @@ public:
 		         const std::string & eventName,
 		         const VrmlField & fieldValue);
     virtual const VrmlMFNode getChildren() const;
-    virtual void addToScene(VrmlScene * scene, const char * relUrl);
+    virtual void addToScene(VrmlScene * scene, const std::string& relativeUrl);
 
     virtual VrmlNodeScript* toScript() const;
 
