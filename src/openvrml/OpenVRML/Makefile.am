@@ -19,7 +19,7 @@ else
   DEBUG_CPPFLAGS = -DNDEBUG
 endif
 
-INCLUDES = -I$(top_srcdir)/lib $(JAVASCRIPT_INCLUDES)
+INCLUDES = -I$(top_srcdir)/lib
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
 AM_CXXFLAGS = $(JNI_CFLAGS) $(JS_CFLAGS)
 
