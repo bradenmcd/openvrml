@@ -89,42 +89,37 @@ namespace openvrml {
     };
 
 
-    struct node_interface_id_equals :
-        std::binary_function<node_interface, node_interface, bool> {
-        result_type operator()(const first_argument_type & lhs,
-                               const second_argument_type & rhs) const
-        {
-            return lhs.id == rhs.id;
-        }
-    };
-
     struct node_interface_matches_eventin :
         std::binary_function<node_interface, std::string, bool> {
         result_type operator()(const first_argument_type & interface,
                                const second_argument_type & eventin_id) const
         {
+            static const char eventin_prefix[] = "set_";
             return (interface.type == node_interface::eventin_id
                     && (eventin_id == interface.id
-                        || "set_" + eventin_id == interface.id))
+                        || eventin_prefix + eventin_id == interface.id))
                 || (interface.type == node_interface::exposedfield_id
                     && (eventin_id == interface.id
-                        || eventin_id == "set_" + interface.id));
+                        || eventin_id == eventin_prefix + interface.id));
         }
     };
+
 
     struct node_interface_matches_eventout :
         std::binary_function<node_interface, std::string, bool> {
         result_type operator()(const first_argument_type & interface,
                                const second_argument_type & eventout_id) const
         {
+            static const char eventout_suffix[] = "_changed";
             return (interface.type == node_interface::eventout_id
                     && (eventout_id == interface.id
-                        || eventout_id + "_changed" == interface.id))
+                        || eventout_id + eventout_suffix == interface.id))
                 || (interface.type == node_interface::exposedfield_id
                     && (eventout_id == interface.id
-                        || eventout_id == interface.id + "_changed"));
+                        || eventout_id == interface.id + eventout_suffix));
         }
     };
+
 
     struct node_interface_matches_exposedfield :
         std::binary_function<node_interface, std::string, bool> {

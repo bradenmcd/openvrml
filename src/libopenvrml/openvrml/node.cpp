@@ -309,31 +309,6 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 
 
 /**
- * @struct node_interface_id_equals
- *
- * @brief Function object to compare two node_interfaces based on their id.
- *
- * @par Model of
- * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
- * AdaptableBinaryPredicate</a>,
- * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>
- */
-
-/**
- * @fn node_interface_id_equals::result_type node_interface_id_equals::operator()(const node_interface_id_equals::first_argument_type & lhs, const node_interface_id_equals::second_argument_type & rhs) const
- *
- * @brief Compare two node_interfaces based on their id.
- *
- * @param lhs   node_interface.
- * @param rhs   node_interface.
- *
- * @return @c true if @p lhs.id is lexicographically equal to @p rhs.id;
- *         @c false otherwise.
- */
-
-
-/**
  * @struct node_interface_matches_eventin
  *
  * @brief Determine if a node_interface matches an eventIn identifier.
