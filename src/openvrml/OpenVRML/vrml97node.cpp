@@ -12405,8 +12405,8 @@ void Text::updateGeometry() throw (std::bad_alloc)
     }
     for (size_t i = 0; i < newGeometry.coord.getLength(); ++i) {
         const float (&vertex)[3] = newGeometry.coord.getElement(i);
-        const float adjustedVertex[3] = { vertex[0] += xOffset,
-                                          vertex[1] += yOffset,
+        const float adjustedVertex[3] = { vertex[0] + xOffset,
+                                          vertex[1] + yOffset,
                                           vertex[2] };
         newGeometry.coord.setElement(i, adjustedVertex);
     }
@@ -12416,7 +12416,8 @@ void Text::updateGeometry() throw (std::bad_alloc)
     //
     newGeometry.normal.setLength(npolygons);
     for (size_t i = 0; i < newGeometry.normal.getLength(); ++i) {
-        newGeometry.normal.getElement(i)[2] = 1.0f;
+        static const float normal[3] = { 0.0, 1.0, 0.0 };
+        newGeometry.normal.setElement(i, normal);
     }
     
     this->textGeometry = newGeometry;

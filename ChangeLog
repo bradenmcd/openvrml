@@ -5,6 +5,8 @@
 
         * src/openvrml/OpenVRML/vrml97node.cpp:  const fixes.
 
+        * src/openvrml/OpenVRML/vrml97node.cpp:  More const fixes.
+
 2002-12-14  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
