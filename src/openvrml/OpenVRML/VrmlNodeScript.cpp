@@ -39,11 +39,11 @@
 #   include <strstream.h>
 # endif
 # include "private.h"
+# include "script.h"
 # include "VrmlNodeScript.h"
 # include "nodetype.h"
 # include "VrmlNodeVisitor.h"
 # include "VrmlNamespace.h"
-# include "ScriptObject.h"
 # include "VrmlScene.h"
 # include "doc2.hpp"
 # include "ScriptJDK.h"
@@ -91,7 +91,7 @@ const NodeTypePtr VrmlNodeScript::defineType(NodeTypePtr nodeType) {
 
 VrmlNodeScript::VrmlNodeScript(VrmlScene * const scene):
         VrmlNodeChild(*defineType(), scene), d_directOutput(false),
-        d_mustEvaluate(false), d_script(0), d_eventsReceived(0) {
+        d_mustEvaluate(false), script(0), d_eventsReceived(0) {
     if (this->d_scene) {
         this->d_scene->addScript(*this);
     }
@@ -99,7 +99,7 @@ VrmlNodeScript::VrmlNodeScript(VrmlScene * const scene):
 
 VrmlNodeScript::VrmlNodeScript(const VrmlNodeScript & node):
         VrmlNodeChild(node), d_directOutput(node.d_directOutput),
-        d_mustEvaluate(node.d_mustEvaluate), d_url(node.d_url), d_script(0),
+        d_mustEvaluate(node.d_mustEvaluate), d_url(node.d_url), script(0),
         d_eventIns(0), d_eventOuts(0), d_fields(0), d_eventsReceived(0) {
   // add eventIn/eventOut/fields from source Script
   FieldList::const_iterator i;
@@ -120,7 +120,7 @@ VrmlNodeScript::~VrmlNodeScript()
   // removeScript ought to call shutdown...
   if (d_scene) d_scene->removeScript(*this);
 
-  delete d_script;
+  delete script;
 
   // delete eventIn/eventOut/field ScriptField list contents
   FieldList::iterator i;
@@ -238,12 +238,12 @@ ostream& VrmlNodeScript::printFields(ostream& os, int indent)
 
 
 void VrmlNodeScript::initialize(const double timestamp) {
-    assert(!this->d_script);
+    assert(!this->script);
 
     this->d_eventsReceived = 0;
-    this->d_script = this->createScript();
-    if (this->d_script) {
-        this->d_script->activate(timestamp, "initialize", 0, 0);
+    this->script = this->createScript();
+    if (this->script) {
+        this->script->initialize(timestamp);
     }
     
     //
@@ -258,19 +258,16 @@ void VrmlNodeScript::initialize(const double timestamp) {
 }
 
 void VrmlNodeScript::shutdown(const double timestamp) {
-    if (this->d_script) {
-        this->d_script->activate(timestamp, "shutdown", 0, 0);
+    if (this->script) {
+        this->script->shutdown(timestamp);
     }
 }
 
 void VrmlNodeScript::update(const VrmlSFTime & timeNow) {
-    if (d_eventsReceived > 0) {
-        d_eventsReceived = 0;
-        
-        //theSystem->debug("Script.%s::update\n", name());
-        
-        if (d_script) {
-            d_script->activate( timeNow.get(), "eventsProcessed", 0, 0 );
+    if (this->d_eventsReceived > 0) {
+        this->d_eventsReceived = 0;
+        if (this->script) {
+            this->script->eventsProcessed(timeNow.get());
         }
         
         // For each modified eventOut, send an event
@@ -288,11 +285,10 @@ void VrmlNodeScript::update(const VrmlSFTime & timeNow) {
 void VrmlNodeScript::eventIn(double timeStamp,
 			     const std::string & eventName,
 			     const VrmlField & fieldValue) {
-    if (!d_script) {
+    if (!this->script) {
         this->initialize(timeStamp);
     }
-    
-    if (!d_script) {
+    if (!this->script) {
         return;
     }
     
@@ -316,7 +312,7 @@ void VrmlNodeScript::eventIn(double timeStamp,
             (*i)->modified = false;
         }
 
-        this->d_script->activate(timeStamp, eventName, 2, args);
+        this->script->processEvent(eventName, fieldValue, timeStamp);
         
         // For each modified eventOut, send an event
         for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i) {
@@ -634,7 +630,7 @@ namespace {
 
     namespace JavaScript_ {
         
-        class Script : public ScriptObject {
+        class Script : public ::Script {
             static JSRuntime * rt;
             static size_t nInstances;
 
@@ -647,8 +643,12 @@ namespace {
                 throw (std::bad_alloc);
             virtual ~Script();
 
-            virtual void activate(double timeStamp, const std::string & fname,
-                                  size_t argc, const VrmlField * const argv[]);
+            virtual void initialize(double timeStamp);
+            virtual void processEvent(const std::string & id,
+                                      const VrmlField & value,
+                                      double timestamp);
+            virtual void eventsProcessed(double timeStamp);
+            virtual void shutdown(double timeStamp);
 
             VrmlNodeScript & getScriptNode();
 
@@ -658,12 +658,15 @@ namespace {
             bool initVrmlClasses() throw ();
             bool defineBrowserObject() throw ();
             bool defineFields() throw ();
+            void activate(double timeStamp, const std::string & fname,
+                          size_t argc, const VrmlField * const argv[]);
         };
+        
     }
 }
 # endif
 
-ScriptObject * VrmlNodeScript::createScript() {
+Script * VrmlNodeScript::createScript() {
     // Try each url until we find one we like
     for (size_t i = 0; i < this->d_url.getLength(); ++i) {
         if (this->d_url.getElement(i).length() == 0) continue;
@@ -700,7 +703,7 @@ ScriptObject * VrmlNodeScript::createScript() {
 	  }
 	  Doc2 doc(this->d_url.getElement(i), relative);
 	  if ( doc.localName() ) {
-	    return new ScriptJDK(this, doc.urlBase(), doc.localPath() );
+	    return new ScriptJDK(*this, doc.urlBase(), doc.localPath());
 	  }
 	}
 #endif
@@ -1290,7 +1293,7 @@ namespace {
 
         Script::Script(VrmlNodeScript & scriptNode, const std::string & source)
                 throw (std::bad_alloc):
-                ScriptObject(scriptNode), cx(0) {
+                ::Script(scriptNode), cx(0) {
 
             //
             // Initialize the runtime.
@@ -1379,6 +1382,32 @@ namespace {
             }
         }
 
+        void Script::initialize(const double timestamp) {
+            const VrmlSFTime arg(timestamp);
+            const VrmlField * argv[] = { &arg };
+            this->activate(timestamp, "initialize", 1, argv);
+        }
+        
+        void Script::processEvent(const std::string & id,
+                                  const VrmlField & value,
+                                  const double timestamp) {
+            const VrmlSFTime timestampArg(timestamp);
+            const VrmlField * argv[] = { &value, &timestampArg };
+            this->activate(timestamp, id, 2, argv);
+        }
+        
+        void Script::eventsProcessed(const double timestamp) {
+            const VrmlSFTime arg(timestamp);
+            const VrmlField * argv[] = { &arg };
+            this->activate(timestamp, "eventsProcessed", 1, argv);
+        }
+        
+        void Script::shutdown(const double timestamp) {
+            const VrmlSFTime arg(timestamp);
+            const VrmlField * argv[] = { &arg };
+            this->activate(timestamp, "shutdown", 1, argv);
+        }
+        
         static double s_timeStamp;	// go away...
 
         /**
@@ -5990,8 +6019,7 @@ namespace {
             for (MField::JsvalArray::size_type i = 0;
                     i < mfdata->array.size(); ++i) {
                 assert(JSVAL_IS_OBJECT(mfdata->array[i]));
-                assert(JS_InstanceOf(cx,
-                                     JSVAL_TO_OBJECT(mfdata->array[i]),
+                assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
                                      &SFRotation::jsclass, 0));
                 const SField::SFData * const sfdata =
                     static_cast<SField::SFData *>

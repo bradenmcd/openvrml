@@ -32,14 +32,14 @@ libopenvrml_la_SOURCES = Doc.cpp doc2.cpp MathUtils.cpp dummysound.cpp \
 Image.cpp Audio.cpp System.cpp Viewer.cpp VrmlBVolume.cpp VrmlBSphere.cpp \
 VrmlAABox.cpp VrmlFrustum.cpp VrmlRenderContext.cpp field.cpp nodetype.cpp \
 VrmlMatrix.cpp nodetypeptr.cpp VrmlNamespace.cpp VrmlNodePtr.cpp Route.cpp \
-VrmlNodeVisitor.cpp VrmlNode.cpp VrmlNodeProto.cpp ScriptJDK.cpp \
-ScriptObject.cpp VrmlNodeScript.cpp VrmlScene.cpp vrml97node.cpp
+VrmlNodeVisitor.cpp VrmlNode.cpp VrmlNodeProto.cpp script.cpp ScriptJDK.cpp \
+VrmlNodeScript.cpp VrmlScene.cpp vrml97node.cpp
 
 libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
 
 OpenVRMLincludedir = $(includedir)/OpenVRML
 OpenVRMLinclude_HEADERS = common.h Audio.h Doc.h Image.h MathUtils.h Route.h \
-ScriptJDK.h ScriptObject.h System.h Viewer.h VrmlAABox.h VrmlBVolume.h VrmlBSphere.h \
+ScriptJDK.h script.h System.h Viewer.h VrmlAABox.h VrmlBVolume.h VrmlBSphere.h \
 VrmlEvent.h VrmlFrustum.h field.h nodetype.h nodetypeptr.h VrmlNamespace.h \
 VrmlNodeProto.h VrmlNodePtr.h VrmlNode.h VrmlNodeScript.h VrmlNodeVisitor.h \
 VrmlMatrix.h vrml97node.h VrmlRenderContext.h VrmlScene.h doc2.hpp

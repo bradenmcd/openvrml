@@ -69,17 +69,10 @@ JNIEnv *ScriptJDK::d_env = 0;
 
 // Construct from classname. Assumes className.class exists in classDir
 
-ScriptJDK::ScriptJDK( VrmlNodeScript *node,
-		      const char *className,
-		      const char *classDir ) :
-  d_node(node),
-  d_class(0),
-  d_object(0),
-  d_processEventsID(0),
-  d_processEventID(0),
-  d_eventsProcessedID(0),
-  ScriptObject(*node)
-{
+ScriptJDK::ScriptJDK(VrmlNodeScript & scriptNode, const char * className,
+		     const char * classDir):
+        Script(scriptNode), d_class(0), d_object(0), d_processEventsID(0),
+        d_processEventID(0), d_eventsProcessedID(0) {
   if (! d_jvm)			// Initialize static members
   {
     JavaVMInitArgs vm_args;
@@ -138,7 +131,7 @@ ScriptJDK::ScriptJDK( VrmlNodeScript *node,
       d_object = d_env->NewObject(d_class, ctorId);
 
     jfieldID fid = d_env->GetFieldID(d_class, "NodePtr", "I");
-    d_env->SetIntField(d_object, fid, (int) scriptNode());
+    d_env->SetIntField(d_object, fid, reinterpret_cast<int>(&this->scriptNode));
 
     // Cache other method IDs
     d_processEventID =
@@ -205,6 +198,36 @@ static jstring fieldToString(JNIEnv *env, jobject obj)
   return result;
 }
 
+void ScriptJDK::initialize(const double timestamp)
+{
+  const VrmlSFTime arg(timestamp);
+  const VrmlField * argv[] = { &arg };
+  this->activate(timestamp, "initialize", 1, argv);
+}
+
+void ScriptJDK::processEvent(const std::string & id,
+                             const VrmlField & value,
+                             const double timestamp)
+{
+  const VrmlSFTime timestampArg(timestamp);
+  const VrmlField * argv[] = { &value, &timestampArg };
+  this->activate(timestamp, id, 2, argv);
+}
+
+void ScriptJDK::eventsProcessed(const double timestamp)
+{
+  const VrmlSFTime arg(timestamp);
+  const VrmlField * argv[] = { &arg };
+  this->activate(timestamp, "eventsProcessed", 1, argv);
+}
+
+void ScriptJDK::shutdown(const double timestamp)
+{
+  const VrmlSFTime arg(timestamp);
+  const VrmlField * argv[] = { &arg };
+  this->activate(timestamp, "shutdown", 1, argv);
+}
+
 // Run a specified script
 
 void ScriptJDK::activate( double timeStamp,
@@ -249,10 +272,6 @@ void ScriptJDK::activate( double timeStamp,
     }
   }
 }
-
-// Get a handle to the scene from a ScriptJDK
-
-VrmlScene *ScriptJDK::browser() { return d_node->browser(); }
 
 extern "C" {
 

@@ -1,7 +1,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
+// Copyright (C) 2001  Braden McDaniel
 // 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,31 +18,34 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef SCRIPTOBJECT_H
-#define SCRIPTOBJECT_H
+# ifndef OPENVRML_SCRIPT_H
+#   define OPENVRML_SCRIPT_H
 
-#include <string>
-#include <stddef.h>
-#include "common.h"
+#   include <stddef.h>
+#   include <string>
+#   include "common.h"
 
 class VrmlField;
 class VrmlNodeScript;
 
-class OPENVRML_SCOPE ScriptObject {
+class OPENVRML_SCOPE Script {
 public:
-    virtual ~ScriptObject() = 0;
-    virtual void activate(double timeStamp, const std::string & fname,
-                          size_t argc, const VrmlField * const argv[]) = 0;
+    virtual ~Script() = 0;
+    virtual void initialize(double timestamp) = 0;
+    virtual void processEvent(const std::string & id, const VrmlField & value,
+                              double timestamp) = 0;
+    virtual void eventsProcessed(double timestamp) = 0;
+    virtual void shutdown(double timestamp) = 0;
 
 protected:
-    ScriptObject(VrmlNodeScript & scriptNode);
-
     VrmlNodeScript & scriptNode;
+
+    Script(VrmlNodeScript & scriptNode);
 
 private:
     // non-copyable
-    ScriptObject(const ScriptObject &);
-    ScriptObject & operator=(const ScriptObject &);
+    Script(const Script &);
+    Script & operator=(const Script &);
 };
 
 #endif

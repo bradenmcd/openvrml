@@ -29,10 +29,7 @@
 # endif
 
 #ifdef OPENVRML_HAVE_JNI
-//
-//  Java (via Sun JDK) Script class
-//
-#include "ScriptObject.h"
+#include "script.h"
 
 #include <jni.h>
 
@@ -41,35 +38,30 @@
 class VrmlNodeScript;
 class VrmlScene;
 
-class ScriptJDK: public ScriptObject {
+class ScriptJDK : public Script {
+    // Shared by all JDK Script objects
+    static JavaVM * d_jvm;
+    static JNIEnv * d_env;
 
+    jclass d_class;
+    jobject d_object;
+    jmethodID d_processEventsID, d_processEventID, d_eventsProcessedID;
+    
 public:
+    ScriptJDK(VrmlNodeScript & scriptNode,
+              const char * className, const char * classDir);
+    virtual ~ScriptJDK();
 
-  ScriptJDK( VrmlNodeScript *, const char *className, const char *classDir );
-  ~ScriptJDK();
+    virtual void initialize(double timestamp);
+    virtual void processEvent(const std::string & id, const VrmlField & value,
+                              double timestamp);
+    virtual void eventsProcessed(double timestamp);
+    virtual void shutdown(double timestamp);
 
-  virtual void activate( double timeStamp,
-			 const std::string & fname,
-			 size_t argc,
-			 const VrmlField * const argv[]);
-
-  VrmlScene *browser();
-  VrmlNodeScript *scriptNode() { return d_node; }
-
-protected:
-
-  // Shared by all JDK Script objects
-  static JavaVM *d_jvm;
-  static JNIEnv *d_env;
-
-  // Per object data members
-  VrmlNodeScript *d_node;
-
-  jclass d_class;
-  jobject d_object;
-  jmethodID d_processEventsID, d_processEventID, d_eventsProcessedID;
+private:
+    void activate(double timeStamp, const std::string & fname,
+                  size_t argc, const VrmlField * const argv[]);
 };
 
 #endif // OPENVRML_HAVE_JNI
 #endif // _SCRIPTJDK_
-

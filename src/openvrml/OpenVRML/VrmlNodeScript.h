@@ -30,7 +30,7 @@
 #include "vrml97node.h"
 
 class Doc;
-class ScriptObject;
+class Script;
 class VrmlScene;
 
 class OPENVRML_SCOPE VrmlNodeScript : public VrmlNodeChild {
@@ -54,7 +54,7 @@ private:
     VrmlSFString d_relativeUrl;
 
     // The script language-dependent part
-    ScriptObject *d_script;
+    Script * script;
 
     // Fields and events defined for this Script
     FieldList d_eventIns;
@@ -105,11 +105,12 @@ public:
     virtual ostream& printFields(ostream& os, int indent);
 
 private:
+    Script * createScript();
+
     // Generic field/event test/value methods
     VrmlField::VrmlFieldType has(const FieldList &, const std::string &) const;
     VrmlField * get(const FieldList &, const std::string &) const;
     void set(const FieldList &, const std::string &, const VrmlField &);
-    ScriptObject * createScript();
 };
 
 #endif
