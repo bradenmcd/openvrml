@@ -215,9 +215,24 @@ namespace {
 FieldValue::~FieldValue() {}
 
 /**
- * @fn FieldValue * FieldValue::clone() const
+ * @fn FieldValue * FieldValue::clone() const throw (std::bad_alloc)
+ *
  * @brief Virtual copy constructor.
+ *
  * @return a new FieldValue identical to this one.
+ *
+ * @throws std::bad_alloc if memory allocation fails.
+ */
+
+/**
+ * @fn FieldValue & FieldValue::assign(const FieldValue & value) const throw (std::bad_cast)
+ *
+ * @brief Virtual assignment.
+ *
+ * @return this object.
+ *
+ * @throws std::bad_cast if value is not of the same concrete type as this
+ *      object.
  */
 
 /**
@@ -477,12 +492,16 @@ SFBool::SFBool(bool value): d_value(value) {}
  */
 SFBool::~SFBool() {}
 
-ostream& SFBool::print(ostream& os) const
-{ return (os << (d_value ? "TRUE" : "FALSE")); }
-
-FieldValue * SFBool::clone() const {
+FieldValue * SFBool::clone() const throw (std::bad_alloc) {
     return new SFBool(*this);
 }
+
+FieldValue & SFBool::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const SFBool &>(value));
+}
+
+ostream& SFBool::print(ostream& os) const
+{ return (os << (d_value ? "TRUE" : "FALSE")); }
 
 FieldValue::Type SFBool::type() const {
     return sfbool;
@@ -548,11 +567,16 @@ SFColor::SFColor(float r, float g, float b)
  */
 SFColor::~SFColor() {}
 
+FieldValue * SFColor::clone() const throw (std::bad_alloc) {
+    return new SFColor(*this);
+}
+
+FieldValue & SFColor::assign(const FieldValue & value)  throw (std::bad_cast) {
+    return (*this = dynamic_cast<const SFColor &>(value));
+}
+
 ostream & SFColor::print(ostream& os) const
 { return (os << d_rgb[0] << ' ' << d_rgb[1] << ' ' << d_rgb[2]); }
-
-FieldValue * SFColor::clone() const
-{ return new SFColor(d_rgb[0],d_rgb[1],d_rgb[2]); }
 
 FieldValue::Type SFColor::type() const {
     return sfcolor;
@@ -743,8 +767,12 @@ SFFloat::~SFFloat() {}
 ostream & SFFloat::print(ostream& os) const
 { return (os << d_value); }
 
-FieldValue * SFFloat::clone() const {
-    return new SFFloat(d_value);
+FieldValue * SFFloat::clone() const throw (std::bad_alloc) {
+    return new SFFloat(*this);
+}
+
+FieldValue & SFFloat::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const SFFloat &>(value));
 }
 
 FieldValue::Type SFFloat::type() const {
@@ -892,8 +920,12 @@ ostream& SFImage::print(ostream& os) const
   return os;
 }
 
-FieldValue * SFImage::clone() const {
+FieldValue * SFImage::clone() const throw (std::bad_alloc) {
     return new SFImage(*this);
+}
+
+FieldValue & SFImage::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const SFImage &>(value));
 }
 
 FieldValue::Type SFImage::type() const {
@@ -983,8 +1015,12 @@ SFInt32::~SFInt32() {}
 ostream & SFInt32::print(ostream& os) const
 { return (os << d_value); }
 
-FieldValue * SFInt32::clone() const {
+FieldValue * SFInt32::clone() const throw (std::bad_alloc) {
     return new SFInt32(*this);
+}
+
+FieldValue & SFInt32::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const SFInt32 &>(value));
 }
 
 FieldValue::Type SFInt32::type() const {
@@ -1035,8 +1071,12 @@ ostream & SFNode::print(ostream & os) const {
     return os << *this->node << endl;
 }
 
-FieldValue * SFNode::clone() const {
+FieldValue * SFNode::clone() const throw (std::bad_alloc) {
     return new SFNode(*this);
+}
+
+FieldValue & SFNode::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const SFNode &>(value));
 }
 
 FieldValue::Type SFNode::type() const {
@@ -1178,8 +1218,14 @@ SFRotation::~SFRotation() {}
 ostream & SFRotation::print(ostream& os) const
 { return (os <<d_x[0] << " " <<d_x[1] << " " <<d_x[2]<< " " <<d_x[3]); }
 
-FieldValue * SFRotation::clone() const
-{ return new SFRotation(d_x[0],d_x[1],d_x[2],d_x[3]); }
+FieldValue * SFRotation::clone() const throw (std::bad_alloc) {
+    return new SFRotation(*this);
+}
+
+FieldValue & SFRotation::assign(const FieldValue & value)
+        throw (std::bad_cast) {
+    return (*this = dynamic_cast<const SFRotation &>(value));
+}
 
 FieldValue::Type SFRotation::type() const 
 { return sfrotation; }
@@ -1517,12 +1563,16 @@ void SFString::set(const std::string & value) {
     this->value = value;
 }
 
-ostream & SFString::print(ostream& os) const
-{ return (os << '\"' << this->value.c_str() << '\"'); }
-
-FieldValue * SFString::clone() const {
+FieldValue * SFString::clone() const throw (std::bad_alloc) {
     return new SFString(*this);
 }
+
+FieldValue & SFString::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const SFString &>(value));
+}
+
+ostream & SFString::print(ostream& os) const
+{ return (os << '\"' << this->value.c_str() << '\"'); }
 
 FieldValue::Type SFString::type() const {
     return sfstring;
@@ -1547,12 +1597,16 @@ SFTime::SFTime(double value): d_value(value) {}
  */
 SFTime::~SFTime() {}
 
-ostream & SFTime::print(ostream& os) const
-{ return (os << d_value); }
-
-FieldValue * SFTime::clone() const {
+FieldValue * SFTime::clone() const throw (std::bad_alloc) {
     return new SFTime(*this);
 }
+
+FieldValue & SFTime::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const SFTime &>(value));
+}
+
+ostream & SFTime::print(ostream& os) const
+{ return (os << d_value); }
 
 FieldValue::Type SFTime::type() const {
     return sftime;
@@ -1643,8 +1697,12 @@ float & SFVec2f::operator[](size_t index) {
 ostream & SFVec2f::print(ostream& os) const
 { return (os << d_x[0] << " " << d_x[1]); }
 
-FieldValue * SFVec2f::clone() const {
+FieldValue * SFVec2f::clone() const throw (std::bad_alloc) {
     return new SFVec2f(*this);
+}
+
+FieldValue & SFVec2f::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const SFVec2f &>(value));
 }
 
 /**
@@ -1872,8 +1930,13 @@ float & SFVec3f::operator[](size_t index) {
 ostream& SFVec3f::print(ostream& os) const
 { return (os << d_x[0] << " " << d_x[1] << " " << d_x[2]); }
 
-FieldValue * SFVec3f::clone() const
-{ return new SFVec3f(*this); }
+FieldValue * SFVec3f::clone() const throw (std::bad_alloc) {
+    return new SFVec3f(*this);
+}
+
+FieldValue & SFVec3f::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const SFVec3f &>(value));
+}
 
 FieldValue::Type SFVec3f::type() const {
     return sfvec3f;
@@ -2240,8 +2303,12 @@ void MFColor::removeElement(size_t index)
   }	
 }
 
-FieldValue * MFColor::clone() const {
+FieldValue * MFColor::clone() const throw (std::bad_alloc) {
     return new MFColor(*this);
+}
+
+FieldValue & MFColor::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const MFColor &>(value));
 }
 
 FieldValue::Type MFColor::type() const {
@@ -2409,8 +2476,12 @@ void MFFloat::removeElement(size_t index)
   }	
 }
 
-FieldValue * MFFloat::clone() const {
+FieldValue * MFFloat::clone() const throw (std::bad_alloc) {
     return new MFFloat(*this);
+}
+
+FieldValue & MFFloat::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const MFFloat &>(value));
 }
 
 FieldValue::Type MFFloat::type() const {
@@ -2581,8 +2652,12 @@ void MFInt32::removeElement(size_t index)
   }
 }
 
-FieldValue * MFInt32::clone() const {
+FieldValue * MFInt32::clone() const throw (std::bad_alloc) {
     return new MFInt32(*this);
+}
+
+FieldValue & MFInt32::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const MFInt32 &>(value));
 }
 
 FieldValue::Type MFInt32::type() const {
@@ -2761,8 +2836,13 @@ void MFNode::removeElement(size_t index)
   this->nodes.erase(this->nodes.begin() + index);
 }
 
-FieldValue * MFNode::clone() const
-{ return new MFNode(*this); }
+FieldValue * MFNode::clone() const throw (std::bad_alloc) {
+    return new MFNode(*this);
+}
+
+FieldValue & MFNode::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const MFNode &>(value));
+}
 
 FieldValue::Type MFNode::type() const {
     return mfnode;
@@ -2950,8 +3030,12 @@ void MFRotation::removeElement(size_t index)
   }
 }
 
-FieldValue * MFRotation::clone() const {
+FieldValue * MFRotation::clone() const throw (std::bad_alloc) {
     return new MFRotation(*this);
+}
+
+FieldValue & MFRotation::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const MFRotation &>(value));
 }
 
 FieldValue::Type MFRotation::type() const {
@@ -3042,8 +3126,13 @@ void MFString::removeElement(size_t index)
   this->values.erase(this->values.begin() + index);
 }
 
-FieldValue * MFString::clone() const
-{ return new MFString(*this); }
+FieldValue * MFString::clone() const throw (std::bad_alloc) {
+    return new MFString(*this);
+}
+
+FieldValue & MFString::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const MFString &>(value));
+}
 
 FieldValue::Type MFString::type() const {
     return mfstring;
@@ -3251,8 +3340,12 @@ void MFTime::removeElement(size_t index)
   }
 }
 
-FieldValue * MFTime::clone() const {
+FieldValue * MFTime::clone() const throw (std::bad_alloc) {
     return new MFTime(*this);
+}
+
+FieldValue & MFTime::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const MFTime &>(value));
 }
 
 FieldValue::Type MFTime::type() const {
@@ -3424,8 +3517,12 @@ void MFVec2f::removeElement(size_t index)
   }
 }
 
-FieldValue * MFVec2f::clone() const {
+FieldValue * MFVec2f::clone() const throw (std::bad_alloc) {
     return new MFVec2f(*this);
+}
+
+FieldValue & MFVec2f::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const MFVec2f &>(value));
 }
 
 FieldValue::Type MFVec2f::type() const {
@@ -3596,8 +3693,12 @@ void MFVec3f::removeElement(size_t index)
   }
 }
 
-FieldValue * MFVec3f::clone() const {
+FieldValue * MFVec3f::clone() const throw (std::bad_alloc) {
     return new MFVec3f(*this);
+}
+
+FieldValue & MFVec3f::assign(const FieldValue & value) throw (std::bad_cast) {
+    return (*this = dynamic_cast<const MFVec3f &>(value));
 }
 
 FieldValue::Type MFVec3f::type() const {

@@ -23,6 +23,7 @@
 #   define OPENVRML_FIELD_H
 
 #   include <string>
+#   include <typeinfo>
 #   include <vector>
 #   include <iostream.h>
 #   include "common.h"
@@ -69,10 +70,13 @@ namespace OpenVRML {
         static Type type(const char * typeId);
         static const char * getFieldName(const Type type);
 
+        virtual ~FieldValue() = 0;
+        
         const char * typeName() const;
 
-        virtual ~FieldValue() = 0;
-        virtual FieldValue * clone() const = 0;
+        virtual FieldValue * clone() const throw (std::bad_alloc) = 0;
+        virtual FieldValue & assign(const FieldValue &)
+                throw (std::bad_cast) = 0;
         virtual ostream& print(ostream& os) const = 0;
         virtual Type type() const = 0;
 
@@ -132,8 +136,9 @@ namespace OpenVRML {
         bool get() const;
         void set(bool value);
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const SFBool * toSFBool() const;
         virtual SFBool * toSFBool();
@@ -164,8 +169,9 @@ namespace OpenVRML {
         void setHSV(float h, float s, float v);
         void getHSV(float hsv[3]) const;
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const SFColor * toSFColor() const;
         virtual SFColor * toSFColor();
@@ -184,8 +190,9 @@ namespace OpenVRML {
         float get() const;
         void set(float value);
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const SFFloat * toSFFloat() const;
         virtual SFFloat * toSFFloat();
@@ -211,8 +218,9 @@ namespace OpenVRML {
         void set(size_t width, size_t height, size_t components,
                  const unsigned char * pixels);
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const SFImage * toSFImage() const;
         virtual SFImage * toSFImage();
@@ -231,8 +239,9 @@ namespace OpenVRML {
         long get() const;
         void set(long);
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const SFInt32 * toSFInt32() const;
         virtual SFInt32 * toSFInt32();
@@ -251,8 +260,9 @@ namespace OpenVRML {
         const NodePtr & get() const;
         void set(const NodePtr & node);
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const SFNode * toSFNode() const;
         virtual SFNode * toSFNode();
@@ -291,8 +301,9 @@ namespace OpenVRML {
         const SFVec3f multVec(const SFVec3f & vec) const;
         const SFRotation slerp(const SFRotation & destRot, float t) const;  
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const SFRotation * toSFRotation() const;
         virtual SFRotation * toSFRotation();
@@ -315,8 +326,9 @@ namespace OpenVRML {
         const std::string & get() const;
         void set(const std::string & value);
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const SFString * toSFString() const;
         virtual SFString * toSFString();
@@ -335,8 +347,9 @@ namespace OpenVRML {
         double get() const;
         void set(double value);
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const SFTime * toSFTime() const;
         virtual SFTime * toSFTime();
@@ -371,8 +384,9 @@ namespace OpenVRML {
         const SFVec2f normalize() const;
         const SFVec2f subtract(const SFVec2f & vec) const;
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const SFVec2f * toSFVec2f() const;
         virtual SFVec2f * toSFVec2f();
@@ -410,8 +424,9 @@ namespace OpenVRML {
         const SFVec3f normalize() const;
         const SFVec3f subtract(const SFVec3f & vec) const;
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const SFVec3f * toSFVec3f() const;
         virtual SFVec3f * toSFVec3f();
@@ -438,8 +453,9 @@ namespace OpenVRML {
         void insertElement(size_t index, const float value[3]);
         void removeElement(size_t index);
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const MFColor * toMFColor() const;
         virtual MFColor * toMFColor();
@@ -466,8 +482,9 @@ namespace OpenVRML {
         void insertElement(size_t index, float value);
         void removeElement(size_t index);
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const MFFloat * toMFFloat() const;
         virtual MFFloat * toMFFloat();
@@ -494,8 +511,9 @@ namespace OpenVRML {
         void insertElement(size_t index, long value);
         void removeElement(size_t index);
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const MFInt32 * toMFInt32() const;
         virtual MFInt32 * toMFInt32();
@@ -522,8 +540,9 @@ namespace OpenVRML {
         void removeElement(size_t index);
         void clear();
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const MFNode* toMFNode() const;
         virtual MFNode* toMFNode();
@@ -550,8 +569,9 @@ namespace OpenVRML {
         void insertElement(size_t index, const float value[3]);
         void removeElement(size_t index);
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream& print(ostream& os) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
         virtual const MFRotation * toMFRotation() const;
         virtual MFRotation * toMFRotation();
@@ -574,7 +594,8 @@ namespace OpenVRML {
         void insertElement(size_t index, const std::string & value);
         void removeElement(size_t index);
 
-        virtual FieldValue * clone() const;
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual Type type() const;
         virtual const MFString * toMFString() const;
         virtual MFString * toMFString();
@@ -602,8 +623,9 @@ namespace OpenVRML {
         void insertElement(size_t index, double value);
         void removeElement(size_t index);
 
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual ostream & print(ostream &) const;
-        virtual FieldValue * clone() const;
         virtual Type type() const;
     };
 
@@ -628,7 +650,8 @@ namespace OpenVRML {
         void insertElement(size_t index, const float value[2]);
         void removeElement(size_t index);
 
-        virtual FieldValue * clone() const;
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual Type type() const;
         virtual ostream& print(ostream& os) const;
         virtual const MFVec2f * toMFVec2f() const;
@@ -656,7 +679,8 @@ namespace OpenVRML {
         void insertElement(size_t index, const float data[3]);
         void removeElement(size_t index);
 
-        virtual FieldValue * clone() const;
+        virtual FieldValue * clone() const throw (std::bad_alloc);
+        virtual FieldValue & assign(const FieldValue &) throw (std::bad_cast);
         virtual Type type() const;
         virtual ostream& print(ostream& os) const;
         virtual const MFVec3f * toMFVec3f() const;
