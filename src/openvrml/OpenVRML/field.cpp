@@ -395,24 +395,47 @@ FieldValue::Type SFBool::type() const throw ()
 }
 
 /**
+ * @fn bool SFBool::get() const throw ()
+ *
  * @brief Get the value.
  *
  * @return the value of this SFBool
  */
-bool SFBool::get() const throw ()
-{
-    return this->value;
-}
 
 /**
+ * @fn void SFBool::set(const bool value) throw ()
+ *
  * @brief Set the value.
  *
  * @param value the new value
  */
-void SFBool::set(const bool value) throw ()
-{
-    this->value = value;
-}
+
+/**
+ * @fn bool operator==(const SFBool & lhs, const SFBool & rhs) throw ()
+ *
+ * @relates SFBool
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const SFBool & lhs, const SFBool & rhs) throw ()
+ *
+ * @relates SFBool
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
 
 
 /**
@@ -518,66 +541,56 @@ FieldValue::Type SFColor::type() const throw ()
 }
 
 /**
+ * @fn float SFColor::operator[](const size_t index) const throw ()
+ *
  * @brief Array element dereference operator (const version).
  *
  * @param index an index from 0 - 2.
+ *
+ * @pre @p index is not larger than 2.
  */
-float SFColor::operator[](const size_t index) const throw ()
-{
-    assert(index < 3);
-    return this->value[index];
-}
 
 /**
+ * @fn float & SFColor::operator[](const size_t index) throw ()
+ *
  * @brief Array element dereference operator (non-const version).
  *
  * @param index an index from 0 - 2.
+ *
+ * @pre @p index is not larger than 2.
  */
-float & SFColor::operator[](const size_t index) throw ()
-{
-    assert(index < 3);
-    return this->value[index];
-}
 
 /**
+ * @fn float SFColor::getR() const throw ()
+ *
  * @brief Get the red component.
  *
  * @return the red component value.
  */
-float SFColor::getR() const throw ()
-{
-    return this->value[0];
-}
 
 /**
+ * @fn float SFColor::getG() const throw ()
+ *
  * @brief Get the green component.
  *
  * @return the green component value.
  */
-float SFColor::getG() const throw ()
-{
-    return this->value[1];
-}
 
 /**
+ * @fn float SFColor::getB() const throw ()
+ *
  * @brief Get the blue component.
  *
  * @return the blue component value.
  */
-float SFColor::getB() const throw ()
-{
-    return this->value[2];
-}
 
 /**
+ * @fn SFColor::ConstArrayReference SFColor::get() const throw ()
+ *
  * @brief Get the value.
  *
  * @return a reference to a 3-element array comprising the RGB value.
  */
-SFColor::ConstArrayReference SFColor::get() const throw ()
-{
-    return this->value;
-}
 
 /**
  * @brief Set the value.
@@ -691,6 +704,33 @@ void SFColor::getHSV(ArrayReference hsv) const throw ()
     SFColor::RGBtoHSV(this->value, hsv);
 }
 
+/**
+ * @fn bool operator==(const SFColor & lhs, const SFColor & rhs) throw ()
+ *
+ * @relates SFColor
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const SFColor & lhs, const SFColor & rhs) throw ()
+ *
+ * @relates SFColor
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+
 
 /**
  * @class SFFloat
@@ -760,24 +800,48 @@ FieldValue::Type SFFloat::type() const throw ()
 }
 
 /**
+ * @fn float SFFloat::get() const throw ()
+ *
  * @brief Get value.
  *
  * @return the SFFloat value
  */
-float SFFloat::get() const throw ()
-{
-    return this->value;
-}
 
 /**
+ * @fn void SFFloat::set(float value) throw ()
+ *
  * @brief Set value.
  *
  * @param value the new value
  */
-void SFFloat::set(const float value) throw ()
-{
-    this->value = value;
-}
+
+/**
+ * @fn bool operator==(const SFFloat & lhs, const SFFloat & rhs) throw ()
+ *
+ * @relates SFFloat
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const SFFloat & lhs, const SFFloat & rhs) throw ()
+ *
+ * @relates SFFloat
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+
 
 /**
  * @class SFImage
@@ -1044,24 +1108,47 @@ FieldValue::Type SFInt32::type() const throw ()
 }
 
 /**
+ * @fn long SFInt32::get() const throw ()
+ *
  * @brief Get value.
  *
  * @return the integer value
  */
-long SFInt32::get() const throw ()
-{
-    return this->value;
-}
 
 /**
+ * @fn void SFInt32::set(const long value) throw ()
+ *
  * @brief Set value.
  *
  * @param value the new integer value
  */
-void SFInt32::set(const long value) throw ()
-{
-    this->value = value;
-}
+
+/**
+ * @fn bool operator==(const SFInt32 & lhs, const SFInt32 & rhs) throw ()
+ *
+ * @relates SFInt32
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const SFInt32 & lhs, const SFInt32 & rhs) throw ()
+ *
+ * @relates SFInt32
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
 
 
 /**
@@ -1136,25 +1223,48 @@ FieldValue::Type SFNode::type() const throw ()
 }
 
 /**
+ * @fn const NodePtr & SFNode::get() const throw ()
+ *
  * @brief Get value.
  *
  * @return a smart pointer to this object's Node
  */
-const NodePtr & SFNode::get() const throw ()
-{
-    return this->node;
-}
 
 /**
+ * @fn void SFNode::set(const NodePtr & node) throw ()
+ *
  * @brief Set value.
  *
  * @param node a smart pointer to a Node, or to 0 if setting this
  *             SFNode to @c NULL.
  */
-void SFNode::set(const NodePtr & node) throw ()
-{
-    this->node = NodePtr(node);
-}
+
+/**
+ * @fn bool operator==(const SFNode & lhs, const SFNode & rhs) throw ()
+ *
+ * @relates SFNode
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const SFNode & lhs, const SFNode & rhs) throw ()
+ *
+ * @relates SFNode
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
 
 
 /**
@@ -1340,14 +1450,41 @@ FieldValue::Type SFRotation::type() const throw ()
 }
 
 /**
+ * @fn SFRotation::ConstArrayReference SFRotation::get() const throw ()
+ *
+ * @brief Get the value of this rotation.
+ *
+ * @return a reference to a 4-element array.
+ */
+
+/**
+ * @brief Set the value of this rotation.
+ *
+ * @param rot a 4-element array
+ *
+ * @pre The first three elements of @p rot constitute a normalized
+ *      vector.
+ */
+void SFRotation::set(ConstArrayReference rot) throw ()
+{
+    using OpenVRML_::fpequal;
+    using OpenVRML_::length;
+
+    //
+    // Make sure axis is normalized.
+    //
+    assert(fpequal(length(rot), 1.0));
+
+    std::copy(rot, rot + 4, this->value);
+}
+
+/**
+ * @fn float SFRotation::getX() const throw ()
+ *
  * @brief Get the @e x-component of the rotation axis.
  *
  * @return the @e x-component of the rotation axis.
  */
-float SFRotation::getX() const throw ()
-{
-    return this->value[0];
-}
 
 namespace {
 
@@ -1378,14 +1515,12 @@ void SFRotation::setX(const float value) throw ()
 }
 
 /**
+ * @fn float SFRotation::getY() const throw ()
+ *
  * @brief Get the @e y-component of the rotation axis.
  *
  * @return the @e y-component of the rotation axis.
  */
-float SFRotation::getY() const throw ()
-{
-    return this->value[1];
-}
 
 /**
  * @brief Set the @e y-component of the rotation axis.
@@ -1399,14 +1534,12 @@ void SFRotation::setY(const float value) throw ()
 }
 
 /**
+ * @fn float SFRotation::getZ() const throw ()
+ *
  * @brief Get the @e z-component of the rotation axis.
  *
  * @return the @e z-component of the rotation axis.
  */
-float SFRotation::getZ() const throw ()
-{
-    return this->value[2];
-}
 
 /**
  * @brief Set the @e z-component of the rotation axis.
@@ -1420,55 +1553,20 @@ void SFRotation::setZ(const float value) throw ()
 }
 
 /**
+ * @fn float SFRotation::getAngle() const throw ()
+ *
  * @brief Get the rotation angle.
  *
  * @return the rotation angle.
  */
-float SFRotation::getAngle() const throw ()
-{
-    return this->value[3];
-}
 
 /**
+ * @fn void SFRotation::setAngle(const float value) throw ()
+ *
  * @brief Set the rotation angle.
  *
  * @param value
  */
-void SFRotation::setAngle(const float value) throw ()
-{
-    this->value[3] = value;
-}
-
-/**
- * @brief Get the value of this rotation.
- *
- * @return a reference to a 4-element array.
- */
-SFRotation::ConstArrayReference SFRotation::get() const throw ()
-{
-    return this->value;
-}
-
-/**
- * @brief Set the value of this rotation.
- *
- * @param rot a 4-element array
- *
- * @pre The first three elements of @p rot constitute a normalized
- *      vector.
- */
-void SFRotation::set(ConstArrayReference rot) throw ()
-{
-    using OpenVRML_::fpequal;
-    using OpenVRML_::length;
-    
-    //
-    // Make sure axis is normalized.
-    //
-    assert(fpequal(length(rot), 1.0));
-    
-    std::copy(rot, rot + 4, this->value);
-}
 
 /**
  * @brief Get the axis of rotation as a SFVec3f.
@@ -1493,12 +1591,12 @@ void SFRotation::setAxis(const SFVec3f & axis) throw ()
 {
     using OpenVRML_::fpequal;
     using OpenVRML_::length;
-    
+
     //
     // Make sure axis is normalized.
     //
     assert(fpequal(length(axis.get()), 1.0));
-    
+
     std::copy(axis.get(), axis.get() + 3, this->value);
 }
 
@@ -1669,6 +1767,33 @@ const SFRotation SFRotation::slerp(const SFRotation & destRotation,
     return result;
 }
 
+/**
+ * @fn bool operator==(const SFRotation & lhs, const SFRotation & rhs) throw ()
+ *
+ * @relates SFRotation
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const SFRotation & lhs, const SFRotation & rhs) throw ()
+ *
+ * @relates SFRotation
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+
 
 /**
  * @class SFString
@@ -1694,26 +1819,22 @@ SFString::~SFString() throw ()
 {}
 
 /**
+ * @fn const std::string & SFString::get() const throw ()
+ *
  * @brief Get value.
  *
  * @return a string
  */
-const std::string & SFString::get() const throw ()
-{
-    return this->value;
-}
 
 /**
+ * @fn void SFString::set(const std::string & value) throw (std::bad_alloc)
+ *
  * @brief Set value.
  *
  * @param value
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void SFString::set(const std::string & value) throw (std::bad_alloc)
-{
-    this->value = value;
-}
 
 /**
  * @brief Virtual copy constructor.
@@ -1762,6 +1883,33 @@ FieldValue::Type SFString::type() const throw ()
 {
     return FieldValue::sfstring;
 }
+
+/**
+ * @fn bool operator==(const SFString & lhs, const SFString & rhs) throw ()
+ *
+ * @relates SFString
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const SFString & lhs, const SFString & rhs) throw ()
+ *
+ * @relates SFString
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
 
 
 /**
@@ -1832,24 +1980,47 @@ FieldValue::Type SFTime::type() const throw ()
 }
 
 /**
+ * @fn double SFTime::get() const throw ()
+ *
  * @brief Get value.
  *
  * @return the value.
  */
-double SFTime::get() const throw ()
-{
-    return this->value;
-}
 
 /**
+ * @fn void SFTime::set(double value) throw ()
+ *
  * @brief Set value.
  *
  * @param value the new value
  */
-void SFTime::set(double value) throw ()
-{
-    this->value = value;
-}
+
+/**
+ * @fn bool operator==(const SFTime & lhs, const SFTime & rhs) throw ()
+ *
+ * @relates SFTime
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const SFTime & lhs, const SFTime & rhs) throw ()
+ *
+ * @relates SFTime
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
 
 
 /**
@@ -1902,28 +2073,22 @@ SFVec2f::~SFVec2f() throw ()
 {}
 
 /**
+ * @fn float SFVec2f::operator[](size_t index) const throw ()
+ *
  * @brief Array element dereference operator (const version).
  *
  * @param index a value from 0 - 1. 0 corresponds to the @e x-component, and 1
  *              corresponds to the @e y-component.
  */
-float SFVec2f::operator[](size_t index) const throw ()
-{
-    assert(index < 2);
-    return this->value[index];
-}
 
 /**
+ * @fn float & SFVec2f::operator[](size_t index) throw ()
+ *
  * @brief Array element dereference operator (non-const version).
  *
  * @param index a value from 0 - 1. 0 corresponds to the @e x-component, and 1
  *              corresponds to the @e y-component.
  */
-float & SFVec2f::operator[](size_t index) throw ()
-{
-    assert(index < 2);
-    return this->value[index];
-}
 
 /**
  * @brief Print to an output stream.
@@ -1972,65 +2137,52 @@ FieldValue::Type SFVec2f::type() const throw ()
 }
 
 /**
+ * @fn float SFVec2f::getX() const throw ()
+ *
  * @brief Get the @e x-component.
  *
  * @return the @e x-component.
  */
-float SFVec2f::getX() const throw ()
-{
-    return this->value[0];
-}
     
 /**
+ * @fn void SFVec2f::setX(const float value) throw ()
+ *
  * @brief Set the @e x-component.
  *
  * @param value the new @e x-component value.
  */
-void SFVec2f::setX(const float value) throw ()
-{
-    this->value[0] = value;
-}
 
 /**
+ * @fn float SFVec2f::getY() const throw ()
+ *
  * @brief Get the @e y-component.
  *
  * @return the @e y-component.
  */
-float SFVec2f::getY() const throw ()
-{
-    return this->value[1];
-}
         
 /**
+ * @fn void SFVec2f::setY(const float value) throw ()
+ *
  * @brief Set the @e y-component.
  *
  * @param value the new @e y-component value.
  */
-void SFVec2f::setY(const float value) throw ()
-{
-    this->value[1] = value;
-}
 
 /**
+ * @fn SFVec2f::ConstArrayReference SFVec2f::get() const throw ()
+ *
  * @brief Get the value of this vector.
  *
  * @returns a reference to a 2-element array.
  */
-SFVec2f::ConstArrayReference SFVec2f::get() const throw ()
-{
-    return this->value;
-}
 
 /**
+ * @fn void SFVec2f::set(ConstArrayReference vec) throw ()
+ *
  * @brief Set the value of this vector.
  *
  * @param vec a 2-element array.
  */
-void SFVec2f::set(ConstArrayReference vec) throw ()
-{
-    this->value[0] = vec[0];
-    this->value[1] = vec[1];
-}
 
 /**
  * @brief Add two vectors.
@@ -2148,6 +2300,33 @@ const SFVec2f SFVec2f::subtract(const SFVec2f & vec) const throw ()
     return result;
 }
 
+/**
+ * @fn bool operator==(const SFVec2f & lhs, const SFVec2f & rhs) throw ()
+ *
+ * @relates SFVec2f
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const SFVec2f & lhs, const SFVec2f & rhs) throw ()
+ *
+ * @relates SFVec2f
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+
 
 /**
  * @class SFVec3f
@@ -2198,30 +2377,24 @@ SFVec3f::~SFVec3f() throw ()
 {}
 
 /**
+ * @fn float SFVec3f::operator[](const size_t index) const throw ()
+ *
  * @brief Array element dereference operator (const version).
  *
  * @param index a value from 0 - 2. 0 corresponds to the @e x-component, 1
  *              corresponds to the @e y-component, and 2 corresponds to the
  *              @e z-component.
  */
-float SFVec3f::operator[](const size_t index) const throw ()
-{
-    assert(index < 3);
-    return this->value[index];
-}
 
 /**
+ * @fn float & SFVec3f::operator[](const size_t index) throw ()
+ *
  * @brief Array element dereference operator (non-const version).
  *
  * @param index a value from 0 - 2. 0 corresponds to the @e x-component, 1
  *              corresponds to the @e y-component, and 2 corresponds to the
  *              @e z-component.
  */
-float & SFVec3f::operator[](const size_t index) throw ()
-{
-    assert(index < 3);
-    return this->value[index];
-}
 
 /**
  * @brief Print to an output stream.
@@ -2270,86 +2443,68 @@ FieldValue::Type SFVec3f::type() const throw ()
 }
 
 /**
+ * @fn float SFVec3f::getX() const throw ()
+ *
  * @brief Get the @e x-component.
  *
  * @return the @e x-component of this vector.
  */
-float SFVec3f::getX() const throw ()
-{
-    return this->value[0];
-}
 
 /**
+ * @fn void SFVec3f::setX(const float value) throw ()
+ *
  * @brief Set the @e x-component.
  *
  * @param value the new @e x-component value.
  */
-void SFVec3f::setX(const float value) throw ()
-{
-    this->value[0] = value;
-}
 
 /**
+ * @fn float SFVec3f::getY() const throw ()
+ *
  * @brief Get the @e y-component.
  *
  * @return the @e y-component of this vector.
  */
-float SFVec3f::getY() const throw ()
-{
-    return this->value[1];
-}
 
 /**
+ * @fn void SFVec3f::setY(const float value) throw ()
+ *
  * @brief Set the @e y-component.
  *
  * @param value the new @e y-component value.
  */
-void SFVec3f::setY(const float value) throw ()
-{
-    this->value[1] = value;
-}
 
 /**
+ * @fn float SFVec3f::getZ() const throw ()
+ *
  * @brief Get the @e z-component.
  *
  * @return the @e z-component of this vector.
  */
-float SFVec3f::getZ() const throw ()
-{
-    return this->value[2];
-}
 
 /**
+ * @fn void SFVec3f::setZ(const float value) throw ()
+ *
  * @brief Set the @e z-component.
  *
  * @param value the new @e z-component value.
  */
-void SFVec3f::setZ(const float value) throw ()
-{
-    this->value[2] = value;
-}
 
 /**
+ * @fn SFVec3f::ConstArrayReference SFVec3f::get() const throw ()
+ *
  * @brief Get the vector value.
  *
  * @return a reference to a 3-element array
  */
-SFVec3f::ConstArrayReference SFVec3f::get() const throw ()
-{
-    return this->value;
-}
 
 /**
+ * @fn void SFVec3f::set(ConstArrayReference vec) throw ()
+ *
  * @brief Set the vector value.
  *
  * @param vec   a 3-element array
  */
-void SFVec3f::set(ConstArrayReference vec) throw ()
-{
-    this->value[0] = vec[0];
-    this->value[1] = vec[1];
-    this->value[2] = vec[2];
-}
 
 /**
  * @brief Add this vector and vec component-wise.
@@ -2486,6 +2641,33 @@ const SFVec3f SFVec3f::subtract(const SFVec3f & vec) const throw () {
     result.value[2] -= vec.value[2];
     return result;
 }
+
+/**
+ * @fn bool operator==(const SFVec3f & lhs, const SFVec3f & rhs) throw ()
+ *
+ * @relates SFVec3f
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const SFVec3f & lhs, const SFVec3f & rhs) throw ()
+ *
+ * @relates SFVec3f
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
 
 
 namespace {
@@ -2840,6 +3022,30 @@ namespace {
             this->erase(this->begin(), this->end());
         }
     };
+
+    template <typename ElementType, size_t ArraySize>
+    struct array_equal {
+        bool operator()(ElementType (&lhs)[ArraySize],
+                        ElementType (&rhs)[ArraySize]) const
+        {
+            return std::equal(lhs, lhs + ArraySize, rhs);
+        }
+    };
+
+    template <typename ElementType, size_t ArraySize>
+    inline bool operator==(const array_vector<ElementType, ArraySize> & lhs,
+                           const array_vector<ElementType, ArraySize> & rhs)
+    {
+        std::equal(lhs.begin(), lhs.end(), rhs.begin(),
+                   array_equal<ElementType, ArraySize>());
+    }
+
+    template <typename ElementType, size_t ArraySize>
+    inline bool operator!=(const array_vector<ElementType, ArraySize> & lhs,
+                           const array_vector<ElementType, ArraySize> & rhs)
+    {
+        return !(lhs == rhs);
+    }
 }
 
 /**
@@ -3068,6 +3274,37 @@ void MFColor::print(std::ostream & out) const
     out << ']';
 }
 
+/**
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+bool operator==(const MFColor & lhs, const MFColor & rhs) throw ()
+{
+    assert(lhs.values);
+    assert(rhs.values);
+
+    return *static_cast<ColorVec *>(lhs.values)
+            == *static_cast<ColorVec *>(rhs.values);
+}
+
+/**
+ * @fn bool operator!=(const MFColor & lhs, const MFColor & rhs) throw ()
+ *
+ * @relates MFColor
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+
 
 /**
  * @class MFFloat
@@ -3244,6 +3481,31 @@ void MFFloat::print(std::ostream & out) const
     out << ']';
 }
 
+/**
+ * @fn bool operator==(const MFFloat & lhs, const MFFloat & rhs) throw ()
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const MFFloat & lhs, const MFFloat & rhs) throw ()
+ *
+ * @relates MFFloat
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+
 
 /**
  * @class MFInt32
@@ -3418,6 +3680,31 @@ void MFInt32::print(std::ostream & out) const
     }
     out << ']';
 }
+
+/**
+ * @fn bool operator==(const MFInt32 & lhs, const MFInt32 & rhs) throw ()
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const MFInt32 & lhs, const MFInt32 & rhs) throw ()
+ *
+ * @relates MFInt32
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
 
 
 /**
@@ -3663,6 +3950,32 @@ void MFNode::print(std::ostream & out) const
 }
 
 /**
+ * @fn bool operator==(const MFNode & lhs, const MFNode & rhs) throw ()
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const MFNode & lhs, const MFNode & rhs) throw ()
+ *
+ * @relates MFNode
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+
+
+/**
  * @internal
  */
 typedef array_vector<float, 4> RotationVec;
@@ -3881,6 +4194,37 @@ void MFRotation::print(std::ostream & out) const
     out << ']';
 }
 
+/**
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+bool operator==(const MFRotation & lhs, const MFRotation & rhs) throw ()
+{
+    assert(lhs.values);
+    assert(rhs.values);
+
+    return *static_cast<RotationVec *>(lhs.values)
+            == *static_cast<RotationVec *>(rhs.values);
+}
+
+/**
+ * @fn bool operator!=(const MFRotation & lhs, const MFRotation & rhs) throw ()
+ *
+ * @relates MFRotation
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+
 
 /**
  * @class MFString
@@ -4081,6 +4425,31 @@ void MFString::print(std::ostream & out) const
     out << ']';
 }
 
+/**
+ * @fn bool operator==(const MFString & lhs, const MFString & rhs) throw ()
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const MFString & lhs, const MFString & rhs) throw ()
+ *
+ * @relates MFString
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+
 
 /**
  * @class MFTime
@@ -4255,6 +4624,31 @@ void MFTime::print(std::ostream & out) const
     }
     out << ']';
 }
+
+/**
+ * @fn bool operator==(const MFTime & lhs, const MFTime & rhs) throw ()
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+
+/**
+ * @fn bool operator!=(const MFTime & lhs, const MFTime & rhs) throw ()
+ *
+ * @relates MFTime
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
 
 
 /**
@@ -4471,6 +4865,37 @@ void MFVec2f::print(std::ostream & out) const
     out << ']';
 }
 
+/**
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+bool operator==(const MFVec2f & lhs, const MFVec2f & rhs) throw ()
+{
+    assert(lhs.values);
+    assert(rhs.values);
+
+    return *static_cast<Vec2fVec *>(lhs.values)
+            == *static_cast<Vec2fVec *>(rhs.values);
+}
+
+/**
+ * @fn bool operator!=(const MFVec2f & lhs, const MFVec2f & rhs) throw ()
+ *
+ * @relates MFVec2f
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+
 
 /**
  * @internal
@@ -4686,5 +5111,36 @@ void MFVec3f::print(std::ostream & out) const
     }
     out << ']';
 }
+
+/**
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false otherwise.
+ */
+bool operator==(const MFVec3f & lhs, const MFVec3f & rhs) throw ()
+{
+    assert(lhs.values);
+    assert(rhs.values);
+
+    return *static_cast<Vec3fVec *>(lhs.values)
+            == *static_cast<Vec3fVec *>(rhs.values);
+}
+
+/**
+ * @fn bool operator!=(const MFVec3f & lhs, const MFVec3f & rhs) throw ()
+ *
+ * @relates MFVec2f
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
 
 } // namespace OpenVRML

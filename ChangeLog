@@ -1,3 +1,9 @@
+2003-01-19  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/field.cpp,
+          src/openvrml/OpenVRML/field.h:  Added operator==, operator!=
+          for FieldValue classes.
+
 2003-01-15  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp:  Removed obsolete code.

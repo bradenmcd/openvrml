@@ -88,6 +88,26 @@ namespace OpenVRML {
         virtual void print(std::ostream & out) const;
     };
 
+    inline bool SFBool::get() const throw ()
+    {
+        return this->value;
+    }
+
+    inline void SFBool::set(const bool value) throw ()
+    {
+        this->value = value;
+    }
+
+    inline bool operator==(const SFBool & lhs, const SFBool & rhs) throw ()
+    {
+        return lhs.get() == rhs.get();
+    }
+
+    inline bool operator!=(const SFBool & lhs, const SFBool & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
 
     class OPENVRML_SCOPE SFColor : public FieldValue {
         float value[3];
@@ -129,6 +149,48 @@ namespace OpenVRML {
         virtual void print(std::ostream & out) const;
     };
 
+    inline float SFColor::operator[](const size_t index) const throw ()
+    {
+        assert(index < 3);
+        return this->value[index];
+    }
+
+    inline float & SFColor::operator[](const size_t index) throw ()
+    {
+        assert(index < 3);
+        return this->value[index];
+    }
+
+    inline float SFColor::getR() const throw ()
+    {
+        return this->value[0];
+    }
+
+    inline float SFColor::getG() const throw ()
+    {
+        return this->value[1];
+    }
+
+    inline float SFColor::getB() const throw ()
+    {
+        return this->value[2];
+    }
+
+    inline SFColor::ConstArrayReference SFColor::get() const throw ()
+    {
+        return this->value;
+    }
+
+    inline bool operator==(const SFColor & lhs, const SFColor & rhs) throw ()
+    {
+        return std::equal(lhs.get(), lhs.get() + 3, rhs.get());
+    }
+
+    inline bool operator!=(const SFColor & lhs, const SFColor & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
 
     class OPENVRML_SCOPE SFFloat : public FieldValue {
         float value;
@@ -150,6 +212,26 @@ namespace OpenVRML {
     private:
         virtual void print(std::ostream & out) const;
     };
+
+    inline float SFFloat::get() const throw ()
+    {
+        return this->value;
+    }
+
+    inline void SFFloat::set(const float value) throw ()
+    {
+        this->value = value;
+    }
+
+    inline bool operator==(const SFFloat & lhs, const SFFloat & rhs) throw ()
+    {
+        return lhs.get() == rhs.get();
+    }
+
+    inline bool operator!=(const SFFloat & lhs, const SFFloat & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
 
 
     class OPENVRML_SCOPE SFImage : public FieldValue {
@@ -203,6 +285,26 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    inline long SFInt32::get() const throw ()
+    {
+        return this->value;
+    }
+
+    inline void SFInt32::set(const long value) throw ()
+    {
+        this->value = value;
+    }
+
+    inline bool operator==(const SFInt32 & lhs, const SFInt32 & rhs) throw ()
+    {
+        return lhs.get() == rhs.get();
+    }
+
+    inline bool operator!=(const SFInt32 & lhs, const SFInt32 & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
 
     class OPENVRML_SCOPE SFNode : public FieldValue {
         NodePtr node;
@@ -224,6 +326,26 @@ namespace OpenVRML {
     private:
         virtual void print(std::ostream &) const;
     };
+
+    inline const NodePtr & SFNode::get() const throw ()
+    {
+        return this->node;
+    }
+
+    inline void SFNode::set(const NodePtr & node) throw ()
+    {
+        this->node = NodePtr(node);
+    }
+
+    inline bool operator==(const SFNode & lhs, const SFNode & rhs) throw ()
+    {
+        return lhs.get() == rhs.get();
+    }
+
+    inline bool operator!=(const SFNode & lhs, const SFNode & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
 
 
     class SFVec3f;
@@ -273,6 +395,48 @@ namespace OpenVRML {
         virtual void print(std::ostream & os) const;
     };
 
+    inline SFRotation::ConstArrayReference SFRotation::get() const throw ()
+    {
+        return this->value;
+    }
+
+    inline float SFRotation::getX() const throw ()
+    {
+        return this->value[0];
+    }
+
+    inline float SFRotation::getY() const throw ()
+    {
+        return this->value[1];
+    }
+
+    inline float SFRotation::getZ() const throw ()
+    {
+        return this->value[2];
+    }
+
+    inline float SFRotation::getAngle() const throw ()
+    {
+        return this->value[3];
+    }
+
+    inline void SFRotation::setAngle(const float value) throw ()
+    {
+        this->value[3] = value;
+    }
+
+    inline bool operator==(const SFRotation & lhs, const SFRotation & rhs)
+        throw ()
+    {
+        return std::equal(lhs.get(), lhs.get() + 4, rhs.get());
+    }
+
+    inline bool operator!=(const SFRotation & lhs, const SFRotation & rhs)
+        throw ()
+    {
+        return !(lhs == rhs);
+    }
+
 
     class OPENVRML_SCOPE SFString : public FieldValue {
         std::string value;
@@ -296,6 +460,26 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    inline const std::string & SFString::get() const throw ()
+    {
+        return this->value;
+    }
+
+    inline void SFString::set(const std::string & value) throw (std::bad_alloc)
+    {
+        this->value = value;
+    }
+
+    inline bool operator==(const SFString & lhs, const SFString & rhs) throw ()
+    {
+        return lhs.get() == rhs.get();
+    }
+
+    inline bool operator!=(const SFString & lhs, const SFString & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
 
     class OPENVRML_SCOPE SFTime : public FieldValue {
         double value;
@@ -317,6 +501,26 @@ namespace OpenVRML {
     private:
         virtual void print(std::ostream &) const;
     };
+
+    inline double SFTime::get() const throw ()
+    {
+        return this->value;
+    }
+
+    inline void SFTime::set(double value) throw ()
+    {
+        this->value = value;
+    }
+
+    inline bool operator==(const SFTime & lhs, const SFTime & rhs) throw ()
+    {
+        return lhs.get() == rhs.get();
+    }
+
+    inline bool operator!=(const SFTime & lhs, const SFTime & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
 
 
     class OPENVRML_SCOPE SFVec2f : public FieldValue {
@@ -360,6 +564,59 @@ namespace OpenVRML {
     private:
         virtual void print(std::ostream &) const;
     };
+
+    inline float SFVec2f::operator[](size_t index) const throw ()
+    {
+        assert(index < 2);
+        return this->value[index];
+    }
+
+    inline float & SFVec2f::operator[](size_t index) throw ()
+    {
+        assert(index < 2);
+        return this->value[index];
+    }
+
+    inline float SFVec2f::getX() const throw ()
+    {
+        return this->value[0];
+    }
+
+    inline void SFVec2f::setX(const float value) throw ()
+    {
+        this->value[0] = value;
+    }
+
+    inline float SFVec2f::getY() const throw ()
+    {
+        return this->value[1];
+    }
+
+    inline void SFVec2f::setY(const float value) throw ()
+    {
+        this->value[1] = value;
+    }
+
+    inline SFVec2f::ConstArrayReference SFVec2f::get() const throw ()
+    {
+        return this->value;
+    }
+
+    inline void SFVec2f::set(ConstArrayReference vec) throw ()
+    {
+        this->value[0] = vec[0];
+        this->value[1] = vec[1];
+    }
+
+    inline bool operator==(const SFVec2f & lhs, const SFVec2f & rhs) throw ()
+    {
+        return std::equal(lhs.get(), lhs.get() + 2, rhs.get());
+    }
+
+    inline bool operator!=(const SFVec2f & lhs, const SFVec2f & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
 
 
     class OPENVRML_SCOPE SFVec3f : public FieldValue {
@@ -407,8 +664,80 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    inline float SFVec3f::operator[](const size_t index) const throw ()
+    {
+        assert(index < 3);
+        return this->value[index];
+    }
+
+    inline float & SFVec3f::operator[](const size_t index) throw ()
+    {
+        assert(index < 3);
+        return this->value[index];
+    }
+
+    inline float SFVec3f::getX() const throw ()
+    {
+        return this->value[0];
+    }
+
+    inline void SFVec3f::setX(const float value) throw ()
+    {
+        this->value[0] = value;
+    }
+
+    inline float SFVec3f::getY() const throw ()
+    {
+        return this->value[1];
+    }
+
+    inline void SFVec3f::setY(const float value) throw ()
+    {
+        this->value[1] = value;
+    }
+
+    inline float SFVec3f::getZ() const throw ()
+    {
+        return this->value[2];
+    }
+
+    inline void SFVec3f::setZ(const float value) throw ()
+    {
+        this->value[2] = value;
+    }
+
+    inline SFVec3f::ConstArrayReference SFVec3f::get() const throw ()
+    {
+        return this->value;
+    }
+
+    inline void SFVec3f::set(ConstArrayReference vec) throw ()
+    {
+        this->value[0] = vec[0];
+        this->value[1] = vec[1];
+        this->value[2] = vec[2];
+    }
+
+    inline bool operator==(const SFVec3f & lhs, const SFVec3f & rhs) throw ()
+    {
+        return std::equal(lhs.get(), lhs.get() + 3, rhs.get());
+    }
+
+    inline bool operator!=(const SFVec3f & lhs, const SFVec3f & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
+
+    class MFColor;
+
+    bool OPENVRML_SCOPE operator==(const MFColor & lhs, const MFColor & rhs)
+        throw ();
 
     class OPENVRML_SCOPE MFColor : public FieldValue {
+        friend bool operator==(const MFColor & lhs, const MFColor & rhs)
+            throw ();
+
         void * values;
 
     public:
@@ -440,8 +769,20 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    inline bool operator!=(const MFColor & lhs, const MFColor & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
+
+    class MFFloat;
+
+    bool operator==(const MFFloat & lhs, const MFFloat & rhs) throw ();
 
     class OPENVRML_SCOPE MFFloat : public FieldValue {
+        friend bool operator==(const MFFloat & lhs, const MFFloat & rhs)
+            throw ();
+
         std::vector<float> values;
 
     public:
@@ -468,8 +809,25 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    inline bool operator==(const MFFloat & lhs, const MFFloat & rhs) throw ()
+    {
+        return lhs.values == rhs.values;
+    }
+
+    inline bool operator!=(const MFFloat & lhs, const MFFloat & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
+
+    class MFInt32;
+
+    bool operator==(const MFInt32 & lhs, const MFInt32 & rhs) throw ();
 
     class OPENVRML_SCOPE MFInt32 : public FieldValue {
+        friend bool operator==(const MFInt32 & lhs, const MFInt32 & rhs)
+            throw ();
+
         std::vector<long> values;
 
     public:
@@ -496,8 +854,24 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    inline bool operator==(const MFInt32 & lhs, const MFInt32 & rhs) throw ()
+    {
+        return lhs.values == rhs.values;
+    }
+
+    inline bool operator!=(const MFInt32 & lhs, const MFInt32 & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
+
+    class MFNode;
+
+    bool operator==(const MFNode & lhs, const MFNode & rhs) throw ();
 
     class OPENVRML_SCOPE MFNode : public FieldValue {
+        friend bool operator==(const MFNode & lhs, const MFNode & rhs) throw ();
+
         std::vector<NodePtr> nodes;
 
     public:
@@ -529,8 +903,26 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    inline bool operator==(const MFNode & lhs, const MFNode & rhs) throw ()
+    {
+        return lhs.nodes == rhs.nodes;
+    }
+
+    inline bool operator!=(const MFNode & lhs, const MFNode & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
+
+    class MFRotation;
+
+    bool OPENVRML_SCOPE operator==(const MFRotation & lhs,
+                                   const MFRotation & rhs) throw ();
 
     class OPENVRML_SCOPE MFRotation : public FieldValue {
+        friend bool operator==(const MFRotation & lhs, const MFRotation & rhs)
+            throw ();
+
         void * values;
 
     public:
@@ -563,8 +955,21 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    inline bool operator!=(const MFRotation & lhs, const MFRotation & rhs)
+        throw ()
+    {
+        return !(lhs == rhs);
+    }
+
+
+    class MFString;
+
+    bool operator==(const MFString & lhs, const MFString & rhs) throw ();
 
     class OPENVRML_SCOPE MFString : public FieldValue {
+        friend bool operator==(const MFString & lhs, const MFString & rhs)
+            throw ();
+
         std::vector<std::string> values;
 
     public:
@@ -594,8 +999,24 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    inline bool operator==(const MFString & lhs, const MFString & rhs) throw ()
+    {
+        return lhs.values == rhs.values;
+    }
+
+    inline bool operator!=(const MFString & lhs, const MFString & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
+
+    class MFTime;
+
+    bool operator==(const MFTime & lhs, const MFTime & rhs) throw ();
 
     class OPENVRML_SCOPE MFTime : public FieldValue {
+        friend bool operator==(const MFTime & lhs, const MFTime & rhs) throw ();
+
         std::vector<double> values;
 
     public:
@@ -622,8 +1043,26 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    inline bool operator==(const MFTime & lhs, const MFTime & rhs) throw ()
+    {
+        return lhs.values == rhs.values;
+    }
+
+    inline bool operator!=(const MFTime & lhs, const MFTime & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
+
+    class MFVec2f;
+
+    bool OPENVRML_SCOPE operator==(const MFVec2f & lhs, const MFVec2f & rhs)
+        throw ();
 
     class OPENVRML_SCOPE MFVec2f : public FieldValue {
+        friend bool OPENVRML_SCOPE operator==(const MFVec2f & lhs,
+                                              const MFVec2f & rhs) throw ();
+
         void * values;
 
     public:
@@ -655,8 +1094,21 @@ namespace OpenVRML {
         virtual void print(std::ostream &) const;
     };
 
+    inline bool operator!=(const MFVec2f & lhs, const MFVec2f & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
+
+    class MFVec3f;
+
+    bool OPENVRML_SCOPE operator==(const MFVec3f & lhs, const MFVec3f & rhs)
+        throw ();
 
     class OPENVRML_SCOPE MFVec3f : public FieldValue {
+        friend bool OPENVRML_SCOPE operator==(const MFVec3f & lhs,
+                                              const MFVec3f & rhs) throw ();
+
         void * values;
 
     public:
@@ -687,6 +1139,11 @@ namespace OpenVRML {
     private:
         virtual void print(std::ostream &) const;
     };
+
+    inline bool operator!=(const MFVec3f & lhs, const MFVec3f & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
 }
 
 # endif
