@@ -1,5 +1,8 @@
-Changes new in version 0.9.0, September 2000
+Changes new in version 0.9.0, November 2000
 ============================================
+- Name change: the library is now called OpenVRML.
+
+- Library is now covered by the GNU Lesser General Public License (LGPL).
 
 - New parser from Braden McDaniel <braden@endoframe.com>, removing
   the dependency on SGI parser code.
@@ -11,13 +14,16 @@ Changes new in version 0.9.0, September 2000
 
 - MPEG reader for MovieTexture nodes.
 
-- Braden updated the javascript support to use mozilla JS 1.5.
+- Braden updated the javascript support to use mozilla JS 1.5rc2.
 
 - SourceForge web site http://openvrml.sourceforge.net/
 
-- New license for the library code: LGPL (see COPYING file for details).
-
 - Lots of clean ups and fixes.
+
+- Also some significant regressions in this release, unfortunately.
+  Architectural changes have left some parts of the library in a state of flux
+  for this release, but enough progress has been made overall that we felt a
+  release would be beneficial anyway.
 
 
 Changes new in version 0.8.2, January 2000

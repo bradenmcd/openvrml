@@ -4,9 +4,6 @@ contributing to any of these, let us know.
 Priority items
 ==============
 
-- The SGI parser code needs to be replaced with code under an Open Source
-  license.
-
 - Navigation/Collisions.
 
 - Sound.  It has been disabled in the current build because we need a cross-
