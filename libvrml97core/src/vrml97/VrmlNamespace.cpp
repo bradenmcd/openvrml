@@ -36,15 +36,13 @@ VrmlNamespace::VrmlNamespace( VrmlNamespace *parent ) :
 
 VrmlNamespace::~VrmlNamespace()
 {
-  using std::list;
-  
   // Free nameList
-  list<VrmlNode*>::iterator n;
+  std::list<VrmlNode*>::iterator n;
   for (n = d_nameList.begin(); n != d_nameList.end(); ++n)
     (*n)->dereference();
   
   // Free typeList
-  list<VrmlNodeType*>::iterator i;
+  std::list<VrmlNodeType*>::iterator i;
   for (i = d_typeList.begin(); i != d_typeList.end(); ++i)
     (*i)->dereference();
 
@@ -52,7 +50,6 @@ VrmlNamespace::~VrmlNamespace()
   if ( --s_nNamespaces == 0 )
 	  for (i = builtInList.begin(); i != builtInList.end(); ++i)
 		(*i)->dereference();
-
 }
 
 
@@ -200,8 +197,6 @@ VrmlNamespace::addNodeType( VrmlNodeType *type )
 const VrmlNodeType *
 VrmlNamespace::findType( const char *name )
 {
-  using std::list;
-  
   // Look through the PROTO stack:
   const VrmlNodeType *nt = findPROTO(name);
   if (nt) return nt;
@@ -211,7 +206,7 @@ VrmlNamespace::findType( const char *name )
     return d_parent->findType( name );
 
   // Look through the built ins
-  list<VrmlNodeType*>::iterator i;
+  std::list<VrmlNodeType*>::iterator i;
   for (i = builtInList.begin(); i != builtInList.end(); ++i)
     {
       nt = *i;
@@ -225,10 +220,8 @@ VrmlNamespace::findType( const char *name )
 const VrmlNodeType *    // LarryD
 VrmlNamespace::findPROTO(const char *name)
 {
-  using std::list;
-  
   // Look through the PROTO list ONLY:
-  list<VrmlNodeType*>::iterator i;
+  std::list<VrmlNodeType*>::iterator i;
   for (i = d_typeList.begin(); i != d_typeList.end(); ++i)
     {
       const VrmlNodeType *nt = *i;
@@ -269,9 +262,7 @@ VrmlNamespace::removeNodeName( VrmlNode *namedNode )
 
 VrmlNode* VrmlNamespace::findNode( const char *name )
 {
-  using std::list;
-  
-  list<VrmlNode*>::iterator n;
+  std::list<VrmlNode*>::iterator n;
   for (n = d_nameList.begin(); n != d_nameList.end(); ++n)
     if (strcmp((*n)->name(), name) == 0)
       return *n;

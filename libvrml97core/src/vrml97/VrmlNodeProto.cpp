@@ -63,10 +63,8 @@ VrmlNodeProto::VrmlNodeProto(const VrmlNodeProto &n) :
   d_nodes(0),
   d_viewerObject(0)
 {
-  using std::list;
-  
   // Copy fields.
-  list<NameValueRec*>::const_iterator i;
+  std::list<NameValueRec*>::const_iterator i;
   for (i = n.d_fields.begin(); i != n.d_fields.end(); i++)
     {
       VrmlField *value = (*i)->value;
@@ -76,10 +74,8 @@ VrmlNodeProto::VrmlNodeProto(const VrmlNodeProto &n) :
 
 VrmlNodeProto::~VrmlNodeProto()
 {
-  using std::list;
-  
   // Free strings & values
-  list<NameValueRec*>::iterator i;
+  std::list<NameValueRec*>::iterator i;
 
   for (i = d_fields.begin(); i != d_fields.end(); i++) {
     NameValueRec *r = *i;
@@ -501,9 +497,7 @@ void VrmlNodeProto::eventIn(double timeStamp,
 
 VrmlNodeProto::NameValueRec *VrmlNodeProto::findField(const char *fieldName) const
 {
-  using std::list;
-  
-  list<NameValueRec*>::const_iterator i;
+  std::list<NameValueRec*>::const_iterator i;
   for (i = d_fields.begin(); i != d_fields.end(); ++i) {
     NameValueRec *nv = *i;
     if (nv != NULL && strcmp(nv->name, fieldName) == 0) {

@@ -1,11 +1,13 @@
 Here are some things that need to be done to the library.  If you feel like 
-contributing to any of these let us know.
+contributing to any of these, let us know.
 
 Priority items
 ==============
 
 - The SGI parser code needs to be replaced with code under an Open Source
   license.
+
+- Navigation/Collisions.
 
 - Sound.  It has been disabled in the current build because we need a cross-
   platform architecture for sound support.
@@ -47,11 +49,9 @@ Furthermore...
   available for the geometry at the rendering level (or should this be moved
   up ...)
 
-- Geometry stuff:  Per-vertex normals & creaseAngles.
+- Geometry stuff:  per-vertex normals & creaseAngles.
 
 - Bounding box computation & visibility-based culling optimizations.
-
-- Navigation/Collisions.
 
 - Textures:  add more MovieTexture formats (MPEG, QT?, AVI?), move the scaling/
   dlist code up to the texture class.  Clean up Image class (remove fopen/stdio
