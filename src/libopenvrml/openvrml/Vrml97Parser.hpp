@@ -174,7 +174,8 @@ public:
 	public: void protoInterfaceDeclaration(
 		
     openvrml::browser & browser,
-    const scope_ptr & scope,
+    const scope_ptr & outer_scope,
+    const std::string & proto_id,
     node_interface_set & interfaces,
     proto_node_class::default_value_map_t & default_value_map
 	);

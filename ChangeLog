@@ -1,4 +1,24 @@
-2004-03-01 Braden McDaniel  <braden@endoframe.com>
+2004-03-02 Braden McDaniel  <braden@endoframe.com>
+
+	PROTO field default value declarations should begin a new scope
+	rooted at the scope outside the PROTO definition.  In
+	particular, this should work:
+
+	PROTO Node0 [] { Group {} }
+
+	PROTO Node1 [
+	  field SFNode field0 Node0 {}
+	] {
+	  Collision {
+	    proxy IS field0
+	  }
+	}
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp
+
+2004-03-02 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp:  Removed obsolete
 	doc-comment.

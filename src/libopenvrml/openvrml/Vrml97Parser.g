@@ -685,28 +685,17 @@ options { defaultErrorHandler=false; }
 }
     :   KEYWORD_PROTO id:ID {
             scope_ptr proto_scope(new openvrml::scope(id->getText(), scope));
-        } LBRACKET (
-            {
-                // XXX
-                // XXX Hmm... We give each interface declaration its own scope
-                // XXX here. This is wasteful; Vrml97RootScope is expensive and
-                // XXX we only *really* need this for SFNode and MFNode
-                // XXX fields/exposedFields.
-                // XXX
-                scope_ptr interface_decl_scope(
-                    new Vrml97RootScope(browser, this->uri));
-            }
-            protoInterfaceDeclaration[browser,
-                                      interface_decl_scope,
-                                      interfaces,
-                                      default_value_map]
-        )* RBRACKET LBRACE protoBody[browser,
-                                     proto_scope,
-                                     interfaces,
-                                     impl_nodes,
-                                     is_map,
-                                     routes]
-        RBRACE {
+        } LBRACKET (protoInterfaceDeclaration[browser,
+                                              scope,
+                                              id->getText(),
+                                              interfaces,
+                                              default_value_map])* RBRACKET
+        LBRACE protoBody[browser,
+                         proto_scope,
+                         interfaces,
+                         impl_nodes,
+                         is_map,
+                         routes] RBRACE {
             node_class_ptr node_class(new proto_node_class(browser,
                                                            interfaces,
                                                            default_value_map,
@@ -747,7 +736,8 @@ options { defaultErrorHandler=false; }
 
 protoInterfaceDeclaration[
     openvrml::browser & browser,
-    const scope_ptr & scope,
+    const scope_ptr & outer_scope,
+    const std::string & proto_id,
     node_interface_set & interfaces,
     proto_node_class::default_value_map_t & default_value_map]
 options { defaultErrorHandler=false; }
@@ -771,7 +761,15 @@ options { defaultErrorHandler=false; }
             }
         }
     |   it=fieldInterfaceType ft=fieldType id1:ID
-        fv=fieldValue[browser, scope, ft] {
+        {
+            //
+            // The field value declaration should have access to the node
+            // types in the outer scope.
+            //
+            const scope_ptr field_decl_scope(
+                new scope(proto_id + '.' + id1->getText(), outer_scope));
+        }
+        fv=fieldValue[browser, field_decl_scope, ft] {
             assert(fv);
             try {
                 add_interface(interfaces,
