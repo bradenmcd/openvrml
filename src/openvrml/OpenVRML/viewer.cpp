@@ -26,105 +26,105 @@
 #   include <config.h>
 # endif
 
-# include "Viewer.h"
+# include "viewer.h"
 # include "private.h"
 
 namespace OpenVRML {
 
 /**
- * @class Viewer
+ * @class viewer
  *
  * @brief Map the scene graph to the underlying graphics library.
  */
 
 /**
- * @var Viewer::MASK_NONE
+ * @var viewer::mask_none
  */
 
 /**
- * @var Viewer::MASK_CCW
+ * @var viewer::mask_ccw
  */
 
 /**
- * @var Viewer::MASK_CONVEX
+ * @var viewer::mask_convex
  */
 
 /**
- * @var Viewer::MASK_SOLID
+ * @var viewer::mask_solid
  */
 
 /**
- * @var Viewer::MASK_BOTTOM
+ * @var viewer::mask_bottom
  */
 
 /**
- * @var Viewer::MASK_TOP
+ * @var viewer::mask_top
  */
 
 /**
- * @var Viewer::MASK_SIDE
+ * @var viewer::mask_side
  */
 
 /**
- * @var Viewer::MASK_COLOR_PER_VERTEX
+ * @var viewer::mask_color_per_vertex
  */
 
 /**
- * @var Viewer::MASK_NORMAL_PER_VERTEX
+ * @var viewer::mask_normal_per_vertex
  */
 
 /**
- * @enum Viewer::RenderMode
+ * @enum viewer::rendering_mode
  *
  * @brief The rendering mode.
  */
 
 /**
- * @var Viewer::RenderMode Viewer::RENDER_MODE_DRAW
+ * @var viewer::rendering_mode viewer::draw_mode
  *
  * @brief Draw mode.
  */
 
 /**
- * @var Viewer::RenderMode Viewer::RENDER_MODE_PICK
+ * @var viewer::rendering_mode viewer::pick_mode
  *
  * @brief Pick mode.
  */
 
 /**
- * @typedef Viewer::Object
+ * @typedef viewer::object_t
  *
  * @brief An object handle.
  */
 
 /**
- * @typedef Viewer::TextureObject
+ * @typedef viewer::texture_object_t
  *
  * @brief An texture object handle.
  */
 
 /**
- * @var OpenVRML::browser & Viewer::browser
+ * @var OpenVRML::browser & viewer::browser
  *
- * @brief The browser associated with the Viewer.
+ * @brief The browser associated with the viewer.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
  * @param browser   a browser.
  */
-Viewer::Viewer(OpenVRML::browser & browser):
+viewer::viewer(OpenVRML::browser & browser):
     browser(browser)
 {}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-Viewer::~Viewer() {}
+viewer::~viewer() {}
 
 /**
- * @fn Viewer::RenderMode Viewer::getRenderMode()
+ * @fn viewer::rendering_mode viewer::mode()
  *
  * @brief Get the rendering mode.
  *
@@ -132,7 +132,7 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn double Viewer::getFrameRate()
+ * @fn double viewer::frame_rate()
  *
  * @brief Get the frame rate.
  *
@@ -140,40 +140,40 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn void Viewer::resetUserNavigation()
+ * @fn void viewer::reset_user_navigation()
  *
  * @brief Return view to the last bound Viewpoint.
  */
 
 /**
- * @fn void Viewer::getUserNavigation(mat4f & M)
+ * @fn void viewer::get_user_navigation(mat4f & mat)
  *
  * @brief Get the user's navigation from the last bound viewpoint.
  *
- * @retval M    orthonormal navigation transformation.
+ * @retval mat    orthonormal navigation transformation.
  */
 
 /**
- * @fn Viewer::Object Viewer::beginObject(const char *, bool)
+ * @fn viewer::object_t viewer::begin_object(const char *, bool)
  *
  * @brief Begin a display list.
  */
 
 /**
- * @fn void Viewer::endObject()
+ * @fn void viewer::end_object()
  *
  * @brief End a display list.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertBackground(const std::vector<float> & groundAngle, const std::vector<color> & groundColor, const std::vector<float> & skyAngle, const std::vector<color> & skyColor, int * whc, unsigned char ** pixels)
+ * @fn viewer::object_t viewer::insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, int * whc, unsigned char ** pixels)
  *
  * @brief Insert a background into a display list.
  *
- * @param groundAngle   ground angles.
- * @param groundColor   ground colors.
- * @param skyAngle      sky angles.
- * @param skyColor      sky colors.
+ * @param ground_angle  ground angles.
+ * @param ground_color  ground colors.
+ * @param sky_angle     sky angles.
+ * @param sky_color     sky colors.
  * @param whc           texture width, height, and number of components.
  * @param pixels        texture pixel data.
  *
@@ -181,7 +181,7 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn Viewer::Object Viewer::insertBox(const vec3f & size)
+ * @fn viewer::object_t viewer::insert_box(const vec3f & size)
  *
  * @brief Insert a box into a display list.
  *
@@ -191,7 +191,7 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn Viewer::Object Viewer::insertCone(float height, float radius, bool bottom, bool side)
+ * @fn viewer::object_t viewer::insert_cone(float height, float radius, bool bottom, bool side)
  *
  * @brief Insert a cone into a display list.
  *
@@ -204,7 +204,7 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn Viewer::Object Viewer::insertCylinder(float height, float radius, bool bottom, bool side, bool top)
+ * @fn viewer::object_t viewer::insert_cylinder(float height, float radius, bool bottom, bool side, bool top)
  *
  * @brief Insert a cylinder into a display list.
  *
@@ -218,31 +218,31 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn Viewer::Object Viewer::insertElevationGrid(unsigned int mask, const std::vector<float> & height, int32 xDimension, int32 zDimension, float xSpacing, float zSpacing, const std::vector<color> & color, const std::vector<vec3f> & normal, const std::vector<vec2f> & texCoord)
+ * @fn viewer::object_t viewer::insert_elevation_grid(unsigned int mask, const std::vector<float> & height, int32 x_dimension, int32 z_dimension, float x_spacing, float z_spacing, const std::vector<color> & color, const std::vector<vec3f> & normal, const std::vector<vec2f> & tex_coord)
  *
  * @brief Insert an elevation grid into a display list.
  *
  * @param mask
  * @param height        height field.
- * @param xDimension    vertices in the x direction.
- * @param zDimension    vertices in the z direction.
- * @param xSpacing      distance between vertices in the x direction.
- * @param zSpacing      distance between vertices in the z direction.
+ * @param x_dimension   vertices in the x direction.
+ * @param z_dimension   vertices in the z direction.
+ * @param x_spacing     distance between vertices in the x direction.
+ * @param z_spacing     distance between vertices in the z direction.
  * @param color         colors.
  * @param normal        normals.
- * @param texCoord      texture coordinates.
+ * @param tex_coord     texture coordinates.
  *
  * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertExtrusion(unsigned int mask, const std::vector<vec3f> & spine, const std::vector<vec2f> & crossSection, const std::vector<rotation> & orientation, const std::vector<vec2f> & scale)
+ * @fn viewer::object_t viewer::insert_extrusion(unsigned int mask, const std::vector<vec3f> & spine, const std::vector<vec2f> & cross_section, const std::vector<rotation> & orientation, const std::vector<vec2f> & scale)
  *
  * @brief Insert an extrusion into a display list.
  *
  * @param mask
  * @param spine         spine points.
- * @param crossSection  cross-sections.
+ * @param cross_section cross-sections.
  * @param orientation   cross-section orientations.
  * @param scale         cross-section scales.
  *
@@ -250,21 +250,21 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn Viewer::Object Viewer::insertLineSet(const std::vector<vec3f> & coord, const std::vector<int32> & coordIndex, bool colorPerVertex, const std::vector<color> & color, const std::vector<int32> & colorIndex)
+ * @fn viewer::object_t viewer::insert_line_set(const std::vector<vec3f> & coord, const std::vector<int32> & coord_index, bool color_per_vertex, const std::vector<color> & color, const std::vector<int32> & color_index)
  *
  * @brief Insert a line set into a display list.
  *
  * @param coord             coordinates.
- * @param coordIndex        coordinate indices.
- * @param colorPerVertex    whether colors are applied per-vertex or per-face.
+ * @param coord_index       coordinate indices.
+ * @param color_per_vertex  whether colors are applied per-vertex or per-face.
  * @param color             colors.
- * @param colorIndex        color indices.
+ * @param color_index       color indices.
  *
  * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertPointSet(const std::vector<vec3f> & coord, const std::vector<color> & color)
+ * @fn viewer::object_t viewer::insert_point_set(const std::vector<vec3f> & coord, const std::vector<color> & color)
  *
  * @brief Insert a point set into a display list.
  *
@@ -275,25 +275,25 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn Viewer::Object Viewer::insertShell(unsigned int mask, const std::vector<vec3f> & coord, const std::vector<int32> & coordIndex, const std::vector<color> & color, const std::vector<int32> & colorIndex, const std::vector<vec3f> & normal, const std::vector<int32> & normalIndex, const std::vector<vec2f> & texCoord, const std::vector<int32> & texCoordIndex)
+ * @fn viewer::object_t viewer::insert_shell(unsigned int mask, const std::vector<vec3f> & coord, const std::vector<int32> & coord_index, const std::vector<color> & color, const std::vector<int32> & color_index, const std::vector<vec3f> & normal, const std::vector<int32> & normal_index, const std::vector<vec2f> & tex_coord, const std::vector<int32> & tex_coord_index)
  *
  * @brief Insert a shell into a display list.
  *
  * @param mask
- * @param coord         coordinates.
- * @param coordIndex    coordinate indices.
- * @param color         colors.
- * @param colorIndex    color indices.
- * @param normal        normals.
- * @param normalIndex   normal indices.
- * @param texCoord      texture coordinates.
- * @param texCoordIndex texture coordinate indices.
+ * @param coord           coordinates.
+ * @param coord_index     coordinate indices.
+ * @param color           colors.
+ * @param color_index     color indices.
+ * @param normal          normals.
+ * @param normal_index    normal indices.
+ * @param tex_coord       texture coordinates.
+ * @param tex_coord_index texture coordinate indices.
  *
  * @return display object identifier.
  */
 
 /**
- * @fn Viewer::Object Viewer::insertSphere(float radius)
+ * @fn viewer::object_t viewer::insert_sphere(float radius)
  *
  * @brief Insert a sphere into a display list.
  *
@@ -303,11 +303,11 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn Viewer::Object Viewer::insertDirLight(float ambientIntensity, float intensity , const color & color, const vec3f & direction)
+ * @fn viewer::object_t viewer::insert_dir_light(float ambient_intensity, float intensity , const color & color, const vec3f & direction)
  *
  * @brief Insert a directional light into a display list.
  *
- * @param ambientIntensity  ambient intensity.
+ * @param ambient_intensity ambient intensity.
  * @param intensity         intensity.
  * @param color             color.
  * @param direction         direction.
@@ -316,11 +316,11 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn Viewer::Object Viewer::insertPointLight(float ambientIntensity, const vec3f & attenuation, const color & color, float intensity, const vec3f & location, float radius)
+ * @fn viewer::object_t viewer::insert_point_light(float ambient_intensity, const vec3f & attenuation, const color & color, float intensity, const vec3f & location, float radius)
  *
  * @brief Insert a point light into a display list.
  *
- * @param ambientIntensity  ambient intensity.
+ * @param ambient_intensity ambient intensity.
  * @param attenuation       attenuation.
  * @param color             color.
  * @param intensity         intensity.
@@ -331,15 +331,15 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn Viewer::Object Viewer::insertSpotLight(float ambientIntensity, const vec3f & attenuation, float beamWidth, const color & color, float cutOffAngle, const vec3f & direction, float intensity, const vec3f & location, float radius)
+ * @fn viewer::object_t viewer::insert_spot_light(float ambient_intensity, const vec3f & attenuation, float beam_width, const color & color, float cut_off_angle, const vec3f & direction, float intensity, const vec3f & location, float radius)
  *
  * @brief Insert a point light into a display list.
  *
- * @param ambientIntensity  ambient intensity.
+ * @param ambient_intensity ambient intensity.
  * @param attenuation       attenuation.
- * @param beamWidth         beam width.
+ * @param beam_width        beam width.
  * @param color             color.
- * @param cutOffAngle       cut-off angle.
+ * @param cut_off_angle     cut-off angle.
  * @param direction         direction.
  * @param intensity         intensity.
  * @param location          location.
@@ -349,24 +349,24 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn Viewer::Object Viewer::insertReference(Object existingObject)
+ * @fn viewer::object_t viewer::insert_reference(object_t existing_object)
  *
  * @brief Insert a reference to an existing object into a display list.
  */
 
 /**
- * @fn void Viewer::setFog(const color & color, float visibilityRange, const char * fogType)
+ * @fn void viewer::set_fog(const color & color, float visibility_range, const char * type)
  *
  * @brief Set the fog.
  *
  * @param color             fog color.
- * @param visibilityRange   the distance at which objects are fully obscured by
+ * @param visibility_range  the distance at which objects are fully obscured by
  *                          fog.
- * @param fogType           fog type.
+ * @param type              fog type.
  */
 
 /**
- * @fn void Viewer::setColor(const color & rgb, float a)
+ * @fn void viewer::set_color(const color & rgb, float a)
  *
  * @brief Set the color.
  *
@@ -375,20 +375,20 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn void Viewer::setMaterial(float ambientIntensity, const color & diffuseColor, const color & emissiveColor, float shininess, const color & specularColor, float transparency)
+ * @fn void viewer::set_material(float ambient_intensity, const color & diffuse_color, const color & emissive_color, float shininess, const color & specular_color, float transparency)
  *
  * @brief Set the material.
  *
- * @param ambientIntensity  ambient intensity.
- * @param diffuseColor      diffuse color.
- * @param emissiveColor     emissive color.
+ * @param ambient_intensity ambient intensity.
+ * @param diffuse_color     diffuse color.
+ * @param emissive_color    emissive color.
  * @param shininess         shininess.
- * @param specularColor     specular color.
+ * @param specular_color    specular color.
  * @param transparency      transparency.
  */
 
 /**
- * @fn void Viewer::setTextureTransform(const vec2f & center, float rotation, const vec2f & scale, const vec2f & translation)
+ * @fn void viewer::set_texture_transform(const vec2f & center, float rotation, const vec2f & scale, const vec2f & translation)
  *
  * @brief Set the texture transform.
  *
@@ -399,19 +399,19 @@ Viewer::~Viewer() {}
  */
 
 /**
- * @fn void Viewer::setViewpoint(const vec3f & position, const rotation & orientation, float fieldOfView, float avatarSize, float visLimit)
+ * @fn void viewer::set_viewpoint(const vec3f & position, const rotation & orientation, float field_of_view, float avatar_size, float visibility_limit)
  *
  * @brief Set the viewpoint.
  *
  * @param position          position.
  * @param orienation        orientation.
- * @param fieldOfView       field of view.
- * @param avatarSize        avatar size.
- * @param visibilityLimit   visiblity limit.
+ * @param field_of_view     field of view.
+ * @param avatar_size       avatar size.
+ * @param visibility_limit  visiblity limit.
  */
 
 /**
- * @fn void Viewer::transform(const mat4f & mat)
+ * @fn void viewer::transform(const mat4f & mat)
  *
  * @brief Transform the modelview.
  *
@@ -427,7 +427,7 @@ Viewer::~Viewer() {}
  * non-standard view volumes. Most subclasses should be able to use
  * the default implementation provided here. If your view volume is
  * so strange that there's no way to cull to is, then reimplement to
- * always return BVolume::inside.
+ * always return bounding_volume::inside.
  *
  * @param bvolume   the bounding volume to intersect with the view volume.
  *
@@ -435,7 +435,7 @@ Viewer::~Viewer() {}
  *         bounding_volume::partial.
  */
 bounding_volume::intersection
-Viewer::intersectViewVolume(const bounding_volume & bvolume) const
+viewer::intersect_view_volume(const bounding_volume & bvolume) const
 {
     //
     // For normal VRML97 use, this won't need to be overridden, but for
@@ -446,11 +446,11 @@ Viewer::intersectViewVolume(const bounding_volume & bvolume) const
     // is enough. If it isn't, please express any concerns to the
     // OpenVRML developer's list, and it can be fixed...
     //
-    return bvolume.intersect_frustum(this->d_frust);
+    return bvolume.intersect_frustum(this->frustum_);
 }
 
 /**
- * @fn void Viewer::drawBSphere(const BSphere & bs, bounding_volume::intersection intersection)
+ * @fn void viewer::draw_bounding_sphere(const bounding_sphere & bs, bounding_volume::intersection intersection)
  *
  * Draw a bounding sphere. Used for debugging view culling. Probably
  * should be drawBVolume and handle aaboxes as well.
@@ -466,10 +466,14 @@ Viewer::intersectViewVolume(const bounding_volume & bvolume) const
  * for debugging and stuff since it might not be valid in some
  * implementations
  */
-const VrmlFrustum & Viewer::getFrustum() const { return this->d_frust; }
+const VrmlFrustum & viewer::frustum() const
+{
+    return this->frustum_;
+}
 
-void Viewer::setFrustum(const VrmlFrustum & afrust) {
-    this->d_frust = afrust; // copy
+void viewer::frustum(const VrmlFrustum & afrust)
+{
+    this->frustum_ = afrust;
 }
 
 } // namespace OpenVRML

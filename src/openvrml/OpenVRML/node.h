@@ -33,7 +33,7 @@
 #   include <OpenVRML/field_value_ptr.h>
 #   include <OpenVRML/node_type_ptr.h>
 #   include <OpenVRML/scope_ptr.h>
-#   include <OpenVRML/Viewer.h>
+#   include <OpenVRML/viewer.h>
 #   include <OpenVRML/VrmlRenderContext.h>
 
 namespace OpenVRML {
@@ -129,7 +129,6 @@ namespace OpenVRML {
 
 
     class browser;
-    class Viewer;
     class viewpoint_node;
 
     class OPENVRML_SCOPE node_class {
@@ -139,7 +138,7 @@ namespace OpenVRML {
         virtual ~node_class() throw () = 0;
         virtual void initialize(viewpoint_node * initial_viewpoint,
                                 double time) throw ();
-        virtual void render(Viewer & viewer) throw ();
+        virtual void render(OpenVRML::viewer & viewer) throw ();
         virtual const node_type_ptr
         create_type(const std::string & id,
                     const node_interface_set & interfaces)
@@ -371,7 +370,8 @@ namespace OpenVRML {
 
         const routes_t & routes() const;
 
-        virtual void render(Viewer & viewer, VrmlRenderContext context);
+        virtual void render(OpenVRML::viewer & viewer,
+                            VrmlRenderContext context);
 
     protected:
         node(const node_type & type, const scope_ptr & scope) throw ();
@@ -524,8 +524,9 @@ namespace OpenVRML {
         virtual const geometry_node * to_geometry() const throw ();
         virtual geometry_node * to_geometry() throw ();
 
-        virtual Viewer::Object insert_geometry(Viewer & viewer,
-                                               VrmlRenderContext context) = 0;
+        virtual viewer::object_t
+        insert_geometry(OpenVRML::viewer & viewer,
+                        VrmlRenderContext context) = 0;
         virtual const color_node * color() const throw ();
 
     protected:

@@ -1,5 +1,36 @@
 2003-05-31  Braden McDaniel  <braden@endoframe.com>
 
+	Applied naming convention changes: Viewer -> viewer.
+
+	* src/openvrml/OpenVRML/viewer.cpp:  Added.  Replaces
+	Viewer.cpp.
+	* src/openvrml/OpenVRML/viewer.h:  Added.  Replaces
+	Viewer.h
+	* src/openvrml/OpenVRML/Viewer.cpp:  Removed.
+	* src/openvrml/OpenVRML/Viewer.h:  Removed.
+	* src/openvrml/OpenVRML/Makefile.am:  Replaced Viewer.cpp,
+	Viewer.h with viewer.cpp, viewer.h.
+	* src/openvrml/OpenVRML/browser.cpp:  Changes associated with
+	naming convention changes to viewer.
+	* src/openvrml/OpenVRML/browser.h:  Changes associated with
+	naming convention changes to viewer.
+	* src/openvrml/OpenVRML/node.cpp:  Changes associated with
+	naming convention changes to viewer.
+	* src/openvrml/OpenVRML/node.h:  Changes associated with
+	naming convention changes to viewer.
+	* src/openvrml/OpenVRML/vrml97node.cpp:  Changes associated with
+	naming convention changes to viewer.
+	* src/openvrml/OpenVRML/vrml97node.h:  Changes associated with
+	naming convention changes to viewer.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  Changes
+	associated with naming convention changes to viewer.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Changes
+	associated with naming convention changes to viewer.
+
+2003-05-31  Braden McDaniel  <braden@endoframe.com>
+
+	Apply naming convention changes: BVolume -> bounding_volume.
+
 	* src/openvrml/OpenVRML/bounding_volume.cpp:  Added.  Replaces
 	bvolume.cpp.  Same as bvolume.cpp, but changed to match new
 	naming convention.

@@ -697,15 +697,15 @@ AbstractGeometry::~AbstractGeometry() throw ()
  * @param viewer a renderer
  * @param context the renderer context
  */
-void AbstractGeometry::render(Viewer & viewer, VrmlRenderContext context)
+void AbstractGeometry::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
 {
     if (this->d_viewerObject && this->modified()) {
-        viewer.removeObject(this->d_viewerObject);
+        viewer.remove_object(this->d_viewerObject);
         this->d_viewerObject = 0;
     }
 
     if (this->d_viewerObject) {
-        viewer.insertReference(this->d_viewerObject);
+        viewer.insert_reference(this->d_viewerObject);
     } else {
         this->d_viewerObject = this->insert_geometry(viewer, context);
         this->modified(false);
@@ -889,7 +889,7 @@ AbstractLight * AbstractLight::to_light() const
  *
  * @param viewer a renderer.
  */
-void AbstractLight::renderScoped(Viewer & viewer)
+void AbstractLight::renderScoped(OpenVRML::viewer & viewer)
 {}
 
 /**
@@ -1216,14 +1216,14 @@ Anchor * Anchor::to_anchor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Anchor::render(Viewer & viewer, const VrmlRenderContext context)
+void Anchor::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
 {
-    viewer.setSensitive(this);
+    viewer.set_sensitive(this);
 
     // Render children
     this->Group::render(viewer, context);
 
-    viewer.setSensitive(0);
+    viewer.set_sensitive(0);
 }
 
 /**
@@ -1443,7 +1443,7 @@ void Appearance::update_modified(node_path & path, int flags)
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
+void Appearance::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
 {
     material_node * const material = this->material_.value
                                   ? this->material_.value->to_material()
@@ -1459,18 +1459,18 @@ void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
         if (nTexComponents == 2 || nTexComponents == 4) { trans = 0.0; }
         if (nTexComponents >= 3) { diffuse = color(1.0, 1.0, 1.0); }
 
-        viewer.enableLighting(true);   // turn lighting on for this object
-        viewer.setMaterial(material->ambient_intensity(),
-                           diffuse,
-                           material->emissive_color(),
-                           material->shininess(),
-                           material->specular_color(),
-                           trans);
+        viewer.enable_lighting(true);   // turn lighting on for this object
+        viewer.set_material(material->ambient_intensity(),
+                            diffuse,
+                            material->emissive_color(),
+                            material->shininess(),
+                            material->specular_color(),
+                            trans);
 
         material->modified(false);
     } else {
-        viewer.setColor(color(1.0, 1.0, 1.0)); // default color
-        viewer.enableLighting(false);   // turn lighting off for this object
+        viewer.set_color(color(1.0, 1.0, 1.0)); // default color
+        viewer.enable_lighting(false);   // turn lighting off for this object
     }
 
     if (texture) {
@@ -1481,7 +1481,7 @@ void Appearance::render(Viewer & viewer, const VrmlRenderContext context)
             static const float rotation = 0.0;
             static const vec2f scale(1.0, 1.0);
             static const vec2f translation(0.0, 0.0);
-            viewer.setTextureTransform(center, rotation, scale, translation);
+            viewer.set_texture_transform(center, rotation, scale, translation);
         }
         texture->render(viewer, context);
     }
@@ -2034,7 +2034,7 @@ namespace {
      * @brief Load and scale textures as needed.
      */
     Image * getTexture(const mfstring & urls, Doc2 & baseDoc,
-                       Image * tex, int thisIndex, Viewer & viewer)
+                       Image * tex, int thisIndex, OpenVRML::viewer & viewer)
     {
         // Check whether the url has already been loaded
         size_t n = urls.value.size();
@@ -2083,9 +2083,9 @@ namespace {
                     // Always scale images down in size and reuse the same pixel
                     // memory. This can cause some ugliness...
                     if (w != sizes[i-1] || h != sizes[j-1]) {
-                        viewer.scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
-                                            tex[thisIndex].nc(),
-                                            tex[thisIndex].pixels());
+                        viewer.scale_texture(w, h, sizes[i - 1], sizes[j - 1],
+                                             tex[thisIndex].nc(),
+                                             tex[thisIndex].pixels());
                         tex[thisIndex].setSize(sizes[i - 1], sizes[j - 1]);
                     }
                 }
@@ -2103,22 +2103,22 @@ namespace {
  *
  * @param viewer    a Viewer.
  */
-void BackgroundClass::render(Viewer & viewer) throw ()
+void BackgroundClass::render(OpenVRML::viewer & viewer) throw ()
 {
     if (!this->boundNodes.empty()) {
         assert(this->boundNodes.back());
         Background & background = *this->boundNodes.back();
 
         // Background isn't selectable, so don't waste the time.
-        if (viewer.getRenderMode() == Viewer::RENDER_MODE_PICK) { return; }
+        if (viewer.mode() == viewer::pick_mode) { return; }
 
         if (background.viewerObject && background.modified()) {
-            viewer.removeObject(background.viewerObject);
+            viewer.remove_object(background.viewerObject);
             background.viewerObject = 0;
         }
 
         if (background.viewerObject) {
-            viewer.insertReference(background.viewerObject);
+            viewer.insert_reference(background.viewerObject);
         } else {
             if (background.modified() || background.texPtr[0] == 0) {
                 Doc2 baseDoc(background.scene()->url());
@@ -2172,12 +2172,12 @@ void BackgroundClass::render(Viewer & viewer) throw ()
             }
 
             background.viewerObject =
-                    viewer.insertBackground(background.groundAngle.value,
-                                            background.groundColor.value,
-                                            background.skyAngle.value,
-                                            background.skyColor.value,
-                                            whc,
-                                            (nPix > 0) ? pixels : 0);
+                    viewer.insert_background(background.groundAngle.value,
+                                             background.groundColor.value,
+                                             background.skyAngle.value,
+                                             background.skyColor.value,
+                                             whc,
+                                             (nPix > 0) ? pixels : 0);
 
             background.modified(false);
         }
@@ -2190,7 +2190,7 @@ void BackgroundClass::render(Viewer & viewer) throw ()
         static const vector<color> groundColor;
         static const vector<float> skyAngle;
         static const vector<color> skyColor;
-        viewer.insertBackground(groundAngle, groundColor, skyAngle, skyColor);
+        viewer.insert_background(groundAngle, groundColor, skyAngle, skyColor);
     }
 }
 
@@ -2708,7 +2708,7 @@ Billboard::~Billboard() throw ()
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-void Billboard::render(Viewer & viewer, VrmlRenderContext context)
+void Billboard::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
 {
     mat4f LM;
     mat4f new_LM = context.getMatrix();
@@ -2717,21 +2717,21 @@ void Billboard::render(Viewer & viewer, VrmlRenderContext context)
     context.setMatrix(new_LM);
 
     if (this->xformObject && this->modified()) {
-        viewer.removeObject(this->xformObject);
+        viewer.remove_object(this->xformObject);
         this->xformObject = 0;
     }
 
     if (this->xformObject) {
-        viewer.insertReference(this->xformObject);
+        viewer.insert_reference(this->xformObject);
     } else if (this->children_.value.size() > 0) {
-        this->xformObject = viewer.beginObject(this->id().c_str());
+        this->xformObject = viewer.begin_object(this->id().c_str());
 
         viewer.transform(LM);
 
         // Render children
         this->Group::render(viewer, context);
 
-        viewer.endObject();
+        viewer.end_object();
     }
 
     this->node::modified(false);
@@ -2906,10 +2906,10 @@ Box::~Box() throw ()
  *
  * @return display object identifier.
  */
-Viewer::Object Box::insert_geometry(Viewer & viewer,
-                                   const VrmlRenderContext context)
+viewer::object_t Box::insert_geometry(OpenVRML::viewer & viewer,
+                                      const VrmlRenderContext context)
 {
-    return viewer.insertBox(this->size.value);
+    return viewer.insert_box(this->size.value);
 }
 
 /**
@@ -3516,13 +3516,13 @@ Cone::~Cone() throw () {}
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object Cone::insert_geometry(Viewer & viewer,
-                                    const VrmlRenderContext context)
+viewer::object_t Cone::insert_geometry(OpenVRML::viewer & viewer,
+                                       const VrmlRenderContext context)
 {
-    return viewer.insertCone(this->height.value,
-                             this->bottomRadius.value,
-                             this->bottom.value,
-                             this->side.value);
+    return viewer.insert_cone(this->height.value,
+                              this->bottomRadius.value,
+                              this->bottom.value,
+                              this->side.value);
 }
 
 
@@ -3962,14 +3962,14 @@ Cylinder::~Cylinder() throw () {
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object Cylinder::insert_geometry(Viewer & viewer,
-                                        const VrmlRenderContext context)
+viewer::object_t Cylinder::insert_geometry(OpenVRML::viewer & viewer,
+                                           const VrmlRenderContext context)
 {
-    return viewer.insertCylinder(this->height.value,
-                                 this->radius.value,
-                                 this->bottom.value,
-                                 this->side.value,
-                                 this->top.value);
+    return viewer.insert_cylinder(this->height.value,
+                                  this->radius.value,
+                                  this->bottom.value,
+                                  this->side.value,
+                                  this->top.value);
 }
 
 
@@ -4135,7 +4135,7 @@ CylinderSensor* CylinderSensor::to_cylinder_sensor() const {   // mgiger 6/16/00
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void CylinderSensor::render(Viewer & viewer, VrmlRenderContext context)
+void CylinderSensor::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
 {
     //
     // Store the ModelView matrix which is calculated at the time of rendering
@@ -4450,13 +4450,14 @@ DirectionalLight::~DirectionalLight() throw () {}
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void DirectionalLight::render(Viewer & viewer, const VrmlRenderContext rc)
+void DirectionalLight::render(OpenVRML::viewer & viewer,
+                              const VrmlRenderContext rc)
 {
     if (this->on.value) {
-        viewer.insertDirLight(this->ambientIntensity.value,
-                              this->intensity.value,
-                              this->color.value,
-                              this->direction.value);
+        viewer.insert_dir_light(this->ambientIntensity.value,
+                                this->intensity.value,
+                                this->color.value,
+                                this->direction.value);
     }
     this->node::modified(false);
 }
@@ -4694,10 +4695,10 @@ void ElevationGrid::update_modified(node_path & path, int flags)
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object ElevationGrid::insert_geometry(Viewer & viewer,
+viewer::object_t ElevationGrid::insert_geometry(OpenVRML::viewer & viewer,
                                              const VrmlRenderContext context)
 {
-    Viewer::Object obj = 0;
+    viewer::object_t obj = 0;
 
     if (!this->height.value.empty()) {
         using std::vector;
@@ -4720,27 +4721,27 @@ Viewer::Object ElevationGrid::insert_geometry(Viewer & viewer,
         // insert geometry
         unsigned int optMask = 0;
         if (this->ccw.value) {
-            optMask |= Viewer::MASK_CCW;
+            optMask |= viewer::mask_ccw;
         }
         if (this->solid.value) {
-            optMask |= Viewer::MASK_SOLID;
+            optMask |= viewer::mask_solid;
         }
         if (this->colorPerVertex.value) {
-            optMask |= Viewer::MASK_COLOR_PER_VERTEX;
+            optMask |= viewer::mask_color_per_vertex;
         }
         if (this->normalPerVertex.value) {
-            optMask |= Viewer::MASK_NORMAL_PER_VERTEX;
+            optMask |= viewer::mask_normal_per_vertex;
         }
 
-        obj = viewer.insertElevationGrid(optMask,
-                                         this->height.value,
-                                         this->xDimension.value,
-                                         this->zDimension.value,
-                                         this->xSpacing.value,
-                                         this->zSpacing.value,
-                                         color,
-                                         normal,
-                                         texCoord);
+        obj = viewer.insert_elevation_grid(optMask,
+                                           this->height.value,
+                                           this->xDimension.value,
+                                           this->zDimension.value,
+                                           this->xSpacing.value,
+                                           this->zSpacing.value,
+                                           color,
+                                           normal,
+                                           texCoord);
     }
 
     if (this->color.value) { this->color.value->modified(false); }
@@ -5010,24 +5011,24 @@ Extrusion::~Extrusion() throw () {}
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object Extrusion::insert_geometry(Viewer & viewer,
+viewer::object_t Extrusion::insert_geometry(OpenVRML::viewer & viewer,
                                          const VrmlRenderContext context)
 {
-    Viewer::Object obj = 0;
+    viewer::object_t obj = 0;
     if (this->crossSection.value.size() > 0 && this->spine.value.size() > 1) {
 
         unsigned int optMask = 0;
-        if (this->ccw.value)        { optMask |= Viewer::MASK_CCW; }
-        if (this->convex.value)     { optMask |= Viewer::MASK_CONVEX; }
-        if (this->solid.value)      { optMask |= Viewer::MASK_SOLID; }
-        if (this->beginCap.value)   { optMask |= Viewer::MASK_BOTTOM; }
-        if (this->endCap.value)     { optMask |= Viewer::MASK_TOP; }
+        if (this->ccw.value)        { optMask |= viewer::mask_ccw; }
+        if (this->convex.value)     { optMask |= viewer::mask_convex; }
+        if (this->solid.value)      { optMask |= viewer::mask_solid; }
+        if (this->beginCap.value)   { optMask |= viewer::mask_bottom; }
+        if (this->endCap.value)     { optMask |= viewer::mask_top; }
 
-        obj = viewer.insertExtrusion(optMask,
-                                     this->spine.value,
-                                     this->crossSection.value,
-                                     this->orientation.value,
-                                     this->scale.value);
+        obj = viewer.insert_extrusion(optMask,
+                                      this->spine.value,
+                                      this->crossSection.value,
+                                      this->orientation.value,
+                                      this->scale.value);
     }
 
     return obj;
@@ -5234,13 +5235,13 @@ void FogClass::initialize(viewpoint_node * initialViewpoint,
  *
  * @param viewer    a Viewer.
  */
-void FogClass::render(Viewer & viewer) throw ()
+void FogClass::render(OpenVRML::viewer & viewer) throw ()
 {
     if (!this->boundNodes.empty()) {
         Fog & fog = dynamic_cast<Fog &>(*this->boundNodes.back());
-        viewer.setFog(fog.color.value,
-                      fog.visibilityRange.value,
-                      fog.fogType.value.c_str());
+        viewer.set_fog(fog.color.value,
+                       fog.visibilityRange.value,
+                       fog.fogType.value.c_str());
     }
 }
 
@@ -5959,7 +5960,7 @@ void Group::update_modified(node_path & path, int flags)
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Group::render(Viewer & viewer, VrmlRenderContext context)
+void Group::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
 {
     if (context.getCullFlag() != bounding_volume::inside) {
         assert(dynamic_cast<const bounding_sphere *>(&this->bounding_volume()));
@@ -5967,8 +5968,9 @@ void Group::render(Viewer & viewer, VrmlRenderContext context)
             static_cast<const bounding_sphere &>(this->bounding_volume());
         bounding_sphere bv_copy(bs);
         bv_copy.transform(context.getMatrix());
-        bounding_volume::intersection r = viewer.intersectViewVolume(bv_copy);
-        if (context.getDrawBSpheres()) { viewer.drawBSphere(bs, r); }
+        bounding_volume::intersection r =
+            viewer.intersect_view_volume(bv_copy);
+        if (context.getDrawBSpheres()) { viewer.draw_bounding_sphere(bs, r); }
         if (r == bounding_volume::outside) { return; }
         if (r == bounding_volume::inside) { context.setCullFlag(bounding_volume::inside); }
     }
@@ -5980,19 +5982,19 @@ void Group::render(Viewer & viewer, VrmlRenderContext context)
  * because children will already have done the culling, we don't need
  * to repeat it here.
  */
-void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
+void Group::renderNoCull(OpenVRML::viewer & viewer, VrmlRenderContext context) {
     if (this->viewerObject && this->modified()) {
-        viewer.removeObject(this->viewerObject);
+        viewer.remove_object(this->viewerObject);
         this->viewerObject = 0;
     }
 
     if (this->viewerObject) {
-        viewer.insertReference(this->viewerObject);
+        viewer.insert_reference(this->viewerObject);
     } else if (this->children_.value.size() > 0) {
         int i, n = this->children_.value.size();
         int nSensors = 0;
 
-        this->viewerObject = viewer.beginObject(this->id().c_str());
+        this->viewerObject = viewer.begin_object(this->id().c_str());
 
         // Draw nodes that impact their siblings (DirectionalLights,
         // TouchSensors, any others? ...)
@@ -6010,7 +6012,7 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
                         && kid->to_cylinder_sensor()->isEnabled())
                     || (kid->to_sphere_sensor()
                         && kid->to_sphere_sensor()->isEnabled())) {
-                if (++nSensors == 1) { viewer.setSensitive(this); }
+                if (++nSensors == 1) { viewer.set_sensitive(this); }
             }
         }
 
@@ -6027,9 +6029,9 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
         }
 
         // Turn off sensitivity
-        if (nSensors > 0) { viewer.setSensitive(0); }
+        if (nSensors > 0) { viewer.set_sensitive(0); }
 
-        viewer.endObject();
+        viewer.end_object();
     }
 
     this->node::modified(false);
@@ -6214,7 +6216,7 @@ ImageTexture::~ImageTexture() throw () {
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void ImageTexture::render(Viewer & viewer, VrmlRenderContext context)
+void ImageTexture::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
 {
     if (modified()) {
         if (this->image) {
@@ -6222,7 +6224,7 @@ void ImageTexture::render(Viewer & viewer, VrmlRenderContext context)
             this->image = 0;
         }
         if (this->texObject) {
-            viewer.removeTextureObject(this->texObject);
+            viewer.remove_texture_object(this->texObject);
             this->texObject = 0;
         }
     }
@@ -6242,7 +6244,7 @@ void ImageTexture::render(Viewer & viewer, VrmlRenderContext context)
 
     // Check texture cache
     if (this->texObject && this->image) {
-        viewer.insertTextureReference(this->texObject, this->image->nc());
+        viewer.insert_texture_reference(this->texObject, this->image->nc());
     } else {
         unsigned char *pix;
 
@@ -6260,12 +6262,12 @@ void ImageTexture::render(Viewer & viewer, VrmlRenderContext context)
                 // Always scale images down in size and reuse the same pixel
                 // memory. This can cause some ugliness...
                 if (w != sizes[i - 1] || h != sizes[j - 1]) {
-                    viewer.scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
+                    viewer.scale_texture(w, h, sizes[i - 1], sizes[j - 1],
                                         this->image->nc(), pix);
                     this->image->setSize(sizes[i - 1], sizes[j - 1]);
                 }
 
-                this->texObject = viewer.insertTexture(this->image->w(),
+                this->texObject = viewer.insert_texture(this->image->w(),
                                                        this->image->h(),
                                                        this->image->nc(),
                                                        this->repeatS.value,
@@ -6566,7 +6568,7 @@ void IndexedFaceSet::update_modified(node_path& path, int flags) {
  *
  * @todo stripify, crease angle, generate normals ...
  */
-Viewer::Object IndexedFaceSet::insert_geometry(Viewer & viewer,
+viewer::object_t IndexedFaceSet::insert_geometry(OpenVRML::viewer & viewer,
                                                const VrmlRenderContext context)
 {
     using std::vector;
@@ -6575,7 +6577,7 @@ Viewer::Object IndexedFaceSet::insert_geometry(Viewer & viewer,
         assert(dynamic_cast<const bounding_sphere *>(&this->bounding_volume()));
         const bounding_sphere & bs =
             static_cast<const bounding_sphere &>(this->bounding_volume());
-        viewer.drawBSphere(bs, static_cast<bounding_volume::intersection>(4));
+        viewer.draw_bounding_sphere(bs, static_cast<bounding_volume::intersection>(4));
     }
 
     coordinate_node * const coordinateNode = this->coord.value
@@ -6608,27 +6610,27 @@ Viewer::Object IndexedFaceSet::insert_geometry(Viewer & viewer,
 
     unsigned int optMask = 0;
     if (this->ccw.value) {
-        optMask |= Viewer::MASK_CCW;
+        optMask |= viewer::mask_ccw;
     }
     if (this->convex.value) {
-        optMask |= Viewer::MASK_CONVEX;
+        optMask |= viewer::mask_convex;
     }
     if (this->solid.value) {
-        optMask |= Viewer::MASK_SOLID;
+        optMask |= viewer::mask_solid;
     }
     if (this->colorPerVertex.value) {
-        optMask |= Viewer::MASK_COLOR_PER_VERTEX;
+        optMask |= viewer::mask_color_per_vertex;
     }
     if (this->normalPerVertex.value) {
-        optMask |= Viewer::MASK_NORMAL_PER_VERTEX;
+        optMask |= viewer::mask_normal_per_vertex;
     }
 
-    const Viewer::Object obj =
-            viewer.insertShell(optMask,
-                               coord, this->coordIndex.value,
-                               color, this->colorIndex.value,
-                               normal, this->normalIndex.value,
-                               texCoord, this->texCoordIndex.value);
+    const viewer::object_t obj =
+            viewer.insert_shell(optMask,
+                                coord, this->coordIndex.value,
+                                color, this->colorIndex.value,
+                                normal, this->normalIndex.value,
+                                texCoord, this->texCoordIndex.value);
 
     if (this->color_.value)     { this->color_.value->modified(false); }
     if (this->coord.value)      { this->coord.value->modified(false); }
@@ -6889,7 +6891,7 @@ IndexedLineSet::~IndexedLineSet() throw () {}
  *
  * @todo colors
  */
-Viewer::Object IndexedLineSet::insert_geometry(Viewer & viewer,
+viewer::object_t IndexedLineSet::insert_geometry(OpenVRML::viewer & viewer,
                                               const VrmlRenderContext context)
 {
     using std::vector;
@@ -6908,9 +6910,10 @@ Viewer::Object IndexedLineSet::insert_geometry(Viewer & viewer,
                                           ? colorNode->color()
                                           : vector<OpenVRML::color>();
 
-    Viewer::Object obj = viewer.insertLineSet(coord, this->coordIndex.value,
-                                              this->colorPerVertex.value,
-                                              color, this->colorIndex.value);
+    viewer::object_t obj =
+        viewer.insert_line_set(coord, this->coordIndex.value,
+                               this->colorPerVertex.value,
+                               color, this->colorIndex.value);
 
     if (this->color_.value) { this->color_.value->modified(false); }
     if (this->coord.value)  { this->coord.value->modified(false); }
@@ -7034,7 +7037,7 @@ Inline::~Inline() throw () {}
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Inline::render(Viewer & viewer, const VrmlRenderContext context)
+void Inline::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
 {
     this->load();
     if (this->inlineScene) { this->inlineScene->render(viewer, context); }
@@ -7270,7 +7273,7 @@ void LOD::update_modified(node_path & path, int flags) {
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void LOD::render(Viewer & viewer, const VrmlRenderContext context)
+void LOD::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
 {
     this->node::modified(false);
     if (this->level.value.size() <= 0) { return; }
@@ -7983,21 +7986,21 @@ void MovieTexture::update(const double currentTime)
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void MovieTexture::render(Viewer & viewer, const VrmlRenderContext context)
+void MovieTexture::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
 {
     if (!this->image || this->frame < 0) { return; }
 
     unsigned char * pix = this->image->pixels(this->frame);
 
     if (this->frame != this->lastFrame && this->texObject) {
-        viewer.removeTextureObject(this->texObject);
+        viewer.remove_texture_object(this->texObject);
         this->texObject = 0;
     }
 
     if (!pix) {
         this->frame = -1;
     } else if (this->texObject) {
-        viewer.insertTextureReference(this->texObject, this->image->nc());
+        viewer.insert_texture_reference(this->texObject, this->image->nc());
     } else {
         // Ensure image dimensions are powers of 2 (move to NodeTexture...)
         int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
@@ -8011,18 +8014,18 @@ void MovieTexture::render(Viewer & viewer, const VrmlRenderContext context)
         if (i > 0 && j > 0) {
             // Always scale images down in size and reuse the same pixel memory.
             if (w != sizes[i - 1] || h != sizes[j - 1]) {
-                viewer.scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
-                                    this->image->nc(), pix);
+                viewer.scale_texture(w, h, sizes[i - 1], sizes[j - 1],
+                                     this->image->nc(), pix);
                 this->image->setSize(sizes[i - 1], sizes[j - 1]);
             }
 
-            this->texObject = viewer.insertTexture(this->image->w(),
-                                                   this->image->h(),
-                                                   this->image->nc(),
-                                                   this->repeatS.value,
-                                                   this->repeatT.value,
-                                                   pix,
-                                                   !this->active.value);
+            this->texObject = viewer.insert_texture(this->image->w(),
+                                                    this->image->h(),
+                                                    this->image->nc(),
+                                                    this->repeatS.value,
+                                                    this->repeatT.value,
+                                                    pix,
+                                                    !this->active.value);
         }
     }
 
@@ -9113,7 +9116,7 @@ PixelTexture::PixelTexture(const node_type & type,
  */
 PixelTexture::~PixelTexture() throw ()
 {
-    // viewer.removeTextureObject(this->texObject); ...
+    // viewer.remove_texture_object(this->texObject); ...
 }
 
 /**
@@ -9122,19 +9125,20 @@ PixelTexture::~PixelTexture() throw ()
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void PixelTexture::render(Viewer & viewer, const VrmlRenderContext context)
+void PixelTexture::render(OpenVRML::viewer & viewer,
+                          const VrmlRenderContext context)
 {
     if (modified()) {
         if (this->texObject) {
-            viewer.removeTextureObject(this->texObject);
+            viewer.remove_texture_object(this->texObject);
             this->texObject = 0;
         }
     }
 
     if (this->image.array()) {
         if (this->texObject) {
-            viewer.insertTextureReference(this->texObject,
-                                          this->image.comp());
+            viewer.insert_texture_reference(this->texObject,
+                                            this->image.comp());
         } else {
             // Ensure the image dimensions are powers of two
             const int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
@@ -9161,21 +9165,21 @@ void PixelTexture::render(Viewer & viewer, const VrmlRenderContext context)
                               this->image.array() + numBytes,
                               pixels);
 
-                    viewer.scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
-                                        this->image.comp(), pixels);
+                    viewer.scale_texture(w, h, sizes[i - 1], sizes[j - 1],
+                                         this->image.comp(), pixels);
                     this->image.set(sizes[i - 1], sizes[j - 1],
                                     this->image.comp(), pixels);
                     delete [] pixels;
                 }
 
                 this->texObject =
-                        viewer.insertTexture(this->image.x(),
-                                             this->image.y(),
-                                             this->image.comp(),
-                                             this->repeatS.value,
-                                             this->repeatT.value,
-                                             this->image.array(),
-                                             true);
+                        viewer.insert_texture(this->image.x(),
+                                              this->image.y(),
+                                              this->image.comp(),
+                                              this->repeatS.value,
+                                              this->repeatT.value,
+                                              this->image.array(),
+                                              true);
             }
         }
     }
@@ -9469,7 +9473,7 @@ PlaneSensor * PlaneSensor::to_plane_sensor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void PlaneSensor::render(Viewer & viewer, const VrmlRenderContext context)
+void PlaneSensor::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
 {
     //
     // Store the ModelView matrix which is calculated at the time of rendering
@@ -9808,15 +9812,15 @@ PointLight* PointLight::to_point_light() const
  *
  * @param viewer    a Viewer.
  */
-void PointLight::renderScoped(Viewer & viewer)
+void PointLight::renderScoped(OpenVRML::viewer & viewer)
 {
     if (this->on.value && this->radius.value > 0.0) {
-        viewer.insertPointLight(this->ambientIntensity.value,
-                                this->attenuation.value,
-                                this->color.value,
-                                this->intensity.value,
-                                this->location.value,
-                                this->radius.value);
+        viewer.insert_point_light(this->ambientIntensity.value,
+                                  this->attenuation.value,
+                                  this->color.value,
+                                  this->intensity.value,
+                                  this->location.value,
+                                  this->radius.value);
     }
     this->node::modified(false);
 }
@@ -10050,7 +10054,7 @@ void PointSet::update_modified(node_path & path, int flags)
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object PointSet::insert_geometry(Viewer & viewer,
+viewer::object_t PointSet::insert_geometry(OpenVRML::viewer & viewer,
                                         const VrmlRenderContext context)
 {
     using std::vector;
@@ -10059,7 +10063,7 @@ Viewer::Object PointSet::insert_geometry(Viewer & viewer,
         assert(dynamic_cast<const bounding_sphere *>(&this->bounding_volume()));
         const bounding_sphere & bs =
             static_cast<const bounding_sphere &>(this->bounding_volume());
-        viewer.drawBSphere(bs, static_cast<bounding_volume::intersection>(4));
+        viewer.draw_bounding_sphere(bs, static_cast<bounding_volume::intersection>(4));
     }
 
     coordinate_node * const coordinateNode = this->coord.value
@@ -10076,7 +10080,7 @@ Viewer::Object PointSet::insert_geometry(Viewer & viewer,
                                           ? colorNode->color()
                                           : vector<OpenVRML::color>();
 
-    Viewer::Object obj = viewer.insertPointSet(coord, color);
+    viewer::object_t obj = viewer.insert_point_set(coord, color);
 
     if (this->color.value) { this->color.value->modified(false); }
     if (this->coord.value) { this->coord.value->modified(false); }
@@ -10595,7 +10599,8 @@ ProximitySensor::~ProximitySensor() throw ()
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
+void ProximitySensor::render(OpenVRML::viewer & viewer,
+                             const VrmlRenderContext context)
 {
     using OpenVRML_::fpequal;
 
@@ -10603,7 +10608,7 @@ void ProximitySensor::render(Viewer & viewer, const VrmlRenderContext context)
             && this->size.value.x() > 0.0
             && this->size.value.y() > 0.0
             && this->size.value.z() > 0.0
-            && viewer.getRenderMode() == Viewer::RENDER_MODE_DRAW) {
+            && viewer.mode() == viewer::draw_mode) {
         sftime timeNow(browser::current_time());
         float x, y, z;
 
@@ -11009,7 +11014,7 @@ const node_type_ptr ShapeClass::create_type(const std::string & id,
  */
 
 /**
- * @var Viewer::Object Shape::viewerObject
+ * @var viewer::object_t Shape::viewerObject
  *
  * @brief A reference to the node's previously used rendering data.
  *
@@ -11078,10 +11083,10 @@ void Shape::update_modified(node_path & path, int flags)
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Shape::render(Viewer & viewer, const VrmlRenderContext context)
+void Shape::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
 {
     if (this->viewerObject && modified()) {
-        viewer.removeObject(this->viewerObject);
+        viewer.remove_object(this->viewerObject);
         this->viewerObject = 0;
     }
 
@@ -11090,12 +11095,12 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
                       : 0;
 
     if (this->viewerObject) {
-        viewer.insertReference(this->viewerObject);
+        viewer.insert_reference(this->viewerObject);
     } else if (g) {
-        this->viewerObject = viewer.beginObject(this->id().c_str());
+        this->viewerObject = viewer.begin_object(this->id().c_str());
 
         // Don't care what color it is if we are picking
-        bool picking = (Viewer::RENDER_MODE_PICK == viewer.getRenderMode());
+        bool picking = (viewer::pick_mode == viewer.mode());
         if (!picking) {
             int nTexComponents = 0;
 
@@ -11108,17 +11113,17 @@ void Shape::render(Viewer & viewer, const VrmlRenderContext context)
                     nTexComponents = a->texture()->to_texture()->nComponents();
                 }
             } else {
-                viewer.setColor(color(1.0, 1.0, 1.0)); // default object color
-                viewer.enableLighting(false);  // turn lighting off
+                viewer.set_color(color(1.0, 1.0, 1.0)); // default object color
+                viewer.enable_lighting(false);  // turn lighting off
             }
 
             // hack for opengl material mode
-            viewer.setMaterialMode(nTexComponents, g->color());
+            viewer.set_material_mode(nTexComponents, g->color());
         }
 
         g->render(viewer, context);
 
-        viewer.endObject();
+        viewer.end_object();
     } else if (this->appearance.value) {
         this->appearance.value->modified(false);
     }
@@ -11429,7 +11434,7 @@ void Sound::update_modified(node_path & path, int flags)
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Sound::render(Viewer & viewer, const VrmlRenderContext context)
+void Sound::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
 {
     // If this clip has been modified, update the internal data
     if (this->source.value && this->source.value->modified()) {
@@ -11699,10 +11704,10 @@ Sphere::~Sphere() throw ()
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object Sphere::insert_geometry(Viewer & viewer,
-                                      const VrmlRenderContext context)
+viewer::object_t Sphere::insert_geometry(OpenVRML::viewer & viewer,
+                                         const VrmlRenderContext context)
 {
-    return viewer.insertSphere(this->radius.value);
+    return viewer.insert_sphere(this->radius.value);
 }
 
 /**
@@ -11924,7 +11929,7 @@ SphereSensor * SphereSensor::to_sphere_sensor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void SphereSensor::render(Viewer & viewer, const VrmlRenderContext context)
+void SphereSensor::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
 {
     //
     // Store the ModelView matrix which is calculated at the time of rendering
@@ -12315,18 +12320,18 @@ SpotLight * SpotLight::to_spot_light() const
  *      parents and apply them before rendering. This is not easy with
  *      DEF/USEd nodes...
  */
-void SpotLight::renderScoped(Viewer & viewer)
+void SpotLight::renderScoped(OpenVRML::viewer & viewer)
 {
     if (this->on.value && this->radius.value > 0.0) {
-        viewer.insertSpotLight(this->ambientIntensity.value,
-                               this->attenuation.value,
-                               this->beamWidth.value,
-                               this->color.value,
-                               this->cutOffAngle.value,
-                               this->direction.value,
-                               this->intensity.value,
-                               this->location.value,
-                               this->radius.value);
+        viewer.insert_spot_light(this->ambientIntensity.value,
+                                 this->attenuation.value,
+                                 this->beamWidth.value,
+                                 this->color.value,
+                                 this->cutOffAngle.value,
+                                 this->direction.value,
+                                 this->intensity.value,
+                                 this->location.value,
+                                 this->radius.value);
     }
     this->node::modified(false);
 }
@@ -12634,7 +12639,7 @@ void Switch::update_modified(node_path & path, int flags) {
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Switch::render(Viewer & viewer, const VrmlRenderContext context)
+void Switch::render(OpenVRML::viewer & viewer, const VrmlRenderContext context)
 {
     if (this->children_.value[0]) {
         this->children_.value[0]->render(viewer, context);
@@ -13416,19 +13421,19 @@ void Text::update_modified(node_path & path, int flags) {
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-Viewer::Object Text::insert_geometry(Viewer & viewer,
+viewer::object_t Text::insert_geometry(OpenVRML::viewer & viewer,
                                      const VrmlRenderContext context)
 {
-    const Viewer::Object retval =
-        viewer.insertShell(Viewer::MASK_CCW,
-                           this->textGeometry.coord,
-                           this->textGeometry.coordIndex,
-                           std::vector<OpenVRML::color>(), // color
-                           std::vector<int32>(), // colorIndex
-                           this->textGeometry.normal,
-                           std::vector<int32>(), // normalIndex
-                           this->textGeometry.texCoord,
-                           std::vector<int32>()); // texCoordIndex
+    const viewer::object_t retval =
+        viewer.insert_shell(viewer::mask_ccw,
+                            this->textGeometry.coord,
+                            this->textGeometry.coordIndex,
+                            std::vector<OpenVRML::color>(), // color
+                            std::vector<int32>(), // colorIndex
+                            this->textGeometry.normal,
+                            std::vector<int32>(), // normalIndex
+                            this->textGeometry.texCoord,
+                            std::vector<int32>()); // texCoordIndex
     if (this->fontStyle.value) { this->fontStyle.value->modified(false); }
     return retval;
 }
@@ -14509,12 +14514,13 @@ TextureTransform::~TextureTransform() throw ()
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void TextureTransform::render(Viewer & viewer, const VrmlRenderContext context)
+void TextureTransform::render(OpenVRML::viewer & viewer,
+                              const VrmlRenderContext context)
 {
-    viewer.setTextureTransform(this->center.value,
-                               this->rotation.value,
-                               this->scale.value,
-                               this->translation.value);
+    viewer.set_texture_transform(this->center.value,
+                                 this->rotation.value,
+                                 this->scale.value,
+                                 this->translation.value);
     this->node::modified(false);
 }
 
@@ -15475,7 +15481,7 @@ TransformClass::create_type(const std::string & id,
  */
 
 /**
- * @var Viewer::Object Transform::xformObject
+ * @var viewer::object_t Transform::xformObject
  *
  * @brief A handle to the renderer's representation of the Transform.
  */
@@ -15549,16 +15555,18 @@ const mat4f & Transform::transform() const throw ()
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-void Transform::render(Viewer & viewer, VrmlRenderContext context)
+void Transform::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
 {
     if (context.getCullFlag() != bounding_volume::inside) {
-        assert(dynamic_cast<const bounding_sphere *>(&this->bounding_volume()));
+        assert(dynamic_cast<const bounding_sphere *>
+               (&this->bounding_volume()));
         const bounding_sphere & bs =
             static_cast<const bounding_sphere &>(this->bounding_volume());
         bounding_sphere bv_copy(bs);
         bv_copy.transform(context.getMatrix());
-        bounding_volume::intersection r = viewer.intersectViewVolume(bv_copy);
-        if (context.getDrawBSpheres()) { viewer.drawBSphere(bs, r); }
+        bounding_volume::intersection r =
+            viewer.intersect_view_volume(bv_copy);
+        if (context.getDrawBSpheres()) { viewer.draw_bounding_sphere(bs, r); }
 
         if (r == bounding_volume::outside) { return; }
         if (r == bounding_volume::inside) { context.setCullFlag(bounding_volume::inside); }
@@ -15572,21 +15580,21 @@ void Transform::render(Viewer & viewer, VrmlRenderContext context)
     context.setMatrix(new_LM);
 
     if (this->xformObject && modified()) {
-        viewer.removeObject(this->xformObject);
+        viewer.remove_object(this->xformObject);
         this->xformObject = 0;
     }
 
     if (this->xformObject) {
-        viewer.insertReference(this->xformObject);
+        viewer.insert_reference(this->xformObject);
     } else if (!this->children_.value.empty()) {
-        this->xformObject = viewer.beginObject(this->id().c_str());
+        this->xformObject = viewer.begin_object(this->id().c_str());
 
         // Apply transforms
         viewer.transform(this->transform());
         // Render children
         this->Group::renderNoCull(viewer, context);
 
-        viewer.endObject();
+        viewer.end_object();
     }
     this->node::modified(false);
 }
@@ -16539,7 +16547,8 @@ VisibilitySensor::~VisibilitySensor() throw ()
  * with respect to the accumulated transformations above it in the
  * scene graph. Move to update() when xforms are accumulated in Groups...
  */
-void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
+void VisibilitySensor::render(OpenVRML::viewer & viewer,
+                              const VrmlRenderContext context)
 {
     using OpenVRML_::fpzero;
 
@@ -16554,7 +16563,7 @@ void VisibilitySensor::render(Viewer & viewer, const VrmlRenderContext context)
         xyz[1][0] = this->center.value.x() + this->size.value.x();
         xyz[1][1] = this->center.value.y() + this->size.value.y();
         xyz[1][2] = this->center.value.z() + this->size.value.z();
-        viewer.transformPoints(2, &xyz[0][0]);
+        viewer.transform_points(2, &xyz[0][0]);
         float dx = xyz[1][0] - xyz[0][0];
         float dy = xyz[1][1] - xyz[0][1];
         float dz = xyz[1][2] - xyz[0][2];

@@ -443,9 +443,9 @@ void node_class::initialize(viewpoint_node * initial_viewpoint,
  *
  * The default implementation of this method does nothing.
  *
- * @param viewer    the Viewer to render to.
+ * @param viewer    the viewer to render to.
  */
-void node_class::render(Viewer & viewer) throw ()
+void node_class::render(OpenVRML::viewer & viewer) throw ()
 {}
 
 /**
@@ -1867,7 +1867,7 @@ bool node::bounding_volume_dirty() const
  * @param context   generic context argument; holds things like the accumulated
  *                  modelview transform.
  */
-void node::render(Viewer & viewer, VrmlRenderContext context)
+void node::render(OpenVRML::viewer & viewer, VrmlRenderContext context)
 {
     this->modified(false);
 }

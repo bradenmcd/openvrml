@@ -36,7 +36,7 @@
 # include "private.h"
 # include "browser.h"
 # include "doc2.hpp"
-# include "Viewer.h"
+# include "viewer.h"
 # include "scope.h"
 # include "VrmlRenderContext.h"
 # include "script.h"
@@ -157,7 +157,8 @@ namespace OpenVRML {
         virtual Vrml97Node::TimeSensor * to_time_sensor() const;
         virtual Vrml97Node::TouchSensor * to_touch_sensor() const;
 
-        virtual void render(Viewer & viewer, VrmlRenderContext context);
+        virtual void render(OpenVRML::viewer & viewer,
+                            VrmlRenderContext context);
 
     private:
         // Not copyable.
@@ -1391,7 +1392,7 @@ namespace {
 
     struct RenderNodeClass :
             std::unary_function<void, node_class_map_t::value_type> {
-        explicit RenderNodeClass(Viewer & viewer):
+        explicit RenderNodeClass(OpenVRML::viewer & viewer):
             viewer(&viewer)
         {}
 
@@ -1401,17 +1402,17 @@ namespace {
         }
 
     private:
-        Viewer * viewer;
+        OpenVRML::viewer * viewer;
     };
 }
 
 /**
  * @brief Draw this browser into the specified viewer
  */
-void browser::render(Viewer & viewer)
+void browser::render(OpenVRML::viewer & viewer)
 {
     if (this->new_view) {
-        viewer.resetUserNavigation();
+        viewer.reset_user_navigation();
         this->new_view = false;
     }
     float avatarSize = 0.25;
@@ -1430,7 +1431,10 @@ void browser::render(Viewer & viewer)
         const float ambientIntensity = 0.3;
         const float intensity = 1.0;
 
-        viewer.insertDirLight(ambientIntensity, intensity, color, direction);
+        viewer.insert_dir_light(ambientIntensity,
+                                intensity,
+                                color,
+                                direction);
     }
 
     // sets the viewpoint transformation
@@ -1440,18 +1444,18 @@ void browser::render(Viewer & viewer)
     vec3f position, scale;
     rotation orientation;
     t.transformation(position, orientation, scale);
-    viewer.setViewpoint(position,
-                        orientation,
-                        this->active_viewpoint_->field_of_view(),
-                        avatarSize,
-                        visibilityLimit);
+    viewer.set_viewpoint(position,
+                         orientation,
+                         this->active_viewpoint_->field_of_view(),
+                         avatarSize,
+                         visibilityLimit);
 
     std::for_each(this->node_class_map.begin(), this->node_class_map.end(),
                   RenderNodeClass(viewer));
 
     // Top level object
 
-    viewer.beginObject(0);
+    viewer.begin_object(0);
     mat4f modelview = t.inverse();
     VrmlRenderContext rc(bounding_volume::partial, modelview);
     rc.setDrawBSpheres(true);
@@ -1467,10 +1471,10 @@ void browser::render(Viewer & viewer)
     assert(this->scene_);
     this->scene_->render(viewer, rc);
 
-    viewer.endObject();
+    viewer.end_object();
 
     // This is actually one frame late...
-    this->frame_rate_ = viewer.getFrameRate();
+    this->frame_rate_ = viewer.frame_rate();
 
     this->modified(false);
 
@@ -2084,7 +2088,7 @@ void scene::initialize(const double timestamp) throw (std::bad_alloc)
  * @param viewer    a Viewer to render to.
  * @param context   a VrmlRenderContext.
  */
-void scene::render(Viewer & viewer, VrmlRenderContext context) {
+void scene::render(OpenVRML::viewer & viewer, VrmlRenderContext context) {
     for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {
@@ -3454,7 +3458,9 @@ Vrml97Node::TouchSensor * ProtoNode::to_touch_sensor() const
     return this->implNodes[0]->to_touch_sensor();
 }
 
-void ProtoNode::render(Viewer & viewer, const VrmlRenderContext context) {
+void ProtoNode::render(OpenVRML::viewer & viewer,
+                       const VrmlRenderContext context)
+{
     assert(this->implNodes[0]);
     this->implNodes[0]->render(viewer, context);
 }

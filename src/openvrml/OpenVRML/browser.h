@@ -38,7 +38,7 @@ namespace OpenVRML {
     };
 
     class Doc2;
-    class Viewer;
+    class viewer;
     class ProtoNode;
     class scene;
     class Vrml97RootScope;
@@ -151,7 +151,7 @@ namespace OpenVRML {
 
         bool update(double current_time = -1.0);
 
-        void render(Viewer & viewer);
+        void render(OpenVRML::viewer & viewer);
 
         void modified(bool value);
         bool modified() const;
@@ -238,7 +238,7 @@ namespace OpenVRML {
         void initialize(double timestamp) throw (std::bad_alloc);
         const std::vector<node_ptr> & nodes() const throw ();
         const std::string url() const throw (std::bad_alloc);
-        void render(Viewer & viewer, VrmlRenderContext context);
+        void render(OpenVRML::viewer & viewer, VrmlRenderContext context);
         void load_url(const std::vector<std::string> & uri,
                       const std::vector<std::string> & parameter)
                 throw (std::bad_alloc);

@@ -23,7 +23,7 @@
 #   define VIEWEROPENGL_H
 
 #   include <stack>
-#   include <OpenVRML/Viewer.h>
+#   include <OpenVRML/viewer.h>
 #   include <OpenVRML/GL/common.h>
 
 // Use the stencil buffer to set the SHAPE mask.
@@ -35,7 +35,7 @@ namespace OpenVRML {
 
     namespace GL {
 
-        class OPENVRML_GL_SCOPE ViewerOpenGL : public Viewer {
+        class OPENVRML_GL_SCOPE ViewerOpenGL : public viewer {
         public:
             enum { MAX_LIGHTS = 8 };
 
@@ -170,6 +170,15 @@ namespace OpenVRML {
             void handleButton(EventInfo*);
             void handleMouseDrag(int, int);
 
+            texture_object_t
+            insertSubTexture(size_t xoffset, size_t yoffset,
+                             size_t w, size_t h,
+                             size_t whole_w, size_t whole_h,
+                             size_t nc, bool repeat_s,
+                             bool repeat_t,
+                             const unsigned char *pixels,
+                             bool retainHint = false);
+
             void insertExtrusionCaps(unsigned int mask, size_t nSpine,
                                      const std::vector<vec3f> & c,
                                      const std::vector<vec2f> & cs);
@@ -181,161 +190,154 @@ namespace OpenVRML {
             explicit ViewerOpenGL(OpenVRML::browser & browser);
             virtual ~ViewerOpenGL();
 
-            virtual RenderMode getRenderMode();
-            virtual double getFrameRate();
+            virtual rendering_mode mode();
+            virtual double frame_rate();
 
             //
-            virtual void resetUserNavigation();
-            virtual void getUserNavigation(mat4f & M);
+            virtual void reset_user_navigation();
+            virtual void get_user_navigation(mat4f & M);
 
             // Scope dirlights, open/close display lists
-            virtual Object beginObject(const char *name, bool retain);
-            virtual void endObject();
+            virtual object_t begin_object(const char *name, bool retain);
+            virtual void end_object();
 
             // Insert objects into the display list
-            virtual Object
-            insertBackground(const std::vector<float> & groundAngle,
-                             const std::vector<color> & groundColor,
-                             const std::vector<float> & skyAngle,
-                             const std::vector<color> & skyColor,
-                             int* whc = 0,
-                             unsigned char ** pixels = 0);
+            virtual object_t
+            insert_background(const std::vector<float> & groundAngle,
+                              const std::vector<color> & groundColor,
+                              const std::vector<float> & skyAngle,
+                              const std::vector<color> & skyColor,
+                              int* whc = 0,
+                              unsigned char ** pixels = 0);
 
 
-            virtual Object insertBox(const vec3f & size);
+            virtual object_t insert_box(const vec3f & size);
 
-            virtual Object insertCone(float h, float r, bool bottom, bool side);
-            virtual Object insertCylinder(float h, float r, bool, bool, bool);
+            virtual object_t insert_cone(float h, float r, bool bottom,
+                                         bool side);
+            virtual object_t insert_cylinder(float h, float r, bool, bool,
+                                             bool);
 
-            virtual Object
-            insertElevationGrid(unsigned int mask,
-                                const std::vector<float> & height,
-                                int32 xDimension,
-                                int32 zDimension,
-                                float xSpacing,
-                                float zSpacing,
-                                const std::vector<color> & color,
-                                const std::vector<vec3f> & normal,
-                                const std::vector<vec2f> & texCoord);
-            virtual Object
-            insertExtrusion(unsigned int,
-                            const std::vector<vec3f> & spine,
-                            const std::vector<vec2f> & crossSection,
-                            const std::vector<rotation> & orientation,
-                            const std::vector<vec2f> & scale);
-            virtual Object
-            insertLineSet(const std::vector<vec3f> & coord,
-                          const std::vector<int32> & coordIndex,
-                          bool colorPerVertex,
-                          const std::vector<color> & color,
-                          const std::vector<int32> & colorIndex);
-            virtual Object
-            insertPointSet(const std::vector<vec3f> & coord,
-                           const std::vector<color> & color);
-            virtual Object
-            insertShell(unsigned int mask,
-                        const std::vector<vec3f> & coord,
-                        const std::vector<int32> & coordIndex,
-                        const std::vector<color> & color,
-                        const std::vector<int32> & colorIndex,
-                        const std::vector<vec3f> & normal,
-                        const std::vector<int32> & normalIndex,
-                        const std::vector<vec2f> & texCoord,
-                        const std::vector<int32> & texCoordIndex);
-            virtual Object insertSphere(float radius);
+            virtual object_t
+            insert_elevation_grid(unsigned int mask,
+                                  const std::vector<float> & height,
+                                  int32 xDimension,
+                                  int32 zDimension,
+                                  float xSpacing,
+                                  float zSpacing,
+                                  const std::vector<color> & color,
+                                  const std::vector<vec3f> & normal,
+                                  const std::vector<vec2f> & texCoord);
+            virtual object_t
+            insert_extrusion(unsigned int,
+                             const std::vector<vec3f> & spine,
+                             const std::vector<vec2f> & crossSection,
+                             const std::vector<rotation> & orientation,
+                             const std::vector<vec2f> & scale);
+            virtual object_t
+            insert_line_set(const std::vector<vec3f> & coord,
+                            const std::vector<int32> & coordIndex,
+                            bool colorPerVertex,
+                            const std::vector<color> & color,
+                            const std::vector<int32> & colorIndex);
+            virtual object_t
+            insert_point_set(const std::vector<vec3f> & coord,
+                             const std::vector<color> & color);
+            virtual object_t
+            insert_shell(unsigned int mask,
+                         const std::vector<vec3f> & coord,
+                         const std::vector<int32> & coordIndex,
+                         const std::vector<color> & color,
+                         const std::vector<int32> & colorIndex,
+                         const std::vector<vec3f> & normal,
+                         const std::vector<int32> & normalIndex,
+                         const std::vector<vec2f> & texCoord,
+                         const std::vector<int32> & texCoordIndex);
+            virtual object_t insert_sphere(float radius);
 
             // Lights
-            virtual Object insertDirLight(float ambientItensity,
-                                          float intensity,
-                                          const color & color,
-                                          const vec3f & direction);
-            virtual Object insertPointLight(float ambientIntensity,
-                                            const vec3f & attenuation,
-                                            const color & color,
-                                            float intensity,
-                                            const vec3f & location,
-                                            float radius);
-            virtual Object insertSpotLight(float ambientIntensity,
-                                           const vec3f & attenuation,
-                                           float beamWidth,
-                                           const color & color,
-                                           float cutOffAngle,
-                                           const vec3f & direction,
-                                           float intensity,
-                                           const vec3f & location,
-                                           float radius);
+            virtual object_t insert_dir_light(float ambientItensity,
+                                              float intensity,
+                                              const color & color,
+                                              const vec3f & direction);
+            virtual object_t insert_point_light(float ambientIntensity,
+                                                const vec3f & attenuation,
+                                                const color & color,
+                                                float intensity,
+                                                const vec3f & location,
+                                                float radius);
+            virtual object_t insert_spot_light(float ambientIntensity,
+                                               const vec3f & attenuation,
+                                               float beamWidth,
+                                               const color & color,
+                                               float cutOffAngle,
+                                               const vec3f & direction,
+                                               float intensity,
+                                               const vec3f & location,
+                                               float radius);
 
 
             // Lightweight copy
-            virtual Object insertReference(Object existingObject);
+            virtual object_t insert_reference(object_t existingObject);
 
             // Remove an object from the display list
-            virtual void removeObject(Object key);
+            virtual void remove_object(object_t key);
 
-            virtual void enableLighting(bool);
+            virtual void enable_lighting(bool);
 
             // Set attributes
-            virtual void setColor(const color & rgb, float a = 1.0);
+            virtual void set_color(const color & rgb, float a = 1.0);
 
-            virtual void setFog(const color & color,
-                                float visibilityRange,
-                                const char * fogType);
+            virtual void set_fog(const color & color,
+                                 float visibilityRange,
+                                 const char * fogType);
 
-            virtual void setMaterial(float ambientIntensity,
-                                     const color & diffuseColor,
-                                     const color & emissiveColor,
-                                     float shininess,
-                                     const color & specularColor,
-                                     float transparency);
+            virtual void set_material(float ambientIntensity,
+                                      const color & diffuseColor,
+                                      const color & emissiveColor,
+                                      float shininess,
+                                      const color & specularColor,
+                                      float transparency);
 
-            virtual void setMaterialMode(int nTexComponents,
-                                         bool geometryColor);
+            virtual void set_material_mode(int nTexComponents,
+                                           bool geometryColor);
 
-            virtual void setSensitive(node * object);
+            virtual void set_sensitive(node * object);
 
-            virtual void scaleTexture(size_t w, size_t h,
-                                      size_t newW, size_t newH,
-                                      size_t nc,
-                                      unsigned char * pixels);
+            virtual void scale_texture(size_t w, size_t h,
+                                       size_t newW, size_t newH,
+                                       size_t nc,
+                                       unsigned char * pixels);
 
-            virtual TextureObject insertTexture(size_t w, size_t h, size_t nc,
-                                                bool repeat_s,
-                                                bool repeat_t,
-                                                const unsigned char *pixels,
-                                                bool retainHint = false);
-
-            virtual TextureObject
-            insertSubTexture(size_t xoffset, size_t yoffset,
-                             size_t w, size_t h,
-                             size_t whole_w, size_t whole_h,
-                             size_t nc, bool repeat_s,
-                             bool repeat_t,
-                             const unsigned char *pixels,
-                             bool retainHint = false);
+            virtual texture_object_t
+            insert_texture(size_t w, size_t h, size_t nc,
+                           bool repeat_s, bool repeat_t,
+                           const unsigned char *pixels,
+                           bool retainHint = false);
 
             // Reference/remove a texture object
-            virtual void insertTextureReference(TextureObject, int);
-            virtual void removeTextureObject(TextureObject);
+            virtual void insert_texture_reference(texture_object_t, int);
+            virtual void remove_texture_object(texture_object_t);
 
-            virtual void setTextureTransform(const vec2f & center,
-                                             float rotation,
-                                             const vec2f & scale,
-                                             const vec2f & translation);
+            virtual void set_texture_transform(const vec2f & center,
+                                               float rotation,
+                                               const vec2f & scale,
+                                               const vec2f & translation);
 
-            virtual void setViewpoint(const vec3f & position,
-                                      const rotation & orientation,
-                                      float fieldOfView,
-                                      float avatarSize,
-                                      float visibilityLimit);
+            virtual void set_viewpoint(const vec3f & position,
+                                       const rotation & orientation,
+                                       float fieldOfView,
+                                       float avatarSize,
+                                       float visibilityLimit);
 
             virtual void transform(const mat4f & mat);
 
             // The viewer knows the current viewpoint
-            virtual void transformPoints(int nPoints, float *points);
+            virtual void transform_points(int nPoints, float *points);
 
             virtual void
-            drawBSphere(const bounding_sphere & bs,
-                        bounding_volume::intersection intersection);
+            draw_bounding_sphere(const bounding_sphere & bs,
+                                 bounding_volume::intersection intersection);
 
 
 

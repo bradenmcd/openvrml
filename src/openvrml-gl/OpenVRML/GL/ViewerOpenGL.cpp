@@ -332,7 +332,7 @@ namespace {
  * @param browser   the browser.
  */
 ViewerOpenGL::ViewerOpenGL(OpenVRML::browser & browser):
-    Viewer(browser),
+    viewer(browser),
     tesselator(gluNewTess()),
     d_nSensitive(0),
     d_activeSensitive(0),
@@ -434,8 +434,8 @@ namespace {
 //  The OpenGL viewer never puts objects in display lists, so the
 //  retain hint is ignored.
 
-Viewer::Object ViewerOpenGL::beginObject(const char *,
-                                         bool retain)
+viewer::object_t ViewerOpenGL::begin_object(const char *,
+                                            bool retain)
 {
     // Finish setup stuff before first object
     if (1 == ++this->d_nObjects) {
@@ -458,7 +458,7 @@ Viewer::Object ViewerOpenGL::beginObject(const char *,
 
 // End of group scope
 
-void ViewerOpenGL::endObject()
+void ViewerOpenGL::end_object()
 {
     // Decrement nesting level for group-scoped lights and get rid
     // of any defined at this level
@@ -507,17 +507,19 @@ void ViewerOpenGL::endGeometry()
   glMatrixMode(GL_MODELVIEW);
 }
 
-Viewer::RenderMode ViewerOpenGL::getRenderMode()
+viewer::rendering_mode ViewerOpenGL::mode()
 {
-  return d_selectMode ? RENDER_MODE_PICK : RENDER_MODE_DRAW;
+    return d_selectMode
+        ? pick_mode
+        : draw_mode;
 }
 
-double ViewerOpenGL::getFrameRate()
+double ViewerOpenGL::frame_rate()
 {
-  return 1.0 / d_renderTime;
+    return 1.0 / this->d_renderTime;
 }
 
-void ViewerOpenGL::resetUserNavigation()
+void ViewerOpenGL::reset_user_navigation()
 {
     viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
     activeViewpoint.user_view_transform(mat4f());
@@ -528,7 +530,7 @@ void ViewerOpenGL::resetUserNavigation()
     wsPostRedraw();
 }
 
-void ViewerOpenGL::getUserNavigation(mat4f & M)
+void ViewerOpenGL::get_user_navigation(mat4f & M)
 {
     // The Matrix M should be a unit matrix
     viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
@@ -560,13 +562,13 @@ namespace {
  *
  * @return display object identifier.
  */
-Viewer::Object
-ViewerOpenGL::insertBackground(const std::vector<float> & groundAngle,
-                               const std::vector<color> & groundColor,
-                               const std::vector<float> & skyAngle,
-                               const std::vector<color> & skyColor,
-                               int * whc,
-                               unsigned char ** pixels)
+viewer::object_t
+ViewerOpenGL::insert_background(const std::vector<float> & groundAngle,
+                                const std::vector<color> & groundColor,
+                                const std::vector<float> & skyAngle,
+                                const std::vector<color> & skyColor,
+                                int * whc,
+                                unsigned char ** pixels)
 {
     float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
 
@@ -839,7 +841,7 @@ ViewerOpenGL::insertBackground(const std::vector<float> & groundAngle,
     this->d_background[1] = g;
     this->d_background[2] = b;
 
-    return Object(glid);
+    return object_t(glid);
 }
 
 /**
@@ -849,7 +851,7 @@ ViewerOpenGL::insertBackground(const std::vector<float> & groundAngle,
  *
  * @return display object identifier.
  */
-Viewer::Object ViewerOpenGL::insertBox(const vec3f & size)
+viewer::object_t ViewerOpenGL::insert_box(const vec3f & size)
 {
     GLuint glid = 0;
 
@@ -916,7 +918,7 @@ Viewer::Object ViewerOpenGL::insertBox(const vec3f & size)
     endGeometry();
     if (glid) { glEndList(); }
 
-    return Object(glid);
+    return object_t(glid);
 }
 
 namespace {
@@ -990,10 +992,10 @@ namespace {
  *
  * @return display object identifier.
  */
-Viewer::Object ViewerOpenGL::insertCone(const float height,
-                                        const float radius,
-                                        const bool bottom,
-                                        const bool side)
+viewer::object_t ViewerOpenGL::insert_cone(const float height,
+                                           const float radius,
+                                           const bool bottom,
+                                           const bool side)
 {
     GLuint glid = 0;
 
@@ -1061,7 +1063,7 @@ Viewer::Object ViewerOpenGL::insertCone(const float height,
     endGeometry();
     if (glid) { glEndList(); }
 
-    return Object(glid);
+    return object_t(glid);
 }
 
 /**
@@ -1075,11 +1077,11 @@ Viewer::Object ViewerOpenGL::insertCone(const float height,
  *
  * @return display object identifier.
  */
-Viewer::Object ViewerOpenGL::insertCylinder(const float height,
-                                            const float radius,
-                                            const bool bottom,
-                                            const bool side,
-                                            const bool top)
+viewer::object_t ViewerOpenGL::insert_cylinder(const float height,
+                                               const float radius,
+                                               const bool bottom,
+                                               const bool side,
+                                               const bool top)
 {
     GLuint glid = 0;
 
@@ -1163,7 +1165,7 @@ Viewer::Object ViewerOpenGL::insertCylinder(const float height,
     endGeometry();
     if (glid) { glEndList(); }
 
-    return Object(glid);
+    return object_t(glid);
 }
 
 namespace {
@@ -1220,16 +1222,16 @@ namespace {
  * @param normal        normals.
  * @param texCoord      texture coordinates.
  */
-Viewer::Object
-ViewerOpenGL::insertElevationGrid(const unsigned int mask,
-                                  const std::vector<float> & height,
-                                  const int32 xDimension,
-                                  const int32 zDimension,
-                                  const float xSpacing,
-                                  const float zSpacing,
-                                  const std::vector<color> & color,
-                                  const std::vector<vec3f> & normal,
-                                  const std::vector<vec2f> & texCoord)
+viewer::object_t
+ViewerOpenGL::insert_elevation_grid(const unsigned int mask,
+                                    const std::vector<float> & height,
+                                    const int32 xDimension,
+                                    const int32 zDimension,
+                                    const float xSpacing,
+                                    const float zSpacing,
+                                    const std::vector<color> & color,
+                                    const std::vector<vec3f> & normal,
+                                    const std::vector<vec2f> & texCoord)
 {
     int32 i, j;
     float x, z;
@@ -1244,8 +1246,8 @@ ViewerOpenGL::insertElevationGrid(const unsigned int mask,
     this->beginGeometry();
 
     // Face orientation & culling
-    glFrontFace((mask & MASK_CCW) ? GL_CCW : GL_CW);
-    if (!(mask & MASK_SOLID)) { glDisable(GL_CULL_FACE); }
+    glFrontFace((mask & mask_ccw) ? GL_CCW : GL_CW);
+    if (!(mask & mask_solid)) { glDisable(GL_CULL_FACE); }
 
     std::vector<float>::const_iterator h = height.begin();
     std::vector<OpenVRML::color>::const_iterator c = color.begin();
@@ -1267,16 +1269,16 @@ ViewerOpenGL::insertElevationGrid(const unsigned int mask,
         for (i = 0; i < xDimension; ++i) {
             x = xSpacing * i;
 
-            if (!color.empty() && ((mask & MASK_COLOR_PER_VERTEX)
+            if (!color.empty() && ((mask & mask_color_per_vertex)
                                     || (i < xDimension - 1))) {
                 glColor3fv(&(*c)[0]);
             }
 
-            if (!normal.empty() && ((mask & MASK_NORMAL_PER_VERTEX)
+            if (!normal.empty() && ((mask & mask_normal_per_vertex)
                                     || (i < xDimension - 1))) {
                 glNormal3fv(&(*n)[0]);
             } else if (normal.empty()) {
-                if (mask & MASK_NORMAL_PER_VERTEX) {
+                if (mask & mask_normal_per_vertex) {
                     const vec3f N =
                             elevationVertexNormal(i, j,
                                                   xDimension, zDimension,
@@ -1307,11 +1309,11 @@ ViewerOpenGL::insertElevationGrid(const unsigned int mask,
             glVertex3f(x, *h, z);
 
             // Vertex from next row
-            if (!color.empty() && (mask & MASK_COLOR_PER_VERTEX)) {
+            if (!color.empty() && (mask & mask_color_per_vertex)) {
                 glColor3fv(&(*(c + xDimension))[0]);
             }
 
-            if (mask & MASK_NORMAL_PER_VERTEX) {
+            if (mask & mask_normal_per_vertex) {
                 if (!normal.empty()) {
                     glNormal3fv(&(*(n + xDimension))[0]);
                 } else {
@@ -1337,7 +1339,7 @@ ViewerOpenGL::insertElevationGrid(const unsigned int mask,
 
     this->endGeometry();
     if (glid) { glEndList(); }
-    return Object(glid);
+    return object_t(glid);
 }
 
 
@@ -1415,14 +1417,14 @@ void ViewerOpenGL::insertExtrusionCaps(const unsigned int mask,
 
     const bool equalEndpts = cs.front() == cs.back();
 
-    if (!(mask & MASK_CONVEX)) {
+    if (!(mask & mask_convex)) {
         gluTessCallback(this->tesselator, GLU_TESS_BEGIN_DATA,
                         reinterpret_cast<TessCB>(tessExtrusionBegin));
         gluTessCallback(this->tesselator, GLU_TESS_VERTEX_DATA,
                         reinterpret_cast<TessCB>(tessExtrusionVertex));
         gluTessCallback(this->tesselator, GLU_TESS_END, glEnd);
 
-        if (mask & MASK_BOTTOM) {
+        if (mask & mask_bottom) {
             TessExtrusion bottom = { &c[0][0],
                                      &cs[0][0],
                                      xz[0], xz[2],
@@ -1445,7 +1447,7 @@ void ViewerOpenGL::insertExtrusionCaps(const unsigned int mask,
             gluTessEndPolygon(this->tesselator);
         }
 
-        if (mask & MASK_TOP) {
+        if (mask & mask_top) {
             int n = (nSpine - 1) * cs.size();
             TessExtrusion top = { &c[0][0],
                                   &cs[0][0],
@@ -1475,7 +1477,7 @@ void ViewerOpenGL::insertExtrusionCaps(const unsigned int mask,
         //
         vec3f N; // Normal
 
-        if (mask & MASK_BOTTOM) {
+        if (mask & mask_bottom) {
             glBegin(GL_POLYGON);
             N = indexFaceNormal(0, 1, 2, c);
             glNormal3fv(&N[0]);
@@ -1488,7 +1490,7 @@ void ViewerOpenGL::insertExtrusionCaps(const unsigned int mask,
             glEnd();
         }
 
-        if (mask & MASK_TOP) {
+        if (mask & mask_top) {
             int n = (nSpine - 1) * cs.size();
             glBegin(GL_POLYGON);
             N = indexFaceNormal(n + 2, n + 1, n, c);
@@ -1731,8 +1733,6 @@ namespace {
 }
 
 /**
- * @fn Viewer::Object Viewer::insertExtrusion(unsigned int mask, const std::vector<vec3f> & spine, const std::vector<vec2f> & crossSection, const std::vector<rotation> & orientation, const std::vector<vec2f> & scale)
- *
  * @brief Insert an extrusion into a display list.
  *
  * @param mask
@@ -1743,12 +1743,12 @@ namespace {
  *
  * @return display object identifier.
  */
-Viewer::Object
-ViewerOpenGL::insertExtrusion(unsigned int mask,
-                              const std::vector<vec3f> & spine,
-                              const std::vector<vec2f> & crossSection,
-                              const std::vector<rotation> & orientation,
-                              const std::vector<vec2f> & scale)
+viewer::object_t
+ViewerOpenGL::insert_extrusion(unsigned int mask,
+                               const std::vector<vec3f> & spine,
+                               const std::vector<vec2f> & crossSection,
+                               const std::vector<rotation> & orientation,
+                               const std::vector<vec2f> & scale)
 {
     using std::vector;
     vector<vec3f> c(crossSection.size() * spine.size());
@@ -1766,8 +1766,8 @@ ViewerOpenGL::insertExtrusion(unsigned int mask,
     this->beginGeometry();
 
     // Face orientation & culling
-    glFrontFace((mask & MASK_CCW) ? GL_CCW : GL_CW);
-    if (!(mask & MASK_SOLID)) { glDisable(GL_CULL_FACE); }
+    glFrontFace((mask & mask_ccw) ? GL_CCW : GL_CW);
+    if (!(mask & mask_solid)) { glDisable(GL_CULL_FACE); }
 
     // Handle creaseAngle, correct normals, ...
     int n = 0;
@@ -1791,7 +1791,7 @@ ViewerOpenGL::insertExtrusion(unsigned int mask,
       }
 
     // Draw caps. Convex can only impact the caps of an extrusion.
-    if (mask & (MASK_BOTTOM | MASK_TOP)) {
+    if (mask & (mask_bottom | mask_top)) {
         this->insertExtrusionCaps(mask,
                                   spine.size(), c,
                                   crossSection);
@@ -1799,7 +1799,7 @@ ViewerOpenGL::insertExtrusion(unsigned int mask,
 
     this->endGeometry();
     if (glid) { glEndList(); }
-    return Object(glid);
+    return object_t(glid);
 }
 
 /**
@@ -1813,12 +1813,12 @@ ViewerOpenGL::insertExtrusion(unsigned int mask,
  *
  * @return display object identifier.
  */
-Viewer::Object
-ViewerOpenGL::insertLineSet(const std::vector<vec3f> & coord,
-                            const std::vector<int32> & coordIndex,
-                            bool colorPerVertex,
-                            const std::vector<color> & color,
-                            const std::vector<int32> & colorIndex)
+viewer::object_t
+ViewerOpenGL::insert_line_set(const std::vector<vec3f> & coord,
+                              const std::vector<int32> & coordIndex,
+                              bool colorPerVertex,
+                              const std::vector<color> & color,
+                              const std::vector<int32> & colorIndex)
 {
     GLuint glid = 0;
 
@@ -1877,7 +1877,7 @@ ViewerOpenGL::insertLineSet(const std::vector<vec3f> & coord,
 
     if (glid) { glEndList(); }
 
-    return Object(glid);
+    return object_t(glid);
 }
 
 /**
@@ -1888,8 +1888,9 @@ ViewerOpenGL::insertLineSet(const std::vector<vec3f> & coord,
  *
  * @return display object identifier.
  */
-Viewer::Object ViewerOpenGL::insertPointSet(const std::vector<vec3f> & coord,
-                                            const std::vector<color> & color)
+viewer::object_t
+ViewerOpenGL::insert_point_set(const std::vector<vec3f> & coord,
+                               const std::vector<color> & color)
 {
     GLuint glid = 0;
 
@@ -1915,7 +1916,7 @@ Viewer::Object ViewerOpenGL::insertPointSet(const std::vector<vec3f> & coord,
     this->endGeometry();
     if (glid) { glEndList(); }
 
-    return Object(glid);
+    return object_t(glid);
 }
 
 namespace {
@@ -2004,14 +2005,14 @@ namespace {
 
                 // Per-face attributes
                 if (!s->color.empty()
-                        && !(s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
+                        && !(s->mask & viewer::mask_color_per_vertex)) {
                     const size_t index = !s->colorIndex.empty()
                                        ? s->colorIndex[nf]
                                        : nf;
                     glColor3fv(&s->color[index][0]);
                 }
 
-                if (! (s->mask & Viewer::MASK_NORMAL_PER_VERTEX)) {
+                if (! (s->mask & viewer::mask_normal_per_vertex)) {
                     int i1 = (i == 0)
                            ? 0
                            : i + 1;
@@ -2030,7 +2031,7 @@ namespace {
                                             s->coord);
 
                         // Flip normal if primitiv-orientation is clockwise
-                        if (!(s->mask & Viewer::MASK_CCW)) { N = -N; }
+                        if (!(s->mask & viewer::mask_ccw)) { N = -N; }
                         glNormal3fv(&N[0]);
                     }
                 }
@@ -2041,14 +2042,14 @@ namespace {
             if (s->coordIndex[i] >= 0) {
                 // Per-vertex attributes
                 if (!s->color.empty()
-                        && (s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
+                        && (s->mask & viewer::mask_color_per_vertex)) {
                     const size_t index = !s->colorIndex.empty()
                                        ? s->colorIndex[i]
                                        : s->coordIndex[i];
                     glColor3fv(&s->color[index][0]);
                 }
 
-                if (s->mask & Viewer::MASK_NORMAL_PER_VERTEX) {
+                if (s->mask & viewer::mask_normal_per_vertex) {
                     if (!s->normal.empty()) {
                         const size_t index = !s->normalIndex.empty()
                                            ? s->normalIndex[i]
@@ -2095,14 +2096,14 @@ namespace {
         glBegin(type);
 
         // Per-face attributes
-        if (!s->color.empty() && !(s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
+        if (!s->color.empty() && !(s->mask & viewer::mask_color_per_vertex)) {
             const size_t index = !s->colorIndex.empty()
                                ? s->colorIndex[s->nf]
                                : s->nf;
             glColor3fv(&s->color[index][0]);
         }
 
-        if (!(s->mask & Viewer::MASK_NORMAL_PER_VERTEX)) {
+        if (!(s->mask & viewer::mask_normal_per_vertex)) {
             int i1 = (s->i == 0)
                    ? 0
                    : s->i - 1;
@@ -2120,7 +2121,7 @@ namespace {
                                                s->coordIndex[i1 + 2],
                                                s->coord);
                 // Flip normal if primitiv-orientation is clockwise.
-                if (!(s->mask & Viewer::MASK_CCW)) { normal = -normal; }
+                if (!(s->mask & viewer::mask_ccw)) { normal = -normal; }
                 glNormal3fv(&normal[0]);
               }
           }
@@ -2132,14 +2133,14 @@ namespace {
         ShellData * s = static_cast<ShellData *>(pdata);
 
         // Per-vertex attributes
-        if (!s->color.empty() && (s->mask & Viewer::MASK_COLOR_PER_VERTEX)) {
+        if (!s->color.empty() && (s->mask & viewer::mask_color_per_vertex)) {
             const size_t index = !s->colorIndex.empty()
                                ? s->colorIndex[i]
                                : s->coordIndex[i];
             glColor3fv(&s->color[index][0]);
         }
 
-        if (s->mask & Viewer::MASK_NORMAL_PER_VERTEX) {
+        if (s->mask & viewer::mask_normal_per_vertex) {
             if (!s->normal.empty()) {
                 const size_t index = !s->normalIndex.empty()
                                    ? s->normalIndex[i]
@@ -2220,16 +2221,16 @@ namespace {
  *
  * @return display object identifier.
  */
-Viewer::Object
-ViewerOpenGL::insertShell(unsigned int mask,
-                          const std::vector<vec3f> & coord,
-                          const std::vector<int32> & coordIndex,
-                          const std::vector<color> & color,
-                          const std::vector<int32> & colorIndex,
-                          const std::vector<vec3f> & normal,
-                          const std::vector<int32> & normalIndex,
-                          const std::vector<vec2f> & texCoord,
-                          const std::vector<int32> & texCoordIndex)
+viewer::object_t
+ViewerOpenGL::insert_shell(unsigned int mask,
+                           const std::vector<vec3f> & coord,
+                           const std::vector<int32> & coordIndex,
+                           const std::vector<color> & color,
+                           const std::vector<int32> & colorIndex,
+                           const std::vector<vec3f> & normal,
+                           const std::vector<int32> & normalIndex,
+                           const std::vector<vec2f> & texCoord,
+                           const std::vector<int32> & texCoordIndex)
 {
     if (coordIndex.size() < 4) { return 0; } // 3 pts and a trailing -1
 
@@ -2258,19 +2259,19 @@ ViewerOpenGL::insertShell(unsigned int mask,
     this->beginGeometry();
 
     // Face orientation & culling
-    glFrontFace((mask & MASK_CCW) ? GL_CCW : GL_CW);
-    if (!(mask & MASK_SOLID)) { glDisable(GL_CULL_FACE); }
+    glFrontFace((mask & mask_ccw) ? GL_CCW : GL_CW);
+    if (!(mask & mask_solid)) { glDisable(GL_CULL_FACE); }
 
     // Color per face
-    if (!color.empty() && ! (mask & MASK_COLOR_PER_VERTEX)) {
+    if (!color.empty() && ! (mask & mask_color_per_vertex)) {
         glShadeModel(GL_FLAT);
     }
 
     // -------------------------------------------------------
 
     // Generation of per vertex normals isn't implemented yet...
-    if (normal.empty() && (mask & MASK_NORMAL_PER_VERTEX)) {
-        mask &= ~MASK_NORMAL_PER_VERTEX;
+    if (normal.empty() && (mask & mask_normal_per_vertex)) {
+        mask &= ~mask_normal_per_vertex;
     }
 
     // -------------------------------------------------------
@@ -2287,7 +2288,7 @@ ViewerOpenGL::insertShell(unsigned int mask,
     };
 
     // Handle non-convex polys
-    if (!(mask & MASK_CONVEX)) {
+    if (!(mask & mask_convex)) {
         insertShellTess(this->tesselator, &s);
     } else {
         insertShellConvex(&s);
@@ -2296,7 +2297,7 @@ ViewerOpenGL::insertShell(unsigned int mask,
     endGeometry();
     if (glid) { glEndList(); }
 
-    return Object(glid);
+    return object_t(glid);
 }
 
 namespace {
@@ -2354,7 +2355,7 @@ namespace {
  *
  * @return display object identifier.
  */
-Viewer::Object ViewerOpenGL::insertSphere(const float radius)
+viewer::object_t ViewerOpenGL::insert_sphere(const float radius)
 {
   GLuint glid = 0;
 
@@ -2406,7 +2407,7 @@ Viewer::Object ViewerOpenGL::insertSphere(const float radius)
   endGeometry();
   if (glid) glEndList();
 
-  return (Object) glid;
+  return object_t(glid);
 }
 
 /**
@@ -2419,10 +2420,10 @@ Viewer::Object ViewerOpenGL::insertSphere(const float radius)
  *
  * @return display object identifier.
  */
-Viewer::Object ViewerOpenGL::insertDirLight(const float ambientIntensity,
-                                            const float intensity,
-                                            const color & color,
-                                            const vec3f & direction)
+viewer::object_t ViewerOpenGL::insert_dir_light(const float ambientIntensity,
+                                                const float intensity,
+                                                const color & color,
+                                                const vec3f & direction)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -2478,12 +2479,12 @@ Viewer::Object ViewerOpenGL::insertDirLight(const float ambientIntensity,
  *      the lights accordingly? Get light and geometry into consistent
  *      coordinates first.
  */
-Viewer::Object ViewerOpenGL::insertPointLight(const float ambientIntensity,
-                                              const vec3f & attenuation,
-                                              const color & color,
-                                              const float intensity,
-                                              const vec3f & location,
-                                              const float radius)
+viewer::object_t ViewerOpenGL::insert_point_light(const float ambientIntensity,
+                                                  const vec3f & attenuation,
+                                                  const color & color,
+                                                  const float intensity,
+                                                  const vec3f & location,
+                                                  const float radius)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -2542,15 +2543,15 @@ Viewer::Object ViewerOpenGL::insertPointLight(const float ambientIntensity,
  *
  * @todo Same comments as for PointLight apply here.
  */
-Viewer::Object ViewerOpenGL::insertSpotLight(const float ambientIntensity,
-                                             const vec3f & attenuation,
-                                             const float beamWidth,
-                                             const color & color,
-                                             const float cutOffAngle,
-                                             const vec3f & direction,
-                                             const float intensity,
-                                             const vec3f & location,
-                                             const float radius)
+viewer::object_t ViewerOpenGL::insert_spot_light(const float ambientIntensity,
+                                                 const vec3f & attenuation,
+                                                 const float beamWidth,
+                                                 const color & color,
+                                                 const float cutOffAngle,
+                                                 const vec3f & direction,
+                                                 const float intensity,
+                                                 const vec3f & location,
+                                                 const float radius)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -2597,28 +2598,27 @@ Viewer::Object ViewerOpenGL::insertSpotLight(const float ambientIntensity,
 
 // Lightweight copy
 
-Viewer::Object ViewerOpenGL::insertReference(Object existingObject)
+viewer::object_t ViewerOpenGL::insert_reference(object_t existingObject)
 {
-  glCallList( (GLuint) existingObject );
-  return 0;
+    glCallList(GLuint(existingObject));
+    return 0;
 }
 
 // Remove an object from the display list
 
-void ViewerOpenGL::removeObject(Object key)
+void ViewerOpenGL::remove_object(object_t key)
 {
-  glDeleteLists( (GLuint) key, 1 );
+    glDeleteLists(GLuint(key), 1 );
 }
 
 
-void ViewerOpenGL::enableLighting(bool lightsOn)
+void ViewerOpenGL::enable_lighting(bool lightsOn)
 {
-  if (lightsOn)
-    {
-      if (d_lit) glEnable(GL_LIGHTING);
+    if (lightsOn) {
+        if (d_lit) { glEnable(GL_LIGHTING); }
+    } else {
+        glDisable(GL_LIGHTING);
     }
-  else
-    glDisable(GL_LIGHTING);
 }
 
 /**
@@ -2627,7 +2627,7 @@ void ViewerOpenGL::enableLighting(bool lightsOn)
  * @param rgb   red, green, and blue components.
  * @param a     alpha (transparency) component.
  */
-void ViewerOpenGL::setColor(const color & rgb, const float a)
+void ViewerOpenGL::set_color(const color & rgb, const float a)
 {
     glColor4f(rgb.r(), rgb.g(), rgb.b(), a);
 }
@@ -2638,15 +2638,17 @@ void ViewerOpenGL::setColor(const color & rgb, const float a)
  * @param color             fog color.
  * @param visibilityRange   the distance at which objects are fully obscured by
  *                          fog.
- * @param fogType           fog type.
+ * @param type              fog type.
  */
-void ViewerOpenGL::setFog(const color & color,
-                          const float visibilityRange,
-                          const char * const fogType)
+void ViewerOpenGL::set_fog(const color & color,
+                           const float visibilityRange,
+                           const char * const type)
 {
     static const std::string exponential("EXPONENTIAL");
     const GLfloat fogColor[4] = { color.r(), color.g(), color.b(), 1.0 };
-    const GLint fogMode = (fogType == exponential) ? GL_EXP : GL_LINEAR;
+    const GLint fogMode = (type == exponential)
+                        ? GL_EXP
+                        : GL_LINEAR;
 
     glEnable(GL_FOG);
     glFogf(GL_FOG_START, 1.5); // XXX What should this be?
@@ -2665,12 +2667,12 @@ void ViewerOpenGL::setFog(const color & color,
  * @param specularColor     specular color.
  * @param transparency      transparency.
  */
-void ViewerOpenGL::setMaterial(const float ambientIntensity,
-                               const color & diffuseColor,
-                               const color & emissiveColor,
-                               const float shininess,
-                               const color & specularColor,
-                               const float transparency)
+void ViewerOpenGL::set_material(const float ambientIntensity,
+                                const color & diffuseColor,
+                                const color & emissiveColor,
+                                const float shininess,
+                                const color & specularColor,
+                                const float transparency)
 {
     const float alpha = 1.0 - transparency;
 
@@ -2721,8 +2723,8 @@ void ViewerOpenGL::setMaterial(const float ambientIntensity,
 // insert<geometry> causes problems when the texture or geometry node is
 // USE'd with a different context.
 
-void ViewerOpenGL::setMaterialMode (int textureComponents,
-                                    bool colors)
+void ViewerOpenGL::set_material_mode(int textureComponents,
+                                     bool colors)
 {
   if (textureComponents && d_texture && ! d_wireframe)
     {
@@ -2746,7 +2748,7 @@ void ViewerOpenGL::setMaterialMode (int textureComponents,
 
 }
 
-void ViewerOpenGL::setSensitive(node * object)
+void ViewerOpenGL::set_sensitive(node * object)
 {
     if (object) {
         // should make this dynamic...
@@ -2767,10 +2769,10 @@ void ViewerOpenGL::setSensitive(node * object)
 // Scale an image to make sizes powers of two. This puts the data back
 // into the memory pointed to by pixels, so there better be enough.
 
-void ViewerOpenGL::scaleTexture(size_t w, size_t h,
-                                size_t newW, size_t newH,
-                                size_t nc,
-                                unsigned char* pixels)
+void ViewerOpenGL::scale_texture(size_t w, size_t h,
+                                 size_t newW, size_t newH,
+                                 size_t nc,
+                                 unsigned char* pixels)
 {
   GLenum fmt[] = { GL_LUMINANCE,        // single component
                    GL_LUMINANCE_ALPHA,        // 2 components
@@ -2793,12 +2795,12 @@ void ViewerOpenGL::scaleTexture(size_t w, size_t h,
 //
 // Pixels are lower left to upper right by row.
 //
-Viewer::TextureObject
-ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
-                            bool repeat_s,
-                            bool repeat_t,
-                            const unsigned char * pixels,
-                            bool retainHint)
+viewer::texture_object_t
+ViewerOpenGL::insert_texture(size_t w, size_t h, size_t nc,
+                             bool repeat_s,
+                             bool repeat_t,
+                             const unsigned char * pixels,
+                             bool retainHint)
 {
   GLenum fmt[] = { GL_LUMINANCE,        // single component
                    GL_LUMINANCE_ALPHA,        // 2 components
@@ -2832,7 +2834,7 @@ ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
-  return (TextureObject) glid;
+  return texture_object_t(glid);
 }
 
 
@@ -2840,7 +2842,7 @@ ViewerOpenGL::insertTexture(size_t w, size_t h, size_t nc,
 // Pixels are lower left to upper right by row.
 //
 
-Viewer::TextureObject
+viewer::texture_object_t
 ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset,
                                size_t w, size_t h,
                                size_t whole_w,size_t whole_h,size_t nc,
@@ -2887,11 +2889,11 @@ ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset,
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
-  return (TextureObject) glid;
+  return texture_object_t(glid);
 }
 
 
-void ViewerOpenGL::insertTextureReference(TextureObject t, int nc)
+void ViewerOpenGL::insert_texture_reference(texture_object_t t, int nc)
 {
 #if USE_TEXTURE_DISPLAY_LISTS
   // Enable blending if needed
@@ -2903,7 +2905,7 @@ void ViewerOpenGL::insertTextureReference(TextureObject t, int nc)
 }
 
 
-void ViewerOpenGL::removeTextureObject(TextureObject t)
+void ViewerOpenGL::remove_texture_object(texture_object_t t)
 {
 #if USE_TEXTURE_DISPLAY_LISTS
   GLuint glid = (GLuint) t;
@@ -2912,8 +2914,6 @@ void ViewerOpenGL::removeTextureObject(TextureObject t)
 }
 
 /**
- * @fn void Viewer::setTextureTransform(const vec2f & center, float rotation, const vec2f & scale, const vec2f & translation)
- *
  * @brief Set the texture transform.
  *
  * Texture coordinate transform
@@ -2924,10 +2924,10 @@ void ViewerOpenGL::removeTextureObject(TextureObject t)
  * @param scale         scale.
  * @param translation   translation.
  */
-void ViewerOpenGL::setTextureTransform(const vec2f & center,
-                                       float rotation,
-                                       const vec2f & scale,
-                                       const vec2f & translation)
+void ViewerOpenGL::set_texture_transform(const vec2f & center,
+                                         float rotation,
+                                         const vec2f & scale,
+                                         const vec2f & translation)
 {
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
@@ -2975,8 +2975,6 @@ namespace {
 }
 
 /**
- * @fn void Viewer::setViewpoint(const vec3f & position, const rotation & orientation, float fieldOfView, float avatarSize, float visLimit)
- *
  * @brief Set the viewpoint.
  *
  * @param position          position.
@@ -2985,11 +2983,11 @@ namespace {
  * @param avatarSize        avatar size.
  * @param visibilityLimit   visiblity limit.
  */
-void ViewerOpenGL::setViewpoint(const vec3f & position,
-                                const rotation & orientation,
-                                const float fieldOfView,
-                                const float avatarSize,
-                                const float visibilityLimit)
+void ViewerOpenGL::set_viewpoint(const vec3f & position,
+                                 const rotation & orientation,
+                                 const float fieldOfView,
+                                 const float avatarSize,
+                                 const float visibilityLimit)
 {
     glMatrixMode( GL_PROJECTION );
     if (!this->d_selectMode) { glLoadIdentity(); }
@@ -3005,7 +3003,7 @@ void ViewerOpenGL::setViewpoint(const vec3f & position,
     gluPerspective(field_of_view, aspect, znear, zfar);
 
     VrmlFrustum frust(field_of_view, aspect, znear, zfar);
-    this->setFrustum(frust);
+    this->frustum(frust);
 
     glMatrixMode(GL_MODELVIEW);
 
@@ -3024,7 +3022,7 @@ void ViewerOpenGL::setViewpoint(const vec3f & position,
 
 // The viewer knows the current viewpoint
 
-void ViewerOpenGL::transformPoints(int np, float *p)
+void ViewerOpenGL::transform_points(int np, float *p)
 {
   float m[16];
   glGetFloatv (GL_MODELVIEW_MATRIX, m);
@@ -3124,19 +3122,22 @@ void ViewerOpenGL::resize(int width, int height)
 }
 
 
-void ViewerOpenGL::input( EventInfo *e )
+void ViewerOpenGL::input(EventInfo * e)
 {
-  switch (e->event)
-    {
+    switch (e->event) {
     case EVENT_KEY_DOWN:
-      handleKey( e->what ); break;
+        handleKey(e->what);
+        break;
     case EVENT_MOUSE_MOVE:
-      (void) checkSensitive( e->x, e->y, EVENT_MOUSE_MOVE ); break;
+        this->checkSensitive(e->x, e->y, EVENT_MOUSE_MOVE);
+        break;
     case EVENT_MOUSE_CLICK:
     case EVENT_MOUSE_RELEASE:
-      handleButton( e ); break;
+        this->handleButton(e);
+        break;
     case EVENT_MOUSE_DRAG:
-      handleMouseDrag( e->x, e->y ); break;
+        handleMouseDrag(e->x, e->y);
+        break;
     }
 }
 
@@ -3360,7 +3361,7 @@ void ViewerOpenGL::handleKey(int key)
 
     case KEY_HOME:
     case 'r':                        // Reset view
-      resetUserNavigation();
+      this->reset_user_navigation();
       break;
 
     case 't':
@@ -3663,8 +3664,9 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
 }
 
 void
-ViewerOpenGL::drawBSphere(const bounding_sphere & bs,
-                          const bounding_volume::intersection intersection)
+ViewerOpenGL::draw_bounding_sphere(
+    const bounding_sphere & bs,
+    const bounding_volume::intersection intersection)
 {
     static const GLfloat green[] = { 0.25f, 1.0f, 0.25f, 1.0f };
     static const GLfloat red[] = { 1.0f, 0.5f, 0.5f, 1.0f };
