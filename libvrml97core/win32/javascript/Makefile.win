@@ -236,7 +236,6 @@ $(BINOUTDIR)\jsapi.obj	 : $(SOURCE)\jsapi.c\
 							$(SOURCE)\jsdate.h\
 							$(SOURCE)\jsemit.h\
 							$(SOURCE)\jsexn.h\
-							$(SOURCE)\jsfile.h\
 							$(SOURCE)\jsfun.h\
 							$(SOURCE)\jsgc.h\
 							$(SOURCE)\jshash.h\
@@ -1120,7 +1119,6 @@ $(BINOUTDIR)\jsinitarrayapi.obj	 : .\jsinitarrayapi.c\
 							$(SOURCE)\jsdate.h\
 							$(SOURCE)\jsemit.h\
 							$(SOURCE)\jsexn.h\
-							$(SOURCE)\jsfile.h\
 							$(SOURCE)\jsfun.h\
 							$(SOURCE)\jsgc.h\
 							$(SOURCE)\jshash.h\

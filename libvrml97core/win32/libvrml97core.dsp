@@ -567,6 +567,10 @@ SOURCE=..\src\vrml97\doc2.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\vrml97\dummysound.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\vrml97\gifread.cpp
 
 !IF  "$(CFG)" == "libvrml97core - Win32 Release"
@@ -636,19 +640,6 @@ SOURCE=..\src\vrml97\pngread.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\vrml97\ScriptJDK.cpp
-
-!IF  "$(CFG)" == "libvrml97core - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
-
-# ADD CPP /I "."
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\src\vrml97\ScriptJS.cpp
 # ADD CPP /I "..\..\win32" /D "XP_PC" /D js_InitArrayClass=JS_InitArrayClass
 # End Source File
@@ -656,19 +647,6 @@ SOURCE=..\src\vrml97\ScriptJS.cpp
 
 SOURCE=..\src\vrml97\ScriptObject.cpp
 # ADD CPP /I "..\..\win32" /D "XP_PC"
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\vrml97\sound.c
-
-!IF  "$(CFG)" == "libvrml97core - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
-
-# ADD CPP /I "."
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 

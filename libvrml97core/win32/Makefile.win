@@ -129,8 +129,8 @@ LIB32 = link.exe -lib
 OBJ1 = $(BINOUTDIR)\Audio$(O) $(BINOUTDIR)\Doc$(O) $(BINOUTDIR)\Doc2$(O) $(BINOUTDIR)\MathUtils$(O)\
       $(BINOUTDIR)\gifread$(O) $(BINOUTDIR)\Image$(O) $(BINOUTDIR)\jpgread$(O)\
 	  $(BINOUTDIR)\Vrml97Parser$(O) $(BINOUTDIR)\vrml97scanner$(O) $(BINOUTDIR)\pngread$(O)\
-      $(BINOUTDIR)\ScriptJDK$(O) $(BINOUTDIR)\ScriptJS$(O) $(BINOUTDIR)\ScriptObject$(O)\
-      $(BINOUTDIR)\sound$(O) $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O)\
+        $(BINOUTDIR)\ScriptJS$(O) $(BINOUTDIR)\ScriptObject$(O)\
+      $(BINOUTDIR)\dummysound$(O) $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O)\
       $(BINOUTDIR)\VrmlField$(O) $(BINOUTDIR)\VrmlNamespace$(O) $(BINOUTDIR)\VrmlNode$(O)\
       $(BINOUTDIR)\VrmlNodeAnchor$(O) $(BINOUTDIR)\VrmlNodeAppearance$(O)\
 	  $(BINOUTDIR)\VrmlNodeAudioClip$(O) $(BINOUTDIR)\VrmlNodeBackGround$(O)\
@@ -183,10 +183,9 @@ clean :
 	-@erase $(BINOUTDIR)\MathUtils.obj
 	-@erase $(BINOUTDIR)\Vrml97Parser.obj
 	-@erase $(BINOUTDIR)\pngread.obj
-	-@erase $(BINOUTDIR)\ScriptJDK.obj
 	-@erase $(BINOUTDIR)\ScriptJS.obj
 	-@erase $(BINOUTDIR)\ScriptObject.obj
-	-@erase $(BINOUTDIR)\sound.obj
+	-@erase $(BINOUTDIR)\dummysound.obj
 	-@erase $(BINOUTDIR)\System.obj
 	-@erase $(BINOUTDIR)\Viewer.obj
 	-@erase $(BINOUTDIR)\VrmlField.obj
@@ -358,24 +357,6 @@ $(BINOUTDIR)\pngread.obj : $(SOURCE)\pngread.cpp $(SOURCE)\pngread.h
 	                    	$(CPP) $(CFLAGS) /I $(PNGLIB_DIR) /I $(ZLIB_DIR)\
 							$(SOURCE)\pngread.cpp
 
-$(BINOUTDIR)\ScriptJDK.obj : $(SOURCE)\ScriptJDK.cpp $(SOURCE)\ScriptJDK.h\
-						     $(SOURCE)\Doc.h $(SOURCE)\MathUtils.h\
-                        	 $(SOURCE)\ScriptObject.h $(SOURCE)\System.h\
-                        	 $(SOURCE)\Viewer.h	$(SOURCE)\VrmlField.h\
-                             $(SOURCE)\VrmlMFColor.h $(SOURCE)\VrmlMFFloat.h\
-	                         $(SOURCE)\VrmlMFInt.h	$(SOURCE)\VrmlMFNode.h\
-                             $(SOURCE)\VrmlMFRotation.h	$(SOURCE)\VrmlMFString.h\
-                             $(SOURCE)\VrmlMFVec2f.h $(SOURCE)\VrmlMFVec3f.h\
-                        	 $(SOURCE)\VrmlNamespace.h $(SOURCE)\VrmlNode.h\
-                        	 $(SOURCE)\VrmlNodeChild.h $(SOURCE)\VrmlNodeGroup.h\
-                             $(SOURCE)\VrmlNodeScript.h $(SOURCE)\VrmlNodeType.h\
-                             $(SOURCE)\VrmlScene.h $(SOURCE)\VrmlSFBool.h\
-                             $(SOURCE)\VrmlSFColor.h $(SOURCE)\VrmlSFFloat.h\
-	                         $(SOURCE)\VrmlSFImage.h $(SOURCE)\VrmlSFInt.h\
-                             $(SOURCE)\VrmlSFNode.h	$(SOURCE)\VrmlSFRotation.h\
-                             $(SOURCE)\VrmlSFString.h $(SOURCE)\VrmlSFTime.h\
-                             $(SOURCE)\VrmlSFVec2f.h $(SOURCE)\VrmlSFVec3f.h
-							 $(CPP) $(CFLAGS) $(SOURCE)\ScriptJDK.cpp
 
 $(BINOUTDIR)\ScriptJS.obj : $(SOURCE)\ScriptJS.cpp $(SOURCE)\ScriptJS.h\
                         	$(SOURCE)\Doc.h $(SOURCE)\MathUtils.h\
@@ -401,7 +382,6 @@ $(BINOUTDIR)\ScriptJS.obj : $(SOURCE)\ScriptJS.cpp $(SOURCE)\ScriptJS.h\
 
 $(BINOUTDIR)\ScriptObject.obj : $(SOURCE)\ScriptObject.cpp $(SOURCE)\ScriptObject.h\
 								$(SOURCE)\Doc.h\
-								$(SOURCE)\ScriptJDK.h\
 								$(SOURCE)\ScriptJS.h\
 								$(SOURCE)\System.h\
 								$(SOURCE)\Viewer.h\
@@ -419,8 +399,8 @@ $(BINOUTDIR)\ScriptObject.obj : $(SOURCE)\ScriptObject.cpp $(SOURCE)\ScriptObjec
 								$(CPP) $(CFLAGS) /I $(JSINCLUDE) /I $(ZLIB_DIR) /D XP_PC\
 								/I ..\..\win32 $(SOURCE)\ScriptObject.cpp
 
-$(BINOUTDIR)\sound.obj : $(SOURCE)\sound.c $(SOURCE)\sound.h
-						 $(CPP) $(CFLAGS) $(SOURCE)\sound.c
+$(BINOUTDIR)\dummysound.obj : $(SOURCE)\dummysound.cpp $(SOURCE)\sound.h
+						 $(CPP) $(CFLAGS) $(SOURCE)\dummysound.cpp
 
 $(BINOUTDIR)\System.obj : $(SOURCE)\System.cpp $(SOURCE)\System.h
 						 $(CPP) $(CFLAGS) $(SOURCE)\System.cpp
