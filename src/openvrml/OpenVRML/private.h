@@ -45,6 +45,7 @@
             
 #   include <assert.h>
 #   include <math.h>
+#   include <stddef.h>
 
 namespace {
     namespace OpenVRML_ {

@@ -1,6 +1,9 @@
-2002-06-16  Braden McDaniel  <braden@endoframe.com>
+2002-06-17  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.12.1.
+
+        * src/openvrml/OpenVRML/private.h,
+          src/openvrml/OpenVRML/VrmlMatrix.h: #include <stddef.h>.
 
 2002-06-16  Braden McDaniel  <braden@endoframe.com>
 

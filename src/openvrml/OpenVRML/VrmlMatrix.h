@@ -22,6 +22,7 @@
 #   define OPENVRML_VRMLMATRIX_H
 
 #   include <assert.h>
+#   include <stddef.h>
 #   include <iostream.h>
 #   include "common.h"
 
