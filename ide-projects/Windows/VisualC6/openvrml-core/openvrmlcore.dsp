@@ -126,10 +126,6 @@ SOURCE=..\..\..\..\src\openvrml\OpenVRML\Route.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\..\src\openvrml\OpenVRML\ScriptJDK.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\..\src\openvrml\OpenVRML\ScriptObject.h
 # End Source File
 # Begin Source File

@@ -23,7 +23,6 @@
 
 #include <string.h>
 #include "field.h"
-#include "VrmlField.h"
 
 class OPENVRML_SCOPE VrmlEvent {
 
@@ -62,4 +61,3 @@ protected:
 };
 
 #endif VRMLEVENT_H
-

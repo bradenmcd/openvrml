@@ -1,3 +1,8 @@
+2001-08-04  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed minor bug in MFInt32::setElement() in the JavaScript
+          binding.
+
 2001-07-30  Braden McDaniel  <braden@endoframe.com>
 
         * Removed obsolete #undef's in `acconfig.h'.
