@@ -41,7 +41,7 @@ IDE_PROJECT_FILES = \
         ide-projects/Windows/VisualC6/tplib/antlr/Makefile.vc6
 
 EXTRA_DIST = Doxyfile.in openvrml.pc.in openvrml-gl.pc.in openvrml.spec.in \
-lookat.xpm $(IDE_PROJECT_FILES)
+lookat.xpm $(IDE_PROJECT_FILES) java
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = openvrml.pc openvrml-gl.pc

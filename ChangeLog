@@ -1,3 +1,8 @@
+2002-05-20  Braden McDaniel  <braden@endoframe.com>
+
+        * Makefile.am, src/Makefile.am: Add optionally built
+          directories to EXTRA_DIST.
+
 2002-05-19  Braden McDaniel  <braden@endoframe.com>
 
         * Document --with-gl and --with-glut configure options in
