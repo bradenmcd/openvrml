@@ -626,7 +626,8 @@ namespace openvrml {
 
     protected:
         child_node(const node_type & type,
-                   const boost::shared_ptr<openvrml::scope> & scope) throw ();
+                   const boost::shared_ptr<openvrml::scope> & scope)
+            throw ();
 
     private:
         virtual child_node * to_child() throw ();
@@ -646,7 +647,8 @@ namespace openvrml {
 
     protected:
         color_node(const node_type & type,
-                   const boost::shared_ptr<openvrml::scope> & scope) throw ();
+                   const boost::shared_ptr<openvrml::scope> & scope)
+            throw ();
 
     private:
         virtual color_node * to_color() throw ();
@@ -803,7 +805,8 @@ namespace openvrml {
 
     protected:
         texture_node(const node_type & type,
-                     const boost::shared_ptr<openvrml::scope> & scope) throw ();
+                     const boost::shared_ptr<openvrml::scope> & scope)
+            throw ();
 
     private:
         virtual texture_node * to_texture() throw ();
@@ -819,8 +822,9 @@ namespace openvrml {
         virtual const std::vector<vec2f> & point() const throw () = 0;
 
     protected:
-        texture_coordinate_node(const node_type & type,
-                                const boost::shared_ptr<openvrml::scope> & scope)
+        texture_coordinate_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:
@@ -835,8 +839,9 @@ namespace openvrml {
         void render_texture_transform(viewer & v);
 
     protected:
-        texture_transform_node(const node_type & type,
-                               const boost::shared_ptr<openvrml::scope> & scope)
+        texture_transform_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:

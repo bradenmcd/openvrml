@@ -1,3 +1,7 @@
+2004-11-14 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/node.h:  Formatting changes.
+
 2004-11-12 Braden McDaniel  <braden@endoframe.com>
 
 	Converted node implementations to override
