@@ -371,16 +371,18 @@ void ScriptJS::activate(double timeStamp, const char * fname,
 
     jsval fval, rval;
 
-    if (!JS_LookupProperty(d_cx, d_globalObj, fname, &fval)) {
-# ifndef NDEBUG
-        cerr << "No function for " << fname << endl;
-# endif
-        return;
-    }
-    
-    assert(!JSVAL_IS_VOID(fval));
-    
     try {
+        if (!JS_LookupProperty(d_cx, d_globalObj, fname, &fval)) {
+            throw std::bad_alloc();
+        }
+
+        //
+        // The function may not be defined, in which case we should do nothing.
+        //
+        if (JSVAL_IS_VOID(fval)) {
+            return;
+        }
+
         jsval * const jsargv = new jsval[argc];
 
         d_timeStamp = timeStamp;
@@ -393,7 +395,7 @@ void ScriptJS::activate(double timeStamp, const char * fname,
                         ? vrmlFieldToJSVal(argv[i]->fieldType(), argv[i], true)
                         : JSVAL_NULL;
         }
-        
+
         JSBool ok;
         ok = JS_CallFunctionValue(d_cx, d_globalObj, fval, argc, jsargv, &rval);
         //
@@ -414,9 +416,9 @@ void ScriptJS::activate(double timeStamp, const char * fname,
                 assert(ok);
             }
         }
-        
+
         delete [] jsargv;
-        
+
     } catch (std::bad_alloc & ex) {
 # ifndef NDEBUG
         cerr << ex.what() << endl;
