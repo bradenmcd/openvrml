@@ -4501,7 +4501,7 @@ namespace {
         //
         // Reconstruct the path.
         //
-        path.clear();
+        path = string();
         for (pos = pathSegments.begin(); pos != pathSegments.end(); ++pos) {
             path += '/' + *pos;
         }

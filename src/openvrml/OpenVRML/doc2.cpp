@@ -354,7 +354,9 @@ namespace {
  *                  absolute URL.
  */
 void Doc2::seturl(const std::string & url, const Doc2 * relative) {
-    this->url_.clear();
+    using std::string;
+    
+    this->url_ = string();
 
     if (!url.empty()) {
 
@@ -363,10 +365,10 @@ void Doc2::seturl(const std::string & url, const Doc2 * relative) {
         delete this->ostm_;
         this->ostm_ = 0;
 
-        std::string path;
+        string path;
 
         if (relative && !isAbsolute(url)) {
-	    path = relative->urlPath();
+            path = relative->urlPath();
         }
 
         this->url_ = path;

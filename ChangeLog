@@ -1,3 +1,9 @@
+2002-08-16  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/doc2.cpp,
+          src/openvrml/OpenVRML/browser.cpp: Apparently gcc 2.95.3
+          doesn't have basic_string<>::clear.
+
 2002-08-13  Braden McDaniel  <braden@endoframe.com>
 
         * lib/antlr/config.hpp, src/openvrml/OpenVRML/field.cpp: Fixes
