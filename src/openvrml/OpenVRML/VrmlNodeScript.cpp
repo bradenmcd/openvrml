@@ -84,25 +84,18 @@ VrmlNodeScript::VrmlNodeScript( VrmlScene *scene ) :
   if (d_scene) d_scene->addScript(this);
 }
 
-VrmlNodeScript::VrmlNodeScript( const VrmlNodeScript &n ) :
-  VrmlNodeChild(0),
-  d_directOutput(n.d_directOutput),
-  d_mustEvaluate(n.d_mustEvaluate),
-  d_url(n.d_url),
-  d_script(0),		// Force creation of a distinct script object
-  d_eventIns(0),
-  d_eventOuts(0),
-  d_fields(0),  
-  d_eventsReceived(0)
-{
+VrmlNodeScript::VrmlNodeScript(const VrmlNodeScript & node):
+        VrmlNodeChild(node), d_directOutput(node.d_directOutput),
+        d_mustEvaluate(node.d_mustEvaluate), d_url(node.d_url), d_script(0),
+        d_eventIns(0), d_eventOuts(0), d_fields(0), d_eventsReceived(0) {
   // add eventIn/eventOut/fields from source Script
   FieldList::const_iterator i;
 
-  for (i = n.d_eventIns.begin(); i != n.d_eventIns.end(); ++i)
+  for (i = node.d_eventIns.begin(); i != node.d_eventIns.end(); ++i)
     addEventIn( (*i)->name, (*i)->type );
-  for (i = n.d_eventOuts.begin(); i != n.d_eventOuts.end(); ++i)
+  for (i = node.d_eventOuts.begin(); i != node.d_eventOuts.end(); ++i)
     addEventOut( (*i)->name, (*i)->type );
-  for (i = n.d_fields.begin(); i != n.d_fields.end(); ++i)
+  for (i = node.d_fields.begin(); i != node.d_fields.end(); ++i)
     addField(  (*i)->name, (*i)->type, (*i)->value );
 }
 

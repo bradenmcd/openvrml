@@ -1,3 +1,8 @@
+2001-01-24  Braden McDaniel  <braden@endoframe.com>
+
+        * Changed VrmlNodeScript copy ctor to call VrmlNodeChild copy
+          ctor.
+
 2001-01-23  Braden McDaniel  <braden@endoframe.com>
 
         * Added getters/setters to VrmlNodeIndexedSet.
