@@ -625,6 +625,7 @@ void ScriptNode::processEventImpl(const std::string & id,
  */
 void ScriptNode::setEventOut(const std::string & id, const FieldValue & value)
         throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
+    cout << this->getId() << " node set " << id << " eventOut." << endl;
     const EventOutValueMap::iterator itr(this->eventOutValueMap.find(id));
     if (itr == this->eventOutValueMap.end()) {
         throw UnsupportedInterface("Script node has no eventOut \"" + id
@@ -1090,6 +1091,7 @@ namespace {
                     throw ();
         };
 
+        
         class MField {
         public:
             typedef std::vector<jsval> JsvalArray;
@@ -1109,6 +1111,11 @@ namespace {
             };
             
         protected:
+            static void AddRoots(JSContext * cx, JsvalArray & jsvalArray)
+                    throw (std::bad_alloc);
+            static void RemoveRoots(JSContext * cx, JsvalArray & jsvalArray)
+                    throw ();
+        
             static JSBool getElement(JSContext * cx, JSObject * obj,
                                      jsval id, jsval * vp) throw ();
             static JSBool getLength(JSContext * cx, JSObject * obj,
@@ -4916,13 +4923,38 @@ namespace {
         
         MField::MFData::~MFData() {}
         
+        void MField::AddRoots(JSContext * const cx, JsvalArray & jsvalArray)
+                throw (std::bad_alloc) {
+            size_t i;
+            try {
+                for (i = 0; i < jsvalArray.size(); ++i) {
+                    if (!JS_AddRoot(cx, &jsvalArray[i])) {
+                        throw std::bad_alloc();
+                    }
+                }
+            } catch (std::bad_alloc &) {
+                for (size_t j = 0; j < i - 1; ++j) {
+                    JS_RemoveRoot(cx, &jsvalArray[j]);
+                }
+                throw;
+            }
+        }
+        
+        void MField::RemoveRoots(JSContext * const cx, JsvalArray & jsvalArray)
+                throw () {
+            for (size_t i = 0; i < jsvalArray.size(); ++i) {
+                const JSBool ok = JS_RemoveRoot(cx, &jsvalArray[i]);
+                assert(ok);
+            }
+        }
+        
         JSBool MField::getElement(JSContext * const cx, JSObject * const obj,
                                   const jsval id, jsval * const vp) throw () {
             assert(cx);
             assert(obj);
             assert(vp);
-            MFData * const mfdata = static_cast<MFData *>
-                                            (JS_GetPrivate(cx, obj));
+            MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
             if (JSVAL_IS_INT(id)) {
@@ -4930,10 +4962,8 @@ namespace {
                         || JSVAL_TO_INT(id) >= mfdata->array.size()) {
                     return JS_FALSE;
                 }
-
                 *vp = mfdata->array[JSVAL_TO_INT(id)];
             }
-
             return JS_TRUE;
         }
 
@@ -4942,8 +4972,8 @@ namespace {
             assert(cx);
             assert(obj);
             assert(vp);
-            const MFData * const mfdata = static_cast<MFData *>
-                                            (JS_GetPrivate(cx, obj));
+            const MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
             *vp = INT_TO_JSVAL(mfdata->array.size());
@@ -4970,10 +5000,7 @@ namespace {
                                                 construct, 0, // constructor function, min arg count
                                                 properties, methods,
                                                 0, 0); // static properties and methods
-                if (!proto || !initObject(cx, proto, 0, 0)) {
-                    return 0;
-                }
-
+                if (!proto || !initObject(cx, proto, 0, 0)) { return 0; }
                 return proto;
             }
 
@@ -4992,12 +5019,9 @@ namespace {
                 //
                 if (!JS_IsConstructing(cx)) {
                     obj = JS_NewObject(cx, &Subclass::jsclass, 0, 0);
-                    if (!obj) {
-                        return JS_FALSE;
-                    }
+                    if (!obj) { return JS_FALSE; }
                     *rval = OBJECT_TO_JSVAL(obj);
                 }
-                
                 return initObject(cx, obj, argc, argv);
             }
         
@@ -5009,32 +5033,31 @@ namespace {
                     throw () {
                 assert(cx);
                 assert(obj);
-                
                 try {
-                    MFData * const mfdata = new MFData(argc);
-                    if (!JS_SetPrivate(cx, obj, mfdata)) { return JS_FALSE; }
-
+                    std::auto_ptr<MFData> mfdata(new MFData(argc));
+                    
                     for (uintN i = 0; i < argc; ++i) {
                         if (!JSVAL_IS_OBJECT(argv[i])
                                 || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[i]),
                                                   &Subclass::sfjsclass, 0)) {
                             return JS_FALSE;
                         }
-
-                        JSBool ok = JS_AddRoot(cx, &argv[i]);
-                        assert(ok);
-
                         mfdata->array[i] = argv[i];
                     }
 
-                } catch (std::exception & ex) {
+                    //
+                    // Protect array values from gc.
+                    //
+                    AddRoots(cx, mfdata->array);
+                    
+                    if (!JS_SetPrivate(cx, obj, mfdata.get())) {
+                        return JS_FALSE;
+                    }
+                    mfdata.release();
+                } catch (std::bad_alloc & ex) {
                     OPENVRML_PRINT_EXCEPTION_(ex);
                     return JS_FALSE;
-                } catch (...) {
-                    assert(false);
-                    return JS_FALSE;
                 }
-
                 return JS_TRUE;
             }
 
@@ -5046,9 +5069,8 @@ namespace {
                 assert(cx);
                 assert(obj);
                 assert(vp);
-                
-                MFData * const mfdata = static_cast<MFData *>
-                                                (JS_GetPrivate(cx, obj));
+                MFData * const mfdata =
+                        static_cast<MFData *>(JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
                 //
@@ -5085,60 +5107,66 @@ namespace {
         template <typename Subclass>
             JSBool MFJSObject<Subclass>::setLength(JSContext * const cx,
                                                    JSObject * const obj,
-                                                   const jsval id,
-                                                   jsval * const vp) throw () {
+                                                   jsval, jsval * const vp)
+                    throw () {
                 assert(cx);
                 assert(obj);
                 assert(vp);
                 
-                MFData * const mfdata = static_cast<MFData *>
-                                                (JS_GetPrivate(cx, obj));
+                MFData * const mfdata =
+                        static_cast<MFData *>(JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
                 if (!JSVAL_IS_INT(*vp) || JSVAL_TO_INT(*vp) < 0) {
                     return JS_FALSE;
                 }
 
+                if (JSVAL_TO_INT(*vp) == mfdata->array.size()) {
+                    return JS_TRUE; // Nothing to do.
+                }
+                
                 try {
-                    if (JSVAL_TO_INT(*vp) > mfdata->array.size()) {
-                        //
-                        // Grow the array; create new elements and protect
-                        // them from garbage collection.
-                        //
-                        const JsvalArray::size_type oldSize =
-                                mfdata->array.size();
-                        mfdata->array.resize(JSVAL_TO_INT(*vp));
-                        for (JsvalArray::size_type i = oldSize;
-                                i < mfdata->array.size(); ++i) {
+                    JsvalArray newArray(JSVAL_TO_INT(*vp));
+                    AddRoots(cx, newArray); // Protect from gc.
+
+                    //
+                    // Copy the values from the old array.
+                    //
+                    const size_t length = newArray.size() < mfdata->array.size()
+                                        ? newArray.size()
+                                        : mfdata->array.size();
+                    copy(mfdata->array.begin(), mfdata->array.begin() + length,
+                         newArray.begin());
+
+                    //
+                    // Initialize the rest of the array with new values.
+                    //
+                    try {
+                        for (size_t i = length; i < newArray.size(); ++i) {
                             JSObject * const element =
-                                JS_ConstructObject(cx, &Subclass::sfjsclass,
-                                                   0, 0);
+                                    JS_ConstructObject(cx, &Subclass::sfjsclass,
+                                                       0, 0);
                             if (!element) { throw std::bad_alloc(); }
-                            mfdata->array[i] = OBJECT_TO_JSVAL(element);
-                            if (!JS_AddRoot(cx, &mfdata->array[i])) {
-                                throw std::bad_alloc();
-                            }
+                            newArray[i] = OBJECT_TO_JSVAL(element);
                         }
-                    } else if (JSVAL_TO_INT(*vp) < mfdata->array.size()) {
-                        //
-                        // Shrink the array; allow the truncated elements to
-                        // be garbage collected.
-                        //
-                        for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
-                                i < mfdata->array.size(); ++i) {
-                            JSBool ok = JS_RemoveRoot(cx, &mfdata->array[i]);
-                            assert(ok);
-                        }
-                        mfdata->array.resize(JSVAL_TO_INT(*vp));
+                    } catch (std::bad_alloc &) {
+                        RemoveRoots(cx, newArray);
+                        throw;
                     }
-                } catch (std::exception & ex) {
+                    
+                    //
+                    // Remove roots for the values in the old array.
+                    //
+                    RemoveRoots(cx, mfdata->array);
+
+                    //
+                    // Finally, swap the new vector with the old one.
+                    //
+                    std::swap(mfdata->array, newArray);
+                } catch (std::bad_alloc & ex) {
                     OPENVRML_PRINT_EXCEPTION_(ex);
                     return JS_FALSE;
-                } catch (...) {
-                    assert(false);
-                    return JS_FALSE;
                 }
-
                 return JS_TRUE;
             }
 
@@ -5166,9 +5194,7 @@ namespace {
                                     JSVAL_TO_OBJECT(mfdata->array[i])));
                     assert(sfdata);
                     os << sfdata->getFieldValue();
-                    if ((i + 1) < mfdata->array.size()) {
-                        os << ", ";
-                    }
+                    if ((i + 1) < mfdata->array.size()) { os << ", "; }
                 }
                 os << "]";
 
@@ -5179,9 +5205,7 @@ namespace {
                 //
                 os.rdbuf()->freeze(0);
                 
-                if (!jsstr) {
-                    return JS_FALSE;
-                }
+                if (!jsstr) { return JS_FALSE; }
 
                 *rval = STRING_TO_JSVAL(jsstr);
                 return JS_TRUE;
@@ -5189,21 +5213,17 @@ namespace {
 
         template <typename Subclass>
             void MFJSObject<Subclass>::finalize(JSContext * const cx,
-                                                JSObject * const obj) throw () {
+                                                JSObject * const obj)
+                    throw () {
                 assert(cx);
                 assert(obj);
-                
                 MFData * const mfdata =
                         static_cast<MFData *>(JS_GetPrivate(cx, obj));
-                assert(mfdata);
-
-                for (JsvalArray::iterator i(mfdata->array.begin());
-                        i != mfdata->array.end(); ++i) {
-                    JSBool ok = JS_RemoveRoot(cx, &*i);
-                    assert(ok);
+                if (mfdata) {
+                    RemoveRoots(cx, mfdata->array);
+                    delete mfdata;
+                    JS_SetPrivate(cx, obj, 0);
                 }
-                delete mfdata;
-                JS_SetPrivate(cx, obj, 0);
             }
 
 
@@ -5223,10 +5243,7 @@ namespace {
                                                 construct, 0, // constructor function, min arg count
                                                 properties, methods,
                                                 0, 0); // static properties and methods
-                if (!proto || !initObject(cx, proto, 0, 0)) {
-                    return 0;
-                }
-
+                if (!proto || !initObject(cx, proto, 0, 0)) { return 0; }
                 return proto;
             }
 
@@ -5235,18 +5252,16 @@ namespace {
                                                    JSObject * obj,
 	                                           const uintN argc,
                                                    jsval * const argv,
-                                                   jsval * rval) throw () {
+                                                   jsval * rval)
+                    throw () {
                 //
                 // If called without new, replace obj with a new object.
                 //
                 if (!JS_IsConstructing(cx)) {
                     obj = JS_NewObject(cx, &Subclass::jsclass, 0, 0);
-                    if (!obj) {
-                        return JS_FALSE;
-                    }
+                    if (!obj) { return JS_FALSE; }
                     *rval = OBJECT_TO_JSVAL(obj);
                 }
-                
                 return initObject(cx, obj, argc, argv);
             }
         
@@ -5257,16 +5272,9 @@ namespace {
                                                     jsval * const argv)
                     throw () {
                 try {
-                    MFData * const mfdata = new MFData(argc);
-                    if (!JS_SetPrivate(cx, obj, mfdata)) {
-                        return JS_FALSE;
-                    }
-
-
+                    std::auto_ptr<MFData> mfdata(new MFData(argc));
                     for (uintN i = 0; i < argc; ++i) {
-                        if (!JSVAL_IS_NUMBER(argv[i])) {
-                            return JS_FALSE;
-                        }
+                        if (!JSVAL_IS_NUMBER(argv[i])) { return JS_FALSE; }
 
                         //
                         // If the value is an int, convert it to a double.
@@ -5280,23 +5288,21 @@ namespace {
                             assert(JSVAL_IS_DOUBLE(argv[i]));
                             mfdata->array[i] = argv[i];
                         }
-                        
-                        //
-                        // Protect from garbage collection.
-                        //
-                        if (!JS_AddRoot(cx, &mfdata->array[i])) {
-                            throw std::bad_alloc();
-                        }
                     }
 
-                } catch (std::exception & ex) {
+                    //
+                    // Protect array values from gc.
+                    //
+                    AddRoots(cx, mfdata->array);
+                    
+                    if (!JS_SetPrivate(cx, obj, mfdata.get())) {
+                        return JS_FALSE;
+                    }
+                    mfdata.release();
+                } catch (std::bad_alloc & ex) {
                     OPENVRML_PRINT_EXCEPTION_(ex);
                     return JS_FALSE;
-                } catch (...) {
-                    assert(false);
-                    return JS_FALSE;
                 }
-                
                 return JS_TRUE;
             }
 
@@ -5312,36 +5318,21 @@ namespace {
                 //
                 // Make sure new value is a number.
                 //
-                if (!JSVAL_IS_NUMBER(*vp)) {
-                    return JS_FALSE;
-                }
+                if (!JSVAL_IS_NUMBER(*vp)) { return JS_FALSE; }
 
                 //
-                // If the new value is an int, convert it to a double.
+                // Make sure the index is valid.
                 //
-                jsval doubleVal;
-                if (JSVAL_IS_INT(*vp)) {
-                    if (!JS_NewDoubleValue(cx, JSVAL_TO_INT(*vp),
-                                           &doubleVal)) {
-                        return JS_FALSE;
-                    }
-                } else {
-                    assert(JSVAL_IS_DOUBLE(*vp));
-                    doubleVal = *vp;
-                }
-                
                 if (!JSVAL_IS_INT(id) || JSVAL_TO_INT(id) < 0) {
                     return JS_FALSE;
                 }
-
+                
                 //
                 // Grow array if necessary.
                 //
                 if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
                     jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
-                    if (!setLength(cx, obj, 0, &newLength)) {
-                        return JS_FALSE;
-                    }
+                    if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
                 }
 
                 //
@@ -5363,50 +5354,64 @@ namespace {
             JSBool MFJSDouble<Subclass>::setLength(JSContext * const cx,
                                                    JSObject * const obj,
                                                    const jsval id,
-                                                   jsval * const vp) throw () {
-                MFData * const mfdata = static_cast<MFData *>
-                                                (JS_GetPrivate(cx, obj));
+                                                   jsval * const vp)
+                    throw () {
+                assert(cx);
+                assert(obj);
+                assert(vp);
+                
+                MFData * const mfdata =
+                        static_cast<MFData *>(JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
                 if (!JSVAL_IS_INT(*vp) || JSVAL_TO_INT(*vp) < 0) {
                     return JS_FALSE;
                 }
 
+                if (JSVAL_TO_INT(*vp) == mfdata->array.size()) {
+                    return JS_TRUE; // Nothing to do.
+                }
+                
                 try {
-                    if (JSVAL_TO_INT(*vp) > mfdata->array.size()) {
-                        //
-                        // Grow the array; create new elements and protect
-                        // them from garbage collection.
-                        //
-                        const JsvalArray::size_type oldSize =
-                                mfdata->array.size();
-                        mfdata->array.resize(JSVAL_TO_INT(*vp));
-                        for (JsvalArray::size_type i = oldSize;
-                                i < mfdata->array.size(); ++i) {
+                    JsvalArray newArray(JSVAL_TO_INT(*vp));
+                    AddRoots(cx, newArray); // Protect from gc.
+
+                    //
+                    // Copy the values from the old array.
+                    //
+                    const size_t length = newArray.size() < mfdata->array.size()
+                                        ? newArray.size()
+                                        : mfdata->array.size();
+                    copy(mfdata->array.begin(), mfdata->array.begin() + length,
+                         newArray.begin());
+
+                    //
+                    // Initialize the rest of the array with new values.
+                    //
+                    try {
+                        for (size_t i = length; i < newArray.size(); ++i) {
                             if (!JS_NewDoubleValue(cx, 0.0, &mfdata->array[i])) {
                                 throw std::bad_alloc();
                             }
-                            if (!JS_AddRoot(cx, &mfdata->array[i])) {
-                                throw std::bad_alloc();
-                            }
                         }
-                    } else if (JSVAL_TO_INT(*vp) < mfdata->array.size()) {
-                        //
-                        // Shrink the array; allow the truncated elements to
-                        // be garbage collected.
-                        //
-                        for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
-                                i < mfdata->array.size(); ++i) {
-                            JSBool ok = JS_RemoveRoot(cx, &mfdata->array[i]);
-                            assert(ok);
-                        }
-                        mfdata->array.resize(JSVAL_TO_INT(*vp));
+                    } catch (std::bad_alloc &) {
+                        RemoveRoots(cx, newArray);
+                        throw;
                     }
-                } catch (std::exception & ex) {
+                    
+                    //
+                    // Remove roots for the values in the old array.
+                    //
+                    RemoveRoots(cx, mfdata->array);
+
+                    //
+                    // Finally, swap the new vector with the old one.
+                    //
+                    std::swap(mfdata->array, newArray);
+                } catch (std::bad_alloc & ex) {
                     OPENVRML_PRINT_EXCEPTION_(ex);
                     return JS_FALSE;
                 }
-
                 return JS_TRUE;
             }
 
@@ -5451,15 +5456,11 @@ namespace {
                                                 JSObject * const obj) throw () {
                 MFData * const mfdata =
                         static_cast<MFData *>(JS_GetPrivate(cx, obj));
-                assert(mfdata);
-
-                for (JsvalArray::iterator i(mfdata->array.begin());
-                        i != mfdata->array.end(); ++i) {
-                    JSBool ok = JS_RemoveRoot(cx, &*i);
-                    assert(ok);
+                if (mfdata) {
+                    RemoveRoots(cx, mfdata->array);
+                    delete mfdata;
+                    JS_SetPrivate(cx, obj, 0);
                 }
-                delete mfdata;
-                JS_SetPrivate(cx, obj, 0);
             }
 
         JSClass MFColor::jsclass =
@@ -5471,6 +5472,9 @@ namespace {
         
         JSClass & MFColor::sfjsclass = SFColor::jsclass;
         
+        /**
+         * @todo This method should return a std::auto_ptr<OpenVRML::MFColor>.
+         */
         OpenVRML::MFColor * MFColor::createFromJSObject(JSContext * const cx,
                                                         JSObject * const obj)
                 throw (BadConversion, std::bad_alloc) {
@@ -5511,19 +5515,17 @@ namespace {
                     JS_ConstructObject(cx, &jsclass, 0, obj);
             if (!mfcolorObj) { return JS_FALSE; }
 
-            MFData * const mfdata = static_cast<MFData *>
-                                    (JS_GetPrivate(cx, mfcolorObj));
-
-            mfdata->array.resize(mfcolor.getLength());
-
+            jsval length = INT_TO_JSVAL(mfcolor.getLength());
+            if (!setLength(cx, mfcolorObj, 0, &length)) { return JS_FALSE; }
+            
+            MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, mfcolorObj));
             for (size_t i = 0; i < mfcolor.getLength(); ++i) {
                 const OpenVRML::SFColor sfcolor(mfcolor.getElement(i));
                 if (!SFColor::toJsval(sfcolor, cx, obj, &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
-
             *rval = OBJECT_TO_JSVAL(mfcolorObj);
             return JS_TRUE;
         }
@@ -5546,19 +5548,17 @@ namespace {
                     JS_ConstructObject(cx, &jsclass, 0, obj);
             if (!mffloatObj) { return JS_FALSE; }
 
-            MFData * const mfdata = static_cast<MFData *>
-                                    (JS_GetPrivate(cx, mffloatObj));
-
-            mfdata->array.resize(mffloat.getLength());
-
+            jsval length = INT_TO_JSVAL(mffloat.getLength());
+            if (!setLength(cx, mffloatObj, 0, &length)) { return JS_FALSE; }
+            
+            MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, mffloatObj));
             for (size_t i = 0; i < mffloat.getLength(); ++i) {
                 if (!JS_NewDoubleValue(cx, mffloat.getElement(i),
                                        &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
-
             *rval = OBJECT_TO_JSVAL(mffloatObj);
             return JS_TRUE;
         }
@@ -5628,19 +5628,21 @@ namespace {
                     JS_ConstructObject(cx, &jsclass, 0, obj);
             if (!mfint32Obj) { return JS_FALSE; }
 
+            jsval length = INT_TO_JSVAL(mfint32.getLength());
+            if (!setLength(cx, mfint32Obj, 0, &length)) { return JS_FALSE; }
+            
             MFData * const mfdata =
                     static_cast<MFData *>(JS_GetPrivate(cx, mfint32Obj));
-
-            mfdata->array.resize(mfint32.getLength());
-
             for (size_t i = 0; i < mfint32.getLength(); ++i) {
                 mfdata->array[i] = INT_TO_JSVAL(mfint32.getElement(i));
             }
-
             *rval = OBJECT_TO_JSVAL(mfint32Obj);
             return JS_TRUE;
         }
 
+        /**
+         * @todo This method should return a std::auto_ptr<OpenVRML::MFInt32>.
+         */
         OpenVRML::MFInt32 * MFInt32::createFromJSObject(JSContext * const cx,
                                                         JSObject * const obj)
                 throw (BadConversion, std::bad_alloc) {
@@ -5676,12 +5678,9 @@ namespace {
             //
             if (!JS_IsConstructing(cx)) {
                 obj = JS_NewObject(cx, &jsclass, 0, 0);
-                if (!obj) {
-                    return JS_FALSE;
-                }
+                if (!obj) { return JS_FALSE; }
                 *rval = OBJECT_TO_JSVAL(obj);
             }
-
             return initObject(cx, obj, argc, argv);
         }
 
@@ -5691,28 +5690,17 @@ namespace {
             assert(obj);
             
             try {
-                MFData * const mfdata =
-                        new MFData(argc);
-                if (!JS_SetPrivate(cx, obj, mfdata)) {
-                    return JS_FALSE;
-                }
-
+                std::auto_ptr<MFData> mfdata(new MFData(argc));
                 for (uintN i = 0; i < argc; ++i) {
-                    if (!JSVAL_IS_INT(argv[i])) {
-                        return JS_FALSE;
-                    }
-
+                    if (!JSVAL_IS_INT(argv[i])) { return JS_FALSE; }
                     mfdata->array[i] = argv[i];
                 }
-
-            } catch (std::exception & ex) {
+                if (!JS_SetPrivate(cx, obj, mfdata.get())) { return JS_FALSE; }
+                mfdata.release();
+            } catch (std::bad_alloc & ex) {
                 OPENVRML_PRINT_EXCEPTION_(ex);
                 return JS_FALSE;
-            } catch (...) {
-                assert(false);
-                return JS_FALSE;
             }
-
             return JS_TRUE;
         }
 
@@ -5729,29 +5717,25 @@ namespace {
             //
             // Make sure new value is an integer.
             //
-            if (!JSVAL_IS_INT(*vp)) {
-                return JS_FALSE;
-            }
+            if (!JSVAL_IS_INT(*vp)) { return JS_FALSE; }
 
-            if (!JSVAL_IS_INT(id) || JSVAL_TO_INT(id) < 0) {
-                return JS_FALSE;
-            }
+            //
+            // Make sure the index is valid.
+            //
+            if (!JSVAL_IS_INT(id) || JSVAL_TO_INT(id) < 0) { return JS_FALSE; }
 
             //
             // Grow array if necessary.
             //
             if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
                 jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
-                if (!setLength(cx, obj, 0, &newLength)) {
-                    return JS_FALSE;
-                }
+                if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
             }
 
             //
             // Put the new element in the array.
             //
             mfdata->array[JSVAL_TO_INT(id)] = *vp;
-
             return JS_TRUE;
         }
 
@@ -5773,14 +5757,10 @@ namespace {
                 if (JSVAL_TO_INT(*vp) != mfdata->array.size()) {
                     mfdata->array.resize(JSVAL_TO_INT(*vp));
                 }
-            } catch (std::exception & ex) {
+            } catch (std::bad_alloc & ex) {
                 OPENVRML_PRINT_EXCEPTION_(ex);
                 return JS_FALSE;
-            } catch (...) {
-                assert(false);
-                return JS_FALSE;
             }
-
             return JS_TRUE;
         }
 
@@ -5862,11 +5842,7 @@ namespace {
             assert(obj);
             
             try {
-                MFData * const mfdata = new MFData(argc);
-                if (!JS_SetPrivate(cx, obj, mfdata)) {
-                    return JS_FALSE;
-                }
-                
+                std::auto_ptr<MFData> mfdata(new MFData(argc));
                 for (uintN i = 0; i < argc; ++i) {
                     //
                     // Make sure all args are SFNodes.
@@ -5876,18 +5852,14 @@ namespace {
                                               &SFNode::jsclass, 0)) {
                         return JS_FALSE;
                     }
-
                     mfdata->array[i] = argv[i];
                 }
-
-            } catch (std::exception & ex) {
+                if (!JS_SetPrivate(cx, obj, mfdata.get())) { return JS_FALSE; }
+                mfdata.release();
+            } catch (std::bad_alloc & ex) {
                 OPENVRML_PRINT_EXCEPTION_(ex);
                 return JS_FALSE;
-            } catch (...) {
-                assert(false);
-                return JS_FALSE;
             }
-
             return JS_TRUE;
         }
         
@@ -5898,23 +5870,24 @@ namespace {
                     JS_ConstructObject(cx, &jsclass, 0, obj);
             if (!mfnodeObj) { return JS_FALSE; }
 
+            jsval length = INT_TO_JSVAL(mfnode.getLength());
+            if (!setLength(cx, mfnodeObj, 0, &length)) { return JS_FALSE; }
+            
             MFData * const mfdata =
                     static_cast<MFData *>(JS_GetPrivate(cx, mfnodeObj));
-
-            mfdata->array.resize(mfnode.getLength());
-
             for (size_t i = 0; i < mfnode.getLength(); ++i) {
                 const OpenVRML::SFNode sfnode(mfnode.getElement(i));
                 if (!SFNode::toJsval(sfnode, cx, obj, &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
-
             *rval = OBJECT_TO_JSVAL(mfnodeObj);
             return JS_TRUE;
         }
 
+        /**
+         * @todo This function should return a std::auto_ptr<OpenVRML::MFNode>.
+         */
         OpenVRML::MFNode * MFNode::createFromJSObject(JSContext * const cx,
                                                       JSObject * const obj)
                 throw (BadConversion, std::bad_alloc) {
@@ -5959,12 +5932,9 @@ namespace {
             //
             if (!JS_IsConstructing(cx)) {
                 obj = JS_NewObject(cx, &jsclass, 0, 0);
-                if (!obj) {
-                    return JS_FALSE;
-                }
+                if (!obj) { return JS_FALSE; }
                 *rval = OBJECT_TO_JSVAL(obj);
             }
-
             return initObject(cx, obj, argc, argv);
         }
         
@@ -6023,50 +5993,51 @@ namespace {
             }
 
             try {
-                if (JSVAL_TO_INT(*vp) > mfdata->array.size()) {
-                    //
-                    // Grow the array; create new elements and protect
-                    // them from garbage collection.
-                    //
-                    const JsvalArray::size_type oldSize =
-                            mfdata->array.size();
-                    mfdata->array.resize(JSVAL_TO_INT(*vp));
+                jsval arg = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "NULL"));
 
-                    jsval arg = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "NULL"));
-
-                    for (JsvalArray::size_type i = oldSize;
-                            i < mfdata->array.size(); ++i) {
+                JsvalArray newArray(JSVAL_TO_INT(*vp));
+                AddRoots(cx, newArray); // Protect from gc.
+                
+                //
+                // Copy the values from the old array.
+                //
+                const size_t length = newArray.size() < mfdata->array.size()
+                                    ? newArray.size()
+                                    : mfdata->array.size();
+                copy(mfdata->array.begin(), mfdata->array.begin() + length,
+                     newArray.begin());
+                
+                //
+                // Initialize the rest of the array with new values.
+                //
+                try {
+                    for (size_t i = length; i < newArray.size(); ++i) {
                         JSObject * const element =
                             JS_NewObject(cx, &SFNode::jsclass, 0, 0);
-                        if (!element) { return JS_FALSE; }
+                        if (!element) { throw std::bad_alloc(); }
                         if (!SFNode::initObject(cx, element, 1, &arg)) {
-                            return JS_FALSE;
+                            throw std::bad_alloc();
                         }
-                        mfdata->array[i] = OBJECT_TO_JSVAL(element);
-                        if (!JS_AddRoot(cx, &mfdata->array[i])) {
-                            return JS_FALSE;
-                        }
+                        newArray[i] = OBJECT_TO_JSVAL(element);
                     }
-                } else if (JSVAL_TO_INT(*vp) < mfdata->array.size()) {
-                    //
-                    // Shrink the array; allow the truncated elements to
-                    // be garbage collected.
-                    //
-                    for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
-                            i < mfdata->array.size(); ++i) {
-                        JSBool ok = JS_RemoveRoot(cx, &mfdata->array[i]);
-                        assert(ok);
-                    }
-                    mfdata->array.resize(JSVAL_TO_INT(*vp));
+                } catch (std::bad_alloc &) {
+                    RemoveRoots(cx, newArray);
+                    throw;
                 }
-            } catch (std::exception & ex) {
+
+                //
+                // Remove roots for the values in the old array.
+                //
+                RemoveRoots(cx, mfdata->array);
+
+                //
+                // Finally, swap the new vector with the old one.
+                //
+                std::swap(mfdata->array, newArray);
+            } catch (std::bad_alloc & ex) {
                 OPENVRML_PRINT_EXCEPTION_(ex);
                 return JS_FALSE;
-            } catch (...) {
-                assert(false);
-                return JS_FALSE;
             }
-
             return JS_TRUE;
         }
         
@@ -6112,19 +6083,15 @@ namespace {
         
         void MFNode::finalize(JSContext * const cx, JSObject * const obj)
                 throw () {
+            assert(cx);
+            assert(obj);
             MFData * const mfdata =
                     static_cast<MFData *>(JS_GetPrivate(cx, obj));
-            
-            //
-            // Allow individual SFNodes to be garbage collected.
-            //
-            for (JsvalArray::iterator i(mfdata->array.begin());
-                    i != mfdata->array.end(); ++i) {
-                JS_RemoveRoot(cx, &*i);
+            if (mfdata) {
+                RemoveRoots(cx, mfdata->array);
+                delete mfdata;
+                JS_SetPrivate(cx, obj, 0);
             }
-            
-            delete mfdata;
-            JS_SetPrivate(cx, obj, 0);
         }
         
         JSClass MFRotation::jsclass =
@@ -6143,24 +6110,26 @@ namespace {
                     JS_ConstructObject(cx, &jsclass, 0, obj);
             if (!mfrotationObj) { return JS_FALSE; }
 
+            jsval length = INT_TO_JSVAL(mfrotation.getLength());
+            if (!setLength(cx, mfrotationObj, 0, &length)) { return JS_FALSE; }
+            
             MFData * const mfdata =
                     static_cast<MFData *>(JS_GetPrivate(cx, mfrotationObj));
-
-            mfdata->array.resize(mfrotation.getLength());
-
             for (size_t i = 0; i < mfrotation.getLength(); ++i) {
                 const OpenVRML::SFRotation sfrotation(mfrotation.getElement(i));
                 if (!SFRotation::toJsval(sfrotation, cx, obj,
                                          &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
-
             *rval = OBJECT_TO_JSVAL(mfrotationObj);
             return JS_TRUE;
         }
 
+        /**
+         * @todo This method should return a
+         *      std::auto_ptr<OpenVRML::MFRotation>.
+         */
         OpenVRML::MFRotation *
                 MFRotation::createFromJSObject(JSContext * const cx,
                                                JSObject * const obj)
@@ -6234,23 +6203,24 @@ namespace {
                     JS_ConstructObject(cx, &jsclass, 0, obj);
             if (!mfstringObj) { return JS_FALSE; }
 
+            jsval length = INT_TO_JSVAL(mfstring.getLength());
+            if (!setLength(cx, mfstringObj, 0, &length)) { return JS_FALSE; }
+            
             MFData * const mfdata =
                     static_cast<MFData *>(JS_GetPrivate(cx, mfstringObj));
-
-            mfdata->array.resize(mfstring.getLength());
-
             for (size_t i = 0; i < mfstring.getLength(); ++i) {
                 JSString * jsstring =
                         JS_NewStringCopyZ(cx, mfstring.getElement(i).c_str());
                 if (!jsstring) { return JS_FALSE; }
                 mfdata->array[i] = STRING_TO_JSVAL(jsstring);
-                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
-
             *rval = OBJECT_TO_JSVAL(mfstringObj);
             return JS_TRUE;
         }
 
+        /**
+         * @todo This method should return a std::auto_ptr<OpenVRML::MFString>.
+         */
         OpenVRML::MFString * MFString::createFromJSObject(JSContext * const cx,
                                                           JSObject * const obj)
                 throw (BadConversion, std::bad_alloc) {
@@ -6289,12 +6259,9 @@ namespace {
             //
             if (!JS_IsConstructing(cx)) {
                 obj = JS_NewObject(cx, &jsclass, 0, 0);
-                if (!obj) {
-                    return JS_FALSE;
-                }
+                if (!obj) { return JS_FALSE; }
                 *rval = OBJECT_TO_JSVAL(obj);
             }
-
             return initObject(cx, obj, argc, argv);
         }
 
@@ -6305,30 +6272,23 @@ namespace {
             assert(obj);
             
             try {
-                MFData * const mfdata = new MFData(argc);
-                if (!JS_SetPrivate(cx, obj, mfdata)) { return JS_FALSE; }
-
+                std::auto_ptr<MFData> mfdata(new MFData(argc));
                 for (uintN i = 0; i < argc; ++i) {
                     if (!JSVAL_IS_STRING(argv[i])) { return JS_FALSE; }
-
                     mfdata->array[i] = argv[i];
-                    
-                    //
-                    // Protect from garbage collection.
-                    //
-                    JSBool ok = JS_AddRoot(cx, &mfdata->array[i]);
-                    assert(ok);
-
                 }
-
-            } catch (std::exception & ex) {
+                
+                //
+                // Protect array values from gc.
+                //
+                AddRoots(cx, mfdata->array);
+                
+                if (!JS_SetPrivate(cx, obj, mfdata.get())) { return JS_FALSE; }
+                mfdata.release();
+            } catch (std::bad_alloc & ex) {
                 OPENVRML_PRINT_EXCEPTION_(ex);
                 return JS_FALSE;
-            } catch (...) {
-                assert(false);
-                return JS_FALSE;
             }
-
             return JS_TRUE;
         }
 
@@ -6353,9 +6313,7 @@ namespace {
             //
             if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
                 jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
-                if (!setLength(cx, obj, 0, &newLength)) {
-                    return JS_FALSE;
-                }
+                if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
             }
 
             //
@@ -6376,45 +6334,45 @@ namespace {
             }
 
             try {
-                if (JSVAL_TO_INT(*vp) > mfdata->array.size()) {
-                    //
-                    // Grow the array; create new elements and protect
-                    // them from garbage collection.
-                    //
-                    const JsvalArray::size_type oldSize =
-                            mfdata->array.size();
-                    mfdata->array.resize(JSVAL_TO_INT(*vp));
-                    for (JsvalArray::size_type i = oldSize;
-                            i < mfdata->array.size(); ++i) {
+                JsvalArray newArray(JSVAL_TO_INT(*vp));
+                AddRoots(cx, newArray); // Protect from gc.
+
+                //
+                // Copy the values from the old array.
+                //
+                const size_t length = newArray.size() < mfdata->array.size()
+                                    ? newArray.size()
+                                    : mfdata->array.size();
+                copy(mfdata->array.begin(), mfdata->array.begin() + length,
+                     newArray.begin());
+
+                //
+                // Initialize the rest of the array with new values.
+                //
+                try {
+                    for (size_t i = length; i < newArray.size(); ++i) {
                         JSString * jsstring = JS_NewStringCopyZ(cx, "");
-                        if (!jsstring) {
-                            throw std::bad_alloc();
-                        }
+                        if (!jsstring) { throw std::bad_alloc(); }
                         mfdata->array[i] = STRING_TO_JSVAL(jsstring);
-                        if (!JS_AddRoot(cx, &mfdata->array[i])) {
-                            throw std::bad_alloc();
-                        }
                     }
-                } else if (JSVAL_TO_INT(*vp) < mfdata->array.size()) {
-                    //
-                    // Shrink the array; allow the truncated elements to
-                    // be garbage collected.
-                    //
-                    for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
-                            i < mfdata->array.size(); ++i) {
-                        JSBool ok = JS_RemoveRoot(cx, &mfdata->array[i]);
-                        assert(ok);
-                    }
-                    mfdata->array.resize(JSVAL_TO_INT(*vp));
+                } catch (std::bad_alloc &) {
+                    RemoveRoots(cx, newArray);
+                    throw;
                 }
-            } catch (std::exception & ex) {
+
+                //
+                // Remove roots for the values in the old array.
+                //
+                RemoveRoots(cx, mfdata->array);
+
+                //
+                // Finally, swap the new vector with the old one.
+                //
+                std::swap(mfdata->array, newArray);
+            } catch (std::bad_alloc & ex) {
                 OPENVRML_PRINT_EXCEPTION_(ex);
                 return JS_FALSE;
-            } catch (...) {
-                assert(false);
-                return JS_FALSE;
             }
-
             return JS_TRUE;
         }
 
@@ -6457,15 +6415,11 @@ namespace {
                 throw () {
             MFData * const mfdata =
                     static_cast<MFData *>(JS_GetPrivate(cx, obj));
-            assert(mfdata);
-
-            for (JsvalArray::iterator i(mfdata->array.begin());
-                    i != mfdata->array.end(); ++i) {
-                JSBool ok = JS_RemoveRoot(cx, &*i);
-                assert(ok);
+            if (mfdata) {
+                RemoveRoots(cx, mfdata->array);
+                delete mfdata;
+                JS_SetPrivate(cx, obj, 0);
             }
-            delete mfdata;
-            JS_SetPrivate(cx, obj, 0);
         }
 
         JSClass MFTime::jsclass =
@@ -6481,24 +6435,25 @@ namespace {
             JSObject * const mftimeObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
             if (!mftimeObj) { return JS_FALSE; }
+            
+            jsval length = INT_TO_JSVAL(mftime.getLength());
+            if (!setLength(cx, mftimeObj, 0, &length)) { return JS_FALSE; }
 
-            MFData * const mfdata = static_cast<MFData *>
-                                    (JS_GetPrivate(cx, mftimeObj));
-
-            mfdata->array.resize(mftime.getLength());
-
+            MFData * const mfdata =
+                    static_cast<MFData *>(JS_GetPrivate(cx, mftimeObj));
             for (size_t i = 0; i < mftime.getLength(); ++i) {
                 if (!JS_NewDoubleValue(cx, mftime.getElement(i),
                                        &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
-
             *rval = OBJECT_TO_JSVAL(mftimeObj);
             return JS_TRUE;
         }
 
+        /**
+         * @todo This method sohuld return a std::auto_ptr<OpenVRML::MFTime>.
+         */
         OpenVRML::MFTime * MFTime::createFromJSObject(JSContext * const cx,
                                                       JSObject * const obj)
                 throw (BadConversion, std::bad_alloc) {
@@ -6536,27 +6491,26 @@ namespace {
                                 jsval * const rval) throw () {
             JSObject * const mfvec2fObj =
                     JS_ConstructObject(cx, &jsclass, 0, obj);
-            if (!mfvec2fObj) {
-                return JS_FALSE;
-            }
+            if (!mfvec2fObj) { return JS_FALSE; }
 
+            jsval length = INT_TO_JSVAL(mfvec2f.getLength());
+            if (!setLength(cx, mfvec2fObj, 0, &length)) { return JS_FALSE; }
+            
             MFData * const mfdata =
                     static_cast<MFData *>(JS_GetPrivate(cx, mfvec2fObj));
-
-            mfdata->array.resize(mfvec2f.getLength());
-
             for (size_t i = 0; i < mfvec2f.getLength(); ++i) {
                 const OpenVRML::SFVec2f sfvec2f(mfvec2f.getElement(i));
                 if (!SFVec2f::toJsval(sfvec2f, cx, obj, &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
-
             *rval = OBJECT_TO_JSVAL(mfvec2fObj);
             return JS_TRUE;
         }
 
+        /**
+         * @todo This function should return a std::auto_ptr<OpenVRML::MFVec2f>.
+         */
         OpenVRML::MFVec2f * MFVec2f::createFromJSObject(JSContext * const cx,
                                                         JSObject * const obj)
                 throw (BadConversion, std::bad_alloc) {
@@ -6606,23 +6560,24 @@ namespace {
                     JS_ConstructObject(cx, &jsclass, 0, obj);
             if (!mfvec3fObj) { return JS_FALSE; }
 
+            jsval length = INT_TO_JSVAL(mfvec3f.getLength());
+            if (!setLength(cx, mfvec3fObj, 0, &length)) { return JS_FALSE; }
+            
             MFData * const mfdata = static_cast<MFData *>
                                     (JS_GetPrivate(cx, mfvec3fObj));
-
-            mfdata->array.resize(mfvec3f.getLength());
-
             for (size_t i = 0; i < mfvec3f.getLength(); ++i) {
                 const OpenVRML::SFVec3f sfvec3f(mfvec3f.getElement(i));
                 if (!SFVec3f::toJsval(sfvec3f, cx, obj, &mfdata->array[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_AddRoot(cx, &mfdata->array[i])) { return JS_FALSE; }
             }
-
             *rval = OBJECT_TO_JSVAL(mfvec3fObj);
             return JS_TRUE;
         }
         
+        /**
+         * @todo This function should return a std::auto_ptr<OpenVRML::MFVec3f>.
+         */
         OpenVRML::MFVec3f * MFVec3f::createFromJSObject(JSContext * const cx,
                                                         JSObject * const obj)
                 throw (BadConversion, std::bad_alloc) {

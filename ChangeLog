@@ -1,3 +1,8 @@
+2002-05-30  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed usage of JS_AddRoot with the MF* types in the JavaScript
+          binding.
+
 2002-05-29  Braden McDaniel  <braden@endoframe.com>
 
         * Don't install openvrml-gl.pc when building --without-gl.
