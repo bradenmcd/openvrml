@@ -239,6 +239,15 @@ VrmlField::VrmlFieldType VrmlField::fieldType(const char * fieldTypeId) {
     return NO_FIELD;
 }
 
+const char* VrmlField::getFieldName(const VrmlFieldType fieldType) {
+  int ft = (int) fieldType;
+  if ((ft > 0) && (ft <= (int) VrmlField::MFVEC3F))
+    return ftn[ft];
+  else
+    return "<invalid field type>";
+}
+
+
 /**
  * @brief Get the type name of a field.
  * @return the (C-style) string name of this Field object's type.
@@ -2620,12 +2629,14 @@ bool VrmlMFNode::removeNode(const VrmlNode & node) {
 
 void VrmlMFNode::insertElement(size_t index, const VrmlNodePtr & node)
 {
-  cout << "VrmlMFNode::insertElement to be implemented" << endl;;
+  assert(index < this->nodes.size());
+  this->nodes.insert(this->nodes.begin() + index, node);
 }
 
 void VrmlMFNode::removeElement(size_t index)
 {
-  cout << "VrmlMFNode::removeElement to be implemented" << endl;;
+  assert(index < this->nodes.size());
+  this->nodes.erase(this->nodes.begin() + index);
 }
 
 VrmlField *VrmlMFNode::clone() const
@@ -2879,12 +2890,14 @@ size_t VrmlMFString::getLength() const {
 
 void VrmlMFString::insertElement(size_t index, const std::string & value)
 {
-  cout << "VrmlMFString::insertElement to be implemented" << endl;
+  assert(index < this->values.size());
+  this->values.insert(this->values.begin() + index, value);
 }
 
 void VrmlMFString::removeElement(size_t index)
 {
-  cout << "VrmlMFString::removeElement to be implemented" << endl;
+  assert(index < this->values.size());
+  this->values.erase(this->values.begin() + index);
 }
 
 VrmlField *VrmlMFString::clone() const
