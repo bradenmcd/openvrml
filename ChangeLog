@@ -41,6 +41,10 @@
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: enum
           ViewerOpenGL::LightType needs to be public.
 
+        * src/openvrml/OpenVRML/VrmlScene.cpp: In
+          ProtoNode::processEventImpl, non-const map<>equal_range
+          returns a std::pair of iterators, not const_iterators.
+
 2002-06-17  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.12.1.

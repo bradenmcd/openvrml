@@ -2706,7 +2706,7 @@ void ProtoNode::processEventImpl(const std::string & id,
                                  const FieldValue & value,
                                  const double timestamp)
         throw (UnsupportedInterface, std::bad_cast, std::bad_alloc) {
-    const std::pair<ISMap::const_iterator, ISMap::const_iterator> rangeItrs =
+    const std::pair<ISMap::iterator, ISMap::iterator> rangeItrs =
             this->isMap.equal_range(id);
     if (rangeItrs.first == this->isMap.end()) {
         throw UnsupportedInterface(this->nodeType.id + " node has no eventIn "
