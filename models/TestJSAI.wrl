@@ -1,0 +1,52 @@
+#VRML V2.0 utf8
+
+Group {
+  children [
+     DEF ITEM1_TOUCH TouchSensor {},
+     DEF ITEM1_DRAG PlaneSensor {
+	minPosition 0 0
+	maxPosition 5 0
+     },
+     DEF ITEM1 Transform {
+	translation 0 0 0
+	scale 1 0.8 0.8
+	children [
+	   Shape {
+	      appearance Appearance {
+		 material DEF ITEM1_COLOR Material {
+		    diffuseColor .5 .5 .5
+		 }
+	      }
+	      geometry Box {
+		 size 5 5 5
+	      }
+	   }
+	]
+     }
+  ]
+}
+
+PROTO Highlighter [
+  eventIn SFBool isActive
+  eventOut SFColor color
+  field SFColor activeColor .8 .8 .8
+  field SFColor inactiveColor .5 .5 .5
+  field SFInt32 testInt32 500
+  field SFFloat testFloat 0.5
+  field SFString testString "test string"
+]
+{
+   Script {
+      eventIn SFBool isActive IS isActive
+      eventOut SFColor color IS color
+      field SFColor activeColor IS activeColor
+      field SFColor inactiveColor IS inactiveColor
+      url ["TestJSAI.class"]
+   }
+}
+
+DEF ITEM_LIGHTER Highlighter {}
+
+ROUTE ITEM1_DRAG.translation_changed TO ITEM1.set_translation
+ROUTE ITEM1_TOUCH.isOver TO ITEM_LIGHTER.isActive
+ROUTE ITEM_LIGHTER.color TO ITEM1_COLOR.diffuseColor
