@@ -51,7 +51,6 @@ libopenvrml_la_SOURCES = \
         Viewer.cpp \
         VrmlRenderContext.cpp \
         VrmlFrustum.cpp \
-        quaternion.cpp \
         vrml97node.cpp
 
 libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
@@ -80,7 +79,6 @@ OpenVRMLinclude_HEADERS = \
         Viewer.h \
         VrmlRenderContext.h \
         VrmlFrustum.h \
-        quaternion.h \
         vrml97node.h
 
 noinst_HEADERS = \

@@ -23,7 +23,6 @@
 # include <numeric>
 # include "private.h"
 # include "basetypes.h"
-# include "quaternion.h"
 
 namespace OpenVRML {
 
@@ -413,7 +412,7 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  */
 
 /**
- * @fn void vec2f::x(float value) const throw ()
+ * @fn void vec2f::x(float value) throw ()
  *
  * @brief Set the x component.
  *
@@ -421,7 +420,7 @@ std::ostream & operator<<(std::ostream & out, const color & c)
  */
 
 /**
- * @fn void vec2f::y(float value) const throw ()
+ * @fn void vec2f::y(float value) throw ()
  *
  * @brief Set the y component.
  *
@@ -772,7 +771,7 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  */
 
 /**
- * @fn void vec3f::x(float value) const throw ()
+ * @fn void vec3f::x(float value) throw ()
  *
  * @brief Set the x component.
  *
@@ -780,7 +779,7 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  */
 
 /**
- * @fn void vec3f::y(float value) const throw ()
+ * @fn void vec3f::y(float value) throw ()
  *
  * @brief Set the y component.
  *
@@ -788,7 +787,7 @@ const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ()
  */
 
 /**
- * @fn void vec3f::z(float value) const throw ()
+ * @fn void vec3f::z(float value) throw ()
  *
  * @brief Set the z component.
  *
@@ -974,11 +973,11 @@ rotation::rotation(const vec3f & from_vec, const vec3f & to_vec)
  *
  * @param quat  a quaternion.
  */
-rotation::rotation(const Quaternion & quat) throw ()
+rotation::rotation(const quatf & quat) throw ()
 {
     using OpenVRML_::fpzero;
 
-    const float val = acos(quat.getW());
+    const float val = acos(quat.w());
     if (fpzero(val)) {
         this->rot[0] = 0.0;
         this->rot[1] = 0.0;
@@ -986,9 +985,9 @@ rotation::rotation(const Quaternion & quat) throw ()
         this->rot[3] = 0.0;
     } else {
         const float sin_val = sin(val);
-        const vec3f axis(quat.getX() / sin_val,
-                         quat.getY() / sin_val,
-                         quat.getZ() / sin_val);
+        const vec3f axis(quat.x() / sin_val,
+                         quat.y() / sin_val,
+                         quat.z() / sin_val);
         this->axis(axis.normalize());
         this->rot[3] = 2 * val;
     }
@@ -1003,7 +1002,7 @@ rotation::rotation(const Quaternion & quat) throw ()
  */
 rotation & rotation::operator*=(const rotation & rot) throw ()
 {
-    return *this = rotation(Quaternion(*this).multiply(Quaternion(rot)));
+    return *this = rotation(quatf(*this) * quatf(rot));
 }
 
 /**
@@ -1145,21 +1144,21 @@ const rotation rotation::slerp(const rotation & dest_rot, const float t) const
 {
     using OpenVRML_::fptolerance;
     
-    Quaternion from_quat(*this), to_quat(dest_rot);
+    quatf from_quat(*this), to_quat(dest_rot);
     
     //
     // Calculate cosine.
     //
-    double cosom = std::inner_product(from_quat.get(), from_quat.get() + 4,
-                                      to_quat.get(), 0.0);
+    double cosom = std::inner_product(&from_quat[0], &from_quat[0] + 4,
+                                      &to_quat[0], 0.0);
     
     //
     // Adjust signs (if necessary).
     //
-    Quaternion to1;
+    quatf to1;
     if (cosom < 0.0) {
         cosom = -cosom;
-        to1 = to_quat.multiply(-1);
+        to1 = to_quat * -1;
     } else {
         to1 = to_quat;
     }
@@ -1185,8 +1184,7 @@ const rotation rotation::slerp(const rotation & dest_rot, const float t) const
     //
     // Calculate the final values.
     //
-    const Quaternion result_quat = from_quat.multiply(scale0)
-                                    .add(to1.multiply(scale1));
+    const quatf result_quat = (from_quat * scale0) + (to1 * scale1);
     return rotation(result_quat);
 }
 
@@ -1277,12 +1275,12 @@ const mat4f mat4f::rotation(const OpenVRML::rotation & rot) throw ()
  *
  * @return a matrix representation of @p quat.
  */
-const mat4f mat4f::rotation(const Quaternion & quat) throw ()
+const mat4f mat4f::rotation(const quatf & quat) throw ()
 {
-    const float x = quat.getX();
-    const float y = quat.getY();
-    const float z = quat.getZ();
-    const float w = quat.getW();
+    const float x = quat.x();
+    const float y = quat.y();
+    const float z = quat.z();
+    const float w = quat.w();
 
     return mat4f(1.0 - 2.0 * (y * y + z * z),
                  2.0 * (x * y + z * w),
@@ -1692,7 +1690,7 @@ void mat4f::transformation(vec3f & t, OpenVRML::rotation & r, vec3f & s) const
     // coordinate system flip ? (According to VRML standard, scale > 0.0)
     // Calculate quaternion rotation from this matrix.
     //
-    Quaternion quat(tmp_matrix);
+    quatf quat(tmp_matrix);
 
     //
     // now convert back to axis/angle.
@@ -1811,7 +1809,7 @@ void mat4f::transformation(vec3f & t,
     // coordinate system flip ? (According to VRML standard, scale > 0.0)
     // Calculate quaternion rotation from this matrix.
     //
-    Quaternion quat(tmp_matrix);
+    quatf quat(tmp_matrix);
 
     //
     // Now convert back to axis/angle.
@@ -1992,8 +1990,6 @@ std::ostream & operator<<(std::ostream & out, const mat4f & mat)
 
 
 /**
- * @fn bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
- *
  * @relates mat4f
  *
  * @brief Equality comparison operator.
@@ -2003,6 +1999,11 @@ std::ostream & operator<<(std::ostream & out, const mat4f & mat)
  * @param lhs   a matrix.
  * @param rhs   a matrix.
  */
+bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
+{
+    using OpenVRML_::fpequal;
+    return std::equal(&lhs[0][0], &lhs[0][0] + 16, &rhs[0][0], fpequal);
+}
 
 /**
  * @fn bool operator!=(const mat4f & lhs, const mat4f & rhs) throw ()
@@ -2013,6 +2014,477 @@ std::ostream & operator<<(std::ostream & out, const mat4f & mat)
  *
  * @param lhs   a matrix.
  * @param rhs   a matrix.
+ */
+
+
+/**
+ * @class quatf
+ *
+ * @ingroup basetypes
+ *
+ * @brief A quaternion.
+ */
+
+/**
+ * @internal
+ *
+ * @var quatf::quat
+ *
+ * @brief An array comprising the quaternion components.
+ */
+
+/**
+ * @brief Default constructor.
+ */
+quatf::quatf() throw ()
+{
+    this->quat[0] = 0.0;
+    this->quat[1] = 0.0;
+    this->quat[2] = 0.0;
+    this->quat[3] = 1.0;
+}
+
+/**
+ * @brief Construct from four values.
+ *
+ * @param x the x vector component.
+ * @param y the y vector component.
+ * @param z the z vector component.
+ * @param w the scalar value w.
+ */
+quatf::quatf(const float x, const float y, const float z, const float w)
+    throw ()
+{
+    this->quat[0] = x;
+    this->quat[1] = y;
+    this->quat[2] = z;
+    this->quat[3] = w;
+}
+
+/**
+ * @brief Construct from an array of four values.
+ *
+ * @param quat  the first three values in the array are used for the x, y, and
+ *              z vector components, respectively. The fourth value in the
+ *              array is used for the scalar part of the quaternion.
+ */
+quatf::quatf(const float (&quat)[4]) throw ()
+{
+    this->quat[0] = quat[0];
+    this->quat[1] = quat[1];
+    this->quat[2] = quat[2];
+    this->quat[3] = quat[3];
+}
+
+quatf::quatf(const mat4f & mat) throw ()
+{
+    float diagonal, s;
+    diagonal = mat[0][0] + mat[1][1] + mat[2][2];
+    // check the diagonal
+    if (diagonal > 0.0) {
+        s = sqrt(diagonal + 1.0);
+        this->quat[3] = s / 2.0;
+        s = 0.5 / s;
+        this->quat[0] = (mat[1][2] - mat[2][1]) * s;
+        this->quat[1] = (mat[2][0] - mat[0][2]) * s;
+        this->quat[2] = (mat[0][1] - mat[1][0]) * s;
+    } else {
+        size_t i, j, k;
+        static const size_t next[3] = { 1, 2, 0 };
+        // diagonal is negative
+        i = 0;
+        if (mat[1][1] > mat[0][0]) { i = 1; }
+        if (mat[2][2] > mat[i][i]) { i = 2; }
+        j = next[i];
+        k = next[j];
+        s = sqrt ((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0);
+        this->quat[i] = s * 0.5;
+
+        if (s != 0.0) { s = 0.5 / s; }
+        this->quat[3] = (mat[j][k] - mat[k][j]) * s;
+        this->quat[j] = (mat[i][j] + mat[j][i]) * s;
+        this->quat[k] = (mat[i][k] + mat[k][i]) * s;
+    }
+}
+
+/**
+ * @brief Construct from an SFRotation.
+ *
+ * @param rot   a rotation.
+ */
+quatf::quatf(const rotation & rot) throw ()
+{
+    using OpenVRML_::fpequal;
+    assert(fpequal(rot.axis().length(), 1.0));
+
+    const float sin_angle = sin(rot.angle() / 2.0);
+    this->quat[0] = rot.x() * sin_angle;
+    this->quat[1] = rot.y() * sin_angle;
+    this->quat[2] = rot.z() * sin_angle;
+    this->quat[3] = cos(rot.angle() / 2.0);
+}
+
+/**
+ * @brief Multiply by a quaternion.
+ *
+ * @note <b>qr</b> = (<b>q</b><sub><i>v</i></sub> x <b>r</b><sub><i>v</i></sub>
+ *                   + <i>r<sub>w</sub></i><b>q</b><sub><i>v</i></sub>
+ *                   + <i>q<sub>w</sub></i><b>r</b><sub><i>v</i></sub>,
+ *                   <i>q<sub>w</sub>r<sub>w</sub></i> - <b>q</b><sub><i>v</i></sub>
+ *                   . <b>r</b><sub><i>v</i></sub>)
+ *
+ * @param quat  the quaternion by which to multiply.
+ *
+ * @return a reference to the object.
+ */
+quatf & quatf::operator*=(const quatf & quat) throw ()
+{
+    *this = quatf(this->quat[1] * quat[2] - this->quat[2] * quat[1]
+                    + quat[3] * this->quat[0] + this->quat[3] * quat[0],
+                  this->quat[2] * quat[0] - this->quat[0] * quat[2]
+                    + quat[3] * this->quat[1] + this->quat[3] * quat[1],
+                  this->quat[0] * quat[1] - this->quat[1] * quat[0]
+                    + quat[3] * this->quat[2] + this->quat[3] * quat[2],
+                  this->quat[3] * quat[3]
+                    - (this->quat[0] * quat[0] + this->quat[1] * quat[1]
+                        + this->quat[2] * quat[2]));
+    return *this;
+}
+
+/**
+ * @fn const quatf operator*(const quatf & lhs, const quatf & rhs) throw ()
+ *
+ * @relates quatf
+ *
+ * @brief Multiply two quaternions.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return the product of @p lhs and @p rhs. 
+ */
+
+/**
+ * @brief Multiply by a scalar.
+ *
+ * @param scalar    value by which to multiply.
+ *
+ * @return a reference to the object.
+ */
+quatf & quatf::operator*=(const float scalar) throw ()
+{
+    this->quat[0] *= scalar;
+    this->quat[1] *= scalar;
+    this->quat[2] *= scalar;
+    this->quat[3] *= scalar;
+    return *this;
+}
+
+/**
+ * @fn const quatf operator*(const quatf & quat, float scalar) throw ()
+ *
+ * @relates quatf
+ *
+ * @brief Multiply a quaternion by a scalar.
+ *
+ * @param quat      quaternion.
+ * @param scalar    scalar.
+ *
+ * @return the product of @p quat and @p scalar.
+ */
+
+/**
+ * @fn const quatf operator*(float scalar, const quatf & quat) throw ()
+ *
+ * @relates quatf
+ *
+ * @brief Multiply a scalar by a quaternion.
+ *
+ * @param scalar    scalar.
+ * @param quat      quaternion.
+ *
+ * @return the product of @p scalar and @p quat.
+ */
+
+/**
+ * @brief Divide by a scalar.
+ *
+ * @param scalar    value by which to divide.
+ *
+ * @return a reference to the object.
+ */
+quatf & quatf::operator/=(const float scalar) throw ()
+{
+    this->quat[0] /= scalar;
+    this->quat[1] /= scalar;
+    this->quat[2] /= scalar;
+    this->quat[3] /= scalar;
+    return *this;
+}
+
+/**
+ * @fn const quatf operator/(const quatf & quat, float scalar) throw ()
+ *
+ * @relates quatf
+ *
+ * @brief Divide a quaternion by a scalar.
+ *
+ * @param quat      quaternion.
+ * @param scalar    scalar.
+ *
+ * @return the result of dividing @p quat by @p scalar.
+ */
+
+/**
+ * @brief Add a quaternion.
+ *
+ * @param quat  the quaternion to add.
+ *
+ * @return a reference to the object.
+ */
+quatf & quatf::operator+=(const quatf & quat) throw ()
+{
+    this->quat[0] += quat[0];
+    this->quat[1] += quat[1];
+    this->quat[2] += quat[2];
+    this->quat[3] += quat[3];
+    return *this;
+}
+
+/**
+ * @fn const quatf operator+(const quatf & lhs, const quatf & rhs) throw ()
+ *
+ * @relates quatf
+ *
+ * @brief Add two quaternions.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return the sum of @p lhs and @p rhs. 
+ */
+
+/**
+ * @brief Subtract a quaternion.
+ *
+ * @param quat  the quaternion to subtract.
+ *
+ * @return a reference to the object.
+ */
+quatf & quatf::operator-=(const quatf & quat) throw ()
+{
+    this->quat[0] -= quat[0];
+    this->quat[1] -= quat[1];
+    this->quat[2] -= quat[2];
+    this->quat[3] -= quat[3];
+    return *this;
+}
+
+/**
+ * @fn const quatf operator-(const quatf & lhs, const quatf & rhs) throw ()
+ *
+ * @relates quatf
+ *
+ * @brief Take the difference between two quaternions.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return the difference between @p lhs and @p rhs. 
+ */
+
+/**
+ * @fn float quatf::operator[](size_t index) const throw ()
+ *
+ * @brief Array element dereference operator (const version).
+ *
+ * @param index an index from 0 - 3.
+ *
+ * @pre @p index is not larger than 3.
+ */
+
+/**
+ * @fn float & quatf::operator[](size_t index) throw ()
+ *
+ * @brief Array element dereference operator (non-const version).
+ *
+ * @param index an index from 0 - 3.
+ *
+ * @pre @p index is not larger than 3.
+ */
+
+/**
+ * @fn float quatf::x() const throw ()
+ *
+ * @brief Get the x component.
+ *
+ * @return the x component value.
+ */
+
+/**
+ * @fn void quatf::x(float value) throw ()
+ *
+ * @brief Set the x component.
+ *
+ * @param value x component value.
+ */
+
+/**
+ * @fn float quatf::y() const throw ()
+ *
+ * @brief Get the y component.
+ *
+ * @return the y component value.
+ */
+
+/**
+ * @fn void quatf::y(float value) throw ()
+ *
+ * @brief Set the y component.
+ *
+ * @param value y component value.
+ */
+
+/**
+ * @fn float quatf::z() const throw ()
+ *
+ * @brief Get the z component.
+ *
+ * @return the z component value.
+ */
+
+/**
+ * @fn void quatf::z(float value) throw ()
+ *
+ * @brief Set the z component.
+ *
+ * @param value z component value.
+ */
+
+/**
+ * @fn float quatf::w() const throw ()
+ *
+ * @brief Get the w component.
+ *
+ * @return the w component value.
+ */
+
+/**
+ * @fn void quatf::w(float value) throw ()
+ *
+ * @brief Set the w component.
+ *
+ * @param value w component value.
+ */
+
+/**
+ * @brief Get the conjugate.
+ *
+ * @note <b>q</b><sup>*</sup> = (-<b>q</b><sub><i>v</i></sub>,
+ *                              <i>q<sub>w</sub></i>)
+ *
+ * @return the conjugate of the quaternion.
+ */
+const quatf quatf::conjugate() const throw ()
+{
+    const quatf q(-this->quat[0],
+                  -this->quat[1],
+                  -this->quat[2],
+                  this->quat[3]);
+    return q;
+}
+
+/**
+ * @brief Get the inverse.
+ *
+ * @note <b>q</b><sup>-1</sup> = <b>q</b><sup>*</sup> / <i>n</i>(<b>q</b>)
+ *
+ * @return the multiplicative inverse.
+ */
+const quatf quatf::inverse() const throw ()
+{
+    return this->conjugate() / this->norm();
+}
+
+/**
+ * @brief Get the norm.
+ *
+ * @note <i>n</i>(<b>q</b>) = <i>q<sub>x</sub><i><sup>2</sup>
+ *                            + <i>q<sub>y</sub><i><sup>2</sup>
+ *                            + <i>q<sub>z</sub><i><sup>2</sup>
+ *                            + <i>q<sub>w</sub><i><sup>2</sup>
+ *
+ * @return the norm.
+ */
+float quatf::norm() const throw ()
+{
+    return this->quat[0] * this->quat[0]
+            + this->quat[1] * this->quat[1]
+            + this->quat[2] * this->quat[2]
+            + this->quat[3] * this->quat[3];
+}
+
+/**
+ * @brief Normalize the quaternion.
+ *
+ * @return a unit quaternion derived from the quaternion.
+ */
+const quatf quatf::normalize() const throw ()
+{
+    const float n = this->norm();
+    const quatf q(this->quat[0] / n,
+                       this->quat[1] / n,
+                       this->quat[2] / n,
+                       this->quat[3] / n);
+    return q;
+}
+
+/**
+ * @relates quatf
+ *
+ * @brief Stream output.
+ *
+ * @param out   an output stream.
+ * @param quat  a quaternion.
+ *
+ * @return @p out.
+ */
+std::ostream & operator<<(std::ostream & out, const quatf & quat)
+{
+    return out << quat.x() << ' ' << quat.y() << ' ' << quat.z() << ' '
+               << quat.w();
+}
+
+/**
+ * @relates quatf
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs are equal; @c false otherwise.
+ */
+bool operator==(const quatf & lhs, const quatf & rhs) throw ()
+{
+    using OpenVRML_::fpequal;
+    return fpequal(lhs.x(), rhs.x())
+        && fpequal(lhs.y(), rhs.y())
+        && fpequal(lhs.z(), rhs.z())
+        && fpequal(lhs.w(), rhs.w());
+}
+
+/**
+ * @fn bool operator!=(const quatf & lhs, const quatf & rhs) throw ()
+ *
+ * @relates quatf
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs are not equal; @c false otherwise.
  */
 
 }

@@ -25,9 +25,8 @@
 # include <algorithm>
 # include <numeric>
 # include <assert.h>
-# include "field.h"
-# include "quaternion.h"
 # include "private.h"
+# include "field.h"
 # include "node.h"
 
 namespace OpenVRML {

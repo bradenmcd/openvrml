@@ -1,3 +1,15 @@
+2003-03-10  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/Makefile.am,
+          src/openvrml/OpenVRML/basetypes.cpp,
+          src/openvrml/OpenVRML/basetypes.h,
+          src/openvrml/OpenVRML/field.cpp,
+          src/openvrml/OpenVRML/quaternion.cpp,
+          src/openvrml/OpenVRML/quaternion.h,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Replaced
+          Quaternion with quatf.
+
 2003-03-09  Braden McDaniel  <braden@endoframe.com>
 
         * src/lookat/lookat.cpp, src/openvrml/OpenVRML/Audio.cpp,

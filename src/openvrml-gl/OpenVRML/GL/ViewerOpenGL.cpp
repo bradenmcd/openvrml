@@ -365,7 +365,7 @@ ViewerOpenGL::ViewerOpenGL(Browser & browser):
     d_rotating = false;
     d_scaling = false;
     d_translating = false;
-    this->curquat = Quaternion(trackball(0.0, 0.0, 0.0, 0.0));
+    this->curquat = quatf(trackball(0.0, 0.0, 0.0, 0.0));
 
     d_renderTime = 1.0;
     d_renderTime1 = 1.0;
@@ -527,7 +527,7 @@ void ViewerOpenGL::resetUserNavigation()
     ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
     activeViewpoint.setUserViewTransform(mat4f());
 
-    this->curquat = Quaternion(trackball(0.0, 0.0, 0.0, 0.0));
+    this->curquat = quatf(trackball(0.0, 0.0, 0.0, 0.0));
     this->d_rotationChanged = true;
 
     wsPostRedraw();
@@ -3011,7 +3011,7 @@ void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
 
 void ViewerOpenGL::rotate(const rotation & rot) throw ()
 {
-    this->lastquat = Quaternion(rot);
+    this->lastquat = quatf(rot);
     if (fpzero(rot.angle())) { return; }
 
     ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
@@ -3046,8 +3046,8 @@ void ViewerOpenGL::rotate(const rotation & rot) throw ()
     rotationMatrix[3][2] = 0.0;
 
     vec3f d = rotationMatrix * rot.axis();
-    Quaternion q(rotation(d, rot.angle()));
-    this->curquat = q.multiply(this->curquat);
+    quatf q(rotation(d, rot.angle()));
+    this->curquat = q * this->curquat;
     this->d_rotationChanged = true;
 
     wsPostRedraw();

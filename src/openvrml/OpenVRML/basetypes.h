@@ -491,7 +491,7 @@ namespace OpenVRML {
                                              const vec3f & v);
 
 
-    class Quaternion;
+    class quatf;
 
     class OPENVRML_SCOPE rotation {
         float rot[4];
@@ -502,7 +502,7 @@ namespace OpenVRML {
         rotation(float x, float y, float z, float angle) throw ();
         rotation(const vec3f & axis, float angle) throw ();
         rotation(const vec3f & from_vec, const vec3f & to_vec) throw ();
-        explicit rotation(const Quaternion & quat) throw ();
+        explicit rotation(const quatf & quat) throw ();
 
         rotation & operator*=(const rotation & rot) throw ();
 
@@ -599,7 +599,7 @@ namespace OpenVRML {
 
     public:
         static const mat4f rotation(const OpenVRML::rotation & rot) throw ();
-        static const mat4f rotation(const Quaternion & quat) throw ();
+        static const mat4f rotation(const quatf & quat) throw ();
         static const mat4f scale(float s) throw ();
         static const mat4f scale(const vec3f & s) throw ();
         static const mat4f translation(const vec3f & t) throw ();
@@ -636,10 +636,8 @@ namespace OpenVRML {
         float det() const throw ();
     };
 
-    inline bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
-    {
-        return std::equal(&lhs[0][0], &lhs[0][0] + 16, &rhs[0][0]);
-    }
+    bool OPENVRML_SCOPE operator==(const mat4f & lhs, const mat4f & rhs)
+        throw ();
 
     inline bool operator!=(const mat4f & lhs, const mat4f & rhs)
         throw ()
@@ -679,6 +677,146 @@ namespace OpenVRML {
 
     std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
                                              const mat4f & mat);
+
+
+    class OPENVRML_SCOPE quatf {
+        float quat[4];
+
+    public:
+        quatf() throw ();
+        quatf(float x, float y, float z, float w) throw ();
+        explicit quatf(const float (&quat)[4]) throw ();
+        explicit quatf(const rotation & rot) throw ();
+        explicit quatf(const mat4f & mat) throw ();
+
+        // use compiler-defined operator= and copy constructor.
+
+        quatf & operator*=(const quatf & quat) throw ();
+        quatf & operator*=(float scalar) throw ();
+        quatf & operator/=(float scalar) throw ();
+        quatf & operator+=(const quatf & quat) throw ();
+        quatf & operator-=(const quatf & quat) throw ();
+
+        const float & operator[](size_t index) const throw ();
+        float & operator[](size_t index) throw ();
+
+        float x() const throw ();
+        float y() const throw ();
+        float z() const throw ();
+        float w() const throw ();
+
+        void x(float value) throw ();
+        void y(float value) throw ();
+        void z(float value) throw ();
+        void w(float value) throw ();
+
+        const quatf conjugate() const throw ();
+        const quatf inverse() const throw ();
+        float norm() const throw ();
+        const quatf normalize() const throw ();
+    };
+
+    bool OPENVRML_SCOPE operator==(const quatf & lhs, const quatf & rhs)
+        throw ();
+
+    inline bool operator!=(const quatf & lhs, const quatf & rhs) throw ()
+    {
+        return !(lhs == rhs);
+    }
+
+    inline const quatf operator*(const quatf & lhs, const quatf & rhs) throw ()
+    {
+        quatf result(lhs);
+        return result *= rhs;
+    }
+
+    inline const quatf operator*(const quatf & quat, const float scalar)
+        throw ()
+    {
+        quatf result(quat);
+        return result *= scalar;
+    }
+
+    inline const quatf operator*(const float scalar, const quatf & quat)
+        throw ()
+    {
+        quatf result(quat);
+        return result *= scalar;
+    }
+
+    inline const quatf operator/(const quatf & quat, const float scalar)
+        throw ()
+    {
+        quatf result(quat);
+        return result /= scalar;
+    }
+
+    inline const quatf operator+(const quatf & lhs, const quatf & rhs) throw ()
+    {
+        quatf result(lhs);
+        return result += rhs;
+    }
+
+    inline const quatf operator-(const quatf & lhs, const quatf & rhs) throw ()
+    {
+        quatf result(lhs);
+        return result -= rhs;
+    }
+
+    inline const float & quatf::operator[](size_t index) const throw ()
+    {
+        assert(index < 4);
+        return this->quat[index];
+    }
+
+    inline float & quatf::operator[](size_t index) throw ()
+    {
+        assert(index < 4);
+        return this->quat[index];
+    }
+
+    inline float quatf::x() const throw ()
+    {
+        return this->quat[0];
+    }
+
+    inline float quatf::y() const throw ()
+    {
+        return this->quat[1];
+    }
+
+    inline float quatf::z() const throw ()
+    {
+        return this->quat[2];
+    }
+
+    inline float quatf::w() const throw ()
+    {
+        return this->quat[3];
+    }
+
+    inline void quatf::x(const float value) throw ()
+    {
+        this->quat[0] = value;
+    }
+
+    inline void quatf::y(const float value) throw ()
+    {
+        this->quat[1] = value;
+    }
+
+    inline void quatf::z(const float value) throw ()
+    {
+        this->quat[2] = value;
+    }
+
+    inline void quatf::w(const float value) throw ()
+    {
+        this->quat[3] = value;
+    }
+
+    std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
+                                             const quatf & quat);
 
 } // namespace OpenVRML
 
