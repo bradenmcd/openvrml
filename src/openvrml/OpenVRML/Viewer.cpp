@@ -43,6 +43,78 @@ namespace OpenVRML {
  */
 
 /**
+ * @var Viewer::MASK_NONE
+ */
+
+/**
+ * @var Viewer::MASK_CCW
+ */
+
+/**
+ * @var Viewer::MASK_CONVEX
+ */
+
+/**
+ * @var Viewer::MASK_SOLID
+ */
+
+/**
+ * @var Viewer::MASK_BOTTOM
+ */
+
+/**
+ * @var Viewer::MASK_TOP
+ */
+
+/**
+ * @var Viewer::MASK_SIDE
+ */
+
+/**
+ * @var Viewer::MASK_COLOR_PER_VERTEX
+ */
+
+/**
+ * @var Viewer::MASK_NORMAL_PER_VERTEX
+ */
+
+/**
+ * @enum Viewer::RenderMode
+ *
+ * @brief The rendering mode.
+ */
+
+/**
+ * @var Viewer::RenderMode Viewer::RENDER_MODE_DRAW
+ *
+ * @brief Draw mode.
+ */
+
+/**
+ * @var Viewer::RenderMode Viewer::RENDER_MODE_PICK
+ *
+ * @brief Pick mode.
+ */
+
+/**
+ * @typedef Viewer::Object
+ *
+ * @brief An object handle.
+ */
+
+/**
+ * @typedef Viewer::TextureObject
+ *
+ * @brief An texture object handle.
+ */
+
+/**
+ * @var VrmlScene & Viewer::scene
+ *
+ * @brief The scene associated with the Viewer.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param scene a VrmlScene.
@@ -55,16 +127,157 @@ Viewer::Viewer(VrmlScene & scene): scene(scene) {}
 Viewer::~Viewer() {}
 
 /**
- * @brief Get the scene associated with the Viewer.
+ * @fn Viewer::RenderMode Viewer::getRenderMode()
  *
- * @return the VrmlScene associated with the Viewer.
+ * @brief Get the rendering mode.
+ *
+ * @return the rendering mode.
  */
-VrmlScene & Viewer::getScene() { return this->scene; }
 
 /**
- * Build a cylinder object. It might be smarter to do just one, and reference
- * it with scaling (but the world creator could just as easily do that with 
- * DEF/USE ...).
+ * @fn double Viewer::getFrameRate()
+ *
+ * @brief Get the frame rate.
+ *
+ * @return the frame rate.
+ */
+
+/**
+ * @fn void Viewer::resetUserNavigation()
+ *
+ * @brief Return view to the last bound Viewpoint.
+ */
+
+/**
+ * @fn void Viewer::getUserNavigation(VrmlMatrix & M)
+ *
+ * @brief Get the user's navigation from the last bound viewpoint. 
+ *
+ * @retval M    orthonormal navigation transformation.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::beginObject(const char *, bool)
+ *
+ * @brief Begin a display list.
+ */
+
+/**
+ * @fn void Viewer::endObject()
+ *
+ * @brief End a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertBackground(size_t nGroundAngles, const float * groundAngle, const float * groundColor, size_t nSkyAngles, const float * skyAngle, const float * skyColor, int * whc, unsigned char ** pixels)
+ *
+ * @brief Insert a background into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertBox(float, float, float)
+ *
+ * @brief Insert a box into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertCone(float, float, bool, bool)
+ *
+ * @brief Insert a cone into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertCylinder(float, float, bool, bool, bool)
+ *
+ * @brief Insert a cylinder into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertElevationGrid(unsigned int mask, size_t nx, size_t nz, const float * height, float dx, float dz, const float * tc, const float * normals, const float * colors)
+ *
+ * @brief Insert an elevation grid into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertExtrusion(unsigned int, size_t nOrientation, const float * orientation, size_t nScale, const float * scale, size_t nCrossSection, const float * crossSection, size_t nSpine, const float * spine)
+ *
+ * @brief Insert an extrusion into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertLineSet(size_t nCoords, const float * coord, size_t nCoordIndex, const long * coordIndex, bool colorPerVertex, const float * color, size_t nColorIndex, const long * colorIndex)
+ *
+ * @brief Insert a line set into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertPointSet(size_t nv, const float * v, const float * c)
+ *
+ * @brief Insert a point set into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertShell(unsigned int mask, size_t npoints, const float * points, size_t nfaces, const long * faces, const float * tc, size_t ntci, const long * tci, const float * normal, size_t nni, const long * ni, const float * color, size_t nci, const long * ci)
+ *
+ * @brief Insert a shell into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertSphere(float radius)
+ *
+ * @brief Insert a sphere into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertText(int*, float size, int n, char const * const *s)
+ *
+ * @brief Insert text into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertDirLight(float, float, const float [], const float [])
+ *
+ * @brief Insert a directional light into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertPointLight(float, const float [], const float [], float, const float [], float)
+ *
+ * @brief Insert a point light into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertSpotLight(float ambientIntensity, const float attenuation[], float beamWidth, const float color[], float cutOffAngle, const float direction[], float intensity, const float location[], float radius)
+ *
+ * @brief Insert a point light into a display list.
+ */
+
+/**
+ * @fn Viewer::Object Viewer::insertReference(Obect existingObject)
+ *
+ * @brief Insert a reference to an existing object into a display list.
+ */
+
+/**
+ * @fn void MatrixMultiply(const float M[4][4])
+ *
+ * @brief Multiply current ModelView Matrix with Given Matrix M
+ *
+ * @param M matrix in VrmlMatrix format (Same as OGL)
+ */
+
+/**
+ * @brief Build a cylinder object.
+ *
+ * @param height    the height for the cylinder.
+ * @param radius    the radius for the cylinder.
+ * @param numFacets the number of facets for the sides of the cylinder.
+ * @retval c        the coordinates.
+ * @retval tc       the texture coordinates.
+ * @retval faces    the faces.
+ *
+ * It might be smarter to do just one, and reference it with scaling (but the
+ * world creator could just as easily do that with DEF/USE ...).
  */
 void Viewer::computeCylinder(const double height, const double radius,
                              const int numFacets, float c[][3],
@@ -111,7 +324,7 @@ void Viewer::computeCylinder(const double height, const double radius,
 }
 
 /**
- * Build an extrusion.
+ * @brief Build an extrusion.
  */
 void Viewer::computeExtrusion(int nOrientation,
                               const float *orientation,
