@@ -328,7 +328,15 @@ void VrmlNode::deleteRoute(const char *fromEventOut,
 	  strcmp(toEventIn, r->toEventIn()) == 0 )
 	{
 	  if (r->prev())
-	    r->prev()->setNext(r->next());
+            {
+	      r->prev()->setNext(r->next());
+            }
+          else
+            {
+              // point to new head of route list if deleting first route
+              d_routes = r->next();
+            }
+
 	  if (r->next())
 	    r->next()->setPrev(r->prev());
 	  delete r;
