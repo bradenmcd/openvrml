@@ -21,10 +21,6 @@
 # ifndef VIEWEROPENGL_H
 #   define VIEWEROPENGL_H
 
-#   ifdef HAVE_CONFIG_H
-#     include <config.h>
-#   endif
-
 #   include <stack>
 #   include <OpenVRML/Viewer.h>
 #   include <OpenVRML/GL/common.h>

@@ -8,6 +8,9 @@
           GL detection macros to add configure option for Apple OpenGL
           framework.
 
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Public headers
+          must not include config.h.
+
 2003-03-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/vrml97node.cpp,
