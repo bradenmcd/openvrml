@@ -5526,15 +5526,7 @@ void Group::setChildren(const MFNode & children) {
 
     for (size_t i = 0; i < children.getLength(); ++i) {
         const NodePtr & child = children.getElement(i);
-# if 0
-        ProtoNode * p = 0;
-        if (child && (child->toChild()
-                || ((p = dynamic_cast<ProtoNode *>(child.get()))
-                    && p->getImplNodes().getLength() == 0)))
-# else
-        if (child && child->toChild())
-# endif
-        {
+        if (child && child->toChild()) {
             child->accumulateTransform(this->parentTransform);
         } else {
             theSystem ->error(
@@ -5567,15 +5559,7 @@ void Group::addChildren(const MFNode & children) {
 
     for (size_t i = 0; i < n; ++i) {
         const NodePtr & child = children.getElement(i);
-# if 0
-        ProtoNode * p = 0;
-        if (child && (child->toChild()
-                || ((p = dynamic_cast<ProtoNode *>(child.get()))
-                    && p->getImplNodes().getLength() == 0)))
-# else
-        if (child && child->toChild())
-# endif
-        {
+        if (child && child->toChild()) {
             this->children.addNode(child);
             child->accumulateTransform(this->parentTransform);
         } else {
