@@ -1,3 +1,11 @@
+2003-09-02  Braden McDaniel  <braden@endoframe.com>
+
+	Fixes for gcc 3.2.2.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
 2003-09-01  Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/doc.cpp (doc2::filename):  Fixed

@@ -942,8 +942,11 @@ std::ostream & operator<<(std::ostream & out, const vec3f & v)
  */
 rotation::rotation(const float (&rot)[4]) throw ()
 {
+# ifndef NDEBUG
     using openvrml_::fequal;
-    assert(fequal<float>()(vec3f(rot[0], rot[1], rot[2]).length(), 1.0f));
+    fequal<float> feq;
+# endif
+    assert(feq(vec3f(rot[0], rot[1], rot[2]).length(), 1.0f));
     std::copy(rot, rot + 4, this->rot);
 }
 
@@ -963,8 +966,11 @@ rotation::rotation(const float x,
                    const float angle)
     throw ()
 {
+# ifndef NDEBUG
     using openvrml_::fequal;
-    assert(fequal<float>()(vec3f(x, y, z).length(), 1.0f));
+    fequal<float> feq;
+# endif
+    assert(feq(vec3f(x, y, z).length(), 1.0f));
     this->rot[0] = x;
     this->rot[1] = y;
     this->rot[2] = z;
@@ -983,8 +989,11 @@ rotation::rotation(const float x,
  */
 rotation::rotation(const vec3f & axis, const float angle) throw ()
 {
+# ifndef NDEBUG
     using openvrml_::fequal;
-    assert(fequal<float>()(axis.length(), 1.0f));
+    fequal<float> feq;
+# endif
+    assert(feq(axis.length(), 1.0f));
     this->axis(axis);
     this->rot[3] = angle;
 }
@@ -1174,8 +1183,11 @@ void rotation::z(const float value) throw ()
  */
 void rotation::axis(const vec3f & axis) throw ()
 {
+# ifndef NDEBUG
     using openvrml_::fequal;
-    assert(fequal<float>()(axis.length(), 1.0f));
+    fequal<float> feq;
+# endif
+    assert(feq(axis.length(), 1.0f));
     this->rot[0] = axis.x();
     this->rot[1] = axis.y();
     this->rot[2] = axis.z();
@@ -2222,8 +2234,11 @@ quatf::quatf(const mat4f & mat) throw ()
  */
 quatf::quatf(const rotation & rot) throw ()
 {
+# ifndef NDEBUG
     using openvrml_::fequal;
-    assert(fequal<float>()(rot.axis().length(), 1.0));
+    fequal<float> feq;
+# endif
+    assert(feq(rot.axis().length(), 1.0));
 
     const float sin_angle = float(sin(rot.angle() / 2.0));
     this->quat[0] = rot.x() * sin_angle;

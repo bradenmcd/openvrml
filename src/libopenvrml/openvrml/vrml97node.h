@@ -1429,7 +1429,7 @@ namespace openvrml {
             sfbool active;
 
             img * image;
-            size_t frame, lastFrame;
+            int frame, lastFrame;
             double lastFrameTime;
 
             viewer::texture_object_t texObject;

@@ -14803,7 +14803,6 @@ namespace {
                            const vec2f & vertex)
         throw ()
     {
-        using openvrml_::fpequal;
         for (size_t i = 0; i < vertices.size(); ++i) {
             if (vertices[i] == vertex) { return i; }
         }
@@ -16641,23 +16640,25 @@ void time_sensor_node::update(const double currentTime)
                 deactivate = true;
             }
 
-            if (cycleInt > 0.0 && timeNow.value > this->startTime.value) {
-                f = fmod(timeNow.value - this->startTime.value, cycleInt);
-            } else {
-                f = 0.0;
-            }
+            f = (cycleInt > 0.0 && timeNow.value > this->startTime.value)
+              ? fmod(timeNow.value - this->startTime.value, cycleInt)
+              : 0.0;
+
+            fequal<double> feq;
 
             // Fraction of cycle message
-            sffloat fraction_changed(fequal<double>()(f, 0.0)
+            sffloat fraction_changed(feq(f, 0.0)
                                      ? 1.0f
                                      : float(f / cycleInt));
-            this->emit_event("fraction_changed", fraction_changed, timeNow.value);
+            this->emit_event("fraction_changed",
+                             fraction_changed,
+                             timeNow.value);
 
             // Current time message
             this->emit_event("time", timeNow, timeNow.value);
 
             // End of cycle message (this may miss cycles...)
-            if (fequal<double>()(fraction_changed.value, 1.0)) {
+            if (feq(fraction_changed.value, 1.0)) {
                 this->emit_event("cycleTime", timeNow, timeNow.value);
             }
 
