@@ -113,21 +113,21 @@ Optional features
    or don't want PNG support).  These arguments can be passed to
    `configure':
    
-   --with-png
-   --with-png=yes
+   --with-libpng
+   --with-libpng=yes
       Look in the default library and include paths for libpng.  This is
       the default.
    
-   --with-png=PREFIX
+   --with-libpng=PREFIX
       If libpng is not installed in the default library and include 
       paths on your system, pass the prefix under which it is installed
       as PREFIX.
    
-   --without-png
-   --with-png=no
+   --without-libpng
+   --with-libpng=no
       Build without PNG support.
    
-   Other build systems should define HAVE_PNG when building OpenVRML
+   Other build systems should define HAVE_LIBPNG when building OpenVRML
    with PNG support.
 
  * JPEG image support
@@ -139,21 +139,21 @@ Optional features
    without JPEG support (if you don't have libjpeg or don't want JPEG
    support).  These arguments can be passed to `configure':
    
-   --with-jpeg
-   --with-jpeg=yes
+   --with-libjpeg
+   --with-libjpeg=yes
       Look in the default library and include paths for libjpeg.  This
       is the default.
    
-   --with-jpeg=PREFIX
+   --with-libjpeg=PREFIX
       If libjpeg is not installed in the default library and include 
       paths on your system, pass the prefix under which it is installed
       as PREFIX.
    
-   --without-jpeg
-   --with-jpeg=no
+   --without-libjpeg
+   --with-libjpeg=no
       Build without JPEG support.
    
-   Other build systems should define HAVE_JPEG when building OpenVRML
+   Other build systems should define HAVE_LIBJPEG when building OpenVRML
    with JPEG support.
 
  * JavaScript support
@@ -166,21 +166,21 @@ Optional features
    (if you don't have SpiderMonkey or don't want JavaScript support).
    These arguments can be passed to `configure':
    
-   --with-javascript
-   --with-javascript=yes
+   --with-mozjs
+   --with-mozjs=yes
       Look in the default library and include paths for libmozjs.  This
       is the default.
    
-   --with-javascript=PREFIX
+   --with-mozjs=PREFIX
       If libmozjs is not installed in the default library and include 
       paths on your system, pass the prefix under which it is installed
       as PREFIX.
    
-   --without-javascript
-   --with-javascript=no
+   --without-mozjs
+   --with-mozjs=no
       Build without JavaScript support.
    
-   Other build systems should define HAVE_JAVASCRIPT when building
+   Other build systems should define HAVE_MOZJS when building
    OpenVRML with JavaScript support.
 
 
