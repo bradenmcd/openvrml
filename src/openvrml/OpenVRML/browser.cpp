@@ -85,8 +85,9 @@ namespace OpenVRML {
         typedef std::map<std::string, FieldValuePtr> FieldValueMap;
         typedef std::map<std::string, PolledEventOutValue> EventOutValueMap;
 
-    private:
         ISMap isMap;
+
+    private:
         FieldValueMap unISdFieldValueMap;
         EventOutValueMap eventOutValueMap;
         std::vector<NodePtr> implNodes;
@@ -727,7 +728,7 @@ const NodePath Browser::findNode(const Node & node) const throw (std::bad_alloc)
             if (&node != &this->objectiveNode) { this->nodePath.pop_back(); }
         }
     };
-    
+
     NodePath nodePath;
     FindNodeTraverser(node, nodePath).traverse(this->scene->getNodes());
     return nodePath;
@@ -2286,7 +2287,7 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
         std::set<Node *> traversedNodes;
         const ProtoNode * protoDef;
         ProtoNode * protoInstance;
-    
+
     public:
         ProtoImplCloner():
             protoDef(0),
@@ -2336,7 +2337,7 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
             }
             return result;
         }
-        
+
         const NodePtr cloneNode(const NodePtr & node,
                                 const ScopePtr & targetScope)
             throw (std::bad_alloc)
@@ -2346,11 +2347,11 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
             NodePtr result(0);
 
             if (!node) { return result; }
-            
+
             std::set<Node *>::iterator pos =
                     this->traversedNodes.find(node.get());
             const bool alreadyTraversed = (pos != this->traversedNodes.end());
-            
+
             if (alreadyTraversed) {
                 result.reset(targetScope->findNode(node->getId()));
                 assert(result);
@@ -2361,7 +2362,7 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
                 //
                 // Any IS mappings for this node?
                 //
-                for (ISMap::const_iterator isMapEntry =
+                for (ProtoNode::ISMap::const_iterator isMapEntry =
                         this->protoDef->isMap.begin();
                         isMapEntry != this->protoDef->isMap.end();
                         ++isMapEntry) {
@@ -2460,7 +2461,7 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
     //
     class NodeFieldCloner {
         std::set<Node *> traversedNodes;
-    
+
     public:
         const SFNode clone(const SFNode & node,
                            const ScopePtr & targetScope)
@@ -2500,7 +2501,7 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
             }
             return result;
         }
-        
+
         const NodePtr cloneNode(const NodePtr & node,
                                 const ScopePtr & targetScope)
             throw (std::bad_alloc)
@@ -2510,11 +2511,11 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
             NodePtr result(0);
 
             if (!node) { return result; }
-            
+
             std::set<Node *>::iterator pos =
                     this->traversedNodes.find(node.get());
             const bool alreadyTraversed = (pos != this->traversedNodes.end());
-            
+
             if (alreadyTraversed) {
                 result.reset(targetScope->findNode(node->getId()));
                 assert(result);
@@ -2556,7 +2557,7 @@ ProtoNode::ProtoNode(const NodeType & nodeType,
                     }
                 }
             }
-            
+
             return result;
         }
     } nodeCloner;
