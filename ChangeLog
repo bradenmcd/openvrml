@@ -1,3 +1,18 @@
+2002-09-07  Thomas Flynn  <tflynn@users.sourceforge.net>
+
+        * src/openvrml/OpenVRML/ScriptJDK.cpp: Additional documentation.
+          Fix ConstMFColor/MFColor CreateObject methods. Fix issues with
+          retrieving and setting eventOut fields. Workaround for
+          BaseNode::getBrowser problems.
+
+        * java/vrml/node/Script.java,
+          java/vrml/BaseNode.java: Temporary workaround for getBrowser
+          problems.
+
+        * java/vrml/ConstMFInt32.java: Update javadoc comments.
+
+        * models/TestJSAI.java: Add additional tests of JSAI functionality.
+
 2002-09-06  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/field.cpp: Fixed size increment in
