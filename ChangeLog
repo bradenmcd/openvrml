@@ -1,3 +1,8 @@
+2003-09-22  Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp:  Doc-comment and
+	cosmetic improvements.
+
 2003-09-18  Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/Vrml97Parser.cpp:  Track changes to

@@ -3161,8 +3161,9 @@ box_class::~box_class() throw ()
  *                                  supported by box_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr box_class::create_type(const std::string & id,
-                                       const node_interface_set & interfaces)
+const node_type_ptr
+box_class::create_type(const std::string & id,
+                       const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface =
@@ -3181,9 +3182,8 @@ const node_type_ptr box_class::create_type(const std::string & id,
             boxNodeType.add_field(
                 supportedInterface.field_type,
                 supportedInterface.id,
-                node_field_ptr_ptr(
-                    new node_field_ptr_impl<box_node, sfvec3f>
-                    (&box_node::size)));
+                node_field_ptr_ptr(new node_field_ptr_impl<box_node, sfvec3f>(
+                                       &box_node::size)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -10628,12 +10628,14 @@ orientation_interpolator_node::process_set_keyValue(const field_value & value,
  * @param browser the browser associated with this class object.
  */
 pixel_texture_class::pixel_texture_class(openvrml::browser & browser):
-        node_class(browser) {}
+    node_class(browser)
+{}
 
 /**
  * @brief Destroy.
  */
-pixel_texture_class::~pixel_texture_class() throw () {}
+pixel_texture_class::~pixel_texture_class() throw ()
+{}
 
 /**
  * @brief Create a node_type.
@@ -10641,7 +10643,8 @@ pixel_texture_class::~pixel_texture_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating PixelTexture nodes.
+ * @return a node_type_ptr to a node_type capable of creating PixelTexture
+ *         nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by pixel_texture_class.
@@ -10663,11 +10666,12 @@ pixel_texture_class::create_type(const std::string & id,
                       field_value::sfbool_id,
                       "repeatT")
     };
-    const node_type_ptr
-        type(new vrml97_node_type_impl<pixel_texture_node>(*this, id));
-    vrml97_node_type_impl<pixel_texture_node> & pixelTextureNodeType =
-        static_cast<vrml97_node_type_impl<pixel_texture_node> &>(*type);
-    typedef vrml97_node_type_impl<pixel_texture_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<pixel_texture_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & pixelTextureNodeType = static_cast<node_type_t &>(*type);
+    typedef node_type_t::node_field_ptr_ptr node_field_ptr_ptr;
     for (node_interface_set::const_iterator interface(interfaces.begin());
             interface != interfaces.end(); ++interface) {
         if (*interface == supportedInterfaces[0]) {
@@ -10727,10 +10731,10 @@ pixel_texture_class::create_type(const std::string & id,
  * @param scope the scope to which the node belongs.
  */
 pixel_texture_node::pixel_texture_node(const node_type & type,
-                           const scope_ptr & scope):
-        node(type, scope),
-        abstract_texture_node(type, scope),
-        texObject(0) {}
+                                       const scope_ptr & scope):
+    node(type, scope),
+    abstract_texture_node(type, scope),
+    texObject(0) {}
 
 /**
  * @brief Destroy.
@@ -10745,9 +10749,13 @@ pixel_texture_node::~pixel_texture_node() throw ()
  *
  * @param viewer    a Viewer.
  * @param context   a rendering context.
+ *
+ * @todo Currently we modify the image when rescaling it to have
+ *       2<sup><var>n</var></sup> sides. This is wrong. We should maintain a
+ *       cache of rescaled images in the renderer.
  */
 void pixel_texture_node::render(openvrml::viewer & viewer,
-                          const rendering_context context)
+                                const rendering_context context)
 {
     if (modified()) {
         if (this->texObject) {
@@ -10762,8 +10770,8 @@ void pixel_texture_node::render(openvrml::viewer & viewer,
                                             this->image.comp());
         } else {
             // Ensure the image dimensions are powers of two
-            const size_t sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-            const size_t nSizes = sizeof sizes / sizeof(int);
+            static const size_t sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
+            static const size_t nSizes = sizeof sizes / sizeof(int);
             const size_t w = this->image.x();
             const size_t h = this->image.y();
             size_t i, j;
@@ -10771,36 +10779,31 @@ void pixel_texture_node::render(openvrml::viewer & viewer,
             for (j = 0; j < nSizes; ++j) { if (h < sizes[j]) { break; } }
 
             if (i > 0 && j > 0) {
-                // Always scale images down in size and reuse the same pixel memory.
-
-                // What if we had multiple renderers serving the same scene, and
-                // the renderers had different requirements for rescaling the
-                // image? I think it would be better to keep the rescaled image
-                // in a cache in the renderer.
-                //   -- Braden McDaniel <braden@endoframe.com>, 9 Dec, 2000
+                // Always scale images down in size and reuse the same pixel
+                // memory.
                 if (w != sizes[i - 1] || h != sizes[j - 1]) {
-                    const size_t numBytes = this->image.x() * this->image.y()
-                                            * this->image.comp();
-                    unsigned char * pixels = new unsigned char[numBytes];
-                    std::copy(this->image.array(),
-                              this->image.array() + numBytes,
-                              pixels);
+                    using std::vector;
+                    using std::copy;
+
+                    const size_t numBytes =
+                        this->image.x() * this->image.y() * this->image.comp();
+                    vector<unsigned char> pixels(numBytes);
+                    copy(this->image.array(), this->image.array() + numBytes,
+                         pixels.begin());
 
                     viewer.scale_texture(w, h, sizes[i - 1], sizes[j - 1],
-                                         this->image.comp(), pixels);
+                                         this->image.comp(), &pixels[0]);
                     this->image.set(sizes[i - 1], sizes[j - 1],
-                                    this->image.comp(), pixels);
-                    delete [] pixels;
+                                    this->image.comp(), &pixels[0]);
                 }
 
-                this->texObject =
-                        viewer.insert_texture(this->image.x(),
-                                              this->image.y(),
-                                              this->image.comp(),
-                                              this->repeatS.value,
-                                              this->repeatT.value,
-                                              this->image.array(),
-                                              true);
+                this->texObject = viewer.insert_texture(this->image.x(),
+                                                        this->image.y(),
+                                                        this->image.comp(),
+                                                        this->repeatS.value,
+                                                        this->repeatT.value,
+                                                        this->image.array(),
+                                                        true);
             }
         }
     }
@@ -10888,12 +10891,14 @@ void pixel_texture_node::process_set_image(const field_value & value,
  * @param browser the browser associated with this node class object.
  */
 plane_sensor_class::plane_sensor_class(openvrml::browser & browser):
-        node_class(browser) {}
+    node_class(browser)
+{}
 
 /**
  * @brief Destroy.
  */
-plane_sensor_class::~plane_sensor_class() throw () {}
+plane_sensor_class::~plane_sensor_class() throw ()
+{}
 
 /**
  * @brief Create a node_type.
@@ -10901,10 +10906,11 @@ plane_sensor_class::~plane_sensor_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a node_type_ptr to a node_type capable of creating PlaneSensor nodes.
+ * @return a node_type_ptr to a node_type capable of creating PlaneSensor
+ *         nodes.
  *
- * @exception unsupported_interface  if @p interfaces includes an interface not
- *                              supported by plane_sensor_class.
+ * @exception unsupported_interface if @p interfaces includes an interface not
+ *                                  supported by plane_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 const node_type_ptr
@@ -10991,13 +10997,11 @@ plane_sensor_class::create_type(const std::string & id,
 /**
  * @class plane_sensor_node
  *
- * The PlaneSensor node maps pointing device motion into
- * two-dimensional translation in a plane parallel to the Z=0 plane of
- * the local coordinate system. The PlaneSensor node uses the
- * descendent geometry of its parent node to determine whether it is
- * liable to generate events
- *
- * @todo need copy constructor for d_parentTransform ...
+ * The PlaneSensor node maps pointing device motion into two-dimensional
+ * translation in a plane parallel to the <var>z</var>&nbsp;=&nbsp;0 plane of
+ * the local coordinate system. The PlaneSensor node uses the descendent
+ * geometry of its parent node to determine whether it is liable to generate
+ * events.
  */
 
 /**
@@ -11127,9 +11131,8 @@ void plane_sensor_node::render(openvrml::viewer & viewer,
 }
 
 /**
- * @todo This is not correct. The local coords are computed for one instance,
- * need to convert p to local coords for each instance (DEF/USE) of the
- * sensor...
+ * @todo The local coords are computed for one instance; do we need to convert
+ *       @p p to local coords for each instance (USE) of the sensor?
  */
 void plane_sensor_node::activate(double timeStamp, bool isActive, double * p)
 {
@@ -14422,18 +14425,28 @@ text_class::~text_class() throw ()
  *                              supported by text_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_type_ptr text_class::create_type(const std::string & id,
-                                        const node_interface_set & interfaces)
-        throw (unsupported_interface, std::bad_alloc) {
+const node_type_ptr
+text_class::create_type(const std::string & id,
+                        const node_interface_set & interfaces)
+        throw (unsupported_interface, std::bad_alloc)
+{
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "string"),
-        node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "fontStyle"),
-        node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "length"),
-        node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "maxExtent")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "string"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "fontStyle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "length"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "maxExtent")
     };
     const node_type_ptr type(new vrml97_node_type_impl<text_node>(*this, id));
     vrml97_node_type_impl<text_node> & textNodeType =
-            static_cast<vrml97_node_type_impl<text_node> &>(*type);
+        static_cast<vrml97_node_type_impl<text_node> &>(*type);
     typedef vrml97_node_type_impl<text_node>::node_field_ptr_ptr node_field_ptr_ptr;
     for (node_interface_set::const_iterator interface(interfaces.begin());
             interface != interfaces.end(); ++interface) {
@@ -16141,7 +16154,7 @@ texture_transform_class::~texture_transform_class() throw ()
  */
 const node_type_ptr
 texture_transform_class::create_type(const std::string & id,
-                                  const node_interface_set & interfaces)
+                                     const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -16402,71 +16415,75 @@ time_sensor_class::create_type(const std::string & id,
                        field_value::sftime_id,
                        "time")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<time_sensor_node>(*this, id));
-    vrml97_node_type_impl<time_sensor_node> & timeSensorNodeType =
-            static_cast<vrml97_node_type_impl<time_sensor_node> &>(*type);
-    typedef vrml97_node_type_impl<time_sensor_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef time_sensor_node node_t;
+    typedef vrml97_node_type_impl<time_sensor_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & timeSensorNodeType = static_cast<node_type_t &>(*type);
+    typedef node_type_t::node_field_ptr_ptr node_field_ptr_ptr;
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             timeSensorNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &time_sensor_node::process_set_cycleInterval,
-                node_field_ptr_ptr(new node_field_ptr_impl<time_sensor_node, sftime>
-                                    (&time_sensor_node::cycleInterval)));
+                node_field_ptr_ptr(
+                    new node_type_t::sftime_ptr(&node_t::cycleInterval)));
         } else if (*interface == supportedInterfaces[1]) {
             timeSensorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &time_sensor_node::process_set_enabled,
-                node_field_ptr_ptr(new node_field_ptr_impl<time_sensor_node, sfbool>
-                                    (&time_sensor_node::enabled)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfbool_ptr(&node_t::enabled)));
         } else if (*interface == supportedInterfaces[2]) {
             timeSensorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &time_sensor_node::process_set_loop,
-                node_field_ptr_ptr(new node_field_ptr_impl<time_sensor_node, sfbool>
-                                    (&time_sensor_node::loop)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfbool_ptr(&node_t::loop)));
         } else if (*interface == supportedInterfaces[3]) {
             timeSensorNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &time_sensor_node::process_set_startTime,
-                node_field_ptr_ptr(new node_field_ptr_impl<time_sensor_node, sftime>
-                                    (&time_sensor_node::startTime)));
+                node_field_ptr_ptr(
+                    new node_type_t::sftime_ptr(&node_t::startTime)));
         } else if (*interface == supportedInterfaces[4]) {
             timeSensorNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &time_sensor_node::process_set_stopTime,
-                node_field_ptr_ptr(new node_field_ptr_impl<time_sensor_node, sftime>
-                                    (&time_sensor_node::stopTime)));
+                node_field_ptr_ptr(
+                    new node_type_t::sftime_ptr(&node_t::stopTime)));
         } else if (*interface == supportedInterfaces[5]) {
             timeSensorNodeType.add_eventout(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<time_sensor_node, sftime>
-                                    (&time_sensor_node::cycleTime)));
+                node_field_ptr_ptr(
+                    new node_type_t::sftime_ptr(&node_t::cycleTime)));
         } else if (*interface == supportedInterfaces[6]) {
             timeSensorNodeType.add_eventout(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<time_sensor_node, sffloat>
-                                    (&time_sensor_node::fraction)));
+                node_field_ptr_ptr(
+                    new node_type_t::sffloat_ptr(&node_t::fraction)));
         } else if (*interface == supportedInterfaces[7]) {
             timeSensorNodeType.add_eventout(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<time_sensor_node, sfbool>
-                                    (&time_sensor_node::active)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfbool_ptr(&node_t::active)));
         } else if (*interface == supportedInterfaces[8]) {
             timeSensorNodeType.add_eventout(
                 supportedInterfaces[8].field_type,
                 supportedInterfaces[8].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<time_sensor_node, sftime>
-                                    (&time_sensor_node::time)));
+                node_field_ptr_ptr(
+                    new node_type_t::sftime_ptr(&node_t::time)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -17730,62 +17747,66 @@ viewpoint_class::create_type(const std::string & id,
                       field_value::sfbool_id,
                       "isBound")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<viewpoint_node>(*this, id));
-    vrml97_node_type_impl<viewpoint_node> & viewpointNodeType =
-            static_cast<vrml97_node_type_impl<viewpoint_node> &>(*type);
-    typedef vrml97_node_type_impl<viewpoint_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef viewpoint_node node_t;
+    typedef vrml97_node_type_impl<viewpoint_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & viewpointNodeType = static_cast<node_type_t &>(*type);
+    typedef node_type_t::node_field_ptr_ptr node_field_ptr_ptr;
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             viewpointNodeType.add_eventin(supportedInterfaces[0].field_type,
-                                   supportedInterfaces[0].id,
-                                   &viewpoint_node::process_set_bind);
+                                          supportedInterfaces[0].id,
+                                          &node_t::process_set_bind);
         } else if (*interface == supportedInterfaces[1]) {
             viewpointNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &viewpoint_node::process_set_fieldOfView,
-                node_field_ptr_ptr(new node_field_ptr_impl<viewpoint_node, sffloat>
-                                    (&viewpoint_node::fieldOfView)));
+                node_field_ptr_ptr(
+                    new node_type_t::sffloat_ptr(&node_t::fieldOfView)));
         } else if (*interface == supportedInterfaces[2]) {
             viewpointNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &viewpoint_node::process_set_jump,
-                node_field_ptr_ptr(new node_field_ptr_impl<viewpoint_node, sfbool>
-                                    (&viewpoint_node::jump)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfbool_ptr(&node_t::jump)));
         } else if (*interface == supportedInterfaces[3]) {
             viewpointNodeType.add_exposedfield(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
                 &viewpoint_node::process_set_orientation,
-                node_field_ptr_ptr(new node_field_ptr_impl<viewpoint_node, sfrotation>
-                                    (&viewpoint_node::orientation_)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfrotation_ptr(&node_t::orientation_)));
         } else if (*interface == supportedInterfaces[4]) {
             viewpointNodeType.add_exposedfield(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
                 &viewpoint_node::process_set_position,
-                node_field_ptr_ptr(new node_field_ptr_impl<viewpoint_node, sfvec3f>
-                                    (&viewpoint_node::position_)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfvec3f_ptr(&node_t::position_)));
         } else if (*interface == supportedInterfaces[5]) {
             viewpointNodeType.add_field(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<viewpoint_node, sfstring>
-                                    (&viewpoint_node::description_)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfstring_ptr(&node_t::description_)));
         } else if (*interface == supportedInterfaces[6]) {
             viewpointNodeType.add_eventout(
                 supportedInterfaces[6].field_type,
                 supportedInterfaces[6].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<viewpoint_node, sftime>
-                                    (&viewpoint_node::bindTime)));
+                node_field_ptr_ptr(
+                    new node_type_t::sftime_ptr(&node_t::bindTime)));
         } else if (*interface == supportedInterfaces[7]) {
             viewpointNodeType.add_eventout(
                 supportedInterfaces[7].field_type,
                 supportedInterfaces[7].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<viewpoint_node, sfbool>
-                                    (&viewpoint_node::bound)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfbool_ptr(&node_t::bound)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -18061,7 +18082,7 @@ void viewpoint_node::process_set_bind(const field_value & value,
     const sfbool & bind = dynamic_cast<const sfbool &>(value);
     assert(dynamic_cast<viewpoint_class *>(&this->type.node_class));
     viewpoint_class & nodeClass =
-            static_cast<viewpoint_class &>(this->type.node_class);
+        static_cast<viewpoint_class &>(this->type.node_class);
     if (bind.value) {
         nodeClass.bind(*this, timestamp);
     } else {
@@ -18206,58 +18227,74 @@ visibility_sensor_class::create_type(const std::string & id,
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
-        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "center"),
-        node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "enabled"),
-        node_interface(node_interface::exposedfield_id, field_value::sfvec3f_id, "size"),
-        node_interface(node_interface::eventout_id, field_value::sftime_id, "enterTime"),
-        node_interface(node_interface::eventout_id, field_value::sftime_id, "exitTime"),
-        node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive")
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "size"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "enterTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "exitTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<visibility_sensor_node>(*this, id));
-    vrml97_node_type_impl<visibility_sensor_node> & visibilitySensorNodeType =
-            static_cast<vrml97_node_type_impl<visibility_sensor_node> &>(*type);
-    typedef vrml97_node_type_impl<visibility_sensor_node>::node_field_ptr_ptr node_field_ptr_ptr;
+
+    typedef visibility_sensor_node node_t;
+    typedef vrml97_node_type_impl<visibility_sensor_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & visibilitySensorNodeType = static_cast<node_type_t &>(*type);
+    typedef node_type_t::node_field_ptr_ptr node_field_ptr_ptr;
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end();
+         ++interface) {
         if (*interface == supportedInterfaces[0]) {
             visibilitySensorNodeType.add_exposedfield(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
                 &visibility_sensor_node::process_set_center,
-                node_field_ptr_ptr(new node_field_ptr_impl<visibility_sensor_node, sfvec3f>
-                                    (&visibility_sensor_node::center)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfvec3f_ptr(&node_t::center)));
         } else if (*interface == supportedInterfaces[1]) {
             visibilitySensorNodeType.add_exposedfield(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
                 &visibility_sensor_node::process_set_enabled,
-                node_field_ptr_ptr(new node_field_ptr_impl<visibility_sensor_node, sfbool>
-                                    (&visibility_sensor_node::enabled)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfbool_ptr(&node_t::enabled)));
         } else if (*interface == supportedInterfaces[2]) {
             visibilitySensorNodeType.add_exposedfield(
                 supportedInterfaces[2].field_type,
                 supportedInterfaces[2].id,
                 &visibility_sensor_node::process_set_size,
-                node_field_ptr_ptr(new node_field_ptr_impl<visibility_sensor_node, sfvec3f>
-                                    (&visibility_sensor_node::size)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfvec3f_ptr(&node_t::size)));
         } else if (*interface == supportedInterfaces[3]) {
             visibilitySensorNodeType.add_eventout(
                 supportedInterfaces[3].field_type,
                 supportedInterfaces[3].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<visibility_sensor_node, sftime>
-                                    (&visibility_sensor_node::enterTime)));
+                node_field_ptr_ptr(
+                    new node_type_t::sftime_ptr(&node_t::enterTime)));
         } else if (*interface == supportedInterfaces[4]) {
             visibilitySensorNodeType.add_eventout(
                 supportedInterfaces[4].field_type,
                 supportedInterfaces[4].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<visibility_sensor_node, sftime>
-                                    (&visibility_sensor_node::exitTime)));
+                node_field_ptr_ptr(
+                    new node_type_t::sftime_ptr(&node_t::exitTime)));
         } else if (*interface == supportedInterfaces[5]) {
             visibilitySensorNodeType.add_eventout(
                 supportedInterfaces[5].field_type,
                 supportedInterfaces[5].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<visibility_sensor_node, sfbool>
-                                    (&visibility_sensor_node::active)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfbool_ptr(&node_t::active)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
@@ -18502,25 +18539,26 @@ world_info_class::create_type(const std::string & id,
                        field_value::sfstring_id,
                        "title")
     };
-    const node_type_ptr type(new vrml97_node_type_impl<world_info_node>(*this, id));
-    vrml97_node_type_impl<world_info_node> & worldInfoNodeType =
-            static_cast<vrml97_node_type_impl<world_info_node> &>(*type);
-    typedef vrml97_node_type_impl<world_info_node>::node_field_ptr_ptr
-        node_field_ptr_ptr;
+
+    typedef vrml97_node_type_impl<world_info_node> node_type_t;
+
+    const node_type_ptr type(new node_type_t(*this, id));
+    node_type_t & worldInfoNodeType = static_cast<node_type_t &>(*type);
+    typedef node_type_t::node_field_ptr_ptr node_field_ptr_ptr;
     for (node_interface_set::const_iterator interface(interfaces.begin());
-            interface != interfaces.end(); ++interface) {
+         interface != interfaces.end(); ++interface) {
         if (*interface == supportedInterfaces[0]) {
             worldInfoNodeType.add_field(
                 supportedInterfaces[0].field_type,
                 supportedInterfaces[0].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<world_info_node, mfstring>
-                                    (&world_info_node::info)));
+                node_field_ptr_ptr(
+                    new node_type_t::mfstring_ptr(&world_info_node::info)));
         } else if (*interface == supportedInterfaces[1]) {
             worldInfoNodeType.add_field(
                 supportedInterfaces[1].field_type,
                 supportedInterfaces[1].id,
-                node_field_ptr_ptr(new node_field_ptr_impl<world_info_node, sfstring>
-                                    (&world_info_node::title)));
+                node_field_ptr_ptr(
+                    new node_type_t::sfstring_ptr(&world_info_node::title)));
         } else {
             throw unsupported_interface("Invalid interface.");
         }
