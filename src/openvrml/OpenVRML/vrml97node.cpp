@@ -9534,65 +9534,56 @@ VrmlNodeTransform::recalcBSphere()
  * @param M gets a copy of the resulting transform
  */
 
-void VrmlNodeTransform::transform_to_matrix(const VrmlNodeTransform* t_arg,VrmlMatrix& M)
-{
-
-  VrmlMatrix temp;
-  M.makeIdentity();
-  VrmlNodeTransform* t = (VrmlNodeTransform*)t_arg; // argh.
-  if(!((t->d_translation[0] == 0.0) &&
-     (t->d_translation[1] == 0.0) &&
-     (t->d_translation[2] == 0.0)))
-		{
-		temp.setTranslate(t->d_translation);
-		M = M.MMleft(temp);            // M = T * M   = T
-		}
-  if(!((t->d_center[0] == 0.0) &&
-     (t->d_center[1] == 0.0) &&
-     (t->d_center[2] == 0.0)))
-		{
-         temp.setTranslate(t->d_center);
-         M = M.MMleft(temp);            // M = C * M   = C * T   
-		}
-  if(!((t->d_rotation.getX() == 0.0) &&
-     (t->d_rotation.getY() == 0.0) &&
-     (t->d_rotation.getZ() == 1.0) &&
-     (t->d_rotation.getAngle() == 0.0)))
-		{
-		temp.setRotate(t->d_rotation);
-		M = M.MMleft(temp);            // M = R * M    = R * C * T
-		}
-  if(!((t->d_scale[0] == 1.0) &&
-     (t->d_scale[1] == 1.0) &&
-     (t->d_scale[2] == 1.0)))
-	 {
-      if(!((t->d_scaleOrientation.getX() == 0.0) &&
-         (t->d_scaleOrientation.getY() == 0.0) &&
-         (t->d_scaleOrientation.getZ() == 1.0) &&
-         (t->d_scaleOrientation.getAngle() == 0.0)))
-		{
-         temp.setRotate(t->d_scaleOrientation);
-         M = M.MMleft(temp);            // M = SR * M    = SR * R * C * T 
-		}
-         temp.setScale(t->d_scale);
-         M = M.MMleft(temp);            // M = S * M     = S * SR * R * C * T
-         if(!((t->d_scaleOrientation.getX() == 0.0) &&
-            (t->d_scaleOrientation.getY() == 0.0) &&
-            (t->d_scaleOrientation.getZ() == 1.0) &&
-            (t->d_scaleOrientation.getAngle() == 0.0)))
-		 {
-          temp.setRotate(t->d_scaleOrientation.inverse());
-          M = M.MMleft(temp);            // M = -SR * M   = -SR * S * SR * R * C * T
-		 }
-	}
-    if(!((t->d_center[0] == 0.0) &&
-       (t->d_center[1] == 0.0) &&
-       (t->d_center[2] == 0.0)))
- 		{
-         temp.setTranslate(t->d_center.negate());
-         M = M.MMleft(temp);            // M = -C * M    =  -C * -SR * S * SR * R * C * T
-		}
-  }
+void VrmlNodeTransform::transform_to_matrix(const VrmlNodeTransform * t,
+                                            VrmlMatrix & M) {
+    VrmlMatrix temp;
+    M.makeIdentity();
+    if(!((t->d_translation[0] == 0.0)
+            && (t->d_translation[1] == 0.0)
+            && (t->d_translation[2] == 0.0))) {
+        temp.setTranslate(t->d_translation);
+        M = M.MMleft(temp);            // M = T * M   = T
+    }
+    if(!((t->d_center[0] == 0.0)
+            && (t->d_center[1] == 0.0)
+            && (t->d_center[2] == 0.0))) {
+        temp.setTranslate(t->d_center);
+        M = M.MMleft(temp);            // M = C * M   = C * T   
+    }
+    if(!((t->d_rotation.getX() == 0.0)
+            && (t->d_rotation.getY() == 0.0)
+            && (t->d_rotation.getZ() == 1.0)
+            && (t->d_rotation.getAngle() == 0.0))) {
+        temp.setRotate(t->d_rotation);
+        M = M.MMleft(temp);            // M = R * M    = R * C * T
+    }
+    if(!((t->d_scale[0] == 1.0)
+            && (t->d_scale[1] == 1.0)
+            && (t->d_scale[2] == 1.0))) {
+        if(!((t->d_scaleOrientation.getX() == 0.0)
+                && (t->d_scaleOrientation.getY() == 0.0)
+                && (t->d_scaleOrientation.getZ() == 1.0)
+                && (t->d_scaleOrientation.getAngle() == 0.0))) {
+            temp.setRotate(t->d_scaleOrientation);
+            M = M.MMleft(temp);            // M = SR * M    = SR * R * C * T 
+        }
+        temp.setScale(t->d_scale);
+        M = M.MMleft(temp);            // M = S * M     = S * SR * R * C * T
+        if(!((t->d_scaleOrientation.getX() == 0.0)
+                && (t->d_scaleOrientation.getY() == 0.0)
+                && (t->d_scaleOrientation.getZ() == 1.0)
+                && (t->d_scaleOrientation.getAngle() == 0.0))) {
+            temp.setRotate(t->d_scaleOrientation.inverse());
+            M = M.MMleft(temp);            // M = -SR * M   = -SR * S * SR * R * C * T
+        }
+    }
+    if(!((t->d_center[0] == 0.0)
+            && (t->d_center[1] == 0.0)
+            && (t->d_center[2] == 0.0))) {
+       temp.setTranslate(t->d_center.negate());
+       M = M.MMleft(temp);            // M = -C * M    =  -C * -SR * S * SR * R * C * T
+    }
+}
 
 
 // P' = T × C × R × SR × S × -SR × -C × P
