@@ -1,5 +1,12 @@
 2004-01-24 Braden McDaniel  <braden@endoframe.com>
 
+	Fixed argument numbering in NaN error message in SFVec2f and
+	SFVec3f constructors.
+
+	* src/libopenvrml/openvrml/script.cpp
+
+2004-01-24 Braden McDaniel  <braden@endoframe.com>
+
 	Guard against NaN values in JavaScript SFVec3f, SFVec2f
 	constructors and component mutators.
 

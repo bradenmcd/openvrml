@@ -4301,7 +4301,7 @@ JSBool SFVec2f::initObject(JSContext * const cx,
         if (!JS_ValueToNumber(cx, argv[i], vec + i)) { return JS_FALSE; }
         if (vec[i] != vec[i]) {
             JS_ReportError(cx, "Argument %d of SFVec2f constructor is NaN.",
-                           i);
+                           i + 1);
             return JS_FALSE;
         }
     }
@@ -4810,7 +4810,7 @@ JSBool SFVec3f::initObject(JSContext * const cx,
         if (!JS_ValueToNumber(cx, argv[i], vec + i)) { return JS_FALSE; }
         if (vec[i] != vec[i]) {
             JS_ReportError(cx, "Argument %d of SFVec3f constructor is NaN.",
-                           i);
+                           i + 1);
             return JS_FALSE;
         }
     }
