@@ -632,7 +632,7 @@ void VrmlNode::eventIn(double timeStamp,
     // Handle set_field eventIn/field
     else if (nodeType().hasEventIn(eventName)
             && nodeType().hasField(basicEventName)) {
-        this->setField(eventName, fieldValue);
+        this->setField(basicEventName, fieldValue);
         this->setModified();
     } else
         cerr << "Error: unhandled eventIn " << nodeType().getName()

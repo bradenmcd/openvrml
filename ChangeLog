@@ -2,6 +2,9 @@
 
         * Fixed crash in VrmlScene::readPROTO().
 
+        * Fixed event value propagation problem in VrmlNode::eventIn()
+          (introduced in transition to std::string).
+
 2001-08-19  Braden McDaniel  <braden@endoframe.com>
 
         * Added getChildren() method to VrmlNode; implemented this for
