@@ -26,7 +26,7 @@
 #include "VrmlScene.h"
 
 #ifdef macintosh
-#include "vrml97/doc2.hpp"
+#include "OpenVRML/doc2.hpp"
 #else
 #include "doc2.hpp"
 #endif
