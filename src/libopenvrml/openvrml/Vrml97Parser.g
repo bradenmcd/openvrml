@@ -1916,8 +1916,22 @@ stringValue returns [std::string str]
 options { defaultErrorHandler=false; }
     :   s:STRING
         {
-            const std::string temp(s->getText());
-            str = std::string(temp.begin() + 1, temp.end() - 1);
+            using std::string;
+            const string & token_text(s->getText());
+            //
+            // "Unescape" the string.
+            //
+            bool escape = false;
+            for (string::const_iterator pos = token_text.begin() + 1;
+                 pos != token_text.end() - 1;
+                 ++pos) {
+                if (*pos == '\\' && !escape) {
+                    escape = true;
+                } else {
+                    str.push_back(*pos);
+                    escape = false;
+                }
+            }
         }
     ;
 

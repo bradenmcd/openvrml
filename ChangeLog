@@ -1,5 +1,12 @@
 2004-04-04 Braden McDaniel  <braden@endoframe.com>
 
+	"Unescape" strings as they are parsed.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+
+2004-04-04 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/doxygen-header:  Another fix to counteract idiosyncrasies
 	of the default doxygen style sheet.
 
