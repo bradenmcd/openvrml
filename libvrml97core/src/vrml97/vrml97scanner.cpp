@@ -99,7 +99,7 @@ int const Vrml97Utf8Scanner::FIELDTYPE_MFVEC3F      (47);
 
 Vrml97Utf8Scanner::Vrml97Utf8Scanner(::istream & istm)
   : _istm(istm), _line(1), _col(0), _c(' '), _prevChar('\0'), _prevTokenType(0),
-    _readTooMuch(false), _expectingFieldType(false), _expectingNodeTypeId(false)
+    _readTooMuch(false), _expectingFieldType(false)
 {}
 
 antlr::RefToken Vrml97Utf8Scanner::nextToken()
@@ -145,16 +145,8 @@ antlr::RefToken Vrml97Utf8Scanner::nextToken()
         if (_expectingFieldType) {
             _identifyFieldType(*token);
             _expectingFieldType = false;
-        } else if (_expectingNodeTypeId) {
-            _identifyScriptNode(*token);
-            _expectingNodeTypeId = false;
         }
-        
         _identifyKeyword(*token);
-        
-        if ((_prevTokenType == KEYWORD_DEF) && (token->getType() == ID)) {
-            _expectingNodeTypeId = true;
-        }
         
     } else if ((_c == '.') || (_c == '+') || (_c == '-') || isdigit(_c)) {
         //
@@ -367,8 +359,7 @@ void Vrml97Utf8Scanner::_identifyKeyword(antlr::Token & token)
 {
     std::string const tokenText(token.getText());
     
-    if      (tokenText == "DEF")            { _expectingNodeTypeId = false;
-                                              token.setType(KEYWORD_DEF); }
+    if      (tokenText == "DEF")            { token.setType(KEYWORD_DEF); }
     else if (tokenText == "eventIn")        { _expectingFieldType = true;
                                               token.setType(KEYWORD_EVENTIN); }
     else if (tokenText == "eventOut")       { _expectingFieldType = true;
@@ -416,13 +407,6 @@ void Vrml97Utf8Scanner::_identifyFieldType(antlr::Token & token)
     else if (tokenText == "MFVec3f")    { token.setType(FIELDTYPE_MFVEC3F); }
 }
 
-void Vrml97Utf8Scanner::_identifyScriptNode(antlr::Token & token)
-{
-    assert(_expectingNodeTypeId);
-    
-    if (token.getText() == "Script") { token.setType(NODE_SCRIPT); }
-}
-
 void Vrml97Utf8Scanner::_identifyTerminalSymbol(antlr::Token & token)
 {
     std::string const tokenText(token.getText());
@@ -430,8 +414,7 @@ void Vrml97Utf8Scanner::_identifyTerminalSymbol(antlr::Token & token)
     if      (tokenText == "[")  { token.setType(LBRACKET); }
     else if (tokenText == "]")  { token.setType(RBRACKET); }
     else if (tokenText == "{")  { token.setType(LBRACE); }
-    else if (tokenText == "}")  { token.setType(RBRACE);
-                                  _expectingNodeTypeId = true; }
+    else if (tokenText == "}")  { token.setType(RBRACE); }
 }
 
 namespace {

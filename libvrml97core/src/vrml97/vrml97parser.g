@@ -476,22 +476,9 @@ options {
         {
             VrmlNodeType const * nodeType = 0;
         }
-    :   nodeTypeId:ID 
-        {
-            nodeType = vrmlNamespace.findType(nodeTypeId->getText().c_str());
-            if (!nodeType) {
-                throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
-            }
-            
-            n = nodeType->newNode();
-            
-            if (nodeId.size() > 0) {
-                n->setName(nodeId.c_str(), &vrmlNamespace);
-            }
-        }
-        LBRACE (nodeBodyElement[vrmlNamespace, doc, *n])* RBRACE
-        
-    |   NODE_SCRIPT
+    :
+	{ !LT(1)->getText().compare("Script") }?
+	scriptId:ID 
         {
             nodeType = vrmlNamespace.findType("Script");
             assert(nodeType);
@@ -509,6 +496,21 @@ options {
             nodeBodyElement[vrmlNamespace, doc, *n]
             | scriptInterfaceDeclaration[vrmlNamespace, doc, *scriptNode]
         )* RBRACE
+        
+    |  	nodeTypeId:ID 
+        {
+            nodeType = vrmlNamespace.findType(nodeTypeId->getText().c_str());
+            if (!nodeType) {
+                throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
+            }
+            
+            n = nodeType->newNode();
+            
+            if (nodeId.size() > 0) {
+                n->setName(nodeId.c_str(), &vrmlNamespace);
+            }
+        }
+        LBRACE (nodeBodyElement[vrmlNamespace, doc, *n])* RBRACE
     ;
 
 nodeBodyElement[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlNode & node]
@@ -594,21 +596,9 @@ options {
         {
             VrmlNodeType const * nodeType = 0;
         }
-    :   nodeTypeId:ID
-        {
-            nodeType = protoNodeType.scope()->findType(nodeTypeId->getText().c_str());
-            if (!nodeType) {
-                throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
-            }
-            
-            n = nodeType->newNode();
-            
-            if (nodeId.size() > 0) {
-                n->setName(nodeId.c_str(), protoNodeType.scope());
-            }
-        }
-        LBRACE (protoNodeBodyElement[doc, protoNodeType, *n])* RBRACE
-    |   NODE_SCRIPT
+    : 
+	{ !LT(1)->getText().compare("Script") }?
+	  scriptId:ID
         {
             nodeType = protoNodeType.scope()->findType("Script");
             assert(nodeType);
@@ -626,6 +616,21 @@ options {
             protoNodeBodyElement[doc, protoNodeType, *n]
             | protoScriptInterfaceDeclaration[doc, protoNodeType, *scriptNode]
         )* RBRACE
+
+    | 	  nodeTypeId:ID
+        {
+            nodeType = protoNodeType.scope()->findType(nodeTypeId->getText().c_str());
+            if (!nodeType) {
+                throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
+            }
+            
+            n = nodeType->newNode();
+            
+            if (nodeId.size() > 0) {
+                n->setName(nodeId.c_str(), protoNodeType.scope());
+            }
+        }
+        LBRACE (protoNodeBodyElement[doc, protoNodeType, *n])* RBRACE
     ;
 
 protoNodeBodyElement[Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNode & node]
@@ -723,6 +728,7 @@ protoScriptFieldInterfaceDeclaration[Doc2 const * doc, VrmlNodeType & protoNodeT
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
+            
         }
         (
             (
@@ -733,7 +739,11 @@ protoScriptFieldInterfaceDeclaration[Doc2 const * doc, VrmlNodeType & protoNodeT
                     delete fv;
                 }
             )
-            | isStatement[protoNodeType, node, id->getText()]
+            |
+		{
+                    node.addField(id->getText().c_str(), ft);
+		}
+		isStatement[protoNodeType, node, id->getText()]
         )
     ;
 

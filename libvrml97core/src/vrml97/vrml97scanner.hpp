@@ -103,7 +103,6 @@ class Vrml97Utf8Scanner : public antlr::TokenStream {
         void _getNextChar();
         void _identifyKeyword(antlr::Token &);
         void _identifyFieldType(antlr::Token &);
-        void _identifyScriptNode(antlr::Token &);
         void _identifyTerminalSymbol(antlr::Token &);
         
         istream &   _istm;
@@ -114,7 +113,6 @@ class Vrml97Utf8Scanner : public antlr::TokenStream {
         int         _prevTokenType;
         bool        _readTooMuch;
         bool        _expectingFieldType;
-        bool        _expectingNodeTypeId;
 };
 
 # endif
