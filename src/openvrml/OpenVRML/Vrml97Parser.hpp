@@ -18,7 +18,7 @@
 # define ANTLR_RBRACE }
 
 namespace OpenVRML {
-    class Scope;
+    class scope;
     class script_node;
     class node_type;
     class Doc2;
@@ -156,7 +156,7 @@ public:
                const OpenVRML::ScopePtr & scope
 	);
 	public: void routeStatement(
-		const OpenVRML::Scope & scope
+		const OpenVRML::scope & scope
 	);
 	public: OpenVRML::node_ptr  node(
 		OpenVRML::Browser & browser,

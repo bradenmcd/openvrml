@@ -926,11 +926,12 @@ node::~node() throw ()
     //
     if (this->scope_) {
         using std::find_if;
-        const named_node_map::iterator end = this->scope_->namedNodeMap.end();
+        const named_node_map::iterator end =
+            this->scope_->named_node_map.end();
         const named_node_map::iterator pos =
-                find_if(this->scope_->namedNodeMap.begin(), end,
-                        node_is_(*this));
-        if (pos != end) { this->scope_->namedNodeMap.erase(pos); }
+            find_if(this->scope_->named_node_map.begin(), end,
+                    node_is_(*this));
+        if (pos != end) { this->scope_->named_node_map.erase(pos); }
     }
 }
 
@@ -950,7 +951,7 @@ node::~node() throw ()
 void node::id(const std::string & node_id)
 {
     assert(this->scope_);
-    this->scope_->namedNodeMap[node_id] = this;
+    this->scope_->named_node_map[node_id] = this;
 }
 
 /**
@@ -962,18 +963,18 @@ const std::string node::id() const
 {
     using std::find_if;
     assert(this->scope_);
-    const named_node_map::iterator end = this->scope_->namedNodeMap.end();
+    const named_node_map::iterator end = this->scope_->named_node_map.end();
     const named_node_map::iterator pos =
-            find_if(this->scope_->namedNodeMap.begin(), end, node_is_(*this));
+        find_if(this->scope_->named_node_map.begin(), end, node_is_(*this));
     return (pos != end) ? pos->first : std::string();
 }
 
 /**
  * @fn const ScopePtr & node::scope() const throw ()
  *
- * @brief Get the Scope to which the node belongs.
+ * @brief Get the scope to which the node belongs.
  *
- * @return the Scope to which the node belongs.
+ * @return the scope to which the node belongs.
  */
 
 /**

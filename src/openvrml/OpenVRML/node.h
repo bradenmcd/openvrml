@@ -186,7 +186,6 @@ namespace OpenVRML {
     typedef std::deque<node *> node_path;
 
 
-    class Scope;
     class BVolume;
     class script_node;
     class appearance_node;

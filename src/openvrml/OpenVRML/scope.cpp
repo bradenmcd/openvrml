@@ -31,9 +31,9 @@
 namespace OpenVRML {
 
 /**
- * @class Scope
+ * @class scope
  *
- * @brief The Scope class keeps track of defined nodes and
+ * @brief The scope class keeps track of defined nodes and
  *      prototypes.
  *
  * PROTO definitions add node types to the namespace.
@@ -43,21 +43,24 @@ namespace OpenVRML {
  * namespace are available.
  */
 
-typedef std::list<node_type_ptr> NodeTypeList;
+typedef std::list<node_type_ptr> node_type_list_t;
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  *
  * @param id        the identifier for the scope.
  * @param parent    the parent scope.
  */
-Scope::Scope(const std::string & id, const ScopePtr & parent):
-        id(id), parent(parent) {}
+scope::scope(const std::string & id, const ScopePtr & parent):
+    id(id),
+    parent(parent)
+{}
 
 /**
- * @brief Destructor.
+ * @brief Destroy.
  */
-Scope::~Scope() {}
+scope::~scope()
+{}
 
 /**
  * @brief Add a node type.
@@ -68,19 +71,23 @@ Scope::~Scope() {}
  *
  * @todo Throw std::invalid_argument if the argument type is already defined.
  */
-void Scope::addNodeType(const node_type_ptr & nodeType) {
-    assert(nodeType);
-    assert(!this->findType(nodeType->id));
-    this->nodeTypeList.push_front(nodeType);
+void scope::add_type(const node_type_ptr & type)
+{
+    assert(type);
+    assert(!this->find_type(type->id));
+    this->node_type_list.push_front(type);
 }
 
 namespace {
-    struct HasId_ : std::unary_function<node_type_ptr, bool> {
-        HasId_(const std::string & id): id(&id) {}
+    struct has_id_ : std::unary_function<node_type_ptr, bool> {
+        has_id_(const std::string & id):
+            id(&id)
+        {}
 
-        bool operator()(const node_type_ptr & nodeType) const {
-            assert(nodeType);
-            return nodeType->id == *this->id;
+        bool operator()(const node_type_ptr & type) const
+        {
+            assert(type);
+            return type->id == *this->id;
         }
 
     private:
@@ -89,38 +96,39 @@ namespace {
 }
 
 /**
- * @brief Find a node type, given a type name. Returns NULL if type is
+ * @brief Find a node type, given a type name. Returns 0 if type is
  *      not defined.
  */
-const node_type_ptr Scope::findType(const std::string & id) const {
+const node_type_ptr scope::find_type(const std::string & id) const {
     //
     // Look through the types unique to this scope.
     //
-    const NodeTypeList::const_iterator end = this->nodeTypeList.end();
-    const NodeTypeList::const_iterator pos =
-            std::find_if(this->nodeTypeList.begin(), end, HasId_(id));
+    const node_type_list_t::const_iterator end = this->node_type_list.end();
+    const node_type_list_t::const_iterator pos =
+            std::find_if(this->node_type_list.begin(), end, has_id_(id));
     if (pos != end) { return *pos; }
 
     //
     // Look in the parent scope for the type.
     //
     return this->parent
-            ? this->parent->findType(id)
+            ? this->parent->find_type(id)
             : node_type_ptr(0);
 }
 
-const node_type_ptr Scope::firstType() const {
-    return !this->nodeTypeList.empty()
-            ? this->nodeTypeList.front()
-            : node_type_ptr(0);
-}
-
-typedef std::map<std::string, node *> NamedNodeMap;
-
-node * Scope::findNode(const std::string & id) const
+const node_type_ptr scope::first_type() const
 {
-    const NamedNodeMap::const_iterator pos = this->namedNodeMap.find(id);
-    return (pos != this->namedNodeMap.end())
+    return !this->node_type_list.empty()
+            ? this->node_type_list.front()
+            : node_type_ptr(0);
+}
+
+typedef std::map<std::string, node *> named_node_map_t;
+
+node * scope::find_node(const std::string & id) const
+{
+    const named_node_map_t::const_iterator pos = this->named_node_map.find(id);
+    return (pos != this->named_node_map.end())
             ? pos->second
             : 0;
 }

@@ -28,7 +28,7 @@ header "post_include_hpp" {
 # define ANTLR_RBRACE }
 
 namespace OpenVRML {
-    class Scope;
+    class scope;
     class script_node;
     class node_type;
     class Doc2;
@@ -642,7 +642,7 @@ options { defaultErrorHandler=false; }
         {
             using antlr::SemanticException;
             assert(scope);
-            n.reset(scope->findNode(id1->getText()));
+            n.reset(scope->find_node(id1->getText()));
             if (!n) {
                 throw SemanticException("Node \"" + id1->getText() + "\" has not been defined in this scope.",
                                         this->uri,
@@ -675,7 +675,7 @@ proto[OpenVRML::Browser & browser,
 }
     : KEYWORD_PROTO id:ID {
             nodeClass.reset(new ProtoNodeClass(browser));
-            protoScope.reset(new Scope(id->getText(), scope));
+            protoScope.reset(new OpenVRML::scope(id->getText(), scope));
         }
         LBRACKET (
             {
@@ -716,7 +716,7 @@ proto[OpenVRML::Browser & browser,
                 nodeClass->create_type(id->getText(), interfaces);
             assert(nodeType);
             assert(scope);
-            scope->addNodeType(nodeType);
+            scope->add_type(nodeType);
         }
     ;
 
@@ -817,9 +817,11 @@ options { defaultErrorHandler=false; }
 }
     : KEYWORD_DEF id0:ID n=protoNode[proto, scope, id0->getText()]
     | KEYWORD_USE id1:ID {
-            n.reset(scope->findNode(id1->getText()));
+            n.reset(scope->find_node(id1->getText()));
             if (!n) {
-                throw SemanticException("Node \"" + id1->getText() + "\" has not been defined in this scope.",
+                throw SemanticException("Node \"" + id1->getText()
+                                        + "\" has not been defined in this "
+                                        + "scope.",
                                         this->uri,
                                         id1->getLine(),
                                         id1->getColumn());
@@ -854,7 +856,7 @@ externproto[OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope]
             // practice, this means that the ordinary way of using EXTERNPROTOs
             // in VRML worlds will fail.
             //
-            if (nodeType) { scope->addNodeType(nodeType); }
+            if (nodeType) { scope->add_type(nodeType); }
         }
     ;
 
@@ -896,7 +898,7 @@ externprotoUrlList returns [OpenVRML::mfstring urlList]
     |   LBRACKET ( s=stringValue { urlList.value.push_back(s); } )* RBRACKET
     ;
 
-routeStatement[const OpenVRML::Scope & scope]
+routeStatement[const OpenVRML::scope & scope]
     :   KEYWORD_ROUTE fromNodeId:ID PERIOD fromInterfaceId:ID
         KEYWORD_TO toNodeId:ID PERIOD toInterfaceId:ID
         {
@@ -905,7 +907,7 @@ routeStatement[const OpenVRML::Scope & scope]
             using OpenVRML::node_ptr;
             using antlr::SemanticException;
 
-            node * const fromNode = scope.findNode(fromNodeId->getText());
+            node * const fromNode = scope.find_node(fromNodeId->getText());
             if (!fromNode) {
                 throw SemanticException("Node \"" + fromNodeId->getText()
                                         + "\" has not been defined in this "
@@ -915,7 +917,7 @@ routeStatement[const OpenVRML::Scope & scope]
                                         fromNodeId->getColumn());
             }
 
-            node * const toNode = scope.findNode(toNodeId->getText());
+            node * const toNode = scope.find_node(toNodeId->getText());
             if (!toNode) {
                 throw SemanticException("Node \"" + toNodeId->getText()
                                         + "\" has not been defined in this "
@@ -962,7 +964,7 @@ options { defaultErrorHandler = false; }
         )* RBRACE
 
     | nodeTypeId:ID {
-            nodeType = scope->findType(nodeTypeId->getText());
+            nodeType = scope->find_type(nodeTypeId->getText());
             if (!nodeType) {
                 throw SemanticException("Unknown node type \""
                                         + nodeTypeId->getText() + "\".",
@@ -1096,7 +1098,7 @@ options { defaultErrorHandler=false; }
         )* RBRACE
 
     | nodeTypeId:ID {
-            nodeType = scope->findType(nodeTypeId->getText());
+            nodeType = scope->find_type(nodeTypeId->getText());
             if (!nodeType) {
                 throw SemanticException("Unknown node type \""
                                         + nodeTypeId->getText() + "\".",

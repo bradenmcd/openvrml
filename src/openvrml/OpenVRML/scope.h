@@ -31,29 +31,29 @@
 
 namespace OpenVRML {
 
-    class OPENVRML_SCOPE Scope {
+    class OPENVRML_SCOPE scope {
         friend class node;
 
-        std::list<node_type_ptr> nodeTypeList;
-        std::map<std::string, node *> namedNodeMap;
+        std::list<node_type_ptr> node_type_list;
+        std::map<std::string, node *> named_node_map;
 
     public:
         const std::string id;
         const ScopePtr parent;
 
-        explicit Scope(const std::string & id,
-                       const ScopePtr & scope = ScopePtr());
-        virtual ~Scope();
+        explicit scope(const std::string & id,
+                       const ScopePtr & parent = ScopePtr());
+        virtual ~scope();
 
-        void addNodeType(const node_type_ptr & nodeType);
-        const node_type_ptr findType(const std::string & name) const;
-        const node_type_ptr firstType() const;
-        node * findNode(const std::string & name) const;
+        void add_type(const node_type_ptr & type);
+        const node_type_ptr find_type(const std::string & id) const;
+        const node_type_ptr first_type() const;
+        node * find_node(const std::string & id) const;
 
     private:
         // Not copyable.
-        Scope(const Scope &);
-        Scope & operator=(const Scope &);
+        scope(const scope &);
+        scope & operator=(const scope &);
     };
 }
 

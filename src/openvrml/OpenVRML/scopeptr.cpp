@@ -3,21 +3,21 @@
 // OpenVRML
 //
 // Copyright (C) 2002  Braden McDaniel
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 
 # include "scopeptr.h"
 # include "scope.h"
@@ -41,9 +41,11 @@ namespace OpenVRML {
  *
  * @param scope a pointer to a Scope constructed with <code>new</code>.
  */
-ScopePtr::ScopePtr(Scope * const scope): scope(scope) {
+ScopePtr::ScopePtr(OpenVRML::scope * const scope):
+    scope_(scope)
+{
     try {
-        this->count = new size_t(1); // prevent leak if new throws
+        this->count_ = new size_t(1); // prevent leak if new throws
     } catch (...) {
         delete scope;
         throw;
@@ -56,8 +58,9 @@ ScopePtr::ScopePtr(Scope * const scope): scope(scope) {
  * @param scopePtr the ScopePtr to copy.
  */
 ScopePtr::ScopePtr(const ScopePtr & scopePtr):
-        scope(scopePtr.scope) {
-    ++*(this->count = scopePtr.count); // never throws
+    scope_(scopePtr.scope_)
+{
+    ++*(this->count_ = scopePtr.count_); // never throws
 }
 
 /**
@@ -65,12 +68,13 @@ ScopePtr::ScopePtr(const ScopePtr & scopePtr):
  *
  * @param scopePtr
  */
-ScopePtr & ScopePtr::operator=(const ScopePtr & scopePtr) {
-    if (this->count != scopePtr.count) {
-        ++*scopePtr.count;
+ScopePtr & ScopePtr::operator=(const ScopePtr & scopePtr)
+{
+    if (this->count_ != scopePtr.count_) {
+        ++*scopePtr.count_;
         this->dispose();
-        this->scope = scopePtr.scope;
-        this->count = scopePtr.count;
+        this->scope_ = scopePtr.scope_;
+        this->count_ = scopePtr.count_;
     }
     return *this;
 }
@@ -80,27 +84,29 @@ ScopePtr & ScopePtr::operator=(const ScopePtr & scopePtr) {
  *
  * @param scope a pointer to a Scope constructed with <code>new</code>.
  */
-void ScopePtr::reset(Scope * const scope) {
-    if (this->scope == scope) { return; }
-    if (--*this->count == 0) {
-        delete this->scope;
+void ScopePtr::reset(OpenVRML::scope * const scope)
+{
+    if (this->scope_ == scope) { return; }
+    if (--*this->count_ == 0) {
+        delete this->scope_;
     } else {
         try {
-            this->count = new size_t;
+            this->count_ = new size_t;
         } catch (...) {
-            ++*this->count;
+            ++*this->count_;
             delete scope;
             throw;
         }
     }
-    *this->count = 1;
-    this->scope = scope;
+    *this->count_ = 1;
+    this->scope_ = scope;
 }
 
-void ScopePtr::dispose() {
-    if (--*this->count == 0) {
-        delete this->scope;
-        delete this->count;
+void ScopePtr::dispose()
+{
+    if (--*this->count_ == 0) {
+        delete this->scope_;
+        delete this->count_;
     }
 }
 

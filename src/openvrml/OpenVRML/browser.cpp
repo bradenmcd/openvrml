@@ -237,7 +237,7 @@ namespace OpenVRML {
             throw (unsupported_interface, std::bad_alloc);
     };
 
-    class Vrml97RootScope : public Scope {
+    class Vrml97RootScope : public scope {
     public:
         Vrml97RootScope(const Browser & browser,
                         const std::string & uri = std::string())
@@ -983,7 +983,7 @@ void Browser::loadURI(const std::vector<std::string> & uri,
         if (!this->scene->getNodes().empty()) {
             const node_ptr & n = this->scene->getNodes()[0];
             if (n) {
-                node * const vp = n->scope()->findNode(viewpointNodeId);
+                node * const vp = n->scope()->find_node(viewpointNodeId);
                 initialViewpoint = dynamic_cast<viewpoint_node *>(vp);
             }
         }
@@ -2372,7 +2372,7 @@ ProtoNode::ProtoNode(const node_type & nodeType,
             const bool alreadyTraversed = (pos != this->traversedNodes.end());
 
             if (alreadyTraversed) {
-                result.reset(targetScope->findNode(n->id()));
+                result.reset(targetScope->find_node(n->id()));
                 assert(result);
             } else {
                 result = n->type.create_node(targetScope);
@@ -2444,10 +2444,10 @@ ProtoNode::ProtoNode(const node_type & nodeType,
     protoImplCloner.clone(n, *this);
 
     class RouteCopyTraverser : public node_traverser {
-        const Scope & targetScope;
+        const OpenVRML::scope & targetScope;
 
     public:
-        RouteCopyTraverser(const Scope & targetScope):
+        RouteCopyTraverser(const OpenVRML::scope & targetScope):
             targetScope(targetScope)
         {}
 
@@ -2459,14 +2459,15 @@ ProtoNode::ProtoNode(const node_type & nodeType,
         {
             const std::string & fromNodeId = n.id();
             if (!fromNodeId.empty()) {
-                node * const fromNode = this->targetScope.findNode(fromNodeId);
+                node * const fromNode =
+                    this->targetScope.find_node(fromNodeId);
                 assert(fromNode);
                 const node::routes_t & routes = n.routes();
                 for (node::routes_t::const_iterator route = routes.begin();
                         route != routes.end(); ++route) {
                     const std::string & toNodeId = route->to_node->id();
                     const node_ptr
-                        toNode(this->targetScope.findNode(toNodeId));
+                        toNode(this->targetScope.find_node(toNodeId));
                     assert(toNode);
                     fromNode->add_route(route->from_eventout,
                                         toNode,
@@ -2540,7 +2541,7 @@ ProtoNode::ProtoNode(const node_type & nodeType,
             const bool alreadyTraversed = (pos != this->traversedNodes.end());
 
             if (alreadyTraversed) {
-                result.reset(targetScope->findNode(node->id()));
+                result.reset(targetScope->find_node(node->id()));
                 assert(result);
             } else {
                 result = node->type.create_node(targetScope);
@@ -3751,8 +3752,9 @@ namespace {
  */
 Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                                  const std::string & uri)
-        throw (std::bad_alloc):
-        Scope(uri) {
+    throw (std::bad_alloc):
+    scope(uri)
+{
     const Browser::NodeClassMap & nodeClassMap = browser.nodeClassMap;
     Browser::NodeClassMap::const_iterator pos;
 
@@ -3760,20 +3762,36 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
     // Anchor node
     //
     static const node_interface anchorInterfaces[] = {
-        node_interface(node_interface::eventin_id, field_value::mfnode_id, "addChildren"),
-        node_interface(node_interface::eventin_id, field_value::mfnode_id, "removeChildren"),
-        node_interface(node_interface::exposedfield_id, field_value::mfnode_id, "children"),
-        node_interface(node_interface::exposedfield_id, field_value::sfstring_id, "description"),
-        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "parameter"),
-        node_interface(node_interface::exposedfield_id, field_value::mfstring_id, "url"),
-        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
-        node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "parameter"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
     };
     static const vrml97_node_interface_set_
             anchorInterfaceSet(anchorInterfaces, anchorInterfaces + 8);
     pos = nodeClassMap.find("urn:X-openvrml:node:Anchor");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("Anchor", anchorInterfaceSet));
+    this->add_type(pos->second->create_type("Anchor", anchorInterfaceSet));
 
     //
     // Appearance node
@@ -3788,7 +3806,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                                    appearanceInterfaces + 3);
     pos = nodeClassMap.find("urn:X-openvrml:node:Appearance");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("Appearance",
+    this->add_type(pos->second->create_type("Appearance",
                                               appearanceInterfaceSet));
 
     //
@@ -3809,7 +3827,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                                   audioClipInterfaces + 8);
     pos = nodeClassMap.find("urn:X-openvrml:node:AudioClip");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("AudioClip",
+    this->add_type(pos->second->create_type("AudioClip",
                                               audioClipInterfaceSet));
 
     //
@@ -3834,7 +3852,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                                   backgroundInterfaces + 12);
     pos = nodeClassMap.find("urn:X-openvrml:node:Background");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("Background",
+    this->add_type(pos->second->create_type("Background",
                                               backgroundInterfaceSet));
 
     //
@@ -3853,7 +3871,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                                   billboardInterfaces + 6);
     pos = nodeClassMap.find("urn:X-openvrml:node:Billboard");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("Billboard",
+    this->add_type(pos->second->create_type("Billboard",
                                               billboardInterfaceSet));
 
     //
@@ -3865,7 +3883,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
             boxInterfaceSet(&boxInterface, &boxInterface + 1);
     pos = nodeClassMap.find("urn:X-openvrml:node:Box");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("Box", boxInterfaceSet));
+    this->add_type(pos->second->create_type("Box", boxInterfaceSet));
 
     //
     // Collision node
@@ -3884,7 +3902,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
         collisionInterfaceSet(collisionInterfaces, collisionInterfaces + 8);
     pos = nodeClassMap.find("urn:X-openvrml:node:Collision");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("Collision",
+    this->add_type(pos->second->create_type("Collision",
                                               collisionInterfaceSet));
 
     //
@@ -3898,7 +3916,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
             colorInterfaceSet(&colorInterface, &colorInterface + 1);
     pos = nodeClassMap.find("urn:X-openvrml:node:Color");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("Color", colorInterfaceSet));
+    this->add_type(pos->second->create_type("Color", colorInterfaceSet));
 
     //
     // ColorInterpolator node
@@ -3922,7 +3940,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                                           colorInterpolatorInterfaces + 4);
     pos = nodeClassMap.find("urn:X-openvrml:node:ColorInterpolator");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("ColorInterpolator",
+    this->add_type(pos->second->create_type("ColorInterpolator",
                                               colorInterpolatorInterfaceSet));
 
     //
@@ -3938,7 +3956,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
             coneInterfaceSet(coneInterfaces, coneInterfaces + 4);
     pos = nodeClassMap.find("urn:X-openvrml:node:Cone");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("Cone", coneInterfaceSet));
+    this->add_type(pos->second->create_type("Cone", coneInterfaceSet));
 
     //
     // Coordinate node
@@ -3950,7 +3968,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                                    &coordinateInterface + 1);
     pos = nodeClassMap.find("urn:X-openvrml:node:Coordinate");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("Coordinate",
+    this->add_type(pos->second->create_type("Coordinate",
                                               coordinateInterfaceSet));
 
     //
@@ -3967,7 +3985,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                                                coordinateInterpolatorInterfaces + 4);
     pos = nodeClassMap.find("urn:X-openvrml:node:CoordinateInterpolator");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("CoordinateInterpolator",
+    this->add_type(pos->second->create_type("CoordinateInterpolator",
                                               coordinateInterpolatorInterfaceSet));
 
     //
@@ -3984,7 +4002,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
             cylinderInterfaceSet(cylinderInterfaces, cylinderInterfaces + 5);
     pos = nodeClassMap.find("urn:X-openvrml:node:Cylinder");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("Cylinder",
+    this->add_type(pos->second->create_type("Cylinder",
                                               cylinderInterfaceSet));
 
     //
@@ -4006,7 +4024,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                                        cylinderSensorInterfaces + 9);
     pos = nodeClassMap.find("urn:X-openvrml:node:CylinderSensor");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("CylinderSensor",
+    this->add_type(pos->second->create_type("CylinderSensor",
                                               cylinderSensorInterfaceSet));
 
     //
@@ -4024,7 +4042,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                                          directionalLightInterfaces + 5);
     pos = nodeClassMap.find("urn:X-openvrml:node:DirectionalLight");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("DirectionalLight",
+    this->add_type(pos->second->create_type("DirectionalLight",
                                               directionalLightInterfaceSet));
 
     //
@@ -4051,7 +4069,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                                          elevationGridInterfaces + 14);
     pos = nodeClassMap.find("urn:X-openvrml:node:ElevationGrid");
     assert(pos != nodeClassMap.end());
-    this->addNodeType(pos->second->create_type("ElevationGrid",
+    this->add_type(pos->second->create_type("ElevationGrid",
                                               elevationGridInterfaceSet));
 
     //
@@ -4078,7 +4096,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 14);
         pos = nodeClassMap.find("urn:X-openvrml:node:Extrusion");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Extrusion",
+        this->add_type(pos->second->create_type("Extrusion",
                                                   nodeInterfaceSet));
     }
 
@@ -4097,7 +4115,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
         pos = nodeClassMap.find("urn:X-openvrml:node:Fog");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Fog", nodeInterfaceSet));
+        this->add_type(pos->second->create_type("Fog", nodeInterfaceSet));
     }
 
     //
@@ -4119,7 +4137,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
         pos = nodeClassMap.find("urn:X-openvrml:node:FontStyle");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("FontStyle",
+        this->add_type(pos->second->create_type("FontStyle",
                                                   nodeInterfaceSet));
     }
 
@@ -4138,7 +4156,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 5);
         pos = nodeClassMap.find("urn:X-openvrml:node:Group");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Group",
+        this->add_type(pos->second->create_type("Group",
                                                   nodeInterfaceSet));
     }
 
@@ -4155,7 +4173,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
         pos = nodeClassMap.find("urn:X-openvrml:node:ImageTexture");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("ImageTexture",
+        this->add_type(pos->second->create_type("ImageTexture",
                                                   nodeInterfaceSet));
     }
 
@@ -4187,7 +4205,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 18);
         pos = nodeClassMap.find("urn:X-openvrml:node:IndexedFaceSet");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("IndexedFaceSet",
+        this->add_type(pos->second->create_type("IndexedFaceSet",
                                                   nodeInterfaceSet));
     }
 
@@ -4222,7 +4240,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
         pos = nodeClassMap.find("urn:X-openvrml:node:IndexedLineSet");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("IndexedLineSet",
+        this->add_type(pos->second->create_type("IndexedLineSet",
                                                   nodeInterfaceSet));
     }
 
@@ -4239,7 +4257,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
         pos = nodeClassMap.find("urn:X-openvrml:node:Inline");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Inline", nodeInterfaceSet));
+        this->add_type(pos->second->create_type("Inline", nodeInterfaceSet));
     }
 
     //
@@ -4255,7 +4273,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
         pos = nodeClassMap.find("urn:X-openvrml:node:LOD");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("LOD", nodeInterfaceSet));
+        this->add_type(pos->second->create_type("LOD", nodeInterfaceSet));
     }
 
     //
@@ -4274,7 +4292,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
         pos = nodeClassMap.find("urn:X-openvrml:node:Material");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Material",
+        this->add_type(pos->second->create_type("Material",
                                                   nodeInterfaceSet));
     }
 
@@ -4297,7 +4315,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
         pos = nodeClassMap.find("urn:X-openvrml:node:MovieTexture");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("MovieTexture",
+        this->add_type(pos->second->create_type("MovieTexture",
                                                   nodeInterfaceSet));
     }
 
@@ -4318,7 +4336,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
         pos = nodeClassMap.find("urn:X-openvrml:node:NavigationInfo");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("NavigationInfo",
+        this->add_type(pos->second->create_type("NavigationInfo",
                                                   nodeInterfaceSet));
     }
 
@@ -4332,7 +4350,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
         pos = nodeClassMap.find("urn:X-openvrml:node:Normal");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Normal",
+        this->add_type(pos->second->create_type("Normal",
                                                   nodeInterfaceSet));
     }
 
@@ -4350,7 +4368,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
         pos = nodeClassMap.find("urn:X-openvrml:node:NormalInterpolator");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("NormalInterpolator",
+        this->add_type(pos->second->create_type("NormalInterpolator",
                                                   nodeInterfaceSet));
     }
 
@@ -4376,7 +4394,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
         pos = nodeClassMap.find("urn:X-openvrml:node:OrientationInterpolator");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("OrientationInterpolator",
+        this->add_type(pos->second->create_type("OrientationInterpolator",
                                                   nodeInterfaceSet));
     }
 
@@ -4399,7 +4417,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 3);
         pos = nodeClassMap.find("urn:X-openvrml:node:PixelTexture");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("PixelTexture",
+        this->add_type(pos->second->create_type("PixelTexture",
                                                   nodeInterfaceSet));
     }
 
@@ -4421,7 +4439,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
         pos = nodeClassMap.find("urn:X-openvrml:node:PlaneSensor");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("PlaneSensor",
+        this->add_type(pos->second->create_type("PlaneSensor",
                                                   nodeInterfaceSet));
     }
 
@@ -4442,7 +4460,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
         pos = nodeClassMap.find("urn:X-openvrml:node:PointLight");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("PointLight",
+        this->add_type(pos->second->create_type("PointLight",
                                                   nodeInterfaceSet));
     }
 
@@ -4458,7 +4476,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
         pos = nodeClassMap.find("urn:X-openvrml:node:PointSet");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("PointSet",
+        this->add_type(pos->second->create_type("PointSet",
                                                   nodeInterfaceSet));
     }
 
@@ -4484,7 +4502,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
         pos = nodeClassMap.find("urn:X-openvrml:node:PositionInterpolator");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("PositionInterpolator",
+        this->add_type(pos->second->create_type("PositionInterpolator",
                                                   nodeInterfaceSet));
     }
 
@@ -4506,7 +4524,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
         pos = nodeClassMap.find("urn:X-openvrml:node:ProximitySensor");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("ProximitySensor",
+        this->add_type(pos->second->create_type("ProximitySensor",
                                                   nodeInterfaceSet));
     }
 
@@ -4524,7 +4542,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
         pos = nodeClassMap.find("urn:X-openvrml:node:ScalarInterpolator");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("ScalarInterpolator",
+        this->add_type(pos->second->create_type("ScalarInterpolator",
                                                   nodeInterfaceSet));
     }
 
@@ -4540,7 +4558,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
         pos = nodeClassMap.find("urn:X-openvrml:node:Shape");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Shape", nodeInterfaceSet));
+        this->add_type(pos->second->create_type("Shape", nodeInterfaceSet));
     }
 
     //
@@ -4563,7 +4581,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
         pos = nodeClassMap.find("urn:X-openvrml:node:Sound");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Sound", nodeInterfaceSet));
+        this->add_type(pos->second->create_type("Sound", nodeInterfaceSet));
     }
 
     //
@@ -4576,7 +4594,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
         pos = nodeClassMap.find("urn:X-openvrml:node:Sphere");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Sphere", nodeInterfaceSet));
+        this->add_type(pos->second->create_type("Sphere", nodeInterfaceSet));
     }
 
     //
@@ -4595,7 +4613,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
         pos = nodeClassMap.find("urn:X-openvrml:node:SphereSensor");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("SphereSensor",
+        this->add_type(pos->second->create_type("SphereSensor",
                                                   nodeInterfaceSet));
     }
 
@@ -4639,7 +4657,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
         pos = nodeClassMap.find("urn:X-openvrml:node:SpotLight");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("SpotLight",
+        this->add_type(pos->second->create_type("SpotLight",
                                                   nodeInterfaceSet));
     }
 
@@ -4659,7 +4677,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
         pos = nodeClassMap.find("urn:X-openvrml:node:Switch");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Switch", nodeInterfaceSet));
+        this->add_type(pos->second->create_type("Switch", nodeInterfaceSet));
     }
 
     //
@@ -4684,7 +4702,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
         pos = nodeClassMap.find("urn:X-openvrml:node:Text");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Text", nodeInterfaceSet));
+        this->add_type(pos->second->create_type("Text", nodeInterfaceSet));
     }
 
     //
@@ -4699,7 +4717,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(&nodeInterface, &nodeInterface + 1);
         pos = nodeClassMap.find("urn:X-openvrml:node:TextureCoordinate");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("TextureCoordinate",
+        this->add_type(pos->second->create_type("TextureCoordinate",
                                                   nodeInterfaceSet));
     }
 
@@ -4717,7 +4735,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 4);
         pos = nodeClassMap.find("urn:X-openvrml:node:TextureTransform");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("TextureTransform",
+        this->add_type(pos->second->create_type("TextureTransform",
                                                   nodeInterfaceSet));
     }
 
@@ -4740,7 +4758,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 9);
         pos = nodeClassMap.find("urn:X-openvrml:node:TimeSensor");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("TimeSensor",
+        this->add_type(pos->second->create_type("TimeSensor",
                                                   nodeInterfaceSet));
     }
 
@@ -4775,7 +4793,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 7);
         pos = nodeClassMap.find("urn:X-openvrml:node:TouchSensor");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("TouchSensor",
+        this->add_type(pos->second->create_type("TouchSensor",
                                                   nodeInterfaceSet));
     }
 
@@ -4819,7 +4837,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 10);
         pos = nodeClassMap.find("urn:X-openvrml:node:Transform");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Transform",
+        this->add_type(pos->second->create_type("Transform",
                                                   nodeInterfaceSet));
     }
 
@@ -4856,7 +4874,7 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 8);
         pos = nodeClassMap.find("urn:X-openvrml:node:Viewpoint");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("Viewpoint",
+        this->add_type(pos->second->create_type("Viewpoint",
                                                   nodeInterfaceSet));
     }
 
@@ -4888,8 +4906,8 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 6);
         pos = nodeClassMap.find("urn:X-openvrml:node:VisibilitySensor");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("VisibilitySensor",
-                                                  nodeInterfaceSet));
+        this->add_type(pos->second->create_type("VisibilitySensor",
+                                                nodeInterfaceSet));
     }
 
     //
@@ -4908,8 +4926,8 @@ Vrml97RootScope::Vrml97RootScope(const Browser & browser,
                 nodeInterfaceSet(nodeInterfaces, nodeInterfaces + 2);
         pos = nodeClassMap.find("urn:X-openvrml:node:WorldInfo");
         assert(pos != nodeClassMap.end());
-        this->addNodeType(pos->second->create_type("WorldInfo",
-                                                  nodeInterfaceSet));
+        this->add_type(pos->second->create_type("WorldInfo",
+                                                nodeInterfaceSet));
     }
 }
 

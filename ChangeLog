@@ -14,6 +14,16 @@
           src/openvrml/OpenVRML/script.h:  Applied new naming convention
           for script_node class.
 
+        * src/openvrml/OpenVRML/Vrml97Parser.cpp,
+          src/openvrml/OpenVRML/Vrml97Parser.g,
+          src/openvrml/OpenVRML/Vrml97Parser.hpp,
+          src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/scope.cpp,
+          src/openvrml/OpenVRML/scopeptr.cpp,
+          src/openvrml/OpenVRML/scopeptr.h:  Aplied new naming
+          convention for scope class.
+
 2003-05-23  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Makefile.am,
