@@ -954,19 +954,19 @@ node::node(const node_type & type, const scope_ptr & scope) throw ():
  *
  * @fn node::node(const node &)
  *
- * @brief Not implemented.
+ * @brief Construct a copy.
  *
- * node is not copyable.
+ * Not implemented. node is not copyable.
  */
-
-/**
- * @internal
- *
- * @brief Map of node names to node instances.
- */
-typedef std::map<std::string, node *> named_node_map_t;
 
 namespace {
+
+    /**
+     * @internal
+     *
+     * @brief Map of node names to node instances.
+     */
+    typedef std::map<std::string, node *> named_node_map_t;
 
     struct node_is_ : std::unary_function<named_node_map_t::value_type, bool> {
         explicit node_is_(const node & n):
@@ -1011,9 +1011,9 @@ node::~node() throw ()
  *
  * @fn node & node::operator=(const node &)
  *
- * @brief Not implemented.
+ * @brief Assign.
  *
- * node is not copyable.
+ * Not implemented. node is not copyable.
  */
 
 /**

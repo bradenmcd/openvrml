@@ -148,12 +148,9 @@ namespace {
     private:
         const std::string * id;
     };
-}
 
-/**
- * @internal
- */
-typedef std::list<node_type_ptr> node_type_list_t;
+    typedef std::list<node_type_ptr> node_type_list_t;
+}
 
 /**
  * @brief Find a node type, given a type name. Returns 0 if type is
@@ -192,11 +189,6 @@ const node_type_ptr & scope::first_type() const
 }
 
 /**
- * @internal
- */
-typedef std::map<std::string, node *> named_node_map_t;
-
-/**
  * @brief Find the node in the scope with node::id @p id.
  *
  * @return a pointer to a node with node::id @p id, or 0 if no such node exists
@@ -204,6 +196,7 @@ typedef std::map<std::string, node *> named_node_map_t;
  */
 node * scope::find_node(const std::string & id) const
 {
+    typedef std::map<std::string, node *> named_node_map_t;
     const named_node_map_t::const_iterator pos = this->named_node_map.find(id);
     return (pos != this->named_node_map.end())
             ? pos->second

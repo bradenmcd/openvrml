@@ -114,42 +114,27 @@ bounding_volume::~bounding_volume() {}
  */
 
 /**
- * @fn void bounding_volume::extend(const bounding_volume & b)
+ * @fn void bounding_volume::extend(const bounding_volume & bv)
  *
- * @brief Extend this bvolume to enclose the given bvolume.
+ * @brief Extend the bounding_volume to enclose @p bv.
  *
- * This is tricky, because C++ doesn't provide us a way to figure out exactly
- * what sort of bvolume we have been passed, yet we have to know in order to do
- * the appropriate math. What we really need is double dispatch but C++ does
- * not provide it.
- *
- * <p>What the implementation will probably do is use the toBSphere and toAABox
- * methods to test for the actual type of the parameter, and redispatch to
- * extend(sphere) or extend(box).  Alternatively, we could use the double
- * dispatch pattern as described in the Gang of Four patterns book.
- *
- * <p>We need this because nodes like Group don't know until runtime exactly
- * what sort of bounding volumes their children will have. Group could test
- * using toBSphere and toAABox, but it's better to centralize ugly stuff like
- * that.
- *
- * @param b a bounding volume of unknown type
+ * @param bv    a bounding volume.
  */
 
 /**
  * @fn void bounding_volume::extend(const vec3f & p)
  *
- * @brief Extend the bounding volume to enclose the given point.
+ * @brief Extend the bounding volume to enclose @p p.
  *
  * @param p a point
  */
 
 /**
- * @fn void bounding_volume::extend(const axis_aligned_bounding_box & b)
+ * @fn void bounding_volume::extend(const axis_aligned_bounding_box & bbox)
  *
- * @brief Extend this bvolume to enclose the given box.
+ * @brief Extend the bounding volume to enclose @p bbox.
  *
- * @param b an axis-aligned box
+ * @param bbox  an axis-aligned bounding box.
  */
 
 /**
@@ -331,40 +316,22 @@ bounding_sphere::intersect_frustum(const openvrml::frustum & frustum) const
 }
 
 /**
- * @fn void bounding_volume::extend(const bounding_volume & b)
- *
- * @brief Extend this bvolume to enclose the given bvolume.
- *
- * This is tricky, because C++ doesn't provide us a way to figure out exactly
- * what sort of bvolume we have been passed, yet we have to know in order to do
- * the appropriate math. What we really need is double dispatch but C++ does
- * not provide it.
- *
- * What the implementation will probably do is use dynamic_cast to test for the
- * actual type of the parameter, and redispatch to  extend(sphere) or
- * extend(box).  Alternatively, we could use the double dispatch pattern as
- * described in the Gang of Four patterns book.
- *
- * We need this because nodes like Group don't know until runtime exactly
- * what sort of bounding volumes their children will have.
+ * @brief Extend the bounding_volume to enclose @p bv.
  *
  * @param bv    a bounding volume.
  */
 void bounding_sphere::extend(const bounding_volume & bv)
 {
-  const bounding_sphere * bs = 0;
-  const axis_aligned_bounding_box * ab = 0;
-  if ((bs = dynamic_cast<const bounding_sphere *>(&bv))) {
-    this->extend(*bs);
-    return;
-  }
-  if ((ab = dynamic_cast<const axis_aligned_bounding_box *>(&bv))) {
-    this->extend(*ab);
-    return;
-  }
-  // doing two tests isn't a big deal, if there get to be too many
-  // more kinds of bounding volumes, move to a double dispatch
-  // pattern.
+    // doing two tests isn't a big deal, if there get to be too many
+    // more kinds of bounding volumes, move to a double dispatch
+    // pattern.
+    const bounding_sphere * bs = 0;
+    const axis_aligned_bounding_box * ab = 0;
+    if ((bs = dynamic_cast<const bounding_sphere *>(&bv))) {
+        this->extend(*bs);
+    } else if ((ab = dynamic_cast<const axis_aligned_bounding_box *>(&bv))) {
+        this->extend(*ab);
+    }
 }
 
 void bounding_sphere::extend(const vec3f & p)
@@ -420,16 +387,14 @@ void bounding_sphere::extend(const vec3f & p)
 }
 
 /**
- * @fn void bounding_volume::extend(const axis_aligned_bounding_box & b)
- *
- * @brief Extend this bvolume to enclose the given box.
+ * @brief Extend the bounding volume to enclose @p bbox.
  *
  * @todo Implement me!
  *
- * @param b an axis-aligned box
+ * @param bbox  an axis-aligned bounding box
  */
-void bounding_sphere::extend(const axis_aligned_bounding_box & b) {
-}
+void bounding_sphere::extend(const axis_aligned_bounding_box & bbox)
+{}
 
 /**
  * @brief Extend this bvolume to enclose the given sphere.
@@ -569,25 +534,44 @@ void bounding_sphere::enclose(const std::vector<vec3f> & points)
     for (i = 0; i < points.size(); ++i) { this->extend(points[i]); }
 }
 
-
+/**
+ * @brief Get the center coordinates.
+ *
+ * @return the center coordinates.
+ */
 const vec3f & bounding_sphere::center() const
 {
     return this->center_;
 }
 
-void bounding_sphere::center(const vec3f & value)
+/**
+ * @brief Set the center coordinates.
+ *
+ * @param c new center coordinates.
+ */
+void bounding_sphere::center(const vec3f & c)
 {
-    this->center_ = value;
+    this->center_ = c;
 }
 
+/**
+ * @brief Get the radius.
+ *
+ * @return the radius.
+ */
 float bounding_sphere::radius() const
 {
     return this->radius_;
 }
 
-void bounding_sphere::radius(const float value)
+/**
+ * @brief Set the radius.
+ *
+ * @param r new radius value.
+ */
+void bounding_sphere::radius(const float r)
 {
-    this->radius_ = value;
+    this->radius_ = r;
 }
 
 void bounding_sphere::maximize()
@@ -658,38 +642,45 @@ axis_aligned_bounding_box::~axis_aligned_bounding_box()
  * @todo Implement me!
  */
 bounding_volume::intersection
-axis_aligned_bounding_box::
-intersect_frustum(const openvrml::frustum & frustum) const
+axis_aligned_bounding_box::intersect_frustum(
+    const openvrml::frustum & frustum) const
 {
     return bounding_volume::partial;
 }
 
-
+/**
+ * @brief Extend the bounding_volume to enclose @p bv.
+ *
+ * @param bv    a bounding volume.
+ */
 void axis_aligned_bounding_box::extend(const bounding_volume & bv)
 {
-  const bounding_sphere * bs = 0;
-  const axis_aligned_bounding_box * ab = 0;
-  if ((bs = dynamic_cast<const bounding_sphere *>(&bv))) {
-    this->extend(*bs);
-    return;
-  }
-  if ((ab = dynamic_cast<const axis_aligned_bounding_box *>(&bv))) {
-    this->extend(*ab);
-    return;
-  }
+    const bounding_sphere * bs = 0;
+    const axis_aligned_bounding_box * ab = 0;
+    if ((bs = dynamic_cast<const bounding_sphere *>(&bv))) {
+        this->extend(*bs);
+    } else if ((ab = dynamic_cast<const axis_aligned_bounding_box *>(&bv))) {
+        this->extend(*ab);
+    }
 }
 
-
+/**
+ * @todo Implement me!
+ */
 void axis_aligned_bounding_box::extend(const vec3f & p)
 {}
 
-void axis_aligned_bounding_box::extend(const axis_aligned_bounding_box& b)
-{
-}
+/**
+ * @todo Implement me!
+ */
+void axis_aligned_bounding_box::extend(const axis_aligned_bounding_box & b)
+{}
 
+/**
+ * @todo Implement me!
+ */
 void axis_aligned_bounding_box::extend(const bounding_sphere& b)
-{
-}
+{}
 
 /**
  * @brief Enclose the given set of points.

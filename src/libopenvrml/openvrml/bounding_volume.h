@@ -46,10 +46,10 @@ namespace openvrml {
         virtual bool maximized() const = 0;
         virtual intersection
         intersect_frustum(const openvrml::frustum & frustum) const = 0;
-        virtual void extend(const bounding_volume & b) = 0;
+        virtual void extend(const bounding_volume & bv) = 0;
         virtual void extend(const vec3f & p) = 0;
-        virtual void extend(const axis_aligned_bounding_box & b) = 0;
-        virtual void extend(const bounding_sphere & b) = 0;
+        virtual void extend(const axis_aligned_bounding_box & bbox) = 0;
+        virtual void extend(const bounding_sphere & bs) = 0;
         virtual void enclose(const std::vector<vec3f> & points) = 0;
         virtual void ortho_transform(const mat4f & M) = 0;
         virtual void transform(const mat4f & M) = 0;

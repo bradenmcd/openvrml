@@ -360,6 +360,12 @@ invalid_vrml::~invalid_vrml() throw ()
  */
 
 /**
+ * @var browser::Vrml97RootScope
+ *
+ * @brief Root scope that is initialized with the VRML97 node types.
+ */
+
+/**
  * @enum browser::cb_reason
  *
  * @brief Valid reasons for browser callback.
@@ -387,6 +393,18 @@ invalid_vrml::~invalid_vrml() throw ()
  */
 
 /**
+ * @var std::auto_ptr<null_node_class> browser::null_node_class_
+ *
+ * @brief "Null" class object for default nodes (e.g., default_viewpoint).
+ */
+
+/**
+ * @var std::auto_ptr<null_node_type> browser::null_node_type_
+ *
+ * @brief "Null" type object for default nodes (e.g., default_viewpoint).
+ */
+
+/**
  * @typedef browser::node_class_map_t
  *
  * @brief Maps URIs to @link node_class node_classes@endlink.
@@ -408,6 +426,19 @@ invalid_vrml::~invalid_vrml() throw ()
  * @var scene * browser::scene_
  *
  * @brief Pointer to the root scene.
+ */
+
+/**
+ * @var node_ptr browser::default_viewpoint
+ *
+ * @brief The "default" viewpoint_node used when no viewpoint_node in the scene
+ *        is bound.
+ */
+
+/**
+ * @var viewpoint_node * browser::active_viewpoint_
+ *
+ * @brief The currently "active" viewpoint_node.
  */
 
 /**
@@ -559,6 +590,18 @@ invalid_vrml::~invalid_vrml() throw ()
  */
 
 /**
+ * @var size_t browser::first_event
+ *
+ * @brief Index of the first pending event.
+ */
+
+/**
+ * @var size_t browser::last_event
+ *
+ * @brief Index of the last pending event.
+ */
+
+/**
  * @brief Get the current time.
  */
 double browser::current_time() throw ()
@@ -609,7 +652,8 @@ double browser::current_time() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-browser::browser(std::ostream & out, std::ostream & err) throw (std::bad_alloc):
+browser::browser(std::ostream & out, std::ostream & err)
+    throw (std::bad_alloc):
     null_node_class_(new null_node_class(*this)),
     null_node_type_(new null_node_type(*null_node_class_)),
     script_node_class_(*this),
@@ -633,6 +677,16 @@ browser::browser(std::ostream & out, std::ostream & err) throw (std::bad_alloc):
 }
 
 /**
+ * @internal
+ *
+ * @fn browser::browser(const browser &)
+ *
+ * @brief Construct a copy.
+ *
+ * Not implemented. browser is not copyable.
+ */
+
+/**
  * @brief Destructor.
  */
 browser::~browser() throw ()
@@ -653,6 +707,16 @@ browser::~browser() throw ()
     assert(this->proto_node_list.empty());
     this->node_class_map.clear();
 }
+
+/**
+ * @internal
+ *
+ * @fn browser &browser::operator=(const browser &)
+ *
+ * @brief Assign.
+ *
+ * Not implemented. browser is not copyable.
+ */
 
 /**
  * @brief Get the root nodes for the browser.
@@ -1355,6 +1419,11 @@ bool browser::update(double current_time)
     return this->modified();
 }
 
+/**
+ * @brief Indicate whether the headlight is on.
+ *
+ * @return @c true if the headlight is on; @c false otherwise.
+ */
 bool browser::headlight_on()
 {
     vrml97_node::navigation_info_node * const navInfo =
