@@ -1,11 +1,8 @@
-Changes new in version 0.8.3, July 2000
-==========================================
+Changes new in version 0.9.0, September 2000
+============================================
 
 - New parser from Braden McDaniel <braden@endoframe.com>, removing
   the dependency on SGI parser code.
-
-- Inclusion of Michael Louka's  <michael.louka@hrp.no> MacLookat
-  in the standard distribution.
 
 - View frustrum culling from Christopher K. St. John <cstjohn@acm.org>
   and S. K. Bose <bose@pavan.barc.ernet.in> and some navigation fixes.
