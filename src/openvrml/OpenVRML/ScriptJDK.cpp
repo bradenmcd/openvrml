@@ -24,87 +24,82 @@
 //  http://java.sun.com/docs/books/tutorial/native1.1/invoking/invo.html
 //
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
-#ifdef OPENVRML_HAVE_JNI
-#include "ScriptJDK.h"
+# ifdef OPENVRML_HAVE_JNI
+#   include "ScriptJDK.h"
 
-#include <stdio.h>
-#include <string.h>
+#   include <stdio.h>
+#   include <string.h>
+#   include <strstream>
 
-#ifdef _WIN32
-#include <strstrea.h>
-#else
-#include <strstream.h>
-#endif
+#   include <vrml_Browser.h>
+#   include <vrml_Event.h>
+#   include <vrml_Field.h>
+#   include <vrml_MField.h>
+#   include <vrml_ConstField.h>
+#   include <vrml_ConstMField.h>
+#   include <vrml_BaseNode.h>
+#   include <vrml_field_SFBool.h>
+#   include <vrml_field_SFColor.h>
+#   include <vrml_field_SFFloat.h>
+#   include <vrml_field_SFImage.h>
+#   include <vrml_field_SFInt32.h>
+#   include <vrml_field_SFNode.h>
+#   include <vrml_field_SFRotation.h>
+#   include <vrml_field_SFString.h>
+#   include <vrml_field_SFTime.h>
+#   include <vrml_field_SFVec2f.h>
+#   include <vrml_field_SFVec3f.h>
+#   include <vrml_field_MFColor.h>
+#   include <vrml_field_MFFloat.h>
+#   include <vrml_field_MFInt32.h>
+#   include <vrml_field_MFNode.h>
+#   include <vrml_field_MFRotation.h>
+#   include <vrml_field_MFString.h>
+#   include <vrml_field_MFTime.h>
+#   include <vrml_field_MFVec2f.h>
+#   include <vrml_field_MFVec3f.h>
+#   include <vrml_field_ConstSFBool.h>
+#   include <vrml_field_ConstSFColor.h>
+#   include <vrml_field_ConstSFFloat.h>
+#   include <vrml_field_ConstSFImage.h>
+#   include <vrml_field_ConstSFInt32.h>
+#   include <vrml_field_ConstSFNode.h>
+#   include <vrml_field_ConstSFRotation.h>
+#   include <vrml_field_ConstSFString.h>
+#   include <vrml_field_ConstSFTime.h>
+#   include <vrml_field_ConstSFVec2f.h>
+#   include <vrml_field_ConstSFVec3f.h>
+#   include <vrml_field_ConstMFColor.h>
+#   include <vrml_field_ConstMFFloat.h>
+#   include <vrml_field_ConstMFInt32.h>
+#   include <vrml_field_ConstMFNode.h>
+#   include <vrml_field_ConstMFRotation.h>
+#   include <vrml_field_ConstMFString.h>
+#   include <vrml_field_ConstMFTime.h>
+#   include <vrml_field_ConstMFVec2f.h>
+#   include <vrml_field_ConstMFVec3f.h>
+#   include <vrml_node_Node.h>
+#   include <vrml_node_Script.h>
 
-# include <vrml_Browser.h>
-# include <vrml_Event.h>
-# include <vrml_Field.h>
-# include <vrml_MField.h>
-# include <vrml_ConstField.h>
-# include <vrml_ConstMField.h>
-# include <vrml_BaseNode.h>
-# include <vrml_field_SFBool.h>
-# include <vrml_field_SFColor.h>
-# include <vrml_field_SFFloat.h>
-# include <vrml_field_SFImage.h>
-# include <vrml_field_SFInt32.h>
-# include <vrml_field_SFNode.h>
-# include <vrml_field_SFRotation.h>
-# include <vrml_field_SFString.h>
-# include <vrml_field_SFTime.h>
-# include <vrml_field_SFVec2f.h>
-# include <vrml_field_SFVec3f.h>
-# include <vrml_field_MFColor.h>
-# include <vrml_field_MFFloat.h>
-# include <vrml_field_MFInt32.h>
-# include <vrml_field_MFNode.h>
-# include <vrml_field_MFRotation.h>
-# include <vrml_field_MFString.h>
-# include <vrml_field_MFTime.h>
-# include <vrml_field_MFVec2f.h>
-# include <vrml_field_MFVec3f.h>
-# include <vrml_field_ConstSFBool.h>
-# include <vrml_field_ConstSFColor.h>
-# include <vrml_field_ConstSFFloat.h>
-# include <vrml_field_ConstSFImage.h>
-# include <vrml_field_ConstSFInt32.h>
-# include <vrml_field_ConstSFNode.h>
-# include <vrml_field_ConstSFRotation.h>
-# include <vrml_field_ConstSFString.h>
-# include <vrml_field_ConstSFTime.h>
-# include <vrml_field_ConstSFVec2f.h>
-# include <vrml_field_ConstSFVec3f.h>
-# include <vrml_field_ConstMFColor.h>
-# include <vrml_field_ConstMFFloat.h>
-# include <vrml_field_ConstMFInt32.h>
-# include <vrml_field_ConstMFNode.h>
-# include <vrml_field_ConstMFRotation.h>
-# include <vrml_field_ConstMFString.h>
-# include <vrml_field_ConstMFTime.h>
-# include <vrml_field_ConstMFVec2f.h>
-# include <vrml_field_ConstMFVec3f.h>
-# include <vrml_node_Node.h>
-# include <vrml_node_Script.h>
+#   include "doc2.hpp"
+#   include "MathUtils.h"
+#   include "System.h"
+#   include "script.h"
+#   include "VrmlNamespace.h"
+#   include "VrmlScene.h"
+#   include "nodeptr.h"
 
-#include "doc2.hpp"
-#include "MathUtils.h"
-#include "System.h"
-#include "script.h"
-#include "VrmlNamespace.h"
-#include "VrmlScene.h"
-#include "nodeptr.h"
+#   include "field.h"
 
-#include "field.h"
-
-#ifdef _WIN32
-#define PATH_SEPARATOR ";"
-#else /* UNIX and macintosh */
-#define PATH_SEPARATOR ":"
-#endif
+#   ifdef _WIN32
+#     define PATH_SEPARATOR ";"
+#   else /* UNIX and macintosh */
+#     define PATH_SEPARATOR ":"
+#   endif
 
 using namespace OpenVRML;
 
@@ -180,7 +175,7 @@ ScriptJDK::ScriptJDK(ScriptNode & scriptNode, const char * className,
     /* get the currently defined CLASSPATH env variable */
     char* classPath = getenv("CLASSPATH");
 
-    ostrstream appendedClassPath;
+    std::ostrstream appendedClassPath;
 
     appendedClassPath << "-Djava.class.path=."
 		      << PATH_SEPARATOR << classDir;
@@ -195,7 +190,7 @@ ScriptJDK::ScriptJDK(ScriptNode & scriptNode, const char * className,
     appendedClassPath << PATH_SEPARATOR
                       << OPENVRML_PKGDATADIR_ << "/java/script.jar";
 #endif
-	appendedClassPath << ends;
+    appendedClassPath << std::ends;
 
     options[0].optionString = appendedClassPath.str();
     options[1].optionString = "-verbose:class";
@@ -292,6 +287,8 @@ static jfieldID getFid(JNIEnv *env, jobject obj, char *membername, char *sig)
  * @param env ...
  * @param obj ...
  * @return ...
+ *
+ * @todo Implement me!
  */
 static FieldValue* getFieldValue(JNIEnv *env, jobject obj)
 {
@@ -305,8 +302,6 @@ static FieldValue* getFieldValue(JNIEnv *env, jobject obj)
   fid = getFid(env, obj, "isExposedField", "Z");
   bool exposedField = static_cast<bool>(env->GetBooleanField(obj, fid));
   fid = getFid(env, obj, "FieldPtr", "I");
-
-  cout << "TODO: Implement getFieldValue" << endl;
 
   if (eventOut)
   {
@@ -335,9 +330,9 @@ static FieldValue* getFieldValue(JNIEnv *env, jobject obj)
  */
 static jstring fieldToString(JNIEnv *env, jobject obj)
 {
-  ostrstream os;
+  std::ostrstream os;
   FieldValue* pField = getFieldValue(env, obj);
-  os << *pField << ends;
+  os << *pField << std::ends;
   char* szString = os.str();
   jstring result = env->NewStringUTF(szString);
   os.rdbuf()->freeze(0);
@@ -536,7 +531,7 @@ jobject JNICALL Java_vrml_Field_clone
   // TODO: This method needs to be revisited
   fid = getFid(env, obj, "FieldPtr", "I");
   pField = (FieldValue*) env->GetIntField(obj, fid);
-  ostrstream os;
+  std::ostrstream os;
   os << "vrml/field/" << pField->type() << '\0';
   clazz = env->FindClass(os.str());
   os.rdbuf()->freeze(false);
@@ -2507,10 +2502,12 @@ jobject JNICALL Java_vrml_field_MFNode_get1Value
   return Java_vrml_field_ConstMFNode_get1Value(env, obj, index);
 }
 
+/**
+ * @todo Implement me!
+ */
 void JNICALL Java_vrml_field_MFNode_setValue__I_3Lvrml_BaseNode_2
   (JNIEnv *env, jobject obj, jint size, jobjectArray basenode)
 {
-  cout << "TODO: Implement Java_vrml_field_MFNode_setValue__I_3Lvrml_BaseNode_2" << endl;
 }
 
 void JNICALL Java_vrml_field_MFNode_setValue__Lvrml_field_MFNode_2
@@ -3957,7 +3954,7 @@ jobject JNICALL Java_vrml_node_Script_getField
   {
     // Then we've found the field
     const FieldValue* fieldPtr = iter->second.get();
-    ostrstream os;
+    std::ostrstream os;
     os << "vrml/field/" << fieldPtr->type() << '\0';
     jclass clazz = env->FindClass(os.str());
     os.rdbuf()->freeze(false);
@@ -3995,7 +3992,7 @@ jobject JNICALL Java_vrml_node_Script_getEventOut
   {
     ScriptNode::PolledEventOutValue eventOutValue(iter->second);
     // Found the eventOut
-    ostrstream os;
+    std::ostrstream os;
     os << "vrml/field/" << iter->second.value->type() << '\0';
     clazz = env->FindClass(os.str());
     os.rdbuf()->freeze(false);
@@ -4085,11 +4082,12 @@ jobject JNICALL Java_vrml_node_Script_getEventIn
   return 0;
 }
 
+/**
+ * @todo Implement me!
+ */
 jstring JNICALL Java_vrml_node_Script_toString
   (JNIEnv *env, jobject obj)
 {
-  cout << "TODO: Implement Java_vrml_node_Script_toString" << endl;
-
   return 0;
 }
 
@@ -4105,7 +4103,6 @@ jstring JNICALL Java_vrml_node_Script_toString
 jstring JNICALL Java_vrml_BaseNode_getType
   (JNIEnv *env, jobject obj)
 {
-  cout << "TODO: Implement Java_vrml_BaseNode_getType" << endl;
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   Node* pNode = (Node*)env->GetIntField(obj, fid);
   // Haven't found a way to do this yet
@@ -4129,11 +4126,12 @@ jobject JNICALL Java_vrml_BaseNode_getBrowser
 // Node
 //
 
+/**
+ * @todo This method needs to be revisited.
+ */
 jobject JNICALL Java_vrml_node_Node_getEventIn
   (JNIEnv *env, jobject obj, jstring jstrEventInName)
 {
-  // TODO: This method needs to be revisited
-
   const char *eventInName = env->GetStringUTFChars(jstrEventInName , 0);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   Node* pNode = (Node*) env->GetIntField(obj, fid);
@@ -4223,10 +4221,10 @@ jobject JNICALL Java_vrml_node_Node_getExposedField
 jstring JNICALL Java_vrml_node_Node_toString
   (JNIEnv *env, jobject obj)
 {
-  ostrstream os;
+  std::ostrstream os;
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
   Node* pNode = (Node*) env->GetIntField(obj, fid);
-  os << *pNode << ends;
+  os << *pNode << std::ends;
   jstring result = env->NewStringUTF(os.str());
   os.rdbuf()->freeze(0);
   return result;
@@ -4256,7 +4254,7 @@ jobject JNICALL Java_vrml_Event_getValue
   jfieldID fid = getFid(env, obj, "EventPtr", "I");
   VrmlEvent* pEvent = (VrmlEvent*) env->GetIntField(obj, fid);
   const FieldValue* pField = pEvent->value();
-  ostrstream os;
+  std::ostrstream os;
   os << "vrml/field/Const" << pField->type() << '\0';
   jclass clazz = env->FindClass(os.str());
   os.rdbuf()->freeze(false);
@@ -4358,31 +4356,35 @@ jstring JNICALL Java_vrml_Browser_getWorldURL
   return env->NewStringUTF(pBrowser->urlDoc()->url());
 }
 
+/**
+ * @todo Implement me!
+ */
 void JNICALL Java_vrml_Browser_replaceWorld
   (JNIEnv *env, jobject obj, jobjectArray basenodes)
 {
   // First check if mustEvaluate is set, if not then method
   // should not continue.
-
-  cout << "TODO: Implement Java_vrml_Browser_replaceWorld" << endl;
 }
 
+/**
+ * @todo Implement me!
+ */
 jobjectArray JNICALL Java_vrml_Browser_createVrmlFromString
   (JNIEnv *env, jobject obj, jstring vrmlSyntax)
 {
   jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
   VrmlScene* pBrowser = (VrmlScene*) env->GetIntField(obj, fid);
 
-  cout << "TODO: implement Java_vrml_Browser_createVrmlFromString" << endl;
-
   return 0;
 }
 
+/**
+ * @todo Implement me!
+ */
 void JNICALL Java_vrml_Browser_createVrmlFromURL
   (JNIEnv *env, jobject obj, jobjectArray urls,
    jobject basenode, jstring event)
 {
-  cout << "TODO: Implement Java_vrml_Browser_createVrmlFromURL" << endl;
 }
 
 void JNICALL Java_vrml_Browser_addRoute
