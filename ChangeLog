@@ -1,3 +1,19 @@
+2002-11-11  Thomas Flynn  <tflynn@users.sourceforge.net>
+
+        * src/openvrml/OpenVRML/ScriptJDK.cpp: Fix bugs in
+          MFRotation::setValue, MFTime::insertValue and MFVec2f::addValue.
+
+        * src/openvrml/OpenVRML/field.cpp: Fix problem with
+          ArrayVector::erase.
+
+        * java/vrml/field/MFRotation.java: Fix bug in setValue method.
+
+        * java/vrml/field/MFVec2f.java, java/vrml/field/MFVec3f.java:
+          Add additional comments.
+
+        * models/TestJSAI.java: Add tests for MFNode, MFRotation, MFTime,
+          MFVec2f and MFVec3f.
+
 2002-11-04  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
