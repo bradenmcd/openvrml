@@ -22,7 +22,11 @@ public:
 
   virtual void debug(const char *, ...);
 
+#ifdef macintosh
+  virtual bool loadUrl(char *url, int np, char **parameters );
+#else
   virtual bool loadUrl(const char *url, int np, char **parameters );
+#endif
 
   virtual int connectSocket( const char *host, int port );
 
