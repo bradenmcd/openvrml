@@ -24,7 +24,6 @@
 
 #   include <cstddef>
 #   include <string>
-#   include <openvrml/common.h>
 #   include <boost/utility.hpp>
 
 namespace openvrml {

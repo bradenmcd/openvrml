@@ -24,7 +24,6 @@
 # ifndef OPENVRML_VRML97NODE_H
 #   define OPENVRML_VRML97NODE_H
 
-#   include <openvrml/common.h>
 #   include <openvrml/node.h>
 #   include <openvrml/img.h>
 #   include <openvrml/bounding_volume.h>

@@ -1,5 +1,24 @@
 2005-01-16 Braden McDaniel  <braden@endoframe.com>
 
+	Moved definition of constants from libopenvrml/openvrml/common.h
+	to libopenvrml/private.h.
+
+	* src/libopenvrml/private.h
+	* src/libopenvrml/openvrml/basetypes.h
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/common.h:  Removed file.
+	* src/libopenvrml/openvrml/frustum.cpp
+	* src/libopenvrml/openvrml/frustum.h
+	* src/libopenvrml/openvrml/img.h
+	* src/libopenvrml/openvrml/node_ptr.h
+	* src/libopenvrml/openvrml/rendering_context.h
+	* src/libopenvrml/openvrml/system.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
+2005-01-16 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp (browser::~browser):
 	Don't clear the node_class_map.  This is unnecessary, and it
 	prematurely removes PROTO definitions that the scene (which

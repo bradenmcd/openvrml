@@ -32,7 +32,6 @@
 #   include <boost/scoped_ptr.hpp>
 #   include <boost/utility.hpp>
 #   include <boost/thread/recursive_mutex.hpp>
-#   include <openvrml/common.h>
 #   include <openvrml/script.h>
 
 namespace openvrml {

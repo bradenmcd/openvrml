@@ -22,7 +22,6 @@
 # ifndef VRMLRENDERCONTEXT_H
 #   define VRMLRENDERCONTEXT_H
 
-#   include <openvrml/common.h>
 #   include <openvrml/bounding_volume.h>
 
 namespace openvrml {

@@ -22,8 +22,6 @@
 # ifndef OPENVRML_FRUSTUM_H
 #   define OPENVRML_FRUSTUM_H
 
-#   include <openvrml/common.h>
-
 namespace openvrml {
 
     class frustum {

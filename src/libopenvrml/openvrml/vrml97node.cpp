@@ -5296,6 +5296,9 @@ void cylinder_sensor_node::activate(double timestamp,
                                     bool isActive,
                                     double * p)
 {
+    using openvrml_::pi;
+    using openvrml_::pi_2;
+
     // Become active
     if (isActive && !this->is_active_.value) {
         this->is_active_.value = isActive;
@@ -11623,6 +11626,8 @@ do_process_event(const sffloat & fraction, const double timestamp)
         } else {
             for (size_t i = 0; i < n; ++i) {
                 if (key[i] <= fraction.value && fraction.value <= key[i + 1]) {
+                    using openvrml_::pi;
+
                     const rotation & v1 = key_value[i];
                     const rotation & v2 = key_value[i + 1];
 

@@ -30,7 +30,6 @@
 #   include <iosfwd>
 #   include <vector>
 #   include <sys/types.h>
-#   include <openvrml/common.h>
 
 #   include <iostream>
 
