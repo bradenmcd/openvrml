@@ -48,6 +48,8 @@ namespace OpenVRML {
  */
 
 /**
+ * @internal
+ *
  * @class ProtoNode::NodeCloneVisitor
  *
  * @brief A NodeVisitor that makes a deep copy of the node tree for creating
@@ -221,6 +223,8 @@ void ProtoNode::NodeCloneVisitor::visit(Node & node) {
 }
 
 /**
+ * @internal
+ *
  * @class ProtoNode::RouteCopyVisitor
  *
  * @brief Copy the routes.

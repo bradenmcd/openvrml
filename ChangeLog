@@ -1,3 +1,9 @@
+2002-05-28  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/proto.cpp: Doxygen comments - marked
+          docs for ProtoNode::NodeCloneVisitor and
+          ProtoNode::RouteCopyVisitor "internal".
+
 2002-05-26  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/node.cpp: Allocate the default BSphere
