@@ -27,7 +27,7 @@ class VrmlSFBool;
 class VrmlSFColor;
 class VrmlSFFloat;
 class VrmlSFImage;
-class VrmlSFInt;
+class VrmlSFInt32;
 class VrmlSFNode;
 class VrmlSFRotation;
 class VrmlSFString;
@@ -37,7 +37,7 @@ class VrmlSFVec3f;
 
 class VrmlMFColor;
 class VrmlMFFloat;
-class VrmlMFInt;
+class VrmlMFInt32;
 class VrmlMFNode;
 class VrmlMFRotation;
 class VrmlMFString;
@@ -109,7 +109,7 @@ public:
   virtual const VrmlSFColor *toSFColor() const;
   virtual const VrmlSFFloat *toSFFloat() const;
   virtual const VrmlSFImage *toSFImage() const;
-  virtual const VrmlSFInt *toSFInt() const;
+  virtual const VrmlSFInt32 *toSFInt32() const;
   virtual const VrmlSFNode *toSFNode() const;
   virtual const VrmlSFRotation *toSFRotation() const;
   virtual const VrmlSFString *toSFString() const;
@@ -119,7 +119,7 @@ public:
   
   virtual const VrmlMFColor *toMFColor() const;
   virtual const VrmlMFFloat *toMFFloat() const;
-  virtual const VrmlMFInt *toMFInt() const;
+  virtual const VrmlMFInt32 *toMFInt32() const;
   virtual const VrmlMFNode *toMFNode() const;
   virtual const VrmlMFRotation *toMFRotation() const;
   virtual const VrmlMFString *toMFString() const;
@@ -130,7 +130,7 @@ public:
   virtual VrmlSFColor *toSFColor();
   virtual VrmlSFFloat *toSFFloat();
   virtual VrmlSFImage *toSFImage();
-  virtual VrmlSFInt *toSFInt();
+  virtual VrmlSFInt32 *toSFInt32();
   virtual VrmlSFNode *toSFNode();
   virtual VrmlSFRotation *toSFRotation();
   virtual VrmlSFString *toSFString();
@@ -140,7 +140,7 @@ public:
   
   virtual VrmlMFColor *toMFColor();
   virtual VrmlMFFloat *toMFFloat();
-  virtual VrmlMFInt *toMFInt();
+  virtual VrmlMFInt32 *toMFInt32();
   virtual VrmlMFNode *toMFNode();
   virtual VrmlMFRotation *toMFRotation();
   virtual VrmlMFString *toMFString();

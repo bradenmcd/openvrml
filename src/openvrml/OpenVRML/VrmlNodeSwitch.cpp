@@ -177,7 +177,7 @@ void VrmlNodeSwitch::setField(const char *fieldName,
 			      const VrmlField &fieldValue)
 {
   if TRY_FIELD(choice, MFNode)
-  else if TRY_FIELD(whichChoice, SFInt)
+  else if TRY_FIELD(whichChoice, SFInt32)
   else
     VrmlNodeChild::setField(fieldName, fieldValue);
   this->setBVolumeDirty(true);

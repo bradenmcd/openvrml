@@ -24,7 +24,7 @@
 #include "VrmlNodeIndexedSet.h"
 #include "VrmlSFBool.h"
 #include "VrmlSFFloat.h"
-#include "VrmlMFInt.h"
+#include "VrmlMFInt32.h"
 
 class VrmlNodeILineSet : public VrmlNodeIndexedSet {
 

@@ -1769,7 +1769,7 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::SFINT32:
       {
-	return INT_TO_JSVAL( f ? f->toSFInt()->get() : 0 );
+	return INT_TO_JSVAL( f ? f->toSFInt32()->get() : 0 );
       }
 
     case VrmlField::SFNODE:
@@ -1867,7 +1867,7 @@ jsval ScriptJS::vrmlFieldToJSVal( VrmlField::VrmlFieldType type,
 
     case VrmlField::MFINT32:
       {
-	VrmlMFInt *mf = f ? ((VrmlMFInt*) (f->toMFInt())) : 0;
+	VrmlMFInt32 *mf = f ? ((VrmlMFInt32*) (f->toMFInt32())) : 0;
 	int i, n = mf ? mf->size() : 0;
 	JSObject *obj = JS_NewArrayObject( d_cx, (jsint)n, 0 );
 	if (! obj) return JSVAL_NULL;
@@ -2013,7 +2013,7 @@ static VrmlField *jsvalToVrmlField( JSContext *cx,
     return new VrmlSFBool( JSVAL_TO_BOOLEAN(v) );
 
   else if (JSVAL_IS_INT(v) && expectType == VrmlField::SFINT32)
-    return new VrmlSFInt( JSVAL_TO_INT(v) );
+    return new VrmlSFInt32( JSVAL_TO_INT(v) );
 
   else if (JSVAL_IS_NUMBER(v) && expectType == VrmlField::SFFLOAT)
     {
@@ -2129,7 +2129,7 @@ static VrmlField *jsvalToVrmlField( JSContext *cx,
 	    data[i] = static_cast<long>(factor);
 	  }
 	}
-      VrmlMFInt *f = new VrmlMFInt(len, data);
+      VrmlMFInt32 *f = new VrmlMFInt32(len, data);
       delete [] data;
       return f;
     }

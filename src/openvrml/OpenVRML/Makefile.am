@@ -161,11 +161,22 @@ OpenVRMLinclude_HEADERS = \
 	VrmlBVolume.h \
 	VrmlBSphere.h \
 	VrmlEvent.h \
-	VrmlField.h \
 	VrmlFrustum.h \
+	VrmlField.h \
+	VrmlSFBool.h \
+        VrmlSFColor.h \
+        VrmlSFFloat.h \
+        VrmlSFImage.h \
+        VrmlSFInt.h \
+        VrmlSFNode.h \
+	VrmlSFRotation.h \
+        VrmlSFString.h \
+        VrmlSFTime.h \
+        VrmlSFVec2f.h \
+        VrmlSFVec3f.h \
 	VrmlMFColor.h \
         VrmlMFFloat.h \
-        VrmlMFInt.h \
+        VrmlMFInt32.h \
         VrmlMFNode.h \
         VrmlMFRotation.h \
 	VrmlMFString.h \
@@ -236,17 +247,6 @@ OpenVRMLinclude_HEADERS = \
 	VrmlNodeVisibilitySensor.h \
 	VrmlNodeWorldInfo.h \
 	VrmlRenderContext.h \
-	VrmlSFBool.h \
-        VrmlSFColor.h \
-        VrmlSFFloat.h \
-        VrmlSFImage.h \
-        VrmlSFInt.h \
-        VrmlSFNode.h \
-	VrmlSFRotation.h \
-        VrmlSFString.h \
-        VrmlSFTime.h \
-        VrmlSFVec2f.h \
-        VrmlSFVec3f.h \
         VrmlScene.h \
 	doc2.hpp
 

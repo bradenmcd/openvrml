@@ -254,9 +254,9 @@ void VrmlNodeElevationGrid::setField(const char *fieldName,
   else if TRY_FIELD(height, MFFloat)
   else if TRY_FIELD(normalPerVertex, SFBool)
   else if TRY_FIELD(solid, SFBool)
-  else if TRY_FIELD(xDimension, SFInt)
+  else if TRY_FIELD(xDimension, SFInt32)
   else if TRY_FIELD(xSpacing, SFFloat)
-  else if TRY_FIELD(zDimension, SFInt)
+  else if TRY_FIELD(zDimension, SFInt32)
   else if TRY_FIELD(zSpacing, SFFloat)
   else
     VrmlNodeGeometry::setField(fieldName, fieldValue);

@@ -41,7 +41,7 @@ header "post_include_cpp" {
 # include "VrmlSFColor.h"
 # include "VrmlSFFloat.h"
 # include "VrmlSFImage.h"
-# include "VrmlSFInt.h"
+# include "VrmlSFInt32.h"
 # include "VrmlSFNode.h"
 # include "VrmlSFRotation.h"
 # include "VrmlSFTime.h"
@@ -49,7 +49,7 @@ header "post_include_cpp" {
 # include "VrmlSFVec3f.h"
 # include "VrmlMFColor.h"
 # include "VrmlMFFloat.h"
-# include "VrmlMFInt.h"
+# include "VrmlMFInt32.h"
 # include "VrmlMFNode.h"
 # include "VrmlMFRotation.h"
 # include "VrmlMFString.h"
@@ -964,23 +964,23 @@ sfImageValue returns [VrmlSFImage * siv = new VrmlSFImage()]
         }
     ;
 
-sfInt32Value returns [VrmlSFInt * siv = new VrmlSFInt(0L)]
+sfInt32Value returns [VrmlSFInt32 * siv = new VrmlSFInt32(0L)]
         {
             long i(0L);
         }
     :   i=intValue
         {
-            *siv = VrmlSFInt(i);
+            *siv = VrmlSFInt32(i);
         }
     ;
 
-mfInt32Value returns [VrmlMFInt * miv = new VrmlMFInt()]
+mfInt32Value returns [VrmlMFInt32 * miv = new VrmlMFInt32()]
         {
             long i(0L);
         }
     :   i=intValue
         {
-            *miv = VrmlMFInt(i);
+            *miv = VrmlMFInt32(i);
         }
     |   LBRACKET
         {
@@ -993,7 +993,7 @@ mfInt32Value returns [VrmlMFInt * miv = new VrmlMFInt()]
             }
         )* RBRACKET
         {
-            *miv = VrmlMFInt(longVector.size(), longVector.data());
+            *miv = VrmlMFInt32(longVector.size(), longVector.data());
         }
     ;
 

@@ -22,7 +22,7 @@
 #define  _VRMLNODESWITCH_
 
 #include "VrmlMFNode.h"
-#include "VrmlSFInt.h"
+#include "VrmlSFInt32.h"
 #include "VrmlNodeChild.h"
 #include "VrmlBSphere.h"
 
@@ -65,7 +65,7 @@ public:
 protected:
 
   VrmlMFNode d_choice;
-  VrmlSFInt d_whichChoice;
+  VrmlSFInt32 d_whichChoice;
   
   /**
    * Cached copy of the bsphere enclosing this node's children.

@@ -24,7 +24,7 @@
 #include "VrmlNodeGeometry.h"
 #include "VrmlSFBool.h"
 #include "VrmlSFFloat.h"
-#include "VrmlSFInt.h"
+#include "VrmlSFInt32.h"
 #include "VrmlSFNode.h"
 #include "VrmlMFFloat.h"
 
@@ -86,9 +86,9 @@ protected:
   VrmlMFFloat d_height;
   VrmlSFBool d_normalPerVertex;
   VrmlSFBool d_solid;
-  VrmlSFInt d_xDimension;
+  VrmlSFInt32 d_xDimension;
   VrmlSFFloat d_xSpacing;
-  VrmlSFInt d_zDimension;
+  VrmlSFInt32 d_zDimension;
   VrmlSFFloat d_zSpacing;
 
 };

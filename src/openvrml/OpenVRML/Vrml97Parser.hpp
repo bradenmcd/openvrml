@@ -2,12 +2,13 @@
 #define INC_Vrml97Parser_hpp_
 
 #include "antlr/config.hpp"
-/* $ANTLR 2.7.0: "Vrml97Parser.g" -> "Vrml97Parser.hpp"$ */
+/* $ANTLR 2.7.1: "Vrml97Parser.g" -> "Vrml97Parser.hpp"$ */
 #include "antlr/TokenStream.hpp"
 #include "antlr/TokenBuffer.hpp"
 #include "Vrml97ParserTokenTypes.hpp"
 #include "antlr/LLkParser.hpp"
 
+#line 21 "Vrml97Parser.g"
 
 # include "VrmlField.h"
 class VrmlNamespace;
@@ -18,13 +19,16 @@ class VrmlMFTime;
 class VrmlMFNode;
 class Doc2;
 
+#line 23 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
  {
+#line 152 "Vrml97Parser.g"
 
     public:
         enum NodeInterfaceType {
             INVALID_NODE_INTERFACE_TYPE, EVENTIN, EVENTOUT, FIELD, EXPOSEDFIELD
         };
+#line 27 "Vrml97Parser.hpp"
 protected:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf, int k);
 public:
@@ -122,7 +126,7 @@ public:
 	public: VrmlSFColor *  sfColorValue();
 	public: VrmlSFFloat *  sfFloatValue();
 	public: VrmlSFImage *  sfImageValue();
-	public: VrmlSFInt *  sfInt32Value();
+	public: VrmlSFInt32 *  sfInt32Value();
 	public: VrmlSFRotation *  sfRotationValue();
 	public: VrmlSFString *  sfStringValue();
 	public: VrmlSFTime *  sfTimeValue();
@@ -130,7 +134,7 @@ public:
 	public: VrmlSFVec3f *  sfVec3fValue();
 	public: VrmlMFColor *  mfColorValue();
 	public: VrmlMFFloat *  mfFloatValue();
-	public: VrmlMFInt *  mfInt32Value();
+	public: VrmlMFInt32 *  mfInt32Value();
 	public: VrmlMFRotation *  mfRotationValue();
 	public: VrmlMFString *  mfStringValue();
 	public: VrmlMFTime *  mfTimeValue();

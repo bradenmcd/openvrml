@@ -25,7 +25,7 @@
 #include "VrmlSFBool.h"
 #include "VrmlSFFloat.h"
 #include "VrmlSFNode.h"
-#include "VrmlMFInt.h"
+#include "VrmlMFInt32.h"
 
 class VrmlNodeIndexedSet : public VrmlNodeGeometry {
 
@@ -53,18 +53,18 @@ public:
   virtual VrmlNodeColor *color();
 
   virtual VrmlNode* getCoordinate();
-  virtual const VrmlMFInt& getCoordIndex() const;
+  virtual const VrmlMFInt32 & getCoordIndex() const;
   virtual bool getColorPerVertex(){ return d_colorPerVertex.get(); } // LarryD  Feb18/99
-  virtual const VrmlMFInt& getColorIndex() const; // LarryD  Feb18/99
+  virtual const VrmlMFInt32 & getColorIndex() const; // LarryD  Feb18/99
 
 protected:
 
   VrmlSFNode d_color;
-  VrmlMFInt d_colorIndex;
+  VrmlMFInt32 d_colorIndex;
   VrmlSFBool d_colorPerVertex;
 
   VrmlSFNode d_coord;
-  VrmlMFInt d_coordIndex;
+  VrmlMFInt32 d_coordIndex;
 
 };
 

@@ -30,7 +30,7 @@
 // change.
 //
 
-class VrmlMFInt : public VrmlField {
+class VrmlMFInt32 : public VrmlField {
 private:
 
   class IData {			// reference counted int data
@@ -50,23 +50,23 @@ private:
 
 public:
 
-  VrmlMFInt();
-  VrmlMFInt(long);
-  VrmlMFInt(size_t n, const long * v);
-  VrmlMFInt(const VrmlMFInt &src);
+  VrmlMFInt32();
+  VrmlMFInt32(long);
+  VrmlMFInt32(size_t n, const long * v);
+  VrmlMFInt32(const VrmlMFInt32 & src);
 
-  ~VrmlMFInt();
+  ~VrmlMFInt32();
 
   virtual ostream& print(ostream& os) const;
 
   void set(size_t, const long *);
-  VrmlMFInt& operator=(const VrmlMFInt& rhs);
+  VrmlMFInt32 & operator=(const VrmlMFInt32 & rhs);
 
   virtual VrmlField *clone() const;
 
   virtual VrmlFieldType fieldType() const;
-  virtual const VrmlMFInt* toMFInt() const;
-  virtual VrmlMFInt* toMFInt();
+  virtual const VrmlMFInt32 * toMFInt32() const;
+  virtual VrmlMFInt32 * toMFInt32();
 
   size_t size() const;
   const long * get() const;

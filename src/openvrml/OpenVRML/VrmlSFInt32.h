@@ -17,23 +17,23 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
-#ifndef VRMLSFINT_H
-#define VRMLSFINT_H
+#ifndef VRMLSFINT32_H
+#define VRMLSFINT32_H
 
 #include "VrmlField.h"
 
-class VrmlSFInt : public VrmlField {
+class VrmlSFInt32 : public VrmlField {
 public:
 
-  VrmlSFInt(long = 0);
+  VrmlSFInt32(long = 0);
 
   virtual ostream& print(ostream& os) const;
 
   virtual VrmlField *clone() const;
 
   virtual VrmlFieldType fieldType() const;
-  virtual const VrmlSFInt* toSFInt() const;
-  virtual VrmlSFInt* toSFInt();
+  virtual const VrmlSFInt32* toSFInt32() const;
+  virtual VrmlSFInt32* toSFInt32();
 
   long get() const;
   void set(long);

@@ -25,7 +25,7 @@
 #include "VrmlSFBool.h"
 #include "VrmlSFFloat.h"
 #include "VrmlSFNode.h"
-#include "VrmlMFInt.h"
+#include "VrmlMFInt32.h"
 #include "VrmlBSphere.h"
 
 class VrmlNodeIFaceSet : public VrmlNodeIndexedSet {
@@ -60,10 +60,10 @@ public:
   virtual VrmlNodeIFaceSet* toIFaceSet() const;
 
   virtual VrmlNode* getNormal();
-  virtual const VrmlMFInt& getNormalIndex() const;
+  virtual const VrmlMFInt32 & getNormalIndex() const;
 
   virtual VrmlNode* getTexCoord();
-  virtual const VrmlMFInt& getTexCoordIndex() const;
+  virtual const VrmlMFInt32 & getTexCoordIndex() const;
 
   virtual bool getCcw(){ return d_ccw.get(); }  // LarryD  Feb18/99
   virtual bool getConvex(){ return d_convex.get(); }   // LarryD Feb18/99
@@ -79,11 +79,11 @@ protected:
   VrmlSFBool d_convex;
   VrmlSFFloat d_creaseAngle;
   VrmlSFNode d_normal;
-  VrmlMFInt d_normalIndex;
+  VrmlMFInt32 d_normalIndex;
   VrmlSFBool d_normalPerVertex;
   VrmlSFBool d_solid;
   VrmlSFNode d_texCoord;
-  VrmlMFInt d_texCoordIndex;
+  VrmlMFInt32 d_texCoordIndex;
 
   VrmlBSphere d_bsphere;
   void recalcBSphere();

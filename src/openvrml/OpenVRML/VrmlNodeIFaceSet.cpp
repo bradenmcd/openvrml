@@ -271,12 +271,12 @@ void VrmlNodeIFaceSet::setField(const char *fieldName,
   else if TRY_FIELD(convex, SFBool)
   else if TRY_FIELD(creaseAngle, SFFloat)
   else if TRY_SFNODE_FIELD(normal, Normal)
-  else if TRY_FIELD(normalIndex, MFInt)
+  else if TRY_FIELD(normalIndex, MFInt32)
   else if TRY_FIELD(normalPerVertex, SFBool)
   else if TRY_FIELD(solid, SFBool)
-  else if TRY_FIELD(normalIndex, MFInt)
+  else if TRY_FIELD(normalIndex, MFInt32)
   else if TRY_SFNODE_FIELD(texCoord, TextureCoordinate)
-  else if TRY_FIELD(texCoordIndex, MFInt)
+  else if TRY_FIELD(texCoordIndex, MFInt32)
   else
     VrmlNodeIndexedSet::setField(fieldName, fieldValue);
 
@@ -292,13 +292,13 @@ void VrmlNodeIFaceSet::setField(const char *fieldName,
 VrmlNode* VrmlNodeIFaceSet::getNormal()
 {   return d_normal.get(); }
 
-const VrmlMFInt& VrmlNodeIFaceSet::getNormalIndex() const
+const VrmlMFInt32 & VrmlNodeIFaceSet::getNormalIndex() const
 {   return d_normalIndex; }
 
 VrmlNode* VrmlNodeIFaceSet::getTexCoord()
 {   return d_texCoord.get(); }
 
-const VrmlMFInt& VrmlNodeIFaceSet::getTexCoordIndex() const
+const VrmlMFInt32 & VrmlNodeIFaceSet::getTexCoordIndex() const
 {   return d_texCoordIndex; }
 
 VrmlNodeIFaceSet* VrmlNodeIFaceSet::toIFaceSet() const

@@ -106,10 +106,10 @@ VrmlNodeColor *VrmlNodeIndexedSet::color()
 VrmlNode* VrmlNodeIndexedSet::getCoordinate()
 {   return d_coord.get(); }
 
-const VrmlMFInt& VrmlNodeIndexedSet::getCoordIndex() const
+const VrmlMFInt32 & VrmlNodeIndexedSet::getCoordIndex() const
 {   return d_coordIndex; }
 
-const VrmlMFInt& VrmlNodeIndexedSet::getColorIndex() const   // LarryD Feb 18/99
+const VrmlMFInt32 & VrmlNodeIndexedSet::getColorIndex() const   // LarryD Feb 18/99
 {   return d_colorIndex; }
 
 // Get the value of one of the exposedFields
@@ -131,10 +131,10 @@ void VrmlNodeIndexedSet::setField(const char *fieldName,
 				  const VrmlField &fieldValue)
 {
   if TRY_SFNODE_FIELD(color, Color)
-  else if TRY_FIELD(colorIndex, MFInt)
+  else if TRY_FIELD(colorIndex, MFInt32)
   else if TRY_FIELD(colorPerVertex, SFBool)
   else if TRY_SFNODE_FIELD(coord, Coordinate)
-  else if TRY_FIELD(coordIndex, MFInt)
+  else if TRY_FIELD(coordIndex, MFInt32)
   else
     VrmlNodeGeometry::setField(fieldName, fieldValue);
 }

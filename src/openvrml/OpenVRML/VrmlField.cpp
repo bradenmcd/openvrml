@@ -360,22 +360,22 @@ void VrmlSFImage::set(size_t width, size_t height, size_t components,
 
 // SFInt
 
-#include "VrmlSFInt.h"
+#include "VrmlSFInt32.h"
 
-VrmlSFInt::VrmlSFInt(long value): d_value(value) {}
+VrmlSFInt32::VrmlSFInt32(long value): d_value(value) {}
 
-ostream& VrmlSFInt::print(ostream& os) const
+ostream& VrmlSFInt32::print(ostream& os) const
 { return (os << d_value); }
 
-VrmlField *VrmlSFInt::clone() const { return new VrmlSFInt(d_value); }
+VrmlField *VrmlSFInt32::clone() const { return new VrmlSFInt32(d_value); }
 
-VrmlField::VrmlFieldType VrmlSFInt::fieldType() const { return SFINT32; }
+VrmlField::VrmlFieldType VrmlSFInt32::fieldType() const { return SFINT32; }
 
-long VrmlSFInt::get() const {
+long VrmlSFInt32::get() const {
     return this->d_value;
 }
 
-void VrmlSFInt::set(long value) {
+void VrmlSFInt32::set(long value) {
     this->d_value = value;
 }
 
@@ -1039,28 +1039,28 @@ VrmlField::VrmlFieldType VrmlMFFloat::fieldType() const { return MFFLOAT; }
 
 // MFInt
 
-#include "VrmlMFInt.h"
+#include "VrmlMFInt32.h"
 
 
-VrmlMFInt::VrmlMFInt() : d_data(new IData(0)) 
+VrmlMFInt32::VrmlMFInt32() : d_data(new IData(0)) 
 {}
 
-VrmlMFInt::VrmlMFInt(long value): d_data(new IData(1)) {
+VrmlMFInt32::VrmlMFInt32(long value): d_data(new IData(1)) {
     d_data->d_v[0] = value;
 }
 
-VrmlMFInt::VrmlMFInt(size_t n, const long * v): d_data(new IData(n)) {
+VrmlMFInt32::VrmlMFInt32(size_t n, const long * v): d_data(new IData(n)) {
     if (v) {
         memcpy(d_data->d_v, v, n*sizeof(long));
     }
 }
 
-VrmlMFInt::VrmlMFInt(const VrmlMFInt &src) : d_data(src.d_data->ref()) 
+VrmlMFInt32::VrmlMFInt32(const VrmlMFInt32 & src) : d_data(src.d_data->ref()) 
 {}
 
-VrmlMFInt::~VrmlMFInt() { d_data->deref(); }
+VrmlMFInt32::~VrmlMFInt32() { d_data->deref(); }
 
-void VrmlMFInt::set(size_t n, const long * v) {
+void VrmlMFInt32::set(size_t n, const long * v) {
     d_data->deref();
     d_data = new IData(n);
     if (v) {
@@ -1068,7 +1068,7 @@ void VrmlMFInt::set(size_t n, const long * v) {
     }
 }
 
-VrmlMFInt& VrmlMFInt::operator=(const VrmlMFInt& rhs)
+VrmlMFInt32 & VrmlMFInt32::operator=(const VrmlMFInt32 & rhs)
 {
   if (this != &rhs) {
     d_data->deref();
@@ -1077,23 +1077,23 @@ VrmlMFInt& VrmlMFInt::operator=(const VrmlMFInt& rhs)
   return *this;
 }
 
-VrmlField *VrmlMFInt::clone() const	{ return new VrmlMFInt(*this); }
+VrmlField * VrmlMFInt32::clone() const { return new VrmlMFInt32(*this); }
 
-VrmlField::VrmlFieldType VrmlMFInt::fieldType() const { return MFINT32; }
+VrmlField::VrmlFieldType VrmlMFInt32::fieldType() const { return MFINT32; }
 
-size_t VrmlMFInt::size() const {
+size_t VrmlMFInt32::size() const {
     return this->d_data->d_n;
 }
 
-const long * VrmlMFInt::get() const {
+const long * VrmlMFInt32::get() const {
     return this->d_data->d_v;
 }
 
-const long & VrmlMFInt::operator[](size_t index) const {
+const long & VrmlMFInt32::operator[](size_t index) const {
     return this->d_data->d_v[index];
 }
 
-ostream& VrmlMFInt::print(ostream& os) const
+ostream& VrmlMFInt32::print(ostream& os) const
 {
   size_t n = this->size();
   const long * c = get();
@@ -1721,7 +1721,7 @@ DOWNCAST(SFBool)
 DOWNCAST(SFColor)
 DOWNCAST(SFFloat)
 DOWNCAST(SFImage)
-DOWNCAST(SFInt)
+DOWNCAST(SFInt32)
 DOWNCAST(SFNode)
 DOWNCAST(SFRotation)
 DOWNCAST(SFString)
@@ -1731,7 +1731,7 @@ DOWNCAST(SFVec3f)
 
 DOWNCAST(MFColor)
 DOWNCAST(MFFloat)
-DOWNCAST(MFInt)
+DOWNCAST(MFInt32)
 DOWNCAST(MFNode)
 DOWNCAST(MFRotation)
 DOWNCAST(MFString)
