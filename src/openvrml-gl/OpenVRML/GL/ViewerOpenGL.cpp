@@ -516,7 +516,6 @@ double ViewerOpenGL::getFrameRate()
 
 void ViewerOpenGL::resetUserNavigation()
 {
-    std::cout << "ViewerOpenGL::resetUserNavigation" << std::endl;
     ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
     activeViewpoint.setUserViewTransform(VrmlMatrix());
 
@@ -3002,7 +3001,6 @@ void ViewerOpenGL::input( EventInfo *e )
 
 void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
 {
-    std::cout << "ViewerOpenGL::rot_trackball" << std::endl;
     const SFRotation rotation = trackball(x1, y1, x2, y2);
     this->rotate(rotation);
 }
@@ -3061,7 +3059,6 @@ void ViewerOpenGL::rotate(const SFRotation & rotation) throw ()
 
 void ViewerOpenGL::step(float x, float y, float z)
 {
-    std::cout << "ViewerOpenGL::step" << std::endl;
     const SFVec3f translation(x, y, z);
     VrmlMatrix t;
     t.setTranslate(translation);
@@ -3073,7 +3070,6 @@ void ViewerOpenGL::step(float x, float y, float z)
 
 void ViewerOpenGL::zoom(float z)
 {
-    std::cout << "ViewerOpenGL::zoom" << std::endl;
     GLint viewport[4];
     GLdouble modelview[16], projection[16];
     glGetIntegerv (GL_VIEWPORT, viewport);
@@ -3106,14 +3102,11 @@ void ViewerOpenGL::zoom(float z)
     dy *= dist;
     dz *= dist;
     const SFVec3f translation(dx, dy, dz);
-    std::cout << "translation = " << translation << std::endl;
     VrmlMatrix t;
     t.setTranslate(translation);
-    std::cout << "t = " << t << std::endl;
     ViewpointNode & activeViewpoint = this->browser.getActiveViewpoint();
     const VrmlMatrix & userViewTransform =
             activeViewpoint.getUserViewTransform();
-    std::cout << "userViewTransform = " << userViewTransform << std::endl;
     activeViewpoint.setUserViewTransform(userViewTransform.multLeft(t));
     wsPostRedraw();
 }
@@ -3307,8 +3300,6 @@ void ViewerOpenGL::handleButton( EventInfo *e)
 
 void ViewerOpenGL::handleMouseDrag(int x, int y)
 {
-    std::cout << "ViewerOpenGL::handleMouseDrag" << std::endl
-              << "x = " << x << ", y = " << y << std::endl;
  if (d_activeSensitive)
     {
       (void) checkSensitive( x, y, EVENT_MOUSE_DRAG );

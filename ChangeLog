@@ -9,6 +9,9 @@
           src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Added abstract
           node classes TransformNode and ViewpointNode.
 
+        * src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  Removed
+          debug output.
+
 2003-02-14  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp:  Restored necessary

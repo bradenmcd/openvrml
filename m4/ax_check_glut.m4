@@ -10,7 +10,7 @@ dnl set to "yes".
 dnl
 dnl @copyright (C) 2003 Braden McDaniel
 dnl @license GNU GPL
-dnl @version $Id: ax_check_glut.m4,v 1.1 2003-01-07 08:18:00 braden Exp $
+dnl @version $Id: ax_check_glut.m4,v 1.2 2003-02-15 08:19:22 braden Exp $
 dnl @author Braden McDaniel <braden@endoframe.com>
 dnl
 AC_DEFUN([AX_CHECK_GLUT],
@@ -23,7 +23,7 @@ GLUT_LIBS="${GL_LIBS}"
 #
 if test "X${no_x}" != "Xyes"; then
   GLUT_CFLAGS="${GL_CFLAGS}"
-  GLUT_LIBS="${GLUT_LIBS} ${X_PRE_LIBS} -lXmu -lXi -lX11 ${X_EXTRA_LIBS}"
+  GLUT_LIBS="${X_PRE_LIBS} -lXmu -lXi ${X_EXTRA_LIBS} ${GLUT_LIBS}"
 fi
 
 AC_LANG_PUSH(C)

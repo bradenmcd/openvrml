@@ -10,7 +10,7 @@ dnl is set to "yes".
 dnl
 dnl @copyright (C) 2003 Braden McDaniel
 dnl @license GNU GPL
-dnl @version $Id: ax_check_gl.m4,v 1.1 2003-01-07 05:34:08 braden Exp $
+dnl @version $Id: ax_check_gl.m4,v 1.2 2003-02-15 08:19:22 braden Exp $
 dnl @author Braden McDaniel <braden@endoframe.com>
 dnl
 AC_DEFUN([AX_CHECK_GL],
@@ -28,7 +28,7 @@ if test "X$no_x" != "Xyes"; then
     GL_CFLAGS="-I${x_includes} ${GL_CFLAGS}"
   fi
   if test -n "$x_libraries"; then
-    GL_LIBS="-L${x_libraries} ${GL_LIBS}"
+    GL_LIBS="-L${x_libraries} -lX11 ${GL_LIBS}"
   fi
 fi
 
