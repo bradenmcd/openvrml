@@ -83,7 +83,7 @@ namespace openvrml {
 
         virtual const node_interface_set & interfaces() const throw ();
         virtual const node_ptr
-        create_node(const scope_ptr & scope,
+        create_node(const boost::shared_ptr<openvrml::scope> & scope,
                     const initial_value_map & initial_values) const
             throw ();
     };
@@ -157,7 +157,7 @@ namespace {
 
             virtual const node_interface_set & interfaces() const throw ();
             virtual const node_ptr
-            create_node(const scope_ptr & scope,
+            create_node(const boost::shared_ptr<openvrml::scope> & scope,
                         const initial_value_map & initial_values =
                         initial_value_map()) const
                 throw (std::bad_alloc);
@@ -277,9 +277,6 @@ namespace {
             virtual ~proto_eventout() throw ();
 
             bool is(event_emitter_type & emitter) throw (std::bad_alloc);
-
-        private:
-            double last_time() const;
         };
 
         static boost::shared_ptr<openvrml::event_emitter>
@@ -310,7 +307,7 @@ namespace {
                             proto_node & node)
             throw (std::bad_alloc);
 
-        scope_ptr proto_scope;
+        boost::shared_ptr<openvrml::scope> proto_scope;
         std::vector<node_ptr> impl_nodes;
 
         typedef boost::shared_ptr<openvrml::event_listener> eventin_ptr;
@@ -323,7 +320,7 @@ namespace {
 
     public:
         proto_node(const node_type & type,
-                   const scope_ptr & scope,
+                   const boost::shared_ptr<openvrml::scope> & scope,
                    const initial_value_map & initial_values)
             throw (std::bad_alloc);
         virtual ~proto_node() throw ();
@@ -442,7 +439,7 @@ namespace {
 
     void path_getter::traverse_children(node & n) throw (std::bad_alloc)
     {
-        const node_interface_set & interfaces = n.type.interfaces();
+        const node_interface_set & interfaces = n.type().interfaces();
         node_path_element & back = this->node_path.back();
         for (node_interface_set::const_iterator interface = interfaces.begin();
              !this->found && interface != interfaces.end();
@@ -516,11 +513,11 @@ namespace {
 
     class field_value_cloner {
     protected:
-        const scope_ptr & target_scope;
+        const boost::shared_ptr<openvrml::scope> & target_scope;
         std::set<node *> traversed_nodes;
 
     public:
-        explicit field_value_cloner(const scope_ptr & target_scope):
+        explicit field_value_cloner(const boost::shared_ptr<openvrml::scope> & target_scope):
             target_scope(target_scope)
         {
             assert(target_scope);
@@ -573,7 +570,8 @@ namespace {
                 assert(result);
             } else {
                 initial_value_map initial_values;
-                const node_interface_set & interfaces = n->type.interfaces();
+                const node_interface_set & interfaces =
+                    n->type().interfaces();
                 for (node_interface_set::const_iterator interface =
                          interfaces.begin();
                      interface != interfaces.end();
@@ -596,8 +594,8 @@ namespace {
                         assert(succeeded);
                     }
                 }
-                result = n->type.create_node(this->target_scope,
-                                             initial_values);
+                result = n->type().create_node(this->target_scope,
+                                               initial_values);
                 if (!n->id().empty()) { result->id(n->id()); }
             }
             return result;
@@ -642,7 +640,7 @@ namespace {
     public:
         proto_impl_cloner(const proto_node_class & node_class,
                           const initial_value_map & initial_values,
-                          const scope_ptr & target_scope):
+                          const boost::shared_ptr<openvrml::scope> & target_scope):
             field_value_cloner(target_scope),
             node_class(node_class),
             initial_values_(initial_values)
@@ -704,7 +702,8 @@ namespace {
                 assert(result);
             } else {
                 initial_value_map initial_values;
-                const node_interface_set & interfaces = n->type.interfaces();
+                const node_interface_set & interfaces =
+                    n->type().interfaces();
                 for (node_interface_set::const_iterator interface =
                          interfaces.begin();
                      interface != interfaces.end();
@@ -795,8 +794,8 @@ namespace {
                         assert(succeeded);
                     }
                 }
-                result = n->type.create_node(this->target_scope,
-                                             initial_values);
+                result = n->type().create_node(this->target_scope,
+                                               initial_values);
                 if (!n->id().empty()) { result->id(n->id()); }
             }
             return result;
@@ -910,7 +909,7 @@ namespace {
 
     const node_ptr
     proto_node_class::proto_node_type::
-    create_node(const scope_ptr & scope,
+    create_node(const boost::shared_ptr<openvrml::scope> & scope,
                 const initial_value_map & initial_values) const
         throw (std::bad_alloc)
     {
@@ -1399,17 +1398,6 @@ namespace {
     }
 
     /**
-     * @brief The timestamp of the most recently emitted event.
-     *
-     * @return the timestamp of the most recently emitted event.
-     */
-    template <typename FieldValue>
-    double proto_node::proto_eventout<FieldValue>::last_time() const
-    {
-        return this->event_emitter::last_time;
-    }
-
-    /**
      * @brief Factory function for proto_eventout<FieldValue> instances.
      *
      * @param type  field_value::type_id.
@@ -1853,14 +1841,14 @@ namespace {
      * @exception std::bad_alloc    if memory allocation fails.
      */
     proto_node::proto_node(const node_type & type,
-                           const scope_ptr & scope,
+                           const boost::shared_ptr<openvrml::scope> & scope,
                            const initial_value_map & initial_values)
         throw (std::bad_alloc):
         node(type, scope),
         proto_scope(scope)
     {
-        proto_node_class & node_class =
-            static_cast<proto_node_class &>(type.node_class);
+        const proto_node_class & node_class =
+            static_cast<const proto_node_class &>(type.node_class());
 
         this->impl_nodes = proto_impl_cloner(node_class,
                                              initial_values,
@@ -1918,7 +1906,7 @@ namespace {
             shared_ptr<openvrml::event_listener> interface_eventin;
             shared_ptr<openvrml::event_emitter> interface_eventout;
             typedef proto_node_class::is_map_t is_map_t;
-            pair<is_map_t::iterator, is_map_t::iterator> is_range;
+            pair<is_map_t::const_iterator, is_map_t::const_iterator> is_range;
             initial_value_map::const_iterator initial_value;
             switch (interface->type) {
             case node_interface::eventin_id:
@@ -2088,9 +2076,9 @@ namespace {
         // First, we need to find the implementation node that the field is
         // IS'd to.  For the accessor, we don't care if there's more than one.
         //
-        proto_node_class & node_class =
-            static_cast<proto_node_class &>(this->type.node_class);
-        proto_node_class::is_map_t::iterator is_mapping =
+        const proto_node_class & node_class =
+            static_cast<const proto_node_class &>(this->type().node_class());
+        proto_node_class::is_map_t::const_iterator is_mapping =
             node_class.is_map.find(id);
         if (is_mapping != node_class.is_map.end()) {
             //
@@ -2116,10 +2104,10 @@ namespace {
             // If there are no IS mappings for the field, then return the
             // default value.
             //
-            proto_node_class::default_value_map_t::iterator default_value =
-                node_class.default_value_map.find(id);
+            proto_node_class::default_value_map_t::const_iterator
+                default_value = node_class.default_value_map.find(id);
             if (default_value == node_class.default_value_map.end()) {
-                throw unsupported_interface(this->type, id);
+                throw unsupported_interface(this->type(), id);
             }
             return *default_value->second;
         }
@@ -2140,7 +2128,7 @@ namespace {
     {
         eventin_map_t::iterator pos = this->eventin_map.find(id);
         if (pos == this->eventin_map.end()) {
-            throw unsupported_interface(this->type,
+            throw unsupported_interface(this->type(),
                                         node_interface::eventin_id,
                                         id);
         }
@@ -2161,7 +2149,7 @@ namespace {
     {
         eventout_map_t::iterator pos = this->eventout_map.find(id);
         if (pos == this->eventout_map.end()) {
-            throw unsupported_interface(this->type,
+            throw unsupported_interface(this->type(),
                                         node_interface::eventout_id,
                                         id);
         }
@@ -2462,7 +2450,7 @@ namespace {
             throw (unsupported_interface);
     };
 
-    static const scope_ptr null_scope_ptr;
+    static const boost::shared_ptr<openvrml::scope> null_scope_ptr;
 
     /**
      * @brief Constructor.
@@ -2557,7 +2545,7 @@ namespace {
         throw (unsupported_interface)
     {
         assert(false);
-        throw unsupported_interface(this->type, id);
+        throw unsupported_interface(this->type(), id);
         return *static_cast<openvrml::event_listener *>(0);
     }
 
@@ -2566,7 +2554,7 @@ namespace {
         throw (unsupported_interface)
     {
         assert(false);
-        throw unsupported_interface(this->type, id);
+        throw unsupported_interface(this->type(), id);
         return *static_cast<openvrml::event_emitter *>(0);
     }
 
@@ -7113,7 +7101,7 @@ const node_interface_set & null_node_type::interfaces() const throw ()
 }
 
 const node_ptr
-null_node_type::create_node(const scope_ptr & scope,
+null_node_type::create_node(const boost::shared_ptr<openvrml::scope> & scope,
                             const initial_value_map & initial_values) const
     throw ()
 {

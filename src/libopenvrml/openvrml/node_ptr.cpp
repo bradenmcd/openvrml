@@ -70,7 +70,7 @@ namespace {
     char not_remotely_a_node_type;
     self_ref_node::self_ref_node():
         node(reinterpret_cast<const node_type &>(not_remotely_a_node_type),
-             scope_ptr())
+             boost::shared_ptr<openvrml::scope>())
     {}
 
     self_ref_node::~self_ref_node() throw ()

@@ -21,6 +21,7 @@
 
 header "post_include_hpp" {
 # include <memory>
+# include <boost/shared_ptr.hpp>
 # include "field.h"
 # include "node_ptr.h"
 # define ANTLR_LBRACE {
@@ -618,14 +619,14 @@ vrmlScene[openvrml::browser & browser,
           std::vector<node_ptr> & nodes]
 options { defaultErrorHandler=false; }
 {
-    const scope_ptr scope(new Vrml97RootScope(browser, this->uri));
+    const boost::shared_ptr<openvrml::scope> scope(new Vrml97RootScope(browser, this->uri));
 }
     :   (statement[browser, nodes, scope])*
     ;
 
 statement[openvrml::browser & browser,
           std::vector<node_ptr> & nodes,
-          const scope_ptr & scope]
+          const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
     {
         node_ptr node;
@@ -642,7 +643,7 @@ options { defaultErrorHandler=false; }
     ;
 
 nodeStatement[openvrml::browser & browser,
-              const scope_ptr & scope,
+              const boost::shared_ptr<openvrml::scope> & scope,
               const std::string & script_node_id]
 returns [node_ptr n]
 options { defaultErrorHandler=false; }
@@ -670,7 +671,7 @@ options { defaultErrorHandler=false; }
     |   n=node[browser, scope, std::string()]
     ;
 
-protoStatement[openvrml::browser & browser, const scope_ptr & scope]
+protoStatement[openvrml::browser & browser, const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
     //
     // XXX What if the node type already exists in the scope? Probably need to
@@ -680,7 +681,7 @@ options { defaultErrorHandler=false; }
     | proto[browser, scope]
     ;
 
-proto[openvrml::browser & browser, const scope_ptr & scope]
+proto[openvrml::browser & browser, const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
 {
     using std::vector;
@@ -692,7 +693,7 @@ options { defaultErrorHandler=false; }
     proto_node_class::routes_t routes;
 }
     :   KEYWORD_PROTO id:ID {
-            scope_ptr proto_scope(new openvrml::scope(id->getText(), scope));
+            boost::shared_ptr<openvrml::scope> proto_scope(new openvrml::scope(id->getText(), scope));
         } LBRACKET (protoInterfaceDeclaration[browser,
                                               scope,
                                               id->getText(),
@@ -718,9 +719,9 @@ options { defaultErrorHandler=false; }
             //
             std::string impl_id;
             do {
-                impl_id = '#' + proto_scope->id + impl_id;
-            } while ((proto_scope = proto_scope->parent));
-            impl_id = scope->id + impl_id;
+                impl_id = '#' + proto_scope->id() + impl_id;
+            } while ((proto_scope = proto_scope->parent()));
+            impl_id = scope->id() + impl_id;
             browser.node_class_map.insert(make_pair(impl_id, node_class));
 
             //
@@ -732,7 +733,7 @@ options { defaultErrorHandler=false; }
             assert(scope);
             if (!scope->add_type(node_type)) {
                 using antlr::SemanticException;
-                throw SemanticException("Node type \"" + node_type->id
+                throw SemanticException("Node type \"" + node_type->id()
                                         + "\" has already been defined in "
                                         "this scope.",
                                         this->uri,
@@ -744,7 +745,7 @@ options { defaultErrorHandler=false; }
 
 protoInterfaceDeclaration[
     openvrml::browser & browser,
-    const scope_ptr & outer_scope,
+    const boost::shared_ptr<openvrml::scope> & outer_scope,
     const std::string & proto_id,
     node_interface_set & interfaces,
     proto_node_class::default_value_map_t & default_value_map]
@@ -777,7 +778,7 @@ options { defaultErrorHandler=false; }
             // The field value declaration should have access to the node
             // types in the outer scope.
             //
-            const scope_ptr field_decl_scope(
+            const boost::shared_ptr<openvrml::scope> field_decl_scope(
                 new scope(proto_id + '.' + id1->getText(), outer_scope));
         }
         fv=fieldValue[browser, field_decl_scope, ft, std::string()] {
@@ -815,7 +816,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoBody[openvrml::browser & browser,
-          const scope_ptr & scope,
+          const boost::shared_ptr<openvrml::scope> & scope,
           const node_interface_set & interfaces,
           std::vector<node_ptr> & impl_nodes,
           proto_node_class::is_map_t & is_map,
@@ -849,7 +850,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoBodyStatement[openvrml::browser & browser,
-                   const scope_ptr & scope,
+                   const boost::shared_ptr<openvrml::scope> & scope,
                    const node_interface_set & interfaces,
                    std::vector<node_ptr> & impl_nodes,
                    proto_node_class::is_map_t & is_map,
@@ -875,7 +876,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoNodeStatement[openvrml::browser & browser,
-                   const openvrml::scope_ptr & scope,
+                   const boost::shared_ptr<openvrml::scope> & scope,
                    const node_interface_set & proto_interfaces,
                    proto_node_class::is_map_t & is_map,
                    proto_node_class::routes_t & routes,
@@ -917,7 +918,7 @@ options { defaultErrorHandler=false; }
                     std::string()]
     ;
 
-externproto[openvrml::browser & browser, const openvrml::scope_ptr & scope]
+externproto[openvrml::browser & browser, const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
 {
     openvrml::node_interface_set interfaces;
@@ -947,7 +948,7 @@ options { defaultErrorHandler=false; }
             if (nodeType) {
                 if (!scope->add_type(nodeType)) {
                     using antlr::SemanticException;
-                    throw SemanticException("Node type \"" + nodeType->id
+                    throw SemanticException("Node type \"" + nodeType->id()
                                             + "\" has already been defined in "
                                             " this scope.",
                                             this->uri,
@@ -1087,29 +1088,29 @@ options { defaultErrorHandler=false; }
             // instantiated.  So, we need to do validation here.
             //
             const node_interface_set & from_node_interfaces =
-                from_node->type.interfaces();
+                from_node->type().interfaces();
             const node_interface_set::const_iterator from_interface =
                 find_if(from_node_interfaces.begin(),
                         from_node_interfaces.end(),
                         bind2nd(node_interface_matches_eventout(),
                                 eventout_id->getText()));
             if (from_interface == from_node_interfaces.end()) {
-                throw SemanticException(from_node->type.id + " node has no "
-                                        "eventOut \"" + eventout_id->getText()
-                                        + "\".",
+                throw SemanticException(from_node->type().id() + " node has "
+                                        "no eventOut \""
+                                        + eventout_id->getText() + "\".",
                                         this->uri,
                                         eventout_id->getLine(),
                                         eventout_id->getColumn());
             }
 
             const node_interface_set & to_node_interfaces =
-                to_node->type.interfaces();
+                to_node->type().interfaces();
             const node_interface_set::const_iterator to_interface =
                 find_if(to_node_interfaces.begin(), to_node_interfaces.end(),
                         bind2nd(node_interface_matches_eventin(),
                                 eventin_id->getText()));
             if (to_interface == to_node_interfaces.end()) {
-                throw SemanticException(to_node->type.id + " node has no "
+                throw SemanticException(to_node->type().id() + " node has no "
                                         "eventIn \"" + eventin_id->getText()
                                         + "\".",
                                         this->uri,
@@ -1132,7 +1133,7 @@ options { defaultErrorHandler=false; }
     ;
 
 node[openvrml::browser & browser,
-     const scope_ptr & scope,
+     const boost::shared_ptr<openvrml::scope> & scope,
      const std::string & node_id]
 returns [node_ptr n]
 options { defaultErrorHandler = false; }
@@ -1202,7 +1203,7 @@ options { defaultErrorHandler = false; }
     }
 
 nodeBodyElement[browser & b,
-                const scope_ptr & scope,
+                const boost::shared_ptr<openvrml::scope> & scope,
                 const node_interface_set & interfaces,
                 initial_value_map & initial_values]
 options { defaultErrorHandler=false; }
@@ -1249,7 +1250,7 @@ options { defaultErrorHandler=false; }
     ;
 
 scriptInterfaceDeclaration[browser & b,
-                           const scope_ptr & scope,
+                           const boost::shared_ptr<openvrml::scope> & scope,
                            node_interface_set & interfaces,
                            initial_value_map & initial_values,
                            const std::string & node_id]
@@ -1282,7 +1283,7 @@ options { defaultErrorHandler=false; }
     ;
 
 scriptFieldInterfaceDeclaration[browser & b,
-                                const scope_ptr & scope,
+                                const boost::shared_ptr<openvrml::scope> & scope,
                                 node_interface_set & interfaces,
                                 initial_value_map & initial_values,
                                 const std::string & script_node_id]
@@ -1319,7 +1320,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoNode[openvrml::browser & browser,
-          const scope_ptr & scope,
+          const boost::shared_ptr<openvrml::scope> & scope,
           const node_interface_set & proto_interfaces,
           proto_node_class::is_map_t & is_map,
           proto_node_class::routes_t & routes,
@@ -1394,7 +1395,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoNodeBodyElement[openvrml::browser & browser,
-                     const scope_ptr & scope,
+                     const boost::shared_ptr<openvrml::scope> & scope,
                      const node_interface_set & proto_interfaces,
                      proto_node_class::is_map_t & is_map,
                      proto_node_class::routes_t & routes,
@@ -1452,7 +1453,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoScriptInterfaceDeclaration[openvrml::browser & browser,
-                                const openvrml::scope_ptr & scope,
+                                const boost::shared_ptr<openvrml::scope> & scope,
                                 const node_interface_set & proto_interfaces,
                                 proto_node_class::is_map_t & is_map,
                                 proto_node_class::routes_t & routes,
@@ -1494,7 +1495,7 @@ options { defaultErrorHandler=false; }
 
 protoScriptFieldInterfaceDeclaration[
     openvrml::browser & browser,
-    const scope_ptr & scope,
+    const boost::shared_ptr<openvrml::scope> & scope,
     const node_interface_set & proto_interfaces,
     proto_node_class::is_map_t & is_map,
     proto_node_class::routes_t & routes,
@@ -1585,7 +1586,7 @@ options { defaultErrorHandler=false; }
     ;
 
 fieldValue[openvrml::browser & browser,
-           const openvrml::scope_ptr & scope,
+           const boost::shared_ptr<openvrml::scope> & scope,
            const openvrml::field_value::type_id ft,
            const std::string & node_id]
 returns [openvrml::field_value_ptr fv]
@@ -1599,7 +1600,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoFieldValue[openvrml::browser & browser,
-                const scope_ptr & scope,
+                const boost::shared_ptr<openvrml::scope> & scope,
                 const node_interface_set & proto_interfaces,
                 proto_node_class::is_map_t & is_map,
                 proto_node_class::routes_t & routes,
@@ -1647,7 +1648,7 @@ options { defaultErrorHandler=false; }
     ;
 
 nodeFieldValue[openvrml::browser & browser,
-               const openvrml::scope_ptr & scope,
+               const boost::shared_ptr<openvrml::scope> & scope,
                openvrml::field_value::type_id ft,
                const std::string & script_node_id]
 returns [openvrml::field_value_ptr fv]
@@ -1661,7 +1662,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoNodeFieldValue[openvrml::browser & browser,
-                    const scope_ptr & scope,
+                    const boost::shared_ptr<openvrml::scope> & scope,
                     const node_interface_set & proto_interfaces,
                     proto_node_class::is_map_t & is_map,
                     proto_node_class::routes_t & routes,
@@ -1835,7 +1836,7 @@ options { defaultErrorHandler=false; }
     ;
 
 sfNodeValue[openvrml::browser & browser,
-            const openvrml::scope_ptr & scope,
+            const boost::shared_ptr<openvrml::scope> & scope,
             const std::string & script_node_id]
 returns [openvrml::field_value_ptr snv]
 options { defaultErrorHandler=false; }
@@ -1849,7 +1850,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoSfNodeValue[openvrml::browser & browser,
-                 const scope_ptr & scope,
+                 const boost::shared_ptr<openvrml::scope> & scope,
                  const node_interface_set & proto_interfaces,
                  proto_node_class::is_map_t & is_map,
                  proto_node_class::routes_t & routes,
@@ -1873,7 +1874,7 @@ options { defaultErrorHandler=false; }
     ;
 
 mfNodeValue[openvrml::browser & browser,
-            const openvrml::scope_ptr & scope,
+            const boost::shared_ptr<openvrml::scope> & scope,
             const std::string & script_node_id]
 returns [openvrml::field_value_ptr mnv = openvrml::field_value_ptr(new mfnode)]
 options { defaultErrorHandler=false; }
@@ -1892,7 +1893,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoMfNodeValue[openvrml::browser & browser,
-                 const scope_ptr & scope,
+                 const boost::shared_ptr<openvrml::scope> & scope,
                  const node_interface_set & proto_interfaces,
                  proto_node_class::is_map_t & is_map,
                  proto_node_class::routes_t & routes,

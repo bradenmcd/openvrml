@@ -186,13 +186,16 @@ namespace openvrml {
     typedef boost::shared_ptr<node_type> node_type_ptr;
 
     class node_class : boost::noncopyable {
-    public:
-        openvrml::browser & browser;
+        openvrml::browser * browser_;
 
+    public:
         virtual ~node_class() throw () = 0;
+
+        openvrml::browser & browser() const throw ();
+
         virtual void initialize(viewpoint_node * initial_viewpoint,
                                 double time) throw ();
-        virtual void render(openvrml::viewer & viewer) throw ();
+        virtual void render(viewer & v) const throw ();
         virtual const node_type_ptr
         create_type(const std::string & id,
                     const node_interface_set & interfaces)
@@ -204,21 +207,30 @@ namespace openvrml {
 
     typedef boost::shared_ptr<node_class> node_class_ptr;
 
+    inline browser & node_class::browser() const throw ()
+    {
+        assert(this->browser_);
+        return *this->browser_;
+    }
+
 
     typedef std::map<std::string, boost::shared_ptr<field_value> >
         initial_value_map;
 
 
     class node_type : boost::noncopyable {
-    public:
-        openvrml::node_class & node_class;
-        const std::string id;
+        openvrml::node_class & node_class_;
+        const std::string id_;
 
+    public:
         virtual ~node_type() throw () = 0;
+
+        const openvrml::node_class & node_class() const throw ();
+        const std::string & id() const throw ();
 
         virtual const node_interface_set & interfaces() const throw () = 0;
         virtual const node_ptr
-        create_node(const scope_ptr & scope,
+        create_node(const boost::shared_ptr<scope> & scope,
                     const initial_value_map & initial_values =
                     initial_value_map()) const
             throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
@@ -227,6 +239,16 @@ namespace openvrml {
         node_type(openvrml::node_class & c, const std::string & id)
             throw (std::bad_alloc);
     };
+
+    inline const node_class & node_type::node_class() const throw ()
+    {
+        return this->node_class_;
+    }
+
+    inline const std::string & node_type::id() const throw ()
+    {
+        return this->id_;
+    }
 
 
     class field_value_type_mismatch : public std::logic_error {
@@ -328,21 +350,21 @@ namespace openvrml {
         friend class exposedfield<mfvec2f>;
         friend class exposedfield<mfvec3f>;
 
-    private:
-        scope_ptr scope_;
+        const node_type & type_;
+        boost::shared_ptr<openvrml::scope> scope_;
         openvrml::scene * scene_;
         bool modified_;
         bool bounding_volume_dirty_;
 
     public:
-        const node_type & type;
-
         virtual ~node() throw () = 0;
+
+        const node_type & type() const throw ();
 
         const std::string & id() const throw ();
         void id(const std::string & node_id) throw (std::bad_alloc);
 
-        const scope_ptr & scope() const throw ();
+        const boost::shared_ptr<openvrml::scope> & scope() const throw ();
 
         openvrml::scene * scene() const throw ();
 
@@ -381,7 +403,8 @@ namespace openvrml {
         virtual bool bounding_volume_dirty() const;
 
     protected:
-        node(const node_type & type, const scope_ptr & scope)
+        node(const node_type & type,
+             const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
         static void emit_event(openvrml::event_emitter & emitter,
@@ -418,7 +441,12 @@ namespace openvrml {
         virtual viewpoint_node * to_viewpoint() throw ();
     };
 
-    inline const scope_ptr & node::scope() const throw ()
+    inline const node_type & node::type() const throw ()
+    {
+        return this->type_;
+    }
+
+    inline const boost::shared_ptr<scope> & node::scope() const throw ()
     {
         return this->scope_;
     }
@@ -581,7 +609,8 @@ namespace openvrml {
         virtual const node_ptr & texture_transform() const throw () = 0;
 
     protected:
-        appearance_node(const node_type & type, const scope_ptr & scope)
+        appearance_node(const node_type & type,
+                        const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:
@@ -600,7 +629,8 @@ namespace openvrml {
         void render_child(viewer & v, rendering_context context);
 
     protected:
-        child_node(const node_type & type, const scope_ptr & scope) throw ();
+        child_node(const node_type & type,
+                   const boost::shared_ptr<openvrml::scope> & scope) throw ();
 
     private:
         virtual child_node * to_child() throw ();
@@ -619,7 +649,8 @@ namespace openvrml {
             throw () = 0;
 
     protected:
-        color_node(const node_type & type, const scope_ptr & scope) throw ();
+        color_node(const node_type & type,
+                   const boost::shared_ptr<openvrml::scope> & scope) throw ();
 
     private:
         virtual color_node * to_color() throw ();
@@ -633,7 +664,8 @@ namespace openvrml {
         virtual const std::vector<vec3f> & point() const throw () = 0;
 
     protected:
-        coordinate_node(const node_type & type, const scope_ptr & scope)
+        coordinate_node(const node_type & type,
+                        const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:
@@ -658,7 +690,8 @@ namespace openvrml {
         virtual bool top_to_bottom() const throw () = 0;
 
     protected:
-        font_style_node(const node_type & type, const scope_ptr & scope)
+        font_style_node(const node_type & type,
+                        const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:
@@ -678,7 +711,8 @@ namespace openvrml {
         virtual const color_node * color() const throw ();
 
     protected:
-        geometry_node(const node_type & type, const scope_ptr & scope)
+        geometry_node(const node_type & type,
+                      const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:
@@ -699,7 +733,8 @@ namespace openvrml {
                               double *p) = 0;
 
     protected:
-        grouping_node(const node_type & type, const scope_ptr & scope)
+        grouping_node(const node_type & type,
+                      const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:
@@ -719,7 +754,8 @@ namespace openvrml {
         virtual float transparency() const throw () = 0;
 
     protected:
-        material_node(const node_type & type, const scope_ptr & scope)
+        material_node(const node_type & type,
+                      const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:
@@ -734,7 +770,8 @@ namespace openvrml {
         virtual const std::vector<vec3f> & vector() const throw () = 0;
 
     protected:
-        normal_node(const node_type & type, const scope_ptr & scope) throw ();
+        normal_node(const node_type & type,
+                    const boost::shared_ptr<openvrml::scope> & scope) throw ();
 
     private:
         virtual normal_node * to_normal() throw ();
@@ -746,7 +783,8 @@ namespace openvrml {
         virtual ~sound_source_node() throw () = 0;
 
     protected:
-        sound_source_node(const node_type & type, const scope_ptr & scope)
+        sound_source_node(const node_type & type,
+                          const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:
@@ -768,7 +806,8 @@ namespace openvrml {
         virtual bool repeat_t() const throw () = 0;
 
     protected:
-        texture_node(const node_type & type, const scope_ptr & scope) throw ();
+        texture_node(const node_type & type,
+                     const boost::shared_ptr<openvrml::scope> & scope) throw ();
 
     private:
         virtual texture_node * to_texture() throw ();
@@ -785,7 +824,7 @@ namespace openvrml {
 
     protected:
         texture_coordinate_node(const node_type & type,
-                                const scope_ptr & scope)
+                                const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:
@@ -801,7 +840,7 @@ namespace openvrml {
 
     protected:
         texture_transform_node(const node_type & type,
-                               const scope_ptr & scope)
+                               const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:
@@ -818,7 +857,8 @@ namespace openvrml {
         virtual const mat4f & transform() const throw () = 0;
 
     protected:
-        transform_node(const node_type & type, const scope_ptr & scope)
+        transform_node(const node_type & type,
+                       const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:
@@ -838,7 +878,8 @@ namespace openvrml {
         virtual float field_of_view() const throw () = 0;
 
     protected:
-        viewpoint_node(const node_type & type, const scope_ptr & scope)
+        viewpoint_node(const node_type & type,
+                       const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
     private:
@@ -909,7 +950,7 @@ namespace openvrml {
     {
         static_cast<FieldValue &>(*this) = value;
         this->do_process_event(value, timestamp);
-        this->node.modified(true);
+        this->node().modified(true);
         node::emit_event(*this, timestamp);
     }
 

@@ -21,7 +21,7 @@ int main()
         if (!nodes[0]) {
             return EXIT_FAILURE;
         }
-        if (nodes[0]->type.id != "Group") {
+        if (nodes[0]->type().id() != "Group") {
             return EXIT_FAILURE;
         }
     } catch (...) {

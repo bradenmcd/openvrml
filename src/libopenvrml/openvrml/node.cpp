@@ -71,7 +71,7 @@ unsupported_interface::unsupported_interface(const node_interface & interface)
 unsupported_interface::unsupported_interface(const node_type & type,
                                              const std::string & interface_id)
     throw ():
-    std::logic_error(type.id + " has no interface \"" + interface_id + '"')
+    std::logic_error(type.id() + " has no interface \"" + interface_id + '"')
 {}
 
 /**
@@ -86,7 +86,7 @@ unsupported_interface::unsupported_interface(
     const node_interface::type_id interface_type,
     const std::string & interface_id)
     throw ():
-    std::logic_error(type.id + " has no "
+    std::logic_error(type.id() + " has no "
                      + boost::lexical_cast<std::string>(interface_type)
                      + " \"" + interface_id + '"')
 {}
@@ -585,7 +585,7 @@ find_interface(const node_interface_set & interfaces, const std::string & id)
  *          <code>node_class</code>.
  */
 node_class::node_class(openvrml::browser & b) throw ():
-    browser(b)
+    browser_(&b)
 {}
 
 /**
@@ -617,9 +617,9 @@ void node_class::initialize(viewpoint_node * initial_viewpoint,
  *
  * The default implementation of this method does nothing.
  *
- * @param viewer    the viewer to render to.
+ * @param v    the viewer to render to.
  */
-void node_class::render(openvrml::viewer & viewer) throw ()
+void node_class::render(viewer & v) const throw ()
 {}
 
 /**
@@ -685,8 +685,8 @@ void node_class::render(openvrml::viewer & viewer) throw ()
  */
 node_type::node_type(openvrml::node_class & c, const std::string & id)
     throw (std::bad_alloc):
-    node_class(c),
-    id(id)
+    node_class_(c),
+    id_(id)
 {}
 
 /**
@@ -831,12 +831,13 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  * @param type  the node_type associated with the instance.
  * @param scope the Scope associated with the instance.
  */
-node::node(const node_type & type, const scope_ptr & scope) throw ():
+node::node(const node_type & type,
+           const boost::shared_ptr<openvrml::scope> & scope) throw ():
     scope_(scope),
     scene_(0),
     modified_(false),
     bounding_volume_dirty_(false),
-    type(type)
+    type_(type)
 {}
 
 namespace {
@@ -919,7 +920,7 @@ const std::string & node::id() const throw ()
 }
 
 /**
- * @fn const scope_ptr & node::scope() const throw ()
+ * @fn const boost::shared_ptr<const openvrml::scope> & node::scope() const throw ()
  *
  * @brief Get the scope to which the node belongs.
  *
@@ -955,7 +956,7 @@ void node::initialize(openvrml::scene & scene, const double timestamp)
         this->scene_ = &scene;
         this->do_initialize(timestamp);
 
-        const node_interface_set & interfaces = this->type.interfaces();
+        const node_interface_set & interfaces = this->type_.interfaces();
         for (node_interface_set::const_iterator interface(interfaces.begin());
                 interface != interfaces.end(); ++interface) {
             if (interface->type == node_interface::exposedfield_id
@@ -1052,7 +1053,7 @@ void node::shutdown(const double timestamp) throw ()
         this->do_shutdown(timestamp);
         this->scene_ = 0;
 
-        const node_interface_set & interfaces = this->type.interfaces();
+        const node_interface_set & interfaces = this->type_.interfaces();
         for (node_interface_set::const_iterator interface(interfaces.begin());
                 interface != interfaces.end(); ++interface) {
             if (interface->type == node_interface::exposedfield_id
@@ -1442,7 +1443,7 @@ vrml97_node::touch_sensor_node * node::to_touch_sensor() const
 void node::modified(const bool value)
 {
     this->modified_ = value;
-    if (this->modified_) { this->type.node_class.browser.modified(true); }
+    if (this->modified_) { this->type_.node_class().browser().modified(true); }
 }
 
 /**
@@ -1507,7 +1508,7 @@ void node::bounding_volume_dirty(const bool value)
 {
     this->bounding_volume_dirty_ = value;
     if (value) { // only if dirtying, not clearing
-        this->type.node_class.browser.flags_need_updating = true;
+        this->type_.node_class().browser().flags_need_updating = true;
     }
 }
 
@@ -1517,9 +1518,9 @@ void node::bounding_volume_dirty(const bool value)
  */
 bool node::bounding_volume_dirty() const
 {
-    if (this->type.node_class.browser.flags_need_updating) {
-        this->type.node_class.browser.update_flags();
-        this->type.node_class.browser.flags_need_updating = false;
+    if (this->type_.node_class().browser().flags_need_updating) {
+        this->type_.node_class().browser().update_flags();
+        this->type_.node_class().browser().flags_need_updating = false;
     }
     return this->bounding_volume_dirty_;
 }
@@ -1581,8 +1582,8 @@ std::ostream & node::print(std::ostream & out, const size_t indent) const
     for (size_t i = 0; i < indent; ++i) { out << ' '; }
     std::string nodeId = this->id();
     if (!nodeId.empty()) { out << "DEF " << nodeId << " "; }
-    out << this->type.id << " { ";
-    const node_interface_set & interfaces = this->type.interfaces();
+    out << this->type_.id() << " { ";
+    const node_interface_set & interfaces = this->type_.interfaces();
     std::for_each(interfaces.begin(), interfaces.end(),
                   PrintField_(*this, out, indent));
     return out << " }";
@@ -1707,7 +1708,7 @@ bool add_route(node & from_node,
     event_listener & listener = to_node.event_listener(to_eventin);
     bool added_route = false;
     try {
-        switch (emitter.value.type()) {
+        switch (emitter.value().type()) {
         case field_value::sfbool_id:
             added_route = add_listener<sfbool>(emitter, listener);
             break;
@@ -1818,7 +1819,7 @@ bool delete_route(node & from,
     bool deleted_route = false;
 
     try {
-        switch (emitter.value.type()) {
+        switch (emitter.value().type()) {
         case field_value::sfbool_id:
             deleted_route = remove_listener<sfbool>(emitter, listener);
             break;
@@ -2081,7 +2082,7 @@ bool delete_route(node & from,
  * @param scope the Scope the node belongs to.
  */
 appearance_node::appearance_node(const node_type & type,
-                                 const scope_ptr & scope)
+                                 const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2163,7 +2164,7 @@ appearance_node * appearance_node::to_appearance() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-child_node::child_node(const node_type & type, const scope_ptr & scope)
+child_node::child_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2283,7 +2284,7 @@ void child_node::do_relocate() throw (std::bad_alloc)
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-color_node::color_node(const node_type & type, const scope_ptr & scope)
+color_node::color_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2326,7 +2327,7 @@ color_node * color_node::to_color() throw ()
  * @param scope the Scope the node belongs to.
  */
 coordinate_node::coordinate_node(const node_type & type,
-                                 const scope_ptr & scope)
+                                 const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2371,7 +2372,7 @@ coordinate_node * coordinate_node::to_coordinate() throw ()
  * @param scope the Scope the node belongs to.
  */
 font_style_node::font_style_node(const node_type & type,
-                                 const scope_ptr & scope)
+                                 const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2492,7 +2493,7 @@ font_style_node * font_style_node::to_font_style() throw ()
  * @param scope the Scope the node belongs to.
  */
 geometry_node::geometry_node(const node_type & type,
-                             const scope_ptr & scope)
+                             const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
     geometry_reference(0)
@@ -2509,8 +2510,8 @@ geometry_node::geometry_node(const node_type & type,
 geometry_node::~geometry_node() throw ()
 {
     if (this->geometry_reference) {
-        assert(this->type.node_class.browser.viewer());
-        this->type.node_class.browser.viewer()
+        assert(this->type().node_class().browser().viewer());
+        this->type().node_class().browser().viewer()
             ->remove_object(this->geometry_reference);
     }
 }
@@ -2617,7 +2618,7 @@ const color_node * geometry_node::color() const throw ()
  * @param scope the Scope the node belongs to.
  */
 grouping_node::grouping_node(const node_type & type,
-                             const scope_ptr & scope)
+                             const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
     child_node(type, scope)
@@ -2674,7 +2675,7 @@ grouping_node * grouping_node::to_grouping() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-material_node::material_node(const node_type & type, const scope_ptr & scope)
+material_node::material_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2758,7 +2759,7 @@ material_node * material_node::to_material() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-normal_node::normal_node(const node_type & type, const scope_ptr & scope)
+normal_node::normal_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2803,7 +2804,7 @@ normal_node * normal_node::to_normal() throw ()
  * @param scope the Scope the node belongs to.
  */
 sound_source_node::sound_source_node(const node_type & type,
-                                     const scope_ptr & scope)
+                                     const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2845,7 +2846,7 @@ sound_source_node * sound_source_node::to_sound_source() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-texture_node::texture_node(const node_type & type, const scope_ptr & scope)
+texture_node::texture_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
     texture_reference(0)
@@ -2862,8 +2863,8 @@ texture_node::texture_node(const node_type & type, const scope_ptr & scope)
 texture_node::~texture_node() throw ()
 {
     if (this->texture_reference) {
-        assert(this->type.node_class.browser.viewer());
-        this->type.node_class.browser.viewer()
+        assert(this->type().node_class().browser().viewer());
+        this->type().node_class().browser().viewer()
             ->remove_texture_object(this->texture_reference);
     }
 }
@@ -2969,7 +2970,7 @@ texture_node * texture_node::to_texture() throw ()
  * @param scope the Scope the node belongs to.
  */
 texture_coordinate_node::texture_coordinate_node(const node_type & type,
-                                                 const scope_ptr & scope)
+                                                 const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -3015,7 +3016,7 @@ texture_coordinate_node * texture_coordinate_node::to_texture_coordinate()
  * @param scope the Scope the node belongs to.
  */
 texture_transform_node::texture_transform_node(const node_type & type,
-                                               const scope_ptr & scope)
+                                               const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -3072,7 +3073,7 @@ texture_transform_node * texture_transform_node::to_texture_transform()
  * @param scope the Scope the node belongs to.
  */
 transform_node::transform_node(const node_type & type,
-                               const scope_ptr & scope)
+                               const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
     child_node(type, scope),
@@ -3118,8 +3119,9 @@ transform_node * transform_node::to_transform() throw ()
  * @param type  the node_type associated with the node.
  * @param scope     the Scope the node belongs to.
  */
-viewpoint_node::viewpoint_node(const node_type & type,
-                               const scope_ptr & scope)
+viewpoint_node::
+viewpoint_node(const node_type & type,
+               const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
     child_node(type, scope)
@@ -3357,7 +3359,7 @@ void node_traverser::do_traversal(node & n)
 
         this->traversed_nodes.insert(&n);
 
-        const node_interface_set & interfaces = n.type.interfaces();
+        const node_interface_set & interfaces = n.type().interfaces();
         for (node_interface_set::const_iterator interface(interfaces.begin());
                 interface != interfaces.end() && !this->halt; ++interface) {
             if (interface->type == node_interface::field_id

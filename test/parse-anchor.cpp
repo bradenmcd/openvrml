@@ -29,7 +29,7 @@ int main()
         if (!nodes[0]) {
             return EXIT_FAILURE;
         }
-        if (nodes[0]->type.id != "Anchor") {
+        if (nodes[0]->type().id() != "Anchor") {
             return EXIT_FAILURE;
         }
     } catch (...) {

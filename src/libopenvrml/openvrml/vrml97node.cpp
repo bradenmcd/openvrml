@@ -307,7 +307,7 @@ namespace {
         virtual const openvrml::node_interface_set &
         interfaces() const throw ();
         virtual const openvrml::node_ptr
-        create_node(const openvrml::scope_ptr & scope,
+        create_node(const boost::shared_ptr<openvrml::scope> & scope,
                     const openvrml::initial_value_map & initial_values) const
             throw (openvrml::unsupported_interface, std::bad_cast,
                    std::bad_alloc);
@@ -376,7 +376,7 @@ namespace {
         bool succeeded = this->interfaces_.insert(interface).second;
         if (!succeeded) {
             throw std::invalid_argument("Interface \"" + id + "\" already "
-                                        "defined for " + this->id + " node");
+                                        "defined for " + this->id() + " node");
         }
         const typename event_listener_map_t::value_type value(id,
                                                               event_listener);
@@ -397,7 +397,7 @@ namespace {
         bool succeeded = this->interfaces_.insert(interface).second;
         if (!succeeded) {
             throw std::invalid_argument("Interface \"" + id + "\" already "
-                                        "defined for " + this->id + " node");
+                                        "defined for " + this->id() + " node");
         }
         const typename event_emitter_map_t::value_type value(id,
                                                              event_emitter);
@@ -422,7 +422,7 @@ namespace {
         bool succeeded = this->interfaces_.insert(interface).second;
         if (!succeeded) {
             throw std::invalid_argument("Interface \"" + id + "\" already "
-                                        "defined for " + this->id + " node");
+                                        "defined for " + this->id() + " node");
         }
         {
             const typename event_listener_map_t::value_type
@@ -456,7 +456,7 @@ namespace {
         bool succeeded = this->interfaces_.insert(interface).second;
         if (!succeeded) {
             throw std::invalid_argument("Interface \"" + id + "\" already "
-                                        "defined for " + this->id + " node");
+                                        "defined for " + this->id() + " node");
         }
         const typename field_value_map_t::value_type
             value(id, nodeFieldPtrPtr);
@@ -505,7 +505,7 @@ namespace {
     template <typename NodeT>
     const openvrml::node_ptr
     vrml97_node_type_impl<NodeT>::
-    create_node(const openvrml::scope_ptr & scope,
+    create_node(const boost::shared_ptr<openvrml::scope> & scope,
                 const openvrml::initial_value_map & initial_values) const
         throw (openvrml::unsupported_interface, std::bad_cast, std::bad_alloc)
     {
@@ -541,7 +541,7 @@ namespace {
         const typename field_value_map_t::const_iterator itr =
                 this->field_value_map.find(id);
         if (itr == this->field_value_map.end()) {
-            throw unsupported_interface(node.type,
+            throw unsupported_interface(node.type(),
                                         node_interface::field_id,
                                         id);
         }
@@ -563,7 +563,7 @@ namespace {
             this->event_listener_map.find(id);
         if (pos == end) { pos = this->event_listener_map.find("set_" + id); }
         if (pos == end) {
-            throw unsupported_interface(node.type,
+            throw unsupported_interface(node.type(),
                                         node_interface::eventin_id,
                                         id);
         }
@@ -587,7 +587,7 @@ namespace {
             pos = this->event_emitter_map.find(id + "_changed");
         }
         if (pos == end) {
-            throw unsupported_interface(node.type,
+            throw unsupported_interface(node.type(),
                                         node_interface::eventout_id,
                                         id);
         }
@@ -622,7 +622,7 @@ namespace vrml97_node {
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-abstract_base::abstract_base(const node_type & type, const scope_ptr & scope):
+abstract_base::abstract_base(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope)
 {}
 
@@ -642,8 +642,8 @@ abstract_base::~abstract_base() throw ()
 const field_value & abstract_base::do_field(const std::string & id) const
     throw (unsupported_interface)
 {
-    assert(dynamic_cast<const vrml97_node_type *>(&this->type));
-    return static_cast<const vrml97_node_type &>(this->type)
+    assert(dynamic_cast<const vrml97_node_type *>(&this->type()));
+    return static_cast<const vrml97_node_type &>(this->type())
         .field_value(*this, id);
 }
 
@@ -661,8 +661,8 @@ const field_value & abstract_base::do_field(const std::string & id) const
 event_listener & abstract_base::do_event_listener(const std::string & id)
     throw (unsupported_interface)
 {
-    assert(dynamic_cast<const vrml97_node_type *>(&this->type));
-    return static_cast<const vrml97_node_type &>(this->type)
+    assert(dynamic_cast<const vrml97_node_type *>(&this->type()));
+    return static_cast<const vrml97_node_type &>(this->type())
         .event_listener(*this, id);
 }
 
@@ -680,8 +680,8 @@ event_listener & abstract_base::do_event_listener(const std::string & id)
 event_emitter & abstract_base::do_event_emitter(const std::string & id)
     throw (unsupported_interface)
 {
-    assert(dynamic_cast<const vrml97_node_type *>(&this->type));
-    return static_cast<const vrml97_node_type &>(this->type)
+    assert(dynamic_cast<const vrml97_node_type *>(&this->type()));
+    return static_cast<const vrml97_node_type &>(this->type())
         .event_emitter(*this, id);
 }
 
@@ -733,7 +733,7 @@ process_event(const mfint32 & color_index,
 {
     try {
         abstract_indexed_set_node & abstract_indexed_set =
-            dynamic_cast<abstract_indexed_set_node &>(this->node);
+            dynamic_cast<abstract_indexed_set_node &>(this->node());
 
         abstract_indexed_set.color_index_ = color_index;
         abstract_indexed_set.node::modified(true);
@@ -783,7 +783,7 @@ process_event(const mfint32 & coord_index,
 {
     try {
         abstract_indexed_set_node & abstract_indexed_set =
-            dynamic_cast<abstract_indexed_set_node &>(this->node);
+            dynamic_cast<abstract_indexed_set_node &>(this->node());
 
         abstract_indexed_set.coord_index_ = coord_index;
         abstract_indexed_set.node::modified(true);
@@ -841,7 +841,7 @@ process_event(const mfint32 & coord_index,
  * @param scope the scope that the new node will belong to.
  */
 abstract_indexed_set_node::abstract_indexed_set_node(const node_type & type,
-                                                     const scope_ptr & scope):
+                                                     const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -921,7 +921,7 @@ const openvrml::color_node * abstract_indexed_set_node::color() const throw ()
  * @param scope     the scope to which the node belongs.
  */
 abstract_light_node::abstract_light_node(const node_type & type,
-                                         const scope_ptr & scope):
+                                         const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -1023,7 +1023,7 @@ void abstract_light_node::renderScoped(openvrml::viewer & viewer)
  * @param scope the scope to which the node belongs.
  */
 abstract_texture_node::abstract_texture_node(const node_type & type,
-                                             const scope_ptr & scope):
+                                             const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     texture_node(type, scope),
@@ -1261,7 +1261,7 @@ anchor_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 anchor_node::anchor_node(const node_type & type,
-                         const scope_ptr & scope):
+                         const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
@@ -1461,7 +1461,7 @@ appearance_class::create_type(const std::string & id,
  * @param scope the scope to which the node belongs.
  */
 appearance_node::appearance_node(const node_type & type,
-                                 const scope_ptr & scope):
+                                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::appearance_node(type, scope),
@@ -1849,7 +1849,7 @@ audio_clip_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 audio_clip_node::audio_clip_node(const node_type & type,
-                                 const scope_ptr & scope):
+                                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     description_(*this),
@@ -2086,7 +2086,7 @@ void background_class::initialize(openvrml::viewpoint_node * initialViewpoint,
  *
  * @param v viewer.
  */
-void background_class::render(viewer & v) throw ()
+void background_class::render(viewer & v) const throw ()
 {
     if (this->bound_nodes.empty()) {
         //
@@ -2424,9 +2424,11 @@ void background_node::set_bind_listener::process_event(const sfbool & value,
     throw (std::bad_alloc)
 {
     try {
-        background_node & node = dynamic_cast<background_node &>(this->node);
+        background_node & node = dynamic_cast<background_node &>(this->node());
         background_class & node_class =
-            static_cast<background_class &>(node.type.node_class);
+            const_cast<background_class &>(
+                static_cast<const background_class &>(
+                    node.type().node_class()));
         if (value.value) {
             node_class.bind(node, timestamp);
         } else {
@@ -2476,7 +2478,7 @@ do_process_event(const mfstring & value,
     throw (std::bad_alloc)
 {
     try {
-        dynamic_cast<background_node &>(this->node).back_needs_update = true;
+        dynamic_cast<background_node &>(this->node()).back_needs_update = true;
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
     }
@@ -2521,7 +2523,7 @@ do_process_event(const mfstring & value,
     throw (std::bad_alloc)
 {
     try {
-        dynamic_cast<background_node &>(this->node).bottom_needs_update = true;
+        dynamic_cast<background_node &>(this->node()).bottom_needs_update = true;
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
     }
@@ -2566,7 +2568,7 @@ do_process_event(const mfstring & value,
     throw (std::bad_alloc)
 {
     try {
-        dynamic_cast<background_node &>(this->node).front_needs_update = true;
+        dynamic_cast<background_node &>(this->node()).front_needs_update = true;
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
     }
@@ -2611,7 +2613,7 @@ do_process_event(const mfstring & value,
     throw (std::bad_alloc)
 {
     try {
-        dynamic_cast<background_node &>(this->node).left_needs_update = true;
+        dynamic_cast<background_node &>(this->node()).left_needs_update = true;
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
     }
@@ -2656,7 +2658,7 @@ do_process_event(const mfstring & value,
     throw (std::bad_alloc)
 {
     try {
-        dynamic_cast<background_node &>(this->node).right_needs_update = true;
+        dynamic_cast<background_node &>(this->node()).right_needs_update = true;
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
     }
@@ -2701,7 +2703,7 @@ do_process_event(const mfstring & value,
     throw (std::bad_alloc)
 {
     try {
-        dynamic_cast<background_node &>(this->node).top_needs_update = true;
+        dynamic_cast<background_node &>(this->node()).top_needs_update = true;
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
     }
@@ -2870,7 +2872,7 @@ do_process_event(const mfstring & value,
  * @param scope the scope to which the node belongs.
  */
 background_node::background_node(const node_type & type,
-                                 const scope_ptr & scope):
+                                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -2910,9 +2912,10 @@ background_node::~background_node() throw ()
  */
 void background_node::do_initialize(const double timestamp) throw ()
 {
-    assert(dynamic_cast<background_class *>(&this->type.node_class));
+    assert(dynamic_cast<const background_class *>(&this->type().node_class()));
     background_class & nodeClass =
-        static_cast<background_class &>(this->type.node_class);
+        const_cast<background_class &>(
+            static_cast<const background_class &>(this->type().node_class()));
     if (!nodeClass.has_first()) { nodeClass.set_first(*this); }
 }
 
@@ -2926,7 +2929,8 @@ void background_node::do_initialize(const double timestamp) throw ()
 void background_node::do_shutdown(const double timestamp) throw ()
 {
     background_class & nodeClass =
-        static_cast<background_class &>(this->type.node_class);
+        const_cast<background_class &>(
+            static_cast<const background_class &>(this->type().node_class()));
     nodeClass.unbind(*this, timestamp);
 }
 
@@ -2952,7 +2956,7 @@ void background_node::update_textures()
                 using std::ostream;
                 using std::endl;
 
-                ostream & err = this->type.node_class.browser.err;
+                ostream & err = this->type().node_class().browser().err;
                 err << "Couldn't read texture from " << this->front_url_
                     << endl;
             }
@@ -2976,7 +2980,7 @@ void background_node::update_textures()
                 using std::ostream;
                 using std::endl;
 
-                ostream & err = this->type.node_class.browser.err;
+                ostream & err = this->type().node_class().browser().err;
                 err << "Couldn't read texture from " << this->back_url_ << endl;
             }
         }
@@ -2999,7 +3003,7 @@ void background_node::update_textures()
                 using std::ostream;
                 using std::endl;
 
-                ostream & err = this->type.node_class.browser.err;
+                ostream & err = this->type().node_class().browser().err;
                 err << "Couldn't read texture from " << this->left_url_ << endl;
             }
         }
@@ -3022,7 +3026,7 @@ void background_node::update_textures()
                 using std::ostream;
                 using std::endl;
 
-                ostream & err = this->type.node_class.browser.err;
+                ostream & err = this->type().node_class().browser().err;
                 err << "Couldn't read texture from " << this->right_url_
                     << endl;
             }
@@ -3046,7 +3050,7 @@ void background_node::update_textures()
                 using std::ostream;
                 using std::endl;
 
-                ostream & err = this->type.node_class.browser.err;
+                ostream & err = this->type().node_class().browser().err;
                 err << "Couldn't read texture from " << this->top_url_ << endl;
             }
         }
@@ -3069,7 +3073,7 @@ void background_node::update_textures()
                 using std::ostream;
                 using std::endl;
 
-                ostream & err = this->type.node_class.browser.err;
+                ostream & err = this->type().node_class().browser().err;
                 err << "Couldn't read texture from " << this->bottom_url_
                     << endl;
             }
@@ -3314,7 +3318,7 @@ const mat4f billboard_node::billboard_to_matrix(const billboard_node & node,
  * @param scope the scope to which the node belongs.
  */
 billboard_node::billboard_node(const node_type & type,
-                               const scope_ptr & scope):
+                               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
@@ -3455,7 +3459,7 @@ box_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 box_node::box_node(const node_type & type,
-                   const scope_ptr & scope):
+                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -3691,7 +3695,7 @@ collision_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 collision_node::collision_node(const node_type & type,
-                               const scope_ptr & scope):
+                               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
@@ -3807,7 +3811,7 @@ color_class::create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-color_node::color_node(const node_type & type, const scope_ptr & scope):
+color_node::color_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::color_node(type, scope),
@@ -3992,7 +3996,7 @@ process_event(const sffloat & value, const double timestamp)
 
     try {
         color_interpolator_node & node =
-            dynamic_cast<color_interpolator_node &>(this->node);
+            dynamic_cast<color_interpolator_node &>(this->node());
 
         float fraction = value.value;
 
@@ -4081,7 +4085,7 @@ process_event(const sffloat & value, const double timestamp)
  * @param scope     the scope to which the node belongs.
  */
 color_interpolator_node::color_interpolator_node(const node_type & type,
-                                                 const scope_ptr & scope):
+                                                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -4229,7 +4233,7 @@ cone_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 cone_node::cone_node(const node_type & type,
-                     const scope_ptr & scope):
+                     const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -4353,7 +4357,7 @@ coordinate_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 coordinate_node::coordinate_node(const node_type & type,
-                                 const scope_ptr & scope):
+                                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::coordinate_node(type, scope),
@@ -4538,7 +4542,7 @@ process_event(const sffloat & fraction, const double timestamp)
         using std::vector;
 
         coordinate_interpolator_node & node =
-            dynamic_cast<coordinate_interpolator_node &>(this->node);
+            dynamic_cast<coordinate_interpolator_node &>(this->node());
 
         const vector<float> & key = node.key_.mffloat::value;
         const vector<vec3f> & key_value = node.key_value_.mfvec3f::value;
@@ -4621,7 +4625,7 @@ process_event(const sffloat & fraction, const double timestamp)
  */
 coordinate_interpolator_node::coordinate_interpolator_node(
     const node_type & type,
-    const scope_ptr & scope):
+    const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -4784,7 +4788,7 @@ cylinder_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 cylinder_node::cylinder_node(const node_type & type,
-                             const scope_ptr & scope):
+                             const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -5122,7 +5126,7 @@ cylinder_sensor_class::create_type(const std::string & id,
  * @param scope the scope to which the node belongs.
  */
 cylinder_sensor_node::cylinder_sensor_node(const node_type & type,
-                                           const scope_ptr & scope):
+                                           const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -5431,7 +5435,7 @@ directional_light_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 directional_light_node::directional_light_node(const node_type & type,
-                                               const scope_ptr & scope):
+                                               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_light_node(type, scope),
     direction_(*this, vec3f(0.0, 0.0, -1.0))
@@ -5723,7 +5727,7 @@ elevation_grid_node::set_height_listener::process_event(const mffloat & height,
 {
     try {
         elevation_grid_node & elevation_grid =
-            dynamic_cast<elevation_grid_node &>(this->node);
+            dynamic_cast<elevation_grid_node &>(this->node());
 
         elevation_grid.height_ = height;
         elevation_grid.node::modified(true);
@@ -5824,7 +5828,7 @@ elevation_grid_node::set_height_listener::process_event(const mffloat & height,
  * @param scope the scope to which the node belongs.
  */
 elevation_grid_node::elevation_grid_node(const node_type & type,
-                                         const scope_ptr & scope):
+                                         const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -6181,7 +6185,7 @@ process_event(const mfvec2f & cross_section, const double timestamp)
 {
     try {
         extrusion_node & extrusion =
-            dynamic_cast<extrusion_node &>(this->node);
+            dynamic_cast<extrusion_node &>(this->node());
         extrusion.cross_section_ = cross_section;
         extrusion.node::modified(true);
     } catch (std::bad_cast & ex) {
@@ -6229,7 +6233,7 @@ process_event(const mfrotation & orientation, const double timestamp)
 {
     try {
         extrusion_node & extrusion =
-            dynamic_cast<extrusion_node &>(this->node);
+            dynamic_cast<extrusion_node &>(this->node());
         extrusion.orientation_ = orientation;
         extrusion.node::modified(true);
     } catch (std::bad_cast & ex) {
@@ -6276,7 +6280,7 @@ extrusion_node::set_scale_listener::process_event(const mfvec2f & scale,
 {
     try {
         extrusion_node & extrusion =
-            dynamic_cast<extrusion_node &>(this->node);
+            dynamic_cast<extrusion_node &>(this->node());
         extrusion.scale_ = scale;
         extrusion.node::modified(true);
     } catch (std::bad_cast & ex) {
@@ -6323,7 +6327,7 @@ extrusion_node::set_spine_listener::process_event(const mfvec3f & spine,
 {
     try {
         extrusion_node & extrusion =
-            dynamic_cast<extrusion_node &>(this->node);
+            dynamic_cast<extrusion_node &>(this->node());
         extrusion.spine_ = spine;
         extrusion.node::modified(true);
     } catch (std::bad_cast & ex) {
@@ -6435,7 +6439,7 @@ namespace {
  * @param scope the scope to which the node belongs.
  */
 extrusion_node::extrusion_node(const node_type & type,
-                               const scope_ptr & scope):
+                               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -6653,15 +6657,15 @@ void fog_class::initialize(openvrml::viewpoint_node * initialViewpoint,
  *
  * Render the active Fog node.
  *
- * @param viewer    a Viewer.
+ * @param v a viewer.
  */
-void fog_class::render(openvrml::viewer & viewer) throw ()
+void fog_class::render(viewer & v) const throw ()
 {
     if (!this->bound_nodes.empty()) {
         fog_node & fog = dynamic_cast<fog_node &>(*this->bound_nodes.back());
-        viewer.set_fog(fog.color_.sfcolor::value,
-                       fog.visibility_range_.sffloat::value,
-                       fog.fog_type_.sfstring::value.c_str());
+        v.set_fog(fog.color_.sfcolor::value,
+                  fog.visibility_range_.sffloat::value,
+                  fog.fog_type_.sfstring::value.c_str());
     }
 }
 
@@ -6810,9 +6814,10 @@ void fog_node::set_bind_listener::process_event(const sfbool & bind,
     throw (std::bad_alloc)
 {
     try {
-        fog_node & fog = dynamic_cast<fog_node &>(this->node);
+        fog_node & fog = dynamic_cast<fog_node &>(this->node());
         fog_class & node_class =
-            static_cast<fog_class &>(node.type.node_class);
+            const_cast<fog_class &>(
+                static_cast<const fog_class &>(fog.type().node_class()));
         if (bind.value) {
             node_class.bind(fog, timestamp);
         } else {
@@ -6865,7 +6870,7 @@ void fog_node::set_bind_listener::process_event(const sfbool & bind,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-fog_node::fog_node(const node_type & type, const scope_ptr & scope):
+fog_node::fog_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -6889,7 +6894,9 @@ fog_node::~fog_node() throw ()
  */
 void fog_node::do_initialize(const double timestamp) throw ()
 {
-    fog_class & nodeClass = static_cast<fog_class &>(this->type.node_class);
+    fog_class & nodeClass =
+        const_cast<fog_class &>(
+            static_cast<const fog_class &>(this->type().node_class()));
     if (!nodeClass.has_first()) { nodeClass.set_first(*this); }
 }
 
@@ -6902,7 +6909,9 @@ void fog_node::do_initialize(const double timestamp) throw ()
  */
 void fog_node::do_shutdown(const double timestamp) throw ()
 {
-    fog_class & nodeClass = static_cast<fog_class &>(this->type.node_class);
+    fog_class & nodeClass =
+        const_cast<fog_class &>(
+            static_cast<const fog_class &>(this->type().node_class()));
     nodeClass.unbind(*this, timestamp);
 }
 
@@ -7124,7 +7133,7 @@ namespace {
  * @param scope     the scope to which the node belongs.
  */
 font_style_node::font_style_node(const node_type & type,
-                                 const scope_ptr & scope):
+                                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::font_style_node(type, scope),
@@ -7401,7 +7410,7 @@ void group_node::add_children_listener::process_event(const mfnode & value,
 {
     using std::vector;
 
-    group_node & group = dynamic_cast<group_node &>(this->node);
+    group_node & group = dynamic_cast<group_node &>(this->node());
 
     for (vector<node_ptr>::const_iterator node = value.value.begin();
          node != value.value.end();
@@ -7473,7 +7482,7 @@ group_node::remove_children_listener::process_event(const mfnode & value,
 {
     using std::vector;
 
-    group_node & group = dynamic_cast<group_node &>(this->node);
+    group_node & group = dynamic_cast<group_node &>(this->node());
 
     for (vector<node_ptr>::const_iterator node = value.value.begin();
          node != value.value.end();
@@ -7525,7 +7534,7 @@ group_node::children_exposedfield::do_process_event(const mfnode & value,
 {
     using std::vector;
 
-    group_node & group = dynamic_cast<group_node &>(this->node);
+    group_node & group = dynamic_cast<group_node &>(this->node());
 
     this->mfnode::value.clear();
 
@@ -7598,7 +7607,7 @@ group_node::children_exposedfield::do_process_event(const mfnode & value,
  * @param type  the node_type associated with the node.
  * @param scope the scope to which the node belongs.
  */
-group_node::group_node(const node_type & type, const scope_ptr & scope):
+group_node::group_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
@@ -7940,7 +7949,7 @@ image_texture_node::url_exposedfield::do_process_event(const mfstring & url,
 {
     try {
         image_texture_node & image_texture =
-            dynamic_cast<image_texture_node &>(this->node);
+            dynamic_cast<image_texture_node &>(this->node());
 
         image_texture.url_.mfstring::value = url.value;
         image_texture.texture_needs_update = true;
@@ -7975,7 +7984,7 @@ image_texture_node::url_exposedfield::do_process_event(const mfstring & url,
  * @param scope the scope to which the node belongs.
  */
 image_texture_node::image_texture_node(const node_type & type,
-                                       const scope_ptr & scope):
+                                       const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_texture_node(type, scope),
     url_(*this),
@@ -8364,7 +8373,7 @@ process_event(const mfint32 & normal_index,
 {
     try {
         indexed_face_set_node & indexed_face_set =
-            dynamic_cast<indexed_face_set_node &>(this->node);
+            dynamic_cast<indexed_face_set_node &>(this->node());
 
         indexed_face_set.normal_index_ = normal_index;
         indexed_face_set.node::modified(true);
@@ -8413,7 +8422,7 @@ process_event(const mfint32 & tex_coord_index, const double timestamp)
 {
     try {
         indexed_face_set_node & indexed_face_set =
-            dynamic_cast<indexed_face_set_node &>(this->node);
+            dynamic_cast<indexed_face_set_node &>(this->node());
 
         indexed_face_set.tex_coord_index_ = tex_coord_index;
         indexed_face_set.node::modified(true);
@@ -8501,7 +8510,7 @@ process_event(const mfint32 & tex_coord_index, const double timestamp)
  * @param scope     the scope to which the node belongs.
  */
 indexed_face_set_node::indexed_face_set_node(const node_type & type,
-                                             const scope_ptr & scope):
+                                             const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_indexed_set_node(type, scope),
     set_normal_index_listener_(*this),
@@ -8810,7 +8819,7 @@ indexed_line_set_class::create_type(const std::string & id,
  * @param scope the scope to which the node belongs.
  */
 indexed_line_set_node::indexed_line_set_node(const node_type & type,
-                                             const scope_ptr & scope):
+                                             const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_indexed_set_node(type, scope)
 {}
@@ -9000,7 +9009,7 @@ inline_class::create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-inline_node::inline_node(const node_type & type, const scope_ptr & scope):
+inline_node::inline_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
@@ -9230,7 +9239,7 @@ lod_class::create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-lod_node::lod_node(const node_type & type, const scope_ptr & scope):
+lod_node::lod_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
@@ -9595,7 +9604,7 @@ material_class::create_type(const std::string & id,
  * @param scope the scope to which the node belongs.
  */
 material_node::material_node(const node_type & type,
-                             const scope_ptr & scope):
+                             const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::material_node(type, scope),
@@ -9902,7 +9911,7 @@ movie_texture_node::set_speed_listener::process_event(const sffloat & speed,
 {
     try {
         movie_texture_node & node =
-            dynamic_cast<movie_texture_node &>(this->node);
+            dynamic_cast<movie_texture_node &>(this->node());
 
         //
         // set_speed is ignored if the MovieTexture is active.
@@ -10020,7 +10029,7 @@ movie_texture_node::set_speed_listener::process_event(const sffloat & speed,
  * @param scope the scope to which the node belongs.
  */
 movie_texture_node::movie_texture_node(const node_type & type,
-                                       const scope_ptr & scope):
+                                       const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_texture_node(type, scope),
     loop_(*this, false),
@@ -10189,7 +10198,7 @@ void movie_texture_node::update(const double time)
     // Tell the scene when the next update is needed.
     if (this->active_.value) {
         double d = this->lastFrameTime + fabs(1 / this->speed_.value) - time;
-        this->type.node_class.browser.delta(0.9 * d);
+        this->type().node_class().browser().delta(0.9 * d);
     }
 }
 
@@ -10468,10 +10477,10 @@ navigation_info_node::set_bind_listener::process_event(const sfbool & bind,
 {
     try {
         navigation_info_node & node =
-            dynamic_cast<navigation_info_node &>(this->node);
+            dynamic_cast<navigation_info_node &>(this->node());
 
         navigation_info_node * current =
-            node.type.node_class.browser.bindable_navigation_info_top();
+            node.type().node_class().browser().bindable_navigation_info_top();
 
         if (bind.value) {        // set_bind TRUE
             if (&node != current) {
@@ -10479,16 +10488,16 @@ navigation_info_node::set_bind_listener::process_event(const sfbool & bind,
                     current->is_bound_.value = false;
                     node::emit_event(current->is_bound_emitter_, timestamp);
                 }
-                node.type.node_class.browser.bindable_push(&node);
+                node.type().node_class().browser().bindable_push(&node);
                 node.is_bound_.value = true;
                 node::emit_event(node.is_bound_emitter_, timestamp);
             }
         } else {            // set_bind FALSE
-            node.type.node_class.browser.bindable_remove(&node);
+            node.type().node_class().browser().bindable_remove(&node);
             if (&node == current) {
                 node.is_bound_.value = false;
                 node::emit_event(node.is_bound_emitter_, timestamp);
-                current = node.type.node_class.browser
+                current = node.type().node_class().browser()
                     .bindable_navigation_info_top();
                 if (current) {
                     current->is_bound_.value = true;
@@ -10561,7 +10570,7 @@ namespace {
  * @param scope the scope to which the node belongs.
  */
 navigation_info_node::navigation_info_node(const node_type & type,
-                                           const scope_ptr & scope):
+                                           const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -10746,7 +10755,7 @@ normal_class::create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope     the scope to which the node belongs.
  */
-normal_node::normal_node(const node_type & type, const scope_ptr & scope):
+normal_node::normal_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::normal_node(type, scope),
@@ -10930,7 +10939,7 @@ process_event(const sffloat & fraction, const double timestamp)
         using std::vector;
 
         normal_interpolator_node & node =
-            dynamic_cast<normal_interpolator_node &>(this->node);
+            dynamic_cast<normal_interpolator_node &>(this->node());
 
         const vector<float> & key = node.key_.mffloat::value;
         const vector<vec3f> & key_value = node.key_value_.mfvec3f::value;
@@ -11031,7 +11040,7 @@ process_event(const sffloat & fraction, const double timestamp)
  * @param scope the scope to which the node belongs.
  */
 normal_interpolator_node::normal_interpolator_node(const node_type & type,
-                                                   const scope_ptr & scope):
+                                                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -11211,7 +11220,7 @@ process_event(const sffloat & fraction, const double timestamp)
         using std::vector;
 
         orientation_interpolator_node & node =
-            dynamic_cast<orientation_interpolator_node &>(this->node);
+            dynamic_cast<orientation_interpolator_node &>(this->node());
 
         const vector<float> & key = node.key_.mffloat::value;
         const vector<rotation> & key_value = node.key_value_.mfrotation::value;
@@ -11313,7 +11322,7 @@ process_event(const sffloat & fraction, const double timestamp)
  */
 orientation_interpolator_node::
 orientation_interpolator_node(const node_type & type,
-                              const scope_ptr & scope):
+                              const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -11441,7 +11450,7 @@ pixel_texture_class::create_type(const std::string & id,
  * @param scope the scope to which the node belongs.
  */
 pixel_texture_node::pixel_texture_node(const node_type & type,
-                                       const scope_ptr & scope):
+                                       const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_texture_node(type, scope),
     image_(*this)
@@ -11761,7 +11770,7 @@ plane_sensor_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 plane_sensor_node::plane_sensor_node(const node_type & type,
-                                     const scope_ptr & scope):
+                                     const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -12101,7 +12110,7 @@ point_light_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 point_light_node::point_light_node(const node_type & type,
-                       const scope_ptr & scope):
+                       const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_light_node(type, scope),
     attenuation_(*this, vec3f(1.0, 0.0, 0.0)),
@@ -12294,7 +12303,7 @@ point_set_class::create_type(const std::string & id,
  * @param scope the scope to which the node belongs.
  */
 point_set_node::point_set_node(const node_type & type,
-                   const scope_ptr & scope):
+                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -12570,7 +12579,7 @@ process_event(const sffloat & fraction, const double timestamp)
         using std::vector;
 
         position_interpolator_node & node =
-            dynamic_cast<position_interpolator_node &>(this->node);
+            dynamic_cast<position_interpolator_node &>(this->node());
 
         const vector<float> & key = node.key_.mffloat::value;
         const vector<vec3f> & key_value = node.key_value_.mfvec3f::value;
@@ -12640,7 +12649,7 @@ process_event(const sffloat & fraction, const double timestamp)
  */
 position_interpolator_node::position_interpolator_node(
     const node_type & type,
-    const scope_ptr & scope):
+    const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -12902,7 +12911,7 @@ proximity_sensor_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 proximity_sensor_node::proximity_sensor_node(const node_type & type,
-                                             const scope_ptr & scope):
+                                             const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -13177,7 +13186,7 @@ process_event(const sffloat & fraction, const double timestamp)
         using std::vector;
 
         scalar_interpolator_node & node =
-            dynamic_cast<scalar_interpolator_node &>(this->node);
+            dynamic_cast<scalar_interpolator_node &>(this->node());
 
         const vector<float> & key = node.key_.mffloat::value;
         const vector<float> & key_value = node.key_value_.mffloat::value;
@@ -13245,7 +13254,7 @@ process_event(const sffloat & fraction, const double timestamp)
  * @param scope the scope to which the node belongs.
  */
 scalar_interpolator_node::scalar_interpolator_node(const node_type & type,
-                                                   const scope_ptr & scope):
+                                                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -13383,7 +13392,7 @@ shape_class::create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope     the scope to which the node belongs.
  */
-shape_node::shape_node(const node_type & type, const scope_ptr & scope):
+shape_node::shape_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -13790,7 +13799,7 @@ sound_class::create_type(const std::string & id,
  * @param type  the node_type associated with the instance.
  * @param scope the scope associated with the instance.
  */
-sound_node::sound_node(const node_type & type, const scope_ptr & scope):
+sound_node::sound_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -13916,7 +13925,7 @@ sphere_class::create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-sphere_node::sphere_node(const node_type & type, const scope_ptr & scope):
+sphere_node::sphere_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -14180,7 +14189,7 @@ sphere_sensor_class::create_type(const std::string & id,
  * @param scope     the scope to which the node belongs.
  */
 sphere_sensor_node::sphere_sensor_node(const node_type & type,
-                                       const scope_ptr & scope):
+                                       const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -14600,7 +14609,7 @@ spot_light_class::create_type(const std::string & id,
  * @param scope the scope to which the node belongs.
  */
 spot_light_node::spot_light_node(const node_type & type,
-                                 const scope_ptr & scope):
+                                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_light_node(type, scope),
     attenuation_(*this, vec3f(1.0, 0.0, 0.0)),
@@ -14813,7 +14822,7 @@ void switch_node::choice_exposedfield::do_process_event(const mfnode & choice,
     throw (std::bad_alloc)
 {
     try {
-        switch_node & node = dynamic_cast<switch_node &>(this->node);
+        switch_node & node = dynamic_cast<switch_node &>(this->node());
 
         const size_t which_choice = size_t(node.which_choice_.sfint32::value);
         assert(!node.children_.value.empty());
@@ -14866,7 +14875,7 @@ do_process_event(const sfint32 & which_choice,
     throw (std::bad_alloc)
 {
     try {
-        switch_node & node = dynamic_cast<switch_node &>(this->node);
+        switch_node & node = dynamic_cast<switch_node &>(this->node());
 
         assert(!node.children_.value.empty());
         node.children_.value[0] =
@@ -14909,7 +14918,7 @@ do_process_event(const sfint32 & which_choice,
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-switch_node::switch_node(const node_type & type, const scope_ptr & scope):
+switch_node::switch_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
@@ -15064,7 +15073,8 @@ text_class::~text_class() throw ()
     FT_Error error = 0;
     error = FT_Done_FreeType(this->freeTypeLibrary);
     if (error) {
-        browser.err << "Error shutting down FreeType library." << std::endl;
+        this->browser().err << "Error shutting down FreeType library."
+                            << std::endl;
     }
 # endif // OPENVRML_ENABLE_TEXT_NODE
 }
@@ -15215,7 +15225,7 @@ void text_node::string_exposedfield::do_process_event(const mfstring & string,
     throw (std::bad_alloc)
 {
     try {
-        text_node & node = dynamic_cast<text_node &>(this->node);
+        text_node & node = dynamic_cast<text_node &>(this->node());
         node.update_ucs4();
         node.update_geometry();
     } catch (std::bad_cast & ex) {
@@ -15260,7 +15270,7 @@ text_node::font_style_exposedfield::do_process_event(const sfnode & font_style,
     throw (std::bad_alloc)
 {
     try {
-        text_node & node = dynamic_cast<text_node &>(this->node);
+        text_node & node = dynamic_cast<text_node &>(this->node());
         node.update_ucs4();
         node.update_geometry();
     } catch (std::bad_cast & ex) {
@@ -15304,7 +15314,7 @@ void text_node::length_exposedfield::do_process_event(const mffloat & length,
     throw (std::bad_alloc)
 {
     try {
-        text_node & node = dynamic_cast<text_node &>(this->node);
+        text_node & node = dynamic_cast<text_node &>(this->node());
         node.update_geometry();
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
@@ -15349,7 +15359,7 @@ do_process_event(const sffloat & max_extent,
     throw (std::bad_alloc)
 {
     try {
-        text_node & node = dynamic_cast<text_node &>(this->node);
+        text_node & node = dynamic_cast<text_node &>(this->node());
         node.update_geometry();
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
@@ -15877,7 +15887,7 @@ text_node::glyph_geometry::glyph_geometry(
  * @param scope the scope that the new node will belong to.
  */
 text_node::text_node(const node_type & type,
-                     const scope_ptr & scope):
+                     const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -16263,7 +16273,9 @@ void text_node::update_face() throw (std::bad_alloc)
             if (result != FcResultMatch) { throw FontconfigError(result); }
 
             text_class & nodeClass =
-                    static_cast<text_class &>(this->type.node_class);
+                const_cast<text_class &>(
+                    static_cast<const text_class &>(
+                        this->type().node_class()));
 
             size_t filenameLen = 0;
             for (; filename[filenameLen]; ++filenameLen) {}
@@ -16885,7 +16897,7 @@ texture_coordinate_class::create_type(const std::string & id,
  * @param scope the scope that the new node will belong to.
  */
 texture_coordinate_node::texture_coordinate_node(const node_type & type,
-                                                 const scope_ptr & scope):
+                                                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::texture_coordinate_node(type, scope),
@@ -17068,7 +17080,7 @@ texture_transform_class::create_type(const std::string & id,
  * @param scope         the scope that the new node will belong to.
  */
 texture_transform_node::texture_transform_node(const node_type & type,
-                                               const scope_ptr & scope):
+                                               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::texture_transform_node(type, scope),
@@ -17323,7 +17335,7 @@ process_event(const sftime & cycle_interval, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
-        time_sensor_node & node = dynamic_cast<time_sensor_node &>(this->node);
+        time_sensor_node & node = dynamic_cast<time_sensor_node &>(this->node());
 
         if (!node.is_active_.value) {
             node.cycle_interval_ = cycle_interval;
@@ -17374,7 +17386,7 @@ do_process_event(const sfbool & enabled, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
-        time_sensor_node & node = dynamic_cast<time_sensor_node &>(this->node);
+        time_sensor_node & node = dynamic_cast<time_sensor_node &>(this->node());
 
         if (enabled.value != node.is_active_.value) {
             if (node.is_active_.value) {
@@ -17451,7 +17463,7 @@ process_event(const sftime & start_time, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
-        time_sensor_node & node = dynamic_cast<time_sensor_node &>(this->node);
+        time_sensor_node & node = dynamic_cast<time_sensor_node &>(this->node());
 
         if (!node.is_active_.value) {
             node.start_time_ = start_time;
@@ -17578,7 +17590,7 @@ process_event(const sftime & start_time, const double timestamp)
  * @param scope         the scope that the new node will belong to.
  */
 time_sensor_node::time_sensor_node(const node_type & type,
-                                   const scope_ptr & scope):
+                                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -17710,7 +17722,7 @@ void time_sensor_node::update(const double currentTime)
         // Should check whether time, fraction_changed eventOuts are
         // being used, and set delta to cycleTime if not...
         if (this->is_active_.value) {
-            this->type.node_class.browser.delta(0.0);
+            this->type().node_class().browser().delta(0.0);
         }
         this->lastTime = currentTime;
     }
@@ -17965,7 +17977,7 @@ touch_sensor_class::create_type(const std::string & id,
  * @param scope         the scope that the new node will belong to.
  */
 touch_sensor_node::touch_sensor_node(const node_type & type,
-                                     const scope_ptr & scope):
+                                     const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -18289,7 +18301,7 @@ transform_node::center_exposedfield::do_process_event(const sfvec3f & center,
     throw (std::bad_alloc)
 {
     try {
-        transform_node & node = dynamic_cast<transform_node &>(this->node);
+        transform_node & node = dynamic_cast<transform_node &>(this->node());
         node.bounding_volume_dirty(true);
         node.transform_dirty = true;
     } catch (std::bad_cast & ex) {
@@ -18335,7 +18347,7 @@ do_process_event(const sfrotation & rotation, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
-        transform_node & node = dynamic_cast<transform_node &>(this->node);
+        transform_node & node = dynamic_cast<transform_node &>(this->node());
         node.bounding_volume_dirty(true);
         node.transform_dirty = true;
     } catch (std::bad_cast & ex) {
@@ -18380,7 +18392,7 @@ transform_node::scale_exposedfield::do_process_event(const sfvec3f & scale,
     throw (std::bad_alloc)
 {
     try {
-        transform_node & node = dynamic_cast<transform_node &>(this->node);
+        transform_node & node = dynamic_cast<transform_node &>(this->node());
         node.bounding_volume_dirty(true);
         node.transform_dirty = true;
     } catch (std::bad_cast & ex) {
@@ -18427,7 +18439,7 @@ do_process_event(const sfrotation & scale_orientation, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
-        transform_node & node = dynamic_cast<transform_node &>(this->node);
+        transform_node & node = dynamic_cast<transform_node &>(this->node());
         node.bounding_volume_dirty(true);
         node.transform_dirty = true;
     } catch (std::bad_cast & ex) {
@@ -18473,7 +18485,7 @@ do_process_event(const sfvec3f & translation, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
-        transform_node & node = dynamic_cast<transform_node &>(this->node);
+        transform_node & node = dynamic_cast<transform_node &>(this->node());
         node.bounding_volume_dirty(true);
         node.transform_dirty = true;
     } catch (std::bad_cast & ex) {
@@ -18536,7 +18548,7 @@ do_process_event(const sfvec3f & translation, const double timestamp)
  * @param scope the scope that the new node will belong to.
  */
 transform_node::transform_node(const node_type & type,
-                               const scope_ptr & scope):
+                               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
@@ -18783,7 +18795,7 @@ void viewpoint_class::bind(viewpoint_node & viewpoint, const double timestamp)
     viewpoint.is_bound_.value = true;
     node::emit_event(viewpoint.is_bound_emitter_, timestamp);
 
-    this->browser.active_viewpoint(viewpoint);
+    this->browser().active_viewpoint(viewpoint);
 }
 
 /**
@@ -18811,9 +18823,9 @@ void viewpoint_class::unbind(viewpoint_node & viewpoint,
             newActive.is_bound_.value = true;
             node::emit_event(newActive.is_bound_emitter_, timestamp);
 
-            this->browser.active_viewpoint(viewpoint);
+            this->browser().active_viewpoint(viewpoint);
         } else {
-            this->browser.reset_default_viewpoint();
+            this->browser().reset_default_viewpoint();
         }
         this->bound_nodes.erase(pos);
     }
@@ -19030,9 +19042,11 @@ void viewpoint_node::set_bind_listener::process_event(const sfbool & value,
     throw (std::bad_alloc)
 {
     try {
-        viewpoint_node & node = dynamic_cast<viewpoint_node &>(this->node);
+        viewpoint_node & node = dynamic_cast<viewpoint_node &>(this->node());
         viewpoint_class & node_class =
-            static_cast<viewpoint_class &>(node.type.node_class);
+            const_cast<viewpoint_class &>(
+                static_cast<const viewpoint_class &>(
+                    node.type().node_class()));
         if (value.value) {
             node_class.bind(node, timestamp);
         } else {
@@ -19081,7 +19095,7 @@ do_process_event(const sfrotation & orientation, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
-        viewpoint_node & node = dynamic_cast<viewpoint_node &>(this->node);
+        viewpoint_node & node = dynamic_cast<viewpoint_node &>(this->node());
         node.final_transformation_dirty = true;
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
@@ -19126,7 +19140,7 @@ do_process_event(const sfvec3f & position, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
-        viewpoint_node & node = dynamic_cast<viewpoint_node &>(this->node);
+        viewpoint_node & node = dynamic_cast<viewpoint_node &>(this->node());
         node.final_transformation_dirty = true;
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
@@ -19231,7 +19245,7 @@ namespace {
  * @param scope         the scope that the new node will belong to.
  */
 viewpoint_node::viewpoint_node(const node_type & type,
-                               const scope_ptr & scope):
+                               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
@@ -19336,9 +19350,10 @@ void viewpoint_node::do_initialize(const double timestamp) throw ()
 {
     assert(this->scene());
     this->scene()->browser.add_viewpoint(*this);
-    assert(dynamic_cast<viewpoint_class *>(&this->type.node_class));
+    assert(dynamic_cast<const viewpoint_class *>(&this->type().node_class()));
     viewpoint_class & nodeClass =
-            static_cast<viewpoint_class &>(this->type.node_class);
+        const_cast<viewpoint_class &>(
+            static_cast<const viewpoint_class &>(this->type().node_class()));
     if (!nodeClass.has_first()) { nodeClass.set_first(*this); }
 }
 
@@ -19617,7 +19632,7 @@ visibility_sensor_class::create_type(const std::string & id,
  * @param scope         the scope that the new node will belong to.
  */
 visibility_sensor_node::visibility_sensor_node(const node_type & type,
-                                               const scope_ptr & scope):
+                                               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -19674,7 +19689,8 @@ void visibility_sensor_node::do_render_child(openvrml::viewer & viewer,
             using openvrml_::fequal;
 
             navigation_info_node * ni =
-                this->type.node_class.browser.bindable_navigation_info_top();
+                this->type().node_class().browser()
+                .bindable_navigation_info_top();
             if (ni && !fequal<float>()(ni->visibility_limit(), 0.0f)
                     && xyz[0][2] < -(ni->visibility_limit())) {
                 inside = false;
@@ -19810,7 +19826,7 @@ world_info_class::create_type(const std::string & id,
  * @param scope the scope that the new node will belong to.
  */
 world_info_node::world_info_node(const node_type & type,
-                                 const scope_ptr & scope):
+                                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope)

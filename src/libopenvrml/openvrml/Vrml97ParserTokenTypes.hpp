@@ -1,8 +1,15 @@
 #ifndef INC_Vrml97ParserTokenTypes_hpp_
 #define INC_Vrml97ParserTokenTypes_hpp_
 
-/* $ANTLR 2.7.2: "Vrml97Parser.g" -> "Vrml97ParserTokenTypes.hpp"$ */
-struct Vrml97ParserTokenTypes {
+/* $ANTLR 2.7.4: "Vrml97Parser.g" -> "Vrml97ParserTokenTypes.hpp"$ */
+
+#ifndef CUSTOM_API
+# define CUSTOM_API
+#endif
+
+#ifdef __cplusplus
+struct CUSTOM_API Vrml97ParserTokenTypes {
+#endif
 	enum {
 		EOF_ = 1,
 		PERIOD = 4,
@@ -51,5 +58,7 @@ struct Vrml97ParserTokenTypes {
 		FIELDTYPE_MFVEC3F = 47,
 		NULL_TREE_LOOKAHEAD = 3
 	};
+#ifdef __cplusplus
 };
+#endif
 #endif /*INC_Vrml97ParserTokenTypes_hpp_*/

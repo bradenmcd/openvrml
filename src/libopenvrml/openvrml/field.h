@@ -761,15 +761,21 @@ namespace openvrml {
 
 
     class event_listener : boost::noncopyable {
-    public:
-        openvrml::node & node;
+        openvrml::node & node_;
 
+    public:
         virtual ~event_listener() throw () = 0;
+
+        openvrml::node & node() throw ();
 
     protected:
         explicit event_listener(openvrml::node & node) throw ();
     };
 
+    inline node & event_listener::node() throw ()
+    {
+        return this->node_;
+    }
 
     template <typename FieldValue>
     class field_value_listener : public event_listener {
@@ -820,21 +826,25 @@ namespace openvrml {
     class event_emitter : boost::noncopyable {
         friend class node;
 
+        const field_value & value_;
+        std::set<event_listener *> listeners_;
+        double last_time_;
+
     public:
         typedef std::set<event_listener *> listener_set;
 
         static std::auto_ptr<event_emitter> create(const field_value & value)
             throw (std::bad_alloc);
 
-        const field_value & value;
-
         virtual ~event_emitter() throw () = 0;
 
+        const field_value & value() const throw ();
         const listener_set & listeners() const throw ();
 
     protected:
-        listener_set listeners_;
-        double last_time;
+        listener_set & listeners() throw ();
+        double last_time() const throw ();
+        void last_time(double t) throw ();
 
         explicit event_emitter(const field_value & value) throw ();
 
@@ -842,6 +852,20 @@ namespace openvrml {
         virtual void emit_event(double timestamp) throw (std::bad_alloc) = 0;
     };
 
+    inline const field_value & event_emitter::value() const throw ()
+    {
+        return this->value_;
+    }
+
+    inline double event_emitter::last_time() const throw ()
+    {
+        return this->last_time_;
+    }
+
+    inline void event_emitter::last_time(const double t) throw ()
+    {
+        this->last_time_ = t;
+    }
 
     template <typename FieldValue>
     class field_value_emitter : public event_emitter {
@@ -875,14 +899,14 @@ namespace openvrml {
         throw (std::bad_alloc)
     {
         for (typename listener_set::iterator listener =
-                 this->listeners_.begin();
-             listener != this->listeners_.end();
+                 this->listeners().begin();
+             listener != this->listeners().end();
              ++listener) {
             using boost::polymorphic_downcast;
             assert(*listener);
             polymorphic_downcast<field_value_listener<FieldValue> *>(*listener)
                 ->process_event(
-                    *polymorphic_downcast<const FieldValue *>(&this->value),
+                    *polymorphic_downcast<const FieldValue *>(&this->value()),
                     timestamp);
         }
     }
@@ -892,7 +916,7 @@ namespace openvrml {
     field_value_emitter<FieldValue>::
     add(field_value_listener<FieldValue> & listener) throw (std::bad_alloc)
     {
-        return this->listeners_.insert(&listener).second;
+        return this->listeners().insert(&listener).second;
     }
 
     template <typename FieldValue>
@@ -900,7 +924,7 @@ namespace openvrml {
     field_value_emitter<FieldValue>::
     remove(field_value_listener<FieldValue> & listener) throw ()
     {
-        return (this->listeners_.erase(&listener) > 0);
+        return (this->listeners().erase(&listener) > 0);
     }
 
     typedef field_value_emitter<sfbool> sfbool_emitter;

@@ -35,27 +35,38 @@ namespace openvrml {
     typedef boost::shared_ptr<node_type> node_type_ptr;
 
     class scope;
-    typedef boost::shared_ptr<scope> scope_ptr;
 
     class scope : boost::noncopyable {
         friend class node;
 
         std::list<node_type_ptr> node_type_list;
         std::map<std::string, node *> named_node_map;
+        const std::string id_;
+        const boost::shared_ptr<scope> parent_;
 
     public:
-        const std::string id;
-        const scope_ptr parent;
-
         explicit scope(const std::string & id,
-                       const scope_ptr & parent = scope_ptr());
+                       const boost::shared_ptr<scope> & parent =
+                       boost::shared_ptr<scope>());
         virtual ~scope();
 
+        const std::string & id() const throw ();
+        const boost::shared_ptr<scope> & parent() const throw ();
         bool add_type(const node_type_ptr & type) throw (std::bad_alloc);
         const node_type_ptr & find_type(const std::string & id) const;
         const node_type_ptr & first_type() const;
         node * find_node(const std::string & id) const;
     };
+
+    inline const std::string & scope::id() const throw ()
+    {
+        return this->id_;
+    }
+
+    inline const boost::shared_ptr<scope> & scope::parent() const throw ()
+    {
+        return this->parent_;
+    }
 }
 
 #endif

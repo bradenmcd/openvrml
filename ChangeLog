@@ -1,5 +1,31 @@
 2004-11-08 Braden McDaniel  <braden@endoframe.com>
 
+	Replaced several public class members with accessor/mutator
+	member functions.
+
+	* src/libopenvrml/openvrml/ScriptJDK.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp
+	* src/libopenvrml/openvrml/Vrml97ParserTokenTypes.hpp
+	* src/libopenvrml/openvrml/Vrml97ParserTokenTypes.txt
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/field.cpp
+	* src/libopenvrml/openvrml/field.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/node_ptr.cpp
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/scope.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+	* test/browser-create_vrml_from_stream.cpp
+	* test/parse-anchor.cpp
+
+2004-11-08 Braden McDaniel  <braden@endoframe.com>
+
 	Updated to ANTLR 2.7.4.
 
 	* lib/antlr/antlr/config.hpp

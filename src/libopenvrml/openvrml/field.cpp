@@ -3293,7 +3293,7 @@ bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
  * @param node  the node to which the event_listener belongs.
  */
 event_listener::event_listener(openvrml::node & node) throw ():
-    node(node)
+    node_(node)
 {}
 
 /**
@@ -3589,7 +3589,7 @@ event_emitter::create(const field_value & value) throw (std::bad_alloc)
  * @param value field_value associated with this emitter.
  */
 event_emitter::event_emitter(const field_value & value) throw ():
-    value(value)
+    value_(value)
 {}
 
 /**
@@ -3604,6 +3604,16 @@ event_emitter::~event_emitter() throw ()
  * @return the set of registered event_listeners.
  */
 const event_emitter::listener_set & event_emitter::listeners() const throw ()
+{
+    return this->listeners_;
+}
+
+/**
+ * @brief Registered listeners.
+ *
+ * @return the set of registered event_listeners.
+ */
+event_emitter::listener_set & event_emitter::listeners() throw ()
 {
     return this->listeners_;
 }

@@ -105,7 +105,7 @@ namespace openvrml {
 
             virtual const node_interface_set & interfaces() const throw ();
             virtual const node_ptr
-            create_node(const scope_ptr & scope,
+            create_node(const boost::shared_ptr<openvrml::scope> & scope,
                         const initial_value_map & initial_values) const
                 throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         };
@@ -175,7 +175,7 @@ namespace openvrml {
 
     public:
         script_node(script_node_class & class_,
-                    const scope_ptr & scope,
+                    const boost::shared_ptr<openvrml::scope> & scope,
                     const node_interface_set & interfaces,
                     const initial_value_map & initial_values)
             throw (unsupported_interface, std::bad_cast, std::bad_alloc,
@@ -229,9 +229,9 @@ namespace openvrml {
         const double timestamp)
         throw (std::bad_alloc)
     {
-        assert(dynamic_cast<openvrml::script_node *>(&this->node));
+        assert(dynamic_cast<openvrml::script_node *>(&this->node()));
         openvrml::script_node & script_node =
-            dynamic_cast<openvrml::script_node &>(this->node);
+            dynamic_cast<openvrml::script_node &>(this->node());
         if (script_node.script_) {
             script_node.script_->process_event(this->id, value, timestamp);
         }

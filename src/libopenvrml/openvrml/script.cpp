@@ -407,15 +407,21 @@ const node_interface_set & script_node::script_node_type::interfaces() const
  */
 const node_ptr
 script_node::script_node_type::
-create_node(const scope_ptr & scope,
+create_node(const boost::shared_ptr<openvrml::scope> & scope,
             const initial_value_map & initial_values) const
     throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
     using std::insert_iterator;
     using std::set_difference;
 
+    //
+    // The const_cast here is a bit messy; the alternative would be to make
+    // script_node_type a friend of node_type. That's not straightforward
+    // since script_node_type is an inner class of script_node.
+    //
     script_node_class & scriptNodeClass =
-        static_cast<script_node_class &>(this->node_class);
+        const_cast<script_node_class &>(
+            static_cast<const script_node_class &>(this->node_class()));
 
     //
     // First, we need the set of node_interfaces *without* the built-in
@@ -766,9 +772,9 @@ void script_node::set_url_listener_t::process_event(const mfstring & value,
                                                     const double timestamp)
     throw (std::bad_alloc)
 {
-    assert(dynamic_cast<openvrml::script_node *>(&this->node));
+    assert(dynamic_cast<openvrml::script_node *>(&this->node()));
     openvrml::script_node & script_node =
-        dynamic_cast<openvrml::script_node &>(this->node);
+        dynamic_cast<openvrml::script_node &>(this->node());
     delete script_node.script_;
     script_node.script_ = 0;
     script_node.url_ = value;
@@ -900,24 +906,29 @@ void script_node::set_url_listener_t::process_event(const mfstring & value,
  * @brief Construct.
  *
  * Unlike other concrete node types, which are always instantiated via
- * node_type::create_node, the script_node constructor is called directly when
- * creating a new script_node from scratch.  However, a script_node can be
- * duplicated (or "cloned") by calling node_type::create_node on
- * script_node::type of a script_node instance.  This provides a consistent
- * interface for cloning any node, regardless of its type.  OpenVRML uses this
- * internally when instantiating PROTOs.
+ * <code>node_type::create_node</code>, the <code>script_node</code>
+ * constructor is called directly when creating a new <code>script_node</code>
+ * from scratch.  However, a <code>script_node</code> can be duplicated (or
+ * "cloned") by calling <code>node_type::create_node</code> on
+ * <code>script_node::type</code> of a <code>script_node</code> instance.  This
+ * provides a consistent interface for cloning any node, regardless of its
+ * type.  OpenVRML uses this internally when instantiating <code>PROTO</code>s.
  *
- * @param class_            the script_node_class.  Typically there is one
- *                          script_node_class per browser instance.
- * @param scope             the scope to which the node should belong.
- * @param interfaces        a node_interface_set containing specifications of
- *                          user-defined fields, eventIns, and eventOuts
- *                          particular to the script_node instance.
+ * @param class_            the <code>script_node_class</code>.  Typically
+ *                          there is one <code>script_node_class</code> per
+ *                          browser instance.
+ * @param scope             the <code>scope</code> to which the node should
+ *                          belong.
+ * @param interfaces        a <code>node_interface_set</code> containing
+ *                          specifications of user-defined fields, eventIns,
+ *                          and eventOuts particular to the
+ *                          <code>script_node</code> instance.
  * @param initial_values    a map of initial values for fields of the
- *                          script_node.
+ *                          <code>script_node</code>.
  *
  * @exception unsupported_interface if @p initial_values specifies a field that
- *                                  is not supported by the script_node.
+ *                                  is not supported by the
+ *                                  <code>script_node</code>.
  * @exception std::bad_cast         if @p initial_values includes a field value
  *                                  that is the wrong type for the specified
  *                                  field.
@@ -933,7 +944,7 @@ void script_node::set_url_listener_t::process_event(const mfstring & value,
  *                                    @p interfaces.
  */
 script_node::script_node(script_node_class & class_,
-                         const scope_ptr & scope,
+                         const boost::shared_ptr<openvrml::scope> & scope,
                          const node_interface_set & interfaces,
                          const initial_value_map & initial_values)
     throw (unsupported_interface, std::bad_cast, std::bad_alloc,
@@ -1449,7 +1460,7 @@ script * script_node::create_script()
                                this->url_.value[i].end() - 6)
                     || std::equal(javaExtension2, javaExtension2 + 6,
                                   this->url_.value[i].end() - 6))) {
-            doc2 base(this->type.node_class.browser.world_url());
+            doc2 base(this->type.node_class().browser().world_url());
             doc2 doc(this->url_.value[i], &base);
             if (doc.local_name()) {
                 return new ScriptJDK(*this,
@@ -2595,7 +2606,8 @@ JSBool eventOut_setProperty(JSContext * const cx,
 
     script_node & scriptNode = script->script_node();
 
-    const node_interface_set & interfaces = scriptNode.node::type.interfaces();
+    const node_interface_set & interfaces =
+        scriptNode.node::type().interfaces();
     const node_interface_set::const_iterator interface =
         find_if(interfaces.begin(), interfaces.end(),
                 bind2nd(node_interface_matches_eventout(), eventId));
@@ -2648,7 +2660,8 @@ JSBool script::field_setProperty(JSContext * const cx,
 
     openvrml::script_node & scriptNode = script->script_node();
 
-    const node_interface_set & interfaces = scriptNode.node::type.interfaces();
+    const node_interface_set & interfaces =
+        scriptNode.node::type().interfaces();
     const node_interface_set::const_iterator interface =
         find_if(interfaces.begin(), interfaces.end(),
                 bind2nd(node_interface_matches_field(), fieldId));
@@ -3022,7 +3035,7 @@ JSBool getName(JSContext * const cx, JSObject *,
     assert(script);
 
     const char * const name =
-        script->script_node().node::type.node_class.browser.name();
+        script->script_node().node::type().node_class().browser().name();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, name));
     return JS_TRUE;
 }
@@ -3036,7 +3049,7 @@ JSBool getVersion(JSContext * const cx, JSObject *,
     assert(script);
 
     const char * const version =
-        script->script_node().node::type.node_class.browser.version();
+        script->script_node().node::type().node_class().browser().version();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, version));
     return JS_TRUE;
 }
@@ -3049,8 +3062,8 @@ JSBool getCurrentSpeed(JSContext * const cx, JSObject *,
         static_cast<js_::script *>(JS_GetContextPrivate(cx));
     assert(script);
 
-    float speed = script->script_node().node::type.node_class
-                  .browser.current_speed();
+    float speed = script->script_node().node::type().node_class()
+                  .browser().current_speed();
     *rval = DOUBLE_TO_JSVAL(JS_NewDouble( cx, speed ));
     return JS_TRUE;
 }
@@ -3067,8 +3080,8 @@ JSBool getCurrentFrameRate(JSContext * const cx,
     assert(script);
 
     jsdouble * d = JS_NewDouble(cx,
-                                script->script_node().node::type.node_class
-                                .browser.frame_rate());
+                                script->script_node().node::type().node_class()
+                                .browser().frame_rate());
     *rval = DOUBLE_TO_JSVAL(d);
     return JS_TRUE;
 }
@@ -3085,7 +3098,7 @@ JSBool getWorldURL(JSContext * const cx,
     assert(script);
 
     const std::string url =
-        script->script_node().node::type.node_class.browser.world_url();
+        script->script_node().node::type().node_class().browser().world_url();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, url.c_str()));
     return JS_TRUE;
 }
@@ -4153,7 +4166,7 @@ JSBool SFNode::getProperty(JSContext * const cx,
         try {
             const char * eventOut = JS_GetStringBytes(JSVAL_TO_STRING(id));
             event_emitter & emitter = thisNode.value->event_emitter(eventOut);
-            *vp = script.vrmlFieldToJSVal(emitter.value);
+            *vp = script.vrmlFieldToJSVal(emitter.value());
         } catch (unsupported_interface & ex) {}
     }
     return JS_TRUE;
@@ -4185,7 +4198,7 @@ JSBool SFNode::setProperty(JSContext * const cx,
         const char * const eventInId = JS_GetStringBytes(JSVAL_TO_STRING(id));
 
         // convert vp to field, send eventIn to node
-        const node_interface_set & interfaces = nodePtr->type.interfaces();
+        const node_interface_set & interfaces = nodePtr->type().interfaces();
         const node_interface_set::const_iterator interface =
             find_if(interfaces.begin(), interfaces.end(),
                     bind2nd(node_interface_matches_eventin(), eventInId));

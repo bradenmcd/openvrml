@@ -82,9 +82,10 @@ namespace openvrml {
  * For the root scope, @p id should be the URI of the world. For child scopes,
  * @p id should be the name of the PROTO to which the scope corresponds.
  */
-scope::scope(const std::string & id, const scope_ptr & parent):
-    id(id),
-    parent(parent)
+scope::scope(const std::string & id,
+             const boost::shared_ptr<openvrml::scope> & parent):
+    id_(id),
+    parent_(parent)
 {}
 
 /**
@@ -111,7 +112,7 @@ scope::~scope()
 bool scope::add_type(const node_type_ptr & type) throw (std::bad_alloc)
 {
     assert(type);
-    if (this->find_type(type->id)) { return false; }
+    if (this->find_type(type->id())) { return false; }
     this->node_type_list.push_front(type); // Throws std::bad_alloc.
     return true;
 }
@@ -125,7 +126,7 @@ namespace {
         bool operator()(const node_type_ptr & type) const
         {
             assert(type);
-            return type->id == *this->id;
+            return type->id() == *this->id;
         }
 
     private:
@@ -152,8 +153,8 @@ const node_type_ptr & scope::find_type(const std::string & id) const {
     // Look in the parent scope for the type.
     //
     static const node_type_ptr null;
-    return this->parent
-            ? this->parent->find_type(id)
+    return this->parent_
+            ? this->parent_->find_type(id)
             : null;
 }
 

@@ -6658,7 +6658,7 @@ jobject JNICALL Java_vrml_node_Script_getEventOut(JNIEnv * env,
         reinterpret_cast<script_node*>(env->GetIntField(obj, fid));
     if (!script) return 0;
 
-    const node_interface_set & interfaces = script->node::type.interfaces();
+    const node_interface_set & interfaces = script->node::type().interfaces();
     const node_interface_set::const_iterator interface =
         find_if(interfaces.begin(), interfaces.end(),
                 bind2nd(node_interface_matches_eventout(), eventOutName));
@@ -6724,7 +6724,7 @@ jobject JNICALL Java_vrml_node_Script_getEventIn(JNIEnv * env,
     if (!script) return 0;
     jobject eventIn;
 
-    const node_interface_set & interfaces = script->node::type.interfaces();
+    const node_interface_set & interfaces = script->node::type().interfaces();
     const node_interface_set::const_iterator interface =
         find_if(interfaces.begin(), interfaces.end(),
                 bind2nd(node_interface_matches_eventin(), eventInName));
@@ -6791,7 +6791,7 @@ jstring JNICALL Java_vrml_BaseNode_getType(JNIEnv * env, jobject obj)
     if (!fid) return 0;
     node * const n = reinterpret_cast<node *>(env->GetIntField(obj, fid));
     if (!n) { return 0; }
-    return env->NewStringUTF(n->type.id.c_str());
+    return env->NewStringUTF(n->type().id().c_str());
 }
 
 /**
