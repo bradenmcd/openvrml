@@ -3557,12 +3557,6 @@ event_emitter::create(const field_value & value) throw (std::bad_alloc)
 }
 
 /**
- * @var event_emitter::node
- *
- * @brief node::emit_event calls event_emitter::emit_event.
- */
-
-/**
  * @var const field_value & event_emitter::value
  *
  * @brief A reference to the field_value for the event_emitter.

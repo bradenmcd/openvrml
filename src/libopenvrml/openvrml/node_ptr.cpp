@@ -32,13 +32,6 @@ namespace openvrml {
  *        @link openvrml::node nodes@endlink.
  */
 
-/**
- * @var node_ptr::script_node
- *
- * @brief Script nodes can be self-referential, so node_ptr works some special
- *      magic.
- */
-
 namespace {
     typedef std::map<openvrml::node *, size_t> count_map_t;
     count_map_t count_map;

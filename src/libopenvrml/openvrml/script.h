@@ -110,8 +110,6 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_cast, std::bad_alloc);
         };
 
-        friend class script_node_type;
-
         template <typename FieldValue>
         class script_event_listener : public field_value_listener<FieldValue> {
             const std::string id;

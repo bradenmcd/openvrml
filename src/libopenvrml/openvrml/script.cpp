@@ -159,12 +159,6 @@ const node_type_ptr script_node_class::create_type(const std::string &,
  */
 
 /**
- * @var script_node::script
- *
- * @brief Abstract base class for script runtimes.
- */
-
-/**
  * @typedef script_node::field_value_map_t
  *
  * @brief A std::map that keys field values on their field name.
@@ -450,12 +444,6 @@ create_node(const scope_ptr & scope,
     }
     return node;
 }
-
-/**
- * @var script_node::script_node_type script_node::script_node_type
- *
- * @brief Type information object.
- */
 
 /**
  * @class script_node::script_event_listener
