@@ -25,6 +25,10 @@
         * src/openvrml/OpenVRML/Doc.cpp, src/openvrml/OpenVRML/doc2.hpp:
           std:: correctness fixes.
 
+        * VrmlScene.cpp: Removed OPENVRML_SCOPE from ProtoNode,
+          ProtoNodeClass; these classes are no longer part of the public
+          API.
+
 2002-06-04  Braden McDaniel  <braden@endoframe.com>
 
         * Made zlib an optional dependency.

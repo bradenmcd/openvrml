@@ -66,7 +66,7 @@ namespace OpenVRML {
         class Viewpoint;
     }
 
-    class OPENVRML_SCOPE ProtoNode : public Node {
+    class ProtoNode : public Node {
         friend class ProtoNodeClass;
         friend class Vrml97Parser;
         
@@ -214,7 +214,7 @@ namespace OpenVRML {
     };
     
     
-    class OPENVRML_SCOPE ProtoNodeClass : public NodeClass {
+    class ProtoNodeClass : public NodeClass {
         
         friend class Vrml97Parser;
         
