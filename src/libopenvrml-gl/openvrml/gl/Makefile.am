@@ -19,7 +19,7 @@ AM_CXXFLAGS = @GL_CFLAGS@
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES = libopenvrml-gl.la
 openvrml_gl_includedir = $(pkgincludedir)/openvrml/gl
-openvrml_gl_include_HEADERS = common.h viewer.h
+openvrml_gl_include_HEADERS = viewer.h
 
 libopenvrml_gl_la_SOURCES = viewer.cpp
 libopenvrml_gl_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @GL_LIBS@

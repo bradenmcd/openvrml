@@ -1,5 +1,10 @@
 2003-09-01  Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml/gl/Makefile.am:  Removed reference
+	to obsolete file common.h.
+
+2003-09-01  Braden McDaniel  <braden@endoframe.com>
+
 	Added doc target to generate Doxygen documentation.
 
 	* Makefile.am:  Added doc target.
