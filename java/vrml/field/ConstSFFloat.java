@@ -22,11 +22,34 @@ package vrml.field;
 
 import vrml.ConstField;
 
+/**
+ * Represents a read-only VRML SFFloat field in Java.
+ */
 public class ConstSFFloat extends ConstField
 {
+  /**
+   * Construct a new SFFloat in OpenVRML using the given value.
+   *
+   * @param value Value of SFFloat.
+   */
   private native void CreateObject(float value);
 
-  public ConstSFFloat(float value) { CreateObject(value); }
+  /**
+   * Construct a read-only SFFloat field.
+   *
+   * @param value Value of SFFloat.
+   */
+  public ConstSFFloat(float value)
+  {
+    CreateObject(value);
+  }
+
+  /**
+   * Get the value of an SFFloat field.
+   * 
+   * @return Value of SFFloat.
+   */
   public native float getValue();
+
   public native String toString();
 }

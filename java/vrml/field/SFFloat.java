@@ -22,16 +22,62 @@ package vrml.field;
 
 import vrml.Field;
 
+/**
+ * Represents a VRML SFFloat field in Java.
+ */
 public class SFFloat extends Field
 {
+  /**
+   * Construct a new SFFloat field in OpenVRML using the given value.
+   *
+   * @param value Initial value of field.
+   */
   private native void CreateObject(float value);
 
-  public SFFloat() { CreateObject(0f); }
-  public SFFloat(float f) { CreateObject(f); }
+  /**
+   * Default constructor for SFFloat fields.
+   */
+  public SFFloat()
+  {
+    CreateObject(0.0f);
+  }
+
+  /**
+   * Construct an SFFloat field.
+   *
+   * @param f Float value of field.
+   */
+  public SFFloat(float f)
+  {
+    CreateObject(f);
+  }
+
+  /**
+   * Get the value of the SFFloat field.
+   *
+   * @return Value of SFFloat.
+   */
   public native float getValue();
 
+  /**
+   * Set the value of the SFFloat field.
+   *
+   * @param f Desired value for SFFloat.
+   */
   public native void setValue(float f);
+
+  /**
+   * Set the value of the SFFloat field.
+   *
+   * @param f Desired value for SFFloat.
+   */
   public native void setValue(ConstSFFloat f);
+
+  /**
+   * Set the value of the SFFloat field.
+   *
+   * @param f Desired value for SFFloat.
+   */
   public native void setValue(SFFloat f);
 
   public native String toString();

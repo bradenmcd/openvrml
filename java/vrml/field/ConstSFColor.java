@@ -23,7 +23,7 @@ package vrml.field;
 import vrml.ConstField;
 
 /**
- * Read-only SFColor field.
+ * Represents a read-only VRML SFColor field in Java.
  */
 public class ConstSFColor extends ConstField
 {
