@@ -350,10 +350,6 @@ ScriptNode::ScriptNode(ScriptNodeClass & nodeClass, const ScopePtr & scope):
  */
 ScriptNode::~ScriptNode() throw ()
 {
-    this->shutdown(Browser::getCurrentTime());
-    if (this->getScene()) {
-        this->getScene()->browser.removeScript(*this);
-    }
     delete script;
 }
 
@@ -696,6 +692,7 @@ const FieldValue & ScriptNode::do_getEventOut(const std::string & id) const
 void ScriptNode::do_shutdown(const double timestamp) throw ()
 {
     if (this->script) { this->script->shutdown(timestamp); }
+    this->getScene()->browser.removeScript(*this);
 }
 
 } // namespace OpenVRML
