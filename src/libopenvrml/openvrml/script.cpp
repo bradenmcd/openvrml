@@ -501,17 +501,17 @@ void script_node::update(const double current_time)
         if (this->script_) {
             this->script_->events_processed(current_time);
         }
+    }
 
-        //
-        // For each modified eventOut, send an event.
-        //
-        for (eventout_value_map_t::iterator itr
-                 = this->eventout_value_map_.begin();
-             itr != this->eventout_value_map_.end(); ++itr) {
-            if (itr->second.modified) {
-                this->emit_event(itr->first, *itr->second.value, current_time);
-                itr->second.modified = false;
-            }
+    //
+    // For each modified eventOut, send an event.
+    //
+    for (eventout_value_map_t::iterator itr
+             = this->eventout_value_map_.begin();
+         itr != this->eventout_value_map_.end(); ++itr) {
+        if (itr->second.modified) {
+            this->emit_event(itr->first, *itr->second.value, current_time);
+            itr->second.modified = false;
         }
     }
 }

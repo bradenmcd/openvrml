@@ -1,3 +1,10 @@
+2003-09-09  Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/script.cpp (script_node::update):
+	Moved check for modified eventOuts outside of conditional
+	testing whether an event had been received; per patch from
+	Steffen Mader <s_mader@users.sourceforge.net>.
+
 2003-09-08  Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp:  Fixed recursive
