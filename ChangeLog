@@ -1,3 +1,15 @@
+2002-10-12  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/browser.h,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h: Refactored bound
+          Background node stack to BackgroundClass; added render and
+          initialize methods to NodeClass.
+          
+
 2002-10-10  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * java/vrml/field/ConstMFColor.java

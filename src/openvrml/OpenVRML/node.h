@@ -103,17 +103,19 @@ namespace OpenVRML {
     
     
     class Browser;
+    class Viewer;
     
     class OPENVRML_SCOPE NodeClass {
     public:
         Browser & browser;
-        
+
         virtual ~NodeClass() throw () = 0;
-        
+        virtual void initialize(double time) throw ();
+        virtual void render(Viewer & viewer) throw ();
         virtual const NodeTypePtr
-                createType(const std::string & id,
-                           const NodeInterfaceSet & interfaces)
-                throw (UnsupportedInterface, std::bad_alloc) = 0;
+            createType(const std::string & id,
+                       const NodeInterfaceSet & interfaces)
+            throw (UnsupportedInterface, std::bad_alloc) = 0;
     
     protected:
         explicit NodeClass(Browser & browser) throw ();
@@ -143,7 +145,6 @@ namespace OpenVRML {
 
 
     class Scope;
-    class Viewer;
     class NodeType;
     class FieldValue;
     class VrmlMatrix;
@@ -166,7 +167,6 @@ namespace OpenVRML {
     namespace Vrml97Node {
         class Anchor;
         class AudioClip;
-        class Background;
         class CylinderSensor;
         class Fog;
         class Group;
@@ -281,7 +281,6 @@ namespace OpenVRML {
         
         virtual Vrml97Node::Anchor * toAnchor() const;
         virtual Vrml97Node::AudioClip * toAudioClip() const;
-        virtual Vrml97Node::Background * toBackground() const;
         virtual Vrml97Node::CylinderSensor * toCylinderSensor() const;
         virtual Vrml97Node::Fog * toFog() const;
         virtual Vrml97Node::Group * toGroup() const;

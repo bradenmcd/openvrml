@@ -233,6 +233,28 @@ NodeClass::NodeClass(Browser & browser) throw (): browser(browser) {}
 NodeClass::~NodeClass() throw () {}
 
 /**
+ * @brief NodeClass-specific initialization.
+ *
+ * This method is called during initialization of a Browser object with a new
+ * root Scene. It is called after the individual node instances have been
+ * initialized, and before the world starts running.
+ *
+ * @param viewer    the Viewer to render to.
+ */
+void NodeClass::initialize(const double timestamp) throw ()
+{}
+
+/**
+ * @brief NodeClass-specific rendering.
+ *
+ * The default implementation of this method does nothing.
+ *
+ * @param viewer    the Viewer to render to.
+ */
+void NodeClass::render(Viewer & viewer) throw ()
+{}
+
+/**
  * @fn const NodeTypePtr NodeClass::createType(const std::string & id, const NodeInterfaceSet & interfaces) throw (std::invalid_argument, std::bad_alloc)
  *
  * @brief Create a new NodeType.
@@ -1107,8 +1129,6 @@ TextureTransformNode * Node::toTextureTransform() throw () { return 0; }
 Vrml97Node::Anchor * Node::toAnchor() const { return 0; }
 
 Vrml97Node::AudioClip * Node::toAudioClip() const { return 0; }
-
-Vrml97Node::Background * Node::toBackground() const { return 0; }
 
 Vrml97Node::Fog * Node::toFog() const { return 0; }
 

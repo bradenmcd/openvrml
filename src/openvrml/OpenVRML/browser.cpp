@@ -211,7 +211,6 @@ namespace OpenVRML {
 
         virtual Vrml97Node::Anchor * toAnchor() const;
         virtual Vrml97Node::AudioClip * toAudioClip() const;
-        virtual Vrml97Node::Background * toBackground() const;
         virtual Vrml97Node::CylinderSensor * toCylinderSensor() const;
         virtual Vrml97Node::Fog * toFog() const;
         virtual Vrml97Node::Group * toGroup() const;
@@ -702,6 +701,25 @@ const std::string Browser::getWorldURI() const throw (std::bad_alloc) {
  */
 void Browser::replaceWorld(const MFNode & nodes) {}
 
+namespace {
+    typedef std::map<std::string, NodeClassPtr> NodeClassMap;
+    
+    struct InitNodeClass : std::unary_function<void, NodeClassMap::value_type> {
+        explicit InitNodeClass(const double time):
+            time(time)
+        {}
+        
+        void operator()(const NodeClassMap::value_type & value) const
+        {
+            assert(value.second);
+            value.second->initialize(this->time);
+        }
+
+    private:
+        double time;
+    };
+}
+
 /**
  * @brief Load a resource into the browser.
  *
@@ -724,11 +742,9 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     //
     delete this->scene;
     this->scene = 0;
-    this->d_backgroundStack.clear();
     this->d_fogStack.clear();
     this->d_navigationInfoStack.clear();
     this->d_viewpointStack.clear();
-    assert(this->d_backgrounds.empty());
     assert(this->d_fogs.empty());
     assert(this->d_navigationInfos.empty());
     assert(this->d_viewpoints.empty());
@@ -741,18 +757,14 @@ void Browser::loadURI(const MFString & uri, const MFString & parameter)
     this->scene = new Scene(*this, uri);
     
     const double timeNow = theSystem->time();
-    
+
     this->scene->initialize(timeNow);
+    std::for_each(this->nodeClassMap.begin(), this->nodeClassMap.end(),
+                  InitNodeClass(timeNow));
 
     //
     // Send initial bind events to bindable nodes.
     //
-    if (!this->d_backgrounds.empty()) {
-        assert(this->d_backgrounds.front());
-        this->d_backgrounds.front()
-                ->processEvent("set_bind", SFBool(true), timeNow);
-    }
-
     if (!this->d_fogs.empty()) {
         assert(this->d_fogs.front());
         this->d_fogs.front()->processEvent("set_bind", SFBool(true), timeNow);
@@ -1121,6 +1133,24 @@ bool Browser::headlightOn() {
     return true;
 }
 
+namespace {
+    
+    struct RenderNodeClass :
+            std::unary_function<void, NodeClassMap::value_type> {
+        explicit RenderNodeClass(Viewer & viewer):
+            viewer(&viewer)
+        {}
+
+        void operator()(const NodeClassMap::value_type & value) const
+        {
+            value.second->render(*this->viewer);
+        }
+
+    private:
+        Viewer * viewer;
+    };
+}
+
 /**
  * @brief Draw this browser into the specified viewer
  */
@@ -1164,16 +1194,9 @@ void Browser::render(Viewer & viewer) {
     // sets the viewpoint transformation
     //
     viewer.setViewpoint(position, orientation, field, avatarSize, visibilityLimit);
-
-    // Set background.
-
-    Vrml97Node::Background * bg = bindableBackgroundTop();
-    if (bg) {
-        // Should be transformed by the accumulated rotations above ...
-        bg->renderBindable(&viewer);
-    } else {
-        viewer.insertBackground(); // Default background
-    }
+    
+    std::for_each(this->nodeClassMap.begin(), this->nodeClassMap.end(),
+                  RenderNodeClass(viewer));
 
     // Fog
     Vrml97Node::Fog * f = bindableFogTop();
@@ -1305,64 +1328,6 @@ void Browser::bindableRemove(BindStack & stack, const NodePtr & node) {
         stack.erase(pos);
         this->setModified();
     }
-}
-
-/**
- * @brief Add a Background node to the list of Background nodes for the browser.
- *
- * @param node  a Background node.
- *
- * @pre @p node is not in the list of Background nodes for the browser.
- */
-void Browser::addBackground(Vrml97Node::Background & node) {
-    assert(std::find(this->d_backgrounds.begin(), this->d_backgrounds.end(),
-                     &node) == this->d_backgrounds.end());
-    this->d_backgrounds.push_back(&node);
-}
-
-/**
- * @brief Remove a Background node from the list of Background nodes for the
- *      browser.
- *
- * @param node  a Background node.
- *
- * @pre @p node is in the list of Background nodes for the browser.
- */
-void Browser::removeBackground(Vrml97Node::Background & node) {
-    assert(!this->d_backgrounds.empty());
-    const std::list<Node *>::iterator end = this->d_backgrounds.end();
-    const std::list<Node *>::iterator pos =
-            std::find(this->d_backgrounds.begin(), end, &node);
-    assert(pos != end);
-    this->d_backgrounds.erase(pos);
-}
-
-/**
- * @brief Get the active node on the bound Background stack.
- *
- * @return the active node on the bound Background stack.
- */
-Vrml97Node::Background * Browser::bindableBackgroundTop() {
-    Node * const b = bindableTop(d_backgroundStack).get();
-    return b ? b->toBackground() : 0;
-}
-
-/**
- * @brief Push a Background node onto the bound Background node stack.
- *
- * @param n a Background node.
- */
-void Browser::bindablePush(Vrml97Node::Background * n) {
-    bindablePush(d_backgroundStack, NodePtr(n));
-}
-
-/**
- * @brief Remove a Background node from the bound Background node stack.
- *
- * @param n a Background node.
- */
-void Browser::bindableRemove(Vrml97Node::Background * n) {
-    bindableRemove(d_backgroundStack, NodePtr(n));
 }
 
 /**
@@ -3324,10 +3289,6 @@ Vrml97Node::Anchor * ProtoNode::toAnchor() const {
 
 Vrml97Node::AudioClip * ProtoNode::toAudioClip() const {
     return this->implNodes.getElement(0)->toAudioClip();
-}
-
-Vrml97Node::Background * ProtoNode::toBackground() const {
-    return this->implNodes.getElement(0)->toBackground();
 }
 
 Vrml97Node::CylinderSensor * ProtoNode::toCylinderSensor() const {

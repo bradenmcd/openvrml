@@ -424,14 +424,27 @@ namespace OpenVRML {
         };
 
 
+        class Background;
+
         class OPENVRML_SCOPE BackgroundClass : public NodeClass {
+            Background * first;
+            std::vector<NodePtr> boundNodes;
+
         public:
             explicit BackgroundClass(Browser & browser);
             virtual ~BackgroundClass() throw ();
 
+            void setFirst(Background & background) throw ();
+            bool hasFirst() const throw ();
+            void bind(Background & background, double timestamp)
+                throw (std::bad_alloc);
+            void unbind(Background & background, double timestamp) throw ();
+
+            virtual void initialize(double timestamp) throw ();
+            virtual void render(Viewer & viewer) throw ();
             virtual const NodeTypePtr createType(const std::string & id,
                                                  const NodeInterfaceSet &)
-                    throw (UnsupportedInterface, std::bad_alloc);
+                throw (UnsupportedInterface, std::bad_alloc);
         };
 
         class OPENVRML_SCOPE Background : public AbstractChild {
@@ -463,11 +476,6 @@ namespace OpenVRML {
                        const ScopePtr & scope);
             virtual ~Background() throw ();
             
-            virtual Background * toBackground() const;
-
-            // render backgrounds once per scene, not via the render() method
-            void renderBindable(Viewer *);
-        
         private:
             virtual void initializeImpl(double timestamp) throw ();
             

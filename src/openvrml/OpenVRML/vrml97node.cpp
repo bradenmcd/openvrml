@@ -1746,7 +1746,8 @@ void AudioClip::processSet_url(const FieldValue & mfstring,
  * @param browser the Browser associated with this class object.
  */
 BackgroundClass::BackgroundClass(Browser & browser):
-    NodeClass(browser)
+    NodeClass(browser),
+    first(0)
 {}
 
 /**
@@ -1754,6 +1755,257 @@ BackgroundClass::BackgroundClass(Browser & browser):
  */
 BackgroundClass::~BackgroundClass() throw ()
 {}
+
+/**
+ * @brief Set the first Background node in the world.
+ *
+ * The first Background node in the world is used as the initial background.
+ * This method is used by Background::initializeImpl.
+ *
+ * @param background    a Background node.
+ */
+void BackgroundClass::setFirst(Background & background) throw ()
+{
+    this->first = &background;
+}
+
+/**
+ * @brief Check to see if the first node has been set.
+ *
+ * This method is used by Background::initializeImpl.
+ *
+ * @return @c true if the first node has already been set; @c false otherwise.
+ */
+bool BackgroundClass::hasFirst() const throw ()
+{
+    return this->first;
+}
+
+/**
+ * @brief Push a Background on the top of the bound node stack.
+ *
+ * @param background    the node to bind.
+ */
+void BackgroundClass::bind(Background & background, const double timestamp)
+    throw (std::bad_alloc)
+{
+    const NodePtr node(&background);
+    
+    //
+    // If the node is already the active node, do nothing.
+    //
+    if (!this->boundNodes.empty() && node == this->boundNodes.back()) {
+        return;
+    }
+    
+    //
+    // If the node is already on the stack, remove it.
+    //
+    const std::vector<NodePtr>::iterator pos =
+            std::find(this->boundNodes.begin(), this->boundNodes.end(), node);
+    if (pos != this->boundNodes.end()) { this->boundNodes.erase(pos); }
+    
+    //
+    // Send FALSE from the currently active node's isBound.
+    //
+    if (!this->boundNodes.empty()) {
+        Background & current =
+                dynamic_cast<Background &>(*this->boundNodes.back());
+        current.bound.set(false);
+        current.emitEvent("isBound", current.bound, timestamp);
+    }
+    
+    //
+    // Push the node to the top of the stack, and have it send isBound TRUE.
+    //
+    this->boundNodes.push_back(node);
+    background.bound.set(true);
+    background.emitEvent("isBound", background.bound, timestamp);
+}
+
+/**
+ * @brief Remove a Background from the bound node stack.
+ *
+ * @param background    the node to unbind.
+ */
+void BackgroundClass::unbind(Background & background, const double timestamp)
+    throw ()
+{
+    const NodePtr node(&background);
+    
+    const std::vector<NodePtr>::iterator pos =
+            std::find(this->boundNodes.begin(), this->boundNodes.end(), node);
+    if (pos != this->boundNodes.end()) {
+        background.bound.set(false);
+        background.emitEvent("isBound", background.bound, timestamp);
+
+        if (pos == this->boundNodes.end() - 1
+                && this->boundNodes.size() > 1) {
+            Background & newActive =
+                    dynamic_cast<Background &>(**(this->boundNodes.end() - 2));
+            newActive.bound.set(true);
+            newActive.emitEvent("isBound", newActive.bound, timestamp);
+        }
+        this->boundNodes.erase(pos);
+    }
+}
+
+/**
+ * @brief NodeClass-specific initialization.
+ *
+ * @param timestamp the current time.
+ */
+void BackgroundClass::initialize(const double timestamp) throw ()
+{
+    if (this->first) {
+        this->first->processEvent("set_bind", SFBool(true), timestamp);
+    }
+}
+
+namespace {
+    /**
+     * @brief Load and scale textures as needed.
+     */
+    Image * getTexture(const MFString & urls, Doc2 & baseDoc,
+                       Image * tex, int thisIndex, Viewer & viewer)
+    {
+        // Check whether the url has already been loaded
+        int n = urls.getLength();
+        if (n > 0) {
+            for (int index=thisIndex-1; index >= 0; --index) {
+                const char * currentTex = tex[index].url();
+                const std::string relPath = baseDoc.urlPath();
+                int currentLen = currentTex ? strlen(currentTex) : 0;
+                int relPathLen = relPath.length();
+                if (relPathLen >= currentLen) { relPathLen = 0; }
+
+                if (currentTex) {
+                    for (int i=0; i<n; ++i) {
+                        if (urls.getElement(i) == currentTex
+                                || urls.getElement(i)
+                                    == (currentTex + relPathLen)) {
+                            return &tex[index];
+                        }
+                    }
+                }
+            }
+
+            // Have to load it
+            if (!tex[thisIndex].tryURLs(urls, &baseDoc)) {
+                std::cerr << "Error: couldn't read Background texture from URL "
+                          << urls << std::endl;
+            } else if ( tex[thisIndex].pixels() && tex[thisIndex].nc() ) {
+                //
+                // The texture needs to be scaled.
+                //
+
+                // Ensure the image dimensions are powers of two
+                int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
+                const int nSizes = sizeof(sizes) / sizeof(int);
+                int w = tex[thisIndex].w();
+                int h = tex[thisIndex].h();
+                int i, j;
+                for (i=0; i<nSizes; ++i) {
+                    if (w < sizes[i]) { break; }
+                }
+                for (j=0; j<nSizes; ++j) {
+                    if (h < sizes[j]) { break; }
+                }
+
+                if (i > 0 && j > 0) {
+                    // Always scale images down in size and reuse the same pixel
+                    // memory. This can cause some ugliness...
+                    if (w != sizes[i-1] || h != sizes[j-1]) {
+                        viewer.scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
+                                            tex[thisIndex].nc(),
+                                            tex[thisIndex].pixels());
+                        tex[thisIndex].setSize(sizes[i - 1], sizes[j - 1]);
+                    }
+                }
+            }
+        }
+
+        return &tex[thisIndex];
+    }
+}
+
+/**
+ * @brief NodeClass-specific rendering.
+ *
+ * Render the active Background node.
+ *
+ * @param viewer    a Viewer.
+ */
+void BackgroundClass::render(Viewer & viewer) throw ()
+{
+    if (!this->boundNodes.empty()) {
+        Background & background =
+                dynamic_cast<Background &>(*this->boundNodes.back());
+
+        // Background isn't selectable, so don't waste the time.
+        if (viewer.getRenderMode() == Viewer::RENDER_MODE_PICK) { return; }
+
+        if (background.viewerObject && background.isModified()) {
+            viewer.removeObject(background.viewerObject);
+            background.viewerObject = 0;
+        }
+
+        if (background.viewerObject) {
+            viewer.insertReference(background.viewerObject);
+        } else {
+            if (background.isModified() || background.texPtr[0] == 0) {
+                Doc2 baseDoc(background.getScene()->getURI());
+                background.texPtr[0] =
+                        getTexture(background.backUrl, baseDoc, background.tex, 0, viewer);
+                background.texPtr[1] =
+                        getTexture(background.bottomUrl, baseDoc, background.tex, 1, viewer);
+                background.texPtr[2] =
+                        getTexture(background.frontUrl, baseDoc, background.tex, 2, viewer);
+                background.texPtr[3] =
+                        getTexture(background.leftUrl, baseDoc, background.tex, 3, viewer);
+                background.texPtr[4] =
+                        getTexture(background.rightUrl, baseDoc, background.tex, 4, viewer);
+                background.texPtr[5] =
+                        getTexture(background.topUrl, baseDoc, background.tex, 5, viewer);
+            }
+
+            int i, whc[18];    // Width, height, and nComponents for 6 tex
+            unsigned char *pixels[6];
+            int nPix = 0;
+
+            for (i = 0; i < 6; ++i) {
+                whc[3 * i + 0] = background.texPtr[i]->w();
+                whc[3 * i + 1] = background.texPtr[i]->h();
+                whc[3 * i + 2] = background.texPtr[i]->nc();
+                pixels[i] = background.texPtr[i]->pixels();
+                if (whc[3 * i + 0] > 0 && whc[3 * i + 1] > 0 && whc[3 * i + 2] > 0
+                        && pixels[i]) { ++nPix; }
+            }
+
+            background.viewerObject =
+                    viewer.insertBackground(background.groundAngle.getLength(),
+                                            (background.groundAngle.getLength() > 0)
+                                               ? &background.groundAngle.getElement(0)
+                                               : 0,
+                                            (background.groundColor.getLength() > 0)
+                                               ? background.groundColor.getElement(0)
+                                               : 0,
+                                            background.skyAngle.getLength(),
+                                            (background.skyAngle.getLength() > 0)
+                                               ? &background.skyAngle.getElement(0)
+                                               : 0,
+                                            (background.skyColor.getLength() > 0)
+                                               ? background.skyColor.getElement(0)
+                                               : 0,
+                                            whc,
+                                            (nPix > 0) ? pixels : 0);
+
+            background.clearModified();
+        }
+    } else {
+        viewer.insertBackground(); // Default background
+    }
+}
 
 /**
  * @brief Create a NodeType.
@@ -1906,151 +2158,7 @@ Background::Background(const NodeType & nodeType,
  */
 Background::~Background() throw ()
 {
-    if (this->getScene()) { this->getScene()->browser.removeBackground(*this); }
     // remove d_viewerObject...
-}
-
-/**
- * @brief Cast to a Background node.
- */
-Background * Background::toBackground() const
-{
-    return (Background*) this;
-}
-
-namespace {
-    /**
-     * @brief Load and scale textures as needed.
-     */
-    Image * getTexture(const MFString & urls, Doc2 & baseDoc,
-                       Image * tex, int thisIndex, Viewer *viewer)
-    {
-        // Check whether the url has already been loaded
-        int n = urls.getLength();
-        if (n > 0) {
-            for (int index=thisIndex-1; index >= 0; --index) {
-                const char * currentTex = tex[index].url();
-                const std::string relPath = baseDoc.urlPath();
-                int currentLen = currentTex ? strlen(currentTex) : 0;
-                int relPathLen = relPath.length();
-                if (relPathLen >= currentLen) { relPathLen = 0; }
-
-                if (currentTex) {
-                    for (int i=0; i<n; ++i) {
-                        if (urls.getElement(i) == currentTex
-                                || urls.getElement(i)
-                                    == (currentTex + relPathLen)) {
-                            return &tex[index];
-                        }
-                    }
-                }
-            }
-
-            // Have to load it
-            if (!tex[thisIndex].tryURLs(urls, &baseDoc)) {
-                std::cerr << "Error: couldn't read Background texture from URL "
-                          << urls << std::endl;
-            } else if ( tex[thisIndex].pixels() && tex[thisIndex].nc() ) {
-                //
-                // The texture needs to be scaled.
-                //
-
-                // Ensure the image dimensions are powers of two
-                int sizes[] = { 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
-                const int nSizes = sizeof(sizes) / sizeof(int);
-                int w = tex[thisIndex].w();
-                int h = tex[thisIndex].h();
-                int i, j;
-                for (i=0; i<nSizes; ++i) {
-                    if (w < sizes[i]) { break; }
-                }
-                for (j=0; j<nSizes; ++j) {
-                    if (h < sizes[j]) { break; }
-                }
-
-                if (i > 0 && j > 0) {
-                    // Always scale images down in size and reuse the same pixel
-                    // memory. This can cause some ugliness...
-                    if (w != sizes[i-1] || h != sizes[j-1]) {
-                        viewer->scaleTexture(w, h, sizes[i - 1], sizes[j - 1],
-                                             tex[thisIndex].nc(),
-                                             tex[thisIndex].pixels());
-                        tex[thisIndex].setSize(sizes[i - 1], sizes[j - 1]);
-                    }
-                }
-            }
-        }
-
-        return &tex[thisIndex];
-    }
-}
-
-/**
- * Backgrounds are rendered once per scene at the beginning, not
- * when they are traversed by the standard render() method.
- */
-void Background::renderBindable(Viewer * const viewer)
-{
-    // Background isn't selectable, so don't waste the time.
-    if (viewer->getRenderMode() == Viewer::RENDER_MODE_PICK) { return; }
-
-    if (this->viewerObject && isModified()) {
-        viewer->removeObject(this->viewerObject);
-        this->viewerObject = 0;
-    }
-
-    if (this->viewerObject) {
-        viewer->insertReference(this->viewerObject);
-    } else {
-        if (this->isModified() || this->texPtr[0] == 0) {
-            Doc2 baseDoc(this->getScene()->getURI());
-            this->texPtr[0] =
-                    getTexture(this->backUrl, baseDoc, this->tex, 0, viewer);
-            this->texPtr[1] =
-                    getTexture(this->bottomUrl, baseDoc, this->tex, 1, viewer);
-            this->texPtr[2] =
-                    getTexture(this->frontUrl, baseDoc, this->tex, 2, viewer);
-            this->texPtr[3] =
-                    getTexture(this->leftUrl, baseDoc, this->tex, 3, viewer);
-            this->texPtr[4] =
-                    getTexture(this->rightUrl, baseDoc, this->tex, 4, viewer);
-            this->texPtr[5] =
-                    getTexture(this->topUrl, baseDoc, this->tex, 5, viewer);
-        }
-
-        int i, whc[18];    // Width, height, and nComponents for 6 tex
-        unsigned char *pixels[6];
-        int nPix = 0;
-
-        for (i = 0; i < 6; ++i) {
-            whc[3 * i + 0] = this->texPtr[i]->w();
-            whc[3 * i + 1] = this->texPtr[i]->h();
-            whc[3 * i + 2] = this->texPtr[i]->nc();
-            pixels[i] = this->texPtr[i]->pixels();
-            if (whc[3 * i + 0] > 0 && whc[3 * i + 1] > 0 && whc[3 * i + 2] > 0
-                    && pixels[i]) { ++nPix; }
-        }
-
-        this->viewerObject =
-                viewer->insertBackground(this->groundAngle.getLength(),
-                                         (this->groundAngle.getLength() > 0)
-                                            ? &this->groundAngle.getElement(0)
-                                            : 0,
-                                         (this->groundColor.getLength() > 0)
-                                            ? this->groundColor.getElement(0)
-                                            : 0,
-                                         this->skyAngle.getLength(),
-                                         (this->skyAngle.getLength() > 0)
-                                            ? &this->skyAngle.getElement(0)
-                                            : 0,
-                                         (this->skyColor.getLength() > 0)
-                                            ? this->skyColor.getElement(0)
-                                            : 0,
-                                         whc,
-                                         (nPix > 0) ? pixels : 0);
-
-        clearModified();
-    }
 }
 
 /**
@@ -2060,8 +2168,9 @@ void Background::renderBindable(Viewer * const viewer)
  */
 void Background::initializeImpl(const double timestamp) throw ()
 {
-    assert(this->getScene());
-    this->getScene()->browser.addBackground(*this);
+    BackgroundClass & nodeClass =
+            static_cast<BackgroundClass &>(this->nodeType.nodeClass);
+    if (!nodeClass.hasFirst()) { nodeClass.setFirst(*this); }
 }
 
 /**
@@ -2077,32 +2186,13 @@ void Background::processSet_bind(const FieldValue & sfbool,
                                  const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    Background * current =
-            this->nodeType.nodeClass.browser.bindableBackgroundTop();
-    const SFBool & b = dynamic_cast<const SFBool &>(sfbool);
-
-    if (b.get()) {        // set_bind TRUE
-        if (this != current) {
-            if (current) {
-                current->bound.set(false);
-                current->emitEvent("isBound", current->bound, timestamp);
-            }
-            this->nodeType.nodeClass.browser.bindablePush(this);
-            this->bound.set(true);
-            this->emitEvent("isBound", this->bound, timestamp);
-        }
-    } else {            // set_bind FALSE
-        this->nodeType.nodeClass.browser.bindableRemove(this);
-        if (this == current) {
-            this->bound.set(false);
-            this->emitEvent("isBound", this->bound, timestamp);
-            current = this->nodeType.nodeClass.browser
-                        .bindableBackgroundTop();
-            if (current) {
-                this->bound.set(true);
-                current->emitEvent("isBound", this->bound, timestamp);
-            }
-        }
+    const SFBool & value = dynamic_cast<const SFBool &>(sfbool);
+    BackgroundClass & nodeClass =
+            static_cast<BackgroundClass &>(this->nodeType.nodeClass);
+    if (value.get()) {
+        nodeClass.bind(*this, timestamp);
+    } else {
+        nodeClass.unbind(*this, timestamp);
     }
 }
 
