@@ -1,5 +1,12 @@
 2003-11-03  Braden McDaniel  <braden@endoframe.com>
 
+	* openvrml.spec.in:  Removed lookat-bin from lookat package.
+	Added mozilla requirement for lookat.  lookat is now built with
+	-rpath for the Mozilla library directory; so the binary package
+	requires the same Mozilla version it was built against.
+
+2003-11-03  Braden McDaniel  <braden@endoframe.com>
+
 	Build executables with -rpath instead of setting
 	LD_LIBRARY_PATH.
 

@@ -62,6 +62,7 @@ using the OpenVRML OpenGL renderer.
 Summary:        VRML viewer
 Group:          Applications/Multimedia
 Requires:       %{name}-gl = %{version}
+Requires:       mozilla = %(rpm -q mozilla --qf='%%{version}')
 %description -n lookat
 GLUT-based VRML viewer.
 
@@ -108,11 +109,16 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 %files -n lookat
 %doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
 %{prefix}/bin/lookat
-%{prefix}/bin/lookat-bin
 %{prefix}/share/pixmaps/lookat.xpm
 
 
 %changelog
+* Mon Nov 03 2003  Braden McDaniel  <braden@endoframe.com>
+- Removed lookat-bin from lookat package.
+- Added mozilla requirement for lookat.  lookat is now built with -rpath for
+  the Mozilla library directory; so the binary package requires the same
+  Mozilla version it was built against.
+
 * Mon Oct 27 2003  Braden McDaniel  <braden@endoframe.com>
 - Added lookat-bin to lookat package.
 
