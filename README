@@ -1,19 +1,19 @@
 OpenVRML library version 0.13.99 (pre-release)
-Copyright (C) 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
-Copyright (C) 2000, 2001, 2002 Braden McDaniel <braden@endoframe.com>
+Copyright 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
+Copyright 2000, 2001, 2002, 2003 Braden McDaniel <braden@endoframe.com>
 Portions Copyright SGI and others
 
 Available from <http://openvrml.org>
 
-See the `NEWS' file for a list of changes in this release.
+See the "NEWS" file for a list of changes in this release.
 
 
 About
 =====
 
-   OpenVRML is a portable C++ class library for reading and displaying
-VRML97 files.  This distribution includes LookAt, a sample viewer
-program that uses GLUT.
+   OpenVRML is a portable C++ library for reading and displaying VRML97
+files.  This distribution includes lookat, a sample viewer program that
+uses GLUT.
 
 
 License terms
@@ -24,14 +24,14 @@ the terms of the Lesser General Public License (LGPL), version 2.1.
 Other code in OpenVRML is used under "LGPL-compatible" licenses, which
 effectively means that OpenVRML is Free Software which may be used as
 a whole according to the terms of the LGPL.  The full text of the LGPL
-can be found in the file `COPYING.LIB'.  Code used (and available for
+can be found in the file "COPYING.LIB".  Code used (and available for
 reuse) under other terms is as follows:
 
  * OpenVRML uses the ANTLR parser generator and C++ support library
    which are in the public domain.
 
  * OpenVRML includes GIF reading code by David Koblas:
- 
+
      Copyright 1990, David Koblas.
      Permission to use, copy, modify, and distribute this software
      and its documentation for any purpose and without fee is hereby
@@ -41,7 +41,7 @@ reuse) under other terms is as follows:
      provided "as is" without express or implied warranty.
 
  * OpenVRML's OpenGL renderer includes code from Silicon Graphics, Inc.:
- 
+
      (c) Copyright 1993, 1994, Silicon Graphics, Inc.
      ALL RIGHTS RESERVED
      Permission to use, copy, modify, and distribute this software for
@@ -51,7 +51,7 @@ reuse) under other terms is as follows:
      documentation, and that the name of Silicon Graphics, Inc. not be
      used in advertising or publicity pertaining to distribution of the
      software without specific, written prior permission.
-     
+
      THE MATERIAL EMBODIED ON THIS SOFTWARE IS PROVIDED TO YOU "AS-IS"
      AND WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR OTHERWISE,
      INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY OR
@@ -64,7 +64,7 @@ reuse) under other terms is as follows:
      ADVISED OF THE POSSIBILITY OF SUCH LOSS, HOWEVER CAUSED AND ON
      ANY THEORY OF LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE
      POSSESSION, USE OR PERFORMANCE OF THIS SOFTWARE.
-     
+
      US Government Users Restricted Rights
      Use, duplication, or disclosure by the Government is subject to
      restrictions set forth in FAR 52.227.19(c)(2) or subparagraph
@@ -74,7 +74,7 @@ reuse) under other terms is as follows:
      Unpublished-- rights reserved under the copyright laws of the
      United States.  Contractor/manufacturer is Silicon Graphics,
      Inc., 2011 N.  Shoreline Blvd., Mountain View, CA 94039-7311.
-     
+
      OpenGL(TM) is a trademark of Silicon Graphics, Inc.
 
 
@@ -153,29 +153,57 @@ depends on.
  --with-x
      Passing the argument "--without-x" to "configure" will allow
      OpenVRML to be built without depending on the X Windowing System.
-     This option is really only useful when building OpenVRML on Cygwin,
-     where there are OpenGL implementations available for both X and the
-     Windows GDI.
+     This option is really only useful when building OpenVRML on
+     platforms where X is available alongside another windowing system
+     (e.g., Cygwin or Mac OS X with X installed).
+
+ --with-apple-opengl-framework
+     Use Apple's OpenGL framework on Mac OS X.
 
  --with-jdk=JDKHOME
      By default the configure script uses the standard include and
      library paths when testing for the JDK.  Use this argument to
      tell the configure script to use a JDK in a specific directory.
 
-        As of the 1.4.1 release, the Sun distribution of the JDK is
-     rather badly broken for many recent GNU/Linux distributions.  The
-     native code libraries in the Sun distribution have been built with
-     an obsolete variant of the gcc compiler that is not binary-
-     compatible with the compilers used in these GNU/Linux
-     distributions.  If you build OpenVRML using the Sun JDK in this
-     situation, the resulting code tends to crash at the first
-     dynamic_cast that is encountered.
+
+Significant preprocessor symbols
+================================
+
+   Certain code in OpenVRML is compiled conditionally depending on what
+symbols have been defined for the preprocessor.  The "configure" script
+will add the appropriate compiler and preprocessor flags for you; in
+general you should use the options to "configure" documented in the
+previous section rather than define these symbols in CPPFLAGS.  These
+symbols are documented here primarily for the benefit of persons trying
+to compile OpenVRML without the GNU build tools.
+
+ OPENVRML_ENABLE_GZIP
+     Include support for gzipped VRML files.  Requires zlib.
+
+ OPENVRML_ENABLE_IMAGETEXTURE_NODE
+     Include support for images as textures using the ImageTexture node.
+     Requires libpng and libjpeg.
+
+ OPENVRML_ENABLE_TEXT_NODE
+     Include support for text using the Text node.  Requires fontconfig
+     and FreeType.
+
+ OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
+     Include support for JavaScript scripts in the Script node.
+     Requires Mozilla SpiderMonkey.
+
+ OPENVRML_ENABLE_SCRIPT_NODE_JAVA
+     Include support for Java scripts in the Script node.  Requires the
+     Sun Java Development Kit.
+
+ HAVE_APPLE_OPENGL_FRAMEWORK
+     Use Apple's OpenGL framework.  Mac OS X only.
 
 
 Installation
 ============
 
-   Refer to the file INSTALL for detailed installation instructions.
+   Refer to the file "INSTALL" for detailed installation instructions.
 
 
 Conformance

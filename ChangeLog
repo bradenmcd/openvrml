@@ -1,6 +1,10 @@
+2003-09-17  Braden McDaniel  <braden@endoframe.com>
+
+	* README:  Added section "Significant preprocessor symbols".
+
 2003-09-13  Braden McDaniel  <braden@endoframe.com>
 
-	* configure.ac: Apparently we really do need Automake 1.7.
+	* configure.ac:  Apparently we really do need Automake 1.7.
 
 2003-09-12  Braden McDaniel  <braden@endoframe.com>
 
