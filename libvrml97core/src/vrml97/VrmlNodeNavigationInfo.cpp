@@ -54,7 +54,8 @@ VrmlNodeNavigationInfo::VrmlNodeNavigationInfo(VrmlScene *scene) :
   VrmlNodeChild(scene),
   d_headlight( true ),
   d_speed( 1.0 ),
-  d_visibilityLimit( 0.0 )
+  d_visibilityLimit( 0.0 ),
+  d_isBound(false)
 {
   float avatarSize[] = { 0.25, 1.6, 0.75 };
   char *type[] = { "WALK", "ANY" };
@@ -102,6 +103,9 @@ ostream& VrmlNodeNavigationInfo::printFields(ostream& os, int indent)
   return os;
 }
 
+// Note that this method is not maintaining isBound.
+// I can't find a good way to ensure that the isBound
+// var of the current node gets updated at the right time...
 
 void VrmlNodeNavigationInfo::eventIn(double timeStamp,
 				     const char *eventName,
@@ -147,6 +151,37 @@ void VrmlNodeNavigationInfo::eventIn(double timeStamp,
       VrmlNode::eventIn(timeStamp, eventName, fieldValue);
     }
 }
+
+// Get the value of a field or eventOut.
+// The isBound eventOut is only set when queried,
+// don't rely on it's value to be valid. This hoses
+// the const-ness of the method, of course :(
+
+const VrmlField *VrmlNodeNavigationInfo::getField(const char *fieldName) const
+{
+  // exposedFields
+  if ( strcmp( fieldName, "avatarSize" ) == 0 )
+    return &d_avatarSize;
+  else if ( strcmp( fieldName, "headlight" ) == 0 )
+    return &d_headlight;
+  else if ( strcmp( fieldName, "speed" ) == 0 )
+    return &d_speed;
+  else if ( strcmp( fieldName, "type" ) == 0 )
+    return &d_type;
+  else if ( strcmp( fieldName, "visibilityLimit" ) == 0 )
+    return &d_visibilityLimit;
+  
+  // eventOuts
+  else if ( strcmp( fieldName, "isBound" ) == 0 )
+    {
+      VrmlSFBool* isBound = (VrmlSFBool*) &(this->d_isBound);
+      isBound->set( d_scene->bindableNavigationInfoTop() == this );
+      return isBound;
+    }
+
+  return VrmlNodeChild::getField(fieldName); // Parent class
+}
+
 
 // Set the value of one of the node fields.
 

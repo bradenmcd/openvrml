@@ -38,6 +38,9 @@ public:
 		       const char *eventName,
 		       const VrmlField *fieldValue);
 
+  // Get a field or eventOut by name.
+  virtual const VrmlField *getField(const char *fieldName) const;
+  
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   float *avatarSize()		{ return d_avatarSize.get(); }
@@ -52,7 +55,8 @@ private:
   VrmlSFFloat d_speed;
   VrmlMFString d_type;
   VrmlSFFloat d_visibilityLimit;
-  
+
+  VrmlSFBool d_isBound;		// eventOut
 };
 
 #endif _VRMLNODENAVIGATIONINFO_
