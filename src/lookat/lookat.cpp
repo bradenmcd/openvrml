@@ -31,7 +31,11 @@
 #endif
 
 #include <stdio.h>
+#if defined (__MACH__) && defined(__APPLE__)
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 #include <OpenVRML/doc2.hpp>
 #include <OpenVRML/System.h>
 #include <OpenVRML/VrmlScene.h>
