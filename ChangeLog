@@ -1,3 +1,15 @@
+2003-10-20  Braden McDaniel  <braden@endoframe.com>
+
+	Merged changes from 0.14.2.
+
+	* doc/doxygen-header:  Removed unsightly filename extensions
+	from URIs.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(elevation_grid_node::insert_geometry):  Added null checks for
+	SFNode fields.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp:  Fixed crashes
+	resulting from size_t carelessness.
+
 2003-10-14  Braden McDaniel  <braden@endoframe.com>
 
 	Generate Doxyfile from configure in order to take advantage of

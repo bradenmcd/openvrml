@@ -5545,22 +5545,32 @@ elevation_grid_node::insert_geometry(openvrml::viewer & viewer,
     if (!this->height.value.empty()) {
         using std::vector;
 
-        openvrml::color_node * const colorNode = this->color.value->to_color();
-        const vector<openvrml::color> & color = colorNode
-                                              ? colorNode->color()
-                                              : vector<openvrml::color>();
+        openvrml::color_node * const colorNode =
+            this->color.value
+            ? this->color.value->to_color()
+            : 0;
+        const vector<openvrml::color> & color =
+            colorNode
+            ? colorNode->color()
+            : vector<openvrml::color>();
 
         openvrml::normal_node * const normalNode =
-            this->normal.value->to_normal();
-        const vector<vec3f> & normal = normalNode
-                                     ? normalNode->vector()
-                                     : vector<vec3f>();
+            this->normal.value
+            ? this->normal.value->to_normal()
+            : 0;
+        const vector<vec3f> & normal =
+            normalNode
+            ? normalNode->vector()
+            : vector<vec3f>();
 
         openvrml::texture_coordinate_node * const texCoordNode =
-            this->texCoord.value->to_texture_coordinate();
-        const vector<vec2f> & texCoord = texCoordNode
-                                       ? texCoordNode->point()
-                                       : vector<vec2f>();
+            this->texCoord.value
+            ? this->texCoord.value->to_texture_coordinate()
+            : 0;
+        const vector<vec2f> & texCoord =
+            texCoordNode
+            ? texCoordNode->point()
+            : vector<vec2f>();
         // insert geometry
         unsigned int optMask = 0;
         if (this->ccw.value) {
