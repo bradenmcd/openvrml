@@ -120,7 +120,7 @@ libjs_la_LIBADD = fdlibm/libfdm.la
 
 endif
 
-libjs_la_LDFLAGS = @RPATH_LDFLAG@ -version-info $JS_LIBRARY_VERSION
+libjs_la_LDFLAGS = @RPATH_LDFLAG@ -version-info $LIBRARY_VERSION
 
 EXTRA_DIST = jsmath.c
 
