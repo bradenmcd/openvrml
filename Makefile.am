@@ -6,7 +6,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = openvrml.pc.in openvrml-gl.pc.in openvrml.spec.in lookat.xpm
 
-if WITH_GL
+if ENABLE_GL_RENDERER
 OPENVRML_GL_PC = openvrml-gl.pc
 endif
 

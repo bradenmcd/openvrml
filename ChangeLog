@@ -2,6 +2,14 @@
 
         * doc/doxygen-header: Add link to bookmark icon to docs.
 
+        * Makefile.am, README, configure.ac, openvrml.spec.in,
+          doc/Makefile.am, m4/Makefile.am, src/lookat/Makefile.am,
+          src/openvrml/OpenVRML/Image.cpp,
+          src/openvrml/OpenVRML/script.cpp,
+          src/openvrml-gl/OpenVRML/GL/Makefile.am, m4/jpeg.m4 m4/png.m4,
+          m4/spidermonkey.m4, m4/zlib.m4: Modified several configure
+          options to be more "feature oriented".
+
 2002-12-04  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/script.cpp: Added VrmlMatrix support

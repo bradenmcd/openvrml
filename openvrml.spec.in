@@ -7,12 +7,17 @@ Group:          System Environment/Libraries
 Packager:       The OpenVRML Development Team <openvrml-develop@lists.sf.net>
 Source:         http://prdownloads.sf.net/openvrml/%{name}-%{version}.tar.gz
 URL:            http://openvrml.org
-BuildRequires:  zlib-devel libpng-devel libjpeg-devel mozilla-devel XFree86-devel glut-devel
+BuildRequires:  zlib-devel >= 1.1.3
+BuildRequires:  libpng-devel >= 1.0.12
+BuildRequires:  libjpeg-devel >= 6b
+BuildRequires:  mozilla-devel >= 1.2.1
+BuildRequires:  XFree86-devel >= 4.2
+BuildRequires:  glut-devel >= 3.7
 BuildRoot:      %{_tmppath}/%{name}-root
 Requires:       zlib >= 1.1.3
 Requires:       libpng >= 1.0.12
 Requires:       libjpeg >= 6b
-Requires:       mozilla = 1.0.0
+Requires:       mozilla >= 1.2.1
 Prefix:         /usr
 
 %description 
@@ -60,7 +65,7 @@ GLUT-based VRML viewer.
 
 
 %build
-./configure $ARCH_FLAGS --prefix=%{prefix} --without-jdk --without-doxygen CPPFLAGS="-I/usr/include/mozilla-1.0.0/js" CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-L/usr/lib/mozilla-1.0.0"
+./configure $ARCH_FLAGS --prefix=%{prefix} --without-jdk --without-ftflib --without-doxygen CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
 make
 
 
@@ -96,6 +101,11 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Thu Dec 05 2002  Braden McDaniel  <braden@endoframe.com>
+- Added minimum versions to BuildRequires dependencies.
+- configure --without-ftflibs.
+- Require Mozilla 1.2.1; removed obsolete CPPFLAGS and LDFLAGS when configuring.
+
 * Sun Jun 30 2002  Braden McDaniel  <braden@endoframe.com>
 - configure --without-doxygen.
 - Removed "doc/conformance.html" from %doc.

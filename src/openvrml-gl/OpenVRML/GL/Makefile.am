@@ -14,7 +14,7 @@ LIBRARY_VERSION = 3:0:0
 INCLUDES = -I$(top_srcdir)/src/openvrml
 AM_CXXFLAGS = @GL_CFLAGS@
 
-if WITH_GL
+if ENABLE_GL_RENDERER
 lib_LTLIBRARIES = libopenvrml-gl.la
 libopenvrml_gl_la_SOURCES = ViewerOpenGL.cpp OpenGLEvent.cpp
 libopenvrml_gl_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @GL_LIBS@

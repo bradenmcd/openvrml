@@ -12,42 +12,124 @@ enable_static=yes
 AC_PROG_LIBTOOL
 AC_PROG_CXX
 AC_PROG_CXXCPP
+AC_PATH_PROG([DOXYGEN], [doxygen])
 
 #
-# Optional packages.
+# Checks for libraries/headers.
 #
-OV_WITH_ZLIB
-OV_WITH_LIBPNG
-OV_WITH_LIBJPEG
+AC_CHECK_LIB([z], [zlibVersion],
+             [Z_LIBS="-lz"],
+             [have_zlib=no])
+AC_CHECK_HEADER([zlib.h], ,
+                [have_zlib=no])
+
+AC_CHECK_LIB([png], [png_read_info],
+             [PNG_LIBS="-lpng -lz -lm"],
+             [have_libpng=no],
+             [-lz -lm])
+AC_CHECK_HEADER([png.h], ,
+                [have_libpng=no])
+
+AC_CHECK_LIB([jpeg], [jpeg_read_header],
+             [JPEG_LIBS="-ljpeg"],
+             [have_libjpeg=no])
+AC_CHECK_HEADER([jpeglib.h], ,
+                [have_libjpeg=no])
+
+PKG_CHECK_MODULES([JS], [mozilla-js >= 1.2.1], , [have_js=no])
+
 OV_WITH_GL
-AM_CONDITIONAL([WITH_GL], [test "X$no_gl" != "Xyes"])
 OV_WITH_GLUT
-AM_CONDITIONAL([WITH_GLUT], [test "X$no_glut" != "Xyes"])
 
-AC_ARG_WITH(spidermonkey, [  --with-spidermonkey     use SpiderMonkey (JavaScript support)], ,
-            [# Use SpiderMonkey by default.
-             with_spidermonkey=yes])
+#
+# gzipped file support
+#
+AC_ARG_ENABLE([gzip], [  --disable-gzip          disable support for gzipped worlds])
+if test "X$enable_gzip" = "Xno"; then
+  Z_LIBS=""
+else
+  if test "X$have_zlib" = "Xno"; then
+    AC_MSG_ERROR([zlib is required for gzipped world support.])
+  fi
+  AC_DEFINE([OPENVRML_ENABLE_GZIP], [1], [Defined if support for gzipped worlds is enabled.])
+fi
+AC_SUBST([Z_LIBS])
+
+#
+# ImageTexture node support
+#
+AC_ARG_ENABLE([imagetexture-node], [  --disable-imagetexture-node  disable ImageTexture node support])
+if test "X$enable_imagetexture_node" = "Xno"; then
+  PNG_LIBS=""
+  JPEG_LIBS=""
+else
+  if test "X$have_libpng" = "Xno" -o "X$have_libjpeg" = "Xno"; then
+    AC_MSG_ERROR([libpng and libpng are required for ImageTexture node support.])
+  fi
+  AC_DEFINE([OPENVRML_ENABLE_IMAGETEXTURE_NODE], [1], [Defined if ImageTexture node support is enabled.])
+fi
+AC_SUBST([PNG_LIBS])
+AC_SUBST([JPEG_LIBS])
+
+#
+# Script node JavaScript support
+#
+AC_ARG_ENABLE([script-node-javascript], [  --disable-script-node-javascript  disable Script node JavaScript support])
+if test "X$enable_script_node_javascript" = "Xno"; then
+  JS_CFLAGS=""
+  JS_LIBS=""
+else
+  if test "X$have_js" = "Xno"; then
+    AC_MSG_ERROR([Mozilla JavaScript is required for Script node JavaScript support.])
+  fi
+  AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1], [Defined if Script node JavaScript support is enabled.])
+fi
+AC_SUBST([JS_CFLAGS])
+AC_SUBST([JS_LIBS])
+
+#
+# build API docs
+#
+AC_ARG_ENABLE([api-docs], [  --disable-api-docs      do not build API documentation])
+if test "X$enable_api_docs" = "Xno"; then
+  DOXYGEN=""
+else
+  if test -z "$DOXYGEN"; then
+    AC_MSG_ERROR([doxygen is required to build the API documentation])
+  fi
+fi
+AM_CONDITIONAL([ENABLE_API_DOCS], [test -n "$DOXYGEN"])
+
+#
+# build GL renderer
+#
+AC_ARG_ENABLE([gl-renderer], [  --disable-gl-renderer   do not build GL renderer])
+if test "X$enable_gl_renderer" != "Xno"; then
+  if test "X$no_gl" = "Xyes"; then
+    AC_MSG_ERROR([OpenGL/Mesa is required for the GL renderer])
+  fi
+fi
+AM_CONDITIONAL([ENABLE_GL_RENDERER],
+               [test "X$enable_gl_renderer" != "Xno" -a "X$no_gl" != "Xyes"])
+
+#
+# build lookat
+#
+AC_ARG_ENABLE([lookat], [  --disable-lookat        do not build lookat])
+if test "X$enable_lookat" != "Xno"; then
+  if test "X$no_glut" = "Xyes"; then
+    AC_MSG_ERROR([glut is required for lookat])
+  fi
+fi
+AM_CONDITIONAL([ENABLE_LOOKAT],
+               [test "X$enable_lookat" != "Xno" -a "X$no_glut" != "Xyes"])
+
 AC_ARG_WITH(jdk, [  --with-jdk              use the Java Development Kit (Java support)], ,
              [# Use the JDK by default.
               with_jdk=yes])
 AC_ARG_WITH(ftflib, [  --with-ftflib           use ftflib (required for font support)], ,
             [# Use ftflib by default.
              with_ftflib=yes])
-AC_ARG_WITH(doxygen, [  --with-doxygen          use Doxygen to generate documentation], ,
-            [# Use Doxygen by default.
-             with_doxygen=yes])
-
-#
-# Check for SpiderMonkey
-#
-if test "X$with_spidermonkey" = "Xyes"; then
-  OV_CHECK_SPIDERMONKEY
-  if test "X$no_js" = "Xyes"; then
-    AC_MSG_ERROR([SpiderMonkey not found.])
-  else
-    AC_DEFINE(OPENVRML_HAVE_SPIDERMONKEY, , [defined if SpiderMonkey is available and should be used])
-  fi
-fi
 
 #
 # Check for the Java Development Kit.
@@ -91,17 +173,6 @@ if test "X$with_ftflib" = "Xyes"; then
   fi
 fi
     
-#
-# Check for Doxygen.
-#
-if test "X$with_doxygen" = "Xyes"; then
-  AC_PATH_PROG([DOXYGEN], [doxygen])
-  if test -z "${DOXYGEN}"; then
-    AC_MSG_ERROR([Doxygen not found.])
-  fi
-fi
-AM_CONDITIONAL([WITH_DOXYGEN], [test "X$with_doxygen" = "Xyes"])
-
 AC_OUTPUT([Makefile \
 doc/Makefile \
 doc/Doxyfile \

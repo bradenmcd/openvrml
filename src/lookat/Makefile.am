@@ -1,7 +1,7 @@
 INCLUDES = -I$(top_srcdir)/src/openvrml -I$(top_srcdir)/src/openvrml-gl
 AM_CXXFLAGS = @GLUT_CFLAGS@ @JNI_CFLAGS@
 
-if WITH_GLUT
+if ENABLE_LOOKAT
 bin_PROGRAMS = lookat
 lookat_SOURCES = lookat.cpp ViewerGlut.cpp
 lookat_LDFLAGS = @GLUT_LIBS@ @JNI_LIBS@

@@ -708,7 +708,7 @@ const FieldValue & ScriptNode::getEventOutImpl(const std::string & id) const
 
 } // namespace OpenVRML
 
-# ifdef OPENVRML_HAVE_SPIDERMONKEY
+# if OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
 #   include <math.h>
 #   include <algorithm>
 #   include <iostream>
@@ -765,7 +765,7 @@ for (size_t i = 0; i < this->url.getLength(); ++i) {
 if (this->url.getElement(i).length() == 0) continue;
 
 // Get the protocol & mimetype...
-# ifdef OPENVRML_HAVE_SPIDERMONKEY
+# if OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
 // Need to handle external .js files too...
 const char * javascriptScheme = "javascript:";
 const char * vrmlscriptScheme = "vrmlscript:";
@@ -809,7 +809,7 @@ namespace {
 
 using namespace OpenVRML;
 
-# ifdef OPENVRML_HAVE_SPIDERMONKEY
+# if OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
 namespace JavaScript_ {
 
 const long MAX_HEAP_BYTES = 4L * 1024L * 1024L;
@@ -7145,5 +7145,5 @@ void VrmlMatrix::finalize(JSContext * const cx, JSObject * const obj) throw ()
 }
 
 } // namespace JavaScript_
-# endif // OPENVRML_HAVE_SPIDERMONKEY
+# endif // OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
 }
