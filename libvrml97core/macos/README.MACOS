@@ -69,11 +69,7 @@ in sysem.cpp in order to use InternetConfig to pass non-VRML anchors to your def
 helper application (Need a smarter solution here...).
 
 Note that I have included premade parser files in the macos folder, which the supplied
-LibVRML97.mcp project uses.  I have also included (and use in ImageReader.mcp) a PNG reader
-for an older version of the PNG library than the one supported by the one in the
-libvrml97core source. This is simply because I don't have a newer version of the
-PNG library for the Mac that works. If you manage to compile, link and test one then
-feel free to 'fix' this in future.
+LibVRML97.mcp project uses.
 
 If you use LibVRML97 to create your own applications then VrmlScene can be
 initialised with either a URL or a filepath but if a filepath is passed then you need
@@ -99,4 +95,4 @@ version of GLUT. Go to this URL for details:
 
 
 Michael louka (Michael.Louka@hrp.no)
-8 December 1999
+7 January 2000
