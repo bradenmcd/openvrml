@@ -1923,6 +1923,8 @@ namespace {
             if (!JS_DefineFunctions(this->cx, browserObj, methods)) {
                 return false;
             }
+            
+            return true;
         }
         
         //
@@ -1986,6 +1988,7 @@ namespace {
                     }
                 }
             }
+            return true;
         }
 
 
@@ -2866,7 +2869,7 @@ namespace {
                     || !JSVAL_IS_NUMBER(argv[1])
                     || !JS_ValueToNumber(cx, argv[1], &s)
                     || !JSVAL_IS_NUMBER(argv[2])
-                    || !JS_ValueToNumber(cx, argv[2], &s)) {
+                    || !JS_ValueToNumber(cx, argv[2], &v)) {
                 return JS_FALSE;
             }
             
@@ -2997,34 +3000,23 @@ namespace {
                 throw () {
             assert(argc >= 4);
             
-            jsdouble d;
-            
             //
             // x dimension.
             //
-            if (!JSVAL_IS_NUMBER(argv[0])
-                    || !JS_ValueToNumber(cx, argv[0], &d)) {
-                return JS_FALSE;
-            }
-            const long x = static_cast<long>(d);
+            if (!JSVAL_IS_INT(argv[0])) { return JS_FALSE; }
+            const size_t x = JSVAL_TO_INT(argv[0]);
             
             //
             // y dimension.
             //
-            if (!JSVAL_IS_NUMBER(argv[1])
-                    || !JS_ValueToNumber(cx, argv[1], &d)) {
-                return JS_FALSE;
-            }
-            const long y = static_cast<long>(d);
+            if (!JSVAL_IS_INT(argv[1])) { return JS_FALSE; }
+            const size_t y = JSVAL_TO_INT(argv[1]);
             
             //
             // components
             //
-            if (!JSVAL_IS_NUMBER(argv[2])
-                    || !JS_ValueToNumber(cx, argv[2], &d)) {
-                return JS_FALSE;
-            }
-            const long comp = static_cast<long>(d);
+            if (!JSVAL_IS_INT(argv[2])) { return JS_FALSE; }
+            const size_t comp = JSVAL_TO_INT(argv[2]);
             
             //
             // pixel data array
@@ -3339,7 +3331,7 @@ namespace {
                 script->getScriptNode().nodeType.nodeClass.scene
                         .queueEvent(s_timeStamp, fieldValue, nodePtr,
                                     eventInId);
-            } else if (expectType = nodePtr->nodeType.hasField(eventInId)) {
+            } else if ((expectType = nodePtr->nodeType.hasField(eventInId))) {
                 try {
                     fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
                 } catch (BadConversion & ex) {
@@ -4964,7 +4956,7 @@ namespace {
 
             if (JSVAL_IS_INT(id)) {
                 if (JSVAL_TO_INT(id) < 0
-                        || JSVAL_TO_INT(id) >= mfdata->array.size()) {
+                        || size_t(JSVAL_TO_INT(id)) >= mfdata->array.size()) {
                     return JS_FALSE;
                 }
                 *vp = mfdata->array[JSVAL_TO_INT(id)];
@@ -5097,7 +5089,7 @@ namespace {
                 //
                 // Grow array if necessary.
                 //
-                if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
+                if (size_t(JSVAL_TO_INT(id)) >= mfdata->array.size()) {
                     jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
                     if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
                 }
@@ -5126,7 +5118,7 @@ namespace {
                     return JS_FALSE;
                 }
 
-                if (JSVAL_TO_INT(*vp) == mfdata->array.size()) {
+                if (size_t(JSVAL_TO_INT(*vp)) == mfdata->array.size()) {
                     return JS_TRUE; // Nothing to do.
                 }
                 
@@ -5335,7 +5327,7 @@ namespace {
                 //
                 // Grow array if necessary.
                 //
-                if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
+                if (size_t(JSVAL_TO_INT(id)) >= mfdata->array.size()) {
                     jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
                     if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
                 }
@@ -5373,7 +5365,7 @@ namespace {
                     return JS_FALSE;
                 }
 
-                if (JSVAL_TO_INT(*vp) == mfdata->array.size()) {
+                if (size_t(JSVAL_TO_INT(*vp)) == mfdata->array.size()) {
                     return JS_TRUE; // Nothing to do.
                 }
                 
@@ -5732,7 +5724,7 @@ namespace {
             //
             // Grow array if necessary.
             //
-            if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
+            if (size_t(JSVAL_TO_INT(id)) >= mfdata->array.size()) {
                 jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
                 if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
             }
@@ -5759,7 +5751,7 @@ namespace {
             }
 
             try {
-                if (JSVAL_TO_INT(*vp) != mfdata->array.size()) {
+                if (size_t(JSVAL_TO_INT(*vp)) != mfdata->array.size()) {
                     mfdata->array.resize(JSVAL_TO_INT(*vp));
                 }
             } catch (std::bad_alloc & ex) {
@@ -5968,7 +5960,7 @@ namespace {
             //
             // Grow array if necessary.
             //
-            if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
+            if (size_t(JSVAL_TO_INT(id)) >= mfdata->array.size()) {
                 jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
                 if (!setLength(cx, obj, 0, &newLength)) {
                     return JS_FALSE;
@@ -6316,7 +6308,7 @@ namespace {
             //
             // Grow array if necessary.
             //
-            if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
+            if (size_t(JSVAL_TO_INT(id)) >= mfdata->array.size()) {
                 jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
                 if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
             }

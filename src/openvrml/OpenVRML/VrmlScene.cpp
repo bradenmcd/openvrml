@@ -587,11 +587,11 @@ namespace OpenVRML {
  * @param url   a URI.
  */
 VrmlScene::VrmlScene(const std::string & url):
-        scriptNodeClass(*this), d_flags_need_updating(false),
+        scriptNodeClass(*this),
         d_url(new Doc2(url)), scope(0), d_modified(false), d_newView(false),
         d_deltaTime(DEFAULT_DELTA), d_pendingUrl(0), d_pendingParameters(0),
         d_pendingNodes(0), d_pendingScope(0), d_frameRate(0.0), d_firstEvent(0),
-        d_lastEvent(0) {
+        d_lastEvent(0), d_flags_need_updating(false) {
     this->initNodeClassMap();
     this->scope = new Vrml97RootNamespace(this->nodeClassMap);
 
@@ -803,8 +803,6 @@ const MFNode & VrmlScene::getRootNodes() const throw () { return this->nodes; }
  */
 bool VrmlScene::loadUrl(const MFString & url,
                         const MFString & parameters) {
-    
-    size_t np = parameters.getLength();
     
     // try each url until we find one we can handle
     size_t i(0);
@@ -1709,7 +1707,7 @@ void VrmlScene::setViewpoint(const std::string & name,
  */
 void VrmlScene::setViewpoint(size_t nvp) {
     std::list<Node *>::iterator i;
-    int j = 0;
+    size_t j = 0;
     
     for (i = d_viewpoints.begin(); i != d_viewpoints.end(); ++i) {
         if (j == nvp) {
@@ -2747,9 +2745,11 @@ const FieldValue & ProtoNode::getEventOutImpl(const std::string & id) const
     //
     {
         const ISMap::const_iterator pos = this->isMap.find(id);
-        if (pos != this->isMap.end()) {
-            return pos->second.node.getEventOut(id);
+        if (pos == this->isMap.end()) {
+            throw UnsupportedInterface(this->nodeType.id + " node has no "
+                                       "eventOut \"" + id + "\".");
         }
+        return pos->second.node.getEventOut(id);
     }
 }
 

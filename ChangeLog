@@ -14,6 +14,14 @@
         * m4/glut.m4: Fix macro documentation to reflect
           AC_SUBST([GLUT_CFLAGS]).
 
+        * src/openvrml/OpenVRML/Viewer.cpp,
+          src/openvrml/OpenVRML/VrmlScene.cpp,
+          src/openvrml/OpenVRML/bvolume.cpp,
+          src/openvrml/OpenVRML/node.cpp,
+          src/openvrml/OpenVRML/script.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp: Quell a bunch of
+          warnings from gcc -Wall.
+
 2002-06-19  Braden McDaniel  <braden@endoframe.com>
 
         * configure.ac, README: Incremented version number to 0.12.2.

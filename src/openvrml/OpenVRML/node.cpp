@@ -445,9 +445,9 @@ FieldValue::Type NodeType::hasField(const std::string & id) const throw () {
  */
 FieldValue::Type NodeType::hasInterface(const std::string & id) const throw () {
     FieldValue::Type retval;
-    if (retval = this->hasEventIn(id))      { return retval; }
-    if (retval = this->hasEventOut(id))     { return retval; }
-    if (retval = this->hasExposedField(id)) { return retval; }
+    if ((retval = this->hasEventIn(id)))      { return retval; }
+    if ((retval = this->hasEventOut(id)))     { return retval; }
+    if ((retval = this->hasExposedField(id))) { return retval; }
     return (retval = this->hasField(id));
 }
 
