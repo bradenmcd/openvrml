@@ -9,6 +9,17 @@
 	* test/Makefile.am:  Added file.
 	* test/browser_basic.cpp:  Added file.
 
+2003-10-23  Braden McDaniel  <braden@endoframe.com>
+
+	Move check for libGLU to AX_CHECK_GLU.
+
+	* openvrml-gl.pc.in
+	* m4/Makefile.am
+	* m4/ax_check_gl.m4
+	* m4/ax_check_glu.m4
+	* m4/ax_check_glut.m4
+	* src/libopenvrml-gl/openvrml/gl/Makefile.am
+
 2003-10-21  Braden McDaniel  <braden@endoframe.com>
 
 	Replace usage of node::to_<node> with node_cast.
