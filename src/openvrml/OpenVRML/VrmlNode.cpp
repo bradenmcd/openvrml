@@ -23,6 +23,7 @@
 #endif
 
 #include "VrmlNode.h"
+#include "Route.h"
 #include "VrmlNamespace.h"
 #include "VrmlNodeType.h"
 #include "VrmlScene.h"
@@ -220,34 +221,6 @@ VrmlNodePositionInt* VrmlNode::toPositionInt() const { return 0; }
 
 VrmlNodeProto*		VrmlNode::toProto() const { return 0; }
 
-
-// Routes
-
-Route::Route( const char *fromEventOut, VrmlNode *toNode, const char *toEventIn ) :
-  d_prev(0),
-  d_next(0)
-{
-  d_fromEventOut = new char[strlen(fromEventOut)+1];
-  strcpy(d_fromEventOut, fromEventOut);
-  d_toNode = toNode;
-  d_toEventIn = new char[strlen(toEventIn)+1];
-  strcpy(d_toEventIn, toEventIn);
-}
-
-Route::Route( const Route &r )
-{
-  d_fromEventOut = new char[strlen(r.d_fromEventOut)+1];
-  strcpy(d_fromEventOut, r.d_fromEventOut);
-  d_toNode = r.d_toNode;
-  d_toEventIn = new char[strlen(r.d_toEventIn)+1];
-  strcpy(d_toEventIn, r.d_toEventIn);
-}
-
-Route::~Route()
-{
-  delete [] d_fromEventOut;
-  delete [] d_toEventIn;
-}
 
 // Add a route from an eventOut of this node to an eventIn of another node.
 

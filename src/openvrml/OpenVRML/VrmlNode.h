@@ -403,32 +403,6 @@ private:
 };
 
 
-/**
- * Routes
- */
-class Route {
-public:
-  Route(const char *fromEventOut, VrmlNode *toNode, const char *toEventIn);
-  Route(const Route&);
-  ~Route();
-
-  char *fromEventOut() { return d_fromEventOut; }
-  char *toEventIn() { return d_toEventIn; }
-  VrmlNode *toNode() { return d_toNode; }
-
-  Route *prev() { return d_prev; }
-  Route *next() { return d_next; }
-  void setPrev(Route* r) { d_prev = r; }
-  void setNext(Route* r) { d_next = r; }
-  
-private:
-  char *d_fromEventOut;
-  VrmlNode *d_toNode;
-  char *d_toEventIn;
-  Route *d_prev, *d_next;
-};
-
-
 // Ugly macro used in printFields
 #define PRINT_FIELD(_f) printField(os,indent+INDENT_INCREMENT,#_f,d_##_f)
 

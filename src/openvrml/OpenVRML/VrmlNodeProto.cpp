@@ -30,6 +30,7 @@
  */
 #include "VrmlNodeProto.h"
 #include "VrmlNamespace.h"
+#include "Route.h"
 #include "VrmlMFNode.h"
 #include "VrmlBSphere.h"
 
