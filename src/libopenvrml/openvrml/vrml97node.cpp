@@ -10803,7 +10803,6 @@ const std::vector<float> & navigation_info_node::avatar_size() const throw ()
  */
 bool navigation_info_node::headlight() const throw ()
 {
-    std::cout << "navigation_info_node::headlight" << std::endl;
     return this->headlight_.sfbool::value;
 }
 

@@ -1,5 +1,10 @@
 2004-12-30 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97node.cpp:  Removed erroneously
+	committed debugging output.
+
+2004-12-30 Braden McDaniel  <braden@endoframe.com>
+
 	Unregister bindable nodes as "first" during shutdown.
 
 	* src/libopenvrml/openvrml/vrml97node.cpp
