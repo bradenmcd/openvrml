@@ -62,7 +62,7 @@ const int Vrml97Scanner::KEYWORD_TO             (25);
 const int Vrml97Scanner::KEYWORD_TRUE           (26);
 const int Vrml97Scanner::KEYWORD_USE            (27);
 const int Vrml97Scanner::FIELDTYPE_SFBOOL       (28);
-const int Vrml97Scanner::FIELDTYPE_SFCOLOR      (39);
+const int Vrml97Scanner::FIELDTYPE_SFCOLOR      (29);
 const int Vrml97Scanner::FIELDTYPE_SFFLOAT      (30);
 const int Vrml97Scanner::FIELDTYPE_SFIMAGE      (31);
 const int Vrml97Scanner::FIELDTYPE_SFINT32      (32);

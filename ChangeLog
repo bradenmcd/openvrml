@@ -1,3 +1,10 @@
+2001-01-19  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed misidentified token ID constant in `Vrml97Scanner.cpp'.
+          Due to a typo, the identifiers for SFColor and MFColor had
+          been given the same value. Thanks to Tom Flynn for reporting
+          the bug.
+
 2001-01-14  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * Update Makefiles, Project files and Workspace files to build
