@@ -1024,6 +1024,246 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @var class node::field_value_listener<sfbool>
+ *
+ * @brief <code>sfbool</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<sfcolor>
+ *
+ * @brief <code>sfcolor</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<sffloat>
+ *
+ * @brief <code>sffloat</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<sfimage>
+ *
+ * @brief <code>sfimage</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<sfint32>
+ *
+ * @brief <code>sfint32</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<sfnode>
+ *
+ * @brief <code>sfnode</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<sfrotation>
+ *
+ * @brief <code>sfrotation</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<sfstring>
+ *
+ * @brief <code>sfstring</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<sftime>
+ *
+ * @brief <code>sftime</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<sfvec2f>
+ *
+ * @brief <code>sfvec2f</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<sfvec3f>
+ *
+ * @brief <code>sfvec3f</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<mfcolor>
+ *
+ * @brief <code>mfcolor</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<mffloat>
+ *
+ * @brief <code>mffloat</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<mfint32>
+ *
+ * @brief <code>mfint32</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<mfnode>
+ *
+ * @brief <code>mfnode</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<mfrotation>
+ *
+ * @brief <code>mfrotation</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<mfstring>
+ *
+ * @brief <code>mfstring</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<mftime>
+ *
+ * @brief <code>mftime</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<mfvec2f>
+ *
+ * @brief <code>mfvec2f</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::field_value_listener<mfvec3f>
+ *
+ * @brief <code>mfvec3f</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class node::exposedfield<sfbool>
+ *
+ * @brief <code>sfbool</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<sfcolor>
+ *
+ * @brief <code>sfcolor</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<sffloat>
+ *
+ * @brief <code>sffloat</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<sfimage>
+ *
+ * @brief <code>sfimage</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<sfint32>
+ *
+ * @brief <code>sfint32</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<sfnode>
+ *
+ * @brief <code>sfnode</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<sfrotation>
+ *
+ * @brief <code>sfrotation</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<sfstring>
+ *
+ * @brief <code>sfstring</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<sftime>
+ *
+ * @brief <code>sftime</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<sfvec2f>
+ *
+ * @brief <code>sfvec2f</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<sfvec3f>
+ *
+ * @brief <code>sfvec3f</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<mfcolor>
+ *
+ * @brief <code>mfcolor</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<mffloat>
+ *
+ * @brief <code>mffloat</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<mfint32>
+ *
+ * @brief <code>mfint32</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<mfnode>
+ *
+ * @brief <code>mfnode</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<mfrotation>
+ *
+ * @brief <code>mfrotation</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<mfstring>
+ *
+ * @brief <code>mfstring</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<mftime>
+ *
+ * @brief <code>mftime</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<mfvec2f>
+ *
+ * @brief <code>mfvec2f</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class node::exposedfield<mfvec3f>
+ *
+ * @brief <code>mfvec3f</code> <code>exposedfield</code>.
+ */
+
+/**
  * @internal
  *
  * @var boost::recursive_mutex node::mutex_

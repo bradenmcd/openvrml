@@ -1,3 +1,7 @@
+2005-03-30 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/node.cpp:  Doc-comment improvements.
+
 2005-03-28 Braden McDaniel  <braden@endoframe.com>
 
 	Removed to_inline member function from
