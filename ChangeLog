@@ -8,6 +8,8 @@
           src/openvrml-gl/OpenVRML/GL/Makefile.am: Updated libtool
           library version numbers.
 
+        * NEWS: Updates for 0.12.5 release.
+
 2002-08-24  Thomas Flynn  <tflynn@users.sf.net>
 
         * Finish updating conformance test results.
