@@ -65,6 +65,8 @@ public:
 
   void activate( double timeStamp, bool isOver, bool isActive, double *p );
 
+  const VrmlMFNode & getChildren() const;
+  void setChildren(const VrmlMFNode & children);
   void addChildren( const VrmlMFNode &children );
   void removeChildren( const VrmlMFNode &children );
   void removeChildren();

@@ -16,6 +16,8 @@
 
         * Added getters/setters for VrmlNodeElevationGrid.
 
+        * Added getter/setter for children on VrmlNodeGroup.
+
 2001-01-20  Braden McDaniel  <braden@endoframe.com>
 
         * Added getRoutes() method to VrmlNode, per patch from Joe

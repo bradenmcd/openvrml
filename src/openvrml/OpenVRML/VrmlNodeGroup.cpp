@@ -339,6 +339,48 @@ void VrmlNodeGroup::activate( double time,
 }
 
 /**
+ * @brief Get the Group's children.
+ *
+ * @return the Group's children
+ */
+const VrmlMFNode & VrmlNodeGroup::getChildren() const {
+    return this->d_children;
+}
+
+/**
+ * @brief Set the Group's children.
+ *
+ * @param children the new children for the node
+ *
+ * @todo We should throw an exception if any of the nodes in
+ *       <var>children</var> are not child nodes.
+ */
+void VrmlNodeGroup::setChildren(const VrmlMFNode & children) {
+    const size_t currentLength = this->d_children.getLength();
+    
+    for (size_t i = 0; i < children.getLength(); ++i) {
+        VrmlNodeProto * p = 0;
+        if (children[i] && (children[i]->toChild() ||
+	        ((p = children[i]->toProto()) != 0 && p->size() == 0))) {
+	    children[i]->addToScene(d_scene, d_relative.get());
+	    children[i]->accumulateTransform(d_parentTransform);
+	} else {
+	    theSystem->error(
+                "Error: Attempt to add a %s node as a child of a %s node.\n",
+	        children[i]->nodeType().getName(), nodeType().getName());
+        }
+    }
+    
+    this->d_children = children;
+    
+    if (currentLength != d_children.getLength()) {
+        //??eventOut( d_scene->timeNow(), "children_changed", d_children );
+        setModified();
+        this->setBVolumeDirty(true);
+    }
+}
+
+/**
  * @brief Add children from another MFNode.
  *
  * Add legal children and un-instantiated EXTERNPROTOs. Children only
@@ -391,6 +433,10 @@ void VrmlNodeGroup::removeChildren( const VrmlMFNode &children )
 
 }
 
+/**
+ * @todo Remove this method in favor of passing an empty VrmlMFNode to
+ *       setChildren()?
+ */
 void VrmlNodeGroup::removeChildren()
 {
   int n = d_children.getLength();
