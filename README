@@ -109,7 +109,6 @@ below.
      Java Development Kit   <http://java.sun.com/j2se/>
      OpenGL/Mesa            <http://mesa3d.org>
      GTK+                   <http://gtk.org>
-     GtkGLExt               <http://gtkglext.sourceforge.net>
      SDL                    <http://libsdl.org>
      DejaGnu                <http://www.gnu.org/software/dejagnu/>
      Doxygen                <http://doxygen.org>
@@ -164,7 +163,7 @@ depends on.
 
  --disable-mozilla-plugin
      Do not build the Mozilla plug-in.  The Mozilla plug-in depends on
-     GTK+, GtkGLExt, and, of course, Mozilla.
+     GTK+ and, of course, Mozilla.
 
 --disable-tests
      Do not build the test programs.  The test programs depend on

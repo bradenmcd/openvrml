@@ -47,7 +47,7 @@ gdkglext_win32_sources = \
 	$(gdkglext_win32_c_sources)
 
 gdkglextwin32includedir = $(includedir)/gtkglext-@GTKGLEXT_API_VERSION@/gdk/win32
-gdkglextwin32include_HEADERS = $(gdkglext_win32_headers)
+noinst_HEADERS = $(gdkglext_win32_headers)
 
 noinst_LTLIBRARIES = libgdkglext-win32.la
 

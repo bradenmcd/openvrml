@@ -2,7 +2,9 @@ AC_PREREQ([2.53])
 AC_INIT([OpenVRML Mozilla Plugin], [0.15.2],
         [openvrml-develop@lists.sourceforge.net])
 AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004 Braden McDaniel])
+AC_CONFIG_SUBDIRS([lib/gtkglext])
 AC_CONFIG_FILES([Makefile]
+                [lib/Makefile]
                 [src/Makefile])
 AM_INIT_AUTOMAKE([1.7 foreign])
 
@@ -25,7 +27,7 @@ mozidldir="$mozprefix/share/idl/mozilla-$mozversion"
 MOZILLA_XPIDLFLAGS="-I $mozidldir"
 AC_SUBST([mozlibdir])
 AC_SUBST([MOZILLA_XPIDLFLAGS])
-PKG_CHECK_MODULES([GTKGLEXT], [gtkglext-1.0], , [have_gtkglext=no])
+PKG_CHECK_MODULES([GTK], [gtk+-2.0], , [have_gtk=no])
 
 if test "X$enable_mozilla_plugin" != "Xno"; then
   if test "X$have_mozilla_plugin" = "Xno"; then
@@ -34,11 +36,11 @@ if test "X$enable_mozilla_plugin" != "Xno"; then
   if test -z "$XPIDL"; then
     AC_MSG_FAILURE([xpidl is required to build the Mozilla plug-in])
   fi
-  if test "X$have_gtkglext" = "Xno"; then
-    AC_MSG_FAILURE([GtkGLExt is required to build the Mozilla plug-in])
+  if test "X$have_gtk" = "Xno"; then
+    AC_MSG_FAILURE([GTK+ is required to build the Mozilla plug-in])
   fi
 fi
 AM_CONDITIONAL([ENABLE_MOZILLA_PLUGIN],
-  [test "X$enable_mozilla_plugin" != "Xno" -a "X$have_gtkglext" != "Xno"])
+  [test "X$enable_mozilla_plugin" != "Xno" -a "X$have_gtk" != "Xno"])
 
 AC_OUTPUT
