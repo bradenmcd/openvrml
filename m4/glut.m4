@@ -36,7 +36,7 @@ GLUT_LIBS="${GL_LIBS}"
 #
 if test "X${no_x}" != "Xyes"; then
   GLUT_CFLAGS="${GL_CFLAGS}"
-  GLUT_LIBS="${GLUT_LIBS} ${X_PRE_LIBS} -lXmu -lX11 ${X_EXTRA_LIBS}"
+  GLUT_LIBS="${GLUT_LIBS} ${X_PRE_LIBS} -lXmu -lXi -lX11 ${X_EXTRA_LIBS}"
 fi
 
 AC_LANG_PUSH(C)
