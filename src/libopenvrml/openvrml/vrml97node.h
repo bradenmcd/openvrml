@@ -1222,6 +1222,7 @@ namespace openvrml {
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
+            virtual bool do_emissive() const throw ();
         };
 
 
@@ -1694,6 +1695,7 @@ namespace openvrml {
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
+            virtual bool do_emissive() const throw ();
 
             void recalcBSphere();
         };

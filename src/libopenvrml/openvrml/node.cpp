@@ -2618,6 +2618,19 @@ viewer::object_t geometry_node::render_geometry(viewer & v,
 }
 
 /**
+ * @brief Indicates whether the geometry should be drawn with the emissive
+ *        color.
+ *
+ * @return @c true if the geometry should be drawn with the emissive color;
+ *         @c false otherwise (if the geometry should be drawn with the diffuse
+ *         color).
+ */
+bool geometry_node::emissive() const throw ()
+{
+    return this->do_emissive();
+}
+
+/**
  * @brief render_geometry implementation.
  *
  * @param v         viewer.
@@ -2629,6 +2642,16 @@ viewer::object_t geometry_node::do_render_geometry(viewer & v,
                                                    rendering_context context)
 {
     return 0;
+}
+
+/**
+ * @brief emissive implementation.
+ *
+ * @return @c false.
+ */
+bool geometry_node::do_emissive() const throw ()
+{
+    return false;
 }
 
 /**

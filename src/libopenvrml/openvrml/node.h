@@ -672,6 +672,7 @@ namespace openvrml {
 
         viewer::object_t render_geometry(viewer & v,
                                          rendering_context context);
+        bool emissive() const throw ();
         virtual const color_node * color() const throw ();
 
     protected:
@@ -681,6 +682,7 @@ namespace openvrml {
     private:
         virtual viewer::object_t
         do_render_geometry(viewer & v, rendering_context context);
+        virtual bool do_emissive() const throw ();
 
         virtual geometry_node * to_geometry() throw ();
     };

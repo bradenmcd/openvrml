@@ -2459,11 +2459,15 @@ viewer::insert_line_set(const std::vector<vec3f> & coord,
     // Lighting, texturing don't apply to line sets
     glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
-    if (!color.empty() && !colorPerVertex) { glShadeModel(GL_FLAT); }
+    const bool color_per_face = (!color.empty() && !colorPerVertex);
+    if (color_per_face) { glShadeModel(GL_FLAT); }
 
     glBegin(GL_LINE_STRIP);
-    if (!color.empty() && !colorPerVertex) {
-        glColor3fv(&color[!colorIndex.empty() ? colorIndex[0] : 0][0]);
+    if (!color.empty() && color_per_face) {
+        const size_t color_index = !colorIndex.empty()
+                                 ? colorIndex.front()
+                                 : 0;
+        glColor3fv(&color[color_index][0]);
     }
 
     size_t nl = 0;
@@ -2472,8 +2476,7 @@ viewer::insert_line_set(const std::vector<vec3f> & coord,
             glEnd();
             glBegin(GL_LINE_STRIP);
             ++nl;
-            if (i < coordIndex.size() - 1
-                    && !color.empty() && !colorPerVertex) {
+            if (i < coordIndex.size() - 1 && color_per_face) {
                 const int32 index = !colorIndex.empty()
                                   ? int32(colorIndex[nl])
                                   : int32(nl);
@@ -3257,7 +3260,9 @@ void viewer::remove_object(const object_t ref)
 void viewer::enable_lighting(const bool val)
 {
     if (val) {
-        if (this->lit) { glEnable(GL_LIGHTING); }
+        if (this->lit) {
+            glEnable(GL_LIGHTING);
+        }
     } else {
         glDisable(GL_LIGHTING);
     }
@@ -3344,22 +3349,13 @@ void viewer::set_material(const float ambientIntensity,
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emission);
     //
     // In OGL standard range of shininess is [0.0,128.0]
     // In VRML97 the range is [0.0,1.0]
     //
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess * 128);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
-
-    if (diffuseColor == color(0.0, 0.0, 0.0)
-            && specularColor == color(0.0, 0.0, 0.0)) {
-        glDisable(GL_LIGHTING);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, diffuse);
-        glColor4fv(emission);
-    } else {
-        glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emission);
-        glColor4fv(diffuse);
-    }
 }
 
 /**

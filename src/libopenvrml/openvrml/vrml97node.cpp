@@ -1510,6 +1510,25 @@ const node_ptr & appearance_node::texture_transform() const throw ()
     return this->texture_transform_.sfnode::value;
 }
 
+namespace {
+
+    void set_unlit_material(viewer & v)
+    {
+        static const float unlit_ambient_intensity(1);
+        static const color unlit_diffuse_color(1, 1, 1);
+        static const color unlit_emissive_color(1, 1, 1);
+        static const float unlit_shininess(0);
+        static const color unlit_specular_color(1, 1, 1);
+        static const float unlit_transparency(0);
+        v.set_material(unlit_ambient_intensity,
+                       unlit_diffuse_color,
+                       unlit_emissive_color,
+                       unlit_shininess,
+                       unlit_specular_color,
+                       unlit_transparency);
+    }
+}
+
 /**
  * @brief render_appearance implementation.
  *
@@ -1542,8 +1561,8 @@ void appearance_node::do_render_appearance(viewer & v,
 
         material->modified(false);
     } else {
-        v.set_color(color(1.0, 1.0, 1.0)); // default color
         v.enable_lighting(false);   // turn lighting off for this object
+        set_unlit_material(v);
     }
 
     if (texture) {
@@ -1561,6 +1580,7 @@ void appearance_node::do_render_appearance(viewer & v,
         }
         texture->render_texture(v);
     }
+    this->node::modified(false);
 }
 
 /**
@@ -3456,7 +3476,8 @@ box_node::~box_node() throw ()
 viewer::object_t box_node::do_render_geometry(openvrml::viewer & viewer,
                                               const rendering_context context)
 {
-    return viewer.insert_box(this->size.value);
+    const viewer::object_t object_ref = viewer.insert_box(this->size.value);
+    return object_ref;
 }
 
 /**
@@ -4250,10 +4271,12 @@ cone_node::~cone_node() throw ()
 viewer::object_t cone_node::do_render_geometry(openvrml::viewer & viewer,
                                                const rendering_context context)
 {
-    return viewer.insert_cone(this->height.value,
-                              this->bottomRadius.value,
-                              this->bottom.value,
-                              this->side.value);
+    const viewer::object_t object_ref =
+        viewer.insert_cone(this->height.value,
+                           this->bottomRadius.value,
+                           this->bottom.value,
+                           this->side.value);
+    return object_ref;
 }
 
 
@@ -4823,11 +4846,13 @@ viewer::object_t
 cylinder_node::do_render_geometry(openvrml::viewer & viewer,
                                   const rendering_context context)
 {
-    return viewer.insert_cylinder(this->height.value,
-                                  this->radius.value,
-                                  this->bottom.value,
-                                  this->side.value,
-                                  this->top.value);
+    const viewer::object_t object_ref =
+        viewer.insert_cylinder(this->height.value,
+                               this->radius.value,
+                               this->bottom.value,
+                               this->side.value,
+                               this->top.value);
+    return object_ref;
 }
 
 
@@ -5901,28 +5926,27 @@ elevation_grid_node::do_render_geometry(openvrml::viewer & viewer,
 {
     viewer::object_t obj = 0;
 
+    openvrml::color_node * const colorNode =
+        node_cast<openvrml::color_node *>(this->color_.sfnode::value.get());
+    openvrml::normal_node * const normalNode =
+        node_cast<openvrml::normal_node *>(this->normal_.sfnode::value.get());
+    openvrml::texture_coordinate_node * const texCoordNode =
+        node_cast<openvrml::texture_coordinate_node *>(
+            this->tex_coord_.sfnode::value.get());
+
     if (!this->height_.mffloat::value.empty()) {
         using std::vector;
 
-        openvrml::color_node * const colorNode =
-            node_cast<openvrml::color_node *>(
-                this->color_.sfnode::value.get());
         const vector<openvrml::color> & color =
             colorNode
             ? colorNode->color()
             : vector<openvrml::color>();
 
-        openvrml::normal_node * const normalNode =
-            node_cast<openvrml::normal_node *>(
-                this->normal_.sfnode::value.get());
         const vector<vec3f> & normal =
             normalNode
             ? normalNode->vector()
             : vector<vec3f>();
 
-        openvrml::texture_coordinate_node * const texCoordNode =
-            node_cast<openvrml::texture_coordinate_node *>(
-                this->tex_coord_.sfnode::value.get());
         const vector<vec2f> & texCoord =
             texCoordNode
             ? texCoordNode->point()
@@ -5953,15 +5977,9 @@ elevation_grid_node::do_render_geometry(openvrml::viewer & viewer,
                                            texCoord);
     }
 
-    if (this->color_.sfnode::value) {
-        this->color_.sfnode::value->modified(false);
-    }
-    if (this->normal_.sfnode::value) {
-        this->normal_.sfnode::value->modified(false);
-    }
-    if (this->tex_coord_.sfnode::value) {
-        this->tex_coord_.sfnode::value->modified(false);
-    }
+    if (colorNode) { colorNode->modified(false); }
+    if (normalNode) { normalNode->modified(false); }
+    if (texCoordNode) { texCoordNode->modified(false); }
 
     return obj;
 }
@@ -8653,24 +8671,16 @@ indexed_face_set_node::do_render_geometry(openvrml::viewer & viewer,
     }
 
     const viewer::object_t obj =
-            viewer.insert_shell(optMask,
-                                coord, this->coord_index_.value,
-                                color, this->color_index_.value,
-                                normal, this->normal_index_.value,
-                                texCoord, this->tex_coord_index_.value);
+        viewer.insert_shell(optMask,
+                            coord, this->coord_index_.value,
+                            color, this->color_index_.value,
+                            normal, this->normal_index_.value,
+                            texCoord, this->tex_coord_index_.value);
 
-    if (this->color_.sfnode::value) {
-        this->color_.sfnode::value->modified(false);
-    }
-    if (this->coord_.sfnode::value) {
-        this->coord_.sfnode::value->modified(false);
-    }
-    if (this->normal_.sfnode::value) {
-        this->normal_.sfnode::value->modified(false);
-    }
-    if (this->tex_coord_.sfnode::value) {
-        this->tex_coord_.sfnode::value->modified(false);
-    }
+    if (colorNode) { colorNode->modified(false); }
+    if (coordinateNode) { coordinateNode->modified(false); }
+    if (normalNode) { normalNode->modified(false); }
+    if (texCoordNode) { texCoordNode->modified(false); }
 
     return obj;
 }
@@ -8912,14 +8922,20 @@ indexed_line_set_node::do_render_geometry(openvrml::viewer & viewer,
                                this->color_per_vertex_.value,
                                color, this->color_index_.value);
 
-    if (this->color_.sfnode::value) {
-        this->color_.sfnode::value->modified(false);
-    }
-    if (this->coord_.sfnode::value) {
-        this->coord_.sfnode::value->modified(false);
-    }
+    if (colorNode) { colorNode->modified(false); }
+    if (coordinateNode) { coordinateNode->modified(false); }
 
     return obj;
+}
+
+/**
+ * @brief Indicate that line sets should be drawn with the emissive color.
+ *
+ * @return @c true.
+ */
+bool indexed_line_set_node::do_emissive() const throw ()
+{
+    return true;
 }
 
 
@@ -12476,14 +12492,20 @@ point_set_node::do_render_geometry(openvrml::viewer & viewer,
 
     viewer::object_t obj = viewer.insert_point_set(coord, color);
 
-    if (this->color_.sfnode::value) {
-        this->color_.sfnode::value->modified(false);
-    }
-    if (this->coord_.sfnode::value) {
-        this->coord_.sfnode::value->modified(false);
-    }
+    if (colorNode) { colorNode->modified(false); }
+    if (coordinateNode) { coordinateNode->modified(false); }
 
     return obj;
+}
+
+/**
+ * @brief Indicate that point sets should be drawn with the emissive color.
+ *
+ * @return @c true.
+ */
+bool point_set_node::do_emissive() const throw ()
+{
+    return true;
 }
 
 /**
@@ -13554,17 +13576,26 @@ bool shape_node::modified() const
 void shape_node::do_render_child(openvrml::viewer & viewer,
                                  const rendering_context context)
 {
-    if (this->viewerObject && modified()) {
+    openvrml::appearance_node * const appearance =
+        node_cast<openvrml::appearance_node *>(
+            this->appearance_.sfnode::value.get());
+    openvrml::material_node * const material =
+        appearance
+        ? node_cast<openvrml::material_node *>(appearance->material().get())
+        : 0;
+    geometry_node * const geometry =
+        node_cast<geometry_node *>(this->geometry_.sfnode::value.get());
+
+    if (this->viewerObject && (this->modified()
+                               || (appearance && appearance->modified())
+                               || (geometry && geometry->modified()))) {
         viewer.remove_object(this->viewerObject);
         this->viewerObject = 0;
     }
 
-    geometry_node * g =
-        node_cast<geometry_node *>(this->geometry_.sfnode::value.get());
-
     if (this->viewerObject) {
         viewer.insert_reference(this->viewerObject);
-    } else if (g) {
+    } else if (geometry) {
         this->viewerObject = viewer.begin_object(this->id().c_str());
 
         // Don't care what color it is if we are picking
@@ -13572,31 +13603,43 @@ void shape_node::do_render_child(openvrml::viewer & viewer,
         if (!picking) {
             size_t texture_components = 0;
 
-            openvrml::appearance_node * appearance =
-                node_cast<openvrml::appearance_node *>(
-                    this->appearance_.sfnode::value.get());
-            if (!picking && appearance) {
+            if (appearance) {
                 appearance->render_appearance(viewer, context);
 
                 texture_node * const texture =
                     node_cast<texture_node *>(appearance->texture().get());
                 if (texture) { texture_components = texture->image().comp(); }
             } else {
-                viewer.set_color(color(1.0, 1.0, 1.0)); // default object color
                 viewer.enable_lighting(false);  // turn lighting off
+                set_unlit_material(viewer);
             }
 
             // hack for opengl material mode
-            viewer.set_material_mode(texture_components, g->color());
+            viewer.set_material_mode(texture_components, geometry->color());
+
+            //
+            // Set the drawing color.
+            //
+            // Most geometries are drawn using the diffuse color; but some
+            // (notably point and line sets) are drawn with the emissive color.
+            //
+            color c(1.0, 1.0, 1.0);
+            float transparency = 0.0;
+            if (material) {
+                if (geometry && geometry->emissive()) {
+                    c = material->emissive_color();
+                } else {
+                    c = material->diffuse_color();
+                }
+                transparency = material->transparency();
+            }
+            viewer.set_color(c, transparency);
         }
 
-        g->render_geometry(viewer, context);
+        geometry->render_geometry(viewer, context);
 
         viewer.end_object();
-    } else if (this->appearance_.sfnode::value) {
-        this->appearance_.sfnode::value->modified(false);
     }
-    this->node::modified(false);
 }
 
 /**
@@ -14062,7 +14105,9 @@ viewer::object_t
 sphere_node::do_render_geometry(openvrml::viewer & viewer,
                                 const rendering_context context)
 {
-    return viewer.insert_sphere(this->radius.value);
+    const viewer::object_t object_ref =
+        viewer.insert_sphere(this->radius.value);
+    return object_ref;
 }
 
 /**
@@ -16050,6 +16095,7 @@ viewer::object_t text_node::do_render_geometry(openvrml::viewer & viewer,
     if (this->font_style_.sfnode::value) {
         this->font_style_.sfnode::value->modified(false);
     }
+
     return retval;
 }
 

@@ -1,3 +1,18 @@
+2004-04-02 Braden McDaniel  <braden@endoframe.com>
+
+	Set the default drawing color (i.e., in the absence of a Color
+	node) in vrml97_node::shape_node::do_render_child.  Added
+	geometry_node::emissive to indicate whether geometry should
+	be drawn with the emissive color (rather than the diffuse
+	color).  This should resolve problems rendering line and point
+	sets with the emissive color.
+
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
 2004-03-28 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac:  Excise -rpath flag from the SDL_LIBS variable.
