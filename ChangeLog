@@ -1,5 +1,12 @@
 2003-11-08  Braden McDaniel  <braden@endoframe.com>
 
+	Fixed GLUT includes when using Apple's OpenGL framework.
+
+	* src/lookat/ViewerGlut.cpp
+	* src/lookat/lookat.cpp
+
+2003-11-08  Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/img.cpp (img::~img):  Initialize
 	img::nframes_ to 0.  Fixes crash in img destruction.
 
