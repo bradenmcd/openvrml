@@ -46,7 +46,6 @@ dnl
 AC_ENABLE_STATIC(yes)
 enable_static=yes
 AM_PROG_LIBTOOL
-AC_PROG_INSTALL
 AC_PROG_CXX
 AC_PROG_CXXCPP
 
@@ -79,6 +78,11 @@ OV_CXX_BOOL(
   ,
   AC_MSG_ERROR([Your C++ compiler does not have the required support for the 'bool' keyword. See 'config.log' for details.])
 )
+
+dnl
+dnl Make sure compiler supports auto_ptr
+dnl
+OV_CXX_AUTO_PTR(, AC_MSG_ERROR([auto_ptr not found]))
 
 
 dnl Checks for library functions.
