@@ -13,6 +13,12 @@
         * src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h:
           Made NodeVisitor destructor non-throwing.
 
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h:  Added GroupingNode
+          abstract node type.
+
 2002-12-26  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/node.h:  Made Node::visited private.

@@ -5660,7 +5660,8 @@ const NodeTypePtr GroupClass::createType(const std::string & id,
 Group::Group(const NodeType & nodeType,
              const ScopePtr & scope):
         Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
+        AbstractBase(nodeType, scope),
+        GroupingNode(nodeType, scope),
         bboxSize(-1.0, -1.0, -1.0),
         parentTransform(0),
         viewerObject(0) {
@@ -5883,6 +5884,15 @@ void Group::renderNoCull(Viewer & viewer, VrmlRenderContext context) {
     this->clearModified();
 }
 
+/**
+ * @brief Get the children in the scene graph.
+ *
+ * @return the child nodes in the scene graph.
+ */
+const MFNode & Group::getChildren() const throw ()
+{
+    return this->children;
+}
 
 /**
  * @brief Accumulate transforms
@@ -5902,20 +5912,23 @@ void Group::accumulateTransform(Node * parent) {
 /**
  * Pass on to enabled touchsensor child.
  */
-void Group::activate(double time, bool isOver, bool isActive, double *p) {
+void Group::activate(double time, bool isOver, bool isActive, double *p)
+{
     for (size_t i = 0; i < this->children.getLength(); ++i) {
-        const NodePtr & kid = this->children.getElement(i);
-
-        if (kid->toTouchSensor() && kid->toTouchSensor()->isEnabled()) {
-            kid->toTouchSensor()->activate(time, isOver, isActive, p);
-        } else if (kid->toPlaneSensor() && kid->toPlaneSensor()->isEnabled()) {
-            kid->toPlaneSensor()->activate(time, isActive, p);
-        } else if (kid->toCylinderSensor()
-                && kid->toCylinderSensor()->isEnabled()) {
-            kid->toCylinderSensor()->activate(time, isActive, p);
-        } else if (kid->toSphereSensor()
-                && kid->toSphereSensor()->isEnabled()) {
-            kid->toSphereSensor()->activate(time, isActive, p);
+        const NodePtr & node = this->children.getElement(i);
+        if (node) {
+            if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
+                node->toTouchSensor()->activate(time, isOver, isActive, p);
+            } else if (node->toPlaneSensor()
+                    && node->toPlaneSensor()->isEnabled()) {
+                node->toPlaneSensor()->activate(time, isActive, p);
+            } else if (node->toCylinderSensor()
+                    && node->toCylinderSensor()->isEnabled()) {
+                node->toCylinderSensor()->activate(time, isActive, p);
+            } else if (node->toSphereSensor()
+                    && node->toSphereSensor()->isEnabled()) {
+                node->toSphereSensor()->activate(time, isActive, p);
+            }
         }
     }
 }
@@ -6837,7 +6850,8 @@ const NodeTypePtr InlineClass::createType(const std::string & id,
 Inline::Inline(const NodeType & nodeType,
                const ScopePtr & scope):
         Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
+        AbstractBase(nodeType, scope),
+        GroupingNode(nodeType, scope),
         inlineScene(0),
         hasLoaded(false) {
     this->setBVolumeDirty(true);
@@ -6863,6 +6877,44 @@ void Inline::render(Viewer & viewer, const VrmlRenderContext context)
 }
 
 Inline * Inline::toInline() const { return const_cast<Inline *>(this); }
+
+/**
+ * @brief Get the children in the scene graph.
+ *
+ * @return the child nodes in the scene graph.
+ */
+const MFNode & Inline::getChildren() const throw ()
+{
+    static const MFNode empty;
+    return this->inlineScene
+            ? this->inlineScene->getNodes()
+            : empty;
+}
+
+/**
+ * Pass on to enabled touchsensor child.
+ */
+void Inline::activate(double time, bool isOver, bool isActive, double *p)
+{
+    const MFNode & children = this->getChildren();
+    for (size_t i = 0; i < children.getLength(); ++i) {
+        const NodePtr & node = children.getElement(i);
+        if (node) {
+            if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
+                node->toTouchSensor()->activate(time, isOver, isActive, p);
+            } else if (node->toPlaneSensor()
+                    && node->toPlaneSensor()->isEnabled()) {
+                node->toPlaneSensor()->activate(time, isActive, p);
+            } else if (node->toCylinderSensor()
+                    && node->toCylinderSensor()->isEnabled()) {
+                node->toCylinderSensor()->activate(time, isActive, p);
+            } else if (node->toSphereSensor()
+                    && node->toSphereSensor()->isEnabled()) {
+                node->toSphereSensor()->activate(time, isActive, p);
+            }
+        }
+    }
+}
 
 /**
  * @brief Load the children from the URL.
@@ -6990,8 +7042,11 @@ const NodeTypePtr LODClass::createType(const std::string & id,
  */
 LOD::LOD(const NodeType & nodeType,
          const ScopePtr & scope):
-        Node(nodeType, scope),
-        AbstractChild(nodeType, scope) {
+    Node(nodeType, scope),
+    AbstractBase(nodeType, scope),
+    GroupingNode(nodeType, scope),
+    children(1)
+{
     this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
@@ -7091,6 +7146,39 @@ const BVolume * LOD::getBVolume() const {
         ((LOD*)this)->recalcBSphere();
     }
     return &this->bsphere;
+}
+
+/**
+ * @brief Get the children in the scene graph.
+ *
+ * @return the child nodes in the scene graph.
+ */
+const MFNode & LOD::getChildren() const throw ()
+{
+    return this->children;
+}
+
+/**
+ * Pass on to enabled touchsensor child.
+ */
+void LOD::activate(double time, bool isOver, bool isActive, double *p)
+{
+    const MFNode & children = this->getChildren();
+    const NodePtr & node = children.getElement(0);
+    if (node) {
+        if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
+            node->toTouchSensor()->activate(time, isOver, isActive, p);
+        } else if (node->toPlaneSensor()
+                && node->toPlaneSensor()->isEnabled()) {
+            node->toPlaneSensor()->activate(time, isActive, p);
+        } else if (node->toCylinderSensor()
+                && node->toCylinderSensor()->isEnabled()) {
+            node->toCylinderSensor()->activate(time, isActive, p);
+        } else if (node->toSphereSensor()
+                && node->toSphereSensor()->isEnabled()) {
+            node->toSphereSensor()->activate(time, isActive, p);
+        }
+    }
 }
 
 /**
@@ -12174,6 +12262,12 @@ const NodeTypePtr SwitchClass::createType(const std::string & id,
  */
 
 /**
+ * @var MFNode Switch::children
+ *
+ * @brief The children currently in the scene graph.
+ */
+
+/**
  * @var BSphere Switch::bsphere
  *
  * @brief Cached copy of the bsphere enclosing this node's children.
@@ -12188,8 +12282,11 @@ const NodeTypePtr SwitchClass::createType(const std::string & id,
 Switch::Switch(const NodeType & nodeType,
                const ScopePtr & scope):
         Node(nodeType, scope),
-        AbstractChild(nodeType, scope),
-        whichChoice(-1) {
+        AbstractBase(nodeType, scope),
+        GroupingNode(nodeType, scope),
+        whichChoice(-1),
+        children(1)
+{
     this->setBVolumeDirty(true);
 }
 
@@ -12246,9 +12343,8 @@ void Switch::updateModified(NodePath & path, int flags) {
  */
 void Switch::render(Viewer & viewer, const VrmlRenderContext context)
 {
-    long w = this->whichChoice.get();
-    if (w >= 0 && size_t(w) < this->choice.getLength()) {
-        this->choice.getElement(w)->render(viewer, context);
+    if (this->children.getElement(0)) {
+        this->children.getElement(0)->render(viewer, context);
     }
     this->clearModified();
 }
@@ -12263,6 +12359,39 @@ const BVolume* Switch::getBVolume() const {
         ((Switch*)this)->recalcBSphere();
     }
     return &this->bsphere;
+}
+
+/**
+ * @brief Get the children in the scene graph.
+ *
+ * @return the child nodes in the scene graph.
+ */
+const MFNode & Switch::getChildren() const throw ()
+{
+    return this->children;
+}
+
+/**
+ * Pass on to enabled touchsensor child.
+ */
+void Switch::activate(double time, bool isOver, bool isActive, double *p)
+{
+    const MFNode & children = this->getChildren();
+    const NodePtr & node = children.getElement(0);
+    if (node) {
+        if (node->toTouchSensor() && node->toTouchSensor()->isEnabled()) {
+            node->toTouchSensor()->activate(time, isOver, isActive, p);
+        } else if (node->toPlaneSensor()
+                && node->toPlaneSensor()->isEnabled()) {
+            node->toPlaneSensor()->activate(time, isActive, p);
+        } else if (node->toCylinderSensor()
+                && node->toCylinderSensor()->isEnabled()) {
+            node->toCylinderSensor()->activate(time, isActive, p);
+        } else if (node->toSphereSensor()
+                && node->toSphereSensor()->isEnabled()) {
+            node->toSphereSensor()->activate(time, isActive, p);
+        }
+    }
 }
 
 /**
@@ -12292,8 +12421,13 @@ void Switch::recalcBSphere() {
  */
 void Switch::processSet_choice(const FieldValue & mfnode,
                                const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->choice = dynamic_cast<const MFNode &>(mfnode);
+    const size_t whichChoice = size_t(this->whichChoice.get());
+    this->children.setElement(0, (whichChoice < this->choice.getLength())
+                                    ? this->choice.getElement(whichChoice)
+                                    : NodePtr(0));
     this->setModified();
     this->emitEvent("choice_changed", this->choice, timestamp);
 }
@@ -12309,8 +12443,13 @@ void Switch::processSet_choice(const FieldValue & mfnode,
  */
 void Switch::processSet_whichChoice(const FieldValue & sfint32,
                                     const double timestamp)
-        throw (std::bad_cast) {
+    throw (std::bad_cast)
+{
     this->whichChoice = dynamic_cast<const SFInt32 &>(sfint32);
+    const size_t whichChoice = size_t(this->whichChoice.get());
+    this->children.setElement(0, (whichChoice < this->choice.getLength())
+                                    ? this->choice.getElement(whichChoice)
+                                    : NodePtr(0));
     this->setModified();
     this->emitEvent("whichChoice_changed", this->whichChoice, timestamp);
 }

@@ -185,6 +185,7 @@ namespace OpenVRML {
     class CoordinateNode;
     class FontStyleNode;
     class GeometryNode;
+    class GroupingNode;
     class MaterialNode;
     class NormalNode;
     class SoundSourceNode;
@@ -197,7 +198,6 @@ namespace OpenVRML {
         class Anchor;
         class AudioClip;
         class CylinderSensor;
-        class Group;
         class AbstractLight;
         class MovieTexture;
         class NavigationInfo;
@@ -296,6 +296,8 @@ namespace OpenVRML {
         virtual FontStyleNode * toFontStyle() throw () ;
         virtual const GeometryNode * toGeometry() const throw ();
         virtual GeometryNode * toGeometry() throw ();
+        virtual const GroupingNode * toGrouping() const throw ();
+        virtual GroupingNode * toGrouping() throw ();
         virtual const MaterialNode * toMaterial() const throw ();
         virtual MaterialNode * toMaterial() throw ();
         virtual const NormalNode * toNormal() const throw ();
@@ -314,7 +316,6 @@ namespace OpenVRML {
         virtual Vrml97Node::Anchor * toAnchor() const;
         virtual Vrml97Node::AudioClip * toAudioClip() const;
         virtual Vrml97Node::CylinderSensor * toCylinderSensor() const;
-        virtual Vrml97Node::Group * toGroup() const;
         virtual Vrml97Node::AbstractLight * toLight() const;
         virtual Vrml97Node::MovieTexture * toMovieTexture() const;
         virtual Vrml97Node::NavigationInfo * toNavigationInfo() const;
@@ -517,6 +518,22 @@ namespace OpenVRML {
 
     protected:
         GeometryNode(const NodeType & nodeType, const ScopePtr & scope);
+    };
+
+
+    class OPENVRML_SCOPE GroupingNode : public ChildNode {
+    public:
+        virtual ~GroupingNode() throw () = 0;
+
+        virtual const GroupingNode * toGrouping() const throw ();
+        virtual GroupingNode * toGrouping() throw ();
+
+        virtual const MFNode & getChildren() const throw () = 0;
+        virtual void activate(double timestamp, bool over, bool active,
+                              double *p) = 0;
+
+    protected:
+        GroupingNode(const NodeType & nodeType, const ScopePtr & scope);
     };
 
 

@@ -1357,6 +1357,30 @@ GeometryNode * Node::toGeometry() throw ()
 }
 
 /**
+ * @brief Cast to a const GroupingNode.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+const GroupingNode * Node::toGrouping() const throw ()
+{
+    return 0;
+}
+
+/**
+ * @brief Cast to a GroupingNode.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+GroupingNode * Node::toGrouping() throw ()
+{
+    return 0;
+}
+
+/**
  * @brief Cast to a const MaterialNode.
  *
  * Default implementation returns 0.
@@ -1510,8 +1534,6 @@ TextureTransformNode * Node::toTextureTransform() throw ()
 Vrml97Node::Anchor * Node::toAnchor() const { return 0; }
 
 Vrml97Node::AudioClip * Node::toAudioClip() const { return 0; }
-
-Vrml97Node::Group * Node::toGroup() const { return 0; }
 
 Vrml97Node::AbstractLight * Node::toLight() const { return 0; }
 
@@ -2341,6 +2363,58 @@ const ColorNode * GeometryNode::getColor() const throw ()
 {
     return 0;
 }
+
+
+/**
+ * @class GroupingNode
+ *
+ * @brief Abstract base class for grouping nodes.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param nodeType  the NodeType associated with the node.
+ * @param scope     the Scope the node belongs to.
+ */
+GroupingNode::GroupingNode(const NodeType & nodeType, const ScopePtr & scope):
+    Node(nodeType, scope),
+    ChildNode(nodeType, scope)
+{}
+
+/**
+ * @brief Destructor.
+ */
+GroupingNode::~GroupingNode() throw ()
+{}
+
+/**
+ * @brief Cast to a GroupingNode.
+ *
+ * @return a pointer to this GroupingNode.
+ */
+const GroupingNode * GroupingNode::toGrouping() const throw ()
+{
+    return this;
+}
+
+/**
+ * @brief Cast to a GroupingNode.
+ *
+ * @return a pointer to this GroupingNode.
+ */
+GroupingNode * GroupingNode::toGrouping() throw ()
+{
+    return this;
+}
+
+/**
+ * @fn const MFNode & GroupingNode::getChildren() const throw ()
+ *
+ * @brief Get the children in the scene graph.
+ *
+ * @return the child nodes in the scene graph.
+ */
 
 
 /**

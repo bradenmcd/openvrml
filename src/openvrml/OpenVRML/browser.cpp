@@ -200,7 +200,6 @@ namespace OpenVRML {
         virtual Vrml97Node::Anchor * toAnchor() const;
         virtual Vrml97Node::AudioClip * toAudioClip() const;
         virtual Vrml97Node::CylinderSensor * toCylinderSensor() const;
-        virtual Vrml97Node::Group * toGroup() const;
         virtual Vrml97Node::AbstractLight * toLight() const;
         virtual Vrml97Node::MovieTexture * toMovieTexture() const;
         virtual Vrml97Node::NavigationInfo * toNavigationInfo() const;
@@ -1037,7 +1036,7 @@ void Browser::sensitiveEvent(Node * const n,
             //
             // The parent grouping node is registered for Touch/Drag Sensors.
             //
-            Vrml97Node::Group * g = n->toGroup();
+            GroupingNode * const g = n->toGrouping();
             if (g) {
                 g->activate(timeStamp, isOver, isActive, point);
                 setModified();
@@ -3337,10 +3336,6 @@ Vrml97Node::AudioClip * ProtoNode::toAudioClip() const {
 
 Vrml97Node::CylinderSensor * ProtoNode::toCylinderSensor() const {
     return this->implNodes.getElement(0)->toCylinderSensor();
-}
-
-Vrml97Node::Group * ProtoNode::toGroup() const {
-    return this->implNodes.getElement(0)->toGroup();
 }
 
 Vrml97Node::AbstractLight * ProtoNode::toLight() const {

@@ -196,7 +196,8 @@ namespace OpenVRML {
                     throw (UnsupportedInterface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE Group : public AbstractChild {
+        class OPENVRML_SCOPE Group : public AbstractBase,
+                                     public GroupingNode {
             friend class GroupClass;
 
         protected:
@@ -227,8 +228,10 @@ namespace OpenVRML {
 
             virtual void accumulateTransform(Node*);
 
+            virtual const MFNode & getChildren() const throw ();
+            virtual void activate(double timeStamp, bool isOver, bool isActive, double *p);
+
             void renderNoCull(Viewer & viewer, VrmlRenderContext context);
-            void activate(double timeStamp, bool isOver, bool isActive, double *p);
 
             virtual Node* getParentTransform();
 
@@ -1279,7 +1282,8 @@ namespace OpenVRML {
                     throw (UnsupportedInterface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE Inline : public AbstractChild {
+        class OPENVRML_SCOPE Inline : public AbstractBase,
+                                      public GroupingNode {
             friend class InlineClass;
 
             SFVec3f bboxCenter;
@@ -1296,6 +1300,10 @@ namespace OpenVRML {
 
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             virtual Inline * toInline() const;
+
+            virtual const MFNode & getChildren() const throw ();
+            virtual void activate(double timestamp, bool over, bool active,
+                                  double * p);
 
         private:
             void load();
@@ -1318,13 +1326,15 @@ namespace OpenVRML {
                     throw (UnsupportedInterface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE LOD : public AbstractChild {
+        class OPENVRML_SCOPE LOD : public AbstractBase,
+                                   public GroupingNode {
             friend class LODClass;
 
             MFNode level;
             SFVec3f center;
             MFFloat range;
 
+            MFNode children;
             BSphere bsphere;
 
         public:
@@ -1336,6 +1346,10 @@ namespace OpenVRML {
             virtual void updateModified(NodePath & path, int flags = 0x003);
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             virtual const BVolume * getBVolume() const;
+
+            virtual const MFNode & getChildren() const throw ();
+            virtual void activate(double timestamp, bool over, bool active,
+                                  double * p);
 
         private:
             //
@@ -2174,12 +2188,14 @@ namespace OpenVRML {
                     throw (UnsupportedInterface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE Switch : public AbstractChild {
+        class OPENVRML_SCOPE Switch : public AbstractBase,
+                                      public GroupingNode {
             friend class SwitchClass;
 
             MFNode choice;
             SFInt32 whichChoice;
 
+            MFNode children;
             BSphere bsphere;
 
         public:
@@ -2191,6 +2207,10 @@ namespace OpenVRML {
             virtual void updateModified(NodePath & path, int flags = 0x003);
             virtual void render(Viewer & viewer, VrmlRenderContext context);
             virtual const BVolume * getBVolume() const;
+
+            virtual const MFNode & getChildren() const throw ();
+            virtual void activate(double timestamp, bool over, bool active,
+                                  double * p);
 
         private:
             //
