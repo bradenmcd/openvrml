@@ -72,7 +72,7 @@ ostream& VrmlNodeCone::printFields(ostream& os, int indent)
   return os;
 }
 
-Viewer::Object VrmlNodeCone::insertGeometry(Viewer *viewer)
+Viewer::Object VrmlNodeCone::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   return viewer->insertCone(d_height.get(),
 			    d_bottomRadius.get(),

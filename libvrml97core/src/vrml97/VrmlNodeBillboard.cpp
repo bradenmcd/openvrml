@@ -66,7 +66,7 @@ ostream& VrmlNodeBillboard::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeBillboard::render(Viewer *viewer)
+void VrmlNodeBillboard::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if ( d_xformObject && isModified() )
     {
@@ -84,7 +84,7 @@ void VrmlNodeBillboard::render(Viewer *viewer)
       viewer->setBillboardTransform( d_axisOfRotation.get() );
 
       // Render children
-      VrmlNodeGroup::render(viewer);
+      VrmlNodeGroup::render(viewer, rc);
 
       viewer->unsetBillboardTransform( d_axisOfRotation.get() );
 

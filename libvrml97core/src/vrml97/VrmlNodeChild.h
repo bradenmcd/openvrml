@@ -10,6 +10,9 @@
 #include "VrmlNode.h"
 class VrmlNodeScene;
 
+/**
+ * Base class for all nodes that may be children of a Group node. 
+ */
 class VrmlNodeChild : public VrmlNode {
 
 public:

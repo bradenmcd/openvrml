@@ -4,8 +4,8 @@
 //
 //  VrmlNodeCone.h
 
-#ifndef VRMLNODECONE_H
-#define VRMLNODECONE_H
+#ifndef  _VRMLNODECONE_
+#define  _VRMLNODECONE_
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlSFBool.h"
@@ -28,7 +28,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual Viewer::Object insertGeometry(Viewer *);
+  virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
@@ -47,4 +47,5 @@ protected:
 
 };
 
-#endif
+#endif _VRMLNODECONE_
+

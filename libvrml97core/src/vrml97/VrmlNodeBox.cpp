@@ -10,6 +10,7 @@
 #include "VrmlNodeType.h"
 #include "MathUtils.h"
 #include "Viewer.h"
+#include "VrmlBSphere.h"
 
 
 // Make a VrmlNodeBox
@@ -45,6 +46,7 @@ VrmlNodeBox::VrmlNodeBox(VrmlScene *scene) :
   VrmlNodeGeometry(scene),
   d_size(2.0, 2.0, 2.0)
 {
+  setBVolumeDirty(true); // lazy calc of bvolume
 }
 
 VrmlNodeBox::~VrmlNodeBox()
@@ -66,7 +68,7 @@ ostream& VrmlNodeBox::printFields(ostream& os, int )
   return os;
 }
 
-Viewer::Object VrmlNodeBox::insertGeometry(Viewer *viewer)
+Viewer::Object VrmlNodeBox::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   return viewer->insertBox(d_size.x(), d_size.y(), d_size.z());
 }
@@ -79,6 +81,7 @@ void VrmlNodeBox::setField(const char *fieldName,
   if TRY_FIELD(size, SFVec3f)
   else
     VrmlNodeGeometry::setField(fieldName, fieldValue);
+  setBVolumeDirty(true);
 }
 
 VrmlNodeBox* VrmlNodeBox::toBox() const //LarryD Mar 08/99
@@ -86,3 +89,21 @@ VrmlNodeBox* VrmlNodeBox::toBox() const //LarryD Mar 08/99
 
 const VrmlSFVec3f& VrmlNodeBox::getSize() const   // LarryD Mar 08/99
 {  return d_size; }
+
+const VrmlBVolume*
+VrmlNodeBox::getBVolume() const
+{
+  //cout << "VrmlNodeBox::getBVolume()" << endl;
+  //static VrmlBSphere* box_sphere = (VrmlBSphere*)0;
+  //if (!box_sphere) 
+  //box_sphere = new VrmlBSphere();
+  if (this->isBVolumeDirty()) {
+    float corner[3] = { d_size.x()/2.0f, d_size.y()/2.0f, d_size.z()/2.0f };
+    float r = Vlength(corner);
+    d_bsphere.setRadius(r);
+    ((VrmlNode*)this)->setBVolumeDirty(false); // logical const
+  }
+  //cout << "VrmlNodeBox::getBVolume():";
+  //box_sphere->dump(cout) << endl;
+  return &d_bsphere;
+}

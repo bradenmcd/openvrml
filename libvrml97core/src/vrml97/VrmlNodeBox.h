@@ -9,6 +9,7 @@
 
 #include "VrmlNodeGeometry.h"
 #include "VrmlSFVec3f.h"
+#include "VrmlBSphere.h"
 
 class VrmlScene;
 
@@ -27,16 +28,19 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual Viewer::Object insertGeometry(Viewer *);
+  virtual Viewer::Object insertGeometry(Viewer *, VrmlRenderContext rc);
 
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
   virtual VrmlNodeBox* toBox() const; //LarryD Mar 08/99
   virtual const VrmlSFVec3f& getSize() const;  //LarryD Mar 08/99
 
+  const VrmlBVolume* getBVolume() const;
+
 protected:
 
   VrmlSFVec3f d_size;
+  VrmlBSphere d_bsphere;
 
 };
 

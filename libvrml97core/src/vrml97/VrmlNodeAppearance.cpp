@@ -83,6 +83,16 @@ bool VrmlNodeAppearance::isModified() const
 	    d_textureTransform.get()->isModified()) );
 }
 
+void VrmlNodeAppearance::updateModified(VrmlNodePath& path)
+{
+  if (this->isModified()) markPathModified(path, true);
+  path.push_front(this);
+  if (d_material.get()) d_material.get()->updateModified(path);
+  if (d_texture.get()) d_texture.get()->updateModified(path);
+  if (d_textureTransform.get()) d_textureTransform.get()->updateModified(path);
+  path.pop_front();
+}
+
 void VrmlNodeAppearance::clearFlags()
 {
   VrmlNode::clearFlags();
@@ -124,7 +134,7 @@ ostream& VrmlNodeAppearance::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeAppearance::render(Viewer *viewer)
+void VrmlNodeAppearance::render(Viewer *viewer, VrmlRenderContext rc)
 {
   VrmlNodeMaterial *m = d_material.get() ? d_material.get()->toMaterial() : 0;
   VrmlNodeTexture *t = d_texture.get() ? d_texture.get()->toTexture() : 0;
@@ -159,11 +169,11 @@ void VrmlNodeAppearance::render(Viewer *viewer)
   if (t)
     {
       if (d_textureTransform.get())
-	d_textureTransform.get()->render(viewer);
+	d_textureTransform.get()->render(viewer, rc);
       else
 	viewer->setTextureTransform( 0, 0, 0, 0 );
 
-      t->render(viewer);
+      t->render(viewer, rc);
     }
 
   clearModified();
@@ -195,4 +205,3 @@ void VrmlNodeAppearance::setField(const char *fieldName,
   else
     VrmlNode::setField(fieldName, fieldValue);
 }
-

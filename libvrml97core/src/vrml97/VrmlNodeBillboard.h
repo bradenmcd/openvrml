@@ -26,7 +26,7 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   virtual void accumulateTransform(VrmlNode*);
   virtual VrmlNode* getParentTransform();

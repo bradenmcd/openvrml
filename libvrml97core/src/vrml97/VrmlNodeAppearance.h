@@ -31,6 +31,7 @@ public:
   virtual VrmlNodeAppearance* toAppearance() const;
 
   virtual bool isModified() const;
+  virtual void updateModified(VrmlNodePath& path);
   virtual void clearFlags();	// Clear childrens flags too.
 
   virtual void addToScene( VrmlScene *s, const char *relativeUrl );
@@ -39,11 +40,11 @@ public:
 
   virtual ostream& printFields(ostream& os, int indent);
 
-  virtual void render(Viewer *);
+  virtual void render(Viewer *, VrmlRenderContext rc);
 
   // Get a field or eventOut by name.
   virtual const VrmlField *getField(const char *fieldName) const;
-  
+
   virtual void setField(const char *fieldName,
 			const VrmlField &fieldValue);
 
@@ -60,4 +61,5 @@ protected:
 
 };
 
-#endif
+#endif // VRMLNODEAPPEARANCE_H
+

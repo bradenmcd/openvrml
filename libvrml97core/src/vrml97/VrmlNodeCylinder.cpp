@@ -77,7 +77,7 @@ ostream& VrmlNodeCylinder::printFields(ostream& os, int indent)
 }
 
 
-Viewer::Object VrmlNodeCylinder::insertGeometry(Viewer *viewer)
+Viewer::Object VrmlNodeCylinder::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
   return viewer->insertCylinder(d_height.get(),
 				d_radius.get(),
