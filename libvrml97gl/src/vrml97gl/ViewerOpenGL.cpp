@@ -355,7 +355,8 @@ void ViewerOpenGL::getOrientation( float *orientation )
 // get rid of this asap: change over to use the transformation matrix
 // accumulated during render traversal. -cks
 //
-void ViewerOpenGL::getBillboardTransformMatrix(float M[4][4], float *axisOfRotation)
+void ViewerOpenGL::getBillboardTransformMatrix(float M[4][4],
+                                               const float axisOfRotation[3])
 {
   GLfloat modelview[16],invert[9];
   glGetFloatv (GL_MODELVIEW_MATRIX, modelview);
@@ -2374,11 +2375,11 @@ void ViewerOpenGL::setTextureTransform( float *center,
 // Transforms
 // P' = T x C x R x SR x S x -SR x -C x P
 
-void ViewerOpenGL::setTransform(float * center,
-				float * rotation,
-				float * scale,
-				float * scaleOrientation,
-				float * translation) 
+void ViewerOpenGL::setTransform(const float center[3],
+				const float rotation[4],
+				const float scale[3],
+				const float scaleOrientation[4],
+				const float translation[3]) 
 {
   //cout << "ViewerOpenGL::setTransform()" << endl;
   glTranslatef(translation[0], translation[1], translation[2]);
@@ -2418,11 +2419,11 @@ void ViewerOpenGL::setTransform(float * center,
 // after a setTransform/unsetTransform may not be identical to the original.
 // It might be better to just build our own matrix stack...
 
-void ViewerOpenGL::unsetTransform(float *center,
-				  float *rotation,
-				  float *scale,
-				  float *scaleOrientation,
-				  float *translation)
+void ViewerOpenGL::unsetTransform(const float center[3],
+				  const float rotation[4],
+				  const float scale[3],
+				  const float scaleOrientation[4],
+				  const float translation[3])
 {
   glTranslatef(center[0], center[1], center[2]);
 
@@ -2460,7 +2461,7 @@ void ViewerOpenGL::unsetTransform(float *center,
 // depth limit of 32 in mesa. Now the limit only applies to 
 // nested billboards.
 
-void ViewerOpenGL::setBillboardTransform(float *axisOfRotation) 
+void ViewerOpenGL::setBillboardTransform(const float axisOfRotation[3]) 
 {
 // Following code is modified by S. K. Bose March 02/2000 to fix the Billboardtransform
 // according to the specification.
@@ -2473,7 +2474,7 @@ void ViewerOpenGL::setBillboardTransform(float *axisOfRotation)
 
 }
 
-void ViewerOpenGL::unsetBillboardTransform(float * /*axisOfRotation*/)
+void ViewerOpenGL::unsetBillboardTransform(const float axisOfRotation[3])
 {
   glPopMatrix();
 }

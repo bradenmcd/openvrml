@@ -107,14 +107,14 @@ ostream& VrmlNodeViewpoint::printFields(ostream& os, int indent)
   if (! FPEQUAL( d_fieldOfView.get(), DEFAULT_FIELD_OF_VIEW))
     PRINT_FIELD(fieldOfView);
   if (! d_jump.get()) PRINT_FIELD(jump);
-  if (! FPZERO(d_orientation.x()) ||
-      ! FPZERO(d_orientation.y()) ||
-      ! FPEQUAL(d_orientation.z(), 1.0) ||
-      ! FPZERO(d_orientation.r()) )
+  if (! FPZERO(d_orientation.getX()) ||
+      ! FPZERO(d_orientation.getY()) ||
+      ! FPEQUAL(d_orientation.getZ(), 1.0) ||
+      ! FPZERO(d_orientation.getAngle()) )
     PRINT_FIELD(orientation);
-  if (! FPZERO(d_position.x()) ||
-      ! FPZERO(d_position.y()) ||
-      ! FPEQUAL(d_position.z(), 10.0) )
+  if (! FPZERO(d_position.getX()) ||
+      ! FPZERO(d_position.getY()) ||
+      ! FPEQUAL(d_position.getZ(), 10.0) )
     PRINT_FIELD(position);
   if (d_description.get()) PRINT_FIELD(description);
 
@@ -241,17 +241,17 @@ void VrmlNodeViewpoint::getInverseMatrix(double IM[4][4]) const
 
   double rot_mat[4][4];
   float rot_aa[4];
-  rot_aa[0] =  d_orientation.x();
-  rot_aa[1] =  d_orientation.y();
-  rot_aa[2] =  d_orientation.z();
-  rot_aa[3] = -d_orientation.r();
+  rot_aa[0] =  d_orientation.getX();
+  rot_aa[1] =  d_orientation.getY();
+  rot_aa[2] =  d_orientation.getZ();
+  rot_aa[3] = -d_orientation.getAngle();
   Mrotation(rot_mat, rot_aa);
 
   double pos_mat[4][4];
   float pos_vec[3];
-  pos_vec[0] = -d_position.x();
-  pos_vec[1] = -d_position.y();
-  pos_vec[2] = -d_position.z();
+  pos_vec[0] = -d_position.getX();
+  pos_vec[1] = -d_position.getY();
+  pos_vec[2] = -d_position.getZ();
   Mtranslation(pos_mat, pos_vec);
 
   //MM(IM, pos_mat, rot_mat);
@@ -272,4 +272,20 @@ const VrmlBVolume* VrmlNodeViewpoint::getBVolume() const
     inf_bsphere = new VrmlBSphere();
   }
   return inf_bsphere;
+}
+
+const VrmlSFFloat & VrmlNodeViewpoint::getFieldOfView() const {
+    return this->d_fieldOfView;
+}
+
+const VrmlSFRotation & VrmlNodeViewpoint::getOrientation() const {
+    return this->d_orientation;
+}
+
+const VrmlSFVec3f & VrmlNodeViewpoint::getPosition() const {
+    return this->d_position;
+}
+
+const VrmlSFString & VrmlNodeViewpoint::getDescription() const {
+    return this->d_description;
 }

@@ -1053,22 +1053,21 @@ static JSBool
 rot_multiply(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 	     jsval *rval)
 {
-  VrmlSFRotation *r1 = (VrmlSFRotation *)JS_GetPrivate( cx, obj );
-  VrmlSFRotation *r2 = 0;
+  const VrmlSFRotation * const r1 =
+          reinterpret_cast<const VrmlSFRotation *>(JS_GetPrivate(cx, obj));
+  const VrmlSFRotation * r2 = 0;
   JSObject *r3obj = 0;
 
   // Verify that we have 2 SFRotation's && create a result
   if (r1 && argc > 0 &&
       JSVAL_IS_OBJECT(argv[0]) &&
       &SFRotationClass == JS_GetClass( JSVAL_TO_OBJECT(argv[0]) ) &&
-      (r2 = (VrmlSFRotation *)JS_GetPrivate( cx, JSVAL_TO_OBJECT(argv[0]))) &&
+      (r2 = reinterpret_cast<const VrmlSFRotation *>(JS_GetPrivate( cx, JSVAL_TO_OBJECT(argv[0])))) &&
       (((VrmlField*)r2)->fieldType() == VrmlField::SFROTATION) &&
       (r3obj = JS_NewObject( cx, &SFRotationClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFRotation *r3 = (VrmlSFRotation*) (r1->clone());
-      r3->multiply( r2 );
-      JS_SetPrivate( cx, r3obj, r3 );
+      JS_SetPrivate( cx, r3obj, new VrmlSFRotation(r1->multiply(*r2));
       *rval = OBJECT_TO_JSVAL(r3obj);
       return JS_TRUE;
     }
@@ -1344,22 +1343,21 @@ vec2f_subtract(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
 static JSBool
 vec3f_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-  VrmlSFVec3f *v1 = (VrmlSFVec3f *)JS_GetPrivate( cx, obj );
-  VrmlSFVec3f *v2 = 0;
+  const VrmlSFVec3f * const v1 =
+          reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+  const VrmlSFVec3f * v2 = 0;
   JSObject *v3obj = 0;
 
   // Verify that we have 2 SFVec3f's && create a result
   if (v1 && argc > 0 &&
       JSVAL_IS_OBJECT(argv[0]) &&
       &SFVec3fClass == JS_GetClass( JSVAL_TO_OBJECT(argv[0]) ) &&
-      (v2 = (VrmlSFVec3f *)JS_GetPrivate( cx, JSVAL_TO_OBJECT(argv[0]))) &&
+      (v2 = reinterpret_cast<const VrmlSFVec3f *>(JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])))) &&
       (((VrmlField*)v2)->fieldType() == VrmlField::SFVEC3F) &&
       (v3obj = JS_NewObject( cx, &SFVec3fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec3f *v3 = (VrmlSFVec3f*) (v1->clone());
-      v3->add( v2 );
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec3f(v1->add(*v2)));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1406,9 +1404,7 @@ vec3f_divide(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
       (v3obj = JS_NewObject( cx, &SFVec3fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec3f *v3 = (VrmlSFVec3f*) (v1->clone());
-      v3->divide( d );
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec3f(v1->divide(d)));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1457,7 +1453,8 @@ vec3f_length(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
 static JSBool
 vec3f_multiply(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-  VrmlSFVec3f *v1 = (VrmlSFVec3f *)JS_GetPrivate( cx, obj );
+  const VrmlSFVec3f * const v1 =
+          reinterpret_cast<const VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
   jsdouble d = 0.0;
   JSObject *v3obj = 0;
 
@@ -1467,9 +1464,7 @@ vec3f_multiply(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
       (v3obj = JS_NewObject( cx, &SFVec3fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec3f *v3 = (VrmlSFVec3f*) (v1->clone());
-      v3->multiply( d );
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec3f(v1->multiply(d)));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1480,16 +1475,15 @@ vec3f_multiply(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rva
 static JSBool
 vec3f_negate(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
 {
-  VrmlSFVec3f *v1 = (VrmlSFVec3f *)JS_GetPrivate( cx, obj );
+  const VrmlSFVec3f * const v1 =
+          reinterpret_cast<const VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
   JSObject *v3obj = 0;
 
   if (v1 &&
       (v3obj = JS_NewObject( cx, &SFVec3fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec3f *v3 = (VrmlSFVec3f*) (v1->clone());
-      v3->multiply( -1.0 );
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate( cx, v3obj, new VrmlSFVec3f(v1->negate()));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1500,16 +1494,15 @@ vec3f_negate(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
 static JSBool
 vec3f_normalize(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
 {
-  VrmlSFVec3f *v1 = (VrmlSFVec3f *)JS_GetPrivate( cx, obj );
+  const VrmlSFVec3f * const v1 =
+          reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
   JSObject *v3obj = 0;
 
   if (v1 &&
       (v3obj = JS_NewObject( cx, &SFVec3fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec3f *v3 = (VrmlSFVec3f*) (v1->clone());
-      v3->normalize();
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec3f(v1->normalize());
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }
@@ -1520,22 +1513,21 @@ vec3f_normalize(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
 static JSBool
 vec3f_subtract(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
-  VrmlSFVec3f *v1 = (VrmlSFVec3f *)JS_GetPrivate( cx, obj );
-  VrmlSFVec3f *v2 = 0;
+  const VrmlSFVec3f * const v1 =
+          reinterpret_cast<const VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+  const VrmlSFVec3f * v2 = 0;
   JSObject *v3obj = 0;
 
   // Verify that we have 2 SFVec3f's && create a result
   if (v1 && argc > 0 &&
       JSVAL_IS_OBJECT(argv[0]) &&
       &SFVec3fClass == JS_GetClass( JSVAL_TO_OBJECT(argv[0]) ) &&
-      (v2 = (VrmlSFVec3f *)JS_GetPrivate( cx, JSVAL_TO_OBJECT(argv[0]))) &&
+      (v2 = reinterpret_cast<const VrmlSFVec3f *>(JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])))) &&
       (((VrmlField*)v2)->fieldType() == VrmlField::SFVEC3F) &&
       (v3obj = JS_NewObject( cx, &SFVec3fClass, 0,
 			     JS_GetParent( cx, obj ) )) != 0)
     {
-      VrmlSFVec3f *v3 = (VrmlSFVec3f*) (v1->clone());
-      v3->subtract( v2 );
-      JS_SetPrivate( cx, v3obj, v3 );
+      JS_SetPrivate(cx, v3obj, new VrmlSFVec3f(v1->subtract(*v2));
       *rval = OBJECT_TO_JSVAL(v3obj);
       return JS_TRUE;
     }

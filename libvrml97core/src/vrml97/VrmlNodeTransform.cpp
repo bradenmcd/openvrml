@@ -101,27 +101,27 @@ VrmlNode *VrmlNodeTransform::cloneMe() const
 
 ostream& VrmlNodeTransform::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_center.x()) ||
-      ! FPZERO(d_center.y()) ||
-      ! FPZERO(d_center.z()))
+  if (! FPZERO(d_center.getX()) ||
+      ! FPZERO(d_center.getY()) ||
+      ! FPZERO(d_center.getZ()))
     PRINT_FIELD(center);
-  if (! FPZERO(d_rotation.x()) ||
-      ! FPZERO(d_rotation.y()) ||
-      ! FPEQUAL(d_rotation.z(), 1.0) ||
-      ! FPZERO(d_rotation.r()))
+  if (! FPZERO(d_rotation.getX()) ||
+      ! FPZERO(d_rotation.getY()) ||
+      ! FPEQUAL(d_rotation.getZ(), 1.0) ||
+      ! FPZERO(d_rotation.getAngle()))
     PRINT_FIELD(rotation);
-  if (! FPEQUAL(d_scale.x(), 1.0) ||
-      ! FPEQUAL(d_scale.y(), 1.0) ||
-      ! FPEQUAL(d_scale.z(), 1.0))
+  if (! FPEQUAL(d_scale.getX(), 1.0) ||
+      ! FPEQUAL(d_scale.getY(), 1.0) ||
+      ! FPEQUAL(d_scale.getZ(), 1.0))
     PRINT_FIELD(scale);
-  if (! FPZERO(d_scaleOrientation.x()) ||
-      ! FPZERO(d_scaleOrientation.y()) ||
-      ! FPEQUAL(d_scaleOrientation.z(), 1.0) ||
-      ! FPZERO(d_scaleOrientation.r()))
+  if (! FPZERO(d_scaleOrientation.getX()) ||
+      ! FPZERO(d_scaleOrientation.getY()) ||
+      ! FPEQUAL(d_scaleOrientation.getZ(), 1.0) ||
+      ! FPZERO(d_scaleOrientation.getAngle()))
     PRINT_FIELD(scaleOrientation);
-  if (! FPZERO(d_translation.x()) ||
-      ! FPZERO(d_translation.y()) ||
-      ! FPZERO(d_translation.z()))
+  if (! FPZERO(d_translation.getX()) ||
+      ! FPZERO(d_translation.getY()) ||
+      ! FPZERO(d_translation.getZ()))
     PRINT_FIELD(translation);
 
   VrmlNodeGroup::printFields(os, indent);
@@ -254,16 +254,16 @@ void VrmlNodeTransform::inverseTransform(Viewer *viewer)
     parentTransform->inverseTransform(viewer);
 
   // Build the inverse
-  float trans[3] = { - d_translation.x(),
-		     - d_translation.y(),
-		     - d_translation.z() };
-  float rot[4] = { d_rotation.x(),
-		   d_rotation.y(),
-		   d_rotation.z(),
-		   -  d_rotation.r() };
+  float trans[3] = { - d_translation.getX(),
+		     - d_translation.getY(),
+		     - d_translation.getZ() };
+  float rot[4] = { d_rotation.getX(),
+		   d_rotation.getY(),
+		   d_rotation.getZ(),
+		   -  d_rotation.getAngle() };
 
   // Invert scale (1/x)
-  float scale[3] = { d_scale.x(), d_scale.y(), d_scale.z() };
+  float scale[3] = { d_scale.getX(), d_scale.getY(), d_scale.getZ() };
   if (! FPZERO(scale[0])) scale[0] = 1.0 / scale[0];
   if (! FPZERO(scale[1])) scale[1] = 1.0 / scale[1];
   if (! FPZERO(scale[2])) scale[2] = 1.0 / scale[2];
@@ -392,10 +392,10 @@ VrmlNodeTransform::transform_to_matrix(const VrmlNodeTransform* t_arg, int flag,
 
   double NSR[4][4];
   float nsr[4]; // just reverse the rotation, right?
-  nsr[0] = t->d_scaleOrientation.x();
-  nsr[1] = t->d_scaleOrientation.y();
-  nsr[2] = t->d_scaleOrientation.z();
-  nsr[3] = -t->d_scaleOrientation.r();
+  nsr[0] = t->d_scaleOrientation.getX();
+  nsr[1] = t->d_scaleOrientation.getY();
+  nsr[2] = t->d_scaleOrientation.getZ();
+  nsr[3] = -t->d_scaleOrientation.getAngle();
   Mrotation(NSR, nsr);
   //Mdump(cout, NSR) << endl;
 
@@ -454,10 +454,10 @@ VrmlNodeTransform::transform_to_matrix(const VrmlNodeTransform* t_arg, int flag,
 
     double NR[4][4];
     float nr[4];
-    nr[0] = t->d_rotation.x();
-    nr[1] = t->d_rotation.y();
-    nr[2] = t->d_rotation.z();
-    nr[3] = -t->d_rotation.r();
+    nr[0] = t->d_rotation.getX();
+    nr[1] = t->d_rotation.getY();
+    nr[2] = t->d_rotation.getZ();
+    nr[3] = -t->d_rotation.getAngle();
     Mrotation(NR, nr);
     
     double NT[4][4];

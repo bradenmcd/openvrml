@@ -93,15 +93,15 @@ VrmlNode *VrmlNodeVisibilitySensor::cloneMe() const
 
 ostream& VrmlNodeVisibilitySensor::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_center.x()) ||
-      ! FPZERO(d_center.y()) ||
-      ! FPZERO(d_center.z()) )
+  if (! FPZERO(d_center.getX()) ||
+      ! FPZERO(d_center.getY()) ||
+      ! FPZERO(d_center.getZ()) )
     PRINT_FIELD(center);
   if (! d_enabled.get())
     PRINT_FIELD(enabled);
-  if (! FPZERO(d_size.x()) ||
-      ! FPZERO(d_size.y()) ||
-      ! FPZERO(d_size.z()) )
+  if (! FPZERO(d_size.getX()) ||
+      ! FPZERO(d_size.getY()) ||
+      ! FPZERO(d_size.getZ()) )
     PRINT_FIELD(size);
       
   return os;
@@ -124,12 +124,12 @@ void VrmlNodeVisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc)
       float xyz[2][3];
 
       // hack: enclose box in a sphere...
-      xyz[0][0] = d_center.x();
-      xyz[0][1] = d_center.y();
-      xyz[0][2] = d_center.z();
-      xyz[1][0] = d_center.x() + d_size.x();
-      xyz[1][1] = d_center.y() + d_size.y();
-      xyz[1][2] = d_center.z() + d_size.z();
+      xyz[0][0] = d_center.getX();
+      xyz[0][1] = d_center.getY();
+      xyz[0][2] = d_center.getZ();
+      xyz[1][0] = d_center.getX() + d_size.getX();
+      xyz[1][1] = d_center.getY() + d_size.getY();
+      xyz[1][2] = d_center.getZ() + d_size.getZ();
       viewer->transformPoints( 2, &xyz[0][0] );
       float dx = xyz[1][0]-xyz[0][0];
       float dy = xyz[1][1]-xyz[0][1];

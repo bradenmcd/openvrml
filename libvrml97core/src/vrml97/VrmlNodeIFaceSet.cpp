@@ -184,7 +184,7 @@ Viewer::Object VrmlNodeIFaceSet::insertGeometry(Viewer *viewer, VrmlRenderContex
       int nvert = coord.size();
       float *tc = 0, *color = 0, *normal = 0;
       int ntc = 0;
-      int ntci = 0; const long * tci = 0;	// texture coordinate indices
+      size_t ntci = 0; const long * tci = 0;	// texture coordinate indices
       int nci = 0; const long * ci = 0;	// color indices
       int nni = 0; const long * ni = 0;	// normal indices
 

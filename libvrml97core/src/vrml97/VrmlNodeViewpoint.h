@@ -18,8 +18,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#ifndef  _VRMLNODEVIEWPOINT_
-#define  _VRMLNODEVIEWPOINT_
+#ifndef VRMLNODEVIEWPOINT_H
+#define VRMLNODEVIEWPOINT_H
 
 #include "VrmlNodeChild.h"
 #include "VrmlField.h"
@@ -63,17 +63,20 @@ public:
   virtual void accumulateTransform( VrmlNode* );
   virtual VrmlNode* getParentTransform();
 
-
-  float fieldOfView() const	{ return d_fieldOfView.get(); }
-  float orientationX() const	{ return d_orientation.x(); }
-  float orientationY() const	{ return d_orientation.y(); }
-  float orientationZ() const	{ return d_orientation.z(); }
-  float orientationR() const	{ return d_orientation.r(); }
-  float positionX() const       { return d_position.x(); }
-  float positionY() const	{ return d_position.y(); }
-  float positionZ() const	{ return d_position.z(); }
-
-  const char *description() const { return d_description.get() ? d_description.get() : ""; }
+  const VrmlSFFloat & getFieldOfView() const;
+//  float fieldOfView() const	{ return d_fieldOfView.get(); }
+  const VrmlSFRotation & getOrientation() const;
+//  float orientationX() const	{ return d_orientation.x(); }
+//  float orientationY() const	{ return d_orientation.y(); }
+//  float orientationZ() const	{ return d_orientation.z(); }
+//  float orientationR() const	{ return d_orientation.r(); }
+  const VrmlSFVec3f & getPosition() const;
+//  float positionX() const       { return d_position.x(); }
+//  float positionY() const	{ return d_position.y(); }
+//  float positionZ() const	{ return d_position.z(); }
+  
+  const VrmlSFString & getDescription() const;
+//  const char *description() const { return d_description.get() ? d_description.get() : ""; }
 
   const VrmlBVolume* getBVolume() const;
 
@@ -110,5 +113,5 @@ private:
 
 };
 
-#endif // _VRMLNODEVIEWPOINT_
+#endif // VRMLNODEVIEWPOINT_H
 

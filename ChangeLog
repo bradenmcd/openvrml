@@ -1,3 +1,11 @@
+2000-12-12  Braden McDaniel  <braden@endoframe.com>
+
+        * API improvements (including const-correctness) to VrmlSFVec3f and
+          VrmlSFRotation. Changed semantics for methods to match those of the
+          ECMAScript binding.
+
+        * Implemented VrmlSFRotation::slerp().
+
 2000-12-10  Braden McDaniel  <braden@endoframe.com>
 
         * Const-correctness changes to VrmlSFImage. Broad ramifications.

@@ -19,6 +19,7 @@
 // 
 
 #include <float.h> // posix-sez: yes, others? FLT_MAX
+#include <algorithm>
 #include <iostream.h>
 #include "VrmlFrustum.h"
 #include "VrmlAABox.h"
@@ -402,9 +403,8 @@ VrmlBSphere::getCenter() const
 void
 VrmlBSphere::setCenter(const VrmlSFVec3f& center)
 {
-  c[0] = center.x();
-  c[1] = center.y();
-  c[2] = center.z();
+  const float * const centerVec = center.get();
+  std::copy(centerVec, centerVec + 3, this->c);
 }
 
 void

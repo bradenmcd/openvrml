@@ -143,9 +143,9 @@ void VrmlNodeLOD::copyRoutes( VrmlNamespace *ns ) const
 ostream& VrmlNodeLOD::printFields(ostream& os, int indent)
 {
   if (d_level.size() > 0) PRINT_FIELD(level);
-  if (! FPZERO(d_center.x()) ||
-      ! FPZERO(d_center.y()) ||
-      ! FPZERO(d_center.z()) )
+  if (! FPZERO(d_center.getX()) ||
+      ! FPZERO(d_center.getY()) ||
+      ! FPZERO(d_center.getZ()) )
     PRINT_FIELD(center);
       
   if (d_range.size() > 0) PRINT_FIELD(range);
@@ -164,9 +164,9 @@ void VrmlNodeLOD::render(Viewer *viewer, VrmlRenderContext rc)
   float x, y, z;
   viewer->getPosition( &x, &y, &z );
 
-  float dx = x - d_center.x();
-  float dy = y - d_center.y();
-  float dz = z - d_center.z();
+  float dx = x - d_center.getX();
+  float dy = y - d_center.getY();
+  float dz = z - d_center.getZ();
   float d2 = dx*dx + dy*dy + dz*dz;
 
   int i, n = d_range.size();

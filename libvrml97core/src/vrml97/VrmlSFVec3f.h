@@ -17,51 +17,91 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
-#ifndef  VRMLSFVEC3F_H
-#define  VRMLSFVEC3F_H
+
+#ifndef VRMLSFVEC3F_H
+#define VRMLSFVEC3F_H
 
 #include "VrmlField.h"
 
-
 class VrmlSFVec3f : public VrmlField {
-public:
-
-  VrmlSFVec3f(float x = 0.0, float y = 0.0, float z = 0.0);
-  VrmlSFVec3f(const VrmlSFVec3f& rhs);
-
-  virtual ostream& print(ostream& os) const;
-
-  virtual VrmlField *clone() const;
-
-  virtual VrmlFieldType fieldType() const;
-  virtual const VrmlSFVec3f* toSFVec3f() const;
-  virtual VrmlSFVec3f* toSFVec3f();
-
-  float x() const		{ return d_x[0]; }
-  float y() const		{ return d_x[1]; }
-  float z() const		{ return d_x[2]; }
-
-  float *get()			{ return &d_x[0]; }
-
-  void set(float x, float y, float z)
-    { d_x[0] = x; d_x[1] = y; d_x[2] = z; }
-
-  // return result
-  double dot( VrmlSFVec3f * );
-  double length();
-
-  // modifiers
-  void normalize();
-
-  void add( VrmlSFVec3f * );
-  void cross( VrmlSFVec3f * );
-  void divide( float );
-  void multiply( float );
-  void subtract( VrmlSFVec3f * );
-
-private:
-  float d_x[3];
-
+    public:
+        VrmlSFVec3f();
+        VrmlSFVec3f(const float vec[3]);
+        VrmlSFVec3f(float x, float y, float z);
+        
+        virtual ostream& print(ostream& os) const;
+        
+        virtual VrmlField * clone() const;
+        
+        virtual VrmlFieldType fieldType() const;
+        virtual const VrmlSFVec3f* toSFVec3f() const;
+        virtual VrmlSFVec3f* toSFVec3f();
+        
+        float getX() const;
+        void setX(float);
+        
+        float getY() const;
+        void setY(float);
+        
+        float getZ() const;
+        void setZ(float);
+        
+        const float * get() const;
+        void set(const float vec[3]);
+        
+        /**
+         * Add this vector and vec component-wise.
+         * @param vec
+         */
+        const VrmlSFVec3f add(const VrmlSFVec3f & vec) const;
+        
+        /**
+         * Get the cross product of this vector and vec.
+         * @param vec
+         */
+        const VrmlSFVec3f cross(const VrmlSFVec3f & vec) const;
+        
+        /**
+         * Get the result of dividing this vector by number.
+         * @param number
+         */
+        const VrmlSFVec3f divide(float number) const;
+        
+        /**
+         * Get the dot product of this vector and vec.
+         * @param vec
+         */
+        double dot(const VrmlSFVec3f & vec) const;
+        
+        /**
+         * Get the length of this vector.
+         */
+        double length() const;
+        
+        /**
+         * Get the product of this vector by number.
+         * @param number
+         */
+        const VrmlSFVec3f multiply(float number) const;
+        
+        /**
+         * Return this vector negated.
+         */
+        const VrmlSFVec3f negate() const;
+        
+        /**
+         * Get this vector normalized.
+         */
+        const VrmlSFVec3f normalize() const;
+        
+        /**
+         * Get the result of subtracting vec from this vector.
+         * @param vec
+         */
+        const VrmlSFVec3f subtract(const VrmlSFVec3f & vec) const;
+        
+    private:
+        float d_x[3];
 };
 
 #endif

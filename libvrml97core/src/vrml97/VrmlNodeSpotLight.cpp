@@ -94,23 +94,23 @@ void VrmlNodeSpotLight::addToScene(VrmlScene *s, const char *)
 ostream& VrmlNodeSpotLight::printFields(ostream& os, int indent)
 {
   VrmlNodeLight::printFields(os, indent);
-  if (! FPEQUAL(d_attenuation.x(), 1.0) ||
-      ! FPZERO(d_attenuation.y()) ||
-      ! FPZERO(d_attenuation.z()) )
+  if (! FPEQUAL(d_attenuation.getX(), 1.0) ||
+      ! FPZERO(d_attenuation.getY()) ||
+      ! FPZERO(d_attenuation.getZ()) )
     PRINT_FIELD(attenuation);
   if (! FPEQUAL(d_beamWidth.get(), 1.570796))
     PRINT_FIELD(beamWidth);
 
   if (! FPEQUAL(d_cutOffAngle.get(), 1.570796))
     PRINT_FIELD(cutOffAngle);
-  if (! FPZERO(d_direction.x()) ||
-      ! FPZERO(d_direction.y()) ||
-      ! FPEQUAL(d_direction.z(), -1.0) )
+  if (! FPZERO(d_direction.getX()) ||
+      ! FPZERO(d_direction.getY()) ||
+      ! FPEQUAL(d_direction.getZ(), -1.0) )
     PRINT_FIELD(direction);
 
-  if (! FPZERO(d_location.x()) ||
-      ! FPZERO(d_location.y()) ||
-      ! FPZERO(d_location.z()) )
+  if (! FPZERO(d_location.getX()) ||
+      ! FPZERO(d_location.getY()) ||
+      ! FPZERO(d_location.getZ()) )
     PRINT_FIELD(location);
 
   if (! FPEQUAL(d_radius.get(), 100.0))

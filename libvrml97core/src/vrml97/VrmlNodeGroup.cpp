@@ -181,13 +181,13 @@ VrmlNode* VrmlNodeGroup::getParentTransform() { return d_parentTransform; }
 
 ostream& VrmlNodeGroup::printFields(ostream& os, int indent)
 {
-  if (d_bboxCenter.x() != 0.0 ||
-      d_bboxCenter.z() != 0.0 ||
-      d_bboxCenter.y() != 0.0)
+  if (d_bboxCenter.getX() != 0.0 ||
+      d_bboxCenter.getZ() != 0.0 ||
+      d_bboxCenter.getY() != 0.0)
     PRINT_FIELD(bboxCenter);
-  if (d_bboxSize.x() != -1.0 ||
-      d_bboxSize.z() != -1.0 ||
-      d_bboxSize.y() != -1.0)
+  if (d_bboxSize.getX() != -1.0 ||
+      d_bboxSize.getZ() != -1.0 ||
+      d_bboxSize.getY() != -1.0)
     PRINT_FIELD(bboxSize);
   if (d_children.size() > 0)
     PRINT_FIELD(children);

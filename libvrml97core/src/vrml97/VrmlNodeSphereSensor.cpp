@@ -98,10 +98,10 @@ ostream& VrmlNodeSphereSensor::printFields(ostream& os, int indent)
   if (! d_autoOffset.get()) PRINT_FIELD(autoOffset);
   if (! d_enabled.get())    PRINT_FIELD(enabled);
 
-  if (! FPZERO(d_offset.x()) ||
-      ! FPEQUAL(d_offset.y(), 1.0) ||
-      ! FPZERO(d_offset.z()) ||
-      ! FPZERO(d_offset.r()) )
+  if (! FPZERO(d_offset.getX()) ||
+      ! FPEQUAL(d_offset.getY(), 1.0) ||
+      ! FPZERO(d_offset.getZ()) ||
+      ! FPZERO(d_offset.getAngle()) )
     PRINT_FIELD(offset);
 
   return os;
@@ -148,7 +148,8 @@ void VrmlNodeSphereSensor::activate( double timeStamp,
 		d_isActive.set(isActive);
 		
 			// set activation point in world coords
-		d_activationPoint.set( p[0], p[1], p[2] );
+                const float floatVec[3] = { p[0], p[1], p[2] };
+		d_activationPoint.set(floatVec);
 		
 		if(d_autoOffset.get())
 			d_rotation = d_offset;
@@ -158,7 +159,7 @@ void VrmlNodeSphereSensor::activate( double timeStamp,
 		double M[4][4];
 		inverseTransform( M );
 		VM( V, M, V );
-		d_centerPoint.set( V[0], V[1], V[2] );
+		d_centerPoint.set(V);
 		
 			// send message
 		eventOut( timeStamp, "isActive", d_isActive );
@@ -184,23 +185,25 @@ void VrmlNodeSphereSensor::activate( double timeStamp,
 		double M[4][4];
 		inverseTransform( M );
 		VM( V, M, V );
-		d_trackPoint.set(V[0], V[1], V[2]);
+		d_trackPoint.set(V);
 		eventOut( timeStamp, "trackPoint_changed", d_trackPoint );
 		
 		float V2[3] = { p[0], p[1], p[2] };
-		VrmlSFVec3f dir1, dir2;
-		Vdiff(dir1.get(), V2, d_centerPoint.get());
+                float tempv[3];
+		Vdiff(tempv, V2, d_centerPoint.get());
+                VrmlSFVec3f dir1(tempv);
 		double dist = dir1.length();				// get the length of the pre-normalized vector
-		dir1.normalize();
-		Vdiff(dir2.get(), d_activationPoint.get(), d_centerPoint.get());
-		dir2.normalize();
+		dir1 = dir1.normalize();
+		Vdiff(tempv, d_activationPoint.get(), d_centerPoint.get());
+                VrmlSFVec3f dir2(tempv);
+		dir2 = dir2.normalize();
 		
-		VrmlSFVec3f cx;
-		Vcross(cx.get(), dir1.get(), dir2.get());
+		Vcross(tempv, dir1.get(), dir2.get());
+                VrmlSFVec3f cx(tempv);
 
-		VrmlSFRotation newRot(cx.x(), cx.y(), cx.z(), dist * acos(dir1.dot(&dir2)));
+		VrmlSFRotation newRot(cx, dist * acos(dir1.dot(dir2)));
 		if ( d_autoOffset.get() )
-			newRot.multiply(&d_offset);
+			newRot = newRot.multiply(d_offset);
 		d_rotation = newRot;
 		
 		eventOut( timeStamp, "rotation_changed", d_rotation );

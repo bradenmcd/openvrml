@@ -99,9 +99,9 @@ void VrmlNodePositionInt::eventIn(double timeStamp,
 
       int n = d_key.size() - 1;
       if (f < d_key[0])
-	d_value.set( d_keyValue[0][0], d_keyValue[0][1], d_keyValue[0][2] );
+	d_value.set(d_keyValue[0]);
       else if (f > d_key[n])
-	d_value.set( d_keyValue[n][0], d_keyValue[n][1], d_keyValue[n][2] );
+	d_value.set(d_keyValue[n]);
       else
 	{
 	  // should cache the last index used...
@@ -112,10 +112,10 @@ void VrmlNodePositionInt::eventIn(double timeStamp,
 		float *v2 = d_keyValue[i+1];
 
 		f = (f - d_key[i]) / (d_key[i+1] - d_key[i]);
-		float x = v1[0] + f * (v2[0] - v1[0]);
-		float y = v1[1] + f * (v2[1] - v1[1]);
-		float z = v1[2] + f * (v2[2] - v1[2]);
-		d_value.set( x, y, z);
+                const float valueVec[3] = { v1[0] + f * (v2[0] - v1[0]),
+                                            v1[1] + f * (v2[1] - v1[1]),
+                                            v1[2] + f * (v2[2] - v1[2]) };
+		d_value.set(valueVec);
 		break;
 	      }
 	}

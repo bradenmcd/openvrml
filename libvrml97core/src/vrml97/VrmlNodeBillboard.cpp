@@ -72,9 +72,9 @@ VrmlNode *VrmlNodeBillboard::cloneMe() const
 
 ostream& VrmlNodeBillboard::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_axisOfRotation.x()) ||
-      ! FPZERO(d_axisOfRotation.y()) ||
-      ! FPZERO(d_axisOfRotation.z()) )
+  if (! FPZERO(d_axisOfRotation.getX()) ||
+      ! FPZERO(d_axisOfRotation.getY()) ||
+      ! FPZERO(d_axisOfRotation.getZ()) )
     PRINT_FIELD(axisOfRotation);
 
   VrmlNodeGroup::printFields(os, indent);

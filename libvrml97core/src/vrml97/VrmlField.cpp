@@ -27,8 +27,8 @@
 
 # include "VrmlField.h"
 # include <algorithm>
-# include <cassert>
-
+# include <numeric>
+# include <assert.h>
 #include <string.h>		// memcpy
 #include <iostream.h>
 
@@ -378,8 +378,28 @@ void VrmlSFNode::set(VrmlNode *value)
 
 #include "VrmlSFRotation.h"
 
-VrmlSFRotation::VrmlSFRotation(float x, float y, float z, float r)
-{ d_x[0] = x; d_x[1] = y; d_x[2] = z; d_x[3] = r; }
+VrmlSFRotation::VrmlSFRotation() {
+    this->d_x[0] = 0.0; // x
+    this->d_x[1] = 0.0; // y
+    this->d_x[2] = 1.0; // z
+    this->d_x[3] = 0.0; // angle
+}
+
+VrmlSFRotation::VrmlSFRotation(const float rotation[4]) {
+    std::copy(rotation, rotation + 4, this->d_x);
+}
+
+VrmlSFRotation::VrmlSFRotation(float x, float y, float z, float angle) {
+    this->d_x[0] = x;
+    this->d_x[1] = y;
+    this->d_x[2] = z;
+    this->d_x[3] = angle;
+}
+
+VrmlSFRotation::VrmlSFRotation(const VrmlSFVec3f & axis, float angle) {
+    std::copy(axis.get(), axis.get() + 3, this->d_x);
+    this->d_x[3] = angle;
+}
 
 ostream& VrmlSFRotation::print(ostream& os) const
 { return (os <<d_x[0] << " " <<d_x[1] << " " <<d_x[2]<< " " <<d_x[3]); }
@@ -390,68 +410,186 @@ VrmlField *VrmlSFRotation::clone() const
 VrmlField::VrmlFieldType VrmlSFRotation::fieldType() const 
 { return SFROTATION; }
 
-void VrmlSFRotation::invert(void)
-{
-  d_x[3] = - d_x[3];
+float VrmlSFRotation::getX() const {
+    return this->d_x[0];
 }
 
-void VrmlSFRotation::multiply(VrmlSFRotation* rotVec)
-{
-		// convert to quaternions
-	float quatUS[4], quatVec[4];
-	ToQuaternion(quatUS);
-	rotVec->ToQuaternion(quatVec);
-	
-		// multiply quaternions
-	float result[4];
-	MultQuat(result, quatUS, quatVec);
-	
-		// now convert back to axis/angle
-	FromQuaternion(result);
+void VrmlSFRotation::setX(float value) {
+    this->d_x[0] = value;
 }
 
-void VrmlSFRotation::ToQuaternion(float* theQuat)
-{
-	float sintd2 = sin(d_x[3] * 0.5);
-	float len = sqrt(d_x[0] * d_x[0] + d_x[1] * d_x[1] + d_x[2] * d_x[2]);
-	float f = sintd2 / len;
-	theQuat[3] = cos(d_x[3] * 0.5);
-	theQuat[0] = d_x[0] * f;
-	theQuat[1] = d_x[1] * f;
-	theQuat[2] = d_x[2] * f;
+float VrmlSFRotation::getY() const {
+    return this->d_x[1];
 }
 
-void VrmlSFRotation::FromQuaternion(float* theQuat)
-{
-	double sina2 = sqrt(theQuat[0]*theQuat[0] + theQuat[1]*theQuat[1] + theQuat[2]*theQuat[2]);
-	double angle = (2.0*atan2(sina2, theQuat[3]));
-
-	if (sina2 >= 1e-8) {
-		sina2 = 1.0/sina2;
-		set(theQuat[0]*sina2,theQuat[1]*sina2,theQuat[2]*sina2, angle);
-	} else {
-        set(0,1,0, 0);
-	}
+void VrmlSFRotation::setY(float value) {
+    this->d_x[1] = value;
 }
 
-void VrmlSFRotation::MultQuat(float* result, float* quat1, float* quat2)
-{
-	result[3] = quat1[3]*quat2[3] - quat1[0]*quat2[0] - 
-		      quat1[1]*quat2[1] - quat1[2]*quat2[2];
-
-	result[0] = quat1[3]*quat2[0] + quat1[0]*quat2[3] + 
-		      quat1[1]*quat2[2] - quat1[2]*quat2[1];
-
-	result[1] = quat1[3]*quat2[1] + quat1[1]*quat2[3] + 
-		      quat1[2]*quat2[0] - quat1[0]*quat2[2];
-
-	result[2] = quat1[3]*quat2[2] + quat1[2]*quat2[3] + 
-		      quat1[0]*quat2[1] - quat1[1]*quat2[0];
+float VrmlSFRotation::getZ() const {
+    return this->d_x[2];
 }
 
-void VrmlSFRotation::slerp(VrmlSFRotation* , float )
-{
-  // not implemented...
+void VrmlSFRotation::setZ(float value) {
+    this->d_x[2] = value;
+}
+
+float VrmlSFRotation::getAngle() const {
+    return this->d_x[3];
+}
+
+void VrmlSFRotation::setAngle(float value) {
+    this->d_x[3] = value;
+}
+
+const float * VrmlSFRotation::get() const {
+    return this->d_x;
+}
+
+void VrmlSFRotation::set(const float rotation[4]) {
+    std::copy(rotation, rotation + 4, this->d_x);
+}
+
+const VrmlSFVec3f VrmlSFRotation::getAxis() const {
+    return VrmlSFVec3f(this->d_x[0], this->d_x[1], this->d_x[2]);
+}
+
+void VrmlSFRotation::setAxis(const VrmlSFVec3f & axis) {
+    std::copy(axis.get(), axis.get() + 3, this->d_x);
+}
+
+const VrmlSFRotation VrmlSFRotation::inverse() const {
+    VrmlSFRotation result(*this);
+    result.d_x[3] = -d_x[3];
+    return result;
+}
+
+namespace {
+    void multQuat(const float quat1[4], const float quat2[4], float result[4]) {
+        result[3] = quat1[3]*quat2[3] - quat1[0]*quat2[0]
+                - quat1[1]*quat2[1] - quat1[2]*quat2[2];
+
+        result[0] = quat1[3]*quat2[0] + quat1[0]*quat2[3]
+                + quat1[1]*quat2[2] - quat1[2]*quat2[1];
+
+        result[1] = quat1[3]*quat2[1] + quat1[1]*quat2[3]
+                + quat1[2]*quat2[0] - quat1[0]*quat2[2];
+
+        result[2] = quat1[3]*quat2[2] + quat1[2]*quat2[3]
+                + quat1[0]*quat2[1] - quat1[1]*quat2[0];
+    }
+}
+
+const VrmlSFRotation VrmlSFRotation::multiply(const VrmlSFRotation & rotVec)
+        const {
+    // convert to quaternions
+    float quatUS[4], quatVec[4];
+    this->toQuaternion(quatUS);
+    rotVec.toQuaternion(quatVec);
+    
+    // multiply quaternions
+    float resultQuat[4];
+    multQuat(quatUS, quatVec, resultQuat);
+    
+    // now convert back to axis/angle
+    VrmlSFRotation result;
+    result.fromQuaternion(resultQuat);
+    return result;
+}
+
+void VrmlSFRotation::toQuaternion(float theQuat[4]) const {
+    const float sintd2 = sin(d_x[3] * 0.5);
+    const float len =
+            sqrt((d_x[0] * d_x[0]) + (d_x[1] * d_x[1]) + (d_x[2] * d_x[2]));
+    const float f = sintd2 / len;
+    theQuat[3] = cos(d_x[3] * 0.5);
+    theQuat[0] = d_x[0] * f;
+    theQuat[1] = d_x[1] * f;
+    theQuat[2] = d_x[2] * f;
+}
+
+void VrmlSFRotation::fromQuaternion(const float theQuat[4]) {
+    double sina2 = sqrt(theQuat[0]*theQuat[0] + theQuat[1]*theQuat[1]
+                    + theQuat[2]*theQuat[2]);
+    const double angle = (2.0*atan2(sina2, theQuat[3]));
+
+    if (sina2 >= 1e-8) {
+	sina2 = 1.0/sina2;
+        this->d_x[0] = theQuat[0] * sina2;
+        this->d_x[1] = theQuat[1] * sina2;
+        this->d_x[2] = theQuat[2] * sina2;
+        this->d_x[3] = angle;
+    } else {
+        this->d_x[0] = 0.0;
+        this->d_x[1] = 1.0;
+        this->d_x[2] = 0.0;
+        this->d_x[3] = 0.0;
+    }
+}
+
+const VrmlSFVec3f VrmlSFRotation::multVec(const VrmlSFVec3f & vec) const {
+    //
+    // IMPLEMENT ME!
+    //
+    return VrmlSFVec3f();
+}
+
+const VrmlSFRotation VrmlSFRotation::slerp(const VrmlSFRotation & destRotation,
+                                           float t) const {
+    float fromQuat[4], toQuat[4];
+    this->toQuaternion(fromQuat);
+    destRotation.toQuaternion(toQuat);
+    
+    //
+    // Calculate cosine.
+    //
+    double cosom = std::inner_product(fromQuat, fromQuat + 4, toQuat, 0.0);
+    
+    //
+    // Adjust signs (if necessary).
+    //
+    float to1[4];
+    if (cosom < 0.0) {
+        cosom = -cosom;
+        to1[0] = -toQuat[0];
+        to1[1] = -toQuat[1];
+        to1[2] = -toQuat[2];
+        to1[3] = -toQuat[3];
+    } else {
+        std::copy(toQuat, toQuat + 4, to1);
+    }
+    
+    //
+    // Calculate coefficients.
+    //
+    double scale0, scale1;
+    if ((1.0 - cosom) > FPTOLERANCE) {
+        const double omega = acos(cosom);
+        const double sinom = sin(omega);
+        scale0 = sin((1.0 - t) * omega) / sinom;
+        scale1 = sin(t * omega) / sinom;
+    } else {
+        //
+        // "From" and "to" quaternions are very close, so do linear
+        // interpolation.
+        //
+        scale0 = 1.0 - t;
+        scale1 = t;
+    }
+    
+    //
+    // Calculate the final values.
+    //
+    float resultQuat[4];
+    resultQuat[0] = (scale0 * fromQuat[0]) + (scale1 * to1[0]);
+    resultQuat[1] = (scale0 * fromQuat[1]) + (scale1 * to1[1]);
+    resultQuat[2] = (scale0 * fromQuat[2]) + (scale1 * to1[2]);
+    resultQuat[3] = (scale0 * fromQuat[3]) + (scale1 * to1[3]);
+    
+    VrmlSFRotation result;
+    result.fromQuaternion(resultQuat);
+    
+    return result;
 }
 
 
@@ -566,70 +704,121 @@ void VrmlSFVec2f::subtract( VrmlSFVec2f *v )
 
 #include "VrmlSFVec3f.h"
 
+VrmlSFVec3f::VrmlSFVec3f() {}
+
+VrmlSFVec3f::VrmlSFVec3f(const float vec[3]) {
+    std::copy(vec, vec + 3, this->d_x);
+}
+
 VrmlSFVec3f::VrmlSFVec3f(float x, float y, float z)
 { d_x[0] = x; d_x[1] = y; d_x[2] = z; }
-
-VrmlSFVec3f::VrmlSFVec3f(const VrmlSFVec3f& rhs)
-{
-  d_x[0] = rhs.d_x[0];
-  d_x[1] = rhs.d_x[1];
-  d_x[2] = rhs.d_x[2];
-}
 
 ostream& VrmlSFVec3f::print(ostream& os) const
 { return (os << d_x[0] << " " << d_x[1] << " " << d_x[2]); }
 
 VrmlField *VrmlSFVec3f::clone() const
-{ return new VrmlSFVec3f(d_x[0],d_x[1],d_x[2]); }
+{ return new VrmlSFVec3f(*this); }
 
 VrmlField::VrmlFieldType VrmlSFVec3f::fieldType() const { return SFVEC3F; }
 
-double VrmlSFVec3f::dot( VrmlSFVec3f *v )
-{
-  return d_x[0] * v->x() + d_x[1] * v->y() + d_x[2] * v->z();
+float VrmlSFVec3f::getX() const {
+    return this->d_x[0];
 }
 
-double VrmlSFVec3f::length()
-{
-  return sqrt(d_x[0] * d_x[0] + d_x[1] * d_x[1] + d_x[2] * d_x[2]);
+void VrmlSFVec3f::setX(float value) {
+    this->d_x[0] = value;
 }
 
-void VrmlSFVec3f::normalize()
-{
-  double len = length();
-  if ( FPZERO(len)) return;
-  d_x[0] /= len; d_x[1] /= len; d_x[2] /= len;
+float VrmlSFVec3f::getY() const {
+    return this->d_x[1];
 }
 
-void VrmlSFVec3f::cross( VrmlSFVec3f *v )
-{
-  float x,y,z;			// Use temps so V can be A or B
-  x = d_x[1]*v->z() - d_x[2]*v->y();
-  y = d_x[2]*v->x() - d_x[0]*v->z();
-  z = d_x[0]*v->y() - d_x[1]*v->x();
-  d_x[0] = x;
-  d_x[1] = y;
-  d_x[2] = z;
+void VrmlSFVec3f::setY(float value) {
+    this->d_x[1] = value;
 }
 
-void VrmlSFVec3f::add( VrmlSFVec3f *v )
-{
-  d_x[0] += v->x(); d_x[1] += v->y(); d_x[2] += v->z();
+float VrmlSFVec3f::getZ() const {
+    return this->d_x[2];
 }
 
-void VrmlSFVec3f::divide( float f )
-{
-  d_x[0] /= f; d_x[1] /= f; d_x[2] /= f;
+void VrmlSFVec3f::setZ(float value) {
+    this->d_x[2] = value;
 }
 
-void VrmlSFVec3f::multiply( float f )
-{
-  d_x[0] *= f; d_x[1] *= f; d_x[2] *= f;
+const float * VrmlSFVec3f::get() const {
+    return this->d_x;
 }
 
-void VrmlSFVec3f::subtract( VrmlSFVec3f *v )
-{
-  d_x[0] -= v->x(); d_x[1] -= v->y(); d_x[2] -= v->z();
+void VrmlSFVec3f::set(const float vec[3]) {
+    std::copy(vec, vec + 3, this->d_x);
+}
+
+const VrmlSFVec3f VrmlSFVec3f::add(const VrmlSFVec3f & vec) const {
+    VrmlSFVec3f result(*this);
+    result.d_x[0] += vec.d_x[0];
+    result.d_x[1] += vec.d_x[1];
+    result.d_x[2] += vec.d_x[2];
+    return result;
+}
+
+const VrmlSFVec3f VrmlSFVec3f::cross(const VrmlSFVec3f & vec) const {
+    VrmlSFVec3f result;
+    result.d_x[0] = (this->d_x[1] * vec.d_x[2]) - (this->d_x[2] * vec.d_x[1]);
+    result.d_x[1] = (this->d_x[2] * vec.d_x[0]) - (this->d_x[0] * vec.d_x[2]);
+    result.d_x[2] = (this->d_x[0] * vec.d_x[1]) - (this->d_x[1] * vec.d_x[0]);
+    return result;
+}
+
+const VrmlSFVec3f VrmlSFVec3f::divide(float number) const {
+    VrmlSFVec3f result(*this);
+    result.d_x[0] /= number;
+    result.d_x[1] /= number;
+    result.d_x[2] /= number;
+    return result;
+}
+
+double VrmlSFVec3f::dot(const VrmlSFVec3f & vec) const {
+    return std::inner_product(this->d_x, this->d_x + 3, vec.d_x, 0.0);
+}
+
+double VrmlSFVec3f::length() const {
+    return sqrt(d_x[0] * d_x[0] + d_x[1] * d_x[1] + d_x[2] * d_x[2]);
+}
+
+const VrmlSFVec3f VrmlSFVec3f::multiply(float number) const {
+    VrmlSFVec3f result(*this);
+    result.d_x[0] *= number;
+    result.d_x[1] *= number;
+    result.d_x[2] *= number;
+    return result;
+}
+
+const VrmlSFVec3f VrmlSFVec3f::negate() const {
+    VrmlSFVec3f result(*this);
+    result.d_x[0] = -result.d_x[0];
+    result.d_x[1] = -result.d_x[1];
+    result.d_x[2] = -result.d_x[2];
+    return result;
+}
+
+const VrmlSFVec3f VrmlSFVec3f::normalize() const {
+    const double len = this->length();
+    VrmlSFVec3f result(*this);
+    if (!FPZERO(len)) {
+        result.d_x[0] /= len;
+        result.d_x[1] /= len;
+        result.d_x[2] /= len;
+    }
+  
+    return result;
+}
+
+const VrmlSFVec3f VrmlSFVec3f::subtract(const VrmlSFVec3f & vec) const {
+    VrmlSFVec3f result(*this);
+    result.d_x[0] -= vec.d_x[0];
+    result.d_x[1] -= vec.d_x[1];
+    result.d_x[2] -= vec.d_x[2];
+    return result;
 }
 
 

@@ -94,15 +94,15 @@ VrmlNode *VrmlNodeProximitySensor::cloneMe() const
 
 ostream& VrmlNodeProximitySensor::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_center.x()) ||
-      ! FPZERO(d_center.y()) ||
-      ! FPZERO(d_center.z()) )
+  if (! FPZERO(d_center.getX()) ||
+      ! FPZERO(d_center.getY()) ||
+      ! FPZERO(d_center.getZ()) )
     PRINT_FIELD(center);
   if (! d_enabled.get())
     PRINT_FIELD(enabled);
-  if (! FPZERO(d_size.x()) ||
-      ! FPZERO(d_size.y()) ||
-      ! FPZERO(d_size.z()) )
+  if (! FPZERO(d_size.getX()) ||
+      ! FPZERO(d_size.getY()) ||
+      ! FPZERO(d_size.getZ()) )
     PRINT_FIELD(size);
       
   return os;
@@ -129,9 +129,9 @@ ostream& VrmlNodeProximitySensor::printFields(ostream& os, int indent)
 void VrmlNodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if (d_enabled.get() &&
-      d_size.x() > 0.0 &&
-      d_size.y() > 0.0 &&
-      d_size.z() > 0.0 &&
+      d_size.getX() > 0.0 &&
+      d_size.getY() > 0.0 &&
+      d_size.getZ() > 0.0 &&
       viewer->getRenderMode() == Viewer::RENDER_MODE_DRAW)
     {
       VrmlSFTime timeNow( theSystem->time() );
@@ -139,9 +139,9 @@ void VrmlNodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
 
       // Is viewer inside the box?
       viewer->getPosition( &x, &y, &z );
-      bool inside = (fabs(x - d_center.x()) <= 0.5 * d_size.x() &&
-		     fabs(y - d_center.y()) <= 0.5 * d_size.y() &&
-		     fabs(z - d_center.z()) <= 0.5 * d_size.z());
+      bool inside = (fabs(x - d_center.getX()) <= 0.5 * d_size.getX() &&
+		     fabs(y - d_center.getY()) <= 0.5 * d_size.getY() &&
+		     fabs(z - d_center.getZ()) <= 0.5 * d_size.getZ());
       bool wasIn = d_isActive.get();
 
       // Check if viewer has entered the box
@@ -171,22 +171,23 @@ void VrmlNodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
       // Check for movement within the box
       if (wasIn || inside)
 	{
-	  if ( ! FPEQUAL(d_position.x(), x) ||
-	       ! FPEQUAL(d_position.y(), y) ||
-	       ! FPEQUAL(d_position.z(), z) )
+	  if ( ! FPEQUAL(d_position.getX(), x) ||
+	       ! FPEQUAL(d_position.getY(), y) ||
+	       ! FPEQUAL(d_position.getZ(), z) )
 	    {
-	      d_position.set( x, y, z );
+	      const float positionVec[3] = { x, y, z };
+              d_position.set(positionVec);
 	      eventOut(timeNow.get(), "position_changed", d_position);
 	    }
 
 	  float xyzr[4];
 	  viewer->getOrientation( xyzr );
-	  if ( ! FPEQUAL(d_orientation.x(), xyzr[0]) ||
-	       ! FPEQUAL(d_orientation.y(), xyzr[1]) ||
-	       ! FPEQUAL(d_orientation.z(), xyzr[2]) ||
-	       ! FPEQUAL(d_orientation.r(), xyzr[3]) )
+	  if ( ! FPEQUAL(d_orientation.getX(), xyzr[0]) ||
+	       ! FPEQUAL(d_orientation.getY(), xyzr[1]) ||
+	       ! FPEQUAL(d_orientation.getZ(), xyzr[2]) ||
+	       ! FPEQUAL(d_orientation.getAngle(), xyzr[3]) )
 	    {
-	      d_orientation.set( xyzr[0], xyzr[1], xyzr[2], xyzr[3] );
+	      d_orientation.set(xyzr);
 	      eventOut(timeNow.get(), "orientation_changed", d_orientation);
 	    }
 	}

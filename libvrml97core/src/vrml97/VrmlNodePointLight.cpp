@@ -86,13 +86,13 @@ void VrmlNodePointLight::addToScene(VrmlScene *s, const char *)
 ostream& VrmlNodePointLight::printFields(ostream& os, int indent)
 {
   VrmlNodeLight::printFields(os, indent);
-  if (! FPEQUAL(d_attenuation.x(), 1.0) ||
-      ! FPZERO(d_attenuation.y()) ||
-      ! FPZERO(d_attenuation.z()) )
+  if (! FPEQUAL(d_attenuation.getX(), 1.0) ||
+      ! FPZERO(d_attenuation.getY()) ||
+      ! FPZERO(d_attenuation.getZ()) )
     PRINT_FIELD(attenuation);
-  if (! FPZERO(d_location.x()) ||
-      ! FPZERO(d_location.y()) ||
-      ! FPZERO(d_location.z()) )
+  if (! FPZERO(d_location.getX()) ||
+      ! FPZERO(d_location.getY()) ||
+      ! FPZERO(d_location.getZ()) )
     PRINT_FIELD(location);
   if (! FPEQUAL(d_radius.get(), 100.0))
     PRINT_FIELD(radius);

@@ -99,14 +99,14 @@ void VrmlNodeInline::addToScene(VrmlScene *s, const char *relativeUrl)
 
 ostream& VrmlNodeInline::printFields(ostream& os, int indent)
 {
-  if ( !FPZERO(d_bboxCenter.x()) ||
-       !FPZERO(d_bboxCenter.y()) ||
-       !FPZERO(d_bboxCenter.z()) )
+  if ( !FPZERO(d_bboxCenter.getX()) ||
+       !FPZERO(d_bboxCenter.getY()) ||
+       !FPZERO(d_bboxCenter.getZ()) )
     PRINT_FIELD(bboxCenter);
 
-  if ( !FPEQUAL(d_bboxSize.x(), -1) ||
-       !FPEQUAL(d_bboxSize.y(), -1) ||
-       !FPEQUAL(d_bboxSize.z(), -1) )
+  if ( !FPEQUAL(d_bboxSize.getX(), -1) ||
+       !FPEQUAL(d_bboxSize.getY(), -1) ||
+       !FPEQUAL(d_bboxSize.getZ(), -1) )
     PRINT_FIELD(bboxCenter);
 
   if (d_url.get()) PRINT_FIELD(url);

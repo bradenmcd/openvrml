@@ -64,7 +64,8 @@ public:
 
 
   // get rid of this asap.
-  virtual void getBillboardTransformMatrix(float [4][4], float *);
+  virtual void getBillboardTransformMatrix(float [4][4],
+                                           const float axisOfRotation[3]);
 
   virtual RenderMode getRenderMode();
   virtual double getFrameRate();
@@ -195,20 +196,20 @@ public:
 				    float * /*scale*/,
 				    float * /*translation*/ );
 
-  virtual void setTransform(float * /*center*/,
-			    float * /*rotation*/,
-			    float * /*scale*/,
-			    float * /*scaleOrientation*/,
-			    float * /*translation*/);
+  virtual void setTransform(const float center[3],
+			    const float rotation[4],
+			    const float scale[3],
+			    const float scaleOrientation[4],
+			    const float translation[3]);
 
-  virtual void unsetTransform(float * /*center*/,
-			      float * /*rotation*/,
-			      float * /*scale*/,
-			      float * /*scaleOrientation*/,
-			      float * /*translation*/);
+  virtual void unsetTransform(const float center[3],
+			      const float rotation[4],
+			      const float scale[3],
+			      const float scaleOrientation[4],
+			      const float translation[3]);
 
-  virtual void setBillboardTransform(float * /*axisOfRotation*/);
-  virtual void unsetBillboardTransform(float * /*axisOfRotation*/);
+  virtual void setBillboardTransform(const float axisOfRotation[3]);
+  virtual void unsetBillboardTransform(const float axisOfRotation[3]);
 
 
   virtual void setViewpoint(const float *position,

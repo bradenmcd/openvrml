@@ -109,9 +109,9 @@ ostream& VrmlNodePlaneSensor::printFields(ostream& os, int indent)
       ! FPEQUAL(d_minPosition.y(), -1.0))
     PRINT_FIELD(minPosition);
 
-  if (! FPZERO(d_offset.x()) ||
-      ! FPZERO(d_offset.y()) ||
-      ! FPZERO(d_offset.z()) )
+  if (! FPZERO(d_offset.getX()) ||
+      ! FPZERO(d_offset.getY()) ||
+      ! FPZERO(d_offset.getZ()) )
     PRINT_FIELD(offset);
 
   return os;
@@ -145,7 +145,7 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
       //double M[4][4];
       inverseTransform( d_activationMatrix );
       VM( V, d_activationMatrix, V );
-      d_activationPoint.set( V[0], V[1], V[2] );
+      d_activationPoint.set(V);
 #if 0
       theSystem->warn(" planesensor: activate at (%g %g %g)\n",
 		      p[0],p[1],p[2]);
@@ -179,12 +179,12 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
       //double M[4][4];
       //inverseTransform( M );
       VM( V, d_activationMatrix, V );
-      d_trackPoint.set( V[0], V[1], V[2] );
+      d_trackPoint.set(V);
       eventOut( timeStamp, "trackPoint_changed", d_trackPoint );
 
       float t[3];
-      t[0] = V[0] - d_activationPoint.x() + d_offset.x();
-      t[1] = V[1] - d_activationPoint.y() + d_offset.y();
+      t[0] = V[0] - d_activationPoint.getX() + d_offset.getX();
+      t[1] = V[1] - d_activationPoint.getY() + d_offset.getY();
       t[2] = 0.0;
 
       if ( d_minPosition.x() == d_maxPosition.x() )
@@ -207,7 +207,7 @@ void VrmlNodePlaneSensor::activate( double timeStamp,
 	    t[1] = d_maxPosition.y();
 	}
 
-      d_translation.set( t[0], t[1], t[2] );
+      d_translation.set(t);
       eventOut( timeStamp, "translation_changed", d_translation );
     }
 }

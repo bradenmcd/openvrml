@@ -75,16 +75,16 @@ VrmlNode *VrmlNodeBox::cloneMe() const
 
 ostream& VrmlNodeBox::printFields(ostream& os, int )
 {
-  if ( ! FPEQUAL(d_size.x(), 2.0) ||
-       ! FPEQUAL(d_size.y(), 2.0) ||
-       ! FPEQUAL(d_size.z(), 2.0) )
+  if ( ! FPEQUAL(d_size.getX(), 2.0) ||
+       ! FPEQUAL(d_size.getY(), 2.0) ||
+       ! FPEQUAL(d_size.getZ(), 2.0) )
     os << " size " << d_size;
   return os;
 }
 
 Viewer::Object VrmlNodeBox::insertGeometry(Viewer *viewer, VrmlRenderContext rc)
 {
-  return viewer->insertBox(d_size.x(), d_size.y(), d_size.z());
+  return viewer->insertBox(d_size.getX(), d_size.getY(), d_size.getZ());
 }
 
 // Set the value of one of the node fields.
@@ -112,7 +112,7 @@ VrmlNodeBox::getBVolume() const
   //if (!box_sphere) 
   //box_sphere = new VrmlBSphere();
   if (this->isBVolumeDirty()) {
-    float corner[3] = { d_size.x()/2.0f, d_size.y()/2.0f, d_size.z()/2.0f };
+    float corner[3] = { d_size.getX()/2.0f, d_size.getY()/2.0f, d_size.getZ()/2.0f };
     float r = Vlength(corner);
     ((VrmlNodeBox*)this)->d_bsphere.setRadius(r);
     ((VrmlNodeBox*)this)->setBVolumeDirty(false); // logical const

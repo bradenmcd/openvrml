@@ -130,9 +130,9 @@ void VrmlNodeSound::copyRoutes(VrmlNamespace *ns) const
 
 ostream& VrmlNodeSound::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_direction.x()) ||
-      ! FPZERO(d_direction.y()) ||
-      ! FPEQUAL(d_direction.z(), 1.0) )
+  if (! FPZERO(d_direction.getX()) ||
+      ! FPZERO(d_direction.getY()) ||
+      ! FPEQUAL(d_direction.getZ(), 1.0) )
     PRINT_FIELD(direction);
 
   // ...

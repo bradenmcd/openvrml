@@ -114,13 +114,13 @@ void VrmlNodeOrientationInt::eventIn(double timeStamp,
 	{
 	  float *v0 = d_keyValue[0];
 	  //printf(" 0 [%g %g %g %g]\n", v0[0], v0[1], v0[2], v0[3] );
-	  d_value.set( v0[0], v0[1], v0[2], v0[3] );
+	  d_value.set(v0);
 	}
       else if (f > d_key[n])
 	{
 	  float *vn = d_keyValue[n];
 	  //printf(" n [%g %g %g %g]\n", vn[0], vn[1], vn[2], vn[3] );
-	  d_value.set( vn[0], vn[1], vn[2], vn[3] );
+	  d_value.set(vn);
 	}
       else
 	{
@@ -158,14 +158,14 @@ void VrmlNodeOrientationInt::eventIn(double timeStamp,
 		    if (r2 > r1) r1 += 2.0 * M_PI;
 		    else         r2 += 2.0 * M_PI;
 		  }
-		float r = r1 + f * (r2 - r1);
-		if (r >= 2.0 * M_PI) r -= 2.0 * M_PI;
-		else if (r < 0.0)    r += 2.0 * M_PI;
+		float angle = r1 + f * (r2 - r1);
+		if (angle >= 2.0 * M_PI) angle -= 2.0 * M_PI;
+		else if (angle < 0.0)    angle += 2.0 * M_PI;
 		
 		//printf(" %g between (%d,%d) [%g %g %g %g]\n", f, i, i+1,
 		//x, y, z, r);
-
-		d_value.set( x, y, z, r);
+                const float rotation[4] = { x, y, z, angle };
+		d_value.set(rotation);
 		break;
 	      }
 	}

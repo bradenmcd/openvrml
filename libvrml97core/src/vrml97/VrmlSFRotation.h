@@ -16,46 +16,83 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
-#ifndef  VRMLSFROTATION_H
-#define  VRMLSFROTATION_H
+//
+
+#ifndef VRMLSFROTATION_H
+#define VRMLSFROTATION_H
 
 #include "VrmlField.h"
+#include "VrmlSFVec3f.h"
 
 class VrmlSFRotation : public VrmlField {
-public:
-
-  VrmlSFRotation(float x = 0.0, float y = 0.0, float z = 1.0, float r = 0.0);
-
-  virtual ostream& print(ostream& os) const;
-
-  virtual VrmlField *clone() const;
-
-  virtual VrmlFieldType fieldType() const;
-  virtual const VrmlSFRotation* toSFRotation() const;
-  virtual VrmlSFRotation* toSFRotation();
-
-  float x() const		{ return d_x[0]; }
-  float y() const		{ return d_x[1]; }
-  float z() const	        { return d_x[2]; }
-  float r() const		{ return d_x[3]; }
-  float *get()			{ return &d_x[0]; }
-
-  void set(float x, float y, float z, float r)
-    { d_x[0] = x; d_x[1] = y; d_x[2] = z; d_x[3] = r; }
-
-  void invert(void);
-  void multiply(VrmlSFRotation*);
-  
-  void ToQuaternion(float* theQuat);
-  void FromQuaternion(float* theQuat);
-  void MultQuat(float* result, float* quat1, float* quat2);
-  
-  void slerp(VrmlSFRotation*, float);  
-
-private:
-  float d_x[4];
-
+    public:
+        VrmlSFRotation();
+        VrmlSFRotation(const float rotation[4]);
+        VrmlSFRotation(float x, float y, float z, float angle);
+        VrmlSFRotation(const VrmlSFVec3f & axis, float angle);
+        
+        virtual ostream& print(ostream& os) const;
+        
+        virtual VrmlField *clone() const;
+        
+        virtual VrmlFieldType fieldType() const;
+        virtual const VrmlSFRotation* toSFRotation() const;
+        virtual VrmlSFRotation* toSFRotation();
+        
+        const float * get() const;
+        void set(const float rotation[4]);
+        
+        float getX() const;
+        void setX(float);
+        
+        float getY() const;
+        void setY(float);
+        
+        float getZ() const;
+        void setZ(float);
+        
+        float getAngle() const;
+        void setAngle(float);
+        
+        /**
+         * Get the axis of rotation.
+         */
+        const VrmlSFVec3f getAxis() const;
+        
+        /**
+         * Get the inverse of this rotation.
+         */
+        const VrmlSFRotation inverse() const;
+        
+        /**
+         * Return the result of multiplying this rotation by rotation.
+         */
+        const VrmlSFRotation multiply(const VrmlSFRotation & rotation) const;
+        
+        /**
+         * Returns a vector that is the result of multiplying vec by the matrix
+         * corresponding to this rotation.
+         */
+        const VrmlSFVec3f multVec(const VrmlSFVec3f & vec) const;
+        
+        /**
+         * Set the axis of rotation.
+         */
+        void setAxis(const VrmlSFVec3f & vec);
+        
+        /**
+         * Perform a Spherical Linear IntERPolation.
+         * @param destRotation the destination rotation
+         * @param t the interval fraction
+         */
+        const VrmlSFRotation slerp(const VrmlSFRotation & destRotation,
+                                   float t) const;  
+        
+    private:
+        void toQuaternion(float theQuat[4]) const;
+        void fromQuaternion(const float theQuat[4]);
+        
+        float d_x[4];
 };
 
 #endif

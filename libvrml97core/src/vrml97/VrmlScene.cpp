@@ -855,14 +855,10 @@ void VrmlScene::render(Viewer *viewer)
   VrmlNodeViewpoint *vp = bindableViewpointTop();
   if (vp)
     {
-      position[0] = vp->positionX();
-      position[1] = vp->positionY();
-      position[2] = vp->positionZ();
-      orientation[0] = vp->orientationX();
-      orientation[1] = vp->orientationY();
-      orientation[2] = vp->orientationZ();
-      orientation[3] = vp->orientationR();
-      field = vp->fieldOfView();
+      std::copy(vp->getPosition().get(), vp->getPosition().get() + 3, position);
+      std::copy(vp->getOrientation().get(), vp->getOrientation().get() + 4,
+                orientation);
+      field = vp->getFieldOfView().get();
       vp->inverseTransform(viewer); // put back!
     }
 
