@@ -50,6 +50,19 @@ AC_PROG_CXX
 AC_PROG_CXXCPP
 
 
+dnl Checks for library functions.
+AC_CHECK_FUNCS(ftime getcwd gettimeofday mktime strdup strerror strstr)
+
+OV_CXX_BOOL(, AC_MSG_ERROR([Your C++ compiler does not have the required support for the 'bool' keyword. See 'config.log' for details.]))
+OV_CXX_NAMESPACE(
+  ,
+  no_cxx_namespaces=true
+)
+AM_CONDITIONAL(NO_CXX_NAMESPACES, test x$no_cxx_namespaces = xtrue)
+
+OV_CXX_AUTO_PTR(, AC_MSG_ERROR([auto_ptr not found]))
+OV_CXX_HASH_MAP
+
 dnl
 dnl Check for libjpeg, libpng, zlib
 dnl
@@ -62,28 +75,6 @@ dnl Check for X, GL/Mesa, glut
 dnl
 OV_PATH_GLUT(, AC_MSG_ERROR([glut or one of its dependencies not found. See 'config.log' for details.]))
 
-dnl
-dnl Test for adequate namespace support in the C++ compiler
-dnl
-OV_CXX_NAMESPACE(
-  ,
-  no_cxx_namespaces=true
-)
-AM_CONDITIONAL(NO_CXX_NAMESPACES, test x$no_cxx_namespaces = xtrue)
-
-OV_CXX_BOOL(
-  ,
-  AC_MSG_ERROR([Your C++ compiler does not have the required support for the 'bool' keyword. See 'config.log' for details.])
-)
-
-dnl
-dnl Make sure compiler supports auto_ptr
-dnl
-OV_CXX_AUTO_PTR(, AC_MSG_ERROR([auto_ptr not found]))
-
-
-dnl Checks for library functions.
-AC_CHECK_FUNCS(ftime getcwd gettimeofday mktime strdup strerror strstr)
 
 dnl
 dnl Modulate debug mode

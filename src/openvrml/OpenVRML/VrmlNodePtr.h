@@ -21,12 +21,24 @@
 # ifndef OPENVRML_NODEPTR_H
 #   define OPENVRML_NODEPTR_H
 
-#   include <map>
 #   include "common.h"
 
 class VrmlNode;
 
+#   ifdef HAVE_STL_HASH_MAP
+#     include <hash_map>
+template <>
+    struct hash<VrmlNode *> {
+        size_t operator()(VrmlNode * ptr) const {
+            return reinterpret_cast<size_t>(ptr);
+        }
+    };
+
+typedef hash_map<VrmlNode *, size_t> CountMap;
+#   else
+#     include <map>
 typedef std::map<VrmlNode *, size_t> CountMap;
+#   endif
 
 OPENVRML_SCOPE class VrmlNodePtr {
 

@@ -1,3 +1,8 @@
+2001-06-08  Braden McDaniel <braden@endoframe.com>
+
+        * If it's available, use the STL hash_map rather than std::map
+          in VrmlNodePtr.
+
 2001-06-07  Braden McDaniel <braden@endoframe.com>
 
         * Replaced SimpleVector in the parser with std::vector.
