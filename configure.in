@@ -31,10 +31,8 @@ AC_SUBST(NOINST_LIBJS)
 AC_SUBST(JS_RPATH_LDFLAG)
 JS_INCLUDE_DIR="\$(includedir)"
 AC_SUBST(JS_INCLUDE_DIR)
-JS_INCLUDE_FILES="jsapi.h jsautocfg.h jscompat.h jslong.h jsotypes.h jsosdep.h jspubtd.h jstypes.h"
-AC_SUBST(JS_INCLUDE_FILES)
 AM_CONDITIONAL(JS_PRELINK_FDLIBM, test "apple" = "orange")
-
+AM_CONDITIONAL(JS_INSTALL_HFILES, test "apple" = "orange")
 
 dnl
 dnl Checks for Win32 stuff

@@ -1,4 +1,4 @@
-#
+# 
 # This Makefile.am can be used either for building libjs as a convenience
 # library or as an installed library. This is dependent on substitutions made
 # during processing of the resulting Makefile.in by configure. The following
@@ -19,17 +19,19 @@
 #       path where the header files will be installed. Can be empty if no
 #       headers are being installed.
 # 
-# JS_INCLUDE_FILES
-#       the headers that will be installed. Should generally be empty (if
-#       building a convenience library and no js headers need to be installed)
-#       or "jsapi.h jsautocfg.h jscompat.h jslong.h jsotypes.h jsosdep.h 
-#       jspubtd.h jstypes.h".
-#
-# Finally, the configure script should employ an automake conditional to set the
-# value of JS_PRELINK_FDLIBM. You probably want this variable to evaluate to
-# true *unless you will be prelinking libjs against another library*. Note that
-# currently, fdlibm is NOT installed *even if this variable is false*.
-#
+# 
+# The configure script should employ two automake conditionals:
+# 
+# JS_PRELINK_FDLIBM
+#       True if you want to incrementally the helper library, fdlibm; false
+#       otherwise.  You probably want this variable to evaluate to true
+#       *unless you will be prelinking libjs against another library*. Note
+#       that currently, fdlibm is NOT installed *even if this variable is
+#       false*.
+# 
+# JS_INSTALL_HFILES
+#       True if you want to install the public header files; false otherwise.
+# 
 
 LIBRARY_VERSION = 0:0:0
 #                 | | |
@@ -73,7 +75,7 @@ lib_LTLIBRARIES = @LIBJS@
 noinst_LTLIBRARIES = @NOINST_LIBJS@
 EXTRA_LTLIBRARIES = libjs.la
 
-noinst_HEADERS = jsarena.h jsarray.h jsatom.h jsbool.h jsbit.h jsclist.h \
+JS_PRIVATE_HFILES = jsarena.h jsarray.h jsatom.h jsbool.h jsbit.h jsclist.h \
 jsconfig.h jscntxt.h jscpucfg.h jsdate.h jsdbgapi.h jsdtoa.h jsemit.h jsexn.h \
 jsfun.h jsgc.h jshash.h jsinterp.h jslibmath.h jslock.h jsmath.h jsnum.h \
 jsobj.h jsopcode.h jsosdep.h jsparse.h jsprvtd.h jsprf.h jsregexp.h jsscan.h \
@@ -81,15 +83,14 @@ jsscope.h jsscript.h jsstddef.h jsstr.h jsutil.h jsxdrapi.h prmjtime.h \
 resource.h jsopcode.tbl js.msg jsshell.msg
 
 jsincludedir = @JS_INCLUDE_DIR@
-jsinclude_HEADERS = @JS_INCLUDE_FILES@
-EXTRA_HEADERS = jsapi.h jsautocfg.h jscompat.h jslong.h jsotypes.h jsosdep.h \
-jspubtd.h jstypes.h
-
-BUILT_SOURCES = jsautocfg.h
-
-jsautocfg.h: jscpucfg
-	./jscpucfg > jsautocfg.h
-
+JS_PUBLIC_HFILES = jsapi.h jsautocfg.h jscompat.h jslong.h jsotypes.h \
+jsosdep.h jspubtd.h jstypes.h
+if JS_INSTALL_HFILES
+jsinclude_HEADERS = $(JS_PUBLIC_HFILES)
+noinst_HEADERS = $(JS_PRIVATE_HFILES)
+else
+noinst_HEADERS = $(JS_PRIVATE_HFILES) $(JS_PUBLIC_HFILES)
+endif
 
 if JS_PRELINK_FDLIBM
 
@@ -106,6 +107,7 @@ jsmathprelinked.lo: jsmath.lo fdlibm/libfdm.la
 	$(LINK) $<
 
 libjs_la_LIBADD = jsmathprelinked.lo
+libjs_la_DEPENDENCIES = jsautocfg.h jsmathprelinked.lo
 
 else
 
@@ -116,11 +118,17 @@ jsprf.c jsregexp.c jsscan.c jsscope.c jsscript.c jsstr.c jsutil.c jsxdrapi.c \
 prmjtime.c jsmath.c
 
 libjs_la_LIBADD = fdlibm/libfdm.la
+libjs_la_DEPENDENCIES = jsautocfg.h fdlibm/libfdm.la
 
 endif
 
-libjs_la_LDFLAGS = @RPATH_LDFLAG@ -version-info $LIBRARY_VERSION
+libjs_la_LDFLAGS = @RPATH_LDFLAG@ -version-info $(LIBRARY_VERSION)
 
 EXTRA_DIST = jsmath.c
 
-DISTCLEANFILES = jsautocfg.h
+CLEANFILES = jsautocfg.h
+
+$(libjs_la_OBJECTS): jsautocfg.h
+
+jsautocfg.h: jscpucfg
+	./jscpucfg > jsautocfg.h
