@@ -321,7 +321,7 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  */
 
 /**
- * @fn node_interface_matches_eventin::result_type node_interface_matches_eventin::operator()(const node_interface_matches_eventin::first_argument_type & interface, const node_interface_matches_eventin::second_argument_type & eventin_id const
+ * @fn node_interface_matches_eventin::result_type node_interface_matches_eventin::operator()(const node_interface_matches_eventin::first_argument_type & interface, const node_interface_matches_eventin::second_argument_type & eventin_id) const
  *
  * @brief Determine if a node_interface matches an eventIn identifier.
  *

@@ -944,7 +944,7 @@ const vec3f vec3f::operator-() const throw()
 }
 
 /**
- * @fn const float & vec3f::operator[](const size_t index) const throw ()
+ * @fn const float & vec3f::operator[](size_t index) const throw ()
  *
  * @brief Index-based component access.
  *
@@ -952,19 +952,6 @@ const vec3f vec3f::operator-() const throw()
  *              component; 2 corresponds to the z component.
  *
  * @return a const reference to the component corresponding to @p index.
- *
- * @pre @p index is less than 3.
- */
-
-/**
- * @fn float & vec3f::operator[](const size_t index) throw ()
- *
- * @brief Index-based component access.
- *
- * @param index 0 corresponds to the x component; 1 corresponds to the y
- *              component; 2 corresponds to the z component.
- *
- * @return a reference to the component corresponding to @p index.
  *
  * @pre @p index is less than 3.
  */
@@ -2284,7 +2271,7 @@ const mat4f mat4f::transpose() const throw ()
 }
 
 /**
- * @brief Return determinant of entire matrix.
+ * @brief Determinant.
  *
  * @return the determinant.
  */
@@ -2299,13 +2286,21 @@ float mat4f::det() const throw ()
 /**
  * @fn float (&mat4f::operator[](size_t index) throw ())[4]
  *
- * @brief To make it usual matrix (non-const)
+ * @brief Row access.
+ *
+ * @param index row index.
+ *
+ * @return row @p index.
  */
 
 /**
  * @fn float (&mat4f::operator[](size_t index) const throw ())[4]
  *
- * @brief To make it usual matrix (const)
+ * @brief Row access.
+ *
+ * @param index row index.
+ *
+ * @return row @p index.
  */
 
 /**
@@ -2344,6 +2339,8 @@ std::ostream & operator<<(std::ostream & out, const mat4f & mat)
  *
  * @param lhs   a matrix.
  * @param rhs   a matrix.
+ *
+ * @return @c true if @p lhs and @p rhs are equivalent; @c false otherwise.
  */
 bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
 {
@@ -2359,6 +2356,8 @@ bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
  *
  * @param lhs   a matrix.
  * @param rhs   a matrix.
+ *
+ * @return @c true if @p lhs and @p rhs are not equivalent; @c false otherwise.
  */
 bool operator!=(const mat4f & lhs, const mat4f & rhs) throw ()
 {
