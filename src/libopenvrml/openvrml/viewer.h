@@ -34,6 +34,10 @@ namespace openvrml {
     class browser;
 
     class viewer : boost::noncopyable {
+        friend class browser;
+
+        openvrml::browser * browser_;
+
     protected:
         openvrml::frustum frustum_;
 
@@ -58,9 +62,9 @@ namespace openvrml {
         typedef long object_t;
         typedef long texture_object_t;
 
-        openvrml::browser & browser;
+        virtual ~viewer() throw () = 0;
 
-        virtual ~viewer() = 0;
+        openvrml::browser * browser() const throw ();
 
         virtual rendering_mode mode() = 0;
         virtual double frame_rate() = 0;
@@ -203,7 +207,7 @@ namespace openvrml {
                              bounding_volume::intersection intersection) = 0;
 
     protected:
-        explicit viewer(openvrml::browser & browser);
+        viewer() throw ();
     };
 }
 

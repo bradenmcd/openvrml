@@ -2622,11 +2622,19 @@ geometry_node::geometry_node(const node_type & type,
 /**
  * @brief Destroy.
  *
- * @todo We should call viewer::remove_object here; but we need a viewer
- *       reference to do that.
+ * @todo Proper resource deallocation in the <code>viewer</code> depends on the
+ *       <code>viewer</code> <strong>not</strong> having been decoupled from
+ *       the browser. We need to handle this better via some refcounting
+ *       scheme.
  */
 geometry_node::~geometry_node() throw ()
-{}
+{
+    if (this->geometry_reference) {
+        assert(this->type.node_class.browser.viewer());
+        this->type.node_class.browser.viewer()
+            ->remove_object(this->geometry_reference);
+    }
+}
 
 /**
  * @brief Cast to a geometry_node.
@@ -2966,9 +2974,20 @@ texture_node::texture_node(const node_type & type, const scope_ptr & scope)
 
 /**
  * @brief Destroy.
+ *
+ * @todo Proper resource deallocation in the <code>viewer</code> depends on the
+ *       <code>viewer</code> <strong>not</strong> having been decoupled from
+ *       the browser. We need to handle this better via some refcounting
+ *       scheme.
  */
 texture_node::~texture_node() throw ()
-{}
+{
+    if (this->texture_reference) {
+        assert(this->type.node_class.browser.viewer());
+        this->type.node_class.browser.viewer()
+            ->remove_texture_object(this->texture_reference);
+    }
+}
 
 /**
  * @brief Insert a texture into a viewer.

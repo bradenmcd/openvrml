@@ -50,8 +50,8 @@ namespace {
         static const int redraw_event_code = 1;
         static const int update_event_code = 2;
 
-        explicit sdl_viewer(openvrml::browser & browser) throw (sdl_error);
-        virtual ~sdl_viewer();
+        explicit sdl_viewer(const std::string & title) throw (sdl_error);
+        virtual ~sdl_viewer() throw ();
 
         void run();
 
@@ -110,13 +110,14 @@ int main(int argc, char * argv[])
         if (inputUrl.empty()) { inputUrl = inputName; }
 
         browser b(cout, cerr);
-        sdl_viewer viewer(b);
+        sdl_viewer v(inputUrl);
+        b.viewer(&v);
 
         vector<string> uri(1, inputUrl);
         vector<string> parameter;
         b.load_url(uri, parameter);
 
-        viewer.run();
+        v.run();
     } catch (std::exception & ex) {
         cerr << ex.what() << endl;
     }
@@ -133,8 +134,7 @@ namespace {
 
     const Uint32 sdl_viewer::video_mode_flags(SDL_OPENGL | SDL_RESIZABLE);
 
-    sdl_viewer::sdl_viewer(openvrml::browser & browser) throw (sdl_error):
-        openvrml::gl::viewer(browser),
+    sdl_viewer::sdl_viewer(const std::string & title) throw (sdl_error):
         update_timer_id(0),
         mouse_button_down(false)
     {
@@ -152,12 +152,11 @@ namespace {
         }
         this->resize(initial_width, initial_height);
 
-        const char * const title = browser.world_url().c_str();
         static const char * const icon = 0;
-        SDL_WM_SetCaption(title, icon);
+        SDL_WM_SetCaption(title.c_str(), icon);
     }
 
-    sdl_viewer::~sdl_viewer()
+    sdl_viewer::~sdl_viewer() throw ()
     {
         SDL_Quit();
     }

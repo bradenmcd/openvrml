@@ -1,3 +1,22 @@
+2004-07-18 Braden McDaniel  <braden@endoframe.com>
+
+	Allow viewers to be associated with and detached from browsers.
+	This is not optimal, but we need to retain a viewer reference so
+	that destroyed nodes can deallocate resources allocated in the
+	renderer.  To really handle this properly, we probably need to
+	have viewers created from a factory function on browser.  But to
+	implement that, we need to be able to register viewer
+	implementations; and we're not in a position to do that yet.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/viewer.cpp
+	* src/libopenvrml/openvrml/viewer.h
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+	* src/lookat/lookat.cpp
+
 2004-07-06 Braden McDaniel  <braden@endoframe.com>
 
 	Cull conformance test table from the distribution in the

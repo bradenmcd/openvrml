@@ -44,6 +44,12 @@ namespace openvrml {
         virtual ~invalid_vrml() throw ();
     };
 
+    class viewer_in_use : public std::invalid_argument {
+    public:
+        viewer_in_use();
+        virtual ~viewer_in_use() throw ();
+    };
+
     class viewer;
     class scene;
     class Vrml97RootScope;
@@ -83,6 +89,7 @@ namespace openvrml {
         bool modified_;
         bool new_view;
         double delta_time;
+        openvrml::viewer * viewer_;
 
     protected:
         typedef std::list<scene_cb> scene_cb_list_t;
@@ -121,6 +128,8 @@ namespace openvrml {
         void add_viewpoint(viewpoint_node & viewpoint) throw (std::bad_alloc);
         void remove_viewpoint(viewpoint_node & viewpoint) throw ();
         const std::list<viewpoint_node *> & viewpoints() const throw ();
+        void viewer(openvrml::viewer * v) throw (viewer_in_use);
+        openvrml::viewer * viewer() throw ();
 
         virtual const char * name() const throw ();
         virtual const char * version() const throw ();
@@ -153,7 +162,7 @@ namespace openvrml {
 
         bool update(double current_time = -1.0);
 
-        void render(openvrml::viewer & viewer);
+        void render();
 
         void modified(bool value);
         bool modified() const;

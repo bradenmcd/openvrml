@@ -156,8 +156,8 @@ namespace openvrml {
             bool checkSensitive(int x, int y, event_type event);
 
         public:
-            explicit viewer(openvrml::browser & b);
-            virtual ~viewer();
+            viewer();
+            virtual ~viewer() throw ();
 
             virtual rendering_mode mode();
             virtual double frame_rate();

@@ -2449,6 +2449,28 @@ invalid_vrml::~invalid_vrml() throw ()
 
 
 /**
+ * @class viewer_in_use
+ *
+ * @brief Exception thrown when attempting to associate a <code>viewer</code>
+ *        with a <code>browser</code> when the <code>viewer</code> is already
+ *        associated with a <code>browser</code>.
+ */
+
+/**
+ * @brief Construct.
+ */
+viewer_in_use::viewer_in_use():
+    std::invalid_argument("viewer in use")
+{}
+
+/**
+ * @brief Destroy.
+ */
+viewer_in_use::~viewer_in_use() throw ()
+{}
+
+
+/**
  * @class browser
  *
  * @brief Encapsulates a VRML browser.
@@ -2603,6 +2625,12 @@ invalid_vrml::~invalid_vrml() throw ()
  */
 
 /**
+ * @var openvrml::viewer * browser::viewer_
+ *
+ * @brief The current <code>viewer</code>.
+ */
+
+/**
  * @typedef browser::scene_cb_list_t
  *
  * @brief List of functions to call when the world is changed.
@@ -2746,6 +2774,7 @@ browser::browser(std::ostream & out, std::ostream & err)
     modified_(false),
     new_view(false),
     delta_time(DEFAULT_DELTA),
+    viewer_(0),
     frame_rate_(0.0),
     first_event(0),
     last_event(0),
@@ -2916,6 +2945,32 @@ void browser::remove_viewpoint(viewpoint_node & viewpoint) throw ()
 const std::list<viewpoint_node *> & browser::viewpoints() const throw ()
 {
     return this->viewpoint_list;
+}
+
+/**
+ * @brief Set the current <code>viewer</code>.
+ *
+ * @param v <code>viewer</code>.
+ *
+ * @exception viewer_in_use if @p v is already associated with a
+ *                          <code>browser</code>.
+ */
+void browser::viewer(openvrml::viewer * v) throw (viewer_in_use)
+{
+    if (v && v->browser_) { throw viewer_in_use(); }
+    if (this->viewer_) { this->viewer_->browser_ = 0; }
+    this->viewer_ = v;
+    if (v) { v->browser_ = this; }
+}
+
+/**
+ * @brief The current <code>viewer</code>.
+ *
+ * @return the current <code>viewer</code>.
+ */
+viewer * browser::viewer() throw ()
+{
+    return this->viewer_;
 }
 
 /**
@@ -3602,10 +3657,12 @@ namespace {
 /**
  * @brief Draw this browser into the specified viewer
  */
-void browser::render(openvrml::viewer & viewer)
+void browser::render()
 {
+    if (!this->viewer_) { return; }
+
     if (this->new_view) {
-        viewer.reset_user_navigation();
+        this->viewer_->reset_user_navigation();
         this->new_view = false;
     }
     float avatarSize = 0.25;
@@ -3625,10 +3682,10 @@ void browser::render(openvrml::viewer & viewer)
         static const float ambientIntensity = 0.3f;
         static const float intensity = 1.0;
 
-        viewer.insert_dir_light(ambientIntensity,
-                                intensity,
-                                color,
-                                direction);
+        this->viewer_->insert_dir_light(ambientIntensity,
+                                        intensity,
+                                        color,
+                                        direction);
     }
 
     // sets the viewpoint transformation
@@ -3638,18 +3695,18 @@ void browser::render(openvrml::viewer & viewer)
     vec3f position, scale;
     rotation orientation;
     t.transformation(position, orientation, scale);
-    viewer.set_viewpoint(position,
-                         orientation,
-                         this->active_viewpoint_->field_of_view(),
-                         avatarSize,
-                         visibilityLimit);
+    this->viewer_->set_viewpoint(position,
+                                 orientation,
+                                 this->active_viewpoint_->field_of_view(),
+                                 avatarSize,
+                                 visibilityLimit);
 
     std::for_each(this->node_class_map.begin(), this->node_class_map.end(),
-                  RenderNodeClass(viewer));
+                  RenderNodeClass(*this->viewer_));
 
     // Top level object
 
-    viewer.begin_object(0);
+    this->viewer_->begin_object(0);
     mat4f modelview = t.inverse();
     rendering_context rc(bounding_volume::partial, modelview);
     rc.draw_bounding_spheres = true;
@@ -3658,20 +3715,20 @@ void browser::render(openvrml::viewer & viewer)
     std::list<node *>::iterator li, end = this->scoped_lights.end();
     for (li = this->scoped_lights.begin(); li != end; ++li) {
         vrml97_node::abstract_light_node * x = (*li)->to_light();
-        if (x) { x->renderScoped(viewer); }
+        if (x) { x->renderScoped(*this->viewer_); }
     }
 
     //
     // Render the nodes.  scene_ may be 0 if the world failed to load.
     //
     if (this->scene_) {
-        this->scene_->render(viewer, rc);
+        this->scene_->render(*this->viewer_, rc);
     }
 
-    viewer.end_object();
+    this->viewer_->end_object();
 
     // This is actually one frame late...
-    this->frame_rate_ = viewer.frame_rate();
+    this->frame_rate_ = this->viewer_->frame_rate();
 
     this->modified(false);
 

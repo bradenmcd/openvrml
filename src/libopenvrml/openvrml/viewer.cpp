@@ -2,7 +2,8 @@
 //
 // OpenVRML
 //
-// Copyright (C) 1998  Chris Morley
+// Copyright 1998  Chris Morley
+// Copyright 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -35,6 +36,13 @@ namespace openvrml {
  * @class viewer
  *
  * @brief Map the scene graph to the underlying graphics library.
+ */
+
+/**
+ * @var browser * viewer::browser_
+ *
+ * @brief A pointer to the <code>browser</code> with which the
+ * <code>viewer</code> is currently associated.
  */
 
 /**
@@ -110,24 +118,30 @@ namespace openvrml {
  */
 
 /**
- * @var openvrml::browser & viewer::browser
- *
- * @brief The browser associated with the viewer.
- */
-
-/**
  * @brief Construct.
- *
- * @param browser   a browser.
  */
-viewer::viewer(openvrml::browser & browser):
-    browser(browser)
+viewer::viewer() throw ():
+    browser_(0)
 {}
 
 /**
  * @brief Destroy.
  */
-viewer::~viewer() {}
+viewer::~viewer() throw ()
+{}
+
+/**
+ * @brief A pointer to the <code>browser</code> with which the
+ *        <code>viewer</code> is currently associated.
+ *
+ * @return a pointer to the <code>browser</code> with which the
+ *         <code>viewer</code> is currently associated, or 0 if the
+ *         <code>viewer</code> is not associated with a <code>browser</code>.
+ */
+browser * viewer::browser() const throw ()
+{
+    return this->browser_;
+}
 
 /**
  * @fn viewer::rendering_mode viewer::mode()

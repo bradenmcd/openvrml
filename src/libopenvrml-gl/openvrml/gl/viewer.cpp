@@ -904,8 +904,7 @@ namespace {
  *
  * @param b the browser.
  */
-viewer::viewer(openvrml::browser & b):
-    openvrml::viewer(b),
+viewer::viewer():
     gl_initialized(false),
     blend(true),
     lit(true),
@@ -938,7 +937,7 @@ viewer::viewer(openvrml::browser & b):
 /**
  * @brief Destroy.
  */
-viewer::~viewer()
+viewer::~viewer() throw ()
 {
     gluDeleteTess(this->tesselator);
 }
@@ -1140,7 +1139,8 @@ double viewer::frame_rate()
  */
 void viewer::reset_user_navigation()
 {
-    this->browser.active_viewpoint().user_view_transform(mat4f());
+    assert(this->browser());
+    this->browser()->active_viewpoint().user_view_transform(mat4f());
     this->post_redraw();
 }
 
@@ -3716,13 +3716,14 @@ void viewer::transform(const mat4f & mat)
  */
 void viewer::update(const double time)
 {
-    if (this->browser.update(time)) {
+    assert(this->browser());
+    if (this->browser()->update(time)) {
         checkErrors("update");
         this->post_redraw();
     }
 
     // Set an alarm clock for the next update time.
-    this->set_timer(this->browser.delta());
+    this->set_timer(this->browser()->delta());
 }
 
 /**
@@ -3730,6 +3731,8 @@ void viewer::update(const double time)
  */
 void viewer::redraw()
 {
+    assert(this->browser());
+
     if (!this->gl_initialized) { initialize(); }
 
     double start = browser::current_time();
@@ -3763,7 +3766,7 @@ void viewer::redraw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    this->browser.render(*this);
+    this->browser()->render();
 
     this->swap_buffers();
 
@@ -3817,9 +3820,11 @@ void viewer::input(event_info * e)
  */
 void viewer::rotate(const openvrml::rotation & rot) throw ()
 {
+    assert(this->browser());
+
     if (fequal<float>()(rot.angle(), 0.0f)) { return; }
 
-    viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
+    viewpoint_node & activeViewpoint = this->browser()->active_viewpoint();
     const mat4f & viewpointTransformation = activeViewpoint.transformation();
     const mat4f & currentUserViewTransform =
             activeViewpoint.user_view_transform();
@@ -3856,8 +3861,10 @@ void viewer::rotate(const openvrml::rotation & rot) throw ()
  */
 void viewer::step(const float x, const float y, const float z)
 {
+    assert(this->browser());
+
     mat4f t = mat4f::translation(vec3f(x, y, z));
-    viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
+    viewpoint_node & activeViewpoint = this->browser()->active_viewpoint();
     activeViewpoint
         .user_view_transform(t * activeViewpoint.user_view_transform());
     post_redraw();
@@ -3870,13 +3877,15 @@ void viewer::step(const float x, const float y, const float z)
  */
 void viewer::zoom(const float z)
 {
+    assert(this->browser());
+
     GLint viewport[4];
     GLdouble modelview[16], projection[16];
     glGetIntegerv (GL_VIEWPORT, viewport);
     glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev (GL_PROJECTION_MATRIX, projection);
     vrml97_node::navigation_info_node * const nav =
-            this->browser.bindable_navigation_info_top();
+        this->browser()->bindable_navigation_info_top();
     GLdouble x_c = this->win_width / 2;
     GLdouble y_c = this->win_height / 2;
     GLdouble z_c = 0.5;
@@ -3913,7 +3922,7 @@ void viewer::zoom(const float z)
                             static_cast<float>(dy),
                             static_cast<float>(dz));
     mat4f t = mat4f::translation(translation);
-    viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
+    viewpoint_node & activeViewpoint = this->browser()->active_viewpoint();
     const mat4f & userViewTransform = activeViewpoint.user_view_transform();
     activeViewpoint.user_view_transform(t * userViewTransform);
     post_redraw();
@@ -3928,6 +3937,8 @@ void viewer::handleKey(int key)
 {
     using std::find;
     using std::list;
+
+    assert(this->browser());
 
     switch (key) {
     case key_left:
@@ -3980,9 +3991,9 @@ void viewer::handleKey(int key)
     case key_page_down:
         {
             viewpoint_node & currentViewpoint =
-                this->browser.active_viewpoint();
+                this->browser()->active_viewpoint();
             const list<viewpoint_node *> & viewpoints =
-                this->browser.viewpoints();
+                this->browser()->viewpoints();
             list<viewpoint_node *>::const_iterator pos =
                     find(viewpoints.begin(), viewpoints.end(),
                          &currentViewpoint);
@@ -4001,9 +4012,9 @@ void viewer::handleKey(int key)
     case key_page_up:
         {
             viewpoint_node & currentViewpoint =
-                this->browser.active_viewpoint();
+                this->browser()->active_viewpoint();
             const list<viewpoint_node *> & viewpoints =
-                this->browser.viewpoints();
+                this->browser()->viewpoints();
             list<viewpoint_node *>::const_iterator pos =
                     find(viewpoints.begin(), viewpoints.end(),
                          &currentViewpoint);
@@ -4164,6 +4175,8 @@ bool viewer::checkSensitive(const int x,
                             const int y,
                             const event_type mouseEvent)
 {
+    assert(this->browser());
+
     double timeNow = browser::current_time();
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
@@ -4211,7 +4224,7 @@ bool viewer::checkSensitive(const int x,
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    this->browser.render(*this);
+    this->browser()->render();
 
     this->select_mode = false;
 
@@ -4297,7 +4310,7 @@ bool viewer::checkSensitive(const int x,
     if (this->active_sensitive) {
         if (mouseEvent == event_mouse_release
                 || mouseEvent == event_mouse_move) {
-            this->browser.sensitive_event(
+            this->browser()->sensitive_event(
                 this->sensitive_object[this->active_sensitive - 1],
                 timeNow,
                 selected == this->active_sensitive,
@@ -4306,7 +4319,7 @@ bool viewer::checkSensitive(const int x,
             this->active_sensitive = 0;
         } else {
             // _DRAG
-            this->browser.sensitive_event(
+            this->browser()->sensitive_event(
                 this->sensitive_object[this->active_sensitive - 1],
                 timeNow,
                 selected == this->active_sensitive,
@@ -4320,7 +4333,7 @@ bool viewer::checkSensitive(const int x,
         // mouse over events are no longer relevant.
         //
         if (over_sensitive && over_sensitive != selected) {
-            this->browser.sensitive_event(
+            this->browser()->sensitive_event(
                 this->sensitive_object[this->over_sensitive - 1],
                 timeNow,
                 false, false, // isOver, isActive
@@ -4328,7 +4341,7 @@ bool viewer::checkSensitive(const int x,
             this->over_sensitive = 0;
         }
         this->active_sensitive = selected;
-        this->browser.sensitive_event(
+        this->browser()->sensitive_event(
             this->sensitive_object[this->active_sensitive - 1],
             timeNow,
             true, true, // isOver, isActive
@@ -4336,7 +4349,7 @@ bool viewer::checkSensitive(const int x,
     } else if (mouseEvent == event_mouse_move) {
         // Handle isOver events (coords are bogus)
         if (this->over_sensitive && this->over_sensitive != selected) {
-            this->browser.sensitive_event(
+            this->browser()->sensitive_event(
                 this->sensitive_object[this->over_sensitive - 1],
                 timeNow,
                 false, false, // isOver, isActive
@@ -4344,7 +4357,7 @@ bool viewer::checkSensitive(const int x,
         }
         this->over_sensitive = selected;
         if (this->over_sensitive) {
-            this->browser.sensitive_event(
+            this->browser()->sensitive_event(
                 this->sensitive_object[this->over_sensitive - 1],
                 timeNow,
                 true, false,  // isOver, isActive
