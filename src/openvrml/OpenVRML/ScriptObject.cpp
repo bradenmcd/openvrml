@@ -61,15 +61,15 @@ ScriptObject *ScriptObject::create( VrmlNodeScript *node,
     // Try each url until we find one we like
     int i, n = url.getLength();
     for (i = 0; i < n; ++i) {
-        if (! url[i]) continue;
+        if (! url.get(i)) continue;
 
         // Get the protocol & mimetype...
 # ifndef OPENVRML_DISABLE_JAVASCRIPT
         // Need to handle external .js files too...
-        if (strncmp(url[i], "javascript:", 11) == 0 ||
-	    strncmp(url[i], "vrmlscript:", 11) == 0 )
+        if (strncmp(url.get(i), "javascript:", 11) == 0 ||
+	    strncmp(url.get(i), "vrmlscript:", 11) == 0 )
 	{
-	    return new ScriptJS( node, url[i]+11 );
+	    return new ScriptJS( node, url.get(i)+11 );
 	}
 # endif
 

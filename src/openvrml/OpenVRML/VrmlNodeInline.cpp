@@ -178,7 +178,7 @@ void VrmlNodeInline::load(const char *relativeUrl)
       else
 	{
 	  theSystem->warn("couldn't load Inline %s (relative %s)\n",
-			  d_url[0],
+			  d_url.get(0),
 			  d_relative.get() ? d_relative.get() : "<null>");
 	  delete ns;
 	}

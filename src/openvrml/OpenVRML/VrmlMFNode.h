@@ -27,7 +27,6 @@ class VrmlNode;
 
 class VrmlMFNode : public VrmlField {
 public:
-    explicit VrmlMFNode(VrmlNode * node);
     explicit VrmlMFNode(size_t length = 0, VrmlNode * const * nodes = 0);
     VrmlMFNode(VrmlMFNode const & mfnode);
 

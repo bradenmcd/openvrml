@@ -200,7 +200,7 @@ bool Image::tryURLs(size_t nUrls, char const * const * urls, Doc2 * relative)
 bool Image::tryURLs(const VrmlMFString & urls, Doc2 * relative) {
     size_t i(0);
     for (; i < urls.getLength(); ++i) {
-        if (urls[i] && setURL(urls[i], relative)) {
+        if (urls.get(i) && setURL(urls.get(i), relative)) {
             break;
         }
     }

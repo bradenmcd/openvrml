@@ -25,7 +25,6 @@
 
 class VrmlMFVec2f : public VrmlField {
 public:
-    VrmlMFVec2f(float x, float y);
     explicit VrmlMFVec2f(size_t length = 0, const float * vecs = 0);
     VrmlMFVec2f(const VrmlMFVec2f & mfvec2f);
 
@@ -34,6 +33,7 @@ public:
     VrmlMFVec2f & operator=(const VrmlMFVec2f & mfvec2f);
 
     const float * operator[](size_t index) const;
+    float * operator[](size_t index);
     
     const float * get() const;
     void set(size_t length, const float * vecs);

@@ -24,35 +24,34 @@
 #include "VrmlField.h"
 
 class VrmlMFFloat : public VrmlField {
-    public:
-        VrmlMFFloat(float value);
-        explicit VrmlMFFloat(size_t length = 0, float const * numbers = 0);
-        VrmlMFFloat(const VrmlMFFloat & mfFloat);
-        
-        ~VrmlMFFloat();
-        
-        VrmlMFFloat& operator=(const VrmlMFFloat & mfFloat);
-        
-        const float operator[](size_t index) const;
-        
-        const float * get() const;
-        void set(size_t length, const float * numbers);
-        
-        size_t getLength() const;
-        void setLength(size_t length);
-        
-        //
-        // VrmlField implementation
-        //
-        virtual ostream& print(ostream& os) const;
-        virtual VrmlField *clone() const;
-        virtual VrmlFieldType fieldType() const;
-        virtual const VrmlMFFloat* toMFFloat() const;
-        virtual VrmlMFFloat* toMFFloat();
+public:
+    explicit VrmlMFFloat(size_t length = 0, float const * numbers = 0);
+    VrmlMFFloat(const VrmlMFFloat & mfFloat);
 
-    private:
-        class FData;
-        FData *d_data;
+    ~VrmlMFFloat();
+
+    VrmlMFFloat& operator=(const VrmlMFFloat & mfFloat);
+
+    const float operator[](size_t index) const;
+
+    const float * get() const;
+    void set(size_t length, const float * numbers);
+
+    size_t getLength() const;
+    void setLength(size_t length);
+
+    //
+    // VrmlField implementation
+    //
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlMFFloat* toMFFloat() const;
+    virtual VrmlMFFloat* toMFFloat();
+
+private:
+    class FData;
+    FData *d_data;
 };
 
 #endif // VRMLMFFLOAT_H

@@ -395,13 +395,13 @@ VrmlNodeType::fieldDefault(const char *fname) const
   return 0;
 }
 
-void VrmlNodeType::addNode(VrmlNode & node)
+void VrmlNodeType::addNode(VrmlNode * node)
 {
     // add node to list of implementation nodes
     if (d_implementation) {
-        d_implementation->addNode(&node);
+        d_implementation->addNode(node);
     } else {
-        d_implementation = new VrmlMFNode(&node);
+        d_implementation = new VrmlMFNode(1, &node);
     }
 }
 

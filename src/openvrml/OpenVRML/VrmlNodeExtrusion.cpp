@@ -67,20 +67,30 @@ VrmlNodeType & VrmlNodeExtrusion::nodeType() const
 }
 
 
-VrmlNodeExtrusion::VrmlNodeExtrusion(VrmlScene *scene) :
-  VrmlNodeGeometry(scene),
-  d_beginCap(true),
-  d_ccw(true),
-  d_convex(true),
-  d_endCap(true),
-  d_orientation( 0, 0, 1, 0 ),
-  d_scale( 1, 1 ),
-  d_solid(true)
-{
-  float crossSection[] = { 1,1,  1,-1,  -1,-1,  -1,1,  1,1 };
-  d_crossSection.set(4, crossSection);
-  float spine[] = { 0,0,0,  0,1,0 };
-  d_spine.set( 2, spine );
+VrmlNodeExtrusion::VrmlNodeExtrusion(VrmlScene * scene):
+        VrmlNodeGeometry(scene), d_beginCap(true), d_ccw(true), d_convex(true),
+        d_creaseAngle(0), d_crossSection(5), d_endCap(true), d_orientation(1),
+        d_scale(1), d_solid(true), d_spine(2) {
+    this->d_crossSection[0][0] = 1.0f;
+    this->d_crossSection[0][1] = 1.0f;
+    this->d_crossSection[1][0] = 1.0f;
+    this->d_crossSection[1][1] = -1.0f;
+    this->d_crossSection[2][0] = -1.0f;
+    this->d_crossSection[2][1] = -1.0f;
+    this->d_crossSection[3][0] = -1.0f;
+    this->d_crossSection[3][1] = 1.0f;
+    this->d_crossSection[4][0] = 1.0f;
+    this->d_crossSection[4][1] = 1.0f;
+    
+    this->d_scale[0][0] = 1.0f;
+    this->d_scale[0][1] = 1.0f;
+    
+    this->d_spine[0][0] = 0.0f;
+    this->d_spine[0][1] = 0.0f;
+    this->d_spine[0][2] = 0.0f;
+    this->d_spine[1][0] = 0.0f;
+    this->d_spine[1][1] = 1.0f;
+    this->d_spine[1][2] = 0.0f;
 }
 
 VrmlNodeExtrusion::~VrmlNodeExtrusion()

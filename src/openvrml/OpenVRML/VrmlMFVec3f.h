@@ -25,7 +25,6 @@
 
 class VrmlMFVec3f : public VrmlField {
 public:
-    VrmlMFVec3f(float x, float y, float z);
     explicit VrmlMFVec3f(size_t length = 0, const float * vecs = 0);
     VrmlMFVec3f(const VrmlMFVec3f & mfvec3f);
 

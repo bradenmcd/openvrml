@@ -59,17 +59,11 @@ VrmlNodeType & VrmlNodeFontStyle::nodeType() const
 }
 
 
-VrmlNodeFontStyle::VrmlNodeFontStyle(VrmlScene *scene) :
-  VrmlNode(scene),
-  d_family("SERIF"),
-  d_horizontal(true),
-  d_justify("BEGIN"),
-  d_leftToRight(true),
-  d_size(1.0),
-  d_spacing(1.0),
-  d_style("PLAIN"),
-  d_topToBottom(true)
-{
+VrmlNodeFontStyle::VrmlNodeFontStyle(VrmlScene *scene): VrmlNode(scene),
+        d_family(1), d_horizontal(true), d_justify(1), d_leftToRight(true),
+        d_size(1.0), d_spacing(1.0), d_style("PLAIN"), d_topToBottom(true) {
+    this->d_family.set(0, "SERIF");
+    this->d_justify.set(0, "BEGIN");
 }
 
 VrmlNodeFontStyle::~VrmlNodeFontStyle()
@@ -90,11 +84,11 @@ VrmlNodeFontStyle* VrmlNodeFontStyle::toFontStyle() const
 ostream& VrmlNodeFontStyle::printFields(ostream& os, int indent)
 {
   if (d_family.getLength() > 1 ||
-      (d_family.getLength() == 1 && strcmp(d_family[0],"SERIF")) )
+      (d_family.getLength() == 1 && strcmp(d_family.get(0),"SERIF")) )
     PRINT_FIELD(family);
   if (! d_horizontal.get()) PRINT_FIELD(horizontal);
   if (d_justify.getLength() > 1 ||
-      (d_justify.getLength() == 1 && strcmp(d_justify[0],"BEGIN")) )
+      (d_justify.getLength() == 1 && strcmp(d_justify.get(0),"BEGIN")) )
     PRINT_FIELD(justify);
   if (d_language.get() && strcmp(d_language.get(), ""))
     PRINT_FIELD(language);

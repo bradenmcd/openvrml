@@ -24,33 +24,32 @@
 #include "VrmlField.h"
 
 class VrmlMFInt32 : public VrmlField {
-    public:
-        VrmlMFInt32(long);
-        explicit VrmlMFInt32(size_t length = 0, const long * numbers = 0);
-        VrmlMFInt32(const VrmlMFInt32 & mfInt32);
-        
-        ~VrmlMFInt32();
-        
-        VrmlMFInt32 & operator=(const VrmlMFInt32 & mfInt32);
+public:
+    explicit VrmlMFInt32(size_t length = 0, const long * numbers = 0);
+    VrmlMFInt32(const VrmlMFInt32 & mfInt32);
 
-        long operator[](size_t) const;
-        
-        const long * get() const;
-        void set(size_t length, const long * numbers);
-        
-        size_t getLength() const;
-        void setLength(size_t length);
-        
-        virtual ostream& print(ostream& os) const;
-        virtual VrmlField *clone() const;
-        virtual VrmlFieldType fieldType() const;
-        virtual const VrmlMFInt32 * toMFInt32() const;
-        virtual VrmlMFInt32 * toMFInt32();
-        
-        
-    private:
-        class IData;
-        IData *d_data;
+    ~VrmlMFInt32();
+
+    VrmlMFInt32 & operator=(const VrmlMFInt32 & mfInt32);
+
+    long operator[](size_t) const;
+
+    const long * get() const;
+    void set(size_t length, const long * numbers);
+
+    size_t getLength() const;
+    void setLength(size_t length);
+
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlMFInt32 * toMFInt32() const;
+    virtual VrmlMFInt32 * toMFInt32();
+
+
+private:
+    class IData;
+    IData *d_data;
 };
 
 #endif // VRMLMFINT_H

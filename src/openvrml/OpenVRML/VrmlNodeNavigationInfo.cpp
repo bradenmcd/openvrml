@@ -110,8 +110,8 @@ ostream& VrmlNodeNavigationInfo::printFields(ostream& os, int indent)
   if (! d_headlight.get()) PRINT_FIELD(headlight);
   if (! FPEQUAL(d_speed.get(), 1.0)) PRINT_FIELD(speed);
   if (d_type.getLength() != 2 ||
-      strcmp(d_type[0], "WALK") != 0 ||
-      strcmp(d_type[1], "ANY") != 0 )
+      strcmp(d_type.get(0), "WALK") != 0 ||
+      strcmp(d_type.get(1), "ANY") != 0 )
     PRINT_FIELD(type);
   if (! FPZERO(d_visibilityLimit.get())) PRINT_FIELD(visibilityLimit);
 

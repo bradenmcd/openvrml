@@ -1789,15 +1789,6 @@ public:
 };
 
 /**
- * @brief Construct from a single color value.
- * @param r red component
- * @param g green component
- * @param b blue component
- */
-VrmlMFColor::VrmlMFColor(float r, float g, float b) : d_data(new FData(3))
-{ d_data->d_v[0] = r; d_data->d_v[1] = g; d_data->d_v[2] = b; }
-
-/**
  * @brief Construct from a float array.
  * @param length the number of RGB triplets in the array
  * @param colors a float array comprising RGB triplets
@@ -1931,13 +1922,6 @@ public:
 };
 
 /**
- * @brief Constructor.
- * @param value
- */
-VrmlMFFloat::VrmlMFFloat(float value) : d_data(new FData(1)) 
-{ d_data->d_v[0] = value; }
-
-/**
  * @brief Construct from a float array.
  * @param length the number of floats in the array
  * @param numbers a pointer to a float array
@@ -2060,14 +2044,6 @@ public:
   size_t d_n;     // size (in ints) of d_v
   long * d_v;     // data vector
 };
-
-/**
- * @brief Constructor.
- * @param number a single initial value
- */
-VrmlMFInt32::VrmlMFInt32(long number): d_data(new IData(1)) {
-    d_data->d_v[0] = number;
-}
 
 /**
  * @brief Construct from a long array.
@@ -2204,16 +2180,6 @@ ostream& VrmlMFInt32::print(ostream& os) const
  * MFNode.
  */
 #include "VrmlMFNode.h"
-
-/**
- * @brief Constructor.
- *
- * @param node a pointer to a VrmlNode; can be null
- */
-VrmlMFNode::VrmlMFNode(VrmlNode * node):
-        d_v(new VrmlNode* [1]), d_allocated(1), d_size(1) {
-    d_v[0] = node ? node->reference() : 0;
-}
 
 /**
  * @brief Construct from an array of VrmlNode pointers.
@@ -2464,22 +2430,6 @@ VrmlMFRotation::VrmlMFRotation(size_t length, float const * rotations):
 }
 
 /**
- * @brief Construct from a single rotation value.
- *
- * @param x the <var>x</var>-component of the axis of rotation
- * @param y the <var>y</var>-component of the axis of rotation
- * @param z the <var>z</var>-component of the axis of rotation
- * @param angle the rotation angle
- */
-VrmlMFRotation::VrmlMFRotation(float x, float y, float z, float angle):
-        d_data(new FData(4)) {
-    this->d_data->d_v[0] = x;
-    this->d_data->d_v[1] = y;
-    this->d_data->d_v[2] = z;
-    this->d_data->d_v[3] = angle;
-}
-
-/**
  * @brief Copy constructor.
  *
  * @param mfrotation the object to copy
@@ -2587,33 +2537,20 @@ ostream& VrmlMFRotation::print(ostream& os) const
 
 /**
  * @class VrmlMFString
- * Encapsulates a MFString.
+ *
+ * @brief Encapsulates a MFString.
  */
 #include "VrmlMFString.h"
 
-VrmlMFString::VrmlMFString()
-  : d_v(0), d_allocated(0), d_size(0)
-{}
-
-VrmlMFString::VrmlMFString(char const * s)
-  : d_v(new char*[1]), d_allocated(1), d_size(1)
-{
-    if (s) {
-        d_v[0] = new char[strlen(s)+1];
-        strcpy(d_v[0],s);
-    } else {
-        d_v[0] = 0;
-    }
-}
-
 VrmlMFString::VrmlMFString(size_t n, char const * const * v)
-  : d_v(new char *[n]), d_allocated(n), d_size(n)
+  : d_v(n ? new const char *[n] : 0), d_allocated(n), d_size(n)
 {
     if (v) {
         for (size_t i(0); i < n; ++i, ++v) {
             if (*v) {
-                d_v[i] = new char[strlen(*v)+1];
-                strcpy(d_v[i], *v);
+                char * const s = new char[strlen(*v) + 1];
+                strcpy(s, *v);
+                d_v[i] = s;
             } else {
                 d_v[i] = 0;
             }
@@ -2625,12 +2562,13 @@ VrmlMFString::VrmlMFString(size_t n, char const * const * v)
 
 
 VrmlMFString::VrmlMFString(VrmlMFString const & rhs)
-  : d_v(new char *[rhs.d_size]), d_allocated(rhs.d_size), d_size(rhs.d_size)
+  : d_v(new const char *[rhs.d_size]), d_allocated(rhs.d_size), d_size(rhs.d_size)
 {
     for (size_t i(0); i < rhs.d_size; ++i) {
         if (rhs.d_v[i]) {
-            d_v[i] = new char[strlen(rhs.d_v[i])+1];
-            strcpy(d_v[i], rhs.d_v[i]);
+            char * const s = new char[strlen(rhs.d_v[i])+1];
+            strcpy(s, rhs.d_v[i]);
+            d_v[i] = s;
         } else {
             d_v[i] = 0;
         }
@@ -2647,7 +2585,9 @@ VrmlMFString::~VrmlMFString()
 
 void VrmlMFString::set(size_t n, char const * const v[])
 {
-    for (size_t i=0; i<d_size; ++i) {
+    cout << "d_size = " << d_size << endl;
+    for (size_t i = 0; i < d_size; ++i) {
+        cout << "d_v[" << i << "] = " << d_v[i] << endl;
         delete [] d_v[i];
     }
     
@@ -2655,15 +2595,16 @@ void VrmlMFString::set(size_t n, char const * const v[])
         delete [] d_v;
         d_v = 0;
         d_allocated = d_size = 0;
-        d_v = new char*[n];
+        d_v = new const char *[n];
         d_allocated = n;
     }
     d_size = n;
     
     for (size_t j = 0; j < n; ++j) {
         if (v[j]) {
-            d_v[j] = new char[ strlen(v[j]) + 1 ];
-            strcpy(d_v[j], v[j]);
+            char * const s = new char[strlen(v[j]) + 1];
+            strcpy(s, v[j]);
+            d_v[j] = s;
         } else {
             d_v[j] = 0;
         }
@@ -2686,20 +2627,20 @@ size_t VrmlMFString::getLength() const
     return d_size;
 }
 
-char const * const * VrmlMFString::get() const
-{
+char const * const * VrmlMFString::get() const {
     return d_v;
 }
 
-char const * VrmlMFString::get(size_t index) const
-{
-    return (*this)[index];
+char const * VrmlMFString::get(size_t index) const {
+    assert(index < this->d_size);
+    return this->d_v[index];
 }
 
-char const * VrmlMFString::operator[](size_t index) const
-{
-    assert(index < d_size);
-    return d_v[index];
+void VrmlMFString::set(size_t index, const char * str) {
+    delete [] this->d_v[index];
+    char * const s = new char[strlen(str) + 1];
+    strcpy(s, str);
+    this->d_v[index] = s;
 }
 
 ostream& VrmlMFString::print(ostream& os) const
@@ -2761,15 +2702,6 @@ void VrmlMFTime::DData::deref() {
     if (--refs == 0) {
         delete this;
     }
-}
-
-/**
- * @brief Construct from a single time time value.
- *
- * @param time
- */
-VrmlMFTime::VrmlMFTime(double time): d_data(new DData(1)) {
-    d_data->data[0] = time;
 }
 
 /**
@@ -2923,17 +2855,6 @@ public:
 };
 
 /**
- * @brief Construct from a single vector value.
- *
- * @param x the <var>x</var>-component
- * @param y the <var>y</var>-component
- */
-VrmlMFVec2f::VrmlMFVec2f(float x, float y): d_data(new FData(2)) {
-    this->d_data->d_v[0] = x;
-    this->d_data->d_v[1] = y;
-}
-
-/**
  * @brief Construct from an array of vector values.
  *
  * @param length the number of vector values in the passed array
@@ -2973,11 +2894,21 @@ VrmlMFVec2f & VrmlMFVec2f::operator=(const VrmlMFVec2f & mfvec2f) {
 }
 
 /**
- * @brief Array element dereference operator.
+ * @brief Array element dereference operator (const version).
  *
  * @param index
  */
 const float * VrmlMFVec2f::operator[](size_t index) const {
+    assert((index * 2) < this->d_data->d_n);
+    return (this->d_data->d_v + (index * 2));
+}
+
+/**
+ * @brief Array element dereference operator (non-const version).
+ *
+ * @param index
+ */
+float * VrmlMFVec2f::operator[](size_t index) {
     assert((index * 2) < this->d_data->d_n);
     return (this->d_data->d_v + (index * 2));
 }
@@ -3066,19 +2997,6 @@ public:
   size_t d_n;			// size (in floats) of d_v
   float *d_v;			// data vector
 };
-
-/**
- * @brief Construct from a single vector value.
- *
- * @param x the <var>x</var>-component
- * @param y the <var>y</var>-component
- * @param z the <var>z</var>-component
- */
-VrmlMFVec3f::VrmlMFVec3f(float x, float y, float z): d_data(new FData(3)) {
-    this->d_data->d_v[0] = x;
-    this->d_data->d_v[1] = y;
-    this->d_data->d_v[2] = z;
-}
 
 /**
  * @brief Construct from an array of vector values.

@@ -85,7 +85,7 @@ public:
   const char *url() { return d_actualUrl ? d_actualUrl->get() : 0; }
 
   // Add a node to a PROTO implementation
-  void addNode(VrmlNode & implNode);
+  void addNode(VrmlNode * implNode);
   
   // Add an IS linkage to one of the PROTO interface fields/events.
   void addIS(const char *isFieldName,

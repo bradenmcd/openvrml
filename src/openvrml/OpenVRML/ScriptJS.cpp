@@ -2588,7 +2588,8 @@ static JSBool createVrmlFromURL(JSContext* cx, JSObject* b,
   if (JSVAL_IS_STRING(argv[0]))
     {
       JSString *str = JSVAL_TO_STRING(argv[0]);
-      url = new VrmlMFString( JS_GetStringBytes(str) );
+      const char * const strBytes = JS_GetStringBytes(str);
+      url = new VrmlMFString(1, &strBytes);
     }
   else if ((f = jsvalToVrmlField( cx, argv[0], VrmlField::MFSTRING )) != 0)
     {

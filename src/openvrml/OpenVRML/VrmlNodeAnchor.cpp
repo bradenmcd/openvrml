@@ -129,7 +129,7 @@ void VrmlNodeAnchor::activate()
       
       VrmlMFString urls(d_url.getLength(), tmp_url_array);
       if (!d_scene->loadUrl(&urls, &d_parameter)) {
-        theSystem->warn("Couldn't load URL %s\n", d_url[0]);
+        theSystem->warn("Couldn't load URL %s\n", d_url.get(0));
       }
 
       for (size_t j = 0; j < d_url.getLength(); j++)

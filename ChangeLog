@@ -1,3 +1,15 @@
+2001-01-03  Braden McDaniel  <braden@endoframe.com>
+
+        * Removed single-value constructor from VrmlMF*. It is
+          unnecessary since the array constructor can be used with a
+          single value, and with types like VrmlMFFloat, VrmlMFTime,
+          and especially VrmlMFInt32, it has the potential to create
+          ambiguous code since the array constructor can be used with
+          a single value as well (to indicate the number of values the
+          new object should hold).
+
+        * Fixed a minor bug with the default Extrusion.
+
 2001-01-01  Braden McDaniel  <braden@endoframe.com>
 
         * Doxygen comments for VrmlMFTime, VrmlMFVec2f, and VrmlMFVec3f.

@@ -47,9 +47,9 @@ public:
 
   const char* title() { return d_title.get(); }
 
-  const char** info() { return (const char**) (d_info.get()); }
+  const char * const * info() { return d_info.get(); }
 
-  const int    size() { return d_info.getLength(); }
+  size_t size() { return d_info.getLength(); }
 
 
 private:

@@ -137,9 +137,9 @@ Viewer::Object VrmlNodeText::insertGeometry(Viewer *viewer, VrmlRenderContext rc
             VrmlMFString & j = f->justify();
             
             for (size_t i=0; i<j.getLength(); ++i) {
-                if (strcmp(j[i], "END") == 0) {
+                if (strcmp(j.get(i), "END") == 0) {
                     justify[i] = -1;
-                } else if (strcmp(j[i], "MIDDLE") == 0) {
+                } else if (strcmp(j.get(i), "MIDDLE") == 0) {
                     justify[i] = 0;
                 }
             }

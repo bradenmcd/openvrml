@@ -1353,7 +1353,6 @@ VrmlNode* VrmlScene::getRoot()
 void VrmlScene::setRoot(VrmlNode* root)
 {
   if (!root) return;
-  VrmlMFNode children(root);
   // safe: addChildren copies args...
-  d_nodes.addChildren(children);
+  d_nodes.addChildren(VrmlMFNode(1, &root));
 }

@@ -24,35 +24,34 @@
 #include "VrmlField.h"
 
 class VrmlMFColor : public VrmlField {
-    public:
-        VrmlMFColor(float r, float g, float b);
-        explicit VrmlMFColor(size_t length = 0, float const * colors = 0);
-        VrmlMFColor(const VrmlMFColor &source);
+public:
+    explicit VrmlMFColor(size_t length = 0, float const * colors = 0);
+    VrmlMFColor(const VrmlMFColor &source);
 
-        ~VrmlMFColor();
+    ~VrmlMFColor();
 
-        VrmlMFColor& operator=(const VrmlMFColor & mfColor);
-        
-        const float * operator[](size_t index) const;
+    VrmlMFColor& operator=(const VrmlMFColor & mfColor);
 
-        const float * get() const;
-        void set(size_t length, const float * colors = 0);
+    const float * operator[](size_t index) const;
 
-        size_t getLength() const;
-        void setLength(size_t length);
+    const float * get() const;
+    void set(size_t length, const float * colors = 0);
 
-        //
-        // VrmlField implementation
-        //
-        virtual ostream& print(ostream& os) const;
-        virtual VrmlField *clone() const;
-        virtual VrmlFieldType fieldType() const;
-        virtual const VrmlMFColor* toMFColor() const;
-        virtual VrmlMFColor* toMFColor();
+    size_t getLength() const;
+    void setLength(size_t length);
 
-    private:
-        class FData;
-        FData *d_data;		// Color data in RGB triples
+    //
+    // VrmlField implementation
+    //
+    virtual ostream& print(ostream& os) const;
+    virtual VrmlField *clone() const;
+    virtual VrmlFieldType fieldType() const;
+    virtual const VrmlMFColor* toMFColor() const;
+    virtual VrmlMFColor* toMFColor();
+
+private:
+    class FData;
+    FData *d_data;		// Color data in RGB triples
 };
 
 #endif // VRMLMFCOLOR_H

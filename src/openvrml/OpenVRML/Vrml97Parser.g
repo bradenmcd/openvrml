@@ -275,7 +275,7 @@ protoBody[Doc2 const * doc, VrmlNodeType & nodeType]
     :   (protoStatement[*nodeType.scope(), doc])* n=protoNodeStatement[doc, nodeType]
         {
             assert(n);
-            nodeType.addNode(*n);
+            nodeType.addNode(n);
         }
         (protoBodyStatement[doc, nodeType])*
     ;
@@ -287,7 +287,7 @@ protoBodyStatement[Doc2 const * doc, VrmlNodeType & nodeType]
     :   n=protoNodeStatement[doc, nodeType]
         {
             assert(n);
-            nodeType.addNode(*n);
+            nodeType.addNode(n);
         }
     |   protoStatement[*nodeType.scope(), doc]
     |   routeStatement[*nodeType.scope()]
@@ -366,7 +366,8 @@ externprotoUrlList returns [VrmlMFString * msv = 0]
         }
     :   s=stringValue
         {
-            msv = new VrmlMFString(s.c_str());
+            const char * const sPtr = s.c_str();
+            msv = new VrmlMFString(1, &sPtr);
         }
     |   LBRACKET
         {
@@ -851,7 +852,7 @@ mfColorValue returns [VrmlMFColor * mcv = new VrmlMFColor()]
         }
     :   colorValue[c]
         {
-            *mcv = VrmlMFColor(c[0], c[1], c[2]);
+            *mcv = VrmlMFColor(1, c);
         }
     |   LBRACKET
         {
@@ -906,7 +907,7 @@ mfFloatValue returns [VrmlMFFloat * mfv = new VrmlMFFloat()]
         }
     :   f=floatValue
         {
-            *mfv = VrmlMFFloat(f);
+            *mfv = VrmlMFFloat(1, &f);
         }
     |   LBRACKET
         {
@@ -980,7 +981,7 @@ mfInt32Value returns [VrmlMFInt32 * miv = new VrmlMFInt32()]
         }
     :   i=intValue
         {
-            *miv = VrmlMFInt32(i);
+            *miv = VrmlMFInt32(1, &i);
         }
     |   LBRACKET
         {
@@ -1030,7 +1031,7 @@ mfNodeValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc] returns [VrmlMFNode
         }
     :   n=nodeStatement[vrmlNamespace, doc]
         {
-            *mnv = VrmlMFNode(n);
+            *mnv = VrmlMFNode(1, &n);
         }
         
     |   LBRACKET
@@ -1048,7 +1049,7 @@ protoMfNodeValue[Doc2 const * doc, VrmlNodeType & protoNodeType] returns [VrmlMF
         }
     :   n=protoNodeStatement[doc, protoNodeType]
         {
-            *mnv = VrmlMFNode(n);
+            *mnv = VrmlMFNode(1, &n);
         }
         
     |   LBRACKET
@@ -1076,7 +1077,7 @@ mfRotationValue returns [VrmlMFRotation * mrv = new VrmlMFRotation()]
         }
     :   rotationValue[r]
         {
-            *mrv = VrmlMFRotation(r[0], r[1], r[2], r[3]);
+            *mrv = VrmlMFRotation(1, r);
         }
     |   LBRACKET
         {
@@ -1128,7 +1129,8 @@ mfStringValue returns [VrmlMFString * msv = new VrmlMFString()]
         }
     :   s=stringValue
         {
-            *msv = VrmlMFString(s.c_str());
+            const char * const sPtr = s.c_str();
+            *msv = VrmlMFString(1, &sPtr);
         }
     |   LBRACKET
         {
@@ -1180,7 +1182,7 @@ mfTimeValue returns [VrmlMFTime * mtv = new VrmlMFTime()]
         }
     :   t=doubleValue
         {
-            *mtv = VrmlMFTime(t);
+            *mtv = VrmlMFTime(1, &t);
         }
     |   LBRACKET
         {
@@ -1218,7 +1220,7 @@ mfVec2fValue returns [VrmlMFVec2f * mvv = new VrmlMFVec2f()]
         }
     :   vec2fValue[v]
         {
-            *mvv = VrmlMFVec2f(v[0], v[1]);
+            *mvv = VrmlMFVec2f(1, v);
         }
     |   LBRACKET
         {
@@ -1263,7 +1265,7 @@ mfVec3fValue returns [VrmlMFVec3f * mvv = new VrmlMFVec3f()]
         }
     :   vec3fValue[v]
         {
-            *mvv = VrmlMFVec3f(v[0], v[1], v[2]);
+            *mvv = VrmlMFVec3f(1, v);
         }
     |   LBRACKET
         {

@@ -26,7 +26,6 @@
 
 class VrmlMFTime : public VrmlField {
 public:
-    explicit VrmlMFTime(double time);
     explicit VrmlMFTime(size_t length = 0, const double * times = 0);
     VrmlMFTime(const VrmlMFTime & mftime);
 

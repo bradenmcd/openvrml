@@ -148,8 +148,8 @@ static Image* getTexture( VrmlMFString &urls,
 
 	  if (currentTex)
 	    for (int i=0; i<n; ++i)
-	      if (strcmp( currentTex, urls[i] ) == 0 ||
-		  strcmp( currentTex+relPathLen, urls[i] ) == 0 )
+	      if (strcmp(currentTex, urls.get(i)) == 0 ||
+		  strcmp(currentTex+relPathLen, urls.get(i)) == 0 )
 		return &tex[index];
 	}
 

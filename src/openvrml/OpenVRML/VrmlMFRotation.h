@@ -26,7 +26,6 @@
 class VrmlMFRotation : public VrmlField {
 public:
     explicit VrmlMFRotation(size_t length = 0, const float * rotations = 0);
-    VrmlMFRotation(float x, float y, float z, float angle);
     VrmlMFRotation(const VrmlMFRotation & mfrotation);
     
     ~VrmlMFRotation();

@@ -131,11 +131,11 @@ void VrmlNodeMovieTexture::update( VrmlSFTime &timeNow )
 	  int i, nUrls = d_url.getLength();
 	  for (i=0; i<nUrls; ++i)
 	    {
-	      int len = strlen(d_url[i]);
+	      int len = strlen(d_url.get(i));
 	      
-	      if ((strcmp(imageUrl, d_url[i]) == 0) ||
+	      if ((strcmp(imageUrl, d_url.get(i)) == 0) ||
 		  (imageLen > len &&
-		   strcmp(imageUrl+imageLen-len, d_url[i]) == 0))
+		   strcmp(imageUrl+imageLen-len, d_url.get(i)) == 0))
 		break;
 	    }
 

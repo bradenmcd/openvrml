@@ -27,9 +27,7 @@
 class VrmlMFString : public VrmlField {
 public:
 
-  VrmlMFString();
-  VrmlMFString(char const * s);
-  VrmlMFString(size_t n, char const * const * values = 0);
+  VrmlMFString(size_t n = 0, char const * const * values = 0);
   VrmlMFString(const VrmlMFString&);
 
   ~VrmlMFString();
@@ -50,11 +48,11 @@ public:
   size_t getLength() const;
   char const * const * get() const;
   char const * get(size_t) const;
-  char const * operator[](size_t) const;
+  void set(size_t, const char *);
 
 private:
 
-  char ** d_v;
+  const char ** d_v;
   size_t d_allocated;
   size_t d_size;
 
