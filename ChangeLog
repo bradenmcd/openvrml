@@ -1,12 +1,14 @@
-1999-10-17  Braden N. McDaniel  <braden@endoframe.com>
+2000-01-03  Braden McDaniel <braden@endoframe.com>
 
-        * OpenGL renderer displaced from libvrml97core and placed in
-          libvrml97gl.
+        * In lbvrml97core, changed the toString() function in ScriptJS.cpp to
+          use the standard, cross-platform means of freeing the buffer required
+          by the ostrstream. Squashing #ifdefs gives me warm fuzzies.
 
-        * Helper functions from MathHelper.cpp in libvrml97core placed in an
-          unnamed namespace in ViewerOpenGL.cpp.
+1999-11-21  Braden McDaniel <braden@endoframe.com>
 
-	* OpenGLEvent.c renamed to OpenGLEvent.cpp
+        * Cleaned up some old #ifdefs in VrmlScene.cpp, Image.cpp, pngread.c,
+          and jpgread.c that would have prevented images and gzipped files from
+          working.
 
 1999-10-19  Braden McDaniel <braden@endoframe.com>
 
@@ -49,9 +51,13 @@
           use of automake means they are nolonger necessary. If anyone needs
           they can be found in an older tarball.
 
+1999-10-17  Braden N. McDaniel  <braden@endoframe.com>
 
-1999-11-21  Braden McDaniel <braden@endoframe.com>
+        * OpenGL renderer displaced from libvrml97core and placed in
+          libvrml97gl.
 
-        * Cleaned up some old #ifdefs in VrmlScene.cpp, Image.cpp, pngread.c,
-          and jpgread.c that would have prevented images and gzipped files from
-          working.
+        * Helper functions from MathHelper.cpp in libvrml97core placed in an
+          unnamed namespace in ViewerOpenGL.cpp.
+
+	* OpenGLEvent.c renamed to OpenGLEvent.cpp
+

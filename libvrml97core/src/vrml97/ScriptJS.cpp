@@ -334,11 +334,7 @@ toString(JSContext *cx, JSObject *obj, uintN, jsval *, jsval *rval)
       os << (*f) << '\0';
       const char *ss = os.str();
       JSString *s = JS_NewStringCopyZ( cx, ss );
-#ifdef _WIN32		// I think this is a vc++ 5 bug
-	  delete [] (void*) ss;
-#else
-      delete [] ss;
-#endif
+      os.freeze(false);
       if (s) { *rval = STRING_TO_JSVAL(s); return JS_TRUE; }
     }
   return JS_FALSE;
