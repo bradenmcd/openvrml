@@ -1,3 +1,8 @@
+2005-01-23 Braden McDaniel  <braden@endoframe.com>
+
+	* README:  Added note about memory requirements for building
+	OpenVRML.
+
 2005-01-22 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node.cpp (find_interface):  Fixed

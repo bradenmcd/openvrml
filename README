@@ -84,13 +84,16 @@ are available under the terms of the GNU General Public License (GPL),
 version 2.  The full text of the GPL can be found in the file "COPYING".
 
 
-Required dependencies
-=====================
+Prerequisites
+=============
 
    OpenVRML requires the Boost C++ libraries to build.  Boost is
 packaged for many systems; so you should consult your operating system
 vendor if Boost is not already installed on your system.  Otherwise, you
 can obtain Boost from <http://boost.org>.
+
+   Building OpenVRML is fairly demanding of system resources.  It is
+recommended that build hosts have at least 512 MB of system memory.
 
 
 Optional dependencies
