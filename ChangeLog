@@ -8,6 +8,10 @@
 
         * Added VrmlNode::toBillboard() and ::toCollision() methods.
 
+        * Removed size(), child() and getChildren() methods from
+          VrmlNodeGroup; these are obsoleted by the getChildren()
+          method.
+
 2001-01-29 Michael Louka  <michael.louka@hrp.no>
 
         * For Mac OS only: Updated System.cpp to removed dependency on

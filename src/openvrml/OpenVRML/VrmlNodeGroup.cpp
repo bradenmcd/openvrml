@@ -491,21 +491,6 @@ void VrmlNodeGroup::setField(const char *fieldName,
   this->setBVolumeDirty(true); // overly conservative?
 }
 
-int VrmlNodeGroup::size()
-{
-  return d_children.getLength();
-}
-
-VrmlNode *VrmlNodeGroup::child(int index)
-{
-  if (index >= 0 && index < (int) d_children.getLength())
-    return d_children[index];
-
-  return 0;
-}
-
-
-
 const VrmlBVolume* VrmlNodeGroup::getBVolume() const
 {
   //cout << "VrmlNodeGroup[" << this << "]::getBVolume() {" << endl;

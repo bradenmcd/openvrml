@@ -76,13 +76,7 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  int size();
-  VrmlNode *child(int index);
-
   virtual VrmlNode* getParentTransform();
-
-  // LarryD Feb 11/99
-  VrmlMFNode *getNodes()  { return &d_children;}
 
   const VrmlBVolume* getBVolume() const;
 
