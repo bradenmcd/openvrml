@@ -1,5 +1,7 @@
 SUBDIRS = vrml
 
+if WITH_JDK
+
 javapkgdatadir = $(pkgdatadir)/java
 javapkgdata_DATA = script.jar
 
@@ -229,3 +231,10 @@ vrml_node_Node.h: vrml/node/Node.class
 
 vrml_node_Script.h: vrml/node/Script.class
 	$(JAVAH) -classpath . vrml.node.Script
+
+endif
+
+#EXTRA_DIST = vrml
+
+#dist-hook:
+#	rm -rf `find $(distdir)/java/vrml -name CVS`

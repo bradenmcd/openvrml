@@ -1,3 +1,8 @@
+2002-06-13  Braden McDaniel  <braden@endoframe.com>
+
+        * Various build fixes to support conditional compilation of Java
+          support and the GL renderer.
+
 2002-06-09  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/VrmlScene.cpp: Marked doc-comments for

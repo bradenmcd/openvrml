@@ -80,8 +80,6 @@ if test "X$with_gl" = "Xyes"; then
   if test "X$no_gl" = "Xyes"; then
     AC_MSG_ERROR([OpenGL/Mesa not found.])
   else
-    AC_SUBST([OPENVRML_GL_SUBDIR], [openvrml-gl])
-    AC_SUBST([OPENVRML_GL_PC], [openvrml-gl.pc])
     AC_DEFINE([OPENVRML_HAVE_GL], , [Defined if OpenGL/Mesa is a available and should be used.])
     
     if test "X$with_glut" = "Xyes"; then
@@ -89,7 +87,6 @@ if test "X$with_gl" = "Xyes"; then
       if test "X$no_glut" = "Xyes"; then
         AC_MSG_ERROR([OpenGL/Mesa not found.])
       else
-        AC_SUBST([LOOKAT_SUBDIR], [lookat])
         AC_DEFINE([OPENVRML_HAVE_GLUT], , [Defined if GLUT is a available and should be used.])
       fi
     else
@@ -99,6 +96,9 @@ if test "X$with_gl" = "Xyes"; then
 else
   AC_MSG_WARN([Building without OpenGL/Mesa. The GL renderer and LookAt will not be built.])
 fi
+AM_CONDITIONAL([WITH_GL], [test "X$with_gl" = "Xyes"])
+AM_CONDITIONAL([WITH_GLUT], [test "X$with_gl" = "Xyes" -a "X$with_glut" = "Xyes"])
+dnl AM_CONDITIONAL([WITH_GLUT], [test "apple" = "orange"])
 
 #
 # Check for libjpeg.
@@ -128,11 +128,10 @@ fi
 # Check for the Java Development Kit.
 #
 if test "X$with_jdk" = "Xyes"; then
-  AC_PATH_PROG(JAVAC, javac)
-  if test -z "${JAVAC}"; then
+  AC_PATH_PROG(JDK_JAVAC, javac)
+  if test -z "${JDK_JAVAC}"; then
     AC_MSG_ERROR([Java compiler not found.])
   fi
-  AC_SUBST(JAVA_SUBDIR, java)
   AC_PATH_PROG(JAR, jar)
   if test -z "${JAR}"; then
     AC_MSG_ERROR([Java archive utility not found.])
@@ -148,6 +147,7 @@ if test "X$with_jdk" = "Xyes"; then
     AC_DEFINE(OPENVRML_HAVE_JNI, , [defined if JNI is available and should be used])
   fi
 fi
+AM_CONDITIONAL([WITH_JDK], [test "X$with_jdk" = "Xyes"])
 
 #
 # Check for Doxygen.
