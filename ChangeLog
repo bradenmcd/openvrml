@@ -17,6 +17,9 @@
           src/openvrml/OpenVRML/field.cpp:  Added addElement methods to
           MF* classes.
 
+        * openvrml.pc.in, openvrml-gl.pc.in:  No longer require glut; made
+          openvrml-gl require openvrml; other cleanup.
+
 2002-11-19  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/MathUtils.cpp,

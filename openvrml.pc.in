@@ -3,8 +3,8 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: openvrml
+Name: OpenVRML
 Description: VRML97 run-time library.
 Version: @VERSION@
 Libs: -L${libdir} -lopenvrml @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @JS_LIBS@ @JNI_LIBS@
-Cflags: -I${includedir} @JS_CFLAGS@ @JNI_CFLAGS@
+Cflags: -I${includedir}
