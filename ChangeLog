@@ -1,5 +1,10 @@
 2003-10-31  Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/img.cpp (img::img):  Initialize
+	img::nframes_ to 0. (Fixes crash on exit.)
+
+2003-10-31  Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp:  Don't render root nodes
 	that aren't child nodes.
 

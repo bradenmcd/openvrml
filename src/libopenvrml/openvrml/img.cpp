@@ -3348,7 +3348,7 @@ namespace {
         }
 
       /* Paulo Villegas - 26/1/1993: Correction for 4-byte alignment */
-      else if (num_read < int(request))
+      else if (num_read < request)
         {
           size_t num_read_rounded;
           unsigned char *index;
@@ -6892,6 +6892,7 @@ img::img():
     w_(0),
     h_(0),
     nc_(0),
+    nframes_(0),
     pixels_(0),
     frame_(0)
 {}
