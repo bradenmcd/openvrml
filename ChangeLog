@@ -1,3 +1,14 @@
+2003-11-21 Braden McDaniel  <braden@endoframe.com>
+
+	Replaced "w", "h", "components", and "pixels" members of
+	"texture_node" with an "image" member that returns an
+	"openvrml::image".
+
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
 2003-11-20 Braden McDaniel  <braden@endoframe.com>
 
 	Modified lookat to use SDL instead of glut.

@@ -2677,7 +2677,7 @@ texture_node::render_texture(viewer & v, rendering_context context)
 
     if (this->texture_reference != 0) {
         v.insert_texture_reference(this->texture_reference,
-                                   this->components());
+                                   this->image().comp());
     } else {
         this->texture_reference = this->do_render_texture(v, context);
         this->modified(false);
@@ -2710,27 +2710,11 @@ texture_node * texture_node::to_texture() throw ()
 }
 
 /**
- * @fn size_t texture_node::components() const throw ()
+ * @fn const image & texture_node::image() const throw ()
  *
- * @brief Get the number of components for the image.
+ * @brief The image.
  *
- * @return the number of components for the image.
- */
-
-/**
- * @fn size_t texture_node::width() const throw ()
- *
- * @brief Get width of the image in pixels.
- *
- * @return the width of the image in pixels.
- */
-
-/**
- * @fn size_t texture_node::height() const throw ()
- *
- * @brief Get height of the image in pixels.
- *
- * @return the height of the image in pixels.
+ * @return the image.
  */
 
 /**
@@ -2742,14 +2726,6 @@ texture_node * texture_node::to_texture() throw ()
  *
  * @todo This needs to go away. Time-dependent textures might not be
  *      frame-based. For instance, consider an SVG animation.
- */
-
-/**
- * @fn const unsigned char * texture_node::pixels() const throw ()
- *
- * @brief Get the pixels.
- *
- * @return the pixels.
  */
 
 /**

@@ -1555,7 +1555,7 @@ void appearance_node::do_render_appearance(viewer & v,
     if (material) {
         float trans = material->transparency();
         color diffuse = material->diffuse_color();
-        size_t nTexComponents = texture ? texture->components() : 0;
+        size_t nTexComponents = texture ? texture->image().comp() : 0;
         if (nTexComponents == 2 || nTexComponents == 4) { trans = 0.0; }
         if (nTexComponents >= 3) { diffuse = color(1.0, 1.0, 1.0); }
 
@@ -7245,7 +7245,7 @@ image_texture_class::create_type(const std::string & id,
  */
 
 /**
- * @var img * image_texture_node::image
+ * @var image image_texture_node::image_
  *
  * @brief Image data.
  */
@@ -7266,7 +7266,6 @@ image_texture_node::image_texture_node(const node_type & type,
                                        const scope_ptr & scope):
     node(type, scope),
     abstract_texture_node(type, scope),
-    image(0),
     texture_needs_update(true)
 {}
 
@@ -7275,38 +7274,17 @@ image_texture_node::image_texture_node(const node_type & type,
  */
 image_texture_node::~image_texture_node() throw ()
 {
-    delete this->image;
     // delete texObject...
 }
 
 /**
- * @brief The number of components.
+ * @brief The image.
  *
- * @return the number of components.
+ * @return the image.
  */
-size_t image_texture_node::components() const throw ()
+const image & image_texture_node::image() const throw ()
 {
-    return this->image ? this->image->nc() : 0;
-}
-
-/**
- * @brief The image width in pixels.
- *
- * @return the image width in pixels.
- */
-size_t image_texture_node::width() const throw ()
-{
-    return this->image ? this->image->w() : 0;
-}
-
-/**
- * @brief The image height in pixels.
- *
- * @return the image height in pixels.
- */
-size_t image_texture_node::height() const throw ()
-{
-    return this->image ? this->image->h() : 0;
+    return this->image_;
 }
 
 /**
@@ -7317,16 +7295,6 @@ size_t image_texture_node::height() const throw ()
 size_t image_texture_node::frames() const throw ()
 {
     return 0;
-}
-
-/**
- * @brief The image pixel data.
- *
- * @return the image pixel data.
- */
-const unsigned char * image_texture_node::pixels() const throw ()
-{
-    return this->image ? this->image->pixels() : 0;
 }
 
 /**
@@ -7341,24 +7309,32 @@ viewer::texture_object_t
 image_texture_node::do_render_texture(viewer & v, rendering_context context)
 {
     this->update_texture();
-    return v.insert_texture(this->image->w(),
-                            this->image->h(),
-                            this->image->nc(),
-                            this->repeatS.value,
-                            this->repeatT.value,
-                            this->image->pixels(),
-                            true);
+    return this->image_.array().empty()
+        ? 0
+        : v.insert_texture(this->image_.x(),
+                           this->image_.y(),
+                           this->image_.comp(),
+                           this->repeatS.value,
+                           this->repeatT.value,
+                           &this->image_.array()[0],
+                           true);
 }
 
 void image_texture_node::update_texture()
 {
     if (this->texture_needs_update) {
-        delete this->image;
-        this->image = 0;
         if (!this->url.value.empty()) {
             doc2 baseDoc(this->scene()->url());
-            this->image = new img;
-            if (!this->image->try_urls(this->url.value, &baseDoc)) {
+            img img_;
+            if (img_.try_urls(this->url.value, &baseDoc)) {
+                this->image_ =
+                    openvrml::image(img_.w(),
+                                    img_.h(),
+                                    img_.nc(),
+                                    img_.pixels(),
+                                    img_.pixels()
+                                    + (img_.w() * img_.h() * img_.nc()));
+            } else {
                 OPENVRML_PRINT_MESSAGE_("Couldn't read ImageTexture from URL "
                                         + this->url.value[0]);
             }
@@ -9129,9 +9105,15 @@ movie_texture_class::create_type(const std::string & id,
  */
 
 /**
- * @var img * movie_texture_node::image
+ * @var img * movie_texture_node::img_
  *
- * @brief Image data.
+ * @brief Movie data.
+ */
+
+/**
+ * @var image movie_texture_node::image_
+ *
+ * @brief Frame data.
  */
 
 /**
@@ -9170,7 +9152,7 @@ movie_texture_node::movie_texture_node(const node_type & type,
     abstract_texture_node(type, scope),
     loop(false),
     speed(1.0),
-    image(0),
+    img_(0),
     frame(0),
     lastFrame(-1),
     lastFrameTime(-1.0)
@@ -9181,7 +9163,7 @@ movie_texture_node::movie_texture_node(const node_type & type,
  */
 movie_texture_node::~movie_texture_node() throw ()
 {
-    delete this->image;
+    delete this->img_;
 }
 
 /**
@@ -9200,8 +9182,8 @@ movie_texture_node* movie_texture_node::to_movie_texture() const
 void movie_texture_node::update(const double time)
 {
     if (modified()) {
-        if (this->image) {
-            const char * imageUrl = this->image->url();
+        if (this->img_) {
+            const char * imageUrl = this->img_->url();
             size_t imageLen = strlen(imageUrl);
             size_t i, nUrls = this->url.value.size();
             for (i = 0; i < nUrls; ++i) {
@@ -9217,22 +9199,22 @@ void movie_texture_node::update(const double time)
 
             // if (d_image->url() not in d_url list) ...
             if (i == nUrls) {
-                delete this->image;
-                this->image = 0;
+                delete this->img_;
+                this->img_ = 0;
             }
         }
     }
 
     // Load the movie if needed (should check startTime...)
-    if (!this->image && this->url.value.size() > 0) {
+    if (!this->img_ && !this->url.value.empty()) {
         doc2 baseDoc(this->scene()->url());
-        this->image = new img;
-        if (!this->image->try_urls(this->url.value, &baseDoc)) {
+        this->img_ = new img;
+        if (!this->img_->try_urls(this->url.value, &baseDoc)) {
             std::cerr << "Error: couldn't read MovieTexture from URL "
                       << this->url << std::endl;
         }
 
-        const size_t nFrames = this->image->nframes();
+        const size_t nFrames = this->img_->nframes();
         this->duration.value = (nFrames >= 0)
                              ? double(nFrames)
                              : -1.0;
@@ -9248,7 +9230,7 @@ void movie_texture_node::update(const double time)
     }
 
     // No pictures to show
-    if (!this->image || this->image->nframes() == 0) { return; }
+    if (!this->img_ || this->img_->nframes() == 0) { return; }
 
     // See section 4.6.9 of the VRML97 spec for a detailed explanation
     // of the logic here.
@@ -9262,7 +9244,7 @@ void movie_texture_node::update(const double time)
                         this->lastFrameTime = time;
                         this->frame = (this->speed.value >= 0)
                                     ? 0
-                                    : this->image->nframes() - 1;
+                                    : this->img_->nframes() - 1;
                         this->modified(true);
 	            } else if (this->startTime.value > this->lastFrameTime) {
                         this->active.value = true;
@@ -9270,7 +9252,7 @@ void movie_texture_node::update(const double time)
                         this->lastFrameTime = time;
                         this->frame = (this->speed.value >= 0)
                                     ? 0
-                                    : this->image->nframes() - 1;
+                                    : this->img_->nframes() - 1;
                         this->modified(true);
 	            }
 	        }
@@ -9278,8 +9260,9 @@ void movie_texture_node::update(const double time)
                 this->active.value = true;
                 this->emit_event("isActive", this->active, time);
                 this->lastFrameTime = time;
-                this->frame = (this->speed.value >= 0) ? 0 :
-                                 this->image->nframes() - 1;
+                this->frame = (this->speed.value >= 0)
+                            ? 0
+                            : this->img_->nframes() - 1;
                 this->modified(true);
             }
         }
@@ -9299,8 +9282,7 @@ void movie_texture_node::update(const double time)
 
     // Check whether the frame should be advanced
     else if (this->active.value
-             && this->lastFrameTime + fabs(1 / this->speed.value)
-                <= time) {
+             && this->lastFrameTime + fabs(1 / this->speed.value) <= time) {
         if (this->speed.value < 0.0) {
             --this->frame;
         } else {
@@ -9311,42 +9293,30 @@ void movie_texture_node::update(const double time)
         this->modified(true);
     }
 
+    const size_t frame_bytes =
+        this->img_->w() * this->img_->h() * this->img_->nc();
+    this->image_ =
+        openvrml::image(this->img_->w(),
+                        this->img_->h(),
+                        this->img_->nc(),
+                        this->img_->pixels(this->frame),
+                        this->img_->pixels(this->frame) + frame_bytes);
+
     // Tell the scene when the next update is needed.
     if (this->active.value) {
-        double d = this->lastFrameTime + fabs(1 / this->speed.value)
-                    - time;
+        double d = this->lastFrameTime + fabs(1 / this->speed.value) - time;
         this->type.node_class.browser.delta(0.9 * d);
     }
 }
 
 /**
- * @brief The number of components.
+ * @brief The image.
  *
- * @return the number of components.
+ * @return the image.
  */
-size_t movie_texture_node::components() const throw ()
+const image & movie_texture_node::image() const throw ()
 {
-    return this->image ? this->image->nc() : 0;
-}
-
-/**
- * @brief The width in pixels.
- *
- * @return the width in pixels.
- */
-size_t movie_texture_node::width() const throw ()
-{
-    return this->image ? this->image->w() : 0;
-}
-
-/**
- * @brief The height in pixels.
- *
- * @return the height in pixels.
- */
-size_t movie_texture_node::height() const throw ()
-{
-    return this->image ? this->image->h() : 0;
+    return this->image_;
 }
 
 /**
@@ -9356,17 +9326,7 @@ size_t movie_texture_node::height() const throw ()
  */
 size_t movie_texture_node::frames() const throw ()
 {
-    return this->image ? this->image->nframes() : 0;
-}
-
-/**
- * @brief Pixel data for the current frame.
- *
- * @return pixel data for the current frame.
- */
-const unsigned char * movie_texture_node::pixels() const throw ()
-{
-    return this->image ? this->image->pixels() : 0;
+    return this->img_ ? this->img_->nframes() : 0;
 }
 
 /**
@@ -9405,19 +9365,19 @@ void movie_texture_node::do_shutdown(const double timestamp) throw ()
 viewer::texture_object_t
 movie_texture_node::do_render_texture(viewer & v, rendering_context context)
 {
-    if (!this->image || this->frame < 0) { return 0; }
+    if (!this->img_ || this->frame < 0) { return 0; }
 
     viewer::texture_object_t texture_object = 0;
 
-    if (!this->image->pixels(this->frame)) {
+    if (!this->img_->pixels(this->frame)) {
         this->frame = -1;
     } else {
-        texture_object = v.insert_texture(this->image->w(),
-                                          this->image->h(),
-                                          this->image->nc(),
+        texture_object = v.insert_texture(this->image_.x(),
+                                          this->image_.y(),
+                                          this->image_.comp(),
                                           this->repeatS.value,
                                           this->repeatT.value,
-                                          this->image->pixels(this->frame),
+                                          &this->image_.array()[0],
                                           !this->active.value);
     }
 
@@ -10595,7 +10555,7 @@ pixel_texture_class::create_type(const std::string & id,
                 supportedInterfaces[0].id,
                 &pixel_texture_node::process_set_image,
                 node_field_ptr_ptr(new node_field_ptr_impl<pixel_texture_node, sfimage>
-                                    (&pixel_texture_node::image)));
+                                    (&pixel_texture_node::image_)));
         } else if (*interface == supportedInterfaces[1]) {
             pixelTextureNodeType.add_field(
                 supportedInterfaces[1].field_type,
@@ -10660,33 +10620,13 @@ pixel_texture_node::~pixel_texture_node() throw ()
 }
 
 /**
- * @brief The number of components in the image.
+ * @brief The image.
  *
- * @return the number of components in the image.
+ * @return the image.
  */
-size_t pixel_texture_node::components() const throw ()
+const image & pixel_texture_node::image() const throw ()
 {
-    return this->image.value.comp();
-}
-
-/**
- * @brief The width of the image in pixels.
- *
- * @return the width of the image in pixels.
- */
-size_t pixel_texture_node::width() const throw ()
-{
-    return this->image.value.x();
-}
-
-/**
- * @brief The height of the image in pixels.
- *
- * @return the height of the image in pixels.
- */
-size_t pixel_texture_node::height() const throw ()
-{
-    return this->image.value.y();
+    return this->image_.value;
 }
 
 /**
@@ -10700,18 +10640,6 @@ size_t pixel_texture_node::frames() const throw ()
 }
 
 /**
- * @brief The pixel data.
- *
- * @return the pixel data.
- */
-const unsigned char * pixel_texture_node::pixels() const throw ()
-{
-    return this->image.value.array().empty()
-        ? 0
-        : &this->image.value.array()[0];
-}
-
-/**
  * @brief render_texture implementation.
  *
  * @param v         viewer.
@@ -10722,14 +10650,14 @@ const unsigned char * pixel_texture_node::pixels() const throw ()
 viewer::texture_object_t
 pixel_texture_node::do_render_texture(viewer & v, rendering_context context)
 {
-    return this->image.value.array().empty()
+    return this->image_.value.array().empty()
         ? 0
-        : v.insert_texture(this->image.value.x(),
-                           this->image.value.y(),
-                           this->image.value.comp(),
+        : v.insert_texture(this->image_.value.x(),
+                           this->image_.value.y(),
+                           this->image_.value.comp(),
                            this->repeatS.value,
                            this->repeatT.value,
-                           &this->image.value.array()[0],
+                           &this->image_.value.array()[0],
                            true);
 }
 
@@ -10746,9 +10674,9 @@ void pixel_texture_node::process_set_image(const field_value & value,
                                            const double timestamp)
     throw (std::bad_cast, std::bad_alloc)
 {
-    this->image = dynamic_cast<const sfimage &>(value);
+    this->image_ = dynamic_cast<const sfimage &>(value);
     this->node::modified(true);
-    this->emit_event("image_changed", this->image, timestamp);
+    this->emit_event("image_changed", this->image_, timestamp);
 }
 
 
@@ -12593,7 +12521,7 @@ bool shape_node::modified() const
  * @param context   a rendering context.
  */
 void shape_node::do_render_child(openvrml::viewer & viewer,
-                        const rendering_context context)
+                                 const rendering_context context)
 {
     if (this->viewerObject && modified()) {
         viewer.remove_object(this->viewerObject);
@@ -12620,7 +12548,7 @@ void shape_node::do_render_child(openvrml::viewer & viewer,
 
                 texture_node * const texture =
                     node_cast<texture_node *>(appearance->texture().get());
-                if (texture) { texture_components = texture->components(); }
+                if (texture) { texture_components = texture->image().comp(); }
             } else {
                 viewer.set_color(color(1.0, 1.0, 1.0)); // default object color
                 viewer.enable_lighting(false);  // turn lighting off

@@ -749,11 +749,8 @@ namespace openvrml {
         viewer::texture_object_t render_texture(viewer & v,
                                                 rendering_context context);
 
-        virtual size_t components() const throw () = 0;
-        virtual size_t width() const throw () = 0;
-        virtual size_t height() const throw () = 0;
+        virtual const openvrml::image & image() const throw () = 0;
         virtual size_t frames() const throw () = 0;
-        virtual const unsigned char * pixels() const throw () = 0;
         virtual bool repeat_s() const throw () = 0;
         virtual bool repeat_t() const throw () = 0;
 

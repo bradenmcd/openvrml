@@ -1142,7 +1142,7 @@ namespace openvrml {
 
             mfstring url;
 
-            img * image;
+            openvrml::image image_;
             bool texture_needs_update;
 
         public:
@@ -1150,11 +1150,8 @@ namespace openvrml {
                                const scope_ptr & scope);
             virtual ~image_texture_node() throw ();
 
-            virtual size_t components() const throw ();
-            virtual size_t width() const throw ();
-            virtual size_t height() const throw ();
+            virtual const openvrml::image & image() const throw ();
             virtual size_t frames() const throw ();
-            virtual const unsigned char * pixels() const throw ();
 
         private:
             virtual viewer::texture_object_t
@@ -1418,8 +1415,8 @@ namespace openvrml {
             virtual ~movie_texture_class() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
-                    throw (unsupported_interface, std::bad_alloc);
+                                                    const node_interface_set &)
+                throw (unsupported_interface, std::bad_alloc);
         };
 
         class movie_texture_node : public abstract_texture_node {
@@ -1434,7 +1431,8 @@ namespace openvrml {
             sftime duration;
             sfbool active;
 
-            img * image;
+            img * img_;
+            openvrml::image image_;
             int frame, lastFrame;
             double lastFrameTime;
 
@@ -1447,11 +1445,8 @@ namespace openvrml {
 
             void update(double time);
 
-            virtual size_t components() const throw ();
-            virtual size_t width() const throw ();
-            virtual size_t height() const throw ();
+            virtual const openvrml::image & image() const throw ();
             virtual size_t frames() const throw ();
-            virtual const unsigned char * pixels() const throw ();
 
         private:
             virtual void do_initialize(double timestamp)
@@ -1667,18 +1662,15 @@ namespace openvrml {
         class pixel_texture_node : public abstract_texture_node {
             friend class pixel_texture_class;
 
-            sfimage image;
+            sfimage image_;
 
         public:
             pixel_texture_node(const node_type & type,
                                const scope_ptr & scope);
             virtual ~pixel_texture_node() throw ();
 
-            virtual size_t components() const throw ();
-            virtual size_t width() const throw ();
-            virtual size_t height() const throw ();
+            virtual const openvrml::image & image() const throw ();
             virtual size_t frames() const throw ();
-            virtual const unsigned char * pixels() const throw ();
 
         private:
             virtual viewer::texture_object_t
