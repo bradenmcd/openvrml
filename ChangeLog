@@ -1,5 +1,15 @@
 2004-03-02 Braden McDaniel  <braden@endoframe.com>
 
+	Changed the lookat license to the GPL.  (The LGPL doesn't make
+	very much sense for ordinary executables.)
+
+	* COPYING:  Added file.
+	* README:  Updated license summary.
+	* src/lookat/lookat.cpp:  Changed license notice to refer to the
+	GPL.
+
+2004-03-02 Braden McDaniel  <braden@endoframe.com>
+
 	PROTO field default value declarations should begin a new scope
 	rooted at the scope outside the PROTO definition.  In
 	particular, this should work:

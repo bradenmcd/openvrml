@@ -18,13 +18,15 @@ files.  This distribution includes lookat, a sample viewer program.
 License terms
 =============
 
-   This bulk of the code in OpenVRML is Free Software available under
-the terms of the Lesser General Public License (LGPL), version 2.1.
-Other code in OpenVRML is used under "LGPL-compatible" licenses, which
-effectively means that OpenVRML is Free Software which may be used as
-a whole according to the terms of the LGPL.  The full text of the LGPL
-can be found in the file "COPYING.LESSER".  Code used (and available for
-reuse) under other terms is as follows:
+   The OpenVRML libraries comprising the VRML97 runtime ("libopenvrml")
+and the OpenGL renderer ("libopenvrml-gl") are available under the terms
+of the GNU Lesser General Public License (LGPL), version 2.1.  These
+libraries incorporate some code that is available under "LGPL-
+compatible" licenses, which effectively means that the OpenVRML
+libraries are Free Software which may be used collectively according to
+the terms of the LGPL.  The full text of the LGPL can be found in the
+file "COPYING.LESSER".  Code used in these libararies under other terms
+(and available for reuse under the same terms) is as follows:
 
  * OpenVRML uses the ANTLR parser generator and C++ support library
    which are in the public domain.
@@ -75,6 +77,10 @@ reuse) under other terms is as follows:
      Inc., 2011 N.  Shoreline Blvd., Mountain View, CA 94039-7311.
 
      OpenGL(TM) is a trademark of Silicon Graphics, Inc.
+
+   The included sample viewer program "lookat" is available under the
+terms of the GNU General Public License (GPL), version 2.  The full text
+of the GPL can be found in the file "COPYING".
 
 
 Dependencies
