@@ -401,6 +401,8 @@ public:
     void setElement(size_t index, const float value[3]);
     size_t getLength() const;
     void setLength(size_t length);
+    void insertElement(size_t index, const float value[3]);
+    void removeElement(size_t index);
 
     //
     // VrmlField implementation
@@ -429,6 +431,8 @@ public:
     void setElement(size_t index, float value);
     size_t getLength() const;
     void setLength(size_t length);
+    void insertElement(size_t index, float value);
+    void removeElement(size_t index);
 
     //
     // VrmlField implementation
@@ -457,6 +461,8 @@ public:
     void setElement(size_t index, long value);
     size_t getLength() const;
     void setLength(size_t length);
+    void insertElement(size_t index, long value);
+    void removeElement(size_t index);
 
     //
     // VrmlField implementation
@@ -485,6 +491,9 @@ public:
     bool exists(const VrmlNode & node) const;
     bool addNode(VrmlNode & node);
     bool removeNode(const VrmlNode & node);
+    void insertElement(size_t index, const VrmlNodePtr & node);
+    void removeElement(size_t index);
+    void clear();
 
     virtual ostream& print(ostream& os) const;
     virtual VrmlField *clone() const;
@@ -510,6 +519,8 @@ public:
     void setElement(size_t, const float value[4]);
     size_t getLength() const;
     void setLength(size_t length);
+    void insertElement(size_t index, const float value[3]);
+    void removeElement(size_t index);
 
     virtual ostream& print(ostream& os) const;
     virtual VrmlField *clone() const;
@@ -531,6 +542,8 @@ public:
     const std::string & getElement(size_t index) const;
     void setElement(size_t index, const std::string & value);
     size_t getLength() const;
+    void insertElement(size_t index, const std::string & value);
+    void removeElement(size_t index);
 
     virtual VrmlField *clone() const;
     virtual VrmlFieldType fieldType() const;
@@ -556,6 +569,8 @@ public:
     void setElement(size_t index, double value);
     size_t getLength() const;
     void setLength(size_t length);
+    void insertElement(size_t index, double value);
+    void removeElement(size_t index);
 
     //
     // Override from VrmlField
@@ -582,6 +597,8 @@ public:
     void setElement(size_t, const float value[2]);
     size_t getLength() const;
     void setLength(size_t length);
+    void insertElement(size_t index, const float value[2]);
+    void removeElement(size_t index);
 
     virtual VrmlField *clone() const;
     virtual VrmlFieldType fieldType() const;
@@ -607,6 +624,8 @@ public:
     void setElement(size_t, const float value[3]);
     size_t getLength() const;
     void setLength(size_t length);
+    void insertElement(size_t index, const float data[3]);
+    void removeElement(size_t index);
 
     virtual VrmlField *clone() const;
     virtual VrmlFieldType fieldType() const;

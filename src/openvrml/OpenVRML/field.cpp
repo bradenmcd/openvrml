@@ -2112,6 +2112,29 @@ void VrmlMFColor::setLength(size_t length) {
     this->d_data = newData;
 }
 
+void VrmlMFColor::insertElement(size_t index, const float value[3])
+{
+  FData* newData;
+
+  newData = new FData(d_data->d_n + 3);
+  memcpy(newData->d_v, d_data->d_v, 3 * index * sizeof(float));
+  memcpy(newData->d_v + 3 * index, value, 3 * sizeof(float));
+  memcpy(newData->d_v + 3 * (index + 1), d_data->d_v + 3 * index, 
+	 (d_data->d_n - 3 * index) * sizeof(float));
+  d_data->deref();
+  d_data = newData;
+}
+
+void VrmlMFColor::removeElement(size_t index)
+{
+  if (3 * index < d_data->d_n)
+  {
+    d_data->d_n -= 3;
+    memcpy(d_data->d_v + 3 * index, d_data->d_v + 3 * (index + 1), 
+	   (d_data->d_n - 3 * index) * sizeof(float));
+  }	
+}
+
 VrmlField *VrmlMFColor::clone() const { return new VrmlMFColor(*this); }
 
 VrmlField::VrmlFieldType VrmlMFColor::fieldType() const { return MFCOLOR; }
@@ -2247,6 +2270,29 @@ void VrmlMFFloat::setLength(size_t length) {
     }
     this->d_data->deref();
     this->d_data = newData;
+}
+
+void VrmlMFFloat::insertElement(size_t index, float value)
+{
+  FData* newData;
+
+  newData = new FData(d_data->d_n + 1);
+  memcpy(newData->d_v, d_data->d_v, index * sizeof(float));
+  newData->d_v[index] = value;
+  memcpy(newData->d_v + (index + 1), d_data->d_v + index, 
+	 (d_data->d_n - index) * sizeof(float));
+  d_data->deref();
+  d_data = newData;
+}
+
+void VrmlMFFloat::removeElement(size_t index)
+{
+  if (index < d_data->d_n)
+  {
+    d_data->d_n--;
+    memcpy(d_data->d_v + index, d_data->d_v + (index + 1), 
+	   (d_data->d_n - index) * sizeof(float));
+  }	
 }
 
 VrmlField *VrmlMFFloat::clone() const	{ return new VrmlMFFloat(*this); }
@@ -2386,6 +2432,29 @@ void VrmlMFInt32::setLength(size_t length) {
     this->d_data = newData;
 }
 
+void VrmlMFInt32::insertElement(size_t index, long value)
+{
+  IData* newData;
+
+  newData = new IData(d_data->d_n + 1);
+  memcpy(newData->d_v, d_data->d_v, index * sizeof(long));
+  newData->d_v[index] = value;
+  memcpy(newData->d_v + (index + 1), d_data->d_v + index, 
+	 (d_data->d_n - index) * sizeof(long));
+  d_data->deref();
+  d_data = newData;
+}
+
+void VrmlMFInt32::removeElement(size_t index)
+{
+  if (index < d_data->d_n)
+  {
+    (d_data->d_n)--;
+    memcpy(d_data->d_v + index, d_data->d_v + (index + 1), 
+	   (d_data->d_n - index) * sizeof(int));
+  }
+}
+
 VrmlField * VrmlMFInt32::clone() const { return new VrmlMFInt32(*this); }
 
 VrmlField::VrmlFieldType VrmlMFInt32::fieldType() const { return MFINT32; }
@@ -2448,6 +2517,14 @@ VrmlMFNode::~VrmlMFNode() {}
 const VrmlNodePtr & VrmlMFNode::getElement(const size_t index) const throw () {
     assert(index < this->nodes.size());
     return this->nodes[index];
+}
+
+/**
+ * @brief Remove all elements.
+ */
+void VrmlMFNode::clear()
+{
+    this->setLength(0);
 }
 
 /**
@@ -2539,6 +2616,16 @@ bool VrmlMFNode::removeNode(const VrmlNode & node) {
         }
     }
     return false;
+}
+
+void VrmlMFNode::insertElement(size_t index, const VrmlNodePtr & node)
+{
+  cout << "VrmlMFNode::insertElement to be implemented" << endl;;
+}
+
+void VrmlMFNode::removeElement(size_t index)
+{
+  cout << "VrmlMFNode::removeElement to be implemented" << endl;;
 }
 
 VrmlField *VrmlMFNode::clone() const
@@ -2702,6 +2789,30 @@ void VrmlMFRotation::setLength(size_t length) {
     this->d_data = newData;
 }
 
+void VrmlMFRotation::insertElement(size_t index, const float value[3])
+{
+  FData* newData;
+
+  newData = new FData(d_data->d_n + 4);
+  memcpy(newData->d_v, d_data->d_v, 4 * index * sizeof(float));
+  memcpy(newData->d_v + 4 * index, value, 4 * sizeof(float));
+  memcpy(newData->d_v + 4 * (index + 1), d_data->d_v + 4 * index, 
+	 (d_data->d_n - 4 * index) * sizeof(float));
+  d_data->deref();
+  d_data = newData;
+  d_data->d_n++;
+}
+
+void VrmlMFRotation::removeElement(size_t index)
+{
+  if (4 * index < d_data->d_n)
+  {
+    d_data->d_n -= 4;
+    memcpy(d_data->d_v + 4 * index, d_data->d_v + 4 * (index + 1),
+	   (d_data->d_n - 4 * index) * sizeof(float));
+  }
+}
+
 VrmlField *VrmlMFRotation::clone() const { return new VrmlMFRotation(*this); }
 
 VrmlField::VrmlFieldType VrmlMFRotation::fieldType() const { return MFROTATION; }
@@ -2764,6 +2875,16 @@ void VrmlMFString::setElement(size_t index, const std::string & value) {
  */
 size_t VrmlMFString::getLength() const {
     return this->values.size();
+}
+
+void VrmlMFString::insertElement(size_t index, const std::string & value)
+{
+  cout << "VrmlMFString::insertElement to be implemented" << endl;
+}
+
+void VrmlMFString::removeElement(size_t index)
+{
+  cout << "VrmlMFString::removeElement to be implemented" << endl;
 }
 
 VrmlField *VrmlMFString::clone() const
@@ -2949,6 +3070,29 @@ void VrmlMFTime::setLength(size_t length) {
     this->d_data = newData;
 }
 
+void VrmlMFTime::insertElement(size_t index, double value)
+{
+  DData* newData;
+
+  newData = new DData(d_data->size + 1);
+  memcpy(newData->data, d_data->data, index * sizeof(double));
+  newData->data[index] = value;
+  memcpy(newData->data + (index + 1), d_data->data + index, 
+	 (d_data->size - index) * sizeof(double));
+  d_data->deref();
+  d_data = newData;
+}
+
+void VrmlMFTime::removeElement(size_t index)
+{
+  if (index < d_data->size)
+  {
+    d_data->size--;
+    memcpy(d_data->data + index, d_data->data + (index + 1), 
+	   (d_data->size - index) * sizeof(double));
+  }
+}
+
 VrmlField * VrmlMFTime::clone() const {
     return new VrmlMFTime(*this);
 }
@@ -3098,6 +3242,30 @@ void VrmlMFVec2f::setLength(size_t length) {
     this->d_data = newData;
 }
 
+void VrmlMFVec2f::insertElement(size_t index, const float data[2])
+{
+  FData* newData;
+
+  newData = new FData(d_data->d_n + 2);
+  memcpy(newData->d_v, d_data->d_v, 2 * index * sizeof(float));
+  memcpy(newData->d_v + 2 * index, data, 2 * sizeof(float));
+  memcpy(newData->d_v + 2 * (index + 1), d_data->d_v + 2 * index, 
+	 (d_data->d_n - 2 * index) * sizeof(float));
+  d_data->deref();
+  d_data = newData;
+  d_data->d_n++;
+}
+
+void VrmlMFVec2f::removeElement(size_t index)
+{
+  if (2 * index < d_data->d_n)
+  {
+    d_data->d_n -= 2;
+    memcpy(d_data->d_v + 2 * index, d_data->d_v + 2 * (index + 1), 
+	   (d_data->d_n - 2 * index) * sizeof(float));
+  }
+}
+
 VrmlField *VrmlMFVec2f::clone() const { return new VrmlMFVec2f(*this); }
 
 VrmlField::VrmlFieldType VrmlMFVec2f::fieldType() const { return MFVEC2F; }
@@ -3240,6 +3408,30 @@ void VrmlMFVec3f::setLength(size_t length) {
     }
     this->d_data->deref();
     this->d_data = newData;
+}
+
+void VrmlMFVec3f::insertElement(size_t index, const float value[3])
+{
+  FData* newData;
+
+  newData = new FData(d_data->d_n + 3);
+  memcpy(newData->d_v, d_data->d_v, 3 * index * sizeof(float));
+  memcpy(newData->d_v + 3 * index, value, 3 * sizeof(float));
+  memcpy(newData->d_v + 3 * (index + 1), d_data->d_v + 3 * index,
+	 (d_data->d_n - 3 * index) * sizeof(float));
+  d_data->deref();
+  d_data = newData;
+  d_data->d_n++;
+}
+
+void VrmlMFVec3f::removeElement(size_t index)
+{
+  if (3 * index < d_data->d_n)
+  {
+    d_data->d_n -= 3;
+    memcpy(d_data->d_v + 3 * index, d_data->d_v + 3 * (index + 1),
+	   (d_data->d_n - 3 * index) * sizeof(float));
+  }
 }
 
 VrmlField *VrmlMFVec3f::clone() const { return new VrmlMFVec3f(*this); }
