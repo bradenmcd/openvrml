@@ -238,8 +238,8 @@ OBJ1 = $(BINOUTDIR)\Audio$(O) $(BINOUTDIR)\Doc$(O) $(BINOUTDIR)\Doc2$(O) $(BINOU
       $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O)\
       $(BINOUTDIR)\VrmlNamespace$(O) $(BINOUTDIR)\VrmlNode$(O)\
       $(BINOUTDIR)\VrmlNodeProto$(O) $(BINOUTDIR)\VrmlNodePtr$(O) $(BINOUTDIR)\Route$(O) \
-       $(BINOUTDIR)\VrmlNodeScript$(O) $(BINOUTDIR)\VrmlNodeType$(O) $(BINOUTDIR)\VrmlScene$(O)\
-	$(BINOUTDIR)\VrmlAABox$(O) $(BINOUTDIR)\VrmlBSphere$(O)\
+       $(BINOUTDIR)\VrmlNodeScript$(O) $(BINOUTDIR)\nodetype$(O) $(BINOUTDIR)\VrmlScene$(O)\
+	$(BINOUTDIR)\VrmlAABox$(O) $(BINOUTDIR)\VrmlBSphere$(O) $(BINOUTDIR)\nodetypeptr$(O)\
       $(BINOUTDIR)\VrmlBVolume$(O) $(BINOUTDIR)\VrmlFrustum$(O) $(BINOUTDIR)\VrmlRenderContext$(O) \
 	$(BINOUTDIR)\VrmlNodeVisitor$(O) $(BINOUTDIR)\vrml97node$(O)  
 
@@ -347,7 +347,7 @@ $(BINOUTDIR)\Viewer.obj :   $(SOURCE)\Viewer.cpp $(SOURCE)\Viewer.h\
 							$(CPP) $(CFLAGS) /I ..\ $(SOURCE)\Viewer.cpp
 
 $(BINOUTDIR)\vrml97node.obj :   $(SOURCE)\vrml97node.cpp $(SOURCE)\vrml97node.h \
-									$(SOURCE)\VrmlNodeType.h\
+									$(SOURCE)\nodetype.h\
 									$(SOURCE)\VrmlNamespace.h\
 									$(SOURCE)\VrmlNodeVisitor.h\
 									$(SOURCE)\VrmlNodeProto.h\
@@ -376,14 +376,14 @@ Vrml97Parser.cpp     :                $(SOURCE)\vrml97parser.g $(SOURCE)\Vrml97T
 $(BINOUTDIR)\Vrml97Parser.obj  :       Vrml97Parser.cpp $(SOURCE)\Doc2.hpp\
                                        $(SOURCE)\field.h $(SOURCE)\common.h \
 						   $(SOURCE)\VrmlNamespace.h $(SOURCE)\VrmlNode.h\
-						   $(SOURCE)\VrmlNodeScript.h $(SOURCE)\VrmlNodeType.h
+						   $(SOURCE)\VrmlNodeScript.h $(SOURCE)\nodetype.h
 						   $(CPP) $(CFLAGS) /GR /I $(LIBINCLUDE) /I $(SOURCE) /I . Vrml97Parser.cpp
 
 !ELSE
 $(BINOUTDIR)\Vrml97Parser.obj  :       $(SOURCE)\Vrml97Parser.cpp $(SOURCE)\Doc2.hpp\
                                        $(SOURCE)\field.h $(SOURCE)\common.h \
 						   $(SOURCE)\VrmlNamespace.h $(SOURCE)\VrmlNode.h\
-						   $(SOURCE)\VrmlNodeScript.h $(SOURCE)\VrmlNodeType.h
+						   $(SOURCE)\VrmlNodeScript.h $(SOURCE)\nodetype.h
 						   $(CPP) $(CFLAGS) /GR /I $(LIBINCLUDE) /I $(SOURCE) $(SOURCE)\Vrml97Parser.cpp
 
 !ENDIF
@@ -409,7 +409,7 @@ $(BINOUTDIR)\VrmlFrustum.obj : $(SOURCE)\VrmlFrustum.cpp $(SOURCE)\VrmlFrustum.h
 
     
 $(BINOUTDIR)\VrmlNamespace.obj :  $(SOURCE)\VrmlNamespace.cpp $(SOURCE)\VrmlNamespace.h\
-								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\nodetype.h\
 								$(SOURCE)\VrmlNamespace.h\
 								$(SOURCE)\VrmlNodeVisitor.h\
 								$(SOURCE)\field.h\
@@ -429,7 +429,7 @@ $(BINOUTDIR)\VrmlNode.obj :  $(SOURCE)\VrmlNode.cpp $(SOURCE)\VrmlNode.h\
 								$(SOURCE)\VrmlBSphere.h\
 								$(SOURCE)\VrmlNamespace.h\
 								$(SOURCE)\VrmlNode.h\
-								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\nodetype.h\
 								$(SOURCE)\VrmlScene.h\
 								$(SOURCE)\VrmlRenderContext.h\
 								$(SOURCE)\common.h
@@ -442,7 +442,7 @@ $(BINOUTDIR)\VrmlNodeProto.obj: $(SOURCE)\VrmlNodeProto.cpp\
 								$(SOURCE)\VrmlNamespace.h\
 								$(SOURCE)\VrmlNode.h\
 								$(SOURCE)\VrmlNodeProto.h\
-								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\nodetype.h\
 								$(SOURCE)\Route.h\
 								$(SOURCE)\VrmlBSphere.h\
 								$(SOURCE)\common.h
@@ -461,7 +461,7 @@ $(BINOUTDIR)\VrmlNodeScript.obj: $(SOURCE)\VrmlNodeScript.cpp\
 					   $(SOURCE)\VrmlNode.h \
 					   $(SOURCE)\VrmlNodeScript.h \
                                  $(SOURCE)\VrmlNamespace.h\
-					   $(SOURCE)\VrmlNodeType.h\
+					   $(SOURCE)\nodetype.h\
 					   $(SOURCE)\ScriptObject.h\
 					   $(SOURCE)\VrmlScene.h\
 					   ..\winconfig.h
@@ -474,7 +474,8 @@ $(BINOUTDIR)\VrmlNodeScript.obj: $(SOURCE)\VrmlNodeScript.cpp\
 
 
 
-$(BINOUTDIR)\VrmlNodeType.obj : $(SOURCE)\VrmlNodeType.cpp\
+$(BINOUTDIR)\nodetype.obj : $(SOURCE)\nodetype.cpp\
+                                                $(SOURCE)\nodetype.h\
 								$(SOURCE)\Doc2.hpp\
 								$(SOURCE)\field.h\
 								$(SOURCE)\VrmlNamespace.h\
@@ -484,7 +485,16 @@ $(BINOUTDIR)\VrmlNodeType.obj : $(SOURCE)\VrmlNodeType.cpp\
 								$(SOURCE)\VrmlScene.h\
 								$(SOURCE)\common.h
 								$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
-							      $(SOURCE)\VrmlNodeType.cpp
+							      $(SOURCE)\nodetype.cpp
+
+$(BINOUTDIR)\nodetypeptr.obj : $(SOURCE)\nodetypeptr.cpp\
+                                                $(SOURCE)\nodetypeptr.h\
+								$(SOURCE)\nodetype.h\
+								$(SOURCE)\common.h
+								$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
+							      $(SOURCE)\nodetypeptr.cpp
+
+
 
 $(BINOUTDIR)\VrmlNodeVisitor.obj : $(SOURCE)\VrmlNodeVisitor.cpp\
 								$(SOURCE)\VrmlNodeVisitor.h\
@@ -505,7 +515,7 @@ $(BINOUTDIR)\VrmlScene.obj : $(SOURCE)\VrmlScene.cpp\
 								$(SOURCE)\vrml97node.h $(SOURCE)\VrmlNamespace.h\
 								$(SOURCE)\Vrml97Parser.hpp \
 								$(SOURCE)\VrmlRenderContext.h\
-								$(SOURCE)\VrmlNodeType.h\
+								$(SOURCE)\nodetype.h\
 								$(SOURCE)\VrmlScene.h\
 								$(SOURCE)\common.h\
 								..\winconfig.h

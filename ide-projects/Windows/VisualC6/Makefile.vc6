@@ -269,8 +269,8 @@ OBJ1 = $(BINOUTDIR)\Audio$(O) $(BINOUTDIR)\Doc$(O) $(BINOUTDIR)\Doc2$(O) $(BINOU
       $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O)\
       $(BINOUTDIR)\VrmlNamespace$(O) $(BINOUTDIR)\VrmlNode$(O)\
       $(BINOUTDIR)\VrmlNodeProto$(O) $(BINOUTDIR)\VrmlNodePtr$(O) $(BINOUTDIR)\Route$(O) \
-       $(BINOUTDIR)\VrmlNodeScript$(O) $(BINOUTDIR)\VrmlNodeType$(O) $(BINOUTDIR)\VrmlScene$(O)\
-	$(BINOUTDIR)\VrmlAABox$(O) $(BINOUTDIR)\VrmlBSphere$(O)\
+       $(BINOUTDIR)\VrmlNodeScript$(O) $(BINOUTDIR)\nodetype$(O) $(BINOUTDIR)\VrmlScene$(O)\
+	$(BINOUTDIR)\VrmlAABox$(O) $(BINOUTDIR)\nodetypeptr$(O) $(BINOUTDIR)\VrmlBSphere$(O)\
       $(BINOUTDIR)\VrmlBVolume$(O) $(BINOUTDIR)\VrmlFrustum$(O) $(BINOUTDIR)\VrmlRenderContext$(O) \
 	$(BINOUTDIR)\VrmlNodeVisitor$(O) $(BINOUTDIR)\vrml97node$(O)
 
@@ -422,7 +422,7 @@ $(BINOUTDIR)\Viewer.obj :   $(CORESOURCE)\Viewer.cpp $(CORESOURCE)\Viewer.h\
 							$(CPP) $(CFLAGS) /I .\ $(CORESOURCE)\Viewer.cpp
 
 $(BINOUTDIR)\vrml97node.obj :   $(CORESOURCE)\vrml97node.cpp $(CORESOURCE)\vrml97node.h \
-									$(CORESOURCE)\VrmlNodeType.h\
+									$(CORESOURCE)\nodetype.h\
 									$(CORESOURCE)\VrmlNamespace.h\
 									$(CORESOURCE)\VrmlNodeVisitor.h\
 									$(CORESOURCE)\VrmlNodeProto.h\
@@ -451,14 +451,14 @@ Vrml97Parser.cpp     :                $(CORESOURCE)\vrml97parser.g $(CORESOURCE)
 $(BINOUTDIR)\Vrml97Parser.obj  :       Vrml97Parser.cpp $(CORESOURCE)\Doc2.hpp\
                                        $(CORESOURCE)\field.h $(CORESOURCE)\common.h \
 						   $(CORESOURCE)\VrmlNamespace.h $(CORESOURCE)\VrmlNode.h\
-						   $(CORESOURCE)\VrmlNodeScript.h $(CORESOURCE)\VrmlNodeType.h
+						   $(CORESOURCE)\VrmlNodeScript.h $(CORESOURCE)\nodetype.h
 						   $(CPP) $(CFLAGS) /GR /I $(LIBINCLUDE) /I $(CORESOURCE) /I . Vrml97Parser.cpp
 
 !ELSE
 $(BINOUTDIR)\Vrml97Parser.obj  :       $(CORESOURCE)\Vrml97Parser.cpp $(CORESOURCE)\Doc2.hpp\
                                        $(CORESOURCE)\field.h $(CORESOURCE)\common.h \
 						   $(CORESOURCE)\VrmlNamespace.h $(CORESOURCE)\VrmlNode.h\
-						   $(CORESOURCE)\VrmlNodeScript.h $(CORESOURCE)\VrmlNodeType.h
+						   $(CORESOURCE)\VrmlNodeScript.h $(CORESOURCE)\nodetype.h
 						   $(CPP) $(CFLAGS) /GR /I $(LIBINCLUDE) /I $(CORESOURCE) $(CORESOURCE)\Vrml97Parser.cpp
 
 !ENDIF
@@ -484,7 +484,7 @@ $(BINOUTDIR)\VrmlFrustum.obj : $(CORESOURCE)\VrmlFrustum.cpp $(CORESOURCE)\VrmlF
 
     
 $(BINOUTDIR)\VrmlNamespace.obj :  $(CORESOURCE)\VrmlNamespace.cpp $(CORESOURCE)\VrmlNamespace.h\
-								$(CORESOURCE)\VrmlNodeType.h\
+								$(CORESOURCE)\nodetype.h\
 								$(CORESOURCE)\VrmlNamespace.h\
 								$(CORESOURCE)\VrmlNodeVisitor.h\
 								$(CORESOURCE)\field.h\
@@ -504,7 +504,7 @@ $(BINOUTDIR)\VrmlNode.obj :  $(CORESOURCE)\VrmlNode.cpp $(CORESOURCE)\VrmlNode.h
 								$(CORESOURCE)\VrmlBSphere.h\
 								$(CORESOURCE)\VrmlNamespace.h\
 								$(CORESOURCE)\VrmlNode.h\
-								$(CORESOURCE)\VrmlNodeType.h\
+								$(CORESOURCE)\nodetype.h\
 								$(CORESOURCE)\VrmlScene.h\
 								$(CORESOURCE)\VrmlRenderContext.h\
 								$(CORESOURCE)\common.h
@@ -517,7 +517,7 @@ $(BINOUTDIR)\VrmlNodeProto.obj: $(CORESOURCE)\VrmlNodeProto.cpp\
 								$(CORESOURCE)\VrmlNamespace.h\
 								$(CORESOURCE)\VrmlNode.h\
 								$(CORESOURCE)\VrmlNodeProto.h\
-								$(CORESOURCE)\VrmlNodeType.h\
+								$(CORESOURCE)\nodetype.h\
 								$(CORESOURCE)\Route.h\
 								$(CORESOURCE)\VrmlBSphere.h\
 								$(CORESOURCE)\common.h
@@ -537,7 +537,7 @@ $(BINOUTDIR)\VrmlNodeScript.obj: $(CORESOURCE)\VrmlNodeScript.cpp\
 					   $(CORESOURCE)\VrmlNode.h \
 					   $(CORESOURCE)\VrmlNodeScript.h \
                                  $(CORESOURCE)\VrmlNamespace.h\
-					   $(CORESOURCE)\VrmlNodeType.h\
+					   $(CORESOURCE)\nodetype.h\
 					   $(CORESOURCE)\ScriptObject.h\
 					   $(CORESOURCE)\VrmlScene.h\
 					   .\winconfig.h
@@ -548,8 +548,8 @@ $(BINOUTDIR)\VrmlNodeScript.obj: $(CORESOURCE)\VrmlNodeScript.cpp\
 					    /I $(ZLIB_DIR) /I .\ \
 					    /D XP_PC $(CORESOURCE)\VrmlNodeScript.cpp
 
-
-$(BINOUTDIR)\VrmlNodeType.obj : $(CORESOURCE)\VrmlNodeType.cpp\
+$(BINOUTDIR)\nodetype.obj : $(CORESOURCE)\nodetype.cpp\
+                                                $(CORESOURCE)\nodetype.h\
 								$(CORESOURCE)\Doc2.hpp\
 								$(CORESOURCE)\field.h\
 								$(CORESOURCE)\VrmlNamespace.h\
@@ -559,7 +559,14 @@ $(BINOUTDIR)\VrmlNodeType.obj : $(CORESOURCE)\VrmlNodeType.cpp\
 								$(CORESOURCE)\VrmlScene.h\
 								$(CORESOURCE)\common.h
 								$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
-							      $(CORESOURCE)\VrmlNodeType.cpp
+							      $(CORESOURCE)\nodetype.cpp
+
+$(BINOUTDIR)\nodetypeptr.obj : $(CORESOURCE)\nodetypeptr.cpp\
+                                                $(CORESOURCE)\nodetypeptr.h\
+								$(CORESOURCE)\nodetype.h\
+								$(CORESOURCE)\common.h
+								$(CPP) $(CFLAGS) /I $(ZLIB_DIR)\
+							      $(CORESOURCE)\nodetypeptr.cpp
 
 $(BINOUTDIR)\VrmlNodeVisitor.obj : $(CORESOURCE)\VrmlNodeVisitor.cpp\
 								$(CORESOURCE)\VrmlNodeVisitor.h\
@@ -580,7 +587,7 @@ $(BINOUTDIR)\VrmlScene.obj : $(CORESOURCE)\VrmlScene.cpp\
 								$(CORESOURCE)\vrml97node.h $(CORESOURCE)\VrmlNamespace.h\
 								$(CORESOURCE)\Vrml97Parser.hpp \
 								$(CORESOURCE)\VrmlRenderContext.h\
-								$(CORESOURCE)\VrmlNodeType.h\
+								$(CORESOURCE)\nodetype.h\
 								$(CORESOURCE)\VrmlScene.h\
 								$(CORESOURCE)\common.h\
 								.\winconfig.h

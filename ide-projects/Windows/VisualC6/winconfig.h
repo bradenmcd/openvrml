@@ -46,11 +46,12 @@ static const char COLON = ':';
 #define HAVE_LIBJPEG
 #define HAVE_LIBPNG
 #define HAVE_MOZJS 
+/* #define OPENVRML_HAVE_JAVA */
 
 /* #undef HAVE_LIBJPEG */
 /* #undef HAVE_LIBPNG  */
 /* #undef HAVE_MOZJS   */ 
-
+#undef OPENVRML_HAVE_JAVA   
 
 
 
