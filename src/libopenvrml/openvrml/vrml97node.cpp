@@ -10513,6 +10513,24 @@ viewer::texture_object_t movie_texture_node::do_render_texture(viewer & v)
  */
 
 /**
+ * @typedef navigation_info_class::bound_nodes_t
+ *
+ * @brief A bound NavigationInfo node stack.
+ */
+
+/**
+ * @var navigation_info_node * navigation_info_class::first
+ *
+ * @brief The first NavigationInfo node in the initial scene graph.
+ */
+
+/**
+ * @var navigation_info_class::bound_nodes_t navigation_info_class::bound_nodes
+ *
+ * @brief The bound NavigationInfo node stack.
+ */
+
+/**
  * @brief Construct.
  *
  * @param browser the browser associated with this class object.
@@ -10944,7 +10962,7 @@ namespace {
 /**
  * @brief Construct.
  *
- * @param type  the node_type associated with the node instance.
+ * @param t     the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
 navigation_info_node::

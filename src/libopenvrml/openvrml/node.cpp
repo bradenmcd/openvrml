@@ -1026,6 +1026,22 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @internal
  *
+ * @var boost::recursive_mutex node::mutex_
+ *
+ * @brief Object mutex.
+ */
+
+/**
+ * @internal
+ *
+ * @var const node_type & node::type_
+ *
+ * @brief The type information object for the node.
+ */
+
+/**
+ * @internal
+ *
  * @var scope_ptr node::scope_
  *
  * @brief The scope to which the node belongs.
@@ -1057,14 +1073,6 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  * @brief Indicate whether the node's cached bounding volume needs updating.
  *
  * @see node::bounding_volume_dirty
- */
-
-/**
- * @internal
- *
- * @var node::type_
- *
- * @brief The type information object for the node.
  */
 
 /**
@@ -1810,6 +1818,17 @@ void node::emit_event(openvrml::event_emitter & emitter,
 {
     emitter.emit_event(timestamp);
 }
+
+/**
+ * @fn boost::recursive_mutex & node::mutex() const throw ()
+ *
+ * @brief Get the mutex associated with the <code>node</code>.
+ *
+ * Concrete node types should lock the <code>node</code> mutex when modifying
+ * field values outside the rendering thread.
+ *
+ * @return the mutex associated with the <code>node</code>.
+ */
 
 namespace {
     const short indentIncrement_ = 4;

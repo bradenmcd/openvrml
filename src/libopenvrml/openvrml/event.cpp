@@ -369,6 +369,14 @@ event_emitter::create(const field_value & value) throw (std::bad_alloc)
 /**
  * @internal
  *
+ * @var boost::recursive_mutex event_emitter::mutex_
+ *
+ * @brief Object mutex.
+ */
+
+/**
+ * @internal
+ *
  * @var const field_value & event_emitter::value_
  *
  * @brief A reference to the field_value for the event_emitter.

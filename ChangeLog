@@ -1,5 +1,19 @@
 2005-03-18 Braden McDaniel  <braden@endoframe.com>
 
+	Doc-comment improvements; moved vrml97_root_scope to be a
+	private inner class of openvrml::browser.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
+2005-03-18 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/basetypes.h (image::pixel):  Fixed
 	pixel mutator.
 

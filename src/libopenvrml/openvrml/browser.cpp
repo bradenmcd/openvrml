@@ -58,10 +58,10 @@
 
 namespace openvrml {
 
-    class vrml97_root_scope : public scope {
+    class browser::vrml97_root_scope : public scope {
     public:
         vrml97_root_scope(const browser & browser,
-                        const std::string & uri = std::string())
+                          const std::string & uri = std::string())
             throw (std::bad_alloc);
         virtual ~vrml97_root_scope() throw ();
     };
@@ -3664,6 +3664,24 @@ viewer_in_use::~viewer_in_use() throw ()
  */
 
 /**
+ * @var boost::mutex browser::node_class_map::mutex_
+ *
+ * @brief Object mutex.
+ */
+
+/**
+ * @typedef browser::node_class_map::map_t
+ *
+ * @brief Map type.
+ */
+
+/**
+ * @var browser::node_class_map::map_t browser::node_class_map::map_
+ *
+ * @brief Map.
+ */
+
+/**
  * @brief Construct.
  *
  * @param b the <code>browser</code>.
@@ -3778,6 +3796,12 @@ browser::node_class_map::node_class_map(browser & b)
     this->map_["urn:X-openvrml:node:WorldInfo"] =
         node_class_ptr(new world_info_class(b));
 }
+
+/**
+ * @fn browser::node_class_map::node_class_map(const node_class_map &)
+ *
+ * @brief Not implemented.
+ */
 
 /**
  * @brief Assign.
@@ -3923,6 +3947,12 @@ void browser::node_class_map::render(openvrml::viewer & v)
  *
  * The callback function provoides a way to let the app know when a world is
  * loaded, changed, etc.
+ */
+
+/**
+ * @var boost::recursive_mutex browser::mutex_
+ *
+ * @brief Object mutex.
  */
 
 /**
@@ -4461,6 +4491,18 @@ browser::get_resource(const std::string & uri)
 {
     return this->do_get_resource(uri);
 }
+
+/**
+ * @brief Fetch a network resource.
+ *
+ * Called by <code>browser::get_resource</code>.
+ *
+ * @param uri   a Uniform Resource Identifier.
+ *
+ * @return the requested resource as a stream.
+ *
+ * @fn std::auto_ptr<openvrml::resource_istream> browser::do_get_resource(const std::string & uri)
+ */
 
 /**
  * @brief Get the browser name.
@@ -5381,17 +5423,9 @@ no_alternative_url::~no_alternative_url() throw ()
  */
 
 /**
- * @var mfnode scene::nodes_
+ * @var boost::recursive_mutex scene::mutex_
  *
- * @brief The nodes for the scene.
- */
-
-/**
- * @var const std::string scene::url_
- *
- * @brief The URI for the scene.
- *
- * @a uri may be a relative or an absolute reference.
+ * @brief <code>scene</code> mutex.
  */
 
 /**
@@ -5406,6 +5440,20 @@ no_alternative_url::~no_alternative_url() throw ()
  * @brief A pointer to the parent scene.
  *
  * If the scene is the root scene, @a parent will be 0.
+ */
+
+/**
+ * @var mfnode scene::nodes_
+ *
+ * @brief The nodes for the scene.
+ */
+
+/**
+ * @var const std::string scene::url_
+ *
+ * @brief The URI for the scene.
+ *
+ * @a uri may be a relative or an absolute reference.
  */
 
 namespace {
@@ -5810,7 +5858,7 @@ void scene::scene_loaded()
 /**
  * @internal
  *
- * @class vrml97_root_scope
+ * @class browser::vrml97_root_scope
  *
  * @brief Root namespace for VRML97 browsers.
  *
@@ -5839,8 +5887,8 @@ namespace {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-vrml97_root_scope::vrml97_root_scope(const browser & browser,
-                                     const std::string & uri)
+browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
+                                              const std::string & uri)
     throw (std::bad_alloc):
     scope(uri)
 {
@@ -7522,7 +7570,7 @@ vrml97_root_scope::vrml97_root_scope(const browser & browser,
     }
 }
 
-vrml97_root_scope::~vrml97_root_scope() throw () {}
+browser::vrml97_root_scope::~vrml97_root_scope() throw () {}
 
 
 null_node_class::null_node_class(openvrml::browser & browser) throw ():

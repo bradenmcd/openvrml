@@ -98,13 +98,13 @@ namespace openvrml {
 
     class viewer;
     class scene;
-    class vrml97_root_scope;
     class null_node_class;
     class null_node_type;
 
     class browser : boost::noncopyable {
         friend class Vrml97Parser;
-        friend class vrml97_root_scope;
+
+        class vrml97_root_scope;
 
         class node_class_map {
             mutable boost::mutex mutex_;

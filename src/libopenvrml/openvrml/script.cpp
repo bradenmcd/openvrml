@@ -42,6 +42,22 @@ namespace openvrml {
  */
 
 /**
+ * @internal
+ *
+ * @typedef script::direct_output_map_t
+ *
+ * @brief Map of direct outputs.
+ */
+
+/**
+ * @internal
+ *
+ * @var script::direct_output_map_t script::direct_output_map_
+ *
+ * @brief Map of direct outputs.
+ */
+
+/**
  * @var script_node & script::node
  *
  * @brief A reference to the script_node that uses this script object.
@@ -86,7 +102,7 @@ void script::initialize(double timestamp)
 /**
  * @brief Process an event.
  *
- * Delegates to <code>script::do_process_event</script>.
+ * Delegates to <code>script::do_process_event</code>.
  *
  * @param id        eventIn identifier.
  * @param value     event value.
@@ -220,6 +236,16 @@ void script::direct_output(event_listener & listener,
     this->direct_output_map_[&listener] = value;
 }
 
+/**
+ * @internal
+ *
+ * @brief Process direct outputs in @a script::direct_output_map_.
+ *
+ * This function is called at the end of initialization and processing normal
+ * events.
+ *
+ * @post <code>script::direct_output_map_.empty()</code> is @c true.
+ */
 void script::process_direct_output(double timestamp)
 {
     for (direct_output_map_t::const_iterator output =
