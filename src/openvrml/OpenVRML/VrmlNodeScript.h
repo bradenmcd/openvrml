@@ -26,8 +26,7 @@
 #endif
 
 #include <list>
-#include "VrmlNodeChild.h"
-#include "field.h"
+#include "vrml97node.h"
 
 class Doc;
 class ScriptObject;

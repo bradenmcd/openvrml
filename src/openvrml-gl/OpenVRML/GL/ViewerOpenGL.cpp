@@ -36,7 +36,7 @@
 #include <OpenVRML/MathUtils.h>
 #include <OpenVRML/System.h>
 #include <OpenVRML/VrmlScene.h>
-#include <OpenVRML/VrmlNodeNavigationInfo.h>
+#include <OpenVRML/vrml97node.h>
 #include <OpenVRML/VrmlBSphere.h>
 #include <OpenVRML/VrmlFrustum.h>
 

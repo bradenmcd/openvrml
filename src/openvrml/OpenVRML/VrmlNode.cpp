@@ -802,22 +802,3 @@ const VrmlField *VrmlNode::getEventOut(const char *fieldName) const
     return getField( fieldName );
   return 0;
 }
-
-
-//
-//  VrmlNodeTexture- should move to its own file
-//
-#include "VrmlNodeTexture.h"
-
-VrmlNodeType *VrmlNodeTexture::defineType(VrmlNodeType *t)
-{ return VrmlNode::defineType(t); }
-
-VrmlNodeTexture::VrmlNodeTexture(VrmlScene *s) : VrmlNode(s) {}
-
-VrmlNodeTexture::~VrmlNodeTexture() {}
-
-VrmlNodeTexture* VrmlNodeTexture::toTexture() const
-{ return (VrmlNodeTexture*) this; }
-
-
-

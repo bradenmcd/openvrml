@@ -18,75 +18,21 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
-#include <stack>
+# include <stack>
+# include "VrmlNamespace.h"
+# include "VrmlNodeType.h"
+# include "VrmlNodeVisitor.h"
+# include "VrmlNode.h"
+# include "Route.h"
+# include "System.h"
+# include "VrmlNodeScript.h"
+# include "VrmlNodeProto.h"
 
-#include "VrmlNamespace.h"
-#include "VrmlNodeType.h"
-#include "VrmlNodeVisitor.h"
-#include "VrmlNode.h"
-#include "Route.h"
-#include "System.h"
-#include "VrmlNodeAnchor.h"
-#include "VrmlNodeAppearance.h"
-#include "VrmlNodeAudioClip.h"
-#include "VrmlNodeBackground.h"
-#include "VrmlNodeBillboard.h"
-#include "VrmlNodeBox.h"
-#include "VrmlNodeCollision.h"
-#include "VrmlNodeColor.h"
-#include "VrmlNodeColorInt.h"
-#include "VrmlNodeCone.h"
-#include "VrmlNodeCoordinate.h"
-#include "VrmlNodeCoordinateInt.h"
-#include "VrmlNodeCylinder.h"
-#include "VrmlNodeCylinderSensor.h"
-#include "VrmlNodeDirLight.h"
-#include "VrmlNodeElevationGrid.h"
-#include "VrmlNodeExtrusion.h"
-#include "VrmlNodeFog.h"
-#include "VrmlNodeFontStyle.h"
-#include "VrmlNodeGroup.h"
-#include "VrmlNodeIFaceSet.h"
-#include "VrmlNodeILineSet.h"
-#include "VrmlNodeImageTexture.h"
-#include "VrmlNodeInline.h"
-#include "VrmlNodeLOD.h"
-#include "VrmlNodeMaterial.h"
-#include "VrmlNodeMovieTexture.h"
-#include "VrmlNodeNavigationInfo.h"
-#include "VrmlNodeNormal.h"
-#include "VrmlNodeNormalInt.h"
-#include "VrmlNodeOrientationInt.h"
-#include "VrmlNodePixelTexture.h"
-#include "VrmlNodePlaneSensor.h"
-#include "VrmlNodePointLight.h"
-#include "VrmlNodePointSet.h"
-#include "VrmlNodePositionInt.h"
-#include "VrmlNodeProto.h"
-#include "VrmlNodeProximitySensor.h"
-#include "VrmlNodeScalarInt.h"
-#include "VrmlNodeScript.h"
-#include "VrmlNodeShape.h"
-#include "VrmlNodeSound.h"
-#include "VrmlNodeSphere.h"
-#include "VrmlNodeSphereSensor.h"
-#include "VrmlNodeSpotLight.h"
-#include "VrmlNodeSwitch.h"
-#include "VrmlNodeText.h"
-#include "VrmlNodeTextureCoordinate.h"
-#include "VrmlNodeTextureTransform.h"
-#include "VrmlNodeTimeSensor.h"
-#include "VrmlNodeTouchSensor.h"
-#include "VrmlNodeTransform.h"
-#include "VrmlNodeViewpoint.h"
-#include "VrmlNodeVisibilitySensor.h"
-#include "VrmlNodeWorldInfo.h"
-
-#include <string.h>
+# include <string.h>
 
 # ifndef NDEBUG
 #   include <typeinfo>

@@ -48,31 +48,8 @@
 #include "VrmlNodeType.h"
 #include "VrmlRenderContext.h"
 
-
-// Handle clicks on Anchor nodes
-#include "VrmlNodeAnchor.h"
-
-// Bindable children nodes
-#include "VrmlNodeBackground.h"
-#include "VrmlNodeFog.h"
-#include "VrmlNodeNavigationInfo.h"
-#include "VrmlNodeViewpoint.h"
-
-// List of scene-scoped lights in the scene
-#include "VrmlNodePointLight.h"
-#include "VrmlNodeSpotLight.h"
-
-// List of Movies in the scene
-#include "VrmlNodeMovieTexture.h"
-
-// List of AudioClips in the scene
-#include "VrmlNodeAudioClip.h"
-
 // List of Scripts in the scene
 #include "VrmlNodeScript.h"
-
-// List of TimeSensors in the scene
-#include "VrmlNodeTimeSensor.h"
 
 // Max time in seconds between updates. Make this user
 // setable to balance performance with cpu usage.

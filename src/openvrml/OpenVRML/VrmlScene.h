@@ -24,7 +24,7 @@
 #include <list>
 
 // The loaders fill in a Group node
-#include "VrmlNodeGroup.h"
+#include "vrml97node.h"
 
 class VrmlNode;
 
@@ -40,20 +40,6 @@ class Viewer;
 // PROTO definitions
 class VrmlNamespace;
 class VrmlNodeType;
-
-// Bindable children node types
-class VrmlNodeBackground;
-class VrmlNodeFog;
-class VrmlNodeNavigationInfo;
-class VrmlNodeViewpoint;
-
-// Lists of other node types needed for rendering or updating the scene
-class VrmlNodeAudioClip;
-class VrmlNodeLight;
-class VrmlNodeMovieTexture;
-class VrmlNodeScript;
-class VrmlNodeTimeSensor;
-
 
 class VrmlScene {
 

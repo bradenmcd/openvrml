@@ -1,3 +1,8 @@
+2001-04-24  Braden McDaniel <braden@endoframe.com>
+
+        * Consolidated VRML97 node types in a single header and a single
+          implementation file.
+
 2001-04-23  Braden McDaniel <braden@endoframe.com>
 
         * Consolidated SF* and MF* types into a single header, `field.h'.
