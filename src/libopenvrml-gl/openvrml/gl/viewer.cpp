@@ -528,12 +528,6 @@ void viewer::modelview_matrix_stack::pop()
  */
 
 /**
- * @var quatf viewer::rotation
- *
- * @brief Current rotation.
- */
-
-/**
  * @var bool viewer::rotating
  *
  * @brief Whether the viewer is in the process of rotating.
@@ -716,7 +710,6 @@ viewer::viewer(openvrml::browser & b):
     over_sensitive(0),
     select_mode(false),
     select_z(0.0),
-    rotation(trackball(0.0, 0.0, 0.0, 0.0)),
     rotating(false),
     scaling(false),
     translating(false),
@@ -937,7 +930,6 @@ double viewer::frame_rate()
 void viewer::reset_user_navigation()
 {
     this->browser.active_viewpoint().user_view_transform(mat4f());
-    this->rotation = quatf(trackball(0.0, 0.0, 0.0, 0.0));
     this->post_redraw();
 }
 
@@ -3707,16 +3699,6 @@ void viewer::rotate(const openvrml::rotation & rot) throw ()
             prevOrientation * (t * (r * viewpointTransformation.inverse()));
 
     activeViewpoint.user_view_transform(newCameraTransform);
-
-    mat4f rotationMatrix;
-    glGetFloatv(GL_MODELVIEW_MATRIX, &rotationMatrix[0][0]);
-    rotationMatrix[3][0] = 0.0;
-    rotationMatrix[3][1] = 0.0;
-    rotationMatrix[3][2] = 0.0;
-
-    vec3f d = rotationMatrix * rot.axis();
-    quatf q(openvrml::rotation(d, rot.angle()));
-    this->rotation = q * this->rotation;
 
     post_redraw();
 }

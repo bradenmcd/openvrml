@@ -1,5 +1,12 @@
 2004-01-07 Braden McDaniel  <braden@endoframe.com>
 
+	Removed unused member "openvrml::gl::viewer::rotation".
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+
+2004-01-07 Braden McDaniel  <braden@endoframe.com>
+
 	Removed unused member "openvrml::gl::viewer::rotation_changed".
 
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
