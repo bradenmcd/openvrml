@@ -1,3 +1,9 @@
+2002-12-03  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/VrmlMatrix.cpp,
+          src/openvrml/OpenVRML/VrmlMatrix.h: Const-correctness
+          improvements and exception specifications for VrmlMatrix.
+
 2002-12-02  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/node.h: Added OPENVRML_SCOPE to some API
