@@ -30,17 +30,19 @@
 #   include <config.h>
 # endif
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+# if defined(_WIN32) && !defined(__CYGWIN__)
 #   include <winconfig.h>
 # endif
 
 # include "doc2.hpp"
 # include "System.h"
-# include <fstream.h>
 # include <string.h>
 # include <ctype.h>
 # include <algorithm>
-# include <zlib.h>
+# include <fstream>
+
+# ifdef OPENVRML_HAVE_ZLIB
+#   include <zlib.h>
 
 namespace {
     namespace z {
@@ -57,7 +59,7 @@ namespace {
             huffman_only        = Z_HUFFMAN_ONLY
         };
         
-        class filebuf : public ::streambuf {
+        class filebuf : public std::streambuf {
             
             public:
                 filebuf();
@@ -79,7 +81,7 @@ namespace {
                 gzFile file;
         };
         
-        class ifstream : public ::istream {
+        class ifstream : public std::istream {
             public:
                 ifstream();
                 explicit ifstream(const char * path, level = default_compression,
@@ -95,8 +97,141 @@ namespace {
             private:
                 filebuf fbuf;
         };
+        //
+        // filebuf
+        //
+
+        int const lookback(4);
+
+        filebuf::filebuf(): file(0) {
+            this->setg(this->buffer + lookback,  // beginning of putback area
+                       this->buffer + lookback,  // read position
+                       this->buffer + lookback); // end position
+        }
+
+        filebuf::~filebuf() {
+            this->close();
+        }
+
+        bool filebuf::is_open() const {
+            return (this->file != 0);
+        }
+
+        filebuf * filebuf::open(const char * path,
+                                const int mode,
+                                const level comp_level,
+                                const strategy comp_strategy) {
+            if (this->file) { return 0; }
+
+            //
+            // zlib only supports the "rb" and "wb" modes, so we bail on anything
+            // else.
+            //
+            static const char read_mode_string[] = "rb";
+            static const char write_mode_string[] = "wb";
+            const char * mode_string = 0;
+            if (mode == (ios::binary | ios::in)) {
+                mode_string = read_mode_string;
+            } else if (   (mode == (ios::binary | ios::out))
+                       || (mode == (ios::binary | ios::out | ios::trunc))) {
+                mode_string = write_mode_string;
+            } else {
+                return 0;
+            }
+
+            this->file = gzopen(path, mode_string);
+            if (!this->file) { return 0; }
+
+            gzsetparams(this->file, comp_level, comp_strategy);
+            return this;
+        }
+
+        filebuf * filebuf::close() {
+            if (!this->file) { return 0; }
+            gzclose(this->file);
+            this->file = 0;
+            return this;
+        }
+
+        int filebuf::underflow() {
+            if (this->gptr() < this->egptr()) { return *this->gptr(); }
+
+            //
+            // Process the size of the putback area; use the number of characters read,
+            // but at most four.
+            //
+            int num_putback = this->gptr() - this->eback();
+            if (num_putback > lookback) { num_putback = lookback; }
+
+            std::copy(this->gptr() - num_putback, this->gptr(),
+                      this->buffer + (lookback - num_putback));
+
+            //
+            // Read new characters.
+            //
+            int num = gzread(this->file,
+                             this->buffer + lookback,
+                             filebuf::buffer_size - lookback);
+            
+            if (num <= 0) { return EOF; } // Error condition or end of file.
+
+            //
+            // Reset the buffer pointers.
+            //
+            this->setg(buffer + (lookback - num_putback), // Beginning of putback area.
+                       buffer + lookback,                 // Read position.
+                       buffer + lookback + num);          // End of buffer.
+
+            //
+            // Return the next character.
+            //
+            return *this->gptr();
+        }
+
+        int filebuf::overflow(int c) {
+            //
+            // This probably ought to be buffered, but this will do for now.
+            //
+            if (c != EOF) {
+                if (gzputc(file, c) == -1) { return EOF; }
+            }
+            return c;
+        }
+
+
+        //
+        // ifstream
+        //
+
+        ifstream::ifstream(): istream(&fbuf) {}
+
+        ifstream::ifstream(const char * path, level lev, strategy strat):
+                istream(&fbuf) {
+            this->open(path, lev, strat);
+        }
+
+        ifstream::~ifstream() {}
+
+        filebuf * ifstream::rdbuf() const {
+            return const_cast<filebuf *>(&this->fbuf);
+        }
+
+        bool ifstream::is_open() const { return this->fbuf.is_open(); }
+
+        void ifstream::open(const char * path, level lev, strategy strat) {
+            if (!this->fbuf.open(path, ios::binary | ios::in, lev, strat)) {
+#   ifdef _WIN32
+                this->clear(failbit);
+#   else
+                this->setstate(failbit);
+#   endif
+            }
+        }
+
+        void ifstream::close() { this->fbuf.close(); }
     }
 }
+# endif // OPENVRML_HAVE_ZLIB
 
 namespace OpenVRML {
 
@@ -275,7 +410,7 @@ const char * Doc2::localPath() {
     return 0;
 }
 
-::istream & Doc2::inputStream() {
+std::istream & Doc2::inputStream() {
     if (!this->istm_) {
         
         char fn[256];
@@ -284,20 +419,30 @@ const char * Doc2::localPath() {
         if (strcmp(fn, "-") == 0) {
             this->istm_ = &cin;
         } else {
+# ifdef OPENVRML_HAVE_ZLIB
             this->istm_ = new z::ifstream(
-# ifdef macintosh
+#   ifdef macintosh
                                           convertCommonToMacPath(fn, sizeof(fn))
-# else
+#   else
                                           fn
-# endif
+#   endif
                                           );
+# else
+            this->istm_ = new std::ifstream(
+#   ifdef macintosh
+                                          convertCommonToMacPath(fn, sizeof(fn))
+#   else
+                                          fn
+#   endif
+                                          );
+# endif
         }
     }
     
     return *this->istm_;
 }
 
-::ostream & Doc2::outputStream() {
+std::ostream & Doc2::outputStream() {
     if (!ostm_) { ostm_ = new ::ofstream(stripProtocol(url_), ios::out); }
     return *this->ostm_;
 }
@@ -469,177 +614,3 @@ char* Doc2::convertCommonToMacPath( char *fn, int nfn )
 # endif /* macintosh */
 
 } // namespace OpenVRML
-
-namespace {
-    
-    //
-    // filebuf
-    //
-    
-    int const lookback(4);
-    
-    z::filebuf::filebuf()
-      : file(0)
-    {
-        setg(this->buffer + lookback,     // beginning of putback area
-             this->buffer + lookback,     // read position
-             this->buffer + lookback);    // end position
-    }
-    
-    z::filebuf::~filebuf()
-    {
-        this->close();
-    }
-    
-    bool z::filebuf::is_open() const
-    {
-        return (this->file != 0);
-    }
-    
-    z::filebuf * z::filebuf::open(const char * path, int mode,
-                                  level comp_level, strategy comp_strategy)
-    {
-        if (this->file) {
-            return 0;
-        }
-        
-        //
-        // zlib only supports the "rb" and "wb" modes, so we bail on anything
-        // else.
-        //
-        static const char * const read_mode_string = "rb";
-        static const char * const write_mode_string = "wb";
-        const char * mode_string = 0;
-        if (mode == (ios::binary | ios::in)) {
-            mode_string = read_mode_string;
-        } else if (   (mode == (ios::binary | ios::out))
-                   || (mode == (ios::binary | ios::out | ios::trunc))) {
-            mode_string = write_mode_string;
-        } else {
-            return 0;
-        }
-        
-        this->file = gzopen(path, mode_string);
-        if (!this->file) {
-            return 0;
-        }
-        
-        gzsetparams(this->file, comp_level, comp_strategy);
-        
-        return this;
-    }
-    
-    z::filebuf * z::filebuf::close()
-    {
-        if (!this->file) {
-            return 0;
-        }
-        
-        gzclose(this->file);
-        this->file = 0;
-        
-        return this;
-    }
-    
-    int z::filebuf::underflow()
-    {
-        if (gptr() < egptr()) {
-            return *gptr();
-        }
-        
-        //
-        // Process the size of the putback area; use the number of characters read,
-        // but at most four.
-        //
-        int num_putback = gptr() - eback();
-        if (num_putback > lookback) {
-            num_putback = lookback;
-        }
-        
-        std::copy(gptr() - num_putback, gptr(),
-                  this->buffer + (lookback - num_putback));
-    
-        //
-        // Read new characters.
-        //
-        int num = gzread(this->file,
-                         this->buffer + lookback,
-                         filebuf::buffer_size - lookback);
-        if (num <= 0) {
-            //
-            // Error condition or end of file.
-            //
-            return EOF;
-        }
-        
-        //
-        // Reset the buffer pointers.
-        //
-        setg(buffer + (lookback - num_putback), // Beginning of putback area.
-             buffer + lookback,                 // Read position.
-             buffer + lookback + num);          // End of buffer.
-        
-        //
-        // Return the next character.
-        //
-        return *gptr();
-    }
-    
-    int z::filebuf::overflow(int c)
-    {
-        //
-        // This probably ought to be buffered, but this will do for now.
-        //
-        if (c != EOF) {
-            if (gzputc(file, c) == -1) {
-                return EOF;
-            }
-        }
-        
-        return c;
-    }
-    
-    
-    //
-    // ifstream
-    //
-    
-    z::ifstream::ifstream()
-      : istream(&fbuf)
-    {}
-    
-    z::ifstream::ifstream(const char * path, level lev, strategy strat)
-      : istream(&fbuf)
-    {
-        this->open(path, lev, strat);
-    }
-    
-    z::ifstream::~ifstream() {}
-    
-    z::filebuf * z::ifstream::rdbuf() const
-    {
-        return const_cast<z::filebuf *>(&this->fbuf);
-    }
-
-    bool z::ifstream::is_open() const
-    {
-        return this->fbuf.is_open();
-    }
-    
-    void z::ifstream::open(const char * path, level lev, strategy strat)
-    {
-        if (!this->fbuf.open(path, ios::binary | ios::in, lev, strat)) {
-# ifdef _WIN32
-            this->clear(failbit);
-# else
-            this->setstate(failbit);
-# endif
-        }
-    }
-    
-    void z::ifstream::close()
-    {
-        this->fbuf.close();
-    }
-    
-}

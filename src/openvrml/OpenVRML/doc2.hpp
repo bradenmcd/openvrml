@@ -19,19 +19,19 @@
 // 
 
 # ifndef DOC2_HPP
-# define DOC2_HPP
+#   define DOC2_HPP
 
-# include <iostream.h>
-# include <string>
-# include "common.h"
+#   include <iostream>
+#   include <string>
+#   include "common.h"
 
 namespace OpenVRML {
 
     class OPENVRML_SCOPE Doc2 {
         char * url_;
         char * tmpfile_;            // Local copy of http: files
-        istream * istm_;
-        ostream * ostm_;
+        std::istream * istm_;
+        std::ostream * ostm_;
 
     public:
         explicit Doc2(const std::string & url = std::string(),
@@ -51,8 +51,8 @@ namespace OpenVRML {
         const char *localName();    // "/tmp/file.xyz" or NULL
         const char *localPath();    // "/tmp/" or NULL
 
-        ::istream & inputStream();
-        ::ostream & outputStream();
+        std::istream & inputStream();
+        std::ostream & outputStream();
 
     private:
         //
@@ -66,9 +66,9 @@ namespace OpenVRML {
 
         bool filename(char * fn, int nfn);
 
-    # ifdef macintosh
+#   ifdef macintosh
         char * convertCommonToMacPath(char * fn, int nfn);
-    # endif
+#   endif
     };
 }
 

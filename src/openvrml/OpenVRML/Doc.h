@@ -25,11 +25,9 @@
 //
 
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <string>
 #include "common.h"
-
-typedef void * gzFile;
 
 namespace OpenVRML {
 
@@ -43,9 +41,8 @@ namespace OpenVRML {
         char* convertCommonToMacPath( char *fn, int nfn );
 #endif
         char *d_url;
-        ostream *d_ostream;
+        std::ostream * d_ostream;
         FILE *d_fp;
-        gzFile d_gz;
         char *d_tmpfile; // Local copy of http: files
 
     public:
@@ -73,11 +70,7 @@ namespace OpenVRML {
         FILE *fopen(const char *mode);
         void fclose();
 
-        // For (optionally) compressed files
-        gzFile gzopen(const char *mode);
-        void gzclose();
-
-        ostream &outputStream();
+        std::ostream & outputStream();
 
     private:
         // Non-copyable.

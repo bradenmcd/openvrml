@@ -23,10 +23,6 @@
 //  a real http protocol library is found...
 //
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #include <winconfig.h>
 #endif
@@ -35,8 +31,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <fstream.h>
-#include <zlib.h>
+#include <fstream>
 
 #include "Doc.h"
 #include "doc2.hpp"
@@ -45,21 +40,21 @@
 namespace OpenVRML {
 
 Doc::Doc(const std::string & url, const Doc * relative): d_url(0), d_ostream(0),
-        d_fp(0), d_gz(0), d_tmpfile(0) {
+        d_fp(0), d_tmpfile(0) {
     if (url.length() > 0) {
         this->seturl(url.c_str(), relative);
     }
 }
 
 Doc::Doc(const std::string & url, const Doc2 * relative): d_url(0),
-        d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0) {
+        d_ostream(0), d_fp(0), d_tmpfile(0) {
     if (url.length() > 0) {
         this->seturl(url.c_str(), relative);
     }
 }
 
 Doc::Doc(Doc const * doc)
-  : d_url(0), d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0)
+  : d_url(0), d_ostream(0), d_fp(0), d_tmpfile(0)
 {
     if (doc) {
         seturl(doc->url(), static_cast<Doc const *>(0));
@@ -67,7 +62,7 @@ Doc::Doc(Doc const * doc)
 }
 
 Doc::Doc(Doc2 const * doc)
-  : d_url(0), d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0)
+  : d_url(0), d_ostream(0), d_fp(0), d_tmpfile(0)
 {
     if (doc) {
         seturl(doc->url(), static_cast<Doc2 const *>(0));
@@ -411,7 +406,6 @@ char* Doc::convertCommonToMacPath( char *fn, int nfn )
 }
 #endif /* macintosh */
 
-
 // Having both fopen and outputStream is dumb...
 
 FILE *Doc::fopen(const char *mode)
@@ -431,11 +425,11 @@ FILE *Doc::fopen(const char *mode)
 	}
       else
 	{
-	  #ifdef macintosh
+# ifdef macintosh
       d_fp = ::fopen( convertCommonToMacPath(fn, sizeof(fn)), mode );
-	  #else
+# else
       d_fp = ::fopen( fn, mode );
-	  #endif
+# endif
 	}
     }
 
@@ -450,57 +444,19 @@ void Doc::fclose()
   d_fp = 0;
   if (d_tmpfile)
     {
-	  #ifdef macintosh
+# ifdef macintosh
       theSystem->removeFile(convertCommonToMacPath(d_tmpfile, sizeof(d_tmpfile)));
-      #else
+# else
       theSystem->removeFile(d_tmpfile);
-      #endif
+# endif
       delete [] d_tmpfile;
       d_tmpfile = 0;
     }
 }
 
-// For (optionally) gzipped files
-
-gzFile Doc::gzopen(const char *mode)
+std::ostream & Doc::outputStream()
 {
-  if (d_fp || d_gz)
-    theSystem->error("Doc::gzopen: %s is already open.\n", d_url ? d_url : "");
-
-  char fn[256];
-  if (filename(fn, sizeof(fn)))
-    {
-	  #ifdef macintosh
-      d_gz = ::gzopen( convertCommonToMacPath(fn, sizeof(fn)), mode );
-	  #else
-      d_gz = ::gzopen( fn, mode );
-	  #endif
-    }
-
-  return d_gz;
-}
-
-void Doc::gzclose()
-{
-  if (d_gz)
-    ::gzclose(d_gz);
-
-  d_gz = 0;
-  if (d_tmpfile)
-    {
-	  #ifdef macintosh
-      theSystem->removeFile(convertCommonToMacPath(d_tmpfile, sizeof(d_tmpfile)));
-	  #else
-      theSystem->removeFile(d_tmpfile);
-      #endif
-      delete [] d_tmpfile;
-      d_tmpfile = 0;
-    }
-}
-
-ostream &Doc::outputStream()
-{
-  d_ostream = new ofstream(stripProtocol(d_url), ios::out);
+  d_ostream = new std::ofstream(stripProtocol(d_url), ios::out);
   return *d_ostream;
 }
 

@@ -1,3 +1,7 @@
+2002-06-04  Braden McDaniel  <braden@endoframe.com>
+
+        * Made zlib an optional dependency.
+
 2002-05-31  Braden McDaniel  <braden@endoframe.com>
 
         * "make install" can now install Dogygen-generated documentation

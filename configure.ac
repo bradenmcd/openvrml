@@ -16,11 +16,6 @@ AC_DEFINE_UNQUOTED([OPENVRML_MICRO_VERSION], ${OPENVRML_MICRO_VERSION},
                    [Micro version number.])
 
 #
-# Checks for Win32 stuff.
-#
-AC_CYGWIN
-
-#
 # Checks for programs.
 #
 AC_ENABLE_STATIC(yes)
@@ -34,11 +29,6 @@ OV_CXX_HASH_MAP
 #
 # Checks for required packages.
 #
-OV_CHECK_ZLIB
-if test "X$no_zlib" = "Xyes"; then
-  AC_MSG_ERROR([zlib not found.])
-fi
-
 AC_PATH_XTRA
 if test "X$no_x" = "Xyes"; then
   AC_MSG_ERROR([X not found.])
@@ -47,12 +37,55 @@ fi
 #
 # Optional packages.
 #
-AC_ARG_WITH(gl, [  --with-gl               use OpenGL/Mesa], ,
+AC_ARG_WITH(zlib, [  --with-zlib             use zlib (read gzipped VRML files)], ,
+            [# Use zlib by default.
+             with_zlib=yes])
+AC_ARG_WITH(libpng, [  --with-libpng           use libpng (PNG image support)], ,
+            [# Use libpng by default.
+             with_libpng=yes])
+AC_ARG_WITH(libjpeg, [  --with-libjpeg          use libjpeg (JPEG image support)], ,
+            [# Use libjpeg by default.
+             with_libjpeg=yes])
+AC_ARG_WITH(gl, [  --with-gl               use OpenGL/Mesa (required for GL renderer)], ,
             [# Use OpenGL by default.
              with_gl=yes])
-AC_ARG_WITH(glut, [  --with-glut             use GLUT], ,
+AC_ARG_WITH(glut, [  --with-glut             use GLUT (required for LookAt and Text node support)], ,
             [# Use GLUT by default.
              with_glut=yes])
+AC_ARG_WITH(spidermonkey, [  --with-spidermonkey     use SpiderMonkey (JavaScript support)], ,
+            [# Use SpiderMonkey by default.
+             with_spidermonkey=yes])
+AC_ARG_WITH(jdk, [  --with-jdk              use the Java Development Kit (Java support)], ,
+             [# Use the JDK by default.
+              with_jdk=yes])
+AC_ARG_WITH(doxygen, [  --with-doxygen          use Doxygen to generate documentation], ,
+            [# Use Doxygen by default.
+             with_doxygen=yes])
+
+#
+# Check for zlib, libpng.
+#
+if test "X$with_zlib" = "Xyes"; then
+  OV_CHECK_ZLIB
+  if test "X$no_zlib" = "Xyes"; then
+    AC_MSG_ERROR([zlib not found.])
+  else
+    AC_DEFINE([OPENVRML_HAVE_ZLIB], , [Defined if zlib is available and should be used.])
+    
+    if test "X$with_libpng" = "Xyes"; then
+      OV_CHECK_LIBPNG
+      if test "X$no_libpng" = "Xyes"; then
+        AC_MSG_ERROR([libpng not found.])
+      else
+        AC_DEFINE([OPENVRML_HAVE_LIBPNG], , [Defined if libpng is available and should be used.])
+      fi
+    fi
+  fi
+fi
+
+#
+# Check for OpenGL/Mesa, GLUT.
+#
 if test "X$with_gl" = "Xyes"; then
   OV_CHECK_GL
   if test "X$no_gl" = "Xyes"; then
@@ -78,9 +111,9 @@ else
   AC_MSG_WARN([Building without OpenGL/Mesa. The GL renderer and LookAt will not be built.])
 fi
 
-AC_ARG_WITH(libjpeg, [  --with-libjpeg          use libjpeg (JPEG image support)], ,
-            [# Use libjpeg by default.
-             with_libjpeg=yes])
+#
+# Check for libjpeg.
+#
 if test "X$with_libjpeg" = "Xyes"; then
   OV_CHECK_LIBJPEG
   if test "X$no_libjpeg" = "Xyes"; then
@@ -90,21 +123,9 @@ if test "X$with_libjpeg" = "Xyes"; then
   fi
 fi
 
-AC_ARG_WITH(libpng, [  --with-libpng           use libpng (PNG image support)], ,
-            [# Use libpng by default.
-             with_libpng=yes])
-if test "X$with_libpng" = "Xyes"; then
-  OV_CHECK_LIBPNG
-  if test "X$no_libpng" = "Xyes"; then
-    AC_MSG_ERROR([libpng not found.])
-  else
-    AC_DEFINE(OPENVRML_HAVE_LIBPNG, , [Defined if libpng is available and should be used.])
-  fi
-fi
-
-AC_ARG_WITH(spidermonkey, [  --with-spidermonkey     use SpiderMonkey (JavaScript support)], ,
-            [# Use SpiderMonkey by default.
-             with_spidermonkey=yes])
+#
+# Check for SpiderMonkey
+#
 if test "X$with_spidermonkey" = "Xyes"; then
   OV_CHECK_SPIDERMONKEY
   if test "X$no_js" = "Xyes"; then
@@ -114,9 +135,9 @@ if test "X$with_spidermonkey" = "Xyes"; then
   fi
 fi
 
-AC_ARG_WITH(jdk, [  --with-jdk              use the Java Development Kit (Java support)], ,
-             [# Use the JDK by default.
-              with_jdk=yes])
+#
+# Check for the Java Development Kit.
+#
 if test "X$with_jdk" = "Xyes"; then
   AC_PATH_PROG(JAVAC, javac)
   if test -z "${JAVAC}"; then
@@ -139,9 +160,9 @@ if test "X$with_jdk" = "Xyes"; then
   fi
 fi
 
-AC_ARG_WITH(doxygen, [  --with-doxygen          use Doxygen to generate documentation], ,
-            [# Use Doxygen by default.
-             with_doxygen=yes])
+#
+# Check for Doxygen.
+#
 if test "X$with_doxygen" = "Xyes"; then
   AC_PATH_PROG([DOXYGEN], [doxygen])
   if test -z "${DOXYGEN}"; then
