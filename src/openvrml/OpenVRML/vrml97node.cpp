@@ -12643,25 +12643,144 @@ const NodeTypePtr TextClass::createType(const std::string & id,
 # ifdef OPENVRML_ENABLE_TEXT_NODE
 namespace {
 
-    const vec2f * getClosestVertex_(const std::vector<vec2f> & contour,
-                                    const vec2f & point)
-        throw ()
+    /**
+     * @brief Determine whether three vertices are ordered counter-clockwise.
+     *
+     * Does not throw.
+     *
+     * @param p0 first vertex.
+     * @param p1 second vertex.
+     * @param p2 third vertex.
+     *
+     * @return 1 if the vertices are counter-clockwise, -1 if the vertices are
+     *         clockwise, or 0 if the vertices are neither.
+     */
+    int ccw_(const vec2f & p0, const vec2f & p1, const vec2f & p2) throw ()
     {
-        assert(contour.size() > 1);
-        const vec2f * result = 0;
-        float shortestDistance = std::numeric_limits<float>::max();
-        for (size_t i = 0; i < contour.size(); ++i) {
-            const float distance = (point - contour[i]).length();
-            if (distance < shortestDistance) {
-                shortestDistance = distance;
-                result = &contour[i];
-            }
-        }
-        assert(result);
-        return result;
+        const float dx1 = p1.x() - p0.x();
+        const float dy1 = p1.y() - p0.y();
+        const float dx2 = p2.x() - p0.x();
+        const float dy2 = p2.y() - p0.y();
+
+        if (dx1 * dy2 > dy1 * dx2) { return 1; }
+        if (dx1 * dy2 < dy1 * dx2) { return -1; }
+        if ((dx1 * dx2 < 0) || (dy1 * dy2 < 0)) return -1;
+        if ((dx1 * dx1 + dy1 * dy1) < (dx2 * dx2 + dy2 * dy2)) { return 1; }
+        return 0;
     }
 
-    bool insideContour_(const std::vector<vec2f> & contour, const vec2f & point)
+    /**
+     * @brief Determine whether two line segments intersect.
+     *
+     * Does not throw.
+     *
+     * @param l0p0 first point of the first line.
+     * @param l0p1 second point of the first line.
+     * @param l1p0 first point of the second line.
+     * @param l1p1 second point of the second line.
+     *
+     * @return @c true if the line segments intersect; @c false otherwise.
+     */
+    bool intersect_(const vec2f & l0p0, const vec2f & l0p1,
+                    const vec2f & l1p0, const vec2f & l1p1)
+        throw ()
+    {
+        return ccw_(l0p0, l0p1, l1p0) * ccw_(l0p0, l0p1, l1p1) <= 0
+            && ccw_(l1p0, l1p1, l0p0) * ccw_(l1p0, l1p1, l0p1) <= 0;
+    }
+
+    /**
+     * @brief Determine whether a line segment intersects any line segments
+     *        in a contour.
+     *
+     * Does not throw.
+     *
+     * @param v0      initial vertex of the line segment.
+     * @param v1      final vertex of the line segment.
+     * @param contour a contour (a series of line segments).
+     *
+     * @return @c true if the line segment defined by (@p v0, @p v1)
+     *         intersects any line segment in @p contour; @c false otherwise.
+     */
+    bool intersects_segment_in_contour(const vec2f & v0,
+                                       const vec2f & v1,
+                                       const std::vector<vec2f> & contour)
+        throw ()
+    {
+        for (size_t j = 0; j < contour.size() - 1; ++j) {
+            //
+            // Endpoints of the segment to test for intersection.
+            //
+            const vec2f & contour_v0 = contour[j];
+            const vec2f & contour_v1 = contour[j + 1];
+            //
+            // We don't care if the endpoints match (and the intersection
+            // test will treat this as an intersection).
+            //
+            if (contour_v0 == v0 || contour_v0 == v1
+                || contour_v1 == v0 || contour_v1 == v1) { continue; }
+            if (intersect_(v0, v1, contour_v0, contour_v1)) { return true; }
+        }
+        return false;
+    }
+
+    /**
+     * @brief Get the exterior vertext that should be used to connect to the
+     *      interior contour.
+     *
+     * Finds the first vertex in @p exteriorContour such that a line segment
+     * from the interior contour vertex at @p interiorIndex through the
+     * exterior contour vertex does not cross @p interiorContour.
+     *
+     * Does not throw.
+     *
+     * @param exterior_contour the exterior contour.
+     * @param interior_contour the interior contour.
+     * @param interior_index   the index of a vertex in @p interiorContour to
+     *                         be used as the interior connecting vertex.
+     *
+     * @return the index of a vertex in @p exteriorContour that is usable as
+     *         the exterior connecting vertex, or -1 if no such vertex is
+     *         found.
+     */
+    long get_exterior_connecting_vertex_index_(
+        const std::vector<vec2f> & exterior_contour,
+        const std::vector<const std::vector<vec2f> *> & interior_contours,
+        const vec2f & interior_vertex)
+        throw ()
+    {
+        assert(exterior_contour.size() > 1);
+        assert(!interior_contours.empty());
+
+        typedef std::vector<const std::vector<vec2f> *> interior_contours_type;
+
+        for (size_t i = 0; i < exterior_contour.size(); ++i) {
+            const vec2f & exterior_vertex = exterior_contour[i];
+            bool intersects_interior = false;
+            for (interior_contours_type::const_iterator interior_contour =
+                     interior_contours.begin();
+                 interior_contour != interior_contours.end()
+                     && !intersects_interior;
+                 ++interior_contour) {
+                assert(*interior_contour);
+                if (intersects_segment_in_contour(interior_vertex,
+                                                  exterior_vertex,
+                                                  **interior_contour)) {
+                    intersects_interior = true;
+                }
+            }
+            if (!intersects_interior
+                && !intersects_segment_in_contour(interior_vertex,
+                                                  exterior_vertex,
+                                                  exterior_contour)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    bool inside_contour_(const std::vector<vec2f> & contour,
+                         const vec2f & point)
         throw ()
     {
         bool result = false;
@@ -12679,10 +12798,10 @@ namespace {
         return result;
     }
 
-    enum ContourType_ { exterior_, interior_ };
+    enum contour_type_ { exterior_, interior_ };
 
-    ContourType_ getType_(const std::vector<vec2f> & contour,
-                          const std::vector<std::vector<vec2f> > & contours)
+    contour_type_ get_type_(const std::vector<vec2f> & contour,
+                            const std::vector<std::vector<vec2f> > & contours)
         throw ()
     {
         using std::vector;
@@ -12690,25 +12809,27 @@ namespace {
         assert(!contour.empty());
         const vec2f & vertex = contour[0];
 
-        bool isInterior = false;
-        for (vector<vector<vec2f> >::const_iterator testContour =
-                contours.begin();
-                testContour != contours.end();
-                ++testContour) {
-            if (&*testContour == &contour) { continue; }
-            if (insideContour_(*testContour, vertex)) {
-                isInterior = !isInterior;
+        bool is_interior = false;
+        for (vector<vector<vec2f> >::const_iterator test_contour =
+                 contours.begin();
+             test_contour != contours.end();
+             ++test_contour) {
+            if (&*test_contour == &contour) { continue; }
+            if (inside_contour_(*test_contour, vertex)) {
+                is_interior = !is_interior;
             }
         }
-        return isInterior ? interior_ : exterior_;
+        return is_interior
+            ? interior_
+            : exterior_;
     }
 
-    struct Polygon_ {
+    struct polygon_ {
         const std::vector<vec2f> * exterior;
         std::vector<const std::vector<vec2f> *> interiors;
     };
 
-    struct Inside_ : std::binary_function<const std::vector<vec2f> *,
+    struct inside_ : std::binary_function<const std::vector<vec2f> *,
                                           const std::vector<vec2f> *,
                                           bool> {
         bool operator()(const std::vector<vec2f> * const lhs,
@@ -12721,24 +12842,26 @@ namespace {
             // Assume contours don't intersect. So if one point on lhs is
             // inside rhs, then assume all of lhs is inside rhs.
             //
-            return insideContour_(*rhs, lhs->front());
+            return inside_contour_(*rhs, lhs->front());
         }
     };
 
-    const std::vector<Polygon_>
-    getPolygons_(const std::vector<std::vector<vec2f> > & contours)
+    const std::vector<polygon_>
+    get_polygons_(const std::vector<std::vector<vec2f> > & contours)
         throw (std::bad_alloc)
     {
         using std::vector;
-        typedef std::multiset<const vector<vec2f> *, Inside_> Contours;
+        typedef std::multiset<const vector<vec2f> *, inside_>
+            segregated_contours;
 
         //
         // First, divide the contours into interior and exterior contours.
         //
-        Contours interiors, exteriors;
+        segregated_contours interiors, exteriors;
         for (vector<vector<vec2f> >::const_iterator contour = contours.begin();
-                contour != contours.end(); ++contour) {
-            switch (getType_(*contour, contours)) {
+             contour != contours.end();
+             ++contour) {
+            switch (get_type_(*contour, contours)) {
             case interior_:
                 interiors.insert(&*contour);
                 break;
@@ -12754,16 +12877,16 @@ namespace {
         // For each exterior, find its associated interiors and group them in
         // a Polygon_.
         //
-        vector<Polygon_> polygons;
+        vector<polygon_> polygons;
         while (!exteriors.empty()) {
-            Polygon_ polygon;
+            polygon_ polygon;
             polygon.exterior = *exteriors.begin();
-            Contours::iterator interior = interiors.begin();
+            segregated_contours::iterator interior = interiors.begin();
             while (interior != interiors.end()) {
                 assert(!(*interior)->empty());
-                if (insideContour_(*polygon.exterior, (*interior)->front())) {
+                if (inside_contour_(*polygon.exterior, (*interior)->front())) {
                     polygon.interiors.push_back(*interior);
-                    Contours::iterator next = interior;
+                    segregated_contours::iterator next = interior;
                     ++next;
                     interiors.erase(interior);
                     interior = next;
@@ -12777,8 +12900,8 @@ namespace {
         return polygons;
     }
 
-    long getVertexIndex_(const std::vector<vec2f> & vertices,
-                         const vec2f & vertex)
+    long get_vertex_index_(const std::vector<vec2f> & vertices,
+                           const vec2f & vertex)
         throw ()
     {
         using OpenVRML_::fpequal;
@@ -12813,16 +12936,17 @@ Text::GlyphGeometry::GlyphGeometry(
 # ifdef OPENVRML_ENABLE_TEXT_NODE
     using std::vector;
 
-    const vector<Polygon_> polygons = getPolygons_(contours);
-    for (vector<Polygon_>::const_iterator polygon = polygons.begin();
-            polygon != polygons.end(); ++polygon) {
+    const vector<polygon_> polygons = get_polygons_(contours);
+    for (vector<polygon_>::const_iterator polygon = polygons.begin();
+         polygon != polygons.end();
+         ++polygon) {
         //
         // connectionMap is keyed on a pointer to a vertex on the exterior
         // contour, and maps to a pointer to the interior contour whose
         // first vertex is closest to the exterior vertex.
         //
         typedef std::multimap<const vec2f *, const std::vector<vec2f> *>
-                ConnectionMap;
+            ConnectionMap;
         ConnectionMap connectionMap;
 
         //
@@ -12830,14 +12954,19 @@ Text::GlyphGeometry::GlyphGeometry(
         // vertex that is closest to the first vertex in the interior contour,
         // and the put the pair in the map.
         //
-        for (vector<const std::vector<vec2f> *>::const_iterator interior =
-                polygon->interiors.begin();
-                interior != polygon->interiors.end();
-                ++interior) {
+        for (vector<const vector<vec2f> *>::const_iterator interior =
+                 polygon->interiors.begin();
+             interior != polygon->interiors.end();
+             ++interior) {
             assert(*interior);
             assert(!(*interior)->empty());
+            long exteriorVertexIndex =
+                get_exterior_connecting_vertex_index_(*polygon->exterior,
+                                                      polygon->interiors,
+                                                      (*interior)->front());
+            assert(exteriorVertexIndex > -1);
             const vec2f * const exteriorVertex =
-                    getClosestVertex_(*polygon->exterior, (*interior)->front());
+                    &(*polygon->exterior)[exteriorVertexIndex];
             assert(exteriorVertex);
             const ConnectionMap::value_type value(exteriorVertex, *interior);
             connectionMap.insert(value);
@@ -12849,7 +12978,8 @@ Text::GlyphGeometry::GlyphGeometry(
         assert(!polygon->exterior->empty());
         for (size_t i = 0; i < polygon->exterior->size(); ++i) {
             const vec2f & exteriorVertex = (*polygon->exterior)[i];
-            long exteriorIndex = getVertexIndex_(this->coord, exteriorVertex);
+            long exteriorIndex = get_vertex_index_(this->coord,
+                                                   exteriorVertex);
             if (exteriorIndex > -1) {
                 this->coordIndex.push_back(exteriorIndex);
             } else {
@@ -12863,8 +12993,8 @@ Text::GlyphGeometry::GlyphGeometry(
                     != connectionMap.end()) {
                 for (int i = pos->second->size() - 1; i > -1; --i) {
                     const vec2f & interiorVertex = (*pos->second)[i];
-                    const long interiorIndex = getVertexIndex_(this->coord,
-                                                               interiorVertex);
+                    const long interiorIndex =
+                        get_vertex_index_(this->coord, interiorVertex);
                     if (interiorIndex > -1) {
                         this->coordIndex.push_back(interiorIndex);
                     } else {
@@ -12940,9 +13070,9 @@ Text::GlyphGeometry::GlyphGeometry(
  *
  * @brief Map of glyph indices to GlyphGeometry.
  *
- * GlyphGeometry instances are created as needed, as new glyphs are encountered.
- * Once they are created, they are cached in the glyphGeometryMap for rapid
- * retrieval the next time the glyph is encountered.
+ * GlyphGeometry instances are created as needed, as new glyphs are
+ * encountered. Once they are created, they are cached in the glyphGeometryMap
+ * for rapid retrieval the next time the glyph is encountered.
  */
 
 /**
@@ -13005,15 +13135,15 @@ Viewer::Object Text::insertGeometry(Viewer & viewer,
                                     const VrmlRenderContext context)
 {
     const Viewer::Object retval =
-            viewer.insertShell(Viewer::MASK_CCW,
-                               this->textGeometry.coord,
-                               this->textGeometry.coordIndex,
-                               std::vector<color>(), // color
-                               std::vector<int32>(), // colorIndex
-                               this->textGeometry.normal,
-                               std::vector<int32>(), // normalIndex
-                               std::vector<vec2f>(), // texCoord
-                               std::vector<int32>()); // texCoordIndex
+        viewer.insertShell(Viewer::MASK_CCW,
+                           this->textGeometry.coord,
+                           this->textGeometry.coordIndex,
+                           std::vector<color>(), // color
+                           std::vector<int32>(), // colorIndex
+                           this->textGeometry.normal,
+                           std::vector<int32>(), // normalIndex
+                           std::vector<vec2f>(), // texCoord
+                           std::vector<int32>()); // texCoordIndex
     if (this->fontStyle.value) { this->fontStyle.value->clearModified(); }
     return retval;
 }
@@ -13269,8 +13399,9 @@ void Text::updateFace() throw (std::bad_alloc)
             //
             fontName += ":outline=True";
 
-            initialPattern = FcNameParse(FcChar8String(fontName.begin(),
-                                                       fontName.end()).c_str());
+            initialPattern =
+                FcNameParse(FcChar8String(fontName.begin(),
+                                          fontName.end()).c_str());
             if (!initialPattern) { throw std::bad_alloc(); }
 
             //
@@ -13302,7 +13433,8 @@ void Text::updateFace() throw (std::bad_alloc)
             size_t filenameLen = 0;
             for (; filename[filenameLen]; ++filenameLen);
 
-            const vector<char> ftFilename(filename, filename + filenameLen + 1);
+            const vector<char> ftFilename(filename,
+                                          filename + filenameLen + 1);
 
             FT_Face newFace = 0;
             FT_Error ftError = FT_Err_Ok;
@@ -13353,10 +13485,11 @@ namespace {
 
     int moveTo_(FT_Vector * const to, void * const user) throw ()
     {
+        using std::vector;
         assert(user);
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
         try {
-            c.contours.push_back(std::vector<vec2f>(1));
+            c.contours.push_back(vector<vec2f>(1));
         } catch (std::bad_alloc & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
             return FT_Err_Out_Of_Memory;
@@ -13433,13 +13566,16 @@ namespace {
                  void * const user)
         throw ()
     {
+        using std::vector;
+
         assert(control);
         assert(to);
         assert(user);
+
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
 
         assert(!c.contours.empty());
-        std::vector<vec2f> & contour = c.contours.back();
+        vector<vec2f> & contour = c.contours.back();
         const vec2f & lastVertex = contour[contour.size() - 1];
 
         assert(!contour.empty());
@@ -13463,14 +13599,17 @@ namespace {
                  FT_Vector * const to, void * const user)
         throw ()
     {
+        using std::vector;
+
         assert(control1);
         assert(control2);
         assert(to);
         assert(user);
+
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
 
         assert(!c.contours.empty());
-        std::vector<vec2f> & contour = c.contours.back();
+        vector<vec2f> & contour = c.contours.back();
         const vec2f & lastVertex = contour[contour.size() - 1];
 
         assert(!contour.empty());
@@ -13552,8 +13691,8 @@ void Text::updateGeometry() throw (std::bad_alloc)
         }
 
         struct LineGeometry {
-            std::vector<vec2f> coord;
-            std::vector<int32> coordIndex;
+            vector<vec2f> coord;
+            vector<int32> coordIndex;
             float xMin, xMax;
             float yMin, yMax;
         };

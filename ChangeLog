@@ -1,5 +1,10 @@
 2003-05-05  Braden McDaniel  <braden@endoframe.com>
 
+        * src/openvrml/OpenVRML/vrml97node.cpp:  Fixed errors rendering
+	  some glyphs with interior contours.
+
+2003-05-05  Braden McDaniel  <braden@endoframe.com>
+
         * src/openvrml/OpenVRML/vrml97node.cpp: Include <limits>; fixed
 	  std::binary_function instantiation.
 
