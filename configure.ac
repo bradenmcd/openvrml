@@ -1,6 +1,5 @@
 AC_INIT([OpenVRML], [0.13.99], [openvrml-develop@lists.sourceforge.net])
 AC_PREREQ([2.53])
-AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile]
                 [doc/Makefile]
                 [m4/Makefile]
@@ -28,7 +27,8 @@ AC_CONFIG_FILES([Makefile]
                 [openvrml-gl.pc]
                 [openvrml.spec])
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([1.6.3 foreign])
+AM_CONFIG_HEADER([config.h])
 
 REQUIRE_FONTCONFIG="fontconfig"
 REQUIRE_MOZILLA_JS="mozilla-js >= 1.2.1"

@@ -1,5 +1,3 @@
-AUTOMAKE_OPTIONS = 1.7 foreign
-
 SUBDIRS = doc ide-projects m4 models lib java src
 
 ACLOCAL_AMFLAGS = -I m4
