@@ -1,3 +1,3 @@
-docdir = $(datadir)/doc/@PACKAGE@-@VERSION@
+docdir = $(datadir)/doc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
 doc_DATA = conformance.html
-EXTRA_DIST = $(doc_DATA)
+EXTRA_DIST = openvrml.css $(doc_DATA)
