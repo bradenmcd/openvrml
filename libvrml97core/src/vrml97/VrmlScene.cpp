@@ -19,7 +19,12 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+
+#ifdef _WIN32
+#include <strstrea.h>
+#else
 #include <strstream.h>
+#endif
 
 #include "doc2.hpp"
 #include "Viewer.h"
@@ -369,7 +374,7 @@ VrmlMFNode * VrmlScene::readWrl(Doc2 * tryUrl, VrmlNamespace * ns)
     theSystem->debug("readWRL %s\n", tryUrl->url());
     
     // Should verify MIME type...
-    istream & istm(tryUrl->inputStream());
+    istream & istm = tryUrl->inputStream();
     if (istm) {
         
         Vrml97Utf8Scanner scanner(istm);
@@ -427,7 +432,13 @@ VrmlMFNode * VrmlScene::readString(char const * vrmlString, VrmlNamespace * ns)
     VrmlMFNode * result = 0;
     
     if (vrmlString) {
-        istrstream istrstm(vrmlString);
+        istrstream istrstm(
+#ifdef _WIN32
+                           const_cast<char *>(vrmlString)
+#else
+                           vrmlString
+#endif
+                           );
         Vrml97Utf8Scanner scanner(istrstm);
         Vrml97Parser parser(scanner);
         
@@ -504,7 +515,7 @@ VrmlNodeType * VrmlScene::readPROTO(VrmlMFString * urls, Doc2 const * relative)
     VrmlNodeType * def = 0;
 //    int i, n = urls->size();
     
-    for (std::size_t i(0); i < urls->size(); ++i) {
+    for (size_t i(0); i < urls->size(); ++i) {
         theSystem->inform("Trying to read EXTERNPROTO from url '%s'\n",
                           urls->get(i));
         urlDoc.seturl( urls->get(i), relative );

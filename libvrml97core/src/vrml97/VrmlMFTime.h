@@ -9,23 +9,23 @@ See the file COPYING for license details.
 # define VRMLMFTIME_H
 
 # include "VrmlField.h"
-# include <cstddef>
+# include <stddef.h>
 
 class VrmlMFTime : public VrmlField {
     public:
         VrmlMFTime();
         VrmlMFTime(double);
-        VrmlMFTime(std::size_t, double const *);
+        VrmlMFTime(size_t, double const *);
         VrmlMFTime(VrmlMFTime const &);
         
         ~VrmlMFTime();
         
         VrmlMFTime & operator=(VrmlMFTime const &);
         
-        void set(std::size_t, double const *);
+        void set(size_t, double const *);
         double const * get() const;
-        double const & operator[](std::size_t) const;
-        std::size_t size() const;
+        double const & operator[](size_t) const;
+        size_t size() const;
         
         //
         // Override from VrmlField

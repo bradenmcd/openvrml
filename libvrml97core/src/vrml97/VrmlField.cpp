@@ -1020,14 +1020,14 @@ char const * const & VrmlMFString::operator[](size_t index) const
 //
 class VrmlMFTime::DData {
     public:
-        DData(std::size_t = 0);
+        DData(size_t = 0);
         ~DData();
         
         DData * ref();
         void deref();
         
         unsigned int refs;      // number of VrmlMFTime objects using this data
-        std::size_t size;       // size of d_v
+        size_t size;            // size of d_v
         double * const data;    // data vector
         
     private:
@@ -1039,7 +1039,7 @@ class VrmlMFTime::DData {
         DData & operator=(DData const &);
 };
 
-VrmlMFTime::DData::DData(std::size_t size)
+VrmlMFTime::DData::DData(size_t size)
   : refs(1), size(size), data(size > 0 ? new double[size] : 0)
 {}
 
@@ -1071,7 +1071,7 @@ VrmlMFTime::VrmlMFTime(double t)
     d_data->data[0] = t;
 }
 
-VrmlMFTime::VrmlMFTime(std::size_t size, double const * v)
+VrmlMFTime::VrmlMFTime(size_t size, double const * v)
   : d_data(new DData(size))
 {
     if (v) {
@@ -1097,7 +1097,7 @@ VrmlMFTime & VrmlMFTime::operator=(VrmlMFTime const & c)
     return *this;
 }
 
-void VrmlMFTime::set(std::size_t size, double const * v)
+void VrmlMFTime::set(size_t size, double const * v)
 {
     d_data->deref();
     d_data = new DData(size);
@@ -1111,14 +1111,14 @@ double const * VrmlMFTime::get() const
     return d_data->data;
 }
 
-double const & VrmlMFTime::operator[](std::size_t index) const
+double const & VrmlMFTime::operator[](size_t index) const
 {
     assert(index >= 0 && index < d_data->size);
     
     return d_data->data[index];
 }
 
-std::size_t VrmlMFTime::size() const
+size_t VrmlMFTime::size() const
 {
     return d_data->size;
 }

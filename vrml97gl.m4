@@ -2,11 +2,7 @@ dnl
 dnl AM_PATH_VRMLGL([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl
 AC_DEFUN(AM_PATH_VRMLGL,
-  [dnl
-    dnl
-    dnl Dependencies
-    dnl
-    dnl AC_REQUIRE([VRMLGL_PATH_GLUT]) dnl Need to get rid of this and just depend on OpenGL.
+  [
     AC_REQUIRE([AM_PATH_VRML])
     
     dnl

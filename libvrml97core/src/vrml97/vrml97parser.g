@@ -1,9 +1,20 @@
-/*
-LibVRML97: a library for loading and viewing VRML
-This software is copyright (C) the Open VRML Advancement League.
-See the file COPYING for license details.
-
-*/
+//
+// Copyright (C) 2000  Braden N. McDaniel
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// 
 
 header "post_include_hpp" {
 # include "VrmlField.h"
@@ -18,7 +29,12 @@ class Doc2;
 
 header "post_include_cpp" {
 # include <memory>
-# include <strstream.h>
+# include <assert.h>
+# ifdef _WIN32
+#   include <strstrea.h>
+# else
+#   include <strstream.h>
+# endif
 # include "doc2.hpp"
 # include "VrmlNamespace.h"
 # include "VrmlNodeType.h"
@@ -49,7 +65,7 @@ namespace {
     template <typename T>
         class SimpleVector {
             public:
-                static std::size_t const BUFFER_INCREMENT;
+                static size_t const BUFFER_INCREMENT;
                 
                 SimpleVector();
                 SimpleVector(SimpleVector<T> const &);
@@ -57,18 +73,18 @@ namespace {
                 
                 SimpleVector<T> & operator=(SimpleVector<T> const &);
                 
-                std::size_t size() const;
+                size_t size() const;
                 void add(T const &);
                 T const * data() const;
                 
             private:
-                std::size_t bufferSize_;
-                std::size_t size_;
+                size_t bufferSize_;
+                size_t size_;
                 T * data_;
         };
     
     template <typename T>
-        std::size_t const SimpleVector<T>::BUFFER_INCREMENT(64);
+        size_t const SimpleVector<T>::BUFFER_INCREMENT(64);
     
     template <typename T>
         SimpleVector<T>::SimpleVector()
@@ -102,7 +118,7 @@ namespace {
         }
     
     template <typename T>
-        std::size_t SimpleVector<T>::size() const
+        size_t SimpleVector<T>::size() const
         {
             return size_;
         }
@@ -396,7 +412,7 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
                 throw antlr::SemanticException("Node \"" + fromNodeId->getText() + "\" has not been defined in this scope.");
             }
             
-            VrmlNodeType const & fromNodeType(fromNode->nodeType());
+            VrmlNodeType const & fromNodeType = fromNode->nodeType();
             VrmlField::VrmlFieldType fromInterfaceType = VrmlField::NO_FIELD;
             
             if (   ((fromInterfaceType = fromNodeType.hasEventOut(fromInterfaceId->getText().c_str())) == VrmlField::NO_FIELD)
@@ -417,7 +433,7 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
                 throw antlr::SemanticException("Node \"" + toNodeId->getText() + "\" has not been defined in this scope.");
             }
             
-            VrmlNodeType const & toNodeType(toNode->nodeType());
+            VrmlNodeType const & toNodeType = toNode->nodeType();
             VrmlField::VrmlFieldType toInterfaceType = VrmlField::NO_FIELD;
             
             if (   ((toInterfaceType = toNodeType.hasEventIn(toInterfaceId->getText().c_str())) == VrmlField::NO_FIELD)
@@ -461,7 +477,7 @@ options {
                 n->setName(nodeId.c_str(), &vrmlNamespace);
             }
             
-            VrmlNodeScript * const scriptNode(dynamic_cast<VrmlNodeScript *>(n));
+            VrmlNodeScript * const scriptNode = dynamic_cast<VrmlNodeScript *>(n);
             assert(scriptNode);
         }
         LBRACE (
@@ -487,7 +503,7 @@ options {
 
 nodeBodyElement[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlNode & node]
         {
-            VrmlNodeType const & nodeType(node.nodeType());
+            VrmlNodeType const & nodeType = node.nodeType();
             VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
         }
     :   id:ID
@@ -581,7 +597,7 @@ options {
                 n->setName(nodeId.c_str(), protoNodeType.scope());
             }
             
-            VrmlNodeScript * const scriptNode(dynamic_cast<VrmlNodeScript *>(n));
+            VrmlNodeScript * const scriptNode = dynamic_cast<VrmlNodeScript *>(n);
             assert(scriptNode);
         }
         LBRACE (
@@ -607,7 +623,7 @@ options {
 
 protoNodeBodyElement[Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNode & node]
         {
-            VrmlNodeType const & nodeType(node.nodeType());
+            VrmlNodeType const & nodeType = node.nodeType();
             VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
         }
     :   { nodeType.hasEventIn(LT(1)->getText().c_str()) != VrmlField::NO_FIELD ||
@@ -874,8 +890,20 @@ colorValue[float c[3]]
 // might be useful to issue a warning if a color component is not in [0, 1].
 //
 colorComponent returns [float f = 0.0f]
-    :   c0:REAL     { istrstream(c0->getText().c_str()) >> f; }
-    |   c1:INTEGER  { istrstream(c1->getText().c_str()) >> f; }
+    :   c0:REAL     { istrstream(
+# ifdef _WIN32
+                                 const_cast<char *>(c0->getText().c_str())
+# else
+                                 c0->getText().c_str()
+# endif
+                                 ) >> f; }
+    |   c1:INTEGER  { istrstream(
+# ifdef _WIN32
+                                 const_cast<char *>(c1->getText().c_str())
+# else
+                                 c1->getText().c_str()
+# endif
+                                 ) >> f; }
     ;
 
 sfFloatValue returns [VrmlSFFloat * sfv = new VrmlSFFloat(0.0f)]
@@ -912,8 +940,20 @@ mfFloatValue returns [VrmlMFFloat * mfv = new VrmlMFFloat()]
     ;
 
 floatValue returns [float f = 0.0f]
-    :   f0:REAL     { istrstream(f0->getText().c_str()) >> f; }
-    |   f1:INTEGER  { istrstream(f1->getText().c_str()) >> f; }
+    :   f0:REAL     { istrstream(
+# ifdef _WIN32
+                                 const_cast<char *>(f0->getText().c_str())
+# else
+                                 f0->getText().c_str()
+# endif
+                                 ) >> f; }
+    |   f1:INTEGER  { istrstream(
+# ifdef _WIN32
+                                 const_cast<char *>(f1->getText().c_str())
+# else
+                                 f1->getText().c_str()
+# endif
+                                 ) >> f; }
     ;
 
 sfImageValue returns [VrmlSFImage * siv = new VrmlSFImage()]
@@ -1179,8 +1219,20 @@ mfTimeValue returns [VrmlMFTime * mtv = new VrmlMFTime()]
     ;
 
 doubleValue returns [double d = 0]
-    :   d0:REAL     { istrstream(d0->getText().c_str()) >> d; }
-    |   d1:INTEGER  { istrstream(d1->getText().c_str()) >> d; }
+    :   d0:REAL     { istrstream(
+# ifdef _WIN32
+                                 const_cast<char *>(d0->getText().c_str())
+# else
+                                 d0->getText().c_str()
+# endif
+                                 ) >> d; }
+    |   d1:INTEGER  { istrstream(
+# ifdef _WIN32
+                                 const_cast<char *>(d1->getText().c_str())
+# else
+                                 d1->getText().c_str()
+# endif
+                                 ) >> d; }
     ;
 
 sfVec2fValue returns [VrmlSFVec2f * svv = new VrmlSFVec2f()]

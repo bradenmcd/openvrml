@@ -1,37 +1,20 @@
-/*
-LibVRML97: a library for loading and viewing VRML
-
-The authors make NO WARRANTY or representation, either express or implied, with
-respect to this software, its quality, accuracy, merchantability, or fitness for
-a particular purpose.  This software is provided "AS IS", and you, its user,
-assume the entire risk as to its quality and accuracy.
-
-This software is copyright (C) the Open VRML Advancement League
-All Rights Reserved except as specified below.
-
-Permission is hereby granted to use, copy, modify, and distribute this software
-(or portions thereof) for any purpose, without fee, subject to these conditions:
-
- (1) If any part of the source code for this software is distributed, then this
-    file must be included, with this copyright and no-warranty notice unaltered;
-    and any additions, deletions, or changes to the original files must be
-    clearly indicated in accompanying documentation.
-
- (2) If only executable code is distributed, then the accompanying documentation
-    must state that "this software is based in part on the LibVRML97 library".
-
- (3) Permission for use of this software is granted only if the user accepts
-    full responsibility for any undesirable consequences; the authors accept NO
-    LIABILITY for damages of any kind.
-
-These conditions apply to any software derived from or based on the LibVRML97
-code, not just to the unmodified library.  If you use our work, you ought to
-acknowledge us.
-
-We specifically permit and encourage the use of this software as the basis of
-commercial products, provided that all warranty or liability claims are assumed
-by the product vendor.
-*/
+//
+// Copyright (C) 2000  Braden N. McDaniel
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// 
 
 //
 // This class is a temporary hack to supplant a temporary hack. Sigh. At some
@@ -53,7 +36,7 @@ by the product vendor.
 # include "System.h"
 # include <fstream.h>
 # include <string.h>
-# include <cctype>
+# include <ctype.h>
 # include <algorithm>
 # include <zlib.h>
 
@@ -89,7 +72,7 @@ namespace {
                 virtual int overflow(int = EOF);
                 
             private:
-                static int const buffer_size =10;
+                enum { buffer_size = 10 };
                 char buffer[buffer_size];
                 gzFile file;
         };
@@ -532,8 +515,8 @@ namespace {
         // zlib only supports the "rb" and "wb" modes, so we bail on anything
         // else.
         //
-        static char const * const read_mode_string("rb");
-        static char const * const write_mode_string("wb");
+        static char const * const read_mode_string = "rb";
+        static char const * const write_mode_string = "wb";
         char const * mode_string = 0;
         if (mode == (ios::binary | ios::in)) {
             mode_string = read_mode_string;
@@ -654,7 +637,11 @@ namespace {
     void z::ifstream::open(char const * path, level lev, strategy strat)
     {
         if (!this->fbuf.open(path, ios::binary | ios::in, lev, strat)) {
+# ifdef _WIN32
+            this->clear(failbit);
+# else
             this->setstate(failbit);
+# endif
         }
     }
     
