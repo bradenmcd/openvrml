@@ -70,25 +70,27 @@ VrmlField::~VrmlField() {}
 
 /**
  * @fn VrmlField * VrmlField::clone() const
- * Virtual copy constructor.
+ * @brief Virtual copy constructor.
  * @return a new VrmlField identical to this one.
  */
 
 /**
  * @fn ostream& VrmlField::print(ostream& os) const
- * Print the value of this VrmlField.
+ * @brief Print the value of this VrmlField.
  * @param os an ostream
  * @return the ostream
  */
 
 /**
  * @fn VrmlField::VrmlFieldType VrmlField::fieldType() const
- * Get the field type.
+ * @brief Get the field type.
  * @return the VrmlFieldType enumerant corresponding to this VrmlField's type
  */
 
 /**
- * A static method to convert a type name to an ID.
+ * @brief A static method to convert a type name to an ID.
+ * @param type the (C-style) string name of a VRML field type
+ * @return the VrmlFieldType enumerant corresponding to the passed type name
  */
 VrmlField::VrmlFieldType VrmlField::fieldType(char const *type) {
     for (size_t i(SFBOOL); i <= MFVEC3F; ++i) {
@@ -101,7 +103,7 @@ VrmlField::VrmlFieldType VrmlField::fieldType(char const *type) {
 }
 
 /**
- * Get the type name of a field.
+ * @brief Get the type name of a field.
  * @return the (C-style) string name of this Field object's type.
  */
 char const * VrmlField::fieldTypeName() const {
@@ -1134,13 +1136,11 @@ void VrmlSFRotation::fromQuaternion(const float theQuat[4]) {
 
 /**
  * Multiply the matrix corresponding to this rotation by a vector.
+ * @todo IMPLEMENT ME!
  * @param vec vector by which to multiply this rotation
  * @return the result of multiplying this rotation by vec
  */
 const VrmlSFVec3f VrmlSFRotation::multVec(const VrmlSFVec3f & vec) const {
-    /**
-     * @todo implement VrmlSFRotation::multVec()
-     */
     return VrmlSFVec3f();
 }
 
@@ -1769,9 +1769,20 @@ public:
   float *d_v;			// data vector
 };
 
+/**
+ * Construct from a single color value.
+ * @param r red component
+ * @param g green component
+ * @param b blue component
+ */
 VrmlMFColor::VrmlMFColor(float r, float g, float b) : d_data(new FData(3))
 { d_data->d_v[0] = r; d_data->d_v[1] = g; d_data->d_v[2] = b; }
 
+/**
+ * Construct from a float array.
+ * @param length the number of RGB triplets in the array
+ * @param colors a float array comprising RGB triplets
+ */
 VrmlMFColor::VrmlMFColor(size_t length, float const * colors):
         d_data(new FData(length * 3)) {
     if (colors) {
@@ -1779,11 +1790,23 @@ VrmlMFColor::VrmlMFColor(size_t length, float const * colors):
     }
 }
 
+/**
+ * Copy constructor.
+ * @param mfColor the object to copy
+ */
 VrmlMFColor::VrmlMFColor(const VrmlMFColor & mfColor):
         d_data(mfColor.d_data->ref()) {}
 
+/**
+ * Destructor.
+ */
 VrmlMFColor::~VrmlMFColor() { d_data->deref(); }
 
+/**
+ * Assignment operator.
+ * @param rhs value to assign to this object
+ * @return a reference to this object
+ */
 VrmlMFColor& VrmlMFColor::operator=(const VrmlMFColor& rhs)
 {
   if (this != &rhs) {
@@ -1793,10 +1816,19 @@ VrmlMFColor& VrmlMFColor::operator=(const VrmlMFColor& rhs)
   return *this;
 }
 
+/**
+ * Get value.
+ * @return a pointer to an array comprising RGB triplets
+ */
 const float * VrmlMFColor::get() const {
     return this->d_data->d_v;
 }
 
+/**
+ * Set value. Copies the contents of a <code>float</code> array.
+ * @param length the number of RGB triplets in the array
+ * @param colors an array comprising RGB triplets
+ */
 void VrmlMFColor::set(size_t length, const float * colors) {
     this->d_data->deref();
     this->d_data = new FData(length * 3);
@@ -1807,10 +1839,23 @@ void VrmlMFColor::set(size_t length, const float * colors) {
     }
 }
 
+/**
+ * Get the length.
+ * @return the number of color values (RGB triplets)
+ */
 size_t VrmlMFColor::getLength() const {
     return (this->d_data->d_n / 3);
 }
 
+/**
+ * @brief Set the length.
+ *
+ * If the new length is greater than the current length, the additional values
+ * are initialized to the default color, (0, 0, 0). If the new length is less
+ * than the current length, the array is truncated.
+ *
+ * @param length new length
+ */
 void VrmlMFColor::setLength(size_t length) {
     FData * const newData = new FData(length * 3);
     if (length > this->d_data->d_n) {
