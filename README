@@ -92,7 +92,7 @@ OpenGL SDK here
      <http://developer.apple.com/opengl/>
 and compiled versions of the remaining dependencies here (courtesy of
 Michael Louka):
-     <ftp://openvrml.sourceforge.net/pub/openvrml/libs_for_libvrml97_src.sit>
+     <ftp://openvrml.sourceforge.net/pub/openvrml/macos_required_libs.sit>
 
 Otherwise, consult the following URLs:
      zlib:     <http://www.info-zip.org/pub/infozip/zlib/>
