@@ -1086,7 +1086,9 @@ void Node::relocate() throw (std::bad_alloc)
         }
     };
 
-    RelocateTraverser(&Node::do_relocate).traverse(*this);
+    Do_relocate do_reloc = &Node::do_relocate;
+
+    RelocateTraverser(do_reloc).traverse(*this);
 }
 
 /**
