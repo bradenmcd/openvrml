@@ -1,3 +1,9 @@
+2000-12-05  Braden McDaniel  <braden@endoframe.com>
+
+        * Reverted 26 Nov change to VrmlField.h. CodeWarrior 5/Mac is
+          using ISO IOstreams, and had problems with the forward
+          declaration.
+
 2000-11-28  Braden McDaniel  <braden@endoframe.com>
 
         * Applied patch to lookat from Jeff Dubrule <igor@pobox.com> to prefer

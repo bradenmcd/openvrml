@@ -21,7 +21,7 @@
 #ifndef VRMLFIELD_H
 #define VRMLFIELD_H
 
-class ostream;
+#include <iostream.h>
 
 class VrmlSFBool;
 class VrmlSFColor;
