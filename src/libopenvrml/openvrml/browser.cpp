@@ -2754,6 +2754,7 @@ browser::browser(std::ostream & out, std::ostream & err)
     flags_need_updating(false)
 {
     assert(this->active_viewpoint_);
+    this->init_node_class_map();
 }
 
 /**

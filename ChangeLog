@@ -1,3 +1,10 @@
+2004-04-08 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp (browser::browser):  Call
+	init_node_class_map to initialize the node class map in the
+	constructor.  Otherwise browser::create_vrml_from_stream will
+	not work until browser::load_url is called.
+
 2004-04-06 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/conformance.doc:  Replaced "Comment" column in the result
