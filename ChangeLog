@@ -1,5 +1,14 @@
 2001-10-15  S. K. Bose  <bose@pavan.barc.ernet.in>
 
+        * Add accumulateTransform after adding all nodes to Scene in
+          "VrmlScene" to cache a pointer to ParentTransform. It is needed
+          to calculate the inverse of transformation stack above
+          Viewpoint node before rendering traversal starts.
+
+        * Fix for Bug #226213 : Nested Viewpoint problem.
+
+2001-10-15  S. K. Bose  <bose@pavan.barc.ernet.in>
+
         * Change method names in VrmlMatrix as ECMAScript VrmlMatrix
           definition.
 
