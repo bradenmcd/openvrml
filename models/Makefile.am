@@ -12,6 +12,8 @@ EXTRA_DIST = \
 	Prox1.wrl \
 	RefractiveMaterial.wrl \
 	SimplePROTO.wrl \
+	TestJSAI.java \
+	TestJSAI.wrl \
 	bounce.wrl \
 	groundPlane.wrl \
 	jsTouch.wrl \
