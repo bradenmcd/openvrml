@@ -1,9 +1,10 @@
 #!/bin/sh
 
-autoheader
+libtoolize --automake
 aclocal
+autoheader
 automake --add-missing
-autoreconf
+autoconf
 ./configure $@ \
 	&& echo "" \
 	&& echo Now type \`make\' to compile LibVRML97 \
