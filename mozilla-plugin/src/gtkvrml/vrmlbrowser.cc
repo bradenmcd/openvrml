@@ -195,10 +195,10 @@ void gtk_vrml_browser_destroy(GtkObject * const object)
     while (gtk_events_pending()) { gtk_main_iteration(); }
 
     GtkVrmlBrowser * const vrml_browser(GTK_VRML_BROWSER(object));
-    delete static_cast<GtkGLViewer *>(vrml_browser->viewer);
-    vrml_browser->viewer = 0;
     delete static_cast<openvrml::browser *>(vrml_browser->browser);
     vrml_browser->browser = 0;
+    delete static_cast<GtkGLViewer *>(vrml_browser->viewer);
+    vrml_browser->viewer = 0;
 
     if (GTK_OBJECT_CLASS(parent_class)->destroy) {
         (*GTK_OBJECT_CLASS(parent_class)->destroy)(object);

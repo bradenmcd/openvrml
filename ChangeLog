@@ -1,7 +1,8 @@
 2004-11-23 Braden McDaniel  <braden@endoframe.com>
 
-	* mozilla-plugin/src/openvrml.cpp (gtk_vrml_browser_destroy):
-	The browser must be destroyed before the viewer.
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
+	(gtk_vrml_browser_destroy):  The browser must be destroyed
+	before the viewer.
 
 2004-11-22 Braden McDaniel  <braden@endoframe.com>
 
@@ -28,8 +29,8 @@
 
 2004-11-19 Braden McDaniel  <braden@endoframe.com>
 
-	* mozilla-plugin/src/openvrml.cpp (gtk_vrml_browser_init):
-	Set the viewer for the browser.
+	* mozilla-plugin/src/gtkvrml/vrmlbrowser.cc
+	(gtk_vrml_browser_init):  Set the viewer for the browser.
 
 2004-11-19 Braden McDaniel  <braden@endoframe.com>
 
