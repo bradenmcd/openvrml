@@ -2,7 +2,7 @@
 
 #define OPENVRML_MAJOR_VERSION	0
 #define OPENVRML_MINOR_VERSION	11
-#define OPENVRML_MICRO_VERSION	0
+#define OPENVRML_MICRO_VERSION	1
 
 #include <fstream.h>
 #include <iostream.h>
