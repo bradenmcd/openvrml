@@ -201,8 +201,6 @@ void VrmlScene::destroyWorld()
 void VrmlScene::replaceWorld( VrmlMFNode &nodes, VrmlNamespace *ns,
 			      Doc *url, Doc *urlLocal )
 {
-  theSystem->debug("replaceWorld( url %s )\n", url->url());
-
   delete d_namespace;
   delete d_url;
   delete d_urlLocal;
@@ -253,6 +251,7 @@ void VrmlScene::replaceWorld( VrmlMFNode &nodes, VrmlNamespace *ns,
   doCallbacks( REPLACE_WORLD );
 
   setModified();
+  d_newView = true;		// Force resetUserNav
 }
 
 void VrmlScene::doCallbacks( int reason )
@@ -299,6 +298,7 @@ bool VrmlScene::load(const char *url, const char *localCopy)
 
   VrmlNamespace *newScope = new VrmlNamespace();
   VrmlMFNode *newNodes = readWrl( tryUrl, newScope );
+
   if ( newNodes )
     {
       Doc *sourceUrl = tryUrl, *urlLocal = 0;
