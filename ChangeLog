@@ -12,6 +12,8 @@
 
         * Require automake 1.5. (Do it right this time.)
 
+        * Autoconf insists that AC_INIT be the very first thing.
+
 2002-01-28  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * In "NodeLOD", accumulated modelview matrix within 
