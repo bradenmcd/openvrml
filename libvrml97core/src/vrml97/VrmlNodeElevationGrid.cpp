@@ -60,7 +60,11 @@ VrmlNodeElevationGrid::VrmlNodeElevationGrid(VrmlScene *scene) :
   d_ccw(true),
   d_colorPerVertex(true),
   d_normalPerVertex(true),
-  d_solid(true)
+  d_solid(true),
+  d_xDimension(0),
+  d_xSpacing(1.0f),
+  d_zDimension(0),
+  d_zSpacing(1.0f)
 {
 }
 
