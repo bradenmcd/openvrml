@@ -8,7 +8,7 @@ endif
 
 INCLUDES = -I$(top_srcdir)/src/openvrml -I$(top_srcdir)/src/openvrml-gl
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
-AM_CXXFLAGS = -Wall @GLUT_CFLAGS@
+AM_CXXFLAGS = @GLUT_CFLAGS@
 
 bin_PROGRAMS = lookat
 lookat_SOURCES = lookat.cpp ViewerGlut.cpp
