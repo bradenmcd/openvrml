@@ -1787,7 +1787,7 @@ proto_node::proto_node(const node_type & type,
         shared_ptr<openvrml::event_emitter> interface_eventout;
         typedef proto_node_class::is_map_t is_map_t;
         pair<is_map_t::iterator, is_map_t::iterator> is_range;
-        proto_node_class::default_value_map_t::const_iterator default_value;
+        initial_value_map::const_iterator initial_value;
         switch (interface->type) {
         case node_interface::eventin_id:
             interface_eventin = create_eventin(interface->field_type, *this);
@@ -1850,15 +1850,13 @@ proto_node::proto_node(const node_type & type,
             assert(succeeded);
             break;
         case node_interface::exposedfield_id:
-            // XXX
-            // XXX This is wrong. We don't want the default value here, we
-            // XXX want the initial value. However, we don't have the initial
-            // XXX value in the constructor because of the wonky way we use
-            // XXX the field setters to initialize nodes.
-            // XXX
-            default_value = node_class.default_value_map.find(interface->id);
-            assert(default_value != node_class.default_value_map.end());
-            interface_eventin = create_exposedfield(*default_value->second,
+            initial_value = initial_values.find(interface->id);
+            if (initial_value == initial_values.end()) {
+                initial_value =
+                    node_class.default_value_map.find(interface->id);
+                assert(initial_value != node_class.default_value_map.end());
+            }
+            interface_eventin = create_exposedfield(*initial_value->second,
                                                     *this);
             interface_eventout =
                 dynamic_pointer_cast<openvrml::event_emitter>(
