@@ -651,10 +651,14 @@ namespace OpenVRML {
         SFFloat d_minAngle;
         SFFloat d_offset;
 
+        SFFloat rotation_val;
         SFBool d_isActive;
         SFRotation d_rotation;
+        SFVec3f d_activationPoint;
         SFVec3f d_trackPoint;
-	    VrmlMatrix M;
+        SFBool disk;
+        VrmlMatrix d_activationMatrix;
+        VrmlMatrix M;
 
     public:
         // Define the fields of CylinderSensor nodes

@@ -2349,6 +2349,79 @@ void NodeCylinderSensor::activate( double timeStamp,
                     bool isActive,
                     double *p )
 {
+// Become active
+    if ( isActive && ! d_isActive.get() ) {
+        d_isActive.set(isActive);
+     
+// set activation point in local coords
+      float Vec[3] = { p[0], p[1], p[2] };
+      d_activationMatrix = getMVMatrix().affine_inverse();
+      d_activationMatrix.multVecMatrix(Vec,Vec);
+      d_activationPoint.set(Vec);
+// Bearing vector in local coordinate system
+      Vec[0] = 0.0; Vec[1] = 0.0; Vec[2] = 1.0;
+      d_activationMatrix.multVecMatrix(Vec,Vec);
+      SFVec3f BV(Vec);
+      SFVec3f Y(0,1,0);
+      BV = BV.normalize();
+      double ang = acos(BV.dot(Y));
+      if (ang > PI_2) ang = PI - ang;
+      if( ang < d_diskAngle.get())
+         disk.set(true);
+      else
+         disk.set(false);
+// send message
+      eventOut( timeStamp, "isActive", d_isActive );
+    }
+
+// Become inactive
+    else if ( ! isActive && d_isActive.get() ) {
+        d_isActive.set(isActive);
+        eventOut( timeStamp, "isActive", d_isActive );
+
+            // save auto offset of rotation
+        if ( d_autoOffset.get() ) {
+            d_offset = rotation_val;
+            eventOut( timeStamp, "offset_changed", d_offset );
+        }
+    }
+
+        // Tracking
+    else if ( isActive ) {
+        // get local coord for touch point
+        float Vec[3] = { p[0], p[1], p[2] };
+        d_activationMatrix.multVecMatrix( Vec , Vec );
+        d_trackPoint.set(Vec);
+        eventOut( timeStamp, "trackPoint_changed", d_trackPoint );
+        float tempv[3],rot,radius;
+        SFVec3f dir1(Vec[0],0,Vec[2]);
+        if (disk.get())
+         radius = 1.0;                
+        else
+         radius = dir1.length();    // get the radius 
+        dir1 = dir1.normalize();
+        SFVec3f dir2(d_activationPoint.getX(),0,d_activationPoint.getZ());
+        dir2 = dir2.normalize();
+        Vcross(tempv, dir2.get(), dir1.get());
+        SFVec3f cx(tempv);
+        cx = cx.normalize();
+        if (cx.length() == 0.0) return; 
+        rot = radius * acos(dir2.dot(dir1));
+        if (fpequal(cx.getY(),-1.0)) rot = -rot;
+        if ( d_autoOffset.get() )
+          rot = d_offset.get() + rot;
+        if ( d_minAngle.get() < d_maxAngle.get() ) {
+           if (rot < d_minAngle.get())
+            rot = d_minAngle.get();
+           else if (rot > d_maxAngle.get())
+            rot = d_maxAngle.get();
+          }
+        rotation_val.set(rot);
+        SFRotation newRot(0,1,0, rot );
+        d_rotation = newRot;         
+
+        eventOut( timeStamp, "rotation_changed", d_rotation );
+    }
 }
 
 /**
