@@ -208,7 +208,8 @@ namespace OpenVRML {
 
     class Scene;
 
-    std::ostream & operator<<(std::ostream & out, const Node & node);
+    std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
+                                             const Node & node);
 
     class OPENVRML_SCOPE Node {
         friend std::ostream & operator<<(std::ostream & out, const Node & node);
