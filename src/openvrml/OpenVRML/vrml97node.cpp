@@ -1442,7 +1442,8 @@ void Appearance::update_modified(node_path & path, int flags)
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void Appearance::render(OpenVRML::viewer & viewer, const rendering_context context)
+void Appearance::render(OpenVRML::viewer & viewer,
+                        const rendering_context context)
 {
     material_node * const material = this->material_.value
                                   ? this->material_.value->to_material()
@@ -1454,7 +1455,7 @@ void Appearance::render(OpenVRML::viewer & viewer, const rendering_context conte
     if (material) {
         float trans = material->transparency();
         color diffuse = material->diffuse_color();
-        size_t nTexComponents = texture ? texture->nComponents() : 0;
+        size_t nTexComponents = texture ? texture->components() : 0;
         if (nTexComponents == 2 || nTexComponents == 4) { trans = 0.0; }
         if (nTexComponents >= 3) { diffuse = color(1.0, 1.0, 1.0); }
 
@@ -6181,12 +6182,12 @@ void ImageTexture::render(OpenVRML::viewer & viewer, rendering_context context)
                 }
 
                 this->texObject = viewer.insert_texture(this->image->w(),
-                                                       this->image->h(),
-                                                       this->image->nc(),
-                                                       this->repeatS.value,
-                                                       this->repeatT.value,
-                                                       pix,
-                                                       true);
+                                                        this->image->h(),
+                                                        this->image->nc(),
+                                                        this->repeatS.value,
+                                                        this->repeatT.value,
+                                                        pix,
+                                                        true);
             }
         }
     }
@@ -6194,21 +6195,28 @@ void ImageTexture::render(OpenVRML::viewer & viewer, rendering_context context)
     this->node::modified(false);
 }
 
-size_t ImageTexture::nComponents() const throw () {
+size_t ImageTexture::components() const throw ()
+{
     return this->image ? this->image->nc() : 0;
 }
 
-size_t ImageTexture::width() const throw () {
+size_t ImageTexture::width() const throw ()
+{
     return this->image ? this->image->w() : 0;
 }
 
-size_t ImageTexture::height() const throw () {
+size_t ImageTexture::height() const throw ()
+{
     return this->image ? this->image->h() : 0;
 }
 
-size_t ImageTexture::nFrames() const throw () { return 0; }
+size_t ImageTexture::frames() const throw ()
+{
+    return 0;
+}
 
-const unsigned char * ImageTexture::pixels() const throw () {
+const unsigned char * ImageTexture::pixels() const throw ()
+{
     return this->image ? this->image->pixels() : 0;
 }
 
@@ -7947,23 +7955,28 @@ void MovieTexture::render(OpenVRML::viewer & viewer,
     this->node::modified(false);
 }
 
-size_t MovieTexture::nComponents() const throw () {
+size_t MovieTexture::components() const throw ()
+{
     return this->image ? this->image->nc() : 0;
 }
 
-size_t MovieTexture::width() const throw () {
+size_t MovieTexture::width() const throw ()
+{
     return this->image ? this->image->w() : 0;
 }
 
-size_t MovieTexture::height() const throw () {
+size_t MovieTexture::height() const throw ()
+{
     return this->image ? this->image->h() : 0;
 }
 
-size_t MovieTexture::nFrames() const throw () {
+size_t MovieTexture::frames() const throw ()
+{
     return this->image ? this->image->nframes() : 0;
 }
 
-const unsigned char * MovieTexture::pixels() const throw () {
+const unsigned char * MovieTexture::pixels() const throw ()
+{
     return this->image ? this->image->pixels() : 0;
 }
 
@@ -9100,7 +9113,7 @@ void PixelTexture::render(OpenVRML::viewer & viewer,
     this->node::modified(false);
 }
 
-size_t PixelTexture::nComponents() const throw ()
+size_t PixelTexture::components() const throw ()
 {
     return this->image.comp();
 }
@@ -9115,7 +9128,7 @@ size_t PixelTexture::height() const throw ()
     return this->image.y();
 }
 
-size_t PixelTexture::nFrames() const throw ()
+size_t PixelTexture::frames() const throw ()
 {
     return 0;
 }
@@ -11025,7 +11038,7 @@ void Shape::render(OpenVRML::viewer & viewer, const rendering_context context)
                 a->render(viewer, context);
 
                 if (a->texture() && a->texture()->to_texture()) {
-                    nTexComponents = a->texture()->to_texture()->nComponents();
+                    nTexComponents = a->texture()->to_texture()->components();
                 }
             } else {
                 viewer.set_color(color(1.0, 1.0, 1.0)); // default object color

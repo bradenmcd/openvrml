@@ -1175,12 +1175,13 @@ namespace OpenVRML {
                          const scope_ptr & scope);
             virtual ~ImageTexture() throw ();
 
-            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
+            virtual void render(OpenVRML::viewer & viewer,
+                                rendering_context context);
 
-            virtual size_t nComponents() const throw ();
+            virtual size_t components() const throw ();
             virtual size_t width() const throw ();
             virtual size_t height() const throw ();
-            virtual size_t nFrames() const throw ();
+            virtual size_t frames() const throw ();
             virtual const unsigned char * pixels() const throw ();
 
         private:
@@ -1458,16 +1459,18 @@ namespace OpenVRML {
 
             void update(double time);
 
-            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
+            virtual void render(OpenVRML::viewer & viewer,
+                                rendering_context context);
 
-            virtual size_t nComponents() const throw ();
+            virtual size_t components() const throw ();
             virtual size_t width() const throw ();
             virtual size_t height() const throw ();
-            virtual size_t nFrames() const throw ();
+            virtual size_t frames() const throw ();
             virtual const unsigned char * pixels() const throw ();
 
         private:
-            virtual void do_initialize(double timestamp) throw (std::bad_alloc);
+            virtual void do_initialize(double timestamp)
+                throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
 
             //
@@ -1689,12 +1692,13 @@ namespace OpenVRML {
                          const scope_ptr & scope);
             virtual ~PixelTexture() throw ();
 
-            virtual void render(OpenVRML::viewer & viewer, rendering_context context);
+            virtual void render(OpenVRML::viewer & viewer,
+                                rendering_context context);
 
-            virtual size_t nComponents() const throw ();
+            virtual size_t components() const throw ();
             virtual size_t width() const throw ();
             virtual size_t height() const throw ();
-            virtual size_t nFrames() const throw ();
+            virtual size_t frames() const throw ();
             virtual const unsigned char * pixels() const throw ();
 
         private:

@@ -1,3 +1,24 @@
+2003-06-08  Braden McDaniel  <braden@endoframe.com>
+
+	Applied naming convention changes:
+	texture_node::nComponents -> texture_node::components,
+	texture_node::nFrames -> texture_node::frames.
+
+	* src/openvrml/OpenVRML/node.cpp (texture_node::components,
+	texture_node::frames):  Naming convention changes.
+	* src/openvrml/OpenVRML/node.h (texture_node::components,
+	texture_node::frames):  Naming convention changes.
+	* src/openvrml/OpenVRML/vrml97node.h (ImageTexture::components,
+	ImageTexture::frames, MovieTexture::components,
+	MovieTexture::frames, PixelTexture::components,
+	PixelTexture::frames):  Naming convention changes.
+	* src/openvrml/OpenVRML/vrml97node.cpp (Appearance::render,
+	ImageTexture::components, ImageTexture::frames,
+	ImageTexture:render, MovieTexture::components,
+	MovieTexture::frames, PixelTexture::components,
+	PixelTexture::frames, Shape::render):  Naming convention
+	changes.
+
 2003-06-06  Braden McDaniel  <braden@endoframe.com>
 
 	Applied naming convention changes:  Image -> img.  "img" is used

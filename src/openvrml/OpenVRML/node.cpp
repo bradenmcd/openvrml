@@ -2685,7 +2685,7 @@ texture_node * texture_node::to_texture() throw ()
 }
 
 /**
- * @fn size_t texture_node::nComponents() const throw ()
+ * @fn size_t texture_node::components() const throw ()
  *
  * @brief Get the number of components for the image.
  *
@@ -2709,7 +2709,7 @@ texture_node * texture_node::to_texture() throw ()
  */
 
 /**
- * @fn size_t texture_node::nFrames() const throw ()
+ * @fn size_t texture_node::frames() const throw ()
  *
  * @brief Get the number of frames for a time-dependent texture.
  *
