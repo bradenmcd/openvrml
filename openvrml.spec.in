@@ -66,7 +66,7 @@ Requires:       %{name}-gl = %{version}
 Requires:       mozilla = %(rpm -q mozilla --qf='%%{version}')
 Requires:       SDL >= 1.2
 %description -n lookat
-GLUT-based VRML viewer.
+SDL-based VRML viewer.
 
 %package mozilla
 Summary:        VRML browser plug-in for Mozilla.
@@ -82,7 +82,7 @@ VRML browser plug-in for Mozilla.
 
 
 %build
-./configure --prefix=%{prefix} CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
+./configure --prefix=%{prefix} CPPFLAGS="-DNDEBUG" CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
 make %{?_smp_mflags}
 
 
@@ -128,6 +128,10 @@ make DESTDIR=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Sun May 09 2004  Braden McDaniel  <braden@endoframe.com>
+- Corrected description of lookat RPM to reflect the change to using SDL.
+- Define NDEBUG when configuring.
+
 * Wed May 05 2004  Braden McDaniel  <braden@endoframe.com>
 - Made Mozilla plug-in scriptable.
 

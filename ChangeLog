@@ -1,5 +1,10 @@
 2004-05-09 Braden McDaniel  <braden@endoframe.com>
 
+	* openvrml.spec.in:  Corrected description of lookat RPM to
+	reflect the change to using SDL; define NDEBUG when configuring.
+
+2004-05-09 Braden McDaniel  <braden@endoframe.com>
+
 	* Makefile.am:  Build the Mozilla plug-in before building the
 	tests.
 
