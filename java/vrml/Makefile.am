@@ -23,4 +23,4 @@ javadir = $(datadir)/java/vrml
 noinst_JAVA = $(JAVA_FILES)
 endif
 
-EXTRA_DIST = $(JAVA_FILES) Makefile.vc6
+EXTRA_DIST = $(JAVA_FILES)

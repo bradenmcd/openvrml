@@ -233,5 +233,3 @@ vrml_node_Script.h: vrml/node/Script.class
 	$(JAVAH) -classpath . vrml.node.Script
 
 endif
-
-EXTRA_DIST = Makefile.vc6

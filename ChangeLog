@@ -1,4 +1,19 @@
-2004-01-24 Braden McDaniel  <braden@endoframe.com>
+2004-01-26 Braden McDaniel  <braden@endoframe.com>
+
+	Removed vestiges of Visual C++ 6.0 build.
+
+	* java/Makefile.am
+	* java/Makefile.vc6:  Removed file.
+	* java/vrml/Makefile.am
+	* java/vrml/Makefile.vc6:  Removed file.
+	* java/vrml/field/Makefile.am
+	* java/vrml/field/Makefile.vc6:  Removed file.
+	* java/vrml/node/Makefile.am
+	* java/vrml/node/Makefile.vc6:  Removed file.
+	* lib/antlr/GNUmakefile.am
+	* lib/antlr/Makefile.vc6
+
+2004-01-26 Braden McDaniel  <braden@endoframe.com>
 
 	Consolidated "Makefile.am" contents.
 
