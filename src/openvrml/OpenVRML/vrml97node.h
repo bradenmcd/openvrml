@@ -26,7 +26,7 @@
 
 #   include <OpenVRML/common.h>
 #   include <OpenVRML/field.h>
-#   include <OpenVRML/nodetypeptr.h>
+#   include <OpenVRML/node_type_ptr.h>
 #   include <OpenVRML/node.h>
 #   include <OpenVRML/Viewer.h>
 #   include <OpenVRML/Image.h>
@@ -205,7 +205,7 @@ namespace OpenVRML {
             explicit GroupClass(Browser & browser);
             virtual ~GroupClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -270,7 +270,7 @@ namespace OpenVRML {
             explicit AnchorClass(Browser & browser);
             virtual ~AnchorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -325,7 +325,7 @@ namespace OpenVRML {
             explicit AppearanceClass(Browser & browser);
             virtual ~AppearanceClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -376,7 +376,7 @@ namespace OpenVRML {
             explicit AudioClipClass(Browser & browser);
             virtual ~AudioClipClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -458,7 +458,7 @@ namespace OpenVRML {
             virtual void initialize(viewpoint_node * initialViewpoint,
                                     double timestamp) throw ();
             virtual void render(Viewer & viewer) throw ();
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                 throw (unsupported_interface, std::bad_alloc);
         };
@@ -539,7 +539,7 @@ namespace OpenVRML {
             explicit BillboardClass(Browser & browser);
             virtual ~BillboardClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -583,7 +583,7 @@ namespace OpenVRML {
             explicit BoxClass(Browser & browser);
             virtual ~BoxClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -611,7 +611,7 @@ namespace OpenVRML {
             explicit CollisionClass(Browser & browser);
             virtual ~CollisionClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -644,7 +644,7 @@ namespace OpenVRML {
             explicit ColorClass(Browser & browser);
             virtual ~ColorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -685,7 +685,7 @@ namespace OpenVRML {
             explicit ColorInterpolatorClass(Browser & browser);
             virtual ~ColorInterpolatorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -730,7 +730,7 @@ namespace OpenVRML {
             explicit ConeClass(Browser & browser);
             virtual ~ConeClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -758,7 +758,7 @@ namespace OpenVRML {
             explicit CoordinateClass(Browser & browser);
             virtual ~CoordinateClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -799,7 +799,7 @@ namespace OpenVRML {
             explicit CoordinateInterpolatorClass(Browser & browser);
             virtual ~CoordinateInterpolatorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -845,7 +845,7 @@ namespace OpenVRML {
             explicit CylinderClass(Browser & browser);
             virtual ~CylinderClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -874,7 +874,7 @@ namespace OpenVRML {
             explicit CylinderSensorClass(Browser & browser);
             virtual ~CylinderSensorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -934,7 +934,7 @@ namespace OpenVRML {
             explicit DirectionalLightClass(Browser & browser);
             virtual ~DirectionalLightClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -965,7 +965,7 @@ namespace OpenVRML {
             explicit ElevationGridClass(Browser & browser);
             virtual ~ElevationGridClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1018,7 +1018,7 @@ namespace OpenVRML {
             explicit ExtrusionClass(Browser & browser);
             virtual ~ExtrusionClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1084,7 +1084,7 @@ namespace OpenVRML {
             virtual void initialize(viewpoint_node * initialViewpoint,
                                     double timestamp) throw ();
             virtual void render(Viewer & viewer) throw ();
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1127,7 +1127,7 @@ namespace OpenVRML {
             explicit FontStyleClass(Browser & browser);
             virtual ~FontStyleClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1171,7 +1171,7 @@ namespace OpenVRML {
             explicit ImageTextureClass(Browser & browser);
             virtual ~ImageTextureClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1212,7 +1212,7 @@ namespace OpenVRML {
             explicit IndexedFaceSetClass(Browser & browser);
             virtual ~IndexedFaceSetClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1268,7 +1268,7 @@ namespace OpenVRML {
             explicit IndexedLineSetClass(Browser & browser);
             virtual ~IndexedLineSetClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1291,7 +1291,7 @@ namespace OpenVRML {
             explicit InlineClass(Browser & browser);
             virtual ~InlineClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1335,7 +1335,7 @@ namespace OpenVRML {
             explicit LODClass(Browser & browser);
             virtual ~LODClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1381,7 +1381,7 @@ namespace OpenVRML {
             explicit MaterialClass(Browser & browser);
             virtual ~MaterialClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1442,7 +1442,7 @@ namespace OpenVRML {
             explicit MovieTextureClass(Browser & browser);
             virtual ~MovieTextureClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1506,7 +1506,7 @@ namespace OpenVRML {
             explicit NavigationInfoClass(Browser & browser);
             virtual ~NavigationInfoClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1579,7 +1579,7 @@ namespace OpenVRML {
             explicit NormalClass(Browser & browser);
             virtual ~NormalClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1613,7 +1613,7 @@ namespace OpenVRML {
             explicit NormalInterpolatorClass(Browser & browser);
             virtual ~NormalInterpolatorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1650,7 +1650,7 @@ namespace OpenVRML {
             explicit OrientationInterpolatorClass(Browser & browser);
             virtual ~OrientationInterpolatorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1687,7 +1687,7 @@ namespace OpenVRML {
             explicit PixelTextureClass(Browser & browser);
             virtual ~PixelTextureClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1726,7 +1726,7 @@ namespace OpenVRML {
             explicit PlaneSensorClass(Browser & browser);
             virtual ~PlaneSensorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1782,7 +1782,7 @@ namespace OpenVRML {
             explicit PointLightClass(Browser & browser);
             virtual ~PointLightClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1824,7 +1824,7 @@ namespace OpenVRML {
             explicit PointSetClass(Browser & browser);
             virtual ~PointSetClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1866,7 +1866,7 @@ namespace OpenVRML {
             explicit PositionInterpolatorClass(Browser & browser);
             virtual ~PositionInterpolatorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1904,7 +1904,7 @@ namespace OpenVRML {
             explicit ProximitySensorClass(Browser & browser);
             virtual ~ProximitySensorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1946,7 +1946,7 @@ namespace OpenVRML {
             explicit ScalarInterpolatorClass(Browser & browser);
             virtual ~ScalarInterpolatorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -1984,7 +1984,7 @@ namespace OpenVRML {
             explicit ShapeClass(Browser & browser);
             virtual ~ShapeClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2025,7 +2025,7 @@ namespace OpenVRML {
             explicit SoundClass(Browser & browser);
             virtual ~SoundClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2082,7 +2082,7 @@ namespace OpenVRML {
             explicit SphereClass(Browser & browser);
             virtual ~SphereClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2109,7 +2109,7 @@ namespace OpenVRML {
             explicit SphereSensorClass(Browser & browser);
             virtual ~SphereSensorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2161,7 +2161,7 @@ namespace OpenVRML {
             explicit SpotLightClass(Browser & browser);
             virtual ~SpotLightClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2215,7 +2215,7 @@ namespace OpenVRML {
             explicit SwitchClass(Browser & browser);
             virtual ~SwitchClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2266,7 +2266,7 @@ namespace OpenVRML {
             explicit TextClass(Browser & browser);
             virtual ~TextClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2347,7 +2347,7 @@ namespace OpenVRML {
             explicit TextureCoordinateClass(Browser & browser);
             virtual ~TextureCoordinateClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2383,7 +2383,7 @@ namespace OpenVRML {
             explicit TextureTransformClass(Browser & browser);
             virtual ~TextureTransformClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2428,7 +2428,7 @@ namespace OpenVRML {
             explicit TimeSensorClass(Browser & browser);
             virtual ~TimeSensorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2486,7 +2486,7 @@ namespace OpenVRML {
             explicit TouchSensorClass(Browser & browser);
             virtual ~TouchSensorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2528,7 +2528,7 @@ namespace OpenVRML {
             explicit TransformClass(Browser & browser);
             virtual ~TransformClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2603,7 +2603,7 @@ namespace OpenVRML {
 
             virtual void initialize(viewpoint_node * initialViewpoint,
                                     double timestamp) throw ();
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2675,7 +2675,7 @@ namespace OpenVRML {
             explicit VisibilitySensorClass(Browser & browser);
             virtual ~VisibilitySensorClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
+            virtual const node_type_ptr create_type(const std::string & id,
                                                  const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
@@ -2717,8 +2717,8 @@ namespace OpenVRML {
             explicit WorldInfoClass(Browser & browser);
             virtual ~WorldInfoClass() throw ();
 
-            virtual const NodeTypePtr create_type(const std::string & id,
-                                                 const node_interface_set &)
+            virtual const node_type_ptr create_type(const std::string & id,
+                                                    const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
 

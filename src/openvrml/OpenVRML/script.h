@@ -57,7 +57,7 @@ namespace OpenVRML {
         ScriptNodeClass(Browser & browser);
         virtual ~ScriptNodeClass() throw ();
 
-        virtual const NodeTypePtr
+        virtual const node_type_ptr
         create_type(const std::string & id,
                     const node_interface_set & interfaces)
             throw ();

@@ -450,7 +450,7 @@ void node_class::render(Viewer & viewer) throw ()
 {}
 
 /**
- * @fn const NodeTypePtr node_class::createType(const std::string & id, const node_interface_set & interfaces) throw (std::invalid_argument, std::bad_alloc)
+ * @fn const node_type_ptr node_class::createType(const std::string & id, const node_interface_set & interfaces) throw (std::invalid_argument, std::bad_alloc)
  *
  * @brief Create a new node_type.
  *
@@ -463,7 +463,7 @@ void node_class::render(Viewer & viewer) throw ()
  * @param interfaces    a node_interface_set containing the interfaces
  *                      for the new type.
  *
- * @return a NodeTypePtr to the newly created node_type.
+ * @return a node_type_ptr to the newly created node_type.
  *
  * @throw std::invalid_argument if the node_class cannot support one of the
  *                              @link node_interface node_interfaces@endlink in

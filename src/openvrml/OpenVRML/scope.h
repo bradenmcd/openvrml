@@ -26,15 +26,15 @@
 #   include <list>
 #   include <map>
 #   include <string>
-#   include "nodetypeptr.h"
-#   include "scopeptr.h"
+#   include <OpenVRML/node_type_ptr.h>
+#   include <OpenVRML/scopeptr.h>
 
 namespace OpenVRML {
 
     class OPENVRML_SCOPE Scope {
         friend class node;
 
-        std::list<NodeTypePtr> nodeTypeList;
+        std::list<node_type_ptr> nodeTypeList;
         std::map<std::string, node *> namedNodeMap;
 
     public:
@@ -45,9 +45,9 @@ namespace OpenVRML {
                        const ScopePtr & scope = ScopePtr());
         virtual ~Scope();
 
-        void addNodeType(const NodeTypePtr & nodeType);
-        const NodeTypePtr findType(const std::string & name) const;
-        const NodeTypePtr firstType() const;
+        void addNodeType(const node_type_ptr & nodeType);
+        const node_type_ptr findType(const std::string & name) const;
+        const node_type_ptr firstType() const;
         node * findNode(const std::string & name) const;
 
     private:

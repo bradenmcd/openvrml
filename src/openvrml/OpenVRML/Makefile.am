@@ -41,7 +41,7 @@ libopenvrml_la_SOURCES = \
         scopeptr.cpp \
         node.cpp \
         nodeptr.cpp \
-        nodetypeptr.cpp \
+        node_type_ptr.cpp \
         node_class_ptr.cpp \
         bvolume.cpp \
         script.cpp \
@@ -69,7 +69,7 @@ OpenVRMLinclude_HEADERS = \
         scopeptr.h \
         node.h \
         nodeptr.h \
-        nodetypeptr.h \
+        node_type_ptr.h \
         node_class_ptr.h \
         bvolume.h \
         script.h \

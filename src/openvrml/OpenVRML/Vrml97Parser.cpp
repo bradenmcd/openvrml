@@ -547,7 +547,7 @@ void Vrml97Parser::statement(
 #line 619 "Vrml97Parser.g"
 	
 	OpenVRML::NodePtr node;
-	OpenVRML::NodeTypePtr nodeType;
+	OpenVRML::node_type_ptr nodeType;
 	
 #line 553 "Vrml97Parser.cpp"
 	
@@ -762,12 +762,12 @@ OpenVRML::NodePtr  Vrml97Parser::node(
 	ANTLR_USE_NAMESPACE(antlr)RefToken  nodeTypeId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 #line 940 "Vrml97Parser.g"
 	
-	using OpenVRML::NodeTypePtr;
+	using OpenVRML::node_type_ptr;
 	using OpenVRML::NodePtr;
 	using OpenVRML::ScriptNode;
 	using antlr::SemanticException;
 	
-	NodeTypePtr nodeType;
+	node_type_ptr nodeType;
 	
 #line 773 "Vrml97Parser.cpp"
 	
@@ -861,7 +861,7 @@ void Vrml97Parser::externproto(
 	
 	OpenVRML::node_interface_set interfaces;
 	OpenVRML::mfstring urlList;
-	OpenVRML::NodeTypePtr nodeType;
+	OpenVRML::node_type_ptr nodeType;
 	
 #line 867 "Vrml97Parser.cpp"
 	
@@ -987,7 +987,7 @@ void Vrml97Parser::proto(
 		const node_interface_set & interfaces =
 		static_cast<ProtoNodeClass &>(*nodeClass)
 		.protoNodeType.interfaces();
-		const NodeTypePtr nodeType =
+		const node_type_ptr nodeType =
 		nodeClass->create_type(id->getText(), interfaces);
 		assert(nodeType);
 		assert(scope);
@@ -1548,12 +1548,12 @@ OpenVRML::NodePtr  Vrml97Parser::protoNode(
 	ANTLR_USE_NAMESPACE(antlr)RefToken  nodeTypeId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 #line 1072 "Vrml97Parser.g"
 	
-	using OpenVRML::NodeTypePtr;
+	using OpenVRML::node_type_ptr;
 	using OpenVRML::NodePtr;
 	using OpenVRML::ScriptNode;
 	using antlr::SemanticException;
 	
-	NodeTypePtr nodeType;
+	node_type_ptr nodeType;
 	
 #line 1559 "Vrml97Parser.cpp"
 	

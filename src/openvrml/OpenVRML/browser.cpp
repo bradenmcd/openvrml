@@ -232,7 +232,7 @@ namespace OpenVRML {
             throw (unsupported_interface, NodeInterfaceTypeMismatch,
                    field_value_type_mismatch, std::bad_alloc);
 
-        virtual const NodeTypePtr create_type(const std::string & id,
+        virtual const node_type_ptr create_type(const std::string & id,
                                               const node_interface_set &)
             throw (unsupported_interface, std::bad_alloc);
     };
@@ -271,7 +271,7 @@ public:
     explicit NullNodeClass(Browser & browser) throw ();
     virtual ~NullNodeClass() throw ();
 
-    virtual const NodeTypePtr
+    virtual const node_type_ptr
     create_type(const std::string & id,
                 const node_interface_set & interfaces)
         throw ();
@@ -3687,12 +3687,12 @@ namespace {
 /**
  * @brief Create a new NodeType.
  */
-const NodeTypePtr
+const node_type_ptr
 ProtoNodeClass::create_type(const std::string & id,
                             const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
-    const NodeTypePtr nodeType(new ProtoNodeType(*this, id));
+    const node_type_ptr nodeType(new ProtoNodeType(*this, id));
     try {
         std::for_each(interfaces.begin(), interfaces.end(),
                       AddInterface_(static_cast<ProtoNodeType &>(*nodeType)));
@@ -4923,13 +4923,13 @@ NullNodeClass::NullNodeClass(Browser & browser) throw ():
 NullNodeClass::~NullNodeClass() throw ()
 {}
 
-const NodeTypePtr
+const node_type_ptr
 NullNodeClass::create_type(const std::string & id,
                            const node_interface_set & interfaces)
     throw ()
 {
     assert(false);
-    static const NodeTypePtr nodeType;
+    static const node_type_ptr nodeType;
     return nodeType;
 }
 

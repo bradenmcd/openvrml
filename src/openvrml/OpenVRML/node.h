@@ -31,7 +31,7 @@
 #   include <utility>
 #   include <OpenVRML/field.h>
 #   include <OpenVRML/field_value_ptr.h>
-#   include <OpenVRML/nodetypeptr.h>
+#   include <OpenVRML/node_type_ptr.h>
 #   include <OpenVRML/scopeptr.h>
 #   include <OpenVRML/Viewer.h>
 #   include <OpenVRML/VrmlRenderContext.h>
@@ -140,7 +140,7 @@ namespace OpenVRML {
         virtual void initialize(viewpoint_node * initial_viewpoint,
                                 double time) throw ();
         virtual void render(Viewer & viewer) throw ();
-        virtual const NodeTypePtr
+        virtual const node_type_ptr
         create_type(const std::string & id,
                     const node_interface_set & interfaces)
             throw (unsupported_interface, std::bad_alloc) = 0;

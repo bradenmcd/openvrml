@@ -1039,13 +1039,13 @@ AnchorClass::~AnchorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Anchor nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Anchor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by AnchorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 AnchorClass::create_type(const std::string & id,
                         const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -1060,7 +1060,7 @@ AnchorClass::create_type(const std::string & id,
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Anchor>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Anchor>(*this, id));
     Vrml97NodeTypeImpl<Anchor> & anchorNodeType =
             static_cast<Vrml97NodeTypeImpl<Anchor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Anchor>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -1272,13 +1272,13 @@ AppearanceClass::~AppearanceClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Appearance nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Appearance nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by AppearanceClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 AppearanceClass::create_type(const std::string & id,
                             const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -1288,7 +1288,7 @@ AppearanceClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "texture"),
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "textureTransform")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Appearance>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Appearance>(*this, id));
     Vrml97NodeTypeImpl<Appearance> & appearanceNodeType =
             static_cast<Vrml97NodeTypeImpl<Appearance> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Appearance>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -1549,13 +1549,13 @@ AudioClipClass::~AudioClipClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating AudioClip nodes.
+ * @return a node_type_ptr to a NodeType capable of creating AudioClip nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by AudioClipClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 AudioClipClass::create_type(const std::string & id,
                            const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -1570,7 +1570,7 @@ AudioClipClass::create_type(const std::string & id,
         node_interface(node_interface::eventout_id, field_value::sftime_id, "duration_changed"),
         node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<AudioClip>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<AudioClip>(*this, id));
     Vrml97NodeTypeImpl<AudioClip> & audioClipNodeType =
             static_cast<Vrml97NodeTypeImpl<AudioClip> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<AudioClip>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -2178,13 +2178,13 @@ void BackgroundClass::render(Viewer & viewer) throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Background nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Background nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by BackgroundClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 BackgroundClass::create_type(const std::string & id,
                             const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -2203,7 +2203,7 @@ BackgroundClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::mfcolor_id, "skyColor"),
         node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Background>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Background>(*this, id));
     Vrml97NodeTypeImpl<Background> & backgroundNodeType =
             static_cast<Vrml97NodeTypeImpl<Background> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Background>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -2584,13 +2584,13 @@ BillboardClass::~BillboardClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Billboard nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Billboard nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by BillboardClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 BillboardClass::create_type(const std::string & id,
                            const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -2603,7 +2603,7 @@ BillboardClass::create_type(const std::string & id,
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Billboard>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Billboard>(*this, id));
     Vrml97NodeTypeImpl<Billboard> & billboardNodeType =
             static_cast<Vrml97NodeTypeImpl<Billboard> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Billboard>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -2819,19 +2819,19 @@ BoxClass::~BoxClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Box nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Box nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by BoxClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr BoxClass::create_type(const std::string & id,
+const node_type_ptr BoxClass::create_type(const std::string & id,
                                        const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface =
             node_interface(node_interface::field_id, field_value::sfvec3f_id, "size");
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Box>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Box>(*this, id));
     Vrml97NodeTypeImpl<Box> & boxNodeType =
             static_cast<Vrml97NodeTypeImpl<Box> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Box>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -2938,13 +2938,13 @@ CollisionClass::~CollisionClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Collision nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Collision nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CollisionClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
         CollisionClass::create_type(const std::string & id,
                                    const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
@@ -2958,7 +2958,7 @@ const NodeTypePtr
         node_interface(node_interface::field_id, field_value::sfnode_id, "proxy"),
         node_interface(node_interface::eventout_id, field_value::sftime_id, "collideTime")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Collision>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Collision>(*this, id));
     Vrml97NodeTypeImpl<Collision> & collisionNodeType =
             static_cast<Vrml97NodeTypeImpl<Collision> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Collision>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -3095,18 +3095,18 @@ ColorClass::~ColorClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Color nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Color nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ColorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr ColorClass::create_type(const std::string & id,
+const node_type_ptr ColorClass::create_type(const std::string & id,
                                          const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
     static const node_interface supportedInterface =
             node_interface(node_interface::exposedfield_id, field_value::mfcolor_id, "color");
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Color>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Color>(*this, id));
     Vrml97NodeTypeImpl<Color> & colorNodeType =
             static_cast<Vrml97NodeTypeImpl<Color> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Color>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -3204,14 +3204,14 @@ ColorInterpolatorClass::~ColorInterpolatorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating ColorInterpolator
+ * @return a node_type_ptr to a NodeType capable of creating ColorInterpolator
  *      nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by ColorInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 ColorInterpolatorClass::create_type(const std::string & id,
                                     const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -3230,7 +3230,7 @@ ColorInterpolatorClass::create_type(const std::string & id,
                       field_value::sfcolor_id,
                       "value_changed")
     };
-    const NodeTypePtr
+    const node_type_ptr
         nodeType(new Vrml97NodeTypeImpl<ColorInterpolator>(*this, id));
     Vrml97NodeTypeImpl<ColorInterpolator> & colorInterpolatorNodeType =
             static_cast<Vrml97NodeTypeImpl<ColorInterpolator> &>(*nodeType);
@@ -3414,13 +3414,13 @@ ConeClass::~ConeClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Cone nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Cone nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ConeClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr ConeClass::create_type(const std::string & id,
+const node_type_ptr ConeClass::create_type(const std::string & id,
                                         const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
     static const node_interface supportedInterfaces[] = {
@@ -3429,7 +3429,7 @@ const NodeTypePtr ConeClass::create_type(const std::string & id,
         node_interface(node_interface::field_id, field_value::sfbool_id, "side"),
         node_interface(node_interface::field_id, field_value::sfbool_id, "bottom")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Cone>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Cone>(*this, id));
     Vrml97NodeTypeImpl<Cone> & coneNodeType =
             static_cast<Vrml97NodeTypeImpl<Cone> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Cone>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -3532,13 +3532,13 @@ CoordinateClass::~CoordinateClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Coordinate nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Coordinate nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CoordinateClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 CoordinateClass::create_type(const std::string & id,
                              const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -3547,7 +3547,7 @@ CoordinateClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id,
                        field_value::mfvec3f_id,
                        "point");
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Coordinate>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Coordinate>(*this, id));
     Vrml97NodeTypeImpl<Coordinate> & coordinateNodeType =
             static_cast<Vrml97NodeTypeImpl<Coordinate> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Coordinate>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -3645,14 +3645,14 @@ CoordinateInterpolatorClass::~CoordinateInterpolatorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating
+ * @return a node_type_ptr to a NodeType capable of creating
  *      CoordinateInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CoordinateInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 CoordinateInterpolatorClass::create_type(const std::string & id,
                                          const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -3670,7 +3670,7 @@ CoordinateInterpolatorClass::create_type(const std::string & id,
                        field_value::mfvec3f_id,
                        "value_changed")
     };
-    const NodeTypePtr
+    const node_type_ptr
         nodeType(new Vrml97NodeTypeImpl<CoordinateInterpolator>(*this, id));
     Vrml97NodeTypeImpl<CoordinateInterpolator> &
         coordinateInterpolatorNodeType =
@@ -3850,13 +3850,13 @@ CylinderClass::~CylinderClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Cylinder nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Cylinder nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CylinderClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr CylinderClass::create_type(const std::string & id,
+const node_type_ptr CylinderClass::create_type(const std::string & id,
                                             const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
     static const node_interface supportedInterfaces[] = {
@@ -3866,7 +3866,7 @@ const NodeTypePtr CylinderClass::create_type(const std::string & id,
         node_interface(node_interface::field_id, field_value::sfbool_id, "side"),
         node_interface(node_interface::field_id, field_value::sfbool_id, "top")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Cylinder>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Cylinder>(*this, id));
     Vrml97NodeTypeImpl<Cylinder> & cylinderNodeType =
             static_cast<Vrml97NodeTypeImpl<Cylinder> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Cylinder>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -3979,13 +3979,13 @@ CylinderSensorClass::~CylinderSensorClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating CylinderSensor nodes.
+ * @return a node_type_ptr to a NodeType capable of creating CylinderSensor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CylinderSensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
         CylinderSensorClass::create_type(const std::string & id,
                                         const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
@@ -4000,7 +4000,7 @@ const NodeTypePtr
         node_interface(node_interface::eventout_id, field_value::sfrotation_id, "rotation_changed"),
         node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<CylinderSensor>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<CylinderSensor>(*this, id));
     Vrml97NodeTypeImpl<CylinderSensor> & cylinderSensorNodeType =
             static_cast<Vrml97NodeTypeImpl<CylinderSensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<CylinderSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -4334,14 +4334,14 @@ DirectionalLightClass::~DirectionalLightClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating DirectionalLight
+ * @return a node_type_ptr to a NodeType capable of creating DirectionalLight
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by DirectionalLightClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
         DirectionalLightClass::create_type(const std::string & id,
                                           const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
@@ -4352,7 +4352,7 @@ const NodeTypePtr
         node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "intensity"),
         node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "on")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<DirectionalLight>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<DirectionalLight>(*this, id));
     Vrml97NodeTypeImpl<DirectionalLight> & directionalLightNodeType =
             static_cast<Vrml97NodeTypeImpl<DirectionalLight> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<DirectionalLight>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -4484,13 +4484,13 @@ ElevationGridClass::~ElevationGridClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating ElevationGrid nodes.
+ * @return a node_type_ptr to a NodeType capable of creating ElevationGrid nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ElevationGridClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
         ElevationGridClass::create_type(const std::string & id,
                                        const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
@@ -4510,7 +4510,7 @@ const NodeTypePtr
         node_interface(node_interface::field_id, field_value::sfint32_id, "zDimension"),
         node_interface(node_interface::field_id, field_value::sffloat_id, "zSpacing")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ElevationGrid>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<ElevationGrid>(*this, id));
     Vrml97NodeTypeImpl<ElevationGrid> & elevationGridNodeType =
             static_cast<Vrml97NodeTypeImpl<ElevationGrid> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<ElevationGrid>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -4824,13 +4824,13 @@ ExtrusionClass::~ExtrusionClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Extrusion nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Extrusion nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ExtrusionClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
         ExtrusionClass::create_type(const std::string & id,
                                    const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
@@ -4850,7 +4850,7 @@ const NodeTypePtr
         node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
         node_interface(node_interface::field_id, field_value::mfvec3f_id, "spine")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Extrusion>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Extrusion>(*this, id));
     Vrml97NodeTypeImpl<Extrusion> & extrusionNodeType =
             static_cast<Vrml97NodeTypeImpl<Extrusion> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Extrusion>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -5232,13 +5232,13 @@ void FogClass::render(Viewer & viewer) throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Fog nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Fog nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by FogClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr FogClass::create_type(const std::string & id,
+const node_type_ptr FogClass::create_type(const std::string & id,
                                        const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
     static const node_interface supportedInterfaces[] = {
@@ -5248,7 +5248,7 @@ const NodeTypePtr FogClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "visibilityRange"),
         node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Fog>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Fog>(*this, id));
     Vrml97NodeTypeImpl<Fog> & fogNodeType =
             static_cast<Vrml97NodeTypeImpl<Fog> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Fog>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -5439,13 +5439,13 @@ FontStyleClass::~FontStyleClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating FontStyle nodes.
+ * @return a node_type_ptr to a NodeType capable of creating FontStyle nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by FontStyleClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 FontStyleClass::create_type(const std::string & id,
                             const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -5479,7 +5479,7 @@ FontStyleClass::create_type(const std::string & id,
                        field_value::sfbool_id,
                        "topToBottom")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<FontStyle>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<FontStyle>(*this, id));
     Vrml97NodeTypeImpl<FontStyle> & fontStyleNodeType =
             static_cast<Vrml97NodeTypeImpl<FontStyle> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<FontStyle>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -5707,13 +5707,13 @@ GroupClass::~GroupClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Group nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Group nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by GroupClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr GroupClass::create_type(const std::string & id,
+const node_type_ptr GroupClass::create_type(const std::string & id,
                                          const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
@@ -5734,7 +5734,7 @@ const NodeTypePtr GroupClass::create_type(const std::string & id,
                        field_value::sfvec3f_id,
                        "bboxSize")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Group>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Group>(*this, id));
     Vrml97NodeTypeImpl<Group> & groupNodeType =
             static_cast<Vrml97NodeTypeImpl<Group> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Group>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -6103,13 +6103,13 @@ ImageTextureClass::~ImageTextureClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating ImageTexture nodes.
+ * @return a node_type_ptr to a NodeType capable of creating ImageTexture nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ImageTextureClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 ImageTextureClass::create_type(const std::string & id,
                                const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -6125,7 +6125,7 @@ ImageTextureClass::create_type(const std::string & id,
                        field_value::sfbool_id,
                        "repeatT")
     };
-    const NodeTypePtr
+    const node_type_ptr
         nodeType(new Vrml97NodeTypeImpl<ImageTexture>(*this, id));
     Vrml97NodeTypeImpl<ImageTexture> & imageTextureNodeType =
             static_cast<Vrml97NodeTypeImpl<ImageTexture> &>(*nodeType);
@@ -6316,13 +6316,13 @@ IndexedFaceSetClass::~IndexedFaceSetClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating IndexedFaceSet nodes.
+ * @return a node_type_ptr to a NodeType capable of creating IndexedFaceSet nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by IndexedFaceSetClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
         IndexedFaceSetClass::create_type(const std::string & id,
                                         const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
@@ -6346,7 +6346,7 @@ const NodeTypePtr
         node_interface(node_interface::field_id, field_value::sfbool_id, "solid"),
         node_interface(node_interface::field_id, field_value::mfint32_id, "texCoordIndex")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<IndexedFaceSet>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<IndexedFaceSet>(*this, id));
     Vrml97NodeTypeImpl<IndexedFaceSet> & indexedFaceSetNodeType =
             static_cast<Vrml97NodeTypeImpl<IndexedFaceSet> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<IndexedFaceSet>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -6740,14 +6740,14 @@ IndexedLineSetClass::~IndexedLineSetClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating IndexedLineSet
+ * @return a node_type_ptr to a NodeType capable of creating IndexedLineSet
  *         nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by IndexedLineSetClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 IndexedLineSetClass::create_type(const std::string & id,
                                 const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -6775,7 +6775,7 @@ IndexedLineSetClass::create_type(const std::string & id,
                       field_value::mfint32_id,
                       "coordIndex")
     };
-    const NodeTypePtr
+    const node_type_ptr
         nodeType(new Vrml97NodeTypeImpl<IndexedLineSet>(*this, id));
     Vrml97NodeTypeImpl<IndexedLineSet> & indexedLineSetNodeType =
         static_cast<Vrml97NodeTypeImpl<IndexedLineSet> &>(*nodeType);
@@ -6916,13 +6916,13 @@ InlineClass::~InlineClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Inline nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Inline nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by InlineClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 InlineClass::create_type(const std::string & id,
                          const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -6938,7 +6938,7 @@ InlineClass::create_type(const std::string & id,
                        field_value::sfvec3f_id,
                        "bboxSize")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Inline>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Inline>(*this, id));
     Vrml97NodeTypeImpl<Inline> & inlineNodeType =
             static_cast<Vrml97NodeTypeImpl<Inline> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Inline>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -7117,13 +7117,13 @@ LODClass::~LODClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating LOD nodes.
+ * @return a node_type_ptr to a NodeType capable of creating LOD nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by LODClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr LODClass::create_type(const std::string & id,
+const node_type_ptr LODClass::create_type(const std::string & id,
                                        const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
     static const node_interface supportedInterfaces[] = {
@@ -7131,7 +7131,7 @@ const NodeTypePtr LODClass::create_type(const std::string & id,
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "center"),
         node_interface(node_interface::field_id, field_value::mffloat_id, "range")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<LOD>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<LOD>(*this, id));
     Vrml97NodeTypeImpl<LOD> & lodNodeType =
             static_cast<Vrml97NodeTypeImpl<LOD> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<LOD>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -7392,13 +7392,13 @@ MaterialClass::~MaterialClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Material nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Material nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by MaterialClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr MaterialClass::create_type(const std::string & id,
+const node_type_ptr MaterialClass::create_type(const std::string & id,
                                             const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
     static const node_interface supportedInterfaces[] = {
@@ -7409,7 +7409,7 @@ const NodeTypePtr MaterialClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfcolor_id, "specularColor"),
         node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "transparency")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Material>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Material>(*this, id));
     Vrml97NodeTypeImpl<Material> & materialNodeType =
             static_cast<Vrml97NodeTypeImpl<Material> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Material>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -7683,13 +7683,13 @@ MovieTextureClass::~MovieTextureClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating MovieTexture nodes.
+ * @return a node_type_ptr to a NodeType capable of creating MovieTexture nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by MovieTextureClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 MovieTextureClass::create_type(const std::string & id,
                               const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -7723,7 +7723,7 @@ MovieTextureClass::create_type(const std::string & id,
                       field_value::sfbool_id,
                       "isActive")
     };
-    const NodeTypePtr
+    const node_type_ptr
         nodeType(new Vrml97NodeTypeImpl<MovieTexture>(*this, id));
     Vrml97NodeTypeImpl<MovieTexture> & movieTextureNodeType =
             static_cast<Vrml97NodeTypeImpl<MovieTexture> &>(*nodeType);
@@ -8160,13 +8160,13 @@ NavigationInfoClass::~NavigationInfoClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating NavigationInfo nodes.
+ * @return a node_type_ptr to a NodeType capable of creating NavigationInfo nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by NavigationInfoClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
         NavigationInfoClass::create_type(const std::string & id,
                                         const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
@@ -8179,7 +8179,7 @@ const NodeTypePtr
         node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "visibilityLimit"),
         node_interface(node_interface::eventout_id, field_value::sfbool_id, "isBound")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<NavigationInfo>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<NavigationInfo>(*this, id));
     Vrml97NodeTypeImpl<NavigationInfo> & navigationInfoNodeType =
             static_cast<Vrml97NodeTypeImpl<NavigationInfo> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<NavigationInfo>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -8454,13 +8454,13 @@ NormalClass::~NormalClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Normal nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Normal nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by NormalClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 NormalClass::create_type(const std::string & id,
                          const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -8469,7 +8469,7 @@ NormalClass::create_type(const std::string & id,
             node_interface(node_interface::exposedfield_id,
                            field_value::mfvec3f_id,
                            "vector");
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Normal>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Normal>(*this, id));
     Vrml97NodeTypeImpl<Normal> & normalNodeType =
             static_cast<Vrml97NodeTypeImpl<Normal> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Normal>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -8567,14 +8567,14 @@ NormalInterpolatorClass::~NormalInterpolatorClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating NormalInterpolator
+ * @return a node_type_ptr to a NodeType capable of creating NormalInterpolator
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by NormalInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
         NormalInterpolatorClass::create_type(const std::string & id,
                                             const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
@@ -8584,7 +8584,7 @@ const NodeTypePtr
         node_interface(node_interface::exposedfield_id, field_value::mfvec3f_id, "keyValue"),
         node_interface(node_interface::eventout_id, field_value::mfvec3f_id, "value_changed")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<NormalInterpolator>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<NormalInterpolator>(*this, id));
     Vrml97NodeTypeImpl<NormalInterpolator> & normalInterpolatorNodeType =
             static_cast<Vrml97NodeTypeImpl<NormalInterpolator> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<NormalInterpolator>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -8782,14 +8782,14 @@ OrientationInterpolatorClass::~OrientationInterpolatorClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating
+ * @return a node_type_ptr to a NodeType capable of creating
  *      OrientationInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by OrientationInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 OrientationInterpolatorClass::create_type(const std::string & id,
                                          const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -8808,7 +8808,7 @@ OrientationInterpolatorClass::create_type(const std::string & id,
                       field_value::sfrotation_id,
                       "value_changed")
     };
-    const NodeTypePtr
+    const node_type_ptr
         nodeType(new Vrml97NodeTypeImpl<OrientationInterpolator>(*this, id));
     Vrml97NodeTypeImpl<OrientationInterpolator> &
         orientationInterpolatorNodeType =
@@ -9007,13 +9007,13 @@ PixelTextureClass::~PixelTextureClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating PixelTexture nodes.
+ * @return a node_type_ptr to a NodeType capable of creating PixelTexture nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PixelTextureClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 PixelTextureClass::create_type(const std::string & id,
                               const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -9029,7 +9029,7 @@ PixelTextureClass::create_type(const std::string & id,
                       field_value::sfbool_id,
                       "repeatT")
     };
-    const NodeTypePtr
+    const node_type_ptr
         nodeType(new Vrml97NodeTypeImpl<PixelTexture>(*this, id));
     Vrml97NodeTypeImpl<PixelTexture> & pixelTextureNodeType =
         static_cast<Vrml97NodeTypeImpl<PixelTexture> &>(*nodeType);
@@ -9223,13 +9223,13 @@ PlaneSensorClass::~PlaneSensorClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating PlaneSensor nodes.
+ * @return a node_type_ptr to a NodeType capable of creating PlaneSensor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PlaneSensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
         PlaneSensorClass::create_type(const std::string & id,
                                      const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
@@ -9243,7 +9243,7 @@ const NodeTypePtr
         node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed"),
         node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "translation_changed")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PlaneSensor>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<PlaneSensor>(*this, id));
     Vrml97NodeTypeImpl<PlaneSensor> & planeSensorNodeType =
             static_cast<Vrml97NodeTypeImpl<PlaneSensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<PlaneSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -9625,13 +9625,13 @@ PointLightClass::~PointLightClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating PointLight nodes.
+ * @return a node_type_ptr to a NodeType capable of creating PointLight nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PointLightClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 PointLightClass::create_type(const std::string & id,
                             const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -9645,7 +9645,7 @@ PointLightClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfbool_id, "on"),
         node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "radius")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PointLight>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<PointLight>(*this, id));
     Vrml97NodeTypeImpl<PointLight> & pointLightNodeType =
             static_cast<Vrml97NodeTypeImpl<PointLight> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<PointLight>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -9896,13 +9896,13 @@ PointSetClass::~PointSetClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating PointSet nodes.
+ * @return a node_type_ptr to a NodeType capable of creating PointSet nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PointSetClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr PointSetClass::create_type(const std::string & id,
+const node_type_ptr PointSetClass::create_type(const std::string & id,
                                             const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
@@ -9910,7 +9910,7 @@ const NodeTypePtr PointSetClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "color"),
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "coord")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<PointSet>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<PointSet>(*this, id));
     Vrml97NodeTypeImpl<PointSet> & pointSetNodeType =
             static_cast<Vrml97NodeTypeImpl<PointSet> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<PointSet>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -10150,14 +10150,14 @@ PositionInterpolatorClass::~PositionInterpolatorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating
+ * @return a node_type_ptr to a NodeType capable of creating
  *      CoordinateInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by CoordinateInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 PositionInterpolatorClass::create_type(const std::string & id,
                                       const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -10176,7 +10176,7 @@ PositionInterpolatorClass::create_type(const std::string & id,
                       field_value::sfvec3f_id,
                       "value_changed")
     };
-    const NodeTypePtr
+    const node_type_ptr
         nodeType(new Vrml97NodeTypeImpl<PositionInterpolator>(*this, id));
     Vrml97NodeTypeImpl<PositionInterpolator> & positionInterpolatorNodeType =
             static_cast<Vrml97NodeTypeImpl<PositionInterpolator> &>(*nodeType);
@@ -10369,14 +10369,14 @@ ProximitySensorClass::~ProximitySensorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating ProximitySensor
+ * @return a node_type_ptr to a NodeType capable of creating ProximitySensor
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ProximitySensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 ProximitySensorClass::create_type(const std::string & id,
                                  const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -10391,7 +10391,7 @@ ProximitySensorClass::create_type(const std::string & id,
         node_interface(node_interface::eventout_id, field_value::sftime_id, "enterTime"),
         node_interface(node_interface::eventout_id, field_value::sftime_id, "exitTime")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ProximitySensor>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<ProximitySensor>(*this, id));
     Vrml97NodeTypeImpl<ProximitySensor> & proximitySensorNodeType =
             static_cast<Vrml97NodeTypeImpl<ProximitySensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<ProximitySensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -10709,14 +10709,14 @@ ScalarInterpolatorClass::~ScalarInterpolatorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating
+ * @return a node_type_ptr to a NodeType capable of creating
  *      CoordinateInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CoordinateInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 ScalarInterpolatorClass::create_type(const std::string & id,
                                     const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -10727,7 +10727,7 @@ ScalarInterpolatorClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "keyValue"),
         node_interface(node_interface::eventout_id, field_value::sffloat_id, "value_changed")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<ScalarInterpolator>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<ScalarInterpolator>(*this, id));
     Vrml97NodeTypeImpl<ScalarInterpolator> & scalarInterpolatorNodeType =
             static_cast<Vrml97NodeTypeImpl<ScalarInterpolator> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<ScalarInterpolator>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -10913,13 +10913,13 @@ ShapeClass::~ShapeClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Shape nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Shape nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by ShapeClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr ShapeClass::create_type(const std::string & id,
+const node_type_ptr ShapeClass::create_type(const std::string & id,
                                          const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
@@ -10927,7 +10927,7 @@ const NodeTypePtr ShapeClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "appearance"),
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "geometry")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Shape>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Shape>(*this, id));
     Vrml97NodeTypeImpl<Shape> & shapeNodeType =
             static_cast<Vrml97NodeTypeImpl<Shape> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Shape>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -11176,13 +11176,13 @@ SoundClass::~SoundClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Sound nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Sound nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by SoundClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr SoundClass::create_type(const std::string & id,
+const node_type_ptr SoundClass::create_type(const std::string & id,
                                          const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
@@ -11198,7 +11198,7 @@ const NodeTypePtr SoundClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfnode_id, "source"),
         node_interface(node_interface::field_id, field_value::sfbool_id, "spatialize")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Sound>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Sound>(*this, id));
     Vrml97NodeTypeImpl<Sound> & soundNodeType =
             static_cast<Vrml97NodeTypeImpl<Sound> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Sound>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -11586,19 +11586,19 @@ SphereClass::~SphereClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Sphere nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Sphere nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by SphereClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr SphereClass::create_type(const std::string & id,
+const node_type_ptr SphereClass::create_type(const std::string & id,
                                           const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface =
             node_interface(node_interface::field_id, field_value::sffloat_id, "radius");
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Sphere>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Sphere>(*this, id));
     Vrml97NodeTypeImpl<Sphere> & spereNodeType =
             static_cast<Vrml97NodeTypeImpl<Sphere> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Sphere>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -11716,13 +11716,13 @@ SphereSensorClass::~SphereSensorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating SphereSensor nodes.
+ * @return a node_type_ptr to a NodeType capable of creating SphereSensor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by SphereSensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 SphereSensorClass::create_type(const std::string & id,
                               const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -11735,7 +11735,7 @@ SphereSensorClass::create_type(const std::string & id,
         node_interface(node_interface::eventout_id, field_value::sfrotation_id, "rotation_changed"),
         node_interface(node_interface::eventout_id, field_value::sfvec3f_id, "trackPoint_changed")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<SphereSensor>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<SphereSensor>(*this, id));
     Vrml97NodeTypeImpl<SphereSensor> & sphereSensorNodeType =
             static_cast<Vrml97NodeTypeImpl<SphereSensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<SphereSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -12064,13 +12064,13 @@ SpotLightClass::~SpotLightClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating PointLight nodes.
+ * @return a node_type_ptr to a NodeType capable of creating PointLight nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by PointLightClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 SpotLightClass::create_type(const std::string & id,
                            const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -12107,7 +12107,7 @@ SpotLightClass::create_type(const std::string & id,
                       field_value::sffloat_id,
                       "radius")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<SpotLight>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<SpotLight>(*this, id));
     Vrml97NodeTypeImpl<SpotLight> & spotLightNodeType =
             static_cast<Vrml97NodeTypeImpl<SpotLight> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<SpotLight>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -12454,13 +12454,13 @@ SwitchClass::~SwitchClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Switch nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Switch nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by SwitchClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr SwitchClass::create_type(const std::string & id,
+const node_type_ptr SwitchClass::create_type(const std::string & id,
                                           const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
     static const node_interface supportedInterfaces[] = {
@@ -12471,7 +12471,7 @@ const NodeTypePtr SwitchClass::create_type(const std::string & id,
                       field_value::sfint32_id,
                       "whichChoice")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Switch>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Switch>(*this, id));
     Vrml97NodeTypeImpl<Switch> & switchNodeType =
             static_cast<Vrml97NodeTypeImpl<Switch> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Switch>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -12767,13 +12767,13 @@ TextClass::~TextClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Text nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Text nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by TextClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr TextClass::create_type(const std::string & id,
+const node_type_ptr TextClass::create_type(const std::string & id,
                                         const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
     static const node_interface supportedInterfaces[] = {
@@ -12782,7 +12782,7 @@ const NodeTypePtr TextClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::mffloat_id, "length"),
         node_interface(node_interface::exposedfield_id, field_value::sffloat_id, "maxExtent")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Text>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Text>(*this, id));
     Vrml97NodeTypeImpl<Text> & textNodeType =
             static_cast<Vrml97NodeTypeImpl<Text> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Text>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -14223,14 +14223,14 @@ TextureCoordinateClass::~TextureCoordinateClass() throw () {}
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating TextureCoordinate
+ * @return a node_type_ptr to a NodeType capable of creating TextureCoordinate
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by TextureCoordinateClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
         TextureCoordinateClass::create_type(const std::string & id,
                                            const node_interface_set & interfaces)
         throw (unsupported_interface, std::bad_alloc) {
@@ -14238,7 +14238,7 @@ const NodeTypePtr
         node_interface(node_interface::exposedfield_id,
                       field_value::mfvec2f_id,
                       "point");
-    const NodeTypePtr
+    const node_type_ptr
         nodeType(new Vrml97NodeTypeImpl<TextureCoordinate>(*this, id));
     Vrml97NodeTypeImpl<TextureCoordinate> & textureCoordinateNodeType =
             static_cast<Vrml97NodeTypeImpl<TextureCoordinate> &>(*nodeType);
@@ -14353,14 +14353,14 @@ TextureTransformClass::~TextureTransformClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating TextureTransform
+ * @return a node_type_ptr to a NodeType capable of creating TextureTransform
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by TextureTransformClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 TextureTransformClass::create_type(const std::string & id,
                                   const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -14371,7 +14371,7 @@ TextureTransformClass::create_type(const std::string & id,
         node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "scale"),
         node_interface(node_interface::exposedfield_id, field_value::sfvec2f_id, "translation")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TextureTransform>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<TextureTransform>(*this, id));
     Vrml97NodeTypeImpl<TextureTransform> & textureTransformNodeType =
             static_cast<Vrml97NodeTypeImpl<TextureTransform> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<TextureTransform>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -14582,13 +14582,13 @@ TimeSensorClass::~TimeSensorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating TimeSensor nodes.
+ * @return a node_type_ptr to a NodeType capable of creating TimeSensor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by TimeSensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 TimeSensorClass::create_type(const std::string & id,
                             const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -14604,7 +14604,7 @@ TimeSensorClass::create_type(const std::string & id,
         node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive"),
         node_interface(node_interface::eventout_id, field_value::sftime_id, "time")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TimeSensor>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<TimeSensor>(*this, id));
     Vrml97NodeTypeImpl<TimeSensor> & timeSensorNodeType =
             static_cast<Vrml97NodeTypeImpl<TimeSensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<TimeSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -15058,13 +15058,13 @@ TouchSensorClass::~TouchSensorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating TouchSensor nodes.
+ * @return a node_type_ptr to a NodeType capable of creating TouchSensor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by TouchSensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 TouchSensorClass::create_type(const std::string & id,
                              const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -15092,7 +15092,7 @@ TouchSensorClass::create_type(const std::string & id,
                       field_value::sftime_id,
                       "touchTime")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<TouchSensor>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<TouchSensor>(*this, id));
     Vrml97NodeTypeImpl<TouchSensor> & touchSensorNodeType =
             static_cast<Vrml97NodeTypeImpl<TouchSensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<TouchSensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -15314,13 +15314,13 @@ TransformClass::~TransformClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Transform nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Transform nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by TransformClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 TransformClass::create_type(const std::string & id,
                            const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -15337,7 +15337,7 @@ TransformClass::create_type(const std::string & id,
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxCenter"),
         node_interface(node_interface::field_id, field_value::sfvec3f_id, "bboxSize")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Transform>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Transform>(*this, id));
     Vrml97NodeTypeImpl<Transform> & transformNodeType =
             static_cast<Vrml97NodeTypeImpl<Transform> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Transform>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -15885,13 +15885,13 @@ void ViewpointClass::initialize(viewpoint_node * initialViewpoint,
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating Viewpoint nodes.
+ * @return a node_type_ptr to a NodeType capable of creating Viewpoint nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by ViewpointClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 ViewpointClass::create_type(const std::string & id,
                            const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -15922,7 +15922,7 @@ ViewpointClass::create_type(const std::string & id,
                       field_value::sfbool_id,
                       "isBound")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<Viewpoint>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<Viewpoint>(*this, id));
     Vrml97NodeTypeImpl<Viewpoint> & viewpointNodeType =
             static_cast<Vrml97NodeTypeImpl<Viewpoint> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<Viewpoint>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -16377,14 +16377,14 @@ VisibilitySensorClass::~VisibilitySensorClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating VisibilitySensor
+ * @return a node_type_ptr to a NodeType capable of creating VisibilitySensor
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by VisibilitySensorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 VisibilitySensorClass::create_type(const std::string & id,
                                   const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -16397,7 +16397,7 @@ VisibilitySensorClass::create_type(const std::string & id,
         node_interface(node_interface::eventout_id, field_value::sftime_id, "exitTime"),
         node_interface(node_interface::eventout_id, field_value::sfbool_id, "isActive")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<VisibilitySensor>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<VisibilitySensor>(*this, id));
     Vrml97NodeTypeImpl<VisibilitySensor> & visibilitySensorNodeType =
             static_cast<Vrml97NodeTypeImpl<VisibilitySensor> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<VisibilitySensor>::NodeFieldPtrPtr NodeFieldPtrPtr;
@@ -16675,13 +16675,13 @@ WorldInfoClass::~WorldInfoClass() throw ()
  * @param id            the name for the new NodeType.
  * @param interfaces    the interfaces for the new NodeType.
  *
- * @return a NodeTypePtr to a NodeType capable of creating WorldInfo nodes.
+ * @return a node_type_ptr to a NodeType capable of creating WorldInfo nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by WorldInfoClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const NodeTypePtr
+const node_type_ptr
 WorldInfoClass::create_type(const std::string & id,
                             const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
@@ -16694,7 +16694,7 @@ WorldInfoClass::create_type(const std::string & id,
                        field_value::sfstring_id,
                        "title")
     };
-    const NodeTypePtr nodeType(new Vrml97NodeTypeImpl<WorldInfo>(*this, id));
+    const node_type_ptr nodeType(new Vrml97NodeTypeImpl<WorldInfo>(*this, id));
     Vrml97NodeTypeImpl<WorldInfo> & worldInfoNodeType =
             static_cast<Vrml97NodeTypeImpl<WorldInfo> &>(*nodeType);
     typedef Vrml97NodeTypeImpl<WorldInfo>::NodeFieldPtrPtr NodeFieldPtrPtr;

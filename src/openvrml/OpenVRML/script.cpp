@@ -132,12 +132,12 @@ ScriptNodeClass::~ScriptNodeClass() throw ()
  * unlike other node implementations, cannot provide the implementation of
  * an @c EXTERNPROTO. It is an error to call this method.
  */
-const NodeTypePtr ScriptNodeClass::create_type(const std::string &,
-                                               const node_interface_set &)
+const node_type_ptr ScriptNodeClass::create_type(const std::string &,
+                                                 const node_interface_set &)
     throw ()
 {
     assert(false);
-    return NodeTypePtr(0);
+    return node_type_ptr(0);
 }
 
 

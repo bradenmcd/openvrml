@@ -43,7 +43,7 @@ namespace OpenVRML {
  * namespace are available.
  */
 
-typedef std::list<NodeTypePtr> NodeTypeList;
+typedef std::list<node_type_ptr> NodeTypeList;
 
 /**
  * @brief Constructor.
@@ -64,21 +64,21 @@ Scope::~Scope() {}
  *
  * Print an error message if the argument type is already defined.
  *
- * @param nodeType a NodeTypePtr
+ * @param nodeType a node_type_ptr
  *
  * @todo Throw std::invalid_argument if the argument type is already defined.
  */
-void Scope::addNodeType(const NodeTypePtr & nodeType) {
+void Scope::addNodeType(const node_type_ptr & nodeType) {
     assert(nodeType);
     assert(!this->findType(nodeType->id));
     this->nodeTypeList.push_front(nodeType);
 }
 
 namespace {
-    struct HasId_ : std::unary_function<NodeTypePtr, bool> {
+    struct HasId_ : std::unary_function<node_type_ptr, bool> {
         HasId_(const std::string & id): id(&id) {}
 
-        bool operator()(const NodeTypePtr & nodeType) const {
+        bool operator()(const node_type_ptr & nodeType) const {
             assert(nodeType);
             return nodeType->id == *this->id;
         }
@@ -92,7 +92,7 @@ namespace {
  * @brief Find a node type, given a type name. Returns NULL if type is
  *      not defined.
  */
-const NodeTypePtr Scope::findType(const std::string & id) const {
+const node_type_ptr Scope::findType(const std::string & id) const {
     //
     // Look through the types unique to this scope.
     //
@@ -106,13 +106,13 @@ const NodeTypePtr Scope::findType(const std::string & id) const {
     //
     return this->parent
             ? this->parent->findType(id)
-            : NodeTypePtr(0);
+            : node_type_ptr(0);
 }
 
-const NodeTypePtr Scope::firstType() const {
+const node_type_ptr Scope::firstType() const {
     return !this->nodeTypeList.empty()
             ? this->nodeTypeList.front()
-            : NodeTypePtr(0);
+            : node_type_ptr(0);
 }
 
 typedef std::map<std::string, node *> NamedNodeMap;

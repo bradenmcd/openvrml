@@ -621,7 +621,7 @@ statement[OpenVRML::Browser & browser,
           const OpenVRML::ScopePtr & scope]
     {
         OpenVRML::NodePtr node;
-        OpenVRML::NodeTypePtr nodeType;
+        OpenVRML::node_type_ptr nodeType;
     }
     : node=nodeStatement[browser, scope] {
             //
@@ -712,7 +712,7 @@ proto[OpenVRML::Browser & browser,
             const node_interface_set & interfaces =
                 static_cast<ProtoNodeClass &>(*nodeClass)
                     .protoNodeType.interfaces();
-            const NodeTypePtr nodeType =
+            const node_type_ptr nodeType =
                 nodeClass->create_type(id->getText(), interfaces);
             assert(nodeType);
             assert(scope);
@@ -832,7 +832,7 @@ externproto[OpenVRML::Browser & browser, const OpenVRML::ScopePtr & scope]
 {
     OpenVRML::node_interface_set interfaces;
     OpenVRML::mfstring urlList;
-    OpenVRML::NodeTypePtr nodeType;
+    OpenVRML::node_type_ptr nodeType;
 }
     : KEYWORD_EXTERNPROTO id:ID LBRACKET
         (externInterfaceDeclaration[interfaces])* RBRACKET
@@ -943,12 +943,12 @@ node[OpenVRML::Browser & browser,
 returns [OpenVRML::NodePtr n]
 options { defaultErrorHandler = false; }
 {
-    using OpenVRML::NodeTypePtr;
+    using OpenVRML::node_type_ptr;
     using OpenVRML::NodePtr;
     using OpenVRML::ScriptNode;
     using antlr::SemanticException;
 
-    NodeTypePtr nodeType;
+    node_type_ptr nodeType;
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID {
             n.reset(new ScriptNode(browser.scriptNodeClass, scope));
@@ -1075,12 +1075,12 @@ protoNode[OpenVRML::ProtoNodeClass & proto,
 returns [OpenVRML::NodePtr n]
 options { defaultErrorHandler=false; }
 {
-    using OpenVRML::NodeTypePtr;
+    using OpenVRML::node_type_ptr;
     using OpenVRML::NodePtr;
     using OpenVRML::ScriptNode;
     using antlr::SemanticException;
 
-    NodeTypePtr nodeType;
+    node_type_ptr nodeType;
 }
     : { !LT(1)->getText().compare("Script") }? scriptId:ID {
             n.reset(new ScriptNode(proto.browser.scriptNodeClass, scope));

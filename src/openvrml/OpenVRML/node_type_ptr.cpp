@@ -19,21 +19,21 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# include "node_class_ptr.h"
+# include "node_type_ptr.h"
 # include "node.h"
 
 namespace OpenVRML {
 
 /**
- * @class node_class_ptr
+ * @class node_type_ptr
  *
- * @brief node_class_ptr is a reference-counting smart pointer for
- *        @link node_class node_classes@endlink.
+ * @brief node_type_ptr is a reference-counting smart pointer for
+ *        @link node_type node_types@endlink.
  *
- * node_class_ptr is patterned after the <a
+ * node_type_ptr is patterned after the <a
  * href="http://boost.org/libs/smart_ptr/shared_ptr.htm">Boost shared_ptr</a>,
- * and it works basically the same way. A node_class_ptr should be constructed
- * or reset with a node_class created with @c new (or 0).
+ * and it works basically the same way. A node_type_ptr should be constructed
+ * or reset with a node_type created with @c new (or 0).
  *
  * @see http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
@@ -41,18 +41,17 @@ namespace OpenVRML {
 /**
  * @brief Constructor.
  *
- * @param class_ a pointer to a NodeClass constructed with @c new.
+ * @param type a pointer to a node_type constructed with @c new.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-node_class_ptr::node_class_ptr(node_class * const class_)
-    throw (std::bad_alloc):
-    class_(class_)
+node_type_ptr::node_type_ptr(node_type * const type) throw (std::bad_alloc):
+    type(type)
 {
     try {
         this->count = new size_t(1); // prevent leak if new throws
     } catch (std::bad_alloc & ex) {
-        delete class_;
+        delete type;
         throw;
     }
 }
@@ -60,10 +59,10 @@ node_class_ptr::node_class_ptr(node_class * const class_)
 /**
  * @brief Copy constructor.
  *
- * @param ptr the node_class_ptr to copy.
+ * @param ptr the node_type_ptr to copy.
  */
-node_class_ptr::node_class_ptr(const node_class_ptr & ptr) throw ():
-    class_(ptr.class_)
+node_type_ptr::node_type_ptr(const node_type_ptr & ptr) throw ():
+    type(ptr.type)
 {
     ++*(this->count = ptr.count); // never throws
 }
@@ -72,99 +71,97 @@ node_class_ptr::node_class_ptr(const node_class_ptr & ptr) throw ():
  * @brief Assignment operator.
  *
  * @param ptr
- *
- * @return a reference to the node_class_ptr.
  */
-node_class_ptr & node_class_ptr::operator=(const node_class_ptr & ptr) throw ()
+node_type_ptr & node_type_ptr::operator=(const node_type_ptr & ptr) throw ()
 {
     if (this->count != ptr.count) {
         ++*ptr.count;
         this->dispose();
-        this->class_ = ptr.class_;
+        this->type = ptr.type;
         this->count = ptr.count;
     }
     return *this;
 }
 
 /**
- * @fn node_class & node_class_ptr::operator*() const throw ()
+ * @fn node_type & node_type_ptr::operator*() const throw ()
  *
  * @brief Dereference.
  *
- * @return a reference to the node_class.
+ * @return a reference to the node_type.
  */
 
 /**
- * @fn node_class * node_class_ptr::operator->() const throw ()
+ * @fn node_type * node_type_ptr::operator->() const throw ()
  *
- * @brief Delegate to the node_class.
+ * @brief Delegate to the node_type.
  *
- * @return a pointer to the node_class.
+ * @return a pointer to the node_type.
  */
 
 /**
- * @fn node_class * node_class_ptr::get() const throw ()
+ * @fn node_type * node_type_ptr::get() const throw ()
  *
- * @brief Get the node_class pointer.
+ * @brief Get the node_type pointer.
  *
- * @return a pointer to the node_class.
+ * @return a pointer to the node_type.
  */
 
 /**
- * @brief Reset the node_class_ptr to a new node_class.
+ * @brief Reset the node_type_ptr to a new node_type.
  *
- * @param class_ a pointer to a node_class constructed with @c new.
+ * @param type a pointer to a node_type constructed with @c new.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void node_class_ptr::reset(node_class * const class_) throw (std::bad_alloc)
+void node_type_ptr::reset(node_type * const type) throw (std::bad_alloc)
 {
-    if (this->class_ == class_) { return; }
+    if (this->type == type) { return; }
     if (--*this->count == 0) {
-        delete this->class_;
+        delete this->type;
     } else {
         try {
             this->count = new size_t;
         } catch (std::bad_alloc & ex) {
             ++*this->count;
-            delete class_;
+            delete type;
             throw;
         }
     }
     *this->count = 1;
-    this->class_ = class_;
+    this->type = type;
 }
 
 /**
- * @brief Decrement the reference count; destroy the node_class if the count
+ * @brief Decrement the reference count; destroy the node_type if the count
  *        drops to zero.
  */
-void node_class_ptr::dispose() throw ()
+void node_type_ptr::dispose() throw ()
 {
     if (--*this->count == 0) {
-        delete this->class_;
+        delete this->type;
         delete this->count;
     }
 }
 
 /**
- * @fn bool operator==(const node_class_ptr & lhs, const node_class_ptr & rhs) throw ()
+ * @fn bool operator==(const node_type_ptr & lhs, const node_type_ptr & rhs) throw ()
  *
  * @brief Compare for equality.
  *
- * @return @c true if @p lhs and @p rhs point to the same node_class; @c false
+ * @return @c true if @p lhs and @p rhs point to the same node_type; @c false
  *         otherwise.
  */
 
 /**
- * @fn bool operator!=(const node_class_ptr & lhs, const node_class_ptr & rhs) throw ()
+ * @fn bool operator!=(const node_type_ptr & lhs, const node_type_ptr & rhs) throw ()
  *
- * @relates node_class_ptr
+ * @relates node_type_ptr
  *
  * @brief Compare for inequality.
  *
  * @return @c true if @p lhs and @p rhs point to different
- *         @link node_class node_classes@endlink; @c false otherwise.
+ *         @link node_type node_types@endlink; @c false otherwise.
  */
 
 } // namespace OpenVRML
