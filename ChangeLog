@@ -19,8 +19,11 @@
         * Tweaked SpiderMonkey detection macro to work with
           Mozilla 1.0.0.
 
-        * script.cpp: Removed vestigal debug output from
-          ScriptNode::setEventOut.
+        * src/openvrml/OpenVRML/script.cpp: Removed vestigal debug
+          output from ScriptNode::setEventOut.
+
+        * src/openvrml/OpenVRML/Doc.cpp, src/openvrml/OpenVRML/doc2.hpp:
+          std:: correctness fixes.
 
 2002-06-04  Braden McDaniel  <braden@endoframe.com>
 

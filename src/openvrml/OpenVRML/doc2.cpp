@@ -121,6 +121,8 @@ namespace {
                                 const int mode,
                                 const level comp_level,
                                 const strategy comp_strategy) {
+            using std::ios;
+            
             if (this->file) { return 0; }
 
             //
@@ -203,10 +205,10 @@ namespace {
         // ifstream
         //
 
-        ifstream::ifstream(): istream(&fbuf) {}
+        ifstream::ifstream(): std::istream(&fbuf) {}
 
         ifstream::ifstream(const char * path, level lev, strategy strat):
-                istream(&fbuf) {
+                std::istream(&fbuf) {
             this->open(path, lev, strat);
         }
 
@@ -219,6 +221,7 @@ namespace {
         bool ifstream::is_open() const { return this->fbuf.is_open(); }
 
         void ifstream::open(const char * path, level lev, strategy strat) {
+            using std::ios;
             if (!this->fbuf.open(path, ios::binary | ios::in, lev, strat)) {
 #   ifdef _WIN32
                 this->clear(failbit);
@@ -417,7 +420,7 @@ std::istream & Doc2::inputStream() {
         
         filename(fn, sizeof(fn));
         if (strcmp(fn, "-") == 0) {
-            this->istm_ = &cin;
+            this->istm_ = &std::cin;
         } else {
 # ifdef OPENVRML_HAVE_ZLIB
             this->istm_ = new z::ifstream(
@@ -443,7 +446,9 @@ std::istream & Doc2::inputStream() {
 }
 
 std::ostream & Doc2::outputStream() {
-    if (!ostm_) { ostm_ = new ::ofstream(stripProtocol(url_), ios::out); }
+    if (!ostm_) {
+        ostm_ = new std::ofstream(stripProtocol(url_), std::ios::out);
+    }
     return *this->ostm_;
 }
 

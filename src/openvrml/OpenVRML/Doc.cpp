@@ -456,7 +456,7 @@ void Doc::fclose()
 
 std::ostream & Doc::outputStream()
 {
-  d_ostream = new std::ofstream(stripProtocol(d_url), ios::out);
+  d_ostream = new std::ofstream(stripProtocol(d_url), std::ios::out);
   return *d_ostream;
 }
 
