@@ -31,7 +31,7 @@
 
 namespace openvrml {
 
-    class OPENVRML_SCOPE invalid_vrml : public std::runtime_error {
+    class invalid_vrml : public std::runtime_error {
     public:
         invalid_vrml();
         virtual ~invalid_vrml() throw ();
@@ -44,7 +44,7 @@ namespace openvrml {
     class null_node_class;
     class null_node_type;
 
-    class OPENVRML_SCOPE browser {
+    class browser {
         friend class Vrml97Parser;
         friend class ProtoNodeClass;
         friend class Vrml97RootScope;
@@ -199,28 +199,28 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE bad_url : public std::runtime_error {
+    class bad_url : public std::runtime_error {
     public:
         bad_url(const std::string & message);
         virtual ~bad_url() throw ();
     };
 
 
-    class OPENVRML_SCOPE invalid_url : public bad_url {
+    class invalid_url : public bad_url {
     public:
         invalid_url();
         virtual ~invalid_url() throw ();
     };
 
 
-    class OPENVRML_SCOPE unreachable_url : public bad_url {
+    class unreachable_url : public bad_url {
     public:
         unreachable_url();
         virtual ~unreachable_url() throw ();
     };
 
 
-    class OPENVRML_SCOPE scene {
+    class scene {
         std::vector<node_ptr> nodes_;
         std::string url_;
 

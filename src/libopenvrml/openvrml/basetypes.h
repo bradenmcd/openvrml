@@ -39,7 +39,7 @@ namespace openvrml {
     typedef int32_t int32;
 #   endif
 
-    class OPENVRML_SCOPE color {
+    class color {
         float rgb[3];
 
     public:
@@ -120,7 +120,7 @@ namespace openvrml {
         this->rgb[2] = value;
     }
 
-    bool OPENVRML_SCOPE operator==(const color & lhs, const color & rhs)
+    bool operator==(const color & lhs, const color & rhs)
         throw ();
 
     inline bool operator!=(const color & lhs, const color & rhs) throw ()
@@ -128,11 +128,10 @@ namespace openvrml {
         return !(lhs == rhs);
     }
 
-    std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
-                                             const color & c);
+    std::ostream & operator<<(std::ostream & out, const color & c);
 
 
-    class OPENVRML_SCOPE vec2f {
+    class vec2f {
         float vec[2];
 
     public:
@@ -279,7 +278,7 @@ namespace openvrml {
         return sqrt(this->dot(*this));
     }
 
-    bool OPENVRML_SCOPE operator==(const vec2f & lhs, const vec2f & rhs)
+    bool operator==(const vec2f & lhs, const vec2f & rhs)
         throw ();
 
     inline bool operator!=(const vec2f & lhs, const vec2f & rhs) throw ()
@@ -287,13 +286,12 @@ namespace openvrml {
         return !(lhs == rhs);
     }
 
-    std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
-                                             const vec2f & v);
+    std::ostream & operator<<(std::ostream & out, const vec2f & v);
 
 
     class mat4f;
 
-    class OPENVRML_SCOPE vec3f {
+    class vec3f {
         float vec[3];
 
     public:
@@ -383,7 +381,7 @@ namespace openvrml {
         return result *= mat;
     }
 
-    const vec3f OPENVRML_SCOPE operator*(const mat4f & mat, const vec3f & vec)
+    const vec3f operator*(const mat4f & mat, const vec3f & vec)
         throw ();
 
     inline vec3f & vec3f::operator/=(const float scalar) throw ()
@@ -487,7 +485,7 @@ namespace openvrml {
         return sqrt(this->dot(*this));
     }
 
-    bool OPENVRML_SCOPE operator==(const vec3f & lhs, const vec3f & rhs)
+    bool operator==(const vec3f & lhs, const vec3f & rhs)
         throw ();
 
     inline bool operator!=(const vec3f & lhs, const vec3f & rhs) throw ()
@@ -495,13 +493,12 @@ namespace openvrml {
         return !(lhs == rhs);
     }
 
-    std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
-                                             const vec3f & v);
+    std::ostream & operator<<(std::ostream & out, const vec3f & v);
 
 
     class quatf;
 
-    class OPENVRML_SCOPE rotation {
+    class rotation {
         float rot[4];
 
     public:
@@ -592,7 +589,7 @@ namespace openvrml {
         return result;
     }
 
-    bool OPENVRML_SCOPE operator==(const rotation & lhs, const rotation & rhs)
+    bool operator==(const rotation & lhs, const rotation & rhs)
         throw ();
 
     inline bool operator!=(const rotation & lhs, const rotation & rhs) throw ()
@@ -600,11 +597,10 @@ namespace openvrml {
         return !(lhs == rhs);
     }
 
-    std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
-                                             const rotation & r);
+    std::ostream & operator<<(std::ostream & out, const rotation & r);
 
 
-    class OPENVRML_SCOPE mat4f {
+    class mat4f {
         float mat[4][4];
 
     public:
@@ -646,7 +642,7 @@ namespace openvrml {
         float det() const throw ();
     };
 
-    bool OPENVRML_SCOPE operator==(const mat4f & lhs, const mat4f & rhs)
+    bool operator==(const mat4f & lhs, const mat4f & rhs)
         throw ();
 
     inline bool operator!=(const mat4f & lhs, const mat4f & rhs)
@@ -687,11 +683,10 @@ namespace openvrml {
         return result *= scalar;
     }
 
-    std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
-                                             const mat4f & mat);
+    std::ostream & operator<<(std::ostream & out, const mat4f & mat);
 
 
-    class OPENVRML_SCOPE quatf {
+    class quatf {
         float quat[4];
 
     public:
@@ -728,7 +723,7 @@ namespace openvrml {
         const quatf normalize() const throw ();
     };
 
-    bool OPENVRML_SCOPE operator==(const quatf & lhs, const quatf & rhs)
+    bool operator==(const quatf & lhs, const quatf & rhs)
         throw ();
 
     inline bool operator!=(const quatf & lhs, const quatf & rhs) throw ()
@@ -827,8 +822,7 @@ namespace openvrml {
         this->quat[3] = value;
     }
 
-    std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
-                                             const quatf & quat);
+    std::ostream & operator<<(std::ostream & out, const quatf & quat);
 
 } // namespace openvrml
 

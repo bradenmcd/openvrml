@@ -38,7 +38,7 @@
 
 namespace openvrml {
 
-    class OPENVRML_SCOPE node_interface {
+    class node_interface {
     public:
         enum type_id {
             invalid_type_id,
@@ -57,10 +57,10 @@ namespace openvrml {
                        const std::string & id);
     };
 
-    std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
-                                             node_interface::type_id type);
-    std::istream & OPENVRML_SCOPE operator>>(std::istream & in,
-                                             node_interface::type_id & type);
+    std::ostream & operator<<(std::ostream & out,
+                              node_interface::type_id type);
+    std::istream & operator>>(std::istream & in,
+                              node_interface::type_id & type);
 
     inline bool operator==(const node_interface & lhs,
                            const node_interface & rhs)
@@ -80,7 +80,7 @@ namespace openvrml {
 
     class node_type;
 
-    class OPENVRML_SCOPE unsupported_interface : public std::runtime_error {
+    class unsupported_interface : public std::runtime_error {
     public:
         explicit unsupported_interface(const std::string & message);
         unsupported_interface(const node_type & type,
@@ -92,7 +92,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE node_interface_set {
+    class node_interface_set {
         struct id_less :
                 std::binary_function<node_interface, node_interface, bool> {
             bool operator()(const node_interface & lhs,
@@ -131,7 +131,7 @@ namespace openvrml {
     class browser;
     class viewpoint_node;
 
-    class OPENVRML_SCOPE node_class {
+    class node_class {
     public:
         openvrml::browser & browser;
 
@@ -148,7 +148,7 @@ namespace openvrml {
         explicit node_class(openvrml::browser & b) throw ();
     };
 
-    class OPENVRML_SCOPE node_type {
+    class node_type {
     public:
         openvrml::node_class & node_class;
         const std::string id;
@@ -174,7 +174,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE field_value_type_mismatch :
+    class field_value_type_mismatch :
         public std::runtime_error {
     public:
         field_value_type_mismatch();
@@ -220,10 +220,9 @@ namespace openvrml {
 
     class scene;
 
-    std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
-                                             const node & n);
+    std::ostream & operator<<(std::ostream & out, const node & n);
 
-    class OPENVRML_SCOPE node {
+    class node {
         friend std::ostream & operator<<(std::ostream & out,
                                          const node & n);
 
@@ -422,7 +421,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE appearance_node : public virtual node {
+    class appearance_node : public virtual node {
     public:
         virtual ~appearance_node() throw () = 0;
 
@@ -439,7 +438,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE child_node : public virtual node {
+    class child_node : public virtual node {
     public:
         virtual ~child_node() throw () = 0;
 
@@ -451,7 +450,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE color_node : public virtual node {
+    class color_node : public virtual node {
     public:
         virtual ~color_node() throw () = 0;
 
@@ -466,7 +465,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE coordinate_node : public virtual node {
+    class coordinate_node : public virtual node {
     public:
         virtual ~coordinate_node() throw () = 0;
 
@@ -481,7 +480,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE font_style_node : public virtual node {
+    class font_style_node : public virtual node {
     public:
         virtual ~font_style_node() throw () = 0;
 
@@ -506,7 +505,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE geometry_node : public virtual node {
+    class geometry_node : public virtual node {
     public:
         virtual ~geometry_node() throw () = 0;
 
@@ -524,7 +523,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE grouping_node : public virtual child_node {
+    class grouping_node : public virtual child_node {
     public:
         virtual ~grouping_node() throw () = 0;
 
@@ -541,7 +540,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE material_node : public virtual node {
+    class material_node : public virtual node {
     public:
         virtual ~material_node() throw () = 0;
 
@@ -561,7 +560,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE normal_node : public virtual node {
+    class normal_node : public virtual node {
     public:
         virtual ~normal_node() throw () = 0;
 
@@ -575,7 +574,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE sound_source_node : public virtual node {
+    class sound_source_node : public virtual node {
     public:
         virtual ~sound_source_node() throw () = 0;
         virtual const sound_source_node * to_sound_source() const throw ();
@@ -587,7 +586,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE texture_node : public virtual node {
+    class texture_node : public virtual node {
     public:
         virtual ~texture_node() throw () = 0;
 
@@ -607,7 +606,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE texture_coordinate_node : public virtual node {
+    class texture_coordinate_node : public virtual node {
     public:
         virtual ~texture_coordinate_node() throw () = 0;
 
@@ -624,7 +623,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE texture_transform_node : public virtual node {
+    class texture_transform_node : public virtual node {
     public:
         virtual ~texture_transform_node() throw () = 0;
 
@@ -639,7 +638,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE transform_node : public virtual grouping_node {
+    class transform_node : public virtual grouping_node {
     public:
         virtual ~transform_node() throw () = 0;
 
@@ -654,7 +653,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE viewpoint_node : public virtual child_node {
+    class viewpoint_node : public virtual child_node {
     public:
         virtual ~viewpoint_node() throw () = 0;
 
@@ -674,7 +673,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE node_traverser {
+    class node_traverser {
         std::set<node *> traversed_nodes;
         bool halt;
 

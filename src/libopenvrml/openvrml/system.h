@@ -30,7 +30,7 @@ namespace openvrml {
 
     class mfstring;
 
-    class OPENVRML_SCOPE system {
+    class system {
     public:
         virtual bool load_url(const std::string & url,
                              const mfstring & parameters);
@@ -40,7 +40,7 @@ namespace openvrml {
         virtual void remove_file( const char *fn );
     };
 
-    extern OPENVRML_SCOPE system * the_system;
+    extern system * the_system;
 }
 
 #endif // OPENVRML_SYSTEM_H

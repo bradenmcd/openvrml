@@ -1,10 +1,67 @@
+2003-08-30  Braden McDaniel  <braden@endoframe.com>
+
+	Removed OPENVRML_SCOPE and OPENVRML_GL_SCOPE macros that were
+	used to apply __declspec(dllimport) and __declspec(dllexport)
+	on Windows.  Because OpenVRML includes classes that inherit
+	classes in the C++ standard library, and the standard library
+	classes are not exported from the C++ runtime DLL on Windows,
+	building a DLL with OpenVRML's classes in the interface is not
+	currently feasible.
+
+	* doc/Doxyfile:  Removed reference to OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/basetypes.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/bounding_volume.h:  Removed
+	occurrences of OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/browser.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/common.h:  Removed OPENVRML_SCOPE
+	macro.
+	* src/libopenvrml/openvrml/doc.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/field.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/field_value_ptr.h:  Removed
+	occurrences of OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/frustum.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/img.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/node.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/node_class_ptr.h:  Removed
+	occurrences of OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/node_ptr.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/node_type_ptr.h:  Removed occurrences
+	of OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/rendering_context.h:  Removed
+	occurrences of OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/scope.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/scope_ptr.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/script.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/system.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/viewer.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml/openvrml/vrml97node.h:  Removed occurrences of
+	OPENVRML_SCOPE macro.
+	* src/libopenvrml-gl/openvrml/gl/Makefile.am:  Removed reference
+	to common.h.
+	* src/libopenvrml-gl/openvrml/gl/common.h:  Removed file.
+	* src/libopenvrml-gl/openvrml/gl/viewer.h:  Removed reference to
+	common.h; removed occurrence of OPENVRML_GL_SCOPE macro.
+
 2003-08-28  Braden McDaniel  <braden@endoframe.com>
 
 	Style sheet modifications to accommodate changes to Doxygen.
 
 	* doc/Doxyfile:  Generate default style sheet.
-	* doc/doxygen-header:  Moved style sheet to <style> element included
-	in the generated documentation.
+	* doc/doxygen-header:  Moved style sheet to <style> element
+	included in the generated documentation.
 	* doc/openvrml.css:  Removed file.
 
 2003-08-25  Braden McDaniel  <braden@endoframe.com>

@@ -31,7 +31,7 @@
 
 namespace openvrml {
 
-    class OPENVRML_SCOPE scope {
+    class scope {
         friend class node;
 
         std::list<node_type_ptr> node_type_list;

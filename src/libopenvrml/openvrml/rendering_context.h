@@ -29,7 +29,7 @@ namespace openvrml {
 
     class mat4f;
 
-    class OPENVRML_SCOPE rendering_context {
+    class rendering_context {
         mat4f * modelview;
 
     public:

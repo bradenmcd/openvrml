@@ -32,7 +32,7 @@ namespace openvrml {
     class node;
     class browser;
 
-    class OPENVRML_SCOPE viewer {
+    class viewer {
     protected:
         openvrml::frustum frustum_;
 

@@ -169,8 +169,7 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = 
-PREDEFINED             = OPENVRML_SCOPE= \
-                         OPENVRML_GL_CALLBACK_=
+PREDEFINED             = OPENVRML_GL_CALLBACK_=
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------

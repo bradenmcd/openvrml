@@ -35,7 +35,7 @@ namespace openvrml {
 
     class scope;
 
-    class OPENVRML_SCOPE scope_ptr {
+    class scope_ptr {
         friend bool operator==(const scope_ptr & lhs, const scope_ptr & rhs)
             throw ();
 

@@ -31,7 +31,7 @@ namespace openvrml {
 
     class doc2;
 
-    class OPENVRML_SCOPE doc {
+    class doc {
         char * url_;
         std::ostream * out_;
         FILE * fp_;
@@ -70,7 +70,7 @@ namespace openvrml {
         bool filename(char * fn, int nfn);
     };
 
-    class OPENVRML_SCOPE doc2 {
+    class doc2 {
         std::string url_;
         char * tmpfile_;            // Local copy of http: files
         std::istream * istm_;

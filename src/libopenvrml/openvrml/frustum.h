@@ -26,7 +26,7 @@
 
 namespace openvrml {
 
-    class OPENVRML_SCOPE frustum {
+    class frustum {
     public:
         float fovy;
         float fovx;

@@ -22,17 +22,6 @@
 # ifndef OPENVRML_COMMON_H
 #   define OPENVRML_COMMON_H
 
-#   if defined(_WIN32)
-#     if defined(DLL_EXPORT)
-#       define OPENVRML_SCOPE __declspec(dllexport)
-#     elif defined(OPENVRML_DLL_IMPORT)
-#       define OPENVRML_SCOPE __declspec(dllimport)
-#     endif
-#   endif
-#   if !defined(OPENVRML_SCOPE)
-#     define OPENVRML_SCOPE
-#   endif
-
 namespace openvrml {
 
     const double pi     = 3.14159265358979323846;

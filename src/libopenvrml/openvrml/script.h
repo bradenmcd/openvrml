@@ -30,7 +30,7 @@ namespace openvrml {
 
     class script_node;
 
-    class OPENVRML_SCOPE script {
+    class script {
     public:
         virtual ~script() = 0;
         virtual void initialize(double timestamp) = 0;
@@ -52,7 +52,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE script_node_class : public node_class {
+    class script_node_class : public node_class {
     public:
         script_node_class(openvrml::browser & browser);
         virtual ~script_node_class() throw ();
@@ -64,7 +64,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE script_node : public child_node {
+    class script_node : public child_node {
     public:
         typedef std::map<std::string, field_value_ptr> field_value_map_t;
         typedef std::map<std::string, polled_eventout_value>

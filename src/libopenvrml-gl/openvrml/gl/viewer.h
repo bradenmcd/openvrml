@@ -19,12 +19,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# ifndef VIEWEROPENGL_H
-#   define VIEWEROPENGL_H
+# ifndef OPENVRML_GL_VIEWER_H
+#   define OPENVRML_GL_VIEWER_H
 
 #   include <stack>
 #   include <openvrml/viewer.h>
-#   include <openvrml/gl/common.h>
 
 // Use the stencil buffer to set the SHAPE mask.
 #   define USE_STENCIL_SHAPE 0
@@ -35,7 +34,7 @@ namespace openvrml {
 
     namespace gl {
 
-        class OPENVRML_GL_SCOPE viewer : public openvrml::viewer {
+        class viewer : public openvrml::viewer {
         public:
             enum { max_lights = 8 };
 
@@ -335,4 +334,4 @@ namespace openvrml {
     }
 }
 
-# endif // VIEWEROPENGL_H
+# endif // OPENVRML_GL_VIEWER_H

@@ -39,7 +39,7 @@ namespace openvrml {
     std::ostream & operator<<(std::ostream & out,
                               const field_value & value);
 
-    class OPENVRML_SCOPE field_value {
+    class field_value {
         friend std::ostream & operator<<(std::ostream & out,
                                          const field_value & value);
 
@@ -94,7 +94,7 @@ namespace openvrml {
                               field_value::type_id & type_id);
 
 
-    class OPENVRML_SCOPE sfbool : public field_value {
+    class sfbool : public field_value {
     public:
         bool value;
 
@@ -124,7 +124,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE sfcolor : public field_value {
+    class sfcolor : public field_value {
     public:
         color value;
 
@@ -154,7 +154,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE sffloat : public field_value {
+    class sffloat : public field_value {
     public:
         float value;
 
@@ -184,7 +184,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE sfimage : public field_value {
+    class sfimage : public field_value {
         size_t d_w, d_h, d_nc;
         unsigned char * d_pixels; // nc bytes/pixel, lower left to upper right
 
@@ -216,7 +216,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE sfint32 : public field_value {
+    class sfint32 : public field_value {
     public:
         int32 value;
 
@@ -246,7 +246,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE sfnode : public field_value {
+    class sfnode : public field_value {
     public:
         node_ptr value;
 
@@ -276,7 +276,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE sfrotation : public field_value {
+    class sfrotation : public field_value {
     public:
         rotation value;
 
@@ -308,7 +308,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE sfstring : public field_value {
+    class sfstring : public field_value {
     public:
         std::string value;
 
@@ -339,7 +339,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE sftime : public field_value {
+    class sftime : public field_value {
     public:
         double value;
 
@@ -369,7 +369,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE sfvec2f : public field_value {
+    class sfvec2f : public field_value {
     public:
         vec2f value;
 
@@ -399,7 +399,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE sfvec3f : public field_value {
+    class sfvec3f : public field_value {
     public:
         vec3f value;
 
@@ -429,7 +429,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE mfcolor : public field_value {
+    class mfcolor : public field_value {
     public:
         std::vector<color> value;
 
@@ -468,7 +468,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE mffloat : public field_value {
+    class mffloat : public field_value {
     public:
         std::vector<float> value;
 
@@ -507,7 +507,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE mfint32 : public field_value {
+    class mfint32 : public field_value {
     public:
         std::vector<int32> value;
 
@@ -545,7 +545,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE mfnode : public field_value {
+    class mfnode : public field_value {
     public:
         std::vector<node_ptr> value;
 
@@ -584,7 +584,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE mfrotation : public field_value {
+    class mfrotation : public field_value {
     public:
         std::vector<rotation> value;
 
@@ -625,7 +625,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE mfstring : public field_value {
+    class mfstring : public field_value {
     public:
         std::vector<std::string> value;
 
@@ -664,7 +664,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE mftime : public field_value {
+    class mftime : public field_value {
     public:
         std::vector<double> value;
 
@@ -703,7 +703,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE mfvec2f : public field_value {
+    class mfvec2f : public field_value {
     public:
         std::vector<vec2f> value;
 
@@ -742,7 +742,7 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_SCOPE mfvec3f : public field_value {
+    class mfvec3f : public field_value {
     public:
         std::vector<vec3f> value;
 

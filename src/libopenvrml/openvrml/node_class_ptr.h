@@ -36,7 +36,7 @@ namespace openvrml {
 
     class node_class;
 
-    class OPENVRML_SCOPE node_class_ptr {
+    class node_class_ptr {
         friend bool operator==(const node_class_ptr & lhs,
                                const node_class_ptr & rhs) throw ();
 

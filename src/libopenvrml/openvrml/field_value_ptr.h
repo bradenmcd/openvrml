@@ -36,7 +36,7 @@ namespace openvrml {
 
     class field_value;
 
-    class OPENVRML_SCOPE field_value_ptr {
+    class field_value_ptr {
         friend bool operator==(const field_value_ptr & lhs,
                                const field_value_ptr & rhs) throw ();
 

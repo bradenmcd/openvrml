@@ -33,7 +33,7 @@ namespace openvrml {
     class bounding_sphere;
     class mat4f;
 
-    class OPENVRML_SCOPE bounding_volume {
+    class bounding_volume {
     public:
         enum intersection {
             inside = 1,
@@ -56,7 +56,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE bounding_sphere : public bounding_volume {
+    class bounding_sphere : public bounding_volume {
         vec3f center_;
         float radius_;
 
@@ -87,7 +87,7 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_SCOPE axis_aligned_bounding_box : public bounding_volume {
+    class axis_aligned_bounding_box : public bounding_volume {
     public:
         virtual ~axis_aligned_bounding_box();
         virtual intersection

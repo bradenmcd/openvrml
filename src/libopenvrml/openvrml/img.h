@@ -32,7 +32,7 @@ namespace openvrml {
     class doc;
     class doc2;
 
-    class OPENVRML_SCOPE img {
+    class img {
         doc * url_;
         size_t w_, h_, nc_, nframes_;
         unsigned char * pixels_;

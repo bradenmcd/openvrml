@@ -38,7 +38,7 @@ namespace openvrml {
 
     namespace vrml97_node {
 
-        class OPENVRML_SCOPE abstract_base : public virtual node {
+        class abstract_base : public virtual node {
         public:
             virtual ~abstract_base() throw () = 0;
 
@@ -64,8 +64,8 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE abstract_child_node : public abstract_base,
-                                                   public child_node {
+        class abstract_child_node : public abstract_base,
+                                    public child_node {
         public:
             virtual ~abstract_child_node() throw () = 0;
 
@@ -75,8 +75,8 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE abstract_geometry_node : public abstract_base,
-                                                      public geometry_node {
+        class abstract_geometry_node : public abstract_base,
+                                       public geometry_node {
         public:
             virtual ~abstract_geometry_node() throw () = 0;
 
@@ -91,8 +91,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE abstract_indexed_set_node :
-            public abstract_geometry_node {
+        class abstract_indexed_set_node : public abstract_geometry_node {
         protected:
             sfnode color_;
             mfint32 colorIndex;
@@ -129,7 +128,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE abstract_light_node : public abstract_child_node {
+        class abstract_light_node : public abstract_child_node {
         protected:
             sffloat ambientIntensity;
             sfcolor color_;
@@ -167,8 +166,8 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE abstract_texture_node : public abstract_base,
-                                                     public texture_node {
+        class abstract_texture_node : public abstract_base,
+                                      public texture_node {
         protected:
             sfbool repeatS;
             sfbool repeatT;
@@ -188,7 +187,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE group_class : public node_class {
+        class group_class : public node_class {
         public:
             explicit group_class(openvrml::browser & browser);
             virtual ~group_class() throw ();
@@ -198,8 +197,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE group_node : public abstract_base,
-                                          public virtual grouping_node {
+        class group_node : public abstract_base,
+                           public virtual grouping_node {
             friend class group_class;
 
         protected:
@@ -245,7 +244,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE anchor_class : public node_class {
+        class anchor_class : public node_class {
         public:
             explicit anchor_class(openvrml::browser & browser);
             virtual ~anchor_class() throw ();
@@ -255,7 +254,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE anchor_node : public group_node {
+        class anchor_node : public group_node {
             friend class anchor_class;
 
             sfstring description;
@@ -291,7 +290,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE appearance_class : public node_class {
+        class appearance_class : public node_class {
         public:
             explicit appearance_class(openvrml::browser & browser);
             virtual ~appearance_class() throw ();
@@ -301,8 +300,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE appearance_node :
-            public abstract_base, public openvrml::appearance_node {
+        class appearance_node : public abstract_base,
+                                public openvrml::appearance_node {
             friend class appearance_class;
 
             sfnode material_;
@@ -342,7 +341,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE audio_clip_class : public node_class {
+        class audio_clip_class : public node_class {
         public:
             explicit audio_clip_class(openvrml::browser & browser);
             virtual ~audio_clip_class() throw ();
@@ -352,7 +351,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE audio_clip_node : public abstract_base {
+        class audio_clip_node : public abstract_base {
             friend class audio_clip_class;
 
             sfstring description;
@@ -403,7 +402,7 @@ namespace openvrml {
 
         class background_node;
 
-        class OPENVRML_SCOPE background_class : public node_class {
+        class background_class : public node_class {
             typedef std::vector<background_node *> bound_nodes_t;
 
             background_node * first;
@@ -428,7 +427,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE background_node : public abstract_child_node {
+        class background_node : public abstract_child_node {
             friend class background_class;
 
             mffloat groundAngle;
@@ -497,7 +496,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE billboard_class : public node_class {
+        class billboard_class : public node_class {
         public:
             explicit billboard_class(openvrml::browser & browser);
             virtual ~billboard_class() throw ();
@@ -507,7 +506,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE billboard_node : public group_node {
+        class billboard_node : public group_node {
             friend class billboard_class;
 
             sfvec3f axisOfRotation;
@@ -535,7 +534,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE box_class : public node_class {
+        class box_class : public node_class {
         public:
             explicit box_class(openvrml::browser & browser);
             virtual ~box_class() throw ();
@@ -545,7 +544,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE box_node : public abstract_geometry_node {
+        class box_node : public abstract_geometry_node {
             friend class box_class;
 
             sfvec3f size;
@@ -564,17 +563,17 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE collision_class : public node_class {
+        class collision_class : public node_class {
         public:
             explicit collision_class(openvrml::browser & browser);
             virtual ~collision_class() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+                                                    const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE collision_node : public group_node {
+        class collision_node : public group_node {
             friend class collision_class;
 
             sfbool collide;
@@ -598,18 +597,18 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE color_class : public node_class {
+        class color_class : public node_class {
         public:
             explicit color_class(openvrml::browser & browser);
             virtual ~color_class() throw ();
 
             virtual const node_type_ptr create_type(const std::string & id,
-                                                 const node_interface_set &)
+                                                    const node_interface_set &)
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE color_node : public abstract_base,
-                                          public openvrml::color_node {
+        class color_node : public abstract_base,
+                           public openvrml::color_node {
             friend class color_class;
 
             mfcolor color_;
@@ -635,7 +634,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE color_interpolator_class : public node_class {
+        class color_interpolator_class : public node_class {
         public:
             explicit color_interpolator_class(openvrml::browser & browser);
             virtual ~color_interpolator_class() throw ();
@@ -645,8 +644,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE color_interpolator_node :
-            public abstract_child_node {
+        class color_interpolator_node : public abstract_child_node {
             friend class color_interpolator_class;
 
             mffloat key;
@@ -674,7 +672,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE cone_class : public node_class {
+        class cone_class : public node_class {
         public:
             explicit cone_class(openvrml::browser & browser);
             virtual ~cone_class() throw ();
@@ -684,7 +682,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE cone_node : public abstract_geometry_node {
+        class cone_node : public abstract_geometry_node {
             friend class cone_class;
 
             sfbool bottom;
@@ -703,7 +701,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE coordinate_class : public node_class {
+        class coordinate_class : public node_class {
         public:
             explicit coordinate_class(openvrml::browser & browser);
             virtual ~coordinate_class() throw ();
@@ -713,8 +711,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE coordinate_node :
-            public abstract_base, public openvrml::coordinate_node {
+        class coordinate_node : public abstract_base,
+                                public openvrml::coordinate_node {
 
             friend class coordinate_class;
 
@@ -740,7 +738,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE coordinate_interpolator_class :
+        class coordinate_interpolator_class :
             public node_class {
         public:
             explicit coordinate_interpolator_class(
@@ -752,8 +750,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE coordinate_interpolator_node :
-            public abstract_child_node {
+        class coordinate_interpolator_node : public abstract_child_node {
 
             friend class coordinate_interpolator_class;
 
@@ -782,7 +779,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE cylinder_class : public node_class {
+        class cylinder_class : public node_class {
         public:
             explicit cylinder_class(openvrml::browser & browser);
             virtual ~cylinder_class() throw ();
@@ -792,7 +789,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE cylinder_node : public abstract_geometry_node {
+        class cylinder_node : public abstract_geometry_node {
             friend class cylinder_class;
 
             sfbool bottom;
@@ -812,7 +809,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE cylinder_sensor_class : public node_class {
+        class cylinder_sensor_class : public node_class {
         public:
             explicit cylinder_sensor_class(openvrml::browser & browser);
             virtual ~cylinder_sensor_class() throw ();
@@ -822,8 +819,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE cylinder_sensor_node :
-            public abstract_child_node {
+        class cylinder_sensor_node : public abstract_child_node {
 
             friend class cylinder_sensor_class;
 
@@ -881,7 +877,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE directional_light_class : public node_class {
+        class directional_light_class : public node_class {
         public:
             explicit directional_light_class(openvrml::browser & browser);
             virtual ~directional_light_class() throw ();
@@ -891,8 +887,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE directional_light_node :
-            public abstract_light_node {
+        class directional_light_node : public abstract_light_node {
 
             friend class directional_light_class;
 
@@ -916,7 +911,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE elevation_grid_class : public node_class {
+        class elevation_grid_class : public node_class {
         public:
             explicit elevation_grid_class(openvrml::browser & browser);
             virtual ~elevation_grid_class() throw ();
@@ -926,7 +921,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE elevation_grid_node :
+        class elevation_grid_node :
             public abstract_geometry_node {
 
             friend class elevation_grid_class;
@@ -974,7 +969,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE extrusion_class : public node_class {
+        class extrusion_class : public node_class {
         public:
             explicit extrusion_class(openvrml::browser & browser);
             virtual ~extrusion_class() throw ();
@@ -984,7 +979,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE extrusion_node : public abstract_geometry_node {
+        class extrusion_node : public abstract_geometry_node {
             friend class extrusion_class;
 
             sfbool beginCap;
@@ -1028,7 +1023,7 @@ namespace openvrml {
 
         class fog_node;
 
-        class OPENVRML_SCOPE fog_class : public node_class {
+        class fog_class : public node_class {
             typedef std::vector<fog_node *> bound_nodes_t;
 
             fog_node * first;
@@ -1051,7 +1046,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE fog_node : public abstract_child_node {
+        class fog_node : public abstract_child_node {
             friend class fog_class;
 
             sfcolor color;
@@ -1085,7 +1080,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE font_style_class : public node_class {
+        class font_style_class : public node_class {
         public:
             explicit font_style_class(openvrml::browser & browser);
             virtual ~font_style_class() throw ();
@@ -1095,8 +1090,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE font_style_node :
-            public abstract_base, public openvrml::font_style_node {
+        class font_style_node : public abstract_base,
+                                public openvrml::font_style_node {
 
             friend class font_style_class;
 
@@ -1130,7 +1125,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE image_texture_class : public node_class {
+        class image_texture_class : public node_class {
         public:
             explicit image_texture_class(openvrml::browser & browser);
             virtual ~image_texture_class() throw ();
@@ -1140,8 +1135,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE image_texture_node :
-            public abstract_texture_node {
+        class image_texture_node : public abstract_texture_node {
 
             friend class image_texture_class;
 
@@ -1175,7 +1169,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE indexed_face_set_class : public node_class {
+        class indexed_face_set_class : public node_class {
         public:
             explicit indexed_face_set_class(openvrml::browser & browser);
             virtual ~indexed_face_set_class() throw ();
@@ -1185,8 +1179,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE indexed_face_set_node :
-            public abstract_indexed_set_node {
+        class indexed_face_set_node : public abstract_indexed_set_node {
 
             friend class indexed_face_set_class;
 
@@ -1234,7 +1227,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE indexed_line_set_class : public node_class {
+        class indexed_line_set_class : public node_class {
         public:
             explicit indexed_line_set_class(openvrml::browser & browser);
             virtual ~indexed_line_set_class() throw ();
@@ -1244,8 +1237,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE indexed_line_set_node :
-            public abstract_indexed_set_node {
+        class indexed_line_set_node : public abstract_indexed_set_node {
 
             friend class indexed_line_set_class;
 
@@ -1260,7 +1252,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE inline_class : public node_class {
+        class inline_class : public node_class {
         public:
             explicit inline_class(openvrml::browser & browser);
             virtual ~inline_class() throw ();
@@ -1270,7 +1262,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE inline_node : public abstract_base,
+        class inline_node : public abstract_base,
                                            public grouping_node {
             friend class inline_class;
 
@@ -1306,7 +1298,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE lod_class : public node_class {
+        class lod_class : public node_class {
         public:
             explicit lod_class(openvrml::browser & browser);
             virtual ~lod_class() throw ();
@@ -1316,8 +1308,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE lod_node : public abstract_base,
-                                        public grouping_node {
+        class lod_node : public abstract_base,
+                         public grouping_node {
             friend class lod_class;
 
             mfnode level;
@@ -1353,7 +1345,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE material_class : public node_class {
+        class material_class : public node_class {
         public:
             explicit material_class(openvrml::browser & browser);
             virtual ~material_class() throw ();
@@ -1363,8 +1355,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE material_node : public abstract_base,
-                                             public openvrml::material_node {
+        class material_node : public abstract_base,
+                              public openvrml::material_node {
             friend class material_class;
 
             sffloat ambientIntensity;
@@ -1414,7 +1406,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE movie_texture_class : public node_class {
+        class movie_texture_class : public node_class {
         public:
             explicit movie_texture_class(openvrml::browser & browser);
             virtual ~movie_texture_class() throw ();
@@ -1424,8 +1416,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE movie_texture_node :
-            public abstract_texture_node {
+        class movie_texture_node : public abstract_texture_node {
 
             friend class movie_texture_class;
 
@@ -1486,7 +1477,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE navigation_info_class : public node_class {
+        class navigation_info_class : public node_class {
         public:
             explicit navigation_info_class(openvrml::browser & browser);
             virtual ~navigation_info_class() throw ();
@@ -1496,8 +1487,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE navigation_info_node :
-            public abstract_child_node {
+        class navigation_info_node : public abstract_child_node {
 
             friend class navigation_info_class;
 
@@ -1548,7 +1538,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE normal_class : public node_class {
+        class normal_class : public node_class {
         public:
             explicit normal_class(openvrml::browser & browser);
             virtual ~normal_class() throw ();
@@ -1558,8 +1548,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE normal_node : public abstract_base,
-                                           public openvrml::normal_node {
+        class normal_node : public abstract_base,
+                            public openvrml::normal_node {
             friend class normal_class;
 
             mfvec3f vector_;
@@ -1584,7 +1574,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE normal_interpolator_class : public node_class {
+        class normal_interpolator_class : public node_class {
         public:
             explicit normal_interpolator_class(openvrml::browser & browser);
             virtual ~normal_interpolator_class() throw ();
@@ -1594,8 +1584,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE normal_interpolator_node :
-            public abstract_child_node {
+        class normal_interpolator_node : public abstract_child_node {
 
             friend class normal_interpolator_class;
 
@@ -1623,8 +1612,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE orientation_interpolator_class :
-            public node_class {
+        class orientation_interpolator_class : public node_class {
         public:
             explicit orientation_interpolator_class(
                 openvrml::browser & browser);
@@ -1635,8 +1623,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE orientation_interpolator_node :
-            public abstract_child_node {
+        class orientation_interpolator_node : public abstract_child_node {
 
             friend class orientation_interpolator_class;
 
@@ -1664,7 +1651,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE pixel_texture_class : public node_class {
+        class pixel_texture_class : public node_class {
         public:
             explicit pixel_texture_class(openvrml::browser & browser);
             virtual ~pixel_texture_class() throw ();
@@ -1674,8 +1661,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE pixel_texture_node :
-            public abstract_texture_node {
+        class pixel_texture_node : public abstract_texture_node {
 
             friend class pixel_texture_class;
 
@@ -1707,7 +1693,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE plane_sensor_class : public node_class {
+        class plane_sensor_class : public node_class {
         public:
             explicit plane_sensor_class(openvrml::browser & browser);
             virtual ~plane_sensor_class() throw ();
@@ -1717,7 +1703,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE plane_sensor_node : public abstract_child_node {
+        class plane_sensor_node : public abstract_child_node {
             friend class plane_sensor_class;
 
             sfbool autoOffset;
@@ -1769,7 +1755,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE point_light_class : public node_class {
+        class point_light_class : public node_class {
         public:
             explicit point_light_class(openvrml::browser & browser);
             virtual ~point_light_class() throw ();
@@ -1779,7 +1765,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE point_light_node : public abstract_light_node {
+        class point_light_node : public abstract_light_node {
             friend class point_light_class;
 
             sfvec3f attenuation;
@@ -1815,7 +1801,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE point_set_class : public node_class {
+        class point_set_class : public node_class {
         public:
             explicit point_set_class(openvrml::browser & browser);
             virtual ~point_set_class() throw ();
@@ -1825,7 +1811,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE point_set_node : public abstract_geometry_node {
+        class point_set_node : public abstract_geometry_node {
             friend class point_set_class;
 
             sfnode color;
@@ -1858,7 +1844,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE position_interpolator_class : public node_class {
+        class position_interpolator_class : public node_class {
         public:
             explicit position_interpolator_class(openvrml::browser & browser);
             virtual ~position_interpolator_class() throw ();
@@ -1868,8 +1854,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE position_interpolator_node :
-            public abstract_child_node {
+        class position_interpolator_node : public abstract_child_node {
 
             friend class position_interpolator_class;
 
@@ -1898,7 +1883,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE proximity_sensor_class : public node_class {
+        class proximity_sensor_class : public node_class {
         public:
             explicit proximity_sensor_class(openvrml::browser & browser);
             virtual ~proximity_sensor_class() throw ();
@@ -1908,8 +1893,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE proximity_sensor_node :
-            public abstract_child_node {
+        class proximity_sensor_node : public abstract_child_node {
 
             friend class proximity_sensor_class;
 
@@ -1946,7 +1930,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE scalar_interpolator_class : public node_class {
+        class scalar_interpolator_class : public node_class {
         public:
             explicit scalar_interpolator_class(openvrml::browser & browser);
             virtual ~scalar_interpolator_class() throw ();
@@ -1956,8 +1940,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE scalar_interpolator_node :
-            public abstract_child_node {
+        class scalar_interpolator_node : public abstract_child_node {
 
             friend class scalar_interpolator_class;
 
@@ -1986,7 +1969,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE shape_class : public node_class {
+        class shape_class : public node_class {
         public:
             explicit shape_class(openvrml::browser & browser);
             virtual ~shape_class() throw ();
@@ -1996,7 +1979,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE shape_node : public abstract_child_node {
+        class shape_node : public abstract_child_node {
             friend class shape_class;
 
             sfnode appearance;
@@ -2027,7 +2010,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE sound_class : public node_class {
+        class sound_class : public node_class {
         public:
             explicit sound_class(openvrml::browser & browser);
             virtual ~sound_class() throw ();
@@ -2037,7 +2020,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE sound_node : public abstract_child_node {
+        class sound_node : public abstract_child_node {
             friend class sound_class;
 
             sfvec3f direction;
@@ -2093,7 +2076,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE sphere_class : public node_class {
+        class sphere_class : public node_class {
         public:
             explicit sphere_class(openvrml::browser & browser);
             virtual ~sphere_class() throw ();
@@ -2103,7 +2086,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE sphere_node : public abstract_geometry_node {
+        class sphere_node : public abstract_geometry_node {
             friend class sphere_class;
 
             sffloat radius;
@@ -2121,7 +2104,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE sphere_sensor_class : public node_class {
+        class sphere_sensor_class : public node_class {
         public:
             explicit sphere_sensor_class(openvrml::browser & browser);
             virtual ~sphere_sensor_class() throw ();
@@ -2131,7 +2114,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE sphere_sensor_node : public abstract_child_node {
+        class sphere_sensor_node : public abstract_child_node {
             friend class sphere_sensor_class;
 
             sfbool autoOffset;
@@ -2174,7 +2157,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE spot_light_class : public node_class {
+        class spot_light_class : public node_class {
         public:
             explicit spot_light_class(openvrml::browser & browser);
             virtual ~spot_light_class() throw ();
@@ -2184,7 +2167,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE spot_light_node : public abstract_light_node {
+        class spot_light_node : public abstract_light_node {
             friend class spot_light_class;
 
             sfvec3f attenuation;
@@ -2232,7 +2215,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE switch_class : public node_class {
+        class switch_class : public node_class {
         public:
             explicit switch_class(openvrml::browser & browser);
             virtual ~switch_class() throw ();
@@ -2242,8 +2225,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE switch_node : public abstract_base,
-                                           public grouping_node {
+        class switch_node : public abstract_base,
+                            public grouping_node {
             friend class switch_class;
 
             mfnode choice;
@@ -2281,7 +2264,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE text_class : public node_class {
+        class text_class : public node_class {
         public:
             FT_Library freeTypeLibrary;
 
@@ -2293,7 +2276,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE text_node : public abstract_geometry_node {
+        class text_node : public abstract_geometry_node {
             friend class text_class;
 
             mfstring string;
@@ -2365,7 +2348,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE texture_coordinate_class : public node_class {
+        class texture_coordinate_class : public node_class {
         public:
             explicit texture_coordinate_class(openvrml::browser & browser);
             virtual ~texture_coordinate_class() throw ();
@@ -2375,7 +2358,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE texture_coordinate_node :
+        class texture_coordinate_node :
             public abstract_base,
             public openvrml::texture_coordinate_node {
 
@@ -2403,7 +2386,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE texture_transform_class : public node_class {
+        class texture_transform_class : public node_class {
         public:
             explicit texture_transform_class(openvrml::browser & browser);
             virtual ~texture_transform_class() throw ();
@@ -2413,7 +2396,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE texture_transform_node :
+        class texture_transform_node :
             public abstract_base,
             public openvrml::texture_transform_node {
 
@@ -2451,7 +2434,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE time_sensor_class : public node_class {
+        class time_sensor_class : public node_class {
         public:
             explicit time_sensor_class(openvrml::browser & browser);
             virtual ~time_sensor_class() throw ();
@@ -2461,7 +2444,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE time_sensor_node : public abstract_child_node {
+        class time_sensor_node : public abstract_child_node {
             friend class time_sensor_class;
 
             sftime cycleInterval;
@@ -2510,7 +2493,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE touch_sensor_class : public node_class {
+        class touch_sensor_class : public node_class {
         public:
             explicit touch_sensor_class(openvrml::browser & browser);
             virtual ~touch_sensor_class() throw ();
@@ -2520,7 +2503,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE touch_sensor_node : public abstract_child_node {
+        class touch_sensor_node : public abstract_child_node {
             friend class touch_sensor_class;
 
             sfbool enabled_;
@@ -2553,7 +2536,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE transform_class : public node_class {
+        class transform_class : public node_class {
         public:
             explicit transform_class(openvrml::browser & browser);
             virtual ~transform_class() throw ();
@@ -2563,8 +2546,8 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE transform_node : public group_node,
-                                              public openvrml::transform_node {
+        class transform_node : public group_node,
+                               public openvrml::transform_node {
             friend class transform_class;
 
             sfvec3f center;
@@ -2616,7 +2599,7 @@ namespace openvrml {
 
         class viewpoint_node;
 
-        class OPENVRML_SCOPE viewpoint_class : public node_class {
+        class viewpoint_class : public node_class {
             typedef std::vector<viewpoint_node *> bound_nodes_t;
 
             viewpoint_node * first;
@@ -2640,8 +2623,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE viewpoint_node : public abstract_base,
-                                              public openvrml::viewpoint_node {
+        class viewpoint_node : public abstract_base,
+                               public openvrml::viewpoint_node {
             friend class viewpoint_class;
 
             sffloat fieldOfView;
@@ -2698,7 +2681,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE visibility_sensor_class : public node_class {
+        class visibility_sensor_class : public node_class {
         public:
             explicit visibility_sensor_class(openvrml::browser & browser);
             virtual ~visibility_sensor_class() throw ();
@@ -2708,8 +2691,7 @@ namespace openvrml {
                     throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE visibility_sensor_node :
-            public abstract_child_node {
+        class visibility_sensor_node : public abstract_child_node {
 
             friend class visibility_sensor_class;
 
@@ -2744,7 +2726,7 @@ namespace openvrml {
         };
 
 
-        class OPENVRML_SCOPE world_info_class : public node_class {
+        class world_info_class : public node_class {
         public:
             explicit world_info_class(openvrml::browser & browser);
             virtual ~world_info_class() throw ();
@@ -2754,7 +2736,7 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class OPENVRML_SCOPE world_info_node : public abstract_child_node {
+        class world_info_node : public abstract_child_node {
             friend class world_info_class;
 
             mfstring info;
