@@ -21,4 +21,5 @@ EXTRA_DIST = \
 	pixtex1.wrl \
 	rotation_toy.wrl \
 	scale.wrl \
-	snoman.wrl
+	snoman.wrl \
+	warbird.wrl
