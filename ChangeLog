@@ -1,5 +1,10 @@
 2001-07-24  Braden McDaniel  <braden@endoframe.com>
 
+        * Fixed minor bug in MFInt32::setElement() in the JavaScript
+          binding.
+
+2001-07-24  Braden McDaniel  <braden@endoframe.com>
+
         * Added Joerg Scheurich's warbird game to the sample worlds.
 
 2001-07-18  S. K. Bose  <bose@pavan.barc.ernet.in>
