@@ -68,6 +68,12 @@ node_type_ptr::node_type_ptr(const node_type_ptr & ptr) throw ():
 }
 
 /**
+ * @fn node_type_ptr::~node_type_ptr() throw ()
+ *
+ * @brief Destroy.
+ */
+
+/**
  * @brief Assignment.
  *
  * @param ptr
@@ -82,6 +88,12 @@ node_type_ptr & node_type_ptr::operator=(const node_type_ptr & ptr) throw ()
     }
     return *this;
 }
+
+/**
+ * @fn node_type_ptr::operator bool() const throw ()
+ *
+ * @brief Automatic conversion to @c bool.
+ */
 
 /**
  * @fn node_type & node_type_ptr::operator*() const throw ()

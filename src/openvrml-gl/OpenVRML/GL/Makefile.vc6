@@ -2,21 +2,21 @@
 # OpenVRML
 #
 # Copyright (C) 2001-2002  S. K. bose
-# 
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
-# 
+#
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-# 
+#
 .SILENT:
 # Makefile for openvrmlgl
 # Microsoft Visual C++6.0 or later
@@ -51,10 +51,10 @@ where: [target] may be any one of the following ...
 PROMPT :
       -@echo Making openvrmlgl library
 
-$(GLBINOUTDIR) : 
+$(GLBINOUTDIR) :
 	   if not exist $(GLBINOUTDIR) mkdir $(GLBINOUTDIR)
 
-$(GLLIBDIR) : 
+$(GLLIBDIR) :
 	   if not exist $(GLLIBDIR) mkdir $(GLLIBDIR)
 
 CPP = cl.exe
@@ -68,7 +68,7 @@ LIB32 = link.exe -lib
 
 # variables
 
-OBJ = $(GLBINOUTDIR)\OpenGLEvent$(O) $(GLBINOUTDIR)\ViewerOpenGL$(O)
+OBJ = $(GLBINOUTDIR)\viewer$(O)
 
 
 clean :
@@ -91,29 +91,13 @@ $(GLLIBDIR)\openvrmlgl.lib : $(OBJ)
                /nologo /out:$(GLLIBDIR)\openvrmlgl.lib \
                $(OBJ)
 
-$(GLBINOUTDIR)\OpenGLEvent.obj :  $(GLSOURCE)\OpenGLEvent.cpp \
-                                  $(GLSOURCE)\OpenGLEvent.h
-                                  $(CPP) $(CFLAGS) $(GLSOURCE)\OpenGLEvent.cpp
-
-$(GLBINOUTDIR)\ViewerOpenGL.obj :  $(GLSOURCE)\ViewerOpenGL.cpp\
+$(GLBINOUTDIR)\viewer.obj :  $(GLSOURCE)\viewer.cpp\
 						$(CORESOURCE)\system.h\
 						$(CORESOURCE)\viewer.h\
 						$(CORESOURCE)\browser.h\
 						$(CORESOURCE)\vrml97node.h\
-						$(CORESOURCE)\bvolume.h\
-						$(CORESOURCE)\VrmlFrustum.h\
-						$(GLSOURCE)\OpenGLEvent.h\
-						$(GLSOURCE)\ViewerOpenGL.h
+						$(CORESOURCE)\bounding_volume.h\
+						$(CORESOURCE)\frustum.h\
+						$(GLSOURCE)\viewer.h
                                     $(CPP) $(CFLAGS) /I $(INCLUDECORE)\
-						$(GLSOURCE)\ViewerOpenGL.cpp
-
-
-
-
-
-
-
-
-
-
-
+						$(GLSOURCE)\viewer.cpp

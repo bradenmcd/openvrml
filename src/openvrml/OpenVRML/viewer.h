@@ -65,7 +65,8 @@ namespace OpenVRML {
         virtual double frame_rate() = 0;
         virtual void reset_user_navigation() = 0;
 
-        virtual object_t begin_object(const char *, bool = false) = 0;
+        virtual object_t begin_object(const char * id,
+                                      bool retain = false) = 0;
         virtual void end_object() = 0;
 
         virtual object_t
@@ -137,9 +138,9 @@ namespace OpenVRML {
                                            float radius) = 0;
         virtual object_t insert_reference(object_t existing_object) = 0;
 
-        virtual void remove_object(object_t) = 0;
+        virtual void remove_object(object_t ref) = 0;
 
-        virtual void enable_lighting(bool) = 0;
+        virtual void enable_lighting(bool val) = 0;
 
         virtual void set_fog(const color & color, float visibility_range,
                              const char * type) = 0;
@@ -163,16 +164,14 @@ namespace OpenVRML {
                                    size_t nc,
                                    unsigned char * pixels) = 0;
 
-        // Create a texture object
         virtual texture_object_t insert_texture(size_t w, size_t h, size_t nc,
                                                 bool repeat_s,
                                                 bool repeat_t,
                                                 const unsigned char * pixels,
                                                 bool retainHint = false) = 0;
 
-        // Reference/remove a texture object
-        virtual void insert_texture_reference(texture_object_t, int) = 0;
-        virtual void remove_texture_object(texture_object_t) = 0;
+        virtual void insert_texture_reference(texture_object_t ref, int) = 0;
+        virtual void remove_texture_object(texture_object_t ref) = 0;
 
         virtual void set_texture_transform(const vec2f & center,
                                            float rotation,

@@ -6845,9 +6845,9 @@ img::img():
  */
 img::~img()
 {
-  delete url_;
-  if (pixels_) free(pixels_); // assumes file readers use malloc...
-  if (frame_) free(frame_);
+    delete this->url_;
+    free(this->pixels_); // assumes file readers use malloc...
+    free(this->frame_);
 }
 
 /**

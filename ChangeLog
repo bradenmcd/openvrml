@@ -1,3 +1,41 @@
+2003-07-23  Braden McDaniel  <braden@endoframe.com>
+
+	Naming convention changes and Doxygen doc improvements.
+
+	* doc/Doxyfile:  Set HIDE_SCOPE_NAMES to NO.
+	* src/lookat/ViewerGlut.cpp:  Naming convention changes.
+	* src/lookat/ViewerGlut.h:  Naming convention changes.
+	* src/openvrml/OpenVRML/basetypes.cpp:  Doxygen doc
+	improvements.
+	* src/openvrml/OpenVRML/basetypes.h:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/browser.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/browser.h:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/field.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/field.h:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/img.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/node.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/node.h:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/node_ptr.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/node_type_ptr.cpp:  Doxygen doc
+	improvements.
+	* src/openvrml/OpenVRML/scope.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/scope_ptr.cpp:  Doxygen doc
+	improvements.
+	* src/openvrml/OpenVRML/script.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/script.h:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/viewer.cpp:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/viewer.h:  Doxygen doc improvements.
+	* src/openvrml/OpenVRML/vrml97node.cpp:  Doxygen doc
+	improvements.
+	* src/openvrml-gl/OpenVRML/GL/Makefile.am:  Added viewer.cpp,
+	viewer.h, removed ViewerOpenGL.cpp, ViewerOpenGL.h.
+	* src/openvrml-gl/OpenVRML/GL/Makefile.vc6:  Added viewer.cpp,
+	viewer.h, removed ViewerOpenGL.cpp, ViewerOpenGL.h.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp:  Removed file.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h:  Removed file.
+	* src/openvrml-gl/OpenVRML/GL/viewer.cpp:  Added file.
+	* src/openvrml-gl/OpenVRML/GL/viewer.h:  Added file.
+
 2003-07-15  Braden McDaniel  <braden@endoframe.com>
 
 	Doxygen doc improvements.

@@ -148,13 +148,13 @@ const node_type_ptr script_node_class::create_type(const std::string &,
  */
 
 /**
- * @typedef script_node::FieldValueMap
+ * @typedef script_node::field_value_map_t
  *
  * @brief A std::map that keys field values on their field name.
  */
 
 /**
- * @typedef script_node::EventOutValueMap
+ * @typedef script_node::eventout_value_map_t
  *
  * @brief A std::map that keys eventOut values on their eventOut name.
  */
@@ -164,7 +164,13 @@ const node_type_ptr script_node_class::create_type(const std::string &,
  *
  * @brief Type objects for @link script_node script_nodes@endlink.
  *
- * @see script_node::scriptNodeType
+ * @see script_node::type
+ */
+
+/**
+ * @var node_interface_set script_node::script_node_type::interfaces_
+ *
+ * @brief Node interfaces.
  */
 
 /**
@@ -282,16 +288,23 @@ script_node::script_node_type::create_node(const scope_ptr & scope) const
 }
 
 /**
- * @var script_node::script_node_type script_node::scriptNodeType
+ * @var script_node::script_node_type script_node::script_node_type
+ *
+ * @brief Type information object.
+ */
+
+/**
+ * @var script_node::script_node_type script_node::type
  *
  * @brief Type object for the script_node instance.
  *
  * Script node @link node_type node_types@endlink are significantly different
- * from other @link node_type node_types@endlink. While most @link node_type node_types@endlink
- * are shared by the Node instances they spawn, the script_node_type is unique
- * to a script_node instance, and it shares the script_nodeInstance's lifetime.
- * This reflects the fact that Script nodes in VRML get their functionality
- * by the addition of fields, eventIns, and eventOuts on a per-instance basis.
+ * from other @link node_type node_types@endlink. While most
+ * @link node_type node_types@endlink are shared by the Node instances they
+ * spawn, the script_node_type is unique to a script_node instance, and it
+ * shares the script_nodeInstance's lifetime. This reflects the fact that
+ * Script nodes in VRML get their functionality by the addition of fields,
+ * eventIns, and eventOuts on a per-instance basis.
  *
  * For script_node instances, Node::nodeType is an alias for the scriptNodeType
  * object.
@@ -310,25 +323,25 @@ script_node::script_node_type::create_node(const scope_ptr & scope) const
  */
 
 /**
- * @var mfstring script_node::url
+ * @var mfstring script_node::url_
  *
  * @brief url exposedField.
  */
 
 /**
- * @var script_node::field_value_map_t script_node::field_value_map
+ * @var script_node::field_value_map_t script_node::field_value_map_
  *
  * @brief Maps user-defined field names to their values.
  */
 
 /**
- * @var script_node::eventout_value_map_t script_node::eventout_value_map
+ * @var script_node::eventout_value_map_t script_node::eventout_value_map_
  *
  * @brief Maps user-defined eventOut names to their values.
  */
 
 /**
- * @var script * script_node::script
+ * @var script * script_node::script_
  *
  * @brief A pointer to a script object.
  */
@@ -366,6 +379,12 @@ script_node::~script_node() throw ()
     delete this->script_;
 }
 
+/**
+ * @brief set_url eventIn handler.
+ *
+ * @param value     new value.
+ * @param timestamp the current time.
+ */
 void script_node::url(const mfstring & value, const double timestamp)
 {
     delete this->script_;
@@ -379,11 +398,22 @@ void script_node::url(const mfstring & value, const double timestamp)
     this->emit_event("url_changed", this->url_, timestamp);
 }
 
+/**
+ * @brief url exposedField.
+ *
+ * @return the current value of the url exposedField.
+ */
 const mfstring & script_node::url() const
 {
     return this->url_;
 }
 
+/**
+ * @brief Add an eventIn.
+ *
+ * @param type  value type.
+ * @param id    identifier.
+ */
 void script_node::add_eventin(const field_value::type_id type,
                               const std::string & id)
     throw (std::invalid_argument, std::bad_alloc)
@@ -392,6 +422,12 @@ void script_node::add_eventin(const field_value::type_id type,
     this->type.add_interface(interface);
 }
 
+/**
+ * @brief Add an eventOut.
+ *
+ * @param type  value type.
+ * @param id    identifier.
+ */
 void script_node::add_eventout(const field_value::type_id type,
                                const std::string & id)
     throw (std::invalid_argument, std::bad_alloc)
@@ -410,6 +446,12 @@ void script_node::add_eventout(const field_value::type_id type,
     assert(succeeded);
 }
 
+/**
+ * @brief Add a field.
+ *
+ * @param id            identifier.
+ * @param default_val   default value.
+ */
 void script_node::add_field(const std::string & id,
                             const field_value_ptr & default_val)
     throw (std::invalid_argument, std::bad_alloc)
@@ -447,6 +489,11 @@ script_node * script_node::to_script() throw ()
     return this;
 }
 
+/**
+ * @brief Update the script_node for the current time.
+ *
+ * @param current_time  the current time.
+ */
 void script_node::update(const double current_time)
 {
     if (this->events_received > 0) {
@@ -469,14 +516,17 @@ void script_node::update(const double current_time)
     }
 }
 
-//
-// Script nodes can be self referential! Check this condition,
-// and "undo" the refcounting: decrement the refcount on any
-// self-references we acquire ownership of, and increment the
-// refcount on any self-references for which we relinquish
-// ownership.
-//
-
+/**
+ * @brief Special assignment function to take into account the fact that
+ *        Script nodes can be self referential.
+ *
+ * "Undo" the refcounting appropriately: decrement the refcount on any
+ * self-references we acquire ownership of, and increment the refcount on any
+ * self-references for which ownership is relinquished.
+ *
+ * @param inval     input sfnode.
+ * @retval retval   output sfnode.
+ */
 void script_node::assign_with_self_ref_check(const sfnode & inval,
                                              sfnode & retval) const
     throw ()
@@ -512,6 +562,17 @@ void script_node::assign_with_self_ref_check(const sfnode & inval,
     }
 }
 
+/**
+ * @brief Special assignment function to take into account the fact that
+ *        Script nodes can be self referential.
+ *
+ * "Undo" the refcounting appropriately: decrement the refcount on any
+ * self-references we acquire ownership of, and increment the refcount on any
+ * self-references for which ownership is relinquished.
+ *
+ * @param inval     input mfnode.
+ * @retval retval   output mfnode.
+ */
 void script_node::assign_with_self_ref_check(const mfnode & inval,
                                              mfnode & retval) const
     throw ()
@@ -632,6 +693,17 @@ const field_value & script_node::do_field(const std::string & id) const
     throw unsupported_interface("Script node has no field \"" + id + "\".");
 }
 
+/**
+ * @brief Process an event.
+ *
+ * @param id        eventIn identifier.
+ * @param value     event value.
+ * @param timestamp current time.
+ *
+ * @exception unsupported_interface if the Script node has no eventIn @p id.
+ * @exception std::bad_cast         if @p value is not the correct type.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
 void script_node::do_process_event(const std::string & id,
                                    const field_value & value,
                                    const double timestamp)
@@ -678,6 +750,13 @@ void script_node::do_process_event(const std::string & id,
  *
  * This method is intended to be used by scripting language bindings to
  * set the value of eventOuts in response to script code.
+ *
+ * @param id    eventOut identifier.
+ * @param value value.
+ *
+ * @exception unsupported_interface if the script_node has no eventOut @p id.
+ * @exception std::bad_cast         if @p value is the wrong type.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 void script_node::eventout(const std::string & id, const field_value & value)
     throw (unsupported_interface, std::bad_cast, std::bad_alloc)
@@ -703,21 +782,49 @@ void script_node::eventout(const std::string & id, const field_value & value)
     itr->second.modified = true;
 }
 
+/**
+ * @fn const script_node::field_value_map_t & script_node::field_value_map() const throw ()
+ *
+ * @brief field value map.
+ *
+ * @return the field value map.
+ */
+
+/**
+ * @fn const script_node::eventout_value_map_t & script_node::eventout_value_map() const throw ()
+ *
+ * @brief eventOut value map.
+ *
+ * @return the eventOut value map.
+ */
+
+/**
+ * @brief Called by node::eventout to get an eventOut value.
+ *
+ * @param id    eventOut identifier.
+ *
+ * @return the eventOut value.
+ *
+ * @exception unsupported_interface if the script_node has no eventOut @p id.
+ */
 const field_value & script_node::do_eventout(const std::string & id) const
     throw (unsupported_interface)
 {
+    if (id == "url" || id == "url_changed") { return this->url_; }
     field_value_map_t::const_iterator itr;
-    if (id == "url" || id == "url_changed") {
-        return this->url_;
-    } else if ((itr = this->field_value_map_.find(id))
-               != this->field_value_map_.end()
-            || (itr = this->field_value_map_.find(id + "_changed"))
-                != this->field_value_map_.end()) {
+    if ((itr = this->field_value_map_.find(id)) != this->field_value_map_.end()
+        || (itr = this->field_value_map_.find(id + "_changed"))
+            != this->field_value_map_.end()) {
         return *itr->second;
     }
     throw unsupported_interface("Script has no eventOut \"" + id + "\".");
 }
 
+/**
+ * @brief Called by node::shutdown.
+ *
+ * @param timestamp the current time.
+ */
 void script_node::do_shutdown(const double timestamp) throw ()
 {
     if (this->script_) { this->script_->shutdown(timestamp); }
@@ -777,6 +884,11 @@ private:
 
 namespace OpenVRML {
 
+/**
+ * @brief Create a script object.
+ *
+ * @return a new script object.
+ */
 script * script_node::create_script() {
     // Try each url until we find one we like
     for (size_t i = 0; i < this->url_.value.size(); ++i) {

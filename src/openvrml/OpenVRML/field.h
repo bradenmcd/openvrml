@@ -196,7 +196,7 @@ namespace OpenVRML {
         sfimage(const sfimage &) throw (std::bad_alloc);
         virtual ~sfimage() throw ();
 
-        sfimage & operator=(const sfimage & rhs) throw (std::bad_alloc);
+        sfimage & operator=(const sfimage & sfimage) throw (std::bad_alloc);
 
         size_t x() const throw ();
         size_t y() const throw ();

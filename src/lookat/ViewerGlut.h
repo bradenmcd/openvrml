@@ -22,12 +22,12 @@
 #ifndef VIEWERGLUT_H
 #define VIEWERGLUT_H
 
-#include <OpenVRML/GL/ViewerOpenGL.h>
+#include <OpenVRML/GL/viewer.h>
 
 /**
  * GLUT version of OpenGL class for display of VRML models.
  */
-class ViewerGlut : public OpenVRML::GL::ViewerOpenGL {
+class ViewerGlut : public OpenVRML::GL::viewer {
     int d_window;
     bool d_timerPending;
 
@@ -42,10 +42,10 @@ protected:
     //
     // Window system specific methods
     //
-    virtual void wsPostRedraw();
-    virtual void wsSetCursor( CursorStyle c);
-    virtual void wsSwapBuffers();
-    virtual void wsSetTimer( double );
+    virtual void post_redraw();
+    virtual void set_cursor(cursor_style c);
+    virtual void swap_buffers();
+    virtual void set_timer(double);
 };
 
 #endif // VIEWERGLUT_H

@@ -916,6 +916,17 @@ std::ostream & operator<<(std::ostream & out, const vec3f & v)
  */
 
 /**
+ * @internal
+ *
+ * @var float rotation::rot[4]
+ *
+ * @brief Rotation components.
+ *
+ * The first three components define an axis through the origin. The fourth
+ * component is a rotation around the axis.
+ */
+
+/**
  * @fn rotation::rotation() throw ()
  *
  * @brief Construct.
@@ -1048,7 +1059,7 @@ rotation & rotation::operator*=(const rotation & rot) throw ()
  */
 
 /**
- * @fn const float & rotation::operator[](const size_t index) throw ()
+ * @fn const float & rotation::operator[](const size_t index) const throw ()
  *
  * @brief Index-based element access.
  *
@@ -1181,6 +1192,24 @@ void rotation::axis(const vec3f & axis) throw ()
  * @param value new rotation angle value.
  */
 
+/**
+ * @fn const rotation rotation::inverse() const throw ()
+ *
+ * @brief Inverse rotation.
+ *
+ * @return the inverse rotation.
+ */
+
+/**
+ * @brief Spherical Linear intERPolation.
+ *
+ * @param dest_rot  destination rotation.
+ * @param t         fraction representing the desired position between the
+ *                  rotation and @p dest_rot.
+ *
+ * @return the rotation corresponding to @p t between the rotation and
+ *         @p dest_rot.
+ */
 const rotation rotation::slerp(const rotation & dest_rot, const float t) const
     throw ()
 {
@@ -1286,6 +1315,14 @@ std::ostream & operator<<(std::ostream & out, const rotation & r)
  * @brief A class for all matrix operations.
  *
  * Matrices are stored in row-major order.
+ */
+
+/**
+ * @internal
+ *
+ * @var float mat4f::mat[4][4]
+ *
+ * @brief 4x4 float matrix.
  */
 
 /**
@@ -1424,11 +1461,13 @@ const mat4f mat4f::transformation(const vec3f & t,
         }
         mat = scale(s) * mat; // M = S * M     = S * SR * R * C * T
         if (!fpzero(sr.angle())) {
-            mat = rotation(sr.inverse()) * mat; // M = -SR * M   = -SR * S * SR * R * C * T
+            // M = -SR * M   = -SR * S * SR * R * C * T
+            mat = rotation(sr.inverse()) * mat;
         }
     }
     if (c != vec3f(0.0, 0.0, 0.0)) {
-        mat = translation(-c) * mat; // M = -C * M    =  -C * -SR * S * SR * R * C * T
+        // M = -C * M    =  -C * -SR * S * SR * R * C * T
+        mat = translation(-c) * mat;
     }
     return mat;
 }
@@ -1863,8 +1902,8 @@ void mat4f::transformation(vec3f & t,
 namespace {
     /**
      * This is taken from Graphics Gems 2, Page 603 and it is valid for only
-     * affine matrix with dimension of 4x4. As here we are storing row-major order,
-     * this means the last column ***MUST** be [0 0 0 1]
+     * affine matrix with dimension of 4x4. As here we are storing row-major
+     * order, this means the last column MUST be [0 0 0 1]
      *
      * By this procedure there is a significant performance improvement over
      * a general procedure that can invert any nonsingular matrix.
@@ -1881,7 +1920,8 @@ namespace {
      *          B is the 1 by 3 lower left submatrix of M.
      *
      * It aborts if input matrix is not affine.
-     * It returns without doing any calculations if the input matrix is singular.
+     * It returns without doing any calculations if the input matrix is
+     * singular.
      *
      * @param in   3D affine matrix.
      *
@@ -1974,10 +2014,22 @@ const mat4f mat4f::inverse() const throw ()
  */
 const mat4f mat4f::transpose() const throw ()
 {
-    return mat4f(this->mat[0][0], this->mat[1][0], this->mat[2][0], this->mat[3][0],
-                 this->mat[0][1], this->mat[1][1], this->mat[2][1], this->mat[3][1],
-                 this->mat[0][2], this->mat[1][2], this->mat[2][2], this->mat[3][2],
-                 this->mat[0][3], this->mat[1][3], this->mat[2][3], this->mat[3][3]);
+    return mat4f(this->mat[0][0],
+                 this->mat[1][0],
+                 this->mat[2][0],
+                 this->mat[3][0],
+                 this->mat[0][1],
+                 this->mat[1][1],
+                 this->mat[2][1],
+                 this->mat[3][1],
+                 this->mat[0][2],
+                 this->mat[1][2],
+                 this->mat[2][2],
+                 this->mat[3][2],
+                 this->mat[0][3],
+                 this->mat[1][3],
+                 this->mat[2][3],
+                 this->mat[3][3]);
 }
 
 /**
@@ -2071,7 +2123,7 @@ bool operator==(const mat4f & lhs, const mat4f & rhs) throw ()
 /**
  * @internal
  *
- * @var quatf::quat
+ * @var float quatf::quat[4]
  *
  * @brief An array comprising the quaternion components.
  */
@@ -2119,6 +2171,11 @@ quatf::quatf(const float (&quat)[4]) throw ()
     this->quat[3] = quat[3];
 }
 
+/**
+ * @brief Construct from a rotation matrix.
+ *
+ * @param mat   a rotation matrix.
+ */
 quatf::quatf(const mat4f & mat) throw ()
 {
     float diagonal, s;
@@ -2151,7 +2208,7 @@ quatf::quatf(const mat4f & mat) throw ()
 }
 
 /**
- * @brief Construct from an SFRotation.
+ * @brief Construct from an rotation.
  *
  * @param rot   a rotation.
  */
@@ -2173,7 +2230,8 @@ quatf::quatf(const rotation & rot) throw ()
  * @note <b>qr</b> = (<b>q</b><sub><i>v</i></sub> x <b>r</b><sub><i>v</i></sub>
  *                   + <i>r<sub>w</sub></i><b>q</b><sub><i>v</i></sub>
  *                   + <i>q<sub>w</sub></i><b>r</b><sub><i>v</i></sub>,
- *                   <i>q<sub>w</sub>r<sub>w</sub></i> - <b>q</b><sub><i>v</i></sub>
+ *                   <i>q<sub>w</sub>r<sub>w</sub></i>
+ *                   - <b>q</b><sub><i>v</i></sub>
  *                   . <b>r</b><sub><i>v</i></sub>)
  *
  * @param quat  the quaternion by which to multiply.

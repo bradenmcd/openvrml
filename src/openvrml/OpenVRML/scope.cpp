@@ -43,18 +43,58 @@ namespace OpenVRML {
  * namespace are available.
  */
 
-typedef std::list<node_type_ptr> node_type_list_t;
+/**
+ * @var scope::node
+ *
+ * @brief node identifiers are stored in the scope, so node needs special
+ *        privilege to access them.
+ */
+
+/**
+ * @var std::list<node_type_ptr> scope::node_type_list
+ *
+ * @brief List of @link node_type node_types@endlink in the scope.
+ */
+
+/**
+ * @var std::map<std::string, node *> scope::named_node_map
+ *
+ * @brief Map of the named @link node nodes@endlink in the scope.
+ */
+
+/**
+ * @var const std::string scope::id
+ *
+ * @brief scope identifier.
+ */
+
+/**
+ * @var const scope_ptr scope::parent
+ *
+ * @brief The parent scope; null if the scope is a root scope.
+ */
 
 /**
  * @brief Construct.
  *
  * @param id        the identifier for the scope.
  * @param parent    the parent scope.
+ *
+ * For the root scope, @p id should be the URI of the world. For child scopes,
+ * @p id should be the name of the PROTO to which the scope corresponds.
  */
 scope::scope(const std::string & id, const scope_ptr & parent):
     id(id),
     parent(parent)
 {}
+
+/**
+ * @fn scope::scope(const scope &)
+ *
+ * @brief Not implemented.
+ *
+ * scopes are not copyable.
+ */
 
 /**
  * @brief Destroy.
@@ -63,11 +103,19 @@ scope::~scope()
 {}
 
 /**
+ * @fn scope & scope::operator=(const scope &)
+ *
+ * @brief Not implemented.
+ *
+ * scopes are not copyable.
+ */
+
+/**
  * @brief Add a node type.
  *
  * Print an error message if the argument type is already defined.
  *
- * @param nodeType a node_type_ptr
+ * @param type  a node_type_ptr
  *
  * @todo Throw std::invalid_argument if the argument type is already defined.
  */
@@ -95,6 +143,8 @@ namespace {
     };
 }
 
+typedef std::list<node_type_ptr> node_type_list_t;
+
 /**
  * @brief Find a node type, given a type name. Returns 0 if type is
  *      not defined.
@@ -116,6 +166,12 @@ const node_type_ptr scope::find_type(const std::string & id) const {
             : node_type_ptr(0);
 }
 
+/**
+ * @brief The first type in the scope.
+ *
+ * @return the first node_type in the scope, or a null node_type_ptr if the
+ *         scope has no node_types.
+ */
 const node_type_ptr scope::first_type() const
 {
     return !this->node_type_list.empty()
@@ -125,6 +181,12 @@ const node_type_ptr scope::first_type() const
 
 typedef std::map<std::string, node *> named_node_map_t;
 
+/**
+ * @brief Find the node in the scope with node::id @p id.
+ *
+ * @return a pointer to a node with node::id @p id, or 0 if no such node exists
+ *         in the scope.
+ */
 node * scope::find_node(const std::string & id) const
 {
     const named_node_map_t::const_iterator pos = this->named_node_map.find(id);

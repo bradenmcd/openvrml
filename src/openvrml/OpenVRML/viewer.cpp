@@ -38,6 +38,12 @@ namespace OpenVRML {
  */
 
 /**
+ * @var frustum viewer::frustum_
+ *
+ * @brief The frustum.
+ */
+
+/**
  * @var viewer::mask_none
  */
 
@@ -162,9 +168,14 @@ viewer::~viewer() {}
  */
 
 /**
- * @fn viewer::object_t viewer::begin_object(const char *, bool)
+ * @fn viewer::object_t viewer::begin_object(const char * id, bool retain)
  *
  * @brief Begin a display list.
+ *
+ * @param id        object identifier.
+ * @param retain    whether the object should be retained for reuse.
+ *
+ * @return the display object identifier.
  */
 
 /**
@@ -360,6 +371,24 @@ viewer::~viewer() {}
  * @fn viewer::object_t viewer::insert_reference(object_t existing_object)
  *
  * @brief Insert a reference to an existing object into a display list.
+ *
+ * @return display object identifier.
+ */
+
+/**
+ * @fn void viewer::remove_object(object_t ref)
+ *
+ * @brief Remove an object from the display list.
+ *
+ * @param ref   object handle.
+ */
+
+/**
+ * @fn void viewer::enable_lighting(bool val)
+ *
+ * @brief Enable/disable lighting.
+ *
+ * @param val whether lighting should be enabled.
  */
 
 /**
@@ -393,6 +422,69 @@ viewer::~viewer() {}
  * @param shininess         shininess.
  * @param specular_color    specular color.
  * @param transparency      transparency.
+ */
+
+/**
+ * @fn void viewer::set_material_mode(int tex_components, bool geometry_color)
+ *
+ * @brief Set the material mode.
+ *
+ * @param tex_components    texture components.
+ * @param geometry_color    geometry color.
+ */
+
+/**
+ * @fn void viewer::set_sensitive(node * object)
+ *
+ * @brief Indicate that a node should be sensitive to the pointing device.
+ *
+ * @param object    a node.
+ */
+
+/**
+ * @fn void viewer::scale_texture(size_t w, size_t h, size_t newW, size_t newH, size_t nc, unsigned char * pixels)
+ *
+ * @brief Scale a texture.
+ *
+ * @param w         current width.
+ * @param h         current height,
+ * @param newW      desired width.
+ * @param newH      desired height.
+ * @param nc        number of components.
+ * @param pixels    pixel data.
+ */
+
+/**
+ * @fn viewer::texture_object_t viewer::insert_texture(size_t w, size_t h, size_t nc, bool repeat_s, bool repeat_t, const unsigned char * pixels, bool retainHint)
+ *
+ * @brief Create a texture object.
+ *
+ * @param w             width.
+ * @param h             height.
+ * @param nc            number of components.
+ * @param repeat_s      repeat in the S direction.
+ * @param repeat_t      repeat in the T direction.
+ * @param pixels        pixel data.
+ * @param retainHint    whether the texture is likely to be reused.
+ *
+ * @return a handle to the inserted texture.
+ */
+
+/**
+ * @fn void viewer::insert_texture_reference(texture_object_t ref, int nc)
+ *
+ * @brief Insert a texture into the display list from an existing handle.
+ *
+ * @param ref   texture handle.
+ * @param nc    number of components.
+ */
+
+/**
+ * @fn void viewer::remove_texture_object(texture_object_t ref)
+ *
+ * @brief Remove a texture from the display list.
+ *
+ * @param ref   texture handle.
  */
 
 /**
@@ -430,6 +522,15 @@ viewer::~viewer() {}
  */
 
 /**
+ * @fn void viewer::transform_points(int nPoints, float * points)
+ *
+ * @brief Transform @p points by the current modelview matrix.
+ *
+ * @param nPoints   number of points.
+ * @param points    points.
+ */
+
+/**
  * Intersect the given bounding volume with the view volume. This
  * goes into the viewer to provide a hook for systems that use
  * non-standard view volumes. Most subclasses should be able to use
@@ -460,8 +561,10 @@ viewer::intersect_view_volume(const bounding_volume & bvolume) const
 /**
  * @fn void viewer::draw_bounding_sphere(const bounding_sphere & bs, bounding_volume::intersection intersection)
  *
- * Draw a bounding sphere. Used for debugging view culling. Probably
- * should be drawBVolume and handle aaboxes as well.
+ * @brief Draw a bounding sphere.
+ *
+ * Used for debugging view culling. Probably should be draw_bounding_volume and
+ * handle axis_aligned_bounding_boxes as well.
  *
  * @param bs            a bounding sphere; if max, will not be drawn
  * @param intersection  one of the bvolume intersection test constants, or 4

@@ -32,7 +32,7 @@ namespace OpenVRML {
  */
 
 /**
- * @var node_ptr::ScriptNode
+ * @var node_ptr::script_node
  *
  * @brief Script nodes can be self-referential, so node_ptr works some special
  *      magic.
@@ -42,6 +42,14 @@ namespace {
     typedef std::map<OpenVRML::node *, size_t> count_map_t;
     count_map_t count_map;
 }
+
+/**
+ * @internal
+ *
+ * @var std::map<node *, size_t>::value_type * node_ptr::count_ptr
+ *
+ * @brief Pointer to an entry in count_map.
+ */
 
 /**
  * @brief Construct.
@@ -120,6 +128,12 @@ node_ptr::node_ptr(const node_ptr & ptr) throw ():
  * @brief Get a raw pointer to the node.
  *
  * @return a raw pointer to the underlying node.
+ */
+
+/**
+ * @fn void node_ptr::swap(node_ptr & ptr) throw ()
+ *
+ * @brief Swap the values of the node_ptr and @p ptr.
  */
 
 /**

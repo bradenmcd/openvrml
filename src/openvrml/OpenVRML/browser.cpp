@@ -1966,26 +1966,30 @@ namespace {
  * @brief Construct a scene from a URI.
  *
  * @param browser   the browser associated with the scene.
- * @param uri       the URI for the scene.
+ * @param url       the URI for the scene.
  * @param parent    the parent scene.
  *
  * @exception invalid_vrml       if there is a syntax error in the VRML input.
  * @exception std::bad_alloc    if memory allocation fails.
  */
 scene::scene(OpenVRML::browser & browser,
-             const std::vector<std::string> & uri,
+             const std::vector<std::string> & url,
              scene * parent)
     throw (invalid_vrml, std::bad_alloc):
     browser(browser),
     parent(parent)
 {
-    std::string absoluteURI;
-    for (size_t i = 0; i < uri.size(); ++i) {
+    using std::istream;
+    using std::string;
+    using std::vector;
+
+    string absoluteURI;
+    for (vector<string>::size_type i = 0; i < url.size(); ++i) {
         try {
             //
             // Throw invalid_url if it isn't a valid URI.
             //
-            URI testURI(uri[i]);
+            URI testURI(url[i]);
 
             const bool absolute = !testURI.getScheme().empty();
             if (absolute) {
@@ -2006,7 +2010,7 @@ scene::scene(OpenVRML::browser & browser,
             }
 
             doc2 doc(absoluteURI);
-            std::istream & in = doc.input_stream();
+            istream & in = doc.input_stream();
             if (!in) { throw unreachable_url(); }
             try {
                 Vrml97Scanner scanner(in);
@@ -2028,11 +2032,27 @@ scene::scene(OpenVRML::browser & browser,
         // this->uri must be the absolute URI.
         //
         this->url_ = parent
-            ? uri[i]
+            ? url[i]
             : absoluteURI;
         break;
     }
 }
+
+/**
+ * @fn scene::scene(const scene &)
+ *
+ * @brief Not implemented.
+ *
+ * scene is not copyable.
+ */
+
+/**
+ * @fn scene & scene::operator=(const scene &)
+ *
+ * @brief Not implemented.
+ *
+ * scene is not copyable.
+ */
 
 /**
  * @brief Get the absolute URI for the scene.

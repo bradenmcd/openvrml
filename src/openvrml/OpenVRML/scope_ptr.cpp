@@ -37,6 +37,18 @@ namespace OpenVRML {
  */
 
 /**
+ * @var scope * scope_ptr::scope_
+ *
+ * @brief Pointer to a scope.
+ */
+
+/**
+ * @var size_t * scope_ptr::count_
+ *
+ * @brief Pointer to the reference count.
+ */
+
+/**
  * @brief Construct.
  *
  * @param scope a pointer to a scope constructed with @c new.
@@ -64,6 +76,14 @@ scope_ptr::scope_ptr(const scope_ptr & ptr) throw ():
 {
     ++*(this->count_ = ptr.count_); // never throws
 }
+
+/**
+ * @fn scope_ptr::operator bool() const throw ()
+ *
+ * @brief Automatic conversion to @c bool.
+ *
+ * @return @c true if the scope_ptr is non-null; @c false otherwise.
+ */
 
 /**
  * @brief Assignment operator.

@@ -44,7 +44,7 @@
 # include <OpenVRML/vrml97node.h>
 # include <OpenVRML/bounding_volume.h>
 
-# include "ViewerOpenGL.h"
+# include "viewer.h"
 
 // Textures are now done using OGL1.1 bindTexture API rather than
 // display lists when this flag is set. Don't define this if you
@@ -108,7 +108,7 @@ namespace OpenVRML {
 namespace GL {
 
 /**
- * @class ViewerOpenGL
+ * @class viewer
  *
  * @brief Abstract class for display of VRML models using OpenGL/Mesa.
  *
@@ -117,43 +117,169 @@ namespace GL {
  */
 
 /**
- * @struct ViewerOpenGL::EventInfo
+ * @var viewer::max_lights
+ *
+ * @brief Maximum number of lights in a scene.
+ */
+
+/**
+ * @enum viewer::light_type
+ *
+ * @brief Light type.
+ */
+
+/**
+ * @var viewer::light_type viewer::light_unused
+ *
+ * @brief Unused.
+ */
+
+/**
+ * @var viewer::light_type viewer::light_directional
+ *
+ * @brief Directional.
+ */
+
+/**
+ * @var viewer::light_type viewer::light_positional
+ *
+ * @brief Positional.
+ */
+
+/**
+ * @enum viewer::event_type
+ *
+ * @brief Event type.
+ */
+
+/**
+ * @var viewer::event_type viewer::event_key_down
+ *
+ * @brief Key down.
+ */
+
+/**
+ * @var viewer::event_type viewer::event_mouse_move
+ *
+ * @brief Mouse movement.
+ */
+
+/**
+ * @var viewer::event_type viewer::event_mouse_click
+ *
+ * @brief Mouse button click.
+ */
+
+/**
+ * @var viewer::event_type viewer::event_mouse_drag
+ *
+ * @brief Mouse drag.
+ */
+
+/**
+ * @var viewer::event_type viewer::event_mouse_release
+ *
+ * @brief Mouse button release.
+ */
+
+/**
+ * @struct viewer::event_info
  *
  * @brief Input event.
  */
 
 /**
- * @class ViewerOpenGL::ModelviewMatrixStack
+ * @var viewer::event_type viewer::event_info::event
  *
- * @brief Encapsulates and extended modelview matrix stack.
+ * @brief Event type.
+ */
+
+/**
+ * @var int viewer::event_info::what
+ *
+ * @brief Key or button number.
+ */
+
+/**
+ * @var int viewer::event_info::x
+ *
+ * @brief x-coordinate (for mouse events).
+ */
+
+/**
+ * @var int viewer::event_info::y
+ *
+ * @brief y-coordinate (for mouse events).
+ */
+
+/**
+ * @enum viewer::cursor_style
+ *
+ * @brief Cursor style.
+ */
+
+/**
+ * @var viewer::cursor_style viewer::cursor_inherit
+ *
+ * @brief Inherit the parent's cursor style.
+ */
+
+/**
+ * @var viewer::cursor_style viewer::cursor_info
+ *
+ * @brief Pointing hand.
+ */
+
+/**
+ * @var viewer::cursor_style viewer::cursor_cycle
+ *
+ * @brief Arrows rotating in a circle.
+ */
+
+/**
+ * @var viewer::cursor_style viewer::cursor_up_down
+ *
+ * @brief Bidirectional pointing up and down.
+ */
+
+/**
+ * @var viewer::cursor_style viewer::cursor_crosshair
+ *
+ * @brief Crosshair.
+ */
+
+/**
+ * @class viewer::modelview_matrix_stack
+ *
+ * @brief Encapsulates an extended modelview matrix stack.
  *
  * OpenGL requires that implementations have a modelview matrix stack with a
  * maximum depth of only 32. Regardless of that, the maximum depth can be
  * expected to vary between implementations, and we don't want nesting of
  * Transform nodes in VRML worlds to be constrained by this limit.
  *
- * ModelviewMatrixStack uses the OpenGL modelview matrix stack until it fills
+ * modelview_matrix_stack uses the OpenGL modelview matrix stack until it fills
  * up, at which point any additional matrices that spill over are pushed onto
  * a conventional stack of mat4f.
  */
 
 /**
- * @var size_t ViewerOpenGL::ModelviewMatrixStack::size
+ * @var size_t viewer::modelview_matrix_stack::size
  *
  * @brief The current stack depth.
  */
 
 /**
- * @var std::stack<mat4f> ViewerOpenGL::ModelviewMatrixStack::spillover
+ * @var std::stack<mat4f> viewer::modelview_matrix_stack::spillover
  *
  * @brief Any matrices that won't fit on the OpenGL modelview matrix stack get
  *      pushed onto this stack.
  */
 
 /**
- * @brief Constructor.
+ * @brief Construct.
  */
-ViewerOpenGL::ModelviewMatrixStack::ModelviewMatrixStack():
+viewer::modelview_matrix_stack::modelview_matrix_stack():
     size(0)
 {}
 
@@ -162,7 +288,7 @@ ViewerOpenGL::ModelviewMatrixStack::ModelviewMatrixStack():
  *
  * @pre The current matrix is the modelview matrix.
  */
-void ViewerOpenGL::ModelviewMatrixStack::push()
+void viewer::modelview_matrix_stack::push()
 {
 # ifndef NDEBUG
     GLint matrixMode;
@@ -184,7 +310,7 @@ void ViewerOpenGL::ModelviewMatrixStack::push()
  *
  * @pre The current matrix is the modelview matrix.
  */
-void ViewerOpenGL::ModelviewMatrixStack::pop()
+void viewer::modelview_matrix_stack::pop()
 {
 # ifndef NDEBUG
     GLint matrixMode;
@@ -201,9 +327,214 @@ void ViewerOpenGL::ModelviewMatrixStack::pop()
 }
 
 /**
- * @struct ViewerOpenGL::LightInfo
+ * @struct viewer::light_info
  *
  * @brief Light information.
+ */
+
+/**
+ * @var viewer::light_type viewer::light_info::type
+ *
+ * @brief Light type.
+ */
+
+/**
+ * @var int viewer::light_info::nesting_level
+ *
+ * @brief Nesting level.
+ */
+
+/**
+ * @var float viewer::light_info::radius_squared
+ *
+ * @brief The light's radius squared.
+ */
+
+/**
+ * @var vec3f viewer::light_info::location
+ *
+ * @brief The light's location.
+ */
+
+/**
+ * @var viewer::modelview_matrix_stack viewer::modelview_matrix_stack_
+ *
+ * @brief Modelview matrix stack.
+ */
+
+/**
+ * @var bool viewer::gl_initialized
+ *
+ * @brief Indicate whether OpenGL has been initialized for rendering.
+ */
+
+/**
+ * @var bool viewer::blend
+ *
+ * @brief Indicate whether alpha blending is enabled.
+ */
+
+/**
+ * @var bool viewer::lit
+ *
+ * @brief Indicate whether lighting is enabled.
+ */
+
+/**
+ * @var bool viewer::texture
+ *
+ * @brief Indicate whether texture mapping is enabled.
+ */
+
+/**
+ * @var bool viewer::wireframe
+ *
+ * @brief Indicate whether wireframe mode is enabled.
+ */
+
+/**
+ * @var size_t viewer::win_width
+ *
+ * @brief Window width.
+ */
+
+/**
+ * @var size_t viewer::win_height
+ *
+ * @brief Window height.
+ */
+
+/**
+ * @var color viewer::background
+ *
+ * @brief Background color.
+ */
+
+/**
+ * @var size_t viewer::objects
+ *
+ * @brief Number of objects.
+ */
+
+/**
+ * @var size_t viewer::nested_objects
+ *
+ * @brief Number of nested objects.
+ */
+
+/**
+ * @var GLUtesselator * viewer::tesselator
+ *
+ * @brief GLU tesselation object.
+ */
+
+/**
+ * @var size_t viewer::sensitive
+ *
+ * @brief Count of sensitive @link OpenVRML::node nodes@endlink.
+ */
+
+/**
+ * @var size_t viewer::active_sensitive
+ *
+ * @brief Count of active sensitive @link OpenVRML::node nodes@endlink.
+ */
+
+/**
+ * @var size_t viewer::over_sensitive
+ *
+ * @brief Count of sensitive @link OpenVRML::node nodes@endlink the mouse is
+ *        over.
+ */
+
+/**
+ * @var viewer::maxsensitive
+ *
+ * @brief Maximum number of sensitive @link OpenVRML::node nodes@endlink.
+ */
+
+/**
+ * @var node * viewer::sensitive_object[viewer::maxsensitive]
+ *
+ * @brief Sensitive @link OpenVRML::node nodes@endlink.
+ */
+
+/**
+ * @var bool viewer::select_mode
+ *
+ * @brief Indicate whether the renderer is in select mode.
+ */
+
+/**
+ * @var double viewer::select_z
+ *
+ * @brief Window z-coordinate of last selection.
+ */
+
+/**
+ * @var viewer::light_info viewer::light_info_[viewer::max_lights]
+ *
+ * @brief light_info for the lights in the scene.
+ */
+
+/**
+ * @var int viewer::beginx
+ *
+ * @brief Mouse drag start x-coordinate.
+ */
+
+/**
+ * @var int viewer::beginy
+ *
+ * @brief Mouse drag start y-coordinate.
+ */
+
+/**
+ * @var quatf viewer::rotation
+ *
+ * @brief Current rotation.
+ */
+
+/**
+ * @var bool viewer::rotation_changed
+ *
+ * @brief Indicate the rotation has changed.
+ */
+
+/**
+ * @var bool viewer::rotating
+ *
+ * @brief Whether the viewer is in the process of rotating.
+ */
+
+/**
+ * @var bool viewer::scaling
+ *
+ * @brief Whether the viewer is in the process of scaling.
+ */
+
+/**
+ * @var bool viewer::translating
+ *
+ * @brief Whether the viewer is in the process of translating.
+ */
+
+/**
+ * @var bool viewer::draw_bounding_spheres
+ *
+ * @brief Whether to draw bounding spheres.
+ */
+
+/**
+ * @var double viewer::render_time
+ *
+ * @brief Updated at the end of redraw with the time redraw took to execute.
+ */
+
+/**
+ * @var double viewer::render_time1
+ *
+ * @brief Rendering time for the previous cycle.
  */
 
 namespace {
@@ -335,73 +666,74 @@ namespace {
 /**
  * @brief Construct a viewer for the specified browser.
  *
- * @param browser   the browser.
+ * @param b the browser.
  */
-ViewerOpenGL::ViewerOpenGL(OpenVRML::browser & browser):
-    viewer(browser),
+viewer::viewer(OpenVRML::browser & b):
+    OpenVRML::viewer(b),
+    gl_initialized(false),
+    blend(true),
+    lit(true),
+    texture(true),
+    wireframe(false),
+    win_width(1),
+    win_height(1),
+    objects(0),
+    nested_objects(0),
     tesselator(gluNewTess()),
-    d_nSensitive(0),
-    d_activeSensitive(0),
-    d_overSensitive(0),
-    d_selectMode(false),
-    d_selectZ(0.0),
-    d_rotationChanged(false)
+    sensitive(0),
+    active_sensitive(0),
+    over_sensitive(0),
+    select_mode(false),
+    select_z(0.0),
+    rotation(trackball(0.0, 0.0, 0.0, 0.0)),
+    rotation_changed(false),
+    rotating(false),
+    scaling(false),
+    translating(false),
+    draw_bounding_spheres(false),
+    render_time(1.0),
+    render_time1(1.0)
 {
-    d_GLinitialized = false;
-    d_blend = true;
-    d_lit = true;
-    d_texture = true;
-    d_wireframe = false;
-
     // Don't make any GL calls here since the window probably doesn't exist.
-    d_nObjects = 0;
-    d_nestedObjects = 0;
 
-    d_background[0] = d_background[1] = d_background[2] = 0.0;
-    d_winWidth = 1;
-    d_winHeight = 1;
-    for (int i=0; i<MAX_LIGHTS; ++i)
-      d_lightInfo[i].lightType = LIGHT_UNUSED;
-
-    d_rotating = false;
-    d_scaling = false;
-    d_translating = false;
-    this->curquat = quatf(trackball(0.0, 0.0, 0.0, 0.0));
-
-    d_renderTime = 1.0;
-    d_renderTime1 = 1.0;
-
-    d_drawBSpheres = false;
-    d_cull = true;
+    for (size_t i = 0; i < max_lights; ++i) {
+        this->light_info_[i].type = viewer::light_unused;
+    }
 }
 
-ViewerOpenGL::~ViewerOpenGL()
+/**
+ * @brief Destroy.
+ */
+viewer::~viewer()
 {
     gluDeleteTess(this->tesselator);
 }
 
-void ViewerOpenGL::initialize()
+/**
+ * @brief Initialize.
+ */
+void viewer::initialize()
 {
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LEQUAL);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
 
 #if USE_STENCIL_SHAPE
-  glEnable(GL_STENCIL_TEST);
-  glStencilFunc(GL_ALWAYS, 1, 1);
-  glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    glEnable(GL_STENCIL_TEST);
+    glStencilFunc(GL_ALWAYS, 1, 1);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 #endif
 
-  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
-  // should only trigger this after a non-uniform scale is seen...
-  // on my system this is <5% speedup though.
-  glEnable(GL_NORMALIZE);
+    // should only trigger this after a non-uniform scale is seen...
+    // on my system this is <5% speedup though.
+    glEnable(GL_NORMALIZE);
 
-  // blending is only enabled if d_blend and a non-zero transparency value is
-  // passed in
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // blending is only enabled if this->blend is true and a non-zero
+    // transparency value is passed in.
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  d_GLinitialized = true;
+    this->gl_initialized = true;
 }
 
 namespace {
@@ -439,100 +771,145 @@ namespace {
 //  The OpenGL viewer never puts objects in display lists, so the
 //  retain hint is ignored.
 
-viewer::object_t ViewerOpenGL::begin_object(const char *,
-                                            bool retain)
+/**
+ * @brief Begin a display list.
+ *
+ * begin_object/end_object should correspond to
+ * @link grouping_node grouping_nodes@endlink.
+ * Group-level scoping for directional lights, anchors, sensors
+ * are handled here. Display lists can optionally be created
+ * (but the retain flag is just a hint, not guaranteed). Retained
+ * objects can be referred to later to avoid duplicating geometry.
+ * OpenGL doesn't allow nested objects. The top-down approach of
+ * putting entire groups in display lists is faster for static
+ * scenes but uses more memory and means that if anything is changed,
+ * the whole object must be tossed.
+ *
+ * The bottom-up model wraps each piece of geometry in a dlist but
+ * requires traversal of the entire scene graph to reference each dlist.
+ * The decision about what groups to stuff in an object is punted to
+ * the object itself, as it can decide whether it is mutable.
+ *
+ * The OpenGL viewer never puts objects in display lists, so the
+ * retain hint is ignored.
+ *
+ * @param id        not used.
+ * @param retain    not used.
+ *
+ * @return 0.
+ */
+viewer::object_t viewer::begin_object(const char *,
+                                      bool retain)
 {
     // Finish setup stuff before first object
-    if (1 == ++this->d_nObjects) {
+    if (1 == ++this->objects) {
         // Finish specifying the view (postponed to make Background easier)
-        this->modelviewMatrixStack.push();
-        if (!this->d_lit) { glDisable(GL_LIGHTING); }
+        this->modelview_matrix_stack_.push();
+        if (!this->lit) { glDisable(GL_LIGHTING); }
     }
 
-    ++this->d_nestedObjects;
+    ++this->nested_objects;
 
     // Increment nesting level for group-scoped lights
-    for (size_t i = 0; i < MAX_LIGHTS; ++i) {
-        if (this->d_lightInfo[i].lightType == LIGHT_DIRECTIONAL) {
-            ++this->d_lightInfo[i].nestingLevel;
+    for (size_t i = 0; i < viewer::max_lights; ++i) {
+        if (this->light_info_[i].type == viewer::light_directional) {
+            ++this->light_info_[i].nesting_level;
         }
     }
-    this->modelviewMatrixStack.push();
+    this->modelview_matrix_stack_.push();
     return 0;
 }
 
-// End of group scope
-
-void ViewerOpenGL::end_object()
+/**
+ * @brief End of group scope.
+ */
+void viewer::end_object()
 {
     // Decrement nesting level for group-scoped lights and get rid
     // of any defined at this level
-    for (size_t i = 0; i < MAX_LIGHTS; ++i) {
-        if (this->d_lightInfo[i].lightType == LIGHT_DIRECTIONAL) {
-            if (--this->d_lightInfo[i].nestingLevel < 0) {
+    for (size_t i = 0; i < max_lights; ++i) {
+        if (this->light_info_[i].type == viewer::light_directional) {
+            if (--this->light_info_[i].nesting_level < 0) {
                 glDisable(GLenum(GL_LIGHT0 + i));
-                this->d_lightInfo[i].lightType = LIGHT_UNUSED;
+                this->light_info_[i].type = viewer::light_unused;
             }
         }
     }
 
-    this->modelviewMatrixStack.pop();
+    this->modelview_matrix_stack_.pop();
 
-    if (--this->d_nestedObjects == 0) {
-        this->modelviewMatrixStack.pop();
-    }
+    if (--this->nested_objects == 0) { this->modelview_matrix_stack_.pop(); }
 }
 
-
-// These attributes need to be reset per geometry. Any attribute
-// modified in a geometry function should be reset here. This is
-// called after Appearance/Material has been set. Any attribute
-// that can be modified by an Appearance node should not be modified
-// here since these settings will be put in dlists with the geometry.
-
-void ViewerOpenGL::beginGeometry()
+/**
+ * @brief Reset per-geometry attributes.
+ *
+ * Called after the appearance/material has been set.
+ */
+void viewer::begin_geometry()
 {
-  glPushAttrib( GL_ENABLE_BIT );
+    //
+    // Any attribute modified in a geometry function should be reset here.
+    // Any attribute that can be modified by an Appearance node should not be
+    // modified here since these settings will be put in dlists with the
+    // geometry.
+    //
+    glPushAttrib(GL_ENABLE_BIT);
 }
 
-// This should be called BEFORE ending any dlists containing geometry,
-// otherwise, attributes changed in the geometry insertion will impact
-// the geometries rendered after the dlist is executed.
-
-void ViewerOpenGL::endGeometry()
+/**
+ * @brief Reset attributes changed during geometry insertion.
+ */
+void viewer::end_geometry()
 {
-  glPopAttrib();
-  glCullFace( GL_BACK );
-  glShadeModel( GL_SMOOTH );
-  glFrontFace( GL_CCW );
+    //
+    // This should be called BEFORE ending any dlists containing geometry,
+    // otherwise, attributes changed in the geometry insertion will impact
+    // the geometries rendered after the dlist is executed.
+    //
+    glPopAttrib();
+    glCullFace(GL_BACK);
+    glShadeModel(GL_SMOOTH);
+    glFrontFace(GL_CCW);
 
-  // if needed...
-  glMatrixMode(GL_TEXTURE);
-  glLoadIdentity();
-  glMatrixMode(GL_MODELVIEW);
+    // if needed...
+    glMatrixMode(GL_TEXTURE);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
 }
 
-viewer::rendering_mode ViewerOpenGL::mode()
+/**
+ * @brief Rendering mode.
+ *
+ * @return the rendering_mode.
+ */
+viewer::rendering_mode viewer::mode()
 {
-    return d_selectMode
-        ? pick_mode
-        : draw_mode;
+    return this->select_mode
+        ? viewer::pick_mode
+        : viewer::draw_mode;
 }
 
-double ViewerOpenGL::frame_rate()
+/**
+ * @brief Frame rate.
+ *
+ * @return the frame rate.
+ */
+double viewer::frame_rate()
 {
-    return 1.0 / this->d_renderTime;
+    return 1.0 / this->render_time;
 }
 
-void ViewerOpenGL::reset_user_navigation()
+/**
+ * @brief Reset the user view to the position and orientation of the currently
+ *        bound Viewpoint node.
+ */
+void viewer::reset_user_navigation()
 {
-    viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
-    activeViewpoint.user_view_transform(mat4f());
-
-    this->curquat = quatf(trackball(0.0, 0.0, 0.0, 0.0));
-    this->d_rotationChanged = true;
-
-    wsPostRedraw();
+    this->browser.active_viewpoint().user_view_transform(mat4f());
+    this->rotation = quatf(trackball(0.0, 0.0, 0.0, 0.0));
+    this->rotation_changed = true;
+    this->post_redraw();
 }
 
 namespace {
@@ -561,12 +938,12 @@ namespace {
  * @return display object identifier.
  */
 viewer::object_t
-ViewerOpenGL::insert_background(const std::vector<float> & groundAngle,
-                                const std::vector<color> & groundColor,
-                                const std::vector<float> & skyAngle,
-                                const std::vector<color> & skyColor,
-                                int * whc,
-                                unsigned char ** pixels)
+viewer::insert_background(const std::vector<float> & groundAngle,
+                          const std::vector<color> & groundColor,
+                          const std::vector<float> & skyAngle,
+                          const std::vector<color> & skyColor,
+                          int * whc,
+                          unsigned char ** pixels)
 {
     float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
 
@@ -599,12 +976,12 @@ ViewerOpenGL::insert_background(const std::vector<float> & groundAngle,
     glClear(mask);
 
     // Draw the background as big spheres centered at the view position
-    if (!this->d_selectMode
+    if (!this->select_mode
             && (!skyAngle.empty() || !groundAngle.empty() || pixels)) {
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_LIGHTING);
 
-        this->modelviewMatrixStack.push();
+        this->modelview_matrix_stack_.push();
 
         glScalef(1000.0, 1000.0, 1000.0);
 
@@ -682,7 +1059,7 @@ ViewerOpenGL::insert_background(const std::vector<float> & groundAngle,
         }
 
         // Background textures are drawn on a transparent cube
-        if (pixels && this->d_texture && !this->d_wireframe) {
+        if (pixels && this->texture && !this->wireframe) {
             float v2[6][4][3] = {
               {{1,-1,1}, {-1,-1,1}, {-1,1,1}, {1,1,1}},     // Back
               {{-1,-1,1}, {1,-1,1}, {1,-1,-1}, {-1,-1,-1}}, // Bottom
@@ -775,20 +1152,21 @@ ViewerOpenGL::insert_background(const std::vector<float> & groundAngle,
             for (t = 0; t < 6; ++t, whc += 3) {
                 for (j = 0; j < number_splits_y; j++) {
                     for (i = 0; i < number_splits_x; i++) {
-                        // Check for non-zero width,height,coords and pixel data
+                        // Check for non-zero width, height, coords and pixel
+                        // data
                         if (whc[0] && whc[1] && whc[2] && pixels[t]) {
-                            // Optimize for the case where the same texture is used
-                            // do not work here....
+                            // Optimize for the case where the same texture is
+                            // used do not work here....
                             // if (lastT == -1 || pixels[t] != pixels[lastT])
-                            insertSubTexture(i * whc[0] / number_splits_x,
-                                             j * whc[1] / number_splits_y,
-                                             whc[0] / number_splits_x,
-                                             whc[1] / number_splits_y,
-                                             whc[0],
-                                             whc[1],
-                                             whc[2],
-                                             false, false, pixels[t],
-                                             false); // Don't put the textures in dlists
+                            insert_subtexture(i * whc[0] / number_splits_x,
+                                              j * whc[1] / number_splits_y,
+                                              whc[0] / number_splits_x,
+                                              whc[1] / number_splits_y,
+                                              whc[0],
+                                              whc[1],
+                                              whc[2],
+                                              false, false, pixels[t],
+                                              false); // Don't put the textures in dlists
 
                             //
                             // The commented out code suggests what might be
@@ -824,9 +1202,9 @@ ViewerOpenGL::insert_background(const std::vector<float> & groundAngle,
         }
 
         // Put everything back the way it was
-        this->modelviewMatrixStack.pop();
+        this->modelview_matrix_stack_.pop();
 
-        if (this->d_lit) { glEnable(GL_LIGHTING); }
+        if (this->lit) { glEnable(GL_LIGHTING); }
         glEnable(GL_DEPTH_TEST);
     }
 
@@ -835,9 +1213,9 @@ ViewerOpenGL::insert_background(const std::vector<float> & groundAngle,
     if (glid) { glEndList(); }
 
     // Save bg color so we can choose a fg color (doesn't help bg textures...)
-    this->d_background[0] = r;
-    this->d_background[1] = g;
-    this->d_background[2] = b;
+    this->background.r(r);
+    this->background.g(g);
+    this->background.b(b);
 
     return object_t(glid);
 }
@@ -849,11 +1227,11 @@ ViewerOpenGL::insert_background(const std::vector<float> & groundAngle,
  *
  * @return display object identifier.
  */
-viewer::object_t ViewerOpenGL::insert_box(const vec3f & size)
+viewer::object_t viewer::insert_box(const vec3f & size)
 {
     GLuint glid = 0;
 
-    if (!this->d_selectMode) {
+    if (!this->select_mode) {
         glid = glGenLists(1);
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
@@ -888,7 +1266,7 @@ viewer::object_t ViewerOpenGL::insert_box(const vec3f & size)
     v[0][2] = v[3][2] = v[4][2] = v[7][2] = -size.z() / 2;
     v[1][2] = v[2][2] = v[5][2] = v[6][2] = size.z() / 2;
 
-    beginGeometry();
+    begin_geometry();
     glShadeModel(GL_FLAT);
 
     glBegin(GL_QUADS);
@@ -913,7 +1291,7 @@ viewer::object_t ViewerOpenGL::insert_box(const vec3f & size)
     }
     glEnd();
 
-    endGeometry();
+    end_geometry();
     if (glid) { glEndList(); }
 
     return object_t(glid);
@@ -990,19 +1368,19 @@ namespace {
  *
  * @return display object identifier.
  */
-viewer::object_t ViewerOpenGL::insert_cone(const float height,
-                                           const float radius,
-                                           const bool bottom,
-                                           const bool side)
+viewer::object_t viewer::insert_cone(const float height,
+                                     const float radius,
+                                     const bool bottom,
+                                     const bool side)
 {
     GLuint glid = 0;
 
-    if (!this->d_selectMode) {
+    if (!this->select_mode) {
         glid = glGenLists(1);
         glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
 
-    beginGeometry();
+    begin_geometry();
     if (!bottom || !side) { glDisable(GL_CULL_FACE); }
 
     if (bottom || side) {
@@ -1058,7 +1436,7 @@ viewer::object_t ViewerOpenGL::insert_cone(const float height,
         }
     }
 
-    endGeometry();
+    end_geometry();
     if (glid) { glEndList(); }
 
     return object_t(glid);
@@ -1075,20 +1453,20 @@ viewer::object_t ViewerOpenGL::insert_cone(const float height,
  *
  * @return display object identifier.
  */
-viewer::object_t ViewerOpenGL::insert_cylinder(const float height,
-                                               const float radius,
-                                               const bool bottom,
-                                               const bool side,
-                                               const bool top)
+viewer::object_t viewer::insert_cylinder(const float height,
+                                         const float radius,
+                                         const bool bottom,
+                                         const bool side,
+                                         const bool top)
 {
     GLuint glid = 0;
 
-    if (!this->d_selectMode) {
+    if (!this->select_mode) {
         glid = glGenLists(1);
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
-    beginGeometry();
+    begin_geometry();
     if (!bottom || !side || !top) { glDisable(GL_CULL_FACE); }
 
     if (bottom || side || top) {
@@ -1160,7 +1538,7 @@ viewer::object_t ViewerOpenGL::insert_cylinder(const float height,
         }
     }
 
-    endGeometry();
+    end_geometry();
     if (glid) { glEndList(); }
 
     return object_t(glid);
@@ -1221,27 +1599,27 @@ namespace {
  * @param texCoord      texture coordinates.
  */
 viewer::object_t
-ViewerOpenGL::insert_elevation_grid(const unsigned int mask,
-                                    const std::vector<float> & height,
-                                    const int32 xDimension,
-                                    const int32 zDimension,
-                                    const float xSpacing,
-                                    const float zSpacing,
-                                    const std::vector<color> & color,
-                                    const std::vector<vec3f> & normal,
-                                    const std::vector<vec2f> & texCoord)
+viewer::insert_elevation_grid(const unsigned int mask,
+                              const std::vector<float> & height,
+                              const int32 xDimension,
+                              const int32 zDimension,
+                              const float xSpacing,
+                              const float zSpacing,
+                              const std::vector<color> & color,
+                              const std::vector<vec3f> & normal,
+                              const std::vector<vec2f> & texCoord)
 {
     int32 i, j;
     float x, z;
 
     GLuint glid = 0;
 
-    if (!this->d_selectMode) {
+    if (!this->select_mode) {
         glid = glGenLists(1);
         glNewList( glid, GL_COMPILE_AND_EXECUTE );
     }
 
-    this->beginGeometry();
+    this->begin_geometry();
 
     // Face orientation & culling
     glFrontFace((mask & mask_ccw) ? GL_CCW : GL_CW);
@@ -1335,24 +1713,11 @@ ViewerOpenGL::insert_elevation_grid(const unsigned int mask,
         glEnd();
     }
 
-    this->endGeometry();
+    this->end_geometry();
     if (glid) { glEndList(); }
     return object_t(glid);
 }
 
-
-// Tesselator callback
-
-# if defined(__CYGWIN__) || defined(__MINGW32__)
-#   define OPENVRML_GL_CALLBACK_ __attribute__ ((__stdcall__))
-# elif defined (_WIN32)
-#   define OPENVRML_GL_CALLBACK_ APIENTRY
-# else
-#   define OPENVRML_GL_CALLBACK_
-# endif
-extern "C" {
-    typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)();
-}
 
 namespace {
 
@@ -1366,15 +1731,42 @@ namespace {
         int vOffset;
         vec3f N; // Normal
     };
+}
 
-    void OPENVRML_GL_CALLBACK_ tessExtrusionBegin(const GLenum type, void * const pdata)
+# if defined(__CYGWIN__) || defined(__MINGW32__)
+#   define OPENVRML_GL_CALLBACK_ __attribute__ ((__stdcall__))
+# elif defined (_WIN32)
+#   define OPENVRML_GL_CALLBACK_ APIENTRY
+# else
+#   define OPENVRML_GL_CALLBACK_
+# endif
+extern "C" {
+    /**
+     * @internal
+     *
+     * @brief Tesselator callback.
+     *
+     * As the type of callback functions given to OpenGL, this type must have
+     * C linkage.
+     */
+    typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)();
+
+    /**
+     * @internal
+     */
+    void OPENVRML_GL_CALLBACK_ tessExtrusionBegin(const GLenum type,
+                                                  void * const pdata)
     {
         TessExtrusion * const p = static_cast<TessExtrusion *>(pdata);
         glBegin(type);
         glNormal3fv(&p->N[0]);
     }
 
-    void OPENVRML_GL_CALLBACK_ tessExtrusionVertex(void * const vdata, void * const pdata)
+    /**
+     * @internal
+     */
+    void OPENVRML_GL_CALLBACK_ tessExtrusionVertex(void * const vdata,
+                                                   void * const pdata)
     {
         const int j = reinterpret_cast<int>(vdata);
         TessExtrusion * const p = static_cast<TessExtrusion *>(pdata);
@@ -1385,126 +1777,129 @@ namespace {
     }
 }
 
-void ViewerOpenGL::insertExtrusionCaps(const unsigned int mask,
-                                       const size_t nSpine,
-                                       const std::vector<vec3f> & c,
-                                       const std::vector<vec2f> & cs)
-{
-    // Determine x,z ranges for top & bottom tex coords
-    float xz[4] = { cs[0].x(), cs[0].x(), cs[0].y(), cs[0].y() };
-    std::vector<vec2f>::const_iterator csp = cs.begin();
-    for (size_t nn = 1; nn < cs.size(); ++nn, ++csp) {
-        if (csp->x() < xz[0]) {
-            xz[0] = csp->x();
-        } else if (csp->x() > xz[1]) {
-            xz[1] = csp->x();
-        }
-        if (csp->y() < xz[2]) {
-            xz[2] = csp->y();
-        } else if (csp->y() > xz[3]) {
-            xz[3] = csp->y();
-        }
-    }
-
-    float dx = xz[1] - xz[0];
-    float dz = xz[3] - xz[2];
-    if (!fpzero(dx)) { dx = 1.0 / dx; }
-    if (!fpzero(dz)) { dz = 1.0 / dz; }
-
-    // If geometry is in dlists, should just always use the tesselator...
-
-    const bool equalEndpts = cs.front() == cs.back();
-
-    if (!(mask & mask_convex)) {
-        gluTessCallback(this->tesselator, GLU_TESS_BEGIN_DATA,
-                        reinterpret_cast<TessCB>(tessExtrusionBegin));
-        gluTessCallback(this->tesselator, GLU_TESS_VERTEX_DATA,
-                        reinterpret_cast<TessCB>(tessExtrusionVertex));
-        gluTessCallback(this->tesselator, GLU_TESS_END, glEnd);
-
-        if (mask & mask_bottom) {
-            TessExtrusion bottom = { &c[0][0],
-                                     &cs[0][0],
-                                     xz[0], xz[2],
-                                     dx, dz,
-                                     0 };
-            bottom.N = indexFaceNormal(0, 1, 2, c);
-
-            gluTessBeginPolygon(this->tesselator, &bottom);
-            gluTessBeginContour(this->tesselator);
-            GLdouble v[3];
-            // Mesa tesselator doesn;t like closed polys
-            int j = equalEndpts ? cs.size() - 2 : cs.size() - 1;
-            for (; j >= 0; --j) {
-                v[0] = c[j].x();
-                v[1] = c[j].y();
-                v[2] = c[j].z();
-                gluTessVertex(this->tesselator, v, reinterpret_cast<void *>(j));
-            }
-            gluTessEndContour(this->tesselator);
-            gluTessEndPolygon(this->tesselator);
-        }
-
-        if (mask & mask_top) {
-            int n = (nSpine - 1) * cs.size();
-            TessExtrusion top = { &c[0][0],
-                                  &cs[0][0],
-                                  xz[0], xz[2],
-                                  dx, dz,
-                                  n };
-            top.N = indexFaceNormal(n + 2, n + 1, n, c);
-
-            gluTessBeginPolygon(this->tesselator, &top);
-            gluTessBeginContour(this->tesselator);
-
-            GLdouble v[3];
-            // Mesa tesselator doesn;t like closed polys
-            size_t j = equalEndpts ? 1 : 0;
-            for (; j < cs.size(); ++j) {
-                v[0] = c[j + n].x();
-                v[1] = c[j + n].y();
-                v[2] = c[j + n].z();
-                gluTessVertex(this->tesselator, v, reinterpret_cast<void *>(j));
-            }
-            gluTessEndContour(this->tesselator);
-            gluTessEndPolygon(this->tesselator);
-        }
-    } else {
-        //
-        // Convex (or not GLU1.2 ...)
-        //
-        vec3f N; // Normal
-
-        if (mask & mask_bottom) {
-            glBegin(GL_POLYGON);
-            N = indexFaceNormal(0, 1, 2, c);
-            glNormal3fv(&N[0]);
-
-            for (int j = cs.size() - 1; j >= 0; --j) {
-                glTexCoord2f((cs[j].x() - xz[0]) * dx,
-                             (cs[j].y() - xz[2]) * dz);
-                glVertex3fv(&c[j][0]);
-            }
-            glEnd();
-        }
-
-        if (mask & mask_top) {
-            int n = (nSpine - 1) * cs.size();
-            glBegin(GL_POLYGON);
-            N = indexFaceNormal(n + 2, n + 1, n, c);
-            glNormal3fv(&N[0]);
-
-            for (size_t j = 0; j < cs.size(); ++j) {
-                glTexCoord2f((cs[j].x() - xz[0]) * dx,
-                             (cs[j].y() - xz[2]) * dz);
-                glVertex3fv(&c[j + n][0]);
-            }
-            glEnd();
-        }
-    }
-}
-
 namespace {
+
+    void insertExtrusionCaps(GLUtesselator & tesselator,
+                             const unsigned int mask,
+                             const size_t nSpine,
+                             const std::vector<vec3f> & c,
+                             const std::vector<vec2f> & cs)
+    {
+        using std::vector;
+
+        // Determine x,z ranges for top & bottom tex coords
+        float xz[4] = { cs[0].x(), cs[0].x(), cs[0].y(), cs[0].y() };
+        vector<vec2f>::const_iterator csp = cs.begin();
+        for (vector<vec2f>::size_type nn = 1; nn < cs.size(); ++nn, ++csp) {
+            if (csp->x() < xz[0]) {
+                xz[0] = csp->x();
+            } else if (csp->x() > xz[1]) {
+                xz[1] = csp->x();
+            }
+            if (csp->y() < xz[2]) {
+                xz[2] = csp->y();
+            } else if (csp->y() > xz[3]) {
+                xz[3] = csp->y();
+            }
+        }
+
+        float dx = xz[1] - xz[0];
+        float dz = xz[3] - xz[2];
+        if (!fpzero(dx)) { dx = 1.0 / dx; }
+        if (!fpzero(dz)) { dz = 1.0 / dz; }
+
+        // If geometry is in dlists, should just always use the tesselator...
+
+        const bool equalEndpts = cs.front() == cs.back();
+
+        if (!(mask & viewer::mask_convex)) {
+            gluTessCallback(&tesselator, GLU_TESS_BEGIN_DATA,
+                            reinterpret_cast<TessCB>(tessExtrusionBegin));
+            gluTessCallback(&tesselator, GLU_TESS_VERTEX_DATA,
+                            reinterpret_cast<TessCB>(tessExtrusionVertex));
+            gluTessCallback(&tesselator, GLU_TESS_END, glEnd);
+
+            if (mask & viewer::mask_bottom) {
+                TessExtrusion bottom = { &c[0][0],
+                                         &cs[0][0],
+                                         xz[0], xz[2],
+                                         dx, dz,
+                                         0 };
+                bottom.N = indexFaceNormal(0, 1, 2, c);
+
+                gluTessBeginPolygon(&tesselator, &bottom);
+                gluTessBeginContour(&tesselator);
+                GLdouble v[3];
+                // Mesa tesselator doesn;t like closed polys
+                int j = equalEndpts ? cs.size() - 2 : cs.size() - 1;
+                for (; j >= 0; --j) {
+                    v[0] = c[j].x();
+                    v[1] = c[j].y();
+                    v[2] = c[j].z();
+                    gluTessVertex(&tesselator, v, reinterpret_cast<void *>(j));
+                }
+                gluTessEndContour(&tesselator);
+                gluTessEndPolygon(&tesselator);
+            }
+
+            if (mask & viewer::mask_top) {
+                int n = (nSpine - 1) * cs.size();
+                TessExtrusion top = { &c[0][0],
+                                      &cs[0][0],
+                                      xz[0], xz[2],
+                                      dx, dz,
+                                      n };
+                top.N = indexFaceNormal(n + 2, n + 1, n, c);
+
+                gluTessBeginPolygon(&tesselator, &top);
+                gluTessBeginContour(&tesselator);
+
+                GLdouble v[3];
+                // Mesa tesselator doesn;t like closed polys
+                size_t j = equalEndpts ? 1 : 0;
+                for (; j < cs.size(); ++j) {
+                    v[0] = c[j + n].x();
+                    v[1] = c[j + n].y();
+                    v[2] = c[j + n].z();
+                    gluTessVertex(&tesselator, v, reinterpret_cast<void *>(j));
+                }
+                gluTessEndContour(&tesselator);
+                gluTessEndPolygon(&tesselator);
+            }
+        } else {
+            //
+            // Convex (or not GLU1.2 ...)
+            //
+            vec3f N; // Normal
+
+            if (mask & viewer::mask_bottom) {
+                glBegin(GL_POLYGON);
+                N = indexFaceNormal(0, 1, 2, c);
+                glNormal3fv(&N[0]);
+
+                for (int j = cs.size() - 1; j >= 0; --j) {
+                    glTexCoord2f((cs[j].x() - xz[0]) * dx,
+                                 (cs[j].y() - xz[2]) * dz);
+                    glVertex3fv(&c[j][0]);
+                }
+                glEnd();
+            }
+
+            if (mask & viewer::mask_top) {
+                int n = (nSpine - 1) * cs.size();
+                glBegin(GL_POLYGON);
+                N = indexFaceNormal(n + 2, n + 1, n, c);
+                glNormal3fv(&N[0]);
+
+                for (size_t j = 0; j < cs.size(); ++j) {
+                    glTexCoord2f((cs[j].x() - xz[0]) * dx,
+                                 (cs[j].y() - xz[2]) * dz);
+                    glVertex3fv(&c[j + n][0]);
+                }
+                glEnd();
+            }
+        }
+    }
 
     /**
      * @brief Build an extrusion.
@@ -1742,11 +2137,11 @@ namespace {
  * @return display object identifier.
  */
 viewer::object_t
-ViewerOpenGL::insert_extrusion(unsigned int mask,
-                               const std::vector<vec3f> & spine,
-                               const std::vector<vec2f> & crossSection,
-                               const std::vector<rotation> & orientation,
-                               const std::vector<vec2f> & scale)
+viewer::insert_extrusion(unsigned int mask,
+                         const std::vector<vec3f> & spine,
+                         const std::vector<vec2f> & crossSection,
+                         const std::vector<OpenVRML::rotation> & orientation,
+                         const std::vector<vec2f> & scale)
 {
     using std::vector;
     vector<vec3f> c(crossSection.size() * spine.size());
@@ -1756,12 +2151,12 @@ ViewerOpenGL::insert_extrusion(unsigned int mask,
 
     GLuint glid = 0;
 
-    if (!this->d_selectMode) {
+    if (!this->select_mode) {
         glid = glGenLists(1);
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
-    this->beginGeometry();
+    this->begin_geometry();
 
     // Face orientation & culling
     glFrontFace((mask & mask_ccw) ? GL_CCW : GL_CW);
@@ -1784,18 +2179,20 @@ ViewerOpenGL::insert_extrusion(unsigned int mask,
             glVertex3fv(&c[n + j + crossSection.size()][0]);
             glTexCoord2fv(&tc[n + j][0]);
             glVertex3fv(&c[n + j][0]);
-          }
-          glEnd();
-      }
+        }
+        glEnd();
+    }
 
     // Draw caps. Convex can only impact the caps of an extrusion.
     if (mask & (mask_bottom | mask_top)) {
-        this->insertExtrusionCaps(mask,
-                                  spine.size(), c,
-                                  crossSection);
+        insertExtrusionCaps(*this->tesselator,
+                            mask,
+                            spine.size(),
+                            c,
+                            crossSection);
     }
 
-    this->endGeometry();
+    this->end_geometry();
     if (glid) { glEndList(); }
     return object_t(glid);
 }
@@ -1812,22 +2209,22 @@ ViewerOpenGL::insert_extrusion(unsigned int mask,
  * @return display object identifier.
  */
 viewer::object_t
-ViewerOpenGL::insert_line_set(const std::vector<vec3f> & coord,
-                              const std::vector<int32> & coordIndex,
-                              bool colorPerVertex,
-                              const std::vector<color> & color,
-                              const std::vector<int32> & colorIndex)
+viewer::insert_line_set(const std::vector<vec3f> & coord,
+                        const std::vector<int32> & coordIndex,
+                        bool colorPerVertex,
+                        const std::vector<color> & color,
+                        const std::vector<int32> & colorIndex)
 {
     GLuint glid = 0;
 
     if (coord.size() < 2) { return 0; }
 
-    if (!this->d_selectMode) {
+    if (!this->select_mode) {
         glid = glGenLists(1);
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
-    this->beginGeometry();
+    this->begin_geometry();
 
     // Lighting, texturing don't apply to line sets
     glDisable(GL_LIGHTING);
@@ -1871,7 +2268,7 @@ ViewerOpenGL::insert_line_set(const std::vector<vec3f> & coord,
 
     glEnd();
 
-    this->endGeometry();
+    this->end_geometry();
 
     if (glid) { glEndList(); }
 
@@ -1887,17 +2284,17 @@ ViewerOpenGL::insert_line_set(const std::vector<vec3f> & coord,
  * @return display object identifier.
  */
 viewer::object_t
-ViewerOpenGL::insert_point_set(const std::vector<vec3f> & coord,
-                               const std::vector<color> & color)
+viewer::insert_point_set(const std::vector<vec3f> & coord,
+                         const std::vector<color> & color)
 {
     GLuint glid = 0;
 
-    if (!this->d_selectMode) {
+    if (!this->select_mode) {
         glid = glGenLists(1);
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
-    this->beginGeometry();
+    this->begin_geometry();
 
     // Lighting, texturing don't apply to points
     glDisable(GL_LIGHTING);
@@ -1911,7 +2308,7 @@ ViewerOpenGL::insert_point_set(const std::vector<vec3f> & coord,
     }
 
     glEnd();
-    this->endGeometry();
+    this->end_geometry();
     if (glid) { glEndList(); }
 
     return object_t(glid);
@@ -1919,7 +2316,9 @@ ViewerOpenGL::insert_point_set(const std::vector<vec3f> & coord,
 
 namespace {
 
-    void computeBounds(size_t npoints, const float * points, float (&bounds)[6])
+    void computeBounds(size_t npoints,
+                       const float * points,
+                       float (&bounds)[6])
     {
         if (npoints == 0) {
             std::fill(bounds, bounds + 6, 0.0);
@@ -2066,8 +2465,10 @@ namespace {
                     glTexCoord2fv(&s->texCoord[index][0]);
                 } else {
                     float c0, c1;
-                    c0 = (v[s->texAxes[0]] - s->texParams[0]) * s->texParams[1];
-                    c1 = (v[s->texAxes[1]] - s->texParams[2]) * s->texParams[3];
+                    c0 = (v[s->texAxes[0]] - s->texParams[0])
+                        * s->texParams[1];
+                    c1 = (v[s->texAxes[1]] - s->texParams[2])
+                        * s->texParams[3];
                     glTexCoord2f(c0, c1);
                 }
 
@@ -2220,15 +2621,15 @@ namespace {
  * @return display object identifier.
  */
 viewer::object_t
-ViewerOpenGL::insert_shell(unsigned int mask,
-                           const std::vector<vec3f> & coord,
-                           const std::vector<int32> & coordIndex,
-                           const std::vector<color> & color,
-                           const std::vector<int32> & colorIndex,
-                           const std::vector<vec3f> & normal,
-                           const std::vector<int32> & normalIndex,
-                           const std::vector<vec2f> & texCoord,
-                           const std::vector<int32> & texCoordIndex)
+viewer::insert_shell(unsigned int mask,
+                     const std::vector<vec3f> & coord,
+                     const std::vector<int32> & coordIndex,
+                     const std::vector<color> & color,
+                     const std::vector<int32> & colorIndex,
+                     const std::vector<vec3f> & normal,
+                     const std::vector<int32> & normalIndex,
+                     const std::vector<vec2f> & texCoord,
+                     const std::vector<int32> & texCoordIndex)
 {
     if (coordIndex.size() < 4) { return 0; } // 3 pts and a trailing -1
 
@@ -2241,20 +2642,19 @@ ViewerOpenGL::insert_shell(unsigned int mask,
         float bounds[6]; // xmin,xmax, ymin,ymax, zmin,zmax
         computeBounds(coord.size(), &coord[0][0], bounds);
 
-        // do the bounds intersect the radius of any active positional lights...
-
+        // do the bounds intersect the radius of any active positional lights.
         texGenParams(bounds, texAxes, texParams);
         if (fpzero(texParams[1]) || fpzero(texParams[3])) { return 0; }
     }
 
     GLuint glid = 0;
 
-    if (!this->d_selectMode) {
+    if (!this->select_mode) {
         glid = glGenLists(1);
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
-    this->beginGeometry();
+    this->begin_geometry();
 
     // Face orientation & culling
     glFrontFace((mask & mask_ccw) ? GL_CCW : GL_CW);
@@ -2292,7 +2692,7 @@ ViewerOpenGL::insert_shell(unsigned int mask,
         insertShellConvex(&s);
     }
 
-    endGeometry();
+    end_geometry();
     if (glid) { glEndList(); }
 
     return object_t(glid);
@@ -2300,8 +2700,11 @@ ViewerOpenGL::insert_shell(unsigned int mask,
 
 namespace {
 
-    void computeSphere(const double radius, const int numLatLong,
-                       float c[][3], float tc[][3], int *faces)
+    void computeSphere(const double radius,
+                       const int numLatLong,
+                       float c[][3],
+                       float tc[][3],
+                       int *faces)
     {
         using OpenVRML::pi;
         using OpenVRML::pi_2;
@@ -2336,8 +2739,10 @@ namespace {
                 for (j = 0; j < numLatLong; ++j) {
                     polyIndex = 5 * (i * numLatLong + j);
                     faces[polyIndex + 0] = i * numLatLong + j;
-                    faces[polyIndex + 1] = i * numLatLong + (j + 1) % numLatLong;
-                    faces[polyIndex + 2] = (i + 1) * numLatLong + (j + 1) % numLatLong;
+                    faces[polyIndex + 1] = i * numLatLong
+                                           + (j + 1) % numLatLong;
+                    faces[polyIndex + 2] = (i + 1) * numLatLong
+                                           + (j + 1) % numLatLong;
                     faces[polyIndex + 3] = (i + 1) * numLatLong + j;
                     faces[polyIndex + 4] = -1;  // quad
                 }
@@ -2353,59 +2758,56 @@ namespace {
  *
  * @return display object identifier.
  */
-viewer::object_t ViewerOpenGL::insert_sphere(const float radius)
+viewer::object_t viewer::insert_sphere(const float radius)
 {
-  GLuint glid = 0;
+    GLuint glid = 0;
 
-  if (! d_selectMode)
-    {
-      glid = glGenLists(1);
-      glNewList( glid, GL_COMPILE_AND_EXECUTE );
+    if (!this->select_mode) {
+        glid = glGenLists(1);
+        glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
-  const int numLatLong = 10;
-  const int npts = numLatLong * numLatLong;
+    static const size_t numLatLong = 10;
+    static const size_t npts = numLatLong * numLatLong;
 
-  float c[ npts ][ 3 ];
-  float tc[ npts ][ 3 ];
+    float c[npts][3];
+    float tc[npts][3];
 
-  // should only compute tc if a texture is present...
-  computeSphere(radius, numLatLong, c, tc, 0);
+    // should only compute tc if a texture is present...
+    computeSphere(radius, numLatLong, c, tc, 0);
 
-  beginGeometry();
+    this->begin_geometry();
 
-  for ( int i = 0; i < numLatLong-1; ++i)
-    {
-      int n = i * numLatLong;
+    for (size_t i = 0; i < numLatLong - 1; ++i) {
+        size_t n = i * numLatLong;
 
-      glBegin( GL_QUAD_STRIP );
+        glBegin(GL_QUAD_STRIP);
 
-      for ( int j = 0; j < numLatLong; ++j )
-        {
-          glTexCoord2f( tc[n+j+numLatLong][0], tc[n+j+numLatLong][1] );
-          glNormal3fv( &c[n+j+numLatLong][0] );
-          glVertex3fv( &c[n+j+numLatLong][0] );
+        for (size_t j = 0; j < numLatLong; ++j) {
+            glTexCoord2f(tc[n + j + numLatLong][0], tc[n + j + numLatLong][1]);
+            glNormal3fv(&c[n + j + numLatLong][0]);
+            glVertex3fv(&c[n + j + numLatLong][0]);
 
-          glTexCoord2f( tc[n+j][0], tc[n+j][1] );
-          glNormal3fv( &c[n+j][0] );
-          glVertex3fv( &c[n+j][0] );
+            glTexCoord2f(tc[n+j][0], tc[n+j][1]);
+            glNormal3fv(&c[n+j][0]);
+            glVertex3fv(&c[n+j][0]);
         }
 
-      glTexCoord2f( 1.0, tc[n+numLatLong][1] );
-      glNormal3fv( &c[n+numLatLong][0] );
-      glVertex3fv( &c[n+numLatLong][0] );
+        glTexCoord2f(1.0, tc[n + numLatLong][1]);
+        glNormal3fv(&c[n + numLatLong][0]);
+        glVertex3fv(&c[n + numLatLong][0]);
 
-      glTexCoord2f( 1.0, tc[n][1] );
-      glNormal3fv( &c[n][0] );
-      glVertex3fv( &c[n][0] );
+        glTexCoord2f(1.0, tc[n][1]);
+        glNormal3fv(&c[n][0]);
+        glVertex3fv(&c[n][0]);
 
-      glEnd();
+        glEnd();
     }
 
-  endGeometry();
-  if (glid) glEndList();
+    this->end_geometry();
+    if (glid) { glEndList(); }
 
-  return object_t(glid);
+    return object_t(glid);
 }
 
 /**
@@ -2418,10 +2820,10 @@ viewer::object_t ViewerOpenGL::insert_sphere(const float radius)
  *
  * @return display object identifier.
  */
-viewer::object_t ViewerOpenGL::insert_dir_light(const float ambientIntensity,
-                                                const float intensity,
-                                                const color & color,
-                                                const vec3f & direction)
+viewer::object_t viewer::insert_dir_light(const float ambientIntensity,
+                                          const float intensity,
+                                          const color & color,
+                                          const vec3f & direction)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -2435,13 +2837,13 @@ viewer::object_t ViewerOpenGL::insert_dir_light(const float ambientIntensity,
 
     // Find an unused light, give up if none left.
     int i;
-    for (i = 0; i < MAX_LIGHTS; ++i) {
-        if (this->d_lightInfo[i].lightType == LIGHT_UNUSED) { break; }
+    for (i = 0; i < max_lights; ++i) {
+        if (this->light_info_[i].type == viewer::light_unused) { break; }
     }
-    if (i == MAX_LIGHTS) { return 0; }
+    if (i == max_lights) { return 0; }
 
-    this->d_lightInfo[i].lightType = LIGHT_DIRECTIONAL;
-    this->d_lightInfo[i].nestingLevel = 0;
+    this->light_info_[i].type = viewer::light_directional;
+    this->light_info_[i].nesting_level = 0;
     GLenum light = GLenum(GL_LIGHT0 + i);
 
     glEnable(light);
@@ -2477,12 +2879,12 @@ viewer::object_t ViewerOpenGL::insert_dir_light(const float ambientIntensity,
  *      the lights accordingly? Get light and geometry into consistent
  *      coordinates first.
  */
-viewer::object_t ViewerOpenGL::insert_point_light(const float ambientIntensity,
-                                                  const vec3f & attenuation,
-                                                  const color & color,
-                                                  const float intensity,
-                                                  const vec3f & location,
-                                                  const float radius)
+viewer::object_t viewer::insert_point_light(const float ambientIntensity,
+                                            const vec3f & attenuation,
+                                            const color & color,
+                                            const float intensity,
+                                            const vec3f & location,
+                                            const float radius)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -2496,14 +2898,14 @@ viewer::object_t ViewerOpenGL::insert_point_light(const float ambientIntensity,
 
     // Find an unused light, give up if none left.
     int i;
-    for (i = 0; i < MAX_LIGHTS; ++i) {
-        if (this->d_lightInfo[i].lightType == LIGHT_UNUSED) { break; }
+    for (i = 0; i < max_lights; ++i) {
+        if (this->light_info_[i].type == viewer::light_unused) { break; }
     }
-    if (i == MAX_LIGHTS) { return 0; }
+    if (i == max_lights) { return 0; }
 
-    this->d_lightInfo[i].lightType = LIGHT_POSITIONAL;
-    this->d_lightInfo[i].location = location;
-    this->d_lightInfo[i].radiusSquared = radius * radius;
+    this->light_info_[i].type = viewer::light_positional;
+    this->light_info_[i].location = location;
+    this->light_info_[i].radius_squared = radius * radius;
 
     GLenum light(GL_LIGHT0 + i);
 
@@ -2537,19 +2939,19 @@ viewer::object_t ViewerOpenGL::insert_point_light(const float ambientIntensity,
  * @param location          location.
  * @param radius            radius.
  *
- * @return display object identifier.
+ * @return 0.
  *
  * @todo Same comments as for PointLight apply here.
  */
-viewer::object_t ViewerOpenGL::insert_spot_light(const float ambientIntensity,
-                                                 const vec3f & attenuation,
-                                                 const float beamWidth,
-                                                 const color & color,
-                                                 const float cutOffAngle,
-                                                 const vec3f & direction,
-                                                 const float intensity,
-                                                 const vec3f & location,
-                                                 const float radius)
+viewer::object_t viewer::insert_spot_light(const float ambientIntensity,
+                                           const vec3f & attenuation,
+                                           const float beamWidth,
+                                           const color & color,
+                                           const float cutOffAngle,
+                                           const vec3f & direction,
+                                           const float intensity,
+                                           const vec3f & location,
+                                           const float radius)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -2564,14 +2966,14 @@ viewer::object_t ViewerOpenGL::insert_spot_light(const float ambientIntensity,
 
     // Find an unused light, give up if none left.
     int i;
-    for (i = 0; i < MAX_LIGHTS; ++i) {
-        if (this->d_lightInfo[i].lightType == LIGHT_UNUSED) { break; }
+    for (i = 0; i < max_lights; ++i) {
+        if (this->light_info_[i].type == viewer::light_unused) { break; }
     }
-    if (i == MAX_LIGHTS) { return 0; }
+    if (i == max_lights) { return 0; }
 
-    this->d_lightInfo[i].lightType = LIGHT_POSITIONAL;
-    this->d_lightInfo[i].location = location;
-    this->d_lightInfo[i].radiusSquared = radius * radius;
+    this->light_info_[i].type = viewer::light_positional;
+    this->light_info_[i].location = location;
+    this->light_info_[i].radius_squared = radius * radius;
 
     GLenum light(GL_LIGHT0 + i);
 
@@ -2594,26 +2996,36 @@ viewer::object_t ViewerOpenGL::insert_spot_light(const float ambientIntensity,
 }
 
 
-// Lightweight copy
-
-viewer::object_t ViewerOpenGL::insert_reference(object_t existingObject)
+/**
+ * @brief Insert a reference to an existing object into a display list.
+ *
+ * @return 0.
+ */
+viewer::object_t viewer::insert_reference(const object_t existing_object)
 {
-    glCallList(GLuint(existingObject));
+    glCallList(GLuint(existing_object));
     return 0;
 }
 
-// Remove an object from the display list
-
-void ViewerOpenGL::remove_object(object_t key)
+/**
+ * @brief Remove an object from the display list.
+ *
+ * @param ref   object handle.
+ */
+void viewer::remove_object(const object_t ref)
 {
-    glDeleteLists(GLuint(key), 1 );
+    glDeleteLists(GLuint(ref), 1);
 }
 
-
-void ViewerOpenGL::enable_lighting(bool lightsOn)
+/**
+ * @brief Enable/disable lighting.
+ *
+ * @param val whether lighting should be enabled.
+ */
+void viewer::enable_lighting(const bool val)
 {
-    if (lightsOn) {
-        if (d_lit) { glEnable(GL_LIGHTING); }
+    if (val) {
+        if (this->lit) { glEnable(GL_LIGHTING); }
     } else {
         glDisable(GL_LIGHTING);
     }
@@ -2625,7 +3037,7 @@ void ViewerOpenGL::enable_lighting(bool lightsOn)
  * @param rgb   red, green, and blue components.
  * @param a     alpha (transparency) component.
  */
-void ViewerOpenGL::set_color(const color & rgb, const float a)
+void viewer::set_color(const color & rgb, const float a)
 {
     glColor4f(rgb.r(), rgb.g(), rgb.b(), a);
 }
@@ -2638,9 +3050,9 @@ void ViewerOpenGL::set_color(const color & rgb, const float a)
  *                          fog.
  * @param type              fog type.
  */
-void ViewerOpenGL::set_fog(const color & color,
-                           const float visibilityRange,
-                           const char * const type)
+void viewer::set_fog(const color & color,
+                     const float visibilityRange,
+                     const char * const type)
 {
     static const std::string exponential("EXPONENTIAL");
     const GLfloat fogColor[4] = { color.r(), color.g(), color.b(), 1.0 };
@@ -2665,12 +3077,12 @@ void ViewerOpenGL::set_fog(const color & color,
  * @param specularColor     specular color.
  * @param transparency      transparency.
  */
-void ViewerOpenGL::set_material(const float ambientIntensity,
-                                const color & diffuseColor,
-                                const color & emissiveColor,
-                                const float shininess,
-                                const color & specularColor,
-                                const float transparency)
+void viewer::set_material(const float ambientIntensity,
+                          const color & diffuseColor,
+                          const color & emissiveColor,
+                          const float shininess,
+                          const color & specularColor,
+                          const float transparency)
 {
     const float alpha = 1.0 - transparency;
 
@@ -2692,7 +3104,7 @@ void ViewerOpenGL::set_material(const float ambientIntensity,
                                 alpha };
 
     // XXX doesn't work right yet (need alpha render pass...)
-    if (this->d_blend && ! fpzero(transparency)) { glEnable(GL_BLEND); }
+    if (this->blend && ! fpzero(transparency)) { glEnable(GL_BLEND); }
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
@@ -2714,64 +3126,82 @@ void ViewerOpenGL::set_material(const float ambientIntensity,
     }
 }
 
-
-// This hack is necessary because setting the color mode needs to know
-// about the appearance (presence & components of texture) and the geometry
-// (presence of colors). Putting this stuff in either insertTexture or
-// insert<geometry> causes problems when the texture or geometry node is
-// USE'd with a different context.
-
-void ViewerOpenGL::set_material_mode(int textureComponents,
-                                     bool colors)
+/**
+ * @brief Set the material mode.
+ *
+ * @note This hack is necessary because setting the color mode needs to know
+ *       about the appearance (presence & components of texture) and the
+ *       geometry (presence of colors). Putting this stuff in either
+ *       insert_texture or insert_<geometry> causes problems when the texture
+ *       or geometry node is USE'd with a different context.
+ *
+ * @param tex_components    texture components.
+ * @param geometry_color    geometry color.
+ */
+void viewer::set_material_mode(int tex_components, bool geometry_color)
 {
-  if (textureComponents && d_texture && ! d_wireframe)
-    {
-      glEnable( GL_TEXTURE_2D );
+    if (tex_components && this->texture && !this->wireframe) {
+        glEnable(GL_TEXTURE_2D);
 
-      // This is a hack: if per-{face,vertex} colors are specified,
-      // they take precedence over textures with GL_MODULATE. The
-      // textures won't be lit this way but at least they show up...
-      if (textureComponents > 2 && colors)
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-      else
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+        // This is a hack: if per-{face,vertex} colors are specified,
+        // they take precedence over textures with GL_MODULATE. The
+        // textures won't be lit this way but at least they show up...
+        if (tex_components > 2 && geometry_color) {
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+        } else {
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        }
+    } else {
+        glDisable(GL_TEXTURE_2D);
     }
-  else
-    glDisable( GL_TEXTURE_2D );
 
-  if (colors && textureComponents < 3 /* && lighting enabled... */ )
-    glEnable( GL_COLOR_MATERIAL );
-  else
-    glDisable( GL_COLOR_MATERIAL );
-
+    if (geometry_color && tex_components < 3 /* && lighting enabled... */ ) {
+        glEnable(GL_COLOR_MATERIAL);
+    } else {
+        glDisable(GL_COLOR_MATERIAL);
+    }
 }
 
-void ViewerOpenGL::set_sensitive(node * object)
+/**
+ * @brief Indicate that a node should be sensitive to the pointing device.
+ *
+ * @param object    a node.
+ */
+void viewer::set_sensitive(node * object)
 {
     if (object) {
         // should make this dynamic...
-        if (this->d_nSensitive == MAXSENSITIVE) {
+        if (this->sensitive == viewer::maxsensitive) {
             OPENVRML_GL_PRINT_MESSAGE_("Internal Error: too many sensitive "
                                        "objects.");
             return;
         }
 
         // push name, increment object count
-        this->d_sensitiveObject[this->d_nSensitive] = object;
-        glPushName(++this->d_nSensitive); // array index+1
+        this->sensitive_object[this->sensitive] = object;
+        glPushName(++this->sensitive); // array index + 1
     } else {
-        glPopName( );
+        glPopName();
     }
 }
 
-
-// Scale an image to make sizes powers of two. This puts the data back
-// into the memory pointed to by pixels, so there better be enough.
-
-void ViewerOpenGL::scale_texture(size_t w, size_t h,
-                                 size_t newW, size_t newH,
-                                 size_t nc,
-                                 unsigned char* pixels)
+/**
+ * @brief Scale a texture.
+ *
+ * Scale an image to make sizes powers of two. This puts the data back
+ * into the memory pointed to by pixels, so there better be enough.
+ *
+ * @param w         current width.
+ * @param h         current height,
+ * @param newW      desired width.
+ * @param newH      desired height.
+ * @param nc        number of components.
+ * @param pixels    pixel data.
+ */
+void viewer::scale_texture(size_t w, size_t h,
+                           size_t newW, size_t newH,
+                           size_t nc,
+                           unsigned char* pixels)
 {
   GLenum fmt[] = { GL_LUMINANCE,        // single component
                    GL_LUMINANCE_ALPHA,        // 2 components
@@ -2791,124 +3221,160 @@ void ViewerOpenGL::scale_texture(size_t w, size_t h,
 }
 
 
-//
-// Pixels are lower left to upper right by row.
-//
+/**
+ * @brief Create a texture object.
+ *
+ * @param w             width.
+ * @param h             height.
+ * @param nc            number of components.
+ * @param repeat_s      repeat in the S direction.
+ * @param repeat_t      repeat in the T direction.
+ * @param pixels        pixel data.
+ * @param retainHint    whether the texture is likely to be reused.
+ *
+ * @return a handle to the inserted texture.
+ */
 viewer::texture_object_t
-ViewerOpenGL::insert_texture(size_t w, size_t h, size_t nc,
-                             bool repeat_s,
-                             bool repeat_t,
-                             const unsigned char * pixels,
-                             bool retainHint)
+viewer::insert_texture(size_t w, size_t h, size_t nc,
+                       bool repeat_s,
+                       bool repeat_t,
+                       const unsigned char * pixels,
+                       bool retainHint)
 {
-  GLenum fmt[] = { GL_LUMINANCE,        // single component
-                   GL_LUMINANCE_ALPHA,        // 2 components
-                   GL_RGB,                // 3 components
-                   GL_RGBA                // 4 components
-  };
+    //
+    // Pixels are lower left to upper right by row.
+    //
+    GLenum fmt[] = { GL_LUMINANCE,        // single component
+                     GL_LUMINANCE_ALPHA,        // 2 components
+                     GL_RGB,                // 3 components
+                     GL_RGBA                // 4 components
+    };
 
-  GLuint glid = 0;
+    GLuint glid = 0;
 
-  if (d_selectMode) return 0;
+    if (this->select_mode) { return 0; }
 
-  // Enable blending if needed
-  if (d_blend && (nc == 2 || nc == 4))
-    glEnable(GL_BLEND);
+    // Enable blending if needed
+    if (this->blend && (nc == 2 || nc == 4)) { glEnable(GL_BLEND); }
 
 #if USE_TEXTURE_DISPLAY_LISTS
-  if (retainHint) glGenTextures(1, &glid);
-  glBindTexture( GL_TEXTURE_2D, glid );
+    if (retainHint) { glGenTextures(1, &glid); }
+    glBindTexture(GL_TEXTURE_2D, glid);
 #endif
 
-  // Texturing is enabled in setMaterialMode
-  glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+    // Texturing is enabled in setMaterialMode
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-  glTexImage2D( GL_TEXTURE_2D, 0, nc, w, h, 0,
-                fmt[nc-1], GL_UNSIGNED_BYTE, pixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, nc, w, h, 0,
+                 fmt[nc - 1], GL_UNSIGNED_BYTE, pixels);
 
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                   repeat_s ? GL_REPEAT : GL_CLAMP );
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                   repeat_t ? GL_REPEAT : GL_CLAMP );
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                    repeat_s ? GL_REPEAT : GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                    repeat_t ? GL_REPEAT : GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-  return texture_object_t(glid);
+    return texture_object_t(glid);
 }
 
 
-//
-// Pixels are lower left to upper right by row.
-//
-
+/**
+ * @brief Insert a subcomponent of a texture as an OpenGL texture.
+ *
+ * Pixels are lower left to upper right by row.
+ *
+ * @param xoffset       x offset.
+ * @param yoffset       y offset.
+ * @param w             subtexture width.
+ * @param h             subtexture height.
+ * @param whole_w       texture width.
+ * @param whole_h       texture height.
+ * @param nc            number of components.
+ * @param repeat_s      whether to repeat the texture in the S direction.
+ * @param repeat_t      whether to repeat the texture in the T direction.
+ * @param pixels        pixel data.
+ * @param retainHint    whether the subtexture should be retained for reuse.
+ *
+ * @return texture object identifier for the inserted subtexture.
+ */
 viewer::texture_object_t
-ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset,
-                               size_t w, size_t h,
-                               size_t whole_w,size_t whole_h,size_t nc,
-                               bool repeat_s,
-                               bool repeat_t,
-                               const unsigned char *pixels,
-                               bool retainHint)
+viewer::insert_subtexture(size_t xoffset, size_t yoffset,
+                          size_t w, size_t h,
+                          size_t whole_w,size_t whole_h,size_t nc,
+                          bool repeat_s,
+                          bool repeat_t,
+                          const unsigned char *pixels,
+                          bool retainHint)
 {
+    GLenum fmt[] = { GL_LUMINANCE,        // single component
+                     GL_LUMINANCE_ALPHA,        // 2 components
+                     GL_RGB,                // 3 components
+                     GL_RGBA                // 4 components
+    };
 
-  GLenum fmt[] = { GL_LUMINANCE,        // single component
-                   GL_LUMINANCE_ALPHA,        // 2 components
-                   GL_RGB,                // 3 components
-                   GL_RGBA                // 4 components
-  };
+    GLuint glid = 0;
 
-  GLuint glid = 0;
+    if (this->select_mode) { return 0; }
 
-  if (d_selectMode) return 0;
-
-  // Enable blending if needed
-  if (d_blend && (nc == 2 || nc == 4))
-    glEnable(GL_BLEND);
+    // Enable blending if needed
+    if (this->blend && (nc == 2 || nc == 4)) { glEnable(GL_BLEND); }
 
 #if USE_TEXTURE_DISPLAY_LISTS
-  if (retainHint) glGenTextures(1, &glid);
-  glBindTexture( GL_TEXTURE_2D, glid );
+    if (retainHint) { glGenTextures(1, &glid); }
+    glBindTexture(GL_TEXTURE_2D, glid);
 #endif
 
-  // Texturing is enabled in setMaterialMode
-  glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+    // Texturing is enabled in setMaterialMode
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-  GLubyte* texturepart=new GLubyte[w*h*nc];
-  for (size_t i = 0; i < h; i++)
-    memcpy(texturepart+i*w*nc,pixels+(i+yoffset)*whole_w*nc+xoffset*nc, w*nc);
+    std::vector<GLubyte> texturepart(w * h * nc);
+    for (size_t i = 0; i < h; i++) {
+        std::copy(pixels + ((i + yoffset) * whole_w + xoffset) * nc,
+                  pixels + ((i + yoffset) * whole_w + xoffset + w) * nc,
+                  texturepart.begin() + (i * w * nc));
+    }
+    glTexImage2D(GL_TEXTURE_2D, 0, nc, w, h, 0,
+                 fmt[nc - 1], GL_UNSIGNED_BYTE, &texturepart[0]);
 
-  glTexImage2D( GL_TEXTURE_2D, 0, nc, w, h, 0,
-                fmt[nc-1], GL_UNSIGNED_BYTE, texturepart);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                    repeat_s ? GL_REPEAT : GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                    repeat_t ? GL_REPEAT : GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-  delete [] texturepart;
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                   repeat_s ? GL_REPEAT : GL_CLAMP );
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                   repeat_t ? GL_REPEAT : GL_CLAMP );
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-  return texture_object_t(glid);
+    return texture_object_t(glid);
 }
 
 
-void ViewerOpenGL::insert_texture_reference(texture_object_t t, int nc)
+/**
+ * @brief Insert a texture into the display list from an existing handle.
+ *
+ * @param ref   texture handle.
+ * @param nc    number of components.
+ */
+void viewer::insert_texture_reference(const texture_object_t ref, const int nc)
 {
 #if USE_TEXTURE_DISPLAY_LISTS
-  // Enable blending if needed
-  if (d_blend && (nc == 2 || nc == 4))
-    glEnable(GL_BLEND);
+    // Enable blending if needed
+    if (this->blend && (nc == 2 || nc == 4)) { glEnable(GL_BLEND); }
 
-  glBindTexture( GL_TEXTURE_2D, (GLuint) t );
+    glBindTexture(GL_TEXTURE_2D, GLuint(t));
 #endif
 }
 
 
-void ViewerOpenGL::remove_texture_object(texture_object_t t)
+/**
+ * @brief Remove a texture from the display list.
+ *
+ * @param ref   texture handle.
+ */
+void viewer::remove_texture_object(const texture_object_t ref)
 {
 #if USE_TEXTURE_DISPLAY_LISTS
-  GLuint glid = (GLuint) t;
-  glDeleteTextures( 1, &glid );
+    const GLuint glid = GLuint(ref);
+    glDeleteTextures(1, &glid);
 #endif
 }
 
@@ -2923,10 +3389,10 @@ void ViewerOpenGL::remove_texture_object(texture_object_t t)
  * @param scale         scale.
  * @param translation   translation.
  */
-void ViewerOpenGL::set_texture_transform(const vec2f & center,
-                                         float rotation,
-                                         const vec2f & scale,
-                                         const vec2f & translation)
+void viewer::set_texture_transform(const vec2f & center,
+                                   float rotation,
+                                   const vec2f & scale,
+                                   const vec2f & translation)
 {
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
@@ -2982,17 +3448,17 @@ namespace {
  * @param avatarSize        avatar size.
  * @param visibilityLimit   visiblity limit.
  */
-void ViewerOpenGL::set_viewpoint(const vec3f & position,
-                                 const rotation & orientation,
-                                 const float fieldOfView,
-                                 const float avatarSize,
-                                 const float visibilityLimit)
+void viewer::set_viewpoint(const vec3f & position,
+                           const OpenVRML::rotation & orientation,
+                           const float fieldOfView,
+                           const float avatarSize,
+                           const float visibilityLimit)
 {
     glMatrixMode( GL_PROJECTION );
-    if (!this->d_selectMode) { glLoadIdentity(); }
+    if (!this->select_mode) { glLoadIdentity(); }
 
     float field_of_view = fieldOfView * 180.0 / pi;
-    float aspect = float(this->d_winWidth) / this->d_winHeight;
+    float aspect = float(this->win_width) / this->win_height;
     float znear = (avatarSize > 0.0)
                 ? 0.5 * avatarSize
                 : 0.01;
@@ -3017,27 +3483,28 @@ void ViewerOpenGL::set_viewpoint(const vec3f & position,
               up.x(), up.y(), up.z());
 }
 
-
-// The viewer knows the current viewpoint
-
-void ViewerOpenGL::transform_points(int np, float *p)
+/**
+ * @brief Transform @p points by the current modelview matrix.
+ *
+ * @param nPoints   number of points.
+ * @param points    points.
+ */
+void viewer::transform_points(int np, float *p)
 {
-  float m[16];
-  glGetFloatv (GL_MODELVIEW_MATRIX, m);
+    float m[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX, m);
 
-  float x, y, z;
-  for (int i=0; i<np; ++i)
-    {
-      x = m[0]*p[0] + m[4]*p[1] + m[8]*p[2] + m[12];
-      y = m[1]*p[0] + m[5]*p[1] + m[9]*p[2] + m[13];
-      z = m[2]*p[0] + m[6]*p[1] + m[10]*p[2] + m[14];
+    float x, y, z;
+    for (int i = 0; i < np; ++i) {
+        x = m[0] * p[0] + m[4] * p[1] + m[8] * p[2] + m[12];
+        y = m[1] * p[0] + m[5] * p[1] + m[9] * p[2] + m[13];
+        z = m[2] * p[0] + m[6] * p[1] + m[10] * p[2] + m[14];
 
-      p[0] = x;
-      p[1] = y;
-      p[2] = z;
-      p += 3;
+        p[0] = x;
+        p[1] = y;
+        p[2] = z;
+        p += 3;
     }
-
 }
 
 /**
@@ -3045,109 +3512,121 @@ void ViewerOpenGL::transform_points(int np, float *p)
  *
  * @param mat   a matrix.
  */
-void ViewerOpenGL::transform(const mat4f & mat)
+void viewer::transform(const mat4f & mat)
 {
     glMultMatrixf(&mat[0][0]);
 }
 
-//
-//  Viewer callbacks (called from window system specific functions)
-//
-
-// update is called from a timer callback and from checkSensitive
-void ViewerOpenGL::update(const double timeNow) {
-    if (this->browser.update(timeNow)) {
+/**
+ * @brief Update the scene.
+ *
+ * update is called from a timer callback and from checkSensitive.
+ *
+ * @param time  current time.
+ */
+void viewer::update(const double time)
+{
+    if (this->browser.update(time)) {
         checkErrors("update");
-        this->wsPostRedraw();
+        this->post_redraw();
     }
 
     // Set an alarm clock for the next update time.
-    this->wsSetTimer(this->browser.delta());
+    this->set_timer(this->browser.delta());
 }
 
-void ViewerOpenGL::redraw()
+/**
+ * @brief Redraw the scene.
+ */
+void viewer::redraw()
 {
-  if (! d_GLinitialized) initialize();
+    if (!this->gl_initialized) { initialize(); }
 
-  double start = browser::current_time();
+    double start = browser::current_time();
 
+    glDisable(GL_FOG);                // this is a global attribute
+    glDisable(GL_TEXTURE_2D);
 
-  glDisable( GL_FOG );                // this is a global attribute
-  glDisable( GL_TEXTURE_2D );
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
 
-  glEnable( GL_CULL_FACE );
-  glFrontFace( GL_CCW );
-  glCullFace( GL_BACK );
+    if (this->lit) { glEnable(GL_LIGHTING); }
+    glDisable(GL_COLOR_MATERIAL);
 
-  if (d_lit) glEnable( GL_LIGHTING );
-  glDisable( GL_COLOR_MATERIAL );
+    glDisable(GL_BLEND);
 
-  glDisable(GL_BLEND);
+    glShadeModel(GL_SMOOTH);
 
-  glShadeModel( GL_SMOOTH );
+    this->objects = 0;
+    this->nested_objects = 0;
 
-  d_nObjects = 0;
-  d_nestedObjects = 0;
+    this->sensitive = 0;
 
-  d_nSensitive = 0;
-
-  // Clean out any defined lights
-  for (int i=0; i<MAX_LIGHTS; ++i)
-    {
-      d_lightInfo[i].lightType = LIGHT_UNUSED;
-      GLenum light = (GLenum) (GL_LIGHT0 + i);
-      glDisable( light );
+    // Clean out any defined lights
+    for (size_t i = 0; i < viewer::max_lights; ++i) {
+        light_info_[i].type = viewer::light_unused;
+        GLenum light = GLenum(GL_LIGHT0 + i);
+        glDisable(light);
     }
 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-  this->browser.render(*this);
+    this->browser.render(*this);
 
-  wsSwapBuffers();
+    this->swap_buffers();
 
-  d_renderTime1 = d_renderTime;
-  d_renderTime = browser::current_time() - start;
+    this->render_time1 = this->render_time;
+    this->render_time = browser::current_time() - start;
 }
 
-void ViewerOpenGL::resize(int width, int height)
+/**
+ * @brief Resize the viewport.
+ *
+ * @param width     new width.
+ * @param height    new height.
+ */
+void viewer::resize(size_t width, size_t height)
 {
-  if (width < 2) width = 2;
-  if (height < 2) height = 2;
-  glViewport(0, 0, width, height);
-  d_winWidth = width;
-  d_winHeight = height;
+    if (width < 2) { width = 2; }
+    if (height < 2) { height = 2; }
+    glViewport(0, 0, width, height);
+    this->win_width = width;
+    this->win_height = height;
 }
 
-
-void ViewerOpenGL::input(EventInfo * e)
+/**
+ * @brief Handle an event generated from user input.
+ *
+ * @param e event data.
+ */
+void viewer::input(event_info * e)
 {
     switch (e->event) {
-    case EVENT_KEY_DOWN:
+    case event_key_down:
         handleKey(e->what);
         break;
-    case EVENT_MOUSE_MOVE:
-        this->checkSensitive(e->x, e->y, EVENT_MOUSE_MOVE);
+    case event_mouse_move:
+        this->checkSensitive(e->x, e->y, event_mouse_move);
         break;
-    case EVENT_MOUSE_CLICK:
-    case EVENT_MOUSE_RELEASE:
+    case event_mouse_click:
+    case event_mouse_release:
         this->handleButton(e);
         break;
-    case EVENT_MOUSE_DRAG:
+    case event_mouse_drag:
         handleMouseDrag(e->x, e->y);
         break;
     }
 }
 
-void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
+/**
+ * @brief Rotate the user view.
+ *
+ * @param rot   rotation.
+ */
+void viewer::rotate(const OpenVRML::rotation & rot) throw ()
 {
-    const rotation rot = trackball(x1, y1, x2, y2);
-    this->rotate(rot);
-}
-
-void ViewerOpenGL::rotate(const rotation & rot) throw ()
-{
-    this->lastquat = quatf(rot);
     if (fpzero(rot.angle())) { return; }
 
     viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
@@ -3159,7 +3638,7 @@ void ViewerOpenGL::rotate(const rotation & rot) throw ()
             currentUserViewTransform * viewpointTransformation;
 
     vec3f currentTranslation, currentScale;
-    rotation currentRotation;
+    OpenVRML::rotation currentRotation;
     oldCameraTransform.transformation(currentTranslation,
                                       currentRotation,
                                       currentScale);
@@ -3182,23 +3661,35 @@ void ViewerOpenGL::rotate(const rotation & rot) throw ()
     rotationMatrix[3][2] = 0.0;
 
     vec3f d = rotationMatrix * rot.axis();
-    quatf q(rotation(d, rot.angle()));
-    this->curquat = q * this->curquat;
-    this->d_rotationChanged = true;
+    quatf q(OpenVRML::rotation(d, rot.angle()));
+    this->rotation = q * this->rotation;
+    this->rotation_changed = true;
 
-    wsPostRedraw();
+    post_redraw();
 }
 
-void ViewerOpenGL::step(float x, float y, float z)
+/**
+ * @brief Translate the user view.
+ *
+ * @param x translation vector x component.
+ * @param y translation vector y component.
+ * @param z translation vector z component.
+ */
+void viewer::step(const float x, const float y, const float z)
 {
     mat4f t = mat4f::translation(vec3f(x, y, z));
     viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
     activeViewpoint
-            .user_view_transform(t * activeViewpoint.user_view_transform());
-    wsPostRedraw();
+        .user_view_transform(t * activeViewpoint.user_view_transform());
+    post_redraw();
 }
 
-void ViewerOpenGL::zoom(float z)
+/**
+ * @brief Zoom.
+ *
+ * @param z amount to zoom.
+ */
+void viewer::zoom(const float z)
 {
     GLint viewport[4];
     GLdouble modelview[16], projection[16];
@@ -3207,17 +3698,25 @@ void ViewerOpenGL::zoom(float z)
     glGetDoublev (GL_PROJECTION_MATRIX, projection);
     Vrml97Node::navigation_info_node * const nav =
             this->browser.bindable_navigation_info_top();
-    GLdouble x_c = d_winWidth/2;
-    GLdouble y_c = d_winHeight/2;
+    GLdouble x_c = this->win_width / 2;
+    GLdouble y_c = this->win_height / 2;
     GLdouble z_c = 0.5;
-    float visibilityLimit=0.0;
+    float visibilityLimit = 0.0;
     if (nav) { visibilityLimit = nav->visibility_limit(); }
     if (fpzero(visibilityLimit)) { visibilityLimit = 30000.0; }
     GLdouble ox, oy, oz;
-    gluUnProject(x_c, y_c, z_c, modelview, projection, viewport, &ox, &oy, &oz);
+    gluUnProject(x_c, y_c, z_c,
+                 modelview,
+                 projection,
+                 viewport,
+                 &ox, &oy, &oz);
     z_c = z_c - 100.0 * z / visibilityLimit;
     GLdouble dx, dy, dz;
-    gluUnProject(x_c, y_c, z_c, modelview, projection, viewport, &dx, &dy, &dz);
+    gluUnProject(x_c, y_c, z_c,
+                 modelview,
+                 projection,
+                 viewport,
+                 &dx, &dy, &dz);
     dx -= ox;
     dy -= oy;
     dz -= oz;
@@ -3236,63 +3735,68 @@ void ViewerOpenGL::zoom(float z)
     viewpoint_node & activeViewpoint = this->browser.active_viewpoint();
     const mat4f & userViewTransform = activeViewpoint.user_view_transform();
     activeViewpoint.user_view_transform(t * userViewTransform);
-    wsPostRedraw();
+    post_redraw();
 }
 
-void ViewerOpenGL::handleKey(int key)
+/**
+ * @brief Handle keypresses.
+ *
+ * @param key   key identifier.
+ */
+void viewer::handleKey(int key)
 {
     using std::find;
     using std::list;
 
     switch (key) {
-    case KEY_LEFT:
-          step(-1, 0, 0);
-      break;
+    case key_left:
+        step(-1, 0, 0);
+        break;
 
-    case KEY_RIGHT:
-          step(1, 0, 0);
-     break;
+    case key_right:
+        step(1, 0, 0);
+        break;
 
-    case KEY_UP:  // move forward along line of sight
-      zoom(1);
-      break;
+    case key_up:  // move forward along line of sight
+        zoom(1);
+        break;
 
-    case KEY_DOWN: // move backwards along line of sight
-      zoom(-1);
-      break;
+    case key_down: // move backwards along line of sight
+        zoom(-1);
+        break;
 
     case 'a':  // look up
-      rot_trackball(0.0, 0.45, 0.0, 0.55);
-      break;
+        this->rotate(trackball(0.0, 0.45, 0.0, 0.55));
+        break;
 
     case 'z':  // look down
-      rot_trackball(0.0, 0.55, 0.0, 0.45);
-      break;
+        this->rotate(trackball(0.0, 0.55, 0.0, 0.45));
+        break;
 
     case 'A':  // translate up
-      step(0,1,0);
-      break;
+        step(0,1,0);
+        break;
 
     case 'Z':  // translate down
-      step(0,-1,0);
-      break;
+        step(0,-1,0);
+        break;
 
     case ',':                   // Look left
-      rot_trackball(0.55, 0.0, 0.45, 0.0);
-      break;
+        this->rotate(trackball(0.55, 0.0, 0.45, 0.0));
+        break;
 
     case '.':                   // Look right
-      rot_trackball(0.45, 0.0, 0.55, 0.0);
-      break;
+        this->rotate(trackball(0.45, 0.0, 0.55, 0.0));
+        break;
 
-    //
+    // XXX
     // XXX This can't work well. The list of Viewpoints in the world could
     // XXX change, and the resulting ordering would give unexpected results.
     // XXX The ordering of Viewpoints in the list should be the same as the
     // XXX order in which the nodes are encountered in a normal traversal of
     // XXX the scene graph.
-    //
-    case KEY_PAGE_DOWN:
+    // XXX
+    case key_page_down:
         {
             viewpoint_node & currentViewpoint =
                 this->browser.active_viewpoint();
@@ -3308,10 +3812,10 @@ void ViewerOpenGL::handleKey(int key)
                                       browser::current_time());
             }
         }
-        wsPostRedraw();
+        this->post_redraw();
         break;
 
-    case KEY_PAGE_UP:
+    case key_page_up:
         {
             viewpoint_node & currentViewpoint =
                 this->browser.active_viewpoint();
@@ -3329,163 +3833,159 @@ void ViewerOpenGL::handleKey(int key)
                                       browser::current_time());
             }
         }
-        wsPostRedraw();
+        this->post_redraw();
         break;
 
     case 'b':
-      d_blend = ! d_blend;
-      wsPostRedraw();
-      OPENVRML_GL_PRINT_MESSAGE_(" Alpha blending "
-                                 + std::string(d_blend ? "en" : "dis")
-                                 + "sabled.");
-      break;
+        this->blend = !this->blend;
+        this->post_redraw();
+        OPENVRML_GL_PRINT_MESSAGE_(" Alpha blending "
+                                   + std::string(this->blend ? "en" : "dis")
+                                   + "sabled.");
+        break;
 
     case 'd':
-      d_drawBSpheres = ! d_drawBSpheres;
-      OPENVRML_GL_PRINT_MESSAGE_(" bspheres "
-                                 + std::string(d_drawBSpheres ? "en" : "dis")
-                                 + "sabled.");
-      wsPostRedraw();
-      break;
-
-    case 'c':
-      d_cull = ! d_cull;
-      OPENVRML_GL_PRINT_MESSAGE_(" culling "
-                                 + std::string(d_cull ? "en" : "dis")
-                                 + "sabled.");
-      wsPostRedraw();
-      break;
+        this->draw_bounding_spheres = ! this->draw_bounding_spheres;
+        OPENVRML_GL_PRINT_MESSAGE_(" bounding spheres "
+                                   + std::string(this->draw_bounding_spheres
+                                                 ? "en" : "dis")
+                                   + "sabled.");
+        this->post_redraw();
+        break;
 
     case 'l':
-      d_lit = ! d_lit;
-      OPENVRML_GL_PRINT_MESSAGE_(" Lighting "
-                                 + std::string(d_lit ? "en" : "dis")
-                                 + "sabled.");
-      wsPostRedraw();
-      break;
+        this->lit = !this->lit;
+        OPENVRML_GL_PRINT_MESSAGE_(" Lighting "
+                                   + std::string(this->lit ? "en" : "dis")
+                                   + "sabled.");
+        this->post_redraw();
+        break;
 
-    case KEY_HOME:
+    case key_home:
     case 'r':                        // Reset view
-      this->reset_user_navigation();
-      break;
+        this->reset_user_navigation();
+        break;
 
     case 't':
-      d_texture = ! d_texture;
-      wsPostRedraw();
-      OPENVRML_GL_PRINT_MESSAGE_(" Texture mapping "
-                                 + std::string(d_texture ? "en" : "dis")
-                                 + "sabled.");
-      break;
+        this->texture = !this->texture;
+        this->post_redraw();
+        OPENVRML_GL_PRINT_MESSAGE_(" Texture mapping "
+                                   + std::string(this->texture ? "en" : "dis")
+                                   + "sabled.");
+        break;
 
     case 'w':                        // Wireframe (should disable texturing)
-      d_wireframe = ! d_wireframe;
-      glPolygonMode(GL_FRONT_AND_BACK, d_wireframe ? GL_LINE : GL_FILL);
-      wsPostRedraw();
-      OPENVRML_GL_PRINT_MESSAGE_(" Drawing polygins in "
-                                 + std::string(d_wireframe
-                                               ?"wireframe"
-                                               : "filled")
-                                 + " mode.");
-      break;
+        this->wireframe = !this->wireframe;
+        glPolygonMode(GL_FRONT_AND_BACK, this->wireframe ? GL_LINE : GL_FILL);
+        this->post_redraw();
+        OPENVRML_GL_PRINT_MESSAGE_(" Drawing polygins in "
+                                   + std::string(this->wireframe
+                                                 ?"wireframe"
+                                                 : "filled")
+                                   + " mode.");
+        break;
 
     default:
-      break;
+        break;
     }
 }
 
-// Mouse button up/down
-
-void ViewerOpenGL::handleButton( EventInfo *e)
+/**
+ * @brief Handle mouse button up/down.
+ *
+ * @param e event data.
+ */
+void viewer::handleButton(event_info * e)
 {
-  d_rotating = d_scaling = d_translating = false;
+    this->rotating = false;
+    this->scaling = false;
+    this->translating = false;
 
-  // Check for a sensitive object first
-  if (e->what == 0 &&
-      checkSensitive( e->x, e->y, e->event ) )
-    return;
+    // Check for a sensitive object first
+    if (e->what == 0 && checkSensitive(e->x, e->y, e->event)) { return; }
 
-  d_activeSensitive = 0;
+    this->active_sensitive = 0;
 
-  // Nothing under the mouse
-  if (e->event == EVENT_MOUSE_RELEASE)
-    wsSetCursor( CURSOR_INHERIT );
-  else
-    switch (e->what)                // button
-      {
-      case 0:
-        wsSetCursor( CURSOR_CYCLE );
-        d_rotating = true;
-        d_beginx = e->x;
-        d_beginy = e->y;
-        break;
+    // Nothing under the mouse
+    if (e->event == event_mouse_release) {
+        this->set_cursor(cursor_inherit);
+    } else {
+        switch (e->what) {                // button
+        case 0:
+            this->set_cursor(cursor_cycle);
+            this->rotating = true;
+            this->beginx = e->x;
+            this->beginy = e->y;
+            break;
 
-      case 1:
-        wsSetCursor( CURSOR_UP_DOWN );
-        d_scaling = true;
-        d_beginx = e->x;
-        d_beginy = e->y;
-        break;
+        case 1:
+            this->set_cursor(cursor_up_down);
+            this->scaling = true;
+            this->beginx = e->x;
+            this->beginy = e->y;
+            break;
 
-      case 2:
-        wsSetCursor( CURSOR_CROSSHAIR );
-        d_translating = true;
-        d_beginx = e->x;
-        d_beginy = e->y;
-        break;
-      }
+        case 2:
+            this->set_cursor(cursor_crosshair);
+            this->translating = true;
+            this->beginx = e->x;
+            this->beginy = e->y;
+            break;
+        }
+    }
 }
 
 
-// Mouse movement with button down
-
-void ViewerOpenGL::handleMouseDrag(int x, int y)
+/**
+ * @brief Handle mouse dragging.
+ *
+ * @param x pointer x-coordinate.
+ * @param y pointer y-coordinate.
+ */
+void viewer::handleMouseDrag(int x, int y)
 {
- if (d_activeSensitive)
-    {
-      (void) checkSensitive( x, y, EVENT_MOUSE_DRAG );
+    if (this->active_sensitive) {
+        this->checkSensitive(x, y, event_mouse_drag);
+    } else if (this->rotating) {
+        const float x1 = (2.0 * this->beginx - this->win_width) / this->win_width;
+        const float y1 = (this->win_height - 2.0 * this->beginy)
+                         / this->win_height;
+        const float x2 = (2.0 * x - this->win_width) / this->win_width;
+        const float y2 = (this->win_height - 2.0 * y) / this->win_height;
+        this->rotate(trackball(x1, y1, x2, y2));
+        this->beginx = x;
+        this->beginy = y;
+    } else if (this->scaling) {
+        // This is not scaling, it is now moving in screen Z coords
+        this->zoom(float(this->beginy - y) / this->win_height );
+        this->beginx = x;
+        this->beginy = y;
+    } else if (this->translating) {
+        this->step(float(x - this->beginx) / this->win_width,
+                   float(this->beginy - y) / this->win_height,
+                   0.0);
+        this->beginx = x;
+        this->beginy = y;
     }
-  else if (d_rotating)
-    {
-      rot_trackball((2.0 * d_beginx - d_winWidth) / d_winWidth,
-                (d_winHeight - 2.0 * d_beginy) / d_winHeight,
-                (2.0 * x - d_winWidth) / d_winWidth,
-                (d_winHeight - 2.0 * y) / d_winHeight);
-      d_beginx = x;
-      d_beginy = y;
-    }
-  // This is not scaling, it is now moving in screen Z coords
-  else if (d_scaling)
-    {
-      zoom((float) (d_beginy - y) / d_winHeight );
-      d_beginx = x;
-      d_beginy = y;
-    }
-  else if (d_translating)
-    {
-      step( (float) (x - d_beginx) / d_winWidth,
-            (float) (d_beginy - y) / d_winHeight,
-             0.0 );
-      d_beginx = x;
-      d_beginy = y;
-    }
-
 }
 
 
 /**
  * Check for pickable objects.
  */
-bool ViewerOpenGL::checkSensitive(const int x, const int y,
-                                  const EventType mouseEvent) {
+bool viewer::checkSensitive(const int x,
+                            const int y,
+                            const event_type mouseEvent)
+{
     double timeNow = browser::current_time();
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
 
-    GLuint selectBuffer[4 * MAXSENSITIVE];
-    glSelectBuffer(4 * MAXSENSITIVE, selectBuffer);
+    GLuint selectBuffer[4 * viewer::maxsensitive];
+    glSelectBuffer(4 * viewer::maxsensitive, selectBuffer);
 
     glRenderMode(GL_SELECT);
-    this->d_selectMode = true;
+    this->select_mode = true;
 
     glInitNames();
     glPushName(0);
@@ -3509,14 +4009,14 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
 
     glShadeModel(GL_FLAT);
 
-    this->d_nObjects = 0;
-    this->d_nestedObjects = 0;
+    this->objects = 0;
+    this->nested_objects = 0;
 
-    this->d_nSensitive = 0;
+    this->sensitive = 0;
 
     // Clean out any defined lights
-    for (int i=0; i < MAX_LIGHTS; ++i) {
-        this->d_lightInfo[i].lightType = LIGHT_UNUSED;
+    for (size_t i = 0; i < max_lights; ++i) {
+        this->light_info_[i].type = viewer::light_unused;
         GLenum light = GLenum(GL_LIGHT0 + i);
         glDisable(light);
     }
@@ -3526,30 +4026,30 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
 
     this->browser.render(*this);
 
-    this->d_selectMode = false;
+    this->select_mode = false;
 
     // select closest hit
     GLuint closest = 0, minz = 0xffffffff;
 
-    int selected = 0;   // nothing selected
-    int hits = glRenderMode(GL_RENDER);
+    size_t selected = 0;   // nothing selected
+    GLint hits = glRenderMode(GL_RENDER);
     if (hits > 0) {
         // selectBuffer[] = { N1, z1, z2, name1, ..., nameN1, N2, ... }
         GLuint * sel = selectBuffer;
 
-        for (int nh=0; nh < hits; ++nh, sel += (3 + sel[0])) {
+        for (GLint nh = 0; nh < hits; ++nh, sel += (3 + sel[0])) {
             if (sel[1] <= minz) {
                 minz = sel[1];  // z1
                 closest = sel[2 + sel[0]];  // nameN (most deeply nested)
             }
         }
 
-        if (closest > 0 && closest <= GLuint(this->d_nSensitive)) {
+        if (closest > 0 && closest <= GLuint(this->sensitive)) {
             selected = closest;
         }
     }
 
-    this->wsSetCursor(selected ? CURSOR_INFO : CURSOR_INHERIT);
+    this->set_cursor(selected ? cursor_info : cursor_inherit);
 
     //
     // Compute & store the world coords of the pick if something
@@ -3560,9 +4060,9 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     //
     double selectCoord[3] = { 0.0, 0.0, 0.0 };
 
-    if (this->d_activeSensitive || selected) {
-        if (!this->d_activeSensitive) {
-            this->d_selectZ = minz / double(0xffffffff);
+    if (this->active_sensitive || selected) {
+        if (!this->active_sensitive) {
+            this->select_z = minz / double(0xffffffff);
         }
 
         GLint viewport[4];
@@ -3572,8 +4072,8 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
   //      glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
 
         //
-        // make modelview as a unit matrix as this is taken care in the core side
-        // during render traversal.
+        // make modelview as a unit matrix as this is taken care in the core
+        // side during render traversal.
         //
         for (int i = 0; i < 4; ++i) {
             for (int j = 0; j < 4; ++j) {
@@ -3582,7 +4082,7 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
         }
 
         GLdouble dx, dy, dz;
-        gluUnProject(GLdouble(x), GLdouble(viewport[3] - y), this->d_selectZ,
+        gluUnProject(GLdouble(x), GLdouble(viewport[3] - y), this->select_z,
                      modelview, projection, viewport,
                      &dx, &dy, &dz);
 
@@ -3599,66 +4099,66 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     // Sanity check. This can happen when the world gets replaced
     // by clicking on an anchor - the current sensitive object goes
     // away, but these variables are not reset.
-    if (this->d_activeSensitive > this->d_nSensitive) {
-        this->d_activeSensitive = 0;
+    if (this->active_sensitive > this->sensitive) {
+        this->active_sensitive = 0;
     }
-    if (this->d_overSensitive > this->d_nSensitive) {
-        this->d_overSensitive = 0;
+    if (this->over_sensitive > this->sensitive) {
+        this->over_sensitive = 0;
     }
 
     // An active sensitive object "grabs" the mouse until button released
-    if (this->d_activeSensitive) {
-        if (mouseEvent == EVENT_MOUSE_RELEASE
-                || mouseEvent == EVENT_MOUSE_MOVE) {
+    if (this->active_sensitive) {
+        if (mouseEvent == event_mouse_release
+                || mouseEvent == event_mouse_move) {
             this->browser.sensitive_event(
-                this->d_sensitiveObject[this->d_activeSensitive - 1],
+                this->sensitive_object[this->active_sensitive - 1],
                 timeNow,
-                selected == this->d_activeSensitive,
+                selected == this->active_sensitive,
                 false,
                 selectCoord);
-            this->d_activeSensitive = 0;
+            this->active_sensitive = 0;
         } else {
             // _DRAG
             this->browser.sensitive_event(
-                this->d_sensitiveObject[this->d_activeSensitive - 1],
+                this->sensitive_object[this->active_sensitive - 1],
                 timeNow,
-                selected == this->d_activeSensitive,
+                selected == this->active_sensitive,
                 true,
                 selectCoord);
         }
         wasActive = true;
-    } else if (mouseEvent == EVENT_MOUSE_CLICK && selected) {
+    } else if (mouseEvent == event_mouse_click && selected) {
         //
         // A click down over a sensitive object initiates an active grab and
         // mouse over events are no longer relevant.
         //
-        if (d_overSensitive && d_overSensitive != selected) {
+        if (over_sensitive && over_sensitive != selected) {
             this->browser.sensitive_event(
-                this->d_sensitiveObject[this->d_overSensitive - 1],
+                this->sensitive_object[this->over_sensitive - 1],
                 timeNow,
                 false, false, // isOver, isActive
                 selectCoord);
-            this->d_overSensitive = 0;
+            this->over_sensitive = 0;
         }
-        this->d_activeSensitive = selected;
+        this->active_sensitive = selected;
         this->browser.sensitive_event(
-            this->d_sensitiveObject[this->d_activeSensitive - 1],
+            this->sensitive_object[this->active_sensitive - 1],
             timeNow,
             true, true, // isOver, isActive
             selectCoord);
-    } else if (mouseEvent == EVENT_MOUSE_MOVE) {
+    } else if (mouseEvent == event_mouse_move) {
         // Handle isOver events (coords are bogus)
-        if (d_overSensitive && d_overSensitive != selected) {
+        if (this->over_sensitive && this->over_sensitive != selected) {
             this->browser.sensitive_event(
-                this->d_sensitiveObject[this->d_overSensitive - 1],
+                this->sensitive_object[this->over_sensitive - 1],
                 timeNow,
                 false, false, // isOver, isActive
                 selectCoord);
         }
-        this->d_overSensitive = selected;
-        if (this->d_overSensitive) {
+        this->over_sensitive = selected;
+        if (this->over_sensitive) {
             this->browser.sensitive_event(
-                this->d_sensitiveObject[this->d_overSensitive - 1],
+                this->sensitive_object[this->over_sensitive - 1],
                 timeNow,
                 true, false,  // isOver, isActive
                 selectCoord);
@@ -3666,35 +4166,45 @@ bool ViewerOpenGL::checkSensitive(const int x, const int y,
     }
 
     // Was event handled here?
-    if (this->d_activeSensitive || wasActive) { this->update(timeNow); }
+    if (this->active_sensitive || wasActive) { this->update(timeNow); }
 
     // Everything is handled except down clicks where nothing was selected
     // and up clicks where nothing was active.
-    return this->d_activeSensitive || wasActive;
+    return this->active_sensitive || wasActive;
 }
 
+/**
+ * @brief Draw a bounding sphere.
+ *
+ * Used for debugging view culling. Probably should be draw_bounding_volume and
+ * handle axis_aligned_bounding_boxes as well.
+ *
+ * @param bs            a bounding sphere; if max, will not be drawn
+ * @param intersection  one of the bvolume intersection test constants, or 4
+ *                      to draw in unique way. (useful for debugging)
+ */
 void
-ViewerOpenGL::draw_bounding_sphere(
-    const bounding_sphere & bs,
-    const bounding_volume::intersection intersection)
+viewer::draw_bounding_sphere(const bounding_sphere & bs,
+                             const bounding_volume::intersection intersection)
 {
     static const GLfloat green[] = { 0.25f, 1.0f, 0.25f, 1.0f };
     static const GLfloat red[] = { 1.0f, 0.5f, 0.5f, 1.0f };
     static const GLfloat grey[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 
-    if (!this->d_drawBSpheres || bs.maximized() || bs.radius() == -1.0) {
+    if (!this->draw_bounding_spheres
+        || bs.maximized()
+        || bs.radius() == -1.0) {
         return;
     }
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     //glEnable(GL_LIGHTING);
     glShadeModel(GL_FLAT);
-    GLUquadricObj * sph = 0;
     glMatrixMode(GL_MODELVIEW);
-    this->modelviewMatrixStack.push();
+    this->modelview_matrix_stack_.push();
     const vec3f & c = bs.center();
     glTranslatef(c.x(), c.y(), c.z());
-    sph = gluNewQuadric();
+    GLUquadricObj * const sph = gluNewQuadric();
     switch (intersection) {
     case bounding_volume::outside:
         //glDisable(GL_LIGHTING);
@@ -3735,8 +4245,38 @@ ViewerOpenGL::draw_bounding_sphere(
         gluSphere(sph, bs.radius(), 8, 8);
     }
     gluDeleteQuadric(sph);
-    this->modelviewMatrixStack.pop();
+    this->modelview_matrix_stack_.pop();
 }
+
+/**
+ * @fn void viewer::post_redraw()
+ *
+ * @brief Called to indicate to the windowing system that a redraw is
+ *        necessary.
+ */
+
+/**
+ * @fn void viewer::set_cursor(cursor_style c)
+ *
+ * @brief Called to set the cursor style.
+ *
+ * @param c cursor style identifier.
+ */
+
+/**
+ * @fn void viewer::swap_buffers()
+ *
+ * @brief Called to indicate to the windowing system that the front and back
+ *        buffers should be swapped.
+ */
+
+/**
+ * @fn void viewer::set_timer(double interval)
+ *
+ * @brief Set a delay.
+ *
+ * @param interval  milliseconds to delay.
+ */
 
 } // namespace GL
 

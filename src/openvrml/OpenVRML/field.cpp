@@ -729,6 +729,30 @@ field_value::type_id sffloat::type() const throw ()
  */
 
 /**
+ * @var size_t sfimage::d_w
+ *
+ * @brief Image width.
+ */
+
+/**
+ * @var size_t sfimage::d_h
+ *
+ * @brief Image height.
+ */
+
+/**
+ * @var size_t sfimage::d_nc
+ *
+ * @brief Number of components.
+ */
+
+/**
+ * @var unsigned char * sfimage::d_pixels
+ *
+ * @brief Pixel data.
+ */
+
+/**
  * Construct.
  */
 sfimage::sfimage() throw ():

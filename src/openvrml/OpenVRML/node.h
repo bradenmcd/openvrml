@@ -145,7 +145,7 @@ namespace OpenVRML {
             throw (unsupported_interface, std::bad_alloc) = 0;
 
     protected:
-        explicit node_class(OpenVRML::browser & browser) throw ();
+        explicit node_class(OpenVRML::browser & b) throw ();
     };
 
     class OPENVRML_SCOPE node_type {
@@ -221,11 +221,11 @@ namespace OpenVRML {
     class scene;
 
     std::ostream & OPENVRML_SCOPE operator<<(std::ostream & out,
-                                             const node & node);
+                                             const node & n);
 
     class OPENVRML_SCOPE node {
         friend std::ostream & operator<<(std::ostream & out,
-                                         const node & node);
+                                         const node & n);
 
     public:
         class route {
@@ -273,7 +273,7 @@ namespace OpenVRML {
 
         std::ostream & print(std::ostream & out, size_t indent) const;
 
-        void add_eventout_is(const std::string & eventout,
+        void add_eventout_is(const std::string & eventout_id,
                              polled_eventout_value & eventout_value)
             throw (unsupported_interface, std::bad_alloc);
 
@@ -341,9 +341,8 @@ namespace OpenVRML {
         virtual Vrml97Node::time_sensor_node * to_time_sensor() const;
         virtual Vrml97Node::touch_sensor_node * to_touch_sensor() const;
 
-        // Indicate that the node state has changed, need to re-render
         virtual bool modified() const;
-        void modified(bool modified);
+        void modified(bool value);
 
         static void mark_path_modified(node_path & path, bool mod,
                                        int flags = 0x003);
@@ -361,10 +360,11 @@ namespace OpenVRML {
         virtual bool bounding_volume_dirty() const;
 
         void add_route(const std::string & from_eventout,
-                       const node_ptr & toNode, const std::string & to_eventin)
+                       const node_ptr & to_node,
+                       const std::string & to_eventin)
             throw (unsupported_interface, field_value_type_mismatch);
         void delete_route(const std::string & from_eventout,
-                          const node_ptr & toNode,
+                          const node_ptr & to_node,
                           const std::string & to_eventin)
             throw ();
 
@@ -690,7 +690,7 @@ namespace OpenVRML {
         node_traverser() throw (std::bad_alloc);
         virtual ~node_traverser() throw () = 0;
 
-        void traverse(node & node);
+        void traverse(node & n);
         void traverse(const node_ptr & node);
         void traverse(const std::vector<node_ptr> & nodes);
 
@@ -702,10 +702,10 @@ namespace OpenVRML {
         node_traverser(const node_traverser &);
         node_traverser & operator=(const node_traverser &);
 
-        virtual void on_entering(node & node);
-        virtual void on_leaving(node & node);
+        virtual void on_entering(node & n);
+        virtual void on_leaving(node & n);
 
-        void do_traversal(node & node);
+        void do_traversal(node & n);
     };
 }
 

@@ -271,6 +271,8 @@ node_interface::node_interface(const type_id type,
  * are guaranteed to be unique and non-conflicting.
  */
 
+
+
 /**
  * @internal
  *
@@ -290,6 +292,14 @@ node_interface::node_interface(const type_id type,
  *
  * @return @c true if @p lhs.id is lexicographically less than @p rhs.id,
  *      @c false otherwise.
+ */
+
+/**
+ * @internal
+ *
+ * @var std::set<node_interface, node_interface_set::id_less> node_interface_set::interfaces
+ *
+ * @brief Set of @link node_interface node_interfaces@endlink.
  */
 
 /**
@@ -405,12 +415,13 @@ node_interface_set::find(const std::string & id) const throw ()
  * @brief Constructor.
  *
  * A node_class is constructed using a browser. All node instances that share
- * a particular node_class "belong to" the browser associated with the node_class.
+ * a particular node_class "belong to" the browser associated with the
+ * node_class.
  *
- * @param browser   the browser to be associated with the node_class.
+ * @param b the browser to be associated with the node_class.
  */
-node_class::node_class(OpenVRML::browser & browser) throw ():
-    browser(browser)
+node_class::node_class(OpenVRML::browser & b) throw ():
+    browser(b)
 {}
 
 /**
@@ -446,7 +457,7 @@ void node_class::render(OpenVRML::viewer & viewer) throw ()
 {}
 
 /**
- * @fn const node_type_ptr node_class::createType(const std::string & id, const node_interface_set & interfaces) throw (std::invalid_argument, std::bad_alloc)
+ * @fn const node_type_ptr node_class::create_type(const std::string & id, const node_interface_set & interfaces) throw (std::invalid_argument, std::bad_alloc)
  *
  * @brief Create a new node_type.
  *
@@ -1745,7 +1756,7 @@ const node::routes_t & node::routes() const
 /**
  * @brief Set the modified flag.
  *
- * Indicates the Node needs to be revisited for rendering.
+ * Indicates the node needs to be revisited for rendering.
  *
  * @param value
  */
@@ -3067,10 +3078,26 @@ node_traverser::node_traverser() throw (std::bad_alloc):
 {}
 
 /**
+ * @fn node_traverser::node_traverser(const node_traverser &)
+ *
+ * @brief Not implemented.
+ *
+ * node_traverser is not copyable.
+ */
+
+/**
  * @brief Destroy.
  */
 node_traverser::~node_traverser() throw ()
 {}
+
+/**
+ * @fn node_traverser& node_traverser::operator=(const node_traverser &)
+ *
+ * @brief Not implemented.
+ *
+ * node_traverser is not copyable.
+ */
 
 /**
  * @brief Traverse a node.

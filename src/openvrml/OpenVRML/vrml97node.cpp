@@ -15461,8 +15461,9 @@ void text_node::update_ucs4() throw (std::bad_alloc)
             vector<FcChar8>::iterator utf8interface = utf8String.begin();
             vector<FcChar32>::iterator ucs4interface = ucs4Element.begin();
             while (utf8interface != utf8String.end()) {
-                const int utf8bytes = FcUtf8ToUcs4(&*utf8interface, &*ucs4interface,
-                                                   utf8String.end() - utf8interface);
+                const int utf8bytes =
+                    FcUtf8ToUcs4(&*utf8interface, &*ucs4interface,
+                                 utf8String.end() - utf8interface);
                 utf8interface += utf8bytes;
                 ucs4interface++;
             }
@@ -15739,7 +15740,8 @@ namespace {
         }
     }
 
-    int conicTo_(FT_Vector * const control, FT_Vector * const to,
+    int conicTo_(FT_Vector * const control,
+                 FT_Vector * const to,
                  void * const user)
         throw ()
     {
@@ -15772,8 +15774,10 @@ namespace {
         return 0;
     }
 
-    int cubicTo_(FT_Vector * const control1, FT_Vector * const control2,
-                 FT_Vector * const to, void * const user)
+    int cubicTo_(FT_Vector * const control1,
+                 FT_Vector * const control2,
+                 FT_Vector * const to,
+                 void * const user)
         throw ()
     {
         using std::vector;
@@ -15787,10 +15791,10 @@ namespace {
 
         assert(!c.contours.empty());
         vector<vec2f> & contour = c.contours.back();
-        const vec2f & lastVertex = contour[contour.size() - 1];
-
         assert(!contour.empty());
-        const size_t npoints = 4;
+        const vec2f & lastVertex = contour.back();
+
+        static const size_t npoints = 4;
         vec2f buffer[npoints * npoints] = {
             vec2f(lastVertex[0], lastVertex[1]),
             vec2f(control1->x * c.scale, control1->y * c.scale),

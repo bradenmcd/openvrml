@@ -105,15 +105,15 @@ namespace OpenVRML {
         void url(const mfstring & value, double timestamp);
         const mfstring & url() const;
 
-        void add_eventin(field_value::type_id type_id, const std::string & id)
+        void add_eventin(field_value::type_id type, const std::string & id)
             throw (std::invalid_argument, std::bad_alloc);
-        void add_eventout(field_value::type_id type_id, const std::string & id)
+        void add_eventout(field_value::type_id type, const std::string & id)
             throw (std::invalid_argument, std::bad_alloc);
         void add_field(const std::string & id,
-                      const field_value_ptr & defaultValue)
+                       const field_value_ptr & default_val)
             throw (std::invalid_argument, std::bad_alloc);
 
-        void update(double timestamp);
+        void update(double current_time);
 
         void eventout(const std::string & id, const field_value & value)
             throw (unsupported_interface, std::bad_cast, std::bad_alloc);

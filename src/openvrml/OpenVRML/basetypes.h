@@ -525,11 +525,12 @@ namespace OpenVRML {
         void x(float value) throw ();
         void y(float value) throw ();
         void z(float value) throw ();
-        void axis(const vec3f & vec) throw ();
+        void axis(const vec3f & axis) throw ();
         void angle(float value) throw ();
 
         const rotation inverse() const throw ();
-        const rotation slerp(const rotation & dest_rot, float t) const throw ();
+        const rotation slerp(const rotation & dest_rot, float t) const
+            throw ();
     };
 
     inline const rotation operator*(const rotation & lhs, const rotation & rhs)
@@ -547,7 +548,8 @@ namespace OpenVRML {
         this->rot[3] = 0.0;
     }
 
-    inline const float & rotation::operator[](const size_t index) const throw ()
+    inline const float & rotation::operator[](const size_t index) const
+        throw ()
     {
         assert(index < 4);
         return this->rot[index];
@@ -671,13 +673,15 @@ namespace OpenVRML {
         return result *= rhs;
     }
 
-    inline const mat4f operator*(const mat4f & mat, const float scalar) throw ()
+    inline const mat4f operator*(const mat4f & mat, const float scalar)
+        throw ()
     {
         mat4f result(mat);
         return result *= scalar;
     }
 
-    inline const mat4f operator*(const float scalar, const mat4f & mat) throw ()
+    inline const mat4f operator*(const float scalar, const mat4f & mat)
+        throw ()
     {
         mat4f result(mat);
         return result *= scalar;

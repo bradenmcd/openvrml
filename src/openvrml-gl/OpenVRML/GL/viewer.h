@@ -35,167 +35,150 @@ namespace OpenVRML {
 
     namespace GL {
 
-        class OPENVRML_GL_SCOPE ViewerOpenGL : public viewer {
+        class OPENVRML_GL_SCOPE viewer : public OpenVRML::viewer {
         public:
-            enum { MAX_LIGHTS = 8 };
+            enum { max_lights = 8 };
 
-            enum LightType {
-                LIGHT_UNUSED,
-                LIGHT_DIRECTIONAL,
-                LIGHT_POSITIONAL
+            enum light_type {
+                light_unused,
+                light_directional,
+                light_positional
             };
 
-            // Event types
-            enum EventType {
-                EVENT_KEY_DOWN,
-                EVENT_MOUSE_MOVE,
-                EVENT_MOUSE_CLICK,
-                EVENT_MOUSE_DRAG,
-                EVENT_MOUSE_RELEASE
+            enum event_type {
+                event_key_down,
+                event_mouse_move,
+                event_mouse_click,
+                event_mouse_drag,
+                event_mouse_release
             };
 
             enum {
-                KEY_HOME,
-                KEY_LEFT,
-                KEY_UP,
-                KEY_RIGHT,
-                KEY_DOWN,
-                KEY_PAGE_UP,
-                KEY_PAGE_DOWN
+                key_home,
+                key_left,
+                key_up,
+                key_right,
+                key_down,
+                key_page_up,
+                key_page_down
             };
 
-            struct EventInfo {
-                EventType event;
-                int what; // key or button number
+            struct event_info {
+                event_type event;
+                int what;
                 int x, y;
             };
 
         protected:
-            enum CursorStyle {
-                CURSOR_INHERIT,
-                CURSOR_INFO,
-                CURSOR_CYCLE,
-                CURSOR_UP_DOWN,
-                CURSOR_CROSSHAIR
+            enum cursor_style {
+                cursor_inherit,
+                cursor_info,
+                cursor_cycle,
+                cursor_up_down,
+                cursor_crosshair
             };
 
-            class ModelviewMatrixStack {
+            class modelview_matrix_stack {
                 size_t size;
                 std::stack<mat4f> spillover;
 
             public:
-                ModelviewMatrixStack();
+                modelview_matrix_stack();
 
                 void push();
                 void pop();
             };
 
-            struct LightInfo {
-                LightType lightType;
-                int nestingLevel;
-                float radiusSquared;
+            struct light_info {
+                light_type type;
+                int nesting_level;
+                float radius_squared;
                 vec3f location;
             };
 
-            ModelviewMatrixStack modelviewMatrixStack;
+            modelview_matrix_stack modelview_matrix_stack_;
 
-            // GL status
-            bool d_GLinitialized;
-            bool d_blend;
-            bool d_lit;
-            bool d_texture;
-            bool d_wireframe;
+            bool gl_initialized;
+            bool blend;
+            bool lit;
+            bool texture;
+            bool wireframe;
 
-            int d_window;
-            int d_winWidth, d_winHeight;
-            float d_background[3];
+            size_t win_width;
+            size_t win_height;
+            color background;
 
-            // Groups used to be put in display lists, now these counters
-            // trigger various initializations and clean ups
-            int d_nObjects, d_nestedObjects;
+            size_t objects, nested_objects;
 
-            // Tessellation
             GLUtesselator * tesselator;
 
-            // Pickable entities
-            int d_nSensitive;
-            int d_activeSensitive;
-            int d_overSensitive;
+            size_t sensitive;
+            size_t active_sensitive;
+            size_t over_sensitive;
 
-            enum { MAXSENSITIVE = 1000 }; // make dynamic?...
-            node * d_sensitiveObject[MAXSENSITIVE];
+            enum { maxsensitive = 1000 };
+            node * sensitive_object[maxsensitive];
 
-            bool d_selectMode;
-            double d_selectZ; // window Z coord of last selection
+            bool select_mode;
+            double select_z;
 
-            // Lights
-            LightInfo d_lightInfo[MAX_LIGHTS];
+            light_info light_info_[max_lights];
 
-            int d_beginx, d_beginy;
+            int beginx, beginy;
 
-            // quaternion representations of last, current rotation
-            quatf lastquat, curquat;
-            bool d_rotationChanged;
+            quatf rotation;
+            bool rotation_changed;
 
-            bool d_rotating, d_scaling, d_translating;
-            bool d_drawBSpheres;
-            bool d_cull;
+            bool rotating, scaling, translating;
+            bool draw_bounding_spheres;
 
-            double d_renderTime;
-            double d_renderTime1;
+            double render_time;
+            double render_time1;
 
             // Window system specific methods
 
-            virtual void wsPostRedraw() = 0;
-            virtual void wsSetCursor( CursorStyle c) = 0;
-            virtual void wsSwapBuffers() = 0;
-            virtual void wsSetTimer( double ) = 0;
+            virtual void post_redraw() = 0;
+            virtual void set_cursor(cursor_style c) = 0;
+            virtual void swap_buffers() = 0;
+            virtual void set_timer(double interval) = 0;
 
             // Initialize OpenGL state
             void initialize();
 
-            // Geometry insertion setup & cleanup methods
-            void beginGeometry();
-            void endGeometry();
+            void begin_geometry();
+            void end_geometry();
 
-            // User interaction
             void step(float, float, float);
             void zoom(float);
-            void rot_trackball(float x1, float y1, float x2, float y2);
-            void rotate(const rotation & rotation) throw ();
+            void rotate(const OpenVRML::rotation & rot) throw ();
 
             void handleKey(int);
-            void handleButton(EventInfo*);
+            void handleButton(event_info * e);
             void handleMouseDrag(int, int);
 
             texture_object_t
-            insertSubTexture(size_t xoffset, size_t yoffset,
-                             size_t w, size_t h,
-                             size_t whole_w, size_t whole_h,
-                             size_t nc, bool repeat_s,
-                             bool repeat_t,
-                             const unsigned char *pixels,
-                             bool retainHint = false);
-
-            void insertExtrusionCaps(unsigned int mask, size_t nSpine,
-                                     const std::vector<vec3f> & c,
-                                     const std::vector<vec2f> & cs);
+            insert_subtexture(size_t xoffset, size_t yoffset,
+                              size_t w, size_t h,
+                              size_t whole_w, size_t whole_h,
+                              size_t nc, bool repeat_s,
+                              bool repeat_t,
+                              const unsigned char *pixels,
+                              bool retainHint = false);
 
             // Check for pickable entity selection
-            bool checkSensitive(int x, int y, EventType );
+            bool checkSensitive(int x, int y, event_type event);
 
         public:
-            explicit ViewerOpenGL(OpenVRML::browser & browser);
-            virtual ~ViewerOpenGL();
+            explicit viewer(OpenVRML::browser & b);
+            virtual ~viewer();
 
             virtual rendering_mode mode();
             virtual double frame_rate();
 
-            //
             virtual void reset_user_navigation();
 
             // Scope dirlights, open/close display lists
-            virtual object_t begin_object(const char *name, bool retain);
+            virtual object_t begin_object(const char * id, bool retain);
             virtual void end_object();
 
             // Insert objects into the display list
@@ -225,11 +208,12 @@ namespace OpenVRML {
                                   const std::vector<vec3f> & normal,
                                   const std::vector<vec2f> & texCoord);
             virtual object_t
-            insert_extrusion(unsigned int,
-                             const std::vector<vec3f> & spine,
-                             const std::vector<vec2f> & crossSection,
-                             const std::vector<rotation> & orientation,
-                             const std::vector<vec2f> & scale);
+            insert_extrusion(
+                unsigned int,
+                const std::vector<vec3f> & spine,
+                const std::vector<vec2f> & crossSection,
+                const std::vector<OpenVRML::rotation> & orientation,
+                const std::vector<vec2f> & scale);
             virtual object_t
             insert_line_set(const std::vector<vec3f> & coord,
                             const std::vector<int32> & coordIndex,
@@ -273,11 +257,9 @@ namespace OpenVRML {
                                                float radius);
 
 
-            // Lightweight copy
-            virtual object_t insert_reference(object_t existingObject);
+            virtual object_t insert_reference(object_t existing_object);
 
-            // Remove an object from the display list
-            virtual void remove_object(object_t key);
+            virtual void remove_object(object_t ref);
 
             virtual void enable_lighting(bool);
 
@@ -295,8 +277,8 @@ namespace OpenVRML {
                                       const color & specularColor,
                                       float transparency);
 
-            virtual void set_material_mode(int nTexComponents,
-                                           bool geometryColor);
+            virtual void set_material_mode(int tex_components,
+                                           bool geometry_color);
 
             virtual void set_sensitive(node * object);
 
@@ -321,7 +303,7 @@ namespace OpenVRML {
                                                const vec2f & translation);
 
             virtual void set_viewpoint(const vec3f & position,
-                                       const rotation & orientation,
+                                       const OpenVRML::rotation & orientation,
                                        float fieldOfView,
                                        float avatarSize,
                                        float visibilityLimit);
@@ -345,11 +327,11 @@ namespace OpenVRML {
 
             // Redraw the screen.
             virtual void redraw();
-            void resize(int w, int h);
+            void resize(size_t width, size_t height);
 
             // user interaction
 
-            void input( EventInfo *);
+            void input(event_info * e);
         };
     }
 }

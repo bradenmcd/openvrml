@@ -24,7 +24,7 @@ STRIP_FROM_PATH        =
 INTERNAL_DOCS          = NO
 CASE_SENSE_NAMES       = YES
 SHORT_NAMES            = NO
-HIDE_SCOPE_NAMES       = YES
+HIDE_SCOPE_NAMES       = NO
 VERBATIM_HEADERS       = NO
 SHOW_INCLUDE_FILES     = NO
 JAVADOC_AUTOBRIEF      = NO
@@ -159,7 +159,7 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = 
-PREDEFINED             = OPENVRML_SCOPE=""
+PREDEFINED             = OPENVRML_SCOPE="" OPENVRML_GL_CALLBACK_=""
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------

@@ -34,7 +34,6 @@
 # include "ViewerGlut.h"
 
 using namespace OpenVRML;
-using namespace OpenVRML::GL;
 
 /**
  * @class ViewerGlut
@@ -71,77 +70,82 @@ static ViewerGlut* getViewer(int w)
 //  These callbacks locate the viewer object then call the
 //  viewer-specific versions.
 
-//  Do redraw callback.
+extern "C" {
 
-static void display()
-{
-  ViewerGlut *viewer = getViewer( glutGetWindow() );
-  if (viewer) viewer->redraw();
-}
+    //  Do redraw callback.
 
-//  Keyboard button callback
-
-static void keyboard(unsigned char key, int x, int y)
-{
-  ViewerGlut *viewer = getViewer( glutGetWindow() );
-
-  ViewerOpenGL::EventInfo e = { ViewerOpenGL::EVENT_KEY_DOWN, key, x, y };
-  if (viewer) viewer->input( &e );
-}
-
-//  More keyboard buttons callback
-
-static void specialKey(int key, int x, int y)
-{
-  ViewerOpenGL::EventInfo e = { ViewerOpenGL::EVENT_KEY_DOWN, 0, x, y };
-
-  switch (key)
+    void display()
     {
-    case GLUT_KEY_HOME:  e.what = ViewerOpenGL::KEY_HOME; break;
-    case GLUT_KEY_LEFT:  e.what = ViewerOpenGL::KEY_LEFT; break;
-    case GLUT_KEY_UP:    e.what = ViewerOpenGL::KEY_UP; break;
-    case GLUT_KEY_RIGHT: e.what = ViewerOpenGL::KEY_RIGHT; break;
-    case GLUT_KEY_DOWN:  e.what = ViewerOpenGL::KEY_DOWN; break;
-    case GLUT_KEY_PAGE_DOWN: e.what = ViewerOpenGL::KEY_PAGE_DOWN; break;
-    case GLUT_KEY_PAGE_UP: e.what = ViewerOpenGL::KEY_PAGE_UP; break;
-    default: return;
+        ViewerGlut * viewer = getViewer(glutGetWindow());
+        if (viewer) { viewer->redraw(); }
     }
 
-  ViewerGlut *viewer = getViewer( glutGetWindow() );
+    //  Keyboard button callback
 
-  if (viewer) viewer->input( &e );
-}
+    void keyboard(unsigned char key, int x, int y)
+    {
+        ViewerGlut * viewer = getViewer(glutGetWindow());
 
-//  Mouse button callback
+        GL::viewer::event_info e = { GL::viewer::event_key_down, key, x, y };
+        if (viewer) { viewer->input(&e); }
+    }
 
-static void mouse(int button, int state, int x, int y)
-{
-  ViewerGlut *viewer = getViewer( glutGetWindow() );
+    //  More keyboard buttons callback
 
-  ViewerOpenGL::EventInfo e = { ViewerOpenGL::EVENT_MOUSE_CLICK, button, x, y };
-  if (state == GLUT_UP) e.event = ViewerOpenGL::EVENT_MOUSE_RELEASE;
-  lastButton = button;
-  if (viewer) viewer->input( &e );
-}
+    void specialKey(int key, int x, int y)
+    {
+        GL::viewer::event_info e = { GL::viewer::event_key_down, 0, x, y };
 
-//  Mouse drag motion callback (button down)
+        switch (key) {
+        case GLUT_KEY_HOME:  e.what = GL::viewer::key_home; break;
+        case GLUT_KEY_LEFT:  e.what = GL::viewer::key_left; break;
+        case GLUT_KEY_UP:    e.what = GL::viewer::key_up; break;
+        case GLUT_KEY_RIGHT: e.what = GL::viewer::key_right; break;
+        case GLUT_KEY_DOWN:  e.what = GL::viewer::key_down; break;
+        case GLUT_KEY_PAGE_DOWN: e.what = GL::viewer::key_page_down; break;
+        case GLUT_KEY_PAGE_UP: e.what = GL::viewer::key_page_up; break;
+        default: return;
+        }
 
-static void motion(int x, int y)
-{
-  ViewerGlut *viewer = getViewer( glutGetWindow() );
-  ViewerOpenGL::EventInfo e = { ViewerOpenGL::EVENT_MOUSE_DRAG,
-				lastButton, x, y };
-  if (viewer) viewer->input( &e );
-}
+        ViewerGlut * viewer = getViewer(glutGetWindow());
 
-//  Mouse motion callback
+        if (viewer) { viewer->input(&e); }
+    }
 
-static void passiveMotion(int x, int y)
-{
-  ViewerGlut *viewer = getViewer( glutGetWindow() );
-  ViewerOpenGL::EventInfo e = { ViewerOpenGL::EVENT_MOUSE_MOVE,
-				lastButton, x, y };
-  if (viewer) viewer->input( &e );
+    //  Mouse button callback
+
+    void mouse(int button, int state, int x, int y)
+    {
+        ViewerGlut *viewer = getViewer( glutGetWindow() );
+
+        GL::viewer::event_info e = { GL::viewer::event_mouse_click,
+                                     button,
+                                     x,
+                                     y };
+        if (state == GLUT_UP) e.event = GL::viewer::event_mouse_release;
+        lastButton = button;
+        if (viewer) viewer->input( &e );
+    }
+
+    //  Mouse drag motion callback (button down)
+
+    void motion(int x, int y)
+    {
+        ViewerGlut * viewer = getViewer(glutGetWindow());
+        GL::viewer::event_info e = { GL::viewer::event_mouse_drag,
+                                     lastButton, x, y };
+        if (viewer) { viewer->input(&e); }
+    }
+
+    //  Mouse motion callback
+
+    void passiveMotion(int x, int y)
+    {
+        ViewerGlut *viewer = getViewer( glutGetWindow() );
+        GL::viewer::event_info e = { GL::viewer::event_mouse_move,
+                                     lastButton, x, y };
+        if (viewer) viewer->input( &e );
+    }
 }
 
 #if USE_STENCIL_SHAPE
@@ -240,7 +244,7 @@ static void reshape(int width, int height)
 }
 
 ViewerGlut::ViewerGlut(OpenVRML::browser & browser):
-    ViewerOpenGL(browser)
+    GL::viewer(browser)
 {
 #if USE_STENCIL_SHAPE
     glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE | GLUT_STENCIL);
@@ -265,66 +269,65 @@ ViewerGlut::ViewerGlut(OpenVRML::browser & browser):
     viewers[d_window-1] = this;
 
     // Register callbacks
-    glutDisplayFunc(reinterpret_cast<GlutDisplay>(display));
-    glutKeyboardFunc(reinterpret_cast<GlutKeyboard>(keyboard));
-    glutSpecialFunc(reinterpret_cast<GlutSpecial>(specialKey));
-    glutMouseFunc(reinterpret_cast<GlutMouse>(mouse));
-    glutMotionFunc(reinterpret_cast<GlutMotion>(motion));
-    glutPassiveMotionFunc(reinterpret_cast<GlutPassiveMotion>(passiveMotion));
-    glutReshapeFunc(reinterpret_cast<GlutReshape>(reshape));
+    glutDisplayFunc(display);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(specialKey);
+    glutMouseFunc(mouse);
+    glutMotionFunc(motion);
+    glutPassiveMotionFunc(passiveMotion);
+    glutReshapeFunc(reshape);
 }
 
 
 ViewerGlut::~ViewerGlut()
 {
-  viewers[d_window-1] = 0;
-  glutDestroyWindow(d_window);
+    viewers[d_window-1] = 0;
+    glutDestroyWindow(d_window);
 }
 
 
-void ViewerGlut::wsPostRedraw() {
-  glutPostRedisplay();
-}
-
-void ViewerGlut::wsSetCursor( CursorStyle c)
+void ViewerGlut::post_redraw()
 {
-  static int cursorMap[] = { GLUT_CURSOR_INHERIT,
-			     GLUT_CURSOR_INFO,
-			     GLUT_CURSOR_CYCLE,
-			     GLUT_CURSOR_UP_DOWN,
-			     GLUT_CURSOR_CROSSHAIR
-  };
-  glutSetCursor( cursorMap[c] );
+    glutPostRedisplay();
 }
 
-void ViewerGlut::wsSwapBuffers() {
+void ViewerGlut::set_cursor(const cursor_style c)
+{
+    static const int cursorMap[] = { GLUT_CURSOR_INHERIT,
+                                     GLUT_CURSOR_INFO,
+                                     GLUT_CURSOR_CYCLE,
+                                     GLUT_CURSOR_UP_DOWN,
+                                     GLUT_CURSOR_CROSSHAIR
+    };
+    glutSetCursor(cursorMap[c]);
+}
+
+void ViewerGlut::swap_buffers() {
 #if USE_STENCIL_SHAPE
-  doshape();
+    doshape();
 #endif
-  glutSwapBuffers();
+    glutSwapBuffers();
 }
-
 
 // Timer callback calls the viewer update() method.
-static void timer(int)
+extern "C" void timer(int)
 {
-  ViewerGlut *viewer = getViewer( glutGetWindow() );
-  if (viewer) viewer->timerUpdate();
+    ViewerGlut * viewer = getViewer(glutGetWindow());
+    if (viewer) { viewer->timerUpdate(); }
 }
 
 void ViewerGlut::timerUpdate()
 {
-  d_timerPending = false;
-  update( 0.0 );
+    this->d_timerPending = false;
+    this->update(0.0);
 }
 
 // I think glut timers are one-shot deals.
-void ViewerGlut::wsSetTimer( double t )
+void ViewerGlut::set_timer(const double t)
 {
-  if (! d_timerPending)
-    {
-      unsigned int millis = (unsigned int) (1000.0 * t);
-      glutTimerFunc(millis, reinterpret_cast<GlutTimer>(timer), 1);
-      d_timerPending = true;
+    if (!this->d_timerPending) {
+        unsigned millis = unsigned(1000.0 * t);
+        glutTimerFunc(millis, timer, 1);
+        this->d_timerPending = true;
     }
 }
