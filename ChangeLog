@@ -1,3 +1,8 @@
+2000-11-26  Braden McDaniel  <braden@endoframe.com>
+
+        * Replaced include of <iostream.h> in VrmlField.h with a forward
+          declaration of ostream.
+
 2000-11-23  Braden McDaniel  <braden@endoframe.com>
 
         * Corrected (and changed implementation of) VrmlField::fieldTypeName();
