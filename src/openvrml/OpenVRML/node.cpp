@@ -237,7 +237,7 @@ node_interface::node_interface(const type_id type,
 /**
  * @fn bool operator==(const node_interface & lhs, const node_interface & rhs) throw ()
  *
- * @relates node_interface
+ * @relates OpenVRML::node_interface
  *
  * @brief Compare for equality.
  *
@@ -252,7 +252,7 @@ node_interface::node_interface(const type_id type,
  *
  * @relates node_interface
  *
- * @brief Compare for inequality.
+ * @brief Compare for OpenVRML::inequality.
  *
  * @param lhs   a node_interface.
  * @param rhs   a node_interface.
@@ -791,29 +791,29 @@ node::route::route(const route & route):
 /**
  * @fn bool operator==(const node::route & lhs, const node::route & rhs)
  *
- * @relates node::route
+ * @relates OpenVRML::node::route
  *
- * @brief Compare two @link route routes@endlink for equality.
+ * @brief Compare two @link node::route routes@endlink for equality.
  *
  * @param lhs   a route.
  * @param rhs   a route.
  *
- * @return @c true if the @link route routes@link are identical, @c false
- *      otherwise.
+ * @return @c true if the @link node::route routes@endlink are identical,
+ *         @c false otherwise.
  */
 
 /**
  * @fn bool operator!=(const node::route & lhs, const node::route & rhs)
  *
- * @relates node::route
+ * @relates OpenVRML::node::route
  *
- * @brief Compare two @link route routes@endlink for inequality.
+ * @brief Compare two @link node::route routes@endlink for inequality.
  *
  * @param lhs   a route.
  * @param rhs   a route.
  *
- * @return @c true if the @link route routes@link are not identical, @c false
- *      otherwise.
+ * @return @c true if the @link node::route routes@endlink are not identical,
+ *         @c false otherwise.
  */
 
 /**
@@ -2554,6 +2554,15 @@ geometry_node * geometry_node::to_geometry() throw ()
 }
 
 /**
+ * @fn viewer::object_t geometry_node::insert_geometry(OpenVRML::viewer & v, rendering_context context)
+ *
+ * @param v         viewer.
+ * @param context   rendering context.
+ *
+ * @return object identifier for the inserted geometry.
+ */
+
+/**
  * @brief Get the color node (if any) associated with this geometry.
  *
  * @return the color_node associated associated with this geometry, or 0 if
@@ -2619,6 +2628,18 @@ grouping_node * grouping_node::to_grouping() throw ()
  * @brief Get the children in the scene graph.
  *
  * @return the child nodes in the scene graph.
+ */
+
+/**
+ * @fn void grouping_node::activate(double timestamp, bool over, bool active, double * p)
+ *
+ * @brief Called in response to user interaction to activate any child pointing
+ *        device sensor nodes.
+ *
+ * @param timestamp the current time.
+ * @param over      whether the pointer is over sensitive geometry.
+ * @param active    whether the pointer has activated sensitive geometry.
+ * @param p         the activation point.
  */
 
 

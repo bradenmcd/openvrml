@@ -35,13 +35,13 @@ namespace OpenVRML {
  * @brief A view frustum.
  *
  * A frustum is more or less a truncated pyramid. This class represents
- * frustums with their wide end facing down the -z axis, and their (theoretical)
- * tip at the origin. A frustum is a convenient representation of the volume of
- * virtual space visible through the on-screen window when using a perspective
- * projection.
+ * frustums with their wide end facing down the -z axis, and their
+ * (theoretical) tip at the origin. A frustum is a convenient representation of
+ * the volume of virtual space visible through the on-screen window when using
+ * a perspective projection.
  *
- * @see VrmlNode::render
- * @see Viewer
+ * @see node::render
+ * @see viewer
  */
 
 /**
@@ -76,6 +76,24 @@ namespace OpenVRML {
  * Format is (a,b,c,d) where (a,b,c) is the plane normal and d is the plane
  * offset. For the momement the eyepoint is always the origin, so d is going
  * to be 0.
+ */
+
+/**
+ * @var frustum::right_plane
+ *
+ * @brief Right clipping plane.
+ */
+
+/**
+ * @var frustum::top_plane
+ *
+ * @brief Top clipping plane.
+ */
+
+/**
+ * @var frustum::bot_plane
+ *
+ * @brief Bottom clipping plane.
  */
 
 /**

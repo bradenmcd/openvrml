@@ -355,8 +355,8 @@ namespace {
  *
  * If @p type is field_value::invalidType, @c failbit is set on @p out.
  *
- * @param out   an output stream.
- * @param type  a field_value type identifier.
+ * @param out       output stream.
+ * @param type_id   field_value type identifier.
  *
  * @return @p out.
  */
@@ -376,8 +376,8 @@ std::ostream & operator<<(std::ostream & out,
  *
  * @relates field_value
  *
- * @param in    an input stream.
- * @param type  a field_value type identifier.
+ * @param in        input stream.
+ * @param type_id   field_value type identifier.
  *
  * @return @p in.
  */
@@ -476,7 +476,7 @@ field_value::type_id sfbool::type() const throw ()
 /**
  * @fn bool operator==(const sfbool & lhs, const sfbool & rhs) throw ()
  *
- * @relates sfbool
+ * @relates OpenVRML::sfbool
  *
  * @brief Compare for equality.
  *
@@ -490,7 +490,7 @@ field_value::type_id sfbool::type() const throw ()
 /**
  * @fn bool operator!=(const sfbool & lhs, const sfbool & rhs) throw ()
  *
- * @relates sfbool
+ * @relates OpenVRML::sfbool
  *
  * @brief Compare for inequality.
  *
@@ -580,7 +580,7 @@ field_value::type_id sfcolor::type() const throw ()
 /**
  * @fn bool operator==(const sfcolor & lhs, const sfcolor & rhs) throw ()
  *
- * @relates sfcolor
+ * @relates OpenVRML::sfcolor
  *
  * @brief Compare for equality.
  *
@@ -594,7 +594,7 @@ field_value::type_id sfcolor::type() const throw ()
 /**
  * @fn bool operator!=(const sfcolor & lhs, const sfcolor & rhs) throw ()
  *
- * @relates sfcolor
+ * @relates OpenVRML::sfcolor
  *
  * @brief Compare for inequality.
  *
@@ -684,7 +684,7 @@ field_value::type_id sffloat::type() const throw ()
 /**
  * @fn bool operator==(const sffloat & lhs, const sffloat & rhs) throw ()
  *
- * @relates sffloat
+ * @relates OpenVRML::sffloat
  *
  * @brief Compare for equality.
  *
@@ -698,7 +698,7 @@ field_value::type_id sffloat::type() const throw ()
 /**
  * @fn bool operator!=(const sffloat & lhs, const sffloat & rhs) throw ()
  *
- * @relates sffloat
+ * @relates OpenVRML::sffloat
  *
  * @brief Compare for inequality.
  *
@@ -1043,7 +1043,7 @@ field_value::type_id sfint32::type() const throw ()
 /**
  * @fn bool operator==(const sfint32 & lhs, const sfint32 & rhs) throw ()
  *
- * @relates sfint32
+ * @relates OpenVRML::sfint32
  *
  * @brief Compare for equality.
  *
@@ -1057,7 +1057,7 @@ field_value::type_id sfint32::type() const throw ()
 /**
  * @fn bool operator!=(const sfint32 & lhs, const sfint32 & rhs) throw ()
  *
- * @relates sfint32
+ * @relates OpenVRML::sfint32
  *
  * @brief Compare for inequality.
  *
@@ -1151,7 +1151,7 @@ field_value::type_id sfnode::type() const throw ()
 /**
  * @fn bool operator==(const sfnode & lhs, const sfnode & rhs) throw ()
  *
- * @relates sfnode
+ * @relates OpenVRML::sfnode
  *
  * @brief Compare for equality.
  *
@@ -1165,7 +1165,7 @@ field_value::type_id sfnode::type() const throw ()
 /**
  * @fn bool operator!=(const sfnode & lhs, const sfnode & rhs) throw ()
  *
- * @relates sfnode
+ * @relates OpenVRML::sfnode
  *
  * @brief Compare for inequality.
  *
@@ -1268,7 +1268,7 @@ void sfrotation::print(std::ostream & out) const
 /**
  * @fn bool operator==(const sfrotation & lhs, const sfrotation & rhs) throw ()
  *
- * @relates sfrotation
+ * @relates OpenVRML::sfrotation
  *
  * @brief Compare for equality.
  *
@@ -1282,7 +1282,7 @@ void sfrotation::print(std::ostream & out) const
 /**
  * @fn bool operator!=(const sfrotation & lhs, const sfrotation & rhs) throw ()
  *
- * @relates sfrotation
+ * @relates OpenVRML::sfrotation
  *
  * @brief Compare for inequality.
  *
@@ -1376,7 +1376,7 @@ field_value::type_id sfstring::type() const throw ()
 /**
  * @fn bool operator==(const sfstring & lhs, const sfstring & rhs) throw ()
  *
- * @relates sfstring
+ * @relates OpenVRML::sfstring
  *
  * @brief Compare for equality.
  *
@@ -1390,7 +1390,7 @@ field_value::type_id sfstring::type() const throw ()
 /**
  * @fn bool operator!=(const sfstring & lhs, const sfstring & rhs) throw ()
  *
- * @relates sfstring
+ * @relates OpenVRML::sfstring
  *
  * @brief Compare for inequality.
  *
@@ -1480,7 +1480,7 @@ field_value::type_id sftime::type() const throw ()
 /**
  * @fn bool operator==(const sftime & lhs, const sftime & rhs) throw ()
  *
- * @relates sftime
+ * @relates OpenVRML::sftime
  *
  * @brief Compare for equality.
  *
@@ -1494,7 +1494,7 @@ field_value::type_id sftime::type() const throw ()
 /**
  * @fn bool operator!=(const sftime & lhs, const sftime & rhs) throw ()
  *
- * @relates sftime
+ * @relates OpenVRML::sftime
  *
  * @brief Compare for inequality.
  *
@@ -1584,7 +1584,7 @@ void sfvec2f::print(std::ostream & out) const
 /**
  * @fn bool operator==(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
  *
- * @relates sfvec2f
+ * @relates OpenVRML::sfvec2f
  *
  * @brief Compare for equality.
  *
@@ -1598,7 +1598,7 @@ void sfvec2f::print(std::ostream & out) const
 /**
  * @fn bool operator!=(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
  *
- * @relates sfvec2f
+ * @relates OpenVRML::sfvec2f
  *
  * @brief Compare for inequality.
  *
@@ -1688,7 +1688,7 @@ void sfvec3f::print(std::ostream & out) const
 /**
  * @fn bool operator==(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
  *
- * @relates sfvec3f
+ * @relates OpenVRML::sfvec3f
  *
  * @brief Compare for equality.
  *
@@ -1702,7 +1702,7 @@ void sfvec3f::print(std::ostream & out) const
 /**
  * @fn bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
  *
- * @relates sfvec3f
+ * @relates OpenVRML::sfvec3f
  *
  * @brief Compare for inequality.
  *
@@ -1825,7 +1825,7 @@ void mfcolor::print(std::ostream & out) const
 /**
  * @fn bool operator==(const mfcolor & lhs, const mfcolor & rhs) throw ()
  *
- * @relates mfcolor
+ * @relates OpenVRML::mfcolor
  *
  * @brief Compare for equality.
  *
@@ -1839,7 +1839,7 @@ void mfcolor::print(std::ostream & out) const
 /**
  * @fn bool operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ()
  *
- * @relates mfcolor
+ * @relates OpenVRML::mfcolor
  *
  * @brief Compare for inequality.
  *
@@ -1962,7 +1962,7 @@ void mffloat::print(std::ostream & out) const
 /**
  * @fn bool operator==(const mffloat & lhs, const mffloat & rhs) throw ()
  *
- * @relates mffloat
+ * @relates OpenVRML::mffloat
  *
  * @brief Compare for equality.
  *
@@ -1976,7 +1976,7 @@ void mffloat::print(std::ostream & out) const
 /**
  * @fn bool operator!=(const mffloat & lhs, const mffloat & rhs) throw ()
  *
- * @relates mffloat
+ * @relates OpenVRML::mffloat
  *
  * @brief Compare for inequality.
  *
@@ -2099,7 +2099,7 @@ void mfint32::print(std::ostream & out) const
 /**
  * @fn bool operator==(const mfint32 & lhs, const mfint32 & rhs) throw ()
  *
- * @relates mfint32
+ * @relates OpenVRML::mfint32
  *
  * @brief Compare for equality.
  *
@@ -2113,7 +2113,7 @@ void mfint32::print(std::ostream & out) const
 /**
  * @fn bool operator!=(const mfint32 & lhs, const mfint32 & rhs) throw ()
  *
- * @relates mfint32
+ * @relates OpenVRML::mfint32
  *
  * @brief Compare for inequality.
  *
@@ -2239,7 +2239,7 @@ void mfnode::print(std::ostream & out) const
 /**
  * @fn bool operator==(const mfnode & lhs, const mfnode & rhs) throw ()
  *
- * @relates mfnode
+ * @relates OpenVRML::mfnode
  *
  * @brief Compare for equality.
  *
@@ -2253,7 +2253,7 @@ void mfnode::print(std::ostream & out) const
 /**
  * @fn bool operator!=(const mfnode & lhs, const mfnode & rhs) throw ()
  *
- * @relates mfnode
+ * @relates OpenVRML::mfnode
  *
  * @brief Compare for inequality.
  *
@@ -2377,7 +2377,7 @@ void mfrotation::print(std::ostream & out) const
 /**
  * @fn bool operator==(const mfrotation & lhs, const mfrotation & rhs) throw ()
  *
- * @relates mfrotation
+ * @relates OpenVRML::mfrotation
  *
  * @brief Compare for equality.
  *
@@ -2391,7 +2391,7 @@ void mfrotation::print(std::ostream & out) const
 /**
  * @fn bool operator!=(const mfrotation & lhs, const mfrotation & rhs) throw ()
  *
- * @relates mfrotation
+ * @relates OpenVRML::mfrotation
  *
  * @brief Compare for inequality.
  *
@@ -2514,7 +2514,7 @@ void mfstring::print(std::ostream & out) const
 /**
  * @fn bool operator==(const mfstring & lhs, const mfstring & rhs) throw ()
  *
- * @relates mfstring
+ * @relates OpenVRML::mfstring
  *
  * @brief Compare for equality.
  *
@@ -2528,7 +2528,7 @@ void mfstring::print(std::ostream & out) const
 /**
  * @fn bool operator!=(const mfstring & lhs, const mfstring & rhs) throw ()
  *
- * @relates mfstring
+ * @relates OpenVRML::mfstring
  *
  * @brief Compare for inequality.
  *
@@ -2652,7 +2652,7 @@ void mftime::print(std::ostream & out) const
 /**
  * @fn bool operator==(const mftime & lhs, const mftime & rhs) throw ()
  *
- * @relates mftime
+ * @relates OpenVRML::mftime
  *
  * @brief Compare for equality.
  *
@@ -2666,7 +2666,7 @@ void mftime::print(std::ostream & out) const
 /**
  * @fn bool operator!=(const mftime & lhs, const mftime & rhs) throw ()
  *
- * @relates mftime
+ * @relates OpenVRML::mftime
  *
  * @brief Compare for inequality.
  *
@@ -2790,7 +2790,7 @@ void mfvec2f::print(std::ostream & out) const
 /**
  * @fn bool operator==(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
  *
- * @relates mfvec2f
+ * @relates OpenVRML::mfvec2f
  *
  * @brief Compare for equality.
  *
@@ -2804,7 +2804,7 @@ void mfvec2f::print(std::ostream & out) const
 /**
  * @fn bool operator!=(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
  *
- * @relates mfvec2f
+ * @relates OpenVRML::mfvec2f
  *
  * @brief Compare for inequality.
  *
@@ -2928,7 +2928,7 @@ void mfvec3f::print(std::ostream & out) const
 /**
  * @fn bool operator==(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
  *
- * @relates mfvec3f
+ * @relates OpenVRML::mfvec3f
  *
  * @brief Compare for equality.
  *
@@ -2942,7 +2942,7 @@ void mfvec3f::print(std::ostream & out) const
 /**
  * @fn bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
  *
- * @relates mfvec3f
+ * @relates OpenVRML::mfvec3f
  *
  * @brief Compare for inequality.
  *

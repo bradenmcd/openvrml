@@ -110,8 +110,7 @@ namespace OpenVRML {
         virtual ~browser() throw ();
 
         const std::vector<node_ptr> & root_nodes() const throw ();
-        const node_path find_node(const node & node) const
-            throw (std::bad_alloc);
+        const node_path find_node(const node & n) const throw (std::bad_alloc);
         viewpoint_node & active_viewpoint() const throw ();
         void active_viewpoint(viewpoint_node & viewpoint) throw ();
         void reset_default_viewpoint() throw ();

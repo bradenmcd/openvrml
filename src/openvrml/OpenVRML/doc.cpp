@@ -98,6 +98,16 @@ doc::doc(const std::string & url, const doc2 * relative):
 }
 
 /**
+ * @internal
+ *
+ * @fn doc::doc(const doc &)
+ *
+ * @brief Not implemented.
+ *
+ * doc is not copyable.
+ */
+
+/**
  * @brief Destructor.
  */
 doc::~doc()
@@ -109,6 +119,16 @@ doc::~doc()
         delete [] this->tmpfile_;
     }
 }
+
+/**
+ * @internal
+ *
+ * @fn doc & doc::operator=(const doc &)
+ *
+ * @brief Not implemented.
+ *
+ * doc is not copyable.
+ */
 
 namespace {
     const char * stripProtocol(const char *url)
@@ -136,13 +156,15 @@ namespace {
 }
 
 /**
+ * @fn void doc::seturl(const char * url, const doc * relative)
+ *
  * @brief Set the URL.
  *
  * @param url       the new URL.
  * @param relative  the doc that @p url is relative to, or 0 if @p url is an
  *                  absolute URL.
  */
-void doc::seturl(const char * url, const doc * relative)
+void doc::seturl(const char * const url, const doc * const relative)
 {
   delete [] url_;
   url_ = 0;
@@ -172,6 +194,8 @@ void doc::seturl(const char * url, const doc * relative)
 }
 
 /**
+ * @fn void doc::seturl(const char * url, const doc2 * relative)
+ *
  * @brief Set the URL.
  *
  * @param url       the new URL.
@@ -722,7 +746,8 @@ namespace {
 /**
  * @var char * doc2::tmpfile_
  *
- * @brief Name of the temporary file created for the local copy of the resource.
+ * @brief Name of the temporary file created for the local copy of the
+ *        resource.
  */
 
 /**
@@ -752,6 +777,16 @@ doc2::doc2(const std::string & url, const doc2 * relative):
 }
 
 /**
+ * @internal
+ *
+ * @fn doc2::doc2(const doc2 &)
+ *
+ * @brief Not implemented.
+ *
+ * doc2 is not copyable.
+ */
+
+/**
  * @brief Destructor.
  */
 doc2::~doc2()
@@ -763,6 +798,16 @@ doc2::~doc2()
         delete [] tmpfile_;
     }
 }
+
+/**
+ * @internal
+ *
+ * @fn doc2 & doc2::operator=(const doc2 &)
+ *
+ * @brief Not implemented.
+ *
+ * doc2 is not copyable.
+ */
 
 namespace {
     const std::string stripProtocol(const std::string & url) {

@@ -1,3 +1,38 @@
+2003-07-28  Braden McDaniel  <braden@endoframe.com>
+
+	Doxygen documentation improvements.
+
+	* src/openvrml/OpenVRML/browser.cpp:  Doxygen documentation
+	improvements.
+	* src/openvrml/OpenVRML/browser.h:  Doxygen documentation
+	improvements.
+	* src/openvrml/OpenVRML/doc.cpp:  Doxygen documentation
+	improvements.
+	* src/openvrml/OpenVRML/field.cpp:  Doxygen documentation
+	improvements.
+	* src/openvrml/OpenVRML/field_value_ptr.cpp:  Doxygen
+	documentation improvements.
+	* src/openvrml/OpenVRML/frustum.cpp:  Doxygen documentation
+	improvements.
+	* src/openvrml/OpenVRML/node.cpp:  Doxygen documentation
+	improvements.
+	* src/openvrml/OpenVRML/node.h:  Doxygen documentation
+	improvements.
+
+2003-07-27  Braden McDaniel  <braden@endoframe.com>
+
+	Removed unused functions node::update_modified and
+	node::mark_path_modified.
+
+	* src/openvrml/OpenVRML/node.h:  Removed unused functions
+	node::update_modified and node::mark_path_modified.
+	* src/openvrml/OpenVRML/node.cpp:  Removed unused functions
+	node::update_modified and node::mark_path_modified.
+	* src/openvrml/OpenVRML/vrml97node.h:  Removed unused functions
+	node::update_modified and node::mark_path_modified.
+	* src/openvrml/OpenVRML/vrml97node.cpp:  Removed unused
+	functions node::update_modified and node::mark_path_modified.
+
 2003-07-27  Braden McDaniel  <braden@endoframe.com>
 
 	Doxygen documentation improvements.

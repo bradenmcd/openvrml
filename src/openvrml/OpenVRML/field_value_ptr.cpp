@@ -41,6 +41,18 @@ namespace OpenVRML {
  */
 
 /**
+ * @fn bool field_value_ptr::operator==(const field_value_ptr & lhs, const field_value_ptr & rhs) throw ()
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs point to the same field_value; @c false
+ *         otherwise.
+ */
+
+/**
  * @var field_value * field_value_ptr::value
  *
  * @brief A pointer to a field_value.
@@ -53,6 +65,8 @@ namespace OpenVRML {
  */
 
 /**
+ * @fn field_value_ptr::field_value_ptr(field_value * value) throw (std::bad_alloc)
+ *
  * @brief Construct.
  *
  * @param value a pointer to a field_value constructed with @c new.
@@ -156,6 +170,8 @@ field_value_ptr & field_value_ptr::operator=(const field_value_ptr & ptr)
  */
 
 /**
+ * @fn void field_value_ptr::reset(field_value * value) throw (std::bad_alloc)
+ *
  * @brief Reset the field_value_ptr to a new field_value.
  *
  * @param value a pointer to a field_value constructed with @c new.
@@ -193,20 +209,14 @@ void field_value_ptr::dispose() throw ()
 }
 
 /**
- * @fn bool operator==(const field_value_ptr & lhs, const field_value_ptr & rhs) throw ()
- *
- * @brief Compare for equality.
- *
- * @return @c true if @p lhs and @p rhs point to the same field_value; @c false
- *         otherwise.
- */
-
-/**
  * @fn bool operator!=(const field_value_ptr & lhs, const field_value_ptr & rhs) throw ()
  *
- * @relates field_value_ptr
+ * @relates OpenVRML::field_value_ptr
  *
  * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs point to different field_values;
  *         @c false otherwise.

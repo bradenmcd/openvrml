@@ -1009,11 +1009,11 @@ void browser::load_url(const std::vector<std::string> & url,
  * @a out.  Subclasses can override this method to direct messages to an
  * application's UI; for instance, a status bar.
  *
- * @param desc   a string.
+ * @param description   a string.
  */
-void browser::description(const std::string & desc)
+void browser::description(const std::string & description)
 {
-    this->out << desc << std::endl;
+    this->out << description << std::endl;
 }
 
 /**
@@ -2206,8 +2206,6 @@ NodeInterfaceTypeMismatch::~NodeInterfaceTypeMismatch() throw ()
 
 
 /**
- * @internal
- *
  * @class ProtoNode
  *
  * @brief A prototype node instance.

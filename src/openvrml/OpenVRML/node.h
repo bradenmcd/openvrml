@@ -514,12 +514,13 @@ namespace OpenVRML {
         virtual geometry_node * to_geometry() throw ();
 
         virtual viewer::object_t
-        insert_geometry(OpenVRML::viewer & viewer,
+        insert_geometry(OpenVRML::viewer & v,
                         rendering_context context) = 0;
         virtual const color_node * color() const throw ();
 
     protected:
-        geometry_node(const node_type & type, const scope_ptr & scope) throw ();
+        geometry_node(const node_type & type, const scope_ptr & scope)
+            throw ();
     };
 
 
@@ -535,7 +536,8 @@ namespace OpenVRML {
                               double *p) = 0;
 
     protected:
-        grouping_node(const node_type & type, const scope_ptr & scope) throw ();
+        grouping_node(const node_type & type, const scope_ptr & scope)
+            throw ();
     };
 
 
@@ -554,7 +556,8 @@ namespace OpenVRML {
         virtual float transparency() const throw () = 0;
 
     protected:
-        material_node(const node_type & type, const scope_ptr & scope) throw ();
+        material_node(const node_type & type, const scope_ptr & scope)
+            throw ();
     };
 
 
