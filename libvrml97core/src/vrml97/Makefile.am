@@ -11,7 +11,7 @@ LIBRARY_VERSION = 0:0:0
 #          |           Set to zero if current is incremented
 #          +- Increment if interfaces have been added, removed or changed
 
-SUBDIRS = antlr javascript
+SUBDIRS = @OPENVRML_CORE_SUBDIRS@
 
 #
 # Blow off "std" if the compiler doesn't support namespaces
@@ -28,16 +28,17 @@ else
   DEBUG_CPPFLAGS = -DNDEBUG
 endif
 
+if DISABLE_JAVASCRIPT
+else
 #
 # JS doesn't include config.h, so we have to do this here.
 #
 JS_CPPFLAGS = -DXP_UNIX
+INCLUDES = -I./javascript
+endif
 
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF) $(JS_CPPFLAGS)
-AM_CXXFLAGS = -Wall @JPEG_CFLAGS@ @PNG_CFLAGS@
-
-INCLUDES = -I./javascript
-
+AM_CXXFLAGS = @JPEG_CFLAGS@ @PNG_CFLAGS@
 
 lib_LTLIBRARIES = libopenvrml.la 
 libopenvrml_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ @PNG_LIBS@

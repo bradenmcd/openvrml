@@ -20,11 +20,6 @@
 #ifndef SCRIPTJS_H
 #define SCRIPTJS_H
 
-//
-//  Javascript Script class
-//
-//#include "javascript/jsapi.h"
-
 #include "ScriptObject.h"
 #include "VrmlField.h"
 

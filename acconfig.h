@@ -26,12 +26,12 @@
 # pragma warning( disable : 4305 )  
 // Disable warning messages about truncating names in debug info
 # pragma warning( disable : 4786 )  
-static const char SLASH = '\\';
+const char SLASH = '\\';
 #else
-static const char SLASH = '/';
+const char SLASH = '/';
 #endif
 
-static const char COLON = ':';
+const char COLON = ':';
 
 /* Make sure that PI and friends are defined.  This is needed under 
    platforms that are not directly BSD derived (even under GNU libc
@@ -56,10 +56,7 @@ static const char COLON = ':';
 #undef OPENVRML_MAJOR_VERSION
 #undef OPENVRML_MINOR_VERSION
 #undef OPENVRML_MICRO_VERSION
-#undef HAVE_LIBJPEG
-#undef HAVE_LIBPNG
-#undef HAVE_ZLIB
-#undef XP_UNIX
+#undef OPENVRML_DISABLE_JAVASCRIPT
 #undef AIX4_3
 
 @TOP@

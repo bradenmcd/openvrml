@@ -102,26 +102,42 @@ AC_ARG_ENABLE(debug,
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 dnl
-dnl JavaScript doesn't include config.h, so we have to use automake
-dnl conditionals.
+dnl Allow JavaScript support to be disabled
 dnl
-case "$target" in
-  *-aix*)
-    aix=true
-    case `uname -r` in
-      *4.3*)
-        aix4_3=true
-        AC_DEFINE(AIX4_3, ,[needed by jsotypes.h])
-        ;;
-    esac
-    ;;
-  *-freebsd*)
-    freebsd=true
-    ;;
-esac
-AM_CONDITIONAL(FREEBSD, test x$freebsd = xtrue)
-AM_CONDITIONAL(AIX, test x$aix = xtrue)
-AM_CONDITIONAL(AIX4_3, test x$aix4_3 = xtrue)
+AC_ARG_ENABLE(javascript,
+  [  --disable-javascript    Disable JavaScript support],
+  [ enable_javascript=$enableval ],
+  [ enable_javascript=yes ]
+)
+if test "X$enable_javascript" = "Xno"; then
+  AC_DEFINE(OPENVRML_DISABLE_JAVASCRIPT)
+  OPENVRML_CORE_SUBDIRS="antlr"
+else
+  OPENVRML_CORE_SUBDIRS="antlr javascript"
+  dnl
+  dnl JavaScript doesn't include config.h, so we have to use automake
+  dnl conditionals.
+  dnl
+  case "$target" in
+    *-aix*)
+      aix=true
+      case `uname -r` in
+        *4.3*)
+          aix4_3=true
+          AC_DEFINE(AIX4_3, ,[needed by jsotypes.h])
+          ;;
+      esac
+      ;;
+    *-freebsd*)
+      freebsd=true
+      ;;
+  esac
+  AM_CONDITIONAL(FREEBSD, test x$freebsd = xtrue)
+  AM_CONDITIONAL(AIX, test x$aix = xtrue)
+  AM_CONDITIONAL(AIX4_3, test x$aix4_3 = xtrue)
+fi
+AC_SUBST(OPENVRML_CORE_SUBDIRS)
+AM_CONDITIONAL(DISABLE_JAVASCRIPT, test X$enable_javascript = Xno)
 
 AC_OUTPUT(openvrml.spec \
           Makefile \

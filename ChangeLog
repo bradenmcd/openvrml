@@ -3,6 +3,8 @@
         * API cleanup and improvements to VrmlSFColor, VrmlSFRotation,
           VrmlSFVec2f, VrmlSFVec3f.
 
+        * Added configure option to disable JavaScript support.
+
 2000-12-12  Braden McDaniel  <braden@endoframe.com>
 
         * API improvements (including const-correctness) to VrmlSFVec3f and

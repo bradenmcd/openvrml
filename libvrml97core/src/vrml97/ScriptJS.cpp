@@ -31,7 +31,8 @@
 #include <winconfig.h>
 #endif
 
-//#if HAVE_JAVASCRIPT
+# ifndef OPENVRML_DISABLE_JAVASCRIPT
+
 # include <stdio.h>
 # include <string.h>
 
@@ -2748,4 +2749,5 @@ ErrorReporter(JSContext *, const char *message, JSErrorReport *report)
     }
     theSystem->error("\n");
 }
-//#endif // HAVE_JAVASCRIPT
+
+# endif // ifndef OPENVRML_DISABLE_JAVASCRIPT
