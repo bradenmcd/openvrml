@@ -21,10 +21,23 @@
 # include "Route.h"
 # include <string.h>
 
-Route::Route(const std::string & fromEventOut,
-             const VrmlNodePtr & toNode, const std::string & toEventIn):
-        fromEventOut(fromEventOut), toNode(toNode), 
-	toEventIn(toEventIn) {}
+Route::Route(const char * fromEventOut,
+             const VrmlNodePtr & toNode, const char * toEventIn ):
+        d_toNode(toNode), d_prev(0), d_next(0) {
+    d_fromEventOut = new char[strlen(fromEventOut)+1];
+    strcpy(d_fromEventOut, fromEventOut);
+    d_toEventIn = new char[strlen(toEventIn)+1];
+    strcpy(d_toEventIn, toEventIn);
+}
 
-Route::Route(const Route & route): fromEventOut(route.fromEventOut), 
-	toNode(route.toNode), toEventIn(route.toEventIn) {}
+Route::Route(const Route & r): d_toNode(r.d_toNode) {
+    d_fromEventOut = new char[strlen(r.d_fromEventOut)+1];
+    strcpy(d_fromEventOut, r.d_fromEventOut);
+    d_toEventIn = new char[strlen(r.d_toEventIn)+1];
+    strcpy(d_toEventIn, r.d_toEventIn);
+}
+
+Route::~Route() {
+    delete [] d_fromEventOut;
+    delete [] d_toEventIn;
+}

@@ -25,10 +25,7 @@
 //
 
 #   include <stddef.h>
-#   include <string>
 #   include "common.h"
-
-class VrmlMFString;
 
 class OPENVRML_SCOPE System {
 
@@ -47,7 +44,7 @@ public:
 #ifdef macintosh
   virtual bool loadUrl(char *url, int np, char **parameters );
 #else
-  virtual bool loadUrl(const std::string & url, const VrmlMFString & parameters);
+  virtual bool loadUrl(const char *url, size_t np, char const * const * parameters );
 #endif
 
   virtual int connectSocket( const char *host, int port );

@@ -36,19 +36,21 @@
 #include "VrmlNode.h"
 #include "Route.h"
 #include "VrmlNamespace.h"
-#include "nodetype.h"
+#include "VrmlNodeType.h"
 #include "VrmlScene.h"
 #include "MathUtils.h"
 #include "VrmlBVolume.h"
 #include "VrmlBSphere.h"
 #include "VrmlRenderContext.h"
 
-# ifndef NDEBUG
-#   define VRML_NODE_DEBUG
-# endif
+#include <stdio.h>		// sprintf
 
-/*
- * Given a NodeType, add in the fields, exposedFields, eventIns
+#ifndef NDEBUG
+//#   define VRML_NODE_DEBUG
+#endif
+
+/**
+ * Given a VrmlNodeType, add in the fields, exposedFields, eventIns
  * and eventOuts defined by the particular node implementation.
  * There's a great big method in VrmlNamespace that just calls
  * defineType for every built in node. Nodes that inherit from other
@@ -64,16 +66,23 @@
  *
  * @see VrmlNamespace::defineBuiltins()
  */
+VrmlNodeType *VrmlNode::defineType(VrmlNodeType *t) { return t; }
 
-VrmlNode::VrmlNode(const NodeType & type, VrmlScene * scene):
-        type(type), d_scene(scene), d_modified(false),
-        visited(false), d_routes(0) {
+VrmlNode::VrmlNode(VrmlScene * scene): d_scene(scene), d_modified(false),
+        visited(false), d_routes(0), d_name(0) {
   this->setBVolumeDirty(true);
 }
 
-VrmlNode::VrmlNode(const VrmlNode & node): type(node.type), id(node.id),
-        d_scene(0), d_modified(true), d_routes(0) {
-    this->setBVolumeDirty(true);
+VrmlNode::VrmlNode(const VrmlNode & node):
+  d_scene(0),
+  d_modified(true),
+  d_routes(0),
+  d_name(node.d_name ? new char[strlen(node.d_name) + 1] : 0)
+{
+  if (this->d_name) {
+      strcpy(this->d_name, node.d_name);
+  }
+  this->setBVolumeDirty(true);
 }
 
 
@@ -85,14 +94,22 @@ VrmlNode::VrmlNode(const VrmlNode & node): type(node.type), id(node.id),
 VrmlNode::~VrmlNode() 
 {
   // Remove the node's name (if any) from the map...
-  if (!this->id.empty())
-  {
-    if (d_scene && d_scene->scope())
-      d_scene->scope()->removeNodeName(*this);
-  }
+  if (d_name)
+    {
+      if (d_scene && d_scene->scope())
+	d_scene->scope()->removeNodeName(*this);
+      delete [] d_name;
+    }
 
   // Remove all routes from this node
-  d_routes.resize(0);
+  Route *r = d_routes;
+  while (r)
+    {
+      Route *next = r->next();
+      delete r;
+      r = next;
+    }
+
 }
 
 /**
@@ -133,29 +150,37 @@ void VrmlNode::resetVisitedFlag() {
 }
 
 /**
- * @brief Set the nodeId of the node.
+ * @brief Set the name of the node.
  *
  * Some one else (the parser) needs to tell the scene about the name for
  * use in USE/ROUTEs.
  *
- * @param nodeName a string
+ * @param nodeName a C-style string
  * @param ns a pointer to the VrmlNamespace to which this node should
  *           belong
  */
-void VrmlNode::setId(const std::string & nodeId, VrmlNamespace * const ns) {
-    this->id = nodeId;
-    if (!nodeId.empty() && ns) {
-        ns->addNodeName(VrmlNodePtr(this));
+void VrmlNode::setName(const char *nodeName, VrmlNamespace *ns)
+{
+  if (d_name) delete d_name;
+
+  if (nodeName && *nodeName)
+    {
+      d_name = new char[strlen(nodeName)+1];
+      strcpy(d_name, nodeName);
+      if (ns) ns->addNodeName(VrmlNodePtr(this));
     }
+  else
+    d_name = 0;
 }
 
 /**
- * @brief Retrieve the nodeId of this node.
+ * @brief Retrieve the name of this node.
  *
- * @return the nodeId
+ * @return a pointer to a C-style (0-terminated) string
  */
-const std::string & VrmlNode::getId() const {
-    return this->id;
+const char *VrmlNode::name() const
+{
+  return d_name ? d_name : "";
 }
 
 /**
@@ -167,170 +192,173 @@ const std::string & VrmlNode::getId() const {
  * @param scene
  * @param relativeUrl
  */
-void VrmlNode::addToScene(VrmlScene * scene, const std::string &) {
-    this->d_scene = scene;
+void VrmlNode::addToScene(VrmlScene * scene, const char * relativeUrl)
+{
+  d_scene = scene;
 }
 
 
-// Safe node downcasts. These avoid the dangerous casts of VrmlNode* (esp in
-// presence of protos), but are ugly in that this class must know about all
-// the subclasses. These return 0 if the typecast is invalid.
-// Remember to also add new ones to VrmlNodeProto. Protos should
-// return their first implementation node (except toProto()).
+// Node type tests
 
-VrmlNodeAnchor * VrmlNode::toAnchor() const { return 0; }
+VrmlNodeAnchor*		VrmlNode::toAnchor() const { return 0; }
+VrmlNodeAppearance*	VrmlNode::toAppearance() const { return 0; }
+VrmlNodeAudioClip*	VrmlNode::toAudioClip() const { return 0; }
+VrmlNodeBackground*	VrmlNode::toBackground() const { return 0; }
 
-VrmlNodeAppearance * VrmlNode::toAppearance() const { return 0; }
+const VrmlNodeBillboard * VrmlNode::toBillboard() const {
+    return 0;
+}
 
-VrmlNodeAudioClip * VrmlNode::toAudioClip() const { return 0; }
+VrmlNodeBillboard * VrmlNode::toBillboard() {
+    return 0;
+}
 
-VrmlNodeBackground * VrmlNode::toBackground() const { return 0; }
+VrmlNodeBox*		VrmlNode::toBox() const { return 0; } //LarryD Mar 08/99
 
-VrmlNodeBillboard * VrmlNode::toBillboard() const { return 0; }
+const VrmlNodeChild * VrmlNode::toChild() const {
+    return 0;
+}
 
-VrmlNodeBox * VrmlNode::toBox() const { return 0; }
+VrmlNodeChild * VrmlNode::toChild() {
+    return 0;
+}
 
-VrmlNodeChild * VrmlNode::toChild() const { return 0; }
+const VrmlNodeCollision * VrmlNode::toCollision() const {
+    return 0;
+}
 
-VrmlNodeCollision * VrmlNode::toCollision() const { return 0; }
+VrmlNodeCollision * VrmlNode::toCollision() {
+    return 0;
+}
 
-VrmlNodeColor * VrmlNode::toColor() const { return 0; }
+VrmlNodeColor*		VrmlNode::toColor() const { return 0; }
+VrmlNodeCone*		VrmlNode::toCone() const { return 0; } //LarryD Mar 08/99
+VrmlNodeCoordinate*	VrmlNode::toCoordinate() const { return 0; }
+VrmlNodeCylinder* VrmlNode::toCylinder() const { return 0; } //LarryD Mar 08/99
+VrmlNodeDirLight* VrmlNode::toDirLight() const { return 0; } //LarryD Mar 04/99
+VrmlNodeElevationGrid* VrmlNode::toElevationGrid() const { return 0; } //LarryD Mar 09/99
+VrmlNodeExtrusion*     VrmlNode::toExtrusion() const { return 0; } //LarryD Mar 09/99
+VrmlNodeFog*		VrmlNode::toFog() const { return 0; }
+VrmlNodeFontStyle*	VrmlNode::toFontStyle() const { return 0; }
 
-VrmlNodeCone * VrmlNode::toCone() const { return 0; }
+const VrmlNodeGeometry * VrmlNode::toGeometry() const {
+    return 0;
+}
 
-VrmlNodeCoordinate * VrmlNode::toCoordinate() const { return 0; }
+VrmlNodeGeometry * VrmlNode::toGeometry() {
+    return 0;
+}
 
-VrmlNodeCylinder * VrmlNode::toCylinder() const { return 0; }
+VrmlNodeGroup*		VrmlNode::toGroup() const { return 0; }
+VrmlNodeIFaceSet*	VrmlNode::toIFaceSet() const { return 0; }
+VrmlNodeInline*		VrmlNode::toInline() const { return 0; }
+VrmlNodeLight*		VrmlNode::toLight() const { return 0; }
+VrmlNodeMaterial*	VrmlNode::toMaterial() const { return 0; }
+VrmlNodeMovieTexture*	VrmlNode::toMovieTexture() const { return 0; }
+VrmlNodeNavigationInfo*	VrmlNode::toNavigationInfo() const { return 0; }
+VrmlNodeNormal*		VrmlNode::toNormal() const { return 0; }
+VrmlNodePlaneSensor*	VrmlNode::toPlaneSensor() const { return 0; }
+VrmlNodeSphereSensor*	VrmlNode::toSphereSensor() const { return 0; }
+VrmlNodeCylinderSensor*	VrmlNode::toCylinderSensor() const { return 0; }
+VrmlNodePointLight*	VrmlNode::toPointLight() const { return 0; }
+VrmlNodeScript*		VrmlNode::toScript() const { return 0; }
+VrmlNodeShape*		VrmlNode::toShape() const { return 0; }
+VrmlNodeSound*		VrmlNode::toSound() const { return 0; }
+VrmlNodeSphere* VrmlNode::toSphere() const { return 0; }      //LarryD Mar 08/99
+VrmlNodeSpotLight*	VrmlNode::toSpotLight() const { return 0; }
+VrmlNodeSwitch* VrmlNode::toSwitch() const { return 0; }      //LarryD Mar 08/99
+VrmlNodeTexture*	VrmlNode::toTexture() const { return 0; }
+VrmlNodeTextureCoordinate*	VrmlNode::toTextureCoordinate() const { return 0; }
+VrmlNodeTextureTransform* VrmlNode::toTextureTransform() const { return 0; }
+VrmlNodeTimeSensor*	VrmlNode::toTimeSensor() const { return 0; }
+VrmlNodeTouchSensor*	VrmlNode::toTouchSensor() const { return 0; }
+VrmlNodeTransform* VrmlNode::toTransform() const { return 0; } //LarryD Feb 24/99
+VrmlNodeViewpoint*	VrmlNode::toViewpoint() const { return 0; }
 
-VrmlNodeDirLight * VrmlNode::toDirLight() const { return 0; }
-
-VrmlNodeElevationGrid * VrmlNode::toElevationGrid() const { return 0; }
-
-VrmlNodeExtrusion * VrmlNode::toExtrusion() const { return 0; }
-
-VrmlNodeFog * VrmlNode::toFog() const { return 0; }
-
-VrmlNodeFontStyle * VrmlNode::toFontStyle() const { return 0; }
-
-VrmlNodeGeometry * VrmlNode::toGeometry() const { return 0; }
-
-VrmlNodeGroup * VrmlNode::toGroup() const { return 0; }
-
-VrmlNodeIFaceSet * VrmlNode::toIFaceSet() const { return 0; }
-
-VrmlNodeImageTexture * VrmlNode::toImageTexture() const { return 0; }
-
-VrmlNodeInline * VrmlNode::toInline() const { return 0; }
-
-VrmlNodeLight * VrmlNode::toLight() const { return 0; }
-
-VrmlNodeLOD * VrmlNode::toLOD() const { return 0; }
-
-VrmlNodeMaterial * VrmlNode::toMaterial() const { return 0; }
-
-VrmlNodeMovieTexture * VrmlNode::toMovieTexture() const { return 0; }
-
-VrmlNodeNavigationInfo * VrmlNode::toNavigationInfo() const { return 0; }
-
-VrmlNodeNormal * VrmlNode::toNormal() const { return 0; }
-
-VrmlNodeOrientationInt * VrmlNode::toOrientationInt() const { return 0; }
-
-VrmlNodePlaneSensor * VrmlNode::toPlaneSensor() const { return 0; }
-
-VrmlNodePositionInt * VrmlNode::toPositionInt() const { return 0; }
-
-VrmlNodeSphereSensor * VrmlNode::toSphereSensor() const { return 0; }
-
-VrmlNodeCylinderSensor * VrmlNode::toCylinderSensor() const { return 0; }
-
+VrmlNodeImageTexture* VrmlNode::toImageTexture() const { return 0; }
 VrmlNodePixelTexture* VrmlNode::toPixelTexture() const { return 0; }
 
-VrmlNodePointLight * VrmlNode::toPointLight() const { return 0; }
-
-VrmlNodeScalarInt * VrmlNode::toScalarInt() const { return 0; }
-
-VrmlNodeScript * VrmlNode::toScript() const { return 0; }
-
-VrmlNodeShape * VrmlNode::toShape() const { return 0; }
-
-VrmlNodeSound * VrmlNode::toSound() const { return 0; }
-
-VrmlNodeSphere * VrmlNode::toSphere() const { return 0; }
-
-VrmlNodeSpotLight * VrmlNode::toSpotLight() const { return 0; }
-
-VrmlNodeSwitch * VrmlNode::toSwitch() const { return 0; }
-
-VrmlNodeTexture * VrmlNode::toTexture() const { return 0; }
-
-VrmlNodeTextureCoordinate * VrmlNode::toTextureCoordinate() const { return 0; }
-
-VrmlNodeTextureTransform * VrmlNode::toTextureTransform() const { return 0; }
-
-VrmlNodeTimeSensor * VrmlNode::toTimeSensor() const { return 0; }
-
-VrmlNodeTouchSensor * VrmlNode::toTouchSensor() const { return 0; }
-
-VrmlNodeTransform * VrmlNode::toTransform() const { return 0; }
-
-VrmlNodeViewpoint * VrmlNode::toViewpoint() const { return 0; }
+VrmlNodeLOD* VrmlNode::toLOD() const { return 0; }
+VrmlNodeScalarInt* VrmlNode::toScalarInt() const { return 0; }
+VrmlNodeOrientationInt* VrmlNode::toOrientationInt() const { return 0; }
+VrmlNodePositionInt* VrmlNode::toPositionInt() const { return 0; }
 
 
-/**
- * @brief Add a route from an eventOut of this node to an eventIn of another
- *      node.
- */
-void VrmlNode::addRoute(const std::string & fromEventOut,
+VrmlNodeProto*		VrmlNode::toProto() const { return 0; }
+
+
+// Add a route from an eventOut of this node to an eventIn of another node.
+
+void VrmlNode::addRoute(const char *fromEventOut,
 			const VrmlNodePtr & toNode,
-			const std::string & toEventIn) {
+			const char *toEventIn)
+{
+#ifdef VRML_NODE_DEBUG
+  fprintf(stderr,"%s::%s 0x%x addRoute %s\n",
+	  nodeType()->getName(), name(), (unsigned) this, fromEventOut);
+#endif
+
+
   // Check to make sure fromEventOut and toEventIn are valid names...
   
   // Is this route already here?
-  RouteList::iterator i;
-
-  for (i = d_routes.begin(); i != d_routes.end(); ++i)
-  {
-    if (toNode == (*i)->toNode
-	&& fromEventOut == (*i)->fromEventOut
-	&& toEventIn == (*i)->toEventIn)
-      return;       // Ignore duplicate routes
-  }
+  Route *r;
+  for (r=d_routes; r; r=r->next())
+    {
+      if (toNode == r->toNode() &&
+	  strcmp(fromEventOut, r->fromEventOut()) == 0 &&
+	  strcmp(toEventIn, r->toEventIn()) == 0 )
+	return;       // Ignore duplicate routes
+    }
 
   // Add route
-  Route* r = new Route(fromEventOut, toNode, toEventIn);
-
-  d_routes.push_back(r);
+  r = new Route(fromEventOut, toNode, toEventIn);
+  if (d_routes)
+    {
+      r->setNext(d_routes);
+      d_routes->setPrev(r);
+    }
+  d_routes = r;
 }
 
 
-/**
- * @brief Remove a route from an eventOut of this node to an eventIn of another
- *      node.
- */
-void VrmlNode::deleteRoute(const std::string & fromEventOut,
-			   const VrmlNodePtr & toNode,
-			   const std::string & toEventIn)
-{
-  RouteList::iterator i;
+// Remove a route from an eventOut of this node to an eventIn of another node.
 
-  for (i = d_routes.begin(); i != d_routes.end(); ++i)
-  {
-    if (toNode == (*i)->toNode
-	&& fromEventOut == (*i)->fromEventOut
-	&& toEventIn == (*i)->toEventIn)
+void VrmlNode::deleteRoute(const char *fromEventOut,
+			   const VrmlNodePtr & toNode,
+			   const char *toEventIn)
+{
+  Route *r;
+  for (r=d_routes; r; r=r->next())
     {
-      i = d_routes.erase(i);
+      if (toNode == r->toNode() &&
+	  strcmp(fromEventOut, r->fromEventOut()) == 0 &&
+	  strcmp(toEventIn, r->toEventIn()) == 0 )
+	{
+	  if (r->prev())
+            {
+	      r->prev()->setNext(r->next());
+            }
+          else
+            {
+              // point to new head of route list if deleting first route
+              d_routes = r->next();
+            }
+
+	  if (r->next())
+	    r->next()->setPrev(r->prev());
+	  delete r;
+	  break;
+	}
     }
-  }
 }
 
 /**
  * @brief Get the routes from this node.
  *
- * @return an std::vector of Routes from this node.
+ * @return a pointer to the first Route in the list.
  */
-std::list<Route*> VrmlNode::getRoutes() {
+Route * VrmlNode::getRoutes() {
     return this->d_routes;
 }
 
@@ -362,17 +390,21 @@ VrmlNode::markPathModified(VrmlNodePath& path, bool mod, int flags) {
   VrmlNodePath::iterator i;
   VrmlNodePath::iterator end = path.end();
   if (flags & 0x001) {
+    //cout << "VrmlNode[]::markPathModified():mod" << endl;
     for (i = path.begin(); i != end; ++i) {
       VrmlNode *c = *i;
       if (mod) {
 	// do the proof that our invarient shows that this short
 	// circuit is legal...
+	//if (c->isModified()) 
+	//break;
 	c->setModified();
       } else
 	c->clearModified();
     }
   }
   if (flags & 0x002) {
+    //cout << "VrmlNode[]::markPathModified():bvol" << endl;
     for (i = path.begin(); i != end; ++i) {
       VrmlNode *c = *i;
       if (mod) {
@@ -387,6 +419,7 @@ VrmlNode::markPathModified(VrmlNodePath& path, bool mod, int flags) {
 void
 VrmlNode::updateModified(VrmlNodePath& path, int flags)
 {
+  //cout << "VrmlNode[" << this << "]::updateModified()" << endl;
   if (this->d_modified||this->d_bvol_dirty) markPathModified(path, true, flags);
 }
 
@@ -453,6 +486,7 @@ void VrmlNode::clearFlags()
 const VrmlBVolume*
 VrmlNode::getBVolume() const
 {
+  //cout << "VrmlNode::getBVolume():inf" << endl;
   static VrmlBSphere* inf_bsphere = (VrmlBSphere*)0;
   if (!inf_bsphere) {
     inf_bsphere = new VrmlBSphere();
@@ -465,11 +499,11 @@ VrmlNode::getBVolume() const
 
 /**
  * Override a node's calculated bounding volume. Not implemented.
- *
- * @todo Implement me!
  */
-void VrmlNode::setBVolume(const VrmlBVolume & v) {
-    // XXX Implement me!
+void
+VrmlNode::setBVolume(const VrmlBVolume& v)
+{
+  cout << "VrmlNode::setBVolume():WARNING:not implemented" << endl;
 }
 
 /** 
@@ -572,14 +606,16 @@ void VrmlNode::inverseTransform(Viewer *v)
  * @see accumulateTransform
  * @see getParentTransform
  */
-void VrmlNode::inverseTransform(VrmlMatrix & M)
+void VrmlNode::inverseTransform(double m[4][4])
 {
+  //cout << "VrmlNode::inverseTransform" << endl;
   VrmlNode *parentTransform = getParentTransform();
   if (parentTransform)
-    parentTransform->inverseTransform(M);
+    parentTransform->inverseTransform(m);
   else
-    M.makeIdentity();
+    Midentity(m);
 }
+
 
 /**
  * Pass a named event to this node. This method needs to be overridden
@@ -587,74 +623,54 @@ void VrmlNode::inverseTransform(VrmlMatrix & M)
  * (should be) handled here...
  */
 void VrmlNode::eventIn(double timeStamp,
-		       const std::string & eventName,
-		       const VrmlField & fieldValue) {
-    // Strip set_ prefix
-    static const char * eventInPrefix = "set_";
-    std::string basicEventName;
-    if (std::equal(eventInPrefix, eventInPrefix + 4, eventName.begin())) {
-        basicEventName = eventName.substr(4);
-    } else {
-        basicEventName = eventName;
-    }
+		       const char *eventName,
+		       const VrmlField & fieldValue)
+{
+  // Strip set_ prefix
+  const char *origEventName = eventName;
+  if ( strncmp(eventName, "set_", 4) == 0 )
+    eventName += 4;
 
-    // Handle exposedFields 
-    if (this->type.hasExposedField(basicEventName)) {
-        this->setField(basicEventName, fieldValue);
-        std::string eventOutName = basicEventName + "_changed";
-        this->eventOut(timeStamp, eventOutName, fieldValue);
-        setModified();
-    }
-    
-    // Handle set_field eventIn/field
-    else if (this->type.hasEventIn(eventName)
-            && this->type.hasField(basicEventName)) {
-        this->setField(basicEventName, fieldValue);
-        this->setModified();
-    } else
-        cerr << "Error: unhandled eventIn " << this->type.getId().c_str()
-		<< "::" << this->id.c_str() << "." << eventName.c_str() << endl;
-}
-
-/**
- * @brief Get this node's child nodes as an MFNode.
- *
- * This method is intended to provide generalized access to a node's child
- * nodes. The default implementation returns an empty MFNode. Node
- * implementations that include child nodes should override this method to
- * return an appropriate MFNode.
- *
- * <p>The returned MFNode should include <strong>all</strong> of the node's
- * child nodes, from all of the node's SFNode or MFNode fields. Since fields
- * do not have a defined order, no ordering is defined for the nodes that
- * occur in the returned MFNode. Therefore, traversals that depend on any
- * such ordering should not use this method.</p>
- *
- * @return an MFNode containing any children of this node.
- */
-const VrmlMFNode VrmlNode::getChildren() const {
-    return VrmlMFNode();
-}
-
-/**
- * @brief Send an event from this node.
- */
-void VrmlNode::eventOut(double timeStamp, const std::string & id,
-			const VrmlField & fieldValue) {
-
-  RouteList::const_iterator i;
-
-  for (i = d_routes.begin(); i != d_routes.end(); ++i)
-  {
-    if (id == (*i)->fromEventOut)
+  // Handle exposedFields 
+  if ( nodeType().hasExposedField( eventName ) )
     {
-      VrmlField* eventValue = fieldValue.clone();
-      assert(this->d_scene);
-      this->d_scene->queueEvent(timeStamp, eventValue, (*i)->toNode,
-				(*i)->toEventIn);
+      setField(eventName, fieldValue);
+      char eventOutName[256];
+      sprintf(eventOutName, "%s_changed", eventName);
+      eventOut(timeStamp, eventOutName, fieldValue);
+      setModified();
     }
-  }
+
+  // Handle set_field eventIn/field
+  else if ( nodeType().hasEventIn( origEventName ) &&
+	    nodeType().hasField( eventName ) )
+    {
+      setField(eventName, fieldValue);
+      setModified();
+    }
+
+  else
+    cerr << "Error: unhandled eventIn " << nodeType().getName()
+         << "::" << name() << "." << origEventName << endl;
+
 }
+
+
+// Send a named event from this node.
+
+void VrmlNode::eventOut(double timeStamp,
+			const char *eventOut,
+			const VrmlField &fieldValue) {
+    // Find routes from this eventOut
+    for (Route * r = d_routes; r; r=r->next()) {
+        if (strcmp(eventOut, r->fromEventOut()) == 0) {
+	    VrmlField *eventValue = fieldValue.clone();
+	    d_scene->queueEvent(timeStamp, eventValue,
+			        r->toNode(), r->toEventIn());
+	}
+    }
+}
+
 
 ostream& operator<<(ostream& os, const VrmlNode& f)
 { return f.print(os, 0); }
@@ -662,14 +678,14 @@ ostream& operator<<(ostream& os, const VrmlNode& f)
 
 ostream& VrmlNode::print(ostream& os, int indent) const
 {
+  const char *nm = name();
   for (int i=0; i<indent; ++i)
     os << ' ';
 
-  if (!this->id.empty()) {
-    os << "DEF " << this->id.c_str() << " ";
-  }
+  if (nm && *nm)
+    os << "DEF " << nm << " ";
 
-  os << this->type.getId().c_str() << " { ";
+  os << nodeType().getName() << " { ";
 
   // cast away const-ness for now...
   VrmlNode *n = (VrmlNode*)this;
@@ -683,12 +699,12 @@ ostream& VrmlNode::print(ostream& os, int indent) const
 // This should probably generate an error...
 // Might be nice to make this non-virtual (each node would have
 // to provide a getField(const char* name) method and specify
-// default values in the addField(). The NodeType class would 
+// default values in the addField(). The VrmlNodeType class would 
 // have to make the fields list public.
 
 ostream& VrmlNode::printFields(ostream& os, int /*indent*/)
 {
-  os << "# Error: " << this->type.getId().c_str()
+  os << "# Error: " << nodeType().getName()
      << "::printFields unimplemented.\n";
   return os; 
 }
@@ -716,9 +732,10 @@ ostream& VrmlNode::printField(ostream& os,
  *
  * @todo Make this method pure virtual.
  */
-void VrmlNode::setField(const std::string & fieldId, const VrmlField &) {
-    theSystem->error("%s::setField: no such field (%s)",
-                     this->type.getId().c_str(), fieldId.c_str());
+void VrmlNode::setField(const char *fieldName, const VrmlField &)
+{
+  theSystem->error("%s::setField: no such field (%s)",
+		   nodeType().getName(), fieldName);
 }
 
 /**
@@ -727,13 +744,12 @@ void VrmlNode::setField(const std::string & fieldId, const VrmlField &) {
  * getField is used by Script nodes to access exposedFields. It does not
  * allow access to private fields (there tend to be specific access
  * functions for each field for programmatic access).
- *
- * @todo Make this method pure virtual.
  */
-const VrmlField * VrmlNode::getField(const std::string & fieldId) const {
-    theSystem->error("%s::getField: no such field (%s)\n",
-                     this->type.getId().c_str(), fieldId.c_str());
-    return 0;
+const VrmlField *VrmlNode::getField(const char *fieldName) const
+{
+  theSystem->error("%s::getField: no such field (%s)\n",
+		   nodeType().getName(), fieldName);
+  return 0;
 }
 
 
@@ -743,22 +759,23 @@ const VrmlField * VrmlNode::getField(const std::string & fieldId) const {
  * Used by the script node to access the node fields. This just strips
  * the _changed suffix and tries to access the field using getField.
  */
-const VrmlField * VrmlNode::getEventOut(const std::string & fieldName) const {
-    static const char * eventOutSuffix = "_changed";
-    std::string basicFieldName;
-    if (fieldName.length() > 8
-            && std::equal(fieldName.end() - 8, fieldName.end(),
-                          eventOutSuffix)) {
-        basicFieldName = fieldName.substr(0, fieldName.length() - 8);
-    } else {
-        basicFieldName = fieldName;
-    }
-    
-    // Handle exposedFields 
-    if (this->type.hasExposedField(basicFieldName)) {
-        return getField(basicFieldName);
-    } else if (this->type.hasEventOut(fieldName)) {
-        return getField(fieldName);
-    }
-    return 0;
+const VrmlField *VrmlNode::getEventOut(const char *fieldName) const
+{
+  // Strip _changed prefix
+  char shortName[256];
+  int rootLen = strlen(fieldName) - strlen("_changed");
+  if (rootLen >= (int) sizeof(shortName))
+    rootLen = sizeof(shortName) - 1;
+ 
+  if (rootLen > 0 && strcmp(fieldName+rootLen, "_changed") == 0)
+    strncpy(shortName, fieldName, rootLen);
+  else
+    strncpy(shortName, fieldName, sizeof(shortName));
+
+  // Handle exposedFields 
+  if ( nodeType().hasExposedField( shortName ) )
+    return getField( shortName );
+  else if ( nodeType().hasEventOut( fieldName ) )
+    return getField( fieldName );
+  return 0;
 }

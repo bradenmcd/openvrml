@@ -22,8 +22,6 @@
 # ifndef OPENVRML_FIELD_H
 #   define OPENVRML_FIELD_H
 
-#   include <string>
-#   include <vector>
 #   include <iostream.h>
 #   include "common.h"
 #   include "VrmlNodePtr.h"
@@ -58,7 +56,6 @@ public:
     };
 
     static VrmlFieldType fieldType(const char * fieldTypeId);
-    static const char* getFieldName(const VrmlFieldType fieldType);
     
     const char * fieldTypeName() const;
     
@@ -281,16 +278,16 @@ private:
 
 
 class OPENVRML_SCOPE VrmlSFString : public VrmlField {
-    std::string value;
-
+    char * d_s;
 public:
-    explicit VrmlSFString(const std::string & value = std::string());
+    explicit VrmlSFString(const char *s = 0);
+    VrmlSFString(const VrmlSFString&);
     virtual ~VrmlSFString();
 
-    // Use compiler-defined copy ctor and operator=.
+    VrmlSFString& operator=(const VrmlSFString& rhs);
 
-    const std::string & get() const;
-    void set(const std::string & value);
+    void set(const char *s);
+    const char * get() const;
 
     virtual ostream& print(ostream& os) const;
     virtual VrmlField *clone() const;
@@ -402,8 +399,6 @@ public:
     void setElement(size_t index, const float value[3]);
     size_t getLength() const;
     void setLength(size_t length);
-    void insertElement(size_t index, const float value[3]);
-    void removeElement(size_t index);
 
     //
     // VrmlField implementation
@@ -432,8 +427,6 @@ public:
     void setElement(size_t index, float value);
     size_t getLength() const;
     void setLength(size_t length);
-    void insertElement(size_t index, float value);
-    void removeElement(size_t index);
 
     //
     // VrmlField implementation
@@ -462,8 +455,6 @@ public:
     void setElement(size_t index, long value);
     size_t getLength() const;
     void setLength(size_t length);
-    void insertElement(size_t index, long value);
-    void removeElement(size_t index);
 
     //
     // VrmlField implementation
@@ -477,30 +468,32 @@ public:
 
 
 class OPENVRML_SCOPE VrmlMFNode : public VrmlField {
-    std::vector<VrmlNodePtr> nodes;
-
+    VrmlNodePtr * nodes;
+    size_t allocated;
+    size_t size;
 public:
     explicit VrmlMFNode(size_t length = 0, const VrmlNodePtr * nodes = 0);
+    VrmlMFNode(const VrmlMFNode & mfnode);
     virtual ~VrmlMFNode();
 
-    // Use compiler-defined copy ctor and operator=
+    VrmlMFNode & operator=(const VrmlMFNode & mfnode);
 
-    const VrmlNodePtr & getElement(size_t index) const throw ();
+    const VrmlNodePtr & getElement(size_t index) const;
     void setElement(size_t index, const VrmlNodePtr & node);
-    size_t getLength() const throw ();
+    size_t getLength() const;
     void setLength(size_t length);
     bool exists(const VrmlNode & node) const;
     bool addNode(VrmlNode & node);
     bool removeNode(const VrmlNode & node);
-    void insertElement(size_t index, const VrmlNodePtr & node);
-    void removeElement(size_t index);
-    void clear();
 
     virtual ostream& print(ostream& os) const;
     virtual VrmlField *clone() const;
     virtual VrmlFieldType fieldType() const;
     virtual const VrmlMFNode* toMFNode() const;
     virtual VrmlMFNode* toMFNode();
+
+private:
+    void realloc(size_t newSize);
 };
 
 
@@ -520,8 +513,6 @@ public:
     void setElement(size_t, const float value[4]);
     size_t getLength() const;
     void setLength(size_t length);
-    void insertElement(size_t index, const float value[3]);
-    void removeElement(size_t index);
 
     virtual ostream& print(ostream& os) const;
     virtual VrmlField *clone() const;
@@ -532,20 +523,22 @@ public:
 
 
 class OPENVRML_SCOPE VrmlMFString : public VrmlField {
-    std::vector<std::string> values;
-
+    char * * d_v;
+    size_t d_allocated;
+    size_t d_size;
 public:
-    explicit VrmlMFString(size_t length = 0, const std::string * values = 0);
+    explicit VrmlMFString(size_t n = 0, const char * const * values = 0);
+    VrmlMFString(const VrmlMFString&);
+
     virtual ~VrmlMFString();
 
-    // Use compiler-defined copy ctor and operator=.
+    VrmlMFString& operator=(const VrmlMFString& rhs);
 
-    const std::string & getElement(size_t index) const;
-    void setElement(size_t index, const std::string & value);
+    void set(size_t n, const char * const v[]);
+    const char * const * get() const;
+    const char * getElement(size_t) const;
+    void setElement(size_t, const char *);
     size_t getLength() const;
-    void setLength(const size_t length);
-    void insertElement(size_t index, const std::string & value);
-    void removeElement(size_t index);
 
     virtual VrmlField *clone() const;
     virtual VrmlFieldType fieldType() const;
@@ -571,8 +564,6 @@ public:
     void setElement(size_t index, double value);
     size_t getLength() const;
     void setLength(size_t length);
-    void insertElement(size_t index, double value);
-    void removeElement(size_t index);
 
     //
     // Override from VrmlField
@@ -599,8 +590,6 @@ public:
     void setElement(size_t, const float value[2]);
     size_t getLength() const;
     void setLength(size_t length);
-    void insertElement(size_t index, const float value[2]);
-    void removeElement(size_t index);
 
     virtual VrmlField *clone() const;
     virtual VrmlFieldType fieldType() const;
@@ -626,8 +615,6 @@ public:
     void setElement(size_t, const float value[3]);
     size_t getLength() const;
     void setLength(size_t length);
-    void insertElement(size_t index, const float data[3]);
-    void removeElement(size_t index);
 
     virtual VrmlField *clone() const;
     virtual VrmlFieldType fieldType() const;

@@ -22,92 +22,84 @@ header "post_include_hpp" {
 # include <memory>
 # include "field.h"
 # include "VrmlNodePtr.h"
-# define ANTLR_LBRACE {
-# define ANTLR_RBRACE }
 class VrmlNamespace;
 class VrmlNodeScript;
-class NodeType;
+class VrmlNodeType;
 class Doc2;
 
-namespace ANTLR_LBRACE
-    class Vrml97Scanner : public antlr::TokenStream {
-    public:
-        static const int EOF_;
-        //
-        // The following identifiers for constants must match those in the file
-        // Vrml97TokenTypes.txt.
-        //
-        static const int PERIOD;
-        static const int LBRACKET;
-        static const int RBRACKET;
-        static const int LBRACE;
-        static const int RBRACE;
-        static const int ID;
-        static const int INTEGER;
-        static const int HEX_INTEGER;
-        static const int REAL;
-        static const int STRING;
-        static const int KEYWORD_DEF;
-        static const int KEYWORD_EVENTIN;
-        static const int KEYWORD_EVENTOUT;
-        static const int KEYWORD_EXPOSEDFIELD;
-        static const int KEYWORD_EXTERNPROTO;
-        static const int KEYWORD_FALSE;
-        static const int KEYWORD_FIELD;
-        static const int KEYWORD_IS;
-        static const int KEYWORD_NULL;
-        static const int KEYWORD_PROTO;
-        static const int KEYWORD_ROUTE;
-        static const int KEYWORD_TO;
-        static const int KEYWORD_TRUE;
-        static const int KEYWORD_USE;
-        static const int FIELDTYPE_SFBOOL;
-        static const int FIELDTYPE_SFCOLOR;
-        static const int FIELDTYPE_SFFLOAT;
-        static const int FIELDTYPE_SFIMAGE;
-        static const int FIELDTYPE_SFINT32;
-        static const int FIELDTYPE_SFNODE;
-        static const int FIELDTYPE_SFROTATION;
-        static const int FIELDTYPE_SFSTRING;
-        static const int FIELDTYPE_SFTIME;
-        static const int FIELDTYPE_SFVEC2F;
-        static const int FIELDTYPE_SFVEC3F;
-        static const int FIELDTYPE_MFCOLOR;
-        static const int FIELDTYPE_MFFLOAT;
-        static const int FIELDTYPE_MFINT32;
-        static const int FIELDTYPE_MFNODE;
-        static const int FIELDTYPE_MFROTATION;
-        static const int FIELDTYPE_MFSTRING;
-        static const int FIELDTYPE_MFTIME;
-        static const int FIELDTYPE_MFVEC2F;
-        static const int FIELDTYPE_MFVEC3F;
+class Vrml97Scanner : public antlr::TokenStream {
+public:
+    static const int EOF_;
+    //
+    // The following identifiers for constants must match those in the file
+    // Vrml97TokenTypes.txt.
+    //
+    static const int PERIOD;
+    static const int LBRACKET;
+    static const int RBRACKET;
+    static const int LBRACE;
+    static const int RBRACE;
+    static const int ID;
+    static const int INTEGER;
+    static const int HEX_INTEGER;
+    static const int REAL;
+    static const int STRING;
+    static const int KEYWORD_DEF;
+    static const int KEYWORD_EVENTIN;
+    static const int KEYWORD_EVENTOUT;
+    static const int KEYWORD_EXPOSEDFIELD;
+    static const int KEYWORD_EXTERNPROTO;
+    static const int KEYWORD_FALSE;
+    static const int KEYWORD_FIELD;
+    static const int KEYWORD_IS;
+    static const int KEYWORD_NULL;
+    static const int KEYWORD_PROTO;
+    static const int KEYWORD_ROUTE;
+    static const int KEYWORD_TO;
+    static const int KEYWORD_TRUE;
+    static const int KEYWORD_USE;
+    static const int FIELDTYPE_SFBOOL;
+    static const int FIELDTYPE_SFCOLOR;
+    static const int FIELDTYPE_SFFLOAT;
+    static const int FIELDTYPE_SFIMAGE;
+    static const int FIELDTYPE_SFINT32;
+    static const int FIELDTYPE_SFNODE;
+    static const int FIELDTYPE_SFROTATION;
+    static const int FIELDTYPE_SFSTRING;
+    static const int FIELDTYPE_SFTIME;
+    static const int FIELDTYPE_SFVEC2F;
+    static const int FIELDTYPE_SFVEC3F;
+    static const int FIELDTYPE_MFCOLOR;
+    static const int FIELDTYPE_MFFLOAT;
+    static const int FIELDTYPE_MFINT32;
+    static const int FIELDTYPE_MFNODE;
+    static const int FIELDTYPE_MFROTATION;
+    static const int FIELDTYPE_MFSTRING;
+    static const int FIELDTYPE_MFTIME;
+    static const int FIELDTYPE_MFVEC2F;
+    static const int FIELDTYPE_MFVEC3F;
 
-        Vrml97Scanner(istream &);
+    Vrml97Scanner(istream &);
 
-        antlr::RefToken nextToken();
-        size_t line() const;
-        size_t col() const;
+    antlr::RefToken nextToken();
+    size_t line() const;
+    size_t col() const;
 
-    private:
-        void _getNextChar();
-        void _identifyKeyword(antlr::Token &);
-        void _identifyFieldType(antlr::Token &);
-        void _identifyTerminalSymbol(antlr::Token &);
+private:
+    void _getNextChar();
+    void _identifyKeyword(antlr::Token &);
+    void _identifyFieldType(antlr::Token &);
+    void _identifyTerminalSymbol(antlr::Token &);
 
-        istream &   _istm;
-        size_t      _line;
-        size_t      _col;
-        int         _c;
-        int         _prevChar;
-        int         _prevTokenType;
-        bool        _readTooMuch;
-        bool        _expectingFieldType;
-    };
-}
-
-header "pre_include_cpp" {
-# include "Vrml97Parser.hpp"
-ANTLR_RBRACE
+    istream &   _istm;
+    size_t      _line;
+    size_t      _col;
+    int         _c;
+    int         _prevChar;
+    int         _prevTokenType;
+    bool        _readTooMuch;
+    bool        _expectingFieldType;
+};
 }
 
 header "post_include_cpp" {
@@ -115,12 +107,10 @@ header "post_include_cpp" {
 # include <antlr/CommonToken.hpp>
 # include "doc2.hpp"
 # include "VrmlNamespace.h"
-# include "nodetype.h"
+# include "VrmlNodeType.h"
 # include "VrmlNode.h"
 # include "VrmlNodeScript.h"
 # include "private.h"
-
-using namespace OpenVRML_;
 
 namespace {
     bool isValidIdFirstChar(char);
@@ -609,15 +599,15 @@ returns [VrmlNodePtr n]
 options {
     defaultErrorHandler=false;
 }
-    :   KEYWORD_DEF id0:ID n=node[vrmlNamespace, doc, id0->getText()]
+    :   n=node[vrmlNamespace, doc, std::string()]
+    |   KEYWORD_DEF id0:ID n=node[vrmlNamespace, doc, id0->getText()]
     |   KEYWORD_USE id1:ID
         {
-            n = vrmlNamespace.findNode(id1->getText());
+            n = vrmlNamespace.findNode(id1->getText().c_str());
             if (!n) {
                 throw antlr::SemanticException("Node \"" + id1->getText() + "\" has not been defined in this scope.");
             }
         }
-    |   n=node[vrmlNamespace, doc, std::string()]
     ;
 
 protoStatement[VrmlNamespace & vrmlNamespace, Doc2 const * doc]
@@ -628,7 +618,7 @@ protoStatement[VrmlNamespace & vrmlNamespace, Doc2 const * doc]
 proto[VrmlNamespace & vrmlNamespace, Doc2 const * doc]
     :   KEYWORD_PROTO id:ID
         {
-            NodeTypePtr nodeType(new NodeType(id->getText()));
+            VrmlNodeType * nodeType = new VrmlNodeType(id->getText().c_str());
             nodeType->setScope(vrmlNamespace);
         }
         LBRACKET (
@@ -639,27 +629,24 @@ proto[VrmlNamespace & vrmlNamespace, Doc2 const * doc]
         }
     ;
 
-protoInterfaceDeclaration[VrmlNamespace & vrmlNamespace, Doc2 const * doc,
-                          NodeType & nodeType]
+protoInterfaceDeclaration[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlNodeType & nodeType]
         {
             NodeInterfaceType it = INVALID_NODE_INTERFACE_TYPE;
             VrmlField::VrmlFieldType ft = VrmlField::NO_FIELD;
         }
     :   it=eventInterfaceType ft=fieldType id0:ID
         {
-            if (nodeType.hasInterface(id0->getText()) != VrmlField::NO_FIELD) {
-                throw antlr::SemanticException("Interface \"" + id0->getText()
-                        + "\" already declared for " + nodeType.getId()
-                        + " node type.");
+            if (nodeType.hasInterface(id0->getText().c_str()) != VrmlField::NO_FIELD) {
+                throw antlr::SemanticException("Interface \"" + id0->getText() + "\" already declared for " + std::string(nodeType.getName()) + " node type.");
             }
             
             switch (it) {
                 case EVENTIN:
-                    nodeType.addEventIn(id0->getText(), ft);
+                    nodeType.addEventIn(id0->getText().c_str(), ft);
                     break;
                     
                 case EVENTOUT:
-                    nodeType.addEventOut(id0->getText(), ft);
+                    nodeType.addEventOut(id0->getText().c_str(), ft);
                     break;
                     
                 default:
@@ -674,19 +661,17 @@ protoInterfaceDeclaration[VrmlNamespace & vrmlNamespace, Doc2 const * doc,
         {
             const std::auto_ptr<VrmlField> autofv(fv);
             
-            if (nodeType.hasInterface(id1->getText()) != VrmlField::NO_FIELD) {
-                throw antlr::SemanticException("Interface \"" + id1->getText()
-                        + "\" already declared for " + nodeType.getId()
-                        + " node type.");
+            if (nodeType.hasInterface(id1->getText().c_str()) != VrmlField::NO_FIELD) {
+                throw antlr::SemanticException("Interface \"" + id1->getText() + "\" already declared for " + std::string(nodeType.getName()) + " node type.");
             }
             
             switch (it) {
                 case FIELD:
-                    nodeType.addField(id1->getText(), ft, autofv.get());
+                    nodeType.addField(id1->getText().c_str(), ft, autofv.get());
                     break;
                     
                 case EXPOSEDFIELD:
-                    nodeType.addExposedField(id1->getText(), ft, autofv.get());
+                    nodeType.addExposedField(id1->getText().c_str(), ft, autofv.get());
                     break;
                     
                 default:
@@ -705,7 +690,7 @@ fieldInterfaceType returns [Vrml97Parser::NodeInterfaceType it = INVALID_NODE_IN
     |   KEYWORD_EXPOSEDFIELD { it = EXPOSEDFIELD; }
     ;
 
-protoBody[Doc2 const * doc, NodeType & nodeType]
+protoBody[Doc2 const * doc, VrmlNodeType & nodeType]
         {
             VrmlNodePtr n;
         }
@@ -717,7 +702,7 @@ protoBody[Doc2 const * doc, NodeType & nodeType]
         (protoBodyStatement[doc, nodeType])*
     ;
 
-protoBodyStatement[Doc2 const * doc, NodeType & nodeType]
+protoBodyStatement[Doc2 const * doc, VrmlNodeType & nodeType]
         {
             VrmlNodePtr n;
         }
@@ -730,26 +715,26 @@ protoBodyStatement[Doc2 const * doc, NodeType & nodeType]
     |   routeStatement[*nodeType.getScope()]
     ;
 
-protoNodeStatement[Doc2 const * doc, NodeType & protoNodeType]
+protoNodeStatement[Doc2 const * doc, VrmlNodeType & protoNodeType]
 returns [VrmlNodePtr n]
 options {
     defaultErrorHandler=false;
 }
-    :   KEYWORD_DEF id0:ID n=protoNode[doc, protoNodeType, id0->getText()]
+    :   n=protoNode[doc, protoNodeType, std::string()]
+    |   KEYWORD_DEF id0:ID n=protoNode[doc, protoNodeType, id0->getText()]
     |   KEYWORD_USE id1:ID
         {
-            n = protoNodeType.getScope()->findNode(id1->getText());
+            n = protoNodeType.getScope()->findNode(id1->getText().c_str());
             if (!n) {
                 throw antlr::SemanticException("Node \"" + id1->getText() + "\" has not been defined in this scope.");
             }
         }
-    |   n=protoNode[doc, protoNodeType, std::string()]
     ;
 
 externproto[VrmlNamespace & vrmlNamespace, Doc2 const * doc]
     :   KEYWORD_EXTERNPROTO id:ID
         {
-            NodeTypePtr nodeType(new NodeType(id->getText()));
+            VrmlNodeType * nodeType = new VrmlNodeType(id->getText().c_str());
         }
         LBRACKET (externInterfaceDeclaration[*nodeType])* RBRACKET
         {
@@ -763,7 +748,7 @@ externproto[VrmlNamespace & vrmlNamespace, Doc2 const * doc]
         }
     ;
 
-externInterfaceDeclaration[NodeType & nodeType]
+externInterfaceDeclaration[VrmlNodeType & nodeType]
         {
             NodeInterfaceType it(INVALID_NODE_INTERFACE_TYPE);
             VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
@@ -772,19 +757,19 @@ externInterfaceDeclaration[NodeType & nodeType]
         {
             switch (it) {
                 case EVENTIN:
-                    nodeType.addEventIn(id->getText(), ft);
+                    nodeType.addEventIn(id->getText().c_str(), ft);
                     break;
                     
                 case EVENTOUT:
-                    nodeType.addEventOut(id->getText(), ft);
+                    nodeType.addEventOut(id->getText().c_str(), ft);
                     break;
                     
                 case EXPOSEDFIELD:
-                    nodeType.addExposedField(id->getText(), ft);
+                    nodeType.addExposedField(id->getText().c_str(), ft);
                     break;
                     
                 case FIELD:
-                    nodeType.addField(id->getText(), ft);
+                    nodeType.addField(id->getText().c_str(), ft);
                     break;
                     
                 default:
@@ -804,7 +789,8 @@ externprotoUrlList returns [VrmlMFString * msv = 0]
         }
     :   s=stringValue
         {
-            msv = new VrmlMFString(1, &s);
+            const char * const sPtr = s.c_str();
+            msv = new VrmlMFString(1, &sPtr);
         }
     |   LBRACKET
         {
@@ -817,7 +803,13 @@ externprotoUrlList returns [VrmlMFString * msv = 0]
             }
         )* RBRACKET
         {
-            msv = new VrmlMFString(stringVector.size(), &stringVector[0]);
+            char const ** c_strs = new char const *[stringVector.size()];
+            for (unsigned int i = 0; i < stringVector.size(); ++i) {
+                c_strs[i] = stringVector[i].c_str();
+            }
+            
+            msv = new VrmlMFString(stringVector.size(), c_strs);
+            delete [] c_strs;
         }
     ;
 
@@ -836,43 +828,45 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
     :   KEYWORD_ROUTE fromNodeId:ID PERIOD fromInterfaceId:ID
         KEYWORD_TO toNodeId:ID PERIOD toInterfaceId:ID
         {
-            const VrmlNodePtr fromNode = vrmlNamespace.findNode(fromNodeId->getText());
+            const VrmlNodePtr fromNode = vrmlNamespace.findNode(fromNodeId->getText().c_str());
             if (!fromNode) {
                 throw antlr::SemanticException("Node \"" + fromNodeId->getText() + "\" has not been defined in this scope.");
             }
             
+            VrmlNodeType const & fromNodeType = fromNode->nodeType();
             VrmlField::VrmlFieldType fromInterfaceType = VrmlField::NO_FIELD;
             
-            if (   ((fromInterfaceType = fromNode->type.hasEventOut(fromInterfaceId->getText())) == VrmlField::NO_FIELD)
-                && ((fromInterfaceType = fromNode->type.hasExposedField(fromInterfaceId->getText())) == VrmlField::NO_FIELD)) {
+            if (   ((fromInterfaceType = fromNodeType.hasEventOut(fromInterfaceId->getText().c_str())) == VrmlField::NO_FIELD)
+                && ((fromInterfaceType = fromNodeType.hasExposedField(fromInterfaceId->getText().c_str())) == VrmlField::NO_FIELD)) {
                 
                 VrmlNodeScript * fromScriptNode = 0;
                 if ((fromScriptNode = fromNode->toScript())) {
-                    fromInterfaceType = fromScriptNode->hasEventOut(fromInterfaceId->getText());
+                    fromInterfaceType = fromScriptNode->hasEventOut(fromInterfaceId->getText().c_str());
                 }
                 
                 if (fromInterfaceType == VrmlField::NO_FIELD) {
-                    throw antlr::SemanticException(fromNode->type.getId() + " has no eventOut or exposedField \"" + fromInterfaceId->getText() + "\".");
+                    throw antlr::SemanticException(std::string(fromNodeType.getName()) + " has no eventOut or exposedField \"" + fromInterfaceId->getText() + "\".");
                 }
             }
             
-            const VrmlNodePtr toNode = vrmlNamespace.findNode(toNodeId->getText());
+            const VrmlNodePtr toNode = vrmlNamespace.findNode(toNodeId->getText().c_str());
             if (!toNode) {
                 throw antlr::SemanticException("Node \"" + toNodeId->getText() + "\" has not been defined in this scope.");
             }
             
+            VrmlNodeType const & toNodeType = toNode->nodeType();
             VrmlField::VrmlFieldType toInterfaceType = VrmlField::NO_FIELD;
             
-            if (   ((toInterfaceType = toNode->type.hasEventIn(toInterfaceId->getText())) == VrmlField::NO_FIELD)
-                && ((toInterfaceType = toNode->type.hasExposedField(toInterfaceId->getText())) == VrmlField::NO_FIELD)) {
+            if (   ((toInterfaceType = toNodeType.hasEventIn(toInterfaceId->getText().c_str())) == VrmlField::NO_FIELD)
+                && ((toInterfaceType = toNodeType.hasExposedField(toInterfaceId->getText().c_str())) == VrmlField::NO_FIELD)) {
                 
                 VrmlNodeScript * toScriptNode = 0;
                 if ((toScriptNode = toNode->toScript())) {
-                    toInterfaceType = toScriptNode->hasEventIn(toInterfaceId->getText());
+                    toInterfaceType = toScriptNode->hasEventIn(toInterfaceId->getText().c_str());
                 }
                 
                 if (toInterfaceType == VrmlField::NO_FIELD) {
-                    throw antlr::SemanticException(toNode->type.getId() + " has no eventIn or exposedField \"" + toInterfaceId->getText() + "\".");
+                    throw antlr::SemanticException(std::string(toNodeType.getName()) + " has no eventIn or exposedField \"" + toInterfaceId->getText() + "\".");
                 }
             }
             
@@ -880,18 +874,17 @@ routeStatement[VrmlNamespace const & vrmlNamespace]
                 throw antlr::SemanticException("Routed interface types must match.");
             }
             
-            fromNode->addRoute(fromInterfaceId->getText(), toNode, toInterfaceId->getText());
+            fromNode->addRoute(fromInterfaceId->getText().c_str(), toNode, toInterfaceId->getText().c_str());
         }
     ;
 
-node[VrmlNamespace & vrmlNamespace, const Doc2 * doc,
-     const std::string & nodeId]
+node[VrmlNamespace & vrmlNamespace, Doc2 const * doc, std::string const & nodeId]
 returns [VrmlNodePtr n]
 options {
     defaultErrorHandler = false;
 }
         {
-            NodeTypePtr nodeType(0);
+            VrmlNodeType const * nodeType = 0;
         }
     :
 	{ !LT(1)->getText().compare("Script") }?
@@ -902,8 +895,8 @@ options {
             
             n = VrmlNodePtr(nodeType->newNode());
             
-            if (nodeId.length() > 0) {
-                n->setId(nodeId, &vrmlNamespace);
+            if (nodeId.size() > 0) {
+                n->setName(nodeId.c_str(), &vrmlNamespace);
             }
             
             VrmlNodeScript * const scriptNode = n->toScript();
@@ -916,34 +909,33 @@ options {
         
     |  	nodeTypeId:ID 
         {
-            nodeType = vrmlNamespace.findType(nodeTypeId->getText());
+            nodeType = vrmlNamespace.findType(nodeTypeId->getText().c_str());
             if (!nodeType) {
-                throw antlr::SemanticException("Unknown node type \""
-                        + nodeTypeId->getText() + "\".");
+                throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
             }
             
             n = VrmlNodePtr(nodeType->newNode());
             
-            if (nodeId.length() > 0) {
-                n->setId(nodeId, &vrmlNamespace);
+            if (nodeId.size() > 0) {
+                n->setName(nodeId.c_str(), &vrmlNamespace);
             }
         }
         LBRACE (nodeBodyElement[vrmlNamespace, doc, *n])* RBRACE
     ;
 
-nodeBodyElement[VrmlNamespace & vrmlNamespace, Doc2 const * doc,
+nodeBodyElement[VrmlNamespace & vrmlNamespace,
+                Doc2 const * doc,
                 VrmlNode & node]
         {
+            VrmlNodeType const & nodeType = node.nodeType();
             VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
         }
     :   id:ID
         {
-            if (   ((ft = node.type.hasField(id->getText())) == VrmlField::NO_FIELD)
-                && ((ft = node.type.hasExposedField(id->getText())) == VrmlField::NO_FIELD)) {
+            if (   ((ft = nodeType.hasField(id->getText().c_str())) == VrmlField::NO_FIELD)
+                && ((ft = nodeType.hasExposedField(id->getText().c_str())) == VrmlField::NO_FIELD)) {
                 
-                throw antlr::SemanticException(node.type.getId()
-                        + " node has no field or exposedField \""
-                        + id->getText() + "\"");
+                throw antlr::SemanticException(std::string(nodeType.getName()) + " node has no field or exposedField \"" + id->getText() + "\" (nodeBodyEl).");
             }
             
             VrmlField * fv = 0;
@@ -951,7 +943,7 @@ nodeBodyElement[VrmlNamespace & vrmlNamespace, Doc2 const * doc,
         fv=fieldValue[vrmlNamespace, doc, ft]
         {
             assert(fv);
-            node.setField(id->getText(), *fv);
+            node.setField(id->getText().c_str(), *fv);
             delete fv;
         }
     |   routeStatement[vrmlNamespace]
@@ -967,18 +959,18 @@ scriptInterfaceDeclaration[VrmlNamespace & vrmlNamespace,
         }
     :   it=eventInterfaceType ft=fieldType id:ID
         {
-            if (   (node.hasInterface(id->getText()) != VrmlField::NO_FIELD)
-                || (node.type.hasInterface(id->getText()) != VrmlField::NO_FIELD)) {
+            if (   (node.hasInterface(id->getText().c_str()) != VrmlField::NO_FIELD)
+                || (node.nodeType().hasInterface(id->getText().c_str()) != VrmlField::NO_FIELD)) {
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
             
             switch (it) {
                 case EVENTIN:
-                    node.addEventIn(id->getText(), ft);
+                    node.addEventIn(id->getText().c_str(), ft);
                     break;
                 case EVENTOUT:
-                    node.addEventOut(id->getText(), ft);
+                    node.addEventOut(id->getText().c_str(), ft);
                     break;
                 default:
                     assert(false);
@@ -1000,24 +992,25 @@ scriptFieldInterfaceDeclaration[VrmlNamespace & vrmlNamespace,
             
             const std::auto_ptr<VrmlField> autofv(fv);
             
-            if (   (node.hasInterface(id->getText()) != VrmlField::NO_FIELD)
-                || (node.type.hasInterface(id->getText()) != VrmlField::NO_FIELD)) {
+            if (   (node.hasInterface(id->getText().c_str()) != VrmlField::NO_FIELD)
+                || (node.nodeType().hasInterface(id->getText().c_str()) != VrmlField::NO_FIELD)) {
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
             
-            node.addField(id->getText(), ft, autofv.get());
+            node.addField(id->getText().c_str(), ft, autofv.get());
         }
     ;
 
-protoNode[const Doc2 * doc, NodeType & protoNodeType,
-          const std::string & nodeId]
+protoNode[Doc2 const * doc,
+          VrmlNodeType & protoNodeType,
+          std::string const & nodeId]
 returns [VrmlNodePtr n]
 options {
     defaultErrorHandler=false;
 }
         {
-            NodeTypePtr nodeType(0);
+            VrmlNodeType const * nodeType = 0;
         }
     : 
 	{ !LT(1)->getText().compare("Script") }?
@@ -1026,11 +1019,10 @@ options {
             nodeType = protoNodeType.getScope()->findType("Script");
             assert(nodeType);
             
-            n = nodeType->newNode();
+            n.reset(nodeType->newNode());
             
-            if (!nodeId.empty()) {
-                assert(protoNodeType.getScope());
-                n->setId(nodeId, protoNodeType.getScope());
+            if (nodeId.size() > 0) {
+                n->setName(nodeId.c_str(), protoNodeType.getScope());
             }
             
             VrmlNodeScript * const scriptNode = n->toScript();
@@ -1043,39 +1035,37 @@ options {
 
     | 	  nodeTypeId:ID
         {
-            nodeType = protoNodeType.getScope()->findType(nodeTypeId->getText());
+            nodeType = protoNodeType.getScope()->findType(nodeTypeId->getText().c_str());
             if (!nodeType) {
                 throw antlr::SemanticException("Unknown node type \"" + nodeTypeId->getText() + "\".");
             }
             
             n = VrmlNodePtr(nodeType->newNode());
             
-            if (!nodeId.empty()) {
-                assert(protoNodeType.getScope());
-                n->setId(nodeId, protoNodeType.getScope());
+            if (nodeId.size() > 0) {
+                n->setName(nodeId.c_str(), protoNodeType.getScope());
             }
         }
         LBRACE (protoNodeBodyElement[doc, protoNodeType, *n])* RBRACE
     ;
 
 protoNodeBodyElement[Doc2 const * doc,
-                     NodeType & protoNodeType,
+                     VrmlNodeType & protoNodeType,
                      VrmlNode & node]
         {
+            VrmlNodeType const & nodeType = node.nodeType();
             VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
         }
-    :   { node.type.hasEventIn(LT(1)->getText()) != VrmlField::NO_FIELD ||
-	  node.type.hasEventOut(LT(1)->getText()) != VrmlField::NO_FIELD }?
+    :   { nodeType.hasEventIn(LT(1)->getText().c_str()) != VrmlField::NO_FIELD ||
+	  nodeType.hasEventOut(LT(1)->getText().c_str()) != VrmlField::NO_FIELD }?
       eventId:ID isStatement[protoNodeType, node, eventId->getText()]
 
     | id:ID 
         {
-            if (   ((ft = node.type.hasField(id->getText())) == VrmlField::NO_FIELD)
-                && ((ft = node.type.hasExposedField(id->getText())) == VrmlField::NO_FIELD)) {
+            if (   ((ft = nodeType.hasField(id->getText().c_str())) == VrmlField::NO_FIELD)
+                && ((ft = nodeType.hasExposedField(id->getText().c_str())) == VrmlField::NO_FIELD)) {
                 
-                throw antlr::SemanticException(node.type.getId()
-                        + " node has no field or exposedField \""
-                        + id->getText() + "\".");
+                throw antlr::SemanticException(std::string(nodeType.getName()) + " node has no field or exposedField \"" + id->getText() + "\" (protoNodeBodyEl).");
             }
             
             VrmlField * fv = 0;
@@ -1085,7 +1075,7 @@ protoNodeBodyElement[Doc2 const * doc,
                 fv=protoFieldValue[doc, protoNodeType, ft]
                 {
                     assert(fv);
-                    node.setField(id->getText(), *fv);
+                    node.setField(id->getText().c_str(), *fv);
                     delete fv;
                 }
             )
@@ -1098,19 +1088,19 @@ protoNodeBodyElement[Doc2 const * doc,
 //
 // As with the situation with ROUTEs, we probably want to move the code that 
 // checks to see if the interface is valid and the types match into the
-// implementation of NodeType.
+// implementation of VrmlNodeType.
 // -- Braden McDaniel <braden@endoframe.com>, 8 Apr, 2000
 //
-isStatement[NodeType & protoNodeType,
+isStatement[VrmlNodeType & protoNodeType,
             VrmlNode & node,
             std::string const & nodeInterfaceId]
     :   KEYWORD_IS id:ID
         {
             //
             // Okay, I was going to write some code to make sure the IS
-            // statement is valid before trying to add it, but NodeType has
+            // statement is valid before trying to add it, but VrmlNodeType has
             // poor facilities for determining the interface type from a given
-            // interface id. Also, it does not appear that NodeType
+            // interface id. Also, it does not appear that VrmlNodeType
             // differentiates between an exposedField zzz and field/eventIn/
             // eventOut triplet zzz/set_zzz/zzz_changed. This differentiation
             // probably needs to happen before IS statements can be checked
@@ -1118,29 +1108,29 @@ isStatement[NodeType & protoNodeType,
             // -- Braden McDaniel <braden@endoframe.com>, 8 Apr, 2000
             //
             
-            protoNodeType.addIS(id->getText(), node, nodeInterfaceId);
+            protoNodeType.addIS(id->getText().c_str(), node, nodeInterfaceId.c_str());
         }
     ;
 
-protoScriptInterfaceDeclaration[Doc2 const * doc, NodeType & protoNodeType, VrmlNodeScript & node]
+protoScriptInterfaceDeclaration[Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNodeScript & node]
         {
             NodeInterfaceType it(INVALID_NODE_INTERFACE_TYPE);
             VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
         }
     :   it=eventInterfaceType ft=fieldType id:ID
         {
-            if (   (node.hasInterface(id->getText()) != VrmlField::NO_FIELD)
-                || (node.type.hasInterface(id->getText()) != VrmlField::NO_FIELD)) {
+            if (   (node.hasInterface(id->getText().c_str()) != VrmlField::NO_FIELD)
+                || (node.nodeType().hasInterface(id->getText().c_str()) != VrmlField::NO_FIELD)) {
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
             
             switch (it) {
                 case EVENTIN:
-                    node.addEventIn(id->getText(), ft);
+                    node.addEventIn(id->getText().c_str(), ft);
                     break;
                 case EVENTOUT:
-                    node.addEventOut(id->getText(), ft);
+                    node.addEventOut(id->getText().c_str(), ft);
                     break;
                 default:
                     assert(false);
@@ -1150,15 +1140,15 @@ protoScriptInterfaceDeclaration[Doc2 const * doc, NodeType & protoNodeType, Vrml
     |   protoScriptFieldInterfaceDeclaration[doc, protoNodeType, node]
     ;
 
-protoScriptFieldInterfaceDeclaration[Doc2 const * doc, NodeType & protoNodeType, VrmlNodeScript & node]
+protoScriptFieldInterfaceDeclaration[Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlNodeScript & node]
         {
             VrmlField::VrmlFieldType ft(VrmlField::NO_FIELD);
             VrmlField * fv = 0;
         }
     :   KEYWORD_FIELD ft=fieldType id:ID
         {
-            if (   (node.hasInterface(id->getText()) != VrmlField::NO_FIELD)
-                || (node.type.hasInterface(id->getText()) != VrmlField::NO_FIELD)) {
+            if (   (node.hasInterface(id->getText().c_str()) != VrmlField::NO_FIELD)
+                || (node.nodeType().hasInterface(id->getText().c_str()) != VrmlField::NO_FIELD)) {
                 
                 throw antlr::SemanticException("Interface \"" + id->getText() + "\" already declared for Script node.");
             }
@@ -1169,13 +1159,13 @@ protoScriptFieldInterfaceDeclaration[Doc2 const * doc, NodeType & protoNodeType,
                 fv=protoFieldValue[doc, protoNodeType, ft]
                 {
                     assert(fv);
-                    node.addField(id->getText(), ft, fv);
+                    node.addField(id->getText().c_str(), ft, fv);
                     delete fv;
                 }
             )
             |
 		{
-                    node.addField(id->getText(), ft);
+                    node.addField(id->getText().c_str(), ft);
 		}
 		isStatement[protoNodeType, node, id->getText()]
         )
@@ -1210,7 +1200,7 @@ fieldValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc, VrmlField::VrmlField
     |   fv=nonNodeFieldValue[ft]
     ;
 
-protoFieldValue[Doc2 const * doc, NodeType & protoNodeType, VrmlField::VrmlFieldType ft] returns [VrmlField * fv = 0]
+protoFieldValue[Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlField::VrmlFieldType ft] returns [VrmlField * fv = 0]
     :   {    (ft == VrmlField::SFNODE)
           || (ft == VrmlField::MFNODE) }? fv=protoNodeFieldValue[doc, protoNodeType, ft]
         {
@@ -1251,7 +1241,7 @@ options {
     |   fv=mfNodeValue[vrmlNamespace, doc]
     ;
 
-protoNodeFieldValue[Doc2 const * doc, NodeType & protoNodeType, VrmlField::VrmlFieldType ft] returns [VrmlField * fv = 0]
+protoNodeFieldValue[Doc2 const * doc, VrmlNodeType & protoNodeType, VrmlField::VrmlFieldType ft] returns [VrmlField * fv = 0]
 options {
     defaultErrorHandler=false;
 }
@@ -1461,7 +1451,7 @@ returns [VrmlSFNode * snv = new VrmlSFNode()]
     ;
 
 protoSfNodeValue[Doc2 const * doc,
-                 NodeType & protoNodeType]
+                 VrmlNodeType & protoNodeType]
 returns [VrmlSFNode * snv = new VrmlSFNode()]
         {
             VrmlNodePtr n;
@@ -1491,7 +1481,7 @@ mfNodeValue[VrmlNamespace & vrmlNamespace, Doc2 const * doc] returns [VrmlMFNode
         )* RBRACKET
     ;
 
-protoMfNodeValue[Doc2 const * doc, NodeType & protoNodeType] returns [VrmlMFNode * mnv = new VrmlMFNode()]
+protoMfNodeValue[Doc2 const * doc, VrmlNodeType & protoNodeType] returns [VrmlMFNode * mnv = new VrmlMFNode()]
         {
             VrmlNodePtr n;
         }
@@ -1577,7 +1567,7 @@ sfStringValue returns [VrmlSFString * ssv = new VrmlSFString()]
         }
     :   s=stringValue
         {
-            *ssv = VrmlSFString(s);
+            *ssv = VrmlSFString(s.c_str());
         }
     ;
 
@@ -1587,7 +1577,8 @@ mfStringValue returns [VrmlMFString * msv = new VrmlMFString()]
         }
     :   s=stringValue
         {
-            *msv = VrmlMFString(1, &s);
+            const char * const sPtr = s.c_str();
+            *msv = VrmlMFString(1, &sPtr);
         }
     |   LBRACKET
         {
@@ -1600,7 +1591,13 @@ mfStringValue returns [VrmlMFString * msv = new VrmlMFString()]
             }
         )* RBRACKET
         {
-            *msv = VrmlMFString(stringVector.size(), &stringVector[0]);
+            char const ** c_strs = new char const *[stringVector.size()];
+            for (unsigned int i = 0; i < stringVector.size(); ++i) {
+                c_strs[i] = stringVector[i].c_str();
+            }
+            
+            *msv = VrmlMFString(stringVector.size(), c_strs);
+            delete [] c_strs;
         }
     ;
 

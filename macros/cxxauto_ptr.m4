@@ -1,4 +1,4 @@
-dnl Autoconf macro to check for the availability of a C++ hash_map
+dnl Autoconf macro to check for the availability of the C++ auto_ptr
 dnl Copyright (C) 2001  Braden McDaniel
 dnl
 dnl This program is free software; you can redistribute it and/or modify
@@ -16,29 +16,31 @@ dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 dnl
-dnl OV_CXX_HASH_MAP
+dnl OV_CXX_AUTO_PTR(ACTION-IF_FOUND, [ACTION-IF-NOT-FOUND])
 dnl
-AC_DEFUN(OV_CXX_HASH_MAP,
+AC_DEFUN(OV_CXX_AUTO_PTR,
   [
+    AC_MSG_CHECKING([if C++ compiler has auto_ptr])
+    
     AC_LANG_SAVE
     AC_LANG_CPLUSPLUS
     
-    AC_CHECK_HEADER(hash_map,
-      [
-        dnl
-        dnl There are two variants of the hash_map interface: the STL
-        dnl version and the Dinkumware version. Both support the STL
-        dnl concept of a pair associative container, but the templates
-        dnl take different arguments for instantiation. We ought to
-        dnl differentiate between the two here, but since it's pretty
-        dnl unlikely that someone will be using the Dinkumware library
-        dnl with the GNU build, punt for now and assume hash_map is
-        dnl always the STL version.
-        dnl
-        AC_DEFINE(HAVE_STL_HASH_MAP, , [defined if the C++ library includes hash_map])
-      ]
+    have_auto_ptr=yes
+    AC_TRY_COMPILE(
+      [ #include<memory> ],
+      [ std::auto_ptr<int> p(new int(0)); ],
+      ,
+      have_auto_ptr=no
     )
     
     AC_LANG_RESTORE
+    
+    if test "X$have_auto_ptr" = "Xyes"; then
+      AC_MSG_RESULT([yes])
+      ifelse([$1], , :, [$1])
+    else
+      AC_MSG_RESULT([no])
+      ifelse([$2], , :, [$2])
+    fi
   ]
 )

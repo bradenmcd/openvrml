@@ -42,11 +42,16 @@ extern "C" struct GLUtesselator;
  * virtual methods.
  */
 class OPENVRML_GL_SCOPE ViewerOpenGL : public Viewer {
+
 public:
+
   enum { MAX_LIGHTS = 8 };
 
-  ViewerOpenGL(VrmlScene & scene);
+  ViewerOpenGL(VrmlScene *);
+  ViewerOpenGL(ViewerOpenGL const &);
   virtual ~ViewerOpenGL();
+  
+  ViewerOpenGL & operator=(ViewerOpenGL const &);
   
   // Queries
   virtual void getPosition( float *x, float *y, float *z );
@@ -62,7 +67,7 @@ public:
 
   //
   virtual void resetUserNavigation();
-  virtual void getUserNavigation(VrmlMatrix & M);
+  virtual void getUserNavigation(double M[4][4]);
 
   // Scope dirlights, open/close display lists
   virtual Object beginObject(const char *name, bool retain);
@@ -80,7 +85,6 @@ public:
 
 
   virtual Object insertBox(float x, float y, float z);
-
   virtual Object insertCone(float h, float r, bool bottom, bool side);
   virtual Object insertCylinder(float h, float r, bool, bool, bool);
 
@@ -217,13 +221,6 @@ public:
 			    float avatarSize,
 			    float visLimit);
 
- /**
-   * Multiply current ModelView Matrix with Given Matrix M
-   *
-   * @param M matrix in VrmlMatrix format
-   */
-  virtual void MatrixMultiply(const float M[4][4]);
-
   // The viewer knows the current viewpoint
   virtual void transformPoints(int nPoints, float *points);
 
@@ -308,6 +305,8 @@ protected:
   virtual void wsSwapBuffers() = 0;
   virtual void wsSetTimer( double ) = 0;
 
+//private:
+
   // Initialize OpenGL state
   void initialize();
 
@@ -326,9 +325,6 @@ protected:
   // User interaction
   void step(float, float, float);
   void rot(float x , float y, float z, float a);
-  void zoom(float);
-  void rot_trackball(float x1, float y1, float x2, float y2);  
-
 #ifndef macintosh
   void handleKey(int);
 #endif
@@ -382,7 +378,6 @@ protected:
 
   // View manipulation
   float d_position[3];
-  float d_zoom[3];
   float d_target[3];
   float d_orientation[4];
 
@@ -402,6 +397,7 @@ protected:
   bool d_reportFPS;
   double d_renderTime;
   double d_renderTime1;
+
 };
 
 #endif // VIEWEROPENGL_H

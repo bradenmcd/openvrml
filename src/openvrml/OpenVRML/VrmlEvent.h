@@ -37,10 +37,6 @@ public:
 
   ~VrmlEvent() { delete [] d_eventName; delete d_value; }
 
-  VrmlEvent * clone() const {
-    return new VrmlEvent(this->d_timeStamp, this->d_eventName, this->d_value);
-  }
-
   // VrmlEvents are reference counted.
   // The reference counting is manual (that is, each user of a
   // VrmlEvent, such as the VrmlNode class, calls reference()
@@ -64,4 +60,4 @@ protected:
 
 };
 
-#endif /* VRMLEVENT_H */
+#endif VRMLEVENT_H

@@ -114,6 +114,8 @@ main(int argc, char **argv)
       else
 	inputName = inputUrl = "-";		// Read stdin
     }
+  else
+    cout << "Loading " << inputName << " ...";
 
   if (! inputUrl) inputUrl = inputName;
 
@@ -126,12 +128,15 @@ main(int argc, char **argv)
 	cout << "\nError: couldn't write to " << outputName << endl;
     }
 
-  viewer = new ViewerGlut(*vrmlScene);
+  viewer = new ViewerGlut( vrmlScene );
   if (! viewer)
     {
-      cerr << "\nError: couldn't create GLUT viewer.\n";
+      cout << "\nError: couldn't create GLUT viewer.\n";
       exit(1);
     }
+
+  if (*inputName != '-')
+    cout << " done.\n";
 
   if (title && *title) glutSetWindowTitle(title);
 
@@ -206,12 +211,12 @@ static void buildViewpointMenu() {
   if (numberOfViewpoints > 0 )
     {
       for (int i = 0; i < numberOfViewpoints; i++) {
-	std::string name, description;
-	vrmlScene->getViewpoint(i, name, description);
-	if (description.length() > 0)
-	  glutAddMenuEntry(description.c_str(), i+1);
-	else if (name.length() > 0)
-	  glutAddMenuEntry(name.c_str(), i+1);
+	const char *name, *description;
+	vrmlScene->getViewpoint(i, &name, &description);
+	if ( description && *description )
+	  glutAddMenuEntry(description, i+1);
+	else if ( name && *name )
+	  glutAddMenuEntry(name, i+1);
 	else
 	  {
 	    char buf[25];

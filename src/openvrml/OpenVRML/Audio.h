@@ -26,11 +26,9 @@
 //
 #include <stdio.h>
 #include <math.h>
-#include <string>
 #include "common.h"
 
-class Doc;
-class VrmlMFString;
+class  Doc;
 
 OPENVRML_SCOPE enum AudioEncoding
 {
@@ -42,11 +40,11 @@ OPENVRML_SCOPE enum AudioEncoding
 class OPENVRML_SCOPE  Audio
 {
   public:
-    Audio (const std::string & url, Doc *relative = 0);
+    Audio (const char *url = 0, Doc *relative = 0);
     ~Audio ();
 
-    bool setURL(const std::string & url, Doc * relative = 0);
-    bool tryURLs(const VrmlMFString & urls, Doc * relative = 0);
+    bool setURL (const char *url, Doc *relative = 0);
+    bool tryURLs (int nUrls, const char * const *urls, Doc *relative = 0);
 
     const char *url() const;
 

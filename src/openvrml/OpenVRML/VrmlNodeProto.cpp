@@ -18,64 +18,70 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-# include <algorithm>
-# include "VrmlNodeProto.h"
-# include "VrmlNamespace.h"
-# include "VrmlNodeVisitor.h"
-# include "Route.h"
-# include "VrmlBSphere.h"
 
 /**
  * @class VrmlNodeProto
  *
  * @brief A VrmlNodeProto object represents an instance of a PROTOd node.
  *
- * The definition of the PROTO is stored in a NodeType object;
+ * The definition of the PROTO is stored in a VrmlNodeType object;
  * the VrmlNodeProto object stores a local copy of the implementation
  * nodes.
- *
- * Instances of PROTOs clone the implementation nodes stored
- * in a NodeType object. The only tricky parts are to
- * make sure ROUTEs are properly copied (the DEF name map is
- * not available) and that fields are copied properly (the
- * MF* guys currently share data & need to be made copy-on-
- * write for this to be correct). Flags are set as each node
- * is cloned so that USEd nodes are referenced rather than
- * duplicated.
- *
- * ROUTEs: Build a temp namespace as each (named) implementation
- * node is cloned, then traverse the implementation nodes again,
- * reproducing the routes in the cloned nodes using the temp ns.
- * I think that the addToScene() method is the right place to
- * download EXTERNPROTO implementations. Should also check that
- * the first node matches the expected type (need to store the
- * expected type if first node is null when one of the type
- * tests is run).
- *
- * Events between nodes in the PROTO implementation are handled
- * by the ROUTE copying described above. For eventIns coming into
- * the proto, when the implementation nodes are copied, a list
- * of eventIns/exposedFields along with their IS mappings should
- * be constructed.
- * EventOuts from an implementation node to a node outside the
- * PROTO can be directly replaced at copy time.
  */
+#include "VrmlNodeProto.h"
+#include "VrmlNamespace.h"
+#include "VrmlNodeVisitor.h"
+#include "Route.h"
+#include "VrmlBSphere.h"
 
-// Field name/value pairs specified in PROTO instantiation
-struct VrmlNodeProto::NameValueRec {
-    std::string name;
-    VrmlField * value;
-};
+#include <string.h>
+#include <stdio.h>
 
-struct VrmlNodeProto::EventDispatch {
-    std::string name;
-    NodeType::ISMap ismap;
-};
+#ifndef NDEBUG
+#define VRML_NODE_PROTO_DEBUG
+#endif
+
+#ifdef macintosh
+extern char* strdup( const char* );
+#endif
+
+//
+// Instances of PROTOs clone the implementation nodes stored
+// in a VrmlNodeType object. The only tricky parts are to
+// make sure ROUTEs are properly copied (the DEF name map is
+// not available) and that fields are copied properly (the
+// MF* guys currently share data & need to be made copy-on-
+// write for this to be correct). Flags are set as each node
+// is cloned so that USEd nodes are referenced rather than
+// duplicated.
+//
+// ROUTEs: Build a temp namespace as each (named) implementation
+// node is cloned, then traverse the implementation nodes again,
+// reproducing the routes in the cloned nodes using the temp ns.
+// I think that the addToScene() method is the right place to
+// download EXTERNPROTO implementations. Should also check that
+// the first node matches the expected type (need to store the
+// expected type if first node is null when one of the type
+// tests is run).
+//
+// Events between nodes in the PROTO implementation are handled
+// by the ROUTE copying described above. For eventIns coming into
+// the proto, when the implementation nodes are copied, a list
+// of eventIns/exposedFields along with their IS mappings should
+// be constructed.
+// EventOuts from an implementation node to a node outside the
+// PROTO can be directly replaced at copy time.
+//
+
+VrmlNodeType & VrmlNodeProto::nodeType() const
+{
+    return *d_nodeType;
+}
 
 
-
-VrmlNodeProto::VrmlNodeProto(const NodeType & nodeDef, VrmlScene *scene) :
-  VrmlNode(nodeDef, scene),
+VrmlNodeProto::VrmlNodeProto(VrmlNodeType *nodeDef, VrmlScene *scene) :
+  VrmlNode(scene),
+  d_nodeType(nodeDef->reference()),
   d_instantiated(false),
   d_scope(0),
   d_viewerObject(0)
@@ -84,7 +90,8 @@ VrmlNodeProto::VrmlNodeProto(const NodeType & nodeDef, VrmlScene *scene) :
 }
 
 VrmlNodeProto::VrmlNodeProto(const VrmlNodeProto &n) :
-  VrmlNode(n),
+  VrmlNode(0),
+  d_nodeType(n.nodeType().reference()),
   d_instantiated(false),
   d_scope(0),
   d_viewerObject(0)
@@ -99,25 +106,37 @@ VrmlNodeProto::VrmlNodeProto(const VrmlNodeProto &n) :
   this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
-VrmlNodeProto::~VrmlNodeProto() {
-    for (std::list<NameValueRec*>::iterator i(d_fields.begin());
-            i != d_fields.end(); i++) {
-        delete (*i)->value;
-        delete *i;
-    }
+VrmlNodeProto::~VrmlNodeProto()
+{
+  // Free strings & values
+  std::list<NameValueRec*>::iterator i;
 
-    typedef std::list<EventDispatch *> EventDispatchList;
-    for (EventDispatchList::iterator e(d_eventDispatch.begin());
-            e != d_eventDispatch.end(); ++e) {
-        for (NodeType::ISMap::iterator j((*e)->ismap.begin());
-                j != (*e)->ismap.end(); ++j) {
-            delete *j;
-        }
-        delete *e;
-    }
+  for (i = d_fields.begin(); i != d_fields.end(); i++) {
+    NameValueRec *r = *i;
+    free(r->name);
+    delete r->value;
+    delete r;
+  }
 
-    delete d_scope;
+  EventDispatchList::iterator e;
+  for (e = d_eventDispatch.begin(); e != d_eventDispatch.end(); ++e)
+    {
+      EventDispatch *ed = *e;
+      delete [] ed->name;
+      VrmlNodeType::ISMap::iterator j;
+      for (j = ed->ismap.begin(); j != ed->ismap.end(); ++j)
+	{
+	  VrmlNodeType::NodeFieldRec *nf = (*j);
+	  delete [] nf->fieldName;
+	  delete nf;
+	}
+      delete ed;
+    }
+  
+  delete d_scope;
+  d_nodeType->dereference();
 }
+
 
 bool VrmlNodeProto::accept(VrmlNodeVisitor & visitor) {
     if (!this->visited) {
@@ -140,95 +159,72 @@ void VrmlNodeProto::resetVisitedFlag() {
     }
 }
 
-namespace {
-    struct AccumulateNodes_ :
-            std::unary_function<VrmlNodeProto::NameValueRec *, void> {
-        explicit AccumulateNodes_(VrmlMFNode & children): children(children) {};
-        
-        result_type operator()(argument_type protoFieldRec) {
-            assert(protoFieldRec);
-            if (protoFieldRec->value->fieldType() == VrmlField::SFNODE) {
-                assert(dynamic_cast<VrmlSFNode *>(protoFieldRec->value));
-                this->children.setLength(this->children.getLength() + 1);
-                this->children.setElement(this->children.getLength() - 1,
-                        static_cast<VrmlSFNode *>(protoFieldRec->value)->get());
-            } else if (protoFieldRec->value->fieldType() == VrmlField::MFNODE) {
-                assert(dynamic_cast<VrmlMFNode *>(protoFieldRec->value));
-                VrmlMFNode & nodes =
-                        *static_cast<VrmlMFNode *>(protoFieldRec->value);
-                this->children.setLength(this->children.getLength()
-                                         + nodes.getLength());
-                for (size_t i = 0; i < nodes.getLength(); ++i) {
-                    this->children.setElement(this->children.getLength() + i,
-                                              nodes.getElement(i));
-                }
-            }
-        };
-    
-    private:
-        VrmlMFNode & children;
-    };
-}
+VrmlNodeProto* VrmlNodeProto::toProto() const
+{ return (VrmlNodeProto*) this; }
 
-const VrmlMFNode VrmlNodeProto::getChildren() const {
-    VrmlMFNode children;
-    std::for_each(this->d_fields.begin(), this->d_fields.end(),
-                  AccumulateNodes_(children));
-    return children;
-}
 
-/**
- * Instantiate a local copy of the implementation nodes. EXTERNPROTOs are
- * actually loaded here. We don't want <em>references</em> (DEF/USE) to the
- * nodes in the PROTO definition, we need to actually clone new nodes.
- */
+// Instantiate a local copy of the implementation nodes.
+// EXTERNPROTOs are actually loaded here. We don't want
+// *references* (DEF/USE) to the nodes in the PROTO definition,
+// we need to actually clone new nodes...
+
 void VrmlNodeProto::instantiate()
 {
+  //theSystem->debug("%s::%s instantiate\n", d_nodeType->getName(),
+  //name());
+
   if (this->implNodes.getLength() == 0)
     {
       d_scope = new VrmlNamespace();
 
       // Clone nodes
       this->implNodes =
-              d_scope->cloneNodes(this->type.getImplementationNodes());
+              d_scope->cloneNodes(this->d_nodeType->getImplementationNodes());
       
       // Collect eventIns coming from outside the PROTO.
       // A list of eventIns along with their maps to local
       // nodes/eventIns is constructed for each instance.
-      const NodeType::FieldList & eventIns = this->type.eventIns();
-      NodeType::FieldList::const_iterator ev;
-      const NodeType::ISMap * ismap;
-      NodeType::ISMap::const_iterator j;
+      VrmlNodeType::FieldList &eventIns = d_nodeType->eventIns();
+      VrmlNodeType::FieldList::iterator ev;
+      VrmlNodeType::ISMap *ismap;
+      VrmlNodeType::ISMap::const_iterator j;
 
       for (ev = eventIns.begin(); ev != eventIns.end(); ++ev)
 	{
 	  EventDispatch *ed = new EventDispatch;
-          ed->name = (*ev)->name;
+	  char *eventName = (*ev)->name;
+
+	  ed->name = new char[strlen(eventName)+1];
+	  strcpy(ed->name, eventName);
 	  ismap = &(*ev)->thisIS;
 	  d_eventDispatch.push_front(ed);
 
 	  for (j = ismap->begin(); j != ismap->end(); ++j)
 	    {
-	      NodeType::NodeFieldRec *nf = new NodeType::NodeFieldRec;
-	      nf->node = d_scope->findNode((*j)->node->getId());
-	      nf->fieldName = (*j)->fieldName;
+	      VrmlNodeType::NodeFieldRec *nf = new VrmlNodeType::NodeFieldRec;
+	      nf->node = d_scope->findNode((*j)->node->name());
+	      nf->fieldName = new char[strlen((*j)->fieldName)+1];
+	      strcpy(nf->fieldName, (*j)->fieldName);
 	      ed->ismap.push_front(nf);
 	    }
 	}
 
       // Do the same for fields. Code duplication -- messy!
-      const NodeType::FieldList & fields = this->type.fields();
+      VrmlNodeType::FieldList &fields = d_nodeType->fields();
       for (ev = fields.begin(); ev != fields.end(); ++ev )
         {
           EventDispatch *ed = new EventDispatch;
-          ed->name = "set_" + (*ev)->name;
+          char *fieldName = (*ev)->name;
+          ed->name = new char [ strlen(fieldName)+5 ];
+          sprintf ( ed->name, "set_%s", fieldName );
           ismap = &(*ev)->thisIS;
           d_eventDispatch.push_front(ed);
           for (j = ismap->begin(); j != ismap->end(); ++j)
             {
-              NodeType::NodeFieldRec *nf = new NodeType::NodeFieldRec;
-              nf->node = d_scope->findNode((*j)->node->getId());
-              nf->fieldName = (*j)->fieldName;
+              VrmlNodeType::NodeFieldRec *nf = new VrmlNodeType::NodeFieldRec;
+              nf->node = d_scope->findNode((*j)->node->name());
+              nf->fieldName = new char[strlen((*j)->fieldName)+1];
+              strcpy(nf->fieldName, (*j)->fieldName);
               ed->ismap.push_front(nf);
             }
         }
@@ -236,26 +232,20 @@ void VrmlNodeProto::instantiate()
       // Distribute eventOuts. Each eventOut ROUTE is added
       // directly to the local nodes that have IS'd the PROTO
       // eventOut.
-      const NodeType::FieldList & eventOuts = this->type.eventOuts();
-
-      RouteList::iterator i;
-
-      for (i = d_routes.begin(); i != d_routes.end(); ++i)
-      {
+      VrmlNodeType::FieldList &eventOuts = d_nodeType->eventOuts();
+      for (Route *r = d_routes; r; r = r->next())
 	for (ev = eventOuts.begin(); ev != eventOuts.end(); ++ev)
-	{
-	  if ((*ev)->name == (*i)->fromEventOut)
-	  {
-	    ismap = &(*ev)->thisIS;
-	    for (j = ismap->begin(); j != ismap->end(); ++j)
+	  if (strcmp((*ev)->name, r->fromEventOut()) == 0)
 	    {
-	      const VrmlNodePtr & n = d_scope->findNode((*j)->node->getId());
-	      if (n)
-		n->addRoute((*j)->fieldName, (*i)->toNode, (*i)->toEventIn);
+	      ismap = &(*ev)->thisIS;
+	      for (j = ismap->begin(); j != ismap->end(); ++j)
+		{
+		  const VrmlNodePtr  & n = d_scope->findNode((*j)->node->name());
+		  if (n)
+		    n->addRoute((*j)->fieldName,
+				r->toNode(), r->toEventIn() );
+		}
 	    }
-	  }
-	}
-      }
 
       // Set IS'd field values in the implementation nodes to
       // the values specified in the instantiation.
@@ -264,12 +254,23 @@ void VrmlNodeProto::instantiate()
       for (ifld = d_fields.begin(); ifld != d_fields.end(); ++ifld)
 	{
 	  VrmlField *value = (*ifld)->value;
+#ifdef VRML_NODE_PROTO_DEBUG
+	  cerr << d_nodeType->getName() << "::" << name()
+	       << " setting IS field " << (*ifld)->name;
+	  // Too much stuff...
+	  //if (value) cerr << " to " << *value << endl;
+	  //else cerr << " to null\n";
+	  cerr << endl;
+#endif
 	  if (! value) continue;
-          ismap = this->type.getFieldISMap((*ifld)->name);
-	  if (ismap) {
+	  if ((ismap = d_nodeType->getFieldISMap( (*ifld)->name )) != 0)
+	    {
 	      for (j = ismap->begin(); j != ismap->end(); ++j)
 		{
-		  const VrmlNodePtr & n = d_scope->findNode((*j)->node->getId());
+		  const VrmlNodePtr & n = d_scope->findNode((*j)->node->name());
+#ifdef VRML_NODE_PROTO_DEBUG
+		  cerr << " on " << n->name() << "::" << (*j)->fieldName << endl;
+#endif
 		  if (n) n->setField( (*j)->fieldName, *value );
 		}
 	    }
@@ -281,22 +282,23 @@ void VrmlNodeProto::instantiate()
 }
 
 
-void VrmlNodeProto::addToScene(VrmlScene * scene, const std::string & relUrl) {
-    //theSystem->debug("VrmlNodeProto::%s addToScene\n", name());
-    this->d_scene = scene;
+void VrmlNodeProto::addToScene(VrmlScene *s, const char *relUrl)
+{
+  //theSystem->debug("VrmlNodeProto::%s addToScene\n", name());
+  d_scene = s;
 
-    // Make sure my nodes are here
-    if (! d_instantiated) instantiate();
-    //theSystem->debug("VrmlNodeProto::%s addToScene(%d nodes)\n",
-    //	   name(), d_nodes ? d_nodes->size() : 0);
+  // Make sure my nodes are here
+  if (! d_instantiated) instantiate();
+  //theSystem->debug("VrmlNodeProto::%s addToScene(%d nodes)\n",
+  //	   name(), d_nodes ? d_nodes->size() : 0);
 
-    // ... and add the implementation nodes to the scene.
-    if (this->implNodes.getLength() > 0) {
-        const std::string & rel = this->type.getActualUrl();
-        for (size_t i(0); i<this->implNodes.getLength(); ++i) {
-            this->implNodes.getElement(i)
-                  ->addToScene(scene, (rel.length() > 0) ? rel : relUrl);
-        }
+  // ... and add the implementation nodes to the scene.
+  if (this->implNodes.getLength() > 0)
+    {
+      const char * rel = d_nodeType->getActualUrl();
+      int j, n = this->implNodes.getLength();
+      for (j=0; j<n; ++j)
+	this->implNodes.getElement(j)->addToScene(s, rel ? rel : relUrl);
     }
 }
 
@@ -306,7 +308,7 @@ void VrmlNodeProto::accumulateTransform( VrmlNode *n )
   if (! d_instantiated)
     {
       theSystem->debug("VrmlNodeProto::%s accumTrans before instantiation\n",
-		       this->getId().c_str());
+		       name());
       instantiate();
     }
 
@@ -334,7 +336,7 @@ ostream& VrmlNodeProto::printFields(ostream& os, int )
 const VrmlNodePtr VrmlNodeProto::firstNode() const {
     return (this->implNodes.getLength() > 0)
             ? this->implNodes.getElement(0)
-            : this->type.firstNode();
+            : d_nodeType->firstNode();
 }
 
 
@@ -351,44 +353,17 @@ VrmlNodeAppearance* VrmlNodeProto::toAppearance() const
 VrmlNodeAudioClip* VrmlNodeProto::toAudioClip() const
 { return firstNode() ? firstNode()->toAudioClip() : 0; }
 
-VrmlNodeChild* VrmlNodeProto::toChild() const
+const VrmlNodeChild* VrmlNodeProto::toChild() const
 { return firstNode() ? firstNode()->toChild() : 0; }
 
 VrmlNodeBackground* VrmlNodeProto::toBackground() const
 { return firstNode() ? firstNode()->toBackground() : 0; }
 
-VrmlNodeBillboard * VrmlNodeProto::toBillboard() const
-{ return firstNode() ? firstNode()->toBillboard() : 0; }
-
-VrmlNodeBox* VrmlNodeProto::toBox() const       
-{ return firstNode() ? firstNode()->toBox() : 0; }
- 
-VrmlNodeCollision * VrmlNodeProto::toCollision() const
-{ return firstNode() ? firstNode()->toCollision() : 0; }
-
 VrmlNodeColor* VrmlNodeProto::toColor() const
 { return firstNode() ? firstNode()->toColor() : 0; }
 
-VrmlNodeCone* VrmlNodeProto::toCone() const       
-{ return firstNode() ? firstNode()->toCone() : 0; }
-
 VrmlNodeCoordinate* VrmlNodeProto::toCoordinate() const
 { return firstNode() ? firstNode()->toCoordinate() : 0; }
-
-VrmlNodeCylinder* VrmlNodeProto::toCylinder() const       
-{ return firstNode() ? firstNode()->toCylinder() : 0; }
-
-VrmlNodeCylinderSensor* VrmlNodeProto::toCylinderSensor() const
-{ return firstNode() ? firstNode()->toCylinderSensor() : 0; }
-
-VrmlNodeDirLight* VrmlNodeProto::toDirLight() const       
-{ return firstNode() ? firstNode()->toDirLight() : 0; }
-
-VrmlNodeElevationGrid* VrmlNodeProto::toElevationGrid() const       
-{ return firstNode() ? firstNode()->toElevationGrid() : 0; }
-
-VrmlNodeExtrusion* VrmlNodeProto::toExtrusion() const       
-{ return firstNode() ? firstNode()->toExtrusion() : 0; }
 
 VrmlNodeFog* VrmlNodeProto::toFog() const
 { return firstNode() ? firstNode()->toFog() : 0; }
@@ -396,17 +371,11 @@ VrmlNodeFog* VrmlNodeProto::toFog() const
 VrmlNodeFontStyle* VrmlNodeProto::toFontStyle() const
 { return firstNode() ? firstNode()->toFontStyle() : 0; }
 
-VrmlNodeGeometry* VrmlNodeProto::toGeometry() const
+const VrmlNodeGeometry* VrmlNodeProto::toGeometry() const
 { return firstNode() ? firstNode()->toGeometry() : 0; }
 
 VrmlNodeGroup* VrmlNodeProto::toGroup() const
 { return firstNode() ? firstNode()->toGroup() : 0; }
-
-VrmlNodeImageTexture* VrmlNodeProto::toImageTexture() const
-{ return firstNode() ? firstNode()->toImageTexture() : 0; }
-
-VrmlNodeIFaceSet* VrmlNodeProto::toIFaceSet() const  
-{ return firstNode() ? firstNode()->toIFaceSet() : 0; }
 
 VrmlNodeInline* VrmlNodeProto::toInline() const
 { return firstNode() ? firstNode()->toInline() : 0; }
@@ -429,15 +398,12 @@ VrmlNodeNormal* VrmlNodeProto::toNormal() const
 VrmlNodePlaneSensor* VrmlNodeProto::toPlaneSensor() const
 { return firstNode() ? firstNode()->toPlaneSensor() : 0; }
 
-VrmlNodeShape* VrmlNodeProto::toShape() const  
-{ return firstNode() ? firstNode()->toShape() : 0; }
-
 VrmlNodeSphereSensor* VrmlNodeProto::toSphereSensor() const
 { return firstNode() ? firstNode()->toSphereSensor() : 0; }
 
-VrmlNodePixelTexture* VrmlNodeProto::toPixelTexture() const
-{ return firstNode() ? firstNode()->toPixelTexture() : 0; }
- 
+VrmlNodeCylinderSensor* VrmlNodeProto::toCylinderSensor() const
+{ return firstNode() ? firstNode()->toCylinderSensor() : 0; }
+
 VrmlNodePointLight* VrmlNodeProto::toPointLight() const
 { return firstNode() ? firstNode()->toPointLight() : 0; }
 
@@ -447,14 +413,8 @@ VrmlNodeScript* VrmlNodeProto::toScript() const
 VrmlNodeSound* VrmlNodeProto::toSound() const
 { return firstNode() ? firstNode()->toSound() : 0; }
 
-VrmlNodeSphere* VrmlNodeProto::toSphere() const       
-{ return firstNode() ? firstNode()->toSphere() : 0; }
-
 VrmlNodeSpotLight* VrmlNodeProto::toSpotLight() const
 { return firstNode() ? firstNode()->toSpotLight() : 0; }
-
-VrmlNodeSwitch* VrmlNodeProto::toSwitch() const       
-{ return firstNode() ? firstNode()->toSwitch() : 0; }
 
 VrmlNodeTexture* VrmlNodeProto::toTexture() const
 { return firstNode() ? firstNode()->toTexture() : 0; }
@@ -471,18 +431,54 @@ VrmlNodeTimeSensor* VrmlNodeProto::toTimeSensor() const
 VrmlNodeTouchSensor* VrmlNodeProto::toTouchSensor() const
 { return firstNode() ? firstNode()->toTouchSensor() : 0; }
 
+VrmlNodeViewpoint* VrmlNodeProto::toViewpoint() const
+{ return firstNode() ? firstNode()->toViewpoint() : 0; }
+
+// Larry
+VrmlNodeBox* VrmlNodeProto::toBox() const       
+{ return firstNode() ? firstNode()->toBox() : 0; }
+ 
+VrmlNodeCone* VrmlNodeProto::toCone() const       
+{ return firstNode() ? firstNode()->toCone() : 0; }
+
+VrmlNodeCylinder* VrmlNodeProto::toCylinder() const       
+{ return firstNode() ? firstNode()->toCylinder() : 0; }
+
+VrmlNodeDirLight* VrmlNodeProto::toDirLight() const       
+{ return firstNode() ? firstNode()->toDirLight() : 0; }
+
+VrmlNodeElevationGrid* VrmlNodeProto::toElevationGrid() const       
+{ return firstNode() ? firstNode()->toElevationGrid() : 0; }
+VrmlNodeExtrusion* VrmlNodeProto::toExtrusion() const       
+{ return firstNode() ? firstNode()->toExtrusion() : 0; }
+
+VrmlNodeIFaceSet* VrmlNodeProto::toIFaceSet() const  
+{ return firstNode() ? firstNode()->toIFaceSet() : 0; }
+VrmlNodeShape* VrmlNodeProto::toShape() const  
+{ return firstNode() ? firstNode()->toShape() : 0; }
+
+VrmlNodeSphere* VrmlNodeProto::toSphere() const       
+{ return firstNode() ? firstNode()->toSphere() : 0; }
+
+VrmlNodeSwitch* VrmlNodeProto::toSwitch() const       
+{ return firstNode() ? firstNode()->toSwitch() : 0; }
+
 VrmlNodeTransform* VrmlNodeProto::toTransform() const       
 { return firstNode() ? firstNode()->toTransform() : 0; }
 
-VrmlNodeViewpoint* VrmlNodeProto::toViewpoint() const
-{ return firstNode() ? firstNode()->toViewpoint() : 0; }
+VrmlNodeImageTexture* VrmlNodeProto::toImageTexture() const
+{ return firstNode() ? firstNode()->toImageTexture() : 0; }
+VrmlNodePixelTexture* VrmlNodeProto::toPixelTexture() const
+{ return firstNode() ? firstNode()->toPixelTexture() : 0; }
+ 
+//
 
 void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
 {
   if (! d_instantiated)
     {
       theSystem->debug("VrmlNodeProto::%s render before instantiation\n",
-		       this->getId().c_str());
+		       name());
       instantiate();
     }
 
@@ -499,7 +495,7 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
 
   else if (this->implNodes.getLength() > 0)
     {
-      d_viewerObject = viewer->beginObject(this->getId().c_str());
+      d_viewerObject = viewer->beginObject( name() );
 
       // render the nodes with the new values
       int n = this->implNodes.getLength();
@@ -514,72 +510,69 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
 
 
 void VrmlNodeProto::eventIn(double timeStamp,
-			    const std::string & eventName,
-			    const VrmlField & fieldValue) {
-    if (!d_instantiated) {
-        theSystem->debug("VrmlNodeProto::%s eventIn before instantiation\n",
-                         this->getId().c_str());
-        instantiate();
+			    const char *eventName,
+			    const VrmlField & fieldValue)
+{
+  if (! d_instantiated)
+    {
+      theSystem->debug("VrmlNodeProto::%s eventIn before instantiation\n",
+		       name());
+      instantiate();
     }
 
-    static const char * eventInPrefix = "set_";
-    std::string basicEventName;
-    if (std::equal(eventInPrefix, eventInPrefix + 4, eventName.begin())) {
-        basicEventName = eventName.substr(4);
-    } else {
-        basicEventName = eventName;
-    }
+  const char *origEventName = eventName;
+  if ( strncmp(eventName, "set_", 4) == 0 )
+    eventName += 4;
 
-    typedef std::list<EventDispatch *> EventDispatchList;
-    for (EventDispatchList::iterator i(d_eventDispatch.begin());
-            i != d_eventDispatch.end(); ++i) {
-//        cout << "basicEventName = " << basicEventName
-//             << ", eventName = " << eventName
-//             << ", (*i)->name = " << (*i)->name << endl;
-        if (basicEventName == (*i)->name || eventName == (*i)->name) {
-            NodeType::ISMap * ismap = &(*i)->ismap;
-            for (NodeType::ISMap::iterator j(ismap->begin());
-                    j != ismap->end(); ++j) {
-//                cout << "Relaying event." << endl;
-                (*j)->node->eventIn(timeStamp, (*j)->fieldName, fieldValue);
-            }
-	    return;
-        }
-    }
-    // Let the generic code handle errors.
-    VrmlNode::eventIn(timeStamp, eventName, fieldValue);
-    this->setBVolumeDirty(true); // lazy calc of bvolume
+#if 0
+  cerr << "eventIn " << nodeType()->getName()
+       << "::" << name() << "." << origEventName
+       << " " << fieldValue << endl;
+#endif
+
+  EventDispatchList::iterator i;
+  for (i=d_eventDispatch.begin(); i != d_eventDispatch.end(); ++i) {
+    if ( strcmp(eventName, (*i)->name) == 0 ||
+	 strcmp(origEventName, (*i)->name) == 0 )
+      {
+	VrmlNodeType::ISMap *ismap = & ((*i)->ismap);
+	VrmlNodeType::ISMap::iterator j;
+	for (j = ismap->begin(); j != ismap->end(); ++j)
+	  (*j)->node->eventIn( timeStamp, (*j)->fieldName, fieldValue );
+
+	return;
+      }
+  }
+  // Let the generic code handle errors.
+  VrmlNode::eventIn( timeStamp, origEventName, fieldValue );
+  this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
-/**
- * Find a field by name.
- */
-VrmlNodeProto::NameValueRec *
-        VrmlNodeProto::findField(const std::string & fieldName) const {
-    for (std::list<NameValueRec *>::const_iterator i(d_fields.begin());
-            i != d_fields.end(); ++i) {
-        if (*i && (*i)->name == fieldName) {
-            return *i;
-        }
+
+VrmlNodeProto::NameValueRec *VrmlNodeProto::findField(const char *fieldName) const
+{
+  std::list<NameValueRec*>::const_iterator i;
+  for (i = d_fields.begin(); i != d_fields.end(); ++i) {
+    NameValueRec *nv = *i;
+    if (nv != NULL && strcmp(nv->name, fieldName) == 0) {
+      return nv;
     }
-    return 0;
+  }
+  return NULL;
 }
 
-/**
- * Set the value of one of the node fields (creates the field if
- * it doesn't exist).
- *
- * @todo Is it necessary to create the field if it doesn't exist?
- */
-void VrmlNodeProto::setField(const std::string & fieldName,
-			     const VrmlField & fieldValue)
+// Set the value of one of the node fields (creates the field if
+// it doesn't exist - is that necessary?...)
+
+void VrmlNodeProto::setField(const char *fieldName,
+			     const VrmlField &fieldValue)
 {
   NameValueRec *nv = findField(fieldName);
 
   if (! nv)
     {
       nv = new NameValueRec;
-      nv->name = fieldName;
+      nv->name = strdup(fieldName);
       d_fields.push_front(nv);
     }
   else
@@ -591,12 +584,11 @@ void VrmlNodeProto::setField(const std::string & fieldName,
   this->setBVolumeDirty(true); // lazy calc of bvolume
 }
 
-const VrmlField *VrmlNodeProto::getField(const std::string & fieldName) const {
-    NameValueRec * nv = findField(fieldName);
-    if (nv) {
-        return nv->value;
-    }
-    return this->type.fieldDefault(fieldName);
+const VrmlField *VrmlNodeProto::getField(const char *fieldName) const
+{
+  NameValueRec *nv = findField(fieldName);
+  if (nv) return nv->value;
+  return d_nodeType->fieldDefault(fieldName);
 }
 
 VrmlNodeLOD* VrmlNodeProto::toLOD() const

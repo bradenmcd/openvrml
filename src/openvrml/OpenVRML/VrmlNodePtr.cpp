@@ -54,7 +54,7 @@ VrmlNodePtr::VrmlNodePtr(VrmlNode * node) {
  */
 VrmlNodePtr::VrmlNodePtr(const VrmlNodePtr & nodePtr):
         countPtr(nodePtr.countPtr) {
-    if (this->countPtr) {
+    if (countPtr) {
         ++this->countPtr->second;
     }
 }
@@ -97,7 +97,6 @@ void VrmlNodePtr::dispose() {
         delete this->countPtr->first;
         countMap.erase(this->countPtr->first);
     }
-    this->countPtr = 0;
 }
 
 /**

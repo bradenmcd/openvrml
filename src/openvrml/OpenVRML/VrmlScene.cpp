@@ -30,6 +30,7 @@
 
 #include <errno.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifdef _WIN32
 #include <strstrea.h>
@@ -41,11 +42,10 @@
 #include "Viewer.h"
 #include "System.h"
 #include "MathUtils.h"
+#include "Vrml97Parser.hpp"
 #include "VrmlNamespace.h"
-#include "nodetype.h"
+#include "VrmlNodeType.h"
 #include "VrmlRenderContext.h"
-
-#include "Vrml97Parser.cpp"
 
 // List of Scripts in the scene
 #include "VrmlNodeScript.h"
@@ -56,63 +56,106 @@
 #define DEFAULT_DELTA 0.5
 #endif
 
-
 //
 // Create a VrmlScene from a URL (optionally loading from a local copy,
 // so I can run as a netscape helper but still retrieve embedded urls).
 //
 
-VrmlScene::VrmlScene(const std::string & sceneUrl,
-                     const std::string & localCopy):
-        d_flags_need_updating(false), d_url(0), d_urlLocal(0), d_namespace(0),
-        d_modified(false), d_newView(false), d_deltaTime(DEFAULT_DELTA),
-        d_pendingUrl(0), d_pendingParameters(0), d_pendingNodes(0),
-        d_pendingScope(0), d_frameRate(0.0), d_firstEvent(0), d_lastEvent(0) {
-    for (size_t i = 0; i < this->nodes.getLength(); ++i) {
-        this->nodes.getElement(i)->addToScene(this, sceneUrl);
-        this->nodes.getElement(i)->accumulateTransform(0);
-    }
+VrmlScene::VrmlScene( const char *sceneUrl, const char *localCopy ) :
+  d_flags_need_updating(false),
+  d_url(0),
+  d_urlLocal(0),
+  d_namespace(0),
+  d_modified(false),
+  d_newView(false),
+  d_deltaTime(DEFAULT_DELTA),
+  d_pendingUrl(0),
+  d_pendingParameters(0),
+  d_pendingNodes(0),
+  d_pendingScope(0),
+  d_frameRate(0.0),
+  d_firstEvent(0),
+  d_lastEvent(0)
+{
+  d_nodes.addToScene(this, sceneUrl);
+  d_backgrounds = new VrmlNodeList;
+  d_backgroundStack = new VrmlNodeList;
+  d_fogs = new VrmlNodeList;
+  d_fogStack = new VrmlNodeList;
+  d_navigationInfos = new VrmlNodeList;
+  d_navigationInfoStack = new VrmlNodeList;
+  d_viewpoints = new VrmlNodeList;
+  d_viewpointStack = new VrmlNodeList;
+  d_scopedLights = new VrmlNodeList;
+  d_scripts = new VrmlNodeList;
+  d_timers = new VrmlNodeList;
+  d_movies = new VrmlNodeList;
+  d_audioClips = new VrmlNodeList;
 
-    if (sceneUrl.length() > 0)
-      if (!this->load(sceneUrl, localCopy))
-        theSystem->error("Couldn't load '%s'.\n", sceneUrl.c_str());
+  if (sceneUrl)
+    if (! load(sceneUrl, localCopy))
+      theSystem->error("Couldn't load '%s'.\n", sceneUrl);
 }
 
-VrmlScene::~VrmlScene() {
-    delete d_url;
-    delete d_urlLocal;
+VrmlScene::~VrmlScene()
+{
+  d_nodes.addToScene( 0, 0 );
+  d_nodes.removeChildren();
 
-    delete d_pendingUrl;
-    delete d_pendingParameters;
-    delete d_pendingNodes;
-    delete d_pendingScope;
+  bindableRemoveAll( d_backgroundStack ); 
+  delete d_backgroundStack;
+  bindableRemoveAll( d_fogStack ); 
+  delete d_fogStack;
+  bindableRemoveAll( d_navigationInfoStack ); 
+  delete d_navigationInfoStack;
+  bindableRemoveAll( d_viewpointStack );
+  delete d_viewpointStack;
 
-    delete d_namespace;
-}
+  delete d_backgrounds;
+  delete d_fogs;
+  delete d_navigationInfos;
+  delete d_viewpoints;
 
-const VrmlMFNode & VrmlScene::getRootNodes() const throw () {
-    return this->nodes;
+  delete d_scopedLights;
+  delete d_scripts;
+  delete d_timers;
+  delete d_movies;
+  delete d_audioClips;
+
+  delete d_url;
+  delete d_urlLocal;
+
+  delete d_pendingUrl;
+  delete d_pendingParameters;
+  delete d_pendingNodes;
+  delete d_pendingScope;
+
+  delete d_namespace;
 }
 
 // Load a (possibly non-VRML) file...
 
-bool VrmlScene::loadUrl(const VrmlMFString & url,
-                        const VrmlMFString & parameters) {
+bool VrmlScene::loadUrl(VrmlMFString const * url, VrmlMFString const * parameters)
+{
+    if (! url) {
+        return false;
+    }
     
-    size_t np = parameters.getLength();
+    size_t np = parameters ? parameters->getLength() : 0;
+    char const * const * params = parameters ? parameters->get() : 0;
     
     // try each url until we find one we can handle
+//    int i, n = url->size();
     size_t i(0);
-    for (; i < url.getLength(); ++i) {
-        using std::string;
-        const string & currentUrl = url.getElement(i);
-        if (currentUrl.length() == 0) {
+    char const * const * urls = url->get();
+    for (; i < url->getLength(); ++i) {
+        if (! urls[i]) {
             continue;
         }
         
         // #Viewpoint
-        if (currentUrl[0] == '#') {
-            if (load(url.getElement(i))) {
+        if (*urls[i] == '#') {
+            if (load( urls[i] )) {
                 break;
             }
         }
@@ -120,102 +163,100 @@ bool VrmlScene::loadUrl(const VrmlMFString & url,
         // Load .wrl's, or pass off to system
         else {
             // Check mime type...
-            string::size_type tailPos = currentUrl.find_last_of('/');
-            if (tailPos == string::npos) {
-                tailPos = 0;
+            char const * tail = strrchr(urls[i], SLASH);
+            if (! tail) {
+                tail = urls[i];
             }
-            string::size_type modPos = currentUrl.find_first_of('#', tailPos);
-            if (modPos == string::npos) {
-                modPos = currentUrl.length();
+            char const * mod = strchr(tail, '#');
+            if (! mod) {
+                mod = urls[i] + strlen(urls[i]);
             }
-            if (modPos - tailPos > 4
-                    && (currentUrl.substr(modPos - 4, 4) == ".wrl"
-                        || currentUrl.substr(modPos - 4, 4) == ".wrz"
-                        || currentUrl.substr(modPos - 4, 4) == ".WRL"
-                        || currentUrl.substr(modPos - 4, 4) == ".WRZ"
-                        || (modPos - tailPos > 7 && currentUrl.substr(modPos - 7, 7) == ".wrl.gz")))
+            if (mod-tail > 4
+                && (   strncmp( mod-4, ".wrl", 4) == 0
+                    || strncmp( mod-4, ".wrz", 4) == 0
+                    || strncmp( mod-4, ".WRL", 4) == 0
+                    || strncmp( mod-4, ".WRZ", 4) == 0
+                    || (mod-tail > 7 && strncmp( mod-7, ".wrl.gz", 7) == 0 )))
             {
-                if (load(currentUrl)) {
+                if (load( urls[i] )) {
                     break;
                 }
 	    } else {
-                if (theSystem->loadUrl(currentUrl, parameters)) {
+                if (theSystem->loadUrl( urls[i], np, params )) {
                     break;
                 }
             }
         }
     }
     
-    return (i != url.getLength());  // true if we found a url that loaded
+    return (i != url->getLength());  // true if we found a url that loaded
 }
 
 // Called by viewer when a destroy request is received. The request
 // is just passed on to the client via the worldChanged CB.
 
-void VrmlScene::destroyWorld() {
-    doCallbacks( DESTROY_WORLD );
+void VrmlScene::destroyWorld()
+{
+  doCallbacks( DESTROY_WORLD );
 }
 
 
 // Replace nodes
 
 void VrmlScene::replaceWorld(VrmlMFNode & nodes, VrmlNamespace * ns,
-			     Doc2 * url, Doc2 * urlLocal) {
-    delete d_namespace;
-    delete d_url;
-    delete d_urlLocal;
-    
-    d_namespace = ns;
-    d_url = url;
-    d_urlLocal = urlLocal;
-    
-    // Clear bindable stacks.
-    this->d_backgroundStack.clear();
-    this->d_fogStack.clear(); 
-    this->d_navigationInfoStack.clear(); 
-    this->d_viewpointStack.clear();
-    
-    // Get rid of current world: pending events, nodes.
-    flushEvents();
-    
-    this->nodes = nodes;
+			     Doc2 * url, Doc2 * urlLocal)
+{
+  delete d_namespace;
+  delete d_url;
+  delete d_urlLocal;
 
-  
-    // Do this to set the relative URL
-    for (size_t i = 0; i < this->nodes.getLength(); ++i) {
-        nodes.getElement(i)->addToScene(this, this->d_url ? this->d_url->url() : 0);
-	    nodes.getElement(i)->accumulateTransform(0);
-    }
-    
-    // Send initial set_binds to bindable nodes
-    double timeNow = theSystem->time();
-    VrmlSFBool flag(true);
-    
-    if (!this->d_backgrounds.empty()) {
-        assert(this->d_backgrounds.front());
-        this->d_backgrounds.front()->eventIn(timeNow, "set_bind", flag);
-    }
-    
-    if (!this->d_fogs.empty()) {
-        assert(this->d_fogs.front());
-        this->d_fogs.front()->eventIn(timeNow, "set_bind", flag);
-    }
-    
-    if (!this->d_navigationInfos.empty()) {
-        assert(this->d_navigationInfos.front());
-        this->d_navigationInfos.front()->eventIn(timeNow, "set_bind", flag);
-    }
-    
-    if (!this->d_viewpoints.empty()) {
-        assert(this->d_viewpoints.front());
-        this->d_viewpoints.front()->eventIn(timeNow, "set_bind", flag);
-    }
-    
-    // Notify anyone interested that the world has changed
-    doCallbacks( REPLACE_WORLD );
-    
-    setModified();
-    d_newView = true;		// Force resetUserNav
+  d_namespace = ns;
+  d_url = url;
+  d_urlLocal = urlLocal;
+
+  // Clear bindable stacks.
+  bindableRemoveAll( d_backgroundStack ); 
+  bindableRemoveAll( d_fogStack ); 
+  bindableRemoveAll( d_navigationInfoStack ); 
+  bindableRemoveAll( d_viewpointStack );
+
+  // Get rid of current world: pending events, nodes.
+  flushEvents();
+  d_nodes.removeChildren();
+
+  // Do this to set the relative URL
+  d_nodes.addToScene(this, this->d_url ? this->d_url->url() : 0);
+
+  // Add the nodes to a Group and put the group in the scene.
+  // This will load EXTERNPROTOs and Inlines.
+  d_nodes.addChildren( nodes );
+
+  // Send initial set_binds to bindable nodes
+  double timeNow = theSystem->time();
+  VrmlSFBool flag(true);
+  VrmlNodePtr bindable;
+
+  if (d_backgrounds->size() > 0 &&
+      (bindable = d_backgrounds->front()) != 0)
+    bindable->eventIn(timeNow, "set_bind", flag);
+
+  if (d_fogs->size() > 0 &&
+      (bindable = d_fogs->front()) != 0)
+    bindable->eventIn(timeNow, "set_bind", flag);
+
+  if (d_navigationInfos->size() > 0 &&
+      (bindable = d_navigationInfos->front()) != 0)
+    bindable->eventIn(timeNow, "set_bind", flag);
+
+  if (d_viewpoints->size() > 0 &&
+      (bindable = d_viewpoints->front()) != 0)
+    bindable->eventIn(timeNow, "set_bind", flag);
+
+  // Notify anyone interested that the world has changed
+  doCallbacks( REPLACE_WORLD );
+
+  setModified();
+  d_newView = true;		// Force resetUserNav
 }
 
 void VrmlScene::doCallbacks( int reason )
@@ -234,13 +275,14 @@ void VrmlScene::addWorldChangedCallback( SceneCB cb )
 // Read a VRML97 file.
 // This is only for [*.wrl][#viewpoint] url loading (no parameters).
 
-bool VrmlScene::load(const std::string & url, const std::string & localCopy) {
+bool VrmlScene::load(const char *url, const char *localCopy)
+{
     // Look for '#Viewpoint' syntax. There ought to be a current
     // scene if this format is used.
     VrmlSFBool flag(true);
-    if (url[0] == '#') {
+    if (*url == '#') {
         const VrmlNodePtr & vp = d_namespace
-                                    ? d_namespace->findNode(url.substr(1))
+                                    ? d_namespace->findNode(url+1)
                                     : VrmlNodePtr(0);
         
         // spec: ignore if named viewpoint not found
@@ -254,7 +296,7 @@ bool VrmlScene::load(const std::string & url, const std::string & localCopy) {
     
     // Try to load a file. Prefer a local copy if available.
     Doc2 * tryUrl = 0;
-    if (localCopy.length() > 0) {
+    if (localCopy) {
         tryUrl = new Doc2(localCopy, 0);
     } else {
         tryUrl = new Doc2(url, d_url);
@@ -266,7 +308,7 @@ bool VrmlScene::load(const std::string & url, const std::string & localCopy) {
     if (newNodes) {
         Doc2 * sourceUrl = tryUrl;
         Doc2 * urlLocal = 0;
-        if (localCopy.length() > 0) {
+        if (localCopy) {
             sourceUrl = new Doc2( url );
             urlLocal = tryUrl;
         }
@@ -293,21 +335,20 @@ bool VrmlScene::load(const std::string & url, const std::string & localCopy) {
 
 // Read a VRML file from one of the urls.
 
-VrmlMFNode * VrmlScene::readWrl(const VrmlMFString & urls, Doc2 * relative,
+VrmlMFNode * VrmlScene::readWrl(VrmlMFString * urls, Doc2 * relative,
                                 VrmlNamespace * ns)
 {
     Doc2 url;
-    const size_t n = urls.getLength();
-    for (size_t i = 0; i < n; ++i) {
+    int n = urls->getLength();
+    for (int i = 0; i < n; ++i) {
         //theSystem->debug("Trying to read url '%s'\n", urls->get(i));
-        url.seturl(urls.getElement(i).c_str(), relative );
+        url.seturl( urls->getElement(i), relative );
         VrmlMFNode * kids = VrmlScene::readWrl(&url, ns);
         if (kids) {
             return kids;
-        } else if ((i < n - 1)
-                && strncmp(urls.getElement(i).c_str(), "urn:", 4)) {
+        } else if ((i < n - 1) && strncmp(urls->getElement(i),"urn:",4)) {
             theSystem->warn("Couldn't read url '%s': %s\n",
-                            urls.getElement(i).c_str(), strerror(errno));
+                            urls->getElement(i), strerror( errno));
         }
     }
     
@@ -319,6 +360,8 @@ VrmlMFNode * VrmlScene::readWrl(const VrmlMFString & urls, Doc2 * relative,
 VrmlMFNode * VrmlScene::readWrl(Doc2 * tryUrl, VrmlNamespace * ns)
 {
     VrmlMFNode * result = 0;
+    
+    theSystem->debug("readWRL %s\n", tryUrl->url());
     
     // Should verify MIME type...
     istream & istm = tryUrl->inputStream();
@@ -446,39 +489,40 @@ VrmlMFNode * VrmlScene::readFunction(LoadCB cb, Doc2 * url, VrmlNamespace * ns)
 // This should read only PROTOs and return when the first/specified PROTO
 // is read...
 
-const NodeTypePtr VrmlScene::readPROTO(const VrmlMFString & urls,
-                                       const Doc2 * relative) {
+VrmlNodeType * VrmlScene::readPROTO(const VrmlMFString & urls,
+                                    const Doc2 * relative) {
     // This is a problem. The nodeType of the EXTERNPROTO has a namespace
     // that refers back to this namespace (protos), which will be invalid
     // after we exit this function. I guess it needs to be allocated and
     // ref counted too...
     //VrmlNamespace protos;
     VrmlNamespace * protos = new VrmlNamespace();  // leak...
-    Doc2 urlDoc;
-    NodeTypePtr def(0);
+    Doc2 urlDoc(static_cast<char *>(0));
+    VrmlNodeType * def = 0;
+//    int i, n = urls->size();
     
     for (size_t i(0); i < urls.getLength(); ++i) {
         theSystem->inform("Trying to read EXTERNPROTO from url '%s'\n",
-                          urls.getElement(i).c_str());
-        urlDoc.seturl(urls.getElement(i).c_str(), relative);
+                          urls.getElement(i));
+        urlDoc.seturl(urls.getElement(i), relative);
         VrmlMFNode * kids = VrmlScene::readWrl(&urlDoc, protos);
         delete kids;
         
         // Grab the specified PROTO, or the first one.
         const char * whichProto = urlDoc.urlModifier();
         if (whichProto && *whichProto) {
-            def = protos->findType( whichProto+1 );
+            def = (VrmlNodeType*) protos->findType( whichProto+1 );
         } else {
-            def = protos->firstType();
+            def = (VrmlNodeType*) protos->firstType();
         }
         
         if (def) {
             def->setActualUrl( urlDoc.url() );
             break;
 	} else if ((i < (urls.getLength() - 1))
-                && strncmp(urls.getElement(i).c_str(), "urn:", 4)) {
+                && strncmp(urls.getElement(i),"urn:",4)) {
             theSystem->warn("Couldn't read EXTERNPROTO url '%s': %s\n",
-                            urls.getElement(i).c_str(), strerror(errno));
+                            urls.getElement(i), strerror( errno));
         }
     }
     
@@ -497,7 +541,7 @@ bool VrmlScene::save(const char *url)
   if (os)
     {
       os << "#VRML V2.0 utf8\n";
-      os << this->nodes;
+      os << d_nodes;
       success = true;
     }
 
@@ -544,22 +588,25 @@ void VrmlScene::queueReplaceNodes( VrmlMFNode *nodes, VrmlNamespace *ns )
 // are so far behind that the queue is filled, the oldest events get
 // overwritten.
 
-void VrmlScene::queueEvent(double timeStamp, VrmlField * value,
+void VrmlScene::queueEvent(double timeStamp,
+			   VrmlField *value,
 			   const VrmlNodePtr & toNode,
-			   const std::string & toEventIn) {
-    Event * e = &this->d_eventMem[this->d_lastEvent];
-    e->timeStamp = timeStamp;
-    e->value = value;
-    e->toNode = toNode;
-    e->toEventIn = toEventIn;
-    d_lastEvent = (d_lastEvent+1) % MAXEVENTS;
+			   const char *toEventIn)
+{
+  Event *e = &d_eventMem[d_lastEvent];
+  e->timeStamp = timeStamp;
+  e->value = value;
+  e->toNode = toNode;
+  e->toEventIn = toEventIn;
+  d_lastEvent = (d_lastEvent+1) % MAXEVENTS;
 
-    // If the event queue is full, discard the oldest (in terms of when it
-    // was put on the queue, not necessarily in terms of earliest timestamp).
-    if (d_lastEvent == d_firstEvent) {
-        e = &d_eventMem[d_lastEvent];
-        delete e->value;
-        d_firstEvent = (d_firstEvent+1) % MAXEVENTS;
+  // If the event queue is full, discard the oldest (in terms of when it
+  // was put on the queue, not necessarily in terms of earliest timestamp).
+  if (d_lastEvent == d_firstEvent)
+    {
+      e = &d_eventMem[d_lastEvent];
+      delete e->value;
+      d_firstEvent = (d_firstEvent+1) % MAXEVENTS;
     }
 }
 
@@ -590,7 +637,7 @@ void VrmlScene::sensitiveEvent( void *object,
 				bool isOver, bool isActive,
 				double *point )
 {
-  VrmlNode * const n = reinterpret_cast<VrmlNode *>(object);
+  VrmlNode *n = (VrmlNode *)object;
 
   if (n)
     {
@@ -606,12 +653,12 @@ void VrmlScene::sensitiveEvent( void *object,
 	    }
 	  else if (isOver)
 	    {
-	      const std::string & description = a->description();
-	      const std::string & url = a->url();
-	      if (description.length() > 0 && url.length() > 0)
-		theSystem->inform("%s (%s)", description.c_str(), url.c_str());
-	      else if (description.length() > 0 || url.length() > 0)
-		theSystem->inform("%s", description.length() > 0 ? description.c_str() : url.c_str());
+	      const char *description = a->description();
+	      const char *url = a->url();
+	      if (description && url)
+		theSystem->inform("%s (%s)", description, url);
+	      else if (description || url)
+		theSystem->inform("%s", description ? description : url);
 	      //else
 	      //theSystem->inform("");
 	    }
@@ -649,32 +696,32 @@ bool VrmlScene::update( double timeStamp )
   d_deltaTime = DEFAULT_DELTA;
 
   // Update each of the timers.
-  std::list<VrmlNode *>::iterator i, end = this->d_timers.end();
-  for (i = this->d_timers.begin(); i != end; ++i)
+  VrmlNodeList::iterator i, end = d_timers->end();
+  for (i = d_timers->begin(); i != end; ++i)
     {
       VrmlNodeTimeSensor *t = (*i)->toTimeSensor();
       if (t) t->update( now );
     }
 
   // Update each of the clips.
-  end = this->d_audioClips.end();
-  for (i = this->d_audioClips.begin(); i != end; ++i)
+  end = d_audioClips->end();
+  for (i = d_audioClips->begin(); i != end; ++i)
     {
       VrmlNodeAudioClip *c = (*i)->toAudioClip();
       if (c) c->update( now );
     }
 
   // Update each of the scripts.
-  end = this->d_scripts.end();
-  for (i = this->d_scripts.begin(); i != end; ++i)
+  end = d_scripts->end();
+  for (i = d_scripts->begin(); i != end; ++i)
     {
       VrmlNodeScript *s = (*i)->toScript();
       if (s) s->update( now );
     }
 
   // Update each of the movies.
-  end = this->d_movies.end();
-  for (i = this->d_movies.begin(); i != end; ++i)
+  end = d_movies->end();
+  for (i = d_movies->begin(); i != end; ++i)
     {
       VrmlNodeMovieTexture *m =  (*i)->toMovieTexture();
       if (m) m->update( now );
@@ -682,8 +729,8 @@ bool VrmlScene::update( double timeStamp )
 
 
   // Pass along events to their destinations
-  while (this->d_firstEvent != this->d_lastEvent &&
-	 ! this->d_pendingUrl && ! this->d_pendingNodes)
+  while (d_firstEvent != d_lastEvent &&
+	 ! d_pendingUrl && ! d_pendingNodes)
     {
       Event *e = &d_eventMem[d_firstEvent];
       d_firstEvent = (d_firstEvent+1) % MAXEVENTS;
@@ -693,7 +740,7 @@ bool VrmlScene::update( double timeStamp )
       if (this != n->scene())
 	{
 	  theSystem->debug("VrmlScene::update: %s::%s is not in the scene graph yet.\n",
-                           n->type.getId().c_str(), n->getId().c_str());
+			   n->nodeType().getName(), n->name());
 	  n->addToScene((VrmlScene*)this, urlDoc()->url() );
 	}
       n->eventIn(e->timeStamp, e->toEventIn, *e->value);
@@ -710,7 +757,7 @@ bool VrmlScene::update( double timeStamp )
     }
   else if (d_pendingUrl)
     {
-      loadUrl(*d_pendingUrl, *d_pendingParameters);
+      (void) loadUrl( d_pendingUrl, d_pendingParameters );
       delete d_pendingUrl;
       delete d_pendingParameters;
       d_pendingUrl = 0;
@@ -772,6 +819,12 @@ void VrmlScene::render(Viewer *viewer)
   float avatarSize = 0.25;
   float visibilityLimit = 0.0;
 
+  // since opengl post multiples the matrix, we need to do the user
+  // navigation transform first. this needs to be fixed so it doesn't
+  // depend on a special arg to beginObject.
+  //
+  viewer->beginObject(0);
+
   VrmlNodeViewpoint *vp = bindableViewpointTop();
   if (vp)
     {
@@ -779,6 +832,7 @@ void VrmlScene::render(Viewer *viewer)
       std::copy(vp->getOrientation().get(), vp->getOrientation().get() + 4,
                 orientation);
       field = vp->getFieldOfView().get();
+      vp->inverseTransform(viewer); // put back!
     }
 
   VrmlNodeNavigationInfo *ni = bindableNavigationInfoTop();
@@ -788,24 +842,89 @@ void VrmlScene::render(Viewer *viewer)
       visibilityLimit = ni->visibilityLimit();
     }
 
-    // Activate the headlight.
-  // ambient is supposed to be 0 according to the spec...
-  if ( headlightOn() )
-  {
-    float rgb[3] = { 1.0, 1.0, 1.0 };
-    float xyz[3] = { 0.0, 0.0, -1.0 };
-    float ambient = 0.3;
- 
-    viewer->insertDirLight( ambient, 1.0, rgb, xyz );
-  }                         
-
   // sets the viewpoint transformation
   //
   viewer->setViewpoint(position, orientation, field, avatarSize, visibilityLimit);
 
+  //
+  // Hack alert: Right now the rendering code uses the old-style
+  // set/unset Transform code, but the culling code accumulates the
+  // modelview matrix on the core side using modifications to
+  // VrmlTransform and the new VrmlRenderContext class.
+  //
+  // However, that means we need to jump through some hoops to make
+  // sure that the new modelview transform code exactly shadows the
+  // old code.
+  //
+  double M[4][4]; // the modelview transform
+  Midentity(M);
+  if (vp) {       // viewpoint is optional
+
+    // find the inverse of the transform stack above the viewpoint.
+    //
+    vp->inverseTransform(M);
+
+    // find where the viewpoint itself points (the viewpoint has its
+    // own built-in transformation, in addition to the transformations
+    // of any parent nodes. yes, that is redundant, but that's what the
+    // vrml97 spec says)
+    //
+    double vp_IM[4][4];
+    vp->getInverseMatrix(vp_IM);
+
+    MM(M, vp_IM);
+
+  } else {
+
+    // if there's no viewpoint, then set us up arbitrarily at 0,0,-10,
+    // as indicated in the vrml spec (section 6.53 Viewpoint).
+    //
+    float t[3] = { 0.0f, 0.0f, -10.0f };
+    Mtranslation(M, t);
+  }
+
+  // ok, at this point our matrix M should exactly match the results
+  // of the glGet(MODELVIEW) that we printed out in the call to
+  // setViewpoint above.
+  //
+  //cout << "VrmlScene::render():match:" << endl;
+  //float tmp[16];
+  //matrix_to_glmatrix(M, tmp);
+  //for(int i=0; i<4; i++) {
+  //for(int j=0; j<4; j++)
+  //cout << tmp[i+j*4] << " ";
+  //cout << endl;
+  //}
+  //cout << endl;
+
+  // the user can navigate away from the viewpoint. that part is
+  // handled entirely by the viewer.
+  //
+  double UN[4][4];
+  viewer->getUserNavigation(UN);
+  double M_tmp[4][4];
+  Mcopy(M_tmp, M);
+  //MM(M, M_tmp, UN);
+  MM(M, UN, M_tmp);
+
+  // ok: at this point our calculated modelview transform should exactly
+  // match what we get at ViewerOpenGL::beginObject(). print it out and
+  // see...
+  //
+  //cout << "VrmlScene::render():mv match:" << endl;
+  //float tmp[16];
+  //matrix_to_glmatrix(M, tmp);
+  //for(int i=0; i<4; i++) {
+  //for(int j=0; j<4; j++)
+  //cout << tmp[i+j*4] << " ";
+  //cout << endl;
+  //}
+  //cout << endl;
+
+  VrmlRenderContext rc(VrmlBVolume::BV_PARTIAL, M);
+  rc.setDrawBSpheres(true);
 
   // Set background.
-
   VrmlNodeBackground *bg = bindableBackgroundTop();
   if (bg)
     { // Should be transformed by the accumulated rotations above ...
@@ -818,60 +937,33 @@ void VrmlScene::render(Viewer *viewer)
   VrmlNodeFog *f = bindableFogTop();
   if (f)
     {
-      viewer->setFog(f->color(), f->visibilityRange(), f->fogType().c_str());
+      viewer->setFog(f->color(), f->visibilityRange(), f->fogType());
     }
 
-  // Top level object
-  
-    viewer->beginObject(0);
-  //
-  // Hack alert: Right now the rendering code uses the old-style
-  // set/unset Transform code, but the culling code accumulates the
-  // modelview matrix on the core side using modifications to
-  // VrmlTransform and the new VrmlRenderContext class.
-  //
-  // However, that means we need to jump through some hoops to make
-  // sure that the new modelview transform code exactly shadows the
-  // old code.
-  //
-  VrmlMatrix MV; // the modelview transform
-  if(vp)
+  // Activate the headlight.
+  // ambient is supposed to be 0 according to the spec...
+  if ( headlightOn() )
   {
-   VrmlMatrix IM,NMAT;
-   vp->inverseTransform(IM);   // put back nested viewpoint. skb
-   viewer->MatrixMultiply(IM.get());
-   vp->getInverseMatrix(MV);
-   viewer->getUserNavigation(NMAT);
-   MV = MV.multLeft(NMAT);
-   MV = MV.multLeft(IM);
-  }
-  else
-  {
-    // if there's no viewpoint, then set us up arbitrarily at 0,0,-10,
-    // as indicated in the vrml spec (section 6.53 Viewpoint).
-    //
-    float t[3] = { 0.0f, 0.0f, -10.0f };
-    VrmlMatrix NMAT;
-    MV.setTranslate(t);
-    viewer->getUserNavigation(NMAT);
-    MV = MV.multLeft(NMAT);
-  }     
+    float rgb[3] = { 1.0, 1.0, 1.0 };
+    float xyz[3] = { 0.0, 0.0, -1.0 };
+    float ambient = 0.3;
 
-  VrmlRenderContext rc(VrmlBVolume::BV_PARTIAL, MV);
-  rc.setDrawBSpheres(true);
+    viewer->insertDirLight( ambient, 1.0, rgb, xyz );
+  }
+
+  // Top level object
+  //viewer->beginObject(0);
 
   // Do the scene-level lights (Points and Spots)
-  std::list<VrmlNode *>::iterator li, end = this->d_scopedLights.end();
-  for (li = this->d_scopedLights.begin(); li != end; ++li)
+  VrmlNodeList::iterator li, end = d_scopedLights->end();
+  for (li = d_scopedLights->begin(); li != end; ++li)
     {
       VrmlNodeLight* x = (*li)->toLight();
       if (x) x->renderScoped( viewer );
     }
 
-  // Render the nodes
-  for (size_t i = 0; i < this->nodes.getLength(); ++i) {
-      this->nodes.getElement(i)->render(viewer, rc);
-  }
+  // Render the top level group
+  d_nodes.render( viewer, rc );
 
   viewer->endObject();
 
@@ -892,25 +984,37 @@ void VrmlScene::render(Viewer *viewer)
 //  (not just the top).
 //
 
-const VrmlNodePtr VrmlScene::bindableTop(const BindStack & stack) {
-    return stack.empty() ? VrmlNodePtr(0) : stack.front();
+const VrmlNodePtr VrmlScene::bindableTop(BindStack stack) {
+    return (stack == 0 || stack->empty()) ? VrmlNodePtr(0) : stack->front();
 }
 
-void VrmlScene::bindablePush(BindStack & stack, const VrmlNodePtr & node) {
-    bindableRemove( stack, node ); // Remove any existing reference
-    stack.push_front(node);
-    setModified();
+void VrmlScene::bindablePush(BindStack stack, const VrmlNodePtr & node) {
+  bindableRemove( stack, node ); // Remove any existing reference
+  stack->push_front(node);
+  setModified();
 }
 
-void VrmlScene::bindableRemove(BindStack & stack, const VrmlNodePtr & node) {
-    for (std::list<VrmlNodePtr>::iterator i(stack.begin());
-            i != stack.end(); ++i) {
-        if ( *i == node ) {
-            stack.erase( i );
-            setModified();
-            break;
-        }
+void VrmlScene::bindableRemove(BindStack stack, const VrmlNodePtr & node) {
+  if (stack)
+    {
+      VrmlNodeList::iterator i;
+
+      for (i = stack->begin(); i != stack->end(); ++i )
+	if ( *i == node )
+	  {
+	    stack->erase( i );
+	    setModified();
+	    break;
+	  }
     }
+}
+
+
+// Remove all entries from the stack
+
+void VrmlScene::bindableRemoveAll( BindStack stack )
+{
+  stack->erase(stack->begin(), stack->end());
 }
 
 
@@ -928,20 +1032,22 @@ void VrmlScene::bindableRemove(BindStack & stack, const VrmlNodePtr & node) {
 
 // Background
 
-void VrmlScene::addBackground(VrmlNodeBackground & node) {
-    this->d_backgrounds.push_back(&node);
+void VrmlScene::addBackground(VrmlNodeBackground * node) {
+    this->d_backgrounds->push_back(VrmlNodePtr(node));
 }
 
-void VrmlScene::removeBackground(VrmlNodeBackground & node) {
-    this->d_backgrounds.remove(&node);
+void VrmlScene::removeBackground(VrmlNodeBackground * node) {
+    this->d_backgrounds->remove(VrmlNodePtr(node));
 }
 
-VrmlNodeBackground *VrmlScene::bindableBackgroundTop() {
-    VrmlNode * const b = bindableTop(d_backgroundStack).get();
-    return b ? b->toBackground() : 0;
+VrmlNodeBackground *VrmlScene::bindableBackgroundTop()
+{
+  VrmlNode * const b = bindableTop(d_backgroundStack).get();
+  return b ? b->toBackground() : 0;
 }
 
-void VrmlScene::bindablePush(VrmlNodeBackground * n) {
+void VrmlScene::bindablePush( VrmlNodeBackground *n )
+{
     bindablePush(d_backgroundStack, VrmlNodePtr(n));
 }
 
@@ -952,12 +1058,14 @@ void VrmlScene::bindableRemove( VrmlNodeBackground *n )
 
 // Fog
 
-void VrmlScene::addFog(VrmlNodeFog & n) {
-    this->d_fogs.push_back(&n);
+void VrmlScene::addFog( VrmlNodeFog *n )
+{
+    d_fogs->push_back(VrmlNodePtr(n));
 }
 
-void VrmlScene::removeFog(VrmlNodeFog & n) {
-    this->d_fogs.remove(&n);
+void VrmlScene::removeFog( VrmlNodeFog *n )
+{
+    d_fogs->remove(VrmlNodePtr(n));
 }
 
 VrmlNodeFog *VrmlScene::bindableFogTop()
@@ -977,12 +1085,14 @@ void VrmlScene::bindableRemove( VrmlNodeFog *n )
 }
 
 // NavigationInfo
-void VrmlScene::addNavigationInfo(VrmlNodeNavigationInfo & n) {
-    this->d_navigationInfos.push_back(&n);
+void VrmlScene::addNavigationInfo( VrmlNodeNavigationInfo *n )
+{
+    d_navigationInfos->push_back(VrmlNodePtr(n));
 }
 
-void VrmlScene::removeNavigationInfo(VrmlNodeNavigationInfo & n) {
-    this->d_navigationInfos.remove(&n);
+void VrmlScene::removeNavigationInfo( VrmlNodeNavigationInfo *n )
+{
+    d_navigationInfos->remove(VrmlNodePtr(n));
 }
 
 VrmlNodeNavigationInfo *VrmlScene::bindableNavigationInfoTop()
@@ -1002,12 +1112,14 @@ void VrmlScene::bindableRemove( VrmlNodeNavigationInfo *n )
 }
 
 // Viewpoint
-void VrmlScene::addViewpoint(VrmlNodeViewpoint & n) {
-    this->d_viewpoints.push_back(&n);
+void VrmlScene::addViewpoint( VrmlNodeViewpoint *n )
+{
+    d_viewpoints->push_back(VrmlNodePtr(n));
 }
 
-void VrmlScene::removeViewpoint(VrmlNodeViewpoint & n) {
-    this->d_viewpoints.remove(&n);
+void VrmlScene::removeViewpoint( VrmlNodeViewpoint *n )
+{
+    d_viewpoints->remove(VrmlNodePtr(n));
 }
 
 VrmlNodeViewpoint *VrmlScene::bindableViewpointTop()
@@ -1033,13 +1145,13 @@ void VrmlScene::bindableRemove( VrmlNodeViewpoint *n )
 void VrmlScene::nextViewpoint()
 {
   VrmlNodeViewpoint *vp = bindableViewpointTop();
-  std::list<VrmlNode *>::iterator i;
+  VrmlNodeList::iterator i;
 
-  for (i = d_viewpoints.begin(); i != d_viewpoints.end(); ++i )
-    if (*i == vp)
+  for (i = d_viewpoints->begin(); i != d_viewpoints->end(); ++i )
+    if (i->get() == vp)
       {
-	if (++i == d_viewpoints.end())
-	  i = d_viewpoints.begin();
+	if (++i == d_viewpoints->end())
+	  i = d_viewpoints->begin();
 
 	VrmlSFBool flag(true);
 	if ((*i) && (vp = (*i)->toViewpoint()) != 0)
@@ -1053,13 +1165,13 @@ void VrmlScene::nextViewpoint()
 void VrmlScene::prevViewpoint()
 {
   VrmlNodeViewpoint *vp = bindableViewpointTop();
-  std::list<VrmlNode *>::iterator i;
+  VrmlNodeList::iterator i;
 
-  for (i = d_viewpoints.begin(); i != d_viewpoints.end(); ++i )
-    if (*i == vp)
+  for (i = d_viewpoints->begin(); i != d_viewpoints->end(); ++i )
+    if (i->get() == vp)
       {
-	if (i == d_viewpoints.begin())
-	  i = d_viewpoints.end();
+	if (i == d_viewpoints->begin())
+	  i = d_viewpoints->end();
 
 	VrmlSFBool flag(true);
 	if ( *(--i) && (vp = (*i)->toViewpoint()) != 0 )
@@ -1069,43 +1181,45 @@ void VrmlScene::prevViewpoint()
       }
 }
 
-int VrmlScene::nViewpoints() { return d_viewpoints.size(); }
+int VrmlScene::nViewpoints() { return d_viewpoints->size(); }
 
-void VrmlScene::getViewpoint(const size_t nvp, std::string & name,
-                             std::string & description) {
-    std::list<VrmlNode *>::const_iterator i = this->d_viewpoints.begin();
-    size_t n = 0;
-    for (; i != this->d_viewpoints.end(); ++i, ++n ) {
-        if (n == nvp) {
-            name = (*i)->getId();
-            description = (*i)->toViewpoint()->description();
-            return;
-        }
-    }
+void VrmlScene::getViewpoint(int nvp, const char **namep, const char **descriptionp)
+{
+  VrmlNodeList::iterator i;
+  int n;
+
+  *namep = *descriptionp = 0;
+  for (i = d_viewpoints->begin(), n=0; i != d_viewpoints->end(); ++i, ++n )
+    if (n == nvp)
+      {
+	*namep = (*i)->name();
+	*descriptionp = (*i)->toViewpoint()->description();
+	return;
+      }
 }
 
-void VrmlScene::setViewpoint(const std::string & name,
-                             const std::string & description) {
-    std::list<VrmlNode *>::iterator i = this->d_viewpoints.begin();
-    for (; i != this->d_viewpoints.end(); ++i) {
-        if (name == (*i)->getId()
-                && description == (*i)->toViewpoint()->description()) {
-            VrmlNodeViewpoint * vp;
-            VrmlSFBool flag(true);
-            if ((vp = (*i)->toViewpoint()) != 0) {
-                vp->eventIn(theSystem->time(), "set_bind", flag);
-            }
-            return;
-        }
-    }
+void VrmlScene::setViewpoint(const char *name, const char *description)
+{
+  VrmlNodeList::iterator i;
+
+  for (i = d_viewpoints->begin(); i != d_viewpoints->end(); ++i)
+    if (strcmp(name, (*i)->name()) == 0 &&
+	strcmp(description, (*i)->toViewpoint()->description()) == 0)
+      {
+	VrmlNodeViewpoint *vp;
+	VrmlSFBool flag(true);
+	if ((vp = (*i)->toViewpoint()) != 0)
+	  vp->eventIn(theSystem->time(), "set_bind", flag);
+	return;
+      }
 }
 
 void VrmlScene::setViewpoint(int nvp)
 {
-  std::list<VrmlNode *>::iterator i;
+  VrmlNodeList::iterator i;
   int j = 0;
 
-  for (i = d_viewpoints.begin(); i != d_viewpoints.end(); ++i) {
+  for (i = d_viewpoints->begin(); i != d_viewpoints->end(); ++i) {
     if (j == nvp)
       {
 	VrmlNodeViewpoint *vp;
@@ -1125,70 +1239,76 @@ void VrmlScene::setViewpoint(int nvp)
 
 // Scene-level distance-scoped lights
 
-void VrmlScene::addScopedLight(VrmlNodeLight & light) {
-    this->d_scopedLights.push_back(&light);
+void VrmlScene::addScopedLight( VrmlNodeLight *light )
+{
+    d_scopedLights->push_back(VrmlNodePtr(light));
 }
 
-void VrmlScene::removeScopedLight(VrmlNodeLight & light) {
-    this->d_scopedLights.remove(&light);
+void VrmlScene::removeScopedLight( VrmlNodeLight *light )
+{
+    d_scopedLights->remove(VrmlNodePtr(light));
 }
 
 
 // Movies
 
-void VrmlScene::addMovie(VrmlNodeMovieTexture & movie) {
-    this->d_movies.push_back(&movie);
+void VrmlScene::addMovie( VrmlNodeMovieTexture *movie )
+{
+    d_movies->push_back(VrmlNodePtr(movie));
 }
 
-void VrmlScene::removeMovie(VrmlNodeMovieTexture & movie) {
-    this->d_movies.remove(&movie);
+void VrmlScene::removeMovie( VrmlNodeMovieTexture *movie )
+{
+    d_movies->remove(VrmlNodePtr(movie));
 }
 
 // Scripts
 
-void VrmlScene::addScript(VrmlNodeScript & script) {
-    this->d_scripts.push_back(&script);
+void VrmlScene::addScript( VrmlNodeScript *script )
+{
+    d_scripts->push_back(VrmlNodePtr(script));
 }
 
-void VrmlScene::removeScript(VrmlNodeScript & script) {
-    this->d_scripts.remove(&script);
+void VrmlScene::removeScript( VrmlNodeScript *script )
+{
+    d_scripts->remove(VrmlNodePtr(script));
 }
 
 // TimeSensors
 
-void VrmlScene::addTimeSensor(VrmlNodeTimeSensor & timer) {
-    this->d_timers.push_back(&timer);
+void VrmlScene::addTimeSensor( VrmlNodeTimeSensor *timer )
+{
+    d_timers->push_back(VrmlNodePtr(timer));
 }
 
-void VrmlScene::removeTimeSensor(VrmlNodeTimeSensor & timer) {
-    this->d_timers.remove(&timer);
+void VrmlScene::removeTimeSensor( VrmlNodeTimeSensor *timer )
+{
+    d_timers->remove(VrmlNodePtr(timer));
 }
 
 
 // AudioClips
 
-void VrmlScene::addAudioClip(VrmlNodeAudioClip & audio_clip) {
-    this->d_audioClips.push_back(&audio_clip);
+void VrmlScene::addAudioClip( VrmlNodeAudioClip *audio_clip )
+{
+    d_audioClips->push_back(VrmlNodePtr(audio_clip));
 }
 
-void VrmlScene::removeAudioClip(VrmlNodeAudioClip & audio_clip) {
-    this->d_audioClips.remove(&audio_clip);
+void VrmlScene::removeAudioClip( VrmlNodeAudioClip *audio_clip )
+{
+    d_audioClips->remove(VrmlNodePtr(audio_clip));
 }
 
 
-/**
- * Propagate the bvolume dirty flag from children to ancestors. The
- * invariant is that if a node's bounding volume is out of date,
- * then the bounding volumes of all that nodes's ancestors must be
- * out of date. However, VrmlNode does not maintain a parent
- * pointer. So we must do a traversal of the entire scene graph to
- * do the propagation.
- *
- * @see VrmlNode::setBVolumeDirty
- * @see VrmlNode::isBVolumeDirty
- */
 void VrmlScene::updateFlags()
 {
-//  VrmlNode* root = this->getRoot();
-//  root->updateModified(0x002);
+  //cout << "VrmlScene::updateFlags()" << endl;
+  VrmlNode* root = this->getRoot();
+  root->updateModified(0x002);
+}
+
+
+VrmlNode* VrmlScene::getRoot()
+{
+  return &d_nodes;
 }

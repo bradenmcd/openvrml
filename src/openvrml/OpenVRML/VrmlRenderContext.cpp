@@ -29,15 +29,15 @@
 VrmlRenderContext::VrmlRenderContext()
 {
   cull_flag = VrmlBVolume::BV_PARTIAL;
-  M = (VrmlMatrix *)0;
+  M = (MatrixPtr)0;
   draw_bspheres = false;
 }
 
 
-VrmlRenderContext::VrmlRenderContext(int acull_flag, VrmlMatrix & aM)
+VrmlRenderContext::VrmlRenderContext(int acull_flag, double aM[4][4])
 {
   cull_flag = acull_flag;
-  M = &aM;
+  M = aM;
   draw_bspheres = false;
 }
 
@@ -70,17 +70,17 @@ VrmlRenderContext::setCullFlag(int f)
 
 
 void
-VrmlRenderContext::setMatrix(VrmlMatrix & aM)
+VrmlRenderContext::setMatrix(double aM[4][4])
 {
-  M = &aM;
+  M = aM;
 }
 
-const VrmlMatrix&
-VrmlRenderContext::getMatrix()const 
-{
-  return *(this->M);
-}
 
+VrmlRenderContext::MatrixPtr
+VrmlRenderContext::getMatrix()
+{
+  return M;
+}
 
 bool
 VrmlRenderContext::getDrawBSpheres()

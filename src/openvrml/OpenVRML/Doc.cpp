@@ -42,17 +42,19 @@
 #include "doc2.hpp"
 #include "System.h"
 
-Doc::Doc(const std::string & url, Doc const * relative): d_url(0), d_ostream(0),
-        d_fp(0), d_gz(0), d_tmpfile(0) {
-    if (url.length() > 0) {
-        this->seturl(url.c_str(), relative);
+Doc::Doc(char const * url, Doc const * relative)
+  : d_url(0), d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0)
+{
+    if (url) {
+        seturl(url, relative);
     }
 }
 
-Doc::Doc(const std::string & url, const Doc2 * relative): d_url(0),
-        d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0) {
-    if (url.length() > 0) {
-        this->seturl(url.c_str(), relative);
+Doc::Doc(char const * url, Doc2 const * relative)
+  : d_url(0), d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0)
+{
+    if (url) {
+        seturl(url, relative);
     }
 }
 
@@ -107,7 +109,7 @@ void Doc::seturl(char const * url, Doc const * relative)
       d_url = new char[strlen(path) + strlen(url) + 1];
       strcpy(d_url, path);
 
-      if (strlen(url)>2 && url[0] == '.' && url[1] == '/')
+      if (strlen(url)>2 && url[0] == '.' && url[1] == SLASH)
         strcat(d_url, url+2); // skip "./"
       else
         strcat(d_url, url);
@@ -136,7 +138,7 @@ void Doc::seturl(char const * url, Doc2 const * relative)
       d_url = new char[strlen(path) + strlen(url) + 1];
       strcpy(d_url, path);
 
-      if (strlen(url)>2 && url[0] == '.' && url[1] == '/')
+      if (strlen(url)>2 && url[0] == '.' && url[1] == SLASH)
         strcat(d_url, url+2); // skip "./"
       else
         strcat(d_url, url);
@@ -156,9 +158,9 @@ char const * Doc::urlBase() const
   char *p, *s = path;
   strncpy(path, d_url, sizeof(path)-1);
   path[sizeof(path)-1] = '\0';
-  if ((p = strrchr(s, '/')) != 0)
+  if ((p = strrchr(s, SLASH)) != 0)
     s = p+1;
-  else if ((p = strchr(s, ':')) != 0)
+  else if ((p = strchr(s, COLON)) != 0)
     s = p+1;
 
   if ((p = strrchr(s, '.')) != 0)
@@ -193,7 +195,7 @@ char const * Doc::urlPath() const
 
   strcpy(path, d_url);
   char *slash;
-  if ((slash = strrchr(path, '/')) != 0)
+  if ((slash = strrchr(path, SLASH)) != 0)
     *(slash+1) = '\0';
   else
     path[0] = '\0';
@@ -222,7 +224,7 @@ char const * Doc::urlProtocol() const
 	  protocol[i] = tolower(*s);
 	}
       protocol[sizeof(protocol)-1] = '\0';
-      if (*s == ':')
+      if (*s == COLON)
 	return protocol;
     }
     
@@ -248,7 +250,7 @@ char const * Doc::localPath()
   static char buf[1024];
   if (filename(buf, sizeof(buf)))
     {
-      char *s = strrchr(buf, '/');
+      char *s = strrchr(buf, SLASH);
       if (s) *(s+1) = '\0';
       return &buf[0];
     }
@@ -266,7 +268,7 @@ const char *Doc::stripProtocol(const char *url)
   // strip off protocol if any
   while (*s && isalpha(*s)) ++s;
 
-  if (*s == ':')
+  if (*s == COLON)
     return s + 1;
 
   return url;
@@ -382,15 +384,15 @@ char* Doc::convertCommonToMacPath( char *fn, int nfn )
 
   int macfnpos = 0;
   for ( int i = 3; i < nfn; i++ ) {
-    if ( fn[i] == '/' ) {
-      macfn[macfnpos] = ':';
+    if ( fn[i] == SLASH ) {
+      macfn[macfnpos] = COLON;
       macfnpos++;
     }
     else {
       if ( fn[i] == '.' ) {
          if ( (i+2 < nfn) && (fn[i+1] == '.') && (fn[i+2] == '/') ) {
            // replace "../" with an extra :
-           macfn[macfnpos] = ':';
+           macfn[macfnpos] = COLON;
            macfnpos++;
            i=i+2;
         }
@@ -506,5 +508,5 @@ ostream &Doc::outputStream()
 bool Doc::isAbsolute(const char *url)
 {
   const char *s = stripProtocol(url);
-  return ( *s == '/' || *(s+1) == ':' );
+  return ( *s == SLASH || *(s+1) == ':' );
 }

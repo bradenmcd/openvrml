@@ -25,10 +25,10 @@
 # include <algorithm>
 # include <numeric>
 # include <assert.h>
+# include <string.h>
 # include "field.h"
 # include "private.h"
-
-using namespace OpenVRML_;
+//# include "MathUtils.h"
 
 namespace {
     ::ostream & mffprint(::ostream &, float const * c, int n, int eltsize);
@@ -240,15 +240,6 @@ VrmlField::VrmlFieldType VrmlField::fieldType(const char * fieldTypeId) {
     
     return NO_FIELD;
 }
-
-const char* VrmlField::getFieldName(const VrmlFieldType fieldType) {
-  int ft = (int) fieldType;
-  if ((ft > 0) && (ft <= (int) VrmlField::MFVEC3F))
-    return ftn[ft];
-  else
-    return "<invalid field type>";
-}
-
 
 /**
  * @brief Get the type name of a field.
@@ -1446,44 +1437,61 @@ const VrmlSFRotation VrmlSFRotation::slerp(const VrmlSFRotation & destRotation,
 
 /**
  * @class VrmlSFString
- *
  * @brief Encapsulates an SFString.
  */
 
 /**
- * @brief Constructor.
- *
- * @param value
+ * @brief Constructor
+ * @param s a C-style string
  */
-VrmlSFString::VrmlSFString(const std::string & value): value(value) {}
+VrmlSFString::VrmlSFString(const char *s)
+{ if (s) { d_s = new char[strlen(s)+1]; strcpy(d_s,s); } else d_s = 0; }
+
+/**
+ * @brief Copy constructor.
+ * @param sfs the VrmlSFString to copy
+ */
+VrmlSFString::VrmlSFString(const VrmlSFString &sfs)
+{
+  const char *s = sfs.get();
+  if (s) { d_s = new char[strlen(s)+1]; strcpy(d_s,s); } else d_s = 0; 
+}
 
 /**
  * @brief Destructor.
  */
-VrmlSFString::~VrmlSFString() {}
+VrmlSFString::~VrmlSFString() { if (d_s) delete [] d_s; }
 
 /**
  * @brief Get value.
- *
- * @return a string
+ * @return a C-style string
  */
-const std::string & VrmlSFString::get() const {
-    return this->value;
+const char * VrmlSFString::get() const {
+    return this->d_s;
 }
 
 /**
  * @brief Set value.
- *
- * @param value
+ * @param s a C-style string
  */
-void VrmlSFString::set(const std::string & value) {
-    this->value = value;
+void VrmlSFString::set(const char *s)
+{
+  if (d_s) delete [] d_s;
+  if (s) { d_s = new char[strlen(s)+1]; strcpy(d_s,s); }
+  else d_s = 0;
 }
 
-ostream& VrmlSFString::print(ostream& os) const
-{ return (os << '\"' << this->value.c_str() << '\"'); }
+/**
+ * @brief Assignment.
+ * @param rhs value to assign to this object
+ */
+VrmlSFString& VrmlSFString::operator=(const VrmlSFString& rhs)
+{ if (this != &rhs) set(rhs.d_s); return *this; }
 
-VrmlField *VrmlSFString::clone() const { return new VrmlSFString(*this); }
+ostream& VrmlSFString::print(ostream& os) const
+{ return (os << '\"' << d_s << '\"'); }
+
+VrmlField *VrmlSFString::clone() const { return new VrmlSFString(d_s); }
 
 VrmlField::VrmlFieldType VrmlSFString::fieldType() const { return SFSTRING; }
 
@@ -2123,29 +2131,6 @@ void VrmlMFColor::setLength(size_t length) {
     this->d_data = newData;
 }
 
-void VrmlMFColor::insertElement(size_t index, const float value[3])
-{
-  FData* newData;
-
-  newData = new FData(d_data->d_n + 3);
-  memcpy(newData->d_v, d_data->d_v, 3 * index * sizeof(float));
-  memcpy(newData->d_v + 3 * index, value, 3 * sizeof(float));
-  memcpy(newData->d_v + 3 * (index + 1), d_data->d_v + 3 * index, 
-	 (d_data->d_n - 3 * index) * sizeof(float));
-  d_data->deref();
-  d_data = newData;
-}
-
-void VrmlMFColor::removeElement(size_t index)
-{
-  if (3 * index < d_data->d_n)
-  {
-    d_data->d_n -= 3;
-    memcpy(d_data->d_v + 3 * index, d_data->d_v + 3 * (index + 1), 
-	   (d_data->d_n - 3 * index) * sizeof(float));
-  }	
-}
-
 VrmlField *VrmlMFColor::clone() const { return new VrmlMFColor(*this); }
 
 VrmlField::VrmlFieldType VrmlMFColor::fieldType() const { return MFCOLOR; }
@@ -2281,29 +2266,6 @@ void VrmlMFFloat::setLength(size_t length) {
     }
     this->d_data->deref();
     this->d_data = newData;
-}
-
-void VrmlMFFloat::insertElement(size_t index, float value)
-{
-  FData* newData;
-
-  newData = new FData(d_data->d_n + 1);
-  memcpy(newData->d_v, d_data->d_v, index * sizeof(float));
-  newData->d_v[index] = value;
-  memcpy(newData->d_v + (index + 1), d_data->d_v + index, 
-	 (d_data->d_n - index) * sizeof(float));
-  d_data->deref();
-  d_data = newData;
-}
-
-void VrmlMFFloat::removeElement(size_t index)
-{
-  if (index < d_data->d_n)
-  {
-    d_data->d_n--;
-    memcpy(d_data->d_v + index, d_data->d_v + (index + 1), 
-	   (d_data->d_n - index) * sizeof(float));
-  }	
 }
 
 VrmlField *VrmlMFFloat::clone() const	{ return new VrmlMFFloat(*this); }
@@ -2443,29 +2405,6 @@ void VrmlMFInt32::setLength(size_t length) {
     this->d_data = newData;
 }
 
-void VrmlMFInt32::insertElement(size_t index, long value)
-{
-  IData* newData;
-
-  newData = new IData(d_data->d_n + 1);
-  memcpy(newData->d_v, d_data->d_v, index * sizeof(long));
-  newData->d_v[index] = value;
-  memcpy(newData->d_v + (index + 1), d_data->d_v + index, 
-	 (d_data->d_n - index) * sizeof(long));
-  d_data->deref();
-  d_data = newData;
-}
-
-void VrmlMFInt32::removeElement(size_t index)
-{
-  if (index < d_data->d_n)
-  {
-    (d_data->d_n)--;
-    memcpy(d_data->d_v + index, d_data->d_v + (index + 1), 
-	   (d_data->d_n - index) * sizeof(int));
-  }
-}
-
 VrmlField * VrmlMFInt32::clone() const { return new VrmlMFInt32(*this); }
 
 VrmlField::VrmlFieldType VrmlMFInt32::fieldType() const { return MFINT32; }
@@ -2507,17 +2446,66 @@ ostream& VrmlMFInt32::print(ostream& os) const
  * @param length the length of the array
  * @param nodes a pointer to an array of VrmlNode pointers
  */
-VrmlMFNode::VrmlMFNode(const size_t length, const VrmlNodePtr * nodes):
-        nodes(length) {
+VrmlMFNode::VrmlMFNode(size_t length, const VrmlNodePtr * nodes):
+        nodes(length ? new VrmlNodePtr[length] : 0), allocated(length),
+        size(length) {
     if (nodes) {
-        std::copy(nodes, nodes + length, this->nodes.begin());
+        std::copy(nodes, nodes + length, this->nodes);
+    } else {
+        std::fill(this->nodes, this->nodes + length, VrmlNodePtr(0));
     }
+}
+
+/**
+ * @brief Copy constructor.
+ *
+ * @param mfNode the object to copy
+ */
+VrmlMFNode::VrmlMFNode(const VrmlMFNode & mfnode):
+        nodes(new VrmlNodePtr[mfnode.size]), allocated(mfnode.size),
+        size(mfnode.size) {
+    std::copy(mfnode.nodes, mfnode.nodes + this->size, this->nodes);
 }
 
 /**
  * @brief Destructor.
  */
-VrmlMFNode::~VrmlMFNode() {}
+VrmlMFNode::~VrmlMFNode() {
+    delete [] this->nodes;
+}
+
+/**
+ * @brief Assignment operator.
+ *
+ * @param mfNode the object to copy into this one
+ * @return this object
+ */
+VrmlMFNode & VrmlMFNode::operator=(const VrmlMFNode & mfnode) {
+    if (this != &mfnode) {
+        //
+        // We really only need to reallocate if the argument MFNode has
+        // more values than we have allocated space to hold here.
+        //
+        if (this->allocated < mfnode.size) {
+            delete [] this->nodes;
+            this->nodes = new VrmlNodePtr[this->allocated = mfnode.size];
+        }
+        
+        std::copy(mfnode.nodes, mfnode.nodes + mfnode.size, this->nodes);
+        
+        //
+        // If the current length is greater than the argument length,
+        // set the spare values to null.
+        //
+        if (this->size > mfnode.size) {
+            std::fill(this->nodes + this->size, this->nodes + mfnode.size,
+                      VrmlNodePtr(0));
+        }
+        this->size = mfnode.size;
+    }
+    
+    return *this;
+}
 
 /**
  * @brief Get element.
@@ -2525,17 +2513,8 @@ VrmlMFNode::~VrmlMFNode() {}
  * @param index
  * @return a smart pointer to a VrmlNode
  */
-const VrmlNodePtr & VrmlMFNode::getElement(const size_t index) const throw () {
-    assert(index < this->nodes.size());
+const VrmlNodePtr & VrmlMFNode::getElement(size_t index) const {
     return this->nodes[index];
-}
-
-/**
- * @brief Remove all elements.
- */
-void VrmlMFNode::clear()
-{
-    this->setLength(0);
 }
 
 /**
@@ -2544,8 +2523,7 @@ void VrmlMFNode::clear()
  * @param index
  * @param node
  */
-void VrmlMFNode::setElement(const size_t index, const VrmlNodePtr & node) {
-    assert(index < this->nodes.size());
+void VrmlMFNode::setElement(size_t index, const VrmlNodePtr & node) {
     this->nodes[index] = node;
 }
 
@@ -2554,8 +2532,8 @@ void VrmlMFNode::setElement(const size_t index, const VrmlNodePtr & node) {
  *
  * @return the number of nodes in the array
  */
-size_t VrmlMFNode::getLength() const throw () {
-    return this->nodes.size();
+size_t VrmlMFNode::getLength() const {
+    return this->size;
 }
 
 /**
@@ -2563,13 +2541,34 @@ size_t VrmlMFNode::getLength() const throw () {
  *
  * Set the length of the node array. If the new length is less than the
  * current length, the array is truncated. If the length is greater than
- * the current length, the new positions at the end of the array are filled
- * with null VrmlNodePtrs.
+ * the current length, the new positions at the end of the array are set
+ * to NULL.
  *
  * @param length the new length
  */
-void VrmlMFNode::setLength(const size_t length) {
-    this->nodes.resize(length);
+void VrmlMFNode::setLength(size_t length) {
+    if (length < this->size) {
+        std::fill(this->nodes + length, this->nodes + this->size,
+                  VrmlNodePtr(0));
+    } else {
+        if (length > this->allocated) {
+            this->realloc(length);
+        }
+        if (length > this->size) {
+            std::fill(this->nodes + this->size, this->nodes + length,
+                      VrmlNodePtr(0));
+        }
+    }
+    this->size = length;
+}
+
+void VrmlMFNode::realloc(size_t newSize) {
+    assert(newSize > this->allocated);
+    VrmlNodePtr * newNodes = new VrmlNodePtr[newSize];
+    std::copy(this->nodes, this->nodes + this->size, newNodes);
+    delete [] this->nodes;
+    this->nodes = newNodes;
+    this->allocated = newSize;
 }
 
 /**
@@ -2578,9 +2577,8 @@ void VrmlMFNode::setLength(const size_t length) {
  * @param node
  */
 bool VrmlMFNode::exists(const VrmlNode & node) const {
-    for (std::vector<VrmlNodePtr>::const_iterator i(this->nodes.begin());
-            i != this->nodes.end(); ++i) {
-        if (i->get() == &node) {
+    for (size_t i(0); i < this->size; ++i) {
+        if (this->nodes[i].get() == &node) {
             return true;
         }
     }
@@ -2595,13 +2593,17 @@ bool VrmlMFNode::exists(const VrmlNode & node) const {
  * This method will <strong>not</strong> add NULLs.
  *
  * @param node a pointer to the node to add
- *
  * @return <code>true</code> if a node was added, <code>false</code>
  *         otherwise
  */
 bool VrmlMFNode::addNode(VrmlNode & node) {
-    if (!this->exists(node)) {
-        this->nodes.push_back(VrmlNodePtr(&node));
+    if (!exists(node)) {
+        if (this->allocated < this->size + 1) {
+            this->realloc(this->allocated + 10);
+        }
+        
+        this->nodes[this->size++] = VrmlNodePtr(&node);
+        
         return true;
     }
     
@@ -2619,26 +2621,16 @@ bool VrmlMFNode::addNode(VrmlNode & node) {
  *         otherwise
  */
 bool VrmlMFNode::removeNode(const VrmlNode & node) {
-    for (std::vector<VrmlNodePtr>::iterator i(this->nodes.begin());
-            i != this->nodes.end(); ++i) {
-        if (i->get() == &node) {
-            this->nodes.erase(i);
+    for (size_t i = 0; i < this->size; ++i) {
+        if (this->nodes[i].get() == &node) {
+            for (size_t j = i; j < this->size - 1; ++j) {
+                this->nodes[j] = this->nodes[j + 1];
+            }
+	    --this->size;
 	    return true;
         }
     }
     return false;
-}
-
-void VrmlMFNode::insertElement(size_t index, const VrmlNodePtr & node)
-{
-  assert(index < this->nodes.size());
-  this->nodes.insert(this->nodes.begin() + index, node);
-}
-
-void VrmlMFNode::removeElement(size_t index)
-{
-  assert(index < this->nodes.size());
-  this->nodes.erase(this->nodes.begin() + index);
 }
 
 VrmlField *VrmlMFNode::clone() const
@@ -2647,14 +2639,13 @@ VrmlField *VrmlMFNode::clone() const
 VrmlField::VrmlFieldType VrmlMFNode::fieldType() const { return MFNODE; }
 
 ostream & VrmlMFNode::print(ostream & os) const {
-    if (this->nodes.size() != 1) {
+    if (this->size != 1) {
         os << '[';
     }
-    for (std::vector<VrmlNodePtr>::const_iterator i(this->nodes.begin());
-            i != this->nodes.end(); ++i) {
-        os << **i << endl;
+    for (size_t i = 0; i < this->size; ++i) {
+        os << *(this->nodes[i]) << endl;
     }
-    if (this->nodes.size() != 1) {
+    if (this->size != 1) {
         os << ']';
     }
     
@@ -2802,30 +2793,6 @@ void VrmlMFRotation::setLength(size_t length) {
     this->d_data = newData;
 }
 
-void VrmlMFRotation::insertElement(size_t index, const float value[3])
-{
-  FData* newData;
-
-  newData = new FData(d_data->d_n + 4);
-  memcpy(newData->d_v, d_data->d_v, 4 * index * sizeof(float));
-  memcpy(newData->d_v + 4 * index, value, 4 * sizeof(float));
-  memcpy(newData->d_v + 4 * (index + 1), d_data->d_v + 4 * index, 
-	 (d_data->d_n - 4 * index) * sizeof(float));
-  d_data->deref();
-  d_data = newData;
-  d_data->d_n++;
-}
-
-void VrmlMFRotation::removeElement(size_t index)
-{
-  if (4 * index < d_data->d_n)
-  {
-    d_data->d_n -= 4;
-    memcpy(d_data->d_v + 4 * index, d_data->d_v + 4 * (index + 1),
-	   (d_data->d_n - 4 * index) * sizeof(float));
-  }
-}
-
 VrmlField *VrmlMFRotation::clone() const { return new VrmlMFRotation(*this); }
 
 VrmlField::VrmlFieldType VrmlMFRotation::fieldType() const { return MFROTATION; }
@@ -2840,78 +2807,77 @@ ostream& VrmlMFRotation::print(ostream& os) const
  * @brief Encapsulates a MFString.
  */
 
-/**
- * @brief Constructor.
- *
- * @param length the length of the passed array
- * @param values an array of std::string
- */
-VrmlMFString::VrmlMFString(size_t length, const std::string * values):
-        values(length) {
-    if (values) {
-        std::copy(values, values + length, this->values.begin());
+VrmlMFString::VrmlMFString(size_t n, char const * const * v)
+  : d_v(n ? new char *[n] : 0), d_allocated(n), d_size(n)
+{
+    if (v) {
+        for (size_t i(0); i < n; ++i, ++v) {
+            if (*v) {
+                char * const s = new char[strlen(*v) + 1];
+                strcpy(s, *v);
+                d_v[i] = s;
+            } else {
+                d_v[i] = 0;
+            }
+        }
+    } else {
+        std::fill(d_v, d_v + n, static_cast<char *>(0));
     }
 }
 
-/**
- * @brief Destructor.
- */
-VrmlMFString::~VrmlMFString() {}
 
-/**
- * @brief Get an element of the array.
- *
- * @param index the index of the element to retrieve
- *
- * @return the array element
- */
-const std::string & VrmlMFString::getElement(size_t index) const {
-    assert(index < this->values.size());
-    return this->values[index];
-}
-
-/**
- * @brief Set an element of the array.
- *
- * @param index the index of the element to set
- * @param value the new value
- */
-void VrmlMFString::setElement(size_t index, const std::string & value) {
-    assert(index < this->values.size());
-    this->values[index] = value;
-}
-
-/**
- * @brief Get the length.
- *
- * @return the number of values in the array
- */
-size_t VrmlMFString::getLength() const {
-    return this->values.size();
-}
-
-/**
- *
- * Set the length of the vector of std::strings. If the new length is
- * greater than the current length, the new positions are filled with
- * empty std::strings.
- *
- * @param length the new length
- */
-void VrmlMFString::setLength(const size_t length) {
-  this->values.resize(length);
-}
-
-void VrmlMFString::insertElement(size_t index, const std::string & value)
+VrmlMFString::VrmlMFString(VrmlMFString const & rhs)
+  : d_v(new char *[rhs.d_size]), d_allocated(rhs.d_size), d_size(rhs.d_size)
 {
-  assert(index < this->values.size());
-  this->values.insert(this->values.begin() + index, value);
+    for (size_t i(0); i < rhs.d_size; ++i) {
+        if (rhs.d_v[i]) {
+            char * const s = new char[strlen(rhs.d_v[i])+1];
+            strcpy(s, rhs.d_v[i]);
+            d_v[i] = s;
+        } else {
+            d_v[i] = 0;
+        }
+    }
 }
 
-void VrmlMFString::removeElement(size_t index)
+VrmlMFString::~VrmlMFString()
 {
-  assert(index < this->values.size());
-  this->values.erase(this->values.begin() + index);
+    for (size_t i(0); i < d_size; ++i) {
+        delete [] d_v[i];
+    }
+    delete [] d_v;
+}
+
+void VrmlMFString::set(size_t n, char const * const v[])
+{
+    for (size_t i = 0; i < d_size; ++i) {
+        delete [] d_v[i];
+    }
+    
+    if (d_allocated < n) {
+        delete [] d_v;
+        d_v = 0;
+        d_allocated = d_size = 0;
+        d_v = new char *[n];
+        d_allocated = n;
+    }
+    d_size = n;
+    
+    for (size_t j = 0; j < n; ++j) {
+        if (v[j]) {
+            char * const s = new char[strlen(v[j]) + 1];
+            strcpy(s, v[j]);
+            d_v[j] = s;
+        } else {
+            d_v[j] = 0;
+        }
+    }
+}
+
+VrmlMFString& VrmlMFString::operator=(const VrmlMFString& rhs)
+{
+  if (this != &rhs) set( rhs.d_size, rhs.d_v );
+  return *this;
 }
 
 VrmlField *VrmlMFString::clone() const
@@ -2919,13 +2885,34 @@ VrmlField *VrmlMFString::clone() const
 
 VrmlField::VrmlFieldType VrmlMFString::fieldType() const { return MFSTRING; }
 
+size_t VrmlMFString::getLength() const
+{
+    return d_size;
+}
+
+char const * const * VrmlMFString::get() const {
+    return d_v;
+}
+
+char const * VrmlMFString::getElement(size_t index) const {
+    assert(index < this->d_size);
+    return this->d_v[index];
+}
+
+void VrmlMFString::setElement(size_t index, const char * str) {
+    delete [] this->d_v[index];
+    char * const s = new char[strlen(str) + 1];
+    strcpy(s, str);
+    this->d_v[index] = s;
+}
+
 ostream& VrmlMFString::print(ostream& os) const
 {
   int n = getLength();
 
   if (n != 1) os << '[';
   for (int i=0; i<n; ++i)
-    os << '\"' << (this->values[i]).c_str() << "\" ";
+    os << '\"' << (d_v[i]) << "\" ";
   if (n != 1) os << ']';
 
   return os;
@@ -3097,29 +3084,6 @@ void VrmlMFTime::setLength(size_t length) {
     this->d_data = newData;
 }
 
-void VrmlMFTime::insertElement(size_t index, double value)
-{
-  DData* newData;
-
-  newData = new DData(d_data->size + 1);
-  memcpy(newData->data, d_data->data, index * sizeof(double));
-  newData->data[index] = value;
-  memcpy(newData->data + (index + 1), d_data->data + index, 
-	 (d_data->size - index) * sizeof(double));
-  d_data->deref();
-  d_data = newData;
-}
-
-void VrmlMFTime::removeElement(size_t index)
-{
-  if (index < d_data->size)
-  {
-    d_data->size--;
-    memcpy(d_data->data + index, d_data->data + (index + 1), 
-	   (d_data->size - index) * sizeof(double));
-  }
-}
-
 VrmlField * VrmlMFTime::clone() const {
     return new VrmlMFTime(*this);
 }
@@ -3269,30 +3233,6 @@ void VrmlMFVec2f::setLength(size_t length) {
     this->d_data = newData;
 }
 
-void VrmlMFVec2f::insertElement(size_t index, const float data[2])
-{
-  FData* newData;
-
-  newData = new FData(d_data->d_n + 2);
-  memcpy(newData->d_v, d_data->d_v, 2 * index * sizeof(float));
-  memcpy(newData->d_v + 2 * index, data, 2 * sizeof(float));
-  memcpy(newData->d_v + 2 * (index + 1), d_data->d_v + 2 * index, 
-	 (d_data->d_n - 2 * index) * sizeof(float));
-  d_data->deref();
-  d_data = newData;
-  d_data->d_n++;
-}
-
-void VrmlMFVec2f::removeElement(size_t index)
-{
-  if (2 * index < d_data->d_n)
-  {
-    d_data->d_n -= 2;
-    memcpy(d_data->d_v + 2 * index, d_data->d_v + 2 * (index + 1), 
-	   (d_data->d_n - 2 * index) * sizeof(float));
-  }
-}
-
 VrmlField *VrmlMFVec2f::clone() const { return new VrmlMFVec2f(*this); }
 
 VrmlField::VrmlFieldType VrmlMFVec2f::fieldType() const { return MFVEC2F; }
@@ -3435,30 +3375,6 @@ void VrmlMFVec3f::setLength(size_t length) {
     }
     this->d_data->deref();
     this->d_data = newData;
-}
-
-void VrmlMFVec3f::insertElement(size_t index, const float value[3])
-{
-  FData* newData;
-
-  newData = new FData(d_data->d_n + 3);
-  memcpy(newData->d_v, d_data->d_v, 3 * index * sizeof(float));
-  memcpy(newData->d_v + 3 * index, value, 3 * sizeof(float));
-  memcpy(newData->d_v + 3 * (index + 1), d_data->d_v + 3 * index,
-	 (d_data->d_n - 3 * index) * sizeof(float));
-  d_data->deref();
-  d_data = newData;
-  d_data->d_n++;
-}
-
-void VrmlMFVec3f::removeElement(size_t index)
-{
-  if (3 * index < d_data->d_n)
-  {
-    d_data->d_n -= 3;
-    memcpy(d_data->d_v + 3 * index, d_data->d_v + 3 * (index + 1),
-	   (d_data->d_n - 3 * index) * sizeof(float));
-  }
 }
 
 VrmlField *VrmlMFVec3f::clone() const { return new VrmlMFVec3f(*this); }

@@ -34,8 +34,13 @@
 #include <wingdi.h>
 #endif
 
-# include OPENVRML_GL_H
-# include OPENVRML_GLU_H
+# if defined(__MACH__)&&defined(__APPLE__)
+#   include <OpenGL/gl.h>
+#   include <OpenGL/glu.h>
+# else
+#   include <GL/gl.h>
+#   include <GL/glu.h>
+# endif
 # include <stdio.h>		// sprintf
 # include <math.h>
 
@@ -63,7 +68,6 @@
 
 #define USE_TEXTURE_DISPLAY_LISTS 1
 
-using namespace OpenVRML::GL_;
 
 static void
 matrix_to_glmatrix(double M[4][4], float GLM[16])
@@ -95,7 +99,8 @@ matrix_to_glmatrix(double M[4][4], float GLM[16])
 //  is called from the idle function. A way to pass mouse/keyboard sensor 
 //  events back to the scene is also needed.
 
-ViewerOpenGL::ViewerOpenGL(VrmlScene & scene): Viewer(scene) {
+ViewerOpenGL::ViewerOpenGL(VrmlScene *scene) : Viewer(scene)
+{
   d_GLinitialized = false;
   d_blend = true;
   d_lit = true;
@@ -128,7 +133,6 @@ ViewerOpenGL::ViewerOpenGL(VrmlScene & scene): Viewer(scene) {
   d_translating = false;
   trackball(d_curquat, 0.0, 0.0, 0.0, 0.0);
   d_position[0] = d_position[1] = d_position[2] = 0.0;
-  d_zoom[0] = d_zoom[1] = d_zoom[2] = 0.0;
   d_target[0] = d_target[1] = d_target[2] = 0.0;
 
   d_orientation[0] = 0;
@@ -219,9 +223,9 @@ Viewer::Object ViewerOpenGL::beginObject(const char *,
       //cout << "ViewerOpenGL::beginObject():rot/trans:match" << endl;
       // Finish specifying the view (postponed to make Background easier)
       glPushMatrix();
-      glTranslatef(d_zoom[0], d_zoom[1], d_zoom[2]); // M = M * T
-      glMultMatrixf(&d_rotationMatrix[0][0]);                  // M = M * R 
-      glTranslatef(d_translatex, d_translatey, d_translatez);  // M = M * T 
+      //glLoadIdentity();
+      glMultMatrixf(&d_rotationMatrix[0][0]);                  // M = M * R
+      glTranslatef(d_translatex, d_translatey, d_translatez);  // M = M * T = (M * R) * T = R * T
       if (!d_lit) glDisable(GL_LIGHTING);
 
       //GLfloat actual_gl_mv[16];
@@ -316,21 +320,6 @@ void ViewerOpenGL::getPosition( float *x, float *y, float *z )
 
 void ViewerOpenGL::getOrientation( float *orientation )
 {
-#if 1
-
-  float modelview[4][4],mat[4][4];
-  float q[4];
-  glGetFloatv (GL_MODELVIEW_MATRIX, &modelview[0][0]);
-    for(int i=0; i<4; i++)
-    for(int j=0; j<4; j++)
-      mat[i][j] = modelview[j][i];
-  build_quaternion(mat,q);
-  quat_to_axis(q,orientation);
-  Vnorm( orientation );    
-
-#endif
-
-#if 0
   //cout << "ViewerOpenGL::getOrientation()" << endl;
   GLint viewport[4];
   GLdouble modelview[16], projection[16];
@@ -371,7 +360,6 @@ void ViewerOpenGL::getOrientation( float *orientation )
       orientation[2] = V[2];
       orientation[3] = acos( Vdot( L, Z ) );
     }
-#endif
 }
 
 
@@ -437,7 +425,7 @@ void ViewerOpenGL::getBillboardTransformMatrix(float M[4][4],
      nz[0] = x[2]; nz[1] = y[2]; nz[2] = z[2];
 // calculate the angle by which the Z axis vector of current coordinate system
 // has to be rotated around the Y axis to new coordinate system.
-     float angle = acos(nz[2]) * 180 / PI;
+     float angle = acos(nz[2])*180/M_PI;
      if(nz[0] > 0) angle = -angle;
      glPushMatrix();
      glLoadIdentity();
@@ -465,7 +453,6 @@ void ViewerOpenGL::resetUserNavigation()
 {
   d_translatex = d_translatey = d_translatez = 0.0;
   d_target[0] = d_target[1] = d_target[2] = 0.0;
-  d_zoom[0] = d_zoom[1] = d_zoom[2] = 0.0;
 
   trackball(d_curquat, 0.0, 0.0, 0.0, 0.0);
   //d_rotationChanged = true;
@@ -475,22 +462,28 @@ void ViewerOpenGL::resetUserNavigation()
   wsPostRedraw();
 }
 
-void ViewerOpenGL::getUserNavigation(VrmlMatrix& M)
+
+void ViewerOpenGL::getUserNavigation(double M[4][4])
 {
-  // The Matrix M should be an unit matrix
-  VrmlMatrix tmp,rot(d_rotationMatrix); 
+  //cout << "ViewerOpenGL::getuserNavigation()" << endl;
+
+  Midentity(M);
   float pos_vec[3];
-  pos_vec[0] = d_zoom[0];
-  pos_vec[1] = d_zoom[1];
-  pos_vec[2] = d_zoom[2];
-  tmp.setTranslate(pos_vec);
-  M = M.multLeft(tmp);
-  M = M.multLeft(rot);
   pos_vec[0] = d_translatex;
   pos_vec[1] = d_translatey;
   pos_vec[2] = d_translatez;
-  tmp.setTranslate(pos_vec);
-  M = M.multLeft(tmp);             
+  double pos_mat[4][4];
+  Mtranslation(pos_mat, pos_vec);
+  //cout << "(" << d_translatex << "," << d_translatey << "," << d_translatez << ")" << endl;
+
+  double rot_mat[4][4];
+  for(int i=0; i<4; i++) // oh good grief.
+    for(int j=0; j<4; j++)
+      rot_mat[i][j] = d_rotationMatrix[j][i];
+
+  //MM((double[4][4])M, pos_mat, rot_mat);
+  MM(M, rot_mat, pos_mat); // M = R * T
+  //Mdump(cout, M) << endl;
 }
 
 // Generate a normal from 3 indexed points.
@@ -560,10 +553,10 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
       glDisable( GL_LIGHTING );
 
       glPushMatrix();
-//      glLoadIdentity();
+      glLoadIdentity();
 
       // Undo translation
-//      glTranslatef( d_position[0], d_position[1], d_position[2] );
+      glTranslatef( d_position[0], d_position[1], d_position[2] );
 
       // Apply current view rotation
       glMultMatrixf( &d_rotationMatrix[0][0] );
@@ -572,7 +565,7 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
 
       // Sphere constants
       const int nCirc = 8;		// number of circumferential slices
-      const double cd = 2.0 * PI / nCirc;
+      const double cd = 2.0 * M_PI / nCirc;
 
       double heightAngle0, heightAngle1 = 0.0;
       const float *c0, *c1 = skyColor;
@@ -611,13 +604,13 @@ Viewer::Object ViewerOpenGL::insertBackground(size_t nGroundAngles,
 	}
 
       // Ground
-      heightAngle1 = PI;
+      heightAngle1 = M_PI;
       c1 = groundColor;
 
       for (size_t nGround=0; nGround<nGroundAngles; ++nGround)
 	{
 	  heightAngle0 = heightAngle1;
-	  heightAngle1 = PI - groundAngle[nGround];
+	  heightAngle1 = M_PI - groundAngle[nGround];
 	  c0 = c1;
 	  c1 += 3;
 
@@ -881,7 +874,6 @@ Viewer::Object ViewerOpenGL::insertBox(float x, float y, float z)
 }
 
 
-
 Viewer::Object ViewerOpenGL::insertCone(float h,
 					float r,
 					bool bottom, bool side)
@@ -944,8 +936,8 @@ Viewer::Object ViewerOpenGL::insertCone(float h,
 	  glTexCoord2f( 0.5, 0.5 );
 	  glVertex3f( 0.0, - 0.5 * h, 0.0 );
 
-	  float angle = 0.5 * PI; // First v is at max x
-	  float aincr = 2.0 * PI / (float) nfacets;
+	  float angle = 0.5 * M_PI; // First v is at max x
+	  float aincr = 2.0 * M_PI / (float) nfacets;
 	  for (int i = 0; i < nfacets; ++i, angle+=aincr )
 	    {
 	      glTexCoord2f( 0.5*(1.0+sin( angle )),
@@ -1024,8 +1016,8 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 	  glTexCoord2f( 0.5, 0.5 );
 	  glVertex3f( 0.0, - 0.5 * h, 0.0 );
 
-	  float angle = 0.5 * PI; // First v is at max x
-	  float aincr = 2.0 * PI / (float) nfacets;
+	  float angle = 0.5 * M_PI; // First v is at max x
+	  float aincr = 2.0 * M_PI / (float) nfacets;
 	  for (int i = 0; i < nfacets; ++i, angle+=aincr)
 	    {
 	      glTexCoord2f( 0.5*(1.+sin( angle )),
@@ -1045,8 +1037,8 @@ Viewer::Object ViewerOpenGL::insertCylinder(float h,
 	  glTexCoord2f( 0.5, 0.5 );
 	  glVertex3f( 0.0, 0.5 * h, 0.0 );
 
-	  float angle = 0.75 * PI;
-	  float aincr = 2.0 * PI / (float) nfacets;
+	  float angle = 0.75 * M_PI;
+	  float aincr = 2.0 * M_PI / (float) nfacets;
 	  for (int i = nfacets-1; i >= 0; --i, angle+=aincr)
 	    {
 	      glTexCoord2f( 0.5*(1.+sin( angle )),
@@ -2199,7 +2191,7 @@ Viewer::Object ViewerOpenGL::insertSpotLight( float ambient,
   glLightf(light, GL_QUADRATIC_ATTENUATION, attenuation[2]);
 
   glLightfv(light, GL_SPOT_DIRECTION, direction);
-  glLightf(light, GL_SPOT_CUTOFF, cutOffAngle * 180.0 / PI);
+  glLightf(light, GL_SPOT_CUTOFF, cutOffAngle * 180.0 / M_PI);
   // The exponential dropoff is not right/spec compliant...
   glLightf(light, GL_SPOT_EXPONENT, beamWidth < cutOffAngle ? 1.0 : 0.0);
 
@@ -2288,12 +2280,11 @@ void ViewerOpenGL::setMaterial(float ambientIntensity,
 
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
-// In OGL standard range of shininess is [0.0,128.0]
-// In VRML97 the range is [0.0,1.0] 
-  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess*128);
+  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 
-  if (diffuse[0] == 0. && diffuse[1] == 0. && diffuse[2] == 0. &&
+  if (ambientIntensity == 0. &&
+      diffuse[0] == 0. && diffuse[1] == 0. && diffuse[2] == 0. &&
       specularColor[0] == 0. && specularColor[1] == 0. && specularColor[2] == 0.)
     {
       glDisable(GL_LIGHTING);
@@ -2303,7 +2294,7 @@ void ViewerOpenGL::setMaterial(float ambientIntensity,
   else
     {
       glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emission);
-      glColor4fv( diffuse );
+      glColor4fv( emission );
     }
 }
 
@@ -2472,7 +2463,7 @@ ViewerOpenGL::insertSubTexture(size_t xoffset, size_t yoffset,
   glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
   GLubyte* texturepart=new GLubyte[w*h*nc];
-  for (size_t i = 0; i < h; i++)
+  for (int i=0;i<h;i++)
     memcpy(texturepart+i*w*nc,pixels+(i+yoffset)*whole_w*nc+xoffset*nc, w*nc);
 
   glTexImage2D( GL_TEXTURE_2D, 0, nc, w, h, 0,
@@ -2523,7 +2514,7 @@ void ViewerOpenGL::setTextureTransform(const float center[2],
   if (center) glTranslatef(-center[0], -center[1], 0.0);
   if (scale) glScalef(scale[0], scale[1], 1.0);
   if (rotation != 0.0)
-    glRotatef(rotation * 180.0 / PI, 0.0, 0.0, 1.0);
+    glRotatef(rotation * 180.0 / M_PI, 0.0, 0.0, 1.0);
 
   if (center) glTranslatef(center[0], center[1], 0.0);
   if (translation) glTranslatef(translation[0], translation[1], 0.0);
@@ -2545,7 +2536,7 @@ void ViewerOpenGL::setTransform(const float center[3],
   glTranslatef(center[0], center[1], center[2]);
 
   if (! fpzero(rotation[3]) )
-    glRotatef(rotation[3] * 180.0 / PI,
+    glRotatef(rotation[3] * 180.0 / M_PI,
 	      rotation[0],
 	      rotation[1],
 	      rotation[2]);
@@ -2555,7 +2546,7 @@ void ViewerOpenGL::setTransform(const float center[3],
       ! fpequal(scale[2], 1.0) )
     {
       if (! fpzero(scaleOrientation[3]) )
-	glRotatef(scaleOrientation[3] * 180.0 / PI,
+	glRotatef(scaleOrientation[3] * 180.0 / M_PI,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
@@ -2563,7 +2554,7 @@ void ViewerOpenGL::setTransform(const float center[3],
       glScalef(scale[0], scale[1], scale[2]);
 
       if (! fpzero(scaleOrientation[3]) )
-	glRotatef(-scaleOrientation[3] * 180.0 / PI,
+	glRotatef(-scaleOrientation[3] * 180.0 / M_PI,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
@@ -2591,7 +2582,7 @@ void ViewerOpenGL::unsetTransform(const float center[3],
       ! fpequal(scale[2], 1.0) )
     {
       if (! fpzero(scaleOrientation[3]) )
-	glRotatef(scaleOrientation[3] * 180.0 / PI,
+	glRotatef(scaleOrientation[3] * 180.0 / M_PI,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
@@ -2599,14 +2590,14 @@ void ViewerOpenGL::unsetTransform(const float center[3],
       glScalef(1.0/scale[0], 1.0/scale[1], 1.0/scale[2]);
 
       if (! fpzero(scaleOrientation[3]) )
-	glRotatef(-scaleOrientation[3] * 180.0 / PI,
+	glRotatef(-scaleOrientation[3] * 180.0 / M_PI,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
     }
 
   if (! fpzero(rotation[3]) )
-    glRotatef(- rotation[3] * 180.0 / PI,
+    glRotatef(- rotation[3] * 180.0 / M_PI,
 	      rotation[0],
 	      rotation[1],
 	      rotation[2]);
@@ -2650,7 +2641,7 @@ void ViewerOpenGL::setViewpoint(const float *position,
   glMatrixMode( GL_PROJECTION );
   if (! d_selectMode) glLoadIdentity();
 
-  float field_of_view = fieldOfView * 180.0 / PI;
+  float field_of_view = fieldOfView * 180.0 / M_PI;
   float aspect = ((float) d_winWidth) / d_winHeight;
   float znear = (avatarSize > 0.0) ? (0.5 * avatarSize) : 0.01;
   float zfar = (visibilityLimit > 0.0) ? visibilityLimit : 30000.0;
@@ -2732,30 +2723,24 @@ void ViewerOpenGL::transformPoints(int np, float *p)
 
 }
 
-//   
-// Multiply current ModelView Matrix with Given Matrix M
-// @param M matrix in OpenGL format
-//
-// 
-void ViewerOpenGL::MatrixMultiply(const float M[4][4])
-{
-   glMultMatrixf(&M[0][0]);
-}
-
 //
 //  Viewer callbacks (called from window system specific functions)
 //
 
 // update is called from a timer callback and from checkSensitive
-void ViewerOpenGL::update(const double timeNow) {
-    if (this->scene.update(timeNow)) {
-        checkErrors("update");
-        wsPostRedraw();
+void ViewerOpenGL::update( double timeNow )
+{
+
+  if (d_scene->update( timeNow ))
+    {
+      checkErrors("update");
+      wsPostRedraw();
     }
 
-    // Set an alarm clock for the next update time.
-    wsSetTimer(this->scene.getDelta());
+  // Set an alarm clock for the next update time.
+  wsSetTimer( d_scene->getDelta() );
 }
+
 
 void ViewerOpenGL::redraw() 
 {
@@ -2794,7 +2779,7 @@ void ViewerOpenGL::redraw()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  this->scene.render(this);
+  d_scene->render(this);
 
   if (d_reportFPS)
     {
@@ -2871,46 +2856,33 @@ ViewerOpenGL::rot(float x, float y, float z, float a)
   wsPostRedraw();
 }
 
-void ViewerOpenGL::rot_trackball(float x1, float y1, float x2, float y2)
-{
-   trackball(d_lastquat, x1, y1, x2, y2);
-   float vx[4],rot_vec[4];
-   double rot_mat[4][4];
-   quat_to_axis(d_lastquat,vx);
-   getOrientation(rot_vec);
-   Mrotation(rot_mat,rot_vec);
-   float d[3],q[4];
-   VM(d, rot_mat, vx);
-   axis_to_quat(d,vx[3],q);
-   add_quats(q, d_curquat, d_curquat);
-   d_rotationChanged = true;
-   wsPostRedraw();
-}                
 
 void ViewerOpenGL::step( float x, float y, float z )
 {
   //cout << "ViewerOpenGL::step(" << x << "," << y << "," << z << ")" << endl;
 
 #if 1
+
   double rot_mat[4][4];
   for(int i=0; i<4; i++) // oh good grief.
     for(int j=0; j<4; j++)
-     rot_mat[i][j] = d_rotationMatrix[i][j];
-  double sco_mat[4][4];
-  float rot_vec[4];
+      rot_mat[i][j] = d_rotationMatrix[i][j];
+
   float vx[3];
   vx[0] = x;
   vx[1] = y;
   vx[2] = z;
   Vnorm(vx);
-  getOrientation(rot_vec);
-  Mrotation(sco_mat,rot_vec);
+  Vscale(vx, 0.5);
+  
   float d[3];
-  VM(d, sco_mat, vx);
-  VM(d, rot_mat, d);
+  VM(d, rot_mat, vx);
+
+  //cout << "(" << d[0] << "," << d[1] << "," << d[2] << ")" << endl;
+
   this->d_translatex += d[0];
   this->d_translatey += d[1];
-  this->d_translatez += d[2];             
+  this->d_translatez += d[2];
 #endif
 
 #if 0
@@ -2948,74 +2920,65 @@ void ViewerOpenGL::step( float x, float y, float z )
   wsPostRedraw();
 }
 
-void ViewerOpenGL::zoom( float z )
-{
-  double sco_mat[4][4];
-  float rot_vec[4];
-  float vx[3];
-  vx[0] = 0;
-  vx[1] = 0;
-  vx[2] = z;
-  Vnorm(vx);
-  getOrientation(rot_vec);
-  Mrotation(sco_mat,rot_vec);
-  float d[3];
-  VM(d, sco_mat, vx);
-  this->d_zoom[0] += d[0];
-  this->d_zoom[1] += d[1];
-  this->d_zoom[2] += d[2];
-  wsPostRedraw();
-}                                
-
 void ViewerOpenGL::handleKey(int key)
 {
   switch (key)
     {
-    case KEY_LEFT:
-          step(-1, 0, 0);
+    case KEY_LEFT: // look left
+      rot(0, 1, 0, -1);
       break;
- 
-    case KEY_RIGHT:
-          step(1, 0, 0);
-     break;
- 
+
+    case KEY_RIGHT: // look right
+      rot(0, 1, 0, 1);
+      break;
+
     case KEY_UP:  // move forward along line of sight
-      zoom(1);
+      step(0, 0, 1);
       break;
- 
+
     case KEY_DOWN: // move backwards along line of sight
-      zoom(-1);
+      step(0, 0, -1);
       break;
- 
+
     case 'a':  // look up
-      rot_trackball(0.0, 0.45, 0.0, 0.55);
+      rot(1, 0, 0, -1);
       break;
- 
+
     case 'z':  // look down
-      rot_trackball(0.0, 0.55, 0.0, 0.45);
+      rot(1, 0, 0, 1);
       break;
- 
+
     case 'A':  // translate up
-      step(0,1,0);
+      d_translatey-=0.5;
+      wsPostRedraw();
       break;
- 
+
     case 'Z':  // translate down
-      step(0,-1,0);                              
+      d_translatey+=0.5;
+      wsPostRedraw();
       break;
- 
-    case ',':                   // Look left
-      rot_trackball(0.55, 0.0, 0.45, 0.0);
+
+    case ',':			// Look left
+      //trackball(d_lastquat, 0.65, 0.0, 0.45, 0.0);
+      //add_quats(d_lastquat, d_curquat, d_curquat);
+      //d_rotationChanged = true;
+      d_target[0] -= 1.0;
+      wsPostRedraw();
       break;
- 
-    case '.':                   // Look right
-      rot_trackball(0.45, 0.0, 0.55, 0.0);
+
+    case '.':			// Look right
+      //trackball(d_lastquat, 0.45, 0.0, 0.65, 0.0);
+      //add_quats(d_lastquat, d_curquat, d_curquat);
+      //d_rotationChanged = true;
+      d_target[0] += 1.0;
+      wsPostRedraw();
       break;
-               
+
     case KEY_PAGE_DOWN:
-      this->scene.nextViewpoint(); wsPostRedraw(); break;
+      if (d_scene) d_scene->nextViewpoint(); wsPostRedraw(); break;
 
     case KEY_PAGE_UP:
-      this->scene.prevViewpoint(); wsPostRedraw(); break;
+      if (d_scene) d_scene->prevViewpoint(); wsPostRedraw(); break;
 
     case '/':			// Frames/second
       d_reportFPS = ! d_reportFPS;
@@ -3067,7 +3030,7 @@ void ViewerOpenGL::handleKey(int key)
       break;
 #ifndef macintosh
     case 'q':
-      this->scene.destroyWorld();	// may not return
+      d_scene->destroyWorld();	// may not return
       break;
 #endif
     default:
@@ -3122,33 +3085,43 @@ void ViewerOpenGL::handleButton( EventInfo *e)
 
 void ViewerOpenGL::handleMouseDrag(int x, int y)
 {
- if (d_activeSensitive)
+  if (d_activeSensitive)
     {
       (void) checkSensitive( x, y, EVENT_MOUSE_DRAG );
     }
   else if (d_rotating)
     {
-      rot_trackball((2.0 * d_beginx - d_winWidth) / d_winWidth,
-                (d_winHeight - 2.0 * d_beginy) / d_winHeight,
-                (2.0 * x - d_winWidth) / d_winWidth,
-                (d_winHeight - 2.0 * y) / d_winHeight);
+      trackball(d_lastquat,
+		(2.0 * d_beginx - d_winWidth) / d_winWidth,
+		(d_winHeight - 2.0 * d_beginy) / d_winHeight,
+		(2.0 * x - d_winWidth) / d_winWidth,
+		(d_winHeight - 2.0 * y) / d_winHeight);
       d_beginx = x;
       d_beginy = y;
+      add_quats(d_lastquat, d_curquat, d_curquat);
+      d_rotationChanged = true;
+      wsPostRedraw();
     }
   // This is not scaling, it is now moving in screen Z coords
   else if (d_scaling)
     {
-      zoom(0.02 * ((float) (d_beginy - y)) / d_winHeight );
+      //d_scale = d_scale * (1.0 - (((float) (d_beginy - y)) / d_winHeight));
+      //d_translatez += 2.0 * ((float) (d_beginy - y)) / d_winHeight;
+      step( 0.0, 0.0, 0.2 * ((float) (d_beginy - y)) / d_winHeight );
       d_beginx = x;
       d_beginy = y;
+      wsPostRedraw();
     }
   else if (d_translating)
     {
-      step( 0.02 * ((float) (x - d_beginx)) / d_winWidth,
-            0.02 * ((float) (d_beginy - y)) / d_winHeight,
-            0.0 );
+      //d_translatex += 2.0 * ((float) (x - d_beginx)) / d_winWidth;
+      //d_translatey += 2.0 * ((float) (d_beginy - y)) / d_winHeight;
+      step( 0.2 * ((float) (x - d_beginx)) / d_winWidth,
+	    0.2 * ((float) (d_beginy - y)) / d_winHeight,
+	    0.0 );
       d_beginx = x;
       d_beginy = y;
+      wsPostRedraw();
     }
 
 }
@@ -3205,7 +3178,7 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  this->scene.render(this);
+  d_scene->render( this );
 
   d_selectMode = false;
 
@@ -3253,14 +3226,7 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
       GLdouble modelview[16], projection[16];
       glGetIntegerv (GL_VIEWPORT, viewport);
       glGetDoublev (GL_PROJECTION_MATRIX, projection);
-//      glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
-
-//   make modelview as an unit matrix as this is taken care in the core side
-//   during render traversal.
-
-      for (int i=0; i<4; ++i)
-        for (int j=0; j<4; ++j)
-          modelview[4*i+j] = (i == j) ? 1.0 : 0.0;
+      glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
 
       GLdouble dx, dy, dz;
       gluUnProject( (GLdouble) x, (GLdouble) (viewport[3] - y), d_selectZ,
@@ -3288,7 +3254,7 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
       if (mouseEvent == EVENT_MOUSE_RELEASE ||
 	  mouseEvent == EVENT_MOUSE_MOVE)
 	{
-	  this->scene.sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
+	  d_scene->sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
 				   timeNow,
 				   selected == d_activeSensitive, false,
 				   selectCoord );
@@ -3296,7 +3262,7 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
 	}
       else			// _DRAG
 	{
-	  this->scene.sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
+	  d_scene->sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
 				   timeNow,
 				   selected == d_activeSensitive, true,
 				   selectCoord );
@@ -3310,14 +3276,14 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
     {
       if (d_overSensitive && d_overSensitive != selected)
 	{
-	  this->scene.sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
+	  d_scene->sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
 				   timeNow,
 				   false, false, // isOver, isActive
 				   selectCoord );
 	  d_overSensitive = 0;
 	}
       d_activeSensitive = selected;
-      this->scene.sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
+      d_scene->sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
 			       timeNow,
 			       true, true,  // isOver, isActive
 			       selectCoord );
@@ -3328,14 +3294,14 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
     {
       if (d_overSensitive && d_overSensitive != selected)
 	{
-	  this->scene.sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
+	  d_scene->sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
 				   timeNow,
 				   false, false, // isOver, isActive
 				   selectCoord );
 	}
       d_overSensitive = selected;
       if (d_overSensitive)
-	this->scene.sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
+	d_scene->sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
 				 timeNow,
 				 true, false,  // isOver, isActive
 				 selectCoord );

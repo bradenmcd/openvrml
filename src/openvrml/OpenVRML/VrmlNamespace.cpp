@@ -24,7 +24,7 @@
 
 # include <stack>
 # include "VrmlNamespace.h"
-# include "nodetype.h"
+# include "VrmlNodeType.h"
 # include "VrmlNodeVisitor.h"
 # include "VrmlNode.h"
 # include "Route.h"
@@ -32,48 +32,58 @@
 # include "VrmlNodeScript.h"
 # include "VrmlNodeProto.h"
 
+# include <string.h>
+
 # ifndef NDEBUG
 #   include <typeinfo>
 # endif
 
-/**
- * @class VrmlNamespace
- *
- * @brief The VrmlNamespace class keeps track of defined nodes and
- *      prototypes.
- *
- * PROTO definitions add node types to the namespace.
- * PROTO implementations are a separate node type namespace,
- * and require that any nested PROTOs NOT be available outside
- * the PROTO implementation. PROTOs defined outside the current
- * namespace are available.
- */
-
 // This should at least be a sorted vector...
-std::list<NodeTypePtr> VrmlNamespace::builtInList;
+std::list< VrmlNodeType* > VrmlNamespace::builtInList;
 
 // Ref count of namespaces so builtins can be freed
 int VrmlNamespace::s_nNamespaces;
 
-VrmlNamespace::VrmlNamespace(VrmlNamespace * parent): d_parent(parent) {
-    ++s_nNamespaces;
+VrmlNamespace::VrmlNamespace( VrmlNamespace *parent ) :
+  d_parent(parent)
+{
+  ++s_nNamespaces;
 
-    // Initialize typeList with built in nodes
-    if (builtInList.empty()) {
-        defineBuiltIns();
+  // Initialize typeList with built in nodes
+  if (builtInList.size() == 0) defineBuiltIns();
+}
+
+VrmlNamespace::~VrmlNamespace()
+{
+  // Free typeList
+  std::list<VrmlNodeType*>::iterator i;
+  for (i = d_typeList.begin(); i != d_typeList.end(); ++i)
+    (*i)->dereference();
+
+  // Free builtins
+  if ( --s_nNamespaces == 0 )
+    {
+      for (i = builtInList.begin(); i != builtInList.end(); ++i)
+	(*i)->dereference();
+      builtInList.clear();
     }
 }
 
-VrmlNamespace::~VrmlNamespace() {
-    // Free builtins
-    if ( --s_nNamespaces == 0 ) {
-        builtInList.clear();
-    }
+
+//
+//  Built in nodes.
+//  This code replaces the reading of the "standardNodes.wrl" file
+//  of empty PROTOs so I don't need to carry that file around.
+//
+
+void
+VrmlNamespace::addBuiltIn( VrmlNodeType *type)
+{
+  builtInList.push_front( type->reference() );
 }
 
-void VrmlNamespace::addBuiltIn(const NodeTypePtr & nodeType) {
-    builtInList.push_front(nodeType);
-}
+
+
 
 void VrmlNamespace::defineBuiltIns()
 {
@@ -134,70 +144,64 @@ void VrmlNamespace::defineBuiltIns()
 }
 
 
-/**
- * @brief Add a node type.
- *
- * Print an error message if the argument type is already defined.
- *
- * @param nodeType a NodeTypePtr
- *
- * @todo Throw std::invalid_argument if the argument type is already defined.
- */
-void VrmlNamespace::addNodeType(const NodeTypePtr & nodeType) {
-    assert(!this->findType(nodeType->getId()));
-    this->d_typeList.push_front(nodeType);
-}
+// A safer version for reading PROTOs from files.
 
-/**
- * @brief Find a node type, given a type name. Returns NULL if type is
- *      not defined.
- */
-const NodeTypePtr VrmlNamespace::findType(const std::string & name) const {
-    // Look through the PROTO stack:
-    NodeTypePtr nt(findPROTO(name));
-    if (nt) {
-        return nt;
-    }
-    
-    // Look in parent scope for the type
-    if (d_parent) {
-        return d_parent->findType(name);
-    }
-    
-    // Look through the built ins
-    for (std::list<NodeTypePtr>::iterator i = builtInList.begin();
-            i != builtInList.end(); ++i) {
-        nt = *i;
-        assert(nt);
-        if (name == nt->getId()) {
-            return nt;
-        }
-    }
-    
-    return NodeTypePtr(0);
-}
-
-/**
- * @brief Find a nodeType, given a PROTO name.
- */
-const NodeTypePtr VrmlNamespace::findPROTO(const std::string & name) const {
-    for (std::list<NodeTypePtr>::const_iterator i(d_typeList.begin());
-          i != d_typeList.end(); ++i) {
-        assert(*i);
-        if (name == (*i)->getId()) {
-	    return *i;
-        }
-    }
-    return NodeTypePtr(0);
+void
+VrmlNamespace::addNodeType( VrmlNodeType *type )
+{
+  if ( findType( type->getName() ) != NULL)
+    theSystem->warn("PROTO %s already defined\n",
+		    type->getName() );
+  else
+    d_typeList.push_front( type->reference() );
 }
 
 
-const NodeTypePtr VrmlNamespace::firstType() const {
-    // Top of the PROTO stack (should make sure it has an implementation...)
-    if (!this->d_typeList.empty()) {
-        return d_typeList.front();
+const VrmlNodeType *
+VrmlNamespace::findType( const char *name )
+{
+  // Look through the PROTO stack:
+  const VrmlNodeType *nt = findPROTO(name);
+  if (nt) return nt;
+
+  // Look in parent scope for the type
+  if (d_parent)
+    return d_parent->findType( name );
+
+  // Look through the built ins
+  std::list<VrmlNodeType*>::iterator i;
+  for (i = builtInList.begin(); i != builtInList.end(); ++i)
+    {
+      nt = *i;
+      if (nt != NULL && strcmp(nt->getName(),name) == 0)
+	return nt;
     }
-    return NodeTypePtr(0);
+
+  return NULL;
+}
+
+const VrmlNodeType *    // LarryD
+VrmlNamespace::findPROTO(const char *name)
+{
+  // Look through the PROTO list ONLY:
+  std::list<VrmlNodeType*>::iterator i;
+  for (i = d_typeList.begin(); i != d_typeList.end(); ++i)
+    {
+      const VrmlNodeType *nt = *i;
+      if (nt != NULL && strcmp(nt->getName(),name) == 0)
+	return nt;
+    }
+  return NULL;
+}
+
+
+const VrmlNodeType *
+VrmlNamespace::firstType()
+{
+  // Top of the PROTO stack (should make sure it has an implementation...)
+  if (d_typeList.size() > 0)
+    return d_typeList.front()->reference();
+  return NULL;
 }
 
 void
@@ -222,13 +226,14 @@ void VrmlNamespace::removeNodeName(const VrmlNode & namedNode) {
 }
 
 
-const VrmlNodePtr VrmlNamespace::findNode(const std::string & nodeId) const {
-    for (std::list<VrmlNodePtr>::const_iterator nodeItr(d_nameList.begin());
-            nodeItr != d_nameList.end(); ++nodeItr) {
-        if (nodeId == (*nodeItr)->getId()) {
-            return *nodeItr;
+const VrmlNodePtr VrmlNamespace::findNode(const char * name) const {
+    for (std::list<VrmlNodePtr>::const_iterator n = d_nameList.begin();
+            n != d_nameList.end(); ++n) {
+        if (strcmp((*n)->name(), name) == 0) {
+            return *n;
         }
     }
+    
     return VrmlNodePtr(0);
 }
 
@@ -552,7 +557,7 @@ namespace {
         virtual void visit(VrmlNodeProto & node) {
             const VrmlNodePtr clonedNode(new VrmlNodeProto(node));
             clonedNode->addToScene(node.scene(),
-                                   clonedNode->type.getActualUrl());
+                                   clonedNode->nodeType().getActualUrl());
             this->rootNodeStack.push(clonedNode);
         }
         
@@ -722,14 +727,13 @@ namespace {
             if (node.accept(*this)) {
                 assert(this->rootNodeStack.size() > 0);
                 assert(typeid(node) == typeid(*this->rootNodeStack.top()));
-                const std::string & nodeId =
-                        this->rootNodeStack.top()->getId();
-                if (!this->rootNodeStack.top()->getId().empty()) {
+                const char * const name = this->rootNodeStack.top()->name();
+                if (*this->rootNodeStack.top()->name()) {
                     this->ns.addNodeName(this->rootNodeStack.top());
                 }
             } else {
-                assert(this->ns.findNode(node.getId()));
-                this->rootNodeStack.push(this->ns.findNode(node.getId()));
+                assert(this->ns.findNode(node.name()));
+                this->rootNodeStack.push(this->ns.findNode(node.name()));
             }
         }
         
@@ -1057,23 +1061,17 @@ namespace {
         NodeRouteCopyVisitor & operator=(const NodeRouteCopyVisitor &);
         
         void copyRoutesFromNode(VrmlNode & node) {
-            const std::string & fromNodeId = node.getId();
-            if (!fromNodeId.empty()) {
-                const VrmlNodePtr fromNode = this->ns.findNode(fromNodeId);
+            const char * fromName = 0;
+            if (*(fromName = node.name())) {
+                const VrmlNodePtr fromNode = this->ns.findNode(fromName);
                 assert(fromNode);
-		
-		VrmlNode::RouteList routes = node.getRoutes();
-
-		VrmlNode::RouteList::iterator i;
-		
-		for (i = routes.begin(); i != routes.end(); ++i)
-		{
-		  const std::string& toNodeId = (*i)->toNode->getId();
-		  assert(this->ns.findNode(toNodeId));
-		  fromNode->addRoute((*i)->fromEventOut,
-				     this->ns.findNode(toNodeId),
-				     (*i)->toEventIn);
-		}
+                for (Route * route = node.getRoutes(); route;
+                        route = route->next()) {
+                    const char * toName = route->toNode()->name();
+                    assert(this->ns.findNode(toName));
+                    fromNode->addRoute(route->fromEventOut(),
+                            this->ns.findNode(toName), route->toEventIn());
+                }
             }
         }
         

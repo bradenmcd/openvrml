@@ -2,7 +2,6 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
-// Copyright (C) 2001  Braden McDaniel
 // 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,70 +30,73 @@
 # include <assert.h>
 # include <memory>
 # include <vector>
-# include <algorithm>
-# include <iostream>
 # if defined(_WIN32) && !defined(__CYGWIN__)
 #   include <strstrea.h>
 # else
 #   include <strstream.h>
 # endif
-# include "private.h"
 # include "VrmlNodeScript.h"
-# include "nodetype.h"
+# include "VrmlNodeType.h"
 # include "VrmlNodeVisitor.h"
 # include "VrmlNamespace.h"
 # include "ScriptObject.h"
 # include "VrmlScene.h"
 # include "doc2.hpp"
-# include "ScriptJDK.h"
+
+#ifdef macintosh
+extern char* strdup( const char* );
+#endif
 
 #if defined(WIN32)
 // Disable warning messages about forcing value to bool 'true' or 'false'
 #pragma warning (disable:4800)
 #endif
 
-/**
- * @class VrmlNodeScript
- *
- * @brief Represents a VRML Script node.
- */
+// Script factory. Add each Script to the scene for fast access.
 
-namespace {
-    /**
-     * Script factory. Add each Script to the scene for fast access.
-     */
-    const VrmlNodePtr creator(VrmlScene * const scene) {
-        return VrmlNodePtr(new VrmlNodeScript(scene));
-    }
+static VrmlNode *creator( VrmlScene *scene ) 
+{
+  return new VrmlNodeScript(scene);
 }
 
-/**
- * Define the built in NodeType:: "Script" fields
- */
-const NodeTypePtr VrmlNodeScript::defineType(NodeTypePtr nodeType) {
-    static NodeTypePtr st(0);
 
-    if (!nodeType) {
-        if (st) {
-            return st; // Only define the type once.
-        }
-        st.reset(new NodeType("Script", creator));
-        nodeType = st;
+// Define the built in VrmlNodeType:: "Script" fields
+
+VrmlNodeType *VrmlNodeScript::defineType(VrmlNodeType *t)
+{
+  static VrmlNodeType *st = 0;
+
+  if (! t)
+    {
+      if (st) return st;		// Only define the type once.
+      t = st = new VrmlNodeType("Script", creator);
+      t->reference();
     }
 
-    nodeType->addExposedField("url", VrmlField::MFSTRING);
-    nodeType->addField("directOutput", VrmlField::SFBOOL);
-    nodeType->addField("mustEvaluate", VrmlField::SFBOOL);
+  VrmlNodeChild::defineType(t);	// Parent class
+  t->addExposedField("url", VrmlField::MFSTRING);
+  t->addField("directOutput", VrmlField::SFBOOL);
+  t->addField("mustEvaluate", VrmlField::SFBOOL);
 
-    return nodeType;
+  return t;
 }
 
-VrmlNodeScript::VrmlNodeScript(VrmlScene * const scene):
-        VrmlNodeChild(*defineType(), scene), d_directOutput(false),
-        d_mustEvaluate(false), d_script(0), d_eventsReceived(0) {
-    if (this->d_scene) {
-        this->d_scene->addScript(*this);
-    }
+// Should subclass NodeType and have each Script maintain its own type...
+
+VrmlNodeType & VrmlNodeScript::nodeType() const
+{
+    return *defineType(0);
+}
+
+
+VrmlNodeScript::VrmlNodeScript( VrmlScene *scene ) :
+  VrmlNodeChild(scene),
+  d_directOutput(false),
+  d_mustEvaluate(false),
+  d_script(0),
+  d_eventsReceived(0)
+{
+  if (d_scene) d_scene->addScript(this);
 }
 
 VrmlNodeScript::VrmlNodeScript(const VrmlNodeScript & node):
@@ -118,7 +120,7 @@ VrmlNodeScript::~VrmlNodeScript()
   shutdown( theSystem->time() );
 
   // removeScript ought to call shutdown...
-  if (d_scene) d_scene->removeScript(*this);
+  if (d_scene) d_scene->removeScript(this);
 
   delete d_script;
 
@@ -127,18 +129,21 @@ VrmlNodeScript::~VrmlNodeScript()
   for (i = d_eventIns.begin(); i != d_eventIns.end(); ++i)
     {
       ScriptField *r = *i;
+      free(r->name);
       delete r->value;
       delete r;
     }
   for (i = d_eventOuts.begin(); i != d_eventOuts.end(); ++i)
     {
       ScriptField *r = *i;
+      free(r->name);
       delete r->value;
       delete r;
     }
   for (i = d_fields.begin(); i != d_fields.end(); ++i)
     {
       ScriptField *r = *i;
+      free(r->name);
       delete r->value;
       delete r;
     }
@@ -175,54 +180,21 @@ void VrmlNodeScript::resetVisitedFlag() {
     }
 }
 
-namespace {
-    struct AccumulateNodes_ :
-            public std::unary_function<VrmlNodeScript::FieldList::value_type, void> {
-        explicit AccumulateNodes_(VrmlMFNode & children): children(children) {}
-        
-        result_type operator()(argument_type scriptField) {
-            if (scriptField->type == VrmlField::SFNODE) {
-                assert(dynamic_cast<VrmlSFNode *>(scriptField->value));
-                this->children.setLength(this->children.getLength() + 1);
-                this->children.setElement(this->children.getLength() - 1,
-                        static_cast<VrmlSFNode *>(scriptField->value)->get());
-            } else if (scriptField->type == VrmlField::MFNODE) {
-                assert(dynamic_cast<VrmlMFNode *>(scriptField->value));
-                VrmlMFNode &
-                        nodes = *static_cast<VrmlMFNode *>(scriptField->value);
-                this->children.setLength(children.getLength()
-                                            + nodes.getLength());
-                for (size_t i = 0; i < nodes.getLength(); ++i) {
-                    this->children.setElement(this->children.getLength() + i,
-                                              nodes.getElement(i));
-                }
-            }
-        }
-    
-    private:
-        VrmlMFNode & children;
-    };
-}
-
-const VrmlMFNode VrmlNodeScript::getChildren() const {
-    VrmlMFNode children;
-    std::for_each(this->d_fields.begin(), this->d_fields.end(),
-                  AccumulateNodes_(children));
-    return children;
-}
-
 VrmlNodeScript* VrmlNodeScript::toScript() const
 { return (VrmlNodeScript*) this; }
 
 void VrmlNodeScript::addToScene(VrmlScene * const scene,
-                                const std::string& relativeUrl) {
-    this->d_relativeUrl.set(relativeUrl);
+                                const char * const relUrl) {
+    theSystem->debug("VrmlNodeScript::%s 0x%x addToScene 0x%x\n",
+		     name(), (unsigned)this, (unsigned)scene);
+
+    this->d_relativeUrl.set(relUrl);
     if (this->d_scene == scene) {
         return;
     }
     if ((this->d_scene = scene)) {
         this->initialize(theSystem->time());
-        this->d_scene->addScript(*this);
+        this->d_scene->addScript(this);
     }
 }
 
@@ -237,33 +209,28 @@ ostream& VrmlNodeScript::printFields(ostream& os, int indent)
 }
 
 
-void VrmlNodeScript::initialize(const double timestamp) {
-    assert(!this->d_script);
+void VrmlNodeScript::initialize( double ts )
+{
+  theSystem->debug("Script.%s::initialize\n", name());
+  assert(!this->d_script);
 
-    this->d_eventsReceived = 0;
-    this->d_script = this->createScript();
-    if (this->d_script) {
-        this->d_script->activate(timestamp, "initialize", 0, 0);
-    }
-    
-    //
-    // For each modified eventOut, send an event.
-    //
-    for (FieldList::const_iterator i = this->d_eventOuts.begin();
-            i != this->d_eventOuts.end(); ++i) {
-        if ((*i)->modified) {
-            this->eventOut(timestamp, (*i)->name, *((*i)->value));
-        }
+//  if (d_script) return;	       // How did I get here? Letting the days go by...
+  d_eventsReceived = 0;
+  if (d_url.getLength() > 0)
+    {
+      d_script = this->createScript();
+      if (d_script)
+	d_script->activate( ts, "initialize", 0, 0 );
     }
 }
 
-void VrmlNodeScript::shutdown(const double timestamp) {
-    if (this->d_script) {
-        this->d_script->activate(timestamp, "shutdown", 0, 0);
-    }
+void VrmlNodeScript::shutdown( double ts )
+{
+  if (d_script)
+    d_script->activate( ts, "shutdown", 0, 0 );
 }
 
-void VrmlNodeScript::update(const VrmlSFTime & timeNow) {
+void VrmlNodeScript::update(VrmlSFTime & timeNow) {
     if (d_eventsReceived > 0) {
         d_eventsReceived = 0;
         
@@ -285,28 +252,23 @@ void VrmlNodeScript::update(const VrmlSFTime & timeNow) {
 }
 
 
+// 
+
 void VrmlNodeScript::eventIn(double timeStamp,
-			     const std::string & eventName,
+			     const char *eventName,
 			     const VrmlField & fieldValue) {
-    if (!d_script) {
-        this->initialize(timeStamp);
-    }
+    if (!this->d_script ) { initialize(timeStamp); }
+    if (!this->d_script ) { return; }
     
-    if (!d_script) {
-        return;
+    const char *origEventName = eventName;
+    bool valid = hasEventIn( eventName );
+    if (!valid && strncmp(eventName, "set_", 4) == 0) {
+        eventName += 4;
+        valid = hasEventIn(eventName);
     }
-    
-    static const char * eventInPrefix = "set_";
-    std::string basicEventName;
-    if (std::equal(eventInPrefix, eventInPrefix + 4, eventName.begin())) {
-        basicEventName = eventName.substr(4);
-    } else {
-        basicEventName = eventName;
-    }
-    bool valid = (this->hasEventIn(eventName)
-                || this->hasEventIn(basicEventName));
+
     if (valid) {
-        this->setEventIn(eventName, fieldValue);
+        setEventIn( eventName, fieldValue );
 
         VrmlSFTime ts( timeStamp );
         const VrmlField *args[] = { &fieldValue, &ts };
@@ -328,12 +290,12 @@ void VrmlNodeScript::eventIn(double timeStamp,
         ++d_eventsReceived;	// call eventsProcessed later
     }
 
-    // Let the generic code handle the rest.
-    else
-      VrmlNode::eventIn(timeStamp, eventName, fieldValue);
+  // Let the generic code handle the rest.
+  else
+    VrmlNode::eventIn( timeStamp, origEventName, fieldValue );
 
-    // Scripts shouldn't generate redraws.
-    clearModified();
+  // Scripts shouldn't generate redraws.
+  clearModified();
 }
 
 
@@ -341,11 +303,11 @@ void VrmlNodeScript::eventIn(double timeStamp,
 // add events/fields
 
 namespace {
-    void add(VrmlNodeScript::FieldList & recs, const std::string & ename,
+    void add(VrmlNodeScript::FieldList & recs, const char * ename,
              VrmlField::VrmlFieldType type) {
         VrmlNodeScript::ScriptField * const scriptField =
                 new VrmlNodeScript::ScriptField;
-        scriptField->name = ename;
+        scriptField->name = strdup(ename);
         scriptField->type = type;
         switch (type) {
         case VrmlField::SFBOOL:
@@ -417,18 +379,17 @@ namespace {
     }
 }
 
-void VrmlNodeScript::addEventIn(const std::string & ename,
-                                VrmlField::VrmlFieldType t) {
-    add(this->d_eventIns, ename, t);
+void VrmlNodeScript::addEventIn(const char *ename, VrmlField::VrmlFieldType t)
+{
+  add(d_eventIns, ename, t);
 }
 
-void VrmlNodeScript::addEventOut(const std::string & ename,
-                                 VrmlField::VrmlFieldType t) {
-    add(this->d_eventOuts, ename, t);
+void VrmlNodeScript::addEventOut(const char *ename, VrmlField::VrmlFieldType t)
+{
+  add(d_eventOuts, ename, t);
 }
 
-void VrmlNodeScript::addField(const std::string & ename,
-                              VrmlField::VrmlFieldType t,
+void VrmlNodeScript::addField(const char *ename, VrmlField::VrmlFieldType t,
 			      const VrmlField * val) {
     add(this->d_fields, ename, t);
     if (val) {
@@ -436,35 +397,60 @@ void VrmlNodeScript::addField(const std::string & ename,
     }
 }
 
-VrmlField * VrmlNodeScript::get(const FieldList & recs,
-                                const std::string & fieldId) const {
-    for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
-        if ((*i)->name == fieldId) {
-            return (*i)->value;
-        }
-    }
-    return 0;
+// get event/field values
+#if 0
+VrmlField*
+VrmlNodeScript::getEventIn(const char *fname) const
+{
+  return get(d_eventIns, fname);
+}
+
+VrmlField*
+VrmlNodeScript::getEventOut(const char *fname) const
+{
+  return get(d_eventOuts, fname);
+}
+
+VrmlField*
+VrmlNodeScript::getField(const char *fname) const
+{
+  return get(d_fields, fname);
+}
+#endif
+
+VrmlField*
+VrmlNodeScript::get(const FieldList &recs, const char *fname) const
+{
+  FieldList::const_iterator i;
+  for (i = recs.begin(); i != recs.end(); ++i) {
+    if (strcmp((*i)->name, fname) == 0)
+      return (*i)->value;
+  }
+  return 0;
 }
 
 // has
 
-VrmlField::VrmlFieldType VrmlNodeScript::hasEventIn(const std::string & id)
-        const {
-    return has(d_eventIns, id);
+VrmlField::VrmlFieldType
+VrmlNodeScript::hasEventIn(const char *ename) const
+{
+  return has(d_eventIns, ename);
 }
 
-VrmlField::VrmlFieldType VrmlNodeScript::hasEventOut(const std::string & id)
-        const {
-    return has(d_eventOuts, id);
+VrmlField::VrmlFieldType
+VrmlNodeScript::hasEventOut(const char *ename) const
+{
+  return has(d_eventOuts, ename);
 }
 
-VrmlField::VrmlFieldType VrmlNodeScript::hasField(const std::string & id)
-        const {
-    return has(d_fields, id);
+VrmlField::VrmlFieldType
+VrmlNodeScript::hasField(const char *ename) const
+{
+  return has(d_fields, ename);
 }
 
-VrmlField::VrmlFieldType VrmlNodeScript::hasInterface(const std::string & id)
-        const {
+VrmlField::VrmlFieldType VrmlNodeScript::hasInterface(const char * id) const
+{
     VrmlField::VrmlFieldType fieldType = VrmlField::NO_FIELD;
     
     if ((fieldType = this->hasField(id)) != VrmlField::NO_FIELD) {
@@ -482,80 +468,88 @@ VrmlField::VrmlFieldType VrmlNodeScript::hasInterface(const std::string & id)
     return fieldType;
 }
 
-VrmlField::VrmlFieldType VrmlNodeScript::has(const FieldList & recs,
-                                             const std::string & id) const {
-    for (FieldList::const_iterator i(recs.begin()); i != recs.end(); ++i) {
-        if ((*i)->name == id) {
-            return (*i)->type;
-        }
-    }
-    return VrmlField::NO_FIELD;
+VrmlField::VrmlFieldType
+VrmlNodeScript::has(const FieldList &recs, const char *ename) const
+{
+  FieldList::const_iterator i;
+  for (i = recs.begin(); i != recs.end(); ++i) {
+    if (strcmp((*i)->name, ename) == 0)
+      return (*i)->type;
+  }
+  return VrmlField::NO_FIELD;
 }
 
 // Get the value of a field or eventOut.
 
-const VrmlField * VrmlNodeScript::getField(const std::string & fieldId) const
+const VrmlField *VrmlNodeScript::getField(const char *fieldName) const
 {
-    // exposedFields
-    if (fieldId == "url") {
-        return &d_url;
-    }
+  // exposedFields
+  if ( strcmp( fieldName, "url" ) == 0 )
+    return &d_url;
 
-    // look up 
-    else if (this->hasField(fieldId)) {
-        return get(d_fields, fieldId);
-    }
+  // look up 
+  else if ( hasField(fieldName) )
+    return get(d_fields, fieldName);
 
-    // look up event outs
-    else if (this->hasEventOut(fieldId)) {
-        return get(d_eventOuts, fieldId);
-    }
+  // look up event outs? ....
 
-    return VrmlNodeChild::getField(fieldId);
+
+  return VrmlNodeChild::getField( fieldName );
 }
 
 
 // Set the value of one of the node fields/events.
 // setField is public so the parser can access it.
 
-void VrmlNodeScript::setField(const std::string & fieldId,
-			      const VrmlField & fieldValue) {
+void VrmlNodeScript::setField(const char *fieldName,
+			      const VrmlField &fieldValue)
+{
   VrmlField::VrmlFieldType ft;
 
   if TRY_FIELD(url, MFString)	// need to re-initialize() if url changes...
   else if TRY_FIELD(directOutput, SFBool)
   else if TRY_FIELD(mustEvaluate, SFBool)
-  else if ( (ft = hasField(fieldId)) != 0 )
+  else if ( (ft = hasField(fieldName)) != 0 )
     {
       if (ft == VrmlField::fieldType( fieldValue.fieldTypeName() ))
-	set(d_fields, fieldId, fieldValue);
+	set(d_fields, fieldName, fieldValue);
       else
 	theSystem->error("Invalid type (%s) for %s field of Script node.\n",
-                         fieldValue.fieldTypeName(), fieldId.c_str());
+		      fieldValue.fieldTypeName(), fieldName );
     }
   else
-    VrmlNodeChild::setField(fieldId, fieldValue);
+    VrmlNodeChild::setField(fieldName, fieldValue);
+}
+
+void
+VrmlNodeScript::setEventIn(const char *fname, const VrmlField & value)
+{
+  set(d_eventIns, fname, value);
+}
+
+void
+VrmlNodeScript::setEventOut(const char *fname, const VrmlField & value)
+{
+  set(d_eventOuts, fname, value);
 }
 
 VrmlNodeScript::FieldList & VrmlNodeScript::eventIns() {
     return this->d_eventIns;
 }
 
-void VrmlNodeScript::setEventIn(const std::string & fname,
-                                const VrmlField & value) {
-    this->set(d_eventIns, fname, value);
+VrmlNodeScript::FieldList & VrmlNodeScript::eventOuts() {
+    return this->d_eventOuts;
 }
 
-void VrmlNodeScript::setEventOut(const std::string & fname,
-                                 const VrmlField & value) {
-    this->set(d_eventOuts, fname, value);
+VrmlNodeScript::FieldList & VrmlNodeScript::fields() {
+    return this->d_fields;
 }
 
-void VrmlNodeScript::set(const FieldList & recs, const std::string & fieldId,
+void VrmlNodeScript::set(const FieldList & recs, const char * fname,
                          const VrmlField & value) {
     for (FieldList::const_iterator itr = recs.begin(); itr != recs.end();
             ++itr) {
-        if ((*itr)->name == fieldId) {
+        if (strcmp((*itr)->name, fname) == 0) {
             //
             // Script nodes can be self referential! Check this condition,
             // and "undo" the refcounting: decrement the refcount on any
@@ -596,7 +590,7 @@ void VrmlNodeScript::set(const FieldList & recs, const std::string & fieldId,
                     --(newNode.countPtr->second);
                 }
             } else if (fieldType == VrmlField::MFNODE) {
-                size_t i;
+				size_t i;
                 const VrmlMFNode & oldNodes =
                         static_cast<VrmlMFNode &>(*(*itr)->value);
                 for (i = 0; i < oldNodes.getLength(); ++i) {
@@ -628,8 +622,8 @@ void VrmlNodeScript::set(const FieldList & recs, const std::string & fieldId,
     }
 }
 
-# ifdef OPENVRML_HAVE_SPIDERMONKEY
-#   include OPENVRML_JSAPI_H
+# ifdef HAVE_MOZJS
+#   include <mozilla/jsapi.h>
 namespace {
 
     namespace JavaScript_ {
@@ -643,12 +637,12 @@ namespace {
             JSContext * cx;
 
         public:
-            Script(VrmlNodeScript & scriptNode, const std::string & source)
+            Script(VrmlNodeScript & scriptNode, const char * source)
                 throw (std::bad_alloc);
             virtual ~Script();
 
-            virtual void activate(double timeStamp, const std::string & fname,
-                                  size_t argc, const VrmlField * const argv[]);
+            virtual void activate(double timeStamp, const char * fname,
+                                  size_t argc, const VrmlField * argv[]);
 
             VrmlNodeScript & getScriptNode();
 
@@ -666,42 +660,32 @@ namespace {
 ScriptObject * VrmlNodeScript::createScript() {
     // Try each url until we find one we like
     for (size_t i = 0; i < this->d_url.getLength(); ++i) {
-        if (this->d_url.getElement(i).length() == 0) continue;
+        if (!this->d_url.getElement(i)) continue;
 
         // Get the protocol & mimetype...
-# ifdef OPENVRML_HAVE_SPIDERMONKEY
+# ifdef HAVE_MOZJS
         // Need to handle external .js files too...
-        const char javascriptScheme[] = "javascript:";
-        const char vrmlscriptScheme[] = "vrmlscript:";
-        if (std::equal(javascriptScheme, javascriptScheme + 11,
-                       this->d_url.getElement(i).begin())
-                || std::equal(vrmlscriptScheme, vrmlscriptScheme + 11,
-                              this->d_url.getElement(i).begin())) {
+        if (strncmp(this->d_url.getElement(i), "javascript:", 11) == 0
+                || strncmp(this->d_url.getElement(i), "vrmlscript:", 11) == 0) {
             return new JavaScript_::Script(*this,
-                                        this->d_url.getElement(i).substr(11));
+                                           this->d_url.getElement(i) + 11);
 	}
 # endif
 
-#ifdef OPENVRML_HAVE_JNI
-	const char javaExtension1[] = ".class";
-	const char javaExtension2[] = ".CLASS";
-
-        int slen = this->d_url.getElement(i).length();
-
-        if (slen > 6  &&
-	    (std::equal(javaExtension1, javaExtension1 + 6, 
-			this->d_url.getElement(i).end() - 6) ||
-	     std::equal(javaExtension2, javaExtension2 + 6, 
-			this->d_url.getElement(i).end() - 6)))
+#if HAVE_JAVA
+        int slen = strlen(url[i]);
+        if (slen > 6 &&
+	    (strcmp(url[i]+slen-6,".class") == 0 ||
+	     strcmp(url[i]+slen-6,".CLASS") == 0))
 	{
-	  Doc2 *relative = 0;
-	  if ( browser() ) {
-	    relative = browser()->urlDoc();
-	  }
-	  Doc2 doc(this->d_url.getElement(i), relative);
-	  if ( doc.localName() ) {
-	    return new ScriptJDK(this, doc.urlBase(), doc.localPath() );
-	  }
+	    Doc *relative = 0;
+	    if ( node->scene() ) {
+	        relative = node->scene()->url();
+            }
+	    Doc doc( url[i], relative );
+	    if ( doc.localName() ) {
+	        return new ScriptJDK( node, doc.urlBase(), doc.localPath() );
+            }
 	}
 #endif
     }
@@ -711,7 +695,7 @@ ScriptObject * VrmlNodeScript::createScript() {
 
 namespace {
 
-# ifdef OPENVRML_HAVE_SPIDERMONKEY
+# ifdef HAVE_MOZJS
     namespace JavaScript_ {
 
         const long MAX_HEAP_BYTES = 4L * 1024L * 1024L;
@@ -774,49 +758,7 @@ namespace {
                     throw ();
         }
 
-        //
-        // A base class for a field value "holder" that gets owned by the
-        // JavaScript objects corresponding to VRML data values. The holder
-        // includes essential metadata: the corresponding interface ID for
-        // the object, if any, and whether or not the object corresponds to
-        // an eventOut.
-        //
-        class FieldData {
-        public:
-            const std::string * scriptFieldId;
-            bool isEventOut;
-        
-            virtual ~FieldData() = 0;
-            
-            bool isScriptField() const;
-            
-        protected:
-            FieldData(const std::string * scriptFieldId, bool isEventOut);
-        };
-        
         class SField {
-        public:
-            /**
-             * The SFData class takes ownership of the VrmlField value and
-             * deletes it upon destruction.
-             */
-            class SFData : public FieldData {
-                VrmlField * const fieldValue;
-                
-            public:
-                explicit SFData(VrmlField * fieldValue,
-                                const std::string * scriptFieldId = 0,
-                                bool isEventOut = false);
-                virtual ~SFData();
-                
-                VrmlField & getFieldValue() const;
-            
-            private:
-                // non-copyable
-                SFData(const SFData &);
-                SFData & operator=(const SFData &);
-            };
-            
         protected:
             static void finalize(JSContext * cx, JSObject * obj) throw ();
             static JSBool toString(JSContext * cx, JSObject * obj,
@@ -890,6 +832,8 @@ namespace {
                     throw ();
             static VrmlSFNode * createFromJSObject(JSContext * cx,
                                                    JSObject * obj);
+        
+        private:
             static JSBool construct(JSContext * cx, JSObject * obj,
                                     uintN argc, jsval * argv, jsval *) throw ();
             static JSBool initObject(JSContext * cx, JSObject * obj,
@@ -1040,13 +984,12 @@ namespace {
         public:
             typedef std::vector<jsval> JsvalArray;
             
-            class MFData : public FieldData {
-            public:
+            class MFData {
                 JsvalArray array;
+            public:
+                MFData(JsvalArray::size_type size);
 
-                MFData(JsvalArray::size_type size,
-                       const std::string * scriptFieldId = 0, bool isEventOut = false);
-                virtual ~MFData();
+                JsvalArray & getArray();
 
             private:
                 // Not copyable.
@@ -1121,18 +1064,35 @@ namespace {
                                          uintN argc, jsval * argv) throw ();
             };
 
-        class MFColor : public MFJSObject<MFColor> {
+
+        class MFColor : public MField {
         public:
             static JSClass jsclass;
-            static JSClass & sfjsclass;
             
+            static JSObject * initClass(JSContext * cx, JSObject * obj)
+                    throw ();
             static JSBool toJsval(const VrmlMFColor & mfcolor, bool protect,
                                   JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
             static VrmlMFColor * createFromJSObject(JSContext * cx,
                                                     JSObject * obj);
+
+        private:
+            static JSBool construct(JSContext * cx, JSObject * obj,
+	                            uintN argc, jsval * argv, jsval * vp)
+                    throw ();
+            static JSBool initObject(JSContext * cx, JSObject * obj,
+                                     uintN argc, jsval * argv) throw ();
+            static JSBool setElement(JSContext * cx, JSObject * obj,
+                                     jsval id, jsval * vp) throw ();
+            static JSBool setLength(JSContext * cx, JSObject * obj,
+                                    jsval id, jsval * vp) throw ();
+            static JSBool toString(JSContext * cx, JSObject * obj,
+                                   uintN argc, jsval * argv, jsval * rval)
+                    throw ();
+            static void finalize(JSContext * cx, JSObject * obj) throw ();
         };
-        
+                
         class MFFloat : public MFJSDouble<MFFloat> {
         public:
             static JSClass jsclass;
@@ -1170,36 +1130,16 @@ namespace {
             static void finalize(JSContext * cx, JSObject * obj);
         };
         
-        //
-        // We can't use the MFJSObject<> template to implement MFNode, since
-        // the SFNode constructor requires an argument.
-        //
-        class MFNode : public MField {
+        class MFNode : public MFJSObject<MFNode> {
         public:
             static JSClass jsclass;
+            static JSClass & sfjsclass;
             
-            static JSObject * initClass(JSContext * cx, JSObject * obj)
-                    throw ();
             static JSBool toJsval(const VrmlMFNode & mfnode, bool protect,
                                   JSContext * cx, JSObject * obj, jsval * rval)
                     throw ();
             static VrmlMFNode * createFromJSObject(JSContext * cx,
-                                                     JSObject * obj);
-
-        private:
-            static JSBool construct(JSContext * cx, JSObject * obj,
-	                            uintN argc, jsval * argv,
-                                    jsval * vp) throw ();
-            static JSBool initObject(JSContext * cx, JSObject * obj,
-                                     uintN argc, jsval * argv) throw ();
-            static JSBool setElement(JSContext * cx, JSObject * obj,
-                                     jsval id, jsval * vp) throw ();
-            static JSBool setLength(JSContext * cx, JSObject * obj,
-                                    jsval id, jsval * vp) throw ();
-            static JSBool toString(JSContext * cx, JSObject * obj,
-                                   uintN argc, jsval * argv, jsval * rval)
-                    throw ();
-            static void finalize(JSContext * cx, JSObject * obj) throw ();
+                                                   JSObject * obj);
         };
         
         class MFRotation : public MFJSObject<MFRotation> {
@@ -1288,7 +1228,7 @@ namespace {
 
         // Construct from inline script
 
-        Script::Script(VrmlNodeScript & scriptNode, const std::string & source)
+        Script::Script(VrmlNodeScript & scriptNode, const char * source)
                 throw (std::bad_alloc):
                 ScriptObject(scriptNode), cx(0) {
 
@@ -1363,9 +1303,8 @@ namespace {
             uintN lineno = 0;
 
             jsval rval;
-            if (!JS_EvaluateScript(cx, globalObj,
-                                   source.c_str(), source.length(),
-                                   filename, lineno, &rval))
+            if (! JS_EvaluateScript( cx, globalObj, source, strlen(source),
+			             filename, lineno, &rval))
 	      theSystem->error("JS_EvaluateScript failed\n");
             
             ++nInstances;
@@ -1387,17 +1326,17 @@ namespace {
          * @todo Decide what to do if a call to a JavaScript function fails
          *      (probably due to an error in the script).
          */
-        void Script::activate(const double timeStamp, const std::string & fname,
-                              const size_t argc,
-                              const VrmlField * const argv[]) {
+        void Script::activate(double timeStamp, const char * fname,
+                              const size_t argc, const VrmlField * argv[]) {
             assert(this->cx);
+            assert(fname);
 
             jsval fval, rval;
             JSObject * const globalObj = JS_GetGlobalObject(this->cx);
             assert(globalObj);
             
             try {
-                if (!JS_LookupProperty(cx, globalObj, fname.c_str(), &fval)) {
+                if (!JS_LookupProperty(cx, globalObj, fname, &fval)) {
                     throw std::bad_alloc();
                 }
 
@@ -1427,8 +1366,8 @@ namespace {
                 //
 # ifndef NDEBUG
                 if (!ok) {
-                    cerr << "Call to " << fname.c_str() << " in Script node "
-                         << this->scriptNode.getId().c_str() << " failed." << endl;
+                    cerr << "Call to " << fname << " in Script node "
+                         << this->scriptNode.name() << " failed." << endl;
                 }
 # endif
 
@@ -1443,7 +1382,9 @@ namespace {
                 delete [] jsargv;
 
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+        # ifndef NDEBUG
+                cerr << ex.what() << endl;
+        # endif
             } catch (...) {
                 assert(false);
             }
@@ -1509,7 +1450,7 @@ namespace {
             case VrmlField::SFSTRING:
                 {
 	            JSString * s = JS_NewStringCopyZ(cx,
-                            static_cast<const VrmlSFString &>(f).get().c_str());
+                                            static_cast<const VrmlSFString &>(f).get());
 	            if (protect) JS_AddRoot( cx, s );
 	            rval = STRING_TO_JSVAL(s);
                     break;
@@ -1518,7 +1459,7 @@ namespace {
             case VrmlField::SFTIME:
                 {
 	            jsdouble *d = JS_NewDouble(cx,
-                                    static_cast<const VrmlSFTime &>(f).get());
+                                            static_cast<const VrmlSFTime &>(f).get());
 	            if (protect) JS_AddRoot( cx, d );
 	            rval = DOUBLE_TO_JSVAL(d);
                     break;
@@ -1623,7 +1564,7 @@ namespace {
             // context.
             //
             Script * const script =
-                    static_cast<Script *>(JS_GetContextPrivate(cx));
+                    reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
             assert(script);
 
             VrmlNodeScript & scriptNode = script->getScriptNode();
@@ -1642,7 +1583,9 @@ namespace {
                         fieldValue(createVrmlFieldFromJsval(cx, *val, fieldType));
                 scriptNode.setEventOut(eventName, *fieldValue);
             } catch (std::exception & ex) { // should be bad_alloc
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 assert(false);
@@ -1731,16 +1674,10 @@ namespace {
             for (i = this->scriptNode.fields().begin();
                     i != this->scriptNode.fields().end(); ++i) {
                 jsval val = vrmlFieldToJSVal(*(*i)->value, false);
-                if (JSVAL_IS_OBJECT(val)) {
-                    FieldData * const fieldData =
-                            static_cast<FieldData *>
-                                (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
-                    fieldData->scriptFieldId = &(*i)->name;
-                }
-                if (!JS_DefineProperty(this->cx, globalObj,
-                                       (*i)->name.c_str(), val,
-                                       0, 0, // getter, setter, ...
-                                       JSPROP_PERMANENT)) {
+                if (!JS_DefineProperty(this->cx, globalObj, (*i)->name, val,
+                                       //getter, setter, ...
+                                       0, 0,
+                                       JSPROP_PERMANENT )) {
                     return false;
                 }
             }
@@ -1749,20 +1686,19 @@ namespace {
                     i != this->scriptNode.eventOuts().end(); ++i) {
                 assert((*i)->value);
                 jsval val = vrmlFieldToJSVal(*(*i)->value, false);
-                if (JSVAL_IS_OBJECT(val)) {
-                    FieldData * const fieldData =
-                            static_cast<FieldData *>
-                                (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
-                    fieldData->scriptFieldId = &(*i)->name;
-                    fieldData->isEventOut = true;
-                }
-                
-                if (!JS_DefineProperty(this->cx, globalObj,
-                                       (*i)->name.c_str(), val,
+                if (JSVAL_IS_OBJECT(val)
+                        && JSVAL_TO_OBJECT(val)
+                        && !JS_DefineProperty(this->cx, JSVAL_TO_OBJECT(val),
+                                              "_eventOut",
+                                              PRIVATE_TO_JSVAL(reinterpret_cast<long>((*i)->name)),
+			                      0, 0, JSPROP_READONLY | JSPROP_PERMANENT))
+	          theSystem->error("JS_DefineProp _eventOut failed\n");
+
+                if (!JS_DefineProperty(this->cx, globalObj, (*i)->name, val,
 			               0, eventOut_setProperty, //getter, setter
 			               JSPROP_PERMANENT)) {
 # ifndef NDEBUG
-                    cerr << "Attempt to define \"" << (*i)->name.c_str()
+                    cerr << "Attempt to define \"" << (*i)->name
                          << "\" on global object failed." << endl;
 # endif
                     return false;
@@ -1969,17 +1905,13 @@ namespace {
         //
         void checkEventOut(JSContext * const cx, JSObject * const obj,
                            const VrmlField & val) {
-            const FieldData * const fieldData =
-                    static_cast<FieldData *>(JS_GetPrivate(cx, obj));
-            assert(fieldData);
+            Script * const script =
+                    reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+            assert(script);
             
-            if (fieldData->isEventOut) {
-                assert(fieldData->scriptFieldId);
-                Script * const script =
-                        static_cast<Script *>(JS_GetContextPrivate(cx));
-                assert(script);
-                script->getScriptNode().setEventOut(*fieldData->scriptFieldId,
-                                                    val);
+            char * eventOut = 0;
+            if ((eventOut = objToEventOut(cx, obj))) {
+                script->getScriptNode().setEventOut(eventOut, val);
             }
         }
 
@@ -2004,7 +1936,7 @@ namespace {
             JSBool getName(JSContext * const cx, JSObject *,
 		           uintN, jsval *, jsval * const rval) throw () {
                 Script * const script =
-                        static_cast<Script *>(JS_GetContextPrivate(cx));
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2019,7 +1951,7 @@ namespace {
             JSBool getVersion(JSContext * const cx, JSObject *,
 		              uintN, jsval *, jsval * const rval) throw () {
                 Script * const script =
-                        static_cast<Script *>(JS_GetContextPrivate(cx));
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2041,7 +1973,7 @@ namespace {
                                        uintN, jsval *, jsval * const rval)
                     throw () {
                 Script * const script =
-                        static_cast<Script *>(JS_GetContextPrivate(cx));
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2055,7 +1987,7 @@ namespace {
             JSBool getWorldURL(JSContext * const cx, JSObject *,
                                uintN, jsval *, jsval * const rval) throw () {
                 Script * const script =
-                        static_cast<Script *>(JS_GetContextPrivate(cx));
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2081,7 +2013,7 @@ namespace {
                 assert(argc >= 2);
                 
                 Script * const script =
-                        static_cast<Script *>(JS_GetContextPrivate(cx));
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2129,7 +2061,7 @@ namespace {
                 assert(argc >= 1);
                 
                 Script * const script =
-                        static_cast<Script *>(JS_GetContextPrivate(cx));
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2160,7 +2092,7 @@ namespace {
 				        const uintN argc, jsval * const argv,
                                         jsval * const rval) throw () {
                 assert(argc >= 1);
-
+                
                 //
                 // Make sure our argument is a string.
                 //
@@ -2196,7 +2128,7 @@ namespace {
                 assert(argc >= 3);
 
                 Script * const script =
-                        static_cast<Script *>(JS_GetContextPrivate(cx));
+                        reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
                 assert(script);
                 if (!script->getScriptNode().scene()) {
                     return JS_FALSE;
@@ -2248,7 +2180,7 @@ namespace {
                 
 	        VrmlNamespace ns;	// this is a problem...
 	        std::auto_ptr<VrmlMFNode>
-                        kids(VrmlScene::readWrl(*url, relative, &ns));
+                        kids(VrmlScene::readWrl(url.get(), relative, &ns));
                 
                 if (!kids.get()) {
                     return JS_FALSE;
@@ -2387,55 +2319,20 @@ namespace {
             }
         }
 
-
-        //
-        // FieldData
-        //
-        
-        FieldData::FieldData(const std::string * const scriptFieldId,
-                             const bool isEventOut):
-                scriptFieldId(scriptFieldId), isEventOut(isEventOut) {}
-        
-        FieldData::~FieldData() {}
-        
-        bool FieldData::isScriptField() const {
-            return this->scriptFieldId;
-        }
-        
-        
-        //
-        // SField
-        //
-        
-        SField::SFData::SFData(VrmlField * const fieldValue,
-                               const std::string * const scriptFieldId,
-                               const bool isEventOut):
-                FieldData(scriptFieldId, isEventOut), fieldValue(fieldValue) {
-            assert(fieldValue);
-        }
-        
-        SField::SFData::~SFData() {
-            delete fieldValue;
-        }
-        
-        VrmlField & SField::SFData::getFieldValue() const {
-            return *this->fieldValue;
-        }
-        
         void SField::finalize(JSContext * const cx, JSObject * const obj)
                 throw () {
-            delete static_cast<FieldData *>(JS_GetPrivate(cx, obj));
+            delete reinterpret_cast<VrmlField *>(JS_GetPrivate(cx, obj));
             JS_SetPrivate(cx, obj, 0);
         }
 
         JSBool SField::toString(JSContext * const cx, JSObject * const obj,
                                 uintN, jsval *, jsval * const rval) throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
+            const VrmlField * const fieldValue =
+                    reinterpret_cast<const VrmlField *>(JS_GetPrivate(cx, obj));
+            assert(fieldValue);
 
             ostrstream os;
-            os << sfdata->getFieldValue() << '\0';
+            os << *fieldValue << '\0';
             const char * ss = os.str();
             JSString * s = JS_NewStringCopyZ(cx, ss);
             os.rdbuf()->freeze(0);
@@ -2487,15 +2384,27 @@ namespace {
                 }
             }
 
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, sfcolorObj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
-            
-            //
-            // Assignment should not throw.
-            //
-            static_cast<VrmlSFColor &>(sfdata->getFieldValue()) = sfcolor;
+            VrmlSFColor * const privateSfcolor =
+                    reinterpret_cast<VrmlSFColor *>
+                        (JS_GetPrivate(cx, sfcolorObj));
+            assert(privateSfcolor);
+            try {
+                *privateSfcolor = sfcolor;
+            } catch (std::exception & ex) {
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
+                return JS_FALSE;
+            } catch (...) {
+                assert(false);
+                return JS_FALSE;
+            }
+
+	    if (protect) {
+                if (!JS_AddRoot(cx, sfcolorObj)) {
+                    return JS_FALSE;
+                }
+            }
 
             *rval = OBJECT_TO_JSVAL(sfcolorObj);
             return JS_TRUE;
@@ -2504,11 +2413,10 @@ namespace {
         VrmlSFColor * SFColor::createFromJSObject(JSContext * const cx,
                                                   JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &SFColor::jsclass, 0));
-            const SFData * const sfdata =
-                static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
-            return static_cast<VrmlSFColor *>(sfdata->getFieldValue().clone());
+            const VrmlSFColor * const sfcolor =
+                    reinterpret_cast<VrmlSFColor *>(JS_GetPrivate(cx, obj));
+            assert(sfcolor);
+            return static_cast<VrmlSFColor *>(sfcolor->clone());
         }
         
         JSBool SFColor::construct(JSContext * const cx, JSObject * obj,
@@ -2541,15 +2449,15 @@ namespace {
 
             try {
                 std::auto_ptr<VrmlSFColor>
-                        sfcolor(new VrmlSFColor(rgb[0], rgb[1], rgb[2]));
-                std::auto_ptr<SFData> sfdata(new SFData(sfcolor.get()));
-                sfcolor.release();
-                if (!JS_SetPrivate(cx, obj, sfdata.get())) {
+                    sfcolor(new VrmlSFColor(rgb[0], rgb[1], rgb[2]));
+                if (!JS_SetPrivate(cx, obj, sfcolor.get())) {
                     return JS_FALSE;
                 }
-                sfdata.release();
+                sfcolor.release();
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 assert(false);
@@ -2562,18 +2470,16 @@ namespace {
         JSBool SFColor::getProperty(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const rval)
                 throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
-            const VrmlSFColor & thisColor =
-                    static_cast<VrmlSFColor &>(sfdata->getFieldValue());
+            const VrmlSFColor * const sfcolor =
+                    reinterpret_cast<const VrmlSFColor *>
+                            (JS_GetPrivate(cx, obj));
+            assert(sfcolor);
 
             if (JSVAL_IS_INT(id)) {
                 if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 2) {
                     return JS_FALSE;
                 }
-                if (!JS_NewDoubleValue(cx, thisColor[JSVAL_TO_INT(id)], rval)) {
+                if (!JS_NewDoubleValue(cx, (*sfcolor)[JSVAL_TO_INT(id)], rval)) {
                     return JS_FALSE;
                 }
             }
@@ -2583,12 +2489,9 @@ namespace {
 
         JSBool SFColor::setProperty(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const vp) throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
-            VrmlSFColor & thisColor =
-                    static_cast<VrmlSFColor &>(sfdata->getFieldValue());
+            VrmlSFColor * const sfcolor =
+                    reinterpret_cast<VrmlSFColor *>(JS_GetPrivate(cx, obj));
+            assert(sfcolor);
 
             if (!JSVAL_IS_INT(id)
                     || JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 2) {
@@ -2600,8 +2503,8 @@ namespace {
                 return JS_FALSE;
             }
 
-            thisColor[JSVAL_TO_INT(id)] = d;
-            checkEventOut(cx, obj, thisColor);
+            (*sfcolor)[JSVAL_TO_INT(id)] = d;
+            checkEventOut(cx, obj, *sfcolor);
 
             return JS_TRUE;
         }
@@ -2610,16 +2513,12 @@ namespace {
                                const uintN argc, jsval * const argv,
                                jsval * const rval) throw () {
             assert(argc >= 3);
-            
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
-            VrmlSFColor & thisColor =
-                    static_cast<VrmlSFColor &>(sfdata->getFieldValue());
-            
             jsdouble h, s, v;
-            
+            VrmlSFColor * const thisColor =
+                    reinterpret_cast<VrmlSFColor *>(JS_GetPrivate(cx, obj));
+            assert(thisColor);
+
+
             if (!JSVAL_IS_NUMBER(argv[0])
                     || !JS_ValueToNumber(cx, argv[0], &h)
                     || !JSVAL_IS_NUMBER(argv[1])
@@ -2629,25 +2528,19 @@ namespace {
                 return JS_FALSE;
             }
             
-            thisColor.setHSV(h, s, v);
-            checkEventOut(cx, obj, thisColor);
+            thisColor->setHSV(h, s, v);
+            checkEventOut(cx, obj, *thisColor);
             *rval = JSVAL_VOID;
             return JS_TRUE;
         }
 
         JSBool SFColor::getHSV(JSContext * const cx, JSObject * const obj,
                                uintN, jsval *, jsval * rval) throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFColor *>(&sfdata->getFieldValue()));
-            VrmlSFColor & thisColor =
-                    static_cast<VrmlSFColor &>(sfdata->getFieldValue());
-            
+            const VrmlSFColor * const thisColor =
+                    reinterpret_cast<VrmlSFColor *>(JS_GetPrivate(cx, obj));
+            assert(thisColor);
             float hsv[3];
-            
-            thisColor.getHSV(hsv); // XXX throws? nah...
-            
+            thisColor->getHSV(hsv); // throws? nah...
             return floatsToJSArray(3, hsv, cx, rval);
         }
 
@@ -2703,18 +2596,23 @@ namespace {
             try {
                 std::auto_ptr<VrmlSFImage>
                         sfimageClone(static_cast<VrmlSFImage *>(sfimage.clone()));
-                std::auto_ptr<SFData> sfdata(new SFData(sfimageClone.get()));
-                sfimageClone.release();
-                if (!JS_SetPrivate(cx, sfimageObj, sfdata.get())) {
+                if (!JS_SetPrivate(cx, sfimageObj, sfimageClone.get())) {
                     return JS_FALSE;
                 }
-                sfdata.release();
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 assert(false);
                 return JS_FALSE;
+            }
+
+	    if (protect) {
+                if (!JS_AddRoot(cx, sfimageObj)) {
+                    return JS_FALSE;
+                }
             }
 
             *rval = OBJECT_TO_JSVAL(sfimageObj);
@@ -2724,11 +2622,10 @@ namespace {
         VrmlSFImage * SFImage::createFromJSObject(JSContext * const cx,
                                                   JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &SFImage::jsclass, 0));
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFImage *>(&sfdata->getFieldValue()));
-            return static_cast<VrmlSFImage *>(sfdata->getFieldValue().clone());
+            const VrmlSFImage * const sfimage =
+                    reinterpret_cast<VrmlSFImage *>(JS_GetPrivate(cx, obj));
+            assert(sfimage);
+            return static_cast<VrmlSFImage *>(sfimage->clone());
         }
         
         JSBool SFImage::construct(JSContext * const cx, JSObject * obj,
@@ -2797,10 +2694,10 @@ namespace {
             }
             
             MField::MFData * const mfdata =
-                    static_cast<MField::MFData *>
+                    reinterpret_cast<MField::MFData *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[3])));
             
-            if (mfdata->array.size() != (x * y)) {
+            if (mfdata->getArray().size() != (x * y)) {
                 return JS_FALSE;
             }
             
@@ -2811,12 +2708,12 @@ namespace {
                 
                 Pixels::iterator pixelPtr = pixels.begin();
                 for (MField::JsvalArray::size_type i(0);
-                        i < mfdata->array.size(); ++i, pixelPtr += comp) {
-                    assert(JSVAL_IS_INT(mfdata->array[i]));
+                        i < mfdata->getArray().size(); ++i, pixelPtr += comp) {
+                    assert(JSVAL_IS_INT(mfdata->getArray()[i]));
 	            static const long byteMask[] =
                             { 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 };
                     int32 pixel;
-                    if (!JS_ValueToInt32(cx, mfdata->array[i], &pixel)) {
+                    if (!JS_ValueToInt32(cx, mfdata->getArray()[i], &pixel)) {
                         return JS_FALSE;
                     }
                     for (size_t j(0); j < comp; ++j) {
@@ -2826,14 +2723,15 @@ namespace {
 
                 std::auto_ptr<VrmlSFImage>
                         sfimage(new VrmlSFImage(x, y, comp, &pixels[0]));
-                std::auto_ptr<SFData> sfdata(new SFData(sfimage.get()));
-                sfimage.release();
-                if (!JS_SetPrivate(cx, obj, sfdata.get())) {
+                
+                if (!JS_SetPrivate(cx, obj, sfimage.get())) {
                     return JS_FALSE;
                 }
-                sfdata.release();
+                sfimage.release();
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 return JS_FALSE;
@@ -2849,23 +2747,20 @@ namespace {
          */
         JSBool SFImage::getProperty(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const vp) throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFImage *>(&sfdata->getFieldValue()));
-            const VrmlSFImage & thisImage =
-                        (static_cast<VrmlSFImage &>(sfdata->getFieldValue()));
+            const VrmlSFImage * const sfimage = reinterpret_cast<VrmlSFImage *>
+                                                    (JS_GetPrivate(cx, obj));
+            assert(sfimage);
 
             if (JSVAL_IS_INT(id)) {
                 switch (JSVAL_TO_INT(id)) {
                     case 0:
-                        *vp = INT_TO_JSVAL(thisImage.getWidth());
+                        *vp = INT_TO_JSVAL(sfimage->getWidth());
                         break;
                     case 1:
-                        *vp = INT_TO_JSVAL(thisImage.getHeight());
+                        *vp = INT_TO_JSVAL(sfimage->getHeight());
                         break;
                     case 2:
-                        *vp = INT_TO_JSVAL(thisImage.getComponents());
+                        *vp = INT_TO_JSVAL(sfimage->getComponents());
                         break;
                     case 3: // *vp = convert pixels to MFInt...
                     default: return JS_FALSE;
@@ -2918,27 +2813,27 @@ namespace {
                 return JS_FALSE;
             }
 
-	    if (protect) {
-                if (!JS_AddRoot(cx, sfnodeObj)) {
-                    return JS_FALSE;
-                }
-            }
-            
             try {
                 std::auto_ptr<VrmlSFNode>
                         sfnodeClone(static_cast<VrmlSFNode *>(sfnode.clone()));
-                std::auto_ptr<SFData> sfdata(new SFData(sfnodeClone.get()));
-                sfnodeClone.release();
-                if (!JS_SetPrivate(cx, sfnodeObj, sfdata.get())) {
+                if (!JS_SetPrivate(cx, sfnodeObj, sfnodeClone.get())) {
                     return JS_FALSE;
                 }
-                sfdata.release();
+                sfnodeClone.release();
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+#ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 assert(false);
                 return JS_FALSE;
+            }
+
+	    if (protect) {
+                if (!JS_AddRoot(cx, sfnodeObj)) {
+                    return JS_FALSE;
+                }
             }
 
             *rval = OBJECT_TO_JSVAL(sfnodeObj);
@@ -2948,11 +2843,10 @@ namespace {
         VrmlSFNode * SFNode::createFromJSObject(JSContext * const cx,
                                                 JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &SFNode::jsclass, 0));
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFNode *>(&sfdata->getFieldValue()));
-            return static_cast<VrmlSFNode *>(sfdata->getFieldValue().clone());
+            const VrmlSFNode * const sfnode =
+                    reinterpret_cast<VrmlSFNode *>(JS_GetPrivate(cx, obj));
+            assert(sfnode);
+            return static_cast<VrmlSFNode *>(sfnode->clone());
         }
 
         JSBool SFNode::construct(JSContext * const cx, JSObject * obj,
@@ -3000,17 +2894,14 @@ namespace {
             try {
                 std::auto_ptr<VrmlSFNode>
                     sfnode(new VrmlSFNode(nodes.getElement(0)));
-                std::auto_ptr<SFData> sfdata(new SFData(sfnode.get()));
-                sfnode.release();
-                if (!JS_SetPrivate(cx, obj, sfdata.get())) {
+                if (!JS_SetPrivate(cx, obj, sfnode.get())) {
                     return JS_FALSE;
                 }
-                sfdata.release();
+                sfnode.release();
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
-                return JS_FALSE;
-            } catch (...) {
-                assert(false);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             }
 
@@ -3022,26 +2913,22 @@ namespace {
         //
         JSBool SFNode::getProperty(JSContext * const cx, JSObject * const obj,
                                    const jsval id, jsval * const vp) throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFNode *>(&sfdata->getFieldValue()));
-            const VrmlSFNode & thisNode =
-                    static_cast<VrmlSFNode &>(sfdata->getFieldValue());
+            const VrmlSFNode * const sfnode =
+                    reinterpret_cast<VrmlSFNode *>(JS_GetPrivate(cx, obj));
+            assert(sfnode);
             
-            if (!thisNode.get()) {
+            if (!sfnode->get()) {
                 return JS_FALSE;
             }
             
             Script * const script =
-                    static_cast<Script *>(JS_GetContextPrivate(cx));
+                    reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
             assert(script);
 
             JSString * str = 0;
             if (JSVAL_IS_STRING(id) && ((str = JSVAL_TO_STRING(id)))) {
                 char * eventOut = JS_GetStringBytes(str);
-                const VrmlField * const fieldVal =
-                        thisNode.get()->getEventOut(eventOut);
+                const VrmlField * fieldVal = sfnode->get()->getEventOut(eventOut);
 
                 // convert event out value to jsval...
                 if (fieldVal) {
@@ -3060,65 +2947,37 @@ namespace {
 
         JSBool SFNode::setProperty(JSContext * const cx, JSObject * const obj,
                                    const jsval id, jsval * const vp) throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFNode *>(&sfdata->getFieldValue()));
-            VrmlSFNode & thisNode =
-                    static_cast<VrmlSFNode &>(sfdata->getFieldValue());
-            
-            VrmlNodePtr nodePtr = thisNode.get();
-            
-            if (!nodePtr || !JSVAL_IS_STRING(id)) {
-                return JS_FALSE;
-            }
-            
-            const char * const eventInId = JS_GetStringBytes(JSVAL_TO_STRING(id));
-            if (!eventInId) {
-                return JS_FALSE;
-            }
-            
-	    // convert vp to field, send eventIn to node
-            VrmlField::VrmlFieldType expectType;
-            if ((expectType = nodePtr->type.hasEventIn(eventInId))) {
-                VrmlField * const fieldValue =
-                        createVrmlFieldFromJsval(cx, *vp, expectType);
-                if (!fieldValue) {
-                    return JS_FALSE;
-                }
-                // This should only happen if directOutput is set...
+            VrmlSFNode * const sfn =
+                    reinterpret_cast<VrmlSFNode *>(JS_GetPrivate(cx, obj));
+            assert(sfn);
+            VrmlNodePtr n = sfn->get();
 
-	        // the timestamp should be stored as a global property and
-	        // looked up via obj somehow...
-	        Script * const script = 
-                        static_cast<Script *>(JS_GetContextPrivate(cx));
-                assert(script);
-	        if (script->getScriptNode().scene()) {
-	            script->getScriptNode().scene()
-                            ->queueEvent(s_timeStamp, fieldValue, nodePtr,
-                                         eventInId);
-	        }
-            } else if (expectType = nodePtr->type.hasField(eventInId)) {
-	        VrmlField * const fieldValue =
-		        createVrmlFieldFromJsval(cx, *vp, expectType);
-		if (!fieldValue) {
-		    return JS_FALSE;
-		}
-		// This should only happen if directOutput is set...
+            if (n && JSVAL_IS_STRING(id))
+              {
+                JSString *str = JSVAL_TO_STRING(id);
+                char *eventIn = str ? JS_GetStringBytes(str) : 0;
+                VrmlField::VrmlFieldType expect =
+                        n->nodeType().hasEventIn(eventIn);
 
-		// the timestamp should be stored as a global property and
-		// looked up via obj somehow...
-		Script * const script = 
-		        static_cast<Script *>(JS_GetContextPrivate(cx));
-		assert(script);
-		if (script->getScriptNode().scene()) {
-		    script->getScriptNode().scene()
-		            ->queueEvent(s_timeStamp, fieldValue, nodePtr,
-					 eventInId);
-		}
-	    }
-            
-            checkEventOut(cx, obj, thisNode);
+                if (expect && eventIn)	// convert vp to field, send eventIn to n
+	          {
+
+	            VrmlField *f = createVrmlFieldFromJsval( cx, *vp, expect );
+                    if ( ! f ) return JS_FALSE;
+
+                    // This should only happen if directOutput is set...
+
+	            // the timestamp should be stored as a global property and
+	            // looked up via obj somehow...
+	            Script * const script = 
+                            reinterpret_cast<Script *>(JS_GetContextPrivate(cx));
+                    assert(script);
+	            if (script->getScriptNode().scene())
+	              script->getScriptNode().scene()->queueEvent( s_timeStamp, f, n, eventIn );
+	          }
+
+                checkEventOut(cx, obj, *sfn);
+              }
             return JS_TRUE;
         }
 
@@ -3169,16 +3028,13 @@ namespace {
                 }
             }
 
-            const SFData * const sfdata =
-                static_cast<SFData *>(JS_GetPrivate(cx, sfrotationObj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
+            VrmlSFRotation * const privateSfrotation =
+                    reinterpret_cast<VrmlSFRotation *>
+                        (JS_GetPrivate(cx, sfrotationObj));
+            assert(privateSfrotation);
             
-            //
-            // Assignment should not throw.
-            //
-            static_cast<VrmlSFRotation &>(sfdata->getFieldValue()) = sfrotation;
-            
+            *privateSfrotation = sfrotation;
+
             *rval = OBJECT_TO_JSVAL(sfrotationObj);
             return JS_TRUE;
         }
@@ -3186,12 +3042,10 @@ namespace {
         VrmlSFRotation * SFRotation::createFromJSObject(JSContext * const cx,
                                                         JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &SFRotation::jsclass, 0));
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            return static_cast<VrmlSFRotation *>
-                    (sfdata->getFieldValue().clone());
+            const VrmlSFRotation * const sfrotation =
+                    reinterpret_cast<VrmlSFRotation *>(JS_GetPrivate(cx, obj));
+            assert(sfrotation);
+            return static_cast<VrmlSFRotation *>(sfrotation->clone());
         }
 
         JSBool SFRotation::construct(JSContext * const cx, JSObject * obj,
@@ -3249,44 +3103,40 @@ namespace {
                                        &JavaScript_::SFVec3f::jsclass, 0)) {
                         return JS_FALSE;
                     }
-                    const SFData * sfdata =
-                            static_cast<SFData *>
-                                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-                    assert(sfdata);
-                    assert(dynamic_cast<VrmlSFVec3f *>
-                                (&sfdata->getFieldValue()));
-                    const VrmlSFVec3f & argVec1 =
-                        (static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()));
+                    VrmlSFVec3f * const argVec1 =
+                            reinterpret_cast<VrmlSFVec3f *>
+                                (JS_GetPrivate(cx,
+                                            JSVAL_TO_OBJECT(argv[0])));
+                    assert(argVec1);
 
                     if (argc > 1) {
                         if (JSVAL_IS_OBJECT(argv[1])) {
-                            if (!JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[1]),
-                                           &JavaScript_::SFVec3f::jsclass, 0)) {
+                            if (!JS_InstanceOf(cx,
+                                               JSVAL_TO_OBJECT(argv[1]),
+                                               &JavaScript_::SFVec3f::jsclass, 0)) {
                                 return JS_FALSE;
                             }
-                            sfdata = static_cast<SFData *>
-                                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-                            assert(sfdata);
-                            assert(dynamic_cast<VrmlSFVec3f *>
-                                        (&sfdata->getFieldValue()));
-                            const VrmlSFVec3f & argVec2 =
-                                    (static_cast<VrmlSFVec3f &>
-                                        (sfdata->getFieldValue()));
-                            
-                            VrmlSFVec3f axisVec(argVec1.cross(argVec2));
+
+                            VrmlSFVec3f * const argVec2 =
+                                    reinterpret_cast<VrmlSFVec3f *>
+                                        (JS_GetPrivate(cx,
+                                            JSVAL_TO_OBJECT(argv[1])));
+
+                            VrmlSFVec3f axisVec(argVec1->cross(*argVec2));
                             x = axisVec.getX();
                             y = axisVec.getY();
                             z = axisVec.getZ();
-                            angle = acos(argVec1.dot(argVec2) /
-                                    (argVec1.length() * argVec2.length()));
+                            angle = acos(argVec1->dot(*argVec2) /
+                                (argVec1->length() * argVec2->length()));
 
                         } else if (JSVAL_IS_NUMBER(argv[1])) {
-                            if (!JS_ValueToNumber(cx, argv[1], &angle)) {
+                            if (!JS_ValueToNumber(cx, argv[1],
+                                                  &angle)) {
                                 return JS_FALSE;
                             }
-                            x = argVec1.getX();
-                            y = argVec1.getY();
-                            z = argVec1.getZ();
+                            x = argVec1->getX();
+                            y = argVec1->getY();
+                            z = argVec1->getZ();
 
                         } else {
                             return JS_FALSE;
@@ -3300,14 +3150,14 @@ namespace {
             try {
                 std::auto_ptr<VrmlSFRotation>
                         sfrotation(new VrmlSFRotation(x, y, z, angle));
-                std::auto_ptr<SFData> sfdata(new SFData(sfrotation.get()));
-                sfrotation.release();
-                if (!JS_SetPrivate(cx, obj, sfdata.get())) {
+                if (!JS_SetPrivate(cx, obj, sfrotation.get())) {
                     return JS_FALSE;
                 }
-                sfdata.release();
+                sfrotation.release();
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 assert(false);
@@ -3321,19 +3171,15 @@ namespace {
                                        JSObject * const obj,
                                        const jsval id, jsval * const rval)
                 throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & thisRot =
-                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
+            const VrmlSFRotation * const thisRot =
+                    reinterpret_cast<VrmlSFRotation *>(JS_GetPrivate(cx, obj));
+            assert(thisRot);
 
             if (JSVAL_IS_INT(id)) {
                 if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 3) {
                     return JS_FALSE;
                 }
-                if (!JS_NewDoubleValue(cx, thisRot.get()[JSVAL_TO_INT(id)],
-                                       rval)) {
+                if (!JS_NewDoubleValue(cx, thisRot->get()[JSVAL_TO_INT(id)], rval)) {
                     return JS_FALSE;
                 }
             }
@@ -3345,12 +3191,9 @@ namespace {
                                        JSObject * const obj,
                                        const jsval id, jsval * const vp)
                 throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            VrmlSFRotation & thisRot
-                    =static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
+            VrmlSFRotation * const thisRot =
+                    reinterpret_cast<VrmlSFRotation *>(JS_GetPrivate(cx, obj));
+            assert(thisRot);
 
             if (!JSVAL_IS_INT(id)) {
                 return JS_FALSE;
@@ -3367,75 +3210,67 @@ namespace {
             
             switch (JSVAL_TO_INT(id)) {
             case 0:
-                thisRot.setX(d);
+                thisRot->setX(d);
                 break;
 
             case 1:
-                thisRot.setY(d);
+                thisRot->setY(d);
                 break;
 
             case 2:
-                thisRot.setZ(d);
+                thisRot->setZ(d);
                 break;
 
             case 3:
-                thisRot.setAngle(d);
+                thisRot->setAngle(d);
                 break;
 
             default:
                 return JS_FALSE;
             }
             
-            checkEventOut(cx, obj, thisRot);
+            checkEventOut(cx, obj, *thisRot);
             return JS_TRUE;
         }
 
         JSBool SFRotation::getAxis(JSContext * const cx, JSObject * const obj,
                                    uintN, jsval *, jsval * const rval)
                 throw () {
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & thisRot =
-                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
-            sfdata = 0;
-            
-            JSObject * const robj =
-                    JS_ConstructObject(cx, &SFVec3f::jsclass, 0, robj);
-            if (!robj) {
+            const VrmlSFRotation * const thisRot =
+                    reinterpret_cast<VrmlSFRotation *>(JS_GetPrivate(cx, obj));
+            assert(thisRot);
+
+            JSObject * const axisObj =
+                    JS_ConstructObject(cx, &SFVec3f::jsclass, 0, axisObj);
+            if (!axisObj) {
                 return JS_FALSE;
             }
-            
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            
+
+            VrmlSFVec3f * const axisVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, axisObj));
+            assert(axisVec);
+
             try {
-                resultVec = thisRot.getAxis();
+                *axisVec = thisRot->getAxis();
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 return JS_FALSE;
             }
-            
-            *rval = OBJECT_TO_JSVAL(robj);
+
+            *rval = OBJECT_TO_JSVAL(axisObj);
             return JS_TRUE;
         }
 
         JSBool SFRotation::inverse(JSContext * const cx, JSObject * const obj,
                                    uintN, jsval *, jsval * const rval)
                 throw () {
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & thisRot =
-                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFRotation * const thisRot =
+                    reinterpret_cast<VrmlSFRotation *>(JS_GetPrivate(cx, obj));
+            assert(thisRot);
 
             JSObject * const robj =
                     JS_ConstructObject(cx, &SFRotation::jsclass, 0,
@@ -3444,38 +3279,32 @@ namespace {
                 return JS_FALSE;
             }
 
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>
-                        (&sfdata->getFieldValue()));
-            VrmlSFRotation & resultRot =
-                static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
+            VrmlSFRotation * const invertedRot =
+                    reinterpret_cast<VrmlSFRotation *>(JS_GetPrivate(cx, robj));
+            assert(invertedRot);
 
             try {
-                resultRot = thisRot.inverse();
+                *invertedRot = thisRot->inverse();
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
-                assert(false);
                 return JS_FALSE;
             }
 
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
         }
-        
+
         JSBool SFRotation::multiply(JSContext * const cx, JSObject * const obj,
                                     const uintN argc, jsval * const argv,
                                     jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & thisRot =
-                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFRotation * const thisRot =
+                    reinterpret_cast<VrmlSFRotation *>(JS_GetPrivate(cx, obj));
+            assert(thisRot);
 
             //
             // Make sure our argument is an SFRotation.
@@ -3486,36 +3315,34 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>
+            const VrmlSFRotation * const argRot =
+                    reinterpret_cast<VrmlSFRotation *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & argRot =
-                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
+            assert(argRot);
             
             //
             // Construct the result object.
             //
-            JSObject * robj = JS_ConstructObject(cx, &SFRotation::jsclass, 0,
-                                                 JS_GetParent(cx, obj));
-            if (!robj) {
-                return JS_FALSE;
-            }
-
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>
-                        (&sfdata->getFieldValue()));
-            VrmlSFRotation & resultRot =
-                static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
-            
+            JSObject * robj = 0;
             try {
-                resultRot = thisRot.multiply(argRot);
+                robj = JS_ConstructObject(cx, &SFRotation::jsclass, 0,
+                                          JS_GetParent(cx, obj));
+                if (!robj) {
+                    throw std::bad_alloc();
+                }
+
+                VrmlSFRotation * const resultRot =
+                        reinterpret_cast<VrmlSFRotation *>
+                            (JS_GetPrivate(cx, robj));
+                assert(resultRot);
+
+                *resultRot = thisRot->multiply(*argRot);
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
-                assert(false);
                 return JS_FALSE;
             }
                 
@@ -3527,13 +3354,8 @@ namespace {
                                    const uintN argc, jsval * const argv,
 	                           jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & thisRot =
-                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFRotation * const thisRot =
+                    reinterpret_cast<VrmlSFRotation *>(JS_GetPrivate(cx, obj));
             
             //
             // Make sure our argument is an SFVec3f.
@@ -3544,35 +3366,32 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & argVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec3f * const argVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+            assert(argVec);
             
             //
             // Construct the result object.
             //
-            JSObject * robj = JS_ConstructObject(cx, &SFVec3f::jsclass, 0,
-                                                 JS_GetParent(cx, obj));
-            if (!robj) {
-                return JS_FALSE;
-            }
-
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            
+            JSObject * robj = 0;
             try {
-                resultVec = thisRot.multVec(argVec);
+                robj = JS_ConstructObject(cx, &SFVec3f::jsclass, 0,
+                                          JS_GetParent(cx, obj));
+                if (!robj) {
+                    throw std::bad_alloc();
+                }
+                
+                VrmlSFVec3f * const resultVec = reinterpret_cast<VrmlSFVec3f *>
+                                                    (JS_GetPrivate(cx, robj));
+                assert(resultVec);
+
+                *resultVec = thisRot->multVec(*argVec);
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
-                assert(false);
                 return JS_FALSE;
             }
                 
@@ -3584,13 +3403,9 @@ namespace {
                                    const uintN argc, jsval * const argv,
                                    jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            VrmlSFRotation & thisRot =
-                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
-            sfdata = 0;
+            VrmlSFRotation * const thisRot =
+                    reinterpret_cast<VrmlSFRotation *>(JS_GetPrivate(cx, obj));
+            assert(thisRot);
             
             //
             // Make sure our argument is an SFVec3f.
@@ -3601,16 +3416,12 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>
-                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & argVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
+            const VrmlSFVec3f * const argVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+            assert(argVec);
             
-            thisRot.setAxis(argVec); // XXX Throws? Nah ...
-            
-            checkEventOut(cx, obj, thisRot);
+            thisRot->setAxis(*argVec);
+            checkEventOut(cx, obj, *thisRot);
             *rval = JSVAL_VOID;
             return JS_TRUE;
         }
@@ -3619,13 +3430,9 @@ namespace {
                                  const uintN argc, jsval * const argv,
                                  jsval * const rval) throw () {
             assert(argc >= 2);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & thisRot =
-                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
-            sfdata = 0;
+            VrmlSFRotation * const thisRot =
+                    reinterpret_cast<VrmlSFRotation *>(JS_GetPrivate(cx, obj));
+            assert(thisRot);
             
             //
             // Make sure our first argument is an SFRotation.
@@ -3636,13 +3443,9 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>
-                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            const VrmlSFRotation & argRot =
-                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFRotation * const argRot =
+                    reinterpret_cast<VrmlSFRotation *>(JS_GetPrivate(cx, obj));
+            assert(argRot);
             
             //
             // Make sure our second argument is a number.
@@ -3656,25 +3459,26 @@ namespace {
             //
             // Construct the result object.
             //
-            JSObject * const robj = JS_ConstructObject(cx, &SFRotation::jsclass, 0,
-                                                       JS_GetParent(cx, obj));
-            if (!robj) {
-                return JS_FALSE;
-            }
-
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFRotation *>(&sfdata->getFieldValue()));
-            VrmlSFRotation & resultRot =
-                    static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
-            
+            JSObject * robj = 0;
             try {
-                resultRot = thisRot.slerp(argRot, factor);
+                robj = JS_ConstructObject(cx, &SFRotation::jsclass, 0,
+                                          JS_GetParent(cx, obj));
+                if (!robj) {
+                    throw std::bad_alloc();
+                }
+                
+                VrmlSFRotation * const resultRot =
+                        reinterpret_cast<VrmlSFRotation *>
+                            (JS_GetPrivate(cx, robj));
+                assert(resultRot);
+
+                *resultRot = thisRot->slerp(*argRot, factor);
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
-                assert(false);
                 return JS_FALSE;
             }
             
@@ -3728,16 +3532,13 @@ namespace {
                 }
             }
 
-            const SFData * const sfdata =
-                static_cast<SFData *>(JS_GetPrivate(cx, sfvec2fObj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
+            VrmlSFVec2f * const privateSFVec2f =
+                    reinterpret_cast<VrmlSFVec2f *>
+                        (JS_GetPrivate(cx, sfvec2fObj));
+            assert(privateSFVec2f);
             
-            //
-            // Assignment should not throw.
-            //
-            static_cast<VrmlSFVec2f &>(sfdata->getFieldValue()) = sfvec2f;
-            
+            *privateSFVec2f = sfvec2f;
+
             *rval = OBJECT_TO_JSVAL(sfvec2fObj);
             return JS_TRUE;
         }
@@ -3745,11 +3546,10 @@ namespace {
         VrmlSFVec2f * SFVec2f::createFromJSObject(JSContext * const cx,
                                                   JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &SFVec2f::jsclass, 0));
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            return static_cast<VrmlSFVec2f *>(sfdata->getFieldValue().clone());
+            const VrmlSFVec2f * const sfvec2f =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, obj));
+            assert(sfvec2f);
+            return static_cast<VrmlSFVec2f *>(sfvec2f->clone());
         }
 
         JSBool SFVec2f::constructor(JSContext * const cx, JSObject * obj,
@@ -3787,15 +3587,16 @@ namespace {
             }
             
             try {
-                std::auto_ptr<VrmlSFVec2f> sfvec2f(new VrmlSFVec2f(x, y));
-                std::auto_ptr<SFData> sfdata(new SFData(sfvec2f.get()));
-                sfvec2f.release();
-                if (!JS_SetPrivate(cx, obj, sfdata.get())) {
+                std::auto_ptr<VrmlSFVec2f>
+                        sfvec2f(new VrmlSFVec2f(x, y));
+                if (!JS_SetPrivate(cx, obj, sfvec2f.get())) {
                     return JS_FALSE;
                 }
-                sfdata.release();
+                sfvec2f.release();
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 assert(false);
@@ -3806,20 +3607,16 @@ namespace {
         }
 
         JSBool SFVec2f::getProperty(JSContext * const cx, JSObject * const obj,
-                                    const jsval id, jsval * const rval)
-                throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
+                                    const jsval id, jsval * const rval) throw () {
+            const VrmlSFVec2f * const thisVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
 
             if (JSVAL_IS_INT(id)) {
                 if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 1) {
                     return JS_FALSE;
                 }
-                if (!JS_NewDoubleValue(cx, thisVec[JSVAL_TO_INT(id)], rval)) {
+                if (!JS_NewDoubleValue(cx, (*thisVec)[JSVAL_TO_INT(id)], rval)) {
                     return JS_FALSE;
                 }
             }
@@ -3829,12 +3626,9 @@ namespace {
 
         JSBool SFVec2f::setProperty(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const vp) throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & thisVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
+            VrmlSFVec2f * const thisVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             if (!JSVAL_IS_INT(id)) {
                 return JS_FALSE;
@@ -3849,8 +3643,8 @@ namespace {
                 return JS_FALSE;
             }
 
-            thisVec[JSVAL_TO_INT(id)] = d;
-            checkEventOut(cx, obj, thisVec);
+            (*thisVec)[JSVAL_TO_INT(id)] = d;
+            checkEventOut(cx, obj, *thisVec);
             return JS_TRUE;
         }
 
@@ -3858,13 +3652,9 @@ namespace {
                             const uintN argc, jsval * const argv,
                             jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec2f * const thisVec = reinterpret_cast<VrmlSFVec2f *>
+                                                    (JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Make sure our argument is an SFVec2f.
@@ -3875,13 +3665,10 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>
+            const VrmlSFVec2f * const argVec =
+                    reinterpret_cast<VrmlSFVec2f *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & argVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            assert(argVec);
             
             //
             // Construct the result object.
@@ -3891,14 +3678,12 @@ namespace {
             if (!robj) {
                 return JS_FALSE;
             }
-
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & resultVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-
-            resultVec = thisVec.add(argVec); // XXX Throws? Nah ...
+            
+            VrmlSFVec2f * const resultVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
+            
+            *resultVec = thisVec->add(*argVec);
             
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
@@ -3908,13 +3693,9 @@ namespace {
                                const uintN argc, jsval * const argv,
                                jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec2f * const thisVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Make sure our argument is a number.
@@ -3930,19 +3711,16 @@ namespace {
             //
             JSObject * const robj = JS_ConstructObject(cx, &SFVec2f::jsclass, 0,
                                                        JS_GetParent(cx, obj));
-            
             if (!robj) {
                 return JS_FALSE;
             }
-
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & resultVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-
-            resultVec = thisVec.divide(divisor); // XXX throws? nah...
-
+            
+            VrmlSFVec2f * const resultVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
+            
+            *resultVec = thisVec->divide(divisor); // throws? nah...
+            
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
         }
@@ -3951,13 +3729,9 @@ namespace {
                             const uintN argc, jsval * const argv,
                             jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec2f * const thisVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Make sure our argument is an SFVec2f.
@@ -3968,28 +3742,21 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>
-                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & argVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec2f * const argVec = reinterpret_cast<VrmlSFVec2f *>
+                                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+            assert(argVec);
 
-            *rval = DOUBLE_TO_JSVAL(thisVec.dot(argVec));
+            *rval = DOUBLE_TO_JSVAL(thisVec->dot(*argVec));
             return JS_TRUE;
         }
 
         JSBool SFVec2f::length(JSContext * const cx, JSObject * const obj,
                                uintN, jsval *, jsval * const rval) throw () {
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
+            const VrmlSFVec2f * const thisVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
-            if (!JS_NewDoubleValue(cx, thisVec.length(), rval)) {
+            if (!JS_NewDoubleValue(cx, thisVec->length(), rval)) {
                 return JS_FALSE;
             }
             
@@ -4000,13 +3767,9 @@ namespace {
                                  const uintN argc, jsval * const argv,
                                  jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec2f * const thisVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Make sure our argument is a number.
@@ -4026,13 +3789,11 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & resultVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
+            VrmlSFVec2f * const resultVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
             
-            resultVec = thisVec.multiply(factor); // XXX throws? nah...
+            *resultVec = thisVec->multiply(factor); // throws? nah...
             
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
@@ -4040,13 +3801,9 @@ namespace {
 
         JSBool SFVec2f::negate(JSContext * const cx, JSObject * const obj,
                                uintN, jsval *, jsval * const rval) throw () {
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec2f * const thisVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Construct the result object.
@@ -4057,13 +3814,11 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & resultVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
+            VrmlSFVec2f * const resultVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
             
-            resultVec = thisVec.negate(); // XXX Throws? Nah ...
+            *resultVec = thisVec->negate();
             
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
@@ -4071,13 +3826,9 @@ namespace {
 
         JSBool SFVec2f::normalize(JSContext * const cx, JSObject * const obj,
                                   uintN, jsval *, jsval * const rval) throw () {
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec2f * const thisVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Construct the result object.
@@ -4088,13 +3839,11 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & resultVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
+            VrmlSFVec2f * const resultVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
             
-            resultVec = thisVec.normalize(); // XXX Throws? Nah ...
+            *resultVec = thisVec->normalize();
             
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
@@ -4104,13 +3853,9 @@ namespace {
                                  const uintN argc, jsval * const argv,
                                  jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & thisVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec2f * const thisVec = reinterpret_cast<VrmlSFVec2f *>
+                                                    (JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Make sure our argument is an SFVec2f.
@@ -4121,13 +3866,10 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>
+            const VrmlSFVec2f * const argVec =
+                    reinterpret_cast<VrmlSFVec2f *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec2f & argVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            assert(argVec);
             
             //
             // Construct the result object.
@@ -4138,13 +3880,11 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec2f *>(&sfdata->getFieldValue()));
-            VrmlSFVec2f & resultVec =
-                    static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
+            VrmlSFVec2f * const resultVec =
+                    reinterpret_cast<VrmlSFVec2f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
             
-            resultVec = thisVec.subtract(argVec); // XXX Throws? Nah ...
+            *resultVec = thisVec->subtract(*argVec);
             
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
@@ -4197,15 +3937,12 @@ namespace {
                 }
             }
 
-            const SFData * const sfdata =
-                static_cast<SFData *>(JS_GetPrivate(cx, sfvec3fObj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            
-            //
-            // Assignment should not throw.
-            //
-            static_cast<VrmlSFVec3f &>(sfdata->getFieldValue()) = sfvec3f;
+            VrmlSFVec3f * const privateSFVec3f =
+                    reinterpret_cast<VrmlSFVec3f *>
+                        (JS_GetPrivate(cx, sfvec3fObj));
+            assert(privateSFVec3f);
+            *privateSFVec3f = sfvec3f; // Compiler-defined copy of array of
+                                       // primitives; shouldn't throw.
 
             *rval = OBJECT_TO_JSVAL(sfvec3fObj);
             return JS_TRUE;
@@ -4214,11 +3951,10 @@ namespace {
         VrmlSFVec3f * SFVec3f::createFromJSObject(JSContext * const cx,
                                                   JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &SFVec3f::jsclass, 0));
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            return static_cast<VrmlSFVec3f *>(sfdata->getFieldValue().clone());
+            const VrmlSFVec3f * const sfvec3f =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+            assert(sfvec3f);
+            return static_cast<VrmlSFVec3f *>(sfvec3f->clone());
         }
 
         JSBool SFVec3f::constructor(JSContext * const cx, JSObject * obj,
@@ -4254,14 +3990,14 @@ namespace {
             try {
                 std::auto_ptr<VrmlSFVec3f>
                         sfvec3f(new VrmlSFVec3f(vec[0], vec[1], vec[2]));
-                std::auto_ptr<SFData> sfdata(new SFData(sfvec3f.get()));
-                sfvec3f.release();
-                if (!JS_SetPrivate(cx, obj, sfdata.get())) {
+                if (!JS_SetPrivate(cx, obj, sfvec3f.get())) {
                     return JS_FALSE;
                 }
-                sfdata.release();
+                sfvec3f.release();
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 assert(false);
@@ -4273,18 +4009,15 @@ namespace {
         
         JSBool SFVec3f::getProperty(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const vp) throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
+            const VrmlSFVec3f * const thisVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             if (JSVAL_IS_INT(id)) {
                 if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 2) {
                     return JS_FALSE;
                 }
-                if (!JS_NewDoubleValue(cx, thisVec[JSVAL_TO_INT(id)], vp)) {
+                if (!JS_NewDoubleValue(cx, (*thisVec)[JSVAL_TO_INT(id)], vp)) {
                     return JS_FALSE;
                 }
             }
@@ -4294,12 +4027,9 @@ namespace {
 
         JSBool SFVec3f::setProperty(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const vp) throw () {
-            const SFData * const sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & thisVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
+            VrmlSFVec3f * const thisVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
 
             if (!JSVAL_IS_INT(id)) {
                 return JS_FALSE;
@@ -4312,8 +4042,8 @@ namespace {
             if (!JS_ValueToNumber(cx, *vp, &d)) {
                 return JS_FALSE;
             }
-            thisVec[JSVAL_TO_INT(id)] = d;
-            checkEventOut(cx, obj, thisVec);
+            (*thisVec)[JSVAL_TO_INT(id)] = d;
+            checkEventOut(cx, obj, *thisVec);
             return JS_TRUE;
         }
 
@@ -4321,13 +4051,9 @@ namespace {
                             const uintN argc, jsval * const argv,
                             jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec3f * const thisVec = reinterpret_cast<VrmlSFVec3f *>
+                                                    (JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Make sure our argument is an SFVec2f.
@@ -4338,13 +4064,10 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>
+            const VrmlSFVec3f * const argVec =
+                    reinterpret_cast<VrmlSFVec3f *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & argVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            assert(argVec);
             
             //
             // Construct the result object.
@@ -4355,13 +4078,11 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
+            VrmlSFVec3f * const resultVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
             
-            resultVec = thisVec.add(argVec); // XXX Throws? Nah ...
+            *resultVec = thisVec->add(*argVec);
             
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
@@ -4371,16 +4092,12 @@ namespace {
                               const uintN argc, jsval * const argv,
                               jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec3f * const thisVec = reinterpret_cast<VrmlSFVec3f *>
+                                                    (JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
-            // Make sure our argument is an SFVec3f.
+            // Make sure our argument is an SFVec2f.
             //
             if (!JSVAL_IS_OBJECT(argv[0])
                     || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]),
@@ -4388,13 +4105,10 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>
+            const VrmlSFVec3f * const argVec =
+                    reinterpret_cast<VrmlSFVec3f *>
                         (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & argVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            assert(argVec);
             
             //
             // Construct the result object.
@@ -4405,14 +4119,11 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>
-                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
+            VrmlSFVec3f * const resultVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
             
-            resultVec = thisVec.cross(argVec); // XXX Throws? Nah ...
+            *resultVec = thisVec->cross(*argVec);
             
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
@@ -4422,13 +4133,9 @@ namespace {
                                const uintN argc, jsval * const argv,
                                jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec3f * const thisVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Make sure our argument is a number.
@@ -4448,13 +4155,11 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
+            VrmlSFVec3f * const resultVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
             
-            resultVec = thisVec.divide(divisor); // XXX Throws? Nah ...
+            *resultVec = thisVec->divide(divisor); // throws? nah...
             
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
@@ -4464,13 +4169,9 @@ namespace {
                             const uintN argc, jsval * const argv,
                             jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec3f * const thisVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Make sure our argument is an SFVec3f.
@@ -4481,27 +4182,21 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>
-                    (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & argVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
+            const VrmlSFVec3f * const argVec = reinterpret_cast<VrmlSFVec3f *>
+                                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+            assert(argVec);
 
-            *rval = DOUBLE_TO_JSVAL(thisVec.dot(argVec));
+            *rval = DOUBLE_TO_JSVAL(thisVec->dot(*argVec));
             return JS_TRUE;
         }
 
         JSBool SFVec3f::length(JSContext * const cx, JSObject * const obj,
                                uintN, jsval *, jsval * const rval) throw () {
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
+            const VrmlSFVec3f * const thisVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
-            if (!JS_NewDoubleValue(cx, thisVec.length(), rval)) {
+            if (!JS_NewDoubleValue(cx, thisVec->length(), rval)) {
                 return JS_FALSE;
             }
             
@@ -4512,13 +4207,9 @@ namespace {
                                const uintN argc, jsval * const argv,
                                jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec3f * const thisVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Make sure our argument is a number.
@@ -4538,13 +4229,11 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
+            VrmlSFVec3f * const resultVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
             
-            resultVec = thisVec.multiply(factor); // XXX Throws? Nah ...
+            *resultVec = thisVec->multiply(factor); // throws? nah...
             
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
@@ -4552,13 +4241,9 @@ namespace {
 
         JSBool SFVec3f::negate(JSContext * const cx, JSObject * const obj,
                                uintN, jsval *, jsval * const rval) throw () {
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec3f * const thisVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Construct the result object.
@@ -4569,13 +4254,11 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
+            VrmlSFVec3f * const resultVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
             
-            resultVec = thisVec.negate(); // Throws? Nah ...
+            *resultVec = thisVec->negate();
             
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
@@ -4583,13 +4266,9 @@ namespace {
 
         JSBool SFVec3f::normalize(JSContext * const cx, JSObject * const obj,
                                   uintN, jsval *, jsval * const rval) throw () {
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec3f * const thisVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Construct the result object.
@@ -4600,13 +4279,11 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
+            VrmlSFVec3f * const resultVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
             
-            resultVec = thisVec.normalize(); // XXX Throws? Nah ...
+            *resultVec = thisVec->normalize();
             
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
@@ -4616,13 +4293,9 @@ namespace {
                                  const uintN argc, jsval * const argv,
                                  jsval * const rval) throw () {
             assert(argc >= 1);
-            const SFData * sfdata =
-                    static_cast<SFData *>(JS_GetPrivate(cx, obj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & thisVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec3f * const thisVec = reinterpret_cast<VrmlSFVec3f *>
+                                                    (JS_GetPrivate(cx, obj));
+            assert(thisVec);
             
             //
             // Make sure our argument is an SFVec2f.
@@ -4633,13 +4306,10 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>
-                    (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            const VrmlSFVec3f & argVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-            sfdata = 0;
+            const VrmlSFVec3f * const argVec =
+                    reinterpret_cast<VrmlSFVec3f *>
+                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+            assert(argVec);
             
             //
             // Construct the result object.
@@ -4650,42 +4320,40 @@ namespace {
                 return JS_FALSE;
             }
             
-            sfdata = static_cast<SFData *>(JS_GetPrivate(cx, robj));
-            assert(sfdata);
-            assert(dynamic_cast<VrmlSFVec3f *>(&sfdata->getFieldValue()));
-            VrmlSFVec3f & resultVec =
-                    static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
+            VrmlSFVec3f * const resultVec =
+                    reinterpret_cast<VrmlSFVec3f *>(JS_GetPrivate(cx, robj));
+            assert(resultVec);
             
-            resultVec = thisVec.subtract(argVec); // XXX Throws? Nah ...
+            *resultVec = thisVec->subtract(*argVec);
             
             *rval = OBJECT_TO_JSVAL(robj);
             return JS_TRUE;
         }
         
         
-        MField::MFData::MFData(JsvalArray::size_type size,
-                               const std::string * const scriptFieldId,
-                               const bool isEventOut):
-                FieldData(scriptFieldId, isEventOut), array(size) {}
-        
-        MField::MFData::~MFData() {}
-        
+        MField::MFData::MFData(JsvalArray::size_type size): array(size) {}
+
+        MField::JsvalArray & MField::MFData::getArray() {
+            return this->array;
+        }
+
+
         JSBool MField::getElement(JSContext * const cx, JSObject * const obj,
                                   const jsval id, jsval * const vp) throw () {
             assert(cx);
             assert(obj);
             assert(vp);
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
             if (JSVAL_IS_INT(id)) {
                 if (JSVAL_TO_INT(id) < 0
-                        || JSVAL_TO_INT(id) >= mfdata->array.size()) {
+                        || JSVAL_TO_INT(id) >= mfdata->getArray().size()) {
                     return JS_FALSE;
                 }
 
-                *vp = mfdata->array[JSVAL_TO_INT(id)];
+                *vp = mfdata->getArray()[JSVAL_TO_INT(id)];
             }
 
             return JS_TRUE;
@@ -4696,11 +4364,11 @@ namespace {
             assert(cx);
             assert(obj);
             assert(vp);
-            const MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
-            *vp = INT_TO_JSVAL(mfdata->array.size());
+            *vp = INT_TO_JSVAL(mfdata->getArray().size());
             return JS_TRUE;
         }
 
@@ -4784,11 +4452,13 @@ namespace {
                                 JS_AddRoot(cx, JSVAL_TO_GCTHING(argv[i]));
                         assert(ok);
 
-                        mfdata->array[i] = argv[i];
+                        mfdata->getArray()[i] = argv[i];
                     }
 
                 } catch (std::exception & ex) {
-                    OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                    cerr << ex.what() << endl;
+# endif
                     return JS_FALSE;
                 } catch (...) {
                     assert(false);
@@ -4807,7 +4477,7 @@ namespace {
                 assert(obj);
                 assert(vp);
                 
-                MFData * const mfdata = static_cast<MFData *>
+                MFData * const mfdata = reinterpret_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
@@ -4827,7 +4497,7 @@ namespace {
                 //
                 // Grow array if necessary.
                 //
-                if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
+                if (JSVAL_TO_INT(id) >= mfdata->getArray().size()) {
                     jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
                     if (!setLength(cx, obj, 0, &newLength)) {
                         return JS_FALSE;
@@ -4845,13 +4515,13 @@ namespace {
                 // Allow the old element to be garbage collected.
                 //
                 JSBool ok = JS_RemoveRoot(cx,
-                            JSVAL_TO_GCTHING(mfdata->array[JSVAL_TO_INT(id)]));
+                            JSVAL_TO_GCTHING(mfdata->getArray()[JSVAL_TO_INT(id)]));
                 assert(ok);
 
                 //
                 // Put the new element in the array.
                 //
-                mfdata->array[JSVAL_TO_INT(id)] = *vp;
+                mfdata->getArray()[JSVAL_TO_INT(id)] = *vp;
 
                 return JS_TRUE;
             }
@@ -4865,7 +4535,7 @@ namespace {
                 assert(obj);
                 assert(vp);
                 
-                MFData * const mfdata = static_cast<MFData *>
+                MFData * const mfdata = reinterpret_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
@@ -4874,16 +4544,16 @@ namespace {
                 }
 
                 try {
-                    if (JSVAL_TO_INT(*vp) > mfdata->array.size()) {
+                    if (JSVAL_TO_INT(*vp) > mfdata->getArray().size()) {
                         //
                         // Grow the array; create new elements and protect
                         // them from garbage collection.
                         //
                         const JsvalArray::size_type oldSize =
-                                mfdata->array.size();
-                        mfdata->array.resize(JSVAL_TO_INT(*vp));
+                                mfdata->getArray().size();
+                        mfdata->getArray().resize(JSVAL_TO_INT(*vp));
                         for (JsvalArray::size_type i = oldSize;
-                                i < mfdata->array.size(); ++i) {
+                                i < mfdata->getArray().size(); ++i) {
                             JSObject * const element =
                                 JS_ConstructObject(cx, &Subclass::sfjsclass,
                                                    0, 0);
@@ -4895,23 +4565,25 @@ namespace {
                                     JSVAL_TO_GCTHING(elementVal))) {
                                 throw std::bad_alloc();
                             }
-                            mfdata->array[i] = elementVal;
+                            mfdata->getArray()[i] = elementVal;
                         }
-                    } else if (JSVAL_TO_INT(*vp) < mfdata->array.size()) {
+                    } else if (JSVAL_TO_INT(*vp) < mfdata->getArray().size()) {
                         //
                         // Shrink the array; allow the truncated elements to
                         // be garbage collected.
                         //
                         for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
-                                i < mfdata->array.size(); ++i) {
+                                i < mfdata->getArray().size(); ++i) {
                             JSBool ok = JS_RemoveRoot(cx,
-                                JSVAL_TO_GCTHING(mfdata->array[i]));
+                                JSVAL_TO_GCTHING(mfdata->getArray()[i]));
                             assert(ok);
                         }
-                        mfdata->array.resize(JSVAL_TO_INT(*vp));
+                        mfdata->getArray().resize(JSVAL_TO_INT(*vp));
                     }
                 } catch (std::exception & ex) {
-                    OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                    cerr << ex.what() << endl;
+# endif
                     return JS_FALSE;
                 } catch (...) {
                     assert(false);
@@ -4930,22 +4602,21 @@ namespace {
                 assert(obj);
                 assert(rval);
                 
-                MFData * const mfdata = static_cast<MFData *>
+                MFData * const mfdata = reinterpret_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
                 ostrstream os;
                 os << "[";
-                for (JsvalArray::size_type i = 0; i < mfdata->array.size();
+                for (JsvalArray::size_type i = 0; i < mfdata->getArray().size();
                         ++i) {
-                    assert(JSVAL_IS_OBJECT(mfdata->array[i]));
-                    const SField::SFData * const sfdata =
-                            static_cast<SField::SFData *>
-                                (JS_GetPrivate(cx,
-                                    JSVAL_TO_OBJECT(mfdata->array[i])));
-                    assert(sfdata);
-                    os << sfdata->getFieldValue();
-                    if ((i + 1) < mfdata->array.size()) {
+                    assert(JSVAL_IS_OBJECT(mfdata->getArray()[i]));
+                    const VrmlField * fieldValue =
+                            reinterpret_cast<VrmlField *>(JS_GetPrivate(cx,
+                                JSVAL_TO_OBJECT(mfdata->getArray()[i])));
+                    assert(fieldValue);
+                    os << *fieldValue;
+                    if ((i + 1) < mfdata->getArray().size()) {
                         os << ", ";
                     }
                 }
@@ -4972,12 +4643,12 @@ namespace {
                 assert(cx);
                 assert(obj);
                 
-                MFData * const mfdata = static_cast<MFData *>
+                MFData * const mfdata = reinterpret_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
-                for (JsvalArray::const_iterator i(mfdata->array.begin());
-                        i != mfdata->array.end(); ++i) {
+                for (JsvalArray::const_iterator i(mfdata->getArray().begin());
+                        i != mfdata->getArray().end(); ++i) {
                     JSBool ok = JS_RemoveRoot(cx, JSVAL_TO_GCTHING(*i));
                     assert(ok);
                 }
@@ -5068,11 +4739,13 @@ namespace {
                                 JS_AddRoot(cx, JSVAL_TO_GCTHING(doubleVal));
                         assert(ok);
 
-                        mfdata->array[i] = doubleVal;
+                        mfdata->getArray()[i] = doubleVal;
                     }
 
                 } catch (std::exception & ex) {
-                    OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                    cerr << ex.what() << endl;
+# endif
                     return JS_FALSE;
                 } catch (...) {
                     assert(false);
@@ -5087,7 +4760,7 @@ namespace {
                                                     JSObject * const obj,
                                                     const jsval id,
                                                     jsval * const vp) throw () {
-                MFData * const mfdata = static_cast<MFData *>
+                MFData * const mfdata = reinterpret_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
@@ -5119,7 +4792,7 @@ namespace {
                 //
                 // Grow array if necessary.
                 //
-                if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
+                if (JSVAL_TO_INT(id) >= mfdata->getArray().size()) {
                     jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
                     if (!setLength(cx, obj, 0, &newLength)) {
                         return JS_FALSE;
@@ -5137,13 +4810,13 @@ namespace {
                 // Allow the old element to be garbage collected.
                 //
                 JSBool ok = JS_RemoveRoot(cx,
-                        JSVAL_TO_GCTHING(mfdata->array[JSVAL_TO_INT(id)]));
+                        JSVAL_TO_GCTHING(mfdata->getArray()[JSVAL_TO_INT(id)]));
                 assert(ok);
 
                 //
                 // Put the new element in the array.
                 //
-                mfdata->array[JSVAL_TO_INT(id)] = doubleVal;
+                mfdata->getArray()[JSVAL_TO_INT(id)] = doubleVal;
 
                 return JS_TRUE;
             }
@@ -5153,7 +4826,7 @@ namespace {
                                                    JSObject * const obj,
                                                    const jsval id,
                                                    jsval * const vp) throw () {
-                MFData * const mfdata = static_cast<MFData *>
+                MFData * const mfdata = reinterpret_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
@@ -5162,16 +4835,16 @@ namespace {
                 }
 
                 try {
-                    if (JSVAL_TO_INT(*vp) > mfdata->array.size()) {
+                    if (JSVAL_TO_INT(*vp) > mfdata->getArray().size()) {
                         //
                         // Grow the array; create new elements and protect
                         // them from garbage collection.
                         //
                         const JsvalArray::size_type oldSize =
-                                mfdata->array.size();
-                        mfdata->array.resize(JSVAL_TO_INT(*vp));
+                                mfdata->getArray().size();
+                        mfdata->getArray().resize(JSVAL_TO_INT(*vp));
                         for (JsvalArray::size_type i = oldSize;
-                                i < mfdata->array.size(); ++i) {
+                                i < mfdata->getArray().size(); ++i) {
                             jsval doubleVal;
                             if (!JS_NewDoubleValue(cx, 0.0, &doubleVal)) {
                                 throw std::bad_alloc();
@@ -5180,23 +4853,25 @@ namespace {
                                     JSVAL_TO_GCTHING(doubleVal))) {
                                 throw std::bad_alloc();
                             }
-                            mfdata->array[i] = doubleVal;
+                            mfdata->getArray()[i] = doubleVal;
                         }
-                    } else if (JSVAL_TO_INT(*vp) < mfdata->array.size()) {
+                    } else if (JSVAL_TO_INT(*vp) < mfdata->getArray().size()) {
                         //
                         // Shrink the array; allow the truncated elements to
                         // be garbage collected.
                         //
                         for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
-                                i < mfdata->array.size(); ++i) {
+                                i < mfdata->getArray().size(); ++i) {
                             JSBool ok = JS_RemoveRoot(cx,
-                                JSVAL_TO_GCTHING(mfdata->array[i]));
+                                JSVAL_TO_GCTHING(mfdata->getArray()[i]));
                             assert(ok);
                         }
-                        mfdata->array.resize(JSVAL_TO_INT(*vp));
+                        mfdata->getArray().resize(JSVAL_TO_INT(*vp));
                     }
                 } catch (std::exception & ex) {
-                    OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                    cerr << ex.what() << endl;
+# endif
                     return JS_FALSE;
                 }
 
@@ -5208,17 +4883,17 @@ namespace {
                                                   JSObject * const obj,
                                                   uintN, jsval *,
                                                   jsval * const rval) throw () {
-                MFData * const mfdata = static_cast<MFData *>
+                MFData * const mfdata = reinterpret_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
                 ostrstream os;
                 os << "[";
-                for (JsvalArray::size_type i = 0; i < mfdata->array.size();
+                for (JsvalArray::size_type i = 0; i < mfdata->getArray().size();
                         ++i) {
-                    assert(JSVAL_IS_DOUBLE(mfdata->array[i]));
-                    os << *JSVAL_TO_DOUBLE(mfdata->array[i]);
-                    if ((i + 1) < mfdata->array.size()) {
+                    assert(JSVAL_IS_DOUBLE(mfdata->getArray()[i]));
+                    os << *JSVAL_TO_DOUBLE(mfdata->getArray()[i]);
+                    if ((i + 1) < mfdata->getArray().size()) {
                         os << ", ";
                     }
                 }
@@ -5242,12 +4917,12 @@ namespace {
         template <typename Subclass>
             void MFJSDouble<Subclass>::finalize(JSContext * const cx,
                                                 JSObject * const obj) throw () {
-                MFData * const mfdata = static_cast<MFData *>
+                MFData * const mfdata = reinterpret_cast<MFData *>
                                                 (JS_GetPrivate(cx, obj));
                 assert(mfdata);
 
-                for (JsvalArray::const_iterator i(mfdata->array.begin());
-                        i != mfdata->array.end(); ++i) {
+                for (JsvalArray::const_iterator i(mfdata->getArray().begin());
+                        i != mfdata->getArray().end(); ++i) {
                     JSBool ok = JS_RemoveRoot(cx, JSVAL_TO_GCTHING(*i));
                     assert(ok);
                 }
@@ -5261,8 +4936,27 @@ namespace {
                   JS_EnumerateStub, JS_ResolveStub,
                   JS_ConvertStub, finalize };
         
-        JSClass & MFColor::sfjsclass = SFColor::jsclass;
-        
+        JSObject * MFColor::initClass(JSContext * const cx,
+                                      JSObject * const obj) throw () {
+            static JSPropertySpec properties[] =
+                    { { "length", 0, JSPROP_PERMANENT, getLength, setLength },
+                      { 0, 0, 0, 0, 0 } };
+
+            static JSFunctionSpec methods[] =
+                    { { "toString", toString, 0, 0, 0 },
+                      { 0, 0, 0, 0, 0 } };
+            
+            JSObject * proto = JS_InitClass(cx, obj, 0, &jsclass,
+                                            construct, 0, // constructor function, min arg count
+                                            properties, methods,
+                                            0, 0); // static properties and methods
+            if (!proto || !initObject(cx, proto, 0, 0)) {
+                return 0;
+            }
+
+            return proto;
+        }
+
         VrmlMFColor * MFColor::createFromJSObject(JSContext * const cx,
                                                   JSObject * const obj) {
             assert(cx);
@@ -5270,29 +4964,242 @@ namespace {
             assert(JS_InstanceOf(cx, obj, &MFColor::jsclass, 0));
             
             MField::MFData * const mfdata =
-                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFColor * const mfcolor =
-                    new VrmlMFColor(mfdata->array.size());
+                    new VrmlMFColor(mfdata->getArray().size());
             for (MField::JsvalArray::size_type i = 0;
-                    i < mfdata->array.size(); ++i) {
-                assert(JSVAL_IS_OBJECT(mfdata->array[i]));
+                    i < mfdata->getArray().size(); ++i) {
+                assert(JSVAL_IS_OBJECT(mfdata->getArray()[i]));
                 assert(JS_InstanceOf(cx,
-                                     JSVAL_TO_OBJECT(mfdata->array[i]),
+                                     JSVAL_TO_OBJECT(mfdata->getArray()[i]),
                                      &SFColor::jsclass, 0));
-                const SField::SFData * const sfdata =
-                        static_cast<SField::SFData *>
-                            (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
-                assert(sfdata);
-                
-                const VrmlSFColor & sfcolor =
-                        static_cast<VrmlSFColor &>(sfdata->getFieldValue());
-                mfcolor->setElement(i, sfcolor.get());
+                const VrmlSFColor * const sfcolor =
+                        reinterpret_cast<VrmlSFColor *>
+                            (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->getArray()[i])));
+                assert(sfcolor);
+                mfcolor->setElement(i, sfcolor->get());
             }
 
             return mfcolor;
         }
         
+        JSBool MFColor::construct(JSContext * const cx, JSObject * obj,
+	                          const uintN argc, jsval * const argv,
+                                  jsval * const rval) throw () {
+            //
+            // If called without new, replace obj with a new object.
+            //
+            if (!JS_IsConstructing(cx)) {
+                obj = JS_NewObject(cx, &jsclass, 0, 0);
+                if (!obj) {
+                    return JS_FALSE;
+                }
+                *rval = OBJECT_TO_JSVAL(obj);
+            }
+
+            return initObject(cx, obj, argc, argv);
+        }
+
+        JSBool MFColor::initObject(JSContext * const cx, JSObject * const obj,
+                                   const uintN argc, jsval * const argv)
+                throw () {
+            try {
+                MFData * const mfdata = new MFData(argc);
+                if (!JS_SetPrivate(cx, obj, mfdata)) {
+                    return JS_FALSE;
+                }
+
+
+                for (uintN i = 0; i < argc; ++i) {
+                    if (!JSVAL_IS_OBJECT(argv[i])
+                            || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[i]),
+                                              &SFColor::jsclass, 0)) {
+                        return JS_FALSE;
+                    }
+
+                    assert(JSVAL_IS_GCTHING(argv[i]));
+                    JSBool ok =
+                            JS_AddRoot(cx, JSVAL_TO_GCTHING(argv[i]));
+                    assert(ok);
+
+                    mfdata->getArray()[i] = argv[i];
+                }
+
+            } catch (std::exception & ex) {
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
+                return JS_FALSE;
+            } catch (...) {
+                assert(false);
+                return JS_FALSE;
+            }
+
+            return JS_TRUE;
+        }
+
+        JSBool MFColor::setElement(JSContext * const cx, JSObject * const obj,
+                                   const jsval id, jsval * const vp) throw () {
+            MFData * const mfdata = reinterpret_cast<MFData *>
+                                            (JS_GetPrivate(cx, obj));
+            assert(mfdata);
+
+            //
+            // Make sure new value is of the correct type.
+            //
+            if (!JSVAL_IS_OBJECT(*vp)
+                    || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(*vp),
+                                      &SFColor::jsclass, 0)) {
+                return JS_FALSE;
+            }
+
+            if (!JSVAL_IS_INT(id) || JSVAL_TO_INT(id) < 0) {
+                return JS_FALSE;
+            }
+
+            //
+            // Grow array if necessary.
+            //
+            if (JSVAL_TO_INT(id) >= mfdata->getArray().size()) {
+                jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
+                if (!setLength(cx, obj, 0, &newLength)) {
+                    return JS_FALSE;
+                }
+            }
+
+            //
+            // Protect the new element from garbage collection.
+            //
+            if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(*vp))) {
+                return JS_FALSE;
+            }
+
+            //
+            // Allow the old element to be garbage collected.
+            //
+            JSBool ok = JS_RemoveRoot(cx,
+                        JSVAL_TO_GCTHING(mfdata->getArray()[JSVAL_TO_INT(id)]));
+            assert(ok);
+
+            //
+            // Put the new element in the array.
+            //
+            mfdata->getArray()[JSVAL_TO_INT(id)] = *vp;
+
+            return JS_TRUE;
+        }
+
+        JSBool MFColor::setLength(JSContext * const cx, JSObject * const obj,
+                                  const jsval id, jsval * const vp) throw () {
+            MFData * const mfdata = reinterpret_cast<MFData *>
+                                            (JS_GetPrivate(cx, obj));
+            assert(mfdata);
+
+            if (!JSVAL_IS_INT(*vp) || JSVAL_TO_INT(*vp) < 0) {
+                return JS_FALSE;
+            }
+
+            try {
+                if (JSVAL_TO_INT(*vp) > mfdata->getArray().size()) {
+                    //
+                    // Grow the array; create new elements and protect
+                    // them from garbage collection.
+                    //
+                    const JsvalArray::size_type oldSize =
+                            mfdata->getArray().size();
+                    mfdata->getArray().resize(JSVAL_TO_INT(*vp));
+                    for (JsvalArray::size_type i = oldSize;
+                            i < mfdata->getArray().size(); ++i) {
+                        JSObject * const element =
+                            JS_ConstructObject(cx, &SFColor::jsclass, 0, 0);
+                        if (!element) {
+                            throw std::bad_alloc();
+                        }
+                        jsval elementVal = OBJECT_TO_JSVAL(element);
+                        if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(elementVal))) {
+                            throw std::bad_alloc();
+                        }
+                        mfdata->getArray()[i] = elementVal;
+                    }
+                } else if (JSVAL_TO_INT(*vp) < mfdata->getArray().size()) {
+                    //
+                    // Shrink the array; allow the truncated elements to
+                    // be garbage collected.
+                    //
+                    for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
+                            i < mfdata->getArray().size(); ++i) {
+                        JSBool ok = JS_RemoveRoot(cx,
+                            JSVAL_TO_GCTHING(mfdata->getArray()[i]));
+                        assert(ok);
+                    }
+                    mfdata->getArray().resize(JSVAL_TO_INT(*vp));
+                }
+            } catch (std::exception & ex) {
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
+                return JS_FALSE;
+            } catch (...) {
+                assert(false);
+                return JS_FALSE;
+            }
+
+            return JS_TRUE;
+        }
+
+        JSBool MFColor::toString(JSContext * const cx, JSObject * const obj,
+                                 uintN, jsval *, jsval * const rval) throw () {
+            MFData * const mfdata = reinterpret_cast<MFData *>
+                                        (JS_GetPrivate(cx, obj));
+            assert(mfdata);
+
+            ostrstream os;
+            os << "[";
+            for (JsvalArray::size_type i = 0; i < mfdata->getArray().size();
+                    ++i) {
+                assert(JSVAL_IS_OBJECT(mfdata->getArray()[i]));
+                const VrmlSFColor * const sfcolor =
+                        reinterpret_cast<VrmlSFColor *>(JS_GetPrivate(cx,
+                            JSVAL_TO_OBJECT(mfdata->getArray()[i])));
+                assert(sfcolor);
+                os << *sfcolor;
+                if ((i + 1) < mfdata->getArray().size()) {
+                    os << ", ";
+                }
+            }
+            os << "]";
+
+            JSString * jsstr = JS_NewStringCopyZ(cx, os.str());
+
+            //
+            // Return ownership of the buffer to the ostrstream.
+            //
+            os.rdbuf()->freeze(0);
+
+            if (!jsstr) {
+                return JS_FALSE;
+            }
+
+            *rval = STRING_TO_JSVAL(jsstr);
+            return JS_TRUE;
+        }
+
+        void MFColor::finalize(JSContext * const cx, JSObject * const obj)
+                throw () {
+            MFData * const mfdata = reinterpret_cast<MFData *>
+                                            (JS_GetPrivate(cx, obj));
+            assert(mfdata);
+
+            for (JsvalArray::const_iterator i(mfdata->getArray().begin());
+                    i != mfdata->getArray().end(); ++i) {
+                JSBool ok = JS_RemoveRoot(cx, JSVAL_TO_GCTHING(*i));
+                assert(ok);
+            }
+            delete mfdata;
+        }
+
+
         JSBool MFColor::toJsval(const VrmlMFColor & mfcolor, const bool protect,
                                 JSContext * const cx, JSObject * const obj,
                                 jsval * const rval) throw () {
@@ -5302,15 +5209,15 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                     (JS_GetPrivate(cx, mfcolorObj));
 
-            mfdata->array.resize(mfcolor.getLength());
+            mfdata->getArray().resize(mfcolor.getLength());
 
             for (size_t i = 0; i < mfcolor.getLength(); ++i) {
                 const VrmlSFColor sfcolor(mfcolor.getElement(i));
                 if (!SFColor::toJsval(sfcolor, true, cx, obj,
-                                      &mfdata->array[i])) {
+                                      &mfdata->getArray()[i])) {
                     return JS_FALSE;
                 }
             }
@@ -5345,17 +5252,17 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                     (JS_GetPrivate(cx, mffloatObj));
 
-            mfdata->array.resize(mffloat.getLength());
+            mfdata->getArray().resize(mffloat.getLength());
 
             for (size_t i = 0; i < mffloat.getLength(); ++i) {
                 if (!JS_NewDoubleValue(cx, mffloat.getElement(i),
-                                       &mfdata->array[i])) {
+                                       &mfdata->getArray()[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(mfdata->array[i]))) {
+                if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(mfdata->getArray()[i]))) {
                     return JS_FALSE;
                 }
             }
@@ -5376,14 +5283,15 @@ namespace {
             assert(obj);
             assert(JS_InstanceOf(cx, obj, &MFFloat::jsclass, 0));
             MField::MFData * const mfdata =
-                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFFloat * mffloat =
-                    new VrmlMFFloat(mfdata->array.size());
+                    new VrmlMFFloat(mfdata->getArray().size());
             for (MField::JsvalArray::size_type i = 0;
-                    i < mfdata->array.size(); ++i) {
-                assert(JSVAL_IS_DOUBLE(mfdata->array[i]));
-                mffloat->setElement(i, *JSVAL_TO_DOUBLE(mfdata->array[i]));
+                    i < mfdata->getArray().size(); ++i) {
+                assert(JSVAL_IS_DOUBLE(mfdata->getArray()[i]));
+                mffloat->setElement(i,
+                                *JSVAL_TO_DOUBLE(mfdata->getArray()[i]));
             }
 
             return mffloat;
@@ -5433,13 +5341,13 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                     (JS_GetPrivate(cx, mfint32Obj));
 
-            mfdata->array.resize(mfint32.getLength());
+            mfdata->getArray().resize(mfint32.getLength());
 
             for (size_t i = 0; i < mfint32.getLength(); ++i) {
-                mfdata->array[i] = INT_TO_JSVAL(mfint32.getElement(i));
+                mfdata->getArray()[i] = INT_TO_JSVAL(mfint32.getElement(i));
             }
 
             if (protect) {
@@ -5458,13 +5366,14 @@ namespace {
             assert(obj);
             assert(JS_InstanceOf(cx, obj, &MFInt32::jsclass, 0));
             MField::MFData * const mfdata =
-                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
-            VrmlMFInt32 * const mfint32 = new VrmlMFInt32(mfdata->array.size());
+            VrmlMFInt32 * const mfint32 =
+                    new VrmlMFInt32(mfdata->getArray().size());
             for (MField::JsvalArray::size_type i = 0;
-                    i < mfdata->array.size(); ++i) {
-                assert(JSVAL_IS_INT(mfdata->array[i]));
-                mfint32->setElement(i, JSVAL_TO_INT(mfdata->array[i]));
+                    i < mfdata->getArray().size(); ++i) {
+                assert(JSVAL_IS_INT(mfdata->getArray()[i]));
+                mfint32->setElement(i, JSVAL_TO_INT(mfdata->getArray()[i]));
             }
 
             return mfint32;
@@ -5508,11 +5417,13 @@ namespace {
                         return JS_FALSE;
                     }
 
-                    mfdata->array[i] = argv[i];
+                    mfdata->getArray()[i] = JSVAL_TO_INT(argv[i]);
                 }
 
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 assert(false);
@@ -5529,7 +5440,7 @@ namespace {
             assert(vp);
             
             MFData * const mfdata =
-                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
+                    reinterpret_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
             //
@@ -5546,7 +5457,7 @@ namespace {
             //
             // Grow array if necessary.
             //
-            if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
+            if (JSVAL_TO_INT(id) >= mfdata->getArray().size()) {
                 jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
                 if (!setLength(cx, obj, 0, &newLength)) {
                     return JS_FALSE;
@@ -5556,7 +5467,7 @@ namespace {
             //
             // Put the new element in the array.
             //
-            mfdata->array[JSVAL_TO_INT(id)] = *vp;
+            mfdata->getArray()[JSVAL_TO_INT(id)] = *vp;
 
             return JS_TRUE;
         }
@@ -5568,7 +5479,7 @@ namespace {
             assert(vp);
             
             MFData * const mfdata =
-                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
+                    reinterpret_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
             if (!JSVAL_IS_INT(*vp) || JSVAL_TO_INT(*vp) < 0) {
@@ -5576,11 +5487,13 @@ namespace {
             }
 
             try {
-                if (JSVAL_TO_INT(*vp) != mfdata->array.size()) {
-                    mfdata->array.resize(JSVAL_TO_INT(*vp));
+                if (JSVAL_TO_INT(*vp) != mfdata->getArray().size()) {
+                    mfdata->getArray().resize(JSVAL_TO_INT(*vp));
                 }
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 assert(false);
@@ -5595,16 +5508,16 @@ namespace {
             assert(cx);
             assert(obj);
             
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                         (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
             ostrstream os;
             os << "[";
-            for (JsvalArray::size_type i = 0; i < mfdata->array.size();
+            for (JsvalArray::size_type i = 0; i < mfdata->getArray().size();
                     ++i) {
-                os << JSVAL_TO_INT(mfdata->array[i]);
-                if ((i + 1) < mfdata->array.size()) {
+                os << JSVAL_TO_INT(mfdata->getArray()[i]);
+                if ((i + 1) < mfdata->getArray().size()) {
                     os << ", ";
                 }
             }
@@ -5626,7 +5539,7 @@ namespace {
         }
 
         void MFInt32::finalize(JSContext * const cx, JSObject * const obj) {
-            delete static_cast<MFData *>(JS_GetPrivate(cx, obj));
+            delete reinterpret_cast<MFData *>(JS_GetPrivate(cx, obj));
         }
 
         JSClass MFNode::jsclass =
@@ -5636,66 +5549,8 @@ namespace {
                   JS_EnumerateStub, JS_ResolveStub,
                   JS_ConvertStub, finalize };
         
-        JSObject * MFNode::initClass(JSContext * const cx, JSObject * const obj)
-                throw () {
-            assert(cx);
-            assert(obj);
-            
-            static JSPropertySpec properties[] =
-                    { { "length", 0, JSPROP_PERMANENT, getLength, setLength },
-                      { 0, 0, 0, 0, 0 } };
+        JSClass & MFNode::sfjsclass = SFNode::jsclass;
 
-            static JSFunctionSpec methods[] =
-                    { { "toString", toString, 0, 0, 0 },
-                      { 0, 0, 0, 0, 0 } };
-
-            JSObject * proto = JS_InitClass(cx, obj, 0, &jsclass,
-                                            construct, 0, // constructor function, min arg count
-                                            properties, methods,
-                                            0, 0); // static properties and methods
-            if (!proto || !initObject(cx, proto, 0, 0)) {
-                return 0;
-            }
-
-            return proto;
-        }
-        
-        JSBool MFNode::initObject(JSContext * const cx, JSObject * const obj,
-                                  const uintN argc, jsval * const argv)
-                throw () {
-            assert(cx);
-            assert(obj);
-            
-            try {
-                MFData * const mfdata = new MFData(argc);
-                if (!JS_SetPrivate(cx, obj, mfdata)) {
-                    return JS_FALSE;
-                }
-                
-                for (uintN i = 0; i < argc; ++i) {
-                    //
-                    // Make sure all args are SFNodes.
-                    //
-                    if (!JSVAL_IS_OBJECT(argv[i])
-                            || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[i]),
-                                              &SFNode::jsclass, 0)) {
-                        return JS_FALSE;
-                    }
-
-                    mfdata->array[i] = argv[i];
-                }
-
-            } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
-                return JS_FALSE;
-            } catch (...) {
-                assert(false);
-                return JS_FALSE;
-            }
-
-            return JS_TRUE;
-        }
-        
         JSBool MFNode::toJsval(const VrmlMFNode & mfnode, const bool protect,
                                JSContext * const cx, JSObject * const obj,
                                jsval * const rval) throw () {
@@ -5705,15 +5560,15 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                     (JS_GetPrivate(cx, mfnodeObj));
 
-            mfdata->array.resize(mfnode.getLength());
+            mfdata->getArray().resize(mfnode.getLength());
 
             for (size_t i = 0; i < mfnode.getLength(); ++i) {
                 const VrmlSFNode sfnode(mfnode.getElement(i));
                 if (!SFNode::toJsval(sfnode, true, cx, obj,
-                                     &mfdata->array[i])) {
+                                     &mfdata->getArray()[i])) {
                     return JS_FALSE;
                 }
             }
@@ -5732,211 +5587,27 @@ namespace {
                                                 JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &MFNode::jsclass, 0));
             MField::MFData * const mfdata =
-                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFNode * const mfnode =
-                    new VrmlMFNode(mfdata->array.size());
+                    new VrmlMFNode(mfdata->getArray().size());
             for (MField::JsvalArray::size_type i = 0;
-                    i < mfdata->array.size(); ++i) {
-                assert(JSVAL_IS_OBJECT(mfdata->array[i]));
-                assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
+                    i < mfdata->getArray().size(); ++i) {
+                assert(JSVAL_IS_OBJECT(mfdata->getArray()[i]));
+                assert(JS_InstanceOf(cx,
+                                     JSVAL_TO_OBJECT(mfdata->getArray()[i]),
                                      &SFNode::jsclass, 0));
-                const SField::SFData * const sfdata =
-                    static_cast<SField::SFData *>
-                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
-                assert(sfdata);
-                
-                const VrmlSFNode & sfnode =
-                        static_cast<VrmlSFNode &>(sfdata->getFieldValue());
-                mfnode->setElement(i, sfnode.get());
+                const VrmlSFNode * const sfnode =
+                        reinterpret_cast<VrmlSFNode *>
+                            (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->getArray()[i])));
+                assert(sfnode);
+                mfnode->setElement(i, sfnode->get());
             }
 
             return mfnode;
         }
-        
-        JSBool MFNode::construct(JSContext * const cx, JSObject * obj,
-                                 const uintN argc, jsval * const argv,
-                                 jsval * const rval) throw () {
-            assert(cx);
-            assert(obj);
-            assert(rval);
-            
-            //
-            // If called without new, replace obj with a new object.
-            //
-            if (!JS_IsConstructing(cx)) {
-                obj = JS_NewObject(cx, &jsclass, 0, 0);
-                if (!obj) {
-                    return JS_FALSE;
-                }
-                *rval = OBJECT_TO_JSVAL(obj);
-            }
 
-            return initObject(cx, obj, argc, argv);
-        }
-        
-        JSBool MFNode::setElement(JSContext * const cx, JSObject * const obj,
-                                  const jsval id, jsval * const vp) throw () {
-            assert(cx);
-            assert(obj);
-            assert(vp);
-            
-            MFData * const mfdata =
-                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
-            assert(mfdata);
-            
-            //
-            // Make sure new value is an SFNode.
-            //
-            if (!JSVAL_IS_OBJECT(*vp)
-                    || !JS_InstanceOf(cx, obj, &SFNode::jsclass, 0)) {
-                return JS_FALSE;
-            }
-            
-            if (!JSVAL_IS_INT(id) || JSVAL_TO_INT(id) < 0) {
-                return JS_FALSE;
-            }
-            
-            //
-            // Grow array if necessary.
-            //
-            if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
-                jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
-                if (!setLength(cx, obj, 0, &newLength)) {
-                    return JS_FALSE;
-                }
-            }
-            
-            //
-            // Put the new element in the array.
-            //
-            mfdata->array[JSVAL_TO_INT(id)] = *vp;
-            
-            return JS_TRUE;
-        }
-        
-        JSBool MFNode::setLength(JSContext * const cx, JSObject * const obj,
-                                 const jsval id, jsval * const vp) throw () {
-            assert(cx);
-            assert(obj);
-            assert(vp);
 
-            MFData * const mfdata = static_cast<MFData *>
-                                            (JS_GetPrivate(cx, obj));
-            assert(mfdata);
-
-            if (!JSVAL_IS_INT(*vp) || JSVAL_TO_INT(*vp) < 0) {
-                return JS_FALSE;
-            }
-
-            try {
-                if (JSVAL_TO_INT(*vp) > mfdata->array.size()) {
-                    //
-                    // Grow the array; create new elements and protect
-                    // them from garbage collection.
-                    //
-                    const JsvalArray::size_type oldSize =
-                            mfdata->array.size();
-                    mfdata->array.resize(JSVAL_TO_INT(*vp));
-
-                    jsval arg = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "NULL"));
-
-                    for (JsvalArray::size_type i = oldSize;
-                            i < mfdata->array.size(); ++i) {
-                        JSObject * const element =
-                            JS_NewObject(cx, &SFNode::jsclass, 0, 0);
-                        if (!element) {
-                            return JS_FALSE;
-                        }
-                        if (!SFNode::initObject(cx, element, 1, &arg)) {
-                            return JS_FALSE;
-                        }
-                        jsval elementVal = OBJECT_TO_JSVAL(element);
-                        if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(elementVal))) {
-                            return JS_FALSE;
-                        }
-                        mfdata->array[i] = elementVal;
-                    }
-                } else if (JSVAL_TO_INT(*vp) < mfdata->array.size()) {
-                    //
-                    // Shrink the array; allow the truncated elements to
-                    // be garbage collected.
-                    //
-                    for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
-                            i < mfdata->array.size(); ++i) {
-                        JSBool ok = JS_RemoveRoot(cx,
-                            JSVAL_TO_GCTHING(mfdata->array[i]));
-                        assert(ok);
-                    }
-                    mfdata->array.resize(JSVAL_TO_INT(*vp));
-                }
-            } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
-                return JS_FALSE;
-            } catch (...) {
-                assert(false);
-                return JS_FALSE;
-            }
-
-            return JS_TRUE;
-        }
-        
-        JSBool MFNode::toString(JSContext * const cx, JSObject * const obj,
-                                const uintN argc, jsval * const argv,
-                                jsval * const rval) throw () {
-            assert(cx);
-            assert(obj);
-            
-            MFData * const mfdata = static_cast<MFData *>
-                                        (JS_GetPrivate(cx, obj));
-            assert(mfdata);
-
-            ostrstream os;
-            os << "[ ";
-            for (JsvalArray::size_type i = 0; i < mfdata->array.size();
-                    ++i) {
-                const SField::SFData * const sfdata =
-                    static_cast<SField::SFData *>
-                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
-                assert(sfdata);
-                os << sfdata->getFieldValue();
-                if ((i + 1) < mfdata->array.size()) {
-                    os << ", ";
-                }
-            }
-            os << " ]";
-
-            JSString * jsstr = JS_NewStringCopyZ(cx, os.str());
-
-            //
-            // Return ownership of the buffer to the ostrstream.
-            //
-            os.rdbuf()->freeze(0);
-
-            if (!jsstr) {
-                return JS_FALSE;
-            }
-
-            *rval = STRING_TO_JSVAL(jsstr);
-            return JS_TRUE;
-        }
-        
-        void MFNode::finalize(JSContext * const cx, JSObject * const obj)
-                throw () {
-            MFData * const mfdata =
-                    static_cast<MFData *>(JS_GetPrivate(cx, obj));
-            
-            //
-            // Allow individual SFNodes to be garbage collected.
-            //
-            for (JsvalArray::iterator i(mfdata->array.begin());
-                    i != mfdata->array.end(); ++i) {
-                JS_RemoveRoot(cx, JSVAL_TO_GCTHING(*i));
-            }
-            
-            delete mfdata;
-        }
-        
         JSClass MFRotation::jsclass =
                 { "MFRotation", JSCLASS_HAS_PRIVATE,
                   JS_PropertyStub, JS_PropertyStub,
@@ -5956,15 +5627,15 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                     (JS_GetPrivate(cx, mfrotationObj));
 
-            mfdata->array.resize(mfrotation.getLength());
+            mfdata->getArray().resize(mfrotation.getLength());
 
             for (size_t i = 0; i < mfrotation.getLength(); ++i) {
                 const VrmlSFRotation sfrotation(mfrotation.getElement(i));
                 if (!SFRotation::toJsval(sfrotation, true, cx, obj,
-                                         &mfdata->array[i])) {
+                                         &mfdata->getArray()[i])) {
                     return JS_FALSE;
                 }
             }
@@ -5983,25 +5654,21 @@ namespace {
                                                         JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &MFRotation::jsclass, 0));
             MField::MFData * const mfdata =
-                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFRotation * const mfrotation =
-                    new VrmlMFRotation(mfdata->array.size());
+                    new VrmlMFRotation(mfdata->getArray().size());
             for (MField::JsvalArray::size_type i = 0;
-                    i < mfdata->array.size(); ++i) {
-                assert(JSVAL_IS_OBJECT(mfdata->array[i]));
+                    i < mfdata->getArray().size(); ++i) {
+                assert(JSVAL_IS_OBJECT(mfdata->getArray()[i]));
                 assert(JS_InstanceOf(cx,
-                                     JSVAL_TO_OBJECT(mfdata->array[i]),
+                                     JSVAL_TO_OBJECT(mfdata->getArray()[i]),
                                      &SFRotation::jsclass, 0));
-                const SField::SFData * const sfdata =
-                    static_cast<SField::SFData *>
-                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
-                assert(sfdata);
-                
-                const VrmlSFRotation & sfrotation =
-                        static_cast<VrmlSFRotation &>(sfdata->getFieldValue());
-                
-                mfrotation->setElement(i, sfrotation.get());
+                const VrmlSFRotation * const sfrotation =
+                        reinterpret_cast<VrmlSFRotation *>
+                            (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->getArray()[i])));
+                assert(sfrotation);
+                mfrotation->setElement(i, sfrotation->get());
             }
 
             return mfrotation;
@@ -6048,21 +5715,21 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                     (JS_GetPrivate(cx, mfstringObj));
 
-            mfdata->array.resize(mfstring.getLength());
+            mfdata->getArray().resize(mfstring.getLength());
 
             for (size_t i = 0; i < mfstring.getLength(); ++i) {
                 JSString * jsstring =
-                        JS_NewStringCopyZ(cx, mfstring.getElement(i).c_str());
+                        JS_NewStringCopyZ(cx, mfstring.getElement(i));
                 if (!jsstring) {
                     return JS_FALSE;
                 }
                 if (!JS_AddRoot(cx, jsstring)) {
                     return JS_FALSE;
                 }
-                mfdata->array[i] = STRING_TO_JSVAL(jsstring);
+                mfdata->getArray()[i] = STRING_TO_JSVAL(jsstring);
             }
 
             if (protect) {
@@ -6079,16 +5746,16 @@ namespace {
                                                     JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &MFString::jsclass, 0));
             MField::MFData * const mfdata =
-                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFString * const mfstring =
-                    new VrmlMFString(mfdata->array.size());
+                    new VrmlMFString(mfdata->getArray().size());
             for (MField::JsvalArray::size_type i = 0;
-                    i < mfdata->array.size(); ++i) {
-                assert(JSVAL_IS_STRING(mfdata->array[i]));
+                    i < mfdata->getArray().size(); ++i) {
+                assert(JSVAL_IS_STRING(mfdata->getArray()[i]));
                 const char * const str =
                         JS_GetStringBytes(
-                            JSVAL_TO_STRING(mfdata->array[i]));
+                            JSVAL_TO_STRING(mfdata->getArray()[i]));
                 mfstring->setElement(i, str);
             }
 
@@ -6141,11 +5808,13 @@ namespace {
                     JSBool ok = JS_AddRoot(cx, JSVAL_TO_GCTHING(argv[i]));
                     assert(ok);
 
-                    mfdata->array[i] = argv[i];
+                    mfdata->getArray()[i] = argv[i];
                 }
 
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 assert(false);
@@ -6157,7 +5826,7 @@ namespace {
 
         JSBool MFString::setElement(JSContext * const cx, JSObject * const obj,
                                     const jsval id, jsval * const vp) throw () {
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -6175,7 +5844,7 @@ namespace {
             //
             // Grow array if necessary.
             //
-            if (JSVAL_TO_INT(id) >= mfdata->array.size()) {
+            if (JSVAL_TO_INT(id) >= mfdata->getArray().size()) {
                 jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
                 if (!setLength(cx, obj, 0, &newLength)) {
                     return JS_FALSE;
@@ -6193,20 +5862,20 @@ namespace {
             // Allow the old element to be garbage collected.
             //
             JSBool ok = JS_RemoveRoot(cx,
-                    JSVAL_TO_GCTHING(mfdata->array[JSVAL_TO_INT(id)]));
+                    JSVAL_TO_GCTHING(mfdata->getArray()[JSVAL_TO_INT(id)]));
             assert(ok);
 
             //
             // Put the new element in the array.
             //
-            mfdata->array[JSVAL_TO_INT(id)] = *vp;
+            mfdata->getArray()[JSVAL_TO_INT(id)] = *vp;
 
             return JS_TRUE;
         }
 
         JSBool MFString::setLength(JSContext * const cx, JSObject * const obj,
                                    const jsval id, jsval * const vp) throw () {
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -6215,16 +5884,16 @@ namespace {
             }
 
             try {
-                if (JSVAL_TO_INT(*vp) > mfdata->array.size()) {
+                if (JSVAL_TO_INT(*vp) > mfdata->getArray().size()) {
                     //
                     // Grow the array; create new elements and protect
                     // them from garbage collection.
                     //
                     const JsvalArray::size_type oldSize =
-                            mfdata->array.size();
-                    mfdata->array.resize(JSVAL_TO_INT(*vp));
+                            mfdata->getArray().size();
+                    mfdata->getArray().resize(JSVAL_TO_INT(*vp));
                     for (JsvalArray::size_type i = oldSize;
-                            i < mfdata->array.size(); ++i) {
+                            i < mfdata->getArray().size(); ++i) {
                         JSString * jsstring = JS_NewStringCopyZ(cx, "");
                         if (!jsstring) {
                             throw std::bad_alloc();
@@ -6232,23 +5901,25 @@ namespace {
                         if (!JS_AddRoot(cx, jsstring)) {
                             throw std::bad_alloc();
                         }
-                        mfdata->array[i] = STRING_TO_JSVAL(jsstring);
+                        mfdata->getArray()[i] = STRING_TO_JSVAL(jsstring);
                     }
-                } else if (JSVAL_TO_INT(*vp) < mfdata->array.size()) {
+                } else if (JSVAL_TO_INT(*vp) < mfdata->getArray().size()) {
                     //
                     // Shrink the array; allow the truncated elements to
                     // be garbage collected.
                     //
                     for (JsvalArray::size_type i = JSVAL_TO_INT(*vp);
-                            i < mfdata->array.size(); ++i) {
+                            i < mfdata->getArray().size(); ++i) {
                         JSBool ok = JS_RemoveRoot(cx,
-                            JSVAL_TO_GCTHING(mfdata->array[i]));
+                            JSVAL_TO_GCTHING(mfdata->getArray()[i]));
                         assert(ok);
                     }
-                    mfdata->array.resize(JSVAL_TO_INT(*vp));
+                    mfdata->getArray().resize(JSVAL_TO_INT(*vp));
                 }
             } catch (std::exception & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+# ifndef NDEBUG
+                cerr << ex.what() << endl;
+# endif
                 return JS_FALSE;
             } catch (...) {
                 assert(false);
@@ -6260,19 +5931,19 @@ namespace {
 
         JSBool MFString::toString(JSContext * const cx, JSObject * const obj,
                                   uintN, jsval *, jsval * const rval) throw () {
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                         (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
             ostrstream os;
             os << "[";
-            for (JsvalArray::size_type i = 0; i < mfdata->array.size();
+            for (JsvalArray::size_type i = 0; i < mfdata->getArray().size();
                     ++i) {
-                assert(JSVAL_IS_STRING(mfdata->array[i]));
+                assert(JSVAL_IS_STRING(mfdata->getArray()[i]));
                 os << "\""
-                   << JS_GetStringBytes(JSVAL_TO_STRING(mfdata->array[i]))
+                   << JS_GetStringBytes(JSVAL_TO_STRING(mfdata->getArray()[i]))
                    << "\"";
-                if ((i + 1) < mfdata->array.size()) {
+                if ((i + 1) < mfdata->getArray().size()) {
                     os << ", ";
                 }
             }
@@ -6295,12 +5966,12 @@ namespace {
 
         void MFString::finalize(JSContext * const cx, JSObject * const obj)
                 throw () {
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                             (JS_GetPrivate(cx, obj));
             assert(mfdata);
 
-            for (JsvalArray::const_iterator i(mfdata->array.begin());
-                    i != mfdata->array.end(); ++i) {
+            for (JsvalArray::const_iterator i(mfdata->getArray().begin());
+                    i != mfdata->getArray().end(); ++i) {
                 JSBool ok = JS_RemoveRoot(cx, JSVAL_TO_GCTHING(*i));
                 assert(ok);
             }
@@ -6323,17 +5994,17 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                     (JS_GetPrivate(cx, mftimeObj));
 
-            mfdata->array.resize(mftime.getLength());
+            mfdata->getArray().resize(mftime.getLength());
 
             for (size_t i = 0; i < mftime.getLength(); ++i) {
                 if (!JS_NewDoubleValue(cx, mftime.getElement(i),
-                                       &mfdata->array[i])) {
+                                       &mfdata->getArray()[i])) {
                     return JS_FALSE;
                 }
-                if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(mfdata->array[i]))) {
+                if (!JS_AddRoot(cx, JSVAL_TO_GCTHING(mfdata->getArray()[i]))) {
                     return JS_FALSE;
                 }
             }
@@ -6352,14 +6023,15 @@ namespace {
                                                 JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &MFTime::jsclass, 0));
             MField::MFData * const mfdata =
-                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFTime * mftime =
-                    new VrmlMFTime(mfdata->array.size());
+                    new VrmlMFTime(mfdata->getArray().size());
             for (MField::JsvalArray::size_type i = 0;
-                    i < mfdata->array.size(); ++i) {
-                assert(JSVAL_IS_DOUBLE(mfdata->array[i]));
-                mftime->setElement(i, *JSVAL_TO_DOUBLE(mfdata->array[i]));
+                    i < mfdata->getArray().size(); ++i) {
+                assert(JSVAL_IS_DOUBLE(mfdata->getArray()[i]));
+                mftime->setElement(i,
+                                *JSVAL_TO_DOUBLE(mfdata->getArray()[i]));
             }
 
             return mftime;
@@ -6383,15 +6055,15 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                     (JS_GetPrivate(cx, mfvec2fObj));
 
-            mfdata->array.resize(mfvec2f.getLength());
+            mfdata->getArray().resize(mfvec2f.getLength());
 
             for (size_t i = 0; i < mfvec2f.getLength(); ++i) {
                 const VrmlSFVec2f sfvec2f(mfvec2f.getElement(i));
                 if (!SFVec2f::toJsval(sfvec2f, true, cx, obj,
-                                      &mfdata->array[i])) {
+                                      &mfdata->getArray()[i])) {
                     return JS_FALSE;
                 }
             }
@@ -6410,24 +6082,21 @@ namespace {
                                                   JSObject * const obj) {
             assert(JS_InstanceOf(cx, obj, &MFVec2f::jsclass, 0));
             MField::MFData * const mfdata =
-                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
             VrmlMFVec2f * mfvec2f =
-                    new VrmlMFVec2f(mfdata->array.size());
+                    new VrmlMFVec2f(mfdata->getArray().size());
             for (MField::JsvalArray::size_type i = 0;
-                    i < mfdata->array.size(); ++i) {
-                assert(JSVAL_IS_OBJECT(mfdata->array[i]));
+                    i < mfdata->getArray().size(); ++i) {
+                assert(JSVAL_IS_OBJECT(mfdata->getArray()[i]));
                 assert(JS_InstanceOf(cx,
-                                     JSVAL_TO_OBJECT(mfdata->array[i]),
+                                     JSVAL_TO_OBJECT(mfdata->getArray()[i]),
                                      &SFVec2f::jsclass, 0));
-                const SField::SFData * const sfdata =
-                        static_cast<SField::SFData *>
-                            (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
-                assert(sfdata);
-                
-                const VrmlSFVec2f & sfvec2f =
-                        static_cast<VrmlSFVec2f &>(sfdata->getFieldValue());
-                mfvec2f->setElement(i, sfvec2f.get());
+                const VrmlSFVec2f * const sfvec2f =
+                        reinterpret_cast<VrmlSFVec2f *>
+                            (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->getArray()[i])));
+                assert(sfvec2f);
+                mfvec2f->setElement(i, sfvec2f->get());
             }
 
             return mfvec2f;
@@ -6451,15 +6120,15 @@ namespace {
                 return JS_FALSE;
             }
 
-            MFData * const mfdata = static_cast<MFData *>
+            MFData * const mfdata = reinterpret_cast<MFData *>
                                     (JS_GetPrivate(cx, mfvec3fObj));
 
-            mfdata->array.resize(mfvec3f.getLength());
+            mfdata->getArray().resize(mfvec3f.getLength());
 
             for (size_t i = 0; i < mfvec3f.getLength(); ++i) {
                 const VrmlSFVec3f sfvec3f(mfvec3f.getElement(i));
                 if (!SFVec3f::toJsval(sfvec3f, true, cx, obj,
-                                      &mfdata->array[i])) {
+                                      &mfdata->getArray()[i])) {
                     return JS_FALSE;
                 }
             }
@@ -6476,30 +6145,27 @@ namespace {
         
         VrmlMFVec3f * MFVec3f::createFromJSObject(JSContext * const cx,
                                                   JSObject * const obj) {
-            assert(cx);
-            assert(obj);
             assert(JS_InstanceOf(cx, obj, &MFVec3f::jsclass, 0));
             MField::MFData * const mfdata =
-                    static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+                    reinterpret_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
-            VrmlMFVec3f * mfvec3f = new VrmlMFVec3f(mfdata->array.size());
+            VrmlMFVec3f * mfvec3f =
+                    new VrmlMFVec3f(mfdata->getArray().size());
             for (MField::JsvalArray::size_type i = 0;
-                    i < mfdata->array.size(); ++i) {
-                assert(JSVAL_IS_OBJECT(mfdata->array[i]));
-                assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
+                    i < mfdata->getArray().size(); ++i) {
+                assert(JSVAL_IS_OBJECT(mfdata->getArray()[i]));
+                assert(JS_InstanceOf(cx,
+                                     JSVAL_TO_OBJECT(mfdata->getArray()[i]),
                                      &SFVec3f::jsclass, 0));
-                const SField::SFData * const sfdata =
-                    static_cast<SField::SFData *>
-                        (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
-                assert(sfdata);
-                
-                const VrmlSFVec3f & sfvec3f =
-                        static_cast<VrmlSFVec3f &>(sfdata->getFieldValue());
-                mfvec3f->setElement(i, sfvec3f.get());
+                const VrmlSFVec3f * const sfvec3f =
+                        reinterpret_cast<VrmlSFVec3f *>
+                            (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->getArray()[i])));
+                assert(sfvec3f);
+                mfvec3f->setElement(i, sfvec3f->get());
             }
 
             return mfvec3f;
         }
     }
-# endif // OPENVRML_HAVE_SPIDERMONKEY
+# endif // HAVE_MOZJS
 }

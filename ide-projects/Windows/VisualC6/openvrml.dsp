@@ -122,19 +122,7 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\MathUtils.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\openvrml\OpenVRML\nodetype.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\openvrml\OpenVRML\nodetypeptr.h
-# End Source File
-# Begin Source File
-
 SOURCE="..\..\..\src\openvrml-gl\OpenVRML\GL\OpenGLEvent.h"
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\openvrml\OpenVRML\private.h
 # End Source File
 # Begin Source File
 
@@ -194,10 +182,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlFrustum.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlMatrix.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlNamespace.h
 # End Source File
 # Begin Source File
@@ -215,6 +199,10 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlNodePtr.h
 # Begin Source File
 
 SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlNodeScript.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlNodeType.h
 # End Source File
 # Begin Source File
 
@@ -340,32 +328,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\MathUtils.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\openvrml\OpenVRML\nodetype.cpp
-
-!IF  "$(CFG)" == "openvrml - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
-
-# ADD CPP /w /W0 /D "DLL_EXPORT"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\openvrml\OpenVRML\nodetypeptr.cpp
-
-!IF  "$(CFG)" == "openvrml - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
-
-# ADD CPP /w /W0 /D "DLL_EXPORT"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE="..\..\..\src\openvrml-gl\OpenVRML\GL\OpenGLEvent.cpp"
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
@@ -382,21 +344,6 @@ SOURCE="..\..\..\src\openvrml-gl\OpenVRML\GL\OpenGLEvent.cpp"
 # Begin Source File
 
 SOURCE=..\..\..\src\openvrml\OpenVRML\Route.cpp
-
-!IF  "$(CFG)" == "openvrml - Win32 Release"
-
-# ADD CPP /w /W0
-
-!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
-
-# ADD CPP /w /W0 /I ".\\" /D "DLL_EXPORT"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\openvrml\OpenVRML\ScriptJDK.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
 
@@ -562,19 +509,6 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlFrustum.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlMatrix.cpp
-
-!IF  "$(CFG)" == "openvrml - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
-
-# ADD CPP /w /W0
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlNamespace.cpp
 
 !IF  "$(CFG)" == "openvrml - Win32 Release"
@@ -644,6 +578,21 @@ SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlNodeScript.cpp
 !ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
 
 # ADD CPP /w /W0 /I "." /I ".\\" /D "DLL_EXPORT" /D "XP_PC"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\openvrml\OpenVRML\VrmlNodeType.cpp
+
+!IF  "$(CFG)" == "openvrml - Win32 Release"
+
+# ADD CPP /w /W0
+
+!ELSEIF  "$(CFG)" == "openvrml - Win32 Debug"
+
+# ADD CPP /w /W0 /I "." /I ".\\" /D "DLL_EXPORT"
 
 !ENDIF 
 
