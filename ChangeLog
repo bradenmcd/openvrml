@@ -3,6 +3,9 @@
         * configure.ac, openvrml.pc.in:  Conditionally add mozilla-js to
           Requires in openvrml.pc.
 
+        * configure.ac:  Fixed error in conditionally adding mozilla-js
+          to Requires in openvrml.pc.
+
 2002-12-08  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/vrml97node.cpp: Fix bug in FontStyle

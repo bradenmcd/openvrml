@@ -85,7 +85,7 @@ else
     AC_MSG_ERROR([Mozilla JavaScript is required for Script node JavaScript support.])
   fi
   if test -n "${OPENVRML_PKG_REQUIRES}"; then
-    REQUIRE_MOZILLA_JS="${OPENVRML_PKG_REQUIRES},"
+    OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
   fi
   OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${REQUIRE_MOZILLA_JS}"
   AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1], [Defined if Script node JavaScript support is enabled.])
