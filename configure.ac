@@ -1,4 +1,4 @@
-AC_PREREQ([2.52])
+AC_PREREQ([2.53])
 AC_INIT([OpenVRML], [0.12.0], [openvrml-develop@lists.sourceforge.net])
 AM_INIT_AUTOMAKE([$PACKAGE_TARNAME], [$PACKAGE_VERSION])
 
