@@ -577,12 +577,12 @@ USERDEP__LEXER="parser.out"
 InputPath=..\src\vrml97\lexer.lpp
 
 "lexer.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	set BISON_SIMPLE=c:\bison\bison.simple 
-	set BISON_HAIRY=c:\bison\bison.hairy 
-	c:\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
+	set BISON_SIMPLE=d:\usr\bose\bison\bison.simple 
+	set BISON_HAIRY=d:\usr\bose\bison\bison.hairy 
+	d:\usr\bose\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
 	del parser.h 
 	ren parser.cpp.h parser.h 
-	c:\flex\flex -dLt ..\src\vrml97\lexer.lpp > lexer.cpp 
+	d:\usr\bose\flex\flex -dLt ..\src\vrml97\lexer.lpp > lexer.cpp 
 	type NUL:  > unistd.h 
 	
 # End Custom Build
@@ -628,9 +628,9 @@ SOURCE=..\src\vrml97\parser.ypp
 InputPath=..\src\vrml97\parser.ypp
 
 "parser.out" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	set BISON_SIMPLE=c:\bison\bison.simple 
-	set BISON_HAIRY=c:\bison\bison.hairy 
-	c:\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
+	set BISON_SIMPLE=d:\usr\bose\bison\bison.simple 
+	set BISON_HAIRY=d:\usr\bose\bison\bison.hairy 
+	d:\usr\bose\bison\bison -ld ..\src\vrml97\parser.ypp -o  parser.cpp 
 	
 # End Custom Build
 
@@ -671,7 +671,7 @@ SOURCE=..\src\vrml97\ScriptJS.cpp
 
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
-# ADD CPP /I "." /D "XP_PC" /D js_InitArrayClass=JS_InitArrayClass
+# ADD CPP /I "..\..\libvrml97js\src" /D "XP_PC" /D js_InitArrayClass=JS_InitArrayClass
 
 !ENDIF 
 
@@ -684,7 +684,7 @@ SOURCE=..\src\vrml97\ScriptObject.cpp
 
 !ELSEIF  "$(CFG)" == "libvrml97core - Win32 Debug"
 
-# ADD CPP /I "." /D "XP_PC"
+# ADD CPP /I "..\..\libvrml97js\src" /D "XP_PC"
 
 !ENDIF 
 
