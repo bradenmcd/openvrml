@@ -40,3 +40,8 @@ ScriptObject::ScriptObject(VrmlNodeScript & scriptNode): scriptNode(scriptNode)
  */
 ScriptObject::~ScriptObject() {}
 
+/**
+ * @var ScriptObject::scriptNode
+ *
+ * @brief A reference to the Script node associated with this script.
+ */
