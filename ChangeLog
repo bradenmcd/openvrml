@@ -5,6 +5,8 @@
 
         * Moved VrmlNode Doxygen comments to implementation file.
 
+        * Added getter/setter methods to VrmlNodeAppearance.
+
 2001-01-20  Braden McDaniel  <braden@endoframe.com>
 
         * Added getRoutes() method to VrmlNode, per patch from Joe

@@ -164,8 +164,8 @@ void VrmlNodeShape::render(Viewer *viewer, VrmlRenderContext rc)
 	      VrmlNodeAppearance *a = d_appearance.get()->toAppearance();
 	      a->render(viewer, rc);
 
-	      if (a->texture() && a->texture()->toTexture())
-		nTexComponents = a->texture()->toTexture()->nComponents();
+	      if (a->getTexture().get() && a->getTexture().get()->toTexture())
+		nTexComponents = a->getTexture().get()->toTexture()->nComponents();
 	    }
 	  else
 	    {

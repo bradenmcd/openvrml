@@ -62,10 +62,14 @@ public:
   virtual void setField(const char *fieldName,
 			const VrmlField &fieldValue);
 
-  VrmlNode *material()	{ return (VrmlNode *) d_material.get(); }
-  VrmlNode *texture()	{ return (VrmlNode *) d_texture.get(); }
-  VrmlNode *textureTransform()
-    { return (VrmlNode *) d_textureTransform.get(); }
+  const VrmlSFNode & getMaterial() const;
+  void setMaterial(const VrmlSFNode & material);
+  
+  const VrmlSFNode & getTexture() const;
+  void setTexture(const VrmlSFNode & texture);
+  
+  const VrmlSFNode & getTextureTransform() const;
+  void setTextureTransform(const VrmlSFNode & textureTransform);
 
 protected:
 
