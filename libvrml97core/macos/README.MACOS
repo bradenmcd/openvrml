@@ -1,7 +1,7 @@
 Read Me for Mac Developers
 ==========================
 
-These project files are for Metroworks CodeWarrior Pro 5.
+The project files are for Metroworks CodeWarrior Pro 5.
 
 
 To build LibVRML and Lookat
@@ -43,34 +43,37 @@ To build LibVRML and Lookat
             - lookat
             - ...
 
-2) Compile JavaScript.mcp in libvrml97js/macos
+2) Compile the LibVRML97js.mcp project in libvrml97js/macos
 
-3) Compile ImageReader.mcp in libvrml97core/macos
-   -- you should ensure that the ImageReader.mcp project access paths include
-      your JPEG, PNG and Z compression library folders.
+3) Compile the LibVRML97gl.mcp project in libvrml97gl/macos
 
-4) Compile LibVRML97.mcp in libvrml97core/macos
-   -- you need to include InternetConfig, ZLIB, PNG, JPEG and OpenGL libraries
-      and header files in your access paths. 
+4) Compile the ImageReader.mcp project in libvrml97core/macos
+
+5) Compile the LibVRML97core.mcp project in libvrml97core/macos
+
+6) Compile the LibVRML97.mcp project in libvrml97core/macos
            
-5) Compile Lookat.mcp (in lookat/macos)
-   -- you will need to update the access paths so that your compiler can find
-      your Apple OpenGL SDK GLUT files (header files, library, and the resource file).
+7) Compile the Lookat.mcp project in lookat/macos
 
-The result should be a libVRML97.Lib library and a simple GLUT-based viewer. You can
-enter URLs (file or http) into the dialog box that appears when you start Lookat to
-choose which VRML files to view.
+For steps 3 and 7, you will probably need to adjust the project access paths so that
+CodeWarrior can locate your OpenGL SDK files. If you do not have the JPEG, PNG, Z, and
+InternetConfig files in the default file structure described above then you will need
+to adjust the access paths for those for steps 4 and 5.
+
+The final result should be a LibVRML97.Lib library in libvrml97core/macos and a simple
+GLUT-based viewer in lookat/macos. You can enter URLs (file or http) into the dialog
+box that appears when you start Lookat to choose which VRML files to view.
 
 
 Notes
 =====
 
-You will usually need to provide your application's creator code in System.cpp
+You will usually need to provide your application's creator code in LibVRML97.prefix
 in order to use InternetConfig to pass non-VRML anchors to your default
 helper application within LibVRML97 (Need a smarter solution here...).
 
-Note that I have included premade parser files in the macos folder, which the supplied
-LibVRML97.mcp project uses.
+Note that I have included premade parser files in the libvrml97core/macos folder, which
+the supplied LibVRML97core.mcp project uses.
 
 If you use LibVRML97 to create your own applications then VrmlScene can be
 initialised with either a URL or a filepath but if a filepath is passed then you need
@@ -81,14 +84,14 @@ Mac file dialog then you need to retrieve the full path of the selected file,
 prepend ///, and replace colons with slashes.
 
 If you want to help develop support for Java in LibVRML97 then you need to add
-access paths to LibVRML97.mcp for JNILib and the JNI header files (in Apple's MRJ SDK),
+access paths to LibVRML97core.mcp for JNILib and the JNI header files (in Apple's MRJ SDK),
 and you must enable HAVE_JDK in the LibVRML97.prefix file.
 
 
 MacLookat
 =========
 
-I'm currently working on a Mac-friendly viewer called MacLookat. it uses a modified
+I'm currently working on a Mac-friendly viewer called MacLookat. It uses a modified
 version of GLUT. Go to this URL for details:
 
       <http://home.telia.no/mlouka/vr/mac/maclookat/>
@@ -96,4 +99,4 @@ version of GLUT. Go to this URL for details:
 
 
 Michael louka (Michael.Louka@hrp.no)
-21 January 2000
+26 January 2000
