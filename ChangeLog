@@ -1,3 +1,9 @@
+2004-11-12 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/exposedfield.h:  Call
+	event_side_effect from do_process_event (instead of recursively
+	calling do_process_event and blowing out the stack).
+
 2004-11-11 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/Makefile.am:  Make documentation directory in

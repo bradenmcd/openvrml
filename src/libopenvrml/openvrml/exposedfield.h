@@ -66,7 +66,7 @@ namespace openvrml {
         throw (std::bad_alloc)
     {
         static_cast<FieldValue &>(*this) = value;
-        this->do_process_event(value, timestamp);
+        this->event_side_effect(value, timestamp);
         this->node().modified(true);
         node::emit_event(*this, timestamp);
     }
