@@ -323,13 +323,7 @@ Doc2::~Doc2()
     delete istm_;
     delete ostm_;
     if (tmpfile_) {
-        theSystem->removeFile(
-# ifdef macintosh
-                              convertCommonToMacPath(tmpfile_, sizeof(tmpfile_))
-# else
-                              tmpfile_
-# endif
-                              );
+        theSystem->removeFile(tmpfile_);
         delete [] tmpfile_;
     }
 }
@@ -527,21 +521,9 @@ std::istream & Doc2::inputStream() {
             this->istm_ = &std::cin;
         } else {
 # ifdef OPENVRML_ENABLE_GZIP
-            this->istm_ = new z::ifstream(
-#   ifdef macintosh
-                                          convertCommonToMacPath(fn, sizeof(fn))
-#   else
-                                          fn
-#   endif
-                                          );
+            this->istm_ = new z::ifstream(fn);
 # else
-            this->istm_ = new std::ifstream(
-#   ifdef macintosh
-                                          convertCommonToMacPath(fn, sizeof(fn))
-#   else
-                                          fn
-#   endif
-                                          );
+            this->istm_ = new std::ifstream(fn);
 # endif
         }
     }
@@ -610,98 +592,6 @@ bool Doc2::filename(char * fn, const size_t nfn) {
 
     return s && *s;
 }
-
-# ifdef macintosh
-
-namespace {
-
-    inline char convertHex(char c)
-    {
-        static char converted;
-        if (c>='0' && c<='9')
-            converted = c-'0';
-        else
-            if (c>='A' && c<='F')
-                converted = c-'A'+10;
-            else
-                converted = c-'a'+10;
-        return converted;
-    }
-
-    char* decodePath(const char* path)
-    {
-        static char converted[256];
-        strcpy (converted, path);
-
-        char * a = converted;
-        char * b = converted;
-
-        while(*a) {
-            if (*a == '%') {
-                a++;
-                if (*a) {
-                    *b = convertHex(*a++) * 16;
-                }
-                if (*a) {
-                    *b = *b+convertHex(*a);
-                }
-                a++, b++;
-            } else {
-                *b++ = *a++;
-            }
-        }
-        *b++ = 0;
-
-        return &converted[0];
-    }
-}
-
-char* Doc2::convertCommonToMacPath( char *fn, int nfn )
-{
-  /* Note that only full paths can be use on the Mac to
-     retrieve files correctly, so this function assumes
-     that the viewer, e.g. Lookat, has provided the Browser with
-     a file path in the form of a URL (optionally without the protocol
-     if it is a local path) */
-
-  static char macfn[256];
-
-  // We start at index 3 in order to skip the /// at the start
-  // of a legal Mac file protocol URL
-
-  if ( !((nfn > 3) && (fn[0] == '/') && (fn[1] == '/') && (fn[2] == '/')) ) {
-    return fn; // its either a tmp file from a URL transfer or its an incorrect path
-  }
-
-  int macfnpos = 0;
-  for ( int i = 3; i < nfn; i++ ) {
-    if ( fn[i] == '/' ) {
-      macfn[macfnpos] = ':';
-      macfnpos++;
-    }
-    else {
-      if ( fn[i] == '.' ) {
-         if ( (i+2 < nfn) && (fn[i+1] == '.') && (fn[i+2] == '/') ) {
-           // replace "../" with an extra :
-           macfn[macfnpos] = ':';
-           macfnpos++;
-           i=i+2;
-        }
-        else {
-          macfn[macfnpos] = fn[i];
-          macfnpos++;
-        }
-      }
-      else {
-        macfn[macfnpos] = fn[i];
-        macfnpos++;
-      }
-    }
-  }
-  return decodePath(macfn);
-}
-
-# endif /* macintosh */
 
 namespace {
 

@@ -405,11 +405,6 @@ namespace {
     {
         GLenum glerr;
         while ((glerr = glGetError()) != GL_NO_ERROR) {
-# ifdef macintosh
-            if (glerr != 1285) // This avoids automatic switching between SW and
-                               // HW renderers being continuously reported as an
-                               // error
-# endif
             theSystem->error("GL ERROR: %s %s\n", s, gluErrorString(glerr));
         }
     }

@@ -164,9 +164,7 @@ namespace OpenVRML {
             void rot_trackball(float x1, float y1, float x2, float y2);
             void rotate(const rotation & rotation) throw ();
 
-#ifndef macintosh
             void handleKey(int);
-#endif
             void handleButton(EventInfo*);
             void handleMouseDrag(int, int);
 

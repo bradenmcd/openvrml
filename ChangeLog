@@ -1,3 +1,36 @@
+2003-06-01  Braden McDaniel  <braden@endoframe.com>
+
+	Removed Mac OS 9-specific #ifdefs.  It is not at all likely that
+	Mac OS 9 support will be revived.
+
+	* src/lookat/lookat.cpp:  Removed conditional code for Mac OS 9.
+	* src/openvrml/OpenVRML/Doc.cpp (convertHex, decodePath,
+	Doc::convertCommonToMacPath, Doc::fopen):  Removed conditional
+	code for Mac OS 9.
+	* src/openvrml/OpenVRML/Doc.h (Doc::convertCommonToMacPath):
+	Removed conditional code for Mac OS 9.
+	* src/openvrml/OpenVRML/Image.cpp:  Removed conditional code for
+	Mac OS 9.
+	* src/openvrml/OpenVRML/System.cpp (System::loadUrl,
+	System::connectSocket, strdup, c2str255, YieldingNotifier,
+	ProgressThread, System::httpFetch):  Removed conditional code
+	for Mac OS 9.
+	* src/openvrml/OpenVRML/System.h (System::loadUrl):  Removed
+	conditional code for Mac OS 9.
+	* src/openvrml/OpenVRML/doc2.cpp (Doc2::~Doc2,
+	Doc2::inputStream, convertHex, decodePath,
+	Doc2::convertCommonToMacPath):  Removed conditional code for
+	Mac OS 9.
+	* src/openvrml/OpenVRML/doc2.hpp (Doc2::convertCommonToMacPath):
+	Removed conditional code for Mac OS 9.
+	* src/openvrml/OpenVRML/vrml97node.cpp (TimeSensor::update):
+	Removed conditional code for Mac OS 9.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp (checkErrors):
+	Removed conditional code for Mac OS 9.
+	* src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h
+	(ViewerOpenGL::handleKey):  Removed conditional code for
+	Mac OS 9.
+
 2003-05-31  Braden McDaniel  <braden@endoframe.com>
 
 	Fixed bounding_volume::ortho_transform that was missed as part

@@ -60,10 +60,6 @@ namespace OpenVRML {
         Doc2 & operator=(const Doc2 &);
 
         bool filename(char * fn, size_t nfn);
-
-#   ifdef macintosh
-        char * convertCommonToMacPath(char * fn, int nfn);
-#   endif
     };
 }
 

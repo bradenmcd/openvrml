@@ -39,12 +39,8 @@ namespace OpenVRML {
         virtual void warn(const char *, ...);
         virtual void inform(const char *, ...);
         virtual void debug(const char *, ...);
-#   ifdef macintosh
-        virtual bool loadUrl(char *url, int np, char **parameters );
-#   else
         virtual bool loadUrl(const std::string & url,
                              const mfstring & parameters);
-#   endif
         virtual int connectSocket( const char *host, int port );
         virtual const char *httpHost(const char *url, int *port);
         virtual const char *httpFetch( const char *url );

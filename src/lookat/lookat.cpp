@@ -27,12 +27,6 @@
 #   include <floatingpoint.h>
 # endif
 
-# ifdef macintosh
-#   include "console.h"
-#   include "unix.h"
-#   include "SIOUX.h"
-# endif
-
 # include <iostream>
 # if HAVE_APPLE_OPENGL_FRAMEWORK
 #   include <OpenGL/glut.h>
@@ -70,13 +64,6 @@ int main(int argc, char * argv[]) {
 
 #if defined(__FreeBSD__)
     fpsetmask(0);
-# endif
-
-# ifdef macintosh
-    SIOUXSettings.asktosaveonclose = 0;
-    argc = ccommand(&argv);
-    _fcreator = 'ttxt';
-    _ftype = 'TEXT';
 # endif
 
     glutInitWindowSize(400, 320);

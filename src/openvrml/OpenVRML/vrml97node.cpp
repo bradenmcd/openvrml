@@ -14905,11 +14905,7 @@ void TimeSensor::update(const double currentTime)
         // Should check whether time, fraction_changed eventOuts are
         // being used, and set delta to cycleTime if not...
         if (this->active.value) {
-#ifdef macintosh
-            this->type._class.browser.delta(0.001); //0.0 is too fast(!)
-#else
             this->type._class.browser.delta(0.0);
-#endif
         }
         this->lastTime = currentTime;
     }

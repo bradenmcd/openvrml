@@ -1113,16 +1113,12 @@ namespace {
  * PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  */
 
-#ifdef macintosh
-#define	htonl(x)	(x)
-#else
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #include <winsock2.h>
 #else
 #include <sys/types.h>   /* to make netinet/in.h happy */
 #include <netinet/in.h>  /* for htonl */
 #endif          // for _WIN32
-#endif          // for macintosh
 namespace {
     const int FRAMES_PER_ALLOC = 100;
 
