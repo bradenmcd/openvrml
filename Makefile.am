@@ -44,7 +44,7 @@ IDE_PROJECT_FILES = \
         ide-projects/Windows/VisualC6/tplib/js/libjs.dsw \
         ide-projects/Windows/VisualC6/tplib/js/Makefile.vc6
 
-EXTRA_DIST = MPL-1.1.txt vrml.m4 vrml-gl.m4 Doxyfile.in openvrml.spec.in \
+EXTRA_DIST = vrml.m4 vrml-gl.m4 Doxyfile.in openvrml.spec.in \
 lookat.xpm $(IDE_PROJECT_FILES)
 
 m4datadir = $(datadir)/aclocal
