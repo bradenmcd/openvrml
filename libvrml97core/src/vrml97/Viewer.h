@@ -10,7 +10,17 @@
 #define VIEWER_H
 
 class VrmlScene;
+class VrmlBVolume;
+class VrmlBSphere;
+class VrmlAABox;
 
+#include "VrmlFrustum.h"
+
+
+/**
+ * Map the scene graph to the underlying graphics library.
+ *
+ */
 class Viewer {
 
 protected:
@@ -45,18 +55,6 @@ public:
   virtual void getPosition( float *x, float *y, float *z ) = 0;
   virtual void getOrientation( float *orientation ) = 0;
 
-  // S. K. Bose March. 02/2000
-  virtual bool IsBoxOutside(float *,float *) = 0;
-  // S. K. Bose March. 02/2000
-  virtual void getTransformMatrix(float [4][4] /*Matrix*/, 
-			    float * /*center*/,
-			    float * /*rotation*/,
-			    float * /*scale*/,
-			    float * /*scaleOrientation*/,
-			    float * /*translation*/) = 0;
-  // S. K. Bose March. 02/2000
-  virtual void getBillboardTransformMatrix(float [4][4], float *) = 0;
-
   enum RenderMode {
     RENDER_MODE_DRAW,
     RENDER_MODE_PICK
@@ -67,8 +65,19 @@ public:
 
   virtual double getFrameRate() = 0;
 
-  // Need a query user nav too...
+  /**
+   * Return view to last bound viewpoint.
+   */
   virtual void resetUserNavigation() = 0;
+
+  /**
+   * Return user's navigation from the last bound viewpoint as a
+   * MathUtils-format matrix. The navigation transformation should be
+   * orthonormal.
+   *
+   * @param M returns navigation matrix in MathUtils format
+   */
+  virtual void getUserNavigation(double M[4][4]) = 0;
 
   // Open/close display lists
   virtual Object beginObject(const char *, bool = false) = 0;
@@ -218,6 +227,38 @@ public:
   virtual void transformPoints(int nPoints, float *points) = 0;
 
 
+  // still working on some navigation api issues, so don't depend on
+  // thses yet. there's a default implementation in any case, so you
+  // shouldn't have to worry about it.
+  //
+  virtual const VrmlFrustum& getFrustum() const;
+  virtual void setFrustum(const VrmlFrustum& afrust);
+
+
+  /**
+   * Intersect the given bounding volume with the view volume. This
+   * goes into the viewer to provide a hook for systems that use
+   * non-standard view volumes. Most subclasses should be able to use
+   * the default implementation provided here. If your view volume is
+   * so strange that there's no way to cull to is, then reimplement to
+   * always return BV_INSIDE
+   *
+   * @param bv the bounding volume to intersect with the view volume
+   * @return VrmlBVolume::INSIDE, OUTSIDE, or PARTIAL
+   */
+  virtual int isectViewVolume(const VrmlBVolume& bv) const;
+
+  /**
+   * Draw a bounding sphere. Used for debugging view culling. Probably
+   * should be drawBVolume and handle aaboxes as well.
+   *
+   * @param bs a bounding sphere, if max, will not be drawn
+   * @param flag one of the bvolume intersection test constants, or 4
+   *             to draw in unique way. (useful for debugging)
+   */
+  virtual void drawBSphere(const VrmlBSphere& bs, int flag) = 0;
+
+
 protected:
 
   static void computeCylinder(double height,
@@ -252,6 +293,10 @@ protected:
 		   float up[3]);
 
   VrmlScene *d_scene;
+
+  VrmlFrustum d_frust;
+
+
 
 private:
 

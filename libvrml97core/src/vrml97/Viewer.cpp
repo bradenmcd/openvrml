@@ -19,6 +19,10 @@
 #include "MathUtils.h"
 #include "VrmlScene.h"
 
+#include "VrmlBVolume.h"
+#include "VrmlBSphere.h"
+#include "VrmlAABox.h"
+
 
 
 //  Empty destructor for derived classes to call.
@@ -377,3 +381,42 @@ void Viewer::computeView(float position[3],
 
 void Viewer::setColor(float , float , float , float ) {}
 
+
+
+/**
+ *  For normal VRML97 use, this won't need to be overridden, but for
+ *  systems with non-standard view volumes, this can be changed to
+ *  cull as appropriate. Note that culling can be disabled by setting
+ *  a flag in VrmlRenderContext. Since I don't have access to the
+ *  appropriate cave/boom/whichever api's, I can't be sure that this
+ *  is enough. If it isn't, please express any concerns to the
+ *  libvrml97 developer's list, and it can be fixed...
+ */
+int Viewer::isectViewVolume(const VrmlBVolume& bv) const {
+  int r = VrmlBVolume::BV_PARTIAL;
+  VrmlBSphere* bs = bv.toBSphere();
+  if (bs) {
+    r = bs->isectFrustum(d_frust);
+  } else {
+    VrmlAABox* ab = bv.toAABox();
+    if (ab) 
+      r = ab->isectFrustum(d_frust);
+  }
+  //cout << "Viewer::isectViewVolume(VrmlBSphere&)=" << r << endl;
+  return r;
+}
+
+
+// comment here on how we're forcing everybody to carry around a frust
+// whether they want it or not, and how it shouldn't be used except
+// for debugging and stuff since it might not be valid in some
+// implementations
+//
+const VrmlFrustum& Viewer::getFrustum() const
+{
+  return d_frust;
+}
+
+void Viewer::setFrustum(const VrmlFrustum& afrust) {
+  d_frust = afrust; // copy
+}
