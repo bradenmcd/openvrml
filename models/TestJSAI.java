@@ -53,6 +53,7 @@ import vrml.node.*;
  *
  * Script
  *   getBrowser
+ *   getEventIn
  *   getEventOut
  *   getField
  *
@@ -91,31 +92,62 @@ class TestJSAI extends Script {
   private SFColor inactiveColor;
   private SFColor color;
 
-  public void initialize() {
+  public void initialize()
+  {
+   try{
+    boolean caught = false;
 
     /* TEST Script Object */
 
     /* Test getField */
     activeColor = (SFColor) getField("activeColor");
     SFColor inactiveColor = (SFColor) getField("inactiveColor");
+
     /* Test getEventOut */
-    color = (SFColor) getEventOut("color");
-    SFColor activeColorEventOut = (SFColor)getEventOut("activeColor");
-    if (activeColorEventOut == null) 
-      System.out.println("getEventOut(1) failed");
-    Field invalidEventOut = getEventOut("blah");
-    if (invalidEventOut != null)
-      System.out.println("getEventOut(2)  failed");
+    try
+    {
+      color = (SFColor) getEventOut("color");
+    }
+    catch (InvalidEventOutException exc)
+    {
+      caught = true;
+    }
+
+    if (caught)
+      System.out.println("getEventOut test failed");
+
+    caught = false;
+
+    try
+    {
+      Field invalidEventOut = getEventOut("blah");
+    }
+    catch (InvalidEventOutException exc)
+    {
+      caught = true;
+    }
+
+    if (!caught)
+      System.out.println("getEventOut test failed");
+    else
+      caught = false;
 
     /* Test getEventIn */
     SFBool isActiveEventIn = (SFBool)getEventIn("isActive");
-    if (isActiveEventIn == null) System.out.println("getEventIn 1 failed");
-    SFColor activeColorEventIn = (SFColor)getEventIn("activeColor");
-    if (activeColorEventIn == null) 
-      System.out.println("getEventIn 2 failed");
-    Field invalidEventIn = getEventIn("blahblah");
-    if (invalidEventIn != null)
-      System.out.println("getEventIn 3 failed");
+
+    try
+    {
+      Field invalidEventIn = getEventIn("blahblah");
+    }
+    catch (InvalidEventInException exc)
+    {
+      caught = true;
+    }
+
+    if (!caught)
+      System.out.println("getEventIn test failed");
+    else
+      caught = false;
 
     /* Test getBrowser */
     System.out.println("Print Browser Information");
@@ -275,8 +307,6 @@ class TestJSAI extends Script {
     SFString testString = (SFString) getField("testString");
     testString.setValue("testString2");
     System.out.println("testString = " + testString);
-    Field invalidField = getField("blah2");
-    if (invalidField != null) System.out.println("getField(1) failed");
     SFString testSFString1 = new SFString();
     SFString testSFString2 = new SFString("testing");
     testString.setValue(testSFString1);
@@ -328,7 +358,6 @@ class TestJSAI extends Script {
     MFColor testMFColor1 = new MFColor();
     MFColor testMFColor2 = new MFColor(colorArrays);
     MFColor testMFColor3 = new MFColor(colorArray2);
-    // Is this correct or should the first param be 1
     MFColor testMFColor4 = new MFColor(3, colorArray3);
     if (testMFColor3.getSize() != 1)
       System.out.println("MFColor.getSize() failed");
@@ -423,6 +452,12 @@ class TestJSAI extends Script {
     System.out.println("Test ConstMFVec3f/MFVec3f");
  
     System.out.println("exit initialize method");
+   }
+   catch(Exception e)
+   {
+     System.out.println("Exception caught in initialize method");
+     e.printStackTrace();
+   }
   }
 
   public void processEvent (Event event) 
