@@ -36,6 +36,7 @@
 #   include <string.h>
 #   include <strstream>
 
+# ifndef _WIN32_IDE
 #   include <vrml_Browser.h>
 #   include <vrml_Event.h>
 #   include <vrml_Field.h>
@@ -85,6 +86,7 @@
 #   include <vrml_field_ConstMFVec3f.h>
 #   include <vrml_node_Node.h>
 #   include <vrml_node_Script.h>
+# endif
 
 #   include "doc2.hpp"
 #   include "MathUtils.h"
@@ -4266,7 +4268,7 @@ jobject JNICALL Java_vrml_node_Node_getEventIn
 jobject JNICALL Java_vrml_node_Node_getEventOut
   (JNIEnv *env, jobject obj, jstring jstrEventOutName)
 {
-  cout << "TODO: Java_vrml_node_Node_getEventOut " << endl;
+  std::cout << "TODO: Java_vrml_node_Node_getEventOut " << std::endl;
   /*
   const char *eventOutName = env->GetStringUTFChars(jstrEventOutName , 0);
   jfieldID fid = getFid(env, obj, "NodePtr", "I");
@@ -4299,7 +4301,7 @@ jobject JNICALL Java_vrml_node_Node_getEventOut
 jobject JNICALL Java_vrml_node_Node_getExposedField
   (JNIEnv *env, jobject obj, jstring jstrExposedFieldName)
 {
-  cout << "TODO: Java_vrml_node_Node_getExposedField" << endl;
+  std::cout << "TODO: Java_vrml_node_Node_getExposedField" << std::endl;
   /*
   const char *exposedFieldName =
     env->GetStringUTFChars(jstrExposedFieldName , 0);
