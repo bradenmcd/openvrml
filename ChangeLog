@@ -1,3 +1,11 @@
+2001-06-14  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Fixes for object construction in several places in 
+          vrml97node.cpp, VrmlScene.cpp, VrmlNodeType.cpp and
+          VrmlNodeScript.cpp. MSVC++6.0 does not like the way it was.
+
+        * Fixed type mismatch in VrmlNodeProto.cpp and VrmlNodeProto.h
+
 2001-06-13  S. K. Bose  <bose@pavan.barc.ernet.in>
 
         * In "VrmlNodePtr.h" as "pointer" is not a member of std::map 
