@@ -14,6 +14,7 @@
 #include "Image.h"
 #include "Doc.h"
 #include "System.h"
+#include "VrmlMFString.h"
 
 #include <stdlib.h>		// free()
 #include <string.h>
@@ -181,6 +182,16 @@ bool Image::tryURLs(size_t nUrls, char const * const * urls, Doc2 * relative)
     return i < nUrls;
 }
 
+bool Image::tryURLs(const VrmlMFString & urls, Doc2 * relative) {
+    size_t i(0);
+    for (; i < urls.size(); ++i) {
+        if (urls[i] && setURL(urls[i], relative)) {
+            break;
+        }
+    }
+    
+    return (i < urls.size());
+}
 
 const char *Image::url() { return d_url ? d_url->url() : 0; }
 

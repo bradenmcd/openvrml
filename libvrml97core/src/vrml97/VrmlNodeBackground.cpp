@@ -140,9 +140,10 @@ static Image* getTexture( VrmlMFString &urls,
 	}
 
       // Have to load it
-      if ( ! tex[thisIndex].tryURLs( n, &urls[0], relative ))
+      if (!tex[thisIndex].tryURLs(urls, relative)) {
 	cerr << "Error: couldn't read Background texture from URL "
 	     << urls << endl;
+      }
 
       // check whether it needs to be scaled
       else if ( tex[thisIndex].pixels() && tex[thisIndex].nc() )

@@ -14,6 +14,7 @@
 
 class Doc;
 class Doc2;
+class VrmlMFString;
 
 class Image {
 
@@ -27,6 +28,7 @@ public:
 
   bool tryURLs(size_t nUrls, char const * const * urls, Doc *relative = 0);
   bool tryURLs(size_t nUrls, char const * const * urls, Doc2 *relative = 0);
+  bool tryURLs(const VrmlMFString & urls, Doc2 * relative = 0);
 
   const char *url();
 

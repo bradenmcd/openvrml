@@ -1010,7 +1010,7 @@ char const * VrmlMFString::get(size_t index) const
     return (*this)[index];
 }
 
-char const * const & VrmlMFString::operator[](size_t index) const
+char const * VrmlMFString::operator[](size_t index) const
 {
     assert(index < d_size);
     return d_v[index];

@@ -4,6 +4,14 @@
 
         * Upgraded JavaScript to 1.5RC2.
 
+        * Added another tryURLs method to Image:
+          
+            bool tryURLs(const VrmlMFString & urls, Doc2 * relative = 0);
+          
+          This was needed as there is currently no reliable way to get the
+          char** to the 2D array of strings out of VrmlMFString.  This fixes
+          <http://sourceforge.net/bugs/?func=detailbug&bug_id=116908&group_id=7151>.
+
 2000-11-16  S. K. Bose <bose@pavan.barc.ernet.in>
         
         * Changes in Makefile.win to include conditional generation
