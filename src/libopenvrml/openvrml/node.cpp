@@ -1810,26 +1810,6 @@ bool node::bounding_volume_dirty() const
 }
 
 /**
- * @brief Render this node.
- *
- * Actually, most of the rendering work is delegated to the viewer, but this
- * method is responsible for traversal to the node's renderable children,
- * including culling. Each node class needs to implement this routine
- * appropriately. It's not abstract since it doesn't make sense to call render
- * on some nodes. Alternative would be to break render out into a seperate
- * mixins class, but that's probably overkill.
- *
- * @param viewer    viewer implementation responsible for actually doing the
- *                  drawing.
- * @param context   generic context argument; holds things like the accumulated
- *                  modelview transform.
- */
-void node::render(openvrml::viewer & viewer, const rendering_context context)
-{
-    this->modified(false);
-}
-
-/**
  * @brief Send an event from this node.
  */
 void node::emit_event(const std::string & id,
@@ -1973,6 +1953,28 @@ appearance_node::~appearance_node() throw ()
 {}
 
 /**
+ * @brief Insert appearance when rendering.
+ *
+ * @param v                 viewer.
+ * @param rendering_context context.
+ */
+void appearance_node::render_appearance(viewer & v, rendering_context context)
+{
+    this->do_render_appearance(v, context);
+    this->modified(false);
+}
+
+/**
+ * @brief render_appearance implementation.
+ *
+ * @param v                 viewer.
+ * @param rendering_context context.
+ */
+void appearance_node::do_render_appearance(viewer & v,
+                                           rendering_context context)
+{}
+
+/**
  * @brief Cast to an appearance_node.
  *
  * @return a pointer to this appearance_node.
@@ -2066,6 +2068,40 @@ void child_node::relocate() throw (std::bad_alloc)
 
     RelocateTraverser(do_reloc).traverse(*this);
 }
+
+/**
+ * @brief Render the node.
+ *
+ * Actually, most of the rendering work is delegated to the viewer, but this
+ * method is responsible for traversal to the node's renderable children,
+ * including culling. Each node class needs to implement this routine
+ * appropriately. It's not abstract since it doesn't make sense to call render
+ * on some nodes. Alternative would be to break render out into a seperate
+ * mixins class, but that's probably overkill.
+ *
+ * @param v         viewer implementation responsible for actually doing the
+ *                  drawing.
+ * @param context   generic context argument; holds things like the accumulated
+ *                  modelview transform.
+ */
+void child_node::render_child(viewer & v, const rendering_context context)
+{
+    this->do_render_child(v, context);
+    this->modified(false);
+}
+
+/**
+ * @brief render_child implementation.
+ *
+ * Rendered child nodes should override this method.
+ *
+ * @param v         viewer implementation responsible for actually doing the
+ *                  drawing.
+ * @param context   generic context argument; holds things like the accumulated
+ *                  modelview transform.
+ */
+void child_node::do_render_child(viewer & v, rendering_context context)
+{}
 
 /**
  * @brief Cast to a child_node.
@@ -2304,11 +2340,15 @@ font_style_node * font_style_node::to_font_style() throw ()
 geometry_node::geometry_node(const node_type & type,
                              const scope_ptr & scope)
     throw ():
-    node(type, scope)
+    node(type, scope),
+    geometry_reference(0)
 {}
 
 /**
  * @brief Destroy.
+ *
+ * @todo We should call viewer::remove_object here; but we need a viewer
+ *       reference to do that.
  */
 geometry_node::~geometry_node() throw ()
 {}
@@ -2324,13 +2364,43 @@ geometry_node * geometry_node::to_geometry() throw ()
 }
 
 /**
- * @fn viewer::object_t geometry_node::insert_geometry(openvrml::viewer & v, rendering_context context)
+ * @brief Insert geometry into a viewer.
  *
  * @param v         viewer.
  * @param context   rendering context.
  *
  * @return object identifier for the inserted geometry.
  */
+viewer::object_t geometry_node::render_geometry(viewer & v,
+                                                rendering_context context)
+{
+    if (this->geometry_reference != 0 && this->modified()) {
+        v.remove_object(this->geometry_reference);
+        this->geometry_reference = 0;
+    }
+
+    if (this->geometry_reference != 0) {
+        v.insert_reference(this->geometry_reference);
+    } else {
+        this->geometry_reference = this->do_render_geometry(v, context);
+        this->modified(false);
+    }
+    return this->geometry_reference;
+}
+
+/**
+ * @brief render_geometry implementation.
+ *
+ * @param v         viewer.
+ * @param context   rendering context.
+ *
+ * @return object identifier for the inserted geometry.
+ */
+viewer::object_t geometry_node::do_render_geometry(viewer & v,
+                                                   rendering_context context)
+{
+    return 0;
+}
 
 /**
  * @brief Get the color node (if any) associated with this geometry.
@@ -2579,7 +2649,8 @@ sound_source_node * sound_source_node::to_sound_source() throw ()
  */
 texture_node::texture_node(const node_type & type, const scope_ptr & scope)
     throw ():
-    node(type, scope)
+    node(type, scope),
+    texture_reference(0)
 {}
 
 /**
@@ -2587,6 +2658,46 @@ texture_node::texture_node(const node_type & type, const scope_ptr & scope)
  */
 texture_node::~texture_node() throw ()
 {}
+
+/**
+ * @brief Insert a texture into a viewer.
+ *
+ * @param v         viewer.
+ * @param context   rendering context.
+ *
+ * @return object identifier for the inserted texture.
+ */
+viewer::texture_object_t
+texture_node::render_texture(viewer & v, rendering_context context)
+{
+    if (this->texture_reference != 0 && this->modified()) {
+        v.remove_texture_object(this->texture_reference);
+        this->texture_reference = 0;
+    }
+
+    if (this->texture_reference != 0) {
+        v.insert_texture_reference(this->texture_reference,
+                                   this->components());
+    } else {
+        this->texture_reference = this->do_render_texture(v, context);
+        this->modified(false);
+    }
+    return this->texture_reference;
+}
+
+/**
+ * @brief render_texture implementation.
+ *
+ * @param v         viewer.
+ * @param context   rendering context.
+ *
+ * @return object identifier for the inserted texture.
+ */
+viewer::texture_object_t
+texture_node::do_render_texture(viewer & v, rendering_context context)
+{
+    return 0;
+}
 
 /**
  * @brief Cast to a texture_node.
@@ -2728,6 +2839,31 @@ texture_transform_node::texture_transform_node(const node_type & type,
  * @brief Destructor.
  */
 texture_transform_node::~texture_transform_node() throw ()
+{}
+
+/**
+ * @brief Render the texture transform.
+ *
+ * @param v         viewer.
+ * @param context   rendering context.
+ */
+void
+texture_transform_node::render_texture_transform(viewer & v,
+                                                 rendering_context context)
+{
+    this->do_render_texture_transform(v, context);
+    this->modified(false);
+}
+
+/**
+ * @brief Render the texture transform.
+ *
+ * @param v         viewer.
+ * @param context   rendering context.
+ */
+void
+texture_transform_node::do_render_texture_transform(viewer & v,
+                                                    rendering_context context)
 {}
 
 /**

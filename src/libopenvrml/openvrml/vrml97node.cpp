@@ -614,8 +614,7 @@ abstract_geometry_node::abstract_geometry_node(const node_type & type,
                                                const scope_ptr & scope):
     node(type, scope),
     abstract_base(type, scope),
-    geometry_node(type, scope),
-    viewerObject(0)
+    geometry_node(type, scope)
 {}
 
 /**
@@ -625,31 +624,6 @@ abstract_geometry_node::~abstract_geometry_node() throw ()
 {
     /* Need access to viewer to delete viewerObject...*/
 }
-
-/**
- * @brief Render this node.
- *
- * Subclasses need only define insert_geometry(), not render().
- *
- * @param viewer a renderer
- * @param context the renderer context
- */
-void abstract_geometry_node::render(openvrml::viewer & viewer,
-                                    rendering_context context)
-{
-    if (this->viewerObject && this->modified()) {
-        viewer.remove_object(this->viewerObject);
-        this->viewerObject = 0;
-    }
-
-    if (this->viewerObject) {
-        viewer.insert_reference(this->viewerObject);
-    } else {
-        this->viewerObject = this->insert_geometry(viewer, context);
-        this->modified(false);
-    }
-}
-
 
 /**
  * @class abstract_indexed_set_node
@@ -1294,13 +1268,13 @@ anchor_node * anchor_node::to_anchor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void anchor_node::render(openvrml::viewer & viewer,
-                         const rendering_context context)
+void anchor_node::do_render_child(openvrml::viewer & viewer,
+                                  const rendering_context context)
 {
     viewer.set_sensitive(this);
 
     // Render children
-    this->group_node::render(viewer, context);
+    this->group_node::render_child(viewer, context);
 
     viewer.set_sensitive(0);
 }
@@ -1531,6 +1505,7 @@ bool appearance_node::modified() const
                 && this->textureTransform.value->modified()));
 }
 
+# if 0
 /**
  * @brief Render the node.
  *
@@ -1576,10 +1551,11 @@ void appearance_node::render(openvrml::viewer & viewer,
             static const vec2f translation(0.0, 0.0);
             viewer.set_texture_transform(center, rotation, scale, translation);
         }
-        texture->render(viewer, context);
+        texture->render_texture(viewer, context);
     }
     this->node::modified(false);
 }
+# endif
 
 /**
  * @brief Get the material node.
@@ -1614,6 +1590,57 @@ const node_ptr & appearance_node::texture_transform() const throw ()
     return this->textureTransform.value;
 }
 
+/**
+ * @brief render_appearance implementation.
+ *
+ * @param v                 viewer.
+ * @param rendering_context context.
+ */
+void appearance_node::do_render_appearance(viewer & v,
+                                           rendering_context context)
+{
+    openvrml::material_node * const material =
+        node_cast<openvrml::material_node *>(this->material_.value.get());
+    texture_node * const texture =
+        node_cast<texture_node *>(this->texture_.value.get());
+
+    if (material) {
+        float trans = material->transparency();
+        color diffuse = material->diffuse_color();
+        size_t nTexComponents = texture ? texture->components() : 0;
+        if (nTexComponents == 2 || nTexComponents == 4) { trans = 0.0; }
+        if (nTexComponents >= 3) { diffuse = color(1.0, 1.0, 1.0); }
+
+        v.enable_lighting(true);   // turn lighting on for this object
+        v.set_material(material->ambient_intensity(),
+                       diffuse,
+                       material->emissive_color(),
+                       material->shininess(),
+                       material->specular_color(),
+                       trans);
+
+        material->modified(false);
+    } else {
+        v.set_color(color(1.0, 1.0, 1.0)); // default color
+        v.enable_lighting(false);   // turn lighting off for this object
+    }
+
+    if (texture) {
+        openvrml::texture_transform_node * texture_transform =
+            node_cast<openvrml::texture_transform_node *>(
+                this->textureTransform.value.get());
+        if (texture_transform) {
+            texture_transform->render_texture_transform(v, context);
+        } else {
+            static const vec2f center(0.0, 0.0);
+            static const float rotation = 0.0;
+            static const vec2f scale(1.0, 1.0);
+            static const vec2f translation(0.0, 0.0);
+            v.set_texture_transform(center, rotation, scale, translation);
+        }
+        texture->render_texture(v, context);
+    }
+}
 
 /**
  * @class audio_clip_class
@@ -3049,8 +3076,8 @@ billboard_node::~billboard_node() throw ()
  * @param viewer    a viewer.
  * @param context   the rendering context.
  */
-void billboard_node::render(openvrml::viewer & viewer,
-                            rendering_context context)
+void billboard_node::do_render_child(openvrml::viewer & viewer,
+                                     rendering_context context)
 {
     mat4f new_LM = context.matrix();
     mat4f LM = billboard_to_matrix(*this, new_LM);
@@ -3070,7 +3097,7 @@ void billboard_node::render(openvrml::viewer & viewer,
         viewer.transform(LM);
 
         // Render children
-        this->group_node::render(viewer, context);
+        this->group_node::do_render_child(viewer, context);
 
         viewer.end_object();
     }
@@ -3213,8 +3240,8 @@ box_node::~box_node() throw ()
  *
  * @return display object identifier.
  */
-viewer::object_t box_node::insert_geometry(openvrml::viewer & viewer,
-                                           const rendering_context context)
+viewer::object_t box_node::do_render_geometry(openvrml::viewer & viewer,
+                                              const rendering_context context)
 {
     return viewer.insert_box(this->size.value);
 }
@@ -3971,8 +3998,8 @@ cone_node::~cone_node() throw ()
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-viewer::object_t cone_node::insert_geometry(openvrml::viewer & viewer,
-                                            const rendering_context context)
+viewer::object_t cone_node::do_render_geometry(openvrml::viewer & viewer,
+                                               const rendering_context context)
 {
     return viewer.insert_cone(this->height.value,
                               this->bottomRadius.value,
@@ -4531,8 +4558,8 @@ cylinder_node::~cylinder_node() throw ()
  * @param context   the rendering context.
  */
 viewer::object_t
-cylinder_node::insert_geometry(openvrml::viewer & viewer,
-                               const rendering_context context)
+cylinder_node::do_render_geometry(openvrml::viewer & viewer,
+                                  const rendering_context context)
 {
     return viewer.insert_cylinder(this->height.value,
                                   this->radius.value,
@@ -4825,7 +4852,7 @@ cylinder_sensor_node * cylinder_sensor_node::to_cylinder_sensor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void cylinder_sensor_node::render(openvrml::viewer & viewer,
+void cylinder_sensor_node::do_render_child(openvrml::viewer & viewer,
                                   rendering_context context)
 {
     //
@@ -5186,8 +5213,8 @@ directional_light_node::~directional_light_node() throw () {}
  * @param viewer    a viewer.
  * @param context   a rendering context.
  */
-void directional_light_node::render(openvrml::viewer & viewer,
-                              const rendering_context rc)
+void directional_light_node::do_render_child(openvrml::viewer & viewer,
+                                    const rendering_context rc)
 {
     if (this->on_.value) {
         viewer.insert_dir_light(this->ambientIntensity.value,
@@ -5506,8 +5533,8 @@ bool elevation_grid_node::modified() const
  * @param context   the rendering context.
  */
 viewer::object_t
-elevation_grid_node::insert_geometry(openvrml::viewer & viewer,
-                                     const rendering_context context)
+elevation_grid_node::do_render_geometry(openvrml::viewer & viewer,
+                                        const rendering_context context)
 {
     viewer::object_t obj = 0;
 
@@ -5903,8 +5930,8 @@ extrusion_node::~extrusion_node() throw () {}
  * @param context   the rendering context.
  */
 viewer::object_t
-extrusion_node::insert_geometry(openvrml::viewer & viewer,
-                                const rendering_context context)
+extrusion_node::do_render_geometry(openvrml::viewer & viewer,
+                                   const rendering_context context)
 {
     viewer::object_t obj = 0;
     if (this->crossSection.value.size() > 0 && this->spine.value.size() > 1) {
@@ -7014,7 +7041,8 @@ bool group_node::modified() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void group_node::render(openvrml::viewer & viewer, rendering_context context)
+void group_node::do_render_child(openvrml::viewer & viewer,
+                                 rendering_context context)
 {
     if (context.cull_flag != bounding_volume::inside) {
         assert(dynamic_cast<const bounding_sphere *>
@@ -7062,32 +7090,35 @@ void group_node::render_nocull(openvrml::viewer & viewer,
         // Draw nodes that impact their siblings (DirectionalLights,
         // TouchSensors, any others? ...)
         for (i = 0; i < n; ++i) {
-          const node_ptr & kid = this->children_.value[i];
-
-            if (kid->to_light()
-                    && !(kid->to_point_light() || kid->to_spot_light())) {
-                kid->render(viewer, context);
-            } else if ((kid->to_touch_sensor()
-                        && kid->to_touch_sensor()->enabled())
-                    || (kid->to_plane_sensor()
-                        && kid->to_plane_sensor()->enabled())
-                    || (kid->to_cylinder_sensor()
-                        && kid->to_cylinder_sensor()->enabled())
-                    || (kid->to_sphere_sensor()
-                        && kid->to_sphere_sensor()->isEnabled())) {
-                if (++nSensors == 1) { viewer.set_sensitive(this); }
+            child_node * const child =
+                node_cast<child_node *>(this->children_.value[i].get());
+            if (child) {
+                if (child->to_light()
+                    && !(child->to_point_light() || child->to_spot_light())) {
+                    child->render_child(viewer, context);
+                } else if ((child->to_touch_sensor()
+                            && child->to_touch_sensor()->enabled())
+                           || (child->to_plane_sensor()
+                               && child->to_plane_sensor()->enabled())
+                           || (child->to_cylinder_sensor()
+                               && child->to_cylinder_sensor()->enabled())
+                           || (child->to_sphere_sensor()
+                               && child->to_sphere_sensor()->isEnabled())) {
+                    if (++nSensors == 1) { viewer.set_sensitive(this); }
+                }
             }
         }
 
         // Do the rest of the children (except the scene-level lights)
         for (i = 0; i<n; ++i) {
-            const node_ptr & child = this->children_.value[i];
-            if (!(child->to_light()
+            child_node * const child =
+                node_cast<child_node *>(this->children_.value[i].get());
+            if (child && !(child->to_light()
 //                    || child->to_plane_sensor()
 //                    || child->to_cylinder_sensor()
 //                    || child->to_sphere_sensor()
                     || child->to_touch_sensor())) {
-                child->render(viewer, context);
+                child->render_child(viewer, context);
             }
         }
 
@@ -7288,7 +7319,11 @@ image_texture_node::image_texture_node(const node_type & type,
     node(type, scope),
     abstract_texture_node(type, scope),
     image(0),
+    texture_needs_update(true)
+# if 0
+,
     texObject(0)
+# endif
 {}
 
 /**
@@ -7300,6 +7335,7 @@ image_texture_node::~image_texture_node() throw ()
     // delete texObject...
 }
 
+# if 0
 /**
  * @brief Render the node.
  *
@@ -7324,7 +7360,7 @@ void image_texture_node::render(openvrml::viewer & viewer,
     // should cache on url so multiple references to the same file are
     // loaded just once... of course world authors should just DEF/USE
     // them...
-    if (!this->image && this->url.value.size() > 0) {
+    if (!this->image && !this->url.value.empty()) {
         doc2 baseDoc(this->scene()->url());
         this->image = new img;
         if (!this->image->try_urls(this->url.value, &baseDoc)) {
@@ -7348,6 +7384,7 @@ void image_texture_node::render(openvrml::viewer & viewer,
 
     this->node::modified(false);
 }
+# endif
 
 /**
  * @brief The number of components.
@@ -7400,6 +7437,44 @@ const unsigned char * image_texture_node::pixels() const throw ()
 }
 
 /**
+ * @brief render_texture implementation.
+ *
+ * @param v         viewer.
+ * @param context   rendering context.
+ *
+ * @return object identifier for the inserted texture.
+ */
+viewer::texture_object_t
+image_texture_node::do_render_texture(viewer & v, rendering_context context)
+{
+    this->update_texture();
+    return v.insert_texture(this->image->w(),
+                            this->image->h(),
+                            this->image->nc(),
+                            this->repeatS.value,
+                            this->repeatT.value,
+                            this->image->pixels(),
+                            true);
+}
+
+void image_texture_node::update_texture()
+{
+    if (this->texture_needs_update) {
+        delete this->image;
+        this->image = 0;
+        if (!this->url.value.empty()) {
+            doc2 baseDoc(this->scene()->url());
+            this->image = new img;
+            if (!this->image->try_urls(this->url.value, &baseDoc)) {
+                OPENVRML_PRINT_MESSAGE_("Couldn't read ImageTexture from URL "
+                                        + this->url.value[0]);
+            }
+        }
+        this->texture_needs_update = false;
+    }
+}
+
+/**
  * @brief set_url eventIn handler.
  *
  * @param value     an mfstring value.
@@ -7409,9 +7484,11 @@ const unsigned char * image_texture_node::pixels() const throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void image_texture_node::process_set_url(const field_value & value,
-                                  const double timestamp)
-        throw (std::bad_cast, std::bad_alloc) {
+                                         const double timestamp)
+    throw (std::bad_cast, std::bad_alloc)
+{
     this->url = dynamic_cast<const mfstring &>(value);
+    this->texture_needs_update = true;
     this->node::modified(true);
     this->emit_event("url_changed", this->url, timestamp);
 }
@@ -7713,16 +7790,19 @@ bool indexed_face_set_node::modified() const {
  *
  * @todo stripify, crease angle, generate normals ...
  */
-viewer::object_t indexed_face_set_node::insert_geometry(openvrml::viewer & viewer,
-                                               const rendering_context context)
+viewer::object_t
+indexed_face_set_node::do_render_geometry(openvrml::viewer & viewer,
+                                          const rendering_context context)
 {
     using std::vector;
 
     if (context.draw_bounding_spheres) {
-        assert(dynamic_cast<const bounding_sphere *>(&this->bounding_volume()));
+        assert(dynamic_cast<const bounding_sphere *>(
+                   &this->bounding_volume()));
         const bounding_sphere & bs =
             static_cast<const bounding_sphere &>(this->bounding_volume());
-        viewer.draw_bounding_sphere(bs, static_cast<bounding_volume::intersection>(4));
+        viewer.draw_bounding_sphere(bs,
+                                static_cast<bounding_volume::intersection>(4));
     }
 
     openvrml::coordinate_node * const coordinateNode =
@@ -8043,8 +8123,8 @@ indexed_line_set_node::~indexed_line_set_node() throw ()
  * @todo colors
  */
 viewer::object_t
-indexed_line_set_node::insert_geometry(openvrml::viewer & viewer,
-                                       const rendering_context context)
+indexed_line_set_node::do_render_geometry(openvrml::viewer & viewer,
+                                          const rendering_context context)
 {
     using std::vector;
 
@@ -8224,7 +8304,7 @@ inline_node::~inline_node() throw ()
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void inline_node::render(openvrml::viewer & viewer,
+void inline_node::do_render_child(openvrml::viewer & viewer,
                          const rendering_context context)
 {
     this->load();
@@ -8489,7 +8569,7 @@ bool lod_node::modified() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void lod_node::render(openvrml::viewer & viewer,
+void lod_node::do_render_child(openvrml::viewer & viewer,
                       const rendering_context context)
 {
     this->node::modified(false);
@@ -8518,7 +8598,9 @@ void lod_node::render(openvrml::viewer & viewer,
     // Not enough levels...
     if (i >= this->level.value.size()) { i = this->level.value.size() - 1; }
 
-    this->level.value[i]->render(viewer, context);
+    child_node * const child =
+        node_cast<child_node *>(this->level.value[i].get());
+    if (child) { child->render_child(viewer, context); }
 
     // Don't re-render on their accounts
     for (i = 0; i < this->level.value.size(); ++i) {
@@ -9198,8 +9280,11 @@ movie_texture_node::movie_texture_node(const node_type & type,
     image(0),
     frame(0),
     lastFrame(-1),
-    lastFrameTime(-1.0),
+    lastFrameTime(-1.0)
+# if 0
+,
     texObject(0)
+# endif
 {}
 
 /**
@@ -9345,6 +9430,7 @@ void movie_texture_node::update(const double time)
     }
 }
 
+# if 0
 /**
  * @brief Render the node.
  *
@@ -9381,6 +9467,7 @@ void movie_texture_node::render(openvrml::viewer & viewer,
     this->lastFrame = this->frame;
     this->node::modified(false);
 }
+# endif
 
 /**
  * @brief The number of components.
@@ -9455,6 +9542,37 @@ void movie_texture_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
     this->scene()->browser.remove_movie(*this);
+}
+
+/**
+ * @brief render_texture implementation.
+ *
+ * @param v         viewer.
+ * @param context   rendering context.
+ *
+ * @return object identifier for the inserted texture.
+ */
+viewer::texture_object_t
+movie_texture_node::do_render_texture(viewer & v, rendering_context context)
+{
+    if (!this->image || this->frame < 0) { return 0; }
+
+    viewer::texture_object_t texture_object = 0;
+
+    if (!this->image->pixels(this->frame)) {
+        this->frame = -1;
+    } else {
+        texture_object = v.insert_texture(this->image->w(),
+                                          this->image->h(),
+                                          this->image->nc(),
+                                          this->repeatS.value,
+                                          this->repeatT.value,
+                                          this->image->pixels(this->frame),
+                                          !this->active.value);
+    }
+
+    this->lastFrame = this->frame;
+    return texture_object;
 }
 
 /**
@@ -10680,8 +10798,12 @@ pixel_texture_class::create_type(const std::string & id,
 pixel_texture_node::pixel_texture_node(const node_type & type,
                                        const scope_ptr & scope):
     node(type, scope),
-    abstract_texture_node(type, scope),
-    texObject(0) {}
+    abstract_texture_node(type, scope)
+# if 0
+,
+    texObject(0)
+# endif
+{}
 
 /**
  * @brief Destroy.
@@ -10691,6 +10813,7 @@ pixel_texture_node::~pixel_texture_node() throw ()
     // viewer.remove_texture_object(this->texObject); ...
 }
 
+# if 0
 /**
  * @brief Render the node.
  *
@@ -10727,6 +10850,7 @@ void pixel_texture_node::render(openvrml::viewer & viewer,
     }
     this->node::modified(false);
 }
+# endif
 
 /**
  * @brief The number of components in the image.
@@ -10776,6 +10900,28 @@ size_t pixel_texture_node::frames() const throw ()
 const unsigned char * pixel_texture_node::pixels() const throw ()
 {
     return this->image.array();
+}
+
+/**
+ * @brief render_texture implementation.
+ *
+ * @param v         viewer.
+ * @param context   rendering context.
+ *
+ * @return object identifier for the inserted texture.
+ */
+viewer::texture_object_t
+pixel_texture_node::do_render_texture(viewer & v, rendering_context context)
+{
+    return this->image.array()
+        ? v.insert_texture(this->image.x(),
+                           this->image.y(),
+                           this->image.comp(),
+                           this->repeatS.value,
+                           this->repeatT.value,
+                           this->image.array(),
+                           true)
+        : 0;
 }
 
 /**
@@ -11038,7 +11184,7 @@ plane_sensor_node * plane_sensor_node::to_plane_sensor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void plane_sensor_node::render(openvrml::viewer & viewer,
+void plane_sensor_node::do_render_child(openvrml::viewer & viewer,
                                const rendering_context context)
 {
     //
@@ -11620,8 +11766,9 @@ bool point_set_node::modified() const
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-viewer::object_t point_set_node::insert_geometry(openvrml::viewer & viewer,
-                                        const rendering_context context)
+viewer::object_t
+point_set_node::do_render_geometry(openvrml::viewer & viewer,
+                                   const rendering_context context)
 {
     using std::vector;
 
@@ -12168,7 +12315,7 @@ proximity_sensor_node::~proximity_sensor_node() throw ()
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void proximity_sensor_node::render(openvrml::viewer & viewer,
+void proximity_sensor_node::do_render_child(openvrml::viewer & viewer,
                                    const rendering_context context)
 {
     if (this->enabled.value
@@ -12633,10 +12780,10 @@ bool shape_node::modified() const
 /**
  * @brief Render the node.
  *
- * @param viewer    a Viewer.
+ * @param viewer    a viewer.
  * @param context   a rendering context.
  */
-void shape_node::render(openvrml::viewer & viewer,
+void shape_node::do_render_child(openvrml::viewer & viewer,
                         const rendering_context context)
 {
     if (this->viewerObject && modified()) {
@@ -12654,27 +12801,27 @@ void shape_node::render(openvrml::viewer & viewer,
         // Don't care what color it is if we are picking
         bool picking = (viewer::pick_mode == viewer.mode());
         if (!picking) {
-            size_t nTexComponents = 0;
+            size_t texture_components = 0;
 
             openvrml::appearance_node * appearance =
                 node_cast<openvrml::appearance_node *>(
                     this->appearance.value.get());
             if (!picking && appearance) {
-                appearance->render(viewer, context);
+                appearance->render_appearance(viewer, context);
 
                 texture_node * const texture =
                     node_cast<texture_node *>(appearance->texture().get());
-                if (texture) { nTexComponents = texture->components(); }
+                if (texture) { texture_components = texture->components(); }
             } else {
                 viewer.set_color(color(1.0, 1.0, 1.0)); // default object color
                 viewer.enable_lighting(false);  // turn lighting off
             }
 
             // hack for opengl material mode
-            viewer.set_material_mode(nTexComponents, g->color());
+            viewer.set_material_mode(texture_components, g->color());
         }
 
-        g->render(viewer, context);
+        g->render_geometry(viewer, context);
 
         viewer.end_object();
     } else if (this->appearance.value) {
@@ -12973,12 +13120,12 @@ sound_node::~sound_node() throw ()
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void sound_node::render(openvrml::viewer & viewer,
+void sound_node::do_render_child(openvrml::viewer & viewer,
                         const rendering_context context)
 {
     // If this clip has been modified, update the internal data
     if (this->source.value && this->source.value->modified()) {
-        this->source.value->render(viewer, context);
+//        this->source.value->render(viewer, context);
     }
 }
 
@@ -13245,8 +13392,9 @@ sphere_node::~sphere_node() throw ()
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-viewer::object_t sphere_node::insert_geometry(openvrml::viewer & viewer,
-                                         const rendering_context context)
+viewer::object_t
+sphere_node::do_render_geometry(openvrml::viewer & viewer,
+                                const rendering_context context)
 {
     return viewer.insert_sphere(this->radius.value);
 }
@@ -13470,7 +13618,7 @@ sphere_sensor_node * sphere_sensor_node::to_sphere_sensor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void sphere_sensor_node::render(openvrml::viewer & viewer,
+void sphere_sensor_node::do_render_child(openvrml::viewer & viewer,
                                 const rendering_context context)
 {
     //
@@ -14162,17 +14310,19 @@ bool switch_node::modified() const {
 /**
  * @brief Render the node.
  *
- * The child corresponding to @a whichChoice is rendered. Nothing is rendered if
- * @a whichChoice is -1.
+ * The child corresponding to @a whichChoice is rendered. Nothing is rendered
+ * if @a whichChoice is -1.
  *
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void switch_node::render(openvrml::viewer & viewer, const rendering_context context)
+void switch_node::do_render_child(openvrml::viewer & viewer,
+                                  const rendering_context context)
 {
-    if (this->children_.value[0]) {
-        this->children_.value[0]->render(viewer, context);
-    }
+    assert(!this->children_.value.empty());
+    child_node * const child =
+        node_cast<child_node *>(this->children_.value[0].get());
+    if (child) { child->render_child(viewer, context); }
     this->node::modified(false);
 }
 
@@ -14181,7 +14331,8 @@ void switch_node::render(openvrml::viewer & viewer, const rendering_context cont
  *
  * @return the bounding volume associated with the node.
  */
-const bounding_volume & switch_node::bounding_volume() const {
+const bounding_volume & switch_node::bounding_volume() const
+{
     if (this->bounding_volume_dirty()) {
         const_cast<switch_node *>(this)->recalcBSphere();
     }
@@ -14952,8 +15103,8 @@ bool text_node::modified() const
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-viewer::object_t text_node::insert_geometry(openvrml::viewer & viewer,
-                                            const rendering_context context)
+viewer::object_t text_node::do_render_geometry(openvrml::viewer & viewer,
+                                               const rendering_context context)
 {
     const viewer::object_t retval =
         viewer.insert_shell(viewer::mask_ccw,
@@ -16176,6 +16327,7 @@ texture_transform_node::texture_transform_node(const node_type & type,
 texture_transform_node::~texture_transform_node() throw ()
 {}
 
+# if 0
 /**
  * @brief Render the node.
  *
@@ -16190,6 +16342,23 @@ void texture_transform_node::render(openvrml::viewer & viewer,
                                  this->scale.value,
                                  this->translation.value);
     this->node::modified(false);
+}
+# endif
+
+/**
+ * @brief render_texture_transform implementation.
+ *
+ * @param v         viewer.
+ * @param context   rendering context.
+ */
+void
+texture_transform_node::do_render_texture_transform(viewer & v,
+                                                    rendering_context context)
+{
+    v.set_texture_transform(this->center.value,
+                            this->rotation.value,
+                            this->scale.value,
+                            this->translation.value);
 }
 
 /**
@@ -17263,7 +17432,7 @@ const mat4f & transform_node::transform() const throw ()
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-void transform_node::render(openvrml::viewer & viewer,
+void transform_node::do_render_child(openvrml::viewer & viewer,
                             rendering_context context)
 {
     if (context.cull_flag != bounding_volume::inside) {
@@ -18296,8 +18465,8 @@ visibility_sensor_node::~visibility_sensor_node() throw ()
  * with respect to the accumulated transformations above it in the
  * scene graph. Move to update() when xforms are accumulated in Groups...
  */
-void visibility_sensor_node::render(openvrml::viewer & viewer,
-                                    const rendering_context context)
+void visibility_sensor_node::do_render_child(openvrml::viewer & viewer,
+                                             const rendering_context context)
 {
     if (this->enabled.value) {
         sftime timeNow(browser::current_time());

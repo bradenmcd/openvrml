@@ -1,5 +1,18 @@
 2003-11-08  Braden McDaniel  <braden@endoframe.com>
 
+	Removed node::render in favor of render_* member functions on the
+	derived abstract node types.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
+2003-11-08  Braden McDaniel  <braden@endoframe.com>
+
 	* src/lookat/Makefile.am:  Removed lingering obsolete reference
 	to JNI_CFLAGS.
 

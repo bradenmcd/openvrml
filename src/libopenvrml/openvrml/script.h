@@ -144,6 +144,7 @@ namespace openvrml {
         do_eventout(const std::string & id) const
             throw (unsupported_interface);
         virtual void do_shutdown(double timestamp) throw ();
+        virtual void do_render_child(viewer & v, rendering_context context);
     };
 
     inline const script_node::field_value_map_t &

@@ -104,9 +104,6 @@ namespace openvrml {
         virtual vrml97_node::time_sensor_node * to_time_sensor() const;
         virtual vrml97_node::touch_sensor_node * to_touch_sensor() const;
 
-        virtual void render(openvrml::viewer & viewer,
-                            rendering_context context);
-
     private:
         // Not copyable.
         ProtoNode(const ProtoNode &);
@@ -276,6 +273,8 @@ private:
         throw ();
     virtual const field_value & do_eventout(const std::string & id) const
         throw ();
+
+    virtual void do_render_child(viewer & v, rendering_context context);
 };
 
 
@@ -2164,7 +2163,7 @@ void scene::render(openvrml::viewer & viewer, rendering_context context)
          ++node) {
         assert(*node);
         child_node * child = node_cast<child_node *>(node->get());
-        if (child) { child->render(viewer, context); }
+        if (child) { child->render_child(viewer, context); }
     }
 }
 
@@ -3308,13 +3307,6 @@ vrml97_node::time_sensor_node * ProtoNode::to_time_sensor() const
 vrml97_node::touch_sensor_node * ProtoNode::to_touch_sensor() const
 {
     return this->implNodes[0]->to_touch_sensor();
-}
-
-void ProtoNode::render(openvrml::viewer & viewer,
-                       const rendering_context context)
-{
-    assert(this->implNodes[0]);
-    this->implNodes[0]->render(viewer, context);
 }
 
 
@@ -5264,6 +5256,9 @@ DefaultViewpoint::do_eventout(const std::string & id) const throw ()
     static const sfbool value;
     return value;
 }
+
+void DefaultViewpoint::do_render_child(viewer & v, rendering_context context)
+{}
 
 
 namespace {

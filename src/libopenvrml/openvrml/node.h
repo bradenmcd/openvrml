@@ -355,9 +355,6 @@ namespace openvrml {
 
         const routes_t & routes() const;
 
-        virtual void render(openvrml::viewer & viewer,
-                            rendering_context context);
-
     protected:
         node(const node_type & type, const scope_ptr & scope) throw ();
 
@@ -565,6 +562,8 @@ namespace openvrml {
     public:
         virtual ~appearance_node() throw () = 0;
 
+        void render_appearance(viewer & v, rendering_context context);
+
         virtual const node_ptr & material() const throw () = 0;
         virtual const node_ptr & texture() const throw () = 0;
         virtual const node_ptr & texture_transform() const throw () = 0;
@@ -575,6 +574,9 @@ namespace openvrml {
 
     private:
         virtual appearance_node * to_appearance() throw ();
+
+        virtual void do_render_appearance(viewer & v,
+                                          rendering_context context);
     };
 
 
@@ -583,14 +585,17 @@ namespace openvrml {
         virtual ~child_node() throw () = 0;
 
         void relocate() throw (std::bad_alloc);
+        void render_child(viewer & v, rendering_context context);
 
     protected:
         child_node(const node_type & type, const scope_ptr & scope) throw ();
 
     private:
-        virtual void do_relocate() throw (std::bad_alloc);
-
         virtual child_node * to_child() throw ();
+
+        virtual void do_relocate() throw (std::bad_alloc);
+        virtual void do_render_child(viewer & v,
+                                     rendering_context context);
     };
 
 
@@ -650,12 +655,13 @@ namespace openvrml {
 
 
     class geometry_node : public virtual node {
+        viewer::object_t geometry_reference;
+
     public:
         virtual ~geometry_node() throw () = 0;
 
-        virtual viewer::object_t
-        insert_geometry(openvrml::viewer & v,
-                        rendering_context context) = 0;
+        viewer::object_t render_geometry(viewer & v,
+                                         rendering_context context);
         virtual const color_node * color() const throw ();
 
     protected:
@@ -663,6 +669,9 @@ namespace openvrml {
             throw ();
 
     private:
+        virtual viewer::object_t
+        do_render_geometry(viewer & v, rendering_context context);
+
         virtual geometry_node * to_geometry() throw ();
     };
 
@@ -732,8 +741,13 @@ namespace openvrml {
 
 
     class texture_node : public virtual node {
+        viewer::texture_object_t texture_reference;
+
     public:
         virtual ~texture_node() throw () = 0;
+
+        viewer::texture_object_t render_texture(viewer & v,
+                                                rendering_context context);
 
         virtual size_t components() const throw () = 0;
         virtual size_t width() const throw () = 0;
@@ -748,6 +762,9 @@ namespace openvrml {
 
     private:
         virtual texture_node * to_texture() throw ();
+
+        virtual viewer::texture_object_t
+        do_render_texture(viewer & v, rendering_context context);
     };
 
 
@@ -771,6 +788,8 @@ namespace openvrml {
     public:
         virtual ~texture_transform_node() throw () = 0;
 
+        void render_texture_transform(viewer & v, rendering_context context);
+
     protected:
         texture_transform_node(const node_type & type,
                                const scope_ptr & scope)
@@ -778,6 +797,9 @@ namespace openvrml {
 
     private:
         virtual texture_transform_node * to_texture_transform() throw ();
+
+        virtual void
+        do_render_texture_transform(viewer & v, rendering_context context);
     };
 
 

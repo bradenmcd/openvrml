@@ -823,6 +823,17 @@ void script_node::do_shutdown(const double timestamp) throw ()
     this->scene()->browser.remove_script(*this);
 }
 
+/**
+ * @brief render_child implementation.
+ *
+ * @param v         viewer implementation responsible for actually doing the
+ *                  drawing.
+ * @param context   generic context argument; holds things like the accumulated
+ *                  modelview transform.
+ */
+void script_node::do_render_child(viewer & v, rendering_context context)
+{}
+
 } // namespace openvrml
 
 # if OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
