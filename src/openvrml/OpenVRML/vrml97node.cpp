@@ -12642,35 +12642,32 @@ const NodeTypePtr TextClass::createType(const std::string & id,
 # ifdef OPENVRML_ENABLE_TEXT_NODE
 namespace {
 
-    const vec2f * getClosestVertex_(const MFVec2f & contour,
+    const vec2f * getClosestVertex_(const std::vector<vec2f> & contour,
                                     const vec2f & point)
         throw ()
     {
-        assert(contour.value.size() > 1);
+        assert(contour.size() > 1);
         const vec2f * result = 0;
         float shortestDistance = std::numeric_limits<float>::max();
-        for (size_t i = 0; i < contour.value.size(); ++i) {
-            const vec2f & element = contour.value[i];
-            const float x = point[0] - element.x();
-            const float y = point[1] - element.y();
-            const float distance = sqrt(x * x + y * y);
+        for (size_t i = 0; i < contour.size(); ++i) {
+            const float distance = (point - contour[i]).length();
             if (distance < shortestDistance) {
                 shortestDistance = distance;
-                result = &element;
+                result = &contour[i];
             }
         }
         assert(result);
         return result;
     }
 
-    bool insideContour_(const MFVec2f & contour, const vec2f & point)
+    bool insideContour_(const std::vector<vec2f> & contour, const vec2f & point)
         throw ()
     {
         bool result = false;
-        const size_t nvert = contour.value.size();
+        const size_t nvert = contour.size();
         for (size_t i = 0, j = nvert - 1; i < nvert; j = i++) {
-            const vec2f & vi = contour.value[i];
-            const vec2f & vj = contour.value[j];
+            const vec2f & vi = contour[i];
+            const vec2f & vj = contour[j];
             if ((((vi.y() <= point.y()) && (point.y() < vj.y()))
                         || ((vj.y() <= point.y()) && (point.y() < vi.y())))
                     && (point.x() < (vj.x() - vi.x())
@@ -12683,18 +12680,20 @@ namespace {
 
     enum ContourType_ { exterior_, interior_ };
 
-    ContourType_ getType(const MFVec2f & contour,
-                         const std::vector<MFVec2f> & contours)
+    ContourType_ getType_(const std::vector<vec2f> & contour,
+                          const std::vector<std::vector<vec2f> > & contours)
         throw ()
     {
         using std::vector;
 
-        assert(contour.value.size() > 0);
-        const vec2f & vertex = contour.value[0];
+        assert(!contour.empty());
+        const vec2f & vertex = contour[0];
 
         bool isInterior = false;
-        for (vector<MFVec2f>::const_iterator testContour = contours.begin();
-                testContour != contours.end(); ++testContour) {
+        for (vector<vector<vec2f> >::const_iterator testContour =
+                contours.begin();
+                testContour != contours.end();
+                ++testContour) {
             if (&*testContour == &contour) { continue; }
             if (insideContour_(*testContour, vertex)) {
                 isInterior = !isInterior;
@@ -12704,39 +12703,39 @@ namespace {
     }
 
     struct Polygon_ {
-        const MFVec2f * exterior;
-        std::vector<const MFVec2f *> interiors;
+        const std::vector<vec2f> * exterior;
+        std::vector<const std::vector<vec2f> *> interiors;
     };
 
     struct Inside_ : std::binary_function {
-        bool operator()(const MFVec2f * const lhs,
-                        const MFVec2f * const rhs) const
+        bool operator()(const std::vector<vec2f> * const lhs,
+                        const std::vector<vec2f> * const rhs) const
         {
             assert(lhs);
             assert(rhs);
-            assert(!lhs->value.empty());
+            assert(!lhs->empty());
             //
             // Assume contours don't intersect. So if one point on lhs is
             // inside rhs, then assume all of lhs is inside rhs.
             //
-            return insideContour_(*rhs, lhs->value[0]);
+            return insideContour_(*rhs, lhs->front());
         }
     };
 
     const std::vector<Polygon_>
-    getPolygons_(const std::vector<MFVec2f> & contours)
+    getPolygons_(const std::vector<std::vector<vec2f> > & contours)
         throw (std::bad_alloc)
     {
         using std::vector;
-        typedef std::multiset<const MFVec2f *, Inside_> Contours;
+        typedef std::multiset<const vector<vec2f> *, Inside_> Contours;
 
         //
         // First, divide the contours into interior and exterior contours.
         //
         Contours interiors, exteriors;
-        for (vector<MFVec2f>::const_iterator contour = contours.begin();
+        for (vector<vector<vec2f> >::const_iterator contour = contours.begin();
                 contour != contours.end(); ++contour) {
-            switch (getType(*contour, contours)) {
+            switch (getType_(*contour, contours)) {
             case interior_:
                 interiors.insert(&*contour);
                 break;
@@ -12758,8 +12757,8 @@ namespace {
             polygon.exterior = *exteriors.begin();
             Contours::iterator interior = interiors.begin();
             while (interior != interiors.end()) {
-                assert(!(*interior)->value.empty());
-                if (insideContour_(*polygon.exterior, (*interior)->value[0])) {
+                assert(!(*interior)->empty());
+                if (insideContour_(*polygon.exterior, (*interior)->front())) {
                     polygon.interiors.push_back(*interior);
                     Contours::iterator next = interior;
                     ++next;
@@ -12775,16 +12774,13 @@ namespace {
         return polygons;
     }
 
-    long getVertexIndex_(const MFVec2f & vertices, const vec2f & vertex)
+    long getVertexIndex_(const std::vector<vec2f> & vertices,
+                         const vec2f & vertex)
         throw ()
     {
         using OpenVRML_::fpequal;
-        for (size_t i = 0; i < vertices.value.size(); ++i) {
-            const vec2f & element = vertices.value[i];
-            if (fpequal(vertex[0], element[0])
-                    && fpequal(vertex[1], element[1])) {
-                return i;
-            }
+        for (size_t i = 0; i < vertices.size(); ++i) {
+            if (vertices[i] == vertex) { return i; }
         }
         return -1;
     }
@@ -12803,9 +12799,10 @@ namespace {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
-                                   const float advanceWidth,
-                                   const float advanceHeight)
+Text::GlyphGeometry::GlyphGeometry(
+        const std::vector<std::vector<vec2f> > & contours,
+        const float advanceWidth,
+        const float advanceHeight)
     throw (std::bad_alloc):
     advanceWidth(advanceWidth),
     advanceHeight(advanceHeight)
@@ -12821,7 +12818,8 @@ Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
         // contour, and maps to a pointer to the interior contour whose
         // first vertex is closest to the exterior vertex.
         //
-        typedef std::multimap<const vec2f *, const MFVec2f *> ConnectionMap;
+        typedef std::multimap<const vec2f *, const std::vector<vec2f> *>
+                ConnectionMap;
         ConnectionMap connectionMap;
 
         //
@@ -12829,15 +12827,14 @@ Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
         // vertex that is closest to the first vertex in the interior contour,
         // and the put the pair in the map.
         //
-        for (vector<const MFVec2f *>::const_iterator interior =
+        for (vector<const std::vector<vec2f> *>::const_iterator interior =
                 polygon->interiors.begin();
                 interior != polygon->interiors.end();
                 ++interior) {
             assert(*interior);
-            assert(!(*interior)->value.empty());
+            assert(!(*interior)->empty());
             const vec2f * const exteriorVertex =
-                    getClosestVertex_(*polygon->exterior,
-                                      (*interior)->value[0]);
+                    getClosestVertex_(*polygon->exterior, (*interior)->front());
             assert(exteriorVertex);
             const ConnectionMap::value_type value(exteriorVertex, *interior);
             connectionMap.insert(value);
@@ -12846,40 +12843,39 @@ Text::GlyphGeometry::GlyphGeometry(const std::vector<MFVec2f> & contours,
         //
         // Finally, draw the polygon.
         //
-        assert(!polygon->exterior->value.empty());
-        for (size_t i = 0; i < polygon->exterior->value.size(); ++i) {
-            const vec2f & exteriorVertex = polygon->exterior->value[i];
+        assert(!polygon->exterior->empty());
+        for (size_t i = 0; i < polygon->exterior->size(); ++i) {
+            const vec2f & exteriorVertex = (*polygon->exterior)[i];
             long exteriorIndex = getVertexIndex_(this->coord, exteriorVertex);
             if (exteriorIndex > -1) {
-                this->coordIndex.value.push_back(exteriorIndex);
+                this->coordIndex.push_back(exteriorIndex);
             } else {
-                this->coord.value.push_back(exteriorVertex);
-                assert(!this->coord.value.empty());
-                exteriorIndex = this->coord.value.size() - 1;
-                this->coordIndex.value.push_back(exteriorIndex);
+                this->coord.push_back(exteriorVertex);
+                assert(!this->coord.empty());
+                exteriorIndex = this->coord.size() - 1;
+                this->coordIndex.push_back(exteriorIndex);
             }
             ConnectionMap::iterator pos;
             while ((pos = connectionMap.find(&exteriorVertex))
                     != connectionMap.end()) {
-                for (int i = pos->second->value.size() - 1; i > -1; --i) {
-                    const vec2f & interiorVertex = pos->second->value[i];
+                for (int i = pos->second->size() - 1; i > -1; --i) {
+                    const vec2f & interiorVertex = (*pos->second)[i];
                     const long interiorIndex = getVertexIndex_(this->coord,
                                                                interiorVertex);
                     if (interiorIndex > -1) {
-                        this->coordIndex.value.push_back(interiorIndex);
+                        this->coordIndex.push_back(interiorIndex);
                     } else {
-                        this->coord.value.push_back(interiorVertex);
-                        assert(!this->coord.value.empty());
-                        this->coordIndex
-                            .value.push_back(this->coord.value.size() - 1);
+                        this->coord.push_back(interiorVertex);
+                        assert(!this->coord.empty());
+                        this->coordIndex.push_back(this->coord.size() - 1);
                     }
                 }
-                this->coordIndex.value.push_back(exteriorIndex);
+                this->coordIndex.push_back(exteriorIndex);
                 connectionMap.erase(pos);
             }
         }
         assert(connectionMap.empty());
-        this->coordIndex.value.push_back(-1);
+        this->coordIndex.push_back(-1);
     }
 # endif // OPENVRML_ENABLE_TEXT_NODE
 }
@@ -13007,11 +13003,11 @@ Viewer::Object Text::insertGeometry(Viewer & viewer,
 {
     const Viewer::Object retval =
             viewer.insertShell(Viewer::MASK_CCW,
-                               this->textGeometry.coord.value,
-                               this->textGeometry.coordIndex.value,
+                               this->textGeometry.coord,
+                               this->textGeometry.coordIndex,
                                std::vector<color>(), // color
                                std::vector<int32>(), // colorIndex
-                               this->textGeometry.normal.value,
+                               this->textGeometry.normal,
                                std::vector<int32>(), // normalIndex
                                std::vector<vec2f>(), // texCoord
                                std::vector<int32>()); // texCoordIndex
@@ -13341,7 +13337,7 @@ namespace {
 
     struct GlyphContours_ {
         const float scale;
-        std::vector<MFVec2f> contours;
+        std::vector<std::vector<vec2f> > contours;
 
         explicit GlyphContours_(float scale);
     };
@@ -13357,13 +13353,13 @@ namespace {
         assert(user);
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
         try {
-            c.contours.push_back(MFVec2f(1));
+            c.contours.push_back(std::vector<vec2f>(1));
         } catch (std::bad_alloc & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
             return FT_Err_Out_Of_Memory;
         }
         const vec2f vertex(to->x * c.scale, to->y * c.scale);
-        c.contours.back().value[0] = vertex;
+        c.contours.back().front() = vertex;
         return 0;
     }
 
@@ -13373,7 +13369,7 @@ namespace {
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
         const vec2f vertex(to->x * c.scale, to->y * c.scale);
         try {
-            c.contours.back().value.push_back(vertex);
+            c.contours.back().push_back(vertex);
         } catch (std::bad_alloc & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
             return FT_Err_Out_Of_Memory;
@@ -13406,7 +13402,9 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void evaluateCurve_(vec2f * buffer, const size_t npoints, MFVec2f & contour)
+    void evaluateCurve_(vec2f * const buffer,
+                        const size_t npoints,
+                        std::vector<vec2f> & contour)
         throw (std::bad_alloc)
     {
         for (size_t i = 1; i <= (1 / stepSize_); i++){
@@ -13424,7 +13422,7 @@ namespace {
             //
             // Specify next vertex to be included on curve
             //
-            contour.value.push_back(buffer[(npoints - 1) * npoints]); // throws std::bad_alloc
+            contour.push_back(buffer[(npoints - 1) * npoints]); // throws std::bad_alloc
         }
     }
 
@@ -13438,10 +13436,10 @@ namespace {
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
 
         assert(!c.contours.empty());
-        MFVec2f & contour = c.contours.back();
-        const vec2f & lastVertex = contour.value[contour.value.size() - 1];
+        std::vector<vec2f> & contour = c.contours.back();
+        const vec2f & lastVertex = contour[contour.size() - 1];
 
-        assert(!contour.value.empty());
+        assert(!contour.empty());
         const size_t npoints = 3;
         vec2f buffer[npoints * npoints] = {
             vec2f(lastVertex[0], lastVertex[1]),
@@ -13469,10 +13467,10 @@ namespace {
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
 
         assert(!c.contours.empty());
-        MFVec2f & contour = c.contours.back();
-        const vec2f & lastVertex = contour.value[contour.value.size() - 1];
+        std::vector<vec2f> & contour = c.contours.back();
+        const vec2f & lastVertex = contour[contour.size() - 1];
 
-        assert(!contour.value.empty());
+        assert(!contour.empty());
         const size_t npoints = 4;
         vec2f buffer[npoints * npoints] = {
             vec2f(lastVertex[0], lastVertex[1]),
@@ -13551,8 +13549,8 @@ void Text::updateGeometry() throw (std::bad_alloc)
         }
 
         struct LineGeometry {
-            MFVec2f coord;
-            MFInt32 coordIndex;
+            std::vector<vec2f> coord;
+            std::vector<int32> coordIndex;
             float xMin, xMax;
             float yMin, yMax;
         };
@@ -13614,11 +13612,11 @@ void Text::updateGeometry() throw (std::bad_alloc)
                 glyphGeometry = &result.first->second;
             }
 
-            for (size_t i = 0; i < glyphGeometry->coord.value.size(); ++i) {
-                const vec2f & glyphVertex = glyphGeometry->coord.value[i];
+            for (size_t i = 0; i < glyphGeometry->coord.size(); ++i) {
+                const vec2f & glyphVertex = glyphGeometry->coord[i];
                 const vec2f textVertex(glyphVertex[0] + penPos[0],
                                        glyphVertex[1] + penPos[1]);
-                lineGeometry.coord.value.push_back(textVertex);
+                lineGeometry.coord.push_back(textVertex);
                 lineGeometry.xMin = (lineGeometry.xMin < textVertex[0])
                                   ? lineGeometry.xMin
                                   : textVertex[0];
@@ -13633,14 +13631,14 @@ void Text::updateGeometry() throw (std::bad_alloc)
                                   : textVertex[1];
             }
 
-            for (size_t i = 0; i < glyphGeometry->coordIndex.value.size(); ++i) {
-                const long index = glyphGeometry->coordIndex.value[i];
+            for (size_t i = 0; i < glyphGeometry->coordIndex.size(); ++i) {
+                const long index = glyphGeometry->coordIndex[i];
                 if (index > -1) {
-                    const size_t offset = lineGeometry.coord.value.size()
-                                          - glyphGeometry->coord.value.size();
-                    lineGeometry.coordIndex.value.push_back(offset + index);
+                    const size_t offset = lineGeometry.coord.size()
+                                          - glyphGeometry->coord.size();
+                    lineGeometry.coordIndex.push_back(offset + index);
                 } else {
-                    lineGeometry.coordIndex.value.push_back(-1);
+                    lineGeometry.coordIndex.push_back(-1);
                     ++npolygons;
                 }
             }
@@ -13669,11 +13667,11 @@ void Text::updateGeometry() throw (std::bad_alloc)
                            : 0.0;
         if (length > 0.0) {
             const float currentLength = lineGeometry.xMax - lineGeometry.xMin;
-            for (size_t i = 0; i < lineGeometry.coord.value.size(); ++i) {
-                const vec2f & vertex = lineGeometry.coord.value[i];
+            for (size_t i = 0; i < lineGeometry.coord.size(); ++i) {
+                const vec2f & vertex = lineGeometry.coord[i];
                 const vec2f scaledVertex(vertex[0] / currentLength * length,
                                          vertex[1]);
-                lineGeometry.coord.value[i] = scaledVertex;
+                lineGeometry.coord[i] = scaledVertex;
             }
         }
 
@@ -13698,16 +13696,15 @@ void Text::updateGeometry() throw (std::bad_alloc)
                 yOffset = lineGeometry.yMax - lineGeometry.yMin;
             }
         }
-        for (size_t i = 0; i < lineGeometry.coordIndex.value.size(); ++i) {
-            const long index = lineGeometry.coordIndex.value[i];
+        for (size_t i = 0; i < lineGeometry.coordIndex.size(); ++i) {
+            const long index = lineGeometry.coordIndex[i];
             if (index > -1) {
-                const vec2f & lineVertex = lineGeometry.coord.value[index];
+                const vec2f & lineVertex = lineGeometry.coord[index];
                 const vec3f textVertex(lineVertex.x() + xOffset,
                                        lineVertex.y() + yOffset,
                                        0.0f);
-                newGeometry.coord.value.push_back(textVertex);
-                newGeometry.coordIndex
-                        .value.push_back(newGeometry.coord.value.size() - 1);
+                newGeometry.coord.push_back(textVertex);
+                newGeometry.coordIndex.push_back(newGeometry.coord.size() - 1);
                 geometryXMin = (geometryXMin < textVertex.x())
                              ? geometryXMin
                              : textVertex.x();
@@ -13721,7 +13718,7 @@ void Text::updateGeometry() throw (std::bad_alloc)
                              ? geometryYMax
                              : textVertex.y();
             } else {
-                newGeometry.coordIndex.value.push_back(-1);
+                newGeometry.coordIndex.push_back(-1);
             }
         }
     }
@@ -13735,14 +13732,14 @@ void Text::updateGeometry() throw (std::bad_alloc)
     if (maxExtent > 0.0) {
         const float currentMaxExtent = geometryXMax - geometryXMin;
         if (currentMaxExtent > maxExtent) {
-            for (size_t i = 0; i < newGeometry.coord.value.size(); ++i) {
-                const vec3f & vertex = newGeometry.coord.value[i];
+            for (size_t i = 0; i < newGeometry.coord.size(); ++i) {
+                const vec3f & vertex = newGeometry.coord[i];
                 const vec3f scaledVertex(
                     vertex.x() / currentMaxExtent * maxExtent,
                     vertex.y(),
                     vertex.z()
                 );
-                newGeometry.coord.value[i] = scaledVertex;
+                newGeometry.coord[i] = scaledVertex;
             }
         }
     }
@@ -13773,21 +13770,21 @@ void Text::updateGeometry() throw (std::bad_alloc)
             xOffset = size * spacing * (this->string.value.size() - 1);
         }
     }
-    for (size_t i = 0; i < newGeometry.coord.value.size(); ++i) {
-        const vec3f & vertex = newGeometry.coord.value[i];
+    for (size_t i = 0; i < newGeometry.coord.size(); ++i) {
+        const vec3f & vertex = newGeometry.coord[i];
         const vec3f adjustedVertex(vertex.x() + xOffset,
                                    vertex.y() + yOffset,
                                    vertex.z());
-        newGeometry.coord.value[i] = adjustedVertex;
+        newGeometry.coord[i] = adjustedVertex;
     }
 
     //
     // Create the normals.
     //
-    newGeometry.normal.value.resize(npolygons);
-    for (size_t i = 0; i < newGeometry.normal.value.size(); ++i) {
+    newGeometry.normal.resize(npolygons);
+    for (size_t i = 0; i < newGeometry.normal.size(); ++i) {
         static const vec3f normal(0.0, 0.0, 1.0);
-        newGeometry.normal.value[i] = normal;
+        newGeometry.normal[i] = normal;
     }
 
     this->textGeometry = newGeometry;

@@ -2267,20 +2267,20 @@ namespace OpenVRML {
             SFFloat maxExtent;
 
             struct GlyphGeometry {
-                MFVec2f coord;
-                MFInt32 coordIndex;
+                std::vector<vec2f> coord;
+                std::vector<int32> coordIndex;
                 float advanceWidth;
                 float advanceHeight;
 
-                GlyphGeometry(const std::vector<MFVec2f> & contours,
+                GlyphGeometry(const std::vector<std::vector<vec2f> > & contours,
                               float advanceWidth, float advanceHeight)
                     throw (std::bad_alloc);
             };
 
             struct TextGeometry {
-                MFVec3f coord;
-                MFInt32 coordIndex;
-                MFVec3f normal;
+                std::vector<vec3f> coord;
+                std::vector<int32> coordIndex;
+                std::vector<vec3f> normal;
             };
 
             typedef std::vector<std::vector<FcChar32> > Ucs4String;

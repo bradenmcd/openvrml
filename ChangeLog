@@ -1,3 +1,9 @@
+2003-03-23  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml/OpenVRML/vrml97node.h:  Use basetypes in Text
+          node implementation.
+
 2003-03-22  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/node.cpp:  Work around an apparent
