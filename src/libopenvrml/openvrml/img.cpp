@@ -35,7 +35,7 @@
 
 # include "private.h"
 # include "img.h"
-# include "doc.h"
+# include "browser.h"
 # include "system.h"
 
 /************************************************************************

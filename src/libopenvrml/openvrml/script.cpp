@@ -28,7 +28,6 @@
 # include "script.h"
 # include "scope.h"
 # include "browser.h"
-# include "doc.h"
 # include "ScriptJDK.h"
 
 namespace openvrml {

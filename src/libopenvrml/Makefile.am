@@ -4,7 +4,6 @@ openvrml_includedir = $(pkgincludedir)/openvrml
 openvrml_include_HEADERS = \
         openvrml/common.h \
         openvrml/basetypes.h \
-        openvrml/doc.h \
         openvrml/img.h \
         openvrml/system.h \
         openvrml/field.h \
@@ -52,7 +51,6 @@ AM_CXXFLAGS = \
 
 libopenvrml_la_SOURCES = \
         openvrml/basetypes.cpp \
-        openvrml/doc.cpp \
         openvrml/img.cpp \
         openvrml/system.cpp \
         openvrml/field.cpp \

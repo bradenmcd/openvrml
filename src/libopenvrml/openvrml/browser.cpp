@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 79 -*-
 //
 // OpenVRML
 //
@@ -24,11 +24,14 @@
 #   include <config.h>
 # endif
 
+# include <cstdlib>
+# include <cctype>
+# include <cstring>
 # include <algorithm>
+# include <fstream>
 # include <functional>
 # include <sstream>
 # include <stack>
-# include <regex.h>
 # ifdef _WIN32
 #   include <sys/timeb.h>
 #   include <time.h>
@@ -37,13 +40,17 @@
 # endif
 # include <boost/cast.hpp>
 # include <boost/shared_ptr.hpp>
+# include <boost/spirit.hpp>
 # include <boost/utility.hpp>
+# ifdef OPENVRML_ENABLE_GZIP
+#   include <zlib.h>
+# endif
 # include "private.h"
 # include "browser.h"
-# include "doc.h"
 # include "viewer.h"
 # include "scope.h"
 # include "script.h"
+# include "system.h"
 # include "vrml97node.h"
 
 namespace openvrml {
@@ -2563,6 +2570,745 @@ namespace {
         return *static_cast<openvrml::event_emitter *>(0);
     }
 
+
+    class uri {
+        struct grammar : public boost::spirit::grammar<grammar> {
+            class assign_iterators_actor {
+                std::string::const_iterator * begin;
+                std::string::const_iterator * end;
+
+            public:
+                assign_iterators_actor(std::string::const_iterator & begin,
+                                       std::string::const_iterator & end):
+                    begin(&begin),
+                    end(&end)
+                {}
+
+                template <typename IteratorT>
+                void operator()(const IteratorT & first,
+                                const IteratorT & last) const
+                {
+                    *this->begin = first;
+                    *this->end = last;
+                }
+            };
+
+            static const assign_iterators_actor
+            assign_iterators_a(std::string::const_iterator & begin,
+                               std::string::const_iterator & end)
+            {
+                return assign_iterators_actor(begin, end);
+            }
+
+            template <typename ScannerT>
+            struct definition {
+                typedef boost::spirit::rule<ScannerT> rule_type;
+
+                rule_type uri_reference;
+                rule_type absolute_uri;
+                rule_type relative_uri;
+                rule_type hier_part;
+                rule_type opaque_part;
+                rule_type uric_no_slash;
+                rule_type net_path;
+                rule_type abs_path;
+                rule_type rel_path;
+                rule_type rel_segment;
+                rule_type scheme;
+                rule_type authority;
+                rule_type reg_name;
+                rule_type server;
+                rule_type userinfo;
+                rule_type hostport;
+                rule_type host;
+                rule_type hostname;
+                rule_type domainlabel;
+                rule_type toplabel;
+                rule_type ipv4address;
+                rule_type port;
+                rule_type path_segments;
+                rule_type segment;
+                rule_type param;
+                rule_type pchar;
+                rule_type query;
+                rule_type fragment;
+                rule_type uric;
+                rule_type reserved;
+                rule_type unreserved;
+                rule_type mark;
+                rule_type escaped;
+
+                explicit definition(const grammar & self);
+
+                const boost::spirit::rule<ScannerT> & start() const;
+            };
+
+            mutable uri & uri_ref;
+
+            explicit grammar(uri & uri_ref) throw ();
+        };
+
+        std::string str_;
+        std::string::const_iterator scheme_begin, scheme_end;
+        std::string::const_iterator scheme_specific_part_begin,
+                                    scheme_specific_part_end;
+        std::string::const_iterator authority_begin, authority_end;
+        std::string::const_iterator userinfo_begin, userinfo_end;
+        std::string::const_iterator host_begin, host_end;
+        std::string::const_iterator port_begin, port_end;
+        std::string::const_iterator path_begin, path_end;
+        std::string::const_iterator query_begin, query_end;
+        std::string::const_iterator fragment_begin, fragment_end;
+
+    public:
+        uri() throw (std::bad_alloc);
+        explicit uri(const std::string & str)
+            throw (openvrml::invalid_url, std::bad_alloc);
+
+        operator std::string() const throw (std::bad_alloc);
+
+        const std::string scheme() const throw (std::bad_alloc);
+        const std::string scheme_specific_part() const throw (std::bad_alloc);
+        const std::string authority() const throw (std::bad_alloc);
+        const std::string userinfo() const throw (std::bad_alloc);
+        const std::string host() const throw (std::bad_alloc);
+        const std::string port() const throw (std::bad_alloc);
+        const std::string path() const throw (std::bad_alloc);
+        const std::string query() const throw (std::bad_alloc);
+        const std::string fragment() const throw (std::bad_alloc);
+
+        const uri resolve_against(const uri & absolute_uri) const
+            throw (std::bad_alloc);
+    };
+
+    uri::grammar::grammar(uri & uri_ref) throw ():
+        uri_ref(uri_ref)
+    {}
+
+    template <typename ScannerT>
+    uri::grammar::definition<ScannerT>::definition(const grammar & self)
+    {
+        using namespace boost::spirit;
+
+        BOOST_SPIRIT_DEBUG_NODE(uri_reference);
+        BOOST_SPIRIT_DEBUG_NODE(absolute_uri);
+        BOOST_SPIRIT_DEBUG_NODE(relative_uri);
+        BOOST_SPIRIT_DEBUG_NODE(hier_part);
+        BOOST_SPIRIT_DEBUG_NODE(opaque_part);
+        BOOST_SPIRIT_DEBUG_NODE(uric_no_slash);
+        BOOST_SPIRIT_DEBUG_NODE(net_path);
+        BOOST_SPIRIT_DEBUG_NODE(abs_path);
+        BOOST_SPIRIT_DEBUG_NODE(rel_path);
+        BOOST_SPIRIT_DEBUG_NODE(rel_segment);
+        BOOST_SPIRIT_DEBUG_NODE(scheme);
+        BOOST_SPIRIT_DEBUG_NODE(authority);
+        BOOST_SPIRIT_DEBUG_NODE(reg_name);
+        BOOST_SPIRIT_DEBUG_NODE(server);
+        BOOST_SPIRIT_DEBUG_NODE(userinfo);
+        BOOST_SPIRIT_DEBUG_NODE(hostport);
+        BOOST_SPIRIT_DEBUG_NODE(host);
+        BOOST_SPIRIT_DEBUG_NODE(hostname);
+        BOOST_SPIRIT_DEBUG_NODE(domainlabel);
+        BOOST_SPIRIT_DEBUG_NODE(toplabel);
+        BOOST_SPIRIT_DEBUG_NODE(ipv4address);
+        BOOST_SPIRIT_DEBUG_NODE(port);
+        BOOST_SPIRIT_DEBUG_NODE(path_segments);
+        BOOST_SPIRIT_DEBUG_NODE(segment);
+        BOOST_SPIRIT_DEBUG_NODE(param);
+        BOOST_SPIRIT_DEBUG_NODE(pchar);
+        BOOST_SPIRIT_DEBUG_NODE(query);
+        BOOST_SPIRIT_DEBUG_NODE(fragment);
+        BOOST_SPIRIT_DEBUG_NODE(uric);
+        BOOST_SPIRIT_DEBUG_NODE(reserved);
+        BOOST_SPIRIT_DEBUG_NODE(unreserved);
+        BOOST_SPIRIT_DEBUG_NODE(mark);
+        BOOST_SPIRIT_DEBUG_NODE(escaped);
+
+        uri & uri_ref = self.uri_ref;
+
+        uri_reference
+            =   !(absolute_uri | relative_uri) >> !('#' >> fragment)
+            ;
+
+        absolute_uri
+            =   scheme >> ':' >> (hier_part | opaque_part)[
+                    assign_iterators_a(uri_ref.scheme_specific_part_begin,
+                                       uri_ref.scheme_specific_part_end)
+                ]
+            ;
+
+        relative_uri
+            =   (net_path | abs_path | rel_path) >> !('?' >> query)
+            ;
+
+        hier_part
+            =   (net_path | abs_path) >> !('?' >> query)
+            ;
+
+        opaque_part
+            =   uric_no_slash >> *uric
+            ;
+
+        uric_no_slash
+            =   unreserved
+            |   escaped
+            |   ';'
+            |   '?'
+            |   ':'
+            |   '@'
+            |   '&'
+            |   '='
+            |   '+'
+            |   '$'
+            |   ','
+            ;
+
+        net_path
+            =   "//" >> authority >> !abs_path
+            ;
+
+        abs_path
+            =   ('/' >> path_segments)[
+                    assign_iterators_a(uri_ref.path_begin,
+                                       uri_ref.path_end)
+                ]
+            ;
+
+        rel_path
+            =   (rel_segment >> !abs_path)[
+                    assign_iterators_a(uri_ref.path_begin, uri_ref.path_end)
+                ]
+            ;
+
+        rel_segment
+            =  +(   unreserved
+                |   escaped
+                |   ';'
+                |   '@'
+                |   '&'
+                |   '='
+                |   '+'
+                |   '$'
+                |   ','
+                )
+            ;
+
+        scheme
+            =   (alpha_p >> *(alpha_p | digit_p | '+' | '-' | '.'))[
+                    assign_iterators_a(uri_ref.scheme_begin, uri_ref.scheme_end)
+                ]
+            ;
+
+        authority
+            =   (server | reg_name)[
+                    assign_iterators_a(uri_ref.authority_begin,
+                                       uri_ref.authority_end)
+                ]
+            ;
+
+        reg_name
+            =  +(   unreserved
+                |   escaped
+                |   '$'
+                |   ','
+                |   ';'
+                |   ':'
+                |   '@'
+                |   '&'
+                |   '='
+                |   '+'
+                )
+            ;
+
+        server
+            =  !(!(userinfo >> '@') >> hostport)
+            ;
+
+        userinfo
+            =  (*(   unreserved
+                 |   escaped
+                 |   ';'
+                 |   ':'
+                 |   '&'
+                 |   '='
+                 |   '+'
+                 |   '$'
+                 |   ','
+                 ))[assign_iterators_a(uri_ref.userinfo_begin,
+                                       uri_ref.userinfo_end)]
+            ;
+
+        hostport
+            =   host >> !(':' >> port)
+            ;
+
+        host
+            =   (hostname | ipv4address)[assign_iterators_a(uri_ref.host_begin,
+                                                            uri_ref.host_end)]
+            ;
+
+        hostname
+            =   *(domainlabel >> '.') >> toplabel >> !ch_p('.')
+            ;
+
+        domainlabel
+            =   alnum_p >> *(*ch_p('-') >> alnum_p)
+            ;
+
+        toplabel
+            =   alpha_p >> *(*ch_p('-') >> alnum_p)
+            ;
+
+        ipv4address
+            =   +digit_p >> '.' >> +digit_p >> '.' >> +digit_p >> '.'
+                >> +digit_p
+            ;
+
+        port
+            =   (*digit_p)[assign_iterators_a(uri_ref.port_begin,
+                                              uri_ref.port_end)]
+            ;
+
+        path_segments
+            =   segment >> *('/' >> segment)
+            ;
+
+        segment
+            =   *pchar >> *(';' >> param)
+            ;
+
+        param
+            =   *pchar
+            ;
+
+        pchar
+            =   unreserved
+            |   escaped
+            |   ':'
+            |   '@'
+            |   '&'
+            |   '='
+            |   '+'
+            |   '$'
+            |   ','
+            ;
+
+        query
+            =   (*uric)[
+                    assign_iterators_a(uri_ref.query_begin, uri_ref.query_end)
+                ]
+            ;
+
+        fragment
+            =   (*uric)[
+                    assign_iterators_a(uri_ref.fragment_begin,
+                                       uri_ref.fragment_end)
+                ]
+            ;
+
+        uric
+            =   reserved
+            |   unreserved
+            |   escaped
+            ;
+
+        reserved
+            =   ch_p('#')
+            |   '/'
+            |   '?'
+            |   ':'
+            |   '@'
+            |   '&'
+            |   '='
+            |   '+'
+            |   '$'
+            |   ','
+            ;
+
+        unreserved
+            =   alnum_p
+            |   mark
+            ;
+
+        mark
+            =   ch_p('-')
+            |   '_'
+            |   '.'
+            |   '!'
+            |   '~'
+            |   '*'
+            |   '\''
+            |   '('
+            |   ')'
+            ;
+
+        escaped
+            =   '%' >> xdigit_p >> xdigit_p
+            ;
+    }
+
+    template <typename ScannerT>
+    const boost::spirit::rule<ScannerT> &
+    uri::grammar::definition<ScannerT>::start() const
+    {
+        return uri_reference;
+    }
+
+    uri::uri() throw (std::bad_alloc)
+    {}
+
+    uri::uri(const std::string & str)
+        throw (openvrml::invalid_url, std::bad_alloc):
+        str_(str)
+    {
+        using std::string;
+        using namespace boost::spirit;
+
+        grammar g(*this);
+
+        string::const_iterator begin = this->str_.begin();
+        string::const_iterator end = this->str_.end();
+
+        if (!parse(begin, end, g, space_p).full) {
+            throw openvrml::invalid_url();
+        }
+    }
+
+    uri::operator std::string() const throw (std::bad_alloc)
+    {
+        return this->str_;
+    }
+
+    const std::string uri::scheme() const throw (std::bad_alloc)
+    {
+        return std::string(this->scheme_begin, this->scheme_end);
+    }
+
+    const std::string uri::scheme_specific_part() const
+        throw (std::bad_alloc)
+    {
+        return std::string(this->scheme_specific_part_begin,
+                           this->scheme_specific_part_end);
+    }
+
+    const std::string uri::authority() const throw (std::bad_alloc)
+    {
+        return std::string(this->authority_begin, this->authority_end);
+    }
+
+    const std::string uri::userinfo() const throw (std::bad_alloc)
+    {
+        return std::string(this->userinfo_begin, this->userinfo_end);
+    }
+
+    const std::string uri::host() const throw (std::bad_alloc)
+    {
+        return std::string(this->host_begin, this->host_end);
+    }
+
+    const std::string uri::port() const throw (std::bad_alloc)
+    {
+        return std::string(this->port_begin, this->port_end);
+    }
+
+    const std::string uri::path() const throw (std::bad_alloc)
+    {
+        return std::string(this->path_begin, this->path_end);
+    }
+
+    const std::string uri::query() const throw (std::bad_alloc)
+    {
+        return std::string(this->query_begin, this->query_end);
+    }
+
+    const std::string uri::fragment() const throw (std::bad_alloc)
+    {
+        return std::string(this->fragment_begin, this->fragment_end);
+    }
+
+    const uri uri::resolve_against(const uri & absolute_uri) const
+        throw (std::bad_alloc)
+    {
+        using std::list;
+        using std::string;
+
+        assert(this->scheme().empty());
+        assert(!absolute_uri.scheme().empty());
+
+        string result = absolute_uri.scheme() + ':';
+
+        if (!this->authority().empty()) {
+            return uri(result + this->scheme_specific_part());
+        } else {
+            result += "//" + absolute_uri.authority();
+        }
+
+        string path = absolute_uri.path();
+        const string::size_type last_slash_index = path.find_last_of('/');
+
+        //
+        // Chop off the leading slash and the last path segment (typically a
+        // file name).
+        //
+        path = path.substr(1, last_slash_index);
+
+        //
+        // Append the relative path.
+        //
+        path += this->path();
+
+        //
+        // Put the path segments in a list to process them.
+        //
+        list<string> path_segments;
+        string::size_type slash_index = 0;
+        string::size_type segment_start_index = 0;
+        do {
+            slash_index = path.find('/', segment_start_index);
+            string segment = path.substr(segment_start_index,
+                                         slash_index - segment_start_index);
+            if (!segment.empty()) {
+                path_segments.push_back(segment);
+            }
+            segment_start_index = slash_index + 1;
+        } while (slash_index != string::npos);
+
+        //
+        // Remove any "." segments.
+        //
+        path_segments.remove(".");
+
+        //
+        // Remove any ".." segments along with the segment that precedes them.
+        //
+        const list<string>::iterator begin(path_segments.begin());
+        list<string>::iterator pos;
+        for (pos = begin; pos != path_segments.end(); ++pos) {
+            if (pos != begin && *pos == "..") {
+                --(pos = path_segments.erase(pos));
+                --(pos = path_segments.erase(pos));
+            }
+        }
+
+        //
+        // Reconstruct the path.
+        //
+        path = string();
+        for (pos = path_segments.begin(); pos != path_segments.end(); ++pos) {
+            path += '/' + *pos;
+        }
+
+        //
+        // End in a slash?
+        //
+        if (*(this->path().end() - 1) == '/') { path += '/'; }
+
+        result += path;
+
+        const string query = this->query();
+        if (!query.empty()) { result += '?' + query; }
+
+        const string fragment = this->fragment();
+        if (!fragment.empty()) { result += '#' + fragment; }
+
+        uri result_uri;
+        try {
+            result_uri = uri(result);
+        } catch (openvrml::invalid_url &) {
+            assert(false); // If we constructed a bad URI, something is wrong.
+        }
+
+        return result_uri;
+    }
+
+# ifdef OPENVRML_ENABLE_GZIP
+    namespace z {
+
+        typedef int level;
+        const level no_compression      = Z_NO_COMPRESSION;
+        const level best_speed          = Z_BEST_SPEED;
+        const level best_compression    = Z_BEST_COMPRESSION;
+        const level default_compression = Z_DEFAULT_COMPRESSION;
+
+        enum strategy {
+            default_strategy    = Z_DEFAULT_STRATEGY,
+            filtered            = Z_FILTERED,
+            huffman_only        = Z_HUFFMAN_ONLY
+        };
+
+        class filebuf : public std::streambuf {
+            enum { buffer_size = 16384 };
+            char buffer[buffer_size];
+            gzFile file;
+
+        public:
+            filebuf();
+            virtual ~filebuf();
+
+            bool is_open() const;
+            filebuf * open(const char * path, int mode,
+                           level = default_compression,
+                           strategy = default_strategy);
+            filebuf * close();
+
+        protected:
+            virtual int underflow();
+            virtual int overflow(int = EOF);
+        };
+
+        class ifstream : public std::istream {
+            filebuf fbuf;
+
+        public:
+            ifstream();
+            explicit ifstream(const char * path, level = default_compression,
+                              strategy = default_strategy);
+            virtual ~ifstream();
+
+            filebuf * rdbuf() const;
+            bool is_open() const;
+            void open(const char * path, level = default_compression,
+                      strategy = default_strategy);
+            void close();
+        };
+
+        //
+        // filebuf
+        //
+
+        int const lookback(4);
+
+        filebuf::filebuf(): file(0) {
+            this->setg(this->buffer + lookback,  // beginning of putback area
+                       this->buffer + lookback,  // read position
+                       this->buffer + lookback); // end position
+        }
+
+        filebuf::~filebuf() {
+            this->close();
+        }
+
+        bool filebuf::is_open() const {
+            return (this->file != 0);
+        }
+
+        filebuf * filebuf::open(const char * path,
+                                const int mode,
+                                const level comp_level,
+                                const strategy comp_strategy) {
+            using std::ios;
+
+            if (this->file) { return 0; }
+
+            //
+            // zlib only supports the "rb" and "wb" modes, so we bail on anything
+            // else.
+            //
+            static const char read_mode_string[] = "rb";
+            static const char write_mode_string[] = "wb";
+            const char * mode_string = 0;
+            if (mode == (ios::binary | ios::in)) {
+                mode_string = read_mode_string;
+            } else if (   (mode == (ios::binary | ios::out))
+                       || (mode == (ios::binary | ios::out | ios::trunc))) {
+                mode_string = write_mode_string;
+            } else {
+                return 0;
+            }
+
+            this->file = gzopen(path, mode_string);
+            if (!this->file) { return 0; }
+
+            gzsetparams(this->file, comp_level, comp_strategy);
+            return this;
+        }
+
+        filebuf * filebuf::close() {
+            if (!this->file) { return 0; }
+            gzclose(this->file);
+            this->file = 0;
+            return this;
+        }
+
+        int filebuf::underflow() {
+            if (this->gptr() < this->egptr()) { return *this->gptr(); }
+
+            //
+            // Process the size of the putback area; use the number of characters read,
+            // but at most four.
+            //
+            int num_putback = this->gptr() - this->eback();
+            if (num_putback > lookback) { num_putback = lookback; }
+
+            std::copy(this->gptr() - num_putback, this->gptr(),
+                      this->buffer + (lookback - num_putback));
+
+            //
+            // Read new characters.
+            //
+            int num = gzread(this->file,
+                             this->buffer + lookback,
+                             filebuf::buffer_size - lookback);
+
+            if (num <= 0) { return EOF; } // Error condition or end of file.
+
+            //
+            // Reset the buffer pointers.
+            //
+            this->setg(buffer + (lookback - num_putback), // Beginning of putback area.
+                       buffer + lookback,                 // Read position.
+                       buffer + lookback + num);          // End of buffer.
+
+            //
+            // Return the next character.
+            //
+            return *this->gptr();
+        }
+
+        int filebuf::overflow(int c) {
+            //
+            // This probably ought to be buffered, but this will do for now.
+            //
+            if (c != EOF) {
+                if (gzputc(file, c) == -1) { return EOF; }
+            }
+            return c;
+        }
+
+
+        //
+        // ifstream
+        //
+
+        ifstream::ifstream(): std::basic_istream<char>(&fbuf) {}
+
+        ifstream::ifstream(const char * path, level lev, strategy strat):
+                std::basic_istream<char>(&fbuf) {
+            this->open(path, lev, strat);
+        }
+
+        ifstream::~ifstream() {}
+
+        filebuf * ifstream::rdbuf() const {
+            return const_cast<filebuf *>(&this->fbuf);
+        }
+
+        bool ifstream::is_open() const { return this->fbuf.is_open(); }
+
+        void ifstream::open(const char * path, level lev, strategy strat) {
+            using std::ios;
+            if (!this->fbuf.open(path, ios::binary | ios::in, lev, strat)) {
+#   ifdef _WIN32
+                this->clear(failbit);
+#   else
+                this->setstate(failbit);
+#   endif
+            }
+        }
+
+        void ifstream::close() { this->fbuf.close(); }
+    }
+# endif // OPENVRML_ENABLE_GZIP
 } // namespace
 
 //
@@ -3226,7 +3972,7 @@ float browser::current_speed()
  *
  * @return the URI for the world.
  */
-const std::string  browser::world_url() const throw (std::bad_alloc)
+const std::string browser::world_url() const throw (std::bad_alloc)
 {
     static const std::string empty_string;
     return this->scene_
@@ -3263,31 +4009,6 @@ namespace {
     private:
         viewpoint_node * initialViewpoint;
         double time;
-    };
-
-
-    class URI {
-        std::string str;
-        enum { nmatch = 11 };
-        regmatch_t regmatch[nmatch];
-
-    public:
-        URI(const std::string & str) throw (invalid_url, std::bad_alloc);
-
-        operator std::string() const throw (std::bad_alloc);
-
-        const std::string getScheme() const throw (std::bad_alloc);
-        const std::string getSchemeSpecificPart() const throw (std::bad_alloc);
-        const std::string getAuthority() const throw (std::bad_alloc);
-        const std::string getUserinfo() const throw (std::bad_alloc);
-        const std::string getHost() const throw (std::bad_alloc);
-        const std::string getPort() const throw (std::bad_alloc);
-        const std::string getPath() const throw (std::bad_alloc);
-        const std::string getQuery() const throw (std::bad_alloc);
-        const std::string getFragment() const throw (std::bad_alloc);
-
-        const URI resolveAgainst(const URI & absoluteURI) const
-                throw (std::bad_alloc);
     };
 }
 
@@ -3346,7 +4067,7 @@ void browser::load_url(const std::vector<std::string> & url,
         // Get the initial viewpoint_node, if any was specified.
         //
         viewpoint_node * initialViewpoint = 0;
-        const string viewpointNodeId = URI(this->scene_->url()).getFragment();
+        const string viewpointNodeId = uri(this->scene_->url()).fragment();
         if (!viewpointNodeId.empty()) {
             if (!this->scene_->nodes().empty()) {
                 const node_ptr & n = this->scene_->nodes()[0];
@@ -4378,53 +5099,63 @@ namespace {
     };
 # endif
 
-    const URI createFileURL(const URI & uri) throw ()
+    const uri createFileURL(const uri & relative_uri) throw (std::bad_alloc)
     {
-        assert(uri.getScheme().empty());
+        assert(relative_uri.scheme().empty());
 
         using std::string;
 
         string result = "file://";
+        uri result_uri;
 
+        try {
 # ifdef _WIN32
-        //
-        // _fullpath returns a string starting with the drive letter; for the
-        // URL, the path must begin with a '/'. So we simply put one at the
-        // beginning of the buffer.
-        //
-        char buffer[_MAX_PATH] = { '/' };
-        char * resolvedPath =
-                _fullpath(buffer + 1, uri.getPath().c_str(), _MAX_PATH);
-        if (!resolvedPath) {
             //
-            // XXX Failed; need to check errno to see what we should throw.
+            // _fullpath returns a string starting with the drive letter; for
+            // the URL, the path must begin with a '/'. So we simply put one at
+            // the beginning of the buffer.
             //
-            return result;
-        }
-        std::replace_if(resolvedPath, resolvedPath + strlen(resolvedPath) + 1,
-                        IsBackslash(), '/');
-        --resolvedPath;
-        assert(resolvedPath == buffer);
+            char buffer[_MAX_PATH] = { '/' };
+            char * resolvedPath =
+                _fullpath(buffer + 1, relative_uri.path().c_str(), _MAX_PATH);
+            if (!resolvedPath) {
+                //
+                // XXX Failed; need to check errno to see what we should throw.
+                //
+                return uri(result);
+            }
+            std::replace_if(resolvedPath,
+                            resolvedPath + strlen(resolvedPath) + 1,
+                            IsBackslash(), '/');
+            --resolvedPath;
+            assert(resolvedPath == buffer);
 # else
-        char buffer[PATH_MAX];
-        const char * resolvedPath = realpath(uri.getPath().c_str(), buffer);
-        if (!resolvedPath) {
-            //
-            // XXX Failed; need to check errno to see what we should throw.
-            //
-            return result;
-        }
+            char buffer[PATH_MAX];
+            const char * resolvedPath = realpath(relative_uri.path().c_str(),
+                                                 buffer);
+            if (!resolvedPath) {
+                //
+                // XXX Failed; need to check errno to see what we should throw.
+                //
+                return uri(result);
+            }
 # endif
 
-        result += resolvedPath;
+            result += resolvedPath;
 
-        string query = uri.getQuery();
-        if (!query.empty()) { result += '?' + query; }
+            const string query = relative_uri.query();
+            if (!query.empty()) { result += '?' + query; }
 
-        string fragment = uri.getFragment();
-        if (!fragment.empty()) { result += '#' + fragment; }
+            const string fragment = relative_uri.fragment();
+            if (!fragment.empty()) { result += '#' + fragment; }
 
-        return result;
+            result_uri = uri(result);
+
+        } catch (invalid_url &) {
+            assert(false); // If we constructed a bad URI, something is wrong.
+        }
+
+        return result_uri;
     }
 }
 
@@ -4455,9 +5186,9 @@ scene::scene(openvrml::browser & browser,
             //
             // Throw invalid_url if it isn't a valid URI.
             //
-            URI testURI(url[i]);
+            uri testURI(url[i]);
 
-            const bool absolute = !testURI.getScheme().empty();
+            const bool absolute = !testURI.scheme().empty();
             if (absolute) {
                 absoluteURI = testURI;
             } else if (!parent) {
@@ -4472,7 +5203,7 @@ scene::scene(openvrml::browser & browser,
                 // If we have a relative URI and parent is not null, try to
                 // resolve the relative reference against the parent's URI.
                 //
-                absoluteURI = testURI.resolveAgainst(URI(parent->url()));
+                absoluteURI = testURI.resolve_against(uri(parent->url()));
             }
 
             doc2 doc(absoluteURI);
@@ -4549,7 +5280,7 @@ const std::string scene::url() const throw (std::bad_alloc)
 {
     using std::string;
     return this->parent
-            ? string(URI(this->url_).resolveAgainst(URI(this->parent->url())))
+            ? string(uri(this->url_).resolve_against(uri(this->parent->url())))
             : this->url_;
 }
 
@@ -4615,10 +5346,10 @@ void scene::load_url(const std::vector<std::string> & url,
             std::vector<std::string> absoluteURIs(url.size());
             for (size_t i = 0; i < absoluteURIs.size(); ++i) {
                 try {
-                    const URI urlElement(url[i]);
+                    const uri urlElement(url[i]);
                     const string value =
-                        urlElement.getScheme().empty()
-                            ? urlElement.resolveAgainst(URI(this->url()))
+                        urlElement.scheme().empty()
+                            ? urlElement.resolve_against(uri(this->url()))
                             : urlElement;
                     absoluteURIs[i] = value;
                 } catch (invalid_url & ex) {
@@ -6392,197 +7123,785 @@ null_node_type::create_node(const scope_ptr & scope,
 }
 
 
+/**
+ * @class doc
+ *
+ * @brief A class to contain document references.
+ *
+ * This is just a shell until a real http protocol library is found...
+ */
+
+/**
+ * @var char * doc::url_
+ *
+ * @brief The URL.
+ */
+
+/**
+ * @var std::ostream * doc::out_
+ *
+ * @brief A pointer to a std::ostream used for writing the resource.
+ */
+
+/**
+ * @var FILE * doc::fp_
+ *
+ * @brief A file descriptor for reading the local copy of the resource.
+ */
+
+/**
+ * @var char * doc::tmpfile_
+ *
+ * @brief Name of the temporary file created for the local copy of the
+ *        resource.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param url       an HTTP or file URL.
+ * @param relative  the doc that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+doc::doc(const std::string & url, const doc * relative):
+    url_(0),
+    out_(0),
+    fp_(0),
+    tmpfile_(0)
+{
+    if (!url.empty()) { this->seturl(url.c_str(), relative); }
+}
+
+/**
+ * @brief Constructor.
+ *
+ * @param url       an HTTP or file URL.
+ * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+doc::doc(const std::string & url, const doc2 * relative):
+    url_(0),
+    out_(0),
+    fp_(0),
+    tmpfile_(0)
+{
+    if (!url.empty()) { this->seturl(url.c_str(), relative); }
+}
+
+/**
+ * @brief Destructor.
+ */
+doc::~doc()
+{
+    delete [] this->url_;
+    delete this->out_;
+    if (this->tmpfile_) {
+        the_system->remove_file(this->tmpfile_);
+        delete [] this->tmpfile_;
+    }
+}
+
 namespace {
+    const char * stripProtocol(const char *url)
+    {
+      const char *s = url;
 
-    const char * const expression =
-            "^(([^:/?#]+):)?((//([^/?#]*))?([^?#]*)([?]([^#]*))?(#(.*))?)";
-    //        |+- scheme    ||  |          |       |   |        | +- fragment-id
-    //        +- scheme ':' ||  |          |       |   |        +- '#' fragment-id
-    //                      ||  |          |       |   +- query
-    //                      ||  |          |       +- '?' query
-    //                      ||  |          +- path
-    //                      ||  +- authority
-    //                      |+- "//" authority
-    //                      +- scheme-specific-part
+#ifdef _WIN32
+      if (strncmp(s+1,":/",2) == 0) return url;
+#endif
 
-    class URIRegex {
-        regex_t regex;
+      // strip off protocol if any
+      while (*s && isalpha(*s)) ++s;
 
-    public:
-        URIRegex() throw (std::bad_alloc);
-        ~URIRegex() throw ();
+      if (*s == ':')
+        return s + 1;
 
-        int exec(const char * str, size_t nmatch, regmatch_t pmatch[],
-                 int eflags);
-    };
-
-    URIRegex::URIRegex() throw (std::bad_alloc) {
-        int err = regcomp(&this->regex, expression, REG_EXTENDED);
-        if (err == REG_ESPACE) { throw std::bad_alloc(); }
-        assert(err == 0);
+      return url;
     }
 
-    URIRegex::~URIRegex() throw () { regfree(&this->regex); }
-
-    int URIRegex::exec(const char * str, size_t nmatch, regmatch_t pmatch[],
-                       int eflags) {
-        return regexec(&this->regex, str, nmatch, pmatch, eflags);
+    bool isAbsolute(const char *url)
+    {
+      const char *s = stripProtocol(url);
+      return ( *s == '/' || *(s+1) == ':' );
     }
+}
 
-    URIRegex uriRegex;
+/**
+  * @brief Set the URL.
+ *
+ * @param url       the new URL.
+ * @param relative  the doc that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+void doc::seturl(const char * const url, const doc * const relative)
+{
+  delete [] url_;
+  url_ = 0;
 
-    URI::URI(const std::string & str) throw (invalid_url, std::bad_alloc):
-            str(str) {
-        int err = uriRegex.exec(str.c_str(), URI::nmatch, this->regmatch, 0);
-        if (err != 0) { throw invalid_url(); }
-    }
+  if (url)
+  {
+      const char *path = "";
 
-    URI::operator std::string() const throw (std::bad_alloc) {
-        return this->str;
-    }
+#ifdef _WIN32
+// Convert windows path stream to standard URL
+	  char *p = (char *)url;
+	  for(;*p != '\0';p++)
+		  if(*p == '\\')*p = '/';
+#endif
 
-    const std::string URI::getScheme() const throw (std::bad_alloc) {
-        return (this->regmatch[2].rm_so > -1)
-                ? this->str.substr(this->regmatch[2].rm_so,
-                                   this->regmatch[2].rm_eo - this->regmatch[2].rm_so)
-                : std::string();
-    }
+      if ( relative && ! isAbsolute(url) )
+	    path = relative->url_path();
 
-    const std::string URI::getSchemeSpecificPart() const
-            throw (std::bad_alloc) {
-        return (this->regmatch[3].rm_so > -1)
-                ? this->str.substr(this->regmatch[3].rm_so,
-                                   this->regmatch[3].rm_eo - this->regmatch[3].rm_so)
-                : std::string();
-    }
+      url_ = new char[strlen(path) + strlen(url) + 1];
+      strcpy(url_, path);
 
-    const std::string URI::getAuthority() const throw (std::bad_alloc) {
-        return (this->regmatch[5].rm_so > -1)
-                ? this->str.substr(this->regmatch[5].rm_so,
-                                   this->regmatch[5].rm_eo - this->regmatch[5].rm_so)
-                : std::string();
-    }
+      if (strlen(url)>2 && url[0] == '.' && url[1] == '/')
+        strcat(url_, url+2); // skip "./"
+      else
+        strcat(url_, url);
+  }
+}
 
-    const std::string URI::getUserinfo() const throw (std::bad_alloc) {
-        return std::string();
-    }
+/**
+ * @brief Set the URL.
+ *
+ * @param url       the new URL.
+ * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+void doc::seturl(const char * const url, const doc2 * const relative)
+{
+    delete [] this->url_;
+    this->url_ = 0;
 
-    const std::string URI::getHost() const throw (std::bad_alloc) {
-        return std::string();
-    }
+    if (url) {
+        std::string path;
 
-    const std::string URI::getPort() const throw (std::bad_alloc) {
-        return std::string();
-    }
+#ifdef _WIN32
+        // Convert windows path stream to standard URL
+        char *p = (char *)url;
+        for (; *p != '\0'; p++) { if (*p == '\\') { *p = '/'; } }
+#endif
 
-    const std::string URI::getPath() const throw (std::bad_alloc) {
-        return (this->regmatch[6].rm_so > -1)
-                ? this->str.substr(this->regmatch[6].rm_so,
-                                   this->regmatch[6].rm_eo - this->regmatch[6].rm_so)
-                : std::string();
-    }
+        if (relative && !isAbsolute(url)) { path = relative->url_path(); }
 
-    const std::string URI::getQuery() const throw (std::bad_alloc) {
-        return (this->regmatch[7].rm_so > -1)
-                ? this->str.substr(this->regmatch[7].rm_so,
-                                   this->regmatch[7].rm_eo - this->regmatch[7].rm_so)
-                : std::string();
-    }
+        this->url_ = new char[path.length() + strlen(url) + 1];
+        strcpy(this->url_, path.c_str());
 
-    const std::string URI::getFragment() const throw (std::bad_alloc) {
-        return (this->regmatch[10].rm_so > -1)
-                ? this->str.substr(this->regmatch[10].rm_so,
-                                   this->regmatch[10].rm_eo - this->regmatch[10].rm_so)
-                : std::string();
-    }
-
-    const URI URI::resolveAgainst(const URI & absoluteURI) const
-            throw (std::bad_alloc) {
-        using std::list;
-        using std::string;
-
-        assert(this->getScheme().empty());
-        assert(!absoluteURI.getScheme().empty());
-
-        string result = absoluteURI.getScheme() + ':';
-
-        if (!this->getAuthority().empty()) {
-            return result + this->getSchemeSpecificPart();
+        if (strlen(url) > 2 && url[0] == '.' && url[1] == '/') {
+            strcat(this->url_, url + 2); // skip "./"
         } else {
-            result += "//" + absoluteURI.getAuthority();
+            strcat(this->url_, url);
         }
+    }
+}
 
-        string path = absoluteURI.getPath();
-        const string::size_type lastSlashIndex = path.find_last_of('/');
+/**
+ * @brief Get the URL.
+ *
+ * @return the URL.
+ */
+const char * doc::url() const { return url_; }
 
-        //
-        // Chop off the leading slash and the last path segment (typically a
-        // file name).
-        //
-        path = path.substr(1, lastSlashIndex);
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      without its extension.
+ *
+ * @return the portion of the last path element preceding the last '.' in the
+ *      path, or an empty string if the last path element is empty.
+ */
+const char * doc::url_base() const
+{
+  if (! url_) return "";
 
-        //
-        // Append the relative path.
-        //
-        path += this->getPath();
+  static char path[1024];
+  char *p, *s = path;
+  strncpy(path, url_, sizeof(path)-1);
+  path[sizeof(path)-1] = '\0';
+  if ((p = strrchr(s, '/')) != 0)
+    s = p+1;
+  else if ((p = strchr(s, ':')) != 0)
+    s = p+1;
 
-        //
-        // Put the path segments in a list to process them.
-        //
-        list<string> pathSegments;
-        string::size_type slashIndex = 0;
-        string::size_type segmentStartIndex = 0;
-        do {
-            slashIndex = path.find('/', segmentStartIndex);
-            string segment = path.substr(segmentStartIndex,
-                                         slashIndex - segmentStartIndex);
-            if (!segment.empty()) {
-                pathSegments.push_back(segment);
-            }
-            segmentStartIndex = slashIndex + 1;
-        } while (slashIndex != string::npos);
+  if ((p = strrchr(s, '.')) != 0)
+    *p = '\0';
 
-        //
-        // Remove any "." segments.
-        //
-        pathSegments.remove(".");
+  return s;
+}
 
-        //
-        // Remove any ".." segments along with the segment that precedes them.
-        //
-        const list<string>::iterator begin(pathSegments.begin());
-        list<string>::iterator pos;
-        for (pos = begin; pos != pathSegments.end(); ++pos) {
-            if (pos != begin && *pos == "..") {
-                --(pos = pathSegments.erase(pos));
-                --(pos = pathSegments.erase(pos));
-            }
-        }
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      extension.
+ *
+ * @return the portion of the last path element succeeding the last '.' in the
+ *      path, or an empty string if the last path element includes no '.'.
+ */
+const char * doc::url_ext() const
+{
+  if (! url_) return "";
 
-        //
-        // Reconstruct the path.
-        //
-        path = string();
-        for (pos = pathSegments.begin(); pos != pathSegments.end(); ++pos) {
-            path += '/' + *pos;
-        }
+  static char ext[20];
+  char *p;
 
-        //
-        // End in a slash?
-        //
-        if (*(this->getPath().end() - 1) == '/') { path += '/'; }
+  if ((p = strrchr(url_, '.')) != 0)
+    {
+      strncpy(ext, p+1, sizeof(ext)-1);
+      ext[sizeof(ext)-1] = '\0';
+    }
+  else
+    ext[0] = '\0';
 
-        result += path;
+  return &ext[0];
+}
 
-        const string query = this->getQuery();
-        if (!query.empty()) { result += '?' + query; }
+/**
+ * @brief Get the URL without the last component of the path.
+ *
+ * In spite of its name, this method does not return the URL's path.
+ *
+ * @return the portion of the URL including the scheme, the authority, and all
+ *      but the last component of the path.
+ */
+const char * doc::url_path() const
+{
+  if (! url_) return "";
 
-        const string fragment = this->getFragment();
-        if (!fragment.empty()) { result += '#' + fragment; }
+  static char path[1024];
 
-        return result;
+  strcpy(path, url_);
+  char *slash;
+  if ((slash = strrchr(path, '/')) != 0)
+    *(slash+1) = '\0';
+  else
+    path[0] = '\0';
+  return &path[0];
+}
+
+/**
+ * @brief Get the URL scheme.
+ *
+ * @return the URL scheme.
+ */
+const char * doc::url_protocol() const
+{
+  if (url_)
+    {
+      static char protocol[12];
+      const char *s = url_;
+
+#ifdef _WIN32
+      if (strncmp(s+1,":/",2) == 0) return "file";
+#endif
+
+      for (unsigned int i=0; i<sizeof(protocol); ++i, ++s)
+	{
+	  if (*s == 0 || ! isalpha(*s))
+	    {
+	      protocol[i] = '\0';
+	      break;
+	    }
+	  protocol[i] = tolower(*s);
+	}
+      protocol[sizeof(protocol)-1] = '\0';
+      if (*s == ':')
+	return protocol;
     }
 
-} // namespace
+  return "file";
+}
+
+/**
+ * @brief Get the fragment identifier.
+ *
+ * @return the fragment identifier, including the leading '#', or an empty
+ *      string if there is no fragment identifier.
+ */
+const char * doc::url_modifier() const
+{
+  char *mod = url_ ? strrchr(url_,'#') : 0;
+  return mod;
+}
+
+/**
+ * @brief Get the fully qualified name of a local file that is the downloaded
+ *      resource at @a url_.
+ *
+ * @return the fully qualified name of a local file that is the downloaded
+ *      resource at @a url_.
+ */
+const char * doc::local_name()
+{
+  static char buf[1024];
+  if (filename(buf, sizeof(buf)))
+    return &buf[0];
+  return 0;
+}
+
+/**
+ * @brief Get the path of the local file that is the downloaded resource at
+ *      @a url_.
+ *
+ * @return the path of the local file that is the downloaded resource at
+ *      @a url_.
+ */
+const char * doc::local_path()
+{
+  static char buf[1024];
+  if (filename(buf, sizeof(buf)))
+    {
+      char *s = strrchr(buf, '/');
+      if (s) *(s+1) = '\0';
+      return &buf[0];
+    }
+  return 0;
+}
+
+/**
+ * @brief Converts a url into a local filename.
+ *
+ * @retval fn   a character buffer to hold the local filename.
+ * @param nfn   the number of elements in the buffer @p fn points to.
+ */
+bool doc::filename(char * fn, int nfn)
+{
+    using std::string;
+
+    fn[0] = '\0';
+
+    string s = stripProtocol(this->url_);
+    char * e = 0;
+
+    if ((e = strrchr(s.c_str(),'#')) != 0) { *e = '\0'; }
+
+    const char *protocol = url_protocol();
+
+    // Get a local copy of http files
+    if (strcmp(protocol, "http") == 0) {
+        if (tmpfile_) {
+            // Already fetched it
+            s = tmpfile_;
+        } else if (!(s = the_system->http_fetch(this->url_)).empty()) {
+            tmpfile_ = new char[s.length() + 1];
+            strcpy(tmpfile_, s.c_str());
+            s = tmpfile_;
+	}
+    }
+
+    // Unrecognized protocol (need ftp here...)
+    else if (strcmp(protocol, "file") != 0) {
+        s.clear();
+    }
+
+#ifdef _WIN32
+  // Does not like "//C:" skip "// "
+    if (!s.empty()) {
+        if(s.length() > 2 && s[0] == '/' && s[1] == '/') { s = s.substr(2); }
+    }
+#endif
+
+    if (!s.empty()) {
+        strncpy(fn, s.c_str(), nfn - 1);
+        fn[nfn - 1] = '\0';
+    }
+
+    if (e) { *e = '#'; }
+
+    return !s.empty();
+}
+
+/**
+ * @brief Open a file.
+ *
+ * @return a pointer to a FILE struct for the opened file.
+ *
+ * Having both fopen and outputStream is dumb.
+ */
+FILE *doc::fopen(const char *mode)
+{
+    if (this->fp_) {
+        OPENVRML_PRINT_MESSAGE_(std::string(this->url_ ? this->url_ : "")
+                                + "is already open.");
+    }
+
+    char fn[256];
+    if (filename(fn, sizeof(fn))) {
+        if (strcmp(fn, "-") == 0) {
+            if (*mode == 'r') {
+                fp_ = stdin;
+            } else if (*mode == 'w') {
+                fp_ = stdout;
+            }
+        } else {
+            fp_ = ::fopen( fn, mode );
+        }
+    }
+    return fp_;
+}
+
+/**
+ * @brief Close a file.
+ *
+ * Closes the file opened with doc::fopen.
+ */
+void doc::fclose()
+{
+  if (fp_ && (strcmp(url_, "-") != 0) && (strncmp(url_, "-#", 2) != 0))
+    ::fclose(fp_);
+
+  fp_ = 0;
+  if (tmpfile_)
+    {
+      the_system->remove_file(tmpfile_);
+      delete [] tmpfile_;
+      tmpfile_ = 0;
+    }
+}
+
+/**
+ * @brief Get an output stream for writing to the resource.
+ *
+ * @return an output stream.
+ */
+std::ostream & doc::output_stream()
+{
+    this->out_ = new std::ofstream(stripProtocol(url_), std::ios::out);
+    return *this->out_;
+}
+
+
+/**
+ * @class doc2
+ *
+ * @brief A class to contain document references.
+ *
+ * doc2 is a hack of doc. When the ANTLR parser was added to OpenVRML, a doc
+ * work-alike was needed that would read from a std::istream instead of a C
+ * @c FILE @c *. doc2's purpose is to fill that need, and to remind us through
+ * its ugliness just how badly both it and doc need to be replaced with an I/O
+ * solution that doesn't suck.
+ */
+
+/**
+ * @var char * doc2::url_
+ *
+ * @brief The URL.
+ */
+
+/**
+ * @var char * doc2::tmpfile_
+ *
+ * @brief Name of the temporary file created for the local copy of the
+ *        resource.
+ */
+
+/**
+ * @var std::istream * doc2::istm_
+ *
+ * @brief A file descriptor for reading the local copy of the resource.
+ */
+
+/**
+ * @var std::ostream * doc2::ostm_
+ *
+ * @brief A pointer to a std::ostream used for writing the resource.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param url       an HTTP or file URL.
+ * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+doc2::doc2(const std::string & url, const doc2 * relative):
+    tmpfile_(0),
+    istm_(0),
+    ostm_(0)
+{
+    if (!url.empty()) {
+        this->seturl(url, relative);
+    }
+}
+
+/**
+ * @brief Destructor.
+ */
+doc2::~doc2()
+{
+    delete istm_;
+    delete ostm_;
+    if (tmpfile_) {
+        the_system->remove_file(tmpfile_);
+        delete [] tmpfile_;
+    }
+}
+
+namespace {
+    const std::string stripProtocol(const std::string & url) {
+        using std::string;
+        const string::size_type colonPos = url.find_first_of(':');
+        return (colonPos != string::npos)
+                ? url.substr(colonPos + 1)
+                : url;
+    }
+
+    bool isAbsolute(const std::string & url) {
+        return stripProtocol(url)[0] == '/';
+    }
+}
+
+/**
+ * @brief Set the URL.
+ *
+ * @param url       the new URL.
+ * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+void doc2::seturl(const std::string & url, const doc2 * relative) {
+    using std::string;
+
+    this->url_ = string();
+
+    if (!url.empty()) {
+
+        delete this->istm_;
+        this->istm_ = 0;
+        delete this->ostm_;
+        this->ostm_ = 0;
+
+        string path;
+
+        if (relative && !isAbsolute(url)) {
+            path = relative->url_path();
+        }
+
+        this->url_ = path;
+
+        if (url.length() > 2 && url[0] == '.' && url[1] == '/') {
+            this->url_ += url.substr(2);
+        } else {
+            this->url_ += url;
+        }
+    }
+}
+
+/**
+ * @brief Get the URL.
+ *
+ * @return the URL.
+ */
+const std::string doc2::url() const { return this->url_; }
+
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      without its extension.
+ *
+ * @return the portion of the last path element preceding the last '.' in the
+ *      path, or an empty string if the last path element is empty.
+ */
+const std::string doc2::url_base() const {
+    using std::string;
+
+    string::size_type lastSlashPos = this->url_.find_last_of('/');
+    string::size_type lastDotPos = this->url_.find_last_of('.');
+
+    string::size_type beginPos = (lastSlashPos != string::npos)
+                               ? lastSlashPos + 1
+                               : 0;
+    string::size_type length = (lastDotPos != string::npos)
+                             ? lastDotPos - beginPos
+                             : this->url_.length() - 1 - beginPos;
+
+    return (beginPos < this->url_.length())
+            ? this->url_.substr(beginPos, length)
+            : "";
+}
+
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      extension.
+ *
+ * @return the portion of the last path element succeeding the last '.' in the
+ *      path, or an empty string if the last path element includes no '.'.
+ */
+const std::string doc2::url_ext() const {
+    using std::string;
+    string::size_type lastDotPos = this->url_.find_last_of('.');
+    return (lastDotPos != string::npos)
+            ? this->url_.substr(lastDotPos + 1)
+            : "";
+}
+
+/**
+ * @brief Get the URL without the last component of the path.
+ *
+ * In spite of its name, this method does not return the URL's path.
+ *
+ * @return the portion of the URL including the scheme, the authority, and all
+ *      but the last component of the path.
+ */
+const std::string doc2::url_path() const {
+    using std::string;
+
+    string::size_type lastSlashPos = this->url_.find_last_of('/');
+
+    return (lastSlashPos != string::npos)
+            ? this->url_.substr(0, lastSlashPos + 1)
+            : this->url_;
+}
+
+/**
+ * @brief Get the URL scheme.
+ *
+ * @return the URL scheme.
+ */
+const std::string doc2::url_protocol() const {
+    using std::string;
+
+    string::size_type firstColonPos = this->url_.find_first_of(':');
+    return (firstColonPos != string::npos)
+            ? this->url_.substr(0, firstColonPos)
+            : "file";
+}
+
+/**
+ * @brief Get the fragment identifier.
+ *
+ * @return the fragment identifier, including the leading '#', or an empty
+ *      string if there is no fragment identifier.
+ */
+const std::string doc2::url_modifier() const {
+    using std::string;
+    string::size_type lastHashPos = this->url_.find_last_of('#');
+    return (lastHashPos != string::npos)
+            ? this->url_.substr(lastHashPos)
+            : "";
+}
+
+/**
+ * @brief Get the fully qualified name of a local file that is the downloaded
+ *      resource at @a url_.
+ *
+ * @return the fully qualified name of a local file that is the downloaded
+ *      resource at @a url_.
+ */
+const char * doc2::local_name() {
+    static char buf[1024];
+    if (filename(buf, sizeof(buf))) { return buf; }
+    return 0;
+}
+
+/**
+ * @brief Get the path of the local file that is the downloaded resource at
+ *      @a url_.
+ *
+ * @return the path of the local file that is the downloaded resource at
+ *      @a url_.
+ */
+const char * doc2::local_path() {
+    static char buf[1024];
+
+    if (filename(buf, sizeof(buf))) {
+
+        char * s = strrchr(buf, '/');
+        if (s) {
+            *(s+1) = '\0';
+        }
+
+        return buf;
+    }
+
+    return 0;
+}
+
+/**
+ * @brief Get an input stream for the resource.
+ *
+ * @return an input stream for the resource.
+ */
+std::istream & doc2::input_stream() {
+    if (!this->istm_) {
+
+        char fn[256];
+
+        this->filename(fn, sizeof(fn));
+        if (strcmp(fn, "-") == 0) {
+            this->istm_ = &std::cin;
+        } else {
+# ifdef OPENVRML_ENABLE_GZIP
+            this->istm_ = new z::ifstream(fn);
+# else
+            this->istm_ = new std::ifstream(fn);
+# endif
+        }
+    }
+
+    return *this->istm_;
+}
+
+/**
+ * @brief Get an output stream for the resource.
+ *
+ * @return an output stream for the resource.
+ */
+std::ostream & doc2::output_stream() {
+    if (!ostm_) {
+        ostm_ = new std::ofstream(stripProtocol(url_).c_str(), std::ios::out);
+    }
+    return *this->ostm_;
+}
+
+/**
+ * @brief Converts a url into a local filename.
+ *
+ * @retval fn   a character buffer to hold the local filename.
+ * @param nfn   the number of elements in the buffer @p fn points to.
+ */
+bool doc2::filename(char * fn, const size_t nfn) {
+    using std::copy;
+    using std::string;
+
+    fn[0] = '\0';
+
+    string s;
+
+    const string protocol = this->url_protocol();
+
+    if (protocol == "file") {
+# ifdef _WIN32
+        string name = uri(this->url_).path().substr(1);
+# else
+        string name = uri(this->url_).path();
+# endif
+        size_t len = (name.length() < (nfn - 1))
+                   ? name.length()
+                   : nfn - 1;
+        copy(name.begin(), name.begin() + len, fn);
+        fn[len] = '\0';
+        return true;
+    } else if (protocol == "http") {
+        //
+        // Get a local copy of http files.
+        //
+        if (this->tmpfile_) {    // Already fetched it
+            s = this->tmpfile_;
+        } else if (!(s = the_system->http_fetch(this->url_.c_str())).empty()) {
+            tmpfile_ = new char[s.length() + 1];
+            strcpy(tmpfile_, s.c_str());
+            s = tmpfile_;
+        }
+    }
+    // Unrecognized protocol (need ftp here...)
+    else {
+        s.clear();
+    }
+
+    if (!s.empty()) {
+        strncpy(fn, s.c_str(), nfn - 1);
+        fn[nfn-1] = '\0';
+    }
+
+    return !s.empty();
+}
 
 } // namespace openvrml

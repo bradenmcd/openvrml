@@ -1,3 +1,51 @@
+2004-10-29 Braden McDaniel  <braden@endoframe.com>
+
+	Use Spirit to parse URIs instead of regular expressions.
+	Eliminated need to provide regex library on Windows.
+
+	* ide-projects/Windows/VisualC7_1/OpenVRML/OpenVRML.sln:
+	Removed regex library project.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/regex/regex.vcproj:
+	Removed file.
+	* lib/Makefile.am:  Removed reference to regex subdirectory.
+	* lib/regex/Makefile.am:  Removed file.
+	* lib/regex/cclass.h:  Removed file.
+	* lib/regex/cname.h:  Removed file.
+	* lib/regex/copyright.txt:  Removed file.
+	* lib/regex/engine.c:  Removed file.
+	* lib/regex/hs_regex.def:  Removed file.
+	* lib/regex/hs_regex.html:  Removed file.
+	* lib/regex/install.bat:  Removed file.
+	* lib/regex/re_format.doc:  Removed file.
+	* lib/regex/regcomp.c:  Removed file.
+	* lib/regex/regerror.c:  Removed file.
+	* lib/regex/regex.doc:  Removed file.
+	* lib/regex/regex.h:  Removed file.
+	* lib/regex/regex2.h:  Removed file.
+	* lib/regex/regex_test.c:  Removed file.
+	* lib/regex/regex_test.txt:  Removed file.
+	* lib/regex/regexec.c:  Removed file.
+	* lib/regex/regfree.c:  Removed file.
+	* lib/regex/release.bat:  Removed file.
+	* lib/regex/test_hs_regex.mak:  Removed file.
+	* lib/regex/utils.h:  Removed file.
+	* src/libopenvrml/Makefile.am:  Removed references to doc.h,
+	doc.cpp.
+	* src/libopenvrml/openvrml/browser.cpp:  Replaced URI class with
+	uri class, which uses Spirit--rather than a regular expression--
+	to parse URIs;  moved implementations of doc and doc2 methods to
+	this file.
+	* src/libopenvrml/openvrml/browser.h:  Moved definitions of doc
+	and doc2 classes to this file.
+	* src/libopenvrml/openvrml/doc.cpp:  Removed file.
+	* src/libopenvrml/openvrml/doc.h:  Removed file.
+	* src/libopenvrml/openvrml/img.cpp:  Removed reference to
+	"doc.h".
+	* src/libopenvrml/openvrml/script.cpp:  Removed reference to
+	"doc.h".
+	* src/libopenvrml/openvrml/vrml97node.cpp:  Removed reference to
+	"doc.h".
+
 2004-10-28 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp:  Removed obsoleted

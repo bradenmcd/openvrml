@@ -24,8 +24,12 @@
 #   define OPENVRML_BROWSER_H
 
 #   include <cstddef>
+#   include <cstdio>
+#   include <iosfwd>
 #   include <list>
 #   include <map>
+#   include <string>
+#   include <boost/utility.hpp>
 #   include <openvrml/common.h>
 #   include <openvrml/script.h>
 
@@ -260,6 +264,74 @@ namespace openvrml {
     {
         return this->nodes_;
     }
+
+
+    class doc2;
+
+    class doc : boost::noncopyable {
+        char * url_;
+        std::ostream * out_;
+        FILE * fp_;
+        char * tmpfile_; // Local copy of http: files
+
+    public:
+        explicit doc(const std::string & url = std::string(),
+                     const doc * relative = 0);
+        doc(const std::string & url, const doc2 * relative);
+        ~doc();
+
+        void seturl(const char * url, const doc * relative = 0);
+        void seturl(const char * url, const doc2 * relative = 0);
+
+        const char * url() const;          // "http://www.foo.com/dir/file.xyz#Viewpoint"
+        const char * url_base() const;      // "file" or ""
+        const char * url_ext() const;       // "xyz" or ""
+        const char * url_path() const;      // "http://www.foo.com/dir/" or ""
+        const char * url_protocol() const;  // "http"
+        const char * url_modifier() const;  // "#Viewpoint" or ""
+
+        const char * local_name();    // "/tmp/file.xyz" or NULL
+        const char * local_path();    // "/tmp/" or NULL
+
+
+        FILE * fopen(const char * mode);
+        void fclose();
+
+        std::ostream & output_stream();
+
+    private:
+        bool filename(char * fn, int nfn);
+    };
+
+    class doc2 : boost::noncopyable {
+        std::string url_;
+        char * tmpfile_;            // Local copy of http: files
+        std::istream * istm_;
+        std::ostream * ostm_;
+
+    public:
+        explicit doc2(const std::string & url = std::string(),
+                      const doc2 * relative = 0);
+        ~doc2();
+
+        void seturl(const std::string & url, const doc2 * relative = 0);
+
+        const std::string url() const;         // "http://www.foo.com/dir/file.xyz#Viewpoint"
+        const std::string url_base() const;     // "file" or ""
+        const std::string url_ext() const;      // "xyz" or ""
+        const std::string url_path() const;     // "http://www.foo.com/dir/" or ""
+        const std::string url_protocol() const; // "http"
+        const std::string url_modifier() const; // "#Viewpoint" or ""
+
+        const char * local_name();    // "/tmp/file.xyz" or NULL
+        const char * local_path();    // "/tmp/" or NULL
+
+        std::istream & input_stream();
+        std::ostream & output_stream();
+
+    private:
+        bool filename(char * fn, size_t nfn);
+    };
 }
 
 # endif // OPENVRML_BROWSER_H

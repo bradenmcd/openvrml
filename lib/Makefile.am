@@ -1,1 +1,1 @@
-SUBDIRS = antlr regex
+SUBDIRS = antlr

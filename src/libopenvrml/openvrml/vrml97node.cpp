@@ -41,7 +41,6 @@ extern "C" {
 }
 # endif
 # include "vrml97node.h"
-# include "doc.h"
 # include "browser.h"
 # include "private.h"
 
