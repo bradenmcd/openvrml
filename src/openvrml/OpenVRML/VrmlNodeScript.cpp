@@ -161,12 +161,13 @@ void ScriptNode::resetVisitedFlag() {
                 itr != this->d_fields.end(); ++itr) {
             assert((*itr)->value);
             if ((*itr)->type == FieldValue::SFNODE) {
-                assert(dynamic_cast<SFNode *>((*itr)->value));
-                static_cast<SFNode *>((*itr)->value)
+                assert(dynamic_cast<OpenVRML::SFNode *>((*itr)->value));
+                static_cast<OpenVRML::SFNode *>((*itr)->value)
                         ->get()->resetVisitedFlag();
             } else if ((*itr)->type == FieldValue::MFNODE) {
-                assert(dynamic_cast<MFNode *>((*itr)->value));
-                MFNode & mfnode = static_cast<MFNode &>(*(*itr)->value);
+                assert(dynamic_cast<OpenVRML::MFNode *>((*itr)->value));
+                OpenVRML::MFNode & mfnode =
+                        static_cast<OpenVRML::MFNode &>(*(*itr)->value);
                 for (size_t i = 0; i < mfnode.getLength(); ++i) {
                     mfnode.getElement(i)->resetVisitedFlag();
                 }
@@ -182,14 +183,15 @@ namespace {
         
         result_type operator()(argument_type scriptField) {
             if (scriptField->type == FieldValue::SFNODE) {
-                assert(dynamic_cast<SFNode *>(scriptField->value));
+                assert(dynamic_cast<OpenVRML::SFNode *>(scriptField->value));
                 this->children.setLength(this->children.getLength() + 1);
                 this->children.setElement(this->children.getLength() - 1,
-                        static_cast<SFNode *>(scriptField->value)->get());
+                        static_cast<OpenVRML::SFNode *>
+                            (scriptField->value)->get());
             } else if (scriptField->type == FieldValue::MFNODE) {
-                assert(dynamic_cast<MFNode *>(scriptField->value));
-                MFNode &
-                        nodes = *static_cast<MFNode *>(scriptField->value);
+                assert(dynamic_cast<OpenVRML::MFNode *>(scriptField->value));
+                OpenVRML::MFNode & nodes =
+                        *static_cast<OpenVRML::MFNode *>(scriptField->value);
                 this->children.setLength(children.getLength()
                                             + nodes.getLength());
                 for (size_t i = 0; i < nodes.getLength(); ++i) {
@@ -2528,7 +2530,7 @@ namespace {
             const SFData * const sfdata =
                     static_cast<SFData *>(JS_GetPrivate(cx, sfcolorObj));
             assert(sfdata);
-            assert(dynamic_cast<SFColor *>(&sfdata->getFieldValue()));
+            assert(dynamic_cast<OpenVRML::SFColor *>(&sfdata->getFieldValue()));
             
             //
             // Assignment should not throw.
@@ -3218,7 +3220,8 @@ namespace {
             const SFData * const sfdata =
                 static_cast<SFData *>(JS_GetPrivate(cx, sfrotationObj));
             assert(sfdata);
-            assert(dynamic_cast<SFRotation *>(&sfdata->getFieldValue()));
+            assert(dynamic_cast<OpenVRML::SFRotation *>
+                    (&sfdata->getFieldValue()));
             
             //
             // Assignment should not throw.
@@ -4273,7 +4276,7 @@ namespace {
             const SFData * const sfdata =
                 static_cast<SFData *>(JS_GetPrivate(cx, sfvec3fObj));
             assert(sfdata);
-            assert(dynamic_cast<SFVec3f *>(&sfdata->getFieldValue()));
+            assert(dynamic_cast<OpenVRML::SFVec3f *>(&sfdata->getFieldValue()));
             
             //
             // Assignment should not throw.
