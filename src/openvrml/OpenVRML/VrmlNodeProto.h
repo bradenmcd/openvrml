@@ -21,10 +21,6 @@
 #ifndef VRMLNODEPROTO_H
 #define VRMLNODEPROTO_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "common.h"
 #include "VrmlNode.h"
 #include "nodetype.h"
@@ -112,7 +108,6 @@ public:
     virtual VrmlNodeTouchSensor * toTouchSensor() const;
     virtual VrmlNodeTransform * toTransform() const;
     virtual VrmlNodeViewpoint * toViewpoint() const;
-    virtual VrmlNodeProto * toProto() const;
 
     virtual void render(Viewer *, VrmlRenderContext rc);
 

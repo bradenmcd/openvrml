@@ -1,3 +1,7 @@
+2001-08-31  Braden McDaniel  <braden@endoframe.com>
+
+        * Removed VrmlNode::toProto() method; use dynamic_cast instead.
+
 2001-08-30  Thomas Flynn <tflynn@users.sourceforge.net>
 
 	* Add insert/remove Element methods to all VrmlMF* types.

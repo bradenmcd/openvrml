@@ -3557,12 +3557,13 @@ void VrmlNodeGroup::setChildren(const VrmlMFNode & children) {
     for (size_t i = 0; i < children.getLength(); ++i) {
         VrmlNodeProto * p = 0;
         const VrmlNodePtr & child = children.getElement(i);
-        if (child && (child->toChild() ||
-            ((p = child->toProto()) && p->getImplNodes().getLength() == 0))) {
-        child->addToScene(d_scene, d_relative.get());
-        child->accumulateTransform(d_parentTransform);
-    } else {
-        theSystem ->error(
+        if (child && (child->toChild()
+                || ((p = dynamic_cast<VrmlNodeProto *>(child.get()))
+                    && p->getImplNodes().getLength() == 0))) {
+            child->addToScene(d_scene, d_relative.get());
+            child->accumulateTransform(d_parentTransform);
+        } else {
+            theSystem ->error(
                 "Error: Attempt to add a %s node as a child of a %s node.\n",
                 child->type.getId().c_str(), this->type.getId().c_str());
         }
@@ -3594,13 +3595,14 @@ void VrmlNodeGroup::addChildren(const VrmlMFNode & children) {
         const VrmlNodePtr & child = children.getElement(i);
         VrmlNodeProto *p = 0;
         
-        if (child && (child->toChild() ||
-            ((p = child->toProto()) != 0 && p->getImplNodes().getLength() == 0))) {
-        d_children.addNode(*child);
-        child->addToScene( d_scene, d_relative.get() );
-        child->accumulateTransform( d_parentTransform );
-    } else {
-        theSystem->error(
+        if (child && (child->toChild()
+                || ((p = dynamic_cast<VrmlNodeProto *>(child.get()))
+                    && p->getImplNodes().getLength() == 0))) {
+            d_children.addNode(*child);
+            child->addToScene( d_scene, d_relative.get() );
+            child->accumulateTransform( d_parentTransform );
+        } else {
+            theSystem->error(
                 "Error: Attempt to add a %s node as a child of a %s node.\n",
                 child->type.getId().c_str(), this->type.getId().c_str());
         }

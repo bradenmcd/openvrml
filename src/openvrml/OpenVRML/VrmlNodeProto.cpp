@@ -152,10 +152,6 @@ const VrmlMFNode VrmlNodeProto::getChildren() const {
     return VrmlMFNode();
 }
 
-VrmlNodeProto* VrmlNodeProto::toProto() const
-{ return (VrmlNodeProto*) this; }
-
-
 /**
  * Instantiate a local copy of the implementation nodes. EXTERNPROTOs are
  * actually loaded here. We don't want <em>references</em> (DEF/USE) to the

@@ -283,8 +283,6 @@ VrmlNodeTransform * VrmlNode::toTransform() const { return 0; }
 
 VrmlNodeViewpoint * VrmlNode::toViewpoint() const { return 0; }
 
-VrmlNodeProto * VrmlNode::toProto() const { return 0; }
-
 
 /**
  * @brief Add a route from an eventOut of this node to an eventIn of another

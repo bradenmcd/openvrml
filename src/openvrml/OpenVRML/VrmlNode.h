@@ -165,7 +165,6 @@ public:
     virtual VrmlNodeTouchSensor * toTouchSensor() const;
     virtual VrmlNodeTransform * toTransform() const;
     virtual VrmlNodeViewpoint * toViewpoint() const;
-    virtual VrmlNodeProto * toProto() const;
 
     // Write self
     ostream& print(ostream& os, int indent) const;
@@ -268,9 +267,10 @@ protected:
 #define TRY_SFNODE_FIELD(_f,_n) \
 (fieldId == #_f) { \
     VrmlSFNode *x=(VrmlSFNode*)&fieldValue; \
-    if (fieldValue.toSFNode() && \
-	( (!x->get()) || x->get()->to##_n() || x->get()->toProto() )) \
-      d_##_f = (VrmlSFNode &)fieldValue; \
+    if (fieldValue.toSFNode() \
+            && (!x->get() || x->get()->to##_n() \
+                || dynamic_cast<VrmlNodeProto *>(x->get().get()))) \
+        d_##_f = (VrmlSFNode &)fieldValue; \
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s).\n",\
 	    fieldValue.fieldTypeName(), #_f, this->type.getId().c_str(), #_n);\
@@ -281,7 +281,7 @@ protected:
     VrmlSFNode *x=(VrmlSFNode*)&fieldValue; \
     if (fieldValue.toSFNode() && \
 	((!x->get()) || x->get()->to##_n1() || x->get()->to##_n2() || \
-	 x->get()->toProto() )) \
+	 dynamic_cast<VrmlNodeProto *>(x->get().get()))) \
       d_##_f = (VrmlSFNode &)fieldValue; \
     else \
       theSystem->error("Invalid type (%s) for %s field of %s node (expected %s or %s).\n",\
