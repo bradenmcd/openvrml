@@ -8,7 +8,7 @@
 //
 //  Javascript Script class
 //
-#include "libjs/jsapi.h"
+#include "vrml97js/jsapi.h"
 
 #include "ScriptObject.h"
 #include "VrmlField.h"

@@ -1,5 +1,3 @@
-SUBDIRS = libjs
-
 #
 # Add any debug flags
 #
@@ -14,16 +12,15 @@ endif
 #
 JS_CFLAGS = -DXP_UNIX
 
+INCLUDES = -I$(top_srcdir)/libvrml97js/src
 CXXFLAGS = -Wall -O2 $(DEBUG_CXXFLAGS) $(JS_CFLAGS) @JPEG_CFLAGS@ @PNG_CFLAGS@
-LDFLAGS = -version-info $(LIBVRML97_SO_VERSION) @JPEG_LIBS@ @PNG_LIBS@
+LDFLAGS = -version-info $(LIBVRML97_SO_VERSION) @JPEG_LIBS@ @PNG_LIBS@ -L$../../../libvrml97js/src/vrml97js -lvrml97js
 LFLAGS = -Ls
 YFLAGS = -d
 
 vrml97includedir = $(includedir)/vrml97
 
 lib_LTLIBRARIES = libvrml97.la 
-
-libvrml97_la_LIBADD = ./libjs/libjs.la
 
 vrml97include_HEADERS = \
 	Audio.h \

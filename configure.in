@@ -159,85 +159,6 @@ dnl
 AC_LANG_CPLUSPLUS
 
 
-dnl AC_MSG_CHECKING(if C++ compiler supports bool(required))
-dnl AC_TRY_COMPILE(
-dnl [
-dnl ],[
-dnl    bool b=true;
-dnl    bool b1=false;
-dnl ],[
-dnl   ac_bool=yes
-dnl  AC_DEFINE(HAVE_NATIVE_BOOL)
-dnl ],[
-dnl   config_error=yes
-dnl   AC_WARN(bool type is not supported by your compiler)
-dnl ])
-dnl AC_MSG_RESULT([$ac_bool])
-
-
-
-AC_MSG_CHECKING(if C++ compiler supports const_cast (required))
-AC_TRY_COMPILE(
-[
-   class foo;
-],[
-   const foo *c=0;
-   foo *c1=const_cast<foo*>(c);
-],[
-  ac_const_cast=yes
-dnl  AC_DEFINE(HAVE_CONST_CAST)
-],[
-  AC_WARN(C++ compiler const_cast<> does not work)
-  config_error=yes
-])
-AC_MSG_RESULT([$ac_const_cast])
-
-
-
-AC_MSG_CHECKING(if C++ compiler supports member templates)
-AC_TRY_COMPILE(
-[
-class foo
-{
-public:
-  template <class T> void method(T t);
-};
-
-template <class T> void foo::method(T t) {t = 0;}
-],[
-],[
-   ac_member_templates=yes
-dnl   AC_DEFINE(HAVE_MEMBER_TEMPLATES)
-   AC_MSG_RESULT([$ac_member_templates])
-],[
-  ac_member_templates=no
-  AC_MSG_RESULT([$ac_member_templates])
-  AC_MSG_WARN([Test for member templates failed. If your compiler does support member templates, see config.log to figure out why the test failed.])
-])
-
-
-
-AC_MSG_CHECKING(if C++ compiler supports partial specialization)
-AC_TRY_COMPILE(
-[
-template<class T, class K>
-class k {
-public:
-};
-template<class T> class k<void,T> { };
-],[
-  k<float, float> b;
-  k<void,void> a;
-],[
-  ac_partial_specialization=yes
-dnl  AC_DEFINE(HAVE_PARTIAL_SPECIALIZATION)
-],[
-  ac_partial_specialization=no
-])
-AC_MSG_RESULT([$ac_partial_specialization])
-
-
-
 AC_MSG_CHECKING(if C++ compiler supports static data inside templates)
 AC_TRY_LINK(
 [
@@ -311,12 +232,14 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 AC_OUTPUT(Makefile \
           m4/Makefile \
+          libvrml97js/Makefile \
+          libvrml97js/src/Makefile \
+          libvrml97js/src/vrml97js/Makefile \
+          libvrml97js/src/vrml97js/fdlibm/Makefile \
           libvrml97core/Makefile \
           libvrml97core/m4/Makefile \
           libvrml97core/src/Makefile \
           libvrml97core/src/vrml97/Makefile \
-          libvrml97core/src/vrml97/libjs/Makefile \
-          libvrml97core/src/vrml97/libjs/fdlibm/Makefile \
           libvrml97gl/Makefile \
           libvrml97gl/m4/Makefile \
           libvrml97gl/src/Makefile \
