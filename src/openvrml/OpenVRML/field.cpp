@@ -2706,7 +2706,7 @@ namespace {
                     std::copy(value, value + ArraySize, *i);
                 }
             }
-            ++this->size_;
+            this->size_ += num;
         }
         
         void insert(iterator pos, const_iterator begin, const_iterator end)
@@ -2736,7 +2736,7 @@ namespace {
                     std::copy(value, value + ArraySize, *i);
                 }
             }
-            ++this->size_;
+            this->size_ += num;
         }
 
         void push_back(const_reference value)
