@@ -58,6 +58,7 @@ public:
     };
 
     static VrmlFieldType fieldType(const char * fieldTypeId);
+    static const char* getFieldName(const VrmlFieldType fieldType);
     
     const char * fieldTypeName() const;
     
