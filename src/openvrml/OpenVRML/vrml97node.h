@@ -287,9 +287,6 @@ namespace OpenVRML {
 
             void activate();
 
-            const std::string & getDescription() { return description.get(); }
-            const std::string & getUrl() { assert(url.getLength() > 0); return url.getElement(0); }
-
             const BVolume * getBVolume() const;
         
         private:

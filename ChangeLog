@@ -1,3 +1,14 @@
+2002-09-07  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/vrml97node.cpp: Removed code in
+          Browser::sensitiveEvent to print the URI when the pointer is
+          over the Anchor. We need to call Browser::setDescription, but
+          inside the implementation of Anchor. Removed
+          Anchor::getDescription and Anchor::getUrl. Modified
+          Scene::loadURI to do nothing if the MFString uri argument is
+          empty.
+
 2002-09-07  Thomas Flynn  <tflynn@users.sourceforge.net>
 
         * src/openvrml/OpenVRML/ScriptJDK.cpp: Additional documentation.

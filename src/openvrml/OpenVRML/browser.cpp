@@ -1031,15 +1031,6 @@ void Browser::sensitiveEvent(Node * const n,
             //
             if (isActive && isOver) {
                 a->activate();
-            } else if (isOver) {
-                const std::string & description = a->getDescription();
-                const std::string & url = a->getUrl();
-                if (!description.empty() && !url.empty()) {
-                    theSystem->inform("%s (%s)", description.c_str(),
-                                      url.c_str());
-                } else if (!description.empty() || !url.empty()) {
-                    theSystem->inform("%s", description.length() > 0 ? description.c_str() : url.c_str());
-                }
             }
         } else {
             //
@@ -2143,26 +2134,29 @@ void Scene::render(Viewer & viewer, VrmlRenderContext context) {
 void Scene::loadURI(const MFString & uri, const MFString & parameter)
     throw (std::bad_alloc)
 {
-    if (uri.getLength() > 0 && uri.getElement(0)[0] == '#') {
-        //
-        // If the first element in uri is a Viewpoint name, bind the Viewpoint.
-        //
-        this->browser.setViewpoint(uri.getElement(0).substr(1));
-    } else {
-        MFString absoluteURIs(uri.getLength());
-        for (size_t i = 0; i < absoluteURIs.getLength(); ++i) {
-            try {
-                const URI uriElement(uri.getElement(i));
-                const std::string value =
-                    uriElement.getScheme().empty()
-                        ? uriElement.resolveAgainst(URI(this->getURI()))
-                        : uriElement;
-                absoluteURIs.setElement(i, value);
-            } catch (InvalidURI & ex) {
-                OPENVRML_PRINT_EXCEPTION_(ex);
+    if (uri.getLength() > 0) {
+        if (uri.getElement(0)[0] == '#') {
+            //
+            // If the first element in uri is a Viewpoint name, bind the
+            // Viewpoint.
+            //
+            this->browser.setViewpoint(uri.getElement(0).substr(1));
+        } else {
+            MFString absoluteURIs(uri.getLength());
+            for (size_t i = 0; i < absoluteURIs.getLength(); ++i) {
+                try {
+                    const URI uriElement(uri.getElement(i));
+                    const std::string value =
+                        uriElement.getScheme().empty()
+                            ? uriElement.resolveAgainst(URI(this->getURI()))
+                            : uriElement;
+                    absoluteURIs.setElement(i, value);
+                } catch (InvalidURI & ex) {
+                    OPENVRML_PRINT_EXCEPTION_(ex);
+                }
             }
+            this->browser.loadURI(absoluteURIs, parameter);
         }
-        this->browser.loadURI(absoluteURIs, parameter);
     }
 }
 
