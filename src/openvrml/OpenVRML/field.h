@@ -236,19 +236,19 @@ public:
 
 class OPENVRML_SCOPE VrmlSFRotation : public VrmlField {
     float d_x[4];
+
 public:
     VrmlSFRotation();
-    explicit VrmlSFRotation(const float rotation[4]);
+    explicit VrmlSFRotation(const float rot[4]);
     VrmlSFRotation(float x, float y, float z, float angle);
     VrmlSFRotation(const VrmlSFVec3f & axis, float angle);
-    VrmlSFRotation(const VrmlSFVec3f & fromVector,
-                   const VrmlSFVec3f & toVector);
+    VrmlSFRotation(const VrmlSFVec3f & fromVec, const VrmlSFVec3f & toVec);
     virtual ~VrmlSFRotation();
 
-    float operator[](size_t index) const;
-    float & operator[](size_t index);
+//    float operator[](size_t index) const;
+//    float & operator[](size_t index);
     const float (&get() const)[4];
-    void set(const float rotation[4]);
+    void set(const float rot[4]);
     float getX() const;
     void setX(float);
     float getY() const;
@@ -262,7 +262,7 @@ public:
     const VrmlSFRotation inverse() const;
     const VrmlSFRotation multiply(const VrmlSFRotation & rot) const;
     const VrmlSFVec3f multVec(const VrmlSFVec3f & vec) const;
-    const VrmlSFRotation slerp(const VrmlSFRotation & destRotation,
+    const VrmlSFRotation slerp(const VrmlSFRotation & destRot,
                                float t) const;  
 
     virtual ostream& print(ostream& os) const;

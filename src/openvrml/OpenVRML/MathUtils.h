@@ -30,9 +30,6 @@
 
 // Define single precision floating point "zero".
 
-#define FPTOLERANCE 1.0e-7
-#define FPZERO(n) (fabs(n)<=FPTOLERANCE)
-#define FPEQUAL(a,b) FPZERO((a)-(b))
 
 // Vector ops
 

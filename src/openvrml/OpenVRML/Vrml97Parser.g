@@ -110,6 +110,7 @@ header "post_include_cpp" {
 # include "VrmlNodeType.h"
 # include "VrmlNode.h"
 # include "VrmlNodeScript.h"
+# include "private.h"
 
 namespace {
     bool isValidIdFirstChar(char);
@@ -1504,7 +1505,7 @@ sfRotationValue returns [VrmlSFRotation * srv = new VrmlSFRotation()]
         }
     :   rotationValue[r]
         {
-            *srv = VrmlSFRotation(r[0], r[1], r[2], r[3]);
+            *srv = VrmlSFRotation(r);
         }
     ;
 
@@ -1535,7 +1536,7 @@ mfRotationValue returns [VrmlMFRotation * mrv = new VrmlMFRotation()]
     ;
 
 //
-// Potentially issue a warning here if the vector isn't normalized.
+// Issue a warning here if the vector isn't normalized.
 //
 rotationValue[float r[4]]
         {
@@ -1547,6 +1548,16 @@ rotationValue[float r[4]]
             r[1] = y;
             r[2] = z;
             r[3] = rot;
+            
+            const float axisLength = length(r);
+            if (!fpequal(axisLength, 1.0)) {
+                this->reportWarning("The axis component of a rotation must be a normalized vector.");
+                if (fpequal(axisLength, 0.0)) {
+                    r[2] = 1.0;
+                } else {
+                    normalize(r);
+                }
+            }
         }
     ;
 

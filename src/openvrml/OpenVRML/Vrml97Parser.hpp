@@ -95,7 +95,7 @@ private:
 #line 96 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
  {
-#line 572 "Vrml97Parser.g"
+#line 573 "Vrml97Parser.g"
 
     public:
         enum NodeInterfaceType {

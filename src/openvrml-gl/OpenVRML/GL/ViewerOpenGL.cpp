@@ -18,34 +18,34 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
-#ifdef _WIN32
-#include <winconfig.h>
-#endif
+# if defined(_WIN32) && !defined(__CYGWIN__)
+#   include <winconfig.h>
+# endif
 
-#include "ViewerOpenGL.h"
+# if defined(__MACH__)&&defined(__APPLE__)
+#   include <OpenGL/gl.h>
+#   include <OpenGL/glu.h>
+# else
+#   include <GL/gl.h>
+#   include <GL/glu.h>
+# endif
+# include <stdio.h>		// sprintf
+# include <math.h>
 
-#if defined(__MACH__)&&defined(__APPLE__)
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-#include <stdio.h>		// sprintf
-#include <math.h>
+# include <OpenVRML/MathUtils.h>
+# include <OpenVRML/System.h>
+# include <OpenVRML/VrmlScene.h>
+# include <OpenVRML/vrml97node.h>
+# include <OpenVRML/VrmlBSphere.h>
+# include <OpenVRML/VrmlFrustum.h>
 
-#include <OpenVRML/MathUtils.h>
-#include <OpenVRML/System.h>
-#include <OpenVRML/VrmlScene.h>
-#include <OpenVRML/vrml97node.h>
-#include <OpenVRML/VrmlBSphere.h>
-#include <OpenVRML/VrmlFrustum.h>
-
-#include "OpenGLEvent.h"
+# include "ViewerOpenGL.h"
+# include "OpenGLEvent.h"
+# include "private.h"
 
 // Put geometry into display lists.
 // If geometry is not in display lists, performance will suffer,
@@ -338,7 +338,7 @@ void ViewerOpenGL::getOrientation( float *orientation )
 
   Vnorm( L );
   Vcross( V, Z, L );
-  if ( FPZERO( V[0]*V[0]+V[1]*V[1] ) )
+  if ( fpzero( V[0]*V[0]+V[1]*V[1] ) )
     {
       orientation[0] = 0.0;
       orientation[1] = 1.0;
@@ -376,9 +376,9 @@ void ViewerOpenGL::getBillboardTransformMatrix(float M[4][4],
    v[2] = pos[0] * invert[2] + pos[1] * invert[5] + pos[2] * invert[8];
    Vnorm( v );
 // Viewer-alignment
-  if ( FPZERO(axisOfRotation[0]) &&
-       FPZERO(axisOfRotation[1]) &&
-       FPZERO(axisOfRotation[2]) )
+  if ( fpzero(axisOfRotation[0]) &&
+       fpzero(axisOfRotation[1]) &&
+       fpzero(axisOfRotation[2]) )
     {
 // Viewer's up vector
 	  y[0] = invert[3];
@@ -1293,14 +1293,14 @@ void ViewerOpenGL::insertExtrusionCaps( unsigned int mask,
 
   float dx = xz[1] - xz[0];
   float dz = xz[3] - xz[2];
-  if (! FPZERO(dx)) dx = 1.0 / dx;
-  if (! FPZERO(dz)) dz = 1.0 / dz;
+  if (! fpzero(dx)) dx = 1.0 / dx;
+  if (! fpzero(dz)) dz = 1.0 / dz;
 
   // If geometry is in dlists, should just always use the tesselator...
 
 #if GLU_VERSION_1_2
   int last = 2*(nCrossSection-1);
-  bool equalEndpts = FPEQUAL(cs[0], cs[last]) && FPEQUAL(cs[1], cs[last+1]);
+  bool equalEndpts = fpequal(cs[0], cs[last]) && fpequal(cs[1], cs[last+1]);
 
   if (! (mask & MASK_CONVEX))
     {
@@ -1622,7 +1622,7 @@ texGenParams( float bounds[],	// xmin,xmax, ymin,ymax, zmin,zmax
     }
 
   // If two of the dimensions are zero, give up.
-  if ( FPZERO( params[1] ) || FPZERO( params[3] )) return;
+  if ( fpzero( params[1] ) || fpzero( params[3] )) return;
   
   params[1] = 1.0 / params[1];
   params[3] = 1.0 / params[3];
@@ -1886,7 +1886,7 @@ ViewerOpenGL::insertShell(unsigned int mask,
       // do the bounds intersect the radius of any active positional lights...
 
       texGenParams( bounds, texAxes, texParams );
-      if ( FPZERO( texParams[1] ) || FPZERO( texParams[3] )) return 0;
+      if ( fpzero( texParams[1] ) || fpzero( texParams[3] )) return 0;
     }
 
   GLuint glid = 0;
@@ -2266,7 +2266,7 @@ void ViewerOpenGL::setMaterial(float ambientIntensity,
 			alpha };
 
   // doesn't work right yet (need alpha render pass...)
-  if (d_blend && ! FPZERO(transparency))
+  if (d_blend && ! fpzero(transparency))
     glEnable(GL_BLEND);
 
 
@@ -2527,17 +2527,17 @@ void ViewerOpenGL::setTransform(const float center[3],
   glTranslatef(translation[0], translation[1], translation[2]);
   glTranslatef(center[0], center[1], center[2]);
 
-  if (! FPZERO(rotation[3]) )
+  if (! fpzero(rotation[3]) )
     glRotatef(rotation[3] * 180.0 / M_PI,
 	      rotation[0],
 	      rotation[1],
 	      rotation[2]);
 
-  if (! FPEQUAL(scale[0], 1.0) ||
-      ! FPEQUAL(scale[1], 1.0) ||
-      ! FPEQUAL(scale[2], 1.0) )
+  if (! fpequal(scale[0], 1.0) ||
+      ! fpequal(scale[1], 1.0) ||
+      ! fpequal(scale[2], 1.0) )
     {
-      if (! FPZERO(scaleOrientation[3]) )
+      if (! fpzero(scaleOrientation[3]) )
 	glRotatef(scaleOrientation[3] * 180.0 / M_PI,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
@@ -2545,7 +2545,7 @@ void ViewerOpenGL::setTransform(const float center[3],
 
       glScalef(scale[0], scale[1], scale[2]);
 
-      if (! FPZERO(scaleOrientation[3]) )
+      if (! fpzero(scaleOrientation[3]) )
 	glRotatef(-scaleOrientation[3] * 180.0 / M_PI,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
@@ -2569,11 +2569,11 @@ void ViewerOpenGL::unsetTransform(const float center[3],
 {
   glTranslatef(center[0], center[1], center[2]);
 
-  if (! FPEQUAL(scale[0], 1.0) ||
-      ! FPEQUAL(scale[1], 1.0) ||
-      ! FPEQUAL(scale[2], 1.0) )
+  if (! fpequal(scale[0], 1.0) ||
+      ! fpequal(scale[1], 1.0) ||
+      ! fpequal(scale[2], 1.0) )
     {
-      if (! FPZERO(scaleOrientation[3]) )
+      if (! fpzero(scaleOrientation[3]) )
 	glRotatef(scaleOrientation[3] * 180.0 / M_PI,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
@@ -2581,14 +2581,14 @@ void ViewerOpenGL::unsetTransform(const float center[3],
 
       glScalef(1.0/scale[0], 1.0/scale[1], 1.0/scale[2]);
 
-      if (! FPZERO(scaleOrientation[3]) )
+      if (! fpzero(scaleOrientation[3]) )
 	glRotatef(-scaleOrientation[3] * 180.0 / M_PI,
 		  scaleOrientation[0],
 		  scaleOrientation[1],
 		  scaleOrientation[2]);
     }
 
-  if (! FPZERO(rotation[3]) )
+  if (! fpzero(rotation[3]) )
     glRotatef(- rotation[3] * 180.0 / M_PI,
 	      rotation[0],
 	      rotation[1],
@@ -2893,7 +2893,7 @@ void ViewerOpenGL::step( float x, float y, float z )
 
   dx -= ox; dy -= oy; dz -= oz;
   double d = dx * dx + dy * dy + dz * dz;
-  if (FPZERO(d)) return;
+  if (fpzero(d)) return;
 
   d = sqrt(d);
   VrmlNodeNavigationInfo *nav = d_scene->bindableNavigationInfoTop();
@@ -2902,7 +2902,7 @@ void ViewerOpenGL::step( float x, float y, float z )
 
   d = speed / d;
   dx *= d; dy *= d; dz *= d;
-  if (FPZERO(d)) return;
+  if (fpzero(d)) return;
   
   d_translatex += dx;
   d_translatey += dy;

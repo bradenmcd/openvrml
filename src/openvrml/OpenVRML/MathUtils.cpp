@@ -19,13 +19,14 @@
 // 
 
 #include "MathUtils.h"
+#include "private.h"
 #include <string.h>		// memcpy
 
 
 double Vlength( float V[3] )
 {
   double vlen = sqrt(V[0]*V[0]+V[1]*V[1]+V[2]*V[2]);
-  return (FPZERO(vlen) ? 0.0 : vlen);
+  return (fpzero(vlen) ? 0.0 : vlen);
 }
 
 void Vdiff( float V[3], const float A[3], const float B[3] )
@@ -49,7 +50,7 @@ void Vcross( float V[3], const float A[3], const float B[3] )
 void Vnorm( float V[3] )
 {
   float vlen = (float) sqrt(V[0]*V[0]+V[1]*V[1]+V[2]*V[2]);
-  if (! FPZERO(vlen))
+  if (! fpzero(vlen))
     {
       V[0] /= vlen;
       V[1] /= vlen;

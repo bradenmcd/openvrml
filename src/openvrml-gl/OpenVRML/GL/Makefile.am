@@ -21,7 +21,7 @@ endif
 
 INCLUDES = -I$(top_srcdir)/src/openvrml
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
-AM_CXXFLAGS = -Wall @GLUT_CFLAGS@
+AM_CXXFLAGS = @GLUT_CFLAGS@
 
 lib_LTLIBRARIES = libopenvrml-gl.la
 
@@ -30,3 +30,5 @@ libopenvrml_gl_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @GLUT_LIBS@
 
 OpenVRMLGLincludedir = $(includedir)/OpenVRML/GL
 OpenVRMLGLinclude_HEADERS = common.h OpenGLEvent.h ViewerOpenGL.h
+
+noinst_HEADERS = private.h

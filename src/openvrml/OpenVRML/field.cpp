@@ -18,16 +18,17 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
-#include "field.h"
-#include "MathUtils.h"
-#include <algorithm>
-#include <numeric>
-#include <assert.h>
-#include <string.h>
+# include <algorithm>
+# include <numeric>
+# include <assert.h>
+# include <string.h>
+# include "field.h"
+# include "private.h"
+//# include "MathUtils.h"
 
 namespace {
     ::ostream & mffprint(::ostream &, float const * c, int n, int eltsize);
@@ -1032,7 +1033,23 @@ void VrmlSFNode::set(const VrmlNodePtr & node) {
 
 /**
  * @class VrmlSFRotation
+ *
  * @brief Encapsulates an SFRotation.
+ *
+ * Per the VRML97 specification, the axis of an SFRotation is a normalized
+ * vector (5.8). The specification leaves undefined how to deal with an
+ * attempt to construct an SFRotation from an axis vector that is not
+ * normalized. In order to allow users of the library to minimize the number
+ * of normalizations, OpenVRML takes the following approach:
+ *
+ * <ul>
+ * <li>Attempts to construct an SFRotation axis from a vector that is not
+ * normalized will yield an assertion failure (abort) unless NDEBUG is defined
+ * when compiling the library (in which case truly wacky behavior could
+ * result).
+ * <li>Assignment to individual components of the axis will result in the
+ * axis being re-normalized upon each assignment.
+ * </ul>
  */
 
 /**
@@ -1049,32 +1066,58 @@ VrmlSFRotation::VrmlSFRotation() {
 
 /**
  * @brief Constructor.
+ *
  * @param rotation a 4-element array.
+ *
+ * @pre The first three elements of the argument array constitute a
+ *      normalized vector.
  */
-VrmlSFRotation::VrmlSFRotation(const float rotation[4]) {
-    std::copy(rotation, rotation + 4, this->d_x);
+VrmlSFRotation::VrmlSFRotation(const float rot[4]) {
+    //
+    // Make sure axis is normalized.
+    //
+    assert(fpequal(length(rot), 1.0));
+    
+    std::copy(rot, rot + 4, this->d_x);
 }
 
 /**
  * @brief Constructor.
+ *
  * @param x the <var>x</var>-component of the axis of rotation
  * @param y the <var>y</var>-component of the axis of rotation
  * @param z the <var>z</var>-component of the axis of rotation
  * @param angle the rotation angle
+ *
+ * @pre The first three arguments constitute a normalized vector.
  */
 VrmlSFRotation::VrmlSFRotation(float x, float y, float z, float angle) {
     this->d_x[0] = x;
     this->d_x[1] = y;
     this->d_x[2] = z;
+    
+    //
+    // Make sure axis is normalized.
+    //
+    assert(fpequal(length(this->d_x), 1.0));
+    
     this->d_x[3] = angle;
 }
 
 /**
  * @brief Constructor.
- * @param axis the axis of rotation
+ *
+ * @param axis a normalized vector to use as the axis of rotation
  * @param angle the rotation angle
+ *
+ * @pre The first argument is a normalized vector.
  */
 VrmlSFRotation::VrmlSFRotation(const VrmlSFVec3f & axis, float angle) {
+    //
+    // Make sure axis is normalized.
+    //
+    assert(fpequal(length(axis.get()), 1.0));
+    
     std::copy(axis.get(), axis.get() + 3, this->d_x);
     this->d_x[3] = angle;
 }
@@ -1100,32 +1143,6 @@ VrmlSFRotation::VrmlSFRotation(const VrmlSFVec3f & fromVector,
  */
 VrmlSFRotation::~VrmlSFRotation() {}
 
-/**
- * @brief Array element dereference operator (const version).
- * @param index a value from 0 - 3. 0 corresponds to the
- *              <var>x</var>-component of the rotation axis, 1 corresponds to
- *              the <var>y</var>-component of the rotation axis, 2 corresponds
- *              to the <var>z</var>-component of the rotation axis, and 3
- *              corresponds to the rotation angle.
- */
-float VrmlSFRotation::operator[](size_t index) const {
-    assert(index < 4);
-    return this->d_x[index];
-}
-
-/**
- * @brief Array element dereference operator (non-const version).
- * @param index a value from 0 - 3. 0 corresponds to the
- *              <var>x</var>-component of the rotation axis, 1 corresponds to
- *              the <var>y</var>-component of the rotation axis, 2 corresponds
- *              to the <var>z</var>-component of the rotation axis, and 3
- *              corresponds to the rotation angle.
- */
-float & VrmlSFRotation::operator[](size_t index) {
-    assert(index < 4);
-    return this->d_x[index];
-}
-
 ostream& VrmlSFRotation::print(ostream& os) const
 { return (os <<d_x[0] << " " <<d_x[1] << " " <<d_x[2]<< " " <<d_x[3]); }
 
@@ -1143,12 +1160,24 @@ float VrmlSFRotation::getX() const {
     return this->d_x[0];
 }
 
+namespace {
+    void normalizeAxis_(float axis[3]) {
+        const float axisLength = length(axis);
+        if (fpequal(axisLength, 0.0)) {
+            axis[2] = 1.0;
+        } else {
+            normalize(axis);
+        }
+    }
+}
+
 /**
  * @brief Set the <var>x</var>-component of the rotation axis.
  * @param value
  */
 void VrmlSFRotation::setX(float value) {
     this->d_x[0] = value;
+    normalizeAxis_(this->d_x);
 }
 
 /**
@@ -1165,6 +1194,7 @@ float VrmlSFRotation::getY() const {
  */
 void VrmlSFRotation::setY(float value) {
     this->d_x[1] = value;
+    normalizeAxis_(this->d_x);
 }
 
 /**
@@ -1181,6 +1211,7 @@ float VrmlSFRotation::getZ() const {
  */
 void VrmlSFRotation::setZ(float value) {
     this->d_x[2] = value;
+    normalizeAxis_(this->d_x);
 }
 
 /**
@@ -1209,14 +1240,24 @@ const float (&VrmlSFRotation::get() const)[4] {
 
 /**
  * @brief Set the value of this rotation.
- * @param rotation a 4-element array
+ *
+ * @param rot a 4-element array
+ *
+ * @pre The first three elements of <var>rot</var> constitute a normalized
+ *      vector.
  */
-void VrmlSFRotation::set(const float rotation[4]) {
-    std::copy(rotation, rotation + 4, this->d_x);
+void VrmlSFRotation::set(const float rot[4]) {
+    //
+    // Make sure axis is normalized.
+    //
+    assert(fpequal(length(rot), 1.0));
+    
+    std::copy(rot, rot + 4, this->d_x);
 }
 
 /**
  * @brief Get the axis of rotation as a VrmlSFVec3f.
+ *
  * @return the axis of rotation
  */
 const VrmlSFVec3f VrmlSFRotation::getAxis() const {
@@ -1225,9 +1266,17 @@ const VrmlSFVec3f VrmlSFRotation::getAxis() const {
 
 /**
  * @brief Set the axis of rotation using a VrmlSFVec3f.
+ *
  * @param axis the new rotation axis
+ *
+ * @pre <var>axis</var> is a normalized vector.
  */
 void VrmlSFRotation::setAxis(const VrmlSFVec3f & axis) {
+    //
+    // Make sure axis is normalized.
+    //
+    assert(fpequal(length(axis.get()), 1.0));
+    
     std::copy(axis.get(), axis.get() + 3, this->d_x);
 }
 
@@ -1677,11 +1726,12 @@ const VrmlSFVec2f VrmlSFVec2f::negate() const {
 
 /**
  * @brief Normalize.
+ *
  * @return a VrmlSFVec2f that is this vector normalized.
  */
 const VrmlSFVec2f VrmlSFVec2f::normalize() const {
     const double len = this->length();
-    if (FPZERO(len)) {
+    if (fpzero(len)) {
         return *this;
     }
     VrmlSFVec2f result(*this);
@@ -1886,7 +1936,7 @@ double VrmlSFVec3f::length() const {
     const double len = sqrt((d_x[0] * d_x[0])
                           + (d_x[1] * d_x[1])
                           + (d_x[2] * d_x[2]));
-    return FPZERO(len) ? 0.0 : len;
+    return fpzero(len) ? 0.0 : len;
 }
 
 /**
@@ -1921,7 +1971,7 @@ const VrmlSFVec3f VrmlSFVec3f::negate() const {
 const VrmlSFVec3f VrmlSFVec3f::normalize() const {
     const double len = this->length();
     VrmlSFVec3f result(*this);
-    if (!FPZERO(len)) {
+    if (!fpzero(len)) {
         result.d_x[0] /= len;
         result.d_x[1] /= len;
         result.d_x[2] /= len;

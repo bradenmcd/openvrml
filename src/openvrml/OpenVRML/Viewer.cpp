@@ -30,7 +30,7 @@
 #endif
 
 #include "Viewer.h"
-
+#include "private.h"
 #include "MathUtils.h"
 #include "VrmlScene.h"
 
@@ -119,9 +119,9 @@ void Viewer::computeExtrusion(int nOrientation,
   float lastZ[3];
 
   // Is the spine a closed curve (last pt == first pt)?
-  bool spineClosed = (FPZERO(spine[ 3*(nSpine-1)+0 ] - spine[0]) &&
-		      FPZERO(spine[ 3*(nSpine-1)+1 ] - spine[1]) &&
-		      FPZERO(spine[ 3*(nSpine-1)+2 ] - spine[2]));
+  bool spineClosed = (fpzero(spine[ 3*(nSpine-1)+0 ] - spine[0]) &&
+		      fpzero(spine[ 3*(nSpine-1)+1 ] - spine[1]) &&
+		      fpzero(spine[ 3*(nSpine-1)+2 ] - spine[2]));
   
   // Is the spine a straight line?
   bool spineStraight = true;
@@ -172,7 +172,7 @@ void Viewer::computeExtrusion(int nOrientation,
 
   // Orientation matrix
   double om[4][4];
-  if (nOrientation == 1 && ! FPZERO(orientation[3]) )
+  if (nOrientation == 1 && ! fpzero(orientation[3]) )
     Mrotation( om, orientation );
 
   // Compute coordinates, texture coordinates:
@@ -256,7 +256,7 @@ void Viewer::computeExtrusion(int nOrientation,
     }
 
     // Apply orientation
-    if (! FPZERO(orientation[3]) )
+    if (! fpzero(orientation[3]) )
       {
 	if (nOrientation > 1)
 	  Mrotation( om, orientation );

@@ -1324,10 +1324,14 @@ namespace {
         void Script::activate(double timeStamp, const char * fname,
                               const size_t argc, const VrmlField * argv[]) {
             assert(this->cx);
+            assert(fname);
 
             jsval fval, rval;
             JSObject * const globalObj = JS_GetGlobalObject(this->cx);
             assert(globalObj);
+            
+            cout << "Call to " << fname << " in Script node "
+                 << this->scriptNode.name() << endl;
             
             try {
                 if (!JS_LookupProperty(cx, globalObj, fname, &fval)) {
@@ -1358,12 +1362,12 @@ namespace {
                 // What should we do at this point if a function call fails? For now,
                 // just print a message for a debug build.
                 //
-        # ifndef NDEBUG
+# ifndef NDEBUG
                 if (!ok) {
                     cerr << "Call to " << fname << " in Script node "
                          << this->scriptNode.name() << " failed." << endl;
                 }
-        # endif
+# endif
 
                 // Free up args
                 for (i = 0; i < argc; ++i) {
@@ -3179,7 +3183,7 @@ namespace {
                 if (JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 3) {
                     return JS_FALSE;
                 }
-                if (!JS_NewDoubleValue(cx, (*thisRot)[JSVAL_TO_INT(id)], rval)) {
+                if (!JS_NewDoubleValue(cx, thisRot->get()[JSVAL_TO_INT(id)], rval)) {
                     return JS_FALSE;
                 }
             }
@@ -3207,7 +3211,28 @@ namespace {
             if (!JS_ValueToNumber(cx, *vp, &d)) {
                 return JS_FALSE;
             }
-            (*thisRot)[JSVAL_TO_INT(id)] = d;
+            
+            switch (JSVAL_TO_INT(id)) {
+            case 0:
+                thisRot->setX(d);
+                break;
+
+            case 1:
+                thisRot->setY(d);
+                break;
+
+            case 2:
+                thisRot->setZ(d);
+                break;
+
+            case 3:
+                thisRot->setAngle(d);
+                break;
+
+            default:
+                return JS_FALSE;
+            }
+            
             checkEventOut(cx, obj, *thisRot);
             return JS_TRUE;
         }

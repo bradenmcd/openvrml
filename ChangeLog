@@ -1,3 +1,10 @@
+2001-06-30  Braden McDaniel  <braden@endoframe.com>
+
+        * Changed SFRotations to require that their axis component must
+          be a unit vector. This change was incompatible with write
+          access using operator[]; both read and write access using
+          operator[] with VrmlSFRotation has been eliminated.
+
 2001-06-29  Braden McDaniel <braden@endoframe.com>
 
         * Added ommitted class initializations for the MFString and MFTime

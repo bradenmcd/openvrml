@@ -33,6 +33,7 @@
 # include "VrmlScene.h"
 # include "Audio.h"
 # include "sound.h"
+# include "private.h"
 # include "MathUtils.h"
 
 /**
@@ -229,13 +230,13 @@ void VrmlNodeLight::renderScoped(Viewer * viewer) {}
  */
 ostream& VrmlNodeLight::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_ambientIntensity.get()))
+  if (! fpzero(d_ambientIntensity.get()))
     PRINT_FIELD(ambientIntensity);
-  if (! FPEQUAL(d_color.getR(), 1.0) ||
-      ! FPEQUAL(d_color.getG(), 1.0) ||
-      ! FPEQUAL(d_color.getB(), 1.0) )
+  if (! fpequal(d_color.getR(), 1.0) ||
+      ! fpequal(d_color.getG(), 1.0) ||
+      ! fpequal(d_color.getB(), 1.0) )
     PRINT_FIELD(color);
-  if (! FPEQUAL(d_intensity.get(), 1.0))
+  if (! fpequal(d_intensity.get(), 1.0))
     PRINT_FIELD(intensity);
   if (! d_on.get() ) PRINT_FIELD(on);
 
@@ -792,9 +793,9 @@ ostream& VrmlNodeAudioClip::printFields(ostream& os, int indent)
 {
   if (d_description.get()) PRINT_FIELD(description);
   if (d_loop.get()) PRINT_FIELD(loop);
-  if (! FPEQUAL(d_pitch.get(),1.0)) PRINT_FIELD(pitch);
-  if (! FPZERO(d_startTime.get())) PRINT_FIELD(startTime);
-  if (! FPZERO(d_stopTime.get())) PRINT_FIELD(stopTime);
+  if (! fpequal(d_pitch.get(),1.0)) PRINT_FIELD(pitch);
+  if (! fpzero(d_startTime.get())) PRINT_FIELD(startTime);
+  if (! fpzero(d_stopTime.get())) PRINT_FIELD(stopTime);
   if (d_url.getLength() > 0) PRINT_FIELD(url);
   return os;
 }
@@ -1330,9 +1331,9 @@ bool VrmlNodeBillboard::accept(VrmlNodeVisitor & visitor) {
 
 ostream& VrmlNodeBillboard::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_axisOfRotation.getX()) ||
-      ! FPZERO(d_axisOfRotation.getY()) ||
-      ! FPZERO(d_axisOfRotation.getZ()) )
+  if (!fpzero(d_axisOfRotation.getX()) ||
+      !fpzero(d_axisOfRotation.getY()) ||
+      !fpzero(d_axisOfRotation.getZ()) )
     PRINT_FIELD(axisOfRotation);
 
   VrmlNodeGroup::printFields(os, indent);
@@ -1488,9 +1489,9 @@ bool VrmlNodeBox::accept(VrmlNodeVisitor & visitor) {
 
 ostream& VrmlNodeBox::printFields(ostream& os, int )
 {
-  if ( ! FPEQUAL(d_size.getX(), 2.0) ||
-       ! FPEQUAL(d_size.getY(), 2.0) ||
-       ! FPEQUAL(d_size.getZ(), 2.0) )
+  if (!fpequal(d_size.getX(), 2.0)
+          || !fpequal(d_size.getY(), 2.0)
+          || !fpequal(d_size.getZ(), 2.0))
     os << " size " << d_size;
   return os;
 }
@@ -2428,11 +2429,11 @@ VrmlNodeCylinderSensor* VrmlNodeCylinderSensor::toCylinderSensor() const	// mgig
 ostream& VrmlNodeCylinderSensor::printFields(ostream& os, int indent)
 {
   if (! d_autoOffset.get()) PRINT_FIELD(autoOffset);
-  if (! FPEQUAL(d_diskAngle.get(), 0.262)) PRINT_FIELD(diskAngle);
+  if (!fpequal(d_diskAngle.get(), 0.262)) PRINT_FIELD(diskAngle);
   if (! d_enabled.get())    PRINT_FIELD(enabled);
-  if (! FPEQUAL(d_maxAngle.get(), -1.0)) PRINT_FIELD(maxAngle);
-  if (! FPZERO(d_minAngle.get())) PRINT_FIELD(minAngle);
-  if (! FPZERO(d_offset.get())) PRINT_FIELD(offset);
+  if (!fpequal(d_maxAngle.get(), -1.0)) PRINT_FIELD(maxAngle);
+  if (!fpzero(d_minAngle.get())) PRINT_FIELD(minAngle);
+  if (!fpzero(d_offset.get())) PRINT_FIELD(offset);
 
   return os;
 }
@@ -2539,9 +2540,9 @@ bool VrmlNodeDirLight::accept(VrmlNodeVisitor & visitor) {
 ostream& VrmlNodeDirLight::printFields(ostream& os, int indent)
 {
   VrmlNodeLight::printFields(os, indent);
-  if (! FPZERO(d_direction.getX()) ||
-      ! FPZERO(d_direction.getY()) ||
-      ! FPEQUAL(d_direction.getZ(), -1.0) )
+  if (! fpzero(d_direction.getX()) ||
+      ! fpzero(d_direction.getY()) ||
+      ! fpequal(d_direction.getZ(), -1.0) )
     PRINT_FIELD(direction);
 
   return os;
@@ -3455,8 +3456,8 @@ ostream& VrmlNodeFontStyle::printFields(ostream& os, int indent)
   if (d_language.get() && strcmp(d_language.get(), ""))
     PRINT_FIELD(language);
   if (! d_leftToRight.get()) PRINT_FIELD(leftToRight);
-  if (! FPEQUAL(d_size.get(), 1.0)) PRINT_FIELD(size);
-  if (! FPEQUAL(d_spacing.get(), 1.0)) PRINT_FIELD(spacing);
+  if (! fpequal(d_size.get(), 1.0)) PRINT_FIELD(size);
+  if (! fpequal(d_spacing.get(), 1.0)) PRINT_FIELD(spacing);
   if (d_style.get() && strcmp(d_style.get(), "PLAIN"))
     PRINT_FIELD(style);
   if (! d_topToBottom.get()) PRINT_FIELD(topToBottom);
@@ -4835,14 +4836,14 @@ void VrmlNodeInline::addToScene(VrmlScene *s, const char *relativeUrl)
 
 ostream& VrmlNodeInline::printFields(ostream& os, int indent)
 {
-  if ( !FPZERO(d_bboxCenter.getX()) ||
-       !FPZERO(d_bboxCenter.getY()) ||
-       !FPZERO(d_bboxCenter.getZ()) )
+  if ( !fpzero(d_bboxCenter.getX()) ||
+       !fpzero(d_bboxCenter.getY()) ||
+       !fpzero(d_bboxCenter.getZ()) )
     PRINT_FIELD(bboxCenter);
 
-  if ( !FPEQUAL(d_bboxSize.getX(), -1) ||
-       !FPEQUAL(d_bboxSize.getY(), -1) ||
-       !FPEQUAL(d_bboxSize.getZ(), -1) )
+  if ( !fpequal(d_bboxSize.getX(), -1) ||
+       !fpequal(d_bboxSize.getY(), -1) ||
+       !fpequal(d_bboxSize.getZ(), -1) )
     PRINT_FIELD(bboxCenter);
 
   if (d_url.get()) PRINT_FIELD(url);
@@ -5036,9 +5037,9 @@ void VrmlNodeLOD::addToScene( VrmlScene *s, const char *rel )
 ostream& VrmlNodeLOD::printFields(ostream& os, int indent)
 {
   if (d_level.getLength() > 0) PRINT_FIELD(level);
-  if (! FPZERO(d_center.getX()) ||
-      ! FPZERO(d_center.getY()) ||
-      ! FPZERO(d_center.getZ()) )
+  if (! fpzero(d_center.getX()) ||
+      ! fpzero(d_center.getY()) ||
+      ! fpzero(d_center.getZ()) )
     PRINT_FIELD(center);
       
   if (d_range.getLength() > 0) PRINT_FIELD(range);
@@ -5232,28 +5233,28 @@ VrmlNodeMaterial* VrmlNodeMaterial::toMaterial() const
 
 ostream& VrmlNodeMaterial::printFields(ostream& os, int indent)
 {
-  if (! FPEQUAL(d_ambientIntensity.get(), 0.2))
+  if (! fpequal(d_ambientIntensity.get(), 0.2))
     PRINT_FIELD(ambientIntensity);
 
-  if (! FPEQUAL(d_diffuseColor.getR(), 0.8) ||
-      ! FPEQUAL(d_diffuseColor.getG(), 0.8) ||
-      ! FPEQUAL(d_diffuseColor.getB(), 0.8) )
+  if (! fpequal(d_diffuseColor.getR(), 0.8) ||
+      ! fpequal(d_diffuseColor.getG(), 0.8) ||
+      ! fpequal(d_diffuseColor.getB(), 0.8) )
     PRINT_FIELD(diffuseColor);
 
-  if (! FPZERO(d_emissiveColor.getR()) ||
-      ! FPZERO(d_emissiveColor.getG()) ||
-      ! FPZERO(d_emissiveColor.getB()) )
+  if (! fpzero(d_emissiveColor.getR()) ||
+      ! fpzero(d_emissiveColor.getG()) ||
+      ! fpzero(d_emissiveColor.getB()) )
     PRINT_FIELD(emissiveColor);
 
-  if (! FPEQUAL(d_shininess.get(), 0.2))
+  if (! fpequal(d_shininess.get(), 0.2))
     PRINT_FIELD(shininess);
 
-  if (! FPZERO(d_specularColor.getR()) ||
-      ! FPZERO(d_specularColor.getG()) ||
-      ! FPZERO(d_specularColor.getB()) )
+  if (! fpzero(d_specularColor.getR()) ||
+      ! fpzero(d_specularColor.getG()) ||
+      ! fpzero(d_specularColor.getB()) )
     PRINT_FIELD(specularColor);
 
-  if (! FPZERO(d_transparency.get()) )
+  if (! fpzero(d_transparency.get()) )
       PRINT_FIELD(transparency);
 
   return os;
@@ -5396,9 +5397,9 @@ void VrmlNodeMovieTexture::addToScene(VrmlScene *s, const char *rel)
 ostream& VrmlNodeMovieTexture::printFields(ostream& os, int indent)
 {
   if (d_loop.get()) PRINT_FIELD(loop);
-  if (!FPEQUAL(d_speed.get(), 1.0)) PRINT_FIELD(speed);
-  if (!FPZERO(d_startTime.get())) PRINT_FIELD(startTime);
-  if (!FPZERO(d_stopTime.get())) PRINT_FIELD(stopTime);
+  if (!fpequal(d_speed.get(), 1.0)) PRINT_FIELD(speed);
+  if (!fpzero(d_startTime.get())) PRINT_FIELD(startTime);
+  if (!fpzero(d_stopTime.get())) PRINT_FIELD(stopTime);
   if (d_url.get()) PRINT_FIELD(url);
   if (! d_repeatS.get()) PRINT_FIELD(repeatS);
   if (! d_repeatT.get()) PRINT_FIELD(repeatT);
@@ -5746,17 +5747,17 @@ void VrmlNodeNavigationInfo::addToScene(VrmlScene *s, const char *)
 ostream& VrmlNodeNavigationInfo::printFields(ostream& os, int indent)
 {
   if (d_avatarSize.getLength() != 3 ||
-      ! FPEQUAL(d_avatarSize.getElement(0), 0.25) ||
-      ! FPEQUAL(d_avatarSize.getElement(1), 1.6) ||
-      ! FPEQUAL(d_avatarSize.getElement(2), 0.75) )
+      ! fpequal(d_avatarSize.getElement(0), 0.25) ||
+      ! fpequal(d_avatarSize.getElement(1), 1.6) ||
+      ! fpequal(d_avatarSize.getElement(2), 0.75) )
     PRINT_FIELD(avatarSize);
   if (! d_headlight.get()) PRINT_FIELD(headlight);
-  if (! FPEQUAL(d_speed.get(), 1.0)) PRINT_FIELD(speed);
+  if (! fpequal(d_speed.get(), 1.0)) PRINT_FIELD(speed);
   if (d_type.getLength() != 2 ||
       strcmp(d_type.getElement(0), "WALK") != 0 ||
       strcmp(d_type.getElement(1), "ANY") != 0 )
     PRINT_FIELD(type);
-  if (! FPZERO(d_visibilityLimit.get())) PRINT_FIELD(visibilityLimit);
+  if (! fpzero(d_visibilityLimit.get())) PRINT_FIELD(visibilityLimit);
 
   return os;
 }
@@ -6606,16 +6607,16 @@ ostream& VrmlNodePlaneSensor::printFields(ostream& os, int indent)
 {
   if (! d_autoOffset.get()) PRINT_FIELD(autoOffset);
   if (! d_enabled.get())    PRINT_FIELD(enabled);
-  if (! FPEQUAL(d_maxPosition.getX(), -1.0) ||
-      ! FPEQUAL(d_maxPosition.getY(), -1.0))
+  if (! fpequal(d_maxPosition.getX(), -1.0) ||
+      ! fpequal(d_maxPosition.getY(), -1.0))
     PRINT_FIELD(maxPosition);
-  if (! FPEQUAL(d_minPosition.getX(), -1.0) ||
-      ! FPEQUAL(d_minPosition.getY(), -1.0))
+  if (! fpequal(d_minPosition.getX(), -1.0) ||
+      ! fpequal(d_minPosition.getY(), -1.0))
     PRINT_FIELD(minPosition);
 
-  if (! FPZERO(d_offset.getX()) ||
-      ! FPZERO(d_offset.getY()) ||
-      ! FPZERO(d_offset.getZ()) )
+  if (! fpzero(d_offset.getX()) ||
+      ! fpzero(d_offset.getY()) ||
+      ! fpzero(d_offset.getZ()) )
     PRINT_FIELD(offset);
 
   return os;
@@ -6825,15 +6826,15 @@ void VrmlNodePointLight::addToScene(VrmlScene *s, const char *)
 ostream& VrmlNodePointLight::printFields(ostream& os, int indent)
 {
   VrmlNodeLight::printFields(os, indent);
-  if (! FPEQUAL(d_attenuation.getX(), 1.0) ||
-      ! FPZERO(d_attenuation.getY()) ||
-      ! FPZERO(d_attenuation.getZ()) )
+  if (! fpequal(d_attenuation.getX(), 1.0) ||
+      ! fpzero(d_attenuation.getY()) ||
+      ! fpzero(d_attenuation.getZ()) )
     PRINT_FIELD(attenuation);
-  if (! FPZERO(d_location.getX()) ||
-      ! FPZERO(d_location.getY()) ||
-      ! FPZERO(d_location.getZ()) )
+  if (! fpzero(d_location.getX()) ||
+      ! fpzero(d_location.getY()) ||
+      ! fpzero(d_location.getZ()) )
     PRINT_FIELD(location);
-  if (! FPEQUAL(d_radius.get(), 100.0))
+  if (! fpequal(d_radius.get(), 100.0))
     PRINT_FIELD(radius);
 
   return os;
@@ -7330,15 +7331,15 @@ bool VrmlNodeProximitySensor::accept(VrmlNodeVisitor & visitor) {
 
 ostream& VrmlNodeProximitySensor::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_center.getX()) ||
-      ! FPZERO(d_center.getY()) ||
-      ! FPZERO(d_center.getZ()) )
+  if (! fpzero(d_center.getX()) ||
+      ! fpzero(d_center.getY()) ||
+      ! fpzero(d_center.getZ()) )
     PRINT_FIELD(center);
   if (! d_enabled.get())
     PRINT_FIELD(enabled);
-  if (! FPZERO(d_size.getX()) ||
-      ! FPZERO(d_size.getY()) ||
-      ! FPZERO(d_size.getZ()) )
+  if (! fpzero(d_size.getX()) ||
+      ! fpzero(d_size.getY()) ||
+      ! fpzero(d_size.getZ()) )
     PRINT_FIELD(size);
       
   return os;
@@ -7407,9 +7408,9 @@ void VrmlNodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
       // Check for movement within the box
       if (wasIn || inside)
 	{
-	  if ( ! FPEQUAL(d_position.getX(), x) ||
-	       ! FPEQUAL(d_position.getY(), y) ||
-	       ! FPEQUAL(d_position.getZ(), z) )
+	  if ( ! fpequal(d_position.getX(), x) ||
+	       ! fpequal(d_position.getY(), y) ||
+	       ! fpequal(d_position.getZ(), z) )
 	    {
 	      const float positionVec[3] = { x, y, z };
               d_position.set(positionVec);
@@ -7418,10 +7419,10 @@ void VrmlNodeProximitySensor::render(Viewer *viewer, VrmlRenderContext rc)
 
 	  float xyzr[4];
 	  viewer->getOrientation( xyzr );
-	  if ( ! FPEQUAL(d_orientation.getX(), xyzr[0]) ||
-	       ! FPEQUAL(d_orientation.getY(), xyzr[1]) ||
-	       ! FPEQUAL(d_orientation.getZ(), xyzr[2]) ||
-	       ! FPEQUAL(d_orientation.getAngle(), xyzr[3]) )
+	  if ( ! fpequal(d_orientation.getX(), xyzr[0]) ||
+	       ! fpequal(d_orientation.getY(), xyzr[1]) ||
+	       ! fpequal(d_orientation.getZ(), xyzr[2]) ||
+	       ! fpequal(d_orientation.getAngle(), xyzr[3]) )
 	    {
 	      d_orientation.set(xyzr);
 	      eventOut(timeNow.get(), "orientation_changed", d_orientation);
@@ -7967,9 +7968,9 @@ void VrmlNodeSound::addToScene(VrmlScene *s, const char *relUrl)
 
 ostream& VrmlNodeSound::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_direction.getX()) ||
-      ! FPZERO(d_direction.getY()) ||
-      ! FPEQUAL(d_direction.getZ(), 1.0) )
+  if (! fpzero(d_direction.getX()) ||
+      ! fpzero(d_direction.getY()) ||
+      ! fpequal(d_direction.getZ(), 1.0) )
     PRINT_FIELD(direction);
 
   // ...
@@ -8221,10 +8222,10 @@ ostream& VrmlNodeSphereSensor::printFields(ostream& os, int indent)
   if (! d_autoOffset.get()) PRINT_FIELD(autoOffset);
   if (! d_enabled.get())    PRINT_FIELD(enabled);
 
-  if (! FPZERO(d_offset.getX()) ||
-      ! FPEQUAL(d_offset.getY(), 1.0) ||
-      ! FPZERO(d_offset.getZ()) ||
-      ! FPZERO(d_offset.getAngle()) )
+  if (! fpzero(d_offset.getX()) ||
+      ! fpequal(d_offset.getY(), 1.0) ||
+      ! fpzero(d_offset.getZ()) ||
+      ! fpzero(d_offset.getAngle()) )
     PRINT_FIELD(offset);
 
   return os;
@@ -8408,26 +8409,26 @@ void VrmlNodeSpotLight::addToScene(VrmlScene *s, const char *)
 ostream& VrmlNodeSpotLight::printFields(ostream& os, int indent)
 {
   VrmlNodeLight::printFields(os, indent);
-  if (! FPEQUAL(d_attenuation.getX(), 1.0) ||
-      ! FPZERO(d_attenuation.getY()) ||
-      ! FPZERO(d_attenuation.getZ()) )
+  if (! fpequal(d_attenuation.getX(), 1.0) ||
+      ! fpzero(d_attenuation.getY()) ||
+      ! fpzero(d_attenuation.getZ()) )
     PRINT_FIELD(attenuation);
-  if (! FPEQUAL(d_beamWidth.get(), 1.570796))
+  if (! fpequal(d_beamWidth.get(), 1.570796))
     PRINT_FIELD(beamWidth);
 
-  if (! FPEQUAL(d_cutOffAngle.get(), 1.570796))
+  if (! fpequal(d_cutOffAngle.get(), 1.570796))
     PRINT_FIELD(cutOffAngle);
-  if (! FPZERO(d_direction.getX()) ||
-      ! FPZERO(d_direction.getY()) ||
-      ! FPEQUAL(d_direction.getZ(), -1.0) )
+  if (! fpzero(d_direction.getX()) ||
+      ! fpzero(d_direction.getY()) ||
+      ! fpequal(d_direction.getZ(), -1.0) )
     PRINT_FIELD(direction);
 
-  if (! FPZERO(d_location.getX()) ||
-      ! FPZERO(d_location.getY()) ||
-      ! FPZERO(d_location.getZ()) )
+  if (! fpzero(d_location.getX()) ||
+      ! fpzero(d_location.getY()) ||
+      ! fpzero(d_location.getZ()) )
     PRINT_FIELD(location);
 
-  if (! FPEQUAL(d_radius.get(), 100.0))
+  if (! fpequal(d_radius.get(), 100.0))
     PRINT_FIELD(radius);
 
   return os;
@@ -8811,7 +8812,7 @@ ostream& VrmlNodeText::printFields(ostream& os, int indent)
   if (d_string.getLength() > 0) PRINT_FIELD(string);
   if (d_fontStyle.get()) PRINT_FIELD(fontStyle);
   if (d_length.getLength() > 0) PRINT_FIELD(length);
-  if (! FPZERO(d_maxExtent.get()) ) PRINT_FIELD(maxExtent);
+  if (! fpzero(d_maxExtent.get()) ) PRINT_FIELD(maxExtent);
   return os;
 }
 
@@ -9034,18 +9035,18 @@ VrmlNodeTextureTransform* VrmlNodeTextureTransform::toTextureTransform() const
 
 ostream& VrmlNodeTextureTransform::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_center.getX()) ||
-      ! FPZERO(d_center.getY()))
+  if (! fpzero(d_center.getX()) ||
+      ! fpzero(d_center.getY()))
     PRINT_FIELD(center);
 
-  if (! FPZERO(d_rotation.get()))
+  if (! fpzero(d_rotation.get()))
     PRINT_FIELD(rotation);
 
-  if (! FPEQUAL(d_scale.getX(), 1.0) ||
-      ! FPEQUAL(d_scale.getY(), 1.0))
+  if (! fpequal(d_scale.getX(), 1.0) ||
+      ! fpequal(d_scale.getY(), 1.0))
     PRINT_FIELD(scale);
-  if (! FPZERO(d_translation.getX()) ||
-      ! FPZERO(d_translation.getY()))
+  if (! fpzero(d_translation.getX()) ||
+      ! fpzero(d_translation.getY()))
     PRINT_FIELD(translation);
       
   return os;
@@ -9187,12 +9188,12 @@ void VrmlNodeTimeSensor::addToScene(VrmlScene *s, const char*)
 
 ostream& VrmlNodeTimeSensor::printFields(ostream& os, int indent)
 {
-  if (! FPEQUAL(d_cycleInterval.get(), 1.0))
+  if (! fpequal(d_cycleInterval.get(), 1.0))
     PRINT_FIELD(cycleInterval);
   if (! d_enabled.get()) PRINT_FIELD(enabled);
   if (d_loop.get()) PRINT_FIELD(loop);
-  if (! FPZERO(d_startTime.get())) PRINT_FIELD(startTime);
-  if (! FPZERO(d_stopTime.get())) PRINT_FIELD(stopTime);
+  if (! fpzero(d_startTime.get())) PRINT_FIELD(startTime);
+  if (! fpzero(d_stopTime.get())) PRINT_FIELD(stopTime);
 
   return os;
 }
@@ -9274,14 +9275,14 @@ void VrmlNodeTimeSensor::update( VrmlSFTime &inTime )
 	    f = 0.0;
 
 	  // Fraction of cycle message
-	  VrmlSFFloat fraction_changed( FPZERO(f) ? 1.0 : (f / cycleInt) );
+	  VrmlSFFloat fraction_changed( fpzero(f) ? 1.0 : (f / cycleInt) );
 	  eventOut( timeNow.get(), "fraction_changed", fraction_changed );
 
 	  // Current time message
 	  eventOut( timeNow.get(), "time", timeNow );
 
 	  // End of cycle message (this may miss cycles...)
-	  if ( FPEQUAL(fraction_changed.get(), 1.0) )
+	  if ( fpequal(fraction_changed.get(), 1.0) )
 	    eventOut( timeNow.get(), "cycleTime", timeNow );
 
 	  if (deactivate)
@@ -9348,7 +9349,7 @@ void VrmlNodeTimeSensor::eventIn(double timeStamp,
 	    f = 0.0;
 
 	  // Fraction of cycle message
-	  VrmlSFFloat fraction_changed( FPZERO(f) ? 1.0 : (f / cycleInt) );
+	  VrmlSFFloat fraction_changed( fpzero(f) ? 1.0 : (f / cycleInt) );
 
 	  eventOut(timeStamp, "fraction_changed", fraction_changed);
 	  eventOut(timeStamp, "isActive", d_isActive);
@@ -9657,27 +9658,27 @@ const VrmlSFVec3f& VrmlNodeTransform::getTranslation() const  //LarryD Feb 24/99
 
 ostream& VrmlNodeTransform::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_center.getX()) ||
-      ! FPZERO(d_center.getY()) ||
-      ! FPZERO(d_center.getZ()))
+  if (! fpzero(d_center.getX()) ||
+      ! fpzero(d_center.getY()) ||
+      ! fpzero(d_center.getZ()))
     PRINT_FIELD(center);
-  if (! FPZERO(d_rotation.getX()) ||
-      ! FPZERO(d_rotation.getY()) ||
-      ! FPEQUAL(d_rotation.getZ(), 1.0) ||
-      ! FPZERO(d_rotation.getAngle()))
+  if (! fpzero(d_rotation.getX()) ||
+      ! fpzero(d_rotation.getY()) ||
+      ! fpequal(d_rotation.getZ(), 1.0) ||
+      ! fpzero(d_rotation.getAngle()))
     PRINT_FIELD(rotation);
-  if (! FPEQUAL(d_scale.getX(), 1.0) ||
-      ! FPEQUAL(d_scale.getY(), 1.0) ||
-      ! FPEQUAL(d_scale.getZ(), 1.0))
+  if (! fpequal(d_scale.getX(), 1.0) ||
+      ! fpequal(d_scale.getY(), 1.0) ||
+      ! fpequal(d_scale.getZ(), 1.0))
     PRINT_FIELD(scale);
-  if (! FPZERO(d_scaleOrientation.getX()) ||
-      ! FPZERO(d_scaleOrientation.getY()) ||
-      ! FPEQUAL(d_scaleOrientation.getZ(), 1.0) ||
-      ! FPZERO(d_scaleOrientation.getAngle()))
+  if (! fpzero(d_scaleOrientation.getX()) ||
+      ! fpzero(d_scaleOrientation.getY()) ||
+      ! fpequal(d_scaleOrientation.getZ(), 1.0) ||
+      ! fpzero(d_scaleOrientation.getAngle()))
     PRINT_FIELD(scaleOrientation);
-  if (! FPZERO(d_translation.getX()) ||
-      ! FPZERO(d_translation.getY()) ||
-      ! FPZERO(d_translation.getZ()))
+  if (! fpzero(d_translation.getX()) ||
+      ! fpzero(d_translation.getY()) ||
+      ! fpzero(d_translation.getZ()))
     PRINT_FIELD(translation);
 
   VrmlNodeGroup::printFields(os, indent);
@@ -9816,9 +9817,9 @@ void VrmlNodeTransform::inverseTransform(Viewer *viewer)
 
   // Invert scale (1/x)
   float scale[3] = { d_scale.getX(), d_scale.getY(), d_scale.getZ() };
-  if (! FPZERO(scale[0])) scale[0] = 1.0 / scale[0];
-  if (! FPZERO(scale[1])) scale[1] = 1.0 / scale[1];
-  if (! FPZERO(scale[2])) scale[2] = 1.0 / scale[2];
+  if (! fpzero(scale[0])) scale[0] = 1.0 / scale[0];
+  if (! fpzero(scale[1])) scale[1] = 1.0 / scale[1];
+  if (! fpzero(scale[2])) scale[2] = 1.0 / scale[2];
 
   // Apply transforms (this may need to be broken into separate
   // calls to perform the ops in reverse order...)
@@ -9848,9 +9849,9 @@ void VrmlNodeTransform::inverseTransform(double m[4][4])
   //MM( m, M );
   //// Invert scale (1/x)
   //float scale[3] = { d_scale.x(), d_scale.y(), d_scale.z() };
-  //if (! FPZERO(scale[0])) scale[0] = 1.0 / scale[0];
-  //if (! FPZERO(scale[1])) scale[1] = 1.0 / scale[1];
-  //if (! FPZERO(scale[2])) scale[2] = 1.0 / scale[2];
+  //if (! fpzero(scale[0])) scale[0] = 1.0 / scale[0];
+  //if (! fpzero(scale[1])) scale[1] = 1.0 / scale[1];
+  //if (! fpzero(scale[2])) scale[2] = 1.0 / scale[2];
   //Mscale( M, scale );
 
   double IM[4][4];
@@ -10131,17 +10132,17 @@ void VrmlNodeViewpoint::addToScene(VrmlScene *s, const char *)
 
 ostream& VrmlNodeViewpoint::printFields(ostream& os, int indent)
 {
-  if (! FPEQUAL( d_fieldOfView.get(), DEFAULT_FIELD_OF_VIEW))
+  if (! fpequal( d_fieldOfView.get(), DEFAULT_FIELD_OF_VIEW))
     PRINT_FIELD(fieldOfView);
   if (! d_jump.get()) PRINT_FIELD(jump);
-  if (! FPZERO(d_orientation.getX()) ||
-      ! FPZERO(d_orientation.getY()) ||
-      ! FPEQUAL(d_orientation.getZ(), 1.0) ||
-      ! FPZERO(d_orientation.getAngle()) )
+  if (! fpzero(d_orientation.getX()) ||
+      ! fpzero(d_orientation.getY()) ||
+      ! fpequal(d_orientation.getZ(), 1.0) ||
+      ! fpzero(d_orientation.getAngle()) )
     PRINT_FIELD(orientation);
-  if (! FPZERO(d_position.getX()) ||
-      ! FPZERO(d_position.getY()) ||
-      ! FPEQUAL(d_position.getZ(), 10.0) )
+  if (! fpzero(d_position.getX()) ||
+      ! fpzero(d_position.getY()) ||
+      ! fpequal(d_position.getZ(), 10.0) )
     PRINT_FIELD(position);
   if (d_description.get()) PRINT_FIELD(description);
 
@@ -10383,15 +10384,15 @@ bool VrmlNodeVisibilitySensor::accept(VrmlNodeVisitor & visitor) {
 
 ostream& VrmlNodeVisibilitySensor::printFields(ostream& os, int indent)
 {
-  if (! FPZERO(d_center.getX()) ||
-      ! FPZERO(d_center.getY()) ||
-      ! FPZERO(d_center.getZ()) )
+  if (! fpzero(d_center.getX()) ||
+      ! fpzero(d_center.getY()) ||
+      ! fpzero(d_center.getZ()) )
     PRINT_FIELD(center);
   if (! d_enabled.get())
     PRINT_FIELD(enabled);
-  if (! FPZERO(d_size.getX()) ||
-      ! FPZERO(d_size.getY()) ||
-      ! FPZERO(d_size.getZ()) )
+  if (! fpzero(d_size.getX()) ||
+      ! fpzero(d_size.getY()) ||
+      ! fpzero(d_size.getZ()) )
     PRINT_FIELD(size);
       
   return os;
@@ -10425,7 +10426,7 @@ void VrmlNodeVisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc)
       float dy = xyz[1][1]-xyz[0][1];
       float dz = xyz[1][2]-xyz[0][2];
       float r  = dx*dx + dy*dy + dz*dz;
-      if (! FPZERO(r) ) r = sqrt( r );
+      if (! fpzero(r) ) r = sqrt( r );
 
       // Was the sphere visible last time through? How does this work
       // for USE'd nodes? I need a way for each USE to store whether
@@ -10438,7 +10439,7 @@ void VrmlNodeVisibilitySensor::render(Viewer *viewer, VrmlRenderContext rc)
 	{
 	  VrmlNodeNavigationInfo *ni = d_scene->bindableNavigationInfoTop();
 	  if (ni &&
-	      ! FPZERO(ni->visibilityLimit()) &&
+	      ! fpzero(ni->visibilityLimit()) &&
 	      xyz[0][2] < - ni->visibilityLimit())
 	    inside = false;
 	}

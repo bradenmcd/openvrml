@@ -24,6 +24,7 @@
 #include "VrmlFrustum.h"
 #include "VrmlAABox.h"
 #include "VrmlBSphere.h"
+#include "private.h"
 #include "MathUtils.h"
 #include "field.h"
 
@@ -214,7 +215,7 @@ VrmlBSphere::extend(const float p[3])
   float dn = sqrt(xn*xn+yn*yn+zn*zn);
   //cout << "VrmlBSphere::extend(" << xn << "," << yn << "," << zn << ")" << dn << endl;
 
-  if (FPZERO(dn))
+  if (fpzero(dn))
     return;
 
   if (dn < r0) // point is inside sphere
@@ -293,7 +294,7 @@ VrmlBSphere::extend(const VrmlBSphere& b)
   //cout << xn << "," << yn << ","<< zn << endl;
   float dn = sqrt(xn*xn+yn*yn+zn*zn);
 
-  if (FPZERO(dn))
+  if (fpzero(dn))
     return;
 
   if (dn + r1 < r0) { // inside us, so no change
