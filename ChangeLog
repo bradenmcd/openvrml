@@ -1,3 +1,10 @@
+2002-10-27  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/browser.cpp,
+          src/openvrml/OpenVRML/node.cpp, src/openvrml/OpenVRML/node.h:
+          Fixed crash when calling ProtoNode::setFieldImpl to set the
+          value of an un-IS'd exposedField.
+
 2002-10-26  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Vrml97Parser.cpp,

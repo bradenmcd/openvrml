@@ -216,6 +216,7 @@ namespace OpenVRML {
             const FieldValuePtr value;
             bool modified;
             
+            PolledEventOutValue();
             PolledEventOutValue(const FieldValuePtr & value, bool modified);
         };
 

@@ -3148,9 +3148,32 @@ void ProtoNode::setFieldImpl(const std::string & id,
     }
     
     if (rangeItrs.second == rangeItrs.first) {
-        assert(this->unISdFieldValueMap.find(id)
-                != this->unISdFieldValueMap.end());
-        *this->unISdFieldValueMap[id] = value;
+        //
+        // The field hasn't been IS'd to anything.  If it's an exposedField,
+        // the value is in eventOutValueMap; if it's a field, the value is in
+        // unISdFieldValueMap.
+        //
+        const NodeInterfaceSet & interfaces = this->nodeType.getInterfaces();
+        const NodeInterfaceSet::const_iterator interface =
+                interfaces.findInterface(id);
+        if (interface == interfaces.end()) {
+            throw UnsupportedInterface(this->nodeType,
+                                       NodeInterface::field,
+                                       id);
+        }
+        if (interface->type == NodeInterface::exposedField) {
+            assert(this->eventOutValueMap.find(id + "_changed")
+                    != this->eventOutValueMap.end());
+            this->eventOutValueMap[id + "_changed"].value->assign(value);
+        } else if (interface->type == NodeInterface::field) {
+            assert(this->unISdFieldValueMap.find(id)
+                    != this->unISdFieldValueMap.end());
+            this->unISdFieldValueMap[id]->assign(value);
+        } else {
+            throw UnsupportedInterface(this->nodeType,
+                                       NodeInterface::field,
+                                       id);
+        }
     }
 }
 

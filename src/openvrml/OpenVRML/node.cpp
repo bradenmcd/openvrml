@@ -740,6 +740,13 @@ Node::Route::Route(const Route & route): fromEventOut(route.fromEventOut),
  */
 
 /**
+ * @brief Default constructor.
+ */
+Node::PolledEventOutValue::PolledEventOutValue():
+    modified(false)
+{}
+
+/**
  * @brief Constructor.
  *
  * @param value     the value.
