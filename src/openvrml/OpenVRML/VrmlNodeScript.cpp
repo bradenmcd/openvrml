@@ -44,6 +44,7 @@
 # include "ScriptObject.h"
 # include "VrmlScene.h"
 # include "doc2.hpp"
+# include "ScriptJDK.h"
 
 #if defined(WIN32)
 // Disable warning messages about forcing value to bool 'true' or 'false'
@@ -677,20 +678,24 @@ ScriptObject * VrmlNodeScript::createScript() {
 	}
 # endif
 
-#if HAVE_JAVA
-        int slen = strlen(url[i]);
+#ifdef OPENVRML_HAVE_JAVA
+	const char javaExtension1[] = ".class";
+	const char javaExtension2[] = ".CLASS";
+        int slen = this->d_url.getLength();
         if (slen > 6 &&
-	    (strcmp(url[i]+slen-6,".class") == 0 ||
-	     strcmp(url[i]+slen-6,".CLASS") == 0))
+	    (std::equal(javaExtension1, javaExtension1 + slen - 6, 
+			this->d_url.getElement(i).end()) ||
+	     std::equal(javaExtension2, javaExtension2 + slen - 6, 
+			this->d_url.getElement(i).end())))
 	{
-	    Doc *relative = 0;
-	    if ( node->scene() ) {
-	        relative = node->scene()->url();
-            }
-	    Doc doc( url[i], relative );
-	    if ( doc.localName() ) {
-	        return new ScriptJDK( node, doc.urlBase(), doc.localPath() );
-            }
+	  Doc2 *relative = 0;
+	  if ( browser() ) {
+	    relative = browser()->urlDoc();
+	  }
+	  Doc2 doc(this->d_url.getElement(i), relative);
+	  if ( doc.localName() ) {
+	    return new ScriptJDK(this, doc.urlBase(), doc.localPath() );
+	  }
 	}
 #endif
     }
