@@ -57,7 +57,6 @@ class Vrml97Utf8Scanner : public antlr::TokenStream {
         static const int KEYWORD_TO;
         static const int KEYWORD_TRUE;
         static const int KEYWORD_USE;
-        static const int NODE_SCRIPT;
         static const int FIELDTYPE_SFBOOL;
         static const int FIELDTYPE_SFCOLOR;
         static const int FIELDTYPE_SFFLOAT;

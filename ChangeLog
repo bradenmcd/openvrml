@@ -7,6 +7,9 @@
           This adds identification of hexadecimal integers to the lexer,
           and removes use of istrstream from the parser.
 
+        * Since Script nodes are nolonger detected in the scanner, removed
+          NODE_SCRIPT identifier.
+
 2000-12-05  Braden McDaniel  <braden@endoframe.com>
 
         * Reverted 26 Nov change to VrmlField.h. CodeWarrior 5/Mac is

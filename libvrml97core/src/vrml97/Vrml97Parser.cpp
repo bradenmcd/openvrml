@@ -3057,7 +3057,6 @@ const char* Vrml97Parser::_tokenNames[] = {
 	"\"TO\"",
 	"\"TRUE\"",
 	"\"USE\"",
-	"NODE_SCRIPT",
 	"FIELDTYPE_SFBOOL",
 	"FIELDTYPE_SFCOLOR",
 	"FIELDTYPE_SFFLOAT",
@@ -3097,7 +3096,7 @@ const unsigned long Vrml97Parser::_tokenSet_6_data_[] = { 1278016UL, 0UL, 0UL, 0
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_6(_tokenSet_6_data_,4);
 const unsigned long Vrml97Parser::_tokenSet_7_data_[] = { 256UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_7(_tokenSet_7_data_,4);
-const unsigned long Vrml97Parser::_tokenSet_8_data_[] = { 3758096384UL, 131071UL, 0UL, 0UL };
+const unsigned long Vrml97Parser::_tokenSet_8_data_[] = { 4026531840UL, 65535UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_8(_tokenSet_8_data_,4);
 const unsigned long Vrml97Parser::_tokenSet_9_data_[] = { 512UL, 0UL, 0UL, 0UL };
 const ANTLR_USE_NAMESPACE(antlr)BitSet Vrml97Parser::_tokenSet_9(_tokenSet_9_data_,4);
