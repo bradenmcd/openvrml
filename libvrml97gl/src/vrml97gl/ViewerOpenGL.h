@@ -216,9 +216,9 @@ public:
   void resize(int w, int h);
 
   // user interaction
-  #ifdef macintosh /* in order to be able to send 'keys' from menus */
+#ifdef macintosh /* in order to be able to send 'keys' from menus */
   void handleKey(int);
-  #endif
+#endif
 
   // Event types
   typedef enum {
@@ -282,7 +282,7 @@ protected:
   virtual void wsSwapBuffers() = 0;
   virtual void wsSetTimer( double ) = 0;
 
-private:
+//private:
 
   // Initialize OpenGL state
   void initialize();
@@ -301,9 +301,9 @@ private:
 
   // User interaction
   void step(float, float, float);
-  #ifndef macintosh
+#ifndef macintosh
   void handleKey(int);
-  #endif
+#endif
   void handleButton(EventInfo*);
   void handleMouseDrag(int, int);
 
