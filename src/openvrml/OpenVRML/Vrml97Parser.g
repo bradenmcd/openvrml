@@ -23,11 +23,8 @@ header "post_include_hpp" {
 # include "field.h"
 # include "VrmlNodePtr.h"
 class VrmlNamespace;
-class VrmlNode;
 class VrmlNodeScript;
 class VrmlNodeType;
-class VrmlMFTime;
-class VrmlMFNode;
 class Doc2;
 
 class Vrml97Scanner : public antlr::TokenStream {

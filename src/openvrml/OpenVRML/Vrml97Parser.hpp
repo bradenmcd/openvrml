@@ -14,11 +14,8 @@
 # include "field.h"
 # include "VrmlNodePtr.h"
 class VrmlNamespace;
-class VrmlNode;
 class VrmlNodeScript;
 class VrmlNodeType;
-class VrmlMFTime;
-class VrmlMFNode;
 class Doc2;
 
 class Vrml97Scanner : public antlr::TokenStream {
@@ -95,16 +92,16 @@ private:
     bool        _expectingFieldType;
 };
 
-#line 99 "Vrml97Parser.hpp"
+#line 96 "Vrml97Parser.hpp"
 class Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
  {
-#line 575 "Vrml97Parser.g"
+#line 572 "Vrml97Parser.g"
 
     public:
         enum NodeInterfaceType {
             INVALID_NODE_INTERFACE_TYPE, EVENTIN, EVENTOUT, FIELD, EXPOSEDFIELD
         };
-#line 103 "Vrml97Parser.hpp"
+#line 100 "Vrml97Parser.hpp"
 protected:
 	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf, int k);
 public:
