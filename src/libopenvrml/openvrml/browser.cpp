@@ -3819,7 +3819,7 @@ const node_path browser::find_node(const node & n) const
 
         virtual void on_leaving(node & n) throw ()
         {
-            if (&n != &this->objectiveNode) { this->nodePath.pop_back(); }
+            if (!this->halted()) { this->nodePath.pop_back(); }
         }
     };
 

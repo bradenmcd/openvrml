@@ -3562,7 +3562,9 @@ void node_traverser::do_traversal(node & n)
                 } else if (interface->field_type == field_value::mfnode_id) {
                     const mfnode & children =
                         static_cast<const mfnode &>(n.field(interface->id));
-                    for (size_t i = 0; i < children.value.size(); ++i) {
+                    for (size_t i = 0;
+                         i < children.value.size() && !this->halt;
+                         ++i) {
                         if (children.value[i]) {
                             this->do_traversal(*children.value[i]);
                         }
