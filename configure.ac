@@ -106,10 +106,10 @@ if test "X$with_spidermonkey" = "Xyes"; then
   fi
 fi
 
-AC_ARG_WITH(jni, [  --with-jdk              use the Java Development Kit (Java support)], ,
+AC_ARG_WITH(jdk, [  --with-jdk              use the Java Development Kit (Java support)], ,
              [# Use JNI by default.
-              with_java=yes])
-if test "X$with_java" = "Xyes"; then
+              with_jdk=yes])
+if test "X$with_jdk" = "Xyes"; then
   AC_PATH_PROG(JAVAC, javac)
   if test -z "${JAVAC}"; then
     AC_MSG_ERROR([Java compiler not found.])
