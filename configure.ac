@@ -1,4 +1,4 @@
-AC_INIT([OpenVRML], [0.14.0], [openvrml-develop@lists.sourceforge.net])
+AC_INIT([OpenVRML], [0.14.99], [openvrml-develop@lists.sourceforge.net])
 AC_PREREQ([2.53])
 AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]

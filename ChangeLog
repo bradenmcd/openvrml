@@ -1,5 +1,12 @@
 2003-09-28  Braden McDaniel  <braden@endoframe.com>
 
+	Updated version to 0.14.99.
+
+	* README
+	* configure.ac
+
+2003-09-28  Braden McDaniel  <braden@endoframe.com>
+
 	Updated version to 0.14.0.
 
 	* README
