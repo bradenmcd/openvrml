@@ -47,7 +47,7 @@ extern "C" struct GLUtesselator;
  * A window-system specific subclass needs to redefine the pure
  * virtual methods.
  */
-OPENVRML_GL_SCOPE class ViewerOpenGL : public Viewer {
+class OPENVRML_GL_SCOPE ViewerOpenGL : public Viewer {
 
 public:
 
