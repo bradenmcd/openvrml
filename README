@@ -12,8 +12,7 @@ About
 =====
 
    OpenVRML is a portable C++ library for reading and displaying VRML97
-files.  This distribution includes lookat, a sample viewer program that
-uses GLUT.
+files.  This distribution includes lookat, a sample viewer program.
 
 
 License terms
@@ -93,7 +92,7 @@ If not, consult the URIs below.
      Mozilla                <http://mozilla.org>
      Java Development Kit   <http://java.sun.com/j2se/>
      OpenGL/Mesa            <http://mesa3d.org>
-     GLUT                   <http://opengl.org/developers/documentation/glut/index.html>
+     SDL                    <http://libsdl.org>
      Doxygen                <http://doxygen.org>
 
    OpenVRML can be built with reduced functionality to avoid many of
@@ -145,7 +144,7 @@ depends on.
      OpenGL/Mesa.
 
  --disable-lookat
-     Do not build lookat.  lookat depends on GLUT.
+     Do not build lookat.  lookat depends on SDL.
 
  --with-x
      Passing the argument "--without-x" to "configure" will allow

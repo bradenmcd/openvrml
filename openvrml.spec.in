@@ -18,7 +18,7 @@ BuildRequires:  freetype-devel >= 2.1.2
 BuildRequires:  mozilla-devel >= 1.2.1
 BuildRequires:  libgcj-devel >= 3.3
 BuildRequires:  XFree86-devel >= 4.3
-BuildRequires:  glut-devel >= 3.7
+BuildRequires:  SDL-devel >= 1.2
 Requires:       zlib >= 1.1.3
 Requires:       libpng >= 1.0.12
 Requires:       libjpeg >= 6b
@@ -63,7 +63,7 @@ Summary:        VRML viewer
 Group:          Applications/Multimedia
 Requires:       %{name}-gl = %{version}
 Requires:       mozilla = %(rpm -q mozilla --qf='%%{version}')
-Requires:       glut >= 3.7
+Requires:       SDL >= 1.2
 %description -n lookat
 GLUT-based VRML viewer.
 
@@ -79,7 +79,7 @@ make %{?_smp_mflags}
 
 %install
 if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
-make prefix=$RPM_BUILD_ROOT%{prefix} install
+make DESTDIR=$RPM_BUILD_ROOT%{prefix} install
 
 
 %files
@@ -114,6 +114,10 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
+* Thu Nov 20 2003  Braden McDaniel  <braden@endoframe.com>
+- Require SDL for lookat instead of glut.
+- Set "DESTDIR" for "make install" rather than "prefix".
+
 * Sun Nov 16 2003  Braden McDaniel  <braden@endoframe.com>
 - Removed unused ARCH_FLAGS variable from "configure" invocation.
 - Added _smp_mflags macro to invocation of make.

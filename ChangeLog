@@ -1,3 +1,17 @@
+2003-11-20 Braden McDaniel  <braden@endoframe.com>
+
+	Modified lookat to use SDL instead of glut.
+
+	* README:  Updated description of dependencies.
+	* configure.ac:  Check for SDL instead of glut.
+	* openvrml.spec.in:  Require SDL instead of glut.
+	* m4/Makefile.am:  Removed "ax_check_glut.m4" from EXTRA_DIST.
+	* m4/ax_check_glut.m4:  Removed file.
+	* src/lookat/Makefile.am:  Apply SDL flags instead of glut flags.
+	* src/lookat/ViewerGlut.cpp:  Removed file.
+	* src/lookat/ViewerGlut.h:  Removed file.
+	* src/lookat/lookat.cpp:  Use SDL instead of glut.
+
 2003-11-18  Braden McDaniel  <braden@endoframe.com>
 
 	Apply std::hex manipulator when reading hexadecimal integers.

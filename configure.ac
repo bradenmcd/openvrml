@@ -29,6 +29,7 @@ AC_CONFIG_FILES([Makefile]
                 [openvrml.pc]
                 [openvrml.spec])
 
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.7 foreign])
 AM_CONFIG_HEADER([config.h])
 
@@ -65,9 +66,11 @@ AC_PATH_PROG([FREETYPE_CONFIG], [freetype-config])
 
 PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
 
-OV_CHECK_JNI
+AX_CHECK_GLU
 
-AX_CHECK_GLUT
+AM_PATH_SDL(, [have_sdl=yes], [have_sdl=no])
+
+OV_CHECK_JNI
 
 #
 # gzipped file support
@@ -197,12 +200,12 @@ AM_CONDITIONAL([ENABLE_GL_RENDERER],
 AC_ARG_ENABLE([lookat],
               [AC_HELP_STRING([--disable-lookat], [do not build lookat])])
 if test "X$enable_lookat" != "Xno"; then
-  if test "X$no_glut" = "Xyes"; then
-    AC_MSG_FAILURE([glut is required for lookat])
+  if test "X$have_sdl" != "Xyes"; then
+    AC_MSG_FAILURE([SDL is required for lookat])
   fi
 fi
 AM_CONDITIONAL([ENABLE_LOOKAT],
-               [test "X$enable_lookat" != "Xno" -a "X$no_glut" != "Xyes"])
+               [test "X$enable_lookat" != "Xno" -a "X$have_sdl" = "Xyes"])
 
 #
 # Apply Rez to executables? (Only seem to need this if we're using the Apple

@@ -3,6 +3,7 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
+// Copyright (C) 2003  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,180 +24,280 @@
 #   include <config.h>
 # endif
 
-# ifdef __FreeBSD__
-#   include <floatingpoint.h>
-# endif
-
 # include <iostream>
-# if HAVE_APPLE_OPENGL_FRAMEWORK
-#   include <GLUT/glut.h>
-# else
-#   include <GL/glut.h>
-# endif
+# include <SDL.h>
 # include <openvrml/browser.h>
-
-# include "ViewerGlut.h"
-
-extern "C" {
-    typedef void (*GlutMenu)(int);
-}
+# include <openvrml/gl/viewer.h>
 
 namespace {
-    openvrml::browser * browser = 0;
-    ViewerGlut * viewer = 0;
 
-    bool setTitleUrl = true;
+    extern "C" Uint32 update_timer_callback(Uint32 interval, void * param);
 
-    void onExit();
-    void worldChangedCB(openvrml::browser::cb_reason);
-    void buildViewpointMenu();
+    class sdl_error : std::runtime_error {
+    public:
+        explicit sdl_error(const std::string & message);
+        virtual ~sdl_error() throw ();
+    };
+
+    class sdl_viewer : public openvrml::gl::viewer {
+        friend Uint32 update_timer_callback(Uint32 interval, void * param);
+
+        static const Uint32 video_mode_flags;
+
+        SDL_TimerID update_timer_id;
+        bool mouse_button_down;
+
+    public:
+        static const int redraw_event_code = 1;
+        static const int update_event_code = 2;
+
+        explicit sdl_viewer(openvrml::browser & browser) throw (sdl_error);
+        virtual ~sdl_viewer();
+
+        void run();
+
+        //
+        // Window system specific methods
+        //
+        virtual void post_redraw();
+        virtual void set_cursor(cursor_style c);
+        virtual void swap_buffers();
+        virtual void set_timer(double);
+    };
 }
 
-int main(int argc, char * argv[]) {
+int main(int argc, char * argv[])
+{
+    using std::exception;
     using std::cerr;
     using std::cout;
     using std::endl;
     using std::string;
     using std::vector;
 
-    atexit(onExit);
+    try {
+        using openvrml::browser;
 
-#if defined(__FreeBSD__)
-    fpsetmask(0);
-# endif
+        string inputUrl;
+        string inputName;
 
-    glutInitWindowSize(400, 320);
-    glutInit(&argc, argv);
+        const char * const usage = " file.wrl\n";
 
-    string inputUrl;
-    string inputName;
-    const char * title = 0;
-
-    const char * const usage = " file.wrl\n";
-
-    for (int i = 1; i < argc; ++i) {
-        if (*argv[i] == '-') {
-            if (strcmp(argv[i], "-url") == 0) {
-                inputUrl = argv[++i];
-            } else if (strcmp(argv[i], "-notitle") == 0) {
-                setTitleUrl = false;
-            } else if (strcmp(argv[i], "-title") == 0) {
-                setTitleUrl = false;
-                title = argv[++i];
+        for (int i = 1; i < argc; ++i) {
+            if (*argv[i] == '-') {
+                if (strcmp(argv[i], "-url") == 0) {
+                    inputUrl = argv[++i];
+                } else {
+                    cerr << "Error: unrecognized option " << argv[i] << '\n';
+                    cerr << "Usage: " << argv[0] << usage << endl;
+                    exit(EXIT_FAILURE);
+                }
+            } else if (inputName.empty()) {
+                inputName = argv[i];
             } else {
-                cerr << "Error: unrecognized option " << argv[i] << '\n';
                 cerr << "Usage: " << argv[0] << usage << endl;
                 exit(EXIT_FAILURE);
             }
-        } else if (inputName.empty()) {
-            inputName = argv[i];
-        } else {
-            cerr << "Usage: " << argv[0] << usage << endl;
-            exit(EXIT_FAILURE);
         }
-    }
 
-    if (inputName.empty()) {
-        if (inputUrl.empty()) {
-            inputName = inputUrl;
-        } else {
-            inputName = inputUrl = "-"; // Read stdin
+        if (inputName.empty()) {
+            if (inputUrl.empty()) {
+                inputName = inputUrl;
+            } else {
+                inputName = inputUrl = "-"; // Read stdin
+            }
         }
+
+        if (inputUrl.empty()) { inputUrl = inputName; }
+
+        browser b(cout, cerr);
+        sdl_viewer viewer(b);
+
+        vector<string> uri(1, inputUrl);
+        vector<string> parameter;
+        b.load_url(uri, parameter);
+
+        viewer.run();
+    } catch (std::exception & ex) {
+        cerr << ex.what() << endl;
     }
-
-    if (inputUrl.empty()) { inputUrl = inputName; }
-
-    browser = new openvrml::browser(cout, cerr);
-
-    vector<string> uri(1, inputUrl);
-    vector<string> parameter;
-    browser->load_url(uri, parameter);
-
-    viewer = new ViewerGlut(*::browser);
-    if (!viewer) {
-        cerr << "\nError: couldn't create GLUT viewer.\n";
-        exit(EXIT_FAILURE);
-    }
-
-    if (title && *title) { glutSetWindowTitle(title); }
-
-    browser->add_world_changed_callback(worldChangedCB);
-    worldChangedCB(openvrml::browser::replace_world_id);
-    viewer->update();
-
-    glutMainLoop();
 }
 
 namespace {
 
-    void onExit() {
-        delete browser;
-        delete viewer;
+    sdl_error::sdl_error(const std::string & message):
+        std::runtime_error(message)
+    {}
+
+    sdl_error::~sdl_error() throw ()
+    {}
+
+    const Uint32 sdl_viewer::video_mode_flags(SDL_OPENGL | SDL_RESIZABLE);
+
+    sdl_viewer::sdl_viewer(openvrml::browser & browser) throw (sdl_error):
+        openvrml::gl::viewer(browser),
+        update_timer_id(0),
+        mouse_button_down(false)
+    {
+        static const size_t initial_width = 640;
+        static const size_t initial_height = 480;
+
+        if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO) < 0) {
+            throw sdl_error(SDL_GetError());
+        }
+        if (!SDL_SetVideoMode(initial_width,
+                              initial_height,
+                              0,
+                              sdl_viewer::video_mode_flags)) {
+            throw sdl_error(SDL_GetError());
+        }
+        this->resize(initial_width, initial_height);
+
+        const char * const title = browser.world_url().c_str();
+        static const char * const icon = 0;
+        SDL_WM_SetCaption(title, icon);
     }
 
-    void worldChangedCB(const openvrml::browser::cb_reason reason) {
-        switch (reason) {
-        case openvrml::browser::destroy_world_id:
-            exit(0);
-            break;
+    sdl_viewer::~sdl_viewer()
+    {
+        SDL_Quit();
+    }
 
-        case openvrml::browser::replace_world_id:
-            if (setTitleUrl) {
-                glutSetWindowTitle(browser->world_url().c_str());
+    void sdl_viewer::run()
+    {
+        this->update();
+        bool done = false;
+        do {
+            SDL_Event event;
+            sdl_viewer::event_info viewer_event_info;
+            while (SDL_PollEvent(&event)) {
+                switch (event.type) {
+                case SDL_VIDEOEXPOSE:
+                    this->post_redraw();
+                    break;
+                case SDL_VIDEORESIZE:
+                    SDL_SetVideoMode(event.resize.w,
+                                     event.resize.h,
+                                     0,
+                                     sdl_viewer::video_mode_flags);
+                    this->resize(event.resize.w, event.resize.h);
+                    this->post_redraw();
+                    break;
+                case SDL_KEYDOWN:
+                    viewer_event_info.event = sdl_viewer::event_key_down;
+                    switch (event.key.keysym.sym) {
+                    case SDLK_HOME:
+                        viewer_event_info.what = sdl_viewer::key_home;
+                        break;
+                    case SDLK_LEFT:
+                        viewer_event_info.what = sdl_viewer::key_left;
+                        break;
+                    case SDLK_UP:
+                        viewer_event_info.what = sdl_viewer::key_up;
+                        break;
+                    case SDLK_RIGHT:
+                        viewer_event_info.what = sdl_viewer::key_right;
+                        break;
+                    case SDLK_DOWN:
+                        viewer_event_info.what = sdl_viewer::key_down;
+                        break;
+                    case SDLK_PAGEDOWN:
+                        viewer_event_info.what = sdl_viewer::key_page_down;
+                        break;
+                    case SDLK_PAGEUP:
+                        viewer_event_info.what = sdl_viewer::key_page_up;
+                        break;
+                    default:
+                        break;
+                    }
+                    this->input(&viewer_event_info);
+                    break;
+                case SDL_MOUSEBUTTONDOWN: case SDL_MOUSEBUTTONUP:
+                    viewer_event_info.event = event.button.state == SDL_PRESSED
+                                            ? sdl_viewer::event_mouse_click
+                                            : sdl_viewer::event_mouse_release;
+                    viewer_event_info.what = event.button.button - 1;
+                    viewer_event_info.x = event.button.x;
+                    viewer_event_info.y = event.button.y;
+                    this->input(&viewer_event_info);
+                    break;
+                case SDL_MOUSEMOTION:
+                    if (!event.motion.state) {
+                        viewer_event_info.event = sdl_viewer::event_mouse_move;
+                        viewer_event_info.x = event.motion.x;
+                        viewer_event_info.y = event.motion.y;
+                        this->input(&viewer_event_info);
+                    } else {
+                        for (Uint8 button = SDL_BUTTON_LEFT;
+                             button < 4;
+                             ++button) {
+                            viewer_event_info.event =
+                                sdl_viewer::event_mouse_drag;
+                            viewer_event_info.what = button - 1;
+                            viewer_event_info.x = event.motion.x;
+                            viewer_event_info.y = event.motion.y;
+                            this->input(&viewer_event_info);
+                        }
+                    }
+                    break;
+                case SDL_QUIT:
+                    done = true;
+                    break;
+                case SDL_USEREVENT:
+                    switch (event.user.code) {
+                    case redraw_event_code:
+                        this->redraw();
+                        break;
+                    case update_event_code:
+                        this->update();
+                        break;
+                    }
+                    break;
+                default:
+                    break;
+                }
             }
-            buildViewpointMenu();
-            break;
-        }
+        } while (!done);
     }
 
-    void lookatViewpointMenu(int item) {
-        typedef std::list<openvrml::viewpoint_node *> viewpoint_list_t;
-        const viewpoint_list_t & viewpoints = browser->viewpoints();
-        viewpoint_list_t::const_iterator viewpoint = viewpoints.begin();
-        while(std::distance(viewpoints.begin(), viewpoint) != item
-                    && viewpoint != viewpoints.end()) {
-            ++viewpoint;
-        }
-        (*viewpoint)->process_event("set_bind", openvrml::sfbool(true),
-                                    openvrml::browser::current_time());
+    void sdl_viewer::post_redraw()
+    {
+        SDL_Event redraw_event;
+        redraw_event.type = SDL_USEREVENT;
+        redraw_event.user.code = sdl_viewer::redraw_event_code;
+        redraw_event.user.data1 = 0;
+        redraw_event.user.data2 = 0;
+        SDL_PushEvent(&redraw_event);
     }
 
-    void buildViewpointMenu() {
-        static int topmenu = 0;
-        static int vpmenu = 0;
-        static size_t nvp = 0;
-        size_t numberOfViewpoints = 0;
+    void sdl_viewer::set_cursor(const cursor_style c)
+    {}
 
-        if (vpmenu) {
-            glutSetMenu(vpmenu);
-            for (int i = int(nvp); i > 0; --i) { glutRemoveMenuItem(i); }
-        } else {
-            topmenu = glutCreateMenu(0);
-            vpmenu = glutCreateMenu(reinterpret_cast<GlutMenu>
-                                    (lookatViewpointMenu));
-            glutSetMenu(topmenu);
+    void sdl_viewer::swap_buffers()
+    {
+        SDL_GL_SwapBuffers();
+    }
 
-            glutAddSubMenu("Viewpoints", vpmenu);
-            glutAttachMenu(GLUT_RIGHT_BUTTON);
+    Uint32 update_timer_callback(const Uint32 interval, void * const param)
+    {
+        sdl_viewer & v = *static_cast<sdl_viewer *>(param);
+        SDL_RemoveTimer(v.update_timer_id);
+        v.update_timer_id = 0;
+        SDL_Event update_event;
+        update_event.type = SDL_USEREVENT;
+        update_event.user.code = sdl_viewer::update_event_code;
+        update_event.user.data1 = 0;
+        update_event.user.data2 = 0;
+        SDL_PushEvent(&update_event);
+        return 0;
+    }
+
+    void sdl_viewer::set_timer(const double t)
+    {
+        if (!this->update_timer_id) {
+            const Uint32 interval = Uint32(1000.0 * t + 20); // milliseconds.
+            this->update_timer_id =
+                SDL_AddTimer(interval, update_timer_callback, this);
         }
-
-        glutSetMenu(vpmenu);
-        //glutAddMenuEntry( "Reset", 0 );
-
-        numberOfViewpoints = browser->viewpoints().size();
-        nvp = numberOfViewpoints;
-
-        typedef std::list<openvrml::viewpoint_node *> viewpoint_list_t;
-        const viewpoint_list_t & viewpoints = browser->viewpoints();
-        for (viewpoint_list_t::const_iterator viewpoint(viewpoints.begin());
-                viewpoint != viewpoints.end(); ++viewpoint) {
-            const std::string & description = (*viewpoint)->description();
-            if (!description.empty()) {
-                glutAddMenuEntry(description.c_str(),
-                                 std::distance(viewpoints.begin(), viewpoint));
-            }
-        }
-
-        //glutAttachMenuName(GLUT_RIGHT_BUTTON, "Viewpoints");
     }
 }
