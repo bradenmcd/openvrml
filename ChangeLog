@@ -1,3 +1,9 @@
+2002-02-08  Braden McDaniel  <braden@endoframe.com>
+
+        * Applied patch from Frederic Devernay.
+          <Frederic.Devernay@sophia.inria.fr>
+          configure.ac: AC_PREREQ should be first. fixed version.
+
 2002-02-07  Braden McDaniel  <braden@endoframe.com>
 
         * Added a stylesheet for the Doxygen-generated docs.
