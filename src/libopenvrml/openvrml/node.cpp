@@ -144,7 +144,7 @@ namespace {
  *
  * @relatesalso node_interface
  *
- * If @p type is node_interface::invalidType, @c failbit is set on @p out.
+ * If @p type is node_interface::invalid_type_id, @c failbit is set on @p out.
  *
  * @param out   an output stream.
  * @param type  a node interface type.
