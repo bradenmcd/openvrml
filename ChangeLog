@@ -1,5 +1,10 @@
 2004-02-20 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/field.cpp:  Removed obsolete doc-
+	comments.
+
+2004-02-20 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/field.h:  Changed event_listener and
 	event_emitter to inherit boost::noncopyable.
 

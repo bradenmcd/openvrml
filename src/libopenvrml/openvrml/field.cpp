@@ -3162,26 +3162,10 @@ event_listener::event_listener(openvrml::node & node) throw ():
 {}
 
 /**
- * @fn event_listener::event_listener(const event_listener &)
- *
- * @brief Construct a copy.
- *
- * Not implemented. event_listener is not copyable.
- */
-
-/**
  * @brief Destroy.
  */
 event_listener::~event_listener() throw ()
 {}
-
-/**
- * @fn event_listener & event_listener::operator=(const event_listener &)
- *
- * @brief Assign.
- *
- * Not implemented. event_listener is not copyable.
- */
 
 
 /**
@@ -3488,26 +3472,10 @@ event_emitter::event_emitter(const field_value & value) throw ():
 {}
 
 /**
- * @fn event_emitter::event_emitter(const event_emitter &)
- *
- * @brief Construct a copy.
- *
- * Not implemented. event_emitter is not copyable.
- */
-
-/**
  * @brief Destroy.
  */
 event_emitter::~event_emitter() throw ()
 {}
-
-/**
- * @fn event_emitter & event_emitter::operator=(const event_emitter &)
- *
- * @brief Assign.
- *
- * Not implemented. event_emitter is not copyable.
- */
 
 /**
  * @brief Registered listeners.
