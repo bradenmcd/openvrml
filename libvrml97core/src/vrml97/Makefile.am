@@ -35,6 +35,13 @@ else
 #
 JS_CPPFLAGS = -DXP_UNIX
 INCLUDES = -I./javascript
+JAVASCRIPT_SUPPORT_LIBOBJ = scriptjs-prelinked.lo
+
+ScriptJS.o ScriptJS.lo: ScriptJS.cpp ScriptJS.h
+	$(LTCXXCOMPILE) -c $<
+
+$(JAVASCRIPT_SUPPORT_LIBOBJ): ScriptJS.lo javascript/libjs.la
+	$(CXXLINK) $^
 endif
 
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF) $(JS_CPPFLAGS)
@@ -53,9 +60,6 @@ VrmlSFColor.h VrmlSFFloat.h VrmlSFImage.h VrmlSFInt.h VrmlSFNode.h \
 VrmlSFRotation.h VrmlSFTime.h VrmlSFVec2f.h VrmlSFVec3f.h VrmlMFColor.h \
 VrmlMFFloat.h VrmlMFInt.h VrmlMFNode.h VrmlMFRotation.h VrmlMFString.h \
 VrmlMFTime.h VrmlMFVec2f.h VrmlMFVec3f.h
-	$(LTCXXCOMPILE) -c $<
-
-ScriptJS.o ScriptJS.lo: ScriptJS.cpp ScriptJS.h
 	$(LTCXXCOMPILE) -c $<
 
 libopenvrml_la_SOURCES = \
@@ -143,10 +147,7 @@ libopenvrml_la_SOURCES = \
 antlr-prelinked.lo: vrml97scanner.lo Vrml97Parser.lo antlr/libantlr.la
 	$(CXXLINK) $^
 
-scriptjs-prelinked.lo: ScriptJS.lo javascript/libjs.la
-	$(CXXLINK) $^
-
-libopenvrml_la_LIBADD = antlr-prelinked.lo scriptjs-prelinked.lo
+libopenvrml_la_LIBADD = antlr-prelinked.lo $(JAVASCRIPT_SUPPORT_LIBOBJ)
 
 OpenVRMLincludedir = $(includedir)/OpenVRML
 OpenVRMLinclude_HEADERS = \
