@@ -219,7 +219,7 @@ namespace OpenVRML {
         friend class Vrml97Parser;
         
     public:
-        friend class ProtoNodeType : public NodeType {
+        class ProtoNodeType : public NodeType {
             NodeInterfaceSet nodeInterfaces;
 
         public:
@@ -233,6 +233,8 @@ namespace OpenVRML {
             void addInterface(const NodeInterface & interface)
                     throw (std::invalid_argument, std::bad_alloc);
         };
+        
+        friend class ProtoNodeType;
 
     private:
         typedef std::map<std::string, FieldValuePtr> DefaultValueMap;
@@ -2835,6 +2837,8 @@ void ProtoNode::render(Viewer * const viewer, const VrmlRenderContext rc) {
  */
 
 /**
+ * @internal
+ *
  * @class ProtoNodeClass::ProtoNodeType
  *
  * @brief Type information object for ProtoNode instances.

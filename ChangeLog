@@ -2,6 +2,12 @@
 
         * Doxygen love and minor cruft removal for Doc and Doc2.
 
+        * src/openvrml/OpenVRML/VrmlScene.cpp: MS Visual C++ doesn't
+          like "friend" inline in the class definition; changed for
+          ProtoNode::ProtoNodeType.
+
+        * Mark ProtoNode::ProtoNodeType "internal" for Doxygen.
+
 2002-06-06  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/script.cpp: Fixed segfault introduced
