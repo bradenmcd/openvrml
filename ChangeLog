@@ -4,6 +4,8 @@
 
         * m4/glut.m4:  Added "-lXmu" to libs needed by glut.
 
+        * NEWS:  Updates for 0.12.4 release.
+
 2002-06-30  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/doc2.cpp:  Use a reasonable value for
