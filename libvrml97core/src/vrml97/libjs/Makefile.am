@@ -8,7 +8,7 @@ jscpucfg_SOURCES = jscpucfg.c
 
 BUILT_SOURCES = jsautocfg.h
 jsautocfg.h: jscpucfg
-	jscpucfg > jsautocfg.h
+	./jscpucfg > jsautocfg.h
 
 
 noinst_LTLIBRARIES = libjs.la

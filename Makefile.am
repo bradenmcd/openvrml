@@ -21,5 +21,3 @@ AUTOMAKE_OPTIONS=foreign
 # conditionally.
 #
 SUBDIRS = libvrml97core libvrml97gl lookat
-
-INCLUDES = -I/roo/cks/openvrml/libvrml97/libvrml97core/src -I/roo/cks/openvrml/libvrml97/libvrml97gl/src/
