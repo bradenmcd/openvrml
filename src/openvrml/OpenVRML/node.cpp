@@ -132,6 +132,25 @@ bool operator==(const NodeInterface & rhs, const NodeInterface & lhs) {
  */
 
 /**
+ * @struct NodeInterfaceSet::IdLess
+ *
+ * @brief A functor for ordering @link NodeInterface NodeInterfaces@endlink in
+ *      the set.
+ *
+ * Compares the @a id's of two @link NodeInterface NodeInterfaces@endlink using
+ * @c operator<.
+ */
+
+/**
+ * @fn bool NodeInterfaceSet::IdLess::operator()(const NodeInterface & lhs, const NodeInterface & rhs) const
+ *
+ * @brief Simple lexicographic comparison of the @a id's.
+ *
+ * @return @c true if @p lhs.id is lexicographically less than @p rhs.id,
+ *      @c false otherwise.
+ */
+
+/**
  * @typedef NodeInterfaceSet::const_iterator
  *
  * @brief An STL const_iterator.

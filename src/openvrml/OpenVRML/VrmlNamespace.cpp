@@ -126,6 +126,14 @@ Node * VrmlNamespace::findNode(const std::string & id) const {
 }
 
 
+/**
+ * @class Vrml97RootNamespace
+ *
+ * @brief Root namespace for VRML97 scenes.
+ *
+ * Vrml97RootNamespace is initialized with the VRML97 node types.
+ */
+
 namespace {
     class AddInterfaceToSet_ : std::unary_function<NodeInterface, void> {
         NodeInterfaceSet & nodeInterfaceSet;
@@ -149,6 +157,12 @@ namespace {
     };
 }
 
+/**
+ * @brief Constructor.
+ *
+ * @param nodeClassMap  a map containing @link NodeClass NodeClasses@endlink
+ *                      for the VRML97 nodes.
+ */
 Vrml97RootNamespace::Vrml97RootNamespace(const NodeClassMap & nodeClassMap) {
     NodeClassMap::const_iterator pos;
     

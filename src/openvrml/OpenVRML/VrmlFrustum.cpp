@@ -34,7 +34,7 @@
 namespace OpenVRML {
 
 /**
- * @class OpenVRML::VrmlFrustum
+ * @class VrmlFrustum
  *
  * @brief A view frustum.
  *

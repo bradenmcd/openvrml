@@ -285,6 +285,12 @@ char const * FieldValue::typeName() const {
 
 
 /**
+ * @class SFBool
+ *
+ * @brief Encapsulates an SFBool value.
+ */
+
+/**
  * @brief Constructor.
  *
  * @param value initial value

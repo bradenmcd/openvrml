@@ -27,6 +27,12 @@ namespace OpenVRML {
 
 /**
  * @class ProtoNode
+ *
+ * @brief A prototype node instance.
+ *
+ * An archetypal ProtoNode is constructed in the process of parsing a @c PROTO,
+ * and stored in the ProtoNodeClass. Calls to @c ProtoNodeType::createNode
+ * return a clone of the archetypal instance.
  */
 
 /**
@@ -215,10 +221,19 @@ void ProtoNode::NodeCloneVisitor::visit(Node & node) {
 }
 
 /**
+ * @class ProtoNode::RouteCopyVisitor
+ *
+ * @brief Copy the routes.
+ *
+ * Given two topologically identical node trees, copy the routes in the first
+ * tree to analogous routes in the second tree.
+ */
+
+/**
  * @brief Constructor.
  *
- * @param fromNode  a reference to the "source" node.
- * @param toNode    a reference to the "destination" node.
+ * @param fromProtoNode a reference to the "source" node.
+ * @param toProtoNode   a reference to the "destination" node.
  */
 ProtoNode::RouteCopyVisitor::RouteCopyVisitor(const ProtoNode & fromProtoNode,
                                               ProtoNode & toProtoNode):
