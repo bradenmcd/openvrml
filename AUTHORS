@@ -1,13 +1,8 @@
-OpenVRML library
+LibVRML97 library
 
-Maintainer:
-
-    Braden McDaniel <braden@endoframe.com>
-
-Authors:
+Author:
 
     Chris Morley <cmorley@vermontel.net>
-    Braden McDaniel <braden@endoframe.com>
 
 Contributors:
 
@@ -17,22 +12,20 @@ Contributors:
     Edward A Carter <ecarter@U.Arizona.EDU>
     Clayton Cottingham <drfrog@smartt.com>
     Larry D'Cunha <lpdcunha@golden.net>
-    Frederic Devernay <fredyd@users.sourceforge.net>
     Jeff Dubrule <igor@pobox.com>
     Anton Eliens <eliens@computer.org>
     Jean-Daniel Fekete <Jean-Daniel.Fekete@emn.fr>
-    Thomas Flynn <tflynn@users.sourceforge.net>
+    Thomas Flynn <thomas.flynn@alcatel.com>
     Alex Funk <Alexander.Funk@nord-com.net>
     Matt Giger <mgiger@lunarsoft.com>
     Regis Houde <regie@robot.ireq.ca>
-    Gerall Kahla <kahlage@chromebob.com>
+    Gerall Kahla <kahlage@logoncafe.net>
     Delman Lee <delman@sharp.co.uk>
     Joe Longson <jlongson@es.com>
     Michael Louka <michael.louka@hrp.no>
-    Henri Manson <hfmanson@users.sourceforge.net>
+    Braden McDaniel <braden@endoframe.com>
     Shelby Moore <support@3Dize.com>
     Ted Nolan <ted@ags.ga.erg.sri.com>
-    Luca Regini <lucaregini@libero.it>
     Andrew Reitmeyer <kiwano@t-online.de>
     Greg Roelofs <newt@pobox.com>
     Kumaran Santhanam <rhapsody@stanford.edu>

@@ -1,0 +1,143 @@
+You need to install Microsoft Visual C++ version 6.0 or later. If you 
+want to use nmake utility that came with it, make sure that you have 
+set up the compiler using vcvars32.bat script that came with it.
+
+1) For making OpenVRML What else do I need?
+
+  OpenVRML requires zlib, libpng, libjpeg, OpenGL/Mesa, GLUT and antlr(optional)
+  to build. 
+ 
+    zlib:     <http://www.info-zip.org/pub/infozip/zlib/>
+    libpng:   <http://www.libpng.org/pub/png/libpng.html>
+    libjpeg:  <http://www.ijg.org>
+    Mesa:     <http://www.mesa3d.org>
+    GLUT:     <http://reality.sgi.com/mjk_asd/glut3/> 
+    antlr:    <http://www.ANTLR.org>  
+ 
+  If you want to generate C++ code from antlr grammar(Vrml97Parser.g), 
+  make sure you have java and antlr installed in your system. Otherwise generated
+  code (Vrml97Parser.cpp) will be used for making the library and for this 
+  purpose you don't need to download antlr and also you don't need to have
+  java. The generated code "Vrml97Parser.cpp" is included with the 
+  CVS download.
+ 
+  If you use "nmake" utility to make this library, then you have an option
+  to generate C++ code from antlr grammar or to use generated code directly.
+ 
+  If you use MSVC++6 Projects (*.dsp) and workspace file (*.dsw) to make this
+  library, this will always generate C++ code from the grammar. This means
+  you should have java and antlr installed in your system. 
+
+2) How to build other libraries?
+
+   Use "nmake" utility provided by microsoft for making following static
+   libraries. If you are having any problem to use "nmake", see bellow for
+   information. 
+
+ zlib.lib
+         Use the command nmake /f .\msdos\Makefile.w32
+         For building win32lookat and lookat, I have problem with 
+         undefined symbol "errno" while linking. My simple solution is
+         to add "int errno" in zutil.h and make the library.
+         
+ libpng.lib 
+          Use the command nmake /f .\scripts\makefile.vcwin32
+
+ libjpeg.lib 
+          Use the command  nmake /f makefile.vc
+
+ OpenGL/Mesa
+          I have not tested with Mesa but I have used Opengl32.lib and
+          Glu32.lib that comes along with Microsoft Visual C++6.0
+
+ Glut32.lib
+          Download directly GLUT headers and pre-compiled libraries for
+          Microsoft Windows 95 and NT users (Glut32.dll, Glut32.lib 
+          and gl\Glut.h).
+
+
+antlr 2.7.0
+          Antlr has two parts, a java program that generates C++ code, and a
+          set of C++ utility classes. The utility classes are included with
+          the CVS download, but you will need to download and install the
+          antlr Java classes if you want to generate C++ code from grammar.  
+
+
+3) Installation using MSVC++6
+
+
+   You can install either by using Makefile.vc6 or by MSVC++6
+   Projects (*.dsp) and workspace file (*.dsw). It is recommended to use
+   Makefile.vc6
+
+  a) Using Makefile.vc6
+
+   Use nmake utility provided by Microsoft. Before this you should see all
+   executable files, include files and lib files of MSVC++6 are defined in 
+   path, include and lib environment variables respectively or execute
+   vcvars32.bat script that came with MSVC++.
+
+   For example 
+   SET PATH=%PATH%;c:\Program Files\Microsoft Visual Studio\Vc98\bin;c:\Program Files
+   \Microsoft Visual Studio\Common\MsDev98\bin;c:\Program Files\Microsoft Visual Studio
+   \Common\Tools
+   SET INCLUDE=c:\Program Files\Microsoft Visual Studio\Vc98\include;
+   c:\Program Files\Microsoft Visual Studio\Vc98\mfc\include
+   SET LIB=c:\Program Files\Microsoft Visual Studio\Vc98\lib;
+   c:\Program Files\Microsoft Visual Studio\Vc98\mfc\\lib
+
+   Give the command in command mode. Please note that you should be in 
+   openvrml\ide-projects\Windows\VisualC6.
+
+      i) nmake /F Makefile.vc6 
+               for Help and options
+     ii) nmake /F Makefile.vc6 all 
+               for making all OpenVRML and lookat executable. 
+
+  b) Using MSVC++6 Projects (*.dsp) and workspace files (*.dsw) 
+
+    MSVC++6 Projects (*.dsp) and workspace files (*.dsw) are included for
+    openvrml and lookat. Workspace file for all openvrml is kept in 
+    'openvrml\ide-projects\Windows\VisualC6'. From here you can build 
+    whole openvrml (openvrmlcore,openvrmlgl,libjs and libantlr).
+    From here for building openvrml, you need to set Project->
+    Set Active Project->openvrml and for lookat executable, you 
+    set Project->Set Active Project->lookat.
+
+    For building openvrml library and lookat executable, you need to set 
+    include directories and library directories GLUT, PNG, Zlib and JPEG 
+    library by Tools->Options->Directories in MSVC++6.
+ 
+    Individual workspace file for openvrmlcore is kept in 'openvrml\
+    ide-projects\Windows\VisualC6\openvrml-core' and for openvrmlgl is 
+    kept in 'openvrml\ide-projects\Windows\VisualC6\openvrml-gl'.
+
+    For building openvrmlcore you have to perform Custom Build Step for 
+    'antlr.g' by Project->Settings->openvrmlcore->Source File in 
+    MSVC++6. Replace 'c:\User\jdk1.2.2\bin' with the location of java 
+    compiler. Make sure to set the CLASSPATH to include the directory 
+    that antlr is installed in. Replace 'c:\User\antlr-2.7.0' with the 
+    location "antlr" directory. Otherwise you edit the file 
+    openvrmlcore.dsp in 'openvrml\ide-projects\Windows\VisualC6
+    \openvrml-core' and do the same. 
+
+    For building only javascript library (libjs.lib and libjs.dll),
+    workspace file libjs.dsw is given in 'openvrml\ide-projects\
+    Windows\VisualC6\tplib\js' directory.
+    
+    For building only antlr library (libantlr.lib), workspace file libantlr.dsw is
+    given in 'openvrml\ide-projects\Windows\VisualC6\tplib\antlr'.
+
+
+4) To execute lookat viewer
+
+   a) If you use Makefile.vc6
+       cd openvrml\ide-projects\Windows\VisualC6\lookat\bin 
+       lookat ..\..\..\..\..\models\orbit3.wrl
+
+   b) If you use Projects and workspace
+        cd openvrml\ide-projects\Windows\VisualC6\lookat\release (In release mode)
+        You may need to copy libjs.dll (In openvrml\ide-projects\Windows
+        \VisualC6\tplib\js\Release) and glut32.dll here or these files
+        may be copied into system area (for example c:\WINNT\SYSTEM32 for NT). 
+        lookat ..\..\..\..\..\models\orbit3.wrl 

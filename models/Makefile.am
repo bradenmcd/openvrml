@@ -12,8 +12,6 @@ EXTRA_DIST = \
 	Prox1.wrl \
 	RefractiveMaterial.wrl \
 	SimplePROTO.wrl \
-	TestJSAI.java \
-	TestJSAI.wrl \
 	bounce.wrl \
 	groundPlane.wrl \
 	jsTouch.wrl \
@@ -21,5 +19,4 @@ EXTRA_DIST = \
 	pixtex1.wrl \
 	rotation_toy.wrl \
 	scale.wrl \
-	snoman.wrl \
-	warbird.wrl
+	snoman.wrl

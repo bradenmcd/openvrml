@@ -1,314 +1,213 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
 //
-// lookat
+// OpenVRML
 //
-// Copyright 2003  Braden McDaniel
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
+// Copyright (C) 1998  Chris Morley
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// 
+//  Program to exercise the VrmlScene and ViewerGlut classes.
 //
 
-# ifdef HAVE_CONFIG_H
-#   include <config.h>
-# endif
+#if defined(__FreeBSD__)
+#include <floatingpoint.h>
+#endif
 
-# include <iostream>
-# include <SDL.h>
-# include <openvrml/browser.h>
-# include <openvrml/gl/viewer.h>
+#include <stdio.h>
+#include <GL/glut.h>
+#include <OpenVRML/doc2.hpp>
+#include <OpenVRML/System.h>
+#include <OpenVRML/VrmlScene.h>
 
-extern "C" Uint32 update_timer_callback(Uint32 interval, void * param);
+#include "ViewerGlut.h"
 
-namespace {
+static void worldChangedCB(int);
+static void buildViewpointMenu();
 
-    class sdl_error : std::runtime_error {
-    public:
-        explicit sdl_error(const std::string & message);
-        virtual ~sdl_error() throw ();
-    };
+VrmlScene *vrmlScene = 0;
+ViewerGlut   *viewer = 0;
 
-    class sdl_viewer : public openvrml::gl::viewer {
-        friend Uint32 update_timer_callback(Uint32 interval, void * param);
+static bool setTitleUrl = true;
 
-        static const Uint32 video_mode_flags;
 
-        SDL_TimerID update_timer_id;
-        bool mouse_button_down;
-
-    public:
-        static const int redraw_event_code = 1;
-        static const int update_event_code = 2;
-
-        explicit sdl_viewer(const std::string & title) throw (sdl_error);
-        virtual ~sdl_viewer() throw ();
-
-        void run();
-
-        //
-        // Window system specific methods
-        //
-        virtual void post_redraw();
-        virtual void set_cursor(cursor_style c);
-        virtual void swap_buffers();
-        virtual void set_timer(double);
-    };
-}
-
-int main(int argc, char * argv[])
+int
+main(int argc, char **argv)
 {
-    using std::exception;
-    using std::cerr;
-    using std::cout;
-    using std::endl;
-    using std::string;
-    using std::vector;
+#if defined(__FreeBSD__)
+  fpsetmask(0);
+#endif;  
+  
+  glutInitWindowSize(400, 320);
+  glutInit( &argc, argv);
 
-    try {
-        using openvrml::browser;
+  char *inputUrl = 0;
+  char *inputName = 0;
+  char *outputName = 0;
+  char *title = 0;
 
-        string inputUrl;
-        string inputName;
+  char usage[] = " file.wrl [outputfile]\n";
 
-        const char * const usage = " file.wrl\n";
+  for (int i = 1; i < argc; ++i)
+    {
+      if (*argv[i] == '-')
+	{
+	  if (strcmp(argv[i], "-url") == 0)
+	    inputUrl = argv[++i];
+	  else if (strcmp(argv[i], "-notitle") == 0)
+	    setTitleUrl = false;
+	  else if (strcmp(argv[i], "-title") == 0)
+	    {
+	      setTitleUrl = false;
+	      title = argv[++i];
+	    }
+	  else
+	    {
+	      cerr << "Error: unrecognized option " << argv[i] << '\n';
+	      cerr << "Usage: " << argv[0] << usage << endl;
+	      exit(1);
+	    }
+	}
+      else if (! inputName)
+	inputName = argv[i];
+      else if (! outputName)
+	outputName = argv[i];
+      else
+	{
+	  cerr << "Usage: " << argv[0] << usage << endl;
+	  exit(1);
+	}
+    }
 
-        for (int i = 1; i < argc; ++i) {
-            if (*argv[i] == '-') {
-                if (strcmp(argv[i], "-url") == 0) {
-                    inputUrl = argv[++i];
-                } else {
-                    cerr << "Error: unrecognized option " << argv[i] << '\n';
-                    cerr << "Usage: " << argv[0] << usage << endl;
-                    exit(EXIT_FAILURE);
-                }
-            } else if (inputName.empty()) {
-                inputName = argv[i];
-            } else {
-                cerr << "Usage: " << argv[0] << usage << endl;
-                exit(EXIT_FAILURE);
-            }
-        }
+  if (! inputName)
+    {
+      if (inputUrl)
+	inputName = inputUrl;
+      else
+	inputName = inputUrl = "-";		// Read stdin
+    }
+  else
+    cout << "Loading " << inputName << " ...";
 
-        if (inputName.empty()) {
-            if (inputUrl.empty()) {
-                inputName = inputUrl;
-            } else {
-                inputName = inputUrl = "-"; // Read stdin
-            }
-        }
+  if (! inputUrl) inputUrl = inputName;
 
-        if (inputUrl.empty()) { inputUrl = inputName; }
+  vrmlScene = new VrmlScene( inputUrl, inputName );
 
-        sdl_viewer v(inputUrl);
-        browser b(cout, cerr);
-        b.viewer(&v);
+  if (outputName)
+    {
+      cout << "  Saving scene to " << outputName << endl;
+      if (! vrmlScene->save(outputName))
+	cout << "\nError: couldn't write to " << outputName << endl;
+    }
 
-        vector<string> uri(1, inputUrl);
-        vector<string> parameter;
-        b.load_url(uri, parameter);
+  viewer = new ViewerGlut( vrmlScene );
+  if (! viewer)
+    {
+      cout << "\nError: couldn't create GLUT viewer.\n";
+      exit(1);
+    }
 
-        v.run();
-    } catch (std::exception & ex) {
-        cerr << ex.what() << endl;
+  if (*inputName != '-')
+    cout << " done.\n";
+
+  if (title && *title) glutSetWindowTitle(title);
+
+  vrmlScene->addWorldChangedCallback( worldChangedCB );
+  worldChangedCB( VrmlScene::REPLACE_WORLD );
+  viewer->update();
+
+  glutMainLoop();
+  return 0;
+}
+
+
+static void worldChangedCB(int reason)
+{
+  switch (reason)
+    {
+    case VrmlScene::DESTROY_WORLD:
+      delete viewer;
+      delete vrmlScene;
+      exit(0);
+      break;
+
+    case VrmlScene::REPLACE_WORLD:
+      if ( setTitleUrl ) {
+        Doc2 * urlDoc = vrmlScene->urlDoc();
+        const char * title = urlDoc ? urlDoc->urlBase() : 0;
+        if (title && *title) glutSetWindowTitle(title);
+      }
+      buildViewpointMenu();
+      break;
     }
 }
 
-namespace {
 
-    sdl_error::sdl_error(const std::string & message):
-        std::runtime_error(message)
-    {}
+static void lookatViewpointMenu(int item) {
+  if ( item == 0 )
+    viewer->resetUserNavigation(); // ...
+  else
+    vrmlScene->setViewpoint(item-1);
+}
 
-    sdl_error::~sdl_error() throw ()
-    {}
 
-    const Uint32 sdl_viewer::video_mode_flags(SDL_OPENGL | SDL_RESIZABLE);
+static void buildViewpointMenu() {
 
-    sdl_viewer::sdl_viewer(const std::string & title) throw (sdl_error):
-        update_timer_id(0),
-        mouse_button_down(false)
+  static int  topmenu     = 0;
+  static int  vpmenu     = 0;
+  static int  nvp     = 0;
+  int numberOfViewpoints = 0;
+  
+  if ( vpmenu )
     {
-        static const size_t initial_width = 640;
-        static const size_t initial_height = 480;
+      glutSetMenu( vpmenu );
+      for (int i=nvp; i>0; --i)
+	glutRemoveMenuItem( i );
+    }
+  else
+    {
+      topmenu = glutCreateMenu(0);
+      vpmenu = glutCreateMenu(lookatViewpointMenu);
+      glutSetMenu(topmenu);
 
-        if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO) < 0) {
-            throw sdl_error(SDL_GetError());
-        }
-        if (!SDL_SetVideoMode(initial_width,
-                              initial_height,
-                              0,
-                              sdl_viewer::video_mode_flags)) {
-            throw sdl_error(SDL_GetError());
-        }
-        this->resize(initial_width, initial_height);
-
-        static const char * const icon = 0;
-        SDL_WM_SetCaption(title.c_str(), icon);
+      glutAddSubMenu("Viewpoints", vpmenu);
+      glutAttachMenu(GLUT_RIGHT_BUTTON);
     }
 
-    sdl_viewer::~sdl_viewer() throw ()
+  glutSetMenu(vpmenu);
+  //glutAddMenuEntry( "Reset", 0 );
+  
+  numberOfViewpoints = vrmlScene->nViewpoints();
+  nvp = numberOfViewpoints;
+
+  if (numberOfViewpoints > 0 )
     {
-        SDL_Quit();
+      for (int i = 0; i < numberOfViewpoints; i++) {
+	const char *name, *description;
+	vrmlScene->getViewpoint(i, &name, &description);
+	if ( description && *description )
+	  glutAddMenuEntry(description, i+1);
+	else if ( name && *name )
+	  glutAddMenuEntry(name, i+1);
+	else
+	  {
+	    char buf[25];
+	    sprintf(buf,"Viewpoint %d", i+1);
+	    glutAddMenuEntry(buf, i+1);
+	  }
+      }
     }
 
-    void sdl_viewer::run()
-    {
-        this->update();
-        bool done = false;
-        bool need_update = false;
-        bool need_redraw = false;
-        do {
-            SDL_Event event;
-            sdl_viewer::event_info viewer_event_info;
-            SDL_WaitEvent(0);
-            while (SDL_PollEvent(&event)) {
-                switch (event.type) {
-                case SDL_VIDEOEXPOSE:
-                    this->post_redraw();
-                    break;
-                case SDL_VIDEORESIZE:
-                    SDL_SetVideoMode(event.resize.w,
-                                     event.resize.h,
-                                     0,
-                                     sdl_viewer::video_mode_flags);
-                    this->resize(event.resize.w, event.resize.h);
-                    this->post_redraw();
-                    break;
-                case SDL_KEYDOWN:
-                    viewer_event_info.event = sdl_viewer::event_key_down;
-                    switch (event.key.keysym.sym) {
-                    case SDLK_HOME:
-                        viewer_event_info.what = sdl_viewer::key_home;
-                        break;
-                    case SDLK_LEFT:
-                        viewer_event_info.what = sdl_viewer::key_left;
-                        break;
-                    case SDLK_UP:
-                        viewer_event_info.what = sdl_viewer::key_up;
-                        break;
-                    case SDLK_RIGHT:
-                        viewer_event_info.what = sdl_viewer::key_right;
-                        break;
-                    case SDLK_DOWN:
-                        viewer_event_info.what = sdl_viewer::key_down;
-                        break;
-                    case SDLK_PAGEDOWN:
-                        viewer_event_info.what = sdl_viewer::key_page_down;
-                        break;
-                    case SDLK_PAGEUP:
-                        viewer_event_info.what = sdl_viewer::key_page_up;
-                        break;
-                    default:
-                        break;
-                    }
-                    this->input(&viewer_event_info);
-                    break;
-                case SDL_MOUSEBUTTONDOWN: case SDL_MOUSEBUTTONUP:
-                    viewer_event_info.event = event.button.state == SDL_PRESSED
-                                            ? sdl_viewer::event_mouse_click
-                                            : sdl_viewer::event_mouse_release;
-                    viewer_event_info.what = event.button.button - 1;
-                    viewer_event_info.x = event.button.x;
-                    viewer_event_info.y = event.button.y;
-                    this->input(&viewer_event_info);
-                    break;
-                case SDL_MOUSEMOTION:
-                    if (!event.motion.state) {
-                        viewer_event_info.event = sdl_viewer::event_mouse_move;
-                        viewer_event_info.x = event.motion.x;
-                        viewer_event_info.y = event.motion.y;
-                        this->input(&viewer_event_info);
-                    } else {
-                        for (Uint8 button = SDL_BUTTON_LEFT;
-                             button < 4;
-                             ++button) {
-                            if (event.motion.state & SDL_BUTTON(button)) {
-                                viewer_event_info.event =
-                                    sdl_viewer::event_mouse_drag;
-                                viewer_event_info.what = button - 1;
-                                viewer_event_info.x = event.motion.x;
-                                viewer_event_info.y = event.motion.y;
-                                this->input(&viewer_event_info);
-                            }
-                        }
-                    }
-                    break;
-                case SDL_QUIT:
-                    done = true;
-                    break;
-                case SDL_USEREVENT:
-                    switch (event.user.code) {
-                    case redraw_event_code:
-                        need_redraw = true;
-                        break;
-                    case update_event_code:
-                        need_update = true;
-                        break;
-                    }
-                    break;
-                default:
-                    break;
-                }
-            }
-            if (need_update) {
-                this->update();
-                need_update = false;
-            }
-            if (need_redraw) {
-                this->redraw();
-                need_redraw = false;
-            }
-        } while (!done);
-    }
+  //glutAttachMenuName(GLUT_RIGHT_BUTTON, "Viewpoints");
 
-    void sdl_viewer::post_redraw()
-    {
-        SDL_Event redraw_event;
-        redraw_event.type = SDL_USEREVENT;
-        redraw_event.user.code = sdl_viewer::redraw_event_code;
-        redraw_event.user.data1 = 0;
-        redraw_event.user.data2 = 0;
-        SDL_PushEvent(&redraw_event);
-    }
-
-    void sdl_viewer::set_cursor(const cursor_style c)
-    {}
-
-    void sdl_viewer::swap_buffers()
-    {
-        SDL_GL_SwapBuffers();
-    }
-
-    Uint32 update_timer_callback(const Uint32 interval, void * const param)
-    {
-        sdl_viewer & v = *static_cast<sdl_viewer *>(param);
-        SDL_RemoveTimer(v.update_timer_id);
-        v.update_timer_id = 0;
-        SDL_Event update_event;
-        update_event.type = SDL_USEREVENT;
-        update_event.user.code = sdl_viewer::update_event_code;
-        update_event.user.data1 = 0;
-        update_event.user.data2 = 0;
-        SDL_PushEvent(&update_event);
-        return 0;
-    }
-
-    void sdl_viewer::set_timer(const double t)
-    {
-        if (!this->update_timer_id) {
-            const Uint32 interval = Uint32(1000.0 * t + 20); // milliseconds.
-            this->update_timer_id =
-                SDL_AddTimer(interval, update_timer_callback, this);
-        }
-    }
 }
