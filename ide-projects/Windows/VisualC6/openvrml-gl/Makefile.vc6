@@ -26,7 +26,7 @@
 GLBINOUTDIR = .\bin
 INTDIR = $(GLBINOUTDIR)
 GLLIBDIR = .\lib
-GLSOURCE = ..\..\..\..\src\openvrml-gl\OpenVRML\Gl
+GLSOURCE = ..\..\..\..\src\openvrml-gl\OpenVRML\GL
 CORESOURCE = ..\..\..\..\src\openvrml\OpenVRML
 INCLUDECORE = ..\..\..\..\src\openvrml
 
@@ -43,11 +43,11 @@ where: [target] may be any one of the following ...
 
    GLUTLIB_DIR  .................... - required to be defined as 
 			the path where your GLUTLIB is installed. 
-		   Default path is C:\User\glut, however you may provide 
+		   Default path is C:\User\glut36, however you may provide 
 		   it as an environment variable by doing something like 
 		   this prior to execute nmake:
 
-			 set GLUTLIB_DIR=C:\glut
+			 set GLUTLIB_DIR=C:\glut36
 
 
     ---- makefile Author (bose@pavan.barc.ernet.in) notes ------------------
@@ -68,7 +68,7 @@ where: [target] may be any one of the following ...
 
 
 !IF "$(GLUTLIB_DIR)" == ""
-GLUTLIB_DIR = c:\User\glut
+GLUTLIB_DIR = c:\User\glut36
 !ENDIF
 
 PROMPT :
@@ -111,12 +111,12 @@ gl : PROMPT $(GLBINOUTDIR) $(GLLIBDIR) $(GLLIBDIR)\openvrmlgl.lib
 $(GLLIBDIR)\openvrmlgl.lib : $(OBJ)
 		       if exist $(GLLIBDIR)\openvrmlgl.lib del $(GLLIBDIR)\openvrmlgl.lib
 		       $(LIB32) $(GLUTLIB_DIR)/glut32.lib opengl32.lib glu32.lib\
-                   /nologo /out:$(GLLIBDIR)\openvrmlgl.lib \
-			 $(OBJ)
+               /nologo /out:$(GLLIBDIR)\openvrmlgl.lib \
+               $(OBJ)
 
-$(GLBINOUTDIR)\OpenGLEvent.obj :  $(GLSOURCE)\OpenGLEvent.cpp\
-			                $(GLSOURCE)\OpenGLEvent.h
-            		          $(CPP) $(CFLAGS) $(GLSOURCE)\OpenGLEvent.cpp
+$(GLBINOUTDIR)\OpenGLEvent.obj :  $(GLSOURCE)\OpenGLEvent.cpp \
+                                  $(GLSOURCE)\OpenGLEvent.h
+                                  $(CPP) $(CFLAGS) $(GLSOURCE)\OpenGLEvent.cpp
 
 $(GLBINOUTDIR)\ViewerOpenGL.obj :  $(GLSOURCE)\ViewerOpenGL.cpp\
 						$(CORESOURCE)\system.h\
@@ -126,10 +126,11 @@ $(GLBINOUTDIR)\ViewerOpenGL.obj :  $(GLSOURCE)\ViewerOpenGL.cpp\
 						$(CORESOURCE)\vrml97node.h\
 						$(CORESOURCE)\bvolume.h\
 						$(CORESOURCE)\VrmlFrustum.h\
-						..\winconfig.h\
 						$(GLSOURCE)\OpenGLEvent.h\
 						$(GLSOURCE)\ViewerOpenGL.h
-            			      $(CPP) $(CFLAGS) /I ..\ \
+                        $(CPP) $(CFLAGS) /D "OPENVRML_GL_H=<gl/gl.h>"\
+                        /D "OPENVRML_GLUT_H=<gl/glut.h>"\
+                        /D "OPENVRML_GLU_H=<gl/glu.h>"\
 						/I $(INCLUDECORE) /I $(GLUTLIB_DIR)\
 						$(GLSOURCE)\ViewerOpenGL.cpp
 
