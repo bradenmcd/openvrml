@@ -1,3 +1,16 @@
+LIBRARY_VERSION = 0:1:0
+#                 | | |
+#          +------+ | +---+
+#          |        |     |
+#       current:revision:age
+#          |        |     |
+#          |        |     +- Increment if interfaces have been added
+#          |        |        Set to zero if interfaces have been removed or
+#          |        |        changed
+#          |        +- Increment if source code has changed
+#          |           Set to zero if current is incremented
+#          +- Increment if interfaces have been added, removed or changed
+
 #
 # Add any debug flags
 #
@@ -9,7 +22,7 @@ endif
 INCLUDES = -I$(top_srcdir)/libvrml97core/src
 AM_CPPFLAGS = $(DEBUG_CPPFLAGS)
 AM_CXXFLAGS = -Wall @GLUT_CFLAGS@
-LDFLAGS = -version-info @VRML97GL_LIBRARY_VERSION@ @GLUT_LIBS@
+LDFLAGS = -version-info $(LIBRARY_VERSION) @GLUT_LIBS@
 
 lib_LTLIBRARIES = libvrml97gl.la
 

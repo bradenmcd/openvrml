@@ -1,3 +1,14 @@
+2000-06-27  Braden McDaniel <braden@endoframe.com>
+
+        * Changed build scripts to use JavaScript 1.5 RC1 (SpiderMonkey).
+	  Importantly, it's being built a little differently from before.
+	  libvrml97js is now obsolete. libvrml97core is now pre-linked against
+	  libjs (and its subordinate fdlibm).
+	  
+	  Finally, dependencies in the libvrml97 headers upon the libjs headers
+	  were eliminated: we nolonger have to install the libjs headers. (yea!)
+	  So, note to future JS hackers: let's try to keep it that way.
+
 2000-06-22  Christopher St. John <cstjohn@acm.org>
 
 	* vrml97parser.g There was a case missed in

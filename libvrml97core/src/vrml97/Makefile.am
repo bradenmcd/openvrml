@@ -1,4 +1,17 @@
-SUBDIRS = antlr
+LIBRARY_VERSION = 1:0:0
+#                 | | |
+#          +------+ | +---+
+#          |        |     |
+#       current:revision:age
+#          |        |     |
+#          |        |     +- Increment if interfaces have been added
+#          |        |        Set to zero if interfaces have been removed or
+#          |        |        changed
+#          |        +- Increment if source code has changed
+#          |           Set to zero if current is incremented
+#          +- Increment if interfaces have been added, removed or changed
+
+SUBDIRS = antlr javascript
 
 #
 # Blow off "std" if the compiler doesn't support namespaces
@@ -15,18 +28,24 @@ else
   DEBUG_CPPFLAGS = -DNDEBUG
 endif
 
-INCLUDES = -I$(top_srcdir)/libvrml97js/src -I../../../libvrml97js/src/vrml97js
-AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF)
+#
+# JS doesn't include config.h, so we have to do this here.
+#
+JS_CPPFLAGS = -DXP_UNIX
+
+AM_CPPFLAGS = $(DEBUG_CPPFLAGS) $(NO_STD_NAMESPACE_DEF) $(JS_CPPFLAGS)
 AM_CXXFLAGS = -Wall @JPEG_CFLAGS@ @PNG_CFLAGS@
 AM_LFLAGS = -Ls
 AM_YFLAGS = -d
-libvrml97_la_LDFLAGS = -version-info @VRML97_LIBRARY_VERSION@ @JPEG_LIBS@ @PNG_LIBS@
+
+INCLUDES = -I./javascript
+
+libvrml97_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @JPEG_LIBS@ @PNG_LIBS@
 
 lib_LTLIBRARIES = libvrml97.la 
 
-BUILT_SOURCES = \
-	Vrml97Parser.cpp Vrml97Parser.hpp \
-	Vrml97ParserTokenTypes.hpp Vrml97ParserTokenTypes.txt
+BUILT_SOURCES = Vrml97Parser.cpp Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp \
+Vrml97ParserTokenTypes.txt
 
 Vrml97Parser.cpp Vrml97Parser.hpp Vrml97ParserTokenTypes.hpp \
 Vrml97ParserTokenTypes.txt : vrml97parser.g Vrml97TokenTypes.txt
@@ -45,6 +64,9 @@ VrmlMFFloat.h VrmlMFInt.h VrmlMFNode.h VrmlMFRotation.h VrmlMFString.h \
 VrmlMFTime.h VrmlMFVec2f.h VrmlMFVec3f.h
 	$(LTCXXCOMPILE) -c $<
 
+ScriptJS.o ScriptJS.lo: ScriptJS.cpp ScriptJS.h
+	$(LTCXXCOMPILE) -c $<
+
 libvrml97_la_SOURCES = \
         Doc.cpp \
 	doc2.cpp \
@@ -57,7 +79,6 @@ libvrml97_la_SOURCES = \
 	VrmlScene.cpp VrmlNodeType.cpp VrmlNamespace.cpp \
 	Image.cpp Audio.cpp System.cpp \
 	ScriptObject.cpp \
-	ScriptJS.cpp \
 	Viewer.cpp \
 	VrmlField.cpp \
 	VrmlNode.cpp \
@@ -129,7 +150,10 @@ libvrml97_la_SOURCES = \
 antlr-prelinked.lo: vrml97scanner.lo Vrml97Parser.lo antlr/libantlr.la
 	$(CXXLINK) $^
 
-libvrml97_la_LIBADD = antlr-prelinked.lo
+scriptjs-prelinked.lo: ScriptJS.lo javascript/libjs.la
+	$(CXXLINK) $^
+
+libvrml97_la_LIBADD = antlr-prelinked.lo scriptjs-prelinked.lo
 
 vrml97includedir = $(includedir)/vrml97
 vrml97include_HEADERS = \

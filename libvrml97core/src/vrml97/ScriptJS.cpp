@@ -50,7 +50,8 @@
 #include "VrmlMFVec3f.h"
 
 // This is nominally a private include but I want to subclass Arrays...
-# include "vrml97js/jsarray.h"
+#include "javascript/jsapi.h"
+#include "javascript/jsarray.h"
 
 
 # define MAX_HEAP_BYTES 4L * 1024L * 1024L

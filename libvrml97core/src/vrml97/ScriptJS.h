@@ -8,13 +8,15 @@
 //
 //  Javascript Script class
 //
-#include "vrml97js/jsapi.h"
+//#include "javascript/jsapi.h"
 
 #include "ScriptObject.h"
 #include "VrmlField.h"
 
 class VrmlNodeScript;
 class VrmlScene;
+
+typedef long jsval;
 
 class ScriptJS: public ScriptObject {
 
@@ -37,7 +39,7 @@ public:
 
 protected:
 
-  static JSRuntime *rt;
+  static struct JSRuntime *rt;
   static int nInstances;
 
   void defineAPI();
@@ -47,9 +49,9 @@ protected:
 
   double d_timeStamp;
 
-  JSContext *d_cx;
-  JSObject *d_globalObj;
-  JSObject *d_browserObj;
+  struct JSContext *d_cx;
+  struct JSObject *d_globalObj;
+  struct JSObject *d_browserObj;
 
 };
 
