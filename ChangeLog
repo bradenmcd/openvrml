@@ -1,3 +1,9 @@
+2004-01-20 Braden McDaniel  <braden@endoframe.com>
+
+	Use boost::lexical_cast.
+
+	* src/libopenvrml/openvrml/node.cpp
+
 2004-01-19 Braden McDaniel  <braden@endoframe.com>
 
 	Replaced uses of "@relates" with "@relatesalso".

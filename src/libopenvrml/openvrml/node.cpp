@@ -25,6 +25,7 @@
 
 # include <algorithm>
 # include <sstream>
+# include <boost/lexical_cast.hpp>
 # include "node.h"
 # include "scope.h"
 # include "browser.h"
@@ -63,15 +64,6 @@ unsupported_interface::unsupported_interface(const node_type & type,
     std::runtime_error(type.id + " has no interface \"" + interface_id + '"')
 {}
 
-namespace {
-    const std::string to_string(const node_interface::type_id interface_type)
-    {
-        std::ostringstream out;
-        out << interface_type;
-        return out.str();
-    }
-}
-
 /**
  * @brief Construct.
  *
@@ -83,8 +75,9 @@ unsupported_interface::unsupported_interface(
     const node_type & type,
     const node_interface::type_id interface_type,
     const std::string & interface_id):
-    std::runtime_error(type.id + " has no " + to_string(interface_type) + " \""
-                       + interface_id + '"')
+    std::runtime_error(type.id + " has no "
+                       + boost::lexical_cast<std::string>(interface_type)
+                       + " \"" + interface_id + '"')
 {}
 
 /**
