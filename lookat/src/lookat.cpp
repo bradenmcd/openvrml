@@ -135,25 +135,34 @@ static void lookatViewpointMenu(int item) {
 
 
 static void buildViewpointMenu() {
-  static bool builtMenu  = false;
+
   static int  topmenu     = 0;
   static int  vpmenu     = 0;
+  static int  nvp     = 0;
   int numberOfViewpoints = 0;
   
-  if (builtMenu == true)
+  if ( vpmenu )
     {
-      glutDestroyMenu(vpmenu);
+      glutSetMenu( vpmenu );
+      for (int i=0; i<nvp; ++i)
+	glutRemoveMenuItem( i+1 );
     }
   else
     {
       topmenu = glutCreateMenu(0);
+      vpmenu = glutCreateMenu(lookatViewpointMenu);
+      glutSetMenu(topmenu);
+
+      glutAddSubMenu("Viewpoints", vpmenu);
+      glutAttachMenu(GLUT_RIGHT_BUTTON);
     }
 
-  vpmenu = glutCreateMenu(lookatViewpointMenu);
+  glutSetMenu(vpmenu);
   //glutAddMenuEntry( "Reset", 0 );
   
   numberOfViewpoints = vrmlScene->nViewpoints();
-   
+  nvp = numberOfViewpoints;
+
   if (numberOfViewpoints > 0 )
     {
       for (int i = 0; i < numberOfViewpoints; i++) {
@@ -173,9 +182,5 @@ static void buildViewpointMenu() {
     }
 
   //glutAttachMenuName(GLUT_RIGHT_BUTTON, "Viewpoints");
-  glutSetMenu(topmenu);
-  glutAddSubMenu("Viewpoints", vpmenu);
-  glutAttachMenu(GLUT_RIGHT_BUTTON);
 
-  builtMenu = true;
 }
