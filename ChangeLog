@@ -1,5 +1,39 @@
 2004-03-10 Braden McDaniel  <braden@endoframe.com>
 
+	Minor parse test suite reorg; added some tests to confirm
+	failure on incorrect VRML.
+
+	* test/parse/testsuite/Makefile.am
+	* test/parse/testsuite/parse.bad/parse.exp:  Added file.
+	* test/parse/testsuite/parse.bad/proto-eventin-conflict.wrl:
+	Added file.
+	* test/parse/testsuite/parse.bad/proto-eventout-conflict.wrl:
+	Added file.
+	* test/parse/testsuite/parse.good/parse.exp:  Added file.
+	* test/parse/testsuite/parse.good/proto-containment-2-deep.wrl:
+	Added file.
+	* test/parse/testsuite/parse.good/proto-containment-trivial.wrl:
+	Added file.
+	* test/parse/testsuite/parse.good/proto-containment.wrl:  Added
+	file.
+	* test/parse/testsuite/parse.good/proto-field-is-proto.wrl:
+	Added file.
+	* test/parse/testsuite/parse.good/proto-impl-exposedfield-event-is.wrl:
+	Added file.
+	* test/parse/testsuite/parse.xpass/parse.exp:  Removed file.
+	* test/parse/testsuite/parse.xpass/proto-containment-2-deep.wrl:
+	Removed file.
+	* test/parse/testsuite/parse.xpass/proto-containment-trivial.wrl:
+	Removed file.
+	* test/parse/testsuite/parse.xpass/proto-containment.wrl:
+	Removed file.
+	* test/parse/testsuite/parse.xpass/proto-field-is-proto.wrl:
+	Removed file.
+	* test/parse/testsuite/parse.xpass/proto-impl-exposedfield-event-is.wrl:
+	Removed file.
+
+2004-03-10 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp:  Removed cruft
 	associated with abstract_geometry_node.
 

@@ -1,0 +1,12 @@
+proc run_parse_tests { worlds } {
+    foreach world $worlds {
+        set test $world
+        if [catch { parse_start $world }] {
+            pass "$test"
+        } else {
+            fail "$test"
+        }
+    }
+}
+
+run_parse_tests [lsort [glob $srcdir/$subdir/*.wrl]]
