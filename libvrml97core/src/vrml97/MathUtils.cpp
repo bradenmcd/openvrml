@@ -103,3 +103,61 @@ void VM( float V[3], double M[4][4], float A[3] )
   for (int i=0; i<3; ++i)
     V[i] = (float)(M[i][0] * v[0] + M[i][1] * v[1] + M[i][2] * v[2] + M[i][3]);
 }
+
+// S. K. Bose March 02/2000
+void axis_aligned_bbox(float M[4][4], float *min, float *max)
+{
+// Algorithm is taken from "Transforming Axis aligned Bounding Boxes"
+// by Jim Arvo "Graphics Gems Academic Press 1990"
+
+ float box[8],newbox[8],a,b;
+ int i,j;
+
+ for(i=0;i<8;i++)newbox[i]=0.0,
+ box[0] = min[0]; box[1] = min[1]; box[2] = min[2]; box[3] = 1.0;
+ box[4] = max[0]; box[5] = max[1]; box[6] = max[2]; box[7] = 1.0;
+ for(i=0; i<3; i++)
+	 for(j=0; j<4; j++)
+	 {
+		 a = box[j] * M[j][i];
+		 b = box[j+4] * M[j][i];
+		 if(a < b)
+		 {
+			 newbox[i] += a;
+			 newbox[i+4] += b;
+		 }
+		 else
+		 {
+			 newbox[i] += b;
+			 newbox[i+4] += a;
+		 }
+	 }
+	 min[0] = newbox[0]; min[1] = newbox[1]; min[2] = newbox[2];
+	 max[0] = newbox[4]; max[1] = newbox[5]; max[2] = newbox[6];
+}
+
+bool InvertMatrix3x3of4x4(float In[16],float Out[9])
+{
+	float *Inp = &In[0];
+	float mat[] = {Inp[0], Inp[1], Inp[2],
+		           Inp[4], Inp[5], Inp[6],
+			       Inp[8], Inp[9], Inp[10]};
+	float a = mat[4] * mat[8];
+	float b = mat[5] * mat[7];
+	float c = mat[3] * mat[8];
+	float d = mat[5] * mat[6];
+	float e = mat[3] * mat[7];
+	float f = mat[4] * mat[6];
+	float det = mat[0] * (a - b) - mat[1] * (c - d) + mat[2] * (e - f);
+	if(det == 0) return false;
+	Out[0] = (a - b)/det;
+	Out[1] = (mat[2] * mat[7] - mat[1] * mat[8])/det;
+	Out[2] = (mat[1] * mat[5] - mat[2] * mat[4])/det;
+	Out[3] = (d - c)/det;
+	Out[4] = (mat[0] * mat[8] - mat[2] * mat[6])/det;
+	Out[5] = (mat[2] * mat[3] - mat[0] * mat[5])/det;
+	Out[6] = (e - f)/det;
+    Out[7] = (mat[1] * mat[6] - mat[0] * mat[7])/det;
+	Out[8] = (mat[0] * mat[4] - mat[1] * mat[3])/det;
+	return true;
+}

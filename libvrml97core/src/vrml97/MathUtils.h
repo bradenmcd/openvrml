@@ -38,4 +38,8 @@ void Mscale(double M[4][4], float s[3]);           // M <= scale by s
 
 void MM(double M[4][4], double N[4][4]);           // M <= MN
 
+// S. K. Bose. March 02/2000
+void axis_aligned_bbox(float M[4][4], float *min, float *max);
+bool InvertMatrix3x3of4x4(float In[],float Out[]);
+
 #endif
