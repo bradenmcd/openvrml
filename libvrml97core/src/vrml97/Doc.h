@@ -12,9 +12,9 @@
 //struct FILE; gcc doesn't like this so #include <stdio.h> is necessary
 #include <stdio.h>
 #include <iostream.h>
-#include <zlib.h>
 
 class Doc2;
+typedef void * gzFile;
 
 class Doc {
 

@@ -7,23 +7,24 @@
 //  a real http protocol library is found...
 //
 
-# ifdef HAVE_CONFIG_H
-#   include <config.h>
-# endif
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-# ifdef _WIN32
-#   include <winconfig.h>
-# endif
+#ifdef _WIN32
+#include <winconfig.h>
+#endif
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <ctype.h>
-# include <string.h>
-# include <fstream.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include <fstream.h>
+#include <zlib.h>
 
-# include "Doc.h"
-# include "doc2.hpp"
-# include "System.h"
+#include "Doc.h"
+#include "doc2.hpp"
+#include "System.h"
 
 Doc::Doc(char const * url, Doc const * relative)
   : d_url(0), d_ostream(0), d_fp(0), d_gz(0), d_tmpfile(0)
