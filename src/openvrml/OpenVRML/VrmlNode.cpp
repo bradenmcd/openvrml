@@ -18,6 +18,17 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 
 
+/**
+ * @class VrmlNode
+ *
+ * @brief A node in the scene graph.
+ *
+ * VrmlNodes are reference counted, optionally named objects.
+ * The reference counting is manual (that is, each user of a
+ * VrmlNode, such as the VrmlMFNode class, calls reference()
+ * and dereference() explicitly). Should make it internal...
+ */
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -38,6 +49,23 @@
 //#   define VRML_NODE_DEBUG
 #endif
 
+/**
+ * Given a VrmlNodeType, add in the fields, exposedFields, eventIns
+ * and eventOuts defined by the particular node implementation.
+ * There's a great big method in VrmlNamespace that just calls
+ * defineType for every built in node. Nodes that inherit from other
+ * nodes (eg VrmlNodeIFaceSet) must call their parent classe's
+ * defineType, it doesn't happen automatically. The defineType for
+ * VrmlNode doesn't actually do anything, since there (currently)
+ * aren't any base events to be defined. It's just here for the sake
+ * of symmetry (and makes a nice place to park a comment)
+ *
+ * @param t to get the predefined cached type, pass a null,
+ *          otherwise the fields and events will be added to the
+ *          passed in vrmlnodetype object
+ *
+ * @see VrmlNamespace::defineBuiltins()
+ */
 VrmlNodeType *VrmlNode::defineType(VrmlNodeType *t) { return t; }
 
 VrmlNode::VrmlNode(VrmlScene *scene) :
@@ -61,8 +89,11 @@ VrmlNode::VrmlNode( const VrmlNode & ) :
 }
 
 
-// Free name (if any) and route info.
-
+/**
+ * @brief Destructor.
+ *
+ * Free name (if any) and route info.
+ */
 VrmlNode::~VrmlNode() 
 {
   // Remove the node's name (if any) from the map...
@@ -84,7 +115,12 @@ VrmlNode::~VrmlNode()
 
 }
 
-
+/**
+ * @brief Clone this node in the argument namespace.
+ *
+ * Copy the node, defining its name in the specified scope.
+ * Uses the flag to determine whether the node is a USEd node.
+ */
 VrmlNode *VrmlNode::clone( VrmlNamespace *ns )
 {
   if (isFlagSet())
@@ -103,8 +139,16 @@ VrmlNode *VrmlNode::clone( VrmlNamespace *ns )
 void VrmlNode::cloneChildren( VrmlNamespace* ) {}
 
 
-// Copy the routes to nodes in the given namespace.
-
+/**
+ * @brief Copy the routes to nodes in the given namespace.
+ *
+ * This method takes a pointer to a VrmlNamespace which has nodes of the
+ * same name and type as the nodes to which this node has routes. This
+ * method is a no-op if this node is unnamed, and it will fail silently
+ * for any "to" nodes it fails to find in the argument namespace.
+ *
+ * @param ns a pointer to a VrmlNamespace
+ */
 void VrmlNode::copyRoutes( VrmlNamespace *ns ) const
 {
   const char *fromName = name();
@@ -120,23 +164,37 @@ void VrmlNode::copyRoutes( VrmlNamespace *ns ) const
       }
 }
 
+/**
+ * @brief Increment the reference count.
+ *
+ * @return a pointer to this VrmlNode
+ */
 VrmlNode *VrmlNode::reference()
 {
  ++d_refCount;
  return this; 
 }
 
-// Remove a reference to a node
-
+/**
+ * @brief Decrement the reference count; delete this node if the count
+ *        drops to 0.
+ */
 void VrmlNode::dereference()
 {
   if (--d_refCount == 0) delete this;
 }
 
 
-// Set the name of the node. Some one else (the parser) needs
-// to tell the scene about the name for use in USE/ROUTEs.
-
+/**
+ * @brief Set the name of the node.
+ *
+ * Some one else (the parser) needs to tell the scene about the name for
+ * use in USE/ROUTEs.
+ *
+ * @param nodeName a C-style string
+ * @param ns a pointer to the VrmlNamespace to which this node should
+ *           belong
+ */
 void VrmlNode::setName(const char *nodeName, VrmlNamespace *ns)
 {
   if (d_name) delete d_name;
@@ -151,15 +209,25 @@ void VrmlNode::setName(const char *nodeName, VrmlNamespace *ns)
     d_name = 0;
 }
 
-// Retrieve the name of this node.
-
+/**
+ * @brief Retrieve the name of this node.
+ *
+ * @return a pointer to a C-style (0-terminated) string
+ */
 const char *VrmlNode::name() const
 {
   return d_name ? d_name : "";
 }
 
-// Add to scene
-
+/**
+ * @brief Add to scene.
+ *
+ * A node can belong to at most one scene for now. If it doesn't belong
+ * to a scene, it can't be rendered.
+ *
+ * @param scene
+ * @param relativeUrl
+ */
 void VrmlNode::addToScene( VrmlScene *scene, const char * /* relativeUrl */ )
 {
   d_scene = scene;
@@ -303,6 +371,15 @@ bool VrmlNode::isModified() const
 }
 
 
+/**
+ * @brief Mark all the nodes in the path as (not) modified.
+ *
+ * Convenience function used by updateModified.
+ *
+ * @param path
+ * @param mod
+ * @param flags
+ */
 void
 VrmlNode::markPathModified(VrmlNodePath& path, bool mod, int flags) {
   VrmlNodePath::iterator i;
@@ -342,6 +419,17 @@ VrmlNode::updateModified(VrmlNodePath& path, int flags)
 }
 
 
+/**
+ * Propagate the bvolume dirty flag from children to parents. I
+ * don't like this at all, but it's not worth making it pretty
+ * because the need for it will go away when parent pointers are
+ * implemented.
+ *
+ * @param path stack of ancestor nodes
+ * @param mod set modified flag to this value
+ * @param flags 1 indicates normal modified flag, 2 indicates the
+ *              bvolume dirty flag, 3 indicates both
+ */
 // note not virtual
 //
 void
@@ -380,6 +468,16 @@ void VrmlNode::clearFlags()
 //}
 
 
+/**
+ * Get this node's bounding volume. Nodes that have no bounding
+ * volume, or have a difficult to calculate bvolume (like, say,
+ * Extrusion or Billboard) can just return an infinite bsphere. Note
+ * that returning an infinite bvolume means that all the node's
+ * ancestors will also end up with an infinite bvolume, and will
+ * never be culled.
+ *
+ * @return this node's bounding volume
+ */
 const VrmlBVolume*
 VrmlNode::getBVolume() const
 {
@@ -394,12 +492,21 @@ VrmlNode::getBVolume() const
 }
 
 
+/**
+ * Override a node's calculated bounding volume. Not implemented.
+ */
 void
 VrmlNode::setBVolume(const VrmlBVolume& v)
 {
   cout << "VrmlNode::setBVolume():WARNING:not implemented" << endl;
 }
 
+/** 
+ * Indicate that a node's bounding volume needs to be recalculated
+ * (or not). If a node's bvolume is invalid, then the bvolumes of
+ * all that node's ancestors are also invalid. Normally, the node
+ * itself will determine when its bvolume needs updating.
+ */
 void
 VrmlNode::setBVolumeDirty(bool f)
 {
@@ -408,6 +515,10 @@ VrmlNode::setBVolumeDirty(bool f)
     this->d_scene->d_flags_need_updating = true;
 }
 
+/**
+ * Return true if the node's bounding volume needs to be
+ * recalculated.
+ */
 bool
 VrmlNode::isBVolumeDirty() const
 {
@@ -418,21 +529,61 @@ VrmlNode::isBVolumeDirty() const
   return this->d_bvol_dirty;
 }
 
+/**
+ * Render this node. Actually, most of the rendering work is
+ * delegated to the viewer, but this method is responsible for
+ * traversal to the node's renderable children, including
+ * culling. Each node class needs to implement this routine
+ * appropriately. It's not abstract since it doesn't make sense to
+ * call render on some nodes. Alternative would be to break render
+ * out into a seperate mixins class, but that's probably overkill.
+ *
+ * @param v viewer implementation responsible for actually doing the
+ *          drawing
+ * @param rc generic context argument, holds things like the
+ *          accumulated modelview transform.
+ */
 void VrmlNode::render(Viewer* v, VrmlRenderContext rc)
 {
   //if (cull(v, c)) return;
   clearModified();
 }
 
-// Accumulate transformations for proper rendering of bindable nodes.
-
+/**
+ * @brief Accumulate transformations for proper rendering of bindable
+ *        nodes.
+ *
+ * Cache a pointer to one of the parent transforms. The resulting
+ * pointer is used by getParentTransform. Grouping nodes need to
+ * redefine this, the default implementation does nothing.
+ *
+ * @param p parent node. can be null.
+ *
+ * @deprecated This routine will go away once parent pointers
+ * are implemented.
+ */
 void VrmlNode::accumulateTransform(VrmlNode *)
 {
   ;
 }
 
+/**
+ * Return the nearest ancestor node that affects the modelview
+ * transform. Doesn't work for nodes with more than one parent.
+ */
 VrmlNode* VrmlNode::getParentTransform() { return 0; }
 
+/**
+ * Compute the inverse of the transform above a viewpoint node. Just
+ * like the version that takes a matrix, but instead calls
+ * Viewer::setTransform at each level. The idea is to call this
+ * routine right before the start of a render traversal.
+ *
+ * @see getParentTransform
+ *
+ * @deprecated This method is (gradually) being replaces by
+ * inverseTranform(double[4][4]) and should no longer be used.
+ */
 void VrmlNode::inverseTransform(Viewer *v)
 {
   VrmlNode *parentTransform = getParentTransform();
@@ -440,6 +591,16 @@ void VrmlNode::inverseTransform(Viewer *v)
     parentTransform->inverseTransform(v);
 }
 
+/**
+ * Compute the inverse of the transform stack above a Viewpoint
+ * node. This is safe since the behavior of multi-parented
+ * Viewpoint nodes is undefined. May be called at any time.
+ *
+ * @param M return the accumulated inverse
+ *
+ * @see accumulateTransform
+ * @see getParentTransform
+ */
 void VrmlNode::inverseTransform(double m[4][4])
 {
   //cout << "VrmlNode::inverseTransform" << endl;
@@ -451,8 +612,11 @@ void VrmlNode::inverseTransform(double m[4][4])
 }
 
 
-// Pass a named event to this node.
-
+/**
+ * Pass a named event to this node. This method needs to be overridden
+ * to support any node-specific eventIns behaviors, but exposedFields
+ * (should be) handled here...
+ */
 void VrmlNode::eventIn(double timeStamp,
 		       const char *eventName,
 		       const VrmlField *fieldValue)
@@ -585,17 +749,28 @@ ostream& VrmlNode::printField(ostream& os,
 }
 
 
-// Set the value of one of the node fields. No fields exist at the
-// top level, so reaching this indicates an error.
-
+/**
+ * @brief Set a field by name (used by the parser, not for external
+ *        consumption).
+ *
+ * Set the value of one of the node fields. No fields exist at the
+ * top level, so reaching this indicates an error.
+ *
+ * @todo Make this method pure virtual.
+ */
 void VrmlNode::setField(const char *fieldName, const VrmlField &)
 {
   theSystem->error("%s::setField: no such field (%s)",
 		   nodeType().getName(), fieldName);
 }
 
-// Get the value of a field or eventOut.
-
+/**
+ * @brief Get a field or eventOut by name.
+ *
+ * getField is used by Script nodes to access exposedFields. It does not
+ * allow access to private fields (there tend to be specific access
+ * functions for each field for programmatic access).
+ */
 const VrmlField *VrmlNode::getField(const char *fieldName) const
 {
   theSystem->error("%s::getField: no such field (%s)\n",
@@ -604,8 +779,12 @@ const VrmlField *VrmlNode::getField(const char *fieldName) const
 }
 
 
-// Retrieve a named eventOut/exposedField value.
-
+/**
+ * @brief Retrieve a named eventOut/exposedField value.
+ *
+ * Used by the script node to access the node fields. This just strips
+ * the _changed suffix and tries to access the field using getField.
+ */
 const VrmlField *VrmlNode::getEventOut(const char *fieldName) const
 {
   // Strip _changed prefix

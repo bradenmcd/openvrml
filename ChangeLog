@@ -3,6 +3,8 @@
         * Moved definition of Route from VrmlNode.* to its own
           implementation and header files.
 
+        * Moved VrmlNode Doxygen comments to implementation file.
+
 2001-01-20  Braden McDaniel  <braden@endoframe.com>
 
         * Added getRoutes() method to VrmlNode, per patch from Joe
