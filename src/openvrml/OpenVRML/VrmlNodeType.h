@@ -83,11 +83,11 @@ public:
 
     void setFieldDefault(const char * name, const VrmlField * defaultValue);
 
-    VrmlField::VrmlFieldType hasEventIn(const char *name) const;
-    VrmlField::VrmlFieldType hasEventOut(const char *name) const;
-    VrmlField::VrmlFieldType hasField(const char *name) const;
-    VrmlField::VrmlFieldType hasExposedField(const char *name) const;
-    VrmlField::VrmlFieldType hasInterface(char const *) const;
+    VrmlField::VrmlFieldType hasEventIn(const char * id) const;
+    VrmlField::VrmlFieldType hasEventOut(const char * id) const;
+    VrmlField::VrmlFieldType hasField(const char * id) const;
+    VrmlField::VrmlFieldType hasExposedField(const char * id) const;
+    VrmlField::VrmlFieldType hasInterface(char const * id) const;
 
     VrmlField *fieldDefault(const char *name) const;
 

@@ -407,45 +407,80 @@ const VrmlNodePtr VrmlNodeType::firstNode() const {
             ? this->implNodes.getElement(0)
             : VrmlNodePtr(0);
 }
-  
-VrmlField::VrmlFieldType
-VrmlNodeType::hasEventIn(const char *ename) const
-{
-  return has(d_eventIns, ename);
+
+/**
+ * @brief Check whether the node type has a particular eventIn.
+ *
+ * @param id the name of an eventIn to check for
+ *
+ * @return the VrmlFieldType of the eventIn if it exists, or
+ *      VrmlField::NO_FIELD otherwise.
+ */
+VrmlField::VrmlFieldType VrmlNodeType::hasEventIn(const char * id) const {
+    return has(d_eventIns, id);
 }
 
-VrmlField::VrmlFieldType
-VrmlNodeType::hasEventOut(const char *ename) const
-{
-  return has(d_eventOuts, ename);
+/**
+ * @brief Check whether the node type has a particular eventOut.
+ *
+ * @param id the name of an eventOut to check for
+ *
+ * @return the VrmlFieldType of the eventOut if it exists, or
+ *      VrmlField::NO_FIELD otherwise
+ */
+VrmlField::VrmlFieldType VrmlNodeType::hasEventOut(const char * id) const {
+    return has(d_eventOuts, id);
 }
 
-VrmlField::VrmlFieldType
-VrmlNodeType::hasField(const char *ename) const
-{
-  return has(d_fields, ename);
+/**
+ * @brief Check whether the node type has a particular field.
+ *
+ * @param id the name of an field to check for
+ *
+ * @return the VrmlFieldType of the field if it exists, or
+ *      VrmlField::NO_FIELD otherwise.
+ */
+VrmlField::VrmlFieldType VrmlNodeType::hasField(const char * id) const {
+    return has(d_fields, id);
 }
 
-VrmlField::VrmlFieldType
-VrmlNodeType::hasExposedField(const char *ename) const
-{
-  // Must have field "name", eventIn "set_name", and eventOut
-  // "name_changed", all with same type:
-  char tmp[1000];
-  VrmlField::VrmlFieldType type;
+/**
+ * @brief Check whether the node type has a particular exposedField.
+ *
+ * @param id the name of an exposedField to check for
+ *
+ * @return the VrmlFieldType of the exposedField if it exists, or
+ *      VrmlField::NO_FIELD otherwise.
+ */
+VrmlField::VrmlFieldType VrmlNodeType::hasExposedField(const char * id) const {
+    // Must have field "name", eventIn "set_name", and eventOut
+    // "name_changed", all with same type:
+    char tmp[1000];
+    VrmlField::VrmlFieldType type;
 
-  if ( (type = has(d_fields, ename)) == VrmlField::NO_FIELD)
-    return VrmlField::NO_FIELD;
+    if ( (type = has(d_fields, id)) == VrmlField::NO_FIELD)
+      return VrmlField::NO_FIELD;
 
-  sprintf(tmp, "set_%s", ename);
-  if (type != has(d_eventIns, tmp)) return VrmlField::NO_FIELD;
+    sprintf(tmp, "set_%s", id);
+    if (type != has(d_eventIns, tmp)) return VrmlField::NO_FIELD;
 
-  sprintf(tmp, "%s_changed", ename);
-  if (type != has(d_eventOuts, tmp)) return VrmlField::NO_FIELD;
+    sprintf(tmp, "%s_changed", id);
+    if (type != has(d_eventOuts, tmp)) return VrmlField::NO_FIELD;
 
-  return type;
+    return type;
 }
 
+/**
+ * @brief Check whether the node type has a particular interface.
+ *
+ * Check to see whether a eventIn, eventOut, field, or exposedField with the
+ * given name exists.
+ *
+ * @param id the name of an interface to check for
+ *
+ * @return the VrmlFieldType of the interface if it exists, or
+ *      VrmlField::NO_FIELD otherwise.
+ */
 VrmlField::VrmlFieldType VrmlNodeType::hasInterface(char const * id) const
 {
     VrmlField::VrmlFieldType fieldType = VrmlField::NO_FIELD;
@@ -573,3 +608,33 @@ VrmlNodeType::ISMap *VrmlNodeType::getFieldISMap( const char *fieldName )
       return & ((*i)->thisIS);
   return 0;
 }
+
+/**
+ * @struct VrmlNodeType::NodeFieldRec
+ *
+ * @brief A pointer to a node and the name of an interface of that node.
+ *
+ * This struct is used to identify nodes in the implementation as part of the
+ * <code>IS</code> mapping.
+ */
+
+/**
+ * @typedef VrmlNodeType::ISMap
+ *
+ * @brief An <code>IS</code> mapping.
+ *
+ * A list comprising pointers to NodeFieldRec's which correspond to nodes in
+ * a PROTO implementation.
+ */
+
+/**
+ * @struct VrmlNodeType::ProtoField
+ *
+ * @brief A field in a <code>PROTO</code>.
+ */
+
+/**
+ * @typedef VrmlNodeType::FieldList
+ *
+ * @brief A list of fields in a <code>PROTO</code>.
+ */
