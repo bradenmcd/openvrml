@@ -361,8 +361,6 @@ VrmlMFNode * VrmlScene::readWrl(Doc2 * tryUrl, VrmlNamespace * ns)
 {
     VrmlMFNode * result = 0;
     
-    theSystem->debug("readWRL %s\n", tryUrl->url());
-    
     // Should verify MIME type...
     istream & istm = tryUrl->inputStream();
     if (istm) {
