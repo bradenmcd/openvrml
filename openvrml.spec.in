@@ -1,14 +1,19 @@
 Name:           @PACKAGE_TARNAME@
 Version:        @VERSION@
 Release:        1
-Summary:        VRML support library. 
+Summary:        VRML97 runtime library. 
 Copyright:      LGPL
 Group:          System Environment/Libraries
 Packager:       The OpenVRML Development Team <openvrml-develop@lists.sf.net>
-Source:         http://download.sf.net/openvrml/%{name}-%{version}.tar.gz
+Source:         http://prdownloads.sf.net/openvrml/%{name}-%{version}.tar.gz
 URL:            http://openvrml.org
+BuildRequires:  zlib-devel libpng-devel libjpeg-devel mozilla-devel XFree86-devel glut-devel
+BuildRoot:      %{_tmppath}/%{name}-root
+Requires:       zlib >= 1.1.3
+Requires:       libpng >= 1.0.12
+Requires:       libjpeg >= 6b
+Requires:       mozilla >= 0.9.9
 Prefix:         /usr
-BuildRoot:      /var/tmp/%{name}-%{version}-root
 
 %description 
 OpenVRML is a VRML support library, including a runtime and facilities for
@@ -26,16 +31,18 @@ using OpenVRML
 %package gl
 Summary:        OpenGL renderer for OpenVRML
 Group:          System Environment/Libraries
-Requires:       %{name}
-Requires:       Mesa >= 3.2
+Requires:       %{name} = %{version}
+Requires:       XFree86 >= 4.2
+Requires:       glut >= 3.7
 %description gl
 OpenGL renderer for OpenVRML.
 
 %package gl-devel
 Summary:        OpenVRML OpenGL renderer headers and static library.
 Group:          Development/Libraries
-Requires:       %{name}-gl
-Requires:       Mesa-devel >= 3.2
+Requires:       %{name}-gl = %{version}
+Requires:       XFree86-devel >= 4.2
+Requires:       glut-devel >= 3.7
 %description gl-devel
 Headers and static library that programmers will need to develop C++ programs
 using the OpenVRML OpenGL renderer.
@@ -43,7 +50,7 @@ using the OpenVRML OpenGL renderer.
 %package -n lookat
 Summary:        VRML viewer
 Group:          Applications/Multimedia
-Requires:       %{name}-gl
+Requires:       %{name}-gl = %{version}
 %description -n lookat
 GLUT-based VRML viewer.
 
@@ -53,8 +60,7 @@ GLUT-based VRML viewer.
 
 
 %build
-CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./configure  $ARCH_FLAGS \
---prefix=%{prefix}
+./configure $ARCH_FLAGS --prefix=%{prefix} --without-jdk CPPFLAGS="-I/usr/include/mozilla/js" CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
 make
 
 
@@ -67,7 +73,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 %doc AUTHORS COPYING COPYING.LIB ChangeLog NEWS README THANKS
 %doc doc/conformance.html
 %{prefix}/lib/libopenvrml.so.*
-%{prefix}/lib/pkgconfig/openvrml.m4
+%{prefix}/lib/pkgconfig/openvrml.pc
 
 %files devel
 %{prefix}/include/OpenVRML
@@ -77,7 +83,7 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 %files gl
 %{prefix}/lib/libopenvrml-gl.so.*
-%{prefix}/lib/pkgconfig/openvrml-gl.m4
+%{prefix}/lib/pkgconfig/openvrml-gl.pc
 
 %files gl-devel
 %{prefix}/include/OpenVRML/GL
@@ -91,7 +97,16 @@ make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 
 %changelog
-* Thu Jan 24 2001  Braden McDaniel  <braden@endoframe.com>
+* Mon May 20 2002  Braden McDaniel  <braden@endoframe.com>
+- Fixed pkgconfig metafile names.
+- Updated dependencies to reflect RPMs shipping with Red Hat 7.3.
+- Updated source download URI.
+- Removed prefix.
+- Added BuildRequires.
+- Added Requires for zlib, libpng, libjpeg, mozilla.
+- configure --without-jdk.
+
+* Thu Jan 24 2002  Braden McDaniel  <braden@endoframe.com>
 - Added package metafiles for pkgconfig.
 - Removed autoconf macros for use by client packages.
 
