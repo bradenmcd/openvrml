@@ -1,29 +1,36 @@
-Changes new in version 0.9.0, November 2000
+Changes new in version 0.9.0, December 2000
 ============================================
 - Name change: the library is now called OpenVRML.
 
+- Project has moved to SourceForge:  <http://openvrml.sourceforge.net>
+
 - Library is now covered by the GNU Lesser General Public License (LGPL).
 
-- New parser from Braden McDaniel <braden@endoframe.com>, removing
-  the dependency on SGI parser code.
+- New parser, removing the dependency on SGI parser code.
+  (Braden McDaniel <braden@endoframe.com>)
 
-- View frustrum culling from Christopher K. St. John <cstjohn@acm.org>
-  and S. K. Bose <bose@pavan.barc.ernet.in> and some navigation fixes.
+- View frustum culling and navigation fixes.
+  (Christopher K. St. John <cstjohn@acm.org>,
+  S. K. Bose <bose@pavan.barc.ernet.in>)
 
-- SphereSensor support implemented by Matt Giger <mgiger@lunarsoft.com>
+- Can now compile under CygWin.
+  (Jean-Daniel Fekete <Jean-Daniel.Fekete@emn.fr>)
+
+- SphereSensor support.
+  (Matt Giger <mgiger@lunarsoft.com>.)
 
 - MPEG reader for MovieTexture nodes.
+  (Chris Morley <cmorley@vermontel.net>)
 
-- Braden updated the javascript support to use mozilla JS 1.5rc2.
-
-- SourceForge web site http://openvrml.sourceforge.net/
+- Updated the JavaScript support to use Mozilla JS 1.5rc2.
+  (Braden McDaniel <braden@endoframe.com>)
 
 - Lots of clean ups and fixes.
 
-- Also some significant regressions in this release, unfortunately.
-  Architectural changes have left some parts of the library in a state of flux
-  for this release, but enough progress has been made overall that we felt a
-  release would be beneficial anyway.
+- Some significant regressions in this release, unfortunately.
+  Architectural changes have left some parts of the library in a state
+  of flux for this release, but enough progress has been made overall
+  that we felt a release would be beneficial anyway.
 
 
 Changes new in version 0.8.2, January 2000
