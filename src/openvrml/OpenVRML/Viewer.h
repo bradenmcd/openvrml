@@ -178,26 +178,6 @@ namespace OpenVRML {
 				         const float scale[2],
 				         const float translation[2]) = 0;
 
-        virtual void setTransform(const float center[3],
-			          const float rotation[4],
-			          const float scale[3],
-			          const float scaleOrientation[4],
-			          const float translation[3]) = 0;
-
-        // This is a hack to work around the glPushMatrix() limit (32 deep on Mesa).
-        // It has some ugly disadvantages: it is slower and the resulting transform
-        // after a setTransform/unsetTransform may not be identical to the original.
-        // It might be better to just build our own matrix stack...
-        virtual void unsetTransform(const float center[3],
-			            const float rotation[4],
-			            const float scale[3],
-			            const float scaleOrientation[4],
-			            const float translation[3]) = 0;
-
-        virtual void setBillboardTransform(const float axisOfRotation[3]) = 0;
-
-        virtual void unsetBillboardTransform(const float axisOfRotation[3]) = 0;
-
         virtual void setViewpoint(const float position[3],
 			          const float orientation[4],
 			          float fieldOfView,

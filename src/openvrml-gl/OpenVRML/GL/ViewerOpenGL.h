@@ -49,10 +49,6 @@ namespace OpenVRML {
             ViewerOpenGL(Browser & browser);
             virtual ~ViewerOpenGL();
 
-            // get rid of this asap.
-            virtual void getBillboardTransformMatrix(float [4][4],
-                                                     const float axisOfRotation[3]);
-
             virtual RenderMode getRenderMode();
             virtual double getFrameRate();
 
@@ -195,22 +191,6 @@ namespace OpenVRML {
 				             float rotation,
 				             const float scale[2],
 				             const float translation[2]);
-
-            virtual void setTransform(const float center[3],
-			              const float rotation[4],
-			              const float scale[3],
-			              const float scaleOrientation[4],
-			              const float translation[3]);
-
-            virtual void unsetTransform(const float center[3],
-			                const float rotation[4],
-			                const float scale[3],
-			                const float scaleOrientation[4],
-			                const float translation[3]);
-
-            virtual void setBillboardTransform(const float axisOfRotation[3]);
-            virtual void unsetBillboardTransform(const float axisOfRotation[3]);
-
 
             virtual void setViewpoint(const float position[3],
 			              const float orientation[4],

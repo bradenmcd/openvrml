@@ -2521,13 +2521,11 @@ void Billboard::render(Viewer * const viewer, VrmlRenderContext rc)
     } else if (this->children.getLength() > 0) {
         this->xformObject = viewer->beginObject(this->getId().c_str());
 
-//        viewer->setBillboardTransform( d_axisOfRotation.get() );
         viewer->MatrixMultiply(LM.get());
 
         // Render children
         this->Group::render(viewer, rc);
 
-//        viewer->unsetBillboardTransform( d_axisOfRotation.get() );
         LM = LM.affine_inverse();
         viewer->MatrixMultiply(LM.get());
 
@@ -12772,13 +12770,6 @@ void Transform::render(Viewer * const viewer, VrmlRenderContext rc)
         this->xformObject = viewer->beginObject(this->getId().c_str());
 
         // Apply transforms
-// Why to do again matrix computation in GL side? when this matrix is available
-// here.
-//      viewer->setTransform(d_center.get(),
-//               d_rotation.get(),
-//               d_scale.get(),
-//               d_scaleOrientation.get(),
-//               d_translation.get());
         VrmlMatrix M;
         this->getMatrix(M);
         viewer->MatrixMultiply(M.get());
@@ -12786,11 +12777,6 @@ void Transform::render(Viewer * const viewer, VrmlRenderContext rc)
         this->Group::renderNoCull(viewer, rc);
 
         // Reverse transforms (for immediate mode/no matrix stack renderer)
-//      viewer->unsetTransform(d_center.get(),
-//                 d_rotation.get(),
-//                 d_scale.get(),
-//                 d_scaleOrientation.get(),
-//                 d_translation.get());
         M = M.affine_inverse();
         viewer->MatrixMultiply(M.get());
         viewer->endObject();

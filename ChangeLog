@@ -10,6 +10,14 @@
           handling code in SpiderMonkey can attempt to handle the
           property.
 
+        * src/openvrml/OpenVRML/MathUtils.cpp,
+          src/openvrml/OpenVRML/MathUtils.h,
+          src/openvrml/OpenVRML/Viewer.h,
+          src/openvrml/OpenVRML/vrml97node.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.cpp,
+          src/openvrml-gl/OpenVRML/GL/ViewerOpenGL.h: Removed dead code
+          obsoleted by VrmlMatrix usage.
+
 2002-10-12  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp,
