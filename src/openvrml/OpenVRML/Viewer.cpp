@@ -38,23 +38,26 @@
 #include "VrmlBSphere.h"
 #include "VrmlAABox.h"
 
+/**
+ * @class Viewer
+ *
+ * Map the scene graph to the underlying graphics library.
+ */
 
-
-//  Empty destructor for derived classes to call.
+Viewer::Viewer(VrmlScene & scene): scene(scene) {}
 
 Viewer::~Viewer() {}
+
+VrmlScene & Viewer::getScene() {
+    return this->scene;
+}
 
 //  Build a cylinder object. It might be smarter to do just one, and reference
 //  it with scaling (but the world creator could just as easily do that with 
 //  DEF/USE ...).
 
-void Viewer::computeCylinder(double height,
-			     double radius,
-			     int numFacets,
-			     float c[][3],
-			     float tc[][3],
-			     int faces[])
-{
+void Viewer::computeCylinder(double height, double radius, int numFacets,
+			     float c[][3], float tc[][3], int faces[]) {
   double angle, x, y;
   int i, polyIndex;
 
@@ -399,27 +402,51 @@ void Viewer::setColor(float , float , float , float ) {}
 
 
 /**
- *  For normal VRML97 use, this won't need to be overridden, but for
- *  systems with non-standard view volumes, this can be changed to
- *  cull as appropriate. Note that culling can be disabled by setting
- *  a flag in VrmlRenderContext. Since I don't have access to the
- *  appropriate cave/boom/whichever api's, I can't be sure that this
- *  is enough. If it isn't, please express any concerns to the
- *  libvrml97 developer's list, and it can be fixed...
+ * Intersect the given bounding volume with the view volume. This
+ * goes into the viewer to provide a hook for systems that use
+ * non-standard view volumes. Most subclasses should be able to use
+ * the default implementation provided here. If your view volume is
+ * so strange that there's no way to cull to is, then reimplement to
+ * always return BV_INSIDE
+ *
+ * @param bv the bounding volume to intersect with the view volume
+ * @return VrmlBVolume::INSIDE, OUTSIDE, or PARTIAL
  */
 int Viewer::isectViewVolume(const VrmlBVolume& bv) const {
-  int r = VrmlBVolume::BV_PARTIAL;
-  VrmlBSphere* bs = bv.toBSphere();
-  if (bs) {
-    r = bs->isectFrustum(d_frust);
-  } else {
-    VrmlAABox* ab = bv.toAABox();
-    if (ab) 
-      r = ab->isectFrustum(d_frust);
-  }
-  //cout << "Viewer::isectViewVolume(VrmlBSphere&)=" << r << endl;
-  return r;
+    //
+    // For normal VRML97 use, this won't need to be overridden, but for
+    // systems with non-standard view volumes, this can be changed to
+    // cull as appropriate. Note that culling can be disabled by setting
+    // a flag in VrmlRenderContext. Since I don't have access to the
+    // appropriate cave/boom/whichever api's, I can't be sure that this
+    // is enough. If it isn't, please express any concerns to the
+    // OpenVRML developer's list, and it can be fixed...
+    //
+    int r = VrmlBVolume::BV_PARTIAL;
+    VrmlBSphere* bs = bv.toBSphere();
+    if (bs) {
+        r = bs->isectFrustum(d_frust);
+    } else {
+        VrmlAABox* ab = bv.toAABox();
+        if (ab) {
+            r = ab->isectFrustum(d_frust);
+        }
+    }
+    //cout << "Viewer::isectViewVolume(VrmlBSphere&)=" << r << endl;
+    return r;
 }
+
+/**
+ * @fn void Viewer::drawBSphere(const VrmlBSphere & bs, int flag)
+ *
+ * Draw a bounding sphere. Used for debugging view culling. Probably
+ * should be drawBVolume and handle aaboxes as well.
+ *
+ * @param bs a bounding sphere; if max, will not be drawn
+ * @param flag one of the bvolume intersection test constants, or 4
+ *             to draw in unique way. (useful for debugging)
+ */
+
 
 
 // comment here on how we're forcing everybody to carry around a frust

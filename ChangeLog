@@ -5,6 +5,9 @@
         * Added private macro for outputting exception messages in debug
           mode.
 
+        * Changed Viewer's constructor to take a VrmlScene reference
+          rather than a pointer.
+
 2001-07-24  Braden McDaniel  <braden@endoframe.com>
 
         * Added Joerg Scheurich's warbird game to the sample worlds.

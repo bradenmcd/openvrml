@@ -28,6 +28,12 @@
 
 #include "ViewerGlut.h"
 
+/**
+ * @class ViewerGlut
+ *
+ * GLUT version of OpenGL class for display of VRML models.
+ */
+
 // Last mouse button pressed.
 static int lastButton = 0;
 
@@ -214,8 +220,7 @@ static void reshape(int width, int height)
 #endif
 }
 
-ViewerGlut::ViewerGlut(VrmlScene *scene) : ViewerOpenGL(scene)
-{
+ViewerGlut::ViewerGlut(VrmlScene & scene): ViewerOpenGL(scene) {
 #if USE_STENCIL_SHAPE
   glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE | GLUT_STENCIL);
 #else

@@ -27,29 +27,24 @@
  * GLUT version of OpenGL class for display of VRML models.
  */
 class ViewerGlut : public ViewerOpenGL {
+    int d_window;
+    bool d_timerPending;
 
 public:
+    ViewerGlut(VrmlScene & scene);
+    virtual ~ViewerGlut();
 
-  ViewerGlut(VrmlScene *);
-  virtual ~ViewerGlut();
-
-  // Public so glut callbacks can access
-  void timerUpdate();
+    // Public so glut callbacks can access
+    void timerUpdate();
 
 protected:
-
-  // Window system specific methods
-
-  virtual void wsPostRedraw();
-  virtual void wsSetCursor( CursorStyle c);
-  virtual void wsSwapBuffers();
-  virtual void wsSetTimer( double );
-
-private:
-
-  int d_window;
-  bool d_timerPending;
-
+    //
+    // Window system specific methods
+    //
+    virtual void wsPostRedraw();
+    virtual void wsSetCursor( CursorStyle c);
+    virtual void wsSwapBuffers();
+    virtual void wsSetTimer( double );
 };
 
 #endif // VIEWERGLUT_H
