@@ -65,7 +65,7 @@ where: [target] may be any one of the following ...
                then you must give this path. Otherwise it is not needed. 
                Default path is C:\User\antlr, however you may provide it 
                as an environment variable by doing something like this 
-               prio to execute nmake:
+               prior to execute nmake:
 
 			 set ANTLRLIB_DIR=C:\antlr-2.7.0
 
@@ -112,6 +112,11 @@ ZLIB_DIR = c:\User\zlib
 JPEGLIB_DIR = c:\User\jpeg-6b
 !ENDIF
 
+!IF "$(HAVE_JAVA)" == ""
+HAVE_JAVA = NO
+!ENDIF
+
+
 !IF "$(ANTLRLIB_DIR)" == ""
 ANTLRLIB_DIR = c:\User\antlr-2.7.0
 !ENDIF
@@ -121,6 +126,7 @@ ANTLRLIB_DIR = c:\User\antlr-2.7.0
 !IF "$(GLUTLIB_DIR)" == ""
 GLUTLIB_DIR = c:\User\glut
 !ENDIF
+
 
 clean :
   cd ..\libvrml97core\win32
