@@ -9,6 +9,9 @@
           doesn't like friend declarations included with class
           definitions.
 
+        * Overload operator<< and operator>> on FieldValue::Type for
+          stream I/O.
+
 2002-05-19  Braden McDaniel  <braden@endoframe.com>
 
         * Document --with-gl and --with-glut configure options in

@@ -41,30 +41,6 @@ ostream & operator<<(ostream & os, const FieldValue & f)
 namespace {
     ::ostream & mffprint(::ostream &, float const * c, int n, int eltsize);
     ::ostream & mfdprint(::ostream &, double const * c, int n, int eltsize);
-    
-    const char * ftn[] = {
-        "<invalid field type>",
-        "SFBool",
-        "SFColor",
-        "SFFloat",
-        "SFImage",
-        "SFInt32",
-        "SFNode",
-        "SFRotation",
-        "SFString",
-        "SFTime",
-        "SFVec2f",
-        "SFVec3f",
-        "MFColor",
-        "MFFloat",
-        "MFInt32",
-        "MFNode",
-        "MFRotation",
-        "MFString",
-        "MFTime",
-        "MFVec2f",
-        "MFVec3f"
-    };
 }
 
 /**
@@ -247,42 +223,68 @@ FieldValue::~FieldValue() {}
  * @return the Type enumerant corresponding to this FieldValue's type
  */
 
+namespace {
+    const char * ftn[] = {
+        "<invalid field type>",
+        "SFBool",
+        "SFColor",
+        "SFFloat",
+        "SFImage",
+        "SFInt32",
+        "SFNode",
+        "SFRotation",
+        "SFString",
+        "SFTime",
+        "SFVec2f",
+        "SFVec3f",
+        "MFColor",
+        "MFFloat",
+        "MFInt32",
+        "MFNode",
+        "MFRotation",
+        "MFString",
+        "MFTime",
+        "MFVec2f",
+        "MFVec3f"
+    };
+}
+
 /**
- * @brief A static method to convert a type name to an ID.
+ * @brief Stream output.
  *
- * @param type the (C-style) string name of a VRML field type
+ * @relates FieldValue::Type
  *
- * @return the Type enumerant corresponding to the passed type name
+ * @param out   an ostream.
+ * @param type  a FieldValue type identifier.
+ *
+ * @return @p out.
  */
-FieldValue::Type FieldValue::type(const char * typeId) {
-    for (size_t i(sfbool); i <= mfvec3f; ++i) {
-        if (strcmp(typeId, ftn[i]) == 0) {
-            return static_cast<Type>(i);
-        }
-    }
-    
-    return invalidType;
+std::ostream & operator<<(std::ostream & out, const FieldValue::Type type) {
+    return out << ftn[type];
 }
-
-const char* FieldValue::getFieldName(const Type type) {
-  int ft = (int) type;
-  if ((ft > 0) && (ft <= (int) FieldValue::mfvec3f))
-    return ftn[ft];
-  else
-    return "<invalid field type>";
-}
-
 
 /**
- * @brief Get the type name of a field.
- * @return the (C-style) string name of this Field object's type.
+ * @brief Stream intput.
+ *
+ * @relates FieldValue::Type
+ *
+ * @param in    an istream.
+ * @param type  a FieldValue type identifier.
+ *
+ * @return @p in.
  */
-char const * FieldValue::typeName() const {
-    assert((sizeof(ftn) / sizeof(char *)) >=
-            static_cast<size_t>((this->type() + 1)));
-    return ftn[this->type()];
+std::istream & operator>>(std::istream & in, FieldValue::Type & type) {
+    std::string str;
+    in >> str;
+    const char * const * const begin = ftn + FieldValue::sfbool;
+    const char * const * const end = ftn + FieldValue::mfvec3f + 1;
+    const char * const * pos = std::find(begin, end, str);
+    type = (pos == end)
+         ? FieldValue::invalidType
+         : static_cast<FieldValue::Type>
+                (FieldValue::invalidType + (pos - begin));
+    return in;
 }
-
 
 /**
  * @class SFBool

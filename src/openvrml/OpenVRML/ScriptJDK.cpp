@@ -537,15 +537,14 @@ jobject JNICALL Java_vrml_Field_clone
   jclass clazz;
   FieldValue* pField;
   FieldValue* pCloneField;
-  char clazzName[256];
-  const char *szFieldType;
 
   // TODO: This method needs to be revisited  
   fid = getFid(env, obj, "FieldPtr", "I");
   pField = (FieldValue*) env->GetIntField(obj, fid);
-  szFieldType = pField->typeName();
-  sprintf(clazzName, "vrml/field/%s", szFieldType);
-  clazz = env->FindClass(clazzName);
+  ostrstream os;
+  os << "vrml/field/" << pField->type() << '\0';
+  clazz = env->FindClass(os.str());
+  os.rdbuf()->freeze(false);
   jCloneField = env->AllocObject(clazz);
   fid = env->GetFieldID(clazz, "FieldPtr", "I");
   pCloneField = pField->clone();
@@ -3988,9 +3987,10 @@ jobject JNICALL Java_vrml_node_Script_getField
   {
     // Then we've found the field
     const FieldValue* fieldPtr = iter->second.get();
-    char clazzName[256];
-    sprintf(clazzName, "vrml/field/%s", fieldPtr->typeName());
-    jclass clazz = env->FindClass(clazzName);
+    ostrstream os;
+    os << "vrml/field/" << fieldPtr->type() << '\0';
+    jclass clazz = env->FindClass(os.str());
+    os.rdbuf()->freeze(false);
     Field = env->AllocObject(clazz);
     fid = getFid(env, Field, "FieldPtr", "I");
     env->SetIntField(Field, fid, (int) fieldPtr);
@@ -4011,7 +4011,6 @@ jobject JNICALL Java_vrml_node_Script_getField
 jobject JNICALL Java_vrml_node_Script_getEventOut
   (JNIEnv *env, jobject obj, jstring jstrEventOutName)
 {
-  char clazzName[256];
   jobject eventOut;
   jclass clazz;
   const char *charEventOut = env->GetStringUTFChars(jstrEventOutName , 0);
@@ -4026,9 +4025,10 @@ jobject JNICALL Java_vrml_node_Script_getEventOut
   {
     ScriptNode::PolledEventOutValue eventOutValue(iter->second);
     // Found the eventOut
-    char clazzName[256];
-    sprintf(clazzName, "vrml/field/%s", iter->second.value->typeName());
-    clazz = env->FindClass(clazzName);
+    ostrstream os;
+    os << "vrml/field/" << iter->second.value->type() << '\0';
+    clazz = env->FindClass(os.str());
+    os.rdbuf()->freeze(false);
     eventOut = env->AllocObject(clazz);
     fid = getFid(env, eventOut, "FieldPtr", "I");
     env->SetIntField(eventOut, fid, (int) &eventOutValue);
@@ -4290,9 +4290,10 @@ jobject JNICALL Java_vrml_Event_getValue
   jfieldID fid = getFid(env, obj, "EventPtr", "I");
   VrmlEvent* pEvent = (VrmlEvent*) env->GetIntField(obj, fid);
   const FieldValue* pField = pEvent->value();
-  char clazzName[256];
-  sprintf(clazzName, "vrml/field/Const%s", pField->typeName());
-  jclass clazz = env->FindClass(clazzName);
+  ostrstream os;
+  os << "vrml/field/Const" << pField->type() << '\0';
+  jclass clazz = env->FindClass(os.str());
+  os.rdbuf()->freeze(false);
   jobject Field = env->AllocObject(clazz);
   fid = env->GetFieldID(clazz, "FieldPtr", "I");
   env->SetIntField(Field, fid, (int) pField);

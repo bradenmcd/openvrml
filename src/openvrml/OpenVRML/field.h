@@ -34,26 +34,6 @@ namespace OpenVRML {
 
     ostream & operator<<(ostream &, const FieldValue &);
 
-    class SFBool;
-    class SFColor;
-    class SFFloat;
-    class SFImage;
-    class SFInt32;
-    class SFNode;
-    class SFRotation;
-    class SFString;
-    class SFTime;
-    class SFVec2f;
-    class SFVec3f;
-    class MFColor;
-    class MFFloat;
-    class MFInt32;
-    class MFNode;
-    class MFRotation;
-    class MFString;
-    class MFVec2f;
-    class MFVec3f;
-
     class OPENVRML_SCOPE FieldValue {
         friend ostream & operator<<(ostream &, const FieldValue &);
 
@@ -64,19 +44,17 @@ namespace OpenVRML {
             mfint32, mfnode, mfrotation, mfstring, mftime, mfvec2f, mfvec3f
         };
 
-        static Type type(const char * typeId);
-        static const char * getFieldName(const Type type);
-
         virtual ~FieldValue() = 0;
         
-        const char * typeName() const;
-
         virtual FieldValue * clone() const throw (std::bad_alloc) = 0;
         virtual FieldValue & assign(const FieldValue &)
                 throw (std::bad_cast, std::bad_alloc) = 0;
         virtual ostream& print(ostream& os) const = 0;
         virtual Type type() const = 0;
     };
+
+    std::ostream & operator<<(std::ostream &, FieldValue::Type);
+    std::istream & operator>>(std::istream &, FieldValue::Type &);
 
 
     class OPENVRML_SCOPE SFBool : public FieldValue {
@@ -218,6 +196,8 @@ namespace OpenVRML {
     };
 
 
+    class SFVec3f;
+    
     class OPENVRML_SCOPE SFRotation : public FieldValue {
         float d_x[4];
 
