@@ -41,6 +41,7 @@ VrmlNodeType *VrmlNodeTouchSensor::defineType(VrmlNodeType *t)
   t->addEventOut("hitPoint_changed", VrmlField::SFVEC3F);
   t->addEventOut("hitTexCoord_changed", VrmlField::SFVEC2F);
   t->addEventOut("isActive", VrmlField::SFBOOL);
+  t->addEventOut("isOver", VrmlField::SFBOOL);
   t->addEventOut("touchTime", VrmlField::SFTIME);
 
   return t;
