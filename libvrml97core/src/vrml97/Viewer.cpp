@@ -98,13 +98,13 @@ void Viewer::computeCylinder(double height,
 //  Build an extrusion.
 
 void Viewer::computeExtrusion(int nOrientation,
-			      float *orientation,
+			      const float *orientation,
 			      int nScale,
-			      float *scale,
+			      const float *scale,
 			      int nCrossSection,
-			      float *crossSection,
+			      const float *crossSection,
 			      int nSpine,
-			      float *spine,
+			      const float *spine,
 			      float *c,   // OUT: coordinates
 			      float *tc,  // OUT: texture coords
 			      int *faces)     // OUT: face list
@@ -356,12 +356,15 @@ void Viewer::computeSphere(double radius,
 // Compute a target and up vector from position/orientation/distance.
 //
 
-void Viewer::computeView(float position[3],
-			 float orientation[3],
+void Viewer::computeView(const float position[3],
+			 const float in_orientation[3],
 			 float distance,
 			 float target[3],
 			 float up[3])
 {
+  float orientation[3] = {in_orientation[0], 
+			  in_orientation[1], 
+			  in_orientation[2]};
   // Graphics Gems, p 466. Convert between axis/angle and rotation matrix
   double len = sqrt( orientation[0]*orientation[0] +
 		     orientation[1]*orientation[1] +

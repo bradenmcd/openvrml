@@ -155,19 +155,19 @@ public:
   virtual Object insertText(int*, float size, int n, char const * const *s) = 0;
 
   // Lights
-  virtual Object insertDirLight(float, float, float [], float []) = 0;
+  virtual Object insertDirLight(float, float, const float [], const float []) = 0;
 
-  virtual Object insertPointLight(float, float [], float [],
-				  float, float [], float ) = 0;
+  virtual Object insertPointLight(float, const float [], const float [],
+				  float, const float [], float ) = 0;
 
   virtual Object insertSpotLight( float /*ambientIntensity*/ ,
-				  float /*attenuation*/ [],
+				  const float /*attenuation*/ [],
 				  float /*beamWidth*/ ,
-				  float /*color*/ [],
+				  const float /*color*/ [],
 				  float /*cutOffAngle*/ ,
-				  float /*direction*/ [],
+				  const float /*direction*/ [],
 				  float /*intensity*/ ,
-				  float /*location*/ [],
+				  const float /*location*/ [],
 				  float /*radius*/ ) = 0;
 
   // Lightweight copy
@@ -179,13 +179,15 @@ public:
   virtual void enableLighting(bool) = 0;
 
   // Set attributes
-  virtual void setFog(float * /*color*/,
+  virtual void setFog(const float * /*color*/,
 		      float   /*visibilityRange*/,
 		      const char * /*fogType*/) = 0;
 
   virtual void setColor(float r, float g, float b, float a = 1.0) = 0;
 
-  virtual void setMaterial(float, float[], float[], float, float[], float) = 0;
+  virtual void setMaterial(float, const float[], 
+			   const float[], float, 
+			   const float[], float) = 0;
 
   virtual void setMaterialMode( int nTexComponents, bool geometryColor ) = 0;
 
@@ -232,8 +234,8 @@ public:
 
   virtual void unsetBillboardTransform(float * /*axisOfRotation*/) = 0;
 
-  virtual void setViewpoint(float * /*position*/,
-			    float * /*orientation*/,
+  virtual void setViewpoint(const float * /*position*/,
+			    const float * /*orientation*/,
 			    float /*fieldOfView*/,
 			    float /*avatarSize*/,
 			    float /*visLimit*/) = 0;
@@ -284,13 +286,13 @@ protected:
 		       int faces[]);
 
   static void computeExtrusion( int  /*nOrientation*/,
-			 float * /*orientation*/,
+			 const float * /*orientation*/,
 			 int  /*nScale*/,
-			 float * /*scale*/,
+			 const float * /*scale*/,
 			 int  /*nCrossSection*/,
-			 float * /*crossSection*/,
+			 const float * /*crossSection*/,
 			 int   /*nSpine*/,
-			 float * /*spine*/,
+			 const float * /*spine*/,
 			 float *c,   // OUT: coordinates
 			 float *tc,  // OUT: texture coords
 			 int *faces);    // OUT: face list
@@ -301,8 +303,8 @@ protected:
 		     float tc[][3],
 		     int faces[]);
 
-  static void computeView(float position[3],
-		   float orientation[3],
+  static void computeView(const float position[3],
+		   const float orientation[3],
 		   float distance,
 		   float target[3],
 		   float up[3]);

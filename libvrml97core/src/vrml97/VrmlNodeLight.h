@@ -47,10 +47,10 @@ public:
   virtual void setField(const char *fieldName,
 			const VrmlField &fieldValue);
 
-  virtual float getAmbientIntensity() { return d_ambientIntensity.get(); } //LarryD Mar 04/99
-  virtual float getIntensity() { return d_intensity.get(); } //LarryD Mar 04/99
-  virtual bool  getOn() { return d_on.get(); } //LarryD Mar 04/99
-  virtual float *getColor(){ return d_color.get(); }  //LarryD Mar 04/99
+  virtual float getAmbientIntensity() const { return d_ambientIntensity.get(); } //LarryD Mar 04/99
+  virtual float getIntensity() const { return d_intensity.get(); } //LarryD Mar 04/99
+  virtual bool  getOn() const { return d_on.get(); } //LarryD Mar 04/99
+  virtual const float *getColor() const { return d_color.get(); }  //LarryD Mar 04/99
 
 protected:
 

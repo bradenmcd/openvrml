@@ -1947,8 +1947,8 @@ Viewer::Object ViewerOpenGL::insertText(int *justify,
 
 Viewer::Object ViewerOpenGL::insertDirLight(float ambient,
 					    float intensity,
-					    float rgb[],
-					    float direction[])
+					    const float rgb[],
+					    const float direction[])
 {
   float amb[4] = { ambient * rgb[0],
 		   ambient * rgb[1],
@@ -1996,10 +1996,10 @@ Viewer::Object ViewerOpenGL::insertDirLight(float ambient,
 //
 
 Viewer::Object ViewerOpenGL::insertPointLight(float ambient,
-					      float attenuation[],
-					      float rgb[],
+					      const float attenuation[],
+					      const float rgb[],
 					      float intensity,
-					      float location[],
+					      const float location[],
 					      float radius)
 {
   float amb[4] = { ambient * rgb[0],
@@ -2047,13 +2047,13 @@ Viewer::Object ViewerOpenGL::insertPointLight(float ambient,
 
 // same comments as for PointLight apply here...
 Viewer::Object ViewerOpenGL::insertSpotLight( float ambient,
-					      float attenuation[],
+					      const float attenuation[],
 					      float beamWidth,
-					      float rgb[],
+					      const float rgb[],
 					      float cutOffAngle,
-					      float direction[],
+					      const float direction[],
 					      float intensity,
-					      float location[],
+					      const float location[],
 					      float radius )
 {
   float amb[4] = { ambient * rgb[0],
@@ -2135,7 +2135,7 @@ void ViewerOpenGL::setColor(float r, float g, float b, float a)
   glColor4f(r,g,b,a);
 }
 
-void ViewerOpenGL::setFog(float * color,
+void ViewerOpenGL::setFog(const float * color,
 			  float   visibilityRange,
 			  const char * fogType)
 {
@@ -2151,10 +2151,10 @@ void ViewerOpenGL::setFog(float * color,
 }
 
 void ViewerOpenGL::setMaterial(float ambientIntensity,
-			       float diffuseColor[],
-			       float emissiveColor[],
+			       const float diffuseColor[],
+			       const float emissiveColor[],
 			       float shininess,
-			       float specularColor[],
+			       const float specularColor[],
 			       float transparency)
 {
   float alpha = 1.0 - transparency;
@@ -2478,8 +2478,8 @@ void ViewerOpenGL::unsetBillboardTransform(float * /*axisOfRotation*/)
   glPopMatrix();
 }
 
-void ViewerOpenGL::setViewpoint(float *position,
-				float *orientation,
+void ViewerOpenGL::setViewpoint(const float *position,
+				const float *in_orientation,
 				float fieldOfView,
 				float avatarSize,
 				float visibilityLimit)
@@ -2507,6 +2507,13 @@ void ViewerOpenGL::setViewpoint(float *position,
   if (d < znear || d > zfar) d = 0.2 * (avatarSize + zfar);
 
   float target[3], up[3];
+  float len = sqrt(in_orientation[0]*in_orientation[0]
+		   + in_orientation[1]*in_orientation[1]
+		   + in_orientation[2]*in_orientation[2]);
+  if (len == 0.0) len = 1.0;
+  float orientation[3] = {in_orientation[0] / len, 
+		       in_orientation[1] / len, 
+		       in_orientation[2] / len};
   computeView(position, orientation, d, target, up);
 
   // Save position for use when drawing background

@@ -36,10 +36,10 @@ public:
   virtual const VrmlSFColor* toSFColor() const;
   virtual VrmlSFColor* toSFColor();
 
-  float r(void)			{ return d_rgb[0]; }
-  float g(void)			{ return d_rgb[1]; }
-  float b(void)			{ return d_rgb[2]; }
-  float *get()			{ return &d_rgb[0]; }
+  float r(void)	const		{ return d_rgb[0]; }
+  float g(void)	const		{ return d_rgb[1]; }
+  float b(void)	const		{ return d_rgb[2]; }
+  const float *get() const      { return &d_rgb[0]; }
   void set(float r, float g, float b)
     { d_rgb[0] = r; d_rgb[1] = g; d_rgb[2] = b; }
 

@@ -134,23 +134,23 @@ public:
   virtual Object insertText(int *, float, int n, char const * const * s);
 
   // Lights
-  virtual Object insertDirLight(float a, float i, float rgb[], float xyz[]);
+  virtual Object insertDirLight(float a, float i, const float rgb[], const float xyz[]);
 
   virtual Object insertPointLight( float ambientIntensity,
-				   float attenuation[],
-				   float color[],
+				   const float attenuation[],
+				   const float color[],
 				   float intensity,
-				   float location[],
+				   const float location[],
 				   float radius );
 
   virtual Object insertSpotLight( float /*ambientIntensity*/ ,
-				  float /*attenuation*/ [],
+				  const float /*attenuation*/ [],
 				  float /*beamWidth*/ ,
-				  float /*color*/ [],
+				  const float /*color*/ [],
 				  float /*cutOffAngle*/ ,
-				  float /*direction*/ [],
+				  const float /*direction*/ [],
 				  float /*intensity*/ ,
-				  float /*location*/ [],
+				  const float /*location*/ [],
 				  float /*radius*/ );
 
 
@@ -165,11 +165,11 @@ public:
   // Set attributes
   virtual void setColor(float r, float g, float b, float a = 1.0);
 
-  virtual void setFog(float * /*color*/,
+  virtual void setFog(const float * /*color*/,
 		      float   /*visibilityRange*/,
 		      const char * /*fogType*/);
 
-  virtual void setMaterial(float, float[], float[], float, float[], float);
+  virtual void setMaterial(float, const float[], const float[], float, const float[], float);
 
   virtual void setMaterialMode( int nTexComponents, bool geometryColor );
 
@@ -211,8 +211,8 @@ public:
   virtual void unsetBillboardTransform(float * /*axisOfRotation*/);
 
 
-  virtual void setViewpoint(float *position,
-			    float *orientation,
+  virtual void setViewpoint(const float *position,
+			    const float *orientation,
 			    float fieldOfView,
 			    float avatarSize,
 			    float visLimit);

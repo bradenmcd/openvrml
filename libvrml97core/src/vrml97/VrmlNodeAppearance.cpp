@@ -158,7 +158,7 @@ void VrmlNodeAppearance::render(Viewer *viewer, VrmlRenderContext rc)
   if (m)
     {
       float trans = m->transparency();
-      float *diff = m->diffuseColor();
+      const float *diff = m->diffuseColor();
       float diffuse[3] = { diff[0], diff[1], diff[2] };
       int nTexComponents = t ? t->nComponents() : 0;
       if (nTexComponents == 2 || nTexComponents == 4)

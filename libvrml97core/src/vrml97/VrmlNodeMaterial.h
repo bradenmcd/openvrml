@@ -47,12 +47,12 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  float  ambientIntensity() { return d_ambientIntensity.get(); }
-  float* diffuseColor() { return d_diffuseColor.get(); }
-  float* emissiveColor() { return d_emissiveColor.get(); }
-  float  shininess() { return d_shininess.get(); }
-  float* specularColor() { return d_specularColor.get(); }
-  float  transparency() { return d_transparency.get(); }
+        float  ambientIntensity() const { return d_ambientIntensity.get(); }
+  const float* diffuseColor() const { return d_diffuseColor.get(); }
+  const float* emissiveColor() const { return d_emissiveColor.get(); }
+        float  shininess() const { return d_shininess.get(); }
+  const float* specularColor() const { return d_specularColor.get(); }
+        float  transparency() const { return d_transparency.get(); }
 
 private:
 

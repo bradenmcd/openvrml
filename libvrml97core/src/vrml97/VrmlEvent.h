@@ -22,6 +22,7 @@
 #define VRMLEVENT_H
 
 #include "VrmlField.h"
+#include <string.h>
 
 class VrmlEvent {
 
@@ -46,7 +47,9 @@ public:
   VrmlEvent *reference() { ++d_refCount; return this; }
   void dereference() { if (--d_refCount == 0) delete this; }
 
-  double timeStamp() { return d_timeStamp; }
+  double timeStamp() const { return d_timeStamp; }
+  const char * name() const { return d_eventName; }
+  const VrmlField * value() const { return d_value; }
 
 protected:
 

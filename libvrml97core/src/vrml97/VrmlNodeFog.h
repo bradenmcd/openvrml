@@ -57,9 +57,9 @@ public:
   
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
-  float *color()		{ return d_color.get(); }
-  const char *fogType()		{ return d_fogType.get(); }
-  float visibilityRange()	{ return d_visibilityRange.get(); }
+  const float *color() const	{ return d_color.get(); }
+  const char *fogType()	const	{ return d_fogType.get(); }
+  float visibilityRange() const	{ return d_visibilityRange.get(); }
 
 private:
 
