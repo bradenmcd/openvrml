@@ -798,10 +798,10 @@
                 <SETTING><NAME>MWMerge_MacOS_copyResources</NAME><VALUE>1</VALUE></SETTING>
                 <SETTING><NAME>MWMerge_MacOS_skipResources</NAME>
                     <SETTING><VALUE></VALUE></SETTING>
-                    <SETTING><VALUE>°ı </VALUE></SETTING>
-                    <SETTING><VALUE>ZI8</VALUE></SETTING>
+                    <SETTING><VALUE>¢Î‡</VALUE></SETTING>
+                    <SETTING><VALUE>YH8</VALUE></SETTING>
                     <SETTING><VALUE>
-n 0</VALUE></SETTING>
+m»–</VALUE></SETTING>
                 </SETTING>
 
                 <!-- Settings for "Perl Panel" panel -->
@@ -1054,6 +1054,13 @@ n 0</VALUE></SETTING>
                     <FILEKIND>Library</FILEKIND>
                     <FILEFLAGS></FILEFLAGS>
                 </FILE>
+                <FILE>
+                    <PATHTYPE>Name</PATHTYPE>
+                    <PATH>LibVRML97.rsrc</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                    <FILEKIND>Resource</FILEKIND>
+                    <FILEFLAGS></FILEFLAGS>
+                </FILE>
             </FILELIST>
             <LINKORDER>
                 <FILEREF>
@@ -1156,6 +1163,11 @@ n 0</VALUE></SETTING>
                     <PATH>JavaScript.Lib</PATH>
                     <PATHFORMAT>MacOS</PATHFORMAT>
                 </FILEREF>
+                <FILEREF>
+                    <PATHTYPE>Name</PATHTYPE>
+                    <PATH>LibVRML97.rsrc</PATH>
+                    <PATHFORMAT>MacOS</PATHFORMAT>
+                </FILEREF>
             </LINKORDER>
         </TARGET>
     </TARGETLIST>
@@ -1176,6 +1188,12 @@ n 0</VALUE></SETTING>
                 <TARGETNAME>Lookat</TARGETNAME>
                 <PATHTYPE>Name</PATHTYPE>
                 <PATH>ViewerGlut.cpp</PATH>
+                <PATHFORMAT>MacOS</PATHFORMAT>
+            </FILEREF>
+            <FILEREF>
+                <TARGETNAME>Lookat</TARGETNAME>
+                <PATHTYPE>Name</PATHTYPE>
+                <PATH>LibVRML97.rsrc</PATH>
                 <PATHFORMAT>MacOS</PATHFORMAT>
             </FILEREF>
         </GROUP>
