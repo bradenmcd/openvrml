@@ -21,6 +21,8 @@
           accessors instead of FieldValue types. Added a typedef for
           int32.
 
+        * configure.ac:  Fixed error message for missing libjpeg.
+
 2003-03-10  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Makefile.am,

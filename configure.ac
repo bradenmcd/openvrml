@@ -72,7 +72,7 @@ if test "X$enable_imagetexture_node" = "Xno"; then
   JPEG_LIBS=""
 else
   if test "X$have_libpng" = "Xno" -o "X$have_libjpeg" = "Xno"; then
-    AC_MSG_ERROR([libpng and libpng are required for ImageTexture node support.])
+    AC_MSG_ERROR([libjpeg and libpng are required for ImageTexture node support.])
   fi
   AC_DEFINE([OPENVRML_ENABLE_IMAGETEXTURE_NODE], [1], [Defined if ImageTexture node support is enabled.])
 fi
