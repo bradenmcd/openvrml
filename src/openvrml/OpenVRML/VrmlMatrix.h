@@ -38,6 +38,7 @@ namespace OpenVRML {
 
     class SFVec3f;
     class SFRotation;
+    class Quaternion;
 
     class OPENVRML_SCOPE VrmlMatrix {
         float matrix[4][4];
@@ -48,6 +49,7 @@ namespace OpenVRML {
                    float f21, float f22, float f23, float f24,
                    float f31, float f32, float f33, float f34,
                    float f41, float f42, float f43, float f44) throw ();
+        explicit VrmlMatrix(const float m[16]) throw ();
         explicit VrmlMatrix(const float m[4][4]) throw ();
 
         // use compiler-defined operator= and copy constructor.
@@ -58,6 +60,7 @@ namespace OpenVRML {
 
         void setRotate(const float axisAngle[4]) throw ();
         void setRotate(const SFRotation & axisAngle) throw ();
+        void setRotate(const Quaternion & quat) throw ();
         void setScale(float s) throw ();
         void setScale(const float s[3]) throw ();
         void setScale(const SFVec3f & s) throw ();

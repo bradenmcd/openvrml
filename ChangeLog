@@ -1,3 +1,10 @@
+2003-01-26  Braden McDaniel  <braden@endoframe.com>
+
+        * src/openvrml/OpenVRML/VrmlMatrix.cpp,
+          src/openvrml/OpenVRML/VrmlMatrix.cpp:  Added constructor to
+          take a 16-value float array.  Added a setRotate method to
+          create a rotation matrix from a Quaternion.
+
 2003-01-25  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/Makefile.am,

@@ -20,6 +20,7 @@
 
 # include "field.h"
 # include "VrmlMatrix.h"
+# include "quaternion.h"
 # include "private.h"
 
 namespace OpenVRML {
@@ -165,7 +166,17 @@ VrmlMatrix::VrmlMatrix(float f11, float f12, float f13, float f14,
 }
 
 /**
- * @brief Construct from an array.
+ * @brief Construct from an array of 16 values.
+ *
+ * @param m an array of values in row-major order.
+ */
+VrmlMatrix::VrmlMatrix(const float m[16]) throw ()
+{
+    std::copy(m, m + 16, &this->matrix[0][0]);
+}
+
+/**
+ * @brief Construct from a 4x4 array.
  *
  * @param m a 4x4 array of elements in row-major order.
  */
@@ -217,6 +228,34 @@ void VrmlMatrix::setRotate(const float axisAngle[4]) throw ()
 void VrmlMatrix::setRotate(const SFRotation & axisAngle) throw ()
 {
     this->setRotate(axisAngle.get());
+}
+
+/**
+ * @brief Sets matrix to a rotation matrix corresponding to a quaternion.
+ *
+ * @param quat  a quaternion.
+ */
+void VrmlMatrix::setRotate(const Quaternion & quat) throw ()
+{
+    this->matrix[0][0] = 1.0 - 2.0 * (quat[1] * quat[1] + quat[2] * quat[2]);
+    this->matrix[0][1] = 2.0 * (quat[0] * quat[1] + quat[2] * quat[3]);
+    this->matrix[0][2] = 2.0 * (quat[2] * quat[0] - quat[1] * quat[3]);
+    this->matrix[0][3] = 0.0;
+
+    this->matrix[1][0] = 2.0 * (quat[0] * quat[1] - quat[2] * quat[3]);
+    this->matrix[1][1]= 1.0 - 2.0 * (quat[2] * quat[2] + quat[0] * quat[0]);
+    this->matrix[1][2] = 2.0 * (quat[1] * quat[2] + quat[0] * quat[3]);
+    this->matrix[1][3] = 0.0;
+
+    this->matrix[2][0] = 2.0 * (quat[2] * quat[0] + quat[1] * quat[3]);
+    this->matrix[2][1] = 2.0 * (quat[1] * quat[2] - quat[0] * quat[3]);
+    this->matrix[2][2] = 1.0 - 2.0 * (quat[1] * quat[1] + quat[0] * quat[0]);
+    this->matrix[2][3] = 0.0;
+
+    this->matrix[3][0] = 0.0;
+    this->matrix[3][1] = 0.0;
+    this->matrix[3][2] = 0.0;
+    this->matrix[3][3] = 1.0;
 }
 
 /**
