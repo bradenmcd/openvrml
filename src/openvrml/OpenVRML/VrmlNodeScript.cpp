@@ -276,6 +276,83 @@ void VrmlNodeScript::eventIn(double timeStamp,
 
 // add events/fields
 
+namespace {
+    void add(VrmlNodeScript::FieldList & recs, const char * ename,
+             VrmlField::VrmlFieldType type) {
+        VrmlNodeScript::ScriptField * const scriptField =
+                new VrmlNodeScript::ScriptField;
+        scriptField->name = strdup(ename);
+        scriptField->type = type;
+        switch (type) {
+        case VrmlField::SFBOOL:
+            scriptField->value = new VrmlSFBool();
+            break;
+        case VrmlField::SFCOLOR:
+            scriptField->value = new VrmlSFColor();
+            break;
+        case VrmlField::SFFLOAT:
+            scriptField->value = new VrmlSFFloat();
+            break;
+        case VrmlField::SFIMAGE:
+            scriptField->value = new VrmlSFImage();
+            break;
+        case VrmlField::SFINT32:
+            scriptField->value = new VrmlSFInt32();
+            break;
+        case VrmlField::SFNODE:
+            scriptField->value = new VrmlSFNode();
+            break;
+        case VrmlField::SFROTATION:
+            scriptField->value = new VrmlSFRotation();
+            break;
+        case VrmlField::SFSTRING:
+            scriptField->value = new VrmlSFString();
+            break;
+        case VrmlField::SFTIME:
+            scriptField->value = new VrmlSFTime();
+            break;
+        case VrmlField::SFVEC2F:
+            scriptField->value = new VrmlSFVec2f();
+            break;
+        case VrmlField::SFVEC3F:
+            scriptField->value = new VrmlSFVec3f();
+            break;
+        case VrmlField::MFCOLOR:
+            scriptField->value = new VrmlMFColor();
+            break;
+        case VrmlField::MFFLOAT:
+            scriptField->value = new VrmlMFFloat();
+            break;
+        case VrmlField::MFINT32:
+            scriptField->value = new VrmlMFInt32();
+            break;
+        case VrmlField::MFNODE:
+            scriptField->value = new VrmlMFNode();
+            break;
+        case VrmlField::MFROTATION:
+            scriptField->value = new VrmlMFRotation();
+            break;
+        case VrmlField::MFSTRING:
+            scriptField->value = new VrmlMFString();
+            break;
+        case VrmlField::MFTIME:
+            scriptField->value = new VrmlMFTime();
+            break;
+        case VrmlField::MFVEC2F:
+            scriptField->value = new VrmlMFVec2f();
+            break;
+        case VrmlField::MFVEC3F:
+            scriptField->value = new VrmlMFVec3f();
+            break;
+        default:
+            assert(false);
+            break;
+        }
+        
+        recs.push_front(scriptField);
+    }
+}
+
 void VrmlNodeScript::addEventIn(const char *ename, VrmlField::VrmlFieldType t)
 {
   add(d_eventIns, ename, t);
@@ -287,21 +364,11 @@ void VrmlNodeScript::addEventOut(const char *ename, VrmlField::VrmlFieldType t)
 }
 
 void VrmlNodeScript::addField(const char *ename, VrmlField::VrmlFieldType t,
-			      const VrmlField * val)
-{
-  add(d_fields, ename, t);
-  if (val) set(d_fields, ename, *val);
-}
-
-void VrmlNodeScript::add(FieldList &recs,
-			 const char *ename,
-			 VrmlField::VrmlFieldType type)
-{
-  ScriptField *r = new ScriptField;
-  r->name = strdup(ename);
-  r->type = type;
-  r->value = 0;
-  recs.push_front(r);
+			      const VrmlField * val) {
+    add(this->d_fields, ename, t);
+    if (val) {
+        this->set(this->d_fields, ename, *val);
+    }
 }
 
 // get event/field values

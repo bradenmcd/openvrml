@@ -512,7 +512,7 @@ nodeBodyElement[VrmlNamespace & vrmlNamespace,
     ;
 
 scriptInterfaceDeclaration[VrmlNamespace & vrmlNamespace,
-                           Doc2 const * doc,
+                           const Doc2 * doc,
                            VrmlNodeScript & node]
         {
             NodeInterfaceType it(INVALID_NODE_INTERFACE_TYPE);
@@ -541,7 +541,7 @@ scriptInterfaceDeclaration[VrmlNamespace & vrmlNamespace,
     ;
 
 scriptFieldInterfaceDeclaration[VrmlNamespace & vrmlNamespace,
-                                Doc2 const * doc,
+                                const Doc2 * doc,
                                 VrmlNodeScript & node]
         {
             VrmlField::VrmlFieldType ft = VrmlField::NO_FIELD;
@@ -551,9 +551,6 @@ scriptFieldInterfaceDeclaration[VrmlNamespace & vrmlNamespace,
         {
             assert(fv);
             
-            //
-            // Show this code some auto_ptr lovin' to make it exception-safe.
-            //
             const std::auto_ptr<VrmlField> autofv(fv);
             
             if (   (node.hasInterface(id->getText().c_str()) != VrmlField::NO_FIELD)

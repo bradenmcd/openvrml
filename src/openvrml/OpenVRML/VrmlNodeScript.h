@@ -121,7 +121,6 @@ private:
   FieldList d_fields;
 
   // Generic field/event add/test/value methods
-  void add(FieldList &, const char *, VrmlField::VrmlFieldType);
   VrmlField::VrmlFieldType has(const FieldList &, const char *) const;
   VrmlField* get(const FieldList &, const char *) const;
   void set(const FieldList &, const char *, const VrmlField &);

@@ -3,6 +3,9 @@
         * Made all single-argument constructors for field classes
           "explicit".
 
+        * Fixed crash when loading a world with a Script node SFNode field
+          initialized to NULL.
+
 2001-05-09  Braden McDaniel <braden@endoframe.com>
 
         * Fixed problem with PROTO instantiation where exposedFields
