@@ -1,3 +1,7 @@
+2001-06-10  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Fixed macros in *.h to support WIN32 DLLs
+
 2001-06-08  Braden McDaniel <braden@endoframe.com>
 
         * If it's available, use the STL hash_map rather than std::map
