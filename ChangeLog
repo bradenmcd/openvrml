@@ -1,3 +1,7 @@
+2003-03-05  S. K. Bose  <bose@pavan.barc.ernet.in>
+
+        * Fix for Javascript core dump
+
 2003-02-24  Braden McDaniel  <braden@endoframe.com>
 
         * src/openvrml/OpenVRML/browser.cpp:  Added do_shutdown
