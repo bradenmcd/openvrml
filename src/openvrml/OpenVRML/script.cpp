@@ -231,6 +231,7 @@ namespace {
         case FieldValue::mfvec3f:       return FieldValuePtr(new MFVec3f);
         default: assert(false);
         }
+        return FieldValuePtr(0);
     }
 }
 
@@ -1529,7 +1530,8 @@ namespace {
 # ifndef NDEBUG
                 if (!ok) {
                     cerr << "Call to " << fname.c_str() << " in Script node "
-                         << this->scriptNode.getId().c_str() << " failed." << endl;
+                         << this->scriptNode.getId().c_str() << " failed."
+                         << std::endl;
                 }
 # endif
 
@@ -1810,7 +1812,7 @@ namespace {
                         fieldValue(createFieldValueFromJsval(cx, *val, fieldType));
                 scriptNode.setEventOut(eventId, *fieldValue);
             } catch (BadConversion & ex) {
-                cout << ex.what() << endl;
+                std::cout << ex.what() << std::endl;
             } catch (std::bad_alloc & ex) {
                 OPENVRML_PRINT_EXCEPTION_(ex);
                 return JS_FALSE;
@@ -1851,7 +1853,7 @@ namespace {
                         fieldValue(createFieldValueFromJsval(cx, *val, fieldType));
                 scriptNode.setField(fieldId, *fieldValue);
             } catch (BadConversion & ex) {
-                cout << ex.what() << endl;
+                std::cout << ex.what() << std::endl;
                 return JS_FALSE;
             } catch (std::bad_alloc & ex) {
                 OPENVRML_PRINT_EXCEPTION_(ex);
@@ -1947,8 +1949,8 @@ namespace {
                                            0, field_setProperty, // getter, setter
                                            JSPROP_PERMANENT)) {
 # ifndef NDEBUG
-                        cerr << "Attempt to define \"" << itr->first.c_str()
-                             << "\" on global object failed." << endl;
+                        std::cerr << "Attempt to define \"" << itr->first.c_str()
+                             << "\" on global object failed." << std::endl;
 # endif
                         return false;
                     }
@@ -1975,8 +1977,8 @@ namespace {
 			                   0, eventOut_setProperty, // getter, setter
 			                   JSPROP_PERMANENT)) {
 # ifndef NDEBUG
-                        cerr << "Attempt to define \"" << itr->first.c_str()
-                             << "\" on global object failed." << endl;
+                        std::cerr << "Attempt to define \"" << itr->first.c_str()
+                                  << "\" on global object failed." << std::endl;
 # endif
                         return false;
                     }
@@ -2236,6 +2238,9 @@ namespace {
 
             JSBool print(JSContext * const cx, JSObject *,
                          const uintN argc, jsval * const argv, jsval *) {
+                using std::cout;
+                using std::flush;
+                
                 for (uintN i = 0; i < argc; i++) {
                     JSString * const str = JS_ValueToString(cx, argv[i]);
                     if (!str) {
@@ -3309,7 +3314,7 @@ namespace {
                 try {
                     fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
                 } catch (BadConversion & ex) {
-                    cout << ex.what() << endl;
+                    std::cout << ex.what() << std::endl;
                     return JS_FALSE;
                 } catch (std::bad_alloc & ex) {
                     OPENVRML_PRINT_EXCEPTION_(ex);
@@ -3329,7 +3334,7 @@ namespace {
                 try {
                     fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
                 } catch (BadConversion & ex) {
-                    cout << ex.what() << endl;
+                    std::cout << ex.what() << std::endl;
                     return JS_FALSE;
                 } catch (std::bad_alloc & ex) {
                     OPENVRML_PRINT_EXCEPTION_(ex);
@@ -3634,7 +3639,7 @@ namespace {
             sfdata = 0;
             
             JSObject * const robj =
-                    JS_ConstructObject(cx, &SFVec3f::jsclass, 0, robj);
+                    JS_ConstructObject(cx, &SFVec3f::jsclass, 0, obj);
             if (!robj) {
                 return JS_FALSE;
             }
@@ -5100,6 +5105,8 @@ namespace {
                                                    JSObject * const obj,
                                                    jsval, jsval * const vp)
                     throw () {
+                using std::copy;
+                
                 assert(cx);
                 assert(obj);
                 assert(vp);
@@ -5347,6 +5354,8 @@ namespace {
                                                    const jsval id,
                                                    jsval * const vp)
                     throw () {
+                using std::copy;
+                
                 assert(cx);
                 assert(obj);
                 assert(vp);
@@ -5995,8 +6004,8 @@ namespace {
                 const size_t length = newArray.size() < mfdata->array.size()
                                     ? newArray.size()
                                     : mfdata->array.size();
-                copy(mfdata->array.begin(), mfdata->array.begin() + length,
-                     newArray.begin());
+                std::copy(mfdata->array.begin(), mfdata->array.begin() + length,
+                          newArray.begin());
                 
                 //
                 // Initialize the rest of the array with new values.
@@ -6334,8 +6343,8 @@ namespace {
                 const size_t length = newArray.size() < mfdata->array.size()
                                     ? newArray.size()
                                     : mfdata->array.size();
-                copy(mfdata->array.begin(), mfdata->array.begin() + length,
-                     newArray.begin());
+                std::copy(mfdata->array.begin(), mfdata->array.begin() + length,
+                          newArray.begin());
 
                 //
                 // Initialize the rest of the array with new values.

@@ -103,7 +103,7 @@ namespace OpenVRML {
             virtual ~AbstractIndexedSet() throw () = 0;
 
             virtual bool isModified() const;
-            virtual void updateModified(NodePath& path);
+            virtual void updateModified(NodePath & path, int flags = 0x003);
             virtual void clearFlags();
 
             virtual const ColorNode * getColor() const throw ();
@@ -339,7 +339,7 @@ namespace OpenVRML {
             virtual ~Appearance() throw ();
             
             virtual bool isModified() const;
-            virtual void updateModified(NodePath& path);
+            virtual void updateModified(NodePath & path, int flags = 0x003);
             virtual void clearFlags();	// Clear childrens flags too.
 
             virtual void render(Viewer *, VrmlRenderContext rc);
@@ -974,7 +974,7 @@ namespace OpenVRML {
             virtual ~ElevationGrid() throw ();
 
             virtual bool isModified() const;
-            virtual void updateModified(NodePath& path);
+            virtual void updateModified(NodePath & path, int flags = 0x003);
             virtual void clearFlags();
             virtual Viewer::Object insertGeometry(Viewer *,
                                                   VrmlRenderContext rc);
@@ -1202,7 +1202,7 @@ namespace OpenVRML {
             virtual ~IndexedFaceSet() throw ();
 
             virtual bool isModified() const;
-            virtual void updateModified(NodePath& path, int flags);
+            virtual void updateModified(NodePath & path, int flags = 0x003);
             virtual void clearFlags();
 
             virtual Viewer::Object insertGeometry(Viewer * v,
@@ -1311,7 +1311,7 @@ namespace OpenVRML {
             virtual ~LOD() throw ();
 
             virtual bool isModified() const;
-            virtual void updateModified(NodePath& path);
+            virtual void updateModified(NodePath & path, int flags = 0x003);
             virtual void clearFlags();
             virtual void render(Viewer *, VrmlRenderContext rc);
             virtual const BVolume * getBVolume() const;
@@ -1764,7 +1764,7 @@ namespace OpenVRML {
             explicit PointSet(const NodeType & type);
             virtual ~PointSet() throw ();
 
-            virtual void updateModified(NodePath& path);
+            virtual void updateModified(NodePath & path, int flags = 0x003);
             virtual bool isModified() const;
             virtual void clearFlags();
             virtual Viewer::Object insertGeometry(Viewer *,
@@ -1968,7 +1968,7 @@ namespace OpenVRML {
             explicit Sound(const NodeType & type);
             virtual ~Sound() throw ();
 
-            virtual void updateModified(NodePath& path);
+            virtual void updateModified(NodePath & path, int flags = 0x003);
             virtual void clearFlags();
             virtual void render(Viewer *, VrmlRenderContext rc);
         
@@ -2144,7 +2144,7 @@ namespace OpenVRML {
             virtual ~Switch() throw ();
 
             virtual bool isModified() const;
-            virtual void updateModified(NodePath& path);
+            virtual void updateModified(NodePath & path, int flags = 0x003);
             virtual void clearFlags();
 
             virtual void render(Viewer *, VrmlRenderContext rc);
@@ -2187,7 +2187,7 @@ namespace OpenVRML {
             virtual ~Text() throw ();
 
             virtual bool isModified() const;
-            virtual void updateModified(NodePath& path);
+            virtual void updateModified(NodePath & path, int flags = 0x003);
             virtual void clearFlags();
 
             virtual Viewer::Object insertGeometry(Viewer *,

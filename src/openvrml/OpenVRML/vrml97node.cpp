@@ -573,7 +573,7 @@ bool AbstractIndexedSet::isModified() const {
             || (this->coord.get() && this->coord.get()->isModified()));
 }
 
-void AbstractIndexedSet::updateModified(NodePath & path) {
+void AbstractIndexedSet::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->color.get()) { this->color.get()->updateModified(path); }
@@ -1183,7 +1183,7 @@ bool Appearance::isModified() const {
                 && this->textureTransform.get()->isModified()));
 }
 
-void Appearance::updateModified(NodePath& path) {
+void Appearance::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->material.get()) {
@@ -1811,8 +1811,8 @@ namespace {
 
             // Have to load it
             if (!tex[thisIndex].tryURLs(urls, relative)) {
-                cerr << "Error: couldn't read Background texture from URL "
-                     << urls << endl;
+                std::cerr << "Error: couldn't read Background texture from URL "
+                          << urls << std::endl;
             } else if ( tex[thisIndex].pixels() && tex[thisIndex].nc() ) {
                 //
                 // The texture needs to be scaled.
@@ -4096,7 +4096,7 @@ bool ElevationGrid::isModified() const {
             || (this->texCoord.get() && this->texCoord.get()->isModified()));
 }
 
-void ElevationGrid::updateModified(NodePath & path) {
+void ElevationGrid::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->color.get()) { this->color.get()->updateModified(path); }
@@ -6392,7 +6392,7 @@ bool LOD::isModified() const {
  * selected? to be safe: check them all. this potentially means some
  * extra work, but it's a lot easier to reason about.
  */
-void LOD::updateModified(NodePath & path) {
+void LOD::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     for (size_t i = 0; i < this->level.getLength(); ++i) {
@@ -6947,8 +6947,8 @@ void MovieTexture::update(const double currentTime) {
                    : this->nodeType.nodeClass.scene.urlDoc();
         this->image = new Image;
         if (!this->image->tryURLs(this->url, rel)) {
-            cerr << "Error: couldn't read MovieTexture from URL " << this->url
-                 << endl;
+            std::cerr << "Error: couldn't read MovieTexture from URL "
+                      << this->url << std::endl;
         }
         
         
@@ -8739,7 +8739,7 @@ bool PointSet::isModified() const {
             || (this->coord.get() && this->coord.get()->isModified()));
 }
 
-void PointSet::updateModified(NodePath & path) {
+void PointSet::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->color.get()) { this->color.get()->updateModified(path); }
@@ -9796,7 +9796,7 @@ Sound::Sound(const NodeType & type):
  */
 Sound::~Sound() throw () {}
 
-void Sound::updateModified(NodePath & path) {
+void Sound::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->source.get()) { this->source.get()->updateModified(path); }
@@ -10674,7 +10674,7 @@ bool Switch::isModified() const {
 // all. note that the original isModified() just tested the current
 // one. keep that in mind, and change it back when confirmed safe.
 //
-void Switch::updateModified(NodePath & path) {
+void Switch::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     for (size_t i = 0; i < this->choice.getLength(); ++i) {
@@ -10893,7 +10893,7 @@ bool Text::isModified() const {
             || (this->fontStyle.get() && this->fontStyle.get()->isModified()));
 }
 
-void Text::updateModified(NodePath& path) {
+void Text::updateModified(NodePath & path, int flags) {
     if (this->isModified()) { markPathModified(path, true); }
     path.push_front(this);
     if (this->fontStyle.get()) { this->fontStyle.get()->updateModified(path); }

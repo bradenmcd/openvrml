@@ -1,3 +1,8 @@
+2002-06-22  Braden McDaniel  <braden@endoframe.com>
+
+        * Fixed a bunch of warnings and errors flagged by the Intel C++
+          compiler.
+
 2002-06-21  Braden McDaniel  <braden@endoframe.com>
 
         * doc/openvrml.css: Stylesheet fixes for consistency with Web

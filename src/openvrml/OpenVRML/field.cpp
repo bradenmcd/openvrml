@@ -1002,9 +1002,9 @@ SFNode::~SFNode() throw () {}
  */
 std::ostream & SFNode::print(std::ostream & out) const {
     if (!this->node) {
-        return out << "NULL" << endl;
+        return out << "NULL" << std::endl;
     }
-    return out << *this->node << endl;
+    return out << *this->node << std::endl;
 }
 
 /**
@@ -3183,7 +3183,7 @@ std::ostream & MFNode::print(std::ostream & out) const {
     if (this->nodes.size() != 1) { out << '['; }
     for (std::vector<NodePtr>::const_iterator i(this->nodes.begin());
             i != this->nodes.end(); ++i) {
-        out << **i << endl;
+        out << **i << std::endl;
     }
     if (this->nodes.size() != 1) { out << ']'; }
     

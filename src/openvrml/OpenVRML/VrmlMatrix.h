@@ -23,7 +23,7 @@
 
 #   include <assert.h>
 #   include <stddef.h>
-#   include <iostream.h>
+#   include <iostream>
 #   include "common.h"
 
 namespace OpenVRML {
@@ -117,7 +117,7 @@ namespace OpenVRML {
                                  SFVec3f & shear) const;
 
         // Prints a formatted version of the matrix to the given output stream
-        ostream& print(ostream& o);
+        std::ostream & print(std::ostream & out) const;
     };
 
     inline bool operator!=(const VrmlMatrix & lhs, const VrmlMatrix & rhs) {

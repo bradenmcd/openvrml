@@ -29,10 +29,12 @@
 #     define OPENVRML_VERIFY_(condition_)
 #   else
 #     define OPENVRML_VERIFY_(condition_) \
-            if (!condition_) { \
-                std::cerr << __FILE__ << ":" << __LINE__ << ": verification (" \
-                          << ##condition_ << ") failed" << endl; \
-            }
+            do { \
+                if (!condition_) { \
+                    std::cerr << __FILE__ << ":" << __LINE__ << ": verification (" \
+                              << ##condition_ << ") failed" << std::endl; \
+                } \
+            } while (false)
 #   endif
 
 #   ifdef NDEBUG
@@ -40,7 +42,7 @@
 #   else
 #     define OPENVRML_PRINT_EXCEPTION_(ex_) \
             std::cerr << __FILE__ << ":" << __LINE__ << ": " \
-                      << ex_.what() << endl
+                      << ex_.what() << std::endl
 #   endif
             
 #   include <assert.h>

@@ -318,7 +318,7 @@ BSphere::isectFrustum(const VrmlFrustum& frust) const
   // above. this is all much easier with a diagram...
   //
   float zfar = -frust.z_far;
-  d = c[3] - zfar;
+  d = c[2] - zfar;
   if (d < -r)
     return BVolume::BV_OUTSIDE;
   if (d < r)
@@ -436,10 +436,9 @@ BSphere::extend(const float p[3])
 }  
 
 
-void
-BSphere::extend(const AABox & b)
-{
-  cout << "BSphere::extend(VrmlAABox&):WARNING:not implemented" << endl;
+void BSphere::extend(const AABox & b) {
+    std::cout << "BSphere::extend(VrmlAABox&):WARNING:not implemented"
+              << std::endl;
 }
 
 void
@@ -723,10 +722,8 @@ BSphere::transform(const VrmlMatrix & M)
   r = max_scale*r;
 }
 
-ostream&
-BSphere::dump(ostream& o) const
-{
-  return cout << "(" << c[0] << "," << c[1] << "," << c[2] << "):" << r;
+std::ostream & BSphere::dump(std::ostream & out) const {
+    return out << "(" << c[0] << "," << c[1] << "," << c[2] << "):" << r;
 }
 
 
@@ -741,11 +738,9 @@ BSphere::dump(ostream& o) const
 
 AABox::~AABox() {}
 
-int
-AABox::isectFrustum(const VrmlFrustum& f) const
-{
-  cout << "AABox::isectFrustum():WARNING:not implemented" << endl;
-  return BVolume::BV_PARTIAL;
+int AABox::isectFrustum(const VrmlFrustum& f) const {
+    std::cout << "AABox::isectFrustum():WARNING:not implemented" << std::endl;
+    return BVolume::BV_PARTIAL;
 }
 
 
@@ -806,11 +801,8 @@ AABox::transform(const VrmlMatrix & M)
 {
 }
 
-
-ostream&
-AABox::dump(ostream& o) const
-{
-  return cout << "<AABox:not implemented>" << endl;
+std::ostream & AABox::dump(std::ostream & out) const {
+    return out << "<AABox:not implemented>" << std::endl;
 }
 
 } // namespace OpenVRML

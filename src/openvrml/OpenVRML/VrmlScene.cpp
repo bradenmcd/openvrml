@@ -2202,6 +2202,7 @@ namespace {
         case FieldValue::mfvec3f:       return FieldValuePtr(new MFVec3f);
         default: assert(false);
         }
+        return FieldValuePtr(0);
     }
     
     struct AddEventOutValue_ : std::unary_function<NodeInterface, void> {

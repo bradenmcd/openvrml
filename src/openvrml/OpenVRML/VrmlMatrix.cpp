@@ -551,17 +551,19 @@ float VrmlMatrix::det4() const {
 /**
  * @brief Prints a formatted version of the matrix to the given output stream.
  *
- * @param o is output streams
+ * @param out   an output stream.
+ *
+ * @return @p out.
  */
-ostream & VrmlMatrix::print(ostream & o) {
-  for(int i=0; i<4; i++) {
-    for(int j=0; j<4; j++) {
-      o << matrix[i][j];
-      if (j!=3) cout << ",";
+std::ostream & VrmlMatrix::print(std::ostream & out) const {
+    for(size_t i = 0; i < 4; i++) {
+        for(size_t j = 0; j < 4; j++) {
+            out << matrix[i][j];
+            if (j != 3) { out << ", "; }
+        }
+        out << std::endl;
     }
-    o << endl;
-  }
-  return o;
+    return out;
 }
 
 /**
