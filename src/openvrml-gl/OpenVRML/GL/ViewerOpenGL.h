@@ -42,11 +42,16 @@ extern "C" struct GLUtesselator;
  * virtual methods.
  */
 class OPENVRML_GL_SCOPE ViewerOpenGL : public Viewer {
+
 public:
+
   enum { MAX_LIGHTS = 8 };
 
-  ViewerOpenGL(VrmlScene & scene);
+  ViewerOpenGL(VrmlScene *);
+  ViewerOpenGL(ViewerOpenGL const &);
   virtual ~ViewerOpenGL();
+  
+  ViewerOpenGL & operator=(ViewerOpenGL const &);
   
   // Queries
   virtual void getPosition( float *x, float *y, float *z );
@@ -300,6 +305,8 @@ protected:
   virtual void wsSwapBuffers() = 0;
   virtual void wsSetTimer( double ) = 0;
 
+//private:
+
   // Initialize OpenGL state
   void initialize();
 
@@ -390,6 +397,7 @@ protected:
   bool d_reportFPS;
   double d_renderTime;
   double d_renderTime1;
+
 };
 
 #endif // VIEWEROPENGL_H

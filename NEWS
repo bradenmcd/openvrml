@@ -1,5 +1,13 @@
+Changes new in version 0.11.1, 5 August, 2001
+=============================================
+
+- Fixes to the Visual C++ build.
+
+- Other minor bugfixes.
+
+
 Changes new in version 0.11.0, 30 July, 2001
-===============================================
+============================================
 
 - New memory manager for nodes, using a refcounted smart pointer instead of
   an intrusive reference count.
@@ -14,6 +22,8 @@ Changes new in version 0.11.0, 30 July, 2001
 - API cleanup for VrmlField classes.
 
 - Consolidated node implementations into fewer files.
+
+- Support building DLLs under Win32
 
 
 Changes new in version 0.10.1, 31 January, 2001

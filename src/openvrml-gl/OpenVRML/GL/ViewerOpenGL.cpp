@@ -99,7 +99,8 @@ matrix_to_glmatrix(double M[4][4], float GLM[16])
 //  is called from the idle function. A way to pass mouse/keyboard sensor 
 //  events back to the scene is also needed.
 
-ViewerOpenGL::ViewerOpenGL(VrmlScene & scene): Viewer(scene) {
+ViewerOpenGL::ViewerOpenGL(VrmlScene *scene) : Viewer(scene)
+{
   d_GLinitialized = false;
   d_blend = true;
   d_lit = true;
@@ -2727,15 +2728,19 @@ void ViewerOpenGL::transformPoints(int np, float *p)
 //
 
 // update is called from a timer callback and from checkSensitive
-void ViewerOpenGL::update(const double timeNow) {
-    if (this->scene.update(timeNow)) {
-        checkErrors("update");
-        wsPostRedraw();
+void ViewerOpenGL::update( double timeNow )
+{
+
+  if (d_scene->update( timeNow ))
+    {
+      checkErrors("update");
+      wsPostRedraw();
     }
 
-    // Set an alarm clock for the next update time.
-    wsSetTimer(this->scene.getDelta());
+  // Set an alarm clock for the next update time.
+  wsSetTimer( d_scene->getDelta() );
 }
+
 
 void ViewerOpenGL::redraw() 
 {
@@ -2774,7 +2779,7 @@ void ViewerOpenGL::redraw()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  this->scene.render(this);
+  d_scene->render(this);
 
   if (d_reportFPS)
     {
@@ -2970,10 +2975,10 @@ void ViewerOpenGL::handleKey(int key)
       break;
 
     case KEY_PAGE_DOWN:
-      this->scene.nextViewpoint(); wsPostRedraw(); break;
+      if (d_scene) d_scene->nextViewpoint(); wsPostRedraw(); break;
 
     case KEY_PAGE_UP:
-      this->scene.prevViewpoint(); wsPostRedraw(); break;
+      if (d_scene) d_scene->prevViewpoint(); wsPostRedraw(); break;
 
     case '/':			// Frames/second
       d_reportFPS = ! d_reportFPS;
@@ -3025,7 +3030,7 @@ void ViewerOpenGL::handleKey(int key)
       break;
 #ifndef macintosh
     case 'q':
-      this->scene.destroyWorld();	// may not return
+      d_scene->destroyWorld();	// may not return
       break;
 #endif
     default:
@@ -3173,7 +3178,7 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  this->scene.render(this);
+  d_scene->render( this );
 
   d_selectMode = false;
 
@@ -3249,7 +3254,7 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
       if (mouseEvent == EVENT_MOUSE_RELEASE ||
 	  mouseEvent == EVENT_MOUSE_MOVE)
 	{
-	  this->scene.sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
+	  d_scene->sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
 				   timeNow,
 				   selected == d_activeSensitive, false,
 				   selectCoord );
@@ -3257,7 +3262,7 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
 	}
       else			// _DRAG
 	{
-	  this->scene.sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
+	  d_scene->sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
 				   timeNow,
 				   selected == d_activeSensitive, true,
 				   selectCoord );
@@ -3271,14 +3276,14 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
     {
       if (d_overSensitive && d_overSensitive != selected)
 	{
-	  this->scene.sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
+	  d_scene->sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
 				   timeNow,
 				   false, false, // isOver, isActive
 				   selectCoord );
 	  d_overSensitive = 0;
 	}
       d_activeSensitive = selected;
-      this->scene.sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
+      d_scene->sensitiveEvent( d_sensitiveObject[ d_activeSensitive-1 ],
 			       timeNow,
 			       true, true,  // isOver, isActive
 			       selectCoord );
@@ -3289,14 +3294,14 @@ bool ViewerOpenGL::checkSensitive(int x, int y, EventType mouseEvent )
     {
       if (d_overSensitive && d_overSensitive != selected)
 	{
-	  this->scene.sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
+	  d_scene->sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
 				   timeNow,
 				   false, false, // isOver, isActive
 				   selectCoord );
 	}
       d_overSensitive = selected;
       if (d_overSensitive)
-	this->scene.sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
+	d_scene->sensitiveEvent( d_sensitiveObject[ d_overSensitive-1 ],
 				 timeNow,
 				 true, false,  // isOver, isActive
 				 selectCoord );

@@ -35,14 +35,6 @@
             }
 #   endif
 
-#   ifdef NDEBUG
-#     define OPENVRML_PRINT_EXCEPTION_(ex_)
-#   else
-#     define OPENVRML_PRINT_EXCEPTION_(ex_) \
-            std::cerr << __FILE__ << ":" << __LINE__ << ": " \
-                      << ex_.what() << std::endl
-#   endif
-            
 #   include <assert.h>
 #   include <math.h>
 

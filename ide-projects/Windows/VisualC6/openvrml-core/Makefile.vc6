@@ -234,7 +234,7 @@ LINKFLAGS = wsock32.lib /nologo /subsystem:windows /dll /incremental:no\
 OBJ1 = $(BINOUTDIR)\Audio$(O) $(BINOUTDIR)\Doc$(O) $(BINOUTDIR)\Doc2$(O) $(BINOUTDIR)\dummysound$(O)\
        $(BINOUTDIR)\field$(O) $(BINOUTDIR)\Image$(O) $(BINOUTDIR)\MathUtils$(O) \
        $(BINOUTDIR)\Vrml97Parser$(O) \
-       $(BINOUTDIR)\ScriptObject$(O) $(BINOUTDIR)\ScriptJDK$(O)\
+       $(BINOUTDIR)\ScriptObject$(O) \
       $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O)\
       $(BINOUTDIR)\VrmlNamespace$(O) $(BINOUTDIR)\VrmlNode$(O)\
       $(BINOUTDIR)\VrmlNodeProto$(O) $(BINOUTDIR)\VrmlNodePtr$(O) $(BINOUTDIR)\Route$(O) \
@@ -329,21 +329,6 @@ $(BINOUTDIR)\Route.obj : $(SOURCE)\Route.cpp $(SOURCE)\Route.h $(SOURCE)\common.
 $(BINOUTDIR)\ScriptObject.obj : $(SOURCE)\ScriptObject.cpp $(SOURCE)\ScriptObject.h\
 	             		$(SOURCE)\common.h
 					$(CPP) $(CFLAGS) $(SOURCE)\ScriptObject.cpp
-
-
-$(BINOUTDIR)\ScriptJDK.obj : $(SOURCE)\ScriptJDK.cpp $(SOURCE)\ScriptJDK.h\
-								$(SOURCE)\Doc.h\
-								$(SOURCE)\System.h\
-								$(SOURCE)\field.h\
-								$(SOURCE)\VrmlNode.h\
-								$(SOURCE)\vrml97Node.h\
-								$(SOURCE)\VrmlNodeScript.h\
-								$(SOURCE)\VrmlScene.h\
-								$(SOURCE)\VrmlNamespace.h\
-								$(SOURCE)\VrmlNodeType.h\
-								$(SOURCE)\common.h
-								$(CPP) $(CFLAGS)  /I $(ZLIB_DIR)\
-								/I ..\ $(SOURCE)\ScriptJDK.cpp
 
 
 $(BINOUTDIR)\System.obj : $(SOURCE)\System.cpp $(SOURCE)\System.h $(SOURCE)\common.h 

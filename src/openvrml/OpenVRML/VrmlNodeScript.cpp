@@ -5475,7 +5475,7 @@ namespace {
             //
             // Put the new element in the array.
             //
-            mfdata->getArray()[JSVAL_TO_INT(id)] = JSVAL_TO_INT(*vp);
+            mfdata->getArray()[JSVAL_TO_INT(id)] = *vp;
 
             return JS_TRUE;
         }

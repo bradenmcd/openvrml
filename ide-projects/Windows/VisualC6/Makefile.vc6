@@ -265,7 +265,7 @@ $(LIBDIR) :
 OBJ1 = $(BINOUTDIR)\Audio$(O) $(BINOUTDIR)\Doc$(O) $(BINOUTDIR)\Doc2$(O) $(BINOUTDIR)\dummysound$(O)\
        $(BINOUTDIR)\field$(O) $(BINOUTDIR)\Image$(O) $(BINOUTDIR)\MathUtils$(O) \
        $(BINOUTDIR)\Vrml97Parser$(O)\
-       $(BINOUTDIR)\ScriptJDK$(O) $(BINOUTDIR)\ScriptObject$(O)\
+       $(BINOUTDIR)\ScriptObject$(O)\
       $(BINOUTDIR)\System$(O) $(BINOUTDIR)\Viewer$(O)\
       $(BINOUTDIR)\VrmlNamespace$(O) $(BINOUTDIR)\VrmlNode$(O)\
       $(BINOUTDIR)\VrmlNodeProto$(O) $(BINOUTDIR)\VrmlNodePtr$(O) $(BINOUTDIR)\Route$(O) \
@@ -405,21 +405,6 @@ $(BINOUTDIR)\Route.obj : $(CORESOURCE)\Route.cpp $(CORESOURCE)\Route.h $(CORESOU
 $(BINOUTDIR)\ScriptObject.obj : $(CORESOURCE)\ScriptObject.cpp $(CORESOURCE)\ScriptObject.h\
 	             		$(CORESOURCE)\common.h
 					$(CPP) $(CFLAGS) $(CORESOURCE)\ScriptObject.cpp
-
-$(BINOUTDIR)\ScriptJDK.obj : $(CORESOURCE)\ScriptJDK.cpp $(CORESOURCE)\ScriptJDK.h\
-								$(CORESOURCE)\Doc.h\
-								$(CORESOURCE)\System.h\
-								$(CORESOURCE)\field.h\
-								$(CORESOURCE)\VrmlNode.h\
-								$(CORESOURCE)\vrml97Node.h\
-								$(CORESOURCE)\VrmlNodeScript.h\
-								$(CORESOURCE)\VrmlScene.h\
-								$(CORESOURCE)\VrmlNamespace.h\
-								$(CORESOURCE)\VrmlNodeType.h\
-								$(CORESOURCE)\common.h
-								$(CPP) $(CFLAGS)  /I $(ZLIB_DIR)\
-								/I .\ $(CORESOURCE)\ScriptJDK.cpp
-
 
 $(BINOUTDIR)\System.obj : $(CORESOURCE)\System.cpp $(CORESOURCE)\System.h $(CORESOURCE)\common.h 
 						 $(CPP) $(CFLAGS) $(CORESOURCE)\System.cpp

@@ -114,6 +114,8 @@ main(int argc, char **argv)
       else
 	inputName = inputUrl = "-";		// Read stdin
     }
+  else
+    cout << "Loading " << inputName << " ...";
 
   if (! inputUrl) inputUrl = inputName;
 
@@ -126,12 +128,15 @@ main(int argc, char **argv)
 	cout << "\nError: couldn't write to " << outputName << endl;
     }
 
-  viewer = new ViewerGlut(*vrmlScene);
+  viewer = new ViewerGlut( vrmlScene );
   if (! viewer)
     {
-      cerr << "\nError: couldn't create GLUT viewer.\n";
+      cout << "\nError: couldn't create GLUT viewer.\n";
       exit(1);
     }
+
+  if (*inputName != '-')
+    cout << " done.\n";
 
   if (title && *title) glutSetWindowTitle(title);
 

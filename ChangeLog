@@ -1,12 +1,7 @@
-2001-07-30  Braden McDaniel  <braden@endoframe.com>
+2001-08-04  Braden McDaniel  <braden@endoframe.com>
 
-        * Removed obsolete #undef's in `acconfig.h'.
-
-        * Added private macro for outputting exception messages in debug
-          mode.
-
-        * Changed Viewer's constructor to take a VrmlScene reference
-          rather than a pointer.
+        * Fixed minor bug in MFInt32::setElement() in the JavaScript
+          binding.
 
 2001-07-24  Braden McDaniel  <braden@endoframe.com>
 
