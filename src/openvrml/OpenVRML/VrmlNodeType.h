@@ -112,6 +112,7 @@ public:
 
     ISMap *getFieldISMap( const char *fieldName );
 
+    FieldList &fields() { return d_fields; }
     FieldList &eventIns() { return d_eventIns; }
     FieldList &eventOuts() { return d_eventOuts; }
 

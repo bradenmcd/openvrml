@@ -108,6 +108,7 @@ public:
   virtual const VrmlField *getField(const char *fieldName) const;
   virtual void setField(const char *fieldName, const VrmlField &fieldValue);
 
+  virtual bool isModified() const;
   virtual void updateModified(VrmlNodePath& path, int flags);
 
   virtual void accumulateTransform( VrmlNode* );

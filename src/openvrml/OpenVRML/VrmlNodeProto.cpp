@@ -35,6 +35,7 @@
 #include "VrmlBSphere.h"
 
 #include <string.h>
+#include <stdio.h>
 
 #ifndef NDEBUG
 #define VRML_NODE_PROTO_DEBUG
@@ -207,6 +208,26 @@ void VrmlNodeProto::instantiate()
 	      ed->ismap.push_front(nf);
 	    }
 	}
+
+      // Do the same for fields. Code duplication -- messy!
+      VrmlNodeType::FieldList &fields = d_nodeType->fields();
+      for (ev = fields.begin(); ev != fields.end(); ++ev )
+        {
+          EventDispatch *ed = new EventDispatch;
+          char *fieldName = (*ev)->name;
+          ed->name = new char [ strlen(fieldName)+5 ];
+          sprintf ( ed->name, "set_%s", fieldName );
+          ismap = &(*ev)->thisIS;
+          d_eventDispatch.push_front(ed);
+          for (j = ismap->begin(); j != ismap->end(); ++j)
+            {
+              VrmlNodeType::NodeFieldRec *nf = new VrmlNodeType::NodeFieldRec;
+              nf->node = d_scope->findNode((*j)->node->name());
+              nf->fieldName = new char[strlen((*j)->fieldName)+1];
+              strcpy(nf->fieldName, (*j)->fieldName);
+              ed->ismap.push_front(nf);
+            }
+        }
 
       // Distribute eventOuts. Each eventOut ROUTE is added
       // directly to the local nodes that have IS'd the PROTO
@@ -461,6 +482,14 @@ void VrmlNodeProto::render(Viewer *viewer, VrmlRenderContext rc)
       instantiate();
     }
 
+  // If the PROTO has been modified it is necessary to rebuild the viewer object
+  if ( d_viewerObject && isModified() )
+    {
+      viewer->removeObject(d_viewerObject);
+      d_viewerObject = 0;
+    }
+
+
   if (d_viewerObject)
     viewer->insertReference(d_viewerObject);
 
@@ -559,7 +588,7 @@ const VrmlField *VrmlNodeProto::getField(const char *fieldName) const
 {
   NameValueRec *nv = findField(fieldName);
   if (nv) return nv->value;
-  return 0;
+  return d_nodeType->fieldDefault(fieldName);
 }
 
 VrmlNodeLOD* VrmlNodeProto::toLOD() const
@@ -595,6 +624,17 @@ VrmlNodeProto::getBVolume() const
   //cout << "}";
   //bv->dump(cout) << endl;
   return bv;
+}
+
+/**
+ * @brief determine whether or not implementation is modified
+ */
+bool VrmlNodeProto::isModified() const {
+  if ( d_modified ) return 1;
+  int n = implNodes.getLength();
+  for ( int i=0; i<n; ++i )
+    if ( implNodes.getElement(i)->isModified() ) return 1;
+  return 0;
 }
 
 void

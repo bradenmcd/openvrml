@@ -226,7 +226,7 @@ void VrmlScene::replaceWorld(VrmlMFNode & nodes, VrmlNamespace * ns,
   d_nodes.removeChildren();
 
   // Do this to set the relative URL
-  d_nodes.addToScene( (VrmlScene *) this, urlDoc()->url() );
+  d_nodes.addToScene(this, this->d_url ? this->d_url->url() : 0);
 
   // Add the nodes to a Group and put the group in the scene.
   // This will load EXTERNPROTOs and Inlines.
