@@ -1,3 +1,8 @@
+2000-11-28  Braden McDaniel  <braden@endoframe.com>
+
+        * Applied patch to lookat from Jeff Dubrule <igor@pobox.com> to prefer
+          viewpoint descriptions to DEF names in the viewpoint menu.
+
 2000-11-27  Braden McDaniel  <braden@endoframe.com>
 
         * Got rid of confusing VrmlSField and VrmlMField #defines in
