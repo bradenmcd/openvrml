@@ -1,3 +1,8 @@
+2005-04-07 Braden McDaniel  <braden@endoframe.com>
+
+	* README:  Added "Package directory layout" and "Usage"
+	sections.
+
 2005-03-31 Braden McDaniel  <braden@endoframe.com>
 
 	Removed openvrml::node_class_ptr and openvrml::node_type_ptr
