@@ -1,3 +1,11 @@
+2005-04-11 Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment improvements.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
 2005-04-07 Braden McDaniel  <braden@endoframe.com>
 
 	* README:  Added "Package directory layout" and "Usage"

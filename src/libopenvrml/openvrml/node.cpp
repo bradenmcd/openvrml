@@ -968,6 +968,12 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @fn navigation_info_node * node::node_cast<navigation_info_node *>(node * n) throw ()
+ *
+ * @brief Cast to a <code>navigation_info_node</code>.
+ */
+
+/**
  * @fn normal_node * node::node_cast<normal_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>normal_node</code>.
@@ -3529,17 +3535,6 @@ texture_node * texture_node::to_texture() throw ()
  * @brief The image.
  *
  * @return the image.
- */
-
-/**
- * @fn size_t texture_node::frames() const throw ()
- *
- * @brief Get the number of frames for a time-dependent texture.
- *
- * @return the number of frames.
- *
- * @todo This needs to go away. Time-dependent textures might not be
- *      frame-based. For instance, consider an SVG animation.
  */
 
 /**

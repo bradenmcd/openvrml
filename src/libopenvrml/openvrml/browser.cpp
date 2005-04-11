@@ -3555,12 +3555,6 @@ viewer_in_use::~viewer_in_use() throw ()
  */
 
 /**
- * @var browser::vrml97_root_scope
- *
- * @brief Root scope that is initialized with the VRML97 node types.
- */
-
-/**
  * @internal
  *
  * @class browser::node_class_map
@@ -3921,24 +3915,6 @@ void browser::node_class_map::render(openvrml::viewer & v)
  * @var std::list<viewpoint_node *> browser::viewpoint_list
  *
  * @brief A list of all the Viewpoint nodes in the browser.
- */
-
-/**
- * @typedef browser::bind_stack_t
- *
- * @brief A list of bound nodes.
- */
-
-/**
- * @var browser::bind_stack_t browser::navigation_info_stack
- *
- * @brief The stack of bound NavigationInfo nodes.
- */
-
-/**
- * @var std::list<node *> browser::navigation_infos
- *
- * @brief A list of all the NavigationInfo nodes in the browser.
  */
 
 /**

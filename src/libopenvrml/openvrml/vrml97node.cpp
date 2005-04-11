@@ -10856,24 +10856,6 @@ movie_texture_node::set_speed_listener::do_process_event(const sffloat & speed,
  */
 
 /**
- * @var int movie_texture_node::frame
- *
- * @brief Index of the currently shown frame.
- */
-
-/**
- * @var int movie_texture_node::lastFrame
- *
- * @brief Index of the previously shown frame.
- */
-
-/**
- * @var double movie_texture_node::lastFrameTime
- *
- * @brief Timestamp corresponding to the showing of the previous frame.
- */
-
-/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
