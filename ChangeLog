@@ -1,3 +1,9 @@
+2005-04-11 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp:  Construct a GdkNativeWindow
+	rather than reinterpret_casting to it in order to be 64-bit
+	clean.
+
 2005-03-15 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/basetypes.h:  Do not include
