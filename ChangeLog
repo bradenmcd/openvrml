@@ -1,5 +1,17 @@
 2005-04-11 Braden McDaniel  <braden@endoframe.com>
 
+	Fixes to make --disable-mozilla-plugin work.
+
+	* mozilla-plugin/configure.ac:  configure fails if the PATH
+	argument to AC_PATH_PROG is not quoted and the program (xpidl,
+	in this case) is not found.
+	* mozilla-plugin/lib/gtkglext/configure.in:  Removed occurrences
+	of AC_MSG_ERROR. In general, check failures here should not
+	cause GtkGLExt's configure to fail so that the main configure
+	can succeed even if some of GtkGLExt's dependencies are missing.
+
+2005-04-11 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml.cpp:  Construct a GdkNativeWindow
 	rather than reinterpret_casting to it in order to be 64-bit
 	clean.
