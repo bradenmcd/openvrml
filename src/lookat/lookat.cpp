@@ -32,7 +32,7 @@ extern "C" Uint32 update_timer_callback(Uint32 interval, void * param);
 
 namespace {
 
-    class sdl_error : std::runtime_error {
+    class sdl_error : public std::runtime_error {
     public:
         explicit sdl_error(const std::string & message);
         virtual ~sdl_error() throw ();

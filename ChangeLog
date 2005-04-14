@@ -1,3 +1,8 @@
+2005-04-14 Braden McDaniel  <braden@endoframe.com>
+
+	* src/lookat/lookat.cpp:  sdl_error should publicly inherit
+	std::runtime_error.
+
 2005-04-11 Braden McDaniel  <braden@endoframe.com>
 
 	Fixes to make --disable-mozilla-plugin work.
