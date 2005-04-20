@@ -4,7 +4,7 @@
 //
 // Copyright 1998  Chris Morley
 // Copyright 1999  Kumaran Santhanam
-// Copyright 2001, 2002, 2003, 2004, 2005  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or
@@ -26,18 +26,11 @@
 #   include <config.h>
 # endif
 
-# ifdef OPENVRML_ENABLE_PNG_TEXTURES
-#   include <png.h>
-# endif
-# ifdef OPENVRML_ENABLE_JPEG_TEXTURES
-#   include <jpeglib.h>
-# endif
 # include <algorithm>
 # include <iostream>
 # include <iterator>
 # include <limits>
-# include <boost/algorithm/string/predicate.hpp>
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
 #   include <ft2build.h>
 #   include FT_FREETYPE_H
 #   include FT_GLYPH_H
@@ -47,9 +40,9 @@ extern "C" {
 #   include <fontconfig/fcfreetype.h>
 }
 # endif
-# include <private.h>
 # include "vrml97node.h"
 # include "browser.h"
+# include "private.h"
 
 namespace {
 
@@ -549,7 +542,7 @@ namespace {
         const typename field_value_map_t::const_iterator itr =
                 this->field_value_map.find(id);
         if (itr == this->field_value_map.end()) {
-            throw unsupported_interface(node.node::type(),
+            throw unsupported_interface(node.type(),
                                         node_interface::field_id,
                                         id);
         }
@@ -571,7 +564,7 @@ namespace {
             this->event_listener_map.find(id);
         if (pos == end) { pos = this->event_listener_map.find("set_" + id); }
         if (pos == end) {
-            throw unsupported_interface(node.node::type(),
+            throw unsupported_interface(node.type(),
                                         node_interface::eventin_id,
                                         id);
         }
@@ -595,697 +588,11 @@ namespace {
             pos = this->event_emitter_map.find(id + "_changed");
         }
         if (pos == end) {
-            throw unsupported_interface(node.node::type(),
+            throw unsupported_interface(node.type(),
                                         node_interface::eventout_id,
                                         id);
         }
         return pos->second->deref(node);
-    }
-
-# ifdef OPENVRML_ENABLE_PNG_TEXTURES
-    extern "C" void openvrml_png_info_callback(png_structp png_ptr,
-                                               png_infop info_ptr);
-    extern "C" void openvrml_png_row_callback(png_structp png_ptr,
-                                              png_bytep new_row,
-                                              png_uint_32 row_num,
-                                              int pass);
-    extern "C" void openvrml_png_end_callback(png_structp png_ptr,
-                                              png_infop info_ptr);
-# endif
-
-# ifdef OPENVRML_ENABLE_JPEG_TEXTURES
-    extern "C" void openvrml_jpeg_init_source(j_decompress_ptr cinfo);
-    extern "C" boolean openvrml_jpeg_fill_input_buffer(j_decompress_ptr cinfo);
-    extern "C" void openvrml_jpeg_skip_input_data(j_decompress_ptr cinfo,
-                                                  long num_bytes);
-    extern "C" void openvrml_jpeg_term_source(j_decompress_ptr cinfo);
-# endif
-
-    class image_stream_listener : public openvrml::stream_listener {
-        boost::recursive_mutex & node_mutex_;
-        openvrml::image & image_;
-        openvrml::node & node_;
-
-        class image_reader {
-        public:
-            void read(const std::vector<unsigned char> & data);
-
-        private:
-            virtual void do_read(const std::vector<unsigned char> & data) = 0;
-        };
-
-# ifdef OPENVRML_ENABLE_PNG_TEXTURES
-        friend void openvrml_png_info_callback(png_structp png_ptr,
-                                               png_infop info_ptr);
-        friend void openvrml_png_row_callback(png_structp png_ptr,
-                                              png_bytep new_row,
-                                              png_uint_32 row_num,
-                                              int pass);
-        friend void openvrml_png_end_callback(png_structp png_ptr,
-                                              png_infop info_ptr);
-
-        class png_reader : public image_reader {
-            png_structp png_ptr_;
-            png_infop info_ptr_;
-
-        public:
-            image_stream_listener & stream_listener;
-            std::vector<png_byte> old_row;
-            bool gray_palette;
-
-            explicit png_reader(image_stream_listener & stream_listener);
-            virtual ~png_reader() throw ();
-
-        private:
-            virtual void do_read(const std::vector<unsigned char> & data);
-        };
-# endif
-
-# ifdef OPENVRML_ENABLE_JPEG_TEXTURES
-        friend void openvrml_jpeg_init_source(j_decompress_ptr cinfo);
-        friend boolean openvrml_jpeg_fill_input_buffer(j_decompress_ptr cinfo);
-        friend void openvrml_jpeg_skip_input_data(j_decompress_ptr cinfo,
-                                                  long num_bytes);
-        friend void openvrml_jpeg_term_source(j_decompress_ptr cinfo);
-
-        class jpeg_reader : public image_reader {
-        public:
-            struct source_mgr {
-                jpeg_source_mgr pub;
-                jpeg_reader * reader;
-            };
-
-        private:
-            jpeg_decompress_struct cinfo_;
-            struct error_mgr {
-                jpeg_error_mgr pub;
-                jmp_buf jmpbuf;
-            } error_mgr_;
-            source_mgr source_mgr_;
-
-        public:
-            image_stream_listener & stream_listener;
-            enum read_state_t {
-                reading_back = 0,
-                reading_new
-            } read_state;
-            size_t bytes_to_skip;
-            size_t backtrack_buffer_bytes_unread;
-            std::vector<JOCTET> buffer, backtrack_buffer;
-            enum decoder_state_t {
-                header,
-                start_decompress,
-                decompress_progressive,
-                decompress_sequential,
-                done,
-                sink_non_jpeg_trailer,
-                error
-            } decoder_state;
-            JSAMPARRAY scanlines;
-            bool progressive_scan_started;
-
-            explicit jpeg_reader(image_stream_listener & stream_listener);
-            virtual ~jpeg_reader() throw ();
-
-        private:
-            virtual void do_read(const std::vector<unsigned char> & data);
-
-            bool output_scanlines();
-        };
-# endif
-
-        boost::scoped_ptr<image_reader> image_reader_;
-
-    public:
-        image_stream_listener(openvrml::image & image,
-                              openvrml::node & node,
-                              boost::recursive_mutex & node_mutex);
-        virtual ~image_stream_listener() throw ();
-
-    private:
-        virtual void
-        do_stream_available(const std::string & uri,
-                            const std::string & media_type);
-
-        virtual void
-        do_data_available(const std::vector<unsigned char> & data);
-    };
-
-    void
-    image_stream_listener::image_reader::
-    read(const std::vector<unsigned char> & data)
-    {
-        this->do_read(data);
-    }
-
-# ifdef OPENVRML_ENABLE_PNG_TEXTURES
-    void openvrml_png_info_callback(png_structp png_ptr, png_infop info_ptr)
-    {
-        typedef image_stream_listener::png_reader png_reader_t;
-        png_reader_t & reader =
-            *static_cast<png_reader_t *>(png_get_progressive_ptr(png_ptr));
-
-        boost::recursive_mutex::scoped_lock
-            lock(reader.stream_listener.node_mutex_);
-
-        openvrml::image & image = reader.stream_listener.image_;
-
-        image.comp(png_get_channels(png_ptr, info_ptr));
-        const size_t width = png_get_image_width(png_ptr, info_ptr);
-        const size_t height = png_get_image_height(png_ptr, info_ptr);
-        image.resize(width, height);
-
-        //
-        // Strip 16 bit/color files to 8 bit/color.
-        //
-        png_set_strip_16(png_ptr);
-
-        //
-        // Extract multiple pixels with bit depths of 1, 2, and 4 from a
-        // single byte into separate bytes.  (Usefule for paletted and
-        // grayscale images.)
-        //
-        png_set_packing(png_ptr);
-
-        //
-        // Expand paletted colors into true RGB triplets.
-        //
-        const png_byte color_type = png_get_color_type(png_ptr, info_ptr);
-        if (color_type == PNG_COLOR_TYPE_PALETTE) {
-            png_set_expand(png_ptr);
-            image.comp(3);
-        }
-
-        //
-        // Expand grayscale images to the full 8 bits from 1, 2, or
-        // 4 bits/pixel.
-        //
-        const png_byte bit_depth = png_get_bit_depth(png_ptr, info_ptr);
-        if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) {
-            png_set_expand(png_ptr);
-        }
-
-        //
-        // Expand paletted or RGB images with transparency to full alpha
-        // channels so the data will be available as RGBA quartets.
-        //
-        if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
-            png_set_expand(png_ptr);
-            image.comp(image.comp() + 1);
-        }
-
-        if (color_type == PNG_COLOR_TYPE_PALETTE) {
-            int num_palette;
-            png_colorp palette;
-            if (png_get_PLTE(png_ptr, info_ptr, &palette, &num_palette)) {
-                reader.gray_palette = true;
-                for (int i = 0; i < num_palette; ++i) {
-                    if (palette[i].red != palette[i].green
-                        || palette[i].blue != palette[i].green) {
-                        reader.gray_palette = false;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (reader.gray_palette) {
-            if (image.comp() == 3) {
-                image.comp(1);
-            } else if (image.comp() == 4) {
-                image.comp(2);
-            }
-        }
-
-        //
-        // Set gamma.
-        //
-        static const double screen_gamma = 2.2; // Display exponent.
-        static const double default_gamma = 0.45455;
-        double file_gamma;
-        png_set_gamma(png_ptr,
-                      screen_gamma,
-                      png_get_gAMA(png_ptr, info_ptr, &file_gamma)
-                      ? file_gamma
-                      : default_gamma);
-
-        png_set_interlace_handling(png_ptr);
-
-        png_read_update_info(png_ptr, info_ptr);
-
-        reader.old_row.resize(image.comp() * image.x());
-    }
-
-    void openvrml_png_row_callback(png_structp png_ptr,
-                                   png_bytep new_row,
-                                   png_uint_32 row_num,
-                                   int pass)
-    {
-        if (!new_row) { return; }
-
-        typedef image_stream_listener::png_reader png_reader_t;
-        png_reader_t & reader =
-            *static_cast<png_reader_t *>(png_get_progressive_ptr(png_ptr));
-
-        boost::recursive_mutex::scoped_lock
-            lock(reader.stream_listener.node_mutex_);
-
-        openvrml::image & image = reader.stream_listener.image_;
-
-        png_progressive_combine_row(png_ptr, &reader.old_row[0], new_row);
-
-        //
-        // openvrml::image pixels start at the bottom left.
-        //
-        const size_t image_row = (image.y() - 1) - row_num;
-        const size_t bytes_per_row = reader.old_row.size();
-        const size_t image_width = bytes_per_row / image.comp();
-        for (size_t pixel_index = 0, byte_index = 0; pixel_index < image_width;
-             ++pixel_index) {
-            using openvrml::int32;
-            int32 pixel = 0x00000000;
-            for (size_t component = image.comp();
-                 component > 0;
-                 --component) {
-                pixel |= int32(new_row[byte_index]) << (8 * (component - 1));
-                if (reader.gray_palette) {
-                    if (image.comp() == 1) {
-                        // We just want every third pixel element.
-                        byte_index += 3;
-                    } else if (image.comp() == 2) {
-                        // We just want the first and fourth pixel elements.
-                        byte_index += (byte_index % 4 == 0) ? 3 : 1;
-                    }
-                } else {
-                    ++byte_index;
-                }
-            }
-            image.pixel(image_row * image_width + pixel_index, pixel);
-        }
-
-        reader.stream_listener.node_.modified(true);
-
-        copy(new_row, new_row + bytes_per_row, reader.old_row.begin());
-    }
-
-    void openvrml_png_end_callback(png_structp png_ptr, png_infop info_ptr)
-    {
-    }
-
-    image_stream_listener::png_reader::
-    png_reader(image_stream_listener & stream_listener):
-        png_ptr_(0),
-        info_ptr_(0),
-        stream_listener(stream_listener),
-        gray_palette(false)
-    {
-        using openvrml_::scope_guard;
-        using openvrml_::make_guard;
-
-        this->png_ptr_ =
-            png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
-        if (!this->png_ptr_) { throw std::bad_alloc(); }
-        scope_guard guard = make_guard(&png_destroy_read_struct,
-                                       &this->png_ptr_,
-                                       &this->info_ptr_,
-                                       png_infopp(0));
-
-        this->info_ptr_ = png_create_info_struct(this->png_ptr_);
-        if (!this->info_ptr_) { throw std::bad_alloc(); }
-
-        png_set_progressive_read_fn(this->png_ptr_,
-                                    this,
-                                    openvrml_png_info_callback,
-                                    openvrml_png_row_callback,
-                                    openvrml_png_end_callback);
-        guard.dismiss();
-    }
-
-    image_stream_listener::png_reader::~png_reader() throw ()
-    {
-        png_destroy_read_struct(&this->png_ptr_,
-                                &this->info_ptr_,
-                                png_infopp(0));
-    }
-
-    void
-    image_stream_listener::png_reader::
-    do_read(const std::vector<unsigned char> & data)
-    {
-        int jmpval = setjmp(png_jmpbuf(this->png_ptr_));
-        if (jmpval != 0) { return; }
-
-        png_process_data(this->png_ptr_,
-                         this->info_ptr_,
-                         const_cast<png_byte *>(&data[0]),
-                         data.size());
-    }
-# endif // defined OPENVRML_ENABLE_PNG_TEXTURES
-
-# ifdef OPENVRML_ENABLE_JPEG_TEXTURES
-    void openvrml_jpeg_init_source(j_decompress_ptr cinfo)
-    {
-    }
-
-    boolean openvrml_jpeg_fill_input_buffer(j_decompress_ptr cinfo)
-    {
-        typedef image_stream_listener::jpeg_reader::source_mgr source_mgr_t;
-        source_mgr_t & src =
-            *reinterpret_cast<source_mgr_t *>(cinfo->src);
-
-        jpeg_source_mgr & source_mgr = src.pub;
-        image_stream_listener::jpeg_reader & reader = *src.reader;
-
-        switch (reader.read_state) {
-        case image_stream_listener::jpeg_reader::reading_back:
-            if (reader.buffer.empty()) {
-                return false; // Suspend.
-            }
-            if (reader.bytes_to_skip > reader.buffer.size()) {
-                reader.bytes_to_skip -= reader.buffer.size();
-                reader.buffer.clear();
-                return false; // Suspend.
-            }
-
-            reader.backtrack_buffer_bytes_unread = source_mgr.bytes_in_buffer;
-            {
-                std::vector<JOCTET>::iterator pos = reader.buffer.begin();
-                advance(pos, reader.bytes_to_skip);
-                source_mgr.next_input_byte = &*pos;
-            }
-            source_mgr.bytes_in_buffer -= reader.bytes_to_skip;
-            reader.bytes_to_skip = 0;
-            reader.read_state =
-                image_stream_listener::jpeg_reader::reading_new;
-
-            return true;
-
-        case image_stream_listener::jpeg_reader::reading_new:
-            if (source_mgr.next_input_byte != (reader.buffer.empty()
-                                               ? 0 : &reader.buffer[0])) {
-                reader.backtrack_buffer_bytes_unread = 0;
-                reader.backtrack_buffer.resize(0);
-            }
-
-            {
-                const size_t old_backtrack_buffer_size =
-                    reader.backtrack_buffer.size();
-
-                reader.backtrack_buffer.resize(source_mgr.bytes_in_buffer
-                                               + old_backtrack_buffer_size);
-
-                copy(source_mgr.next_input_byte,
-                     source_mgr.next_input_byte + source_mgr.bytes_in_buffer,
-                     reader.backtrack_buffer.begin()
-                     + old_backtrack_buffer_size);
-
-                source_mgr.next_input_byte =
-                    &*(reader.backtrack_buffer.begin()
-                       + old_backtrack_buffer_size
-                       - reader.backtrack_buffer_bytes_unread);
-            }
-            source_mgr.bytes_in_buffer += reader.backtrack_buffer_bytes_unread;
-            reader.read_state =
-                image_stream_listener::jpeg_reader::reading_back;
-        }
-        return false;
-    }
-
-    void openvrml_jpeg_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
-    {
-        typedef image_stream_listener::jpeg_reader::source_mgr source_mgr_t;
-        source_mgr_t & src =
-            *reinterpret_cast<source_mgr_t *>(cinfo->src);
-
-        jpeg_source_mgr & source_mgr = src.pub;
-        image_stream_listener::jpeg_reader & reader = *src.reader;
-
-        if (num_bytes > source_mgr.bytes_in_buffer) {
-            reader.bytes_to_skip = num_bytes - source_mgr.bytes_in_buffer;
-            source_mgr.next_input_byte += source_mgr.bytes_in_buffer;
-            source_mgr.bytes_in_buffer = 0;
-        } else {
-            source_mgr.bytes_in_buffer -= num_bytes;
-            source_mgr.next_input_byte += num_bytes;
-        }
-    }
-
-    void openvrml_jpeg_term_source(j_decompress_ptr cinfo)
-    {
-    }
-
-    image_stream_listener::jpeg_reader::
-    jpeg_reader(image_stream_listener & stream_listener):
-        stream_listener(stream_listener),
-        read_state(reading_back),
-        bytes_to_skip(0),
-        backtrack_buffer_bytes_unread(0),
-        decoder_state(header),
-        scanlines(0),
-        progressive_scan_started(false)
-    {
-        //std::memset(&this->cinfo, 0, sizeof this->cinfo_);
-        //std::memset(&this->source_mgr_, 0, sizeof this->source_mgr_);
-
-        this->cinfo_.err = jpeg_std_error(&this->error_mgr_.pub);
-        int jmpval = setjmp(this->error_mgr_.jmpbuf);
-        if (jmpval != 0) { return; }
-        jpeg_create_decompress(&this->cinfo_);
-        this->source_mgr_.pub.next_input_byte = 0;
-        this->source_mgr_.pub.bytes_in_buffer = 0;
-        this->source_mgr_.pub.init_source = openvrml_jpeg_init_source;
-        this->source_mgr_.pub.fill_input_buffer =
-            openvrml_jpeg_fill_input_buffer;
-        this->source_mgr_.pub.skip_input_data = openvrml_jpeg_skip_input_data;
-        this->source_mgr_.pub.resync_to_restart = jpeg_resync_to_restart;
-        this->source_mgr_.pub.term_source = openvrml_jpeg_term_source;
-        this->source_mgr_.reader = this;
-
-        this->cinfo_.src =
-            reinterpret_cast<jpeg_source_mgr *>(&this->source_mgr_);
-    }
-
-    image_stream_listener::jpeg_reader::~jpeg_reader() throw ()
-    {
-        jpeg_destroy_decompress(&this->cinfo_);
-    }
-
-    void
-    image_stream_listener::jpeg_reader::
-    do_read(const std::vector<unsigned char> & data)
-    {
-        if (data.size() > this->buffer.size()) {
-            this->buffer.resize(data.size());
-        }
-        copy(data.begin(), data.end(), this->buffer.begin());
-
-        int jmpval = setjmp(this->error_mgr_.jmpbuf);
-        if (jmpval != 0) { return; }
-
-        switch (this->decoder_state) {
-        case jpeg_reader::header:
-        {
-            boost::recursive_mutex::scoped_lock
-                lock(this->stream_listener.node_mutex_);
-
-            static const bool require_image = true;
-            const int read_header_result = jpeg_read_header(&this->cinfo_,
-                                                            require_image);
-            if (read_header_result == JPEG_SUSPENDED) { return; }
-
-            switch (this->cinfo_.jpeg_color_space) {
-            case JCS_GRAYSCALE:
-            case JCS_RGB:
-            case JCS_YCbCr:
-                this->cinfo_.out_color_space = JCS_RGB;
-                break;
-            default:
-                this->decoder_state = jpeg_reader::error;
-                return;
-            }
-
-            this->cinfo_.buffered_image =
-                jpeg_has_multiple_scans(&this->cinfo_);
-
-            jpeg_calc_output_dimensions(&this->cinfo_);
-
-            openvrml::image & image = this->stream_listener.image_;
-            image.comp(this->cinfo_.num_components);
-            image.resize(this->cinfo_.image_width, this->cinfo_.image_height);
-
-            const JDIMENSION samples_per_row =
-                this->cinfo_.output_width * this->cinfo_.num_components;
-            static const JDIMENSION num_rows = 1;
-            this->scanlines =
-                (*this->cinfo_.mem->alloc_sarray)(
-                    reinterpret_cast<j_common_ptr>(&this->cinfo_),
-                    JPOOL_IMAGE,
-                    samples_per_row,
-                    num_rows);
-
-            this->decoder_state = jpeg_reader::start_decompress;
-        }
-        case jpeg_reader::start_decompress:
-        {
-            this->cinfo_.dct_method = JDCT_ISLOW;
-            this->cinfo_.dither_mode = JDITHER_FS;
-            this->cinfo_.do_fancy_upsampling = true;
-            this->cinfo_.enable_2pass_quant = false;
-            this->cinfo_.do_block_smoothing = true;
-
-            if (!jpeg_start_decompress(&this->cinfo_)) {
-                return; // Input suspended.
-            }
-
-            this->decoder_state = this->cinfo_.buffered_image
-                ? jpeg_reader::decompress_progressive
-                : jpeg_reader::decompress_sequential;
-        }
-        case jpeg_reader::decompress_sequential:
-            if (this->decoder_state == jpeg_reader::decompress_sequential) {
-                if (!this->output_scanlines()) {
-                    return; // Input suspended.
-                }
-                this->decoder_state = jpeg_reader::done;
-            }
-        case jpeg_reader::decompress_progressive:
-            if (this->decoder_state == jpeg_reader::decompress_progressive) {
-                int status;
-                do {
-                    status = jpeg_consume_input(&this->cinfo_);
-                } while (status != JPEG_SUSPENDED
-                         && status != JPEG_REACHED_EOI);
-
-                while (true) {
-                    if (this->cinfo_.output_scanline == 0
-                        && !this->progressive_scan_started) {
-                        int scan = this->cinfo_.input_scan_number;
-
-                        if (this->cinfo_.output_scan_number == 0
-                            && scan > 1
-                            && status != JPEG_REACHED_EOI) {
-                            --scan;
-                        }
-
-                        if (!jpeg_start_output(&this->cinfo_, scan)) {
-                            return; // Input suspended.
-                        }
-                        this->progressive_scan_started = true;
-                    }
-
-                    if (!this->output_scanlines()) {
-                        return; // Input suspended.
-                    }
-
-                    if (this->cinfo_.output_scanline
-                        == this->cinfo_.output_height) {
-                        if (!jpeg_finish_output(&this->cinfo_)) {
-                            return; // Input suspended.
-                        }
-                        if (jpeg_input_complete(&this->cinfo_)
-                            && (this->cinfo_.input_scan_number
-                                == this->cinfo_.output_scan_number)) {
-                            break;
-                        }
-                        this->cinfo_.output_scanline = 0;
-                        this->progressive_scan_started = false;
-                    }
-                }
-
-                this->decoder_state = jpeg_reader::done;
-            }
-        case jpeg_reader::done:
-            if (!jpeg_finish_decompress(&this->cinfo_)) {
-                return; // Input suspended.
-            }
-            this->decoder_state = jpeg_reader::sink_non_jpeg_trailer;
-            break;
-
-        case jpeg_reader::sink_non_jpeg_trailer:
-            break;
-
-        case jpeg_reader::error:
-            break;
-        }
-    }
-
-    bool image_stream_listener::jpeg_reader::output_scanlines()
-    {
-        boost::recursive_mutex::scoped_lock
-            lock(this->stream_listener.node_mutex_);
-
-        JDIMENSION top = this->cinfo_.output_scanline;
-        bool result = true;
-
-        openvrml::image & image = this->stream_listener.image_;
-        const size_t bytes_per_row = image.comp() * image.x();
-
-        while (this->cinfo_.output_scanline < this->cinfo_.output_height) {
-            JDIMENSION scanlines_completed =
-                jpeg_read_scanlines(&this->cinfo_, this->scanlines, 1);
-            if (scanlines_completed != 1) {
-                result = false; // Suspend.
-                break;
-            }
-
-            const size_t image_row = image.y() - this->cinfo_.output_scanline;
-            for (size_t pixel_index = 0, byte_index = 0;
-                 pixel_index < image.x();
-                 ++pixel_index) {
-                using openvrml::int32;
-                int32 pixel = 0x00000000;
-                for (size_t component = image.comp();
-                     component > 0;
-                     --component, ++byte_index) {
-                    const JSAMPLE sample = (*this->scanlines)[byte_index];
-                    pixel |= int32(sample) << (8 * (component - 1));
-                }
-                image.pixel(image_row * image.x() + pixel_index, pixel);
-            }
-        }
-
-        if (top != this->cinfo_.output_scanline) {
-            this->stream_listener.node_.modified(true);
-        }
-
-        return result;
-    }
-# endif // defined OPENVRML_ENABLE_JPEG_TEXTURES
-
-    image_stream_listener::
-    image_stream_listener(openvrml::image & image,
-                          openvrml::node & node,
-                          boost::recursive_mutex & node_mutex):
-        node_mutex_(node_mutex),
-        image_(image),
-        node_(node)
-    {}
-
-    image_stream_listener::~image_stream_listener() throw ()
-    {}
-
-    void
-    image_stream_listener::do_stream_available(const std::string & uri,
-                                               const std::string & media_type)
-    {
-        using boost::algorithm::iequals;
-        if (iequals(media_type, "image/png")
-            || iequals(media_type, "image/x-png")) {
-# ifdef OPENVRML_ENABLE_PNG_TEXTURES
-            this->image_reader_.reset(new png_reader(*this));
-# endif
-        } else if (iequals(media_type, "image/jpeg")) {
-# ifdef OPENVRML_ENABLE_JPEG_TEXTURES
-            this->image_reader_.reset(new jpeg_reader(*this));
-# endif
-        }
-    }
-
-    void
-    image_stream_listener::
-    do_data_available(const std::vector<unsigned char> & data)
-    {
-        if (this->image_reader_) { this->image_reader_->read(data); }
     }
 }
 
@@ -1316,8 +623,7 @@ namespace vrml97_node {
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-abstract_base::abstract_base(const node_type & type,
-                             const boost::shared_ptr<openvrml::scope> & scope):
+abstract_base::abstract_base(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope)
 {}
 
@@ -1788,7 +1094,7 @@ anchor_class::~anchor_class() throw ()
  *                              supported by anchor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 anchor_class::do_create_type(const std::string & id,
                           const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -1822,7 +1128,7 @@ anchor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<anchor_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & anchorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
@@ -2054,14 +1360,14 @@ appearance_class::~appearance_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Appearance
+ * @return a node_type_ptr to a node_type capable of creating Appearance
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface
  *                                  not supported by appearance_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 appearance_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -2080,7 +1386,7 @@ appearance_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<appearance_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & appearanceNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
@@ -2332,13 +1638,13 @@ audio_clip_class::~audio_clip_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating AudioClip nodes.
+ * @return a node_type_ptr to a node_type capable of creating AudioClip nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by audio_clip_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 audio_clip_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -2372,7 +1678,7 @@ audio_clip_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<audio_clip_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & audioClipNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
@@ -2612,7 +1918,7 @@ void audio_clip_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser().add_audio_clip(*this);
+    this->scene()->browser.add_audio_clip(*this);
 }
 
 /**
@@ -2623,7 +1929,7 @@ void audio_clip_node::do_initialize(const double timestamp)
 void audio_clip_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser().remove_audio_clip(*this);
+    this->scene()->browser.remove_audio_clip(*this);
 }
 
 
@@ -2671,23 +1977,13 @@ background_class::~background_class() throw ()
  * @brief Set the first Background node in the world.
  *
  * The first Background node in the world is used as the initial background.
- * This method is used by background_node::do_initialize.
+ * This method is used by Background::do_initialize.
  *
  * @param background    a Background node.
  */
 void background_class::set_first(background_node & background) throw ()
 {
     this->first = &background;
-}
-
-/**
- * @brief Reset the pointer to the first Background node in the world to null.
- *
- * This function is called by <code>background_node::do_shutdown</code>.
- */
-void background_class::reset_first() throw ()
-{
-    this->first = 0;
 }
 
 /**
@@ -2700,18 +1996,6 @@ void background_class::reset_first() throw ()
 bool background_class::has_first() const throw ()
 {
     return this->first;
-}
-
-/**
- * @brief Check to see if a node is registered as the "first" node.
- *
- * @param background    a background_node.
- *
- * @return @c true if @p background is the fist node; @c false otherwise.
- */
-bool background_class::is_first(background_node & background) throw ()
-{
-    return &background == this->first;
 }
 
 /**
@@ -2889,13 +2173,13 @@ void background_class::do_render(viewer & v) const throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Background nodes.
+ * @return a node_type_ptr to a node_type capable of creating Background nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by background_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 background_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -2941,7 +2225,7 @@ background_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<background_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & backgroundNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -3614,9 +2898,8 @@ event_side_effect(const mfstring & value,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-background_node::
-background_node(const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope):
+background_node::background_node(const node_type & type,
+                                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -3672,12 +2955,10 @@ void background_node::do_initialize(const double timestamp) throw ()
  */
 void background_node::do_shutdown(const double timestamp) throw ()
 {
-    background_class & node_class =
+    background_class & nodeClass =
         const_cast<background_class &>(
             static_cast<const background_class &>(this->type().node_class()));
-    node_class.unbind(*this, timestamp);
-
-    if (node_class.is_first(*this)) { node_class.reset_first(); }
+    nodeClass.unbind(*this, timestamp);
 }
 
 /**
@@ -3689,15 +2970,23 @@ void background_node::update_textures()
         if (this->front_url_.mfstring::value.empty()) {
             this->front = image();
         } else {
-            using std::auto_ptr;
-            auto_ptr<resource_istream>
-                in(this->scene()
-                   ->get_resource(this->front_url_.mfstring::value));
-            auto_ptr<stream_listener>
-                listener(new image_stream_listener(this->front,
-                                                   *this,
-                                                   this->mutex()));
-            read_stream(in, listener);
+            doc2 base(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->front_url_.mfstring::value, &base)) {
+                this->front = image(img_.w(),
+                                    img_.h(),
+                                    img_.nc(),
+                                    img_.pixels(),
+                                    img_.pixels()
+                                    + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                using std::ostream;
+                using std::endl;
+
+                ostream & err = this->type().node_class().browser().err;
+                err << "Couldn't read texture from " << this->front_url_
+                    << endl;
+            }
         }
         this->front_needs_update = false;
     }
@@ -3705,15 +2994,22 @@ void background_node::update_textures()
         if (this->back_url_.mfstring::value.empty()) {
             this->back = image();
         } else {
-            using std::auto_ptr;
-            auto_ptr<resource_istream>
-                in(this->scene()
-                   ->get_resource(this->back_url_.mfstring::value));
-            auto_ptr<stream_listener>
-                listener(new image_stream_listener(this->back,
-                                                   *this,
-                                                   this->mutex()));
-            read_stream(in, listener);
+            doc2 base(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->back_url_.mfstring::value, &base)) {
+                this->back = image(img_.w(),
+                                   img_.h(),
+                                   img_.nc(),
+                                   img_.pixels(),
+                                   img_.pixels()
+                                   + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                using std::ostream;
+                using std::endl;
+
+                ostream & err = this->type().node_class().browser().err;
+                err << "Couldn't read texture from " << this->back_url_ << endl;
+            }
         }
         this->back_needs_update = false;
     }
@@ -3721,15 +3017,22 @@ void background_node::update_textures()
         if (this->left_url_.mfstring::value.empty()) {
             this->left = image();
         } else {
-            using std::auto_ptr;
-            auto_ptr<resource_istream>
-                in(this->scene()
-                   ->get_resource(this->left_url_.mfstring::value));
-            auto_ptr<stream_listener>
-                listener(new image_stream_listener(this->left,
-                                                   *this,
-                                                   this->mutex()));
-            read_stream(in, listener);
+            doc2 base(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->left_url_.mfstring::value, &base)) {
+                this->left = image(img_.w(),
+                                   img_.h(),
+                                   img_.nc(),
+                                   img_.pixels(),
+                                   img_.pixels()
+                                   + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                using std::ostream;
+                using std::endl;
+
+                ostream & err = this->type().node_class().browser().err;
+                err << "Couldn't read texture from " << this->left_url_ << endl;
+            }
         }
         this->left_needs_update = false;
     }
@@ -3737,15 +3040,23 @@ void background_node::update_textures()
         if (this->right_url_.mfstring::value.empty()) {
             this->right = image();
         } else {
-            using std::auto_ptr;
-            auto_ptr<resource_istream>
-                in(this->scene()
-                   ->get_resource(this->right_url_.mfstring::value));
-            auto_ptr<stream_listener>
-                listener(new image_stream_listener(this->right,
-                                                   *this,
-                                                   this->mutex()));
-            read_stream(in, listener);
+            doc2 base(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->right_url_.mfstring::value, &base)) {
+                this->right = image(img_.w(),
+                                    img_.h(),
+                                    img_.nc(),
+                                    img_.pixels(),
+                                    img_.pixels()
+                                    + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                using std::ostream;
+                using std::endl;
+
+                ostream & err = this->type().node_class().browser().err;
+                err << "Couldn't read texture from " << this->right_url_
+                    << endl;
+            }
         }
         this->right_needs_update = false;
     }
@@ -3753,15 +3064,22 @@ void background_node::update_textures()
         if (this->top_url_.mfstring::value.empty()) {
             this->top = image();
         } else {
-            using std::auto_ptr;
-            auto_ptr<resource_istream>
-                in(this->scene()
-                   ->get_resource(this->top_url_.mfstring::value));
-            auto_ptr<stream_listener>
-                listener(new image_stream_listener(this->top,
-                                                   *this,
-                                                   this->mutex()));
-            read_stream(in, listener);
+            doc2 base(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->top_url_.mfstring::value, &base)) {
+                this->top = image(img_.w(),
+                                  img_.h(),
+                                  img_.nc(),
+                                  img_.pixels(),
+                                  img_.pixels()
+                                  + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                using std::ostream;
+                using std::endl;
+
+                ostream & err = this->type().node_class().browser().err;
+                err << "Couldn't read texture from " << this->top_url_ << endl;
+            }
         }
         this->top_needs_update = false;
     }
@@ -3769,15 +3087,23 @@ void background_node::update_textures()
         if (this->bottom_url_.mfstring::value.empty()) {
             this->bottom = image();
         } else {
-            using std::auto_ptr;
-            auto_ptr<resource_istream>
-                in(this->scene()
-                   ->get_resource(this->bottom_url_.mfstring::value));
-            auto_ptr<stream_listener>
-                listener(new image_stream_listener(this->bottom,
-                                                   *this,
-                                                   this->mutex()));
-            read_stream(in, listener);
+            doc2 base(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->bottom_url_.mfstring::value, &base)) {
+                this->bottom = image(img_.w(),
+                                     img_.h(),
+                                     img_.nc(),
+                                     img_.pixels(),
+                                     img_.pixels()
+                                     + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                using std::ostream;
+                using std::endl;
+
+                ostream & err = this->type().node_class().browser().err;
+                err << "Couldn't read texture from " << this->bottom_url_
+                    << endl;
+            }
         }
         this->bottom_needs_update = false;
     }
@@ -3811,15 +3137,15 @@ billboard_class::~billboard_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Billboard nodes.
+ * @return a node_type_ptr to a node_type capable of creating Billboard nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by billboard_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 billboard_class::do_create_type(const std::string & id,
-                                const node_interface_set & interfaces) const
+                             const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -3845,7 +3171,7 @@ billboard_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<billboard_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & billboardNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -4105,13 +3431,13 @@ box_class::~box_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Box nodes.
+ * @return a node_type_ptr to a node_type capable of creating Box nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by box_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 box_class::do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -4123,7 +3449,7 @@ box_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<box_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & boxNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -4246,13 +3572,13 @@ collision_class::~collision_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Collision nodes.
+ * @return a node_type_ptr to a node_type capable of creating Collision nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by collision_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 collision_class::do_create_type(const std::string & id,
                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -4286,7 +3612,7 @@ collision_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<collision_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & collisionNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -4468,13 +3794,13 @@ color_class::~color_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Color nodes.
+ * @return a node_type_ptr to a node_type capable of creating Color nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by color_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 color_class::do_create_type(const std::string & id,
                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -4486,7 +3812,7 @@ color_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<color_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & colorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -4588,14 +3914,14 @@ color_interpolator_class::~color_interpolator_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating ColorInterpolator
+ * @return a node_type_ptr to a node_type capable of creating ColorInterpolator
  *      nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by color_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 color_interpolator_class::do_create_type(const std::string & id,
                                       const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -4617,7 +3943,7 @@ color_interpolator_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<color_interpolator_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & colorInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -4859,13 +4185,13 @@ cone_class::~cone_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Cone nodes.
+ * @return a node_type_ptr to a node_type capable of creating Cone nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by cone_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 cone_class::do_create_type(const std::string & id,
                         const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -4887,7 +4213,7 @@ cone_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<cone_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & coneNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
@@ -5031,13 +4357,13 @@ coordinate_class::~coordinate_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Coordinate nodes.
+ * @return a node_type_ptr to a node_type capable of creating Coordinate nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by coordinate_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 coordinate_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -5049,7 +4375,7 @@ coordinate_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<coordinate_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & coordinateNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -5152,14 +4478,14 @@ coordinate_interpolator_class::~coordinate_interpolator_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating
+ * @return a node_type_ptr to a node_type capable of creating
  *      CoordinateInterpolator nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by coordinate_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 coordinate_interpolator_class::do_create_type(
     const std::string & id,
     const node_interface_set & interfaces) const
@@ -5181,7 +4507,7 @@ coordinate_interpolator_class::do_create_type(
 
     typedef vrml97_node_type_impl<coordinate_interpolator_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & coordinateInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
@@ -5418,13 +4744,13 @@ cylinder_class::~cylinder_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Cylinder nodes.
+ * @return a node_type_ptr to a node_type capable of creating Cylinder nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by cylinder_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 cylinder_class::do_create_type(const std::string & id,
                             const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -5449,7 +4775,7 @@ cylinder_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<cylinder_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & cylinderNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
@@ -5609,14 +4935,14 @@ cylinder_sensor_class::~cylinder_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating CylinderSensor
+ * @return a node_type_ptr to a node_type capable of creating CylinderSensor
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by cylinder_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 cylinder_sensor_class::do_create_type(const std::string & id,
                                    const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -5653,7 +4979,7 @@ cylinder_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<cylinder_sensor_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & cylinderSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -5945,9 +5271,6 @@ void cylinder_sensor_node::activate(double timestamp,
                                     bool isActive,
                                     double * p)
 {
-    using openvrml_::pi;
-    using openvrml_::pi_2;
-
     // Become active
     if (isActive && !this->is_active_.value) {
         this->is_active_.value = isActive;
@@ -6067,14 +5390,14 @@ directional_light_class::~directional_light_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating DirectionalLight
+ * @return a node_type_ptr to a node_type capable of creating DirectionalLight
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by directional_light_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 directional_light_class::do_create_type(const std::string & id,
                                      const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -6099,7 +5422,7 @@ directional_light_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<directional_light_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & directionalLightNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
@@ -6264,14 +5587,14 @@ elevation_grid_class::~elevation_grid_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating ElevationGrid
+ * @return a node_type_ptr to a node_type capable of creating ElevationGrid
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by elevation_grid_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 elevation_grid_class::do_create_type(const std::string & id,
                                   const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -6323,7 +5646,7 @@ elevation_grid_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<elevation_grid_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & elevationGridNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -6743,13 +6066,13 @@ extrusion_class::~extrusion_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Extrusion nodes.
+ * @return a node_type_ptr to a node_type capable of creating Extrusion nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by extrusion_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 extrusion_class::do_create_type(const std::string & id,
                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -6801,7 +6124,7 @@ extrusion_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<extrusion_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & extrusionNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -7332,16 +6655,6 @@ void fog_class::set_first(fog_node & fog) throw ()
 }
 
 /**
- * @brief Reset the pointer to the first Fog node in the world to null.
- *
- * This function is called by <code>fog_node::do_shutdown</code>.
- */
-void fog_class::reset_first() throw ()
-{
-    this->first = 0;
-}
-
-/**
  * @brief Check to see if the first node has been set.
  *
  * This method is used by fog_node::do_initialize.
@@ -7351,18 +6664,6 @@ void fog_class::reset_first() throw ()
 bool fog_class::has_first() const throw ()
 {
     return this->first;
-}
-
-/**
- * @brief Check to see if a node is registered as the "first" node.
- *
- * @param fog   a fog_node.
- *
- * @return @c true if @p fog is the fist node; @c false otherwise.
- */
-bool fog_class::is_first(fog_node & fog) throw ()
-{
-    return &fog == this->first;
 }
 
 /**
@@ -7479,13 +6780,13 @@ void fog_class::do_render(viewer & v) const throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Fog nodes.
+ * @return a node_type_ptr to a node_type capable of creating Fog nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by fog_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 fog_class::do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -7510,7 +6811,7 @@ fog_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<fog_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & fogNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -7620,7 +6921,7 @@ fog_node::set_bind_listener::~set_bind_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void fog_node::set_bind_listener::do_process_event(const sfbool & bind,
-                                                   const double timestamp)
+                                                const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -7680,8 +6981,7 @@ void fog_node::set_bind_listener::do_process_event(const sfbool & bind,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-fog_node::fog_node(const node_type & type,
-                   const boost::shared_ptr<openvrml::scope> & scope):
+fog_node::fog_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -7720,12 +7020,10 @@ void fog_node::do_initialize(const double timestamp) throw ()
  */
 void fog_node::do_shutdown(const double timestamp) throw ()
 {
-    fog_class & node_class =
+    fog_class & nodeClass =
         const_cast<fog_class &>(
             static_cast<const fog_class &>(this->type().node_class()));
-    node_class.unbind(*this, timestamp);
-
-    if (node_class.is_first(*this)) { node_class.reset_first(); }
+    nodeClass.unbind(*this, timestamp);
 }
 
 
@@ -7756,13 +7054,13 @@ font_style_class::~font_style_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating FontStyle nodes.
+ * @return a node_type_ptr to a node_type capable of creating FontStyle nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by font_style_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 font_style_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -7799,7 +7097,7 @@ font_style_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<font_style_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & fontStyleNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -8095,13 +7393,13 @@ group_class::~group_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating group nodes.
+ * @return a node_type_ptr to a node_type capable of creating group nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by group_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 group_class::do_create_type(const std::string & id,
                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -8126,7 +7424,7 @@ group_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<group_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & groupNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
             interface != interfaces.end(); ++interface) {
@@ -8661,17 +7959,16 @@ image_texture_class::~image_texture_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating ImageTexture
+ * @return a node_type_ptr to a node_type capable of creating ImageTexture
  *         nodes.
  *
- * @exception unsupported_interface if @p interfaces includes an interface not
- *                                  supported by image_texture_class.
+ * @exception unsupported_interface  if @p interfaces includes an interface not
+ *                              supported by image_texture_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-image_texture_class::
-do_create_type(const std::string & id,
-               const node_interface_set & interfaces) const
+const node_type_ptr
+image_texture_class::do_create_type(const std::string & id,
+                                 const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -8688,7 +7985,7 @@ do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<image_texture_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & imageTextureNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -8815,9 +8112,8 @@ image_texture_node::url_exposedfield::event_side_effect(const mfstring & url,
  * @param type  the node_type associated with the node.
  * @param scope the scope to which the node belongs.
  */
-image_texture_node::
-image_texture_node(const node_type & type,
-                   const boost::shared_ptr<openvrml::scope> & scope):
+image_texture_node::image_texture_node(const node_type & type,
+                                       const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_texture_node(type, scope),
     url_(*this),
@@ -8843,6 +8139,16 @@ const image & image_texture_node::image() const throw ()
 }
 
 /**
+ * @brief The number of frames.
+ *
+ * @return 0.
+ */
+size_t image_texture_node::frames() const throw ()
+{
+    return 0;
+}
+
+/**
  * @brief render_texture implementation.
  *
  * @param v viewer.
@@ -8865,14 +8171,20 @@ void image_texture_node::update_texture()
 {
     if (this->texture_needs_update) {
         if (!this->url_.mfstring::value.empty()) {
-            using std::auto_ptr;
-            auto_ptr<resource_istream>
-                in(this->scene()->get_resource(this->url_.mfstring::value));
-            auto_ptr<stream_listener>
-                listener(new image_stream_listener(this->image_,
-                                                   *this,
-                                                   this->mutex()));
-            read_stream(in, listener);
+            doc2 baseDoc(this->scene()->url());
+            img img_;
+            if (img_.try_urls(this->url_.mfstring::value, &baseDoc)) {
+                this->image_ =
+                    openvrml::image(img_.w(),
+                                    img_.h(),
+                                    img_.nc(),
+                                    img_.pixels(),
+                                    img_.pixels()
+                                    + (img_.w() * img_.h() * img_.nc()));
+            } else {
+                OPENVRML_PRINT_MESSAGE_("Couldn't read ImageTexture from URL "
+                                        + this->url_.mfstring::value[0]);
+            }
         }
         this->texture_needs_update = false;
     }
@@ -8906,14 +8218,14 @@ indexed_face_set_class::~indexed_face_set_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating IndexedFaceSet
+ * @return a node_type_ptr to a node_type capable of creating IndexedFaceSet
  *         nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by indexed_face_set_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 indexed_face_set_class::do_create_type(const std::string & id,
                                     const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -8977,7 +8289,7 @@ indexed_face_set_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<indexed_face_set_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & indexedFaceSetNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -9516,14 +8828,14 @@ indexed_line_set_class::~indexed_line_set_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating IndexedLineSet
+ * @return a node_type_ptr to a node_type capable of creating IndexedLineSet
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by indexed_line_set_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 indexed_line_set_class::do_create_type(const std::string & id,
                                     const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -9554,7 +8866,7 @@ indexed_line_set_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<indexed_line_set_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & indexedLineSetNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -9732,13 +9044,13 @@ inline_class::~inline_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Inline nodes.
+ * @return a node_type_ptr to a node_type capable of creating Inline nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by inline_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 inline_class::do_create_type(const std::string & id,
                           const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -9757,7 +9069,7 @@ inline_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<inline_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & inlineNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -9844,8 +9156,7 @@ inline_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-inline_node::inline_node(const node_type & type,
-                         const boost::shared_ptr<openvrml::scope> & scope):
+inline_node::inline_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
@@ -9872,10 +9183,20 @@ inline_node::~inline_node() throw ()
  * @param context   a rendering context.
  */
 void inline_node::do_render_child(openvrml::viewer & viewer,
-                                  const rendering_context context)
+                         const rendering_context context)
 {
     this->load();
     if (this->inlineScene) { this->inlineScene->render(viewer, context); }
+}
+
+/**
+ * @brief Cast to an inline_node.
+ *
+ * @return a pointer to the inline_node.
+ */
+inline_node * inline_node::to_inline() const
+{
+    return const_cast<inline_node *>(this);
 }
 
 /**
@@ -9920,21 +9241,7 @@ void inline_node::activate(double time, bool isOver, bool isActive, double *p)
 /**
  * @brief Load the children from the URL.
  */
-void inline_node::load()
-{
-    class inline_scene : public openvrml::scene {
-    public:
-        inline_scene(openvrml::browser & b, openvrml::scene * parent):
-            openvrml::scene(b, parent)
-        {}
-
-    private:
-        virtual void scene_loaded()
-        {
-            this->initialize(openvrml::browser::current_time());
-        }
-    };
-
+void inline_node::load() {
     //
     // XXX Need to check whether Url has been modified.
     //
@@ -9944,9 +9251,10 @@ void inline_node::load()
     this->bounding_volume_dirty(true);
 
     assert(this->scene());
-    this->inlineScene = new inline_scene(this->scene()->browser(),
-                                         this->scene());
-    this->inlineScene->load(this->url_.mfstring::value);
+    this->inlineScene = new openvrml::scene(this->scene()->browser,
+                                            this->url_.mfstring::value,
+                                            this->scene());
+    this->inlineScene->initialize(browser::current_time());
 }
 
 
@@ -9974,13 +9282,13 @@ lod_class::~lod_class() throw () {}
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating LOD nodes.
+ * @return a node_type_ptr to a node_type capable of creating LOD nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by lod_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 lod_class::do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -9999,7 +9307,7 @@ lod_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<lod_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & lodNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -10270,13 +9578,13 @@ material_class::~material_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Material nodes.
+ * @return a node_type_ptr to a node_type capable of creating Material nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by material_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 material_class::do_create_type(const std::string & id,
                             const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -10304,7 +9612,7 @@ material_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<material_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & materialNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -10561,14 +9869,14 @@ movie_texture_class::~movie_texture_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating MovieTexture
+ * @return a node_type_ptr to a node_type capable of creating MovieTexture
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by movie_texture_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 movie_texture_class::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -10605,7 +9913,7 @@ movie_texture_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<movie_texture_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & movieTextureNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -10850,9 +10158,33 @@ movie_texture_node::set_speed_listener::do_process_event(const sffloat & speed,
  */
 
 /**
+ * @var img * movie_texture_node::img_
+ *
+ * @brief Movie data.
+ */
+
+/**
  * @var image movie_texture_node::image_
  *
  * @brief Frame data.
+ */
+
+/**
+ * @var int movie_texture_node::frame
+ *
+ * @brief Index of the currently shown frame.
+ */
+
+/**
+ * @var int movie_texture_node::lastFrame
+ *
+ * @brief Index of the previously shown frame.
+ */
+
+/**
+ * @var double movie_texture_node::lastFrameTime
+ *
+ * @brief Timestamp corresponding to the showing of the previous frame.
  */
 
 /**
@@ -10861,9 +10193,8 @@ movie_texture_node::set_speed_listener::do_process_event(const sffloat & speed,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-movie_texture_node::
-movie_texture_node(const node_type & type,
-                   const boost::shared_ptr<openvrml::scope> & scope):
+movie_texture_node::movie_texture_node(const node_type & type,
+                                       const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_texture_node(type, scope),
     loop_(*this, false),
@@ -10874,14 +10205,20 @@ movie_texture_node(const node_type & type,
     stop_time_(*this),
     url_(*this),
     duration_changed_(this->duration_),
-    is_active_(this->active_)
+    is_active_(this->active_),
+    img_(0),
+    frame(0),
+    lastFrame(-1),
+    lastFrameTime(-1.0)
 {}
 
 /**
  * @brief Destroy.
  */
 movie_texture_node::~movie_texture_node() throw ()
-{}
+{
+    delete this->img_;
+}
 
 /**
  * @brief Cast to a movie_texture_node.
@@ -10898,7 +10235,6 @@ movie_texture_node* movie_texture_node::to_movie_texture() const
  */
 void movie_texture_node::update(const double time)
 {
-# if 0
     if (this->modified()) {
         if (this->img_) {
             const char * imageUrl = this->img_->url();
@@ -11029,7 +10365,6 @@ void movie_texture_node::update(const double time)
         double d = this->lastFrameTime + fabs(1 / this->speed_.value) - time;
         this->type().node_class().browser().delta(0.9 * d);
     }
-# endif
 }
 
 /**
@@ -11043,6 +10378,16 @@ const image & movie_texture_node::image() const throw ()
 }
 
 /**
+ * @brief The number of frames.
+ *
+ * @return the number of frames.
+ */
+size_t movie_texture_node::frames() const throw ()
+{
+    return this->img_ ? this->img_->nframes() : 0;
+}
+
+/**
  * @brief Initialize.
  *
  * @param timestamp the current time.
@@ -11053,7 +10398,7 @@ void movie_texture_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser().add_movie(*this);
+    this->scene()->browser.add_movie(*this);
 }
 
 /**
@@ -11064,7 +10409,7 @@ void movie_texture_node::do_initialize(const double timestamp)
 void movie_texture_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser().remove_movie(*this);
+    this->scene()->browser.remove_movie(*this);
 }
 
 /**
@@ -11076,7 +10421,6 @@ void movie_texture_node::do_shutdown(const double timestamp) throw ()
  */
 viewer::texture_object_t movie_texture_node::do_render_texture(viewer & v)
 {
-# if 0
     if (!this->img_ || this->frame < 0) { return 0; }
 
     viewer::texture_object_t texture_object = 0;
@@ -11092,8 +10436,6 @@ viewer::texture_object_t movie_texture_node::do_render_texture(viewer & v)
 
     this->lastFrame = this->frame;
     return texture_object;
-# endif
-    return 0;
 }
 
 
@@ -11104,31 +10446,12 @@ viewer::texture_object_t movie_texture_node::do_render_texture(viewer & v)
  */
 
 /**
- * @typedef navigation_info_class::bound_nodes_t
- *
- * @brief A bound NavigationInfo node stack.
- */
-
-/**
- * @var navigation_info_node * navigation_info_class::first
- *
- * @brief The first NavigationInfo node in the initial scene graph.
- */
-
-/**
- * @var navigation_info_class::bound_nodes_t navigation_info_class::bound_nodes
- *
- * @brief The bound NavigationInfo node stack.
- */
-
-/**
  * @brief Construct.
  *
  * @param browser the browser associated with this class object.
  */
 navigation_info_class::navigation_info_class(openvrml::browser & browser):
-    node_class(browser),
-    first(0)
+    node_class(browser)
 {}
 
 /**
@@ -11138,175 +10461,19 @@ navigation_info_class::~navigation_info_class() throw ()
 {}
 
 /**
- * @brief Set the first NavigationInfo node in the world.
- *
- * The first NavigationInfo node in the world is used as the initially active
- * NavigationInfo. This method is used by navigation_info_node::do_initialize.
- *
- * @param nav_info    a Background node.
- */
-void navigation_info_class::set_first(navigation_info_node & nav_info) throw ()
-{
-    this->first = &nav_info;
-}
-
-/**
- * @brief Reset the pointer to the first NavigationInfo node in the world to
- *        null.
- *
- * This function is called by <code>navigation_info_node::do_shutdown</code>.
- */
-void navigation_info_class::reset_first() throw ()
-{
-    this->first = 0;
-}
-
-/**
- * @brief Check to see if the first node has been set.
- *
- * This method is used by navigation_info_node::do_initialize.
- *
- * @return @c true if the first node has already been set; @c false otherwise.
- */
-bool navigation_info_class::has_first() const throw ()
-{
-    return this->first;
-}
-
-/**
- * @brief Check to see if a node is registered as the "first" node.
- *
- * @param nav_info  a navigation_info_node.
- *
- * @return @c true if @p nav_info is the fist node; @c false otherwise.
- */
-bool navigation_info_class::is_first(navigation_info_node & nav_info) throw ()
-{
-    return &nav_info == this->first;
-}
-
-/**
- * @brief Push a navigation_info_node on the top of the bound node stack.
- *
- * @param nav_info    the node to bind.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void navigation_info_class::bind(navigation_info_node & nav_info,
-                                 const double timestamp)
-    throw (std::bad_alloc)
-{
-    using std::find;
-
-    //
-    // If the node is already the active node, do nothing.
-    //
-    if (!this->bound_nodes.empty() && &nav_info == this->bound_nodes.back())
-    {
-        return;
-    }
-
-    //
-    // If the node is already on the stack, remove it.
-    //
-    const bound_nodes_t::iterator pos =
-        find(this->bound_nodes.begin(), this->bound_nodes.end(), &nav_info);
-    if (pos != this->bound_nodes.end()) { this->bound_nodes.erase(pos); }
-
-    //
-    // Send FALSE from the currently active node's isBound.
-    //
-    if (!this->bound_nodes.empty()) {
-        navigation_info_node & current =
-            dynamic_cast<navigation_info_node &>(*this->bound_nodes.back());
-        current.is_bound_.value = false;
-        node::emit_event(current.is_bound_emitter_, timestamp);
-    }
-
-    //
-    // Push the node to the top of the stack, and have it send isBound TRUE.
-    //
-    this->bound_nodes.push_back(&nav_info);
-    nav_info.is_bound_.value = true;
-    node::emit_event(nav_info.is_bound_emitter_, timestamp);
-
-    this->browser().active_navigation_info(nav_info);
-}
-
-/**
- * @brief Remove a navigation_info_node from the bound node stack.
- *
- * @param nav_info    the node to unbind.
- * @param timestamp     the current time.
- */
-void navigation_info_class::unbind(navigation_info_node & nav_info,
-                                   const double timestamp)
-    throw ()
-{
-    using std::find;
-
-    const bound_nodes_t::iterator pos =
-        find(this->bound_nodes.begin(), this->bound_nodes.end(), &nav_info);
-    if (pos != this->bound_nodes.end()) {
-        nav_info.is_bound_.value = false;
-        node::emit_event(nav_info.is_bound_emitter_, timestamp);
-
-        if (pos == this->bound_nodes.end() - 1
-            && this->bound_nodes.size() > 1) {
-            navigation_info_node & newActive =
-                dynamic_cast<navigation_info_node &>(
-                    **(this->bound_nodes.end() - 2));
-            newActive.is_bound_.value = true;
-            node::emit_event(newActive.is_bound_emitter_, timestamp);
-
-            this->browser().active_navigation_info(nav_info);
-        } else {
-            this->browser().reset_default_navigation_info();
-        }
-        this->bound_nodes.erase(pos);
-    }
-}
-
-/**
- * @brief node_class-specific initialization.
- *
- * @param initial_viewpoint the viewpoint_node that should be bound initially.
- * @param timestamp         the current time.
- */
-void
-navigation_info_class::
-do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-              const double timestamp)
-    throw ()
-{
-    if (this->first) {
-        try {
-            event_listener & listener =
-                this->first->event_listener("set_bind");
-            assert(dynamic_cast<sfbool_listener *>(&listener));
-            static_cast<sfbool_listener &>(listener)
-                .process_event(sfbool(true), timestamp);
-        } catch (unsupported_interface & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        }
-    }
-}
-
-/**
  * @brief Create a node_type.
  *
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating NavigationInfo
+ * @return a node_type_ptr to a node_type capable of creating NavigationInfo
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by navigation_info_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 navigation_info_class::do_create_type(const std::string & id,
                                    const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -11336,7 +10503,7 @@ navigation_info_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<navigation_info_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & navigationInfoNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -11475,22 +10642,39 @@ navigation_info_node::set_bind_listener::~set_bind_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-navigation_info_node::set_bind_listener::
-do_process_event(const sfbool & bind,
-                 const double timestamp)
+navigation_info_node::set_bind_listener::do_process_event(const sfbool & bind,
+                                                       const double timestamp)
     throw (std::bad_alloc)
 {
     try {
         navigation_info_node & node =
             dynamic_cast<navigation_info_node &>(this->node());
-        navigation_info_class & node_class =
-            const_cast<navigation_info_class &>(
-                static_cast<const navigation_info_class &>(
-                    this->node().type().node_class()));
-        if (bind.value) {
-            node_class.bind(node, timestamp);
-        } else {
-            node_class.unbind(node, timestamp);
+
+        navigation_info_node * current =
+            node.type().node_class().browser().bindable_navigation_info_top();
+
+        if (bind.value) {        // set_bind TRUE
+            if (&node != current) {
+                if (current) {
+                    current->is_bound_.value = false;
+                    node::emit_event(current->is_bound_emitter_, timestamp);
+                }
+                node.type().node_class().browser().bindable_push(&node);
+                node.is_bound_.value = true;
+                node::emit_event(node.is_bound_emitter_, timestamp);
+            }
+        } else {            // set_bind FALSE
+            node.type().node_class().browser().bindable_remove(&node);
+            if (&node == current) {
+                node.is_bound_.value = false;
+                node::emit_event(node.is_bound_emitter_, timestamp);
+                current = node.type().node_class().browser()
+                    .bindable_navigation_info_top();
+                if (current) {
+                    current->is_bound_.value = true;
+                    node::emit_event(current->is_bound_emitter_, timestamp);
+                }
+            }
         }
     } catch (std::bad_cast & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
@@ -11553,16 +10737,14 @@ namespace {
 /**
  * @brief Construct.
  *
- * @param t     the node_type associated with the node instance.
+ * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-navigation_info_node::
-navigation_info_node(const node_type & t,
-                     const boost::shared_ptr<openvrml::scope> & scope):
-    node(t, scope),
-    abstract_base(t, scope),
-    child_node(t, scope),
-    openvrml::navigation_info_node(t, scope),
+navigation_info_node::navigation_info_node(const node_type & type,
+                                           const boost::shared_ptr<openvrml::scope> & scope):
+    node(type, scope),
+    abstract_base(type, scope),
+    child_node(type, scope),
     set_bind_listener_(*this),
     avatar_size_(*this, std::vector<float>(navigation_avatar_size_,
                                            navigation_avatar_size_ + 3)),
@@ -11581,13 +10763,23 @@ navigation_info_node::~navigation_info_node() throw ()
 {}
 
 /**
+ * @brief Cast to a navigation_info_node.
+ *
+ * @return A pointer to the navigation_info_node.
+ */
+navigation_info_node* navigation_info_node::to_navigation_info() const
+{ return (navigation_info_node*) this; }
+
+/**
  * @brief The avatar size.
  *
  * @return the avatar size.
  */
-const std::vector<float> & navigation_info_node::avatar_size() const throw ()
+const float * navigation_info_node::avatar_size() const
 {
-    return this->avatar_size_.mffloat::value;
+    return !this->avatar_size_.mffloat::value.empty()
+        ? &this->avatar_size_.mffloat::value[0]
+        : 0;
 }
 
 /**
@@ -11595,7 +10787,7 @@ const std::vector<float> & navigation_info_node::avatar_size() const throw ()
  *
  * @return @c true if the headlight is on; @c false otherwise.
  */
-bool navigation_info_node::headlight() const throw ()
+bool navigation_info_node::headlight() const
 {
     return this->headlight_.sfbool::value;
 }
@@ -11605,19 +10797,9 @@ bool navigation_info_node::headlight() const throw ()
  *
  * @return the speed.
  */
-float navigation_info_node::speed() const throw ()
+float navigation_info_node::speed() const
 {
     return this->speed_.sffloat::value;
-}
-
-/**
- * @brief The navigation type.
- *
- * @return the navigation type.
- */
-const std::vector<std::string> & navigation_info_node::type() const throw ()
-{
-    return this->type_.mfstring::value;
 }
 
 /**
@@ -11625,7 +10807,7 @@ const std::vector<std::string> & navigation_info_node::type() const throw ()
  *
  * @return the visibility limit.
  */
-float navigation_info_node::visibility_limit() const throw ()
+float navigation_info_node::visibility_limit() const
 {
     return this->visibility_limit_.sffloat::value;
 }
@@ -11634,16 +10816,14 @@ float navigation_info_node::visibility_limit() const throw ()
  * @brief Initialize.
  *
  * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void navigation_info_node::do_initialize(const double timestamp) throw ()
+void navigation_info_node::do_initialize(const double timestamp)
+    throw (std::bad_alloc)
 {
-    using boost::polymorphic_downcast;
-
-    navigation_info_class & node_class =
-        const_cast<navigation_info_class &>(
-            *polymorphic_downcast<const navigation_info_class *>(
-                &this->node::type().node_class()));
-    if (!node_class.has_first()) { node_class.set_first(*this); }
+    assert(this->scene());
+    this->scene()->browser.add_navigation_info(*this);
 }
 
 /**
@@ -11653,15 +10833,8 @@ void navigation_info_node::do_initialize(const double timestamp) throw ()
  */
 void navigation_info_node::do_shutdown(const double timestamp) throw ()
 {
-    using boost::polymorphic_downcast;
-
-    navigation_info_class & node_class =
-        const_cast<navigation_info_class &>(
-            *polymorphic_downcast<const navigation_info_class *>(
-                &this->node::type().node_class()));
-    node_class.unbind(*this, timestamp);
-
-    if (node_class.is_first(*this)) { node_class.reset_first(); }
+    assert(this->scene());
+    this->scene()->browser.remove_navigation_info(*this);
 }
 
 
@@ -11692,13 +10865,13 @@ normal_class::~normal_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Normal nodes.
+ * @return a node_type_ptr to a node_type capable of creating Normal nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by normal_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 normal_class::do_create_type(const std::string & id,
                           const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -11710,7 +10883,7 @@ normal_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<normal_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & normalNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -11811,14 +10984,14 @@ normal_interpolator_class::~normal_interpolator_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating
+ * @return a node_type_ptr to a node_type capable of creating
  *         NormalInterpolator nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by normal_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 normal_interpolator_class::do_create_type(const std::string & id,
                                        const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -11840,7 +11013,7 @@ normal_interpolator_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<normal_interpolator_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & normalInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -12095,14 +11268,14 @@ orientation_interpolator_class::~orientation_interpolator_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating
+ * @return a node_type_ptr to a node_type capable of creating
  *      OrientationInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by orientation_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 orientation_interpolator_class::
 do_create_type(const std::string & id,
             const node_interface_set & interfaces) const
@@ -12125,7 +11298,7 @@ do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<orientation_interpolator_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & orientationInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -12249,8 +11422,6 @@ do_process_event(const sffloat & fraction, const double timestamp)
         } else {
             for (size_t i = 0; i < n; ++i) {
                 if (key[i] <= fraction.value && fraction.value <= key[i + 1]) {
-                    using openvrml_::pi;
-
                     const rotation & v1 = key_value[i];
                     const rotation & v2 = key_value[i + 1];
 
@@ -12384,14 +11555,14 @@ pixel_texture_class::~pixel_texture_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating PixelTexture
+ * @return a node_type_ptr to a node_type capable of creating PixelTexture
  *         nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by pixel_texture_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 pixel_texture_class::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -12410,7 +11581,7 @@ pixel_texture_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<pixel_texture_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & pixelTextureNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end(); ++interface) {
@@ -12499,6 +11670,16 @@ const image & pixel_texture_node::image() const throw ()
 }
 
 /**
+ * @brief The number of frames.
+ *
+ * @return 0
+ */
+size_t pixel_texture_node::frames() const throw ()
+{
+    return 0;
+}
+
+/**
  * @brief render_texture implementation.
  *
  * @param v viewer.
@@ -12541,14 +11722,14 @@ plane_sensor_class::~plane_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating PlaneSensor
+ * @return a node_type_ptr to a node_type capable of creating PlaneSensor
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by plane_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 plane_sensor_class::do_create_type(const std::string & id,
                                 const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -12582,7 +11763,7 @@ plane_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<plane_sensor_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & planeSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -12953,13 +12134,13 @@ point_light_class::~point_light_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating PointLight nodes.
+ * @return a node_type_ptr to a node_type capable of creating PointLight nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by point_light_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 point_light_class::do_create_type(const std::string & id,
                                const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -12990,7 +12171,7 @@ point_light_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<point_light_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & pointLightNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -13196,7 +12377,7 @@ void point_light_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser().add_scoped_light(*this);
+    this->scene()->browser.add_scoped_light(*this);
 }
 
 /**
@@ -13207,7 +12388,7 @@ void point_light_node::do_initialize(const double timestamp)
 void point_light_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser().remove_scoped_light(*this);
+    this->scene()->browser.remove_scoped_light(*this);
 }
 
 
@@ -13238,13 +12419,13 @@ point_set_class::~point_set_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating PointSet nodes.
+ * @return a node_type_ptr to a node_type capable of creating PointSet nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by point_set_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 point_set_class::do_create_type(const std::string & id,
                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -13260,7 +12441,7 @@ point_set_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<point_set_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & pointSetNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -13478,14 +12659,14 @@ position_interpolator_class::~position_interpolator_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating
+ * @return a node_type_ptr to a node_type capable of creating
  *      PositionInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by position_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 position_interpolator_class::do_create_type(const std::string & id,
                                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -13507,7 +12688,7 @@ position_interpolator_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<position_interpolator_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & positionInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -13731,14 +12912,14 @@ proximity_sensor_class::~proximity_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating ProximitySensor
+ * @return a node_type_ptr to a node_type capable of creating ProximitySensor
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by proximity_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 proximity_sensor_class::do_create_type(const std::string & id,
                                     const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -13772,7 +12953,7 @@ proximity_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<proximity_sensor_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & proximitySensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -14098,14 +13279,14 @@ scalar_interpolator_class::~scalar_interpolator_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating
+ * @return a node_type_ptr to a node_type capable of creating
  *      CoordinateInterpolator nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by CoordinateInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 scalar_interpolator_class::do_create_type(const std::string & id,
                                        const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -14127,7 +13308,7 @@ scalar_interpolator_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<scalar_interpolator_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & scalarInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -14348,13 +13529,13 @@ shape_class::~shape_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Shape nodes.
+ * @return a node_type_ptr to a node_type capable of creating Shape nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by shape_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 shape_class::do_create_type(const std::string & id,
                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -14370,7 +13551,7 @@ shape_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<shape_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & shapeNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -14601,13 +13782,13 @@ sound_class::~sound_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Sound nodes.
+ * @return a node_type_ptr to a node_type capable of creating Sound nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by sound_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 sound_class::do_create_type(const std::string & id,
                          const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -14647,7 +13828,7 @@ sound_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<sound_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & soundNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -14927,13 +14108,13 @@ sphere_class::~sphere_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Sphere nodes.
+ * @return a node_type_ptr to a node_type capable of creating Sphere nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by sphere_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 sphere_class::do_create_type(const std::string & id,
                           const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -14944,7 +14125,7 @@ sphere_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<sphere_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & spereNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -15065,14 +14246,14 @@ sphere_sensor_class::~sphere_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating SphereSensor
+ * @return a node_type_ptr to a node_type capable of creating SphereSensor
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by sphere_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 sphere_sensor_class::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -15100,7 +14281,7 @@ sphere_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<sphere_sensor_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & sphereSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -15437,13 +14618,13 @@ spot_light_class::~spot_light_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating SpotLight nodes.
+ * @return a node_type_ptr to a node_type capable of creating SpotLight nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by spot_light_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 spot_light_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -15483,7 +14664,7 @@ spot_light_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<spot_light_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & spotLightNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -15755,7 +14936,7 @@ void spot_light_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser().add_scoped_light(*this);
+    this->scene()->browser.add_scoped_light(*this);
 }
 
 /**
@@ -15766,7 +14947,7 @@ void spot_light_node::do_initialize(const double timestamp)
 void spot_light_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser().remove_scoped_light(*this);
+    this->scene()->browser.remove_scoped_light(*this);
 }
 
 
@@ -15797,13 +14978,13 @@ switch_class::~switch_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Switch nodes.
+ * @return a node_type_ptr to a node_type capable of creating Switch nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by switch_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 switch_class::do_create_type(const std::string & id,
                           const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -15819,7 +15000,7 @@ switch_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<switch_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & switchNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -16141,13 +15322,13 @@ void switch_node::recalcBSphere()
 text_class::text_class(openvrml::browser & browser):
     node_class(browser)
 {
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# if OPENVRML_ENABLE_TEXT_NODE
     FT_Error error = 0;
     error = FT_Init_FreeType(&this->freeTypeLibrary);
     if (error) {
         browser.err << "Error initializing FreeType library." << std::endl;
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -16155,14 +15336,14 @@ text_class::text_class(openvrml::browser & browser):
  */
 text_class::~text_class() throw ()
 {
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# if OPENVRML_ENABLE_TEXT_NODE
     FT_Error error = 0;
     error = FT_Done_FreeType(this->freeTypeLibrary);
     if (error) {
         this->browser().err << "Error shutting down FreeType library."
                             << std::endl;
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -16171,13 +15352,13 @@ text_class::~text_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Text nodes.
+ * @return a node_type_ptr to a node_type capable of creating Text nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by text_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 text_class::do_create_type(const std::string & id,
                         const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
@@ -16199,7 +15380,7 @@ text_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<text_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & textNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -16516,7 +15697,7 @@ event_side_effect(const sffloat & max_extent,
  *      glyph.
  */
 
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
 namespace {
 
     /**
@@ -16792,7 +15973,7 @@ namespace {
         return -1;
     }
 }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 
 /**
  * @brief Construct from a set of contours.
@@ -16814,7 +15995,7 @@ text_node::glyph_geometry::glyph_geometry(
     advance_width(advance_width),
     advance_height(advance_height)
 {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
     using std::vector;
 
     const vector<polygon_> polygons = get_polygons_(contours);
@@ -16892,7 +16073,7 @@ text_node::glyph_geometry::glyph_geometry(
         assert(connection_map.empty());
         this->coord_index.push_back(-1);
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -17056,12 +16237,12 @@ void text_node::do_initialize(const double timestamp) throw (std::bad_alloc)
  */
 void text_node::do_shutdown(const double timestamp) throw ()
 {
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# if OPENVRML_ENABLE_TEXT_NODE
     if (this->face) {
         FT_Error ftError = FT_Done_Face(this->face);
         assert(ftError == FT_Err_Ok); // Surely this can't fail.
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 /**
@@ -17071,7 +16252,7 @@ void text_node::do_shutdown(const double timestamp) throw ()
  */
 void text_node::update_ucs4() throw (std::bad_alloc)
 {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
     this->ucs4_string.clear();
     this->ucs4_string.resize(this->string_.mfstring::value.size());
 
@@ -17103,10 +16284,10 @@ void text_node::update_ucs4() throw (std::bad_alloc)
             }
         }
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
 namespace {
 
     //
@@ -17230,7 +16411,7 @@ namespace {
         return e1 == e2;
     }
 }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 
 /**
  * @brief Called when @a fontStyle changes to update the font face.
@@ -17239,7 +16420,7 @@ namespace {
  */
 void text_node::update_face() throw (std::bad_alloc)
 {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
     static const char * const fcResultMessage[] = { "match",
                                                     "no match",
                                                     "type mismatch",
@@ -17404,10 +16585,10 @@ void text_node::update_face() throw (std::bad_alloc)
     } catch (FreeTypeError & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
 namespace {
 
     struct GlyphContours_ {
@@ -17572,7 +16753,7 @@ namespace {
         return 0;
     }
 }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 
 /**
  * @brief Called to update @a text_geometry.
@@ -17581,7 +16762,7 @@ namespace {
  */
 void text_node::update_geometry() throw (std::bad_alloc)
 {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_TEXT_NODE
     using std::pair;
     using std::string;
     using std::vector;
@@ -17894,7 +17075,7 @@ void text_node::update_geometry() throw (std::bad_alloc)
     }
 
     this->text_geometry_ = newGeometry;
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+# endif // OPENVRML_ENABLE_TEXT_NODE
 }
 
 
@@ -17926,14 +17107,14 @@ texture_coordinate_class::~texture_coordinate_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating TextureCoordinate
+ * @return a node_type_ptr to a node_type capable of creating TextureCoordinate
  *      nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by texture_coordinate_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 texture_coordinate_class::do_create_type(const std::string & id,
                                       const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -17945,7 +17126,7 @@ texture_coordinate_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<texture_coordinate_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & textureCoordinateNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -18046,14 +17227,14 @@ texture_transform_class::~texture_transform_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating TextureTransform
+ * @return a node_type_ptr to a node_type capable of creating TextureTransform
  *      nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by texture_transform_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 texture_transform_class::do_create_type(const std::string & id,
                                      const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -18075,7 +17256,7 @@ texture_transform_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<texture_transform_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & textureTransformNodeType =
         static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -18242,13 +17423,13 @@ time_sensor_class::~time_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating TimeSensor nodes.
+ * @return a node_type_ptr to a node_type capable of creating TimeSensor nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by time_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 time_sensor_class::do_create_type(const std::string & id,
                                const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -18285,7 +17466,7 @@ time_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<time_sensor_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & timeSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -18850,7 +18031,7 @@ void time_sensor_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser().add_time_sensor(*this);
+    this->scene()->browser.add_time_sensor(*this);
 }
 
 /**
@@ -18861,7 +18042,7 @@ void time_sensor_node::do_initialize(const double timestamp)
 void time_sensor_node::do_shutdown(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser().remove_time_sensor(*this);
+    this->scene()->browser.remove_time_sensor(*this);
 }
 
 
@@ -18892,14 +18073,14 @@ touch_sensor_class::~touch_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating TouchSensor
+ * @return a node_type_ptr to a node_type capable of creating TouchSensor
  *         nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by touch_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 touch_sensor_class::do_create_type(const std::string & id,
                                 const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -18930,7 +18111,7 @@ touch_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<touch_sensor_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & touchSensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -19190,13 +18371,13 @@ transform_class::~transform_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Transform nodes.
+ * @return a node_type_ptr to a node_type capable of creating Transform nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                              supported by transform_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 transform_class::do_create_type(const std::string & id,
                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -19236,7 +18417,7 @@ transform_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<transform_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & transformNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -19854,24 +19035,13 @@ viewpoint_class::~viewpoint_class() throw ()
  * @brief Set the first Viewpoint node in the world.
  *
  * The first Viewpoint node in the world is used as the initial viewpoint.
- * This function is used by <code>viewpoint_node::do_initialize</code>.
+ * This method is used by viewpoint_node::do_initialize.
  *
  * @param viewpoint    a Viewpoint node.
  */
 void viewpoint_class::set_first(viewpoint_node & viewpoint) throw ()
 {
-    assert(!this->has_first());
     this->first = &viewpoint;
-}
-
-/**
- * @brief Reset the pointer to the first Viewpoint node in the world to null.
- *
- * This function is called by <code>viewpoint_node::do_shutdown</code>.
- */
-void viewpoint_class::reset_first() throw ()
-{
-    this->first = 0;
 }
 
 /**
@@ -19884,18 +19054,6 @@ void viewpoint_class::reset_first() throw ()
 bool viewpoint_class::has_first() const throw ()
 {
     return this->first;
-}
-
-/**
- * @brief Check to see if a node is registered as the "first" node.
- *
- * @param viewpoint a viewpoint_node.
- *
- * @return @c true if @p viewpoint is the fist node; @c false otherwise.
- */
-bool viewpoint_class::is_first(viewpoint_node & viewpoint) throw ()
-{
-    return &viewpoint == this->first;
 }
 
 /**
@@ -19948,7 +19106,7 @@ void viewpoint_class::bind(viewpoint_node & viewpoint, const double timestamp)
  * @brief Remove a Viewpoint from the bound node stack.
  *
  * @param viewpoint    the node to unbind.
- * @param timestamp    the current time.
+ * @param timestamp     the current time.
  */
 void viewpoint_class::unbind(viewpoint_node & viewpoint,
                              const double timestamp)
@@ -20008,13 +19166,13 @@ viewpoint_class::do_initialize(openvrml::viewpoint_node * initial_viewpoint,
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating Viewpoint nodes.
+ * @return a node_type_ptr to a node_type capable of creating Viewpoint nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by viewpoint_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 viewpoint_class::do_create_type(const std::string & id,
                              const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -20048,7 +19206,7 @@ viewpoint_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<viewpoint_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & viewpointNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -20503,7 +19661,7 @@ const sfvec3f & viewpoint_node::position() const
 void viewpoint_node::do_initialize(const double timestamp) throw ()
 {
     assert(this->scene());
-    this->scene()->browser().add_viewpoint(*this);
+    this->scene()->browser.add_viewpoint(*this);
     assert(dynamic_cast<const viewpoint_class *>(&this->type().node_class()));
     viewpoint_class & nodeClass =
         const_cast<viewpoint_class &>(
@@ -20542,7 +19700,7 @@ namespace {
 void viewpoint_node::do_relocate() throw (std::bad_alloc)
 {
     assert(this->scene());
-    const node_path path = this->scene()->browser().find_node(*this);
+    const node_path path = this->scene()->browser.find_node(*this);
     assert(!path.empty());
     this->parent_transform = mat4f();
     std::for_each(path.begin(), path.end(),
@@ -20557,14 +19715,8 @@ void viewpoint_node::do_relocate() throw (std::bad_alloc)
  */
 void viewpoint_node::do_shutdown(const double timestamp) throw ()
 {
-    viewpoint_class & node_class =
-        const_cast<viewpoint_class &>(
-            static_cast<const viewpoint_class &>(this->type().node_class()));
-    node_class.unbind(*this, timestamp);
     assert(this->scene());
-    this->scene()->browser().remove_viewpoint(*this);
-
-    if (node_class.is_first(*this)) { node_class.reset_first(); }
+    this->scene()->browser.remove_viewpoint(*this);
 }
 
 /**
@@ -20618,14 +19770,14 @@ visibility_sensor_class::~visibility_sensor_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating VisibilitySensor
+ * @return a node_type_ptr to a node_type capable of creating VisibilitySensor
  *      nodes.
  *
  * @exception unsupported_interface if @p interfaces includes an interface not
  *                                  supported by visibility_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 visibility_sensor_class::do_create_type(const std::string & id,
                                      const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -20653,7 +19805,7 @@ visibility_sensor_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<visibility_sensor_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & visibilitySensorNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();
@@ -20854,10 +20006,11 @@ void visibility_sensor_node::do_render_child(openvrml::viewer & viewer,
         if (inside) {
             using openvrml_::fequal;
 
-            openvrml::navigation_info_node & nav_info =
-                this->type().node_class().browser().active_navigation_info();
-            if (!fequal<float>()(nav_info.visibility_limit(), 0.0f)
-                && xyz[0][2] < -(nav_info.visibility_limit())) {
+            navigation_info_node * ni =
+                this->type().node_class().browser()
+                .bindable_navigation_info_top();
+            if (ni && !fequal<float>()(ni->visibility_limit(), 0.0f)
+                    && xyz[0][2] < -(ni->visibility_limit())) {
                 inside = false;
             }
         }
@@ -20918,13 +20071,13 @@ world_info_class::~world_info_class() throw ()
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of creating WorldInfo nodes.
+ * @return a node_type_ptr to a node_type capable of creating WorldInfo nodes.
  *
  * @exception unsupported_interface  if @p interfaces includes an interface not
  *                                  supported by world_info_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
+const node_type_ptr
 world_info_class::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -20940,7 +20093,7 @@ world_info_class::do_create_type(const std::string & id,
 
     typedef vrml97_node_type_impl<world_info_node> node_type_t;
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    const node_type_ptr type(new node_type_t(*this, id));
     node_type_t & worldInfoNodeType = static_cast<node_type_t &>(*type);
     for (node_interface_set::const_iterator interface(interfaces.begin());
          interface != interfaces.end();

@@ -1,5 +1,5 @@
 AC_PREREQ([2.53])
-AC_INIT([OpenVRML Mozilla Plugin], [0.15.99],
+AC_INIT([OpenVRML Mozilla Plugin], [0.15.7],
         [openvrml-develop@lists.sourceforge.net])
 AC_COPYRIGHT([Portions copyright 2004, 2005 Braden McDaniel])
 AC_CONFIG_SUBDIRS([lib/gtkglext])
@@ -28,7 +28,7 @@ mozprefix=`$PKG_CONFIG --variable=prefix mozilla-plugin`
 mozlibdir=`$PKG_CONFIG --variable=libdir mozilla-plugin`
 AC_ARG_VAR([XPIDL], [Mozilla XPCOM IDL compiler])
 AC_ARG_VAR([XPIDLFLAGS], [Mozilla XPCOM IDL compiler flags])
-AC_PATH_PROG([XPIDL], [xpidl], , [${mozlibdir}])
+AC_PATH_PROG([XPIDL], [xpidl], , ["$mozlibdir"])
 mozidldir="$mozprefix/share/idl/mozilla-$mozversion"
 MOZILLA_XPIDLFLAGS="-I $mozidldir"
 AC_SUBST([mozlibdir])

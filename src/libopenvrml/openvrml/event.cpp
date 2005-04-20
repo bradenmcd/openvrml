@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2004, 2005  Braden McDaniel
+// Copyright 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -59,26 +59,15 @@ event_listener::~event_listener() throw ()
 {}
 
 /**
+ * @fn openvrml::node & event_listener::node() throw ()
+ *
  * @brief The <code>node</code> to which the <code>event_listener</code>
  *        belongs.
  *
  * @return the <code>node</code> to which the <code>event_listener</code>
  *         belongs.
  */
-node & event_listener::node() throw ()
-{
-    return this->node_;
-}
 
-/**
- * @fn field_value::type_id event_listener::type() const throw ()
- *
- * @brief The <code>field_value::type_id</code> for the type accepted by the
- *        event listener.
- *
- * @return The <code>field_value::type_id</code> for the type accepted by the
- *         event listener.
- */
 
 /**
  * @class field_value_listener
@@ -98,14 +87,6 @@ node & event_listener::node() throw ()
  * @fn field_value_listener<FieldValue>::~field_value_listener() throw ()
  *
  * @brief Destroy.
- */
-
-/**
- * @fn field_value::type_id field_value_listener<FieldValue>::type() const throw ()
- *
- * @brief <code>FieldValue::field_value_type_id</code>.
- *
- * @return <code>FieldValue::field_value_type_id</code>.
  */
 
 /**
@@ -369,14 +350,6 @@ event_emitter::create(const field_value & value) throw (std::bad_alloc)
 /**
  * @internal
  *
- * @var boost::recursive_mutex event_emitter::mutex_
- *
- * @brief Object mutex.
- */
-
-/**
- * @internal
- *
  * @var const field_value & event_emitter::value_
  *
  * @brief A reference to the field_value for the event_emitter.
@@ -419,16 +392,6 @@ event_emitter::~event_emitter() throw ()
 {}
 
 /**
- * @brief Get the mutex for the <code>event_emitter</code>.
- *
- * @return a reference to the <code>event_emitter</code>'s mutex.
- */
-boost::recursive_mutex & event_emitter::mutex() const throw ()
-{
-    return this->mutex_;
-}
-
-/**
  * @brief A reference to the <code>field_value</code> for the
  *        <code>event_emitter</code>.
  *
@@ -467,7 +430,6 @@ event_emitter::listener_set & event_emitter::listeners() throw ()
  */
 double event_emitter::last_time() const throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->last_time_;
 }
 
@@ -478,7 +440,6 @@ double event_emitter::last_time() const throw ()
  */
 void event_emitter::last_time(const double t) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->last_time_ = t;
 }
 

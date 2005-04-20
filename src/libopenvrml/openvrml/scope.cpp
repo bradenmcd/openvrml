@@ -51,7 +51,7 @@ namespace openvrml {
  */
 
 /**
- * @var std::list<boost::shared_ptr<node_type> > scope::node_type_list
+ * @var std::list<node_type_ptr> scope::node_type_list
  *
  * @brief List of @link openvrml::node_type node_types@endlink in the scope.
  */
@@ -112,8 +112,8 @@ const std::string & scope::id() const throw ()
 /**
  * @brief The parent <code>scope</code>.
  *
- * @return the parent <code>scope</code>; or null if the <code>scope</code> is
- *         a root <code>scope</code>.
+ * @return the parent <code>scope</code>; or null if the <code>scope</code> is a
+ *         root <code>scope</code>.
  */
 const boost::shared_ptr<scope> & scope::parent() const throw ()
 {
@@ -125,7 +125,7 @@ const boost::shared_ptr<scope> & scope::parent() const throw ()
  *
  * Print an error message if the argument type is already defined.
  *
- * @param type  a node_type.
+ * @param type  a node_type_ptr
  *
  * @return @c true if @p type is successfully added to the scope; @c false
  *         otherwise (if a node_type with the same id is already defined for
@@ -135,8 +135,7 @@ const boost::shared_ptr<scope> & scope::parent() const throw ()
  *
  * @pre @p type is not null.
  */
-bool scope::add_type(const boost::shared_ptr<node_type> & type)
-    throw (std::bad_alloc)
+bool scope::add_type(const node_type_ptr & type) throw (std::bad_alloc)
 {
     assert(type);
     if (this->find_type(type->id())) { return false; }
@@ -145,12 +144,12 @@ bool scope::add_type(const boost::shared_ptr<node_type> & type)
 }
 
 namespace {
-    struct has_id_ : std::unary_function<boost::shared_ptr<node_type>, bool> {
+    struct has_id_ : std::unary_function<node_type_ptr, bool> {
         explicit has_id_(const std::string & id):
             id(&id)
         {}
 
-        bool operator()(const boost::shared_ptr<node_type> & type) const
+        bool operator()(const node_type_ptr & type) const
         {
             assert(type);
             return type->id() == *this->id;
@@ -160,15 +159,14 @@ namespace {
         const std::string * id;
     };
 
-    typedef std::list<boost::shared_ptr<node_type> > node_type_list_t;
+    typedef std::list<node_type_ptr> node_type_list_t;
 }
 
 /**
  * @brief Find a node type, given a type name. Returns 0 if type is
  *      not defined.
  */
-const boost::shared_ptr<node_type> &
-scope::find_type(const std::string & id) const {
+const node_type_ptr & scope::find_type(const std::string & id) const {
     //
     // Look through the types unique to this scope.
     //
@@ -180,7 +178,7 @@ scope::find_type(const std::string & id) const {
     //
     // Look in the parent scope for the type.
     //
-    static const boost::shared_ptr<node_type> null;
+    static const node_type_ptr null;
     return this->parent_
             ? this->parent_->find_type(id)
             : null;
@@ -189,12 +187,12 @@ scope::find_type(const std::string & id) const {
 /**
  * @brief The first type in the scope.
  *
- * @return the first node_type in the scope, or a null shared_ptr if the scope
- *         has no node_types.
+ * @return the first node_type in the scope, or a null node_type_ptr if the
+ *         scope has no node_types.
  */
-const boost::shared_ptr<node_type> & scope::first_type() const
+const node_type_ptr & scope::first_type() const
 {
-    static const boost::shared_ptr<node_type> null;
+    static const node_type_ptr null;
     return !this->node_type_list.empty()
             ? this->node_type_list.front()
             : null;

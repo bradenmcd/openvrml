@@ -2,7 +2,10 @@ lib_LTLIBRARIES = libopenvrml.la
 
 openvrml_includedir = $(pkgincludedir)/openvrml
 openvrml_include_HEADERS = \
+        openvrml/common.h \
         openvrml/basetypes.h \
+        openvrml/img.h \
+        openvrml/system.h \
         openvrml/field_value.h \
         openvrml/event.h \
 	openvrml/exposedfield.h \
@@ -18,10 +21,10 @@ openvrml_include_HEADERS = \
         openvrml/vrml97node.h
 
 noinst_HEADERS = \
-        private.h \
         openvrml/Vrml97Parser.cpp \
         openvrml/Vrml97Parser.hpp \
         openvrml/Vrml97ParserTokenTypes.hpp \
+        openvrml/private.h \
         openvrml/ScriptJDK.h
 
 LIBRARY_VERSION = 5:3:0
@@ -50,6 +53,8 @@ AM_CXXFLAGS = \
 
 libopenvrml_la_SOURCES = \
         openvrml/basetypes.cpp \
+        openvrml/img.cpp \
+        openvrml/system.cpp \
         openvrml/field_value.cpp \
         openvrml/event.cpp \
 	openvrml/exposedfield.cpp \
@@ -69,11 +74,11 @@ libopenvrml_la_LDFLAGS = \
         -version-info $(LIBRARY_VERSION) \
         @JPEG_LIBS@ \
         @PNG_LIBS@ \
+        @Z_LIBS@ \
         @FONTCONFIG_LIBS@ \
         @FREETYPE_LIBS@ \
         @JS_LIBS@ \
-        @JNI_LIBS@ \
-        -lboost_thread
+        @JNI_LIBS@
 
 libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
 

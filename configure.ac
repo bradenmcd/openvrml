@@ -1,4 +1,4 @@
-AC_INIT([OpenVRML], [0.15.99], [openvrml-develop@lists.sourceforge.net])
+AC_INIT([OpenVRML], [0.15.7], [openvrml-develop@lists.sourceforge.net])
 AC_PREREQ([2.53])
 AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004, 2005 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]
@@ -17,15 +17,14 @@ AC_CONFIG_FILES([Makefile]
                 [src/Makefile]
                 [src/libopenvrml/Makefile]
                 [src/libopenvrml-gl/Makefile]
-                [test/Makefile]
-                [test/parse/Makefile]
-                [test/parse/testsuite/Makefile]
-                [examples/Makefile]
+                [src/lookat/Makefile]
+                [tests/Makefile]
+                [tests/atlocal]
                 [openvrml.pc]
                 [openvrml.spec])
 
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.7 foreign dejagnu subdir-objects check-news])
+AM_INIT_AUTOMAKE([1.7 foreign subdir-objects check-news])
 AM_CONFIG_HEADER([config.h])
 
 #
@@ -54,11 +53,6 @@ AC_ARG_VAR([REZ], [Mac OS X resource fork compiler])
 AC_PATH_PROG([REZ], [Rez], [$PATH:/Developer/Tools])
 
 #
-# AM_INIT_AUTOMAKE should probably take care of this, but it doesn't.
-#
-AC_ARG_VAR([RUNTESTFLAGS], [DejaGnu runtest flags])
-
-#
 # Checks for libraries/headers.
 #
 PKG_CHECK_MODULES([FONTCONFIG], [$REQUIRE_FONTCONFIG], , [have_fontconfig=no])
@@ -81,52 +75,53 @@ SDL_LIBS=`echo $SDL_LIBS | sed 's/-Wl,-rpath,[[^ ]]* //'`
 
 OV_CHECK_JNI
 
-AC_CHECK_HEADER([dejagnu.h], [have_dejagnu_h=yes], [have_dejagnu_h=no])
-
 #
-# PNG texture support
+# gzipped file support
 #
-AC_ARG_ENABLE([png-textures],
-              [AC_HELP_STRING([--disable-png-textures],
-                              [disable support for rendering PNG textures])])
-if test X$enable_png_textures = Xno; then
-  PNG_LIBS=""
+AC_ARG_ENABLE([gzip],
+              [AC_HELP_STRING([--disable-gzip],
+                              [disable support for gzipped worlds])])
+if test "X$enable_gzip" = "Xno"; then
+  Z_LIBS=""
 else
-  PNG_LIBS="-lpng -lz"
-  AC_DEFINE([OPENVRML_ENABLE_PNG_TEXTURES], [1],
-            [Defined if support for rendering PNG textures is enabled.])
+  Z_LIBS="-lz"
+  AC_DEFINE([OPENVRML_ENABLE_GZIP], [1],
+            [Defined if support for gzipped worlds is enabled.])
 fi
-AC_SUBST([PNG_LIBS])
+AC_SUBST([Z_LIBS])
 
 #
-# JPEG texture support
+# ImageTexture node support
 #
-AC_ARG_ENABLE([jpeg-textures],
-              [AC_HELP_STRING([--disable-jpeg-textures],
-                              [disable support for rendering JPEG textures])])
-if test X$enable_jpeg_textures = Xno; then
+AC_ARG_ENABLE([imagetexture-node],
+              [AC_HELP_STRING([--disable-imagetexture-node],
+                              [disable ImageTexture node support])])
+if test "X$enable_imagetexture_node" = "Xno"; then
+  PNG_LIBS=""
   JPEG_LIBS=""
 else
+  PNG_LIBS="-lpng -lz"
   JPEG_LIBS="-ljpeg"
-  AC_DEFINE([OPENVRML_ENABLE_JPEG_TEXTURES], [1],
-            [Defined if support for rendering JPEG textures is enabled.])
+  AC_DEFINE([OPENVRML_ENABLE_IMAGETEXTURE_NODE], [1],
+            [Defined if ImageTexture node support is enabled.])
 fi
+AC_SUBST([PNG_LIBS])
 AC_SUBST([JPEG_LIBS])
 
 #
 # Text node support
 #
-AC_ARG_ENABLE([render-text-node],
-              [AC_HELP_STRING([--disable-render-text-node],
-                              [disable support for rendering Text nodes])])
-if test "X$enable_render_text_node" = "Xno"; then
+AC_ARG_ENABLE([text-node],
+              [AC_HELP_STRING([--disable-text-node],
+                              [disable Text node support])])
+if test "X$enable_text_node" = "Xno"; then
   FONTCONFIG_CFLAGS=""
   FONTCONFIG_LIBS=""
   FREETYPE_CFLAGS=""
   FREETYPE_LIBS=""
 else
   if test "X$have_fontconfig" = "Xno" -o -z "$FREETYPE_CONFIG"; then
-    AC_MSG_FAILURE([fontconfig and FreeType are required for rendering Text nodes.])
+    AC_MSG_FAILURE([fontconfig and FreeType are required for Text node support.])
   fi
   if test -n "${OPENVRML_PKG_REQUIRES}"; then
     OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
@@ -134,8 +129,8 @@ else
   OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${REQUIRE_FONTCONFIG}"
   FREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
   FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
-  AC_DEFINE([OPENVRML_ENABLE_RENDER_TEXT_NODE], [1],
-            [Defined if support for rendering Text nodes is enabled.])
+  AC_DEFINE([OPENVRML_ENABLE_TEXT_NODE], [1],
+            [Defined if Text node support is enabled.])
 fi
 AC_SUBST([FONTCONFIG_CFLAGS])
 AC_SUBST([FONTCONFIG_LIBS])
@@ -203,38 +198,24 @@ AM_CONDITIONAL([ENABLE_GL_RENDERER],
                [test "X$enable_gl_renderer" != "Xno" -a "X$no_gl" != "Xyes"])
 
 #
+# build lookat
+#
+AC_ARG_ENABLE([lookat],
+              [AC_HELP_STRING([--disable-lookat], [do not build lookat])])
+if test "X$enable_lookat" != "Xno"; then
+  if test "X$have_sdl" != "Xyes"; then
+    AC_MSG_FAILURE([SDL is required for lookat])
+  fi
+fi
+AM_CONDITIONAL([ENABLE_LOOKAT],
+               [test "X$enable_lookat" != "Xno" -a "X$have_sdl" = "Xyes"])
+
+#
 # build Mozilla plug-in
 #
 AC_ARG_ENABLE([mozilla-plugin],
               [AC_HELP_STRING([--disable-mozilla-plugin],
                               [do not build the Mozilla plug-in])])
-
-#
-# build examples
-#
-AC_ARG_ENABLE([lookat],
-              [AC_HELP_STRING([--disable-examples],
-                              [do not build the example programs])])
-if test "X$enable_examples" != "Xno"; then
-  if test "X$have_sdl" != "Xyes"; then
-    AC_MSG_FAILURE([SDL is required for the example programs])
-  fi
-fi
-AM_CONDITIONAL([ENABLE_EXAMPLES],
-               [test "X$enable_examples" != "Xno" -a "X$have_sdl" = "Xyes"])
-
-#
-# build tests
-#
-AC_ARG_ENABLE([tests], [AC_HELP_STRING([--disable-tests],
-                                       [do not build the tests])])
-if test X$enable_tests != Xno; then
-  if test X$have_dejagnu_h != Xyes; then
-    AC_MSG_FAILURE([DejaGnu is required to build and run the tests])
-  fi
-fi
-AM_CONDITIONAL([ENABLE_TESTS],
-               [test X$enable_tests != Xno -a X$have_dejagnu_h = Xyes]) 
 
 #
 # Apply Rez to executables? (Only seem to need this if we're using the Apple
@@ -256,5 +237,7 @@ AC_SUBST([OPENVRML_RPATH])
 AC_ARG_VAR([XPIDL], [Mozilla XPCOM IDL compiler])
 AC_ARG_VAR([XPIDLFLAGS], [Mozilla XPCOM IDL compiler flags])
 AC_CONFIG_SUBDIRS([mozilla-plugin])
+
+AC_CONFIG_TESTDIR([tests])
 
 AC_OUTPUT

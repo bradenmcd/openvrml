@@ -1,0 +1,134 @@
+AT_INIT
+
+AT_BANNER([Parse tests: code that should be accepted])
+
+AT_SETUP([Trivial PROTO containment])
+AT_DATA([proto-containment-trivial.wrl],
+[#VRML V2.0 utf8
+PROTO Outer0 [[]] { PROTO Inner [[]] { Group {} } Inner {} }
+Outer0 {}
+])
+AT_CHECK([parse < proto-containment-trivial.wrl])
+AT_CLEANUP
+
+AT_SETUP([PROTO containment 2 levels deep])
+AT_DATA([proto-containment-2-deep.wrl],
+[#VRML V2.0 utf8
+PROTO Outer [[]] {
+  PROTO Inner0 [[]] {
+    PROTO Inner1 [[]] {
+      Group {}
+    }
+    Inner1 {}
+  }
+  Inner0 {}
+}
+Outer {}
+])
+AT_CHECK([parse < proto-containment-2-deep.wrl])
+AT_CLEANUP
+
+AT_SETUP([PROTO instance as default PROTO field value])
+AT_DATA([proto-field-is-proto.wrl],
+[#VRML V2.0 utf8
+PROTO Node0 [[]] { Group {} }
+PROTO Node1 [[
+  field SFNode field0 Node0 {}
+]] {
+  Collision {
+    proxy IS field0
+  }
+}
+Node1 {}
+])
+AT_CHECK([parse < proto-field-is-proto.wrl])
+AT_CLEANUP
+
+AT_SETUP([Map PROTO eventIn, eventOut to an exposedField])
+AT_DATA([proto-impl-exposedfield-event-is.wrl],
+[#VRML V2.0 utf8
+PROTO Node [[
+  eventIn MFNode set_children
+  eventOut MFNode children_changed
+]] {
+  Group {
+    set_children IS set_children
+    children_changed IS children_changed
+  }
+}
+Node {}
+])
+AT_CHECK([parse < proto-impl-exposedfield-event-is.wrl])
+AT_CLEANUP
+
+AT_SETUP([ROUTE referring to the current node])
+AT_XFAIL_IF([true])
+AT_DATA([route-referencing-current-node.wrl],
+[#VRML V2.0 utf8
+DEF G1 Group {}
+DEF G2 Group {
+  ROUTE G1.children TO G2.children
+}
+])
+AT_CHECK([parse < route-referencing-current-node.wrl])
+AT_CLEANUP
+
+AT_SETUP([Self-referential Script node])
+AT_DATA([self-referential-script.wrl],
+[#VRML V2.0 utf8
+DEF S Script {
+  field SFNode val0 USE S
+  field MFNode val1 [[ Group {}, USE S, Group {} ]]
+}
+])
+AT_CHECK([parse < self-referential-script.wrl])
+AT_CLEANUP
+
+AT_SETUP([Self-referential Script node in a PROTO])
+AT_DATA([self-referential-script-in-proto.wrl],
+[#VRML V2.0 utf8
+PROTO Node [[]] {
+  DEF S Script {
+    field SFNode val0 USE S
+    field MFNode val1 [[ Group {}, USE S, Group {} ]]
+  }
+}
+Node {}
+])
+AT_CHECK([parse < self-referential-script-in-proto.wrl])
+AT_CLEANUP
+
+
+AT_BANNER([Parse tests: code that should be rejected])
+
+AT_SETUP([PROTO with a conflicting eventIn and exposedField])
+AT_DATA([proto-eventin-conflict.wrl],
+[#VRML V2.0 utf8
+PROTO Node [[
+  eventIn SFBool set_foo
+  exposedField MFNode foo []
+]] {
+  Group {}
+}
+Node {}
+])
+AT_CHECK([parse < proto-eventin-conflict.wrl], [1], [],
+[:4:26: error: Interface "exposedField MFNode foo" conflicts with previous declaration
+])
+AT_CLEANUP
+
+AT_SETUP([PROTO with a conflicting eventOut and exposedField])
+AT_DATA([proto-eventout-conflict.wrl],
+[#VRML V2.0 utf8
+PROTO Node [[
+  exposedField MFVec3f foo []
+  eventOut SFColor foo_changed
+]] {
+  Group {}
+}
+Node {}
+])
+AT_CHECK([parse < proto-eventout-conflict.wrl], [1], [],
+[:5:0: error: Interface "eventOut SFColor foo_changed" conflicts with previous declaration
+])
+AT_CLEANUP

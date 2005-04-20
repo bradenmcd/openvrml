@@ -1,4 +1,4 @@
-OpenVRML library version 0.15.99
+OpenVRML library version 0.15.7
 Copyright 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
 Copyright 2000, 2001, 2002, 2003, 2004, 2005
    Braden McDaniel <braden@endoframe.com>
@@ -12,9 +12,8 @@ See the "NEWS" file for a list of changes in this release.
 About
 =====
 
-   OpenVRML is a portable VRML97 toolkit including a C++ library for
-reading and displaying VRML97 files, an OpenGL renderer, and a Mozilla
-Web browser plug-in for viewing VRML97 content on the Internet.
+   OpenVRML is a portable C++ library for reading and displaying VRML97
+files.  This distribution includes lookat, a sample viewer program.
 
 
 License terms
@@ -32,6 +31,16 @@ file "COPYING.LESSER".  Code used in these libararies under other terms
 
  * OpenVRML uses the ANTLR parser generator and C++ support library
    which are in the public domain.
+
+ * OpenVRML includes GIF reading code by David Koblas:
+
+     Copyright 1990, David Koblas.
+     Permission to use, copy, modify, and distribute this software
+     and its documentation for any purpose and without fee is hereby
+     granted, provided that the above copyright notice appear in all
+     copies and that both that copyright notice and this permission
+     notice appear in supporting documentation.  This software is
+     provided "as is" without express or implied warranty.
 
  * OpenVRML's OpenGL renderer includes code from Silicon Graphics, Inc.:
 
@@ -70,26 +79,9 @@ file "COPYING.LESSER".  Code used in these libararies under other terms
 
      OpenGL(TM) is a trademark of Silicon Graphics, Inc.
 
-   The Mozilla plug-in as well as the included example programs are
-available under the terms of the GNU General Public License (GPL),
+   The included sample viewer program "lookat" and the Mozilla plug-in
+are available under the terms of the GNU General Public License (GPL),
 version 2.  The full text of the GPL can be found in the file "COPYING".
-
-
-Package directory layout
-========================
-   /doc
-     /manual            :  API documentation.
-   /examples            :  Example programs.
-   /ide-projects
-     /Windows
-       /VisualC7_1      :  Microsoft Visual C++ 7.1 project files.
-   /java                :  Java sources.
-   /lib                 :  3rd party library sources.
-   /m4                  :  m4 macros used by the GNU build system.
-   /models              :  Sample VRML models.
-   /mozilla-plugin      :  Mozilla plug-in sources.
-   /src                 :  Library sources.
-   /test                :  Test programs.
 
 
 Prerequisites
@@ -122,7 +114,6 @@ below.
      OpenGL/Mesa            <http://mesa3d.org>
      GTK+                   <http://gtk.org>
      SDL                    <http://libsdl.org>
-     DejaGnu                <http://www.gnu.org/software/dejagnu/>
      Doxygen                <http://doxygen.org>
 
    OpenVRML can be built with reduced functionality which can avoid
@@ -137,19 +128,21 @@ for details.
 that modify what features are built and/or what packages OpenVRML
 depends on.
 
- --disable-png-textures
-     Disable support for rendering PNG images as textures.  OpenVRML
-     uses libpng to read PNG images.
+ --disable-gzip
+     Disable support for gzipped VRML worlds. By default, OpenVRML uses
+     zlib to read gzipped worlds.
 
- --disable-jpeg-textures
-     Disable support for rendering JPEG images as textures.  OpenVRML
-     uses libjpeg to read JPEG images.
+ --disable-imagetexture-node
+     Disable support for the ImageTexture node.  The node is still
+     parsed, and events to and from it are processed; but no textures
+     are rendered.  By default OpenVRML uses libpng and libjpeg to read
+     get ImageTexture data.
 
- --disable-render-text-node
-     Disable support for rendering Text nodes.  The node is still
-     parsed, and events to and from it are processed; but no text is
-     rendered.  By default OpenVRML uses Fontconfig for font discovery
-     and FreeType to get font data.
+ --disable-text-node
+     Disable support for the Text node.  The node is still parsed, and
+     events to and from it are processed; but no text is rendered.  By
+     default OpenVRML uses Fontconfig for font discovery and FreeType to
+     get font data.
 
  --disable-script-node-javascript
      Disable support for JavaScript in the Script node.  By default,
@@ -168,17 +161,12 @@ depends on.
      Do not build the GL renderer.  OpenVRML's GL renderer depends on
      OpenGL/Mesa.
 
+ --disable-lookat
+     Do not build lookat.  lookat depends on SDL.
+
  --disable-mozilla-plugin
      Do not build the Mozilla plug-in.  The Mozilla plug-in depends on
      GTK+ and, of course, Mozilla.
-
- --disable-examples
-     Do not build the example programs.  The example programs depend on
-     SDL.
-
---disable-tests
-     Do not build the test programs.  The test programs depend on
-     DejaGnu.
 
  --with-x
      Passing the argument "--without-x" to "configure" will allow
@@ -202,17 +190,16 @@ previous section rather than define these symbols in CPPFLAGS.  These
 symbols are documented here primarily for the benefit of persons trying
 to compile OpenVRML without the GNU build tools.
 
- OPENVRML_ENABLE_PNG_TEXTURES
-     Include support for rendering PNG images as textures.  Requires
-     libpng.
+ OPENVRML_ENABLE_GZIP
+     Include support for gzipped VRML files.  Requires zlib.
 
- OPENVRML_ENABLE_JPEG_TEXTURES
-     Include support for rendering JPEG images as textures.  Requires
-     libjpeg.
+ OPENVRML_ENABLE_IMAGETEXTURE_NODE
+     Include support for images as textures using the ImageTexture node.
+     Requires libpng and libjpeg.
 
- OPENVRML_ENABLE_RENDER_TEXT_NODE
-     Include support for rendering text using the Text node.  Requires
-     fontconfig and FreeType.
+ OPENVRML_ENABLE_TEXT_NODE
+     Include support for text using the Text node.  Requires fontconfig
+     and FreeType.
 
  OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
      Include support for JavaScript scripts in the Script node.
@@ -230,27 +217,6 @@ Installation
 ============
 
    Refer to the file "INSTALL" for detailed installation instructions.
-
-
-Usage
-=====
-
-   To write programs that use the OpenVRML libraries, refer to the API
-documentation in the "doc/manual" subdirectory of the distribution and
-the example programs in the "examples" subdirectory.
-
-   If OpenVRML is configured to be installed to the same prefix as
-Mozilla is installed on the system, "make install" will install the
-Mozilla plug-in to the browser's plug-in directory.  This should be
-sufficient to enable support for the "model/vrml" media type in the
-browser.  Entering "about:plugins" in the URL entry bar of a Mozilla-
-based browser will show a listing of successfully installed plug-ins.
-
-   It is possible, for testing or other convenience, to run the plug-in
-from the build directories.  A symbolic link to the plug-in module
-"openvrml.so" must be made in the Mozilla plug-in directory and the
-environment variable "OPENVRML_PLAYER" must be set to the full path name
-of the "openvrml-player" executable.
 
 
 Conformance

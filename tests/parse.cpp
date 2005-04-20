@@ -1,5 +1,5 @@
 # include <iostream>
-# include <test_browser.h>
+# include <openvrml/browser.h>
 
 using namespace std;
 using namespace openvrml;
@@ -7,7 +7,7 @@ using namespace openvrml;
 int main()
 {
     try {
-        test_browser b;
+        browser b(cout, cerr);
         b.create_vrml_from_stream(cin);
     } catch (invalid_vrml & ex) {
         cerr << ex.url << ':' << ex.line << ':' << ex.column << ": error: "

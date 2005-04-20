@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,36 +24,44 @@
 #   include <config.h>
 # endif
 
+# include <cstdlib>
+# include <cctype>
+# include <cstring>
 # include <algorithm>
+# include <fstream>
 # include <functional>
+# include <sstream>
+# include <stack>
 # ifdef _WIN32
 #   include <sys/timeb.h>
 #   include <time.h>
 # else
 #   include <sys/time.h>
 # endif
-# include <boost/bind.hpp>
 # include <boost/cast.hpp>
 # include <boost/shared_ptr.hpp>
 # include <boost/spirit.hpp>
 # include <boost/spirit/phoenix.hpp>
-# include <boost/thread/thread.hpp>
 # include <boost/utility.hpp>
-# include <private.h>
+# ifdef OPENVRML_ENABLE_GZIP
+#   include <zlib.h>
+# endif
+# include "private.h"
 # include "browser.h"
 # include "viewer.h"
 # include "scope.h"
 # include "script.h"
+# include "system.h"
 # include "vrml97node.h"
 
 namespace openvrml {
 
-    class browser::vrml97_root_scope : public scope {
+    class Vrml97RootScope : public scope {
     public:
-        vrml97_root_scope(const browser & browser,
-                          const std::string & uri = std::string())
+        Vrml97RootScope(const browser & browser,
+                        const std::string & uri = std::string())
             throw (std::bad_alloc);
-        virtual ~vrml97_root_scope() throw ();
+        virtual ~Vrml97RootScope() throw ();
     };
 
 
@@ -63,7 +71,7 @@ namespace openvrml {
         virtual ~null_node_class() throw ();
 
     private:
-        virtual const boost::shared_ptr<node_type>
+        virtual const node_type_ptr
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
             throw ();
@@ -169,7 +177,7 @@ namespace {
             const routes_t & routes);
         virtual ~proto_node_class() throw ();
 
-        virtual const boost::shared_ptr<node_type>
+        virtual const node_type_ptr
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc);
@@ -731,7 +739,7 @@ namespace {
                                     matches_is_target(
                                         is_target(*n, interface->id)));
                         if (is_mapping != this->node_class.is_map.end()) {
-                            using boost::bind;
+                            using openvrml_::compose2;
                             using std::logical_or;
                             //
                             // If an exposedField in the implementation is IS'd
@@ -745,13 +753,11 @@ namespace {
                                 proto_interface =
                                 find_if(this->node_class.interfaces.begin(),
                                         this->node_class.interfaces.end(),
-                                        bind(logical_or<bool>(),
-                                             bind(node_interface_matches_exposedfield(),
-                                                  _1,
-                                                  is_mapping->first),
-                                             bind(node_interface_matches_field(),
-                                                  _1,
-                                                  is_mapping->first)));
+                                        compose2(logical_or<bool>(),
+                                                 bind2nd(node_interface_matches_exposedfield(),
+                                                         is_mapping->first),
+                                                 bind2nd(node_interface_matches_field(),
+                                                         is_mapping->first)));
 
                             if (proto_interface
                                 != this->node_class.interfaces.end()) {
@@ -2403,172 +2409,13 @@ namespace {
     proto_node_class::~proto_node_class() throw ()
     {}
 
-    const boost::shared_ptr<node_type>
+    const node_type_ptr
     proto_node_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        return boost::shared_ptr<node_type>(new proto_node_type(*this, id, interfaces));
-    }
-
-
-    class default_navigation_info : public navigation_info_node {
-    public:
-        explicit default_navigation_info(const null_node_type & type) throw ();
-        virtual ~default_navigation_info() throw ();
-
-        virtual const std::vector<float> & avatar_size() const throw ();
-        virtual bool headlight() const throw ();
-        virtual float speed() const throw ();
-        virtual const std::vector<std::string> & type() const throw ();
-        virtual float visibility_limit() const throw ();
-
-    private:
-        virtual void do_field(const std::string & id,
-                              const field_value & value)
-            throw ();
-        virtual const field_value & do_field(const std::string & id) const
-            throw ();
-        virtual void do_process_event(const std::string & id,
-                                      const field_value & value,
-                                      double timestamp)
-            throw ();
-        virtual const field_value & do_eventout(const std::string & id) const
-            throw ();
-
-        virtual openvrml::event_listener &
-        do_event_listener(const std::string & id)
-            throw (unsupported_interface);
-        virtual openvrml::event_emitter &
-        do_event_emitter(const std::string & id)
-            throw (unsupported_interface);
-    };
-
-    const boost::shared_ptr<openvrml::scope> null_scope_ptr;
-
-    /**
-     * @brief Construct.
-     *
-     * @param t node type.
-     */
-    default_navigation_info::default_navigation_info(const null_node_type & t)
-        throw ():
-        node(t, null_scope_ptr),
-        child_node(t, null_scope_ptr),
-        openvrml::navigation_info_node(t, null_scope_ptr)
-    {}
-
-    /**
-     * @brief Destroy
-     */
-    default_navigation_info::~default_navigation_info() throw ()
-    {}
-
-    /**
-     * @brief The avatar dimensions.
-     *
-     * @return [0.25, 1.6, 0.75]
-     */
-    const std::vector<float> & default_navigation_info::avatar_size() const
-        throw ()
-    {
-        static const float array[] = { 0.25, 1.6, 0.75 };
-        static const std::vector<float> vec(array, array + 3);
-        return vec;
-    }
-
-    /**
-     * @brief The headlight state.
-     *
-     * @return @c true
-     */
-    bool default_navigation_info::headlight() const throw ()
-    {
-        return true;
-    }
-
-    /**
-     * @brief The speed of the user view.
-     *
-     * @return 1.0
-     */
-    float default_navigation_info::speed() const throw ()
-    {
-        return 1.0;
-    }
-
-    /**
-     * @brief The navigation type.
-     *
-     * @return ["WALK", "ANY"]
-     */
-    const std::vector<std::string> & default_navigation_info::type() const
-        throw ()
-    {
-        static const char * array[] = { "WALK", "ANY" };
-        static const std::vector<std::string> vec(array, array + 2);
-        return vec;
-    }
-
-    /**
-     * @brief The visibility limit.
-     *
-     * @return 0.0
-     */
-    float default_navigation_info::visibility_limit() const throw ()
-    {
-        return 0.0;
-    }
-
-    void default_navigation_info::do_field(const std::string & id,
-                                           const field_value & value)
-        throw ()
-    {
-        assert(false);
-    }
-
-    const field_value &
-    default_navigation_info::do_field(const std::string & id) const
-        throw ()
-    {
-        assert(false);
-        static const sfbool value;
-        return value;
-    }
-
-    void default_navigation_info::do_process_event(const std::string & id,
-                                                   const field_value & value,
-                                                   double timestamp)
-        throw ()
-    {
-        assert(false);
-    }
-
-    const field_value &
-    default_navigation_info::do_eventout(const std::string & id) const throw ()
-    {
-        assert(false);
-        static const sfbool value;
-        return value;
-    }
-
-    event_listener &
-    default_navigation_info::do_event_listener(const std::string & id)
-        throw (unsupported_interface)
-    {
-        assert(false);
-        throw unsupported_interface(this->node::type(), id);
-        return *static_cast<openvrml::event_listener *>(0);
-    }
-
-    event_emitter &
-    default_navigation_info::do_event_emitter(const std::string & id)
-        throw (unsupported_interface)
-    {
-        assert(false);
-        throw unsupported_interface(this->node::type(), id);
-        return *static_cast<openvrml::event_emitter *>(0);
+        return node_type_ptr(new proto_node_type(*this, id, interfaces));
     }
 
 
@@ -2576,7 +2423,7 @@ namespace {
         mat4f userViewTransform;
 
     public:
-        explicit default_viewpoint(const null_node_type & type) throw ();
+        explicit default_viewpoint(const null_node_type & nodeType) throw ();
         virtual ~default_viewpoint() throw ();
 
         virtual const mat4f & transformation() const throw ();
@@ -2606,8 +2453,10 @@ namespace {
             throw (unsupported_interface);
     };
 
+    static const boost::shared_ptr<openvrml::scope> null_scope_ptr;
+
     /**
-     * @brief Construct.
+     * @brief Constructor.
      *
      * @param type  the browser's null_node_type instance.
      */
@@ -2619,7 +2468,7 @@ namespace {
     {}
 
     /**
-     * @brief Destroy.
+     * @brief Destructor.
      */
     default_viewpoint::~default_viewpoint() throw ()
     {}
@@ -2711,7 +2560,6 @@ namespace {
         throw unsupported_interface(this->type(), id);
         return *static_cast<openvrml::event_emitter *>(0);
     }
-
 
     class uri {
         struct grammar : public boost::spirit::grammar<grammar> {
@@ -3276,6 +3124,196 @@ namespace {
 
         return result_uri;
     }
+
+
+# ifdef OPENVRML_ENABLE_GZIP
+    namespace z {
+
+        typedef int level;
+        const level no_compression      = Z_NO_COMPRESSION;
+        const level best_speed          = Z_BEST_SPEED;
+        const level best_compression    = Z_BEST_COMPRESSION;
+        const level default_compression = Z_DEFAULT_COMPRESSION;
+
+        enum strategy {
+            default_strategy    = Z_DEFAULT_STRATEGY,
+            filtered            = Z_FILTERED,
+            huffman_only        = Z_HUFFMAN_ONLY
+        };
+
+        class filebuf : public std::streambuf {
+            enum { buffer_size = 16384 };
+            char buffer[buffer_size];
+            gzFile file;
+
+        public:
+            filebuf();
+            virtual ~filebuf();
+
+            bool is_open() const;
+            filebuf * open(const char * path, int mode,
+                           level = default_compression,
+                           strategy = default_strategy);
+            filebuf * close();
+
+        protected:
+            virtual int underflow();
+            virtual int overflow(int = EOF);
+        };
+
+        class ifstream : public std::istream {
+            filebuf fbuf;
+
+        public:
+            ifstream();
+            explicit ifstream(const char * path, level = default_compression,
+                              strategy = default_strategy);
+            virtual ~ifstream();
+
+            filebuf * rdbuf() const;
+            bool is_open() const;
+            void open(const char * path, level = default_compression,
+                      strategy = default_strategy);
+            void close();
+        };
+
+        //
+        // filebuf
+        //
+
+        int const lookback(4);
+
+        filebuf::filebuf(): file(0) {
+            this->setg(this->buffer + lookback,  // beginning of putback area
+                       this->buffer + lookback,  // read position
+                       this->buffer + lookback); // end position
+        }
+
+        filebuf::~filebuf() {
+            this->close();
+        }
+
+        bool filebuf::is_open() const {
+            return (this->file != 0);
+        }
+
+        filebuf * filebuf::open(const char * path,
+                                const int mode,
+                                const level comp_level,
+                                const strategy comp_strategy) {
+            using std::ios;
+
+            if (this->file) { return 0; }
+
+            //
+            // zlib only supports the "rb" and "wb" modes, so we bail on anything
+            // else.
+            //
+            static const char read_mode_string[] = "rb";
+            static const char write_mode_string[] = "wb";
+            const char * mode_string = 0;
+            if (mode == (ios::binary | ios::in)) {
+                mode_string = read_mode_string;
+            } else if (   (mode == (ios::binary | ios::out))
+                       || (mode == (ios::binary | ios::out | ios::trunc))) {
+                mode_string = write_mode_string;
+            } else {
+                return 0;
+            }
+
+            this->file = gzopen(path, mode_string);
+            if (!this->file) { return 0; }
+
+            gzsetparams(this->file, comp_level, comp_strategy);
+            return this;
+        }
+
+        filebuf * filebuf::close() {
+            if (!this->file) { return 0; }
+            gzclose(this->file);
+            this->file = 0;
+            return this;
+        }
+
+        int filebuf::underflow() {
+            if (this->gptr() < this->egptr()) { return *this->gptr(); }
+
+            //
+            // Process the size of the putback area; use the number of characters read,
+            // but at most four.
+            //
+            int num_putback = this->gptr() - this->eback();
+            if (num_putback > lookback) { num_putback = lookback; }
+
+            std::copy(this->gptr() - num_putback, this->gptr(),
+                      this->buffer + (lookback - num_putback));
+
+            //
+            // Read new characters.
+            //
+            int num = gzread(this->file,
+                             this->buffer + lookback,
+                             filebuf::buffer_size - lookback);
+
+            if (num <= 0) { return EOF; } // Error condition or end of file.
+
+            //
+            // Reset the buffer pointers.
+            //
+            this->setg(buffer + (lookback - num_putback), // Beginning of putback area.
+                       buffer + lookback,                 // Read position.
+                       buffer + lookback + num);          // End of buffer.
+
+            //
+            // Return the next character.
+            //
+            return *this->gptr();
+        }
+
+        int filebuf::overflow(int c) {
+            //
+            // This probably ought to be buffered, but this will do for now.
+            //
+            if (c != EOF) {
+                if (gzputc(file, c) == -1) { return EOF; }
+            }
+            return c;
+        }
+
+
+        //
+        // ifstream
+        //
+
+        ifstream::ifstream(): std::basic_istream<char>(&fbuf) {}
+
+        ifstream::ifstream(const char * path, level lev, strategy strat):
+                std::basic_istream<char>(&fbuf) {
+            this->open(path, lev, strat);
+        }
+
+        ifstream::~ifstream() {}
+
+        filebuf * ifstream::rdbuf() const {
+            return const_cast<filebuf *>(&this->fbuf);
+        }
+
+        bool ifstream::is_open() const { return this->fbuf.is_open(); }
+
+        void ifstream::open(const char * path, level lev, strategy strat) {
+            using std::ios;
+            if (!this->fbuf.open(path, ios::binary | ios::in, lev, strat)) {
+#   ifdef _WIN32
+                this->clear(failbit);
+#   else
+                this->setstate(failbit);
+#   endif
+            }
+        }
+
+        void ifstream::close() { this->fbuf.close(); }
+    }
+# endif // OPENVRML_ENABLE_GZIP
 } // namespace
 
 //
@@ -3321,154 +3359,6 @@ namespace openvrml {
  *
  * @brief 1/pi
  */
-
-/**
- * @class resource_istream
- *
- * @brief An abstract input stream for network resources.
- *
- * <code>resource_istream</code> inherits <code>std::istream</code>, adding
- * functions to get the URI and the MIME content type associated with the
- * stream. Users of the library must provide an implementation of this class,
- * to be returned from <code>openvrml::browser::do_get_resource</code>.
- */
-
-/**
- * @brief Construct.
- *
- * @param streambuf a stream buffer.
- */
-resource_istream::resource_istream(std::streambuf * streambuf):
-    std::istream(streambuf)
-{}
-
-/**
- * @brief Destroy.
- */
-resource_istream::~resource_istream()
-{}
-
-/**
- * @fn const std::string resource_istream::url() const throw ()
- *
- * @brief Get the URL associated with the stream.
- *
- * @return the URL associated with the stream.
- */
-
-/**
- * @fn const std::string resource_istream::type() const throw ()
- *
- * @brief Get the MIME content type associated with the stream.
- *
- * @return the MIME content type associated with the stream.
- */
-
-
-/**
- * @class stream_listener
- *
- * @brief An interface to simplify asynchronously reading a
- *        <code>resource_istream</code>.
- */
-
-/**
- * @brief Destroy.
- */
-stream_listener::~stream_listener() throw ()
-{}
-
-/**
- * @brief Called once the stream is available for use.
- *
- * This function calls <code>stream_listener::do_stream_available</code>.
- *
- * @param uri           the URI associated with the stream.
- * @param media_type    the MIME media type for the stream.
- */
-void stream_listener::stream_available(const std::string & uri,
-                                       const std::string & media_type)
-{
-    this->do_stream_available(uri, media_type);
-}
-
-/**
- * @fn void stream_listener::do_stream_available(const std::string & uri, const std::string & media_type)
- *
- * @brief Called by <code>stream_listener::stream_available</code>.
- *
- * Concrete <code>stream_listener</code>s must override this function.
- *
- * @param uri           the URI associated with the stream.
- * @param media_type    the MIME media type for the stream.
- */
-
-/**
- * @brief Called when data is available.
- *
- * This function calls <code>stream_listener::do_data_available</code>.
- *
- * @param data  the data.
- */
-void stream_listener::data_available(const std::vector<unsigned char> & data)
-{
-    this->do_data_available(data);
-}
-
-/**
- * @fn void stream_listener::do_data_available(const std::vector<unsigned char> & data)
- *
- * @brief Called by <code>stream_listener::data_available</code>
- *
- * @param data  the data.
- */
-
-namespace {
-
-    struct stream_reader {
-        stream_reader(std::auto_ptr<openvrml::resource_istream> in,
-                      std::auto_ptr<openvrml::stream_listener> listener):
-            in_(in),
-            listener_(listener)
-        {}
-
-        void operator()() const
-        {
-            this->listener_->stream_available(this->in_->url(),
-                                              this->in_->type());
-            while (*this->in_) {
-                std::vector<unsigned char> data;
-                while (this->in_->data_available()) {
-                    resource_istream::int_type c = this->in_->get();
-                    if (c != resource_istream::traits_type::eof()) {
-                        data.push_back(
-                            resource_istream::traits_type::to_char_type(c));
-                    }
-                }
-                this->listener_->data_available(data);
-            }
-        }
-
-    private:
-        boost::shared_ptr<openvrml::resource_istream> in_;
-        boost::shared_ptr<openvrml::stream_listener> listener_;
-    };
-}
-
-/**
- * @brief Read a stream in a new thread.
- *
- * <code>read_stream</code> takes ownership of its arguments; the resources
- * are released when reading the stream completes and the thread terminates.
- *
- * @param in        an input stream.
- * @param listener  a stream listener.
- */
-void read_stream(std::auto_ptr<resource_istream> in,
-                 std::auto_ptr<stream_listener> listener)
-{
-    boost::thread(stream_reader(in, listener));
-}
 
 /**
  * @class invalid_vrml
@@ -3555,272 +3445,22 @@ viewer_in_use::~viewer_in_use() throw ()
  */
 
 /**
- * @internal
+ * @var browser::Vrml97RootScope
  *
- * @class browser::node_class_map
- *
- * @brief The map of <code>node_class</code>es.
+ * @brief Root scope that is initialized with the VRML97 node types.
  */
 
 /**
- * @var boost::mutex browser::node_class_map::mutex_
+ * @var browser::Vrml97Parser
  *
- * @brief Object mutex.
+ * @brief VRML97 parser generated by ANTLR.
  */
 
 /**
- * @typedef browser::node_class_map::map_t
+ * @var browser::Vrml97RootScope
  *
- * @brief Map type.
+ * @brief Root scope that is initialized with the VRML97 node types.
  */
-
-/**
- * @var browser::node_class_map::map_t browser::node_class_map::map_
- *
- * @brief Map.
- */
-
-/**
- * @brief Construct.
- *
- * @param b the <code>browser</code>.
- */
-browser::node_class_map::node_class_map(browser & b)
-{
-    using namespace vrml97_node;
-    this->map_["urn:X-openvrml:node:Anchor"] =
-        boost::shared_ptr<node_class>(new anchor_class(b));
-    this->map_["urn:X-openvrml:node:Appearance"] =
-        boost::shared_ptr<node_class>(new appearance_class(b));
-    this->map_["urn:X-openvrml:node:AudioClip"] =
-        boost::shared_ptr<node_class>(new audio_clip_class(b));
-    this->map_["urn:X-openvrml:node:Background"] =
-        boost::shared_ptr<node_class>(new background_class(b));
-    this->map_["urn:X-openvrml:node:Billboard"] =
-        boost::shared_ptr<node_class>(new billboard_class(b));
-    this->map_["urn:X-openvrml:node:Box"] =
-        boost::shared_ptr<node_class>(new box_class(b));
-    this->map_["urn:X-openvrml:node:Collision"] =
-        boost::shared_ptr<node_class>(new collision_class(b));
-    this->map_["urn:X-openvrml:node:Color"] =
-        boost::shared_ptr<node_class>(new color_class(b));
-    this->map_["urn:X-openvrml:node:ColorInterpolator"] =
-        boost::shared_ptr<node_class>(new color_interpolator_class(b));
-    this->map_["urn:X-openvrml:node:Cone"] =
-        boost::shared_ptr<node_class>(new cone_class(b));
-    this->map_["urn:X-openvrml:node:Coordinate"] =
-        boost::shared_ptr<node_class>(new coordinate_class(b));
-    this->map_["urn:X-openvrml:node:CoordinateInterpolator"] =
-        boost::shared_ptr<node_class>(new coordinate_interpolator_class(b));
-    this->map_["urn:X-openvrml:node:Cylinder"] =
-        boost::shared_ptr<node_class>(new cylinder_class(b));
-    this->map_["urn:X-openvrml:node:CylinderSensor"] =
-        boost::shared_ptr<node_class>(new cylinder_sensor_class(b));
-    this->map_["urn:X-openvrml:node:DirectionalLight"] =
-        boost::shared_ptr<node_class>(new directional_light_class(b));
-    this->map_["urn:X-openvrml:node:ElevationGrid"] =
-        boost::shared_ptr<node_class>(new elevation_grid_class(b));
-    this->map_["urn:X-openvrml:node:Extrusion"] =
-        boost::shared_ptr<node_class>(new extrusion_class(b));
-    this->map_["urn:X-openvrml:node:Fog"] =
-        boost::shared_ptr<node_class>(new fog_class(b));
-    this->map_["urn:X-openvrml:node:FontStyle"] =
-        boost::shared_ptr<node_class>(new font_style_class(b));
-    this->map_["urn:X-openvrml:node:Group"] =
-        boost::shared_ptr<node_class>(new group_class(b));
-    this->map_["urn:X-openvrml:node:ImageTexture"] =
-        boost::shared_ptr<node_class>(new image_texture_class(b));
-    this->map_["urn:X-openvrml:node:IndexedFaceSet"] =
-        boost::shared_ptr<node_class>(new indexed_face_set_class(b));
-    this->map_["urn:X-openvrml:node:IndexedLineSet"] =
-        boost::shared_ptr<node_class>(new indexed_line_set_class(b));
-    this->map_["urn:X-openvrml:node:Inline"] =
-        boost::shared_ptr<node_class>(new inline_class(b));
-    this->map_["urn:X-openvrml:node:LOD"] =
-        boost::shared_ptr<node_class>(new lod_class(b));
-    this->map_["urn:X-openvrml:node:Material"] =
-        boost::shared_ptr<node_class>(new material_class(b));
-    this->map_["urn:X-openvrml:node:MovieTexture"] =
-        boost::shared_ptr<node_class>(new movie_texture_class(b));
-    this->map_["urn:X-openvrml:node:NavigationInfo"] =
-        boost::shared_ptr<node_class>(new navigation_info_class(b));
-    this->map_["urn:X-openvrml:node:Normal"] =
-        boost::shared_ptr<node_class>(new normal_class(b));
-    this->map_["urn:X-openvrml:node:NormalInterpolator"] =
-        boost::shared_ptr<node_class>(new normal_interpolator_class(b));
-    this->map_["urn:X-openvrml:node:OrientationInterpolator"] =
-        boost::shared_ptr<node_class>(new orientation_interpolator_class(b));
-    this->map_["urn:X-openvrml:node:PixelTexture"] =
-        boost::shared_ptr<node_class>(new pixel_texture_class(b));
-    this->map_["urn:X-openvrml:node:PlaneSensor"] =
-        boost::shared_ptr<node_class>(new plane_sensor_class(b));
-    this->map_["urn:X-openvrml:node:PointLight"] =
-        boost::shared_ptr<node_class>(new point_light_class(b));
-    this->map_["urn:X-openvrml:node:PointSet"] =
-        boost::shared_ptr<node_class>(new point_set_class(b));
-    this->map_["urn:X-openvrml:node:PositionInterpolator"] =
-        boost::shared_ptr<node_class>(new position_interpolator_class(b));
-    this->map_["urn:X-openvrml:node:ProximitySensor"] =
-        boost::shared_ptr<node_class>(new proximity_sensor_class(b));
-    this->map_["urn:X-openvrml:node:ScalarInterpolator"] =
-        boost::shared_ptr<node_class>(new scalar_interpolator_class(b));
-    this->map_["urn:X-openvrml:node:Shape"] =
-        boost::shared_ptr<node_class>(new shape_class(b));
-    this->map_["urn:X-openvrml:node:Sound"] =
-        boost::shared_ptr<node_class>(new sound_class(b));
-    this->map_["urn:X-openvrml:node:Sphere"] =
-        boost::shared_ptr<node_class>(new sphere_class(b));
-    this->map_["urn:X-openvrml:node:SphereSensor"] =
-        boost::shared_ptr<node_class>(new sphere_sensor_class(b));
-    this->map_["urn:X-openvrml:node:SpotLight"] =
-        boost::shared_ptr<node_class>(new spot_light_class(b));
-    this->map_["urn:X-openvrml:node:Switch"] =
-        boost::shared_ptr<node_class>(new switch_class(b));
-    this->map_["urn:X-openvrml:node:Text"] =
-        boost::shared_ptr<node_class>(new text_class(b));
-    this->map_["urn:X-openvrml:node:TextureCoordinate"] =
-        boost::shared_ptr<node_class>(new texture_coordinate_class(b));
-    this->map_["urn:X-openvrml:node:TextureTransform"] =
-        boost::shared_ptr<node_class>(new texture_transform_class(b));
-    this->map_["urn:X-openvrml:node:TimeSensor"] =
-        boost::shared_ptr<node_class>(new time_sensor_class(b));
-    this->map_["urn:X-openvrml:node:TouchSensor"] =
-        boost::shared_ptr<node_class>(new touch_sensor_class(b));
-    this->map_["urn:X-openvrml:node:Transform"] =
-        boost::shared_ptr<node_class>(new transform_class(b));
-    this->map_["urn:X-openvrml:node:Viewpoint"] =
-        boost::shared_ptr<node_class>(new viewpoint_class(b));
-    this->map_["urn:X-openvrml:node:VisibilitySensor"] =
-        boost::shared_ptr<node_class>(new visibility_sensor_class(b));
-    this->map_["urn:X-openvrml:node:WorldInfo"] =
-        boost::shared_ptr<node_class>(new world_info_class(b));
-}
-
-/**
- * @fn browser::node_class_map::node_class_map(const node_class_map &)
- *
- * @brief Not implemented.
- */
-
-/**
- * @brief Assign.
- *
- * @param map   the value to assign.
- */
-browser::node_class_map &
-browser::node_class_map::operator=(const node_class_map & map)
-{
-    boost::mutex::scoped_lock my_lock(this->mutex_), map_lock(map.mutex_);
-    map_t temp(map.map_);
-    swap(this->map_, temp);
-    return *this;
-}
-
-namespace {
-    typedef std::map<std::string, boost::shared_ptr<node_class> >
-        node_class_map_t;
-
-    struct init_node_class : std::unary_function<void,
-                                                 node_class_map_t::value_type>
-    {
-        init_node_class(viewpoint_node * initial_viewpoint, const double time)
-            throw ():
-            initial_viewpoint_(initial_viewpoint),
-            time_(time)
-        {}
-
-        void operator()(const node_class_map_t::value_type & value) const
-            throw ()
-        {
-            assert(value.second);
-            value.second->initialize(this->initial_viewpoint_, this->time_);
-        }
-
-    private:
-        viewpoint_node * initial_viewpoint_;
-        double time_;
-    };
-}
-
-/**
- * @brief Initialize the <code>node_class</code>es.
- *
- * @param initial_viewpoint the viewpoint_node that should be initially active.
- * @param timestamp         the current time.
- */
-void browser::node_class_map::init(viewpoint_node * initial_viewpoint,
-                                   const double timestamp)
-{
-    boost::mutex::scoped_lock lock(this->mutex_);
-    for_each(this->map_.begin(), this->map_.end(),
-             init_node_class(initial_viewpoint, timestamp));
-}
-
-/**
- * @brief Insert a <code>node_class</code>.
- *
- * This operation will "fail" silently. That is, if a <code>node_class</code>
- * corresponding to @p id already exists in the map, the existing element will
- * simply be returned.
- *
- * @param id            the implementation identifier.
- * @param node_class    a <code>node_class</code>.
- *
- * @return the element in the node_class_map corresponding to @p id.
- */
-const boost::shared_ptr<node_class>
-browser::node_class_map::insert(const std::string & id,
-                                const boost::shared_ptr<node_class> & node_class)
-{
-    boost::mutex::scoped_lock lock(this->mutex_);
-    return this->map_.insert(make_pair(id, node_class)).first->second;
-}
-
-/**
- * @brief Find a <code>node_class</code>.
- *
- * @param id    an implementation id.
- *
- * @return the <code>node_class</code> corresponding to @p id, or a null
- *         pointer if no such <code>node_class</code> exists in the map.
- */
-const boost::shared_ptr<node_class>
-browser::node_class_map::find(const std::string & id) const
-{
-    const map_t::const_iterator pos = this->map_.find(id);
-    return (pos != this->map_.end())
-        ? pos->second
-        : boost::shared_ptr<node_class>();
-}
-
-namespace {
-
-    struct render_node_class :
-            std::unary_function<void, node_class_map_t::value_type> {
-        explicit render_node_class(openvrml::viewer & viewer):
-            viewer(&viewer)
-        {}
-
-        void operator()(const node_class_map_t::value_type & value) const
-        {
-            value.second->render(*this->viewer);
-        }
-
-    private:
-        openvrml::viewer * viewer;
-    };
-}
-
-/**
- * @brief Render the <code>node_class</code>es.
- *
- * @param v a viewer.
- */
-void browser::node_class_map::render(openvrml::viewer & v)
-{
-    boost::mutex::scoped_lock lock(this->mutex_);
-    for_each(this->map_.begin(), this->map_.end(), render_node_class(v));
-}
 
 /**
  * @enum browser::cb_reason
@@ -3850,12 +3490,6 @@ void browser::node_class_map::render(openvrml::viewer & v)
  */
 
 /**
- * @var boost::recursive_mutex browser::mutex_
- *
- * @brief Object mutex.
- */
-
-/**
  * @var std::auto_ptr<null_node_class> browser::null_node_class_
  *
  * @brief "Null" class object for default nodes (e.g., default_viewpoint).
@@ -3868,7 +3502,13 @@ void browser::node_class_map::render(openvrml::viewer & v)
  */
 
 /**
- * @var browser::node_class_map browser::node_class_map_
+ * @typedef browser::node_class_map_t
+ *
+ * @brief Maps URIs to @link node_class node_classes@endlink.
+ */
+
+/**
+ * @var browser::node_class_map_t browser::node_class_map
  *
  * @brief A map of URIs to node implementations.
  */
@@ -3899,22 +3539,27 @@ void browser::node_class_map::render(openvrml::viewer & v)
  */
 
 /**
- * @var node_ptr browser::default_navigation_info_
- *
- * @brief The "default" navigation_info_node used when no navigation_info_node
- *        in the scene is bound.
- */
-
-/**
- * @var navigation_info_node * browser::active_navigation_info_
- *
- * @brief The currently "active" navigation_info_node.
- */
-
-/**
  * @var std::list<viewpoint_node *> browser::viewpoint_list
  *
  * @brief A list of all the Viewpoint nodes in the browser.
+ */
+
+/**
+ * @typedef browser::bind_stack_t
+ *
+ * @brief A list of bound nodes.
+ */
+
+/**
+ * @var browser::bind_stack_t browser::navigation_info_stack
+ *
+ * @brief The stack of bound NavigationInfo nodes.
+ */
+
+/**
+ * @var std::list<node *> browser::navigation_infos
+ *
+ * @brief A list of all the NavigationInfo nodes in the browser.
  */
 
 /**
@@ -4108,14 +3753,10 @@ browser::browser(std::ostream & out, std::ostream & err)
     throw (std::bad_alloc):
     null_node_class_(new null_node_class(*this)),
     null_node_type_(new null_node_type(*null_node_class_)),
-    node_class_map_(*this),
     script_node_class_(*this),
-    scene_(new scene(*this)),
+    scene_(0),
     default_viewpoint_(new default_viewpoint(*null_node_type_)),
     active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint_.get())),
-    default_navigation_info_(new default_navigation_info(*null_node_type_)),
-    active_navigation_info_(
-        node_cast<navigation_info_node *>(default_navigation_info_.get())),
     modified_(false),
     new_view(false),
     delta_time(DEFAULT_DELTA),
@@ -4128,7 +3769,7 @@ browser::browser(std::ostream & out, std::ostream & err)
     flags_need_updating(false)
 {
     assert(this->active_viewpoint_);
-    assert(this->active_navigation_info_);
+    this->init_node_class_map();
 }
 
 /**
@@ -4139,12 +3780,17 @@ browser::~browser() throw ()
     const double now = browser::current_time();
 
     if (this->scene_) { this->scene_->shutdown(now); }
+    delete this->scene_;
+    this->scene_ = 0;
+    this->navigation_info_stack.clear();
     assert(this->viewpoint_list.empty());
+    assert(this->navigation_infos.empty());
     assert(this->scoped_lights.empty());
     assert(this->scripts.empty());
     assert(this->timers.empty());
     assert(this->audio_clips.empty());
     assert(this->movies.empty());
+    this->node_class_map.clear();
 }
 
 /**
@@ -4154,7 +3800,6 @@ browser::~browser() throw ()
  */
 const std::vector<node_ptr> & browser::root_nodes() const throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(this->scene_);
     return this->scene_->nodes();
 }
@@ -4173,7 +3818,6 @@ const std::vector<node_ptr> & browser::root_nodes() const throw ()
 const node_path browser::find_node(const node & n) const
     throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(this->scene_);
 
     class FindNodeTraverser : public node_traverser {
@@ -4218,7 +3862,6 @@ const node_path browser::find_node(const node & n) const
  */
 viewpoint_node & browser::active_viewpoint() const throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return *this->active_viewpoint_;
 }
 
@@ -4229,7 +3872,6 @@ viewpoint_node & browser::active_viewpoint() const throw ()
  */
 void browser::active_viewpoint(viewpoint_node & viewpoint) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->active_viewpoint_ = &viewpoint;
 }
 
@@ -4238,49 +3880,10 @@ void browser::active_viewpoint(viewpoint_node & viewpoint) throw ()
  */
 void browser::reset_default_viewpoint() throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(this->default_viewpoint_);
     this->active_viewpoint_ =
         node_cast<viewpoint_node *>(this->default_viewpoint_.get());
     assert(this->active_viewpoint_);
-}
-
-/**
- * @brief Get the active navigation_info_node.
- *
- * The active navigation_info_node is the one currently associated with the
- * user view.
- *
- * @return the active navigation_info_node.
- */
-navigation_info_node & browser::active_navigation_info() const throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    return *this->active_navigation_info_;
-}
-
-/**
- * @brief Set the active navigation_info_node.
- *
- * @param nav_info a navigation_info_node.
- */
-void browser::active_navigation_info(navigation_info_node & nav_info) throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    this->active_navigation_info_ = &nav_info;
-}
-
-/**
- * @brief Reset the active navigation_info_node to the default.
- */
-void browser::reset_default_navigation_info() throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->default_navigation_info_);
-    this->active_navigation_info_ =
-        node_cast<navigation_info_node *>(
-            this->default_navigation_info_.get());
-    assert(this->active_navigation_info_);
 }
 
 /**
@@ -4294,7 +3897,6 @@ void browser::reset_default_navigation_info() throw ()
  */
 void browser::add_viewpoint(viewpoint_node & viewpoint) throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(std::find(this->viewpoint_list.begin(), this->viewpoint_list.end(),
                      &viewpoint) == this->viewpoint_list.end());
     this->viewpoint_list.push_back(&viewpoint);
@@ -4310,7 +3912,6 @@ void browser::add_viewpoint(viewpoint_node & viewpoint) throw (std::bad_alloc)
  */
 void browser::remove_viewpoint(viewpoint_node & viewpoint) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(!this->viewpoint_list.empty());
     typedef std::list<viewpoint_node *> viewpoint_list_t;
     const viewpoint_list_t::iterator end = this->viewpoint_list.end();
@@ -4329,7 +3930,6 @@ void browser::remove_viewpoint(viewpoint_node & viewpoint) throw ()
  */
 const std::list<viewpoint_node *> & browser::viewpoints() const throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->viewpoint_list;
 }
 
@@ -4343,7 +3943,6 @@ const std::list<viewpoint_node *> & browser::viewpoints() const throw ()
  */
 void browser::viewer(openvrml::viewer * v) throw (viewer_in_use)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (v && v->browser_) { throw viewer_in_use(); }
     if (this->viewer_) { this->viewer_->browser_ = 0; }
     this->viewer_ = v;
@@ -4355,36 +3954,10 @@ void browser::viewer(openvrml::viewer * v) throw (viewer_in_use)
  *
  * @return the current <code>viewer</code>.
  */
-viewer * browser::viewer() const throw ()
+viewer * browser::viewer() throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->viewer_;
 }
-
-/**
- * @brief Fetch a network resource.
- *
- * @param uri   a Uniform Resource Identifier.
- *
- * @return the requested resource as a stream.
- */
-std::auto_ptr<openvrml::resource_istream>
-browser::get_resource(const std::string & uri)
-{
-    return this->do_get_resource(uri);
-}
-
-/**
- * @brief Fetch a network resource.
- *
- * Called by <code>browser::get_resource</code>.
- *
- * @param uri   a Uniform Resource Identifier.
- *
- * @return the requested resource as a stream.
- *
- * @fn std::auto_ptr<openvrml::resource_istream> browser::do_get_resource(const std::string & uri)
- */
 
 /**
  * @brief Get the browser name.
@@ -4417,9 +3990,10 @@ const char * browser::version() const throw ()
  */
 float browser::current_speed()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    navigation_info_node & nav_info = this->active_navigation_info();
-    return nav_info.speed();
+    vrml97_node::navigation_info_node * const navInfo =
+        bindable_navigation_info_top();
+    if (navInfo) { return navInfo->speed(); }
+    return 0.0f;
 }
 
 /**
@@ -4429,125 +4003,66 @@ float browser::current_speed()
  */
 const std::string browser::world_url() const throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->scene_);
-    return this->scene_->url(); // Throws std::bad_alloc.
+    static const std::string empty_string;
+    return this->scene_
+        ? this->scene_->url() // Throws std::bad_alloc.
+        : empty_string;
 }
 
 /**
- * @brief Set the URI for the world.
- *
- * This function does nothing other than change the URI returned by
- * the browser::world_url accessor. It does not result in loading a new world.
- *
- * @param str   a valid URI.
- *
- * @exception invalid_url       if @p str is not a valid URI.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void browser::world_url(const std::string & str)
-    throw (invalid_url, std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->scene_);
-    this->scene_->url(str);
-}
-
-/**
- * @brief Replace the root nodes of the world.
- *
- * @param nodes new root nodes for the world.
+ * @todo Implement me!
  */
 void browser::replace_world(const std::vector<node_ptr> & nodes)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    const double now = browser::current_time();
-    this->scene_->shutdown(now);
-    this->scene_->nodes(nodes);
-    this->scene_->initialize(now);
-    //
-    // Initialize the node_classes.
-    //
-    static viewpoint_node * const initial_viewpoint = 0;
-    this->node_class_map_.init(initial_viewpoint, now);
-    this->modified(true);
-    this->new_view = true; // Force resetUserNav
+{}
+
+namespace {
+    typedef std::map<std::string, node_class_ptr> node_class_map_t;
+
+    struct InitNodeClass : std::unary_function<void,
+                                               node_class_map_t::value_type>
+    {
+        explicit InitNodeClass(viewpoint_node * initialViewpoint,
+                               const double time)
+            throw ():
+            initialViewpoint(initialViewpoint),
+            time(time)
+        {}
+
+        void operator()(const node_class_map_t::value_type & value) const
+            throw ()
+        {
+            assert(value.second);
+            value.second->initialize(this->initialViewpoint, this->time);
+        }
+
+    private:
+        viewpoint_node * initialViewpoint;
+        double time;
+    };
 }
 
 /**
- * @brief Load a VRML world into the browser.
+ * @brief Load a resource into the browser.
+ *
+ * The default implementation of this method simply loads a VRML world
+ * into the browser.  If the resource at @p url is not a VRML world, this
+ * method as no effect.
+ *
+ * Implementations should override this method to handle non-VRML resources,
+ * handing them off to a Web browser or other appropriate handler.
  *
  * @param url       a URI.
  * @param parameter parameters for @p url.
  *
- * @exception std::bad_alloc    if memory allocation fails.
+ * @todo Make this asynchronous.
  */
 void browser::load_url(const std::vector<std::string> & url,
                        const std::vector<std::string> & parameter)
     throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-
-    class root_scene : public openvrml::scene {
-    public:
-        explicit root_scene(openvrml::browser & b):
-            scene(b, 0)
-        {}
-
-    private:
-        virtual void scene_loaded()
-        {
-            boost::recursive_mutex::scoped_lock lock(this->browser().mutex_);
-
-            try {
-                using std::string;
-
-                const double now = browser::current_time();
-                this->initialize(now);
-
-                //
-                // Get the initial viewpoint_node, if any was specified.
-                //
-                viewpoint_node * initial_viewpoint = 0;
-                const string viewpoint_node_id = uri(this->url()).fragment();
-                if (!viewpoint_node_id.empty()) {
-                    if (!this->nodes().empty()) {
-                        const node_ptr & n = this->nodes()[0];
-                        if (n) {
-                            node * const vp =
-                                n->scope()->find_node(viewpoint_node_id);
-                            initial_viewpoint =
-                                dynamic_cast<viewpoint_node *>(vp);
-                        }
-                    }
-                }
-
-                //
-                // Initialize the node_classes.
-                //
-                this->browser().node_class_map_.init(initial_viewpoint, now);
-
-                if (this->browser().active_viewpoint_
-                    != node_cast<viewpoint_node *>(
-                        this->browser().default_viewpoint_.get())) {
-                    event_listener & listener =
-                        this->browser().active_viewpoint_
-                        ->event_listener("set_bind");
-                    assert(dynamic_cast<sfbool_listener *>(&listener));
-                    static_cast<sfbool_listener &>(listener)
-                        .process_event(sfbool(true), now);
-                }
-            } catch (std::exception & ex) {
-                std::ostream & err = this->browser().err;
-                err << ex.what() << std::endl;
-            }
-            this->browser().modified(true);
-            this->browser().new_view = true; // Force resetUserNav
-        }
-    };
-
     using std::for_each;
     using std::list;
+    using std::string;
 
     const double now = browser::current_time();
 
@@ -4555,23 +4070,77 @@ void browser::load_url(const std::vector<std::string> & url,
     // Clear out the current scene.
     //
     if (this->scene_) { this->scene_->shutdown(now); }
-    this->scene_.reset();
+    delete this->scene_;
+    this->scene_ = 0;
     this->active_viewpoint_ =
         node_cast<viewpoint_node *>(this->default_viewpoint_.get());
+    this->navigation_info_stack.clear();
     assert(this->viewpoint_list.empty());
+    assert(this->navigation_infos.empty());
     assert(this->scoped_lights.empty());
     assert(this->scripts.empty());
     assert(this->timers.empty());
     assert(this->audio_clips.empty());
     assert(this->movies.empty());
+    this->node_class_map.clear();
 
     //
     // Create the new scene.
     //
-    node_class_map new_map(*this);
-    this->node_class_map_ = new_map;
-    this->scene_.reset(new root_scene(*this));
-    this->scene_->load(url);
+    this->init_node_class_map();
+    try {
+        this->scene_ = new scene(*this, url);
+        this->scene_->initialize(now);
+
+        //
+        // Get the initial viewpoint_node, if any was specified.
+        //
+        viewpoint_node * initialViewpoint = 0;
+        const string viewpointNodeId = uri(this->scene_->url()).fragment();
+        if (!viewpointNodeId.empty()) {
+            if (!this->scene_->nodes().empty()) {
+                const node_ptr & n = this->scene_->nodes()[0];
+                if (n) {
+                    node * const vp = n->scope()->find_node(viewpointNodeId);
+                    initialViewpoint = dynamic_cast<viewpoint_node *>(vp);
+                }
+            }
+        }
+
+        //
+        // Initialize the node_classes.
+        //
+        for_each(this->node_class_map.begin(), this->node_class_map.end(),
+                 InitNodeClass(initialViewpoint, now));
+
+        //
+        // Send initial bind events to bindable nodes.
+        //
+        if (!this->navigation_infos.empty()) {
+            assert(this->navigation_infos.front());
+            event_listener & listener =
+                navigation_infos.front()->event_listener("set_bind");
+            assert(dynamic_cast<sfbool_listener *>(&listener));
+            static_cast<sfbool_listener &>(listener)
+                .process_event(sfbool(true), now);
+        }
+
+        if (this->active_viewpoint_
+            != node_cast<viewpoint_node *>(this->default_viewpoint_.get())) {
+            event_listener & listener =
+                this->active_viewpoint_->event_listener("set_bind");
+            assert(dynamic_cast<sfbool_listener *>(&listener));
+            static_cast<sfbool_listener &>(listener)
+                .process_event(sfbool(true), now);
+        }
+    } catch (invalid_vrml & ex) {
+        this->err << ex.url << ':' << ex.line << ':' << ex.column
+                  << ": error: " << ex.what() << std::endl;
+    } catch (no_alternative_url & ex) {
+        this->err << ex.what() << std::endl;
+    }
+    this->modified(true);
+    this->new_view = true; // Force resetUserNav
 }
 
 /**
@@ -4628,13 +4197,126 @@ void browser::create_vrml_from_url(const std::vector<std::string> & url,
 {}
 
 /**
+ * @brief Initialize the node_class map with the available node
+ *        implementations.
+ */
+void browser::init_node_class_map() {
+    using namespace vrml97_node;
+    this->node_class_map["urn:X-openvrml:node:Anchor"] =
+        node_class_ptr(new anchor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Appearance"] =
+        node_class_ptr(new appearance_class(*this));
+    this->node_class_map["urn:X-openvrml:node:AudioClip"] =
+        node_class_ptr(new audio_clip_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Background"] =
+        node_class_ptr(new background_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Billboard"] =
+        node_class_ptr(new billboard_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Box"] =
+        node_class_ptr(new box_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Collision"] =
+        node_class_ptr(new collision_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Color"] =
+        node_class_ptr(new color_class(*this));
+    this->node_class_map["urn:X-openvrml:node:ColorInterpolator"] =
+        node_class_ptr(new color_interpolator_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Cone"] =
+        node_class_ptr(new cone_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Coordinate"] =
+        node_class_ptr(new coordinate_class(*this));
+    this->node_class_map["urn:X-openvrml:node:CoordinateInterpolator"] =
+        node_class_ptr(new coordinate_interpolator_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Cylinder"] =
+        node_class_ptr(new cylinder_class(*this));
+    this->node_class_map["urn:X-openvrml:node:CylinderSensor"] =
+        node_class_ptr(new cylinder_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:DirectionalLight"] =
+        node_class_ptr(new directional_light_class(*this));
+    this->node_class_map["urn:X-openvrml:node:ElevationGrid"] =
+        node_class_ptr(new elevation_grid_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Extrusion"] =
+        node_class_ptr(new extrusion_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Fog"] =
+        node_class_ptr(new fog_class(*this));
+    this->node_class_map["urn:X-openvrml:node:FontStyle"] =
+        node_class_ptr(new font_style_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Group"] =
+        node_class_ptr(new group_class(*this));
+    this->node_class_map["urn:X-openvrml:node:ImageTexture"] =
+        node_class_ptr(new image_texture_class(*this));
+    this->node_class_map["urn:X-openvrml:node:IndexedFaceSet"] =
+        node_class_ptr(new indexed_face_set_class(*this));
+    this->node_class_map["urn:X-openvrml:node:IndexedLineSet"] =
+        node_class_ptr(new indexed_line_set_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Inline"] =
+        node_class_ptr(new inline_class(*this));
+    this->node_class_map["urn:X-openvrml:node:LOD"] =
+        node_class_ptr(new lod_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Material"] =
+        node_class_ptr(new material_class(*this));
+    this->node_class_map["urn:X-openvrml:node:MovieTexture"] =
+        node_class_ptr(new movie_texture_class(*this));
+    this->node_class_map["urn:X-openvrml:node:NavigationInfo"] =
+        node_class_ptr(new navigation_info_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Normal"] =
+        node_class_ptr(new normal_class(*this));
+    this->node_class_map["urn:X-openvrml:node:NormalInterpolator"] =
+        node_class_ptr(new normal_interpolator_class(*this));
+    this->node_class_map["urn:X-openvrml:node:OrientationInterpolator"] =
+        node_class_ptr(new orientation_interpolator_class(*this));
+    this->node_class_map["urn:X-openvrml:node:PixelTexture"] =
+        node_class_ptr(new pixel_texture_class(*this));
+    this->node_class_map["urn:X-openvrml:node:PlaneSensor"] =
+        node_class_ptr(new plane_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:PointLight"] =
+        node_class_ptr(new point_light_class(*this));
+    this->node_class_map["urn:X-openvrml:node:PointSet"] =
+        node_class_ptr(new point_set_class(*this));
+    this->node_class_map["urn:X-openvrml:node:PositionInterpolator"] =
+        node_class_ptr(new position_interpolator_class(*this));
+    this->node_class_map["urn:X-openvrml:node:ProximitySensor"] =
+        node_class_ptr(new proximity_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:ScalarInterpolator"] =
+        node_class_ptr(new scalar_interpolator_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Shape"] =
+        node_class_ptr(new shape_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Sound"] =
+        node_class_ptr(new sound_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Sphere"] =
+        node_class_ptr(new sphere_class(*this));
+    this->node_class_map["urn:X-openvrml:node:SphereSensor"] =
+        node_class_ptr(new sphere_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:SpotLight"] =
+        node_class_ptr(new spot_light_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Switch"] =
+        node_class_ptr(new switch_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Text"] =
+        node_class_ptr(new text_class(*this));
+    this->node_class_map["urn:X-openvrml:node:TextureCoordinate"] =
+        node_class_ptr(new texture_coordinate_class(*this));
+    this->node_class_map["urn:X-openvrml:node:TextureTransform"] =
+        node_class_ptr(new texture_transform_class(*this));
+    this->node_class_map["urn:X-openvrml:node:TimeSensor"] =
+        node_class_ptr(new time_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:TouchSensor"] =
+        node_class_ptr(new touch_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Transform"] =
+        node_class_ptr(new transform_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Viewpoint"] =
+        node_class_ptr(new viewpoint_class(*this));
+    this->node_class_map["urn:X-openvrml:node:VisibilitySensor"] =
+        node_class_ptr(new visibility_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:WorldInfo"] =
+        node_class_ptr(new world_info_class(*this));
+}
+
+/**
  * @brief Execute browser callback functions.
  *
  * @param reason    the cb_reason to pass to the callback functions.
  */
 void browser::do_callbacks(const cb_reason reason)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     scene_cb_list_t::iterator cb, cbend = this->scene_callbacks.end();
     for (cb = this->scene_callbacks.begin(); cb != cbend; ++cb) {
         (*cb)(reason);
@@ -4648,7 +4330,6 @@ void browser::do_callbacks(const cb_reason reason)
  */
 void browser::add_world_changed_callback(const scene_cb cb)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->scene_callbacks.push_front(cb);
 }
 
@@ -4659,7 +4340,6 @@ void browser::add_world_changed_callback(const scene_cb cb)
  */
 double browser::frame_rate() const
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->frame_rate_;
 }
 
@@ -4676,7 +4356,6 @@ void browser::queue_event(double timestamp,
                           const node_ptr & to_node,
                           const std::string & to_eventin)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     event * e = &this->event_mem[this->last_event];
     e->timestamp = timestamp;
     e->value = value;
@@ -4700,7 +4379,6 @@ void browser::queue_event(double timestamp,
  */
 bool browser::events_pending()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->first_event != this->last_event;
 }
 
@@ -4710,7 +4388,6 @@ bool browser::events_pending()
  */
 void browser::flush_events()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     while (this->first_event != this->last_event) {
         event *e = &this->event_mem[this->first_event];
         this->first_event = (this->first_event + 1) % max_events;
@@ -4729,7 +4406,6 @@ void browser::sensitive_event(node * const n,
                               const bool is_active,
                               double * const point)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (n) {
         vrml97_node::anchor_node * a = n->to_anchor();
         if (a) {
@@ -4784,8 +4460,6 @@ namespace {
  */
 bool browser::update(double current_time)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-
     if (current_time <= 0.0) { current_time = browser::current_time(); }
 
     this->delta_time = DEFAULT_DELTA;
@@ -4902,8 +4576,28 @@ bool browser::update(double current_time)
  */
 bool browser::headlight_on()
 {
-    navigation_info_node & nav_info = this->active_navigation_info();
-    return nav_info.headlight();
+    vrml97_node::navigation_info_node * const navInfo =
+        this->bindable_navigation_info_top();
+    if (navInfo) { return navInfo->headlight(); }
+    return true;
+}
+
+namespace {
+
+    struct RenderNodeClass :
+            std::unary_function<void, node_class_map_t::value_type> {
+        explicit RenderNodeClass(openvrml::viewer & viewer):
+            viewer(&viewer)
+        {}
+
+        void operator()(const node_class_map_t::value_type & value) const
+        {
+            value.second->render(*this->viewer);
+        }
+
+    private:
+        openvrml::viewer * viewer;
+    };
 }
 
 /**
@@ -4911,18 +4605,20 @@ bool browser::headlight_on()
  */
 void browser::render()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (!this->viewer_) { return; }
 
     if (this->new_view) {
         this->viewer_->reset_user_navigation();
         this->new_view = false;
     }
-    navigation_info_node & nav_info = this->active_navigation_info();
-    const float avatarSize = nav_info.avatar_size().empty()
-        ? 0.25
-        : nav_info.avatar_size()[0];
-    const float visibilityLimit = nav_info.visibility_limit();
+    float avatarSize = 0.25;
+    float visibilityLimit = 0.0;
+    vrml97_node::navigation_info_node * ni =
+        this->bindable_navigation_info_top();
+    if (ni) {
+        avatarSize = ni->avatar_size()[0];
+        visibilityLimit = ni->visibility_limit();
+    }
 
     // Activate the headlight.
     // ambient is supposed to be 0 according to the spec...
@@ -4951,7 +4647,8 @@ void browser::render()
                                  avatarSize,
                                  visibilityLimit);
 
-    this->node_class_map_.render(*this->viewer_);
+    std::for_each(this->node_class_map.begin(), this->node_class_map.end(),
+                  RenderNodeClass(*this->viewer_));
 
     // Top level object
 
@@ -4993,7 +4690,6 @@ void browser::render()
  */
 void browser::modified(const bool value)
 {
-    boost::mutex::scoped_lock lock(this->modified_mutex_);
     this->modified_ = value;
 }
 
@@ -5004,7 +4700,6 @@ void browser::modified(const bool value)
  */
 bool browser::modified() const
 {
-    boost::mutex::scoped_lock lock(this->modified_mutex_);
     return this->modified_;
 }
 
@@ -5015,7 +4710,6 @@ bool browser::modified() const
  */
 void browser::delta(const double d)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (d < this->delta_time) { this->delta_time = d; }
 }
 
@@ -5026,8 +4720,112 @@ void browser::delta(const double d)
  */
 double browser::delta() const
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->delta_time;
+}
+
+/**
+ * @brief Get the top node of a bind_stack_t.
+ *
+ * @return the top node of @p stack.
+ */
+const node_ptr browser::bindable_top(const bind_stack_t & stack)
+{
+    return stack.empty() ? node_ptr(0) : stack.front();
+}
+
+/**
+ * @brief Push a node onto a bind_stack_t.
+ *
+ * @param stack the bind_stack_t onto which to push @p node.
+ * @param node  the node to push onto @p stack.
+ */
+void browser::bindable_push(bind_stack_t & stack, const node_ptr & node)
+{
+    this->bindable_remove(stack, node); // Remove any existing reference
+    stack.push_front(node);
+    this->modified(true);
+}
+
+/**
+ * @brief Remove a node from a bind_stack_t.
+ *
+ * @param stack the bind_stack_t from which to remove @p node.
+ * @param node  the node to remove from @p stack.
+ */
+void browser::bindable_remove(bind_stack_t & stack, const node_ptr & node)
+{
+    const bind_stack_t::iterator pos =
+        std::find(stack.begin(), stack.end(), node);
+    if (pos != stack.end()) {
+        stack.erase(pos);
+        this->modified(true);
+    }
+}
+
+/**
+ * @brief Add a NavigationInfo node to the list of NavigationInfo nodes for the
+ *      browser.
+ *
+ * @param node a NavigationInfo node.
+ *
+ * @pre @p node is not in the list of NavigationInfo nodes for the browser.
+ */
+void browser::add_navigation_info(vrml97_node::navigation_info_node & node)
+{
+    assert(std::find(this->navigation_infos.begin(),
+                     this->navigation_infos.end(), &node)
+            == this->navigation_infos.end());
+    this->navigation_infos.push_back(&node);
+}
+
+/**
+ * @brief Remove a NavigationInfo node from the list of NavigationInfo nodes
+ *      for the browser.
+ *
+ * @param n  a NavigationInfo node.
+ *
+ * @pre @p n is in the list of NavigationInfo nodes for the browser.
+ */
+void browser::remove_navigation_info(vrml97_node::navigation_info_node & n)
+{
+    assert(!this->navigation_infos.empty());
+    const std::list<node *>::iterator end = this->navigation_infos.end();
+    const std::list<node *>::iterator pos =
+            std::find(this->navigation_infos.begin(), end, &n);
+    assert(pos != end);
+    this->navigation_infos.erase(pos);
+}
+
+/**
+ * @brief Get the active node on the bound NavigationInfo stack.
+ *
+ * @return the active node on the bound NavigationInfo stack.
+ */
+vrml97_node::navigation_info_node * browser::bindable_navigation_info_top()
+{
+    node * const n = this->bindable_top(this->navigation_info_stack).get();
+    return n ? n->to_navigation_info() : 0;
+}
+
+/**
+ * @brief Push a NavigationInfo node onto the bound NavigationInfo node stack.
+ *
+ * @param n a NavigationInfo node.
+ */
+void browser::bindable_push(vrml97_node::navigation_info_node * n)
+{
+    this->bindable_push(this->navigation_info_stack, node_ptr(n));
+}
+
+/**
+ * @brief Remove a NavigationInfo node from the bound NavigationInfo node
+ *        stack.
+ *
+ * @param n a NavigationInfo node.
+ */
+void browser::bindable_remove(vrml97_node::navigation_info_node * n)
+{
+    this->bindable_remove(this->navigation_info_stack, node_ptr(n));
 }
 
 /**
@@ -5037,9 +4835,7 @@ double browser::delta() const
  *
  * @pre @p light is not in the list of light nodes for the browser.
  */
-void browser::add_scoped_light(vrml97_node::abstract_light_node & light)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+void browser::add_scoped_light(vrml97_node::abstract_light_node & light) {
     assert(std::find(this->scoped_lights.begin(), this->scoped_lights.end(),
                      &light) == this->scoped_lights.end());
     this->scoped_lights.push_back(&light);
@@ -5054,7 +4850,6 @@ void browser::add_scoped_light(vrml97_node::abstract_light_node & light)
  */
 void browser::remove_scoped_light(vrml97_node::abstract_light_node & light)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(!this->scoped_lights.empty());
     const std::list<node *>::iterator end = this->scoped_lights.end();
     const std::list<node *>::iterator pos =
@@ -5071,7 +4866,6 @@ void browser::remove_scoped_light(vrml97_node::abstract_light_node & light)
  * @pre @p movie is not in the list of MovieTexture nodes for the browser.
  */
 void browser::add_movie(vrml97_node::movie_texture_node & movie) {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(std::find(this->movies.begin(), this->movies.end(), &movie)
             == this->movies.end());
     this->movies.push_back(&movie);
@@ -5086,7 +4880,6 @@ void browser::add_movie(vrml97_node::movie_texture_node & movie) {
  */
 void browser::remove_movie(vrml97_node::movie_texture_node & movie)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(!this->movies.empty());
     const std::list<node *>::iterator end = this->movies.end();
     const std::list<node *>::iterator pos =
@@ -5102,9 +4895,7 @@ void browser::remove_movie(vrml97_node::movie_texture_node & movie)
  *
  * @pre @p script is not in the list of Script nodes for the browser.
  */
-void browser::add_script(script_node & script)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+void browser::add_script(script_node & script) {
     assert(std::find(this->scripts.begin(), this->scripts.end(), &script)
             == this->scripts.end());
     this->scripts.push_back(&script);
@@ -5117,9 +4908,7 @@ void browser::add_script(script_node & script)
  *
  * @pre @p script is in the list of Script nodes for the browser.
  */
-void browser::remove_script(script_node & script)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+void browser::remove_script(script_node & script) {
     assert(!this->scripts.empty());
     typedef std::list<script_node *> script_node_list_t;
     const script_node_list_t::iterator end = this->scripts.end();
@@ -5138,7 +4927,6 @@ void browser::remove_script(script_node & script)
  */
 void browser::add_time_sensor(vrml97_node::time_sensor_node & timer)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(std::find(this->timers.begin(), this->timers.end(), &timer)
            == this->timers.end());
     this->timers.push_back(&timer);
@@ -5153,7 +4941,6 @@ void browser::add_time_sensor(vrml97_node::time_sensor_node & timer)
  */
 void browser::remove_time_sensor(vrml97_node::time_sensor_node & timer)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(!this->timers.empty());
     const std::list<node *>::iterator end = this->timers.end();
     const std::list<node *>::iterator pos =
@@ -5172,7 +4959,6 @@ void browser::remove_time_sensor(vrml97_node::time_sensor_node & timer)
  */
 void browser::add_audio_clip(vrml97_node::audio_clip_node & audio_clip)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(std::find(this->audio_clips.begin(), this->audio_clips.end(),
                      &audio_clip) == this->audio_clips.end());
     this->audio_clips.push_back(&audio_clip);
@@ -5187,7 +4973,6 @@ void browser::add_audio_clip(vrml97_node::audio_clip_node & audio_clip)
  */
 void browser::remove_audio_clip(vrml97_node::audio_clip_node & audio_clip)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(!this->audio_clips.empty());
     const std::list<node *>::iterator end = this->audio_clips.end();
     const std::list<node *>::iterator pos =
@@ -5305,26 +5090,6 @@ no_alternative_url::~no_alternative_url() throw ()
  */
 
 /**
- * @var boost::recursive_mutex scene::mutex_
- *
- * @brief <code>scene</code> mutex.
- */
-
-/**
- * @var browser * scene::browser_
- *
- * @brief A reference to the browser associated with the scene.
- */
-
-/**
- * @var scene * const scene::parent_
- *
- * @brief A pointer to the parent scene.
- *
- * If the scene is the root scene, @a parent will be 0.
- */
-
-/**
  * @var mfnode scene::nodes_
  *
  * @brief The nodes for the scene.
@@ -5338,9 +5103,32 @@ no_alternative_url::~no_alternative_url() throw ()
  * @a uri may be a relative or an absolute reference.
  */
 
+/**
+ * @var browser & scene::browser
+ *
+ * @brief A reference to the browser associated with the scene.
+ */
+
+/**
+ * @var scene * const scene::parent
+ *
+ * @brief A pointer to the parent scene.
+ *
+ * If the scene is the root scene, @a parent will be 0.
+ */
+
 namespace {
 
-    const uri create_file_url(const uri & relative_uri) throw (std::bad_alloc)
+# ifdef _WIN32
+    struct IsBackslash : std::unary_function<char, bool> {
+        bool operator()(const char c) const throw ()
+        {
+            return c == '\\';
+        }
+    };
+# endif
+
+    const uri createFileURL(const uri & relative_uri) throw (std::bad_alloc)
     {
         assert(relative_uri.scheme().empty());
 
@@ -5367,7 +5155,7 @@ namespace {
             }
             std::replace_if(resolvedPath,
                             resolvedPath + strlen(resolvedPath) + 1,
-                            bind2nd(equal_to<char>(), '\\'), '/');
+                            IsBackslash(), '/');
             --resolvedPath;
             assert(resolvedPath == buffer);
 # else
@@ -5401,116 +5189,85 @@ namespace {
 }
 
 /**
- * @brief Construct.
+ * @brief Construct a scene from a URI.
  *
  * @param browser   the browser associated with the scene.
+ * @param url       the URI for the scene.
  * @param parent    the parent scene.
- */
-scene::scene(openvrml::browser & browser, scene * parent) throw ():
-    browser_(&browser),
-    parent_(parent)
-{}
-
-/**
- * @brief Destroy.
- */
-scene::~scene() throw ()
-{}
-
-/**
- * @brief Get the associated <code>browser</code>.
  *
- * @return the associated <code>browser</code>.
+ * @exception invalid_vrml      if there is a syntax error in the VRML input.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::browser & scene::browser() const throw ()
+scene::scene(openvrml::browser & browser,
+             const std::vector<std::string> & url,
+             scene * parent)
+    throw (invalid_vrml, no_alternative_url, std::bad_alloc):
+    browser(browser),
+    parent(parent)
 {
-    return *this->browser_;
-}
+    using std::istream;
+    using std::string;
+    using std::vector;
 
-/**
- * @brief Get the parent <code>scene</code>.
- *
- * @return the parent <code>scene</code>, or 0 if this is the root
- *         <code>scene</code>.
- */
-scene * scene::parent() const throw ()
-{
-    return this->parent_;
-}
-
-struct scene::load_scene {
-
-    load_scene(openvrml::scene & scene,
-               const std::vector<std::string> & url):
-        scene_(&scene),
-        url_(&url)
-    {}
-        
-    void operator()() const throw () try {
-        using std::auto_ptr;
-        using std::string;
-        using std::vector;
-
-        openvrml::scene & scene = *this->scene_;
-        const vector<string> & url = *this->url_;
-
-        assert(scene.url().empty());
-
-        vector<node_ptr> nodes;
+    string absoluteURI;
+    for (vector<string>::size_type i = 0; i < url.size(); ++i) {
         try {
-            auto_ptr<resource_istream> in = scene.get_resource(url);
-            if (!(*in)) { throw unreachable_url(); }
-            Vrml97Scanner scanner(*in);
-            Vrml97Parser parser(scanner, in->url());
-            parser.vrmlScene(scene.browser(), nodes);
-        } catch (antlr::RecognitionException & ex) {
-            throw invalid_vrml(ex.getFilename(),
-                               ex.getLine(),
-                               ex.getColumn(),
-                               ex.getMessage());
-        } catch (antlr::ANTLRException & ex) {
-            scene.browser().err << ex.getMessage() << std::endl;
-        } catch (std::bad_alloc & ex) {
-            scene.browser().err << ex.what() << std::endl;
-            throw unreachable_url();
-        } catch (...) {
-            throw unreachable_url();
+            //
+            // Throw invalid_url if it isn't a valid URI.
+            //
+            uri testURI(url[i]);
+
+            const bool absolute = !testURI.scheme().empty();
+            if (absolute) {
+                absoluteURI = testURI;
+            } else if (!parent) {
+                //
+                // If we have a relative reference and the parent is null, then
+                // assume the reference is to the local file system: convert
+                // the relative reference to a file URL.
+                //
+                absoluteURI = createFileURL(testURI);
+            } else {
+                //
+                // If we have a relative URI and parent is not null, try to
+                // resolve the relative reference against the parent's URI.
+                //
+                absoluteURI = testURI.resolve_against(uri(parent->url()));
+            }
+
+            doc2 doc(absoluteURI);
+            istream & in = doc.input_stream();
+            if (!in) { throw unreachable_url(); }
+            try {
+                Vrml97Scanner scanner(in);
+                Vrml97Parser parser(scanner, absoluteURI);
+                parser.vrmlScene(browser, this->nodes_);
+            } catch (antlr::RecognitionException & ex) {
+                throw invalid_vrml(ex.getFilename(),
+                                   ex.getLine(),
+                                   ex.getColumn(),
+                                   ex.getMessage());
+            } catch (antlr::ANTLRException & ex) {
+                browser.err << ex.getMessage() << std::endl;
+            } catch (std::bad_alloc &) {
+                throw;
+            } catch (...) {
+                throw unreachable_url();
+            }
+        } catch (bad_url & ex) {
+            browser.err << ex.what() << std::endl;
+            continue;
         }
-        scene.nodes(nodes);
-        scene.scene_loaded();
-    } catch (std::exception & ex) {
-        this->scene_->browser().err << ex.what() << std::endl;
+        //
+        // If this is the root scene (that is, the parent is null), then
+        // this->uri must be the absolute URI.
+        //
+        this->url_ = parent
+            ? url[i]
+            : absoluteURI;
+        break;
     }
-
-private:
-    openvrml::scene * const scene_;
-    const std::vector<std::string> * const url_;
-};
-
-/**
- * @brief Load a world.
- *
- * The world specified by @p url is loaded asynchronously.
- * <code>scene::scene_loaded</code> is called when loading the world has
- * completed (i.e., when <code>scene::nodes</code> will return the world's
- * root <code>node</code>s).
- *
- * As this function executes asynchronously, note that it will not throw upon
- * encountering a malformed or unreachable URI, or syntactically incorrect
- * VRML.
- *
- * @param url   the URI for the world.  Per VRML97 convention, this is a list
- *              of alternative URIs.  The first one in the list to load
- *              successfully is used.
- *
- * @exception boost::thread_resource_error  if a new thread of execution cannot
- *                                          be started.
- * @exception std::bad_alloc                if memory allocation fails.
- */
-void scene::load(const std::vector<std::string> & url)
-    throw (boost::thread_resource_error, std::bad_alloc)
-{
-    boost::thread(load_scene(*this, url));
+    if (this->url_.empty()) { throw no_alternative_url(); }
 }
 
 /**
@@ -5522,7 +5279,6 @@ void scene::load(const std::vector<std::string> & url)
  */
 void scene::initialize(const double timestamp) throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {
@@ -5543,19 +5299,6 @@ void scene::initialize(const double timestamp) throw (std::bad_alloc)
  */
 
 /**
- * @brief Set the root nodes for the scene.
- *
- * @param n the new root nodes for the scene.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void scene::nodes(const std::vector<node_ptr> & n) throw (std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    this->nodes_ = n;
-}
-
-/**
  * @brief Get the absolute URI for the scene.
  *
  * @return the absolute URI for the scene.
@@ -5564,42 +5307,20 @@ void scene::nodes(const std::vector<node_ptr> & n) throw (std::bad_alloc)
  */
 const std::string scene::url() const throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     using std::string;
-    return this->parent_
-        ? string(uri(this->url_)
-                 .resolve_against(uri(this->parent_->url())))
-        : this->url_;
-}
-
-/**
- * @brief Set the URI for the scene.
- *
- * Generally this function is used in conjunction with the two-argument
- * constructor (that does not take an alternative URI list) and the
- * scene::nodes mutator function.
- *
- * @param str   a valid URI.
- *
- * @exception invalid_url       if @p str is not a valid URI.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void scene::url(const std::string & str) throw (invalid_url, std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    uri id(str); // Make sure we have a valid URI.
-    this->url_ = str;
+    return this->parent
+            ? string(uri(this->url_).resolve_against(uri(this->parent->url())))
+            : this->url_;
 }
 
 /**
  * @brief Render the scene.
  *
- * @param viewer    a viewer to render to.
+ * @param viewer    a Viewer to render to.
  * @param context   a rendering_context.
  */
 void scene::render(openvrml::viewer & viewer, rendering_context context)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {
@@ -5639,8 +5360,6 @@ void scene::load_url(const std::vector<std::string> & url,
                      const std::vector<std::string> & parameter)
     throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-
     using std::string;
 
     if (!url.empty()) {
@@ -5650,7 +5369,7 @@ void scene::load_url(const std::vector<std::string> & url,
             // If the first element in uri is a Viewpoint name, bind the
             // Viewpoint.
             //
-            this->browser_->setViewpoint(uri[0].substr(1));
+            this->browser.setViewpoint(uri[0].substr(1));
 # endif
         } else {
             std::vector<std::string> absoluteURIs(url.size());
@@ -5666,64 +5385,9 @@ void scene::load_url(const std::vector<std::string> & url,
                     OPENVRML_PRINT_EXCEPTION_(ex);
                 }
             }
-            this->browser_->load_url(absoluteURIs, parameter);
+            this->browser.load_url(absoluteURIs, parameter);
         }
     }
-}
-
-/**
- * @brief Get a resource using a list of alternative URIs.
- *
- * Relative URIs in @p url are resolved against the absolute URI of the
- * <code>scene</code>.
- *
- * @param url   a list of alternative URIs.
- *
- * @return the resource.
- *
- * @exception no_alternative_url    if none of the elements of @p url can be
- *                                  resolved.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-std::auto_ptr<resource_istream>
-scene::get_resource(const std::vector<std::string> & url) const
-    throw (no_alternative_url, std::bad_alloc)
-{
-    using std::string;
-    using std::vector;
-
-    std::auto_ptr<resource_istream> in;
-
-    for (vector<string>::size_type i = 0; i < url.size(); ++i) {
-        try {
-            //
-            // Throw invalid_url if it isn't a valid URI.
-            //
-            uri test_uri(url[i]);
-
-            //
-            // If we have a relative reference, resolve it against this->url();
-            // unless the parent is null and this->url() is empty, in which
-            // case we are loading the root scene.  In that case, construct an
-            // absolute file URL.
-            //
-            const uri absolute_uri = !test_uri.scheme().empty()
-                                   ? test_uri
-                                   : (this->parent() && !this->url().empty())
-                                        ? test_uri
-                                            .resolve_against(uri(this->url()))
-                                        : create_file_url(test_uri);
-
-            in = this->browser().get_resource(absolute_uri);
-            if (!(*in)) { throw unreachable_url(); }
-            break;
-        } catch (bad_url & ex) {
-            this->browser().err << ex.what() << std::endl;
-            continue;
-        }
-    }
-    if (!in.get()) { throw no_alternative_url(); }
-    return in;
 }
 
 /**
@@ -5735,7 +5399,6 @@ scene::get_resource(const std::vector<std::string> & url) const
  */
 void scene::shutdown(const double timestamp) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {
@@ -5743,24 +5406,15 @@ void scene::shutdown(const double timestamp) throw ()
     }
 }
 
-/**
- * @brief Function called once the scene has been loaded.
- *
- * <code>scene::load</code> calls this function once the scene has finished
- * loading. The default implementation does nothing.
- */
-void scene::scene_loaded()
-{}
-
 
 /**
  * @internal
  *
- * @class browser::vrml97_root_scope
+ * @class Vrml97RootScope
  *
  * @brief Root namespace for VRML97 browsers.
  *
- * <code>vrml97_root_scope</code> is initialized with the VRML97 node types.
+ * Vrml97RootScope is initialized with the VRML97 node types.
  */
 
 namespace {
@@ -5785,13 +5439,13 @@ namespace {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
-                                              const std::string & uri)
+Vrml97RootScope::Vrml97RootScope(const browser & browser,
+                                 const std::string & uri)
     throw (std::bad_alloc):
     scope(uri)
 {
-    const browser::node_class_map & node_class_map = browser.node_class_map_;
-    boost::shared_ptr<openvrml::node_class> node_class;
+    const browser::node_class_map_t & nodeClassMap = browser.node_class_map;
+    browser::node_class_map_t::const_iterator pos;
 
     try {
         //
@@ -5826,9 +5480,9 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 8);
-            node_class = node_class_map.find("urn:X-openvrml:node:Anchor");
-            assert(node_class);
-            this->add_type(node_class->create_type("Anchor", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Anchor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Anchor", interface_set));
         }
 
         //
@@ -5848,10 +5502,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 3);
-            node_class = node_class_map.find("urn:X-openvrml:node:Appearance");
-            assert(node_class);
-            this->add_type(node_class->create_type("Appearance",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Appearance");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Appearance",
+                                                    interface_set));
         }
 
         //
@@ -5886,10 +5540,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 8);
-            node_class = node_class_map.find("urn:X-openvrml:node:AudioClip");
-            assert(node_class);
-            this->add_type(node_class->create_type("AudioClip",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:AudioClip");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("AudioClip",
+                                                    interface_set));
         }
 
         //
@@ -5936,10 +5590,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 12);
-            node_class = node_class_map.find("urn:X-openvrml:node:Background");
-            assert(node_class);
-            this->add_type(node_class->create_type("Background",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Background");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Background",
+                                                    interface_set));
         }
 
         //
@@ -5968,10 +5622,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 6);
-            node_class = node_class_map.find("urn:X-openvrml:node:Billboard");
-            assert(node_class);
-            this->add_type(node_class->create_type("Billboard",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Billboard");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Billboard",
+                                                    interface_set));
         }
 
         //
@@ -5984,9 +5638,9 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
                                "size");
             static const vrml97_node_interface_set_
                 interface_set(&interface, &interface + 1);
-            node_class = node_class_map.find("urn:X-openvrml:node:Box");
-            assert(node_class);
-            this->add_type(node_class->create_type("Box", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Box");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Box", interface_set));
         }
 
         //
@@ -6021,10 +5675,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 8);
-            node_class = node_class_map.find("urn:X-openvrml:node:Collision");
-            assert(node_class);
-            this->add_type(node_class->create_type("Collision",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Collision");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Collision",
+                                                    interface_set));
         }
 
         //
@@ -6037,9 +5691,9 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
                                "color");
             static const vrml97_node_interface_set_
                 interface_set(&interface, &interface + 1);
-            node_class = node_class_map.find("urn:X-openvrml:node:Color");
-            assert(node_class);
-            this->add_type(node_class->create_type("Color", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Color");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Color", interface_set));
         }
 
         //
@@ -6062,11 +5716,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:ColorInterpolator");
-            assert(node_class);
-            this->add_type(node_class->create_type("ColorInterpolator",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:ColorInterpolator");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ColorInterpolator",
+                                                    interface_set));
         }
 
         //
@@ -6089,9 +5742,9 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = node_class_map.find("urn:X-openvrml:node:Cone");
-            assert(node_class);
-            this->add_type(node_class->create_type("Cone", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Cone");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Cone", interface_set));
         }
 
         //
@@ -6104,10 +5757,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
                                "point");
             static const vrml97_node_interface_set_
                 interface_set(&interface, &interface + 1);
-            node_class = node_class_map.find("urn:X-openvrml:node:Coordinate");
-            assert(node_class);
-            this->add_type(node_class->create_type("Coordinate",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Coordinate");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Coordinate",
+                                                    interface_set));
         }
 
         //
@@ -6130,11 +5783,11 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = node_class_map
+            pos = nodeClassMap
                 .find("urn:X-openvrml:node:CoordinateInterpolator");
-            assert(node_class);
-            this->add_type(node_class->create_type("CoordinateInterpolator",
-                                                   interface_set));
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("CoordinateInterpolator",
+                                                    interface_set));
         }
 
         //
@@ -6160,10 +5813,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 5);
-            node_class = node_class_map.find("urn:X-openvrml:node:Cylinder");
-            assert(node_class);
-            this->add_type(node_class->create_type("Cylinder",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Cylinder");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Cylinder",
+                                                    interface_set));
         }
 
         //
@@ -6201,11 +5854,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 9);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:CylinderSensor");
-            assert(node_class);
-            this->add_type(node_class->create_type("CylinderSensor",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:CylinderSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("CylinderSensor",
+                                                    interface_set));
         }
 
         //
@@ -6231,11 +5883,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 5);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:DirectionalLight");
-            assert(node_class);
-            this->add_type(node_class->create_type("DirectionalLight",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:DirectionalLight");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("DirectionalLight",
+                                                    interface_set));
         }
 
         //
@@ -6288,11 +5939,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 14);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:ElevationGrid");
-            assert(node_class);
-            this->add_type(node_class->create_type("ElevationGrid",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:ElevationGrid");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ElevationGrid",
+                                                    interface_set));
         }
 
         //
@@ -6345,10 +5995,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 14);
-            node_class = node_class_map.find("urn:X-openvrml:node:Extrusion");
-            assert(node_class);
-            this->add_type(node_class->create_type("Extrusion",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Extrusion");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Extrusion",
+                                                    interface_set));
         }
 
         //
@@ -6374,9 +6024,9 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 5);
-            node_class = node_class_map.find("urn:X-openvrml:node:Fog");
-            assert(node_class);
-            this->add_type(node_class->create_type("Fog", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Fog");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Fog", interface_set));
         }
 
         //
@@ -6414,10 +6064,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 9);
-            node_class = node_class_map.find("urn:X-openvrml:node:FontStyle");
-            assert(node_class);
-            this->add_type(node_class->create_type("FontStyle",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:FontStyle");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("FontStyle",
+                                                    interface_set));
         }
 
         //
@@ -6443,9 +6093,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 5);
-            node_class = node_class_map.find("urn:X-openvrml:node:Group");
-            assert(node_class);
-            this->add_type(node_class->create_type("Group", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Group");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Group",
+                                                    interface_set));
         }
 
         //
@@ -6465,11 +6116,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 3);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:ImageTexture");
-            assert(node_class);
-            this->add_type(node_class->create_type("ImageTexture",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:ImageTexture");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ImageTexture",
+                                                    interface_set));
         }
 
         //
@@ -6534,11 +6184,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 18);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:IndexedFaceSet");
-            assert(node_class);
-            this->add_type(node_class->create_type("IndexedFaceSet",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:IndexedFaceSet");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("IndexedFaceSet",
+                                                    interface_set));
         }
 
         //
@@ -6570,11 +6219,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 7);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:IndexedLineSet");
-            assert(node_class);
-            this->add_type(node_class->create_type("IndexedLineSet",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:IndexedLineSet");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("IndexedLineSet",
+                                                    interface_set));
         }
 
         //
@@ -6594,9 +6242,9 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 3);
-            node_class = node_class_map.find("urn:X-openvrml:node:Inline");
-            assert(node_class);
-            this->add_type(node_class->create_type("Inline", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Inline");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Inline", interface_set));
         }
 
         //
@@ -6616,9 +6264,9 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 3);
-            node_class = node_class_map.find("urn:X-openvrml:node:LOD");
-            assert(node_class);
-            this->add_type(node_class->create_type("LOD", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:LOD");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("LOD", interface_set));
         }
 
         //
@@ -6647,10 +6295,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 6);
-            node_class = node_class_map.find("urn:X-openvrml:node:Material");
-            assert(node_class);
-            this->add_type(node_class->create_type("Material",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Material");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Material",
+                                                    interface_set));
         }
 
         //
@@ -6688,11 +6336,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 9);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:MovieTexture");
-            assert(node_class);
-            this->add_type(node_class->create_type("MovieTexture",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:MovieTexture");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("MovieTexture",
+                                                    interface_set));
         }
 
         //
@@ -6724,11 +6371,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 7);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:NavigationInfo");
-            assert(node_class);
-            this->add_type(node_class->create_type("NavigationInfo",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:NavigationInfo");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("NavigationInfo",
+                                                    interface_set));
         }
 
         //
@@ -6741,9 +6387,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
                                "vector");
             static const vrml97_node_interface_set_
                 interface_set(&interface, &interface + 1);
-            node_class = node_class_map.find("urn:X-openvrml:node:Normal");
-            assert(node_class);
-            this->add_type(node_class->create_type("Normal", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Normal");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Normal",
+                                                    interface_set));
         }
 
         //
@@ -6766,11 +6413,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:NormalInterpolator");
-            assert(node_class);
-            this->add_type(node_class->create_type("NormalInterpolator",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:NormalInterpolator");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("NormalInterpolator",
+                                                    interface_set));
         }
 
         //
@@ -6793,11 +6439,11 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = node_class_map
+            pos = nodeClassMap
                 .find("urn:X-openvrml:node:OrientationInterpolator");
-            assert(node_class);
-            this->add_type(node_class->create_type("OrientationInterpolator",
-                                                   interface_set));
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("OrientationInterpolator",
+                                                    interface_set));
         }
 
         //
@@ -6817,11 +6463,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 3);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:PixelTexture");
-            assert(node_class);
-            this->add_type(node_class->create_type("PixelTexture",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:PixelTexture");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PixelTexture",
+                                                    interface_set));
         }
 
         //
@@ -6856,11 +6501,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 8);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:PlaneSensor");
-            assert(node_class);
-            this->add_type(node_class->create_type("PlaneSensor",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:PlaneSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PlaneSensor",
+                                                    interface_set));
         }
 
         //
@@ -6892,10 +6536,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 7);
-            node_class = node_class_map.find("urn:X-openvrml:node:PointLight");
-            assert(node_class);
-            this->add_type(node_class->create_type("PointLight",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:PointLight");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PointLight",
+                                                    interface_set));
         }
 
         //
@@ -6912,9 +6556,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 2);
-            node_class = node_class_map.find("urn:X-openvrml:node:PointSet");
-            assert(node_class);
-            this->add_type(node_class->create_type("PointSet", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:PointSet");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PointSet",
+                                                    interface_set));
         }
 
         //
@@ -6937,11 +6582,11 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = node_class_map
+            pos = nodeClassMap
                 .find("urn:X-openvrml:node:PositionInterpolator");
-            assert(node_class);
-            this->add_type(node_class->create_type("PositionInterpolator",
-                                                   interface_set));
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PositionInterpolator",
+                                                    interface_set));
         }
 
         //
@@ -6976,11 +6621,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 8);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:ProximitySensor");
-            assert(node_class);
-            this->add_type(node_class->create_type("ProximitySensor",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:ProximitySensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ProximitySensor",
+                                                    interface_set));
         }
 
         //
@@ -7003,11 +6647,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:ScalarInterpolator");
-            assert(node_class);
-            this->add_type(node_class->create_type("ScalarInterpolator",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:ScalarInterpolator");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ScalarInterpolator",
+                                                    interface_set));
         }
 
         //
@@ -7024,9 +6667,9 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 2);
-            node_class = node_class_map.find("urn:X-openvrml:node:Shape");
-            assert(node_class);
-            this->add_type(node_class->create_type("Shape", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Shape");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Shape", interface_set));
         }
 
         //
@@ -7067,9 +6710,9 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 10);
-            node_class = node_class_map.find("urn:X-openvrml:node:Sound");
-            assert(node_class);
-            this->add_type(node_class->create_type("Sound", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Sound");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Sound", interface_set));
         }
 
         //
@@ -7082,9 +6725,9 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
                                "radius");
             static const vrml97_node_interface_set_
                 interface_set(&interface, &interface + 1);
-            node_class = node_class_map.find("urn:X-openvrml:node:Sphere");
-            assert(node_class);
-            this->add_type(node_class->create_type("Sphere", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Sphere");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Sphere", interface_set));
         }
 
         //
@@ -7113,11 +6756,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 6);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:SphereSensor");
-            assert(node_class);
-            this->add_type(node_class->create_type("SphereSensor",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:SphereSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("SphereSensor",
+                                                    interface_set));
         }
 
         //
@@ -7158,10 +6800,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 10);
-            node_class = node_class_map.find("urn:X-openvrml:node:SpotLight");
-            assert(node_class);
-            this->add_type(node_class->create_type("SpotLight",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:SpotLight");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("SpotLight",
+                                                    interface_set));
         }
 
         //
@@ -7178,9 +6820,9 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 2);
-            node_class = node_class_map.find("urn:X-openvrml:node:Switch");
-            assert(node_class);
-            this->add_type(node_class->create_type("Switch", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Switch");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Switch", interface_set));
         }
 
         //
@@ -7203,9 +6845,9 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = node_class_map.find("urn:X-openvrml:node:Text");
-            assert(node_class);
-            this->add_type(node_class->create_type("Text", interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Text");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Text", interface_set));
         }
 
         //
@@ -7218,11 +6860,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
                                "point");
             static const vrml97_node_interface_set_
                 interface_set(&interface, &interface + 1);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:TextureCoordinate");
-            assert(node_class);
-            this->add_type(node_class->create_type("TextureCoordinate",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:TextureCoordinate");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("TextureCoordinate",
+                                                    interface_set));
         }
 
         //
@@ -7245,11 +6886,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:TextureTransform");
-            assert(node_class);
-            this->add_type(node_class->create_type("TextureTransform",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:TextureTransform");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("TextureTransform",
+                                                    interface_set));
         }
 
         //
@@ -7287,10 +6927,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 9);
-            node_class = node_class_map.find("urn:X-openvrml:node:TimeSensor");
-            assert(node_class);
-            this->add_type(node_class->create_type("TimeSensor",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:TimeSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("TimeSensor",
+                                                    interface_set));
         }
 
         //
@@ -7322,11 +6962,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 7);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:TouchSensor");
-            assert(node_class);
-            this->add_type(node_class->create_type("TouchSensor",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:TouchSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("TouchSensor",
+                                                    interface_set));
         }
 
         //
@@ -7367,10 +7006,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 10);
-            node_class = node_class_map.find("urn:X-openvrml:node:Transform");
-            assert(node_class);
-            this->add_type(node_class->create_type("Transform",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Transform");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Transform",
+                                                    interface_set));
         }
 
         //
@@ -7405,10 +7044,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 8);
-            node_class = node_class_map.find("urn:X-openvrml:node:Viewpoint");
-            assert(node_class);
-            this->add_type(node_class->create_type("Viewpoint",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Viewpoint");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Viewpoint",
+                                                    interface_set));
         }
 
         //
@@ -7437,11 +7076,10 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 6);
-            node_class = node_class_map
-                .find("urn:X-openvrml:node:VisibilitySensor");
-            assert(node_class);
-            this->add_type(node_class->create_type("VisibilitySensor",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:VisibilitySensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("VisibilitySensor",
+                                                    interface_set));
         }
 
         //
@@ -7458,17 +7096,17 @@ browser::vrml97_root_scope::vrml97_root_scope(const browser & browser,
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 2);
-            node_class = node_class_map.find("urn:X-openvrml:node:WorldInfo");
-            assert(node_class);
-            this->add_type(node_class->create_type("WorldInfo",
-                                                   interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:WorldInfo");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("WorldInfo",
+                                                    interface_set));
         }
     } catch (std::invalid_argument & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
     }
 }
 
-browser::vrml97_root_scope::~vrml97_root_scope() throw () {}
+Vrml97RootScope::~Vrml97RootScope() throw () {}
 
 
 null_node_class::null_node_class(openvrml::browser & browser) throw ():
@@ -7478,13 +7116,13 @@ null_node_class::null_node_class(openvrml::browser & browser) throw ():
 null_node_class::~null_node_class() throw ()
 {}
 
-const boost::shared_ptr<node_type>
+const node_type_ptr
 null_node_class::do_create_type(const std::string & id,
                                 const node_interface_set & interfaces) const
     throw ()
 {
     assert(false);
-    static const boost::shared_ptr<node_type> nodeType;
+    static const node_type_ptr nodeType;
     return nodeType;
 }
 
@@ -7512,6 +7150,788 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
     assert(false);
     static const node_ptr node;
     return node;
+}
+
+
+/**
+ * @class doc
+ *
+ * @brief A class to contain document references.
+ *
+ * This is just a shell until a real http protocol library is found...
+ */
+
+/**
+ * @var char * doc::url_
+ *
+ * @brief The URL.
+ */
+
+/**
+ * @var std::ostream * doc::out_
+ *
+ * @brief A pointer to a std::ostream used for writing the resource.
+ */
+
+/**
+ * @var FILE * doc::fp_
+ *
+ * @brief A file descriptor for reading the local copy of the resource.
+ */
+
+/**
+ * @var char * doc::tmpfile_
+ *
+ * @brief Name of the temporary file created for the local copy of the
+ *        resource.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param url       an HTTP or file URL.
+ * @param relative  the doc that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+doc::doc(const std::string & url, const doc * relative):
+    url_(0),
+    out_(0),
+    fp_(0),
+    tmpfile_(0)
+{
+    if (!url.empty()) { this->seturl(url.c_str(), relative); }
+}
+
+/**
+ * @brief Constructor.
+ *
+ * @param url       an HTTP or file URL.
+ * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+doc::doc(const std::string & url, const doc2 * relative):
+    url_(0),
+    out_(0),
+    fp_(0),
+    tmpfile_(0)
+{
+    if (!url.empty()) { this->seturl(url.c_str(), relative); }
+}
+
+/**
+ * @brief Destructor.
+ */
+doc::~doc()
+{
+    delete [] this->url_;
+    delete this->out_;
+    if (this->tmpfile_) {
+        the_system->remove_file(this->tmpfile_);
+        delete [] this->tmpfile_;
+    }
+}
+
+namespace {
+    const char * stripProtocol(const char *url)
+    {
+      const char *s = url;
+
+#ifdef _WIN32
+      if (strncmp(s+1,":/",2) == 0) return url;
+#endif
+
+      // strip off protocol if any
+      while (*s && isalpha(*s)) ++s;
+
+      if (*s == ':')
+        return s + 1;
+
+      return url;
+    }
+
+    bool isAbsolute(const char *url)
+    {
+      const char *s = stripProtocol(url);
+      return ( *s == '/' || *(s+1) == ':' );
+    }
+}
+
+/**
+  * @brief Set the URL.
+ *
+ * @param url       the new URL.
+ * @param relative  the doc that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+void doc::seturl(const char * const url, const doc * const relative)
+{
+  delete [] url_;
+  url_ = 0;
+
+  if (url)
+  {
+      const char *path = "";
+
+#ifdef _WIN32
+// Convert windows path stream to standard URL
+	  char *p = (char *)url;
+	  for(;*p != '\0';p++)
+		  if(*p == '\\')*p = '/';
+#endif
+
+      if ( relative && ! isAbsolute(url) )
+	    path = relative->url_path();
+
+      url_ = new char[strlen(path) + strlen(url) + 1];
+      strcpy(url_, path);
+
+      if (strlen(url)>2 && url[0] == '.' && url[1] == '/')
+        strcat(url_, url+2); // skip "./"
+      else
+        strcat(url_, url);
+  }
+}
+
+/**
+ * @brief Set the URL.
+ *
+ * @param url       the new URL.
+ * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+void doc::seturl(const char * const url, const doc2 * const relative)
+{
+    delete [] this->url_;
+    this->url_ = 0;
+
+    if (url) {
+        std::string path;
+
+#ifdef _WIN32
+        // Convert windows path stream to standard URL
+        char *p = (char *)url;
+        for (; *p != '\0'; p++) { if (*p == '\\') { *p = '/'; } }
+#endif
+
+        if (relative && !isAbsolute(url)) { path = relative->url_path(); }
+
+        this->url_ = new char[path.length() + strlen(url) + 1];
+        strcpy(this->url_, path.c_str());
+
+        if (strlen(url) > 2 && url[0] == '.' && url[1] == '/') {
+            strcat(this->url_, url + 2); // skip "./"
+        } else {
+            strcat(this->url_, url);
+        }
+    }
+}
+
+/**
+ * @brief Get the URL.
+ *
+ * @return the URL.
+ */
+const char * doc::url() const { return url_; }
+
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      without its extension.
+ *
+ * @return the portion of the last path element preceding the last '.' in the
+ *      path, or an empty string if the last path element is empty.
+ */
+const char * doc::url_base() const
+{
+  if (! url_) return "";
+
+  static char path[1024];
+  char *p, *s = path;
+  strncpy(path, url_, sizeof(path)-1);
+  path[sizeof(path)-1] = '\0';
+  if ((p = strrchr(s, '/')) != 0)
+    s = p+1;
+  else if ((p = strchr(s, ':')) != 0)
+    s = p+1;
+
+  if ((p = strrchr(s, '.')) != 0)
+    *p = '\0';
+
+  return s;
+}
+
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      extension.
+ *
+ * @return the portion of the last path element succeeding the last '.' in the
+ *      path, or an empty string if the last path element includes no '.'.
+ */
+const char * doc::url_ext() const
+{
+  if (! url_) return "";
+
+  static char ext[20];
+  char *p;
+
+  if ((p = strrchr(url_, '.')) != 0)
+    {
+      strncpy(ext, p+1, sizeof(ext)-1);
+      ext[sizeof(ext)-1] = '\0';
+    }
+  else
+    ext[0] = '\0';
+
+  return &ext[0];
+}
+
+/**
+ * @brief Get the URL without the last component of the path.
+ *
+ * In spite of its name, this method does not return the URL's path.
+ *
+ * @return the portion of the URL including the scheme, the authority, and all
+ *      but the last component of the path.
+ */
+const char * doc::url_path() const
+{
+  if (! url_) return "";
+
+  static char path[1024];
+
+  strcpy(path, url_);
+  char *slash;
+  if ((slash = strrchr(path, '/')) != 0)
+    *(slash+1) = '\0';
+  else
+    path[0] = '\0';
+  return &path[0];
+}
+
+/**
+ * @brief Get the URL scheme.
+ *
+ * @return the URL scheme.
+ */
+const char * doc::url_protocol() const
+{
+  if (url_)
+    {
+      static char protocol[12];
+      const char *s = url_;
+
+#ifdef _WIN32
+      if (strncmp(s+1,":/",2) == 0) return "file";
+#endif
+
+      for (unsigned int i=0; i<sizeof(protocol); ++i, ++s)
+	{
+	  if (*s == 0 || ! isalpha(*s))
+	    {
+	      protocol[i] = '\0';
+	      break;
+	    }
+	  protocol[i] = tolower(*s);
+	}
+      protocol[sizeof(protocol)-1] = '\0';
+      if (*s == ':')
+	return protocol;
+    }
+
+  return "file";
+}
+
+/**
+ * @brief Get the fragment identifier.
+ *
+ * @return the fragment identifier, including the leading '#', or an empty
+ *      string if there is no fragment identifier.
+ */
+const char * doc::url_modifier() const
+{
+  char *mod = url_ ? strrchr(url_,'#') : 0;
+  return mod;
+}
+
+/**
+ * @brief Get the fully qualified name of a local file that is the downloaded
+ *      resource at @a url_.
+ *
+ * @return the fully qualified name of a local file that is the downloaded
+ *      resource at @a url_.
+ */
+const char * doc::local_name()
+{
+  static char buf[1024];
+  if (filename(buf, sizeof(buf)))
+    return &buf[0];
+  return 0;
+}
+
+/**
+ * @brief Get the path of the local file that is the downloaded resource at
+ *      @a url_.
+ *
+ * @return the path of the local file that is the downloaded resource at
+ *      @a url_.
+ */
+const char * doc::local_path()
+{
+  static char buf[1024];
+  if (filename(buf, sizeof(buf)))
+    {
+      char *s = strrchr(buf, '/');
+      if (s) *(s+1) = '\0';
+      return &buf[0];
+    }
+  return 0;
+}
+
+/**
+ * @brief Converts a url into a local filename.
+ *
+ * @retval fn   a character buffer to hold the local filename.
+ * @param nfn   the number of elements in the buffer @p fn points to.
+ */
+bool doc::filename(char * fn, int nfn)
+{
+    using std::string;
+
+    fn[0] = '\0';
+
+    string s = stripProtocol(this->url_);
+    char * e = 0;
+
+    if ((e = strrchr(s.c_str(),'#')) != 0) { *e = '\0'; }
+
+    const char *protocol = url_protocol();
+
+    // Get a local copy of http files
+    if (strcmp(protocol, "http") == 0) {
+        if (tmpfile_) {
+            // Already fetched it
+            s = tmpfile_;
+        } else if (!(s = the_system->http_fetch(this->url_)).empty()) {
+            tmpfile_ = new char[s.length() + 1];
+            strcpy(tmpfile_, s.c_str());
+            s = tmpfile_;
+	}
+    }
+
+    // Unrecognized protocol (need ftp here...)
+    else if (strcmp(protocol, "file") != 0) {
+        s.clear();
+    }
+
+#ifdef _WIN32
+  // Does not like "//C:" skip "// "
+    if (!s.empty()) {
+        if(s.length() > 2 && s[0] == '/' && s[1] == '/') { s = s.substr(2); }
+    }
+#endif
+
+    if (!s.empty()) {
+        strncpy(fn, s.c_str(), nfn - 1);
+        fn[nfn - 1] = '\0';
+    }
+
+    if (e) { *e = '#'; }
+
+    return !s.empty();
+}
+
+/**
+ * @brief Open a file.
+ *
+ * @return a pointer to a FILE struct for the opened file.
+ *
+ * Having both fopen and outputStream is dumb.
+ */
+FILE *doc::fopen(const char *mode)
+{
+    if (this->fp_) {
+        OPENVRML_PRINT_MESSAGE_(std::string(this->url_ ? this->url_ : "")
+                                + "is already open.");
+    }
+
+    char fn[256];
+    if (filename(fn, sizeof(fn))) {
+        if (strcmp(fn, "-") == 0) {
+            if (*mode == 'r') {
+                fp_ = stdin;
+            } else if (*mode == 'w') {
+                fp_ = stdout;
+            }
+        } else {
+            fp_ = ::fopen( fn, mode );
+        }
+    }
+    return fp_;
+}
+
+/**
+ * @brief Close a file.
+ *
+ * Closes the file opened with doc::fopen.
+ */
+void doc::fclose()
+{
+  if (fp_ && (strcmp(url_, "-") != 0) && (strncmp(url_, "-#", 2) != 0))
+    ::fclose(fp_);
+
+  fp_ = 0;
+  if (tmpfile_)
+    {
+      the_system->remove_file(tmpfile_);
+      delete [] tmpfile_;
+      tmpfile_ = 0;
+    }
+}
+
+/**
+ * @brief Get an output stream for writing to the resource.
+ *
+ * @return an output stream.
+ */
+std::ostream & doc::output_stream()
+{
+    this->out_ = new std::ofstream(stripProtocol(url_), std::ios::out);
+    return *this->out_;
+}
+
+
+/**
+ * @class doc2
+ *
+ * @brief A class to contain document references.
+ *
+ * doc2 is a hack of doc. When the ANTLR parser was added to OpenVRML, a doc
+ * work-alike was needed that would read from a std::istream instead of a C
+ * @c FILE @c *. doc2's purpose is to fill that need, and to remind us through
+ * its ugliness just how badly both it and doc need to be replaced with an I/O
+ * solution that doesn't suck.
+ */
+
+/**
+ * @var char * doc2::url_
+ *
+ * @brief The URL.
+ */
+
+/**
+ * @var char * doc2::tmpfile_
+ *
+ * @brief Name of the temporary file created for the local copy of the
+ *        resource.
+ */
+
+/**
+ * @var std::istream * doc2::istm_
+ *
+ * @brief A file descriptor for reading the local copy of the resource.
+ */
+
+/**
+ * @var std::ostream * doc2::ostm_
+ *
+ * @brief A pointer to a std::ostream used for writing the resource.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param url       an HTTP or file URL.
+ * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+doc2::doc2(const std::string & url, const doc2 * relative):
+    tmpfile_(0),
+    istm_(0),
+    ostm_(0)
+{
+    if (!url.empty()) {
+        this->seturl(url, relative);
+    }
+}
+
+/**
+ * @brief Destructor.
+ */
+doc2::~doc2()
+{
+    delete istm_;
+    delete ostm_;
+    if (tmpfile_) {
+        the_system->remove_file(tmpfile_);
+        delete [] tmpfile_;
+    }
+}
+
+namespace {
+    const std::string stripProtocol(const std::string & url) {
+        using std::string;
+        const string::size_type colonPos = url.find_first_of(':');
+        return (colonPos != string::npos)
+                ? url.substr(colonPos + 1)
+                : url;
+    }
+
+    bool isAbsolute(const std::string & url) {
+        return stripProtocol(url)[0] == '/';
+    }
+}
+
+/**
+ * @brief Set the URL.
+ *
+ * @param url       the new URL.
+ * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+void doc2::seturl(const std::string & url, const doc2 * relative) {
+    using std::string;
+
+    this->url_ = string();
+
+    if (!url.empty()) {
+
+        delete this->istm_;
+        this->istm_ = 0;
+        delete this->ostm_;
+        this->ostm_ = 0;
+
+        string path;
+
+        if (relative && !isAbsolute(url)) {
+            path = relative->url_path();
+        }
+
+        this->url_ = path;
+
+        if (url.length() > 2 && url[0] == '.' && url[1] == '/') {
+            this->url_ += url.substr(2);
+        } else {
+            this->url_ += url;
+        }
+    }
+}
+
+/**
+ * @brief Get the URL.
+ *
+ * @return the URL.
+ */
+const std::string doc2::url() const { return this->url_; }
+
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      without its extension.
+ *
+ * @return the portion of the last path element preceding the last '.' in the
+ *      path, or an empty string if the last path element is empty.
+ */
+const std::string doc2::url_base() const {
+    using std::string;
+
+    string::size_type lastSlashPos = this->url_.find_last_of('/');
+    string::size_type lastDotPos = this->url_.find_last_of('.');
+
+    string::size_type beginPos = (lastSlashPos != string::npos)
+                               ? lastSlashPos + 1
+                               : 0;
+    string::size_type length = (lastDotPos != string::npos)
+                             ? lastDotPos - beginPos
+                             : this->url_.length() - 1 - beginPos;
+
+    return (beginPos < this->url_.length())
+            ? this->url_.substr(beginPos, length)
+            : "";
+}
+
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      extension.
+ *
+ * @return the portion of the last path element succeeding the last '.' in the
+ *      path, or an empty string if the last path element includes no '.'.
+ */
+const std::string doc2::url_ext() const {
+    using std::string;
+    string::size_type lastDotPos = this->url_.find_last_of('.');
+    return (lastDotPos != string::npos)
+            ? this->url_.substr(lastDotPos + 1)
+            : "";
+}
+
+/**
+ * @brief Get the URL without the last component of the path.
+ *
+ * In spite of its name, this method does not return the URL's path.
+ *
+ * @return the portion of the URL including the scheme, the authority, and all
+ *      but the last component of the path.
+ */
+const std::string doc2::url_path() const {
+    using std::string;
+
+    string::size_type lastSlashPos = this->url_.find_last_of('/');
+
+    return (lastSlashPos != string::npos)
+            ? this->url_.substr(0, lastSlashPos + 1)
+            : this->url_;
+}
+
+/**
+ * @brief Get the URL scheme.
+ *
+ * @return the URL scheme.
+ */
+const std::string doc2::url_protocol() const {
+    using std::string;
+
+    string::size_type firstColonPos = this->url_.find_first_of(':');
+    return (firstColonPos != string::npos)
+            ? this->url_.substr(0, firstColonPos)
+            : "file";
+}
+
+/**
+ * @brief Get the fragment identifier.
+ *
+ * @return the fragment identifier, including the leading '#', or an empty
+ *      string if there is no fragment identifier.
+ */
+const std::string doc2::url_modifier() const {
+    using std::string;
+    string::size_type lastHashPos = this->url_.find_last_of('#');
+    return (lastHashPos != string::npos)
+            ? this->url_.substr(lastHashPos)
+            : "";
+}
+
+/**
+ * @brief Get the fully qualified name of a local file that is the downloaded
+ *      resource at @a url_.
+ *
+ * @return the fully qualified name of a local file that is the downloaded
+ *      resource at @a url_.
+ */
+const char * doc2::local_name() {
+    static char buf[1024];
+    if (filename(buf, sizeof(buf))) { return buf; }
+    return 0;
+}
+
+/**
+ * @brief Get the path of the local file that is the downloaded resource at
+ *      @a url_.
+ *
+ * @return the path of the local file that is the downloaded resource at
+ *      @a url_.
+ */
+const char * doc2::local_path() {
+    static char buf[1024];
+
+    if (filename(buf, sizeof(buf))) {
+
+        char * s = strrchr(buf, '/');
+        if (s) {
+            *(s+1) = '\0';
+        }
+
+        return buf;
+    }
+
+    return 0;
+}
+
+/**
+ * @brief Get an input stream for the resource.
+ *
+ * @return an input stream for the resource.
+ */
+std::istream & doc2::input_stream() {
+    if (!this->istm_) {
+
+        char fn[256];
+
+        this->filename(fn, sizeof(fn));
+        if (strcmp(fn, "-") == 0) {
+            this->istm_ = &std::cin;
+        } else {
+# ifdef OPENVRML_ENABLE_GZIP
+            this->istm_ = new z::ifstream(fn);
+# else
+            this->istm_ = new std::ifstream(fn);
+# endif
+        }
+    }
+
+    return *this->istm_;
+}
+
+/**
+ * @brief Get an output stream for the resource.
+ *
+ * @return an output stream for the resource.
+ */
+std::ostream & doc2::output_stream() {
+    if (!ostm_) {
+        ostm_ = new std::ofstream(stripProtocol(url_).c_str(), std::ios::out);
+    }
+    return *this->ostm_;
+}
+
+/**
+ * @brief Converts a url into a local filename.
+ *
+ * @retval fn   a character buffer to hold the local filename.
+ * @param nfn   the number of elements in the buffer @p fn points to.
+ */
+bool doc2::filename(char * fn, const size_t nfn) {
+    using std::copy;
+    using std::string;
+
+    fn[0] = '\0';
+
+    string s;
+
+    const string protocol = this->url_protocol();
+
+    if (protocol == "file") {
+# ifdef _WIN32
+        string name = uri(this->url_).path().substr(1);
+# else
+        string name = uri(this->url_).path();
+# endif
+        size_t len = (name.length() < (nfn - 1))
+                   ? name.length()
+                   : nfn - 1;
+        copy(name.begin(), name.begin() + len, fn);
+        fn[len] = '\0';
+        return true;
+    } else if (protocol == "http") {
+        //
+        // Get a local copy of http files.
+        //
+        if (this->tmpfile_) {    // Already fetched it
+            s = this->tmpfile_;
+        } else if (!(s = the_system->http_fetch(this->url_.c_str())).empty()) {
+            tmpfile_ = new char[s.length() + 1];
+            strcpy(tmpfile_, s.c_str());
+            s = tmpfile_;
+        }
+    }
+    // Unrecognized protocol (need ftp here...)
+    else {
+        s.clear();
+    }
+
+    if (!s.empty()) {
+        strncpy(fn, s.c_str(), nfn - 1);
+        fn[nfn-1] = '\0';
+    }
+
+    return !s.empty();
 }
 
 } // namespace openvrml

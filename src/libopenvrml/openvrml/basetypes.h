@@ -30,6 +30,7 @@
 #   include <iosfwd>
 #   include <vector>
 #   include <sys/types.h>
+#   include <openvrml/common.h>
 
 namespace openvrml {
 
@@ -533,8 +534,6 @@ namespace openvrml {
 
         // Use compiler-defined operator= and copy constructor.
 
-        void swap(image & img) throw ();
-
         size_t x() const throw ();
         void x(size_t value) throw (std::bad_alloc);
 
@@ -620,7 +619,7 @@ namespace openvrml {
         for (size_t component = this->comp_, i = index * this->comp_;
              component > 0;
              --component, ++i) {
-            retval |= int32(this->array_[i]) << (8 * (component - 1));
+            retval |= int32(this->array_[i]) << (8 * component);
         }
         return retval;
     }
@@ -653,14 +652,5 @@ namespace openvrml {
     std::ostream & operator<<(std::ostream & out, const image & img);
 
 } // namespace openvrml
-
-namespace std {
-
-    template <>
-    inline void swap(openvrml::image & a, openvrml::image & b)
-    {
-        a.swap(b);
-    }
-}
 
 # endif // OPENVRML_BASETYPES_H
