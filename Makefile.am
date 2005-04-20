@@ -1,4 +1,4 @@
-SUBDIRS = doc ide-projects m4 models lib java src mozilla-plugin test
+SUBDIRS = doc ide-projects m4 models lib java src mozilla-plugin tests
 
 ACLOCAL_AMFLAGS = -I m4
 
