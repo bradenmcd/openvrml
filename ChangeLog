@@ -1,3 +1,14 @@
+2005-04-20 Braden McDaniel  <braden@endoframe.com>
+
+	Updated package version to 0.15.7.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* mozilla-plugin/configure.ac
+
 2005-04-19 Braden McDaniel  <braden@endoframe.com>
 
 	Use Autotest instead of DejaGnu as a test harness.
