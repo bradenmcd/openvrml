@@ -347,12 +347,10 @@ gmodule_pkg >= gmodule_required_version \
 ])
 
 # Check for GLib
-AM_PATH_GLIB_2_0([glib_required_version], ,
-                 [AC_MSG_ERROR([GLib 2.0 not found])])
+AM_PATH_GLIB_2_0([glib_required_version], , )
 
 # Check for GTK+
-AM_PATH_GTK_2_0([gtk_required_version], ,
-                [AC_MSG_ERROR([GTK+ 2.0 not found])])
+AM_PATH_GTK_2_0([gtk_required_version], , )
 
 # Checks for libraries.
 
@@ -439,10 +437,6 @@ GDKGLEXT_WIN_EXTRA_DEFS=""
 
 if test "x$gdktarget" = "xx11"; then
   AC_PATH_XTRA
-
-  if test "x$no_x" = "xyes" ; then
-    AC_MSG_ERROR([X development libraries not found])
-  fi
 
   save_CPPFLAGS="$CPPFLAGS"
   CPPFLAGS="$CPPFLAGS $X_CFLAGS"
@@ -532,12 +526,10 @@ save_LIBS="$LIBS"
 LIBS="$LIBS $GL_LDFLAGS $WINDOWING_LIBS $MATH_LIB"
 
 if test "x$gdktarget" = "xx11"; then
-  AC_CHECK_HEADERS([GL/glx.h], ,
-                   [AC_MSG_ERROR([Cannot find GLX header])])
+  AC_CHECK_HEADERS([GL/glx.h], , )
 fi
 
-AC_CHECK_HEADERS([GL/gl.h GL/glu.h], ,
-                 [AC_MSG_ERROR([Cannot find OpenGL headers])])
+AC_CHECK_HEADERS([GL/gl.h GL/glu.h], , )
 
 if test "x$gdktarget" = "xx11"; then
 
@@ -597,11 +589,6 @@ if test "x$gdktarget" = "xx11"; then
                   GL_LIB_NAME=MesaGL])
   fi
 
-  if test "x$have_GL" = "xno" ; then
-    # no GL found
-    AC_MSG_ERROR([Cannot find GL library])
-  fi
-
   # GLU
 
   have_GLU=no
@@ -641,11 +628,6 @@ if test "x$gdktarget" = "xx11"; then
                  [GL_LIBS="-lMesaGLU $GL_LIBS"
                   have_GLU=yes], ,
                  [$GL_LIBS])
-  fi
-
-  if test "x$have_GLU" = "xno" ; then
-    # no GLU found
-    AC_MSG_ERROR([Cannot find GLU library])
   fi
 
   # Checks for SGI's GLU library
@@ -725,9 +707,6 @@ else
               [GL_LIBS="-lopengl32"
                have_opengl32=yes])
   AC_MSG_RESULT([$have_opengl32])
-  if test "x$have_opengl32" = "xno" ; then
-    AC_MSG_ERROR([Cannot find GL library])
-  fi
 
   AC_MSG_CHECKING([for gluNewQuadric in -lglu32])
   have_glu32=no
@@ -739,9 +718,6 @@ else
               [GL_LIBS="-lglu32 $GL_LIBS"
                have_glu32=yes])
   AC_MSG_RESULT([$have_glu32])
-  if test "x$have_glu32" = "xno" ; then
-    AC_MSG_ERROR([Cannot find GLU library])
-  fi
 
 dnl   AC_CHECK_LIB(opengl32, glNewList,
 dnl                GL_LIBS="-lopengl32",

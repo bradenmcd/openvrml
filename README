@@ -122,7 +122,6 @@ below.
      OpenGL/Mesa            <http://mesa3d.org>
      GTK+                   <http://gtk.org>
      SDL                    <http://libsdl.org>
-     DejaGnu                <http://www.gnu.org/software/dejagnu/>
      Doxygen                <http://doxygen.org>
 
    OpenVRML can be built with reduced functionality which can avoid
@@ -175,10 +174,6 @@ depends on.
  --disable-examples
      Do not build the example programs.  The example programs depend on
      SDL.
-
---disable-tests
-     Do not build the test programs.  The test programs depend on
-     DejaGnu.
 
  --with-x
      Passing the argument "--without-x" to "configure" will allow

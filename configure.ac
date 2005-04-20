@@ -17,15 +17,14 @@ AC_CONFIG_FILES([Makefile]
                 [src/Makefile]
                 [src/libopenvrml/Makefile]
                 [src/libopenvrml-gl/Makefile]
-                [test/Makefile]
-                [test/parse/Makefile]
-                [test/parse/testsuite/Makefile]
                 [examples/Makefile]
+                [tests/Makefile]
+                [tests/atlocal]
                 [openvrml.pc]
                 [openvrml.spec])
 
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.7 foreign dejagnu subdir-objects check-news])
+AM_INIT_AUTOMAKE([1.7 foreign subdir-objects check-news])
 AM_CONFIG_HEADER([config.h])
 
 #
@@ -54,11 +53,6 @@ AC_ARG_VAR([REZ], [Mac OS X resource fork compiler])
 AC_PATH_PROG([REZ], [Rez], [$PATH:/Developer/Tools])
 
 #
-# AM_INIT_AUTOMAKE should probably take care of this, but it doesn't.
-#
-AC_ARG_VAR([RUNTESTFLAGS], [DejaGnu runtest flags])
-
-#
 # Checks for libraries/headers.
 #
 PKG_CHECK_MODULES([FONTCONFIG], [$REQUIRE_FONTCONFIG], , [have_fontconfig=no])
@@ -80,8 +74,6 @@ AM_PATH_SDL(, [have_sdl=yes], [have_sdl=no])
 SDL_LIBS=`echo $SDL_LIBS | sed 's/-Wl,-rpath,[[^ ]]* //'`
 
 OV_CHECK_JNI
-
-AC_CHECK_HEADER([dejagnu.h], [have_dejagnu_h=yes], [have_dejagnu_h=no])
 
 #
 # PNG texture support
@@ -224,19 +216,6 @@ AM_CONDITIONAL([ENABLE_EXAMPLES],
                [test "X$enable_examples" != "Xno" -a "X$have_sdl" = "Xyes"])
 
 #
-# build tests
-#
-AC_ARG_ENABLE([tests], [AC_HELP_STRING([--disable-tests],
-                                       [do not build the tests])])
-if test X$enable_tests != Xno; then
-  if test X$have_dejagnu_h != Xyes; then
-    AC_MSG_FAILURE([DejaGnu is required to build and run the tests])
-  fi
-fi
-AM_CONDITIONAL([ENABLE_TESTS],
-               [test X$enable_tests != Xno -a X$have_dejagnu_h = Xyes]) 
-
-#
 # Apply Rez to executables? (Only seem to need this if we're using the Apple
 # OpenGL framework.)
 #
@@ -256,5 +235,7 @@ AC_SUBST([OPENVRML_RPATH])
 AC_ARG_VAR([XPIDL], [Mozilla XPCOM IDL compiler])
 AC_ARG_VAR([XPIDLFLAGS], [Mozilla XPCOM IDL compiler flags])
 AC_CONFIG_SUBDIRS([mozilla-plugin])
+
+AC_CONFIG_TESTDIR([tests])
 
 AC_OUTPUT

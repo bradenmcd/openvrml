@@ -1,3 +1,66 @@
+2005-04-20 Braden McDaniel  <braden@endoframe.com>
+
+	Merged changes from 0.15.7 release.
+
+	* Makefile.am:  Use "tests" directory instead of "test".
+	* NEWS:  Updated for 0.15.7 release.
+	* README:  Removed references to --disable-tests option and
+	DejaGnu dependency.
+	* configure.ac  Removed --disable-tests option; removed DejaGnu
+	initialization; added autotest initialization.
+	* openvrml.spec.in:  Removed dejagnu build prerequisite.
+	* examples/sdk_viewer.cpp:  sdl_error should publicly inherit
+	std::runtime_error.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* mozilla-plugin/configure.ac:  configure fails if the PATH
+	argument to AC_PATH_PROG is not quoted and the program (xpidl,
+	in this case) is not found.
+	* mozilla-plugin/lib/gtkglext/configure.in:  Removed occurrences
+	of AC_MSG_ERROR. In general, check failures here should not
+	cause GtkGLExt's configure to fail so that the main configure
+	can succeed even if some of GtkGLExt's dependencies are missing.
+	* mozilla-plugin/src/openvrml.cpp:  Construct a GdkNativeWindow
+	rather than reinterpret_casting to it in order to be 64-bit
+	clean.
+	* src/libopenvrml/openvrml/basetypes.cpp:  Include <ostream>.
+	* test/Makefile.am:  Removed file.
+	* test/browser-create_vrml_from_stream.cpp:  Removed file.
+	* test/browser_basic.cpp:  Removed file.
+	* test/node_interface_set.cpp:  Removed file.
+	* test/parse-anchor.cpp:  Removed file.
+	* test/parse/Makefile.am:  Removed file.
+	* test/parse/parse.cpp:  Removed file.
+	* test/parse/testsuite/Makefile.am:  Removed file.
+	* test/parse/testsuite/config/unix.exp:  Removed file.
+	* test/parse/testsuite/parse.bad/parse.exp:  Removed file.
+	* test/parse/testsuite/parse.bad/proto-eventin-conflict.wrl:
+	Removed file.
+	* test/parse/testsuite/parse.bad/proto-eventout-conflict.wrl:
+	Removed file.
+	* test/parse/testsuite/parse.good/parse.exp:  Removed file.
+	* test/parse/testsuite/parse.good/proto-containment-2-deep.wrl:
+	Removed file.
+	* test/parse/testsuite/parse.good/proto-containment-trivial.wrl:
+	Removed file.
+	* test/parse/testsuite/parse.good/proto-containment.wrl:
+	Removed file.
+	* test/parse/testsuite/parse.good/proto-field-is-proto.wrl:
+	Removed file.
+	* test/parse/testsuite/parse.good/proto-impl-exposedfield-event-is.wrl:
+	Removed file.
+	* test/parse/testsuite/parse.good/self-referential-script-in-proto.wrl:
+	Removed file.
+	* test/parse/testsuite/parse.good/self-referential-script.wrl:
+	Removed file.
+	* tests/Makefile.am:  Added file.
+	* tests/atlocal.in:  Added file.
+	* tests/browser_basic.cpp:  Added file.
+	* tests/browser_create_vrml_from_stream.cpp:  Added file.
+	* tests/node_interface_set.cpp:  Added file.
+	* tests/parse.cpp:  Added file.
+	* tests/parse_anchor.cpp:  Added file.
+	* tests/testsuite.at:  Added file.
+
 2005-04-11 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment improvements.

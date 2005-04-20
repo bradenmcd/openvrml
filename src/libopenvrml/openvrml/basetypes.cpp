@@ -21,6 +21,7 @@
 //
 
 # include <numeric>
+# include <ostream>
 # include <private.h>
 # include "basetypes.h"
 
