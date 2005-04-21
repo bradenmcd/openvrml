@@ -25,10 +25,8 @@
 
 # include "exposedfield.h"
 
-namespace openvrml {
-
 /**
- * @class exposedfield
+ * @class openvrml::exposedfield
  *
  * @brief Class template to simplify implementation of exposedFields.
  *
@@ -44,7 +42,7 @@ namespace openvrml {
  */
 
 /**
- * @fn exposedfield::exposedfield(openvrml::node & node, const typename FieldValue::value_type & value)
+ * @fn openvrml::exposedfield::exposedfield(openvrml::node & node, const typename FieldValue::value_type & value)
  *
  * @brief Construct.
  *
@@ -53,13 +51,13 @@ namespace openvrml {
  */
 
 /**
- * @fn exposedfield::~exposedfield() throw ()
+ * @fn openvrml::exposedfield::~exposedfield() throw ()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn void exposedfield::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::exposedfield::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
  * @brief Process an event.
  *
@@ -81,7 +79,7 @@ namespace openvrml {
  */
 
 /**
- * @fn void exposedfield::event_side_effect(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::exposedfield::event_side_effect(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
  * @brief Called by <code>exposedfield<FieldValue>::do_process_event</code>.
  *
@@ -94,5 +92,3 @@ namespace openvrml {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-
-}

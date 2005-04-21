@@ -1,3 +1,24 @@
+2005-04-21 Braden McDaniel  <braden@endoframe.com>
+
+	Changed convention for scoping definitions.  Definitions are now
+	explicitly qualified in the global scope rather than enclosed in
+	namespace scope blocks.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/exposedfield.cpp
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/frustum.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node_ptr.cpp
+	* src/libopenvrml/openvrml/rendering_context.cpp
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/viewer.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
 2005-04-20 Braden McDaniel  <braden@endoframe.com>
 
 	Merged changes from 0.15.7 release.

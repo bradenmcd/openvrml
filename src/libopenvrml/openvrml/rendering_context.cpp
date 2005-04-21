@@ -25,10 +25,8 @@
 
 # include "rendering_context.h"
 
-namespace openvrml {
-
 /**
- * @class rendering_context
+ * @class openvrml::rendering_context
  *
  * @brief Information needed during a render traversal.
  *
@@ -65,7 +63,7 @@ namespace openvrml {
  */
 
 /**
- * @var bounding_volume::Intersection rendering_context::cull_flag
+ * @var openvrml::bounding_volume::Intersection openvrml::rendering_context::cull_flag
  *
  * @brief Track the results of intersecting node bounds with the view volume.
  *
@@ -84,18 +82,18 @@ namespace openvrml {
  * of the traversal has the effect of disabling the culling tests. The behavior
  * is undefined if the flag is not one of the allowed values.
  *
- * @see browser
- * @see bounding_volume
+ * @see openvrml::browser
+ * @see openvrml::bounding_volume
  */
 
 /**
- * @var mat4f * rendering_context::modelview;
+ * @var openvrml::mat4f * openvrml::rendering_context::modelview;
  *
  * The current modelview matrix.
  */
 
 /**
- * @var bool rendering_context::draw_bounding_spheres;
+ * @var bool openvrml::rendering_context::draw_bounding_spheres;
  *
  * @brief Draw the bounding volumes or not.
  *
@@ -110,7 +108,7 @@ namespace openvrml {
  * An empty context should not be passed to VrmlNode::render.
  * This constructor is useful only for debugging and experimentation.
  */
-rendering_context::rendering_context():
+openvrml::rendering_context::rendering_context():
     modelview(0),
     cull_flag(bounding_volume::partial),
     draw_bounding_spheres(false)
@@ -127,7 +125,7 @@ rendering_context::rendering_context():
  *
  * @see cull_flag
  */
-rendering_context::rendering_context(
+openvrml::rendering_context::rendering_context(
     const bounding_volume::intersection cull_flag,
     mat4f & modelview):
     modelview(&modelview),
@@ -146,7 +144,7 @@ rendering_context::rendering_context(
  * @param modelview the modelview matrix. Must be at least affine, although the
  *                  render code may optimize for orthogonal transforms.
  */
-void rendering_context::matrix(mat4f & modelview)
+void openvrml::rendering_context::matrix(mat4f & modelview)
 {
     this->modelview = &modelview;
 }
@@ -156,10 +154,8 @@ void rendering_context::matrix(mat4f & modelview)
  *
  * @return the modelview matrix.
  */
-const mat4f & rendering_context::matrix() const
+const openvrml::mat4f & openvrml::rendering_context::matrix() const
 {
     assert(this->modelview);
     return *this->modelview;
 }
-
-} // namespace openvrml

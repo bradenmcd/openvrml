@@ -30,10 +30,8 @@
 # include "browser.h"
 # include "ScriptJDK.h"
 
-namespace openvrml {
-
 /**
- * @class script
+ * @class openvrml::script
  *
  * @brief Abstract class implemented by scripting language bindings.
  *
@@ -44,7 +42,7 @@ namespace openvrml {
 /**
  * @internal
  *
- * @typedef script::direct_output_map_t
+ * @typedef openvrml::script::direct_output_map_t
  *
  * @brief Map of direct outputs.
  */
@@ -52,7 +50,7 @@ namespace openvrml {
 /**
  * @internal
  *
- * @var script::direct_output_map_t script::direct_output_map_
+ * @var openvrml::script::direct_output_map_t openvrml::script::direct_output_map_
  *
  * @brief Map of direct outputs.
  */
@@ -68,14 +66,14 @@ namespace openvrml {
  *
  * @param node  a reference to the script_node that uses this script object.
  */
-script::script(script_node & node):
+openvrml::script::script(script_node & node):
     node(node)
 {}
 
 /**
  * @brief Destroy.
  */
-script::~script()
+openvrml::script::~script()
 {}
 
 /**
@@ -85,14 +83,14 @@ script::~script()
  *
  * @param timestamp the current time.
  */
-void script::initialize(double timestamp)
+void openvrml::script::initialize(double timestamp)
 {
     this->do_initialize(timestamp);
     this->process_direct_output(timestamp);
 }
 
 /**
- * @fn void script::do_initialize(double timestamp)
+ * @fn void openvrml::script::do_initialize(double timestamp)
  *
  * @brief Initialize the Script node.
  *
@@ -108,16 +106,16 @@ void script::initialize(double timestamp)
  * @param value     event value.
  * @param timestamp the current time.
  */
-void script::process_event(const std::string & id,
-                           const field_value & value,
-                           double timestamp)
+void openvrml::script::process_event(const std::string & id,
+                                     const field_value & value,
+                                     double timestamp)
 {
     this->do_process_event(id, value, timestamp);
     this->process_direct_output(timestamp);
 }
 
 /**
- * @fn void script::do_process_event(const std::string & id, const field_value & value, double timestamp)
+ * @fn void openvrml::script::do_process_event(const std::string & id, const field_value & value, double timestamp)
  *
  * @brief Process an event.
  *
@@ -133,13 +131,13 @@ void script::process_event(const std::string & id,
  *
  * @param timestamp the current time.
  */
-void script::events_processed(double timestamp)
+void openvrml::script::events_processed(double timestamp)
 {
     this->do_events_processed(timestamp);
 }
 
 /**
- * @fn void script::do_events_processed(double timestamp)
+ * @fn void openvrml::script::do_events_processed(double timestamp)
  *
  * @brief Execute script code after processing events.
  *
@@ -153,14 +151,14 @@ void script::events_processed(double timestamp)
  *
  * @param timestamp the current time.
  */
-void script::shutdown(double timestamp)
+void openvrml::script::shutdown(double timestamp)
 {
     this->do_shutdown(timestamp);
     this->process_direct_output(timestamp);
 }
 
 /**
- * @fn void script::do_shutdown(double timestamp)
+ * @fn void openvrml::script::do_shutdown(double timestamp)
  *
  * @brief Shut down the Script node.
  *
@@ -173,7 +171,7 @@ void script::shutdown(double timestamp)
  * @return @c true if direct output is enabled for the Script node; @c false
  *         otherwise.
  */
-bool script::direct_output() const throw ()
+bool openvrml::script::direct_output() const throw ()
 {
     return this->node.direct_output.value;
 }
@@ -185,7 +183,7 @@ bool script::direct_output() const throw ()
  * @return @c true if the browser may delay sending input events to the script
  *         until its outputs are needed by the browser; @c false otherwise.
  */
-bool script::must_evaluate() const throw ()
+bool openvrml::script::must_evaluate() const throw ()
 {
     return this->node.must_evaluate.value;
 }
@@ -200,7 +198,7 @@ bool script::must_evaluate() const throw ()
  * @exception std::bad_cast         if @p value is the wrong type.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-void script::field(const std::string & id, const field_value & value)
+void openvrml::script::field(const std::string & id, const field_value & value)
     throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
     const script_node::field_value_map_t::iterator field =
@@ -225,8 +223,9 @@ void script::field(const std::string & id, const field_value & value)
  *                                      to process events of @p value's type.
  * @exception std::bad_alloc            if memory allocation fails.
  */
-void script::direct_output(event_listener & listener,
-                           const boost::shared_ptr<field_value> & value)
+void
+openvrml::script::direct_output(event_listener & listener,
+                                const boost::shared_ptr<field_value> & value)
     throw (field_value_type_mismatch, std::bad_alloc)
 {
     assert(value);
@@ -246,7 +245,7 @@ void script::direct_output(event_listener & listener,
  *
  * @post <code>script::direct_output_map_.empty()</code> is @c true.
  */
-void script::process_direct_output(double timestamp)
+void openvrml::script::process_direct_output(double timestamp)
 {
     for (direct_output_map_t::const_iterator output =
              this->direct_output_map_.begin();
@@ -361,9 +360,9 @@ void script::process_direct_output(double timestamp)
 
 
 /**
- * @class script_node_class
+ * @class openvrml::script_node_class
  *
- * @brief Class object for @link script_node script_nodes@endlink.
+ * @brief Class object for <code>script_node</code>s.
  *
  * There is one script_node_class per browser instance.
  *
@@ -375,14 +374,14 @@ void script::process_direct_output(double timestamp)
  *
  * @param browser   the browser to be associated with the script_node_class.
  */
-script_node_class::script_node_class(openvrml::browser & browser):
+openvrml::script_node_class::script_node_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-script_node_class::~script_node_class() throw ()
+openvrml::script_node_class::~script_node_class() throw ()
 {}
 
 /**
@@ -392,9 +391,9 @@ script_node_class::~script_node_class() throw ()
  * unlike other node implementations, cannot provide the implementation of
  * an @c EXTERNPROTO. It is an error to call this method.
  */
-const boost::shared_ptr<node_type>
-script_node_class::do_create_type(const std::string &,
-                                  const node_interface_set &) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::script_node_class::do_create_type(const std::string &,
+                                            const node_interface_set &) const
     throw ()
 {
     assert(false);
@@ -403,49 +402,49 @@ script_node_class::do_create_type(const std::string &,
 
 
 /**
- * @class script_node
+ * @class openvrml::script_node
  *
  * @brief Represents a VRML Script node.
  */
 
 /**
- * @var class script_node::script
+ * @var class openvrml::script_node::script
  *
  * @brief Abstract base class for script runtimes.
  */
 
 /**
- * @typedef script_node::field_value_map_t
+ * @typedef openvrml::script_node::field_value_map_t
  *
  * @brief A std::map that keys field values on their field name.
  */
 
 /**
- * @class script_node::eventout
+ * @class openvrml::script_node::eventout
  *
  * @brief An event_emitter along with the emitted value.
  */
 
 /**
- * @var script_node & script_node::eventout::node_
+ * @var openvrml::script_node & openvrml::script_node::eventout::node_
  *
  * @brief The containing script_node.
  */
 
 /**
- * @var boost::scoped_ptr<field_value> script_node::eventout::value_
+ * @var boost::scoped_ptr<openvrml::field_value> openvrml::script_node::eventout::value_
  *
  * @brief The value.
  */
 
 /**
- * @var bool script_node::eventout::modified_
+ * @var bool openvrml::script_node::eventout::modified_
  *
  * @brief Flag to indicate whether @a value_ has been modified.
  */
 
 /**
- * @var boost::scoped_ptr<openvrml::event_emitter> script_node::eventout::emitter_
+ * @var boost::scoped_ptr<openvrml::event_emitter> openvrml::script_node::eventout::emitter_
  *
  * @brief Event emitter.
  */
@@ -458,8 +457,8 @@ script_node_class::do_create_type(const std::string &,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-script_node::eventout::eventout(const field_value::type_id type,
-                                script_node & node)
+openvrml::script_node::eventout::eventout(const field_value::type_id type,
+                                          script_node & node)
     throw (std::bad_alloc):
     node_(node),
     value_(field_value::create(type)),
@@ -472,7 +471,8 @@ script_node::eventout::eventout(const field_value::type_id type,
  *
  * @return the value that will be sent from the eventOut.
  */
-const field_value & script_node::eventout::value() const throw ()
+const openvrml::field_value & openvrml::script_node::eventout::value() const
+    throw ()
 {
     return *this->value_;
 }
@@ -488,7 +488,7 @@ const field_value & script_node::eventout::value() const throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  * @exception std::bad_cast     if @p val is not the correct type.
  */
-void script_node::eventout::value(const field_value & val)
+void openvrml::script_node::eventout::value(const field_value & val)
     throw (std::bad_alloc, std::bad_cast)
 {
     if (this->value_->type() == field_value::sfnode_id) {
@@ -511,7 +511,7 @@ void script_node::eventout::value(const field_value & val)
  * @return @c true if the value has been changed since emit_event was last
  *         called; @c false otherwise.
  */
-bool script_node::eventout::modified() const throw ()
+bool openvrml::script_node::eventout::modified() const throw ()
 {
     return this->modified_;
 }
@@ -521,7 +521,7 @@ bool script_node::eventout::modified() const throw ()
  *
  * @return the event_emitter associated with the eventout.
  */
-event_emitter & script_node::eventout::emitter() throw ()
+openvrml::event_emitter & openvrml::script_node::eventout::emitter() throw ()
 {
     return *this->emitter_;
 }
@@ -536,7 +536,7 @@ event_emitter & script_node::eventout::emitter() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void script_node::eventout::emit_event(const double timestamp)
+void openvrml::script_node::eventout::emit_event(const double timestamp)
     throw (std::bad_alloc)
 {
     node::emit_event(*this->emitter_, timestamp);
@@ -544,13 +544,13 @@ void script_node::eventout::emit_event(const double timestamp)
 }
 
 /**
- * @typedef script_node::eventout_ptr
+ * @typedef openvrml::script_node::eventout_ptr
  *
  * @brief Reference-counted smart pointer to an eventout.
  */
 
 /**
- * @typedef script_node::eventout_map_t
+ * @typedef openvrml::script_node::eventout_map_t
  *
  * @brief Map of eventout instances.
  */
@@ -558,7 +558,7 @@ void script_node::eventout::emit_event(const double timestamp)
 /**
  * @internal
  *
- * @class script_node::script_node_type
+ * @class openvrml::script_node::script_node_type
  *
  * @brief Type objects for @link script_node script_nodes@endlink.
  *
@@ -566,7 +566,7 @@ void script_node::eventout::emit_event(const double timestamp)
  */
 
 /**
- * @var node_interface_set script_node::script_node_type::interfaces_
+ * @var openvrml::node_interface_set openvrml::script_node::script_node_type::interfaces_
  *
  * @brief Node interfaces.
  */
@@ -578,16 +578,16 @@ namespace {
     // range is used with std::set_difference, so the elements *must* be in
     // lexicographically increasing order according to their "id" member.
     //
-    const node_interface built_in_script_interfaces_[] = {
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "directOutput"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "mustEvaluate"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "url")
+    const openvrml::node_interface built_in_script_interfaces_[] = {
+        openvrml::node_interface(openvrml::node_interface::field_id,
+                                 openvrml::field_value::sfbool_id,
+                                 "directOutput"),
+        openvrml::node_interface(openvrml::node_interface::field_id,
+                                 openvrml::field_value::sfbool_id,
+                                 "mustEvaluate"),
+        openvrml::node_interface(openvrml::node_interface::exposedfield_id,
+                                 openvrml::field_value::mfstring_id,
+                                 "url")
     };
 }
 
@@ -596,7 +596,8 @@ namespace {
  *
  * @param class_    the node_class for @link script_node script_nodes@endlink.
  */
-script_node::script_node_type::script_node_type(script_node_class & class_):
+openvrml::script_node::script_node_type::
+script_node_type(script_node_class & class_):
     node_type(class_, "Script")
 {
     for (size_t i = 0; i < 3; ++i) {
@@ -609,7 +610,7 @@ script_node::script_node_type::script_node_type(script_node_class & class_):
 /**
  * @brief Destroy.
  */
-script_node::script_node_type::~script_node_type() throw ()
+openvrml::script_node::script_node_type::~script_node_type() throw ()
 {}
 
 /**
@@ -622,7 +623,8 @@ script_node::script_node_type::~script_node_type() throw ()
  *                                  interface that conflicts with @p interface.
  */
 void
-script_node::script_node_type::add_interface(const node_interface & interface)
+openvrml::script_node::script_node_type::
+add_interface(const node_interface & interface)
     throw (std::bad_alloc, std::invalid_argument)
 {
     bool succeeded  = this->interfaces_.insert(interface).second;
@@ -637,7 +639,8 @@ script_node::script_node_type::add_interface(const node_interface & interface)
  *
  * @return the interfaces for the node.
  */
-const node_interface_set & script_node::script_node_type::do_interfaces() const
+const openvrml::node_interface_set &
+openvrml::script_node::script_node_type::do_interfaces() const
     throw ()
 {
     return this->interfaces_;
@@ -662,8 +665,8 @@ const node_interface_set & script_node::script_node_type::do_interfaces() const
  *                                  wrong type.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_ptr
-script_node::script_node_type::
+const openvrml::node_ptr
+openvrml::script_node::script_node_type::
 do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                const initial_value_map & initial_values) const
     throw (unsupported_interface, std::bad_cast, std::bad_alloc)
@@ -710,19 +713,19 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @class script_node::script_event_listener
+ * @class openvrml::script_node::script_event_listener
  *
  * @brief Event listener.
  */
 
 /**
- * @var const std::string script_node::script_event_listener::id
+ * @var const std::string openvrml::script_node::script_event_listener::id
  *
  * @brief eventIn identifier.
  */
 
 /**
- * @fn script_node::script_event_listener::script_event_listener(const std::string & id, script_node & node)
+ * @fn openvrml::script_node::script_event_listener::script_event_listener(const std::string & id, script_node & node)
  *
  * @brief Construct.
  *
@@ -731,13 +734,13 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  */
 
 /**
- * @fn script_node::script_event_listener::~script_event_listener() throw ()
+ * @fn openvrml::script_node::script_event_listener::~script_event_listener() throw ()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn script_node::script_event_listener::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::script_node::script_event_listener::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
  * @brief Process an event.
  *
@@ -750,7 +753,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::sfbool_listener
+ * @typedef openvrml::script_node::sfbool_listener
  *
  * @brief sfbool event listener.
  */
@@ -758,7 +761,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::sfcolor_listener
+ * @typedef openvrml::script_node::sfcolor_listener
  *
  * @brief sfcolor event listener.
  */
@@ -766,7 +769,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::sffloat_listener
+ * @typedef openvrml::script_node::sffloat_listener
  *
  * @brief sffloat event listener.
  */
@@ -774,7 +777,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::sfimage_listener
+ * @typedef openvrml::script_node::sfimage_listener
  *
  * @brief sfimage event listener.
  */
@@ -782,7 +785,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::sfint32_listener
+ * @typedef openvrml::script_node::sfint32_listener
  *
  * @brief sfint32 event listener.
  */
@@ -790,7 +793,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::sfnode_listener
+ * @typedef openvrml::script_node::sfnode_listener
  *
  * @brief sfnode event listener.
  */
@@ -798,7 +801,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::sfrotation_listener
+ * @typedef openvrml::script_node::sfrotation_listener
  *
  * @brief sfrotation event listener.
  */
@@ -806,7 +809,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::sfstring_listener
+ * @typedef openvrml::script_node::sfstring_listener
  *
  * @brief sfstring event listener.
  */
@@ -814,7 +817,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::sftime_listener
+ * @typedef openvrml::script_node::sftime_listener
  *
  * @brief sftime event listener.
  */
@@ -822,7 +825,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::sfvec2f_listener
+ * @typedef openvrml::script_node::sfvec2f_listener
  *
  * @brief sfvec2f event listener.
  */
@@ -830,7 +833,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::sfvec3f_listener
+ * @typedef openvrml::script_node::sfvec3f_listener
  *
  * @brief sfvec3f event listener.
  */
@@ -838,7 +841,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::mfcolor_listener
+ * @typedef openvrml::script_node::mfcolor_listener
  *
  * @brief mfcolor event listener.
  */
@@ -846,7 +849,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::mffloat_listener
+ * @typedef openvrml::script_node::mffloat_listener
  *
  * @brief mffloat event listener.
  */
@@ -854,7 +857,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::mfint32_listener
+ * @typedef openvrml::script_node::mfint32_listener
  *
  * @brief mfint32 event listener.
  */
@@ -862,7 +865,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::mfnode_listener
+ * @typedef openvrml::script_node::mfnode_listener
  *
  * @brief mfnode event listener.
  */
@@ -870,7 +873,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::mfrotation_listener
+ * @typedef openvrml::script_node::mfrotation_listener
  *
  * @brief mfrotation event listener.
  */
@@ -878,7 +881,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::mfstring_listener
+ * @typedef openvrml::script_node::mfstring_listener
  *
  * @brief mfstring event listener.
  */
@@ -886,7 +889,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::mftime_listener
+ * @typedef openvrml::script_node::mftime_listener
  *
  * @brief mftime event listener.
  */
@@ -894,7 +897,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::mfvec2f_listener
+ * @typedef openvrml::script_node::mfvec2f_listener
  *
  * @brief mfvec2f event listener.
  */
@@ -902,7 +905,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @typedef script_node::mfvec3f_listener
+ * @typedef openvrml::script_node::mfvec3f_listener
  *
  * @brief mfvec3f event listener.
  */
@@ -920,10 +923,10 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-const boost::shared_ptr<event_listener>
-script_node::create_listener(const field_value::type_id type,
-                             const std::string & id,
-                             script_node & node)
+const boost::shared_ptr<openvrml::event_listener>
+openvrml::script_node::create_listener(const field_value::type_id type,
+                                       const std::string & id,
+                                       script_node & node)
     throw (std::bad_alloc)
 {
     boost::shared_ptr<openvrml::event_listener> listener;
@@ -997,7 +1000,7 @@ script_node::create_listener(const field_value::type_id type,
 /**
  * @internal
  *
- * @class script_node::set_url_listener_t
+ * @class openvrml::script_node::set_url_listener_t
  *
  * @brief set_url event listener.
  */
@@ -1007,14 +1010,15 @@ script_node::create_listener(const field_value::type_id type,
  *
  * @param node  a reference to the containing script_node.
  */
-script_node::set_url_listener_t::set_url_listener_t(script_node & node):
+openvrml::script_node::set_url_listener_t::
+set_url_listener_t(script_node & node):
     openvrml::mfstring_listener(node)
 {}
 
 /**
  * @brief Destroy.
  */
-script_node::set_url_listener_t::~set_url_listener_t() throw ()
+openvrml::script_node::set_url_listener_t::~set_url_listener_t() throw ()
 {}
 
 /**
@@ -1025,8 +1029,9 @@ script_node::set_url_listener_t::~set_url_listener_t() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void script_node::set_url_listener_t::do_process_event(const mfstring & value,
-                                                       const double timestamp)
+void
+openvrml::script_node::set_url_listener_t::
+do_process_event(const mfstring & value, const double timestamp)
     throw (std::bad_alloc)
 {
     assert(dynamic_cast<openvrml::script_node *>(&this->node()));
@@ -1046,7 +1051,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @var script_node::script_node_type script_node::type
+ * @var openvrml::script_node::script_node_type openvrml::script_node::type
  *
  * @brief Type object for the script_node instance.
  *
@@ -1065,7 +1070,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @var sfbool script_node::direct_output
+ * @var openvrml::sfbool openvrml::script_node::direct_output
  *
  * @brief directOutput field.
  */
@@ -1073,7 +1078,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @var sfbool script_node::must_evaluate
+ * @var openvrml::sfbool openvrml::script_node::must_evaluate
  *
  * @brief mustEvaluate field.
  */
@@ -1081,7 +1086,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @var script_node::set_url_listener_t script_node::set_url_listener
+ * @var openvrml::script_node::set_url_listener_t openvrml::script_node::set_url_listener
  *
  * @brief set_url eventIn handler.
  */
@@ -1089,7 +1094,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @var mfstring script_node::url_
+ * @var openvrml::mfstring openvrml::script_node::url_
  *
  * @brief url exposedField.
  */
@@ -1097,7 +1102,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @var mfstring_emitter script_node::url_changed_emitter
+ * @var openvrml::mfstring_emitter openvrml::script_node::url_changed_emitter
  *
  * @brief url_changed eventOut emitter.
  */
@@ -1105,7 +1110,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @var script_node::field_value_map_t script_node::field_value_map_
+ * @var openvrml::script_node::field_value_map_t openvrml::script_node::field_value_map_
  *
  * @brief Maps user-defined field names to their values.
  */
@@ -1113,7 +1118,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @typedef script_node::event_listener_ptr
+ * @typedef openvrml::script_node::event_listener_ptr
  *
  * @brief Reference-counted smart pointer to an event_listener.
  */
@@ -1121,7 +1126,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @typedef script_node::event_listener_map_t
+ * @typedef openvrml::script_node::event_listener_map_t
  *
  * @brief Map of event listeners.
  */
@@ -1129,7 +1134,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @var script_node::event_listener_map_t script_node::event_listener_map
+ * @var openvrml::script_node::event_listener_map_t openvrml::script_node::event_listener_map
  *
  * @brief Map of event listeners.
  */
@@ -1137,7 +1142,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @var script_node::eventout_map_t script_node::eventout_map_
+ * @var openvrml::script_node::eventout_map_t openvrml::script_node::eventout_map_
  *
  * @brief Map of eventout instances.
  */
@@ -1145,7 +1150,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @var script * script_node::script_
+ * @var openvrml::script * openvrml::script_node::script_
  *
  * @brief A pointer to a script object.
  */
@@ -1153,7 +1158,7 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
 /**
  * @internal
  *
- * @var int script_node::events_received
+ * @var int openvrml::script_node::events_received
  *
  * @brief A count of the number of events received since script_node::update
  *      was called.
@@ -1200,10 +1205,11 @@ void script_node::set_url_listener_t::do_process_event(const mfstring & value,
  *                                    value for a user-defined field in
  *                                    @p interfaces.
  */
-script_node::script_node(script_node_class & class_,
-                         const boost::shared_ptr<openvrml::scope> & scope,
-                         const node_interface_set & interfaces,
-                         const initial_value_map & initial_values)
+openvrml::script_node::
+script_node(script_node_class & class_,
+            const boost::shared_ptr<openvrml::scope> & scope,
+            const node_interface_set & interfaces,
+            const initial_value_map & initial_values)
     throw (unsupported_interface, std::bad_cast, std::bad_alloc,
            std::invalid_argument):
     node(this->type, scope),
@@ -1320,7 +1326,7 @@ script_node::script_node(script_node_class & class_,
 /**
  * @brief Destroy.
  */
-script_node::~script_node() throw ()
+openvrml::script_node::~script_node() throw ()
 {
     delete this->script_;
 }
@@ -1332,7 +1338,7 @@ script_node::~script_node() throw ()
  *
  * @return a pointer to this script_node.
  */
-script_node * script_node::to_script() throw ()
+openvrml::script_node * openvrml::script_node::to_script() throw ()
 {
     return this;
 }
@@ -1342,7 +1348,7 @@ script_node * script_node::to_script() throw ()
  *
  * @param current_time  the current time.
  */
-void script_node::update(const double current_time)
+void openvrml::script_node::update(const double current_time)
 {
     if (this->events_received > 0) {
         this->events_received = 0;
@@ -1364,7 +1370,7 @@ void script_node::update(const double current_time)
 }
 
 /**
- * @fn const script_node::field_value_map_t & script_node::field_value_map() const throw ()
+ * @fn const openvrml::script_node::field_value_map_t & openvrml::script_node::field_value_map() const throw ()
  *
  * @brief Field value map accessor.
  *
@@ -1372,7 +1378,7 @@ void script_node::update(const double current_time)
  */
 
 /**
- * @fn const script_node::eventout_map_t & script_node::eventout_map() const throw ()
+ * @fn const openvrml::script_node::eventout_map_t & openvrml::script_node::eventout_map() const throw ()
  *
  * @brief eventOut map accessor.
  *
@@ -1392,8 +1398,8 @@ void script_node::update(const double current_time)
  * @param inval     input sfnode.
  * @retval retval   output sfnode.
  */
-void script_node::assign_with_self_ref_check(const sfnode & inval,
-                                             sfnode & retval) const
+void openvrml::script_node::assign_with_self_ref_check(const sfnode & inval,
+                                                       sfnode & retval) const
     throw ()
 {
     const node_ptr & oldNode = retval.value;
@@ -1440,8 +1446,8 @@ void script_node::assign_with_self_ref_check(const sfnode & inval,
  * @param inval     input mfnode.
  * @retval retval   output mfnode.
  */
-void script_node::assign_with_self_ref_check(const mfnode & inval,
-                                             mfnode & retval) const
+void openvrml::script_node::assign_with_self_ref_check(const mfnode & inval,
+                                                       mfnode & retval) const
     throw ()
 {
     std::vector<node_ptr>::size_type i;
@@ -1473,7 +1479,8 @@ void script_node::assign_with_self_ref_check(const mfnode & inval,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void script_node::do_initialize(const double timestamp) throw (std::bad_alloc)
+void openvrml::script_node::do_initialize(const double timestamp)
+    throw (std::bad_alloc)
 {
     assert(this->scene());
     this->scene()->browser().add_script(*this);
@@ -1503,7 +1510,8 @@ void script_node::do_initialize(const double timestamp) throw (std::bad_alloc)
  *
  * @exception unsupported_interface  if the node has no field @p id.
  */
-const field_value & script_node::do_field(const std::string & id) const
+const openvrml::field_value &
+openvrml::script_node::do_field(const std::string & id) const
     throw (unsupported_interface)
 {
     field_value_map_t::const_iterator itr;
@@ -1532,7 +1540,8 @@ const field_value & script_node::do_field(const std::string & id) const
  *
  * @exception unsupported_interface if the node has no eventIn @p id.
  */
-event_listener & script_node::do_event_listener(const std::string & id)
+openvrml::event_listener &
+openvrml::script_node::do_event_listener(const std::string & id)
     throw (unsupported_interface)
 {
     if (id == "url" || id == "set_url") {
@@ -1561,7 +1570,8 @@ event_listener & script_node::do_event_listener(const std::string & id)
  *
  * @exception unsupported_interface if the node has no eventOut @p id.
  */
-event_emitter & script_node::do_event_emitter(const std::string & id)
+openvrml::event_emitter &
+openvrml::script_node::do_event_emitter(const std::string & id)
     throw (unsupported_interface)
 {
     openvrml::event_emitter * result = 0;
@@ -1585,7 +1595,7 @@ event_emitter & script_node::do_event_emitter(const std::string & id)
 }
 
 /**
- * @fn const script_node::field_value_map_t & script_node::field_value_map() const throw ()
+ * @fn const openvrml::script_node::field_value_map_t & openvrml::script_node::field_value_map() const throw ()
  *
  * @brief field value map.
  *
@@ -1593,7 +1603,7 @@ event_emitter & script_node::do_event_emitter(const std::string & id)
  */
 
 /**
- * @fn const script_node::eventout_map_t & script_node::eventout_map() const throw ()
+ * @fn const openvrml::script_node::eventout_map_t & openvrml::script_node::eventout_map() const throw ()
  *
  * @brief eventOut map.
  *
@@ -1605,7 +1615,7 @@ event_emitter & script_node::do_event_emitter(const std::string & id)
  *
  * @param timestamp the current time.
  */
-void script_node::do_shutdown(const double timestamp) throw ()
+void openvrml::script_node::do_shutdown(const double timestamp) throw ()
 {
     if (this->script_) { this->script_->shutdown(timestamp); }
     this->scene()->browser().remove_script(*this);
@@ -1619,10 +1629,9 @@ void script_node::do_shutdown(const double timestamp) throw ()
  * @param context   generic context argument; holds things like the accumulated
  *                  modelview transform.
  */
-void script_node::do_render_child(viewer & v, rendering_context context)
+void openvrml::script_node::do_render_child(viewer & v,
+                                            rendering_context context)
 {}
-
-} // namespace openvrml
 
 # if OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
 #   include <algorithm>
@@ -1632,7 +1641,6 @@ void script_node::do_render_child(viewer & v, rendering_context context)
 #   include <vector>
 #   include <jsapi.h>
 # endif
-namespace openvrml {
 
 # if OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
 namespace {
@@ -1710,7 +1718,7 @@ private:
  *
  * @return a new script object.
  */
-script * script_node::create_script()
+openvrml::script * openvrml::script_node::create_script()
 {
     // Try each url until we find one we like
     for (size_t i = 0; i < this->url_.value.size(); ++i) {
@@ -1807,9 +1815,9 @@ public:
 
 JSBool floatsToJSArray(size_t numFloats, const float * floats,
                        JSContext * cx, jsval * rval);
-std::auto_ptr<field_value>
+std::auto_ptr<openvrml::field_value>
 createFieldValueFromJsval(JSContext * cx, jsval val,
-                          field_value::type_id fieldType)
+                          openvrml::field_value::type_id fieldType)
     throw (bad_conversion, std::bad_alloc);
 
 namespace Global {
@@ -1906,7 +1914,7 @@ public:
     static JSClass jsclass;
 
     static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
-    static JSBool toJsval(const color & sfcolor,
+    static JSBool toJsval(const openvrml::color & sfcolor,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<openvrml::sfcolor>
@@ -1958,7 +1966,7 @@ public:
 
     static JSObject * initClass(JSContext * cx, JSObject * obj)
         throw ();
-    static JSBool toJsval(const node_ptr & node,
+    static JSBool toJsval(const openvrml::node_ptr & node,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<openvrml::sfnode>
@@ -1983,7 +1991,7 @@ public:
     static JSClass jsclass;
 
     static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
-    static JSBool toJsval(const rotation & rotation,
+    static JSBool toJsval(const openvrml::rotation & rotation,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<openvrml::sfrotation>
@@ -2018,7 +2026,7 @@ public:
     static JSClass jsclass;
 
     static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
-    static JSBool toJsval(const vec2f & vec2f,
+    static JSBool toJsval(const openvrml::vec2f & vec2f,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<openvrml::sfvec2f>
@@ -2057,7 +2065,7 @@ public:
     static JSClass jsclass;
 
     static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
-    static JSBool toJsval(const vec3f & vec3f,
+    static JSBool toJsval(const openvrml::vec3f & vec3f,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<openvrml::sfvec3f>
@@ -2176,7 +2184,7 @@ public:
     static JSClass jsclass;
     static JSClass & sfjsclass;
 
-    static JSBool toJsval(const std::vector<color> & colors,
+    static JSBool toJsval(const std::vector<openvrml::color> & colors,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<openvrml::mfcolor>
@@ -2232,7 +2240,7 @@ public:
     static JSClass jsclass;
 
     static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
-    static JSBool toJsval(const std::vector<node_ptr> & nodes,
+    static JSBool toJsval(const std::vector<openvrml::node_ptr> & nodes,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<openvrml::mfnode>
@@ -2259,7 +2267,7 @@ public:
     static JSClass jsclass;
     static JSClass & sfjsclass;
 
-    static JSBool toJsval(const std::vector<rotation> & rotations,
+    static JSBool toJsval(const std::vector<openvrml::rotation> & rotations,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<openvrml::mfrotation>
@@ -2311,7 +2319,7 @@ public:
     static JSClass jsclass;
     static JSClass & sfjsclass;
 
-    static JSBool toJsval(const std::vector<vec2f> & vec2fs,
+    static JSBool toJsval(const std::vector<openvrml::vec2f> & vec2fs,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<openvrml::mfvec2f>
@@ -2324,7 +2332,7 @@ public:
     static JSClass jsclass;
     static JSClass & sfjsclass;
 
-    static JSBool toJsval(const std::vector<vec3f> & vec3fs,
+    static JSBool toJsval(const std::vector<openvrml::vec3f> & vec3fs,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<openvrml::mfvec3f>
@@ -2522,31 +2530,31 @@ script::~script()
 
 void script::do_initialize(const double timestamp)
 {
-    const sftime arg(timestamp);
-    const field_value * argv[] = { &arg };
+    const openvrml::sftime arg(timestamp);
+    const openvrml::field_value * argv[] = { &arg };
     this->activate(timestamp, "initialize", 1, argv);
 }
 
 void script::do_process_event(const std::string & id,
-                              const field_value & value,
+                              const openvrml::field_value & value,
                               const double timestamp)
 {
-    const sftime timestampArg(timestamp);
-    const field_value * argv[] = { &value, &timestampArg };
+    const openvrml::sftime timestampArg(timestamp);
+    const openvrml::field_value * argv[] = { &value, &timestampArg };
     this->activate(timestamp, id, 2, argv);
 }
 
 void script::do_events_processed(const double timestamp)
 {
-    const sftime arg(timestamp);
-    const field_value * argv[] = { &arg };
+    const openvrml::sftime arg(timestamp);
+    const openvrml::field_value * argv[] = { &arg };
     this->activate(timestamp, "eventsProcessed", 1, argv);
 }
 
 void script::do_shutdown(const double timestamp)
 {
-    const sftime arg(timestamp);
-    const field_value * argv[] = { &arg };
+    const openvrml::sftime arg(timestamp);
+    const openvrml::field_value * argv[] = { &arg };
     this->activate(timestamp, "shutdown", 1, argv);
 }
 
@@ -2560,7 +2568,7 @@ double s_timeStamp; // XXX go away...
  */
 void script::activate(const double timeStamp, const std::string & fname,
                       const size_t argc,
-                      const field_value * const argv[])
+                      const openvrml::field_value * const argv[])
 {
     assert(this->cx);
 
@@ -2616,7 +2624,7 @@ void script::activate(const double timeStamp, const std::string & fname,
         //
         // Check to see if any eventOuts need to be sent.
         //
-        for (script_node::eventout_map_t::const_iterator eventout =
+        for (openvrml::script_node::eventout_map_t::const_iterator eventout =
                  this->node.eventout_map().begin();
              eventout != this->node.eventout_map().end();
              ++eventout) {
@@ -2633,7 +2641,7 @@ void script::activate(const double timeStamp, const std::string & fname,
                         (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
                 if (fieldData->changed) {
                     using std::auto_ptr;
-                    auto_ptr<field_value> fieldValue =
+                    auto_ptr<openvrml::field_value> fieldValue =
                         createFieldValueFromJsval(
                             this->cx,
                             val,
@@ -2650,7 +2658,7 @@ void script::activate(const double timeStamp, const std::string & fname,
     }
 }
 
-script_node & script::script_node()
+openvrml::script_node & script::script_node()
 {
     return this->node;
 }
@@ -2658,8 +2666,11 @@ script_node & script::script_node()
 /**
  * @brief Create a jsval from an openvrml::field_value.
  */
-jsval script::vrmlFieldToJSVal(const field_value & fieldValue) throw ()
+jsval script::vrmlFieldToJSVal(const openvrml::field_value & fieldValue)
+    throw ()
 {
+    using openvrml::field_value;
+
     jsval rval;
     JSObject * const globalObj = JS_GetGlobalObject(this->cx);
     assert(globalObj);
@@ -2891,20 +2902,20 @@ JSBool eventOut_setProperty(JSContext * const cx,
             static_cast<js_::script *>(JS_GetContextPrivate(cx));
     assert(script);
 
-    script_node & scriptNode = script->script_node();
+    openvrml::script_node & scriptNode = script->script_node();
 
-    const node_interface_set & interfaces =
+    const openvrml::node_interface_set & interfaces =
         scriptNode.node::type().interfaces();
-    const node_interface_set::const_iterator interface =
+    const openvrml::node_interface_set::const_iterator interface =
         find_if(interfaces.begin(), interfaces.end(),
-                bind2nd(node_interface_matches_eventout(), eventId));
+                bind2nd(openvrml::node_interface_matches_eventout(), eventId));
     //
     // If this assertion is false, then we accidentally gave this
     // setter to an object that doesn't correspond to an eventOut!
     //
     assert(interface != interfaces.end());
 
-    const field_value::type_id field_type_id = interface->field_type;
+    const openvrml::field_value::type_id field_type_id = interface->field_type;
 
     //
     // Convert to an openvrml::field_value and set the eventOut value.
@@ -2912,9 +2923,9 @@ JSBool eventOut_setProperty(JSContext * const cx,
     try {
         using std::auto_ptr;
 
-        auto_ptr<field_value> fieldValue =
+        auto_ptr<openvrml::field_value> fieldValue =
             createFieldValueFromJsval(cx, *val, field_type_id);
-        const script_node::eventout_map_t::const_iterator eventout =
+        const openvrml::script_node::eventout_map_t::const_iterator eventout =
             scriptNode.eventout_map().find(eventId);
         assert(eventout != scriptNode.eventout_map().end());
         eventout->second->value(*fieldValue);
@@ -2947,31 +2958,31 @@ JSBool script::field_setProperty(JSContext * const cx,
 
     openvrml::script_node & scriptNode = script->script_node();
 
-    const node_interface_set & interfaces =
+    const openvrml::node_interface_set & interfaces =
         scriptNode.node::type().interfaces();
-    const node_interface_set::const_iterator interface =
+    const openvrml::node_interface_set::const_iterator interface =
         find_if(interfaces.begin(), interfaces.end(),
-                bind2nd(node_interface_matches_field(), fieldId));
+                bind2nd(openvrml::node_interface_matches_field(), fieldId));
     //
     // If this assertion is false, then we accidentally gave this
     // setter to an object that doesn't correspond to a field!
     //
     assert(interface != interfaces.end());
 
-    const field_value::type_id field_type_id = interface->field_type;
+    const openvrml::field_value::type_id field_type_id = interface->field_type;
 
     //
     // Convert to an openvrml::FieldValue and set the field value.
     //
     try {
         using std::auto_ptr;
-        auto_ptr<field_value> fieldValue =
+        auto_ptr<openvrml::field_value> fieldValue =
             createFieldValueFromJsval(cx, *val, field_type_id);
         script->field(fieldId, *fieldValue);
     } catch (bad_conversion & ex) {
         JS_ReportError(cx, ex.what());
         return JS_FALSE;
-    } catch (unsupported_interface & ex) {
+    } catch (openvrml::unsupported_interface & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
         assert(false);
     } catch (std::bad_cast & ex) {
@@ -3055,7 +3066,7 @@ void script::defineFields() throw (std::bad_alloc)
     assert(globalObj);
 
     {
-        script_node::field_value_map_t::const_iterator
+        openvrml::script_node::field_value_map_t::const_iterator
             itr(this->node.field_value_map().begin());
         for (; itr != this->node.field_value_map().end(); ++itr) {
             assert(itr->second);
@@ -3069,7 +3080,7 @@ void script::defineFields() throw (std::bad_alloc)
         }
     }
 
-    for (script_node::eventout_map_t::const_iterator eventout =
+    for (openvrml::script_node::eventout_map_t::const_iterator eventout =
              this->node.eventout_map().begin();
          eventout != this->node.eventout_map().end();
          ++eventout) {
@@ -3149,13 +3160,14 @@ JSBool floatsToJSArray(const size_t numFloats,
 /**
  * @brief Convert a jsval to a (new) field_value.
  */
-std::auto_ptr<field_value>
+std::auto_ptr<openvrml::field_value>
 createFieldValueFromJsval(JSContext * const cx,
                           const jsval v,
-                          const field_value::type_id expectType)
+                          const openvrml::field_value::type_id expectType)
     throw (bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
+    using namespace openvrml;
 
     switch (expectType) {
     case field_value::sfbool_id:
@@ -3495,7 +3507,7 @@ JSBool createVrmlFromString(JSContext * const cx,
         assert(script.script_node().scene());
         openvrml::browser & browser =
             script.script_node().scene()->browser();
-        const std::vector<node_ptr> nodes =
+        const std::vector<openvrml::node_ptr> nodes =
             browser.create_vrml_from_stream(in);
 
         if (nodes.empty()) {
@@ -3762,7 +3774,7 @@ sfield::sfdata::~sfdata()
     delete this->field_value_;
 }
 
-field_value & sfield::sfdata::field_value() const
+openvrml::field_value & sfield::sfdata::field_value() const
 {
     return *this->field_value_;
 }
@@ -3828,7 +3840,7 @@ JSObject * SFColor::initClass(JSContext * const cx, JSObject * const obj)
     return proto;
 }
 
-JSBool SFColor::toJsval(const color & color,
+JSBool SFColor::toJsval(const openvrml::color & color,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
@@ -3910,7 +3922,9 @@ JSBool SFColor::initObject(JSContext * const cx,
         using std::auto_ptr;
 
         auto_ptr<openvrml::sfcolor>
-            sfcolor(new openvrml::sfcolor(color(rgb[0], rgb[1], rgb[2])));
+            sfcolor(new openvrml::sfcolor(openvrml::color(rgb[0],
+                                                          rgb[1],
+                                                          rgb[2])));
         auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfcolor.get()));
         sfcolor.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -4210,7 +4224,8 @@ JSBool SFImage::initObject(JSContext * const cx,
         }
 
         auto_ptr<openvrml::sfimage>
-            sfimage(new openvrml::sfimage(image(x, y, comp, pixels)));
+            sfimage(new openvrml::sfimage(
+                        openvrml::image(x, y, comp, pixels)));
         auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfimage.get()));
         sfimage.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -4320,7 +4335,7 @@ JSObject * SFNode::initClass(JSContext * const cx,
     return proto;
 }
 
-JSBool SFNode::toJsval(const node_ptr & node,
+JSBool SFNode::toJsval(const openvrml::node_ptr & node,
                        JSContext * const cx,
                        JSObject * const obj,
                        jsval * const rval)
@@ -4418,10 +4433,10 @@ JSBool SFNode::initObject(JSContext * const cx,
 
     assert(script.script_node().scene());
     openvrml::browser & browser = script.script_node().scene()->browser();
-    std::vector<node_ptr> nodes;
+    std::vector<openvrml::node_ptr> nodes;
     try {
         nodes = browser.create_vrml_from_stream(in);
-    } catch (invalid_vrml & ex) {
+    } catch (openvrml::invalid_vrml & ex) {
         JS_ReportError(cx, ex.what());
         return JS_FALSE;
     } catch (std::bad_alloc &) {
@@ -4474,9 +4489,10 @@ JSBool SFNode::getProperty(JSContext * const cx,
 
     try {
         const char * eventOut = JS_GetStringBytes(JSVAL_TO_STRING(id));
-        event_emitter & emitter = thisNode.value->event_emitter(eventOut);
+        openvrml::event_emitter & emitter =
+            thisNode.value->event_emitter(eventOut);
         *vp = script.vrmlFieldToJSVal(emitter.value());
-    } catch (unsupported_interface & ex) {}
+    } catch (openvrml::unsupported_interface & ex) {}
 
     return JS_TRUE;
 }
@@ -4502,7 +4518,7 @@ JSBool SFNode::setProperty(JSContext * const cx,
 
         if (!thisNode.value) { return JS_TRUE; }
 
-        node_ptr nodePtr = thisNode.value;
+        openvrml::node_ptr nodePtr = thisNode.value;
 
         const char * const eventInId = JS_GetStringBytes(JSVAL_TO_STRING(id));
 
@@ -4510,19 +4526,21 @@ JSBool SFNode::setProperty(JSContext * const cx,
             //
             // Get the event_listener.
             //
-            event_listener & listener = nodePtr->event_listener(eventInId);
+            openvrml::event_listener & listener =
+                nodePtr->event_listener(eventInId);
 
             // convert vp to field, send eventIn to node
-            field_value::type_id expectType = listener.type();
-            auto_ptr<field_value> fieldValue;
+            openvrml::field_value::type_id expectType = listener.type();
+            auto_ptr<openvrml::field_value> fieldValue;
             fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
             
             assert(JS_GetContextPrivate(cx));
             js_::script & script =
                 *static_cast<js_::script *>(JS_GetContextPrivate(cx));
             script.direct_output(listener,
-                                 boost::shared_ptr<field_value>(fieldValue));
-        } catch (unsupported_interface & ex) {
+                                 boost::shared_ptr<openvrml::field_value>(
+                                     fieldValue));
+        } catch (openvrml::unsupported_interface & ex) {
             // We can't handle the property here, so get out of the way.
             return JS_TRUE;
         } catch (bad_conversion & ex) {
@@ -4581,7 +4599,7 @@ JSObject * SFRotation::initClass(JSContext * const cx,
     return proto;
 }
 
-JSBool SFRotation::toJsval(const rotation & rotation,
+JSBool SFRotation::toJsval(const openvrml::rotation & rotation,
                            JSContext * const cx,
                            JSObject * const obj,
                            jsval * const rval)
@@ -4701,7 +4719,7 @@ JSBool SFRotation::initObject(JSContext * const cx,
                     const openvrml::sfvec3f & argVec2 =
                         static_cast<openvrml::sfvec3f &>(sfdata.field_value());
 
-                    vec3f axisVec =
+                    openvrml::vec3f axisVec =
                         (argVec1.value * argVec2.value).normalize();
                     x = axisVec.x();
                     y = axisVec.y();
@@ -4728,7 +4746,8 @@ JSBool SFRotation::initObject(JSContext * const cx,
 
     try {
         auto_ptr<openvrml::sfrotation>
-            sfrotation(new openvrml::sfrotation(rotation(x, y, z, angle)));
+            sfrotation(new openvrml::sfrotation(
+                           openvrml::rotation(x, y, z, angle)));
         auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfrotation.get()));
         sfrotation.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -4970,7 +4989,7 @@ JSBool SFRotation::multVec(JSContext * const cx,
     //
     // Does not throw.
     //
-    resultVec.value = argVec.value * mat4f::rotation(thisRot.value);
+    resultVec.value = argVec.value * openvrml::mat4f::rotation(thisRot.value);
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -5114,7 +5133,7 @@ JSObject * SFVec2f::initClass(JSContext * const cx, JSObject * const obj)
     return proto;
 }
 
-JSBool SFVec2f::toJsval(const vec2f & vec2f,
+JSBool SFVec2f::toJsval(const openvrml::vec2f & vec2f,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
@@ -5192,7 +5211,7 @@ JSBool SFVec2f::initObject(JSContext * const cx,
         using std::auto_ptr;
 
         auto_ptr<openvrml::sfvec2f>
-            sfvec2f(new openvrml::sfvec2f(vec2f(vec[0], vec[1])));
+            sfvec2f(new openvrml::sfvec2f(openvrml::vec2f(vec[0], vec[1])));
         auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec2f.get()));
         sfvec2f.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -5622,7 +5641,7 @@ JSObject * SFVec3f::initClass(JSContext * const cx, JSObject * const obj)
     return proto;
 }
 
-JSBool SFVec3f::toJsval(const vec3f & vec3f,
+JSBool SFVec3f::toJsval(const openvrml::vec3f & vec3f,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
@@ -5701,7 +5720,8 @@ JSBool SFVec3f::initObject(JSContext * const cx,
         using std::auto_ptr;
 
         auto_ptr<openvrml::sfvec3f>
-            sfvec3f(new openvrml::sfvec3f(vec3f(vec[0], vec[1], vec[2])));
+            sfvec3f(new openvrml::sfvec3f(
+                        openvrml::vec3f(vec[0], vec[1], vec[2])));
         auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec3f.get()));
         sfvec3f.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -6701,7 +6721,7 @@ MFColor::createFromJSObject(JSContext * const cx, JSObject * const obj)
     return mfcolor;
 }
 
-JSBool MFColor::toJsval(const std::vector<color> & colors,
+JSBool MFColor::toJsval(const std::vector<openvrml::color> & colors,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
@@ -7083,7 +7103,7 @@ JSBool MFNode::initObject(JSContext * const cx, JSObject * const obj,
     return JS_TRUE;
 }
 
-JSBool MFNode::toJsval(const std::vector<node_ptr> & nodes,
+JSBool MFNode::toJsval(const std::vector<openvrml::node_ptr> & nodes,
                        JSContext * const cx,
                        JSObject * const obj,
                        jsval * const rval)
@@ -7340,7 +7360,7 @@ JSClass MFRotation::jsclass = {
 
 JSClass & MFRotation::sfjsclass = SFRotation::jsclass;
 
-JSBool MFRotation::toJsval(const std::vector<rotation> & rotations,
+JSBool MFRotation::toJsval(const std::vector<openvrml::rotation> & rotations,
                            JSContext * const cx,
                            JSObject * const obj,
                            jsval * const rval)
@@ -7730,7 +7750,7 @@ JSClass MFVec2f::jsclass = {
 
 JSClass & MFVec2f::sfjsclass = SFVec2f::jsclass;
 
-JSBool MFVec2f::toJsval(const std::vector<vec2f> & vec2fs,
+JSBool MFVec2f::toJsval(const std::vector<openvrml::vec2f> & vec2fs,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
@@ -7798,7 +7818,7 @@ JSClass MFVec3f::jsclass = {
 
 JSClass & MFVec3f::sfjsclass = SFVec3f::jsclass;
 
-JSBool MFVec3f::toJsval(const std::vector<vec3f> & vec3fs,
+JSBool MFVec3f::toJsval(const std::vector<openvrml::vec3f> & vec3fs,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
@@ -8000,7 +8020,7 @@ JSBool VrmlMatrix::initObject(JSContext * const cx,
          ? argc
          : 16;
     try {
-        std::auto_ptr<mat4f> mat(new mat4f);
+        std::auto_ptr<openvrml::mat4f> mat(new openvrml::mat4f);
         for (uintN i = 0; i < argc; ++i) {
             jsdouble d;
             if (!JS_ValueToNumber(cx, argv[i], &d)) { return JS_FALSE; }
@@ -8025,6 +8045,7 @@ JSBool VrmlMatrix::getElement(JSContext * const cx,
     assert(obj);
 
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 4) {
+        using openvrml::mat4f;
         mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
 
         //
@@ -8060,8 +8081,11 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx,
     assert(cx);
     assert(obj);
 
-    using openvrml::sfvec3f;
+    using openvrml::mat4f;
+    using openvrml::rotation;
+    using openvrml::vec3f;
     using openvrml::sfrotation;
+    using openvrml::sfvec3f;
 
     vec3f translation(0.0, 0.0, 0.0);
     rotation rot(0.0, 0.0, 1.0, 0.0);
@@ -8141,8 +8165,11 @@ JSBool VrmlMatrix::getTransform(JSContext * const cx,
                                 jsval * const rval)
     throw ()
 {
-    using openvrml::sfvec3f;
+    using openvrml::mat4f;
+    using openvrml::rotation;
+    using openvrml::vec3f;
     using openvrml::sfrotation;
+    using openvrml::sfvec3f;
 
     assert(cx);
     assert(obj);
@@ -8206,6 +8233,8 @@ JSBool VrmlMatrix::inverse(JSContext * const cx,
     assert(cx);
     assert(obj);
 
+    using openvrml::mat4f;
+
     JSObject * robj = JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
                                          JS_GetParent(cx, obj));
     if (!robj) { return JS_FALSE; }
@@ -8230,6 +8259,8 @@ JSBool VrmlMatrix::transpose(JSContext * const cx,
     assert(cx);
     assert(obj);
 
+    using openvrml::mat4f;
+
     JSObject * robj = JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
                                          JS_GetParent(cx, obj));
     if (!robj) { return JS_FALSE; }
@@ -8253,6 +8284,8 @@ JSBool VrmlMatrix::multLeft(JSContext * const cx,
 {
     assert(cx);
     assert(obj);
+
+    using openvrml::mat4f;
 
     JSObject * arg_obj;
     if (!JS_ValueToObject(cx, argv[0], &arg_obj)) { return JS_FALSE; }
@@ -8292,6 +8325,8 @@ JSBool VrmlMatrix::multRight(JSContext * const cx,
     assert(obj);
     assert(argc >= 1);
 
+    using openvrml::mat4f;
+
     JSObject * arg_obj;
     if (!JS_ValueToObject(cx, argv[0], &arg_obj)) { return JS_FALSE; }
     if (!JS_InstanceOf(cx, arg_obj, &VrmlMatrix::jsclass, argv)) {
@@ -8327,6 +8362,8 @@ JSBool VrmlMatrix::multVecMatrix(JSContext * const cx,
 {
     assert(cx);
     assert(obj);
+
+    using openvrml::mat4f;
 
     //
     // Make sure argument is an SFVec3f.
@@ -8379,6 +8416,8 @@ JSBool VrmlMatrix::multMatrixVec(JSContext * const cx,
     assert(cx);
     assert(obj);
 
+    using openvrml::mat4f;
+
     //
     // Make sure argument is an SFVec3f.
     //
@@ -8428,6 +8467,8 @@ JSBool VrmlMatrix::toString(JSContext * const cx,
     assert(obj);
     assert(rval);
 
+    using openvrml::mat4f;
+
     assert(JS_GetPrivate(cx, obj));
     const mat4f & thisMat = *static_cast<mat4f *>(JS_GetPrivate(cx, obj));
 
@@ -8447,7 +8488,7 @@ JSBool VrmlMatrix::toString(JSContext * const cx,
 
 void VrmlMatrix::finalize(JSContext * const cx, JSObject * const obj) throw ()
 {
-    delete static_cast<mat4f *>(JS_GetPrivate(cx, obj));
+    delete static_cast<openvrml::mat4f *>(JS_GetPrivate(cx, obj));
     JS_SetPrivate(cx, obj, 0);
 }
 
@@ -8455,5 +8496,3 @@ void VrmlMatrix::finalize(JSContext * const cx, JSObject * const obj) throw ()
 
 } // namespace
 # endif // OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
-
-} // namespace openvrml

@@ -25,10 +25,8 @@
 # include "field_value.h"
 # include "frustum.h"
 
-namespace openvrml {
-
 /**
- * @class bounding_volume
+ * @class openvrml::bounding_volume
  *
  * @brief A bounding volume.
  *
@@ -38,27 +36,27 @@ namespace openvrml {
  * that are expected to be static. That probably means boxes for geometry and
  * spheres for grouping nodes.
  *
- * @see node::render
- * @see bounding_sphere
- * @see axis_aligned_bounding_box
+ * @see openvrml::node::render
+ * @see openvrml::bounding_sphere
+ * @see openvrml::axis_aligned_bounding_box
  */
 
 /**
- * @var bounding_volume::inside
+ * @var openvrml::bounding_volume::inside
  *
  * @brief Results of an intersection; indicates that the tested volume is
  *      entirely inside the target volume.
  */
 
 /**
- * @var bounding_volume::outside
+ * @var openvrml::bounding_volume::outside
  *
  * @brief Results of an intersection; indicates that the tested volume is
  *      entirely outside the target volume.
  */
 
 /**
- * @var bounding_volume::partial
+ * @var openvrml::bounding_volume::partial
  *
  * @brief Results of an intersection; indicates that the tested volume
  *      intersects with the target volume.
@@ -67,10 +65,10 @@ namespace openvrml {
 /**
  * @brief Destructor.
  */
-bounding_volume::~bounding_volume() {}
+openvrml::bounding_volume::~bounding_volume() {}
 
 /**
- * @fn bool bounding_volume::maximized() const
+ * @fn bool openvrml::bounding_volume::maximized() const
  *
  * @brief Indicates whether the bounding volume is maximized.
  *
@@ -82,11 +80,11 @@ bounding_volume::~bounding_volume() {}
  *
  * @return @c true if the bounding voume is maximized; @c false otherwise.
  *
- * @see maximize
+ * @see openvrml::bounding_volume::maximize
  */
 
 /**
- * @fn void bounding_volume::maximize()
+ * @fn void openvrml::bounding_volume::maximize()
  *
  * @brief Maximize the bounding volume.
  *
@@ -94,9 +92,10 @@ bounding_volume::~bounding_volume() {}
  */
 
 /**
- * @fn bounding_volume::intersection bounding_volume::intersect_frustum(const openvrml::frustum & frustum) const
+ * @fn openvrml::bounding_volume::intersection openvrml::bounding_volume::intersect_frustum(const openvrml::frustum & frustum) const
  *
- * @brief Intersect this bvolume with a frustum.
+ * @brief Intersect this <code>bounding_volume</code> with a
+ *        <code>frustum</code>.
  *
  * The test assumes that the frustum is in the canonical
  * looking-down-negative-z orientation, so the bounding volume is going to have
@@ -109,12 +108,12 @@ bounding_volume::~bounding_volume() {}
  *
  * @return inside, outside, or partial.
  *
- * @see bounding_volume::transform
- * @see bounding_volume::ortho_transform
+ * @see openvrml::bounding_volume::transform
+ * @see openvrml::bounding_volume::ortho_transform
  */
 
 /**
- * @fn void bounding_volume::extend(const bounding_volume & bv)
+ * @fn void openvrml::bounding_volume::extend(const bounding_volume & bv)
  *
  * @brief Extend the bounding_volume to enclose @p bv.
  *
@@ -122,7 +121,7 @@ bounding_volume::~bounding_volume() {}
  */
 
 /**
- * @fn void bounding_volume::extend(const vec3f & p)
+ * @fn void openvrml::bounding_volume::extend(const vec3f & p)
  *
  * @brief Extend the bounding volume to enclose @p p.
  *
@@ -130,7 +129,7 @@ bounding_volume::~bounding_volume() {}
  */
 
 /**
- * @fn void bounding_volume::extend(const axis_aligned_bounding_box & bbox)
+ * @fn void openvrml::bounding_volume::extend(const axis_aligned_bounding_box & bbox)
  *
  * @brief Extend the bounding volume to enclose @p bbox.
  *
@@ -138,7 +137,7 @@ bounding_volume::~bounding_volume() {}
  */
 
 /**
- * @fn void bounding_volume::extend(const bounding_sphere & b)
+ * @fn void openvrml::bounding_volume::extend(const bounding_sphere & b)
  *
  * @brief Extend this bvolume to enclose the given sphere.
  *
@@ -146,7 +145,7 @@ bounding_volume::~bounding_volume() {}
  */
 
 /**
- * @fn void bounding_volume::enclose(const std::vector<vec3f> & points)
+ * @fn void openvrml::bounding_volume::enclose(const std::vector<vec3f> & points)
  *
  * @brief Enclose the given set of points.
  *
@@ -156,7 +155,7 @@ bounding_volume::~bounding_volume() {}
  */
 
 /**
- * @fn void bounding_volume::ortho_transform(const mat4f & M)
+ * @fn void openvrml::bounding_volume::ortho_transform(const mat4f & M)
  *
  * @brief Transform this bounding volume using an orthogonal transfom.
  *
@@ -169,12 +168,10 @@ bounding_volume::~bounding_volume() {}
  * call transform instead and take the speed hit.
  *
  * @param M orthonormal transformation matrix in mat4f format
- *
- * @see MathUtils
  */
 
 /**
- * @fn void bounding_volume::transform(const mat4f & M)
+ * @fn void openvrml::bounding_volume::transform(const mat4f & M)
  *
  * @brief Transform this bounding volume using an affine transfom.
  *
@@ -193,7 +190,7 @@ bounding_volume::~bounding_volume() {}
 
 
 /**
- * @class bounding_sphere
+ * @class openvrml::bounding_sphere
  *
  * @brief A bounding sphere.
  *
@@ -204,13 +201,13 @@ bounding_volume::~bounding_volume() {}
  */
 
 /**
- * @var bounding_sphere::center_
+ * @var openvrml::bounding_sphere::center_
  *
  * @brief The center of the sphere.
  */
 
 /**
- * @var bounding_sphere::radius_
+ * @var openvrml::bounding_sphere::radius_
  *
  * @brief The radius of the sphere.
  */
@@ -218,25 +215,25 @@ bounding_volume::~bounding_volume() {}
 /**
  * @brief Construct.
  */
-bounding_sphere::bounding_sphere():
+openvrml::bounding_sphere::bounding_sphere():
     radius_(-1.0)
 {}
 
 /**
  * @brief Destroy.
  */
-bounding_sphere::~bounding_sphere()
+openvrml::bounding_sphere::~bounding_sphere()
 {}
 
 namespace {
-    float sphere_plane_distance(const bounding_sphere & bs,
+    float sphere_plane_distance(const openvrml::bounding_sphere & bs,
                                 const float N[3],
                                 float D)
     {
         //
         // r = Ax + By + Cz + D
         //
-        const vec3f & c = bs.center();
+        const openvrml::vec3f & c = bs.center();
         float d = N[0] * c[0] + N[1] * c[1] + N[2] * c[2] - D;
         return d;
     }
@@ -259,8 +256,9 @@ namespace {
  * @see bounding_volume::transform
  * @see bounding_volume::ortho_transform
  */
-bounding_volume::intersection
-bounding_sphere::intersect_frustum(const openvrml::frustum & frustum) const
+openvrml::bounding_volume::intersection
+openvrml::bounding_sphere::
+intersect_frustum(const openvrml::frustum & frustum) const
 {
     if (this->maximized()) { return bounding_volume::partial; }
     if (this->radius_ == -1.0f) { return bounding_volume::partial; } // ???
@@ -304,11 +302,15 @@ bounding_sphere::intersect_frustum(const openvrml::frustum & frustum) const
     if (d < -this->radius_) { return bounding_volume::outside; }
     if (d < this->radius_) { code = bounding_volume::partial; }
 
-    d = sphere_plane_distance(*this, frustum.left_plane, frustum.left_plane[3]);
+    d = sphere_plane_distance(*this,
+                              frustum.left_plane,
+                              frustum.left_plane[3]);
     if (d < -this->radius_) { return bounding_volume::outside; }
     if (d < this->radius_) { code = bounding_volume::partial; }
 
-    d = sphere_plane_distance(*this, frustum.right_plane, frustum.right_plane[3]);
+    d = sphere_plane_distance(*this,
+                              frustum.right_plane,
+                              frustum.right_plane[3]);
     if (d < -this->radius_) { return bounding_volume::outside; }
     if (d < this->radius_) { code = bounding_volume::partial; }
 
@@ -320,7 +322,7 @@ bounding_sphere::intersect_frustum(const openvrml::frustum & frustum) const
  *
  * @param bv    a bounding volume.
  */
-void bounding_sphere::extend(const bounding_volume & bv)
+void openvrml::bounding_sphere::extend(const bounding_volume & bv)
 {
     // doing two tests isn't a big deal, if there get to be too many
     // more kinds of bounding volumes, move to a double dispatch
@@ -339,7 +341,7 @@ void bounding_sphere::extend(const bounding_volume & bv)
  *
  * @param p a point.
  */
-void bounding_sphere::extend(const vec3f & p)
+void openvrml::bounding_sphere::extend(const vec3f & p)
 {
     using openvrml_::fequal;
 
@@ -398,7 +400,7 @@ void bounding_sphere::extend(const vec3f & p)
  *
  * @param bbox  an axis-aligned bounding box
  */
-void bounding_sphere::extend(const axis_aligned_bounding_box & bbox)
+void openvrml::bounding_sphere::extend(const axis_aligned_bounding_box & bbox)
 {}
 
 /**
@@ -406,7 +408,7 @@ void bounding_sphere::extend(const axis_aligned_bounding_box & bbox)
  *
  * @param b a bounding sphere
  */
-void bounding_sphere::extend(const bounding_sphere & b)
+void openvrml::bounding_sphere::extend(const bounding_sphere & b)
 {
     using openvrml_::fequal;
 
@@ -474,7 +476,7 @@ void bounding_sphere::extend(const bounding_sphere & b)
  *
  * @param points    points.
  */
-void bounding_sphere::enclose(const std::vector<vec3f> & points)
+void openvrml::bounding_sphere::enclose(const std::vector<vec3f> & points)
 {
     // doing an extend() for each point is ok, but there are
     // faster algorithms reference "An Efficient Bounding Sphere"
@@ -544,7 +546,7 @@ void bounding_sphere::enclose(const std::vector<vec3f> & points)
  *
  * @return the center coordinates.
  */
-const vec3f & bounding_sphere::center() const
+const openvrml::vec3f & openvrml::bounding_sphere::center() const
 {
     return this->center_;
 }
@@ -554,7 +556,7 @@ const vec3f & bounding_sphere::center() const
  *
  * @param c new center coordinates.
  */
-void bounding_sphere::center(const vec3f & c)
+void openvrml::bounding_sphere::center(const vec3f & c)
 {
     this->center_ = c;
 }
@@ -564,7 +566,7 @@ void bounding_sphere::center(const vec3f & c)
  *
  * @return the radius.
  */
-float bounding_sphere::radius() const
+float openvrml::bounding_sphere::radius() const
 {
     return this->radius_;
 }
@@ -574,7 +576,7 @@ float bounding_sphere::radius() const
  *
  * @param r new radius value.
  */
-void bounding_sphere::radius(const float r)
+void openvrml::bounding_sphere::radius(const float r)
 {
     this->radius_ = r;
 }
@@ -582,7 +584,7 @@ void bounding_sphere::radius(const float r)
 /**
  * @brief Extend the bounding sphere to infinity.
  */
-void bounding_sphere::maximize()
+void openvrml::bounding_sphere::maximize()
 {
     this->radius_ = std::numeric_limits<float>::max();
     this->center_ = vec3f(0.0, 0.0, 0.0);
@@ -594,7 +596,7 @@ void bounding_sphere::maximize()
  * @return @c true if the bounding_sphere has been maximized; @c false
  *         otherwise.
  */
-bool bounding_sphere::maximized() const
+bool openvrml::bounding_sphere::maximized() const
 {
     if (this->radius_ == std::numeric_limits<float>::max()) { return true; }
     return false;
@@ -605,7 +607,7 @@ bool bounding_sphere::maximized() const
  *
  * @param t transformation matrix.
  */
-void bounding_sphere::ortho_transform(const mat4f & t)
+void openvrml::bounding_sphere::ortho_transform(const mat4f & t)
 {
     if (this->maximized()) { return; }
     if (this->radius_ == -1) { return; }
@@ -623,7 +625,7 @@ void bounding_sphere::ortho_transform(const mat4f & t)
  *
  * @param t transformation matrix.
  */
-void bounding_sphere::transform(const mat4f & t)
+void openvrml::bounding_sphere::transform(const mat4f & t)
 {
     if (this->maximized()) { return; }
     if (this->radius_ == -1) { return; }
@@ -646,7 +648,7 @@ void bounding_sphere::transform(const mat4f & t)
 
 
 /**
- * @class axis_aligned_bounding_box
+ * @class openvrml::axis_aligned_bounding_box
  *
  * @brief An axis-aligned bounding box.
  *
@@ -656,14 +658,14 @@ void bounding_sphere::transform(const mat4f & t)
 /**
  * @brief Destroy.
  */
-axis_aligned_bounding_box::~axis_aligned_bounding_box()
+openvrml::axis_aligned_bounding_box::~axis_aligned_bounding_box()
 {}
 
 /**
  * @todo Implement me!
  */
-bounding_volume::intersection
-axis_aligned_bounding_box::intersect_frustum(
+openvrml::bounding_volume::intersection
+openvrml::axis_aligned_bounding_box::intersect_frustum(
     const openvrml::frustum & frustum) const
 {
     return bounding_volume::partial;
@@ -674,7 +676,7 @@ axis_aligned_bounding_box::intersect_frustum(
  *
  * @param bv    a bounding volume.
  */
-void axis_aligned_bounding_box::extend(const bounding_volume & bv)
+void openvrml::axis_aligned_bounding_box::extend(const bounding_volume & bv)
 {
     const bounding_sphere * bs = 0;
     const axis_aligned_bounding_box * ab = 0;
@@ -688,19 +690,21 @@ void axis_aligned_bounding_box::extend(const bounding_volume & bv)
 /**
  * @todo Implement me!
  */
-void axis_aligned_bounding_box::extend(const vec3f & p)
+void openvrml::axis_aligned_bounding_box::extend(const vec3f & p)
 {}
 
 /**
  * @todo Implement me!
  */
-void axis_aligned_bounding_box::extend(const axis_aligned_bounding_box & b)
+void
+openvrml::axis_aligned_bounding_box::
+extend(const axis_aligned_bounding_box & b)
 {}
 
 /**
  * @todo Implement me!
  */
-void axis_aligned_bounding_box::extend(const bounding_sphere& b)
+void openvrml::axis_aligned_bounding_box::extend(const bounding_sphere& b)
 {}
 
 /**
@@ -712,20 +716,21 @@ void axis_aligned_bounding_box::extend(const bounding_sphere& b)
  *
  * @todo Implement me!
  */
-void axis_aligned_bounding_box::enclose(const std::vector<vec3f> & points)
+void
+openvrml::axis_aligned_bounding_box::enclose(const std::vector<vec3f> & points)
 {}
 
 /**
  * @brief Implement me!
  */
-void axis_aligned_bounding_box::maximize()
+void openvrml::axis_aligned_bounding_box::maximize()
 {
 }
 
 /**
  * @brief Implement me!
  */
-bool axis_aligned_bounding_box::maximized() const
+bool openvrml::axis_aligned_bounding_box::maximized() const
 {
   return true;
 }
@@ -733,15 +738,13 @@ bool axis_aligned_bounding_box::maximized() const
 /**
  * @brief Implement me!
  */
-void axis_aligned_bounding_box::ortho_transform(const mat4f & M)
+void openvrml::axis_aligned_bounding_box::ortho_transform(const mat4f & M)
 {
 }
 
 /**
  * @brief Implement me!
  */
-void axis_aligned_bounding_box::transform(const mat4f & M)
+void openvrml::axis_aligned_bounding_box::transform(const mat4f & M)
 {
 }
-
-} // namespace openvrml

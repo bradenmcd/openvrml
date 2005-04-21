@@ -37,10 +37,8 @@
  * @defgroup nodes Nodes
  */
 
-namespace openvrml {
-
 /**
- * @class unsupported_interface
+ * @class openvrml::unsupported_interface
  *
  * @ingroup nodes
  *
@@ -58,7 +56,8 @@ namespace openvrml {
  *
  * @param interface a node_interface.
  */
-unsupported_interface::unsupported_interface(const node_interface & interface)
+openvrml::unsupported_interface::
+unsupported_interface(const node_interface & interface)
     throw ():
     std::logic_error("Unsupported interface \""
                      + boost::lexical_cast<std::string>(interface) + "\".")
@@ -70,8 +69,8 @@ unsupported_interface::unsupported_interface(const node_interface & interface)
  * @param type          the node type.
  * @param interface_id  the name of the interface that is not available.
  */
-unsupported_interface::unsupported_interface(const node_type & type,
-                                             const std::string & interface_id)
+openvrml::unsupported_interface::
+unsupported_interface(const node_type & type, const std::string & interface_id)
     throw ():
     std::logic_error(type.id() + " has no interface \"" + interface_id + '"')
 {}
@@ -83,10 +82,10 @@ unsupported_interface::unsupported_interface(const node_type & type,
  * @param interface_type    the type of the interface that is not available.
  * @param interface_id      the name of the interface that is not available.
  */
-unsupported_interface::unsupported_interface(
-    const node_type & type,
-    const node_interface::type_id interface_type,
-    const std::string & interface_id)
+openvrml::unsupported_interface::
+unsupported_interface(const node_type & type,
+                      const node_interface::type_id interface_type,
+                      const std::string & interface_id)
     throw ():
     std::logic_error(type.id() + " has no "
                      + boost::lexical_cast<std::string>(interface_type)
@@ -96,12 +95,12 @@ unsupported_interface::unsupported_interface(
 /**
  * @brief Destroy.
  */
-unsupported_interface::~unsupported_interface() throw ()
+openvrml::unsupported_interface::~unsupported_interface() throw ()
 {}
 
 
 /**
- * @class node_interface
+ * @class openvrml::node_interface
  *
  * @ingroup nodes
  *
@@ -109,37 +108,37 @@ unsupported_interface::~unsupported_interface() throw ()
  */
 
 /**
- * @enum node_interface::type_id
+ * @enum openvrml::node_interface::type_id
  *
  * @brief Identify the type of interface.
  */
 
 /**
- * @var node_interface::type_id node_interface::invalid_type_id
+ * @var openvrml::node_interface::type_id openvrml::node_interface::invalid_type_id
  *
  * @brief Used to indicate an invalid or unknown interface type.
  */
 
 /**
- * @var node_interface::type_id node_interface::eventin_id
+ * @var openvrml::node_interface::type_id openvrml::node_interface::eventin_id
  *
  * @brief An eventIn.
  */
 
 /**
- * @var node_interface::type_id node_interface::eventout_id
+ * @var openvrml::node_interface::type_id openvrml::node_interface::eventout_id
  *
  * @brief An eventOut.
  */
 
 /**
- * @var node_interface::type_id node_interface::exposedfield_id
+ * @var openvrml::node_interface::type_id openvrml::node_interface::exposedfield_id
  *
  * @brief An exposedField.
  */
 
 /**
- * @var node_interface::type_id node_interface::field_id
+ * @var openvrml::node_interface::type_id openvrml::node_interface::field_id
  *
  * @brief A field.
  */
@@ -157,7 +156,7 @@ namespace {
 /**
  * @brief Stream inserter.
  *
- * @relatesalso node_interface
+ * @relatesalso openvrml::node_interface
  *
  * If @p type is node_interface::invalid_type_id, @c failbit is set on @p out.
  *
@@ -166,8 +165,8 @@ namespace {
  *
  * @return @p out.
  */
-std::ostream & operator<<(std::ostream & out,
-                          const node_interface::type_id type)
+std::ostream & openvrml::operator<<(std::ostream & out,
+                                    const node_interface::type_id type)
 {
     if (type == node_interface::invalid_type_id) {
         out.setstate(std::ios_base::failbit);
@@ -187,7 +186,8 @@ std::ostream & operator<<(std::ostream & out,
  *
  * @return @p in.
  */
-std::istream & operator>>(std::istream & in, node_interface::type_id & type)
+std::istream & openvrml::operator>>(std::istream & in,
+                                    node_interface::type_id & type)
 {
     using std::find;
     using std::string;
@@ -210,19 +210,19 @@ std::istream & operator>>(std::istream & in, node_interface::type_id & type)
 
 
 /**
- * @var node_interface::type
+ * @var openvrml::node_interface::type
  *
  * @brief The interface type.
  */
 
 /**
- * @var node_interface::field_type
+ * @var openvrml::node_interface::field_type
  *
  * @brief The field data type handled by this interface.
  */
 
 /**
- * @var node_interface::id
+ * @var openvrml::node_interface::id
  *
  * @brief The name of this interface.
  */
@@ -234,16 +234,16 @@ std::istream & operator>>(std::istream & in, node_interface::type_id & type)
  * @param field_type the field data type handled by the interface.
  * @param id         the name of the interface.
  */
-node_interface::node_interface(const type_id type,
-                               const field_value::type_id field_type,
-                               const std::string & id):
+openvrml::node_interface::node_interface(const type_id type,
+                                         const field_value::type_id field_type,
+                                         const std::string & id):
     type(type),
     field_type(field_type),
     id(id)
 {}
 
 /**
- * @relatesalso node_interface
+ * @relatesalso openvrml::node_interface
  *
  * @brief Compare for equality.
  *
@@ -252,7 +252,8 @@ node_interface::node_interface(const type_id type,
  *
  * @return @c true if the two node_interfaces are equal, @c false otherwise.
  */
-bool operator==(const node_interface & lhs, const node_interface & rhs)
+bool openvrml::operator==(const node_interface & lhs,
+                          const node_interface & rhs)
     throw ()
 {
     return lhs.type == rhs.type
@@ -261,7 +262,7 @@ bool operator==(const node_interface & lhs, const node_interface & rhs)
 }
 
 /**
- * @relatesalso node_interface
+ * @relatesalso openvrml::node_interface
  *
  * @brief Compare for openvrml::inequality.
  *
@@ -270,14 +271,15 @@ bool operator==(const node_interface & lhs, const node_interface & rhs)
  *
  * @return @c true if the two node_interfaces are equal, @c false otherwise.
  */
-bool operator!=(const node_interface & lhs, const node_interface & rhs)
+bool openvrml::operator!=(const node_interface & lhs,
+                          const node_interface & rhs)
     throw ()
 {
     return !(lhs == rhs);
 }
 
 /**
- * @relatesalso node_interface
+ * @relatesalso openvrml::node_interface
  *
  * @brief Stream output.
  *
@@ -286,14 +288,15 @@ bool operator!=(const node_interface & lhs, const node_interface & rhs)
  *
  * @return @p out.
  */
-std::ostream & operator<<(std::ostream & out, const node_interface & interface)
+std::ostream & openvrml::operator<<(std::ostream & out,
+                                    const node_interface & interface)
 {
     return out << interface.type << ' ' << interface.field_type << ' '
                << interface.id;
 }
 
 /**
- * @relatesalso node_interface
+ * @relatesalso openvrml::node_interface
  *
  * @brief Stream input.
  *
@@ -302,14 +305,15 @@ std::ostream & operator<<(std::ostream & out, const node_interface & interface)
  *
  * @return @p in.
  */
-std::istream & operator>>(std::istream & in, node_interface & interface)
+std::istream & openvrml::operator>>(std::istream & in,
+                                    node_interface & interface)
 {
     return in >> interface.type >> interface.field_type >> interface.id;
 }
 
 
 /**
- * @struct node_interface_matches_eventin
+ * @struct openvrml::node_interface_matches_eventin
  *
  * @ingroup nodes
  *
@@ -323,7 +327,7 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  */
 
 /**
- * @fn node_interface_matches_eventin::result_type node_interface_matches_eventin::operator()(const node_interface_matches_eventin::first_argument_type & interface, const node_interface_matches_eventin::second_argument_type & eventin_id) const
+ * @fn openvrml::node_interface_matches_eventin::result_type openvrml::node_interface_matches_eventin::operator()(const node_interface_matches_eventin::first_argument_type & interface, const node_interface_matches_eventin::second_argument_type & eventin_id) const
  *
  * @brief Determine if a node_interface matches an eventIn identifier.
  *
@@ -347,7 +351,7 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 
 
 /**
- * @struct node_interface_matches_eventout
+ * @struct openvrml::node_interface_matches_eventout
  *
  * @ingroup nodes
  *
@@ -361,7 +365,7 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  */
 
 /**
- * @fn node_interface_matches_eventout::result_type node_interface_matches_eventout::operator()(const node_interface_matches_eventout::first_argument_type & interface, const node_interface_matches_eventout::second_argument_type & eventout_id) const
+ * @fn openvrml::node_interface_matches_eventout::result_type openvrml::node_interface_matches_eventout::operator()(const node_interface_matches_eventout::first_argument_type & interface, const node_interface_matches_eventout::second_argument_type & eventout_id) const
  *
  * @brief Determine if a node_interface matches an eventOut identifier.
  *
@@ -385,7 +389,7 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 
 
 /**
- * @struct node_interface_matches_exposedfield
+ * @struct openvrml::node_interface_matches_exposedfield
  *
  * @ingroup nodes
  *
@@ -399,7 +403,7 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  */
 
 /**
- * @fn node_interface_matches_exposedfield::result_type node_interface_matches_exposedfield::operator()(const node_interface_matches_exposedfield::first_argument_type & interface, const node_interface_matches_exposedfield::second_argument_type & exposedfield_id) const
+ * @fn openvrml::node_interface_matches_exposedfield::result_type openvrml::node_interface_matches_exposedfield::operator()(const node_interface_matches_exposedfield::first_argument_type & interface, const node_interface_matches_exposedfield::second_argument_type & exposedfield_id) const
  *
  * @brief Determine if a node_interface matches an exposedField identifier.
  *
@@ -416,7 +420,7 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 
 
 /**
- * @struct node_interface_matches_field
+ * @struct openvrml::node_interface_matches_field
  *
  * @ingroup nodes
  *
@@ -430,7 +434,7 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  */
 
 /**
- * @fn node_interface_matches_field::result_type node_interface_matches_field::operator()(const node_interface_matches_field::first_argument_type & interface, const node_interface_matches_field::second_argument_type & field_id) const
+ * @fn openvrml::node_interface_matches_field::result_type openvrml::node_interface_matches_field::operator()(const node_interface_matches_field::first_argument_type & interface, const node_interface_matches_field::second_argument_type & field_id) const
  *
  * @brief Determine if a node_interface matches an field identifier.
  *
@@ -446,7 +450,7 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 
 
 /**
- * @struct node_interface_compare
+ * @struct openvrml::node_interface_compare
  *
  * @ingroup nodes
  *
@@ -474,7 +478,7 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  */
 
 /**
- * @fn node_interface_compare::result_type node_interface_compare::operator()(const node_interface_compare::first_argument_type & lhs, const node_interface_compare::second_argument_type & rhs) const
+ * @fn openvrml::node_interface_compare::result_type openvrml::node_interface_compare::operator()(const node_interface_compare::first_argument_type & lhs, const node_interface_compare::second_argument_type & rhs) const
  *
  * @brief Compare two node_interfaces based on their id.
  *
@@ -487,7 +491,7 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
 
 
 /**
- * @typedef std::set<node_interface, node_interface_compare> node_interface_set
+ * @typedef std::set<openvrml::node_interface, openvrml::node_interface_compare> openvrml::node_interface_set
  *
  * @ingroup nodes
  *
@@ -518,8 +522,9 @@ std::istream & operator>>(std::istream & in, node_interface & interface)
  * @return a <code>const_iterator</code> to the interface, or
  *         <code>node_interface_set::end</code> if no interface is found.
  */
-const node_interface_set::const_iterator
-find_interface(const node_interface_set & interfaces, const std::string & id)
+const openvrml::node_interface_set::const_iterator
+openvrml::find_interface(const node_interface_set & interfaces,
+                         const std::string & id)
     throw ()
 {
     using std::find_if;
@@ -540,7 +545,7 @@ find_interface(const node_interface_set & interfaces, const std::string & id)
 
 
 /**
- * @class node_class
+ * @class openvrml::node_class
  *
  * @ingroup nodes
  *
@@ -556,7 +561,7 @@ find_interface(const node_interface_set & interfaces, const std::string & id)
 /**
  * @internal
  *
- * @var openvrml::browser * node_class::browser_
+ * @var openvrml::browser * openvrml::node_class::browser_
  *
  * @brief The browser associated with this <code>node_class</code>.
  */
@@ -572,14 +577,14 @@ find_interface(const node_interface_set & interfaces, const std::string & id)
  * @param b the <code>browser</code> to be associated with the
  *          <code>node_class</code>.
  */
-node_class::node_class(openvrml::browser & b) throw ():
+openvrml::node_class::node_class(openvrml::browser & b) throw ():
     browser_(&b)
 {}
 
 /**
  * @brief Destructor.
  */
-node_class::~node_class() throw ()
+openvrml::node_class::~node_class() throw ()
 {}
 
 /**
@@ -589,7 +594,7 @@ node_class::~node_class() throw ()
  * @return the <code>browser</code> associated with this
  *         <code>node_class</code>.
  */
-browser & node_class::browser() const throw ()
+openvrml::browser & openvrml::node_class::browser() const throw ()
 {
     assert(this->browser_);
     return *this->browser_;
@@ -608,8 +613,8 @@ browser & node_class::browser() const throw ()
  *                          <code>viewpoint_node</code> should be bound.
  * @param time              the current time.
  */
-void node_class::initialize(viewpoint_node * initial_viewpoint,
-                            const double time)
+void openvrml::node_class::initialize(viewpoint_node * initial_viewpoint,
+                                      const double time)
     throw ()
 {
     this->do_initialize(initial_viewpoint, time);
@@ -628,8 +633,8 @@ void node_class::initialize(viewpoint_node * initial_viewpoint,
  *
  * @sa node_class::initialize
  */
-void node_class::do_initialize(viewpoint_node * initial_viewpoint,
-                               const double time)
+void openvrml::node_class::do_initialize(viewpoint_node * initial_viewpoint,
+                                         const double time)
     throw ()
 {}
 
@@ -640,7 +645,7 @@ void node_class::do_initialize(viewpoint_node * initial_viewpoint,
  *
  * @param v    the viewer to render to.
  */
-void node_class::render(viewer & v) const throw ()
+void openvrml::node_class::render(viewer & v) const throw ()
 {
     this->do_render(v);
 }
@@ -654,7 +659,7 @@ void node_class::render(viewer & v) const throw ()
  *
  * @sa node_class::render
  */
-void node_class::do_render(viewer & v) const throw ()
+void openvrml::node_class::do_render(viewer & v) const throw ()
 {}
 
 /**
@@ -681,16 +686,16 @@ void node_class::do_render(viewer & v) const throw ()
  *                                  @p interfaces.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-node_class::create_type(const std::string & id,
-                        const node_interface_set & interfaces)
+const boost::shared_ptr<openvrml::node_type>
+openvrml::node_class::create_type(const std::string & id,
+                                  const node_interface_set & interfaces)
     throw (unsupported_interface, std::bad_alloc)
 {
     return this->do_create_type(id, interfaces);
 }
 
 /**
- * @fn const boost::shared_ptr<node_type> node_class::do_create_type(const std::string & id, const node_interface_set & interfaces) const throw (unsupported_interface, std::bad_alloc)
+ * @fn const boost::shared_ptr<openvrml::node_type> openvrml::node_class::do_create_type(const std::string & id, const node_interface_set & interfaces) const throw (unsupported_interface, std::bad_alloc)
  *
  * @brief Create a new <code>node_type</code>.
  *
@@ -711,7 +716,7 @@ node_class::create_type(const std::string & id,
 
 
 /**
- * @typedef initial_value_map
+ * @typedef openvrml::initial_value_map
  *
  * @brief A map of the initial values with which a <code>node</code> is
  *        instantiated.
@@ -719,7 +724,7 @@ node_class::create_type(const std::string & id,
 
 
 /**
- * @class node_type
+ * @class openvrml::node_type
  *
  * @ingroup nodes
  *
@@ -729,7 +734,7 @@ node_class::create_type(const std::string & id,
 /**
  * @internal
  *
- * @var openvrml::node_class & node_type::node_class_
+ * @var openvrml::node_class & openvrml::node_type::node_class_
  *
  * @brief The class object associated with the <code>node_type</code>.
  */
@@ -737,7 +742,7 @@ node_class::create_type(const std::string & id,
 /**
  * @internal
  *
- * @var const std::string node_type::id_
+ * @var const std::string openvrml::node_type::id_
  *
  * @brief The name of the <code>node_type</code>.
  */
@@ -750,7 +755,8 @@ node_class::create_type(const std::string & id,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-node_type::node_type(const openvrml::node_class & c, const std::string & id)
+openvrml::node_type::node_type(const openvrml::node_class & c,
+                               const std::string & id)
     throw (std::bad_alloc):
     node_class_(c),
     id_(id)
@@ -759,7 +765,7 @@ node_type::node_type(const openvrml::node_class & c, const std::string & id)
 /**
  * @brief Destructor.
  */
-node_type::~node_type() throw ()
+openvrml::node_type::~node_type() throw ()
 {}
 
 /**
@@ -767,7 +773,7 @@ node_type::~node_type() throw ()
  *
  * @return the class object associated with the <code>node_type</code>.
  */
-const node_class & node_type::node_class() const throw ()
+const openvrml::node_class & openvrml::node_type::node_class() const throw ()
 {
     return this->node_class_;
 }
@@ -777,7 +783,7 @@ const node_class & node_type::node_class() const throw ()
  *
  * @return the name of the <code>node_type</code>.
  */
-const std::string & node_type::id() const throw ()
+const std::string & openvrml::node_type::id() const throw ()
 {
     return this->id_;
 }
@@ -789,13 +795,14 @@ const std::string & node_type::id() const throw ()
  *
  * @return the set of interfaces.
  */
-const node_interface_set & node_type::interfaces() const throw ()
+const openvrml::node_interface_set & openvrml::node_type::interfaces() const
+    throw ()
 {
     return this->do_interfaces();
 }
 
 /**
- * @fn const node_interface_set & node_type::do_interfaces() const throw ()
+ * @fn const openvrml::node_interface_set & openvrml::node_type::do_interfaces() const throw ()
  *
  * @brief Get the set of interfaces for the <code>node_type</code>.
  *
@@ -821,16 +828,17 @@ const node_interface_set & node_type::interfaces() const throw ()
  *                                  wrong type.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const node_ptr
-node_type::create_node(const boost::shared_ptr<openvrml::scope> & scope,
-                       const initial_value_map & initial_values) const
+const openvrml::node_ptr
+openvrml::node_type::
+create_node(const boost::shared_ptr<openvrml::scope> & scope,
+            const initial_value_map & initial_values) const
     throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
     return this->do_create_node(scope, initial_values);
 }
 
 /**
- * @fn const node_ptr node_type::do_create_node(const boost::shared_ptr<openvrml::scope> & scope, const initial_value_map & initial_values) const throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+ * @fn const openvrml::node_ptr openvrml::node_type::do_create_node(const boost::shared_ptr<openvrml::scope> & scope, const initial_value_map & initial_values) const throw (unsupported_interface, std::bad_cast, std::bad_alloc)
  *
  * @brief Create a new node with this <code>node_type</code>.
  *
@@ -853,7 +861,7 @@ node_type::create_node(const boost::shared_ptr<openvrml::scope> & scope,
 
 
 /**
- * @class field_value_type_mismatch
+ * @class openvrml::field_value_type_mismatch
  *
  * @ingroup nodes
  *
@@ -864,19 +872,19 @@ node_type::create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @brief Constructor.
  */
-field_value_type_mismatch::field_value_type_mismatch():
+openvrml::field_value_type_mismatch::field_value_type_mismatch():
     std::logic_error("Field value types do not match.")
 {}
 
 /**
  * @brief Destructor.
  */
-field_value_type_mismatch::~field_value_type_mismatch() throw ()
+openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
 {}
 
 
 /**
- * @typedef std::deque<node *> node_path
+ * @typedef std::deque<openvrml::node *> openvrml::node_path
  *
  * @ingroup nodes
  *
@@ -886,7 +894,7 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 
 
 /**
- * @fn To * node_cast(node * n) throw ()
+ * @fn To * openvrml::node_cast(node * n) throw ()
  *
  * @ingroup nodes
  *
@@ -900,7 +908,7 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
- * @class node
+ * @class openvrml::node
  *
  * @ingroup nodes
  *
@@ -908,349 +916,349 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
- * @fn std::ostream & node::operator<<(std::ostream & out, const node & n)
+ * @fn std::ostream & openvrml::node::operator<<(std::ostream & out, const node & n)
  *
  * @brief Stream output.
  */
 
 /**
- * @fn script_node * node::node_cast<script_node *>(node * n) throw ()
+ * @fn openvrml::script_node * openvrml::node::node_cast<script_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>script_node</code>.
  */
 
 /**
- * @fn appearance_node * node::node_cast<appearance_node *>(node * n) throw ()
+ * @fn openvrml::appearance_node * openvrml::node::node_cast<appearance_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>appearance_node</code>.
  */
 
 /**
- * @fn child_node * node::node_cast<child_node *>(node * n) throw ()
+ * @fn openvrml::child_node * openvrml::node::node_cast<child_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>child_node</code>.
  */
 
 /**
- * @fn color_node * node::node_cast<color_node *>(node * n) throw ()
+ * @fn openvrml::color_node * openvrml::node::node_cast<color_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>color_node</code>.
  */
 
 /**
- * @fn coordinate_node * node::node_cast<coordinate_node *>(node * n) throw ()
+ * @fn openvrml::coordinate_node * openvrml::node::node_cast<coordinate_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>coordinate_node</code>.
  */
 
 /**
- * @fn font_style_node * node::node_cast<font_style_node *>(node * n) throw ()
+ * @fn openvrml::font_style_node * openvrml::node::node_cast<font_style_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>font_style_node</code>.
  */
 
 /**
- * @fn geometry_node * node::node_cast<geometry_node *>(node * n) throw ()
+ * @fn openvrml::geometry_node * openvrml::node::node_cast<geometry_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>geometry_node</code>.
  */
 
 /**
- * @fn grouping_node * node::node_cast<grouping_node *>(node * n) throw ()
+ * @fn openvrml::grouping_node * openvrml::node::node_cast<grouping_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>grouping_node</code>.
  */
 
 /**
- * @fn material_node * node::node_cast<material_node *>(node * n) throw ()
+ * @fn openvrml::material_node * openvrml::node::node_cast<material_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>material_node</code>.
  */
 
 /**
- * @fn navigation_info_node * node::node_cast<navigation_info_node *>(node * n) throw ()
+ * @fn openvrml::navigation_info_node * openvrml::node::node_cast<navigation_info_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>navigation_info_node</code>.
  */
 
 /**
- * @fn normal_node * node::node_cast<normal_node *>(node * n) throw ()
+ * @fn openvrml::normal_node * openvrml::node::node_cast<normal_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>normal_node</code>.
  */
 
 /**
- * @fn sound_source_node * node::node_cast<sound_source_node *>(node * n) throw ()
+ * @fn openvrml::sound_source_node * openvrml::node::node_cast<sound_source_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>sound_source_node</code>.
  */
 
 /**
- * @fn texture_node * node::node_cast<texture_node *>(node * n) throw ()
+ * @fn openvrml::texture_node * openvrml::node::node_cast<texture_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>texture_node</code>.
  */
 
 /**
- * @fn texture_coordinate_node * node::node_cast<texture_coordinate_node *>(node * n) throw ()
+ * @fn openvrml::texture_coordinate_node * openvrml::node::node_cast<texture_coordinate_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>texture_coordinate_node</code>.
  */
 
 /**
- * @fn texture_transform_node * node::node_cast<texture_transform_node *>(node * n) throw ()
+ * @fn openvrml::texture_transform_node * openvrml::node::node_cast<texture_transform_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>texture_transform_node</code>.
  */
 
 /**
- * @fn transform_node * node::node_cast<transform_node *>(node * n) throw ()
+ * @fn openvrml::transform_node * openvrml::node::node_cast<transform_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>transform_node</code>.
  */
 
 /**
- * @fn viewpoint_node * node::node_cast<viewpoint_node *>(node * n) throw ()
+ * @fn openvrml::viewpoint_node * openvrml::node::node_cast<viewpoint_node *>(node * n) throw ()
  *
  * @brief Cast to a <code>viewpoint_node</code>.
  */
 
 /**
- * @var class node::field_value_listener<sfbool>
+ * @var class openvrml::node::field_value_listener<sfbool>
  *
  * @brief <code>sfbool</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<sfcolor>
+ * @var class openvrml::node::field_value_listener<sfcolor>
  *
  * @brief <code>sfcolor</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<sffloat>
+ * @var class openvrml::node::field_value_listener<sffloat>
  *
  * @brief <code>sffloat</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<sfimage>
+ * @var class openvrml::node::field_value_listener<sfimage>
  *
  * @brief <code>sfimage</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<sfint32>
+ * @var class openvrml::node::field_value_listener<sfint32>
  *
  * @brief <code>sfint32</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<sfnode>
+ * @var class openvrml::node::field_value_listener<sfnode>
  *
  * @brief <code>sfnode</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<sfrotation>
+ * @var class openvrml::node::field_value_listener<sfrotation>
  *
  * @brief <code>sfrotation</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<sfstring>
+ * @var class openvrml::node::field_value_listener<sfstring>
  *
  * @brief <code>sfstring</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<sftime>
+ * @var class openvrml::node::field_value_listener<sftime>
  *
  * @brief <code>sftime</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<sfvec2f>
+ * @var class openvrml::node::field_value_listener<sfvec2f>
  *
  * @brief <code>sfvec2f</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<sfvec3f>
+ * @var class openvrml::node::field_value_listener<sfvec3f>
  *
  * @brief <code>sfvec3f</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<mfcolor>
+ * @var class openvrml::node::field_value_listener<mfcolor>
  *
  * @brief <code>mfcolor</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<mffloat>
+ * @var class openvrml::node::field_value_listener<mffloat>
  *
  * @brief <code>mffloat</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<mfint32>
+ * @var class openvrml::node::field_value_listener<mfint32>
  *
  * @brief <code>mfint32</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<mfnode>
+ * @var class openvrml::node::field_value_listener<mfnode>
  *
  * @brief <code>mfnode</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<mfrotation>
+ * @var class openvrml::node::field_value_listener<mfrotation>
  *
  * @brief <code>mfrotation</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<mfstring>
+ * @var class openvrml::node::field_value_listener<mfstring>
  *
  * @brief <code>mfstring</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<mftime>
+ * @var class openvrml::node::field_value_listener<mftime>
  *
  * @brief <code>mftime</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<mfvec2f>
+ * @var class openvrml::node::field_value_listener<mfvec2f>
  *
  * @brief <code>mfvec2f</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::field_value_listener<mfvec3f>
+ * @var class openvrml::node::field_value_listener<mfvec3f>
  *
  * @brief <code>mfvec3f</code> <code>field_value_listener</code>.
  */
 
 /**
- * @var class node::exposedfield<sfbool>
+ * @var class openvrml::node::exposedfield<sfbool>
  *
  * @brief <code>sfbool</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<sfcolor>
+ * @var class openvrml::node::exposedfield<sfcolor>
  *
  * @brief <code>sfcolor</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<sffloat>
+ * @var class openvrml::node::exposedfield<sffloat>
  *
  * @brief <code>sffloat</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<sfimage>
+ * @var class openvrml::node::exposedfield<sfimage>
  *
  * @brief <code>sfimage</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<sfint32>
+ * @var class openvrml::node::exposedfield<sfint32>
  *
  * @brief <code>sfint32</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<sfnode>
+ * @var class openvrml::node::exposedfield<sfnode>
  *
  * @brief <code>sfnode</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<sfrotation>
+ * @var class openvrml::node::exposedfield<sfrotation>
  *
  * @brief <code>sfrotation</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<sfstring>
+ * @var class openvrml::node::exposedfield<sfstring>
  *
  * @brief <code>sfstring</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<sftime>
+ * @var class openvrml::node::exposedfield<sftime>
  *
  * @brief <code>sftime</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<sfvec2f>
+ * @var class openvrml::node::exposedfield<sfvec2f>
  *
  * @brief <code>sfvec2f</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<sfvec3f>
+ * @var class openvrml::node::exposedfield<sfvec3f>
  *
  * @brief <code>sfvec3f</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<mfcolor>
+ * @var class openvrml::node::exposedfield<mfcolor>
  *
  * @brief <code>mfcolor</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<mffloat>
+ * @var class openvrml::node::exposedfield<mffloat>
  *
  * @brief <code>mffloat</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<mfint32>
+ * @var class openvrml::node::exposedfield<mfint32>
  *
  * @brief <code>mfint32</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<mfnode>
+ * @var class openvrml::node::exposedfield<mfnode>
  *
  * @brief <code>mfnode</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<mfrotation>
+ * @var class openvrml::node::exposedfield<mfrotation>
  *
  * @brief <code>mfrotation</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<mfstring>
+ * @var class openvrml::node::exposedfield<mfstring>
  *
  * @brief <code>mfstring</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<mftime>
+ * @var class openvrml::node::exposedfield<mftime>
  *
  * @brief <code>mftime</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<mfvec2f>
+ * @var class openvrml::node::exposedfield<mfvec2f>
  *
  * @brief <code>mfvec2f</code> <code>exposedfield</code>.
  */
 
 /**
- * @var class node::exposedfield<mfvec3f>
+ * @var class openvrml::node::exposedfield<mfvec3f>
  *
  * @brief <code>mfvec3f</code> <code>exposedfield</code>.
  */
@@ -1258,7 +1266,7 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @internal
  *
- * @var boost::recursive_mutex node::mutex_
+ * @var boost::recursive_mutex openvrml::node::mutex_
  *
  * @brief Object mutex.
  */
@@ -1266,7 +1274,7 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @internal
  *
- * @var const node_type & node::type_
+ * @var const openvrml::node_type & openvrml::node::type_
  *
  * @brief The type information object for the node.
  */
@@ -1274,7 +1282,7 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @internal
  *
- * @var scope_ptr node::scope_
+ * @var boost::shared_ptr<openvrml::scope> openvrml::node::scope_
  *
  * @brief The scope to which the node belongs.
  */
@@ -1282,7 +1290,7 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @internal
  *
- * @var scene * node::scene_
+ * @var openvrml::scene * openvrml::node::scene_
  *
  * @brief The scene with which the node is associated.
  */
@@ -1290,31 +1298,32 @@ field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @internal
  *
- * @var bool node::modified_
+ * @var bool openvrml::node::modified_
  *
  * @brief Indicate whether the node has been modified.
  *
- * @see node::modified
+ * @see openvrml::node::modified
  */
 
 /**
  * @internal
  *
- * @var bool node::bounding_volume_dirty_
+ * @var bool openvrml::node::bounding_volume_dirty_
  *
  * @brief Indicate whether the node's cached bounding volume needs updating.
  *
- * @see node::bounding_volume_dirty
+ * @see openvrml::node::bounding_volume_dirty
  */
 
 /**
  * @brief Construct.
  *
  * @param type  the node_type associated with the instance.
- * @param scope the Scope associated with the instance.
+ * @param scope the scope associated with the instance.
  */
-node::node(const node_type & type,
-           const boost::shared_ptr<openvrml::scope> & scope) throw ():
+openvrml::node::node(const node_type & type,
+                     const boost::shared_ptr<openvrml::scope> & scope)
+    throw ():
     scope_(scope),
     scene_(0),
     modified_(false),
@@ -1329,10 +1338,10 @@ namespace {
      *
      * @brief Map of node names to node instances.
      */
-    typedef std::map<std::string, node *> named_node_map_t;
+    typedef std::map<std::string, openvrml::node *> named_node_map_t;
 
     struct node_is_ : std::unary_function<named_node_map_t::value_type, bool> {
-        explicit node_is_(const node & n):
+        explicit node_is_(const openvrml::node & n):
             n(&n)
         {}
 
@@ -1343,7 +1352,7 @@ namespace {
         }
 
     private:
-        const node * n;
+        const openvrml::node * n;
     };
 }
 
@@ -1352,7 +1361,7 @@ namespace {
  *
  * Remove node name (if any) from the scope.
  */
-node::~node() throw ()
+openvrml::node::~node() throw ()
 {
     //
     // If this is the primordial node in a prototype definition, this->scope_
@@ -1374,7 +1383,7 @@ node::~node() throw ()
  *
  * @return the type information object for the node.
  */
-const node_type & node::type() const throw ()
+const openvrml::node_type & openvrml::node::type() const throw ()
 {
     return this->type_;
 }
@@ -1386,7 +1395,7 @@ const node_type & node::type() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void node::id(const std::string & node_id) throw (std::bad_alloc)
+void openvrml::node::id(const std::string & node_id) throw (std::bad_alloc)
 {
     assert(this->scope_);
     this->scope_->named_node_map[node_id] = this; // Throws std::bad_alloc.
@@ -1397,7 +1406,7 @@ void node::id(const std::string & node_id) throw (std::bad_alloc)
  *
  * @return the node name.
  */
-const std::string & node::id() const throw ()
+const std::string & openvrml::node::id() const throw ()
 {
     using std::find_if;
     using std::string;
@@ -1412,7 +1421,7 @@ const std::string & node::id() const throw ()
 }
 
 /**
- * @fn const boost::shared_ptr<const openvrml::scope> & node::scope() const throw ()
+ * @fn const boost::shared_ptr<const openvrml::scope> & openvrml::node::scope() const throw ()
  *
  * @brief Get the scope to which the node belongs.
  *
@@ -1420,7 +1429,7 @@ const std::string & node::id() const throw ()
  */
 
 /**
- * @fn scene * node::scene() const throw ()
+ * @fn openvrml::scene * openvrml::node::scene() const throw ()
  *
  * @brief Get the scene with which the node is associated.
  *
@@ -1441,7 +1450,8 @@ const std::string & node::id() const throw ()
  *
  * @post @a scene points to @p scene.
  */
-void node::initialize(openvrml::scene & scene, const double timestamp)
+void openvrml::node::initialize(openvrml::scene & scene,
+                                const double timestamp)
     throw (std::bad_alloc)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
@@ -1486,7 +1496,8 @@ void node::initialize(openvrml::scene & scene, const double timestamp)
  *
  * @exception unsupported_interface if the node has no field named @p id.
  */
-const field_value & node::field(const std::string & id) const
+const openvrml::field_value &
+openvrml::node::field(const std::string & id) const
     throw (unsupported_interface)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
@@ -1494,7 +1505,7 @@ const field_value & node::field(const std::string & id) const
 }
 
 /**
- * @fn const field_value & node::do_field(const std::string & id) const throw (unsupported_interface)
+ * @fn const openvrml::field_value & openvrml::node::do_field(const std::string & id) const throw (unsupported_interface)
  *
  * @brief Called by node::field to get a field.
  *
@@ -1512,7 +1523,8 @@ const field_value & node::field(const std::string & id) const
  *
  * @exception unsupported_interface  if the node has no eventIn @p id.
  */
-event_listener & node::event_listener(const std::string & id)
+openvrml::event_listener &
+openvrml::node::event_listener(const std::string & id)
     throw (unsupported_interface)
 {
     //
@@ -1529,7 +1541,7 @@ event_listener & node::event_listener(const std::string & id)
  *
  * @exception unsupported_interface  if the node has no eventOut @p id.
  */
-event_emitter & node::event_emitter(const std::string & id)
+openvrml::event_emitter & openvrml::node::event_emitter(const std::string & id)
     throw (unsupported_interface)
 {
     //
@@ -1549,7 +1561,7 @@ event_emitter & node::event_emitter(const std::string & id)
  *
  * @post @a scene is 0.
  */
-void node::shutdown(const double timestamp) throw ()
+void openvrml::node::shutdown(const double timestamp) throw ()
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (this->scene_) {
@@ -1585,7 +1597,7 @@ void node::shutdown(const double timestamp) throw ()
 }
 
 /**
- * @fn void node::do_shutdown(double timestamp) throw ()
+ * @fn void openvrml::node::do_shutdown(double timestamp) throw ()
  *
  * @brief Called by node::shutdown.
  *
@@ -1601,7 +1613,7 @@ void node::shutdown(const double timestamp) throw ()
  *
  * @return 0
  */
-script_node * node::to_script() throw ()
+openvrml::script_node * openvrml::node::to_script() throw ()
 {
     return 0;
 }
@@ -1615,7 +1627,7 @@ script_node * node::to_script() throw ()
  *
  * @return 0
  */
-appearance_node * node::to_appearance() throw ()
+openvrml::appearance_node * openvrml::node::to_appearance() throw ()
 {
     return 0;
 }
@@ -1629,7 +1641,7 @@ appearance_node * node::to_appearance() throw ()
  *
  * @return 0
  */
-child_node * node::to_child() throw ()
+openvrml::child_node * openvrml::node::to_child() throw ()
 {
     return 0;
 }
@@ -1643,7 +1655,7 @@ child_node * node::to_child() throw ()
  *
  * @return 0
  */
-color_node * node::to_color() throw ()
+openvrml::color_node * openvrml::node::to_color() throw ()
 {
     return 0;
 }
@@ -1657,7 +1669,7 @@ color_node * node::to_color() throw ()
  *
  * @return 0
  */
-coordinate_node * node::to_coordinate() throw ()
+openvrml::coordinate_node * openvrml::node::to_coordinate() throw ()
 {
     return 0;
 }
@@ -1671,7 +1683,7 @@ coordinate_node * node::to_coordinate() throw ()
  *
  * @return 0
  */
-font_style_node * node::to_font_style() throw ()
+openvrml::font_style_node * openvrml::node::to_font_style() throw ()
 {
     return 0;
 }
@@ -1685,7 +1697,7 @@ font_style_node * node::to_font_style() throw ()
  *
  * @return 0
  */
-geometry_node * node::to_geometry() throw ()
+openvrml::geometry_node * openvrml::node::to_geometry() throw ()
 {
     return 0;
 }
@@ -1699,7 +1711,7 @@ geometry_node * node::to_geometry() throw ()
  *
  * @return 0
  */
-grouping_node * node::to_grouping() throw ()
+openvrml::grouping_node * openvrml::node::to_grouping() throw ()
 {
     return 0;
 }
@@ -1713,7 +1725,7 @@ grouping_node * node::to_grouping() throw ()
  *
  * @return 0
  */
-material_node * node::to_material() throw ()
+openvrml::material_node * openvrml::node::to_material() throw ()
 {
     return 0;
 }
@@ -1727,7 +1739,7 @@ material_node * node::to_material() throw ()
  *
  * @return 0.
  */
-navigation_info_node * node::to_navigation_info() throw ()
+openvrml::navigation_info_node * openvrml::node::to_navigation_info() throw ()
 {
     return 0;
 }
@@ -1741,7 +1753,7 @@ navigation_info_node * node::to_navigation_info() throw ()
  *
  * @return 0
  */
-normal_node * node::to_normal() throw ()
+openvrml::normal_node * openvrml::node::to_normal() throw ()
 {
     return 0;
 }
@@ -1755,7 +1767,7 @@ normal_node * node::to_normal() throw ()
  *
  * @return 0
  */
-sound_source_node * node::to_sound_source() throw ()
+openvrml::sound_source_node * openvrml::node::to_sound_source() throw ()
 {
     return 0;
 }
@@ -1769,7 +1781,7 @@ sound_source_node * node::to_sound_source() throw ()
  *
  * @return 0
  */
-texture_node * node::to_texture() throw ()
+openvrml::texture_node * openvrml::node::to_texture() throw ()
 {
     return 0;
 }
@@ -1783,7 +1795,8 @@ texture_node * node::to_texture() throw ()
  *
  * @return 0
  */
-texture_coordinate_node * node::to_texture_coordinate() throw ()
+openvrml::texture_coordinate_node *
+openvrml::node::to_texture_coordinate() throw ()
 {
     return 0;
 }
@@ -1797,7 +1810,8 @@ texture_coordinate_node * node::to_texture_coordinate() throw ()
  *
  * @return 0
  */
-texture_transform_node * node::to_texture_transform() throw ()
+openvrml::texture_transform_node *
+openvrml::node::to_texture_transform() throw ()
 {
     return 0;
 }
@@ -1811,7 +1825,7 @@ texture_transform_node * node::to_texture_transform() throw ()
  *
  * @return 0
  */
-transform_node * node::to_transform() throw ()
+openvrml::transform_node * openvrml::node::to_transform() throw ()
 {
     return 0;
 }
@@ -1825,7 +1839,7 @@ transform_node * node::to_transform() throw ()
  *
  * @return 0
  */
-viewpoint_node * node::to_viewpoint() throw ()
+openvrml::viewpoint_node * openvrml::node::to_viewpoint() throw ()
 {
     return 0;
 }
@@ -1835,7 +1849,7 @@ viewpoint_node * node::to_viewpoint() throw ()
  *
  * @return 0.
  */
-vrml97_node::anchor_node * node::to_anchor() const
+openvrml::vrml97_node::anchor_node * openvrml::node::to_anchor() const
 {
     return 0;
 }
@@ -1845,7 +1859,7 @@ vrml97_node::anchor_node * node::to_anchor() const
  *
  * @return 0.
  */
-vrml97_node::audio_clip_node * node::to_audio_clip() const
+openvrml::vrml97_node::audio_clip_node * openvrml::node::to_audio_clip() const
 {
     return 0;
 }
@@ -1855,7 +1869,7 @@ vrml97_node::audio_clip_node * node::to_audio_clip() const
  *
  * @return 0.
  */
-vrml97_node::abstract_light_node * node::to_light() const
+openvrml::vrml97_node::abstract_light_node * openvrml::node::to_light() const
 {
     return 0;
 }
@@ -1865,7 +1879,8 @@ vrml97_node::abstract_light_node * node::to_light() const
  *
  * @return 0.
  */
-vrml97_node::movie_texture_node * node::to_movie_texture() const
+openvrml::vrml97_node::movie_texture_node *
+openvrml::node::to_movie_texture() const
 {
     return 0;
 }
@@ -1875,7 +1890,8 @@ vrml97_node::movie_texture_node * node::to_movie_texture() const
  *
  * @return 0.
  */
-vrml97_node::plane_sensor_node * node::to_plane_sensor() const
+openvrml::vrml97_node::plane_sensor_node *
+openvrml::node::to_plane_sensor() const
 {
     return 0;
 }
@@ -1885,7 +1901,8 @@ vrml97_node::plane_sensor_node * node::to_plane_sensor() const
  *
  * @return 0.
  */
-vrml97_node::sphere_sensor_node * node::to_sphere_sensor() const
+openvrml::vrml97_node::sphere_sensor_node *
+openvrml::node::to_sphere_sensor() const
 {
     return 0;
 }
@@ -1895,7 +1912,8 @@ vrml97_node::sphere_sensor_node * node::to_sphere_sensor() const
  *
  * @return 0.
  */
-vrml97_node::cylinder_sensor_node * node::to_cylinder_sensor() const
+openvrml::vrml97_node::cylinder_sensor_node *
+openvrml::node::to_cylinder_sensor() const
 {
     return 0;
 }
@@ -1905,7 +1923,8 @@ vrml97_node::cylinder_sensor_node * node::to_cylinder_sensor() const
  *
  * @return 0.
  */
-vrml97_node::point_light_node * node::to_point_light() const
+openvrml::vrml97_node::point_light_node *
+openvrml::node::to_point_light() const
 {
     return 0;
 }
@@ -1915,7 +1934,8 @@ vrml97_node::point_light_node * node::to_point_light() const
  *
  * @return 0.
  */
-vrml97_node::spot_light_node * node::to_spot_light() const
+openvrml::vrml97_node::spot_light_node *
+openvrml::node::to_spot_light() const
 {
     return 0;
 }
@@ -1925,7 +1945,8 @@ vrml97_node::spot_light_node * node::to_spot_light() const
  *
  * @return 0.
  */
-vrml97_node::time_sensor_node * node::to_time_sensor() const
+openvrml::vrml97_node::time_sensor_node *
+openvrml::node::to_time_sensor() const
 {
     return 0;
 }
@@ -1935,7 +1956,8 @@ vrml97_node::time_sensor_node * node::to_time_sensor() const
  *
  * @return 0.
  */
-vrml97_node::touch_sensor_node * node::to_touch_sensor() const
+openvrml::vrml97_node::touch_sensor_node *
+openvrml::node::to_touch_sensor() const
 {
     return 0;
 }
@@ -1947,7 +1969,7 @@ vrml97_node::touch_sensor_node * node::to_touch_sensor() const
  *
  * @param value
  */
-void node::modified(const bool value)
+void openvrml::node::modified(const bool value)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->modified_ = value;
@@ -1963,7 +1985,7 @@ void node::modified(const bool value)
  *
  * @return @c true if the node has been modified; @c false otherwise.
  */
-bool node::modified() const
+bool openvrml::node::modified() const
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->modified_;
@@ -1980,7 +2002,7 @@ bool node::modified() const
  *
  * @return a maximized bounding volume.
  */
-const bounding_volume & node::bounding_volume() const
+const openvrml::bounding_volume & openvrml::node::bounding_volume() const
 {
     class default_bounding_volume : public bounding_sphere {
     public:
@@ -2002,7 +2024,7 @@ const bounding_volume & node::bounding_volume() const
  *
  * @todo Implement me!
  */
-void node::bounding_volume(const openvrml::bounding_volume & v)
+void openvrml::node::bounding_volume(const openvrml::bounding_volume & v)
 {
     // XXX Implement me!
 }
@@ -2013,7 +2035,7 @@ void node::bounding_volume(const openvrml::bounding_volume & v)
  * all that node's ancestors are also invalid. Normally, the node
  * itself will determine when its bvolume needs updating.
  */
-void node::bounding_volume_dirty(const bool value)
+void openvrml::node::bounding_volume_dirty(const bool value)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->bounding_volume_dirty_ = value;
@@ -2026,7 +2048,7 @@ void node::bounding_volume_dirty(const bool value)
  * Return true if the node's bounding volume needs to be
  * recalculated.
  */
-bool node::bounding_volume_dirty() const
+bool openvrml::node::bounding_volume_dirty() const
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (this->type_.node_class().browser().flags_need_updating) {
@@ -2044,15 +2066,15 @@ bool node::bounding_volume_dirty() const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void node::emit_event(openvrml::event_emitter & emitter,
-                      const double timestamp)
+void openvrml::node::emit_event(openvrml::event_emitter & emitter,
+                                const double timestamp)
     throw (std::bad_alloc)
 {
     emitter.emit_event(timestamp);
 }
 
 /**
- * @fn boost::recursive_mutex & node::mutex() const throw ()
+ * @fn boost::recursive_mutex & openvrml::node::mutex() const throw ()
  *
  * @brief Get the mutex associated with the <code>node</code>.
  *
@@ -2063,31 +2085,32 @@ void node::emit_event(openvrml::event_emitter & emitter,
  */
 
 namespace {
-    const short indentIncrement_ = 4;
+    const short indent_increment_ = 4;
 
-    class PrintField_ : public std::unary_function<node_interface, void> {
-        const node & n;
-        std::ostream & out;
-        const size_t indent;
-
-    public:
-        PrintField_(const node & n,
-                    std::ostream & out,
-                    const size_t indent):
+    struct print_field_ : std::unary_function<openvrml::node_interface, void> {
+        print_field_(const openvrml::node & n,
+                     std::ostream & out,
+                     const size_t indent):
             n(n),
             out(out),
             indent(indent)
         {}
 
-        void operator()(const node_interface & interface) const
+        void operator()(const openvrml::node_interface & interface) const
         {
+            using openvrml::node_interface;
             if (interface.type == node_interface::exposedfield_id
                     || interface.type == node_interface::field_id) {
-                this->out << std::string(this->indent + indentIncrement_, ' ')
+                this->out << std::string(this->indent + indent_increment_, ' ')
                           << interface.id << ' '
                           << n.field(interface.id);
             }
         }
+
+    private:
+        const openvrml::node & n;
+        std::ostream & out;
+        const size_t indent;
     };
 }
 
@@ -2099,7 +2122,8 @@ namespace {
  *
  * @return @p out.
  */
-std::ostream & node::print(std::ostream & out, const size_t indent) const
+std::ostream & openvrml::node::print(std::ostream & out,
+                                     const size_t indent) const
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     for (size_t i = 0; i < indent; ++i) { out << ' '; }
@@ -2108,7 +2132,7 @@ std::ostream & node::print(std::ostream & out, const size_t indent) const
     out << this->type_.id() << " { ";
     const node_interface_set & interfaces = this->type_.interfaces();
     std::for_each(interfaces.begin(), interfaces.end(),
-                  PrintField_(*this, out, indent));
+                  print_field_(*this, out, indent));
     return out << " }";
 }
 
@@ -2120,7 +2144,7 @@ std::ostream & node::print(std::ostream & out, const size_t indent) const
  *
  * @return @p out.
  */
-std::ostream & operator<<(std::ostream & out, const node & n)
+std::ostream & openvrml::operator<<(std::ostream & out, const node & n)
 {
     return n.print(out, 0);
 }
@@ -2137,11 +2161,12 @@ std::ostream & operator<<(std::ostream & out, const node & n)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void node::do_initialize(const double timestamp) throw (std::bad_alloc)
+void openvrml::node::do_initialize(const double timestamp)
+    throw (std::bad_alloc)
 {}
 
 /**
- * @fn event_listener & node::do_event_listener(const std::string & id) throw (unsupported_interface)
+ * @fn openvrml::event_listener & openvrml::node::do_event_listener(const std::string & id) throw (unsupported_interface)
  *
  * @brief Get an event listener.
  *
@@ -2156,7 +2181,7 @@ void node::do_initialize(const double timestamp) throw (std::bad_alloc)
  */
 
 /**
- * @fn event_emitter & node::do_event_emitter(const std::string & id) throw (unsupported_interface)
+ * @fn openvrml::event_emitter & openvrml::node::do_event_emitter(const std::string & id) throw (unsupported_interface)
  *
  * @brief Get an event emitter.
  *
@@ -2181,14 +2206,17 @@ void node::do_initialize(const double timestamp) throw (std::bad_alloc)
  *
  * @param timestamp the current time.
  */
-void node::do_shutdown(const double timestamp) throw ()
+void openvrml::node::do_shutdown(const double timestamp) throw ()
 {}
 
 namespace {
     template <typename FieldValue>
-    bool add_listener(event_emitter & emitter, event_listener & listener)
+    bool add_listener(openvrml::event_emitter & emitter,
+                      openvrml::event_listener & listener)
         throw (std::bad_alloc, std::bad_cast)
     {
+        using openvrml::field_value_emitter;
+        using openvrml::field_value_listener;
         return static_cast<field_value_emitter<FieldValue> &>(emitter)
             .add(dynamic_cast<field_value_listener<FieldValue> &>(listener));
     }
@@ -2219,16 +2247,16 @@ namespace {
  *
  * @pre @p to_node is not null.
  */
-bool add_route(node & from_node,
-               const std::string & from_eventout,
-               node & to_node,
-               const std::string & to_eventin)
+bool openvrml::add_route(node & from,
+                         const std::string & eventout,
+                         node & to,
+                         const std::string & eventin)
     throw (std::bad_alloc, unsupported_interface, field_value_type_mismatch)
 {
     using std::bad_cast;
 
-    event_emitter & emitter = from_node.event_emitter(from_eventout);
-    event_listener & listener = to_node.event_listener(to_eventin);
+    event_emitter & emitter = from.event_emitter(eventout);
+    event_listener & listener = to.event_listener(eventin);
     bool added_route = false;
     try {
         switch (emitter.value().type()) {
@@ -2301,9 +2329,12 @@ bool add_route(node & from_node,
 
 namespace {
     template <typename FieldValue>
-    bool remove_listener(event_emitter & emitter, event_listener & listener)
+    bool remove_listener(openvrml::event_emitter & emitter,
+                         openvrml::event_listener & listener)
         throw (std::bad_cast)
     {
+        using openvrml::field_value_emitter;
+        using openvrml::field_value_listener;
         return static_cast<field_value_emitter<FieldValue> &>(emitter).remove(
             dynamic_cast<field_value_listener<FieldValue> &>(listener));
     }
@@ -2328,10 +2359,10 @@ namespace {
  * @exception unsupported_interface if @p from has no eventOut @p eventout or
  *                                  if @p to has no eventIn @p eventin.
  */
-bool delete_route(node & from,
-                  const std::string & eventout,
-                  node & to,
-                  const std::string & eventin)
+bool openvrml::delete_route(node & from,
+                            const std::string & eventout,
+                            node & to,
+                            const std::string & eventin)
     throw (unsupported_interface)
 {
     using std::bad_cast;
@@ -2414,7 +2445,7 @@ bool delete_route(node & from,
 
 
 /**
- * @fn template <> script_node * node_cast<script_node *>(node * n) throw ()
+ * @fn template <> openvrml::script_node * openvrml::node_cast<openvrml::script_node *>(node * n) throw ()
  *
  * @brief Cast to a script_node.
  *
@@ -2425,7 +2456,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> appearance_node * node_cast<appearance_node *>(node * n) throw ()
+ * @fn template <> openvrml::appearance_node * openvrml::node_cast<openvrml::appearance_node *>(node * n) throw ()
  *
  * @brief Cast to an appearance_node.
  *
@@ -2436,7 +2467,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> child_node * node_cast<child_node *>(node * n) throw ()
+ * @fn template <> openvrml::child_node * openvrml::node_cast<openvrml::child_node *>(node * n) throw ()
  *
  * @brief Cast to a child_node.
  *
@@ -2447,7 +2478,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> color_node * node_cast<color_node *>(node * n) throw ()
+ * @fn template <> openvrml::color_node * openvrml::node_cast<openvrml::color_node *>(node * n) throw ()
  *
  * @brief Cast to a color_node.
  *
@@ -2458,7 +2489,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> coordinate_node * node_cast<coordinate_node *>(node * n) throw ()
+ * @fn template <> openvrml::coordinate_node * openvrml::node_cast<openvrml::coordinate_node *>(node * n) throw ()
  *
  * @brief Cast to a coordinate_node.
  *
@@ -2469,7 +2500,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> font_style_node * node_cast<font_style_node *>(node * n) throw ()
+ * @fn template <> openvrml::font_style_node * openvrml::node_cast<openvrml::font_style_node *>(node * n) throw ()
  *
  * @brief Cast to a font_style_node.
  *
@@ -2480,7 +2511,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> geometry_node * node_cast<geometry_node *>(node * n) throw ()
+ * @fn template <> openvrml::geometry_node * openvrml::node_cast<openvrml::geometry_node *>(node * n) throw ()
  *
  * @brief Cast to a geometry_node.
  *
@@ -2491,7 +2522,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> grouping_node * node_cast<grouping_node *>(node * n) throw ()
+ * @fn template <> openvrml::grouping_node * openvrml::node_cast<openvrml::grouping_node *>(node * n) throw ()
  *
  * @brief Cast to a grouping_node.
  *
@@ -2502,7 +2533,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> material_node * node_cast<material_node *>(node * n) throw ()
+ * @fn template <> openvrml::material_node * openvrml::node_cast<openvrml::material_node *>(node * n) throw ()
  *
  * @brief Cast to a material_node.
  *
@@ -2513,7 +2544,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> normal_node * node_cast<normal_node *>(node * n) throw ()
+ * @fn template <> openvrml::normal_node * openvrml::node_cast<openvrml::normal_node *>(node * n) throw ()
  *
  * @brief Cast to a normal_node.
  *
@@ -2524,7 +2555,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> sound_source_node * node_cast<sound_source_node *>(node * n) throw ()
+ * @fn template <> openvrml::sound_source_node * openvrml::node_cast<openvrml::sound_source_node *>(node * n) throw ()
  *
  * @brief Cast to a sound_source_node.
  *
@@ -2535,7 +2566,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> texture_node * node_cast<texture_node *>(node * n) throw ()
+ * @fn template <> openvrml::texture_node * node_cast<openvrml::texture_node *>(node * n) throw ()
  *
  * @brief Cast to a texture_node.
  *
@@ -2546,7 +2577,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> texture_coordinate_node * node_cast<texture_coordinate_node *>(node * n) throw ()
+ * @fn template <> openvrml::texture_coordinate_node * openvrml::node_cast<openvrml::texture_coordinate_node *>(node * n) throw ()
  *
  * @brief Cast to a texture_coordinate_node.
  *
@@ -2557,7 +2588,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> texture_transform_node * node_cast<texture_transform_node *>(node * n) throw ()
+ * @fn template <> openvrml::texture_transform_node * openvrml::node_cast<openvrml::texture_transform_node *>(node * n) throw ()
  *
  * @brief Cast to a texture_transform_node.
  *
@@ -2568,7 +2599,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> transform_node * node_cast<transform_node *>(node * n) throw ()
+ * @fn template <> openvrml::transform_node * openvrml::node_cast<openvrml::transform_node *>(node * n) throw ()
  *
  * @brief Cast to a transform_node.
  *
@@ -2579,7 +2610,7 @@ bool delete_route(node & from,
  */
 
 /**
- * @fn template <> viewpoint_node * node_cast<viewpoint_node *>(node * n) throw ()
+ * @fn template <> openvrml::viewpoint_node * openvrml::node_cast<openvrml::viewpoint_node *>(node * n) throw ()
  *
  * @brief Cast to a viewpoint_node.
  *
@@ -2591,7 +2622,7 @@ bool delete_route(node & from,
 
 
 /**
- * @class appearance_node
+ * @class openvrml::appearance_node
  *
  * @ingroup nodes
  *
@@ -2604,8 +2635,9 @@ bool delete_route(node & from,
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-appearance_node::appearance_node(const node_type & type,
-                                 const boost::shared_ptr<openvrml::scope> & scope)
+openvrml::appearance_node::
+appearance_node(const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2613,7 +2645,7 @@ appearance_node::appearance_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-appearance_node::~appearance_node() throw ()
+openvrml::appearance_node::~appearance_node() throw ()
 {}
 
 /**
@@ -2622,7 +2654,8 @@ appearance_node::~appearance_node() throw ()
  * @param v         viewer.
  * @param context   rendering_context.
  */
-void appearance_node::render_appearance(viewer & v, rendering_context context)
+void openvrml::appearance_node::render_appearance(viewer & v,
+                                                  rendering_context context)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex());
     this->do_render_appearance(v, context);
@@ -2635,8 +2668,8 @@ void appearance_node::render_appearance(viewer & v, rendering_context context)
  * @param v         viewer.
  * @param context   rendering_context.
  */
-void appearance_node::do_render_appearance(viewer & v,
-                                           rendering_context context)
+void openvrml::appearance_node::do_render_appearance(viewer & v,
+                                                     rendering_context context)
 {}
 
 /**
@@ -2644,13 +2677,13 @@ void appearance_node::do_render_appearance(viewer & v,
  *
  * @return a pointer to this appearance_node.
  */
-appearance_node * appearance_node::to_appearance() throw ()
+openvrml::appearance_node * openvrml::appearance_node::to_appearance() throw ()
 {
     return this;
 }
 
 /**
- * @fn const node_ptr & appearance_node::material() const throw ()
+ * @fn const openvrml::node_ptr & openvrml::appearance_node::material() const throw ()
  *
  * @brief Get the material node associated with this appearance node.
  *
@@ -2658,7 +2691,7 @@ appearance_node * appearance_node::to_appearance() throw ()
  */
 
 /**
- * @fn const node_ptr & appearance_node::texture() const throw ()
+ * @fn const openvrml::node_ptr & openvrml::appearance_node::texture() const throw ()
  *
  * @brief Get the texture node associated with this appearance node.
  *
@@ -2666,7 +2699,7 @@ appearance_node * appearance_node::to_appearance() throw ()
  */
 
 /**
- * @fn const node_ptr & appearance_node::texture_transform() const throw ()
+ * @fn const openvrml::node_ptr & openvrml::appearance_node::texture_transform() const throw ()
  *
  * @brief Get the texture transform node associated with this appearance node.
  *
@@ -2675,7 +2708,7 @@ appearance_node * appearance_node::to_appearance() throw ()
 
 
 /**
- * @class child_node
+ * @class openvrml::child_node
  *
  * @ingroup nodes
  *
@@ -2688,8 +2721,9 @@ appearance_node * appearance_node::to_appearance() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-child_node::child_node(const node_type & type,
-                       const boost::shared_ptr<openvrml::scope> & scope)
+openvrml::child_node::
+child_node(const node_type & type,
+           const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2697,7 +2731,7 @@ child_node::child_node(const node_type & type,
 /**
  * @brief Destructor.
  */
-child_node::~child_node() throw ()
+openvrml::child_node::~child_node() throw ()
 {}
 
 /**
@@ -2709,7 +2743,7 @@ child_node::~child_node() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void child_node::relocate() throw (std::bad_alloc)
+void openvrml::child_node::relocate() throw (std::bad_alloc)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex());
 
@@ -2754,7 +2788,8 @@ void child_node::relocate() throw (std::bad_alloc)
  * @param context   generic context argument; holds things like the accumulated
  *                  modelview transform.
  */
-void child_node::render_child(viewer & v, const rendering_context context)
+void openvrml::child_node::render_child(viewer & v,
+                                        const rendering_context context)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex());
     this->do_render_child(v, context);
@@ -2771,7 +2806,8 @@ void child_node::render_child(viewer & v, const rendering_context context)
  * @param context   generic context argument; holds things like the accumulated
  *                  modelview transform.
  */
-void child_node::do_render_child(viewer & v, rendering_context context)
+void openvrml::child_node::do_render_child(viewer & v,
+                                           rendering_context context)
 {}
 
 /**
@@ -2779,7 +2815,7 @@ void child_node::do_render_child(viewer & v, rendering_context context)
  *
  * @return a pointer to this child_node.
  */
-child_node * child_node::to_child() throw ()
+openvrml::child_node * openvrml::child_node::to_child() throw ()
 {
     return this;
 }
@@ -2794,12 +2830,12 @@ child_node * child_node::to_child() throw ()
  *
  * The default implementation of this method does nothing.
  */
-void child_node::do_relocate() throw (std::bad_alloc)
+void openvrml::child_node::do_relocate() throw (std::bad_alloc)
 {}
 
 
 /**
- * @class color_node
+ * @class openvrml::color_node
  *
  * @ingroup nodes
  *
@@ -2812,7 +2848,9 @@ void child_node::do_relocate() throw (std::bad_alloc)
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-color_node::color_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
+openvrml::color_node::
+color_node(const node_type & type,
+           const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2820,7 +2858,7 @@ color_node::color_node(const node_type & type, const boost::shared_ptr<openvrml:
 /**
  * @brief Destroy.
  */
-color_node::~color_node() throw ()
+openvrml::color_node::~color_node() throw ()
 {}
 
 /**
@@ -2828,13 +2866,13 @@ color_node::~color_node() throw ()
  *
  * @return a pointer to this color_node.
  */
-color_node * color_node::to_color() throw ()
+openvrml::color_node * openvrml::color_node::to_color() throw ()
 {
     return this;
 }
 
 /**
- * @fn const std::vector<openvrml::color> & color_node::color() const
+ * @fn const std::vector<openvrml::color> & openvrml::color_node::color() const
  *
  * @brief Get the color array encapsulated by this node.
  *
@@ -2843,7 +2881,7 @@ color_node * color_node::to_color() throw ()
 
 
 /**
- * @class coordinate_node
+ * @class openvrml::coordinate_node
  *
  * @brief Abstract base class for coordinate nodes.
  */
@@ -2854,8 +2892,9 @@ color_node * color_node::to_color() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-coordinate_node::coordinate_node(const node_type & type,
-                                 const boost::shared_ptr<openvrml::scope> & scope)
+openvrml::coordinate_node::
+coordinate_node(const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -2863,7 +2902,7 @@ coordinate_node::coordinate_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-coordinate_node::~coordinate_node() throw ()
+openvrml::coordinate_node::~coordinate_node() throw ()
 {}
 
 /**
@@ -2871,13 +2910,13 @@ coordinate_node::~coordinate_node() throw ()
  *
  * @return a pointer to this coordinate_node.
  */
-coordinate_node * coordinate_node::to_coordinate() throw ()
+openvrml::coordinate_node * openvrml::coordinate_node::to_coordinate() throw ()
 {
     return this;
 }
 
 /**
- * @fn const std::vector<vec3f> & coordinate_node::point() const
+ * @fn const std::vector<openvrml::vec3f> & openvrml::coordinate_node::point() const
  *
  * @brief Get the points encapsulated by this node.
  *
@@ -2886,7 +2925,7 @@ coordinate_node * coordinate_node::to_coordinate() throw ()
 
 
 /**
- * @class font_style_node
+ * @class openvrml::font_style_node
  *
  * @ingroup nodes
  *
@@ -2899,7 +2938,7 @@ coordinate_node * coordinate_node::to_coordinate() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-font_style_node::
+openvrml::font_style_node::
 font_style_node(const node_type & type,
                 const boost::shared_ptr<openvrml::scope> & scope) throw ():
     node(type, scope)
@@ -2908,7 +2947,7 @@ font_style_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-font_style_node::~font_style_node() throw ()
+openvrml::font_style_node::~font_style_node() throw ()
 {}
 
 /**
@@ -2916,13 +2955,13 @@ font_style_node::~font_style_node() throw ()
  *
  * @return a pointer to this font_style_node.
  */
-font_style_node * font_style_node::to_font_style() throw ()
+openvrml::font_style_node * openvrml::font_style_node::to_font_style() throw ()
 {
     return this;
 }
 
 /**
- * @fn const std::vector<std::string> & font_style_node::family() const throw ()
+ * @fn const std::vector<std::string> & openvrml::font_style_node::family() const throw ()
  *
  * @brief Get the list of font families.
  *
@@ -2930,7 +2969,7 @@ font_style_node * font_style_node::to_font_style() throw ()
  */
 
 /**
- * @fn bool font_style_node::horizontal() const throw ()
+ * @fn bool openvrml::font_style_node::horizontal() const throw ()
  *
  * @brief Get the flag indicating whether the text should be horizontal or
  *      vertical.
@@ -2940,7 +2979,7 @@ font_style_node * font_style_node::to_font_style() throw ()
  */
 
 /**
- * @fn const std::vector<std::string> & font_style_node::justify() const throw ()
+ * @fn const std::vector<std::string> & openvrml::font_style_node::justify() const throw ()
  *
  * @brief Get the descriptor for the text justification.
  *
@@ -2948,7 +2987,7 @@ font_style_node * font_style_node::to_font_style() throw ()
  */
 
 /**
- * @fn const std::string & font_style_node::language() const throw ()
+ * @fn const std::string & openvrml::font_style_node::language() const throw ()
  *
  * @brief Get the language code.
  *
@@ -2956,7 +2995,7 @@ font_style_node * font_style_node::to_font_style() throw ()
  */
 
 /**
- * @fn bool font_style_node::left_to_right() const throw ()
+ * @fn bool openvrml::font_style_node::left_to_right() const throw ()
  *
  * @brief Get the flag indicating whether the text should be rendered
  *      left-to-right.
@@ -2966,7 +3005,7 @@ font_style_node * font_style_node::to_font_style() throw ()
  */
 
 /**
- * @fn float font_style_node::size() const throw ()
+ * @fn float openvrml::font_style_node::size() const throw ()
  *
  * @brief Get the size of the text.
  *
@@ -2974,7 +3013,7 @@ font_style_node * font_style_node::to_font_style() throw ()
  */
 
 /**
- * @fn float font_style_node::spacing() const throw ()
+ * @fn float openvrml::font_style_node::spacing() const throw ()
  *
  * @brief Get the spacing for the text.
  *
@@ -2982,7 +3021,7 @@ font_style_node * font_style_node::to_font_style() throw ()
  */
 
 /**
- * @fn const std::string & font_style_node::style() const throw ()
+ * @fn const std::string & openvrml::font_style_node::style() const throw ()
  *
  * @brief Get the style for the text.
  *
@@ -2990,7 +3029,7 @@ font_style_node * font_style_node::to_font_style() throw ()
  */
 
 /**
- * @fn bool font_style_node::top_to_bottom() const throw ()
+ * @fn bool openvrml::font_style_node::top_to_bottom() const throw ()
  *
  * @brief Get the flag indicating whether the text should be rendered
  *      top-to-bottom.
@@ -3001,7 +3040,7 @@ font_style_node * font_style_node::to_font_style() throw ()
 
 
 /**
- * @class geometry_node
+ * @class openvrml::geometry_node
  *
  * @ingroup nodes
  *
@@ -3009,7 +3048,7 @@ font_style_node * font_style_node::to_font_style() throw ()
  */
 
 /**
- * @var viewer::object_t geometry_node::geometry_reference
+ * @var openvrml::viewer::object_t openvrml::geometry_node::geometry_reference
  *
  * @brief Identifier for a geometry object in the renderer.
  */
@@ -3020,8 +3059,9 @@ font_style_node * font_style_node::to_font_style() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-geometry_node::geometry_node(const node_type & type,
-                             const boost::shared_ptr<openvrml::scope> & scope)
+openvrml::geometry_node::
+geometry_node(const node_type & type,
+              const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
     geometry_reference(0)
@@ -3035,7 +3075,7 @@ geometry_node::geometry_node(const node_type & type,
  *       the browser. We need to handle this better via some refcounting
  *       scheme.
  */
-geometry_node::~geometry_node() throw ()
+openvrml::geometry_node::~geometry_node() throw ()
 {
     if (this->geometry_reference) {
         assert(this->type().node_class().browser().viewer());
@@ -3049,7 +3089,7 @@ geometry_node::~geometry_node() throw ()
  *
  * @return a pointer to this geometry_node.
  */
-geometry_node * geometry_node::to_geometry() throw ()
+openvrml::geometry_node * openvrml::geometry_node::to_geometry() throw ()
 {
     return this;
 }
@@ -3062,8 +3102,9 @@ geometry_node * geometry_node::to_geometry() throw ()
  *
  * @return object identifier for the inserted geometry.
  */
-viewer::object_t geometry_node::render_geometry(viewer & v,
-                                                rendering_context context)
+openvrml::viewer::object_t
+openvrml::geometry_node::render_geometry(viewer & v,
+                                         rendering_context context)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex());
 
@@ -3089,7 +3130,7 @@ viewer::object_t geometry_node::render_geometry(viewer & v,
  *         @c false otherwise (if the geometry should be drawn with the diffuse
  *         color).
  */
-bool geometry_node::emissive() const throw ()
+bool openvrml::geometry_node::emissive() const throw ()
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex());
     return this->do_emissive();
@@ -3103,8 +3144,9 @@ bool geometry_node::emissive() const throw ()
  *
  * @return object identifier for the inserted geometry.
  */
-viewer::object_t geometry_node::do_render_geometry(viewer & v,
-                                                   rendering_context context)
+openvrml::viewer::object_t
+openvrml::geometry_node::do_render_geometry(viewer & v,
+                                            rendering_context context)
 {
     return 0;
 }
@@ -3114,7 +3156,7 @@ viewer::object_t geometry_node::do_render_geometry(viewer & v,
  *
  * @return @c false.
  */
-bool geometry_node::do_emissive() const throw ()
+bool openvrml::geometry_node::do_emissive() const throw ()
 {
     return false;
 }
@@ -3128,14 +3170,14 @@ bool geometry_node::do_emissive() const throw ()
  * @todo Reevaluate the way the renderer visits geometry nodes; potentially
  *      eliminate this method.
  */
-const color_node * geometry_node::color() const throw ()
+const openvrml::color_node * openvrml::geometry_node::color() const throw ()
 {
     return 0;
 }
 
 
 /**
- * @class grouping_node
+ * @class openvrml::grouping_node
  *
  * @ingroup nodes
  *
@@ -3148,8 +3190,9 @@ const color_node * geometry_node::color() const throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-grouping_node::grouping_node(const node_type & type,
-                             const boost::shared_ptr<openvrml::scope> & scope)
+openvrml::grouping_node::
+grouping_node(const node_type & type,
+              const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
     child_node(type, scope)
@@ -3158,7 +3201,7 @@ grouping_node::grouping_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-grouping_node::~grouping_node() throw ()
+openvrml::grouping_node::~grouping_node() throw ()
 {}
 
 /**
@@ -3166,13 +3209,13 @@ grouping_node::~grouping_node() throw ()
  *
  * @return a pointer to this grouping_node.
  */
-grouping_node * grouping_node::to_grouping() throw ()
+openvrml::grouping_node * openvrml::grouping_node::to_grouping() throw ()
 {
     return this;
 }
 
 /**
- * @fn const std::vector<node_ptr> & grouping_node::children() const throw ()
+ * @fn const std::vector<openvrml::node_ptr> & openvrml::grouping_node::children() const throw ()
  *
  * @brief Get the children in the scene graph.
  *
@@ -3180,7 +3223,7 @@ grouping_node * grouping_node::to_grouping() throw ()
  */
 
 /**
- * @fn void grouping_node::activate(double timestamp, bool over, bool active, double * p)
+ * @fn void openvrml::grouping_node::activate(double timestamp, bool over, bool active, double * p)
  *
  * @brief Called in response to user interaction to activate any child pointing
  *        device sensor nodes.
@@ -3193,7 +3236,7 @@ grouping_node * grouping_node::to_grouping() throw ()
 
 
 /**
- * @class material_node
+ * @class openvrml::material_node
  *
  * @ingroup nodes
  *
@@ -3206,8 +3249,9 @@ grouping_node * grouping_node::to_grouping() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-material_node::material_node(const node_type & type,
-                             const boost::shared_ptr<openvrml::scope> & scope)
+openvrml::material_node::
+material_node(const node_type & type,
+              const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -3215,7 +3259,7 @@ material_node::material_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-material_node::~material_node() throw ()
+openvrml::material_node::~material_node() throw ()
 {}
 
 /**
@@ -3223,13 +3267,13 @@ material_node::~material_node() throw ()
  *
  * @return a pointer to this material_node.
  */
-material_node * material_node::to_material() throw ()
+openvrml::material_node * openvrml::material_node::to_material() throw ()
 {
     return this;
 }
 
 /**
- * @fn float material_node::ambient_intensity() const throw ()
+ * @fn float openvrml::material_node::ambient_intensity() const throw ()
  *
  * @brief Get the ambient intensity.
  *
@@ -3237,7 +3281,7 @@ material_node * material_node::to_material() throw ()
  */
 
 /**
- * @fn const color & material_node::diffuse_color() const throw ()
+ * @fn const openvrml::color & openvrml::material_node::diffuse_color() const throw ()
  *
  * @brief Get the diffuse color.
  *
@@ -3245,7 +3289,7 @@ material_node * material_node::to_material() throw ()
  */
 
 /**
- * @fn const color & material_node::emissive_color() const throw ()
+ * @fn const openvrml::color & openvrml::material_node::emissive_color() const throw ()
  *
  * @brief Get the emissive color.
  *
@@ -3253,7 +3297,7 @@ material_node * material_node::to_material() throw ()
  */
 
 /**
- * @fn float material_node::shininess() const throw ()
+ * @fn float openvrml::material_node::shininess() const throw ()
  *
  * @brief Get the shininess.
  *
@@ -3261,7 +3305,7 @@ material_node * material_node::to_material() throw ()
  */
 
 /**
- * @fn const color & material_node::specular_color() const throw ()
+ * @fn const openvrml::color & openvrml::material_node::specular_color() const throw ()
  *
  * @brief Get the specular color.
  *
@@ -3269,7 +3313,7 @@ material_node * material_node::to_material() throw ()
  */
 
 /**
- * @fn float material_node::transparency() const throw ()
+ * @fn float openvrml::material_node::transparency() const throw ()
  *
  * @brief Get the transparency.
  *
@@ -3278,7 +3322,7 @@ material_node * material_node::to_material() throw ()
 
 
 /**
- * @class navigation_info_node
+ * @class openvrml::navigation_info_node
  *
  * @ingroup nodes
  *
@@ -3291,7 +3335,7 @@ material_node * material_node::to_material() throw ()
  * @param t     the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-navigation_info_node::
+openvrml::navigation_info_node::
 navigation_info_node(const node_type & t,
                      const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
@@ -3302,7 +3346,7 @@ navigation_info_node(const node_type & t,
 /**
  * @brief Destroy.
  */
-navigation_info_node::~navigation_info_node() throw ()
+openvrml::navigation_info_node::~navigation_info_node() throw ()
 {}
 
 /**
@@ -3310,13 +3354,14 @@ navigation_info_node::~navigation_info_node() throw ()
  *
  * @return a pointer to this navigation_info_node.
  */
-navigation_info_node * navigation_info_node::to_navigation_info() throw ()
+openvrml::navigation_info_node *
+openvrml::navigation_info_node::to_navigation_info() throw ()
 {
     return this;
 }
 
 /**
- * @fn const std::vector<float> & navigation_info_node::avatar_size() const throw ()
+ * @fn const std::vector<float> & openvrml::navigation_info_node::avatar_size() const throw ()
  *
  * @brief Get the avatar dimensions.
  *
@@ -3324,7 +3369,7 @@ navigation_info_node * navigation_info_node::to_navigation_info() throw ()
  */
 
 /**
- * @fn bool navigation_info_node::headlight() const throw ()
+ * @fn bool openvrml::navigation_info_node::headlight() const throw ()
  *
  * @brief Get the state of the headlight.
  *
@@ -3332,7 +3377,7 @@ navigation_info_node * navigation_info_node::to_navigation_info() throw ()
  */
 
 /**
- * @fn float navigation_info_node::speed() const throw ()
+ * @fn float openvrml::navigation_info_node::speed() const throw ()
  *
  * @brief Get the current speed of the user view.
  *
@@ -3340,7 +3385,7 @@ navigation_info_node * navigation_info_node::to_navigation_info() throw ()
  */
 
 /**
- * @fn const std::vector<std::string> & navigation_info_node::type() const throw ()
+ * @fn const std::vector<std::string> & openvrml::navigation_info_node::type() const throw ()
  *
  * @brief Get the navigation type.
  *
@@ -3348,7 +3393,7 @@ navigation_info_node * navigation_info_node::to_navigation_info() throw ()
  */
 
 /**
- * @fn float navigation_info_node::visibility_limit() const throw ()
+ * @fn float openvrml::navigation_info_node::visibility_limit() const throw ()
  *
  * @brief Get the visibility limit.
  *
@@ -3357,7 +3402,7 @@ navigation_info_node * navigation_info_node::to_navigation_info() throw ()
 
 
 /**
- * @class normal_node
+ * @class openvrml::normal_node
  *
  * @ingroup nodes
  *
@@ -3370,7 +3415,9 @@ navigation_info_node * navigation_info_node::to_navigation_info() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-normal_node::normal_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
+openvrml::normal_node::
+normal_node(const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -3378,7 +3425,7 @@ normal_node::normal_node(const node_type & type, const boost::shared_ptr<openvrm
 /**
  * @brief Destroy.
  */
-normal_node::~normal_node() throw ()
+openvrml::normal_node::~normal_node() throw ()
 {}
 
 /**
@@ -3386,13 +3433,13 @@ normal_node::~normal_node() throw ()
  *
  * @return a pointer to this normal_node.
  */
-normal_node * normal_node::to_normal() throw ()
+openvrml::normal_node * openvrml::normal_node::to_normal() throw ()
 {
     return this;
 }
 
 /**
- * @fn const std::vector<vec3f> & normal_node::vector() const throw ()
+ * @fn const std::vector<openvrml::vec3f> & openvrml::normal_node::vector() const throw ()
  *
  * @brief Get the array of normal vectors.
  *
@@ -3401,7 +3448,7 @@ normal_node * normal_node::to_normal() throw ()
 
 
 /**
- * @class sound_source_node
+ * @class openvrml::sound_source_node
  *
  * @ingroup nodes
  *
@@ -3414,8 +3461,9 @@ normal_node * normal_node::to_normal() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-sound_source_node::sound_source_node(const node_type & type,
-                                     const boost::shared_ptr<openvrml::scope> & scope)
+openvrml::sound_source_node::
+sound_source_node(const node_type & type,
+                  const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope)
 {}
@@ -3423,7 +3471,7 @@ sound_source_node::sound_source_node(const node_type & type,
 /**
  * @brief Destructor.
  */
-sound_source_node::~sound_source_node() throw ()
+openvrml::sound_source_node::~sound_source_node() throw ()
 {}
 
 /**
@@ -3431,14 +3479,15 @@ sound_source_node::~sound_source_node() throw ()
  *
  * @return a pointer to this sound_source_node.
  */
-sound_source_node * sound_source_node::to_sound_source() throw ()
+openvrml::sound_source_node * openvrml::sound_source_node::to_sound_source()
+    throw ()
 {
     return this;
 }
 
 
 /**
- * @class texture_node
+ * @class openvrml::texture_node
  *
  * @ingroup nodes
  *
@@ -3446,7 +3495,7 @@ sound_source_node * sound_source_node::to_sound_source() throw ()
  */
 
 /**
- * @var viewer::texture_object_t texture_node::texture_reference
+ * @var openvrml::viewer::texture_object_t openvrml::texture_node::texture_reference
  *
  * @brief Identifier for a texture object in the renderer.
  */
@@ -3457,8 +3506,9 @@ sound_source_node * sound_source_node::to_sound_source() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-texture_node::texture_node(const node_type & type,
-                           const boost::shared_ptr<openvrml::scope> & scope)
+openvrml::texture_node::
+texture_node(const node_type & type,
+             const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
     texture_reference(0)
@@ -3472,7 +3522,7 @@ texture_node::texture_node(const node_type & type,
  *       the browser. We need to handle this better via some refcounting
  *       scheme.
  */
-texture_node::~texture_node() throw ()
+openvrml::texture_node::~texture_node() throw ()
 {
     if (this->texture_reference) {
         assert(this->type().node_class().browser().viewer());
@@ -3488,7 +3538,8 @@ texture_node::~texture_node() throw ()
  *
  * @return object identifier for the inserted texture.
  */
-viewer::texture_object_t texture_node::render_texture(viewer & v)
+openvrml::viewer::texture_object_t
+openvrml::texture_node::render_texture(viewer & v)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex());
 
@@ -3514,7 +3565,8 @@ viewer::texture_object_t texture_node::render_texture(viewer & v)
  *
  * @return object identifier for the inserted texture.
  */
-viewer::texture_object_t texture_node::do_render_texture(viewer & v)
+openvrml::viewer::texture_object_t
+openvrml::texture_node::do_render_texture(viewer & v)
 {
     return 0;
 }
@@ -3524,13 +3576,13 @@ viewer::texture_object_t texture_node::do_render_texture(viewer & v)
  *
  * @return a pointer to this texture_node.
  */
-texture_node * texture_node::to_texture() throw ()
+openvrml::texture_node * openvrml::texture_node::to_texture() throw ()
 {
     return this;
 }
 
 /**
- * @fn const image & texture_node::image() const throw ()
+ * @fn const openvrml::image & openvrml::texture_node::image() const throw ()
  *
  * @brief The image.
  *
@@ -3538,7 +3590,7 @@ texture_node * texture_node::to_texture() throw ()
  */
 
 /**
- * @fn bool texture_node::repeat_s() const throw ()
+ * @fn bool openvrml::texture_node::repeat_s() const throw ()
  *
  * @brief Get the flag indicating whether the texture should repeat in the
  *      <var>S</var> direction.
@@ -3548,7 +3600,7 @@ texture_node * texture_node::to_texture() throw ()
  */
 
 /**
- * @fn bool texture_node::repeat_t() const throw ()
+ * @fn bool openvrml::texture_node::repeat_t() const throw ()
  *
  * @brief Get the flag indicating whether the texture should repeat in the
  *      <var>T</var> direction.
@@ -3559,7 +3611,7 @@ texture_node * texture_node::to_texture() throw ()
 
 
 /**
- * @class texture_coordinate_node
+ * @class openvrml::texture_coordinate_node
  *
  * @ingroup nodes
  *
@@ -3572,7 +3624,7 @@ texture_node * texture_node::to_texture() throw ()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-texture_coordinate_node::
+openvrml::texture_coordinate_node::
 texture_coordinate_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
@@ -3582,7 +3634,7 @@ texture_coordinate_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-texture_coordinate_node::~texture_coordinate_node() throw ()
+openvrml::texture_coordinate_node::~texture_coordinate_node() throw ()
 {}
 
 /**
@@ -3590,14 +3642,15 @@ texture_coordinate_node::~texture_coordinate_node() throw ()
  *
  * @return a pointer to this texture_coordinate_node.
  */
-texture_coordinate_node * texture_coordinate_node::to_texture_coordinate()
+openvrml::texture_coordinate_node *
+openvrml::texture_coordinate_node::to_texture_coordinate()
     throw ()
 {
     return this;
 }
 
 /**
- * @fn const std::vector<vec2f> & texture_coordinate_node::point() const throw ()
+ * @fn const std::vector<openvrml::vec2f> & openvrml::texture_coordinate_node::point() const throw ()
  *
  * @brief The texture coordinates.
  *
@@ -3606,7 +3659,7 @@ texture_coordinate_node * texture_coordinate_node::to_texture_coordinate()
 
 
 /**
- * @class texture_transform_node
+ * @class openvrml::texture_transform_node
  *
  * @ingroup nodes
  *
@@ -3619,7 +3672,7 @@ texture_coordinate_node * texture_coordinate_node::to_texture_coordinate()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-texture_transform_node::
+openvrml::texture_transform_node::
 texture_transform_node(const node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
@@ -3629,7 +3682,7 @@ texture_transform_node(const node_type & type,
 /**
  * @brief Destructor.
  */
-texture_transform_node::~texture_transform_node() throw ()
+openvrml::texture_transform_node::~texture_transform_node() throw ()
 {}
 
 /**
@@ -3637,7 +3690,7 @@ texture_transform_node::~texture_transform_node() throw ()
  *
  * @param v viewer.
  */
-void texture_transform_node::render_texture_transform(viewer & v)
+void openvrml::texture_transform_node::render_texture_transform(viewer & v)
 {
     this->do_render_texture_transform(v);
     this->modified(false);
@@ -3648,7 +3701,7 @@ void texture_transform_node::render_texture_transform(viewer & v)
  *
  * @param v viewer.
  */
-void texture_transform_node::do_render_texture_transform(viewer & v)
+void openvrml::texture_transform_node::do_render_texture_transform(viewer & v)
 {}
 
 /**
@@ -3656,7 +3709,8 @@ void texture_transform_node::do_render_texture_transform(viewer & v)
  *
  * @return a pointer to this texture_transform_node.
  */
-texture_transform_node * texture_transform_node::to_texture_transform()
+openvrml::texture_transform_node *
+openvrml::texture_transform_node::to_texture_transform()
     throw ()
 {
     return this;
@@ -3664,7 +3718,7 @@ texture_transform_node * texture_transform_node::to_texture_transform()
 
 
 /**
- * @class transform_node
+ * @class openvrml::transform_node
  *
  * @ingroup nodes
  *
@@ -3677,8 +3731,9 @@ texture_transform_node * texture_transform_node::to_texture_transform()
  * @param type  the node_type associated with the node.
  * @param scope the Scope the node belongs to.
  */
-transform_node::transform_node(const node_type & type,
-                               const boost::shared_ptr<openvrml::scope> & scope)
+openvrml::transform_node::
+transform_node(const node_type & type,
+               const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
     child_node(type, scope),
@@ -3688,7 +3743,7 @@ transform_node::transform_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-transform_node::~transform_node() throw ()
+openvrml::transform_node::~transform_node() throw ()
 {}
 
 /**
@@ -3696,13 +3751,13 @@ transform_node::~transform_node() throw ()
  *
  * @return a pointer to this transform_node.
  */
-transform_node * transform_node::to_transform() throw ()
+openvrml::transform_node * openvrml::transform_node::to_transform() throw ()
 {
     return this;
 }
 
 /**
- * @fn const mat4f & transform_node::transform() const throw ()
+ * @fn const openvrml::mat4f & openvrml::transform_node::transform() const throw ()
  *
  * @brief Get the transformation associated with the node as a matrix.
  *
@@ -3711,7 +3766,7 @@ transform_node * transform_node::to_transform() throw ()
 
 
 /**
- * @class viewpoint_node
+ * @class openvrml::viewpoint_node
  *
  * @ingroup nodes
  *
@@ -3724,7 +3779,7 @@ transform_node * transform_node::to_transform() throw ()
  * @param type  the node_type associated with the node.
  * @param scope     the Scope the node belongs to.
  */
-viewpoint_node::
+openvrml::viewpoint_node::
 viewpoint_node(const node_type & type,
                const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
@@ -3735,7 +3790,7 @@ viewpoint_node(const node_type & type,
 /**
  * @brief Destructor.
  */
-viewpoint_node::~viewpoint_node() throw ()
+openvrml::viewpoint_node::~viewpoint_node() throw ()
 {}
 
 /**
@@ -3743,13 +3798,13 @@ viewpoint_node::~viewpoint_node() throw ()
  *
  * @return a pointer to this viewpoint_node.
  */
-viewpoint_node * viewpoint_node::to_viewpoint() throw ()
+openvrml::viewpoint_node * openvrml::viewpoint_node::to_viewpoint() throw ()
 {
     return this;
 }
 
 /**
- * @fn const mat4f & viewpoint_node::transformation() const throw ()
+ * @fn const openvrml::mat4f & openvrml::viewpoint_node::transformation() const throw ()
  *
  * @brief Get the transformation of the viewpoint_node in the global coordinate
  *      system.
@@ -3759,7 +3814,7 @@ viewpoint_node * viewpoint_node::to_viewpoint() throw ()
  */
 
 /**
- * @fn const mat4f & viewpoint_node::user_view_transform() const throw ()
+ * @fn const openvrml::mat4f & openvrml::viewpoint_node::user_view_transform() const throw ()
  *
  * @brief Get the transformation of the user view relative to the
  *      viewpoint_node.
@@ -3768,7 +3823,7 @@ viewpoint_node * viewpoint_node::to_viewpoint() throw ()
  */
 
 /**
- * @fn void viewpoint_node::user_view_transform(const mat4f & transform) throw ()
+ * @fn void openvrml::viewpoint_node::user_view_transform(const mat4f & transform) throw ()
  *
  * @brief Set the transformation of the user view relative to the
  *      viewpoint_node.
@@ -3777,7 +3832,7 @@ viewpoint_node * viewpoint_node::to_viewpoint() throw ()
  */
 
 /**
- * @fn const std::string & viewpoint_node::description() const throw ()
+ * @fn const std::string & openvrml::viewpoint_node::description() const throw ()
  *
  * @brief Get the description.
  *
@@ -3785,7 +3840,7 @@ viewpoint_node * viewpoint_node::to_viewpoint() throw ()
  */
 
 /**
- * @fn float viewpoint_node::field_of_view() const throw ()
+ * @fn float openvrml::viewpoint_node::field_of_view() const throw ()
  *
  * @brief Get the field of view.
  *
@@ -3794,7 +3849,7 @@ viewpoint_node * viewpoint_node::to_viewpoint() throw ()
 
 
 /**
- * @class node_traverser
+ * @class openvrml::node_traverser
  *
  * @ingroup nodes
  *
@@ -3823,7 +3878,7 @@ viewpoint_node * viewpoint_node::to_viewpoint() throw ()
 /**
  * @internal
  *
- * @var std::set<node *> node_traverser::traversed_nodes
+ * @var std::set<openvrml::node *> openvrml::node_traverser::traversed_nodes
  *
  * @brief The set of nodes that have already been traversed.
  */
@@ -3831,7 +3886,7 @@ viewpoint_node * viewpoint_node::to_viewpoint() throw ()
 /**
  * @internal
  *
- * @var bool node_traverser::halt
+ * @var bool openvrml::node_traverser::halt
  *
  * @brief Flag to indicate if the traversal should be halted.
  */
@@ -3841,14 +3896,14 @@ viewpoint_node * viewpoint_node::to_viewpoint() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-node_traverser::node_traverser() throw (std::bad_alloc):
+openvrml::node_traverser::node_traverser() throw (std::bad_alloc):
     halt(false)
 {}
 
 /**
  * @brief Destroy.
  */
-node_traverser::~node_traverser() throw ()
+openvrml::node_traverser::~node_traverser() throw ()
 {}
 
 /**
@@ -3866,7 +3921,7 @@ node_traverser::~node_traverser() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void node_traverser::traverse(node & n)
+void openvrml::node_traverser::traverse(node & n)
 {
     assert(this->traversed_nodes.empty());
     try {
@@ -3887,7 +3942,7 @@ void node_traverser::traverse(node & n)
  *
  * @param node  the root node of the branch to traverse.
  */
-void node_traverser::traverse(const node_ptr & node)
+void openvrml::node_traverser::traverse(const node_ptr & node)
 {
     assert(this->traversed_nodes.empty());
     try {
@@ -3914,7 +3969,7 @@ void node_traverser::traverse(const node_ptr & node)
  * @param nodes  the root @link openvrml::node nodes@endlink of the branch to
  *               traverse.
  */
-void node_traverser::traverse(const std::vector<node_ptr> & nodes)
+void openvrml::node_traverser::traverse(const std::vector<node_ptr> & nodes)
 {
     assert(this->traversed_nodes.empty());
     try {
@@ -3951,7 +4006,7 @@ void node_traverser::traverse(const std::vector<node_ptr> & nodes)
  * <code>node_traverser::halted</code> to check whether the traversal has been
  * halted.
  */
-void node_traverser::halt_traversal() throw ()
+void openvrml::node_traverser::halt_traversal() throw ()
 {
     this->halt = true;
 }
@@ -3965,7 +4020,7 @@ void node_traverser::halt_traversal() throw ()
  *
  * @return @c true if the traversal has been halted; @c false otherwise.
  */
-bool node_traverser::halted() throw ()
+bool openvrml::node_traverser::halted() throw ()
 {
     return this->halt;
 }
@@ -3979,7 +4034,7 @@ bool node_traverser::halted() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void node_traverser::do_traversal(node & n)
+void openvrml::node_traverser::do_traversal(node & n)
 {
     std::set<node *>::iterator pos = this->traversed_nodes.find(&n);
     const bool alreadyTraversed = (pos != this->traversed_nodes.end());
@@ -4023,7 +4078,7 @@ void node_traverser::do_traversal(node & n)
  *
  * @param n  the <code>node</code> currently being traversed.
  */
-void node_traverser::on_entering(node & n)
+void openvrml::node_traverser::on_entering(node & n)
 {}
 
 /**
@@ -4032,7 +4087,5 @@ void node_traverser::on_entering(node & n)
  *
  * @param n  the <code>node</code> currently being traversed.
  */
-void node_traverser::on_leaving(node & n)
+void openvrml::node_traverser::on_leaving(node & n)
 {}
-
-} // namespace openvrml

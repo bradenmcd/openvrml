@@ -28,44 +28,41 @@
 # include "scope.h"
 # include "node.h"
 
-namespace openvrml {
-
 /**
- * @class scope
+ * @class openvrml::scope
  *
  * @brief The scope class keeps track of defined nodes and
  *      prototypes.
  *
- * PROTO definitions add node types to the namespace.
- * PROTO implementations are a separate node type namespace,
- * and require that any nested PROTOs NOT be available outside
- * the PROTO implementation. PROTOs defined outside the current
- * namespace are available.
+ * PROTO definitions add node types to the namespace. PROTO implementations are
+ * a separate node type namespace, and require that any nested PROTOs @b not be
+ * available outside the PROTO implementation. PROTOs defined outside the
+ * current namespace are available.
  */
 
 /**
- * @var scope::node
+ * @var openvrml::scope::node
  *
  * @brief node identifiers are stored in the scope, so node needs special
  *        privilege to access them.
  */
 
 /**
- * @var std::list<boost::shared_ptr<node_type> > scope::node_type_list
+ * @var std::list<boost::shared_ptr<openvrml::node_type> > openvrml::scope::node_type_list
  *
- * @brief List of @link openvrml::node_type node_types@endlink in the scope.
+ * @brief List of <code>node_type</code>s in the scope.
  */
 
 /**
- * @var std::map<std::string, node *> scope::named_node_map
+ * @var std::map<std::string, openvrml::node *> openvrml::scope::named_node_map
  *
- * @brief Map of the named @link openvrml::node nodes@endlink in the scope.
+ * @brief Map of the named <code>node</code>s in the scope.
  */
 
 /**
  * @internal
  *
- * @var const std::string scope::id_
+ * @var const std::string openvrml::scope::id_
  *
  * @brief <code>scope</code> identifier.
  */
@@ -73,7 +70,7 @@ namespace openvrml {
 /**
  * @internal
  *
- * @var const scope_ptr scope::parent_
+ * @var const boost::shared_ptr<openvrml::scope> openvrml::scope::parent_
  *
  * @brief The parent scope; null if the scope is a root scope.
  */
@@ -87,8 +84,8 @@ namespace openvrml {
  * For the root scope, @p id should be the URI of the world. For child scopes,
  * @p id should be the name of the PROTO to which the scope corresponds.
  */
-scope::scope(const std::string & id,
-             const boost::shared_ptr<openvrml::scope> & parent):
+openvrml::scope::scope(const std::string & id,
+                       const boost::shared_ptr<openvrml::scope> & parent):
     id_(id),
     parent_(parent)
 {}
@@ -96,7 +93,7 @@ scope::scope(const std::string & id,
 /**
  * @brief Destroy.
  */
-scope::~scope()
+openvrml::scope::~scope()
 {}
 
 /**
@@ -104,7 +101,7 @@ scope::~scope()
  *
  * @return the <code>scope</code> identifier.
  */
-const std::string & scope::id() const throw ()
+const std::string & openvrml::scope::id() const throw ()
 {
     return this->id_;
 }
@@ -115,7 +112,8 @@ const std::string & scope::id() const throw ()
  * @return the parent <code>scope</code>; or null if the <code>scope</code> is
  *         a root <code>scope</code>.
  */
-const boost::shared_ptr<scope> & scope::parent() const throw ()
+const boost::shared_ptr<openvrml::scope> & openvrml::scope::parent() const
+    throw ()
 {
     return this->parent_;
 }
@@ -135,7 +133,7 @@ const boost::shared_ptr<scope> & scope::parent() const throw ()
  *
  * @pre @p type is not null.
  */
-bool scope::add_type(const boost::shared_ptr<node_type> & type)
+bool openvrml::scope::add_type(const boost::shared_ptr<node_type> & type)
     throw (std::bad_alloc)
 {
     assert(type);
@@ -145,12 +143,14 @@ bool scope::add_type(const boost::shared_ptr<node_type> & type)
 }
 
 namespace {
-    struct has_id_ : std::unary_function<boost::shared_ptr<node_type>, bool> {
+    struct has_id_ :
+        std::unary_function<boost::shared_ptr<openvrml::node_type>, bool> {
         explicit has_id_(const std::string & id):
             id(&id)
         {}
 
-        bool operator()(const boost::shared_ptr<node_type> & type) const
+        bool
+        operator()(const boost::shared_ptr<openvrml::node_type> & type) const
         {
             assert(type);
             return type->id() == *this->id;
@@ -160,15 +160,17 @@ namespace {
         const std::string * id;
     };
 
-    typedef std::list<boost::shared_ptr<node_type> > node_type_list_t;
+    typedef std::list<boost::shared_ptr<openvrml::node_type> >
+        node_type_list_t;
 }
 
 /**
  * @brief Find a node type, given a type name. Returns 0 if type is
  *      not defined.
  */
-const boost::shared_ptr<node_type> &
-scope::find_type(const std::string & id) const {
+const boost::shared_ptr<openvrml::node_type> &
+openvrml::scope::find_type(const std::string & id) const
+{
     //
     // Look through the types unique to this scope.
     //
@@ -192,7 +194,8 @@ scope::find_type(const std::string & id) const {
  * @return the first node_type in the scope, or a null shared_ptr if the scope
  *         has no node_types.
  */
-const boost::shared_ptr<node_type> & scope::first_type() const
+const boost::shared_ptr<openvrml::node_type> &
+openvrml::scope::first_type() const
 {
     static const boost::shared_ptr<node_type> null;
     return !this->node_type_list.empty()
@@ -206,7 +209,7 @@ const boost::shared_ptr<node_type> & scope::first_type() const
  * @return a pointer to a node with node::id @p id, or 0 if no such node exists
  *         in the scope.
  */
-node * scope::find_node(const std::string & id) const
+openvrml::node * openvrml::scope::find_node(const std::string & id) const
 {
     typedef std::map<std::string, node *> named_node_map_t;
     const named_node_map_t::const_iterator pos = this->named_node_map.find(id);
@@ -214,5 +217,3 @@ node * scope::find_node(const std::string & id) const
             ? pos->second
             : 0;
 }
-
-} // namespace openvrml

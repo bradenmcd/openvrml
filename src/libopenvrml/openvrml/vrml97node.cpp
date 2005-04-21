@@ -1289,9 +1289,10 @@ namespace {
     }
 }
 
-namespace openvrml {
 
 /**
+ * @namespace openvrml::vrml97_node
+ *
  * @brief Implementations of the VRML97 nodes.
  *
  * It is a legacy of OpenVRML's initial architecture that these classes are
@@ -1299,10 +1300,10 @@ namespace openvrml {
  * this namespace have been factored out of other parts of OpenVRML, all of
  * these classes will be moving into the library's implementation.
  */
-namespace vrml97_node {
+
 
 /**
- * @class abstract_base
+ * @class openvrml::vrml97_node::abstract_base
  *
  * @brief Abstract base class for VRML97 node implementations.
  *
@@ -1316,15 +1317,16 @@ namespace vrml97_node {
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-abstract_base::abstract_base(const node_type & type,
-                             const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::abstract_base::
+abstract_base(const node_type & type,
+              const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope)
 {}
 
 /**
  * @brief Destroy.
  */
-abstract_base::~abstract_base() throw ()
+openvrml::vrml97_node::abstract_base::~abstract_base() throw ()
 {}
 
 /**
@@ -1334,7 +1336,8 @@ abstract_base::~abstract_base() throw ()
  *
  * @exception unsupported_interface  if the node has no field @p id.
  */
-const field_value & abstract_base::do_field(const std::string & id) const
+const openvrml::field_value &
+openvrml::vrml97_node::abstract_base::do_field(const std::string & id) const
     throw (unsupported_interface)
 {
     assert(dynamic_cast<const vrml97_node_type *>(&this->type()));
@@ -1353,7 +1356,8 @@ const field_value & abstract_base::do_field(const std::string & id) const
  *
  * @exception unsupported_interface if the node has no eventIn @p id.
  */
-event_listener & abstract_base::do_event_listener(const std::string & id)
+openvrml::event_listener &
+openvrml::vrml97_node::abstract_base::do_event_listener(const std::string & id)
     throw (unsupported_interface)
 {
     assert(dynamic_cast<const vrml97_node_type *>(&this->type()));
@@ -1372,7 +1376,8 @@ event_listener & abstract_base::do_event_listener(const std::string & id)
  *
  * @exception unsupported_interface if the node has no eventOut @p id.
  */
-event_emitter & abstract_base::do_event_emitter(const std::string & id)
+openvrml::event_emitter &
+openvrml::vrml97_node::abstract_base::do_event_emitter(const std::string & id)
     throw (unsupported_interface)
 {
     assert(dynamic_cast<const vrml97_node_type *>(&this->type()));
@@ -1382,7 +1387,7 @@ event_emitter & abstract_base::do_event_emitter(const std::string & id)
 
 
 /**
- * @class abstract_indexed_set_node
+ * @class openvrml::vrml97_node::abstract_indexed_set_node
  *
  * @brief Abstract base class for IndexedFaceSet and IndexedLineSet.
  */
@@ -1390,7 +1395,7 @@ event_emitter & abstract_base::do_event_emitter(const std::string & id)
 /**
  * @internal
  *
- * @class abstract_indexed_set_node::set_color_index_listener
+ * @class openvrml::vrml97_node::abstract_indexed_set_node::set_color_index_listener
  *
  * @brief set_colorIndex event handler.
  */
@@ -1400,7 +1405,7 @@ event_emitter & abstract_base::do_event_emitter(const std::string & id)
  *
  * @param node  abstract_indexed_set_node.
  */
-abstract_indexed_set_node::set_color_index_listener::
+openvrml::vrml97_node::abstract_indexed_set_node::set_color_index_listener::
 set_color_index_listener(abstract_indexed_set_node & node):
     mfint32_listener(node)
 {}
@@ -1408,7 +1413,7 @@ set_color_index_listener(abstract_indexed_set_node & node):
 /**
  * @brief Destroy.
  */
-abstract_indexed_set_node::set_color_index_listener::
+openvrml::vrml97_node::abstract_indexed_set_node::set_color_index_listener::
 ~set_color_index_listener() throw ()
 {}
 
@@ -1421,7 +1426,7 @@ abstract_indexed_set_node::set_color_index_listener::
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-abstract_indexed_set_node::set_color_index_listener::
+openvrml::vrml97_node::abstract_indexed_set_node::set_color_index_listener::
 do_process_event(const mfint32 & color_index,
                  const double timestamp)
     throw (std::bad_alloc)
@@ -1440,7 +1445,7 @@ do_process_event(const mfint32 & color_index,
 /**
  * @internal
  *
- * @class abstract_indexed_set_node::set_coord_index_listener
+ * @class openvrml::vrml97_node::abstract_indexed_set_node::set_coord_index_listener
  *
  * @brief set_coordIndex event handler.
  */
@@ -1450,7 +1455,7 @@ do_process_event(const mfint32 & color_index,
  *
  * @param node  abstract_indexed_set_node.
  */
-abstract_indexed_set_node::set_coord_index_listener::
+openvrml::vrml97_node::abstract_indexed_set_node::set_coord_index_listener::
 set_coord_index_listener(abstract_indexed_set_node & node):
     mfint32_listener(node)
 {}
@@ -1458,7 +1463,7 @@ set_coord_index_listener(abstract_indexed_set_node & node):
 /**
  * @brief Destroy.
  */
-abstract_indexed_set_node::set_coord_index_listener::
+openvrml::vrml97_node::abstract_indexed_set_node::set_coord_index_listener::
 ~set_coord_index_listener() throw ()
 {}
 
@@ -1471,7 +1476,7 @@ abstract_indexed_set_node::set_coord_index_listener::
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-abstract_indexed_set_node::set_coord_index_listener::
+openvrml::vrml97_node::abstract_indexed_set_node::set_coord_index_listener::
 do_process_event(const mfint32 & coord_index,
                  const double timestamp)
     throw (std::bad_alloc)
@@ -1488,43 +1493,43 @@ do_process_event(const mfint32 & coord_index,
 }
 
 /**
- * @var abstract_indexed_set_node::set_color_index_listener abstract_indexed_set_node::set_color_index_
+ * @var openvrml::vrml97_node::abstract_indexed_set_node::set_color_index_listener openvrml::vrml97_node::abstract_indexed_set_node::set_color_index_
  *
  * @brief set_colorIndex event handler.
  */
 
 /**
- * @var abstract_indexed_set_node::set_coord_index_listener abstract_indexed_set_node::set_coord_index_
+ * @var openvrml::vrml97_node::abstract_indexed_set_node::set_coord_index_listener openvrml::vrml97_node::abstract_indexed_set_node::set_coord_index_
  *
  * @brief set_coordIndex event handler.
  */
 
 /**
- * @var exposedfield<sfnode> abstract_indexed_set_node::color_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::abstract_indexed_set_node::color_
  *
  * @brief color exposedField.
  */
 
 /**
- * @var exposedfield<sfnode> abstract_indexed_set_node::coord_
+ * @var openvrml::exposedfield<sfnode> openvrml::vrml97_node::abstract_indexed_set_node::coord_
  *
  * @brief coord exposedField.
  */
 
 /**
- * @var mfint32 abstract_indexed_set_node::color_index_
+ * @var openvrml::mfint32 openvrml::vrml97_node::abstract_indexed_set_node::color_index_
  *
  * @brief colorIndex field.
  */
 
 /**
- * @var sfbool abstract_indexed_set_node::color_per_vertex_
+ * @var openvrml::sfbool openvrml::vrml97_node::abstract_indexed_set_node::color_per_vertex_
  *
  * @brief colorPerVertex field.
  */
 
 /**
- * @var mfint32 abstract_indexed_set_node::coord_index_
+ * @var openvrml::mfint32 openvrml::vrml97_node::abstract_indexed_set_node::coord_index_
  *
  * @brief coordIndex field.
  */
@@ -1535,8 +1540,9 @@ do_process_event(const mfint32 & coord_index,
  * @param type  the node_type associated with the instance.
  * @param scope the scope that the new node will belong to.
  */
-abstract_indexed_set_node::abstract_indexed_set_node(const node_type & type,
-                                                     const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::abstract_indexed_set_node::
+abstract_indexed_set_node(const node_type & type,
+                          const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -1550,7 +1556,8 @@ abstract_indexed_set_node::abstract_indexed_set_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-abstract_indexed_set_node::~abstract_indexed_set_node() throw ()
+openvrml::vrml97_node::abstract_indexed_set_node::~abstract_indexed_set_node()
+    throw ()
 {}
 
 /**
@@ -1559,7 +1566,7 @@ abstract_indexed_set_node::~abstract_indexed_set_node() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool abstract_indexed_set_node::modified() const
+bool openvrml::vrml97_node::abstract_indexed_set_node::modified() const
 {
     return this->node::modified()
         || (this->color_.sfnode::value
@@ -1573,38 +1580,39 @@ bool abstract_indexed_set_node::modified() const
  *
  * @return the color_node, or 0 if none is set.
  */
-const openvrml::color_node * abstract_indexed_set_node::color() const throw ()
+const openvrml::color_node *
+openvrml::vrml97_node::abstract_indexed_set_node::color() const throw ()
 {
     return node_cast<openvrml::color_node *>(this->color_.sfnode::value.get());
 }
 
 
 /**
- * @class abstract_light_node
+ * @class openvrml::vrml97_node::abstract_light_node
  *
  * @brief Base class for all light nodes.
  */
 
 /**
- * @var exposedfield<sffloat> abstract_light_node::ambient_intensity_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::abstract_light_node::ambient_intensity_
  *
  * @brief ambientIntensity exposedField.
  */
 
 /**
- * @var exposedfield<sfcolor> abstract_light_node::color_
+ * @var openvrml::exposedfield<openvrml::sfcolor> openvrml::vrml97_node::abstract_light_node::color_
  *
  * @brief color exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> abstract_light_node::intensity_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::abstract_light_node::intensity_
  *
  * @brief intensity exposedField.
  */
 
 /**
- * @var exposedfield<sfbool> abstract_light_node::on_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::abstract_light_node::on_
  *
  * @brief on exposedField.
  */
@@ -1615,8 +1623,9 @@ const openvrml::color_node * abstract_indexed_set_node::color() const throw ()
  * @param type  the node_type for the node.
  * @param scope     the scope to which the node belongs.
  */
-abstract_light_node::abstract_light_node(const node_type & type,
-                                         const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::abstract_light_node::
+abstract_light_node(const node_type & type,
+                    const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -1629,7 +1638,7 @@ abstract_light_node::abstract_light_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-abstract_light_node::~abstract_light_node() throw ()
+openvrml::vrml97_node::abstract_light_node::~abstract_light_node() throw ()
 {}
 
 /**
@@ -1637,7 +1646,8 @@ abstract_light_node::~abstract_light_node() throw ()
  *
  * @return a pointer to this object.
  */
-abstract_light_node * abstract_light_node::to_light() const
+openvrml::vrml97_node::abstract_light_node *
+openvrml::vrml97_node::abstract_light_node::to_light() const
 {
     return const_cast<abstract_light_node *>(this);
 }
@@ -1647,7 +1657,8 @@ abstract_light_node * abstract_light_node::to_light() const
  *
  * @return the ambient intensity.
  */
-float abstract_light_node::ambient_intensity() const throw ()
+float openvrml::vrml97_node::abstract_light_node::ambient_intensity() const
+    throw ()
 {
     return this->ambient_intensity_.sffloat::value;
 }
@@ -1657,7 +1668,7 @@ float abstract_light_node::ambient_intensity() const throw ()
  *
  * @return the intensity.
  */
-float abstract_light_node::intensity() const throw ()
+float openvrml::vrml97_node::abstract_light_node::intensity() const throw ()
 {
     return this->intensity_.sffloat::value;
 }
@@ -1667,7 +1678,7 @@ float abstract_light_node::intensity() const throw ()
  *
  * @return @c true if the light is on; @c false otherwise.
  */
-bool abstract_light_node::on() const throw ()
+bool openvrml::vrml97_node::abstract_light_node::on() const throw ()
 {
     return this->on_.sfbool::value;
 }
@@ -1677,7 +1688,8 @@ bool abstract_light_node::on() const throw ()
  *
  * @return the light color.
  */
-const openvrml::color & abstract_light_node::color() const throw ()
+const openvrml::color &
+openvrml::vrml97_node::abstract_light_node::color() const throw ()
 {
     return this->color_.sfcolor::value;
 }
@@ -1687,26 +1699,27 @@ const openvrml::color & abstract_light_node::color() const throw ()
  *
  * The default version of this method does nothing.
  *
- * @param viewer a renderer.
+ * @param v a renderer.
  */
-void abstract_light_node::renderScoped(openvrml::viewer & viewer)
+void
+openvrml::vrml97_node::abstract_light_node::renderScoped(openvrml::viewer & v)
 {}
 
 
 /**
- * @class abstract_texture_node
+ * @class openvrml::vrml97_node::abstract_texture_node
  *
  * @brief Abstract base class for VRML97 texture nodes.
  */
 
 /**
- * @var sfbool abstract_texture_node::repeat_s_
+ * @var openvrml::sfbool openvrml::vrml97_node::abstract_texture_node::repeat_s_
  *
  * @brief repeatS field.
  */
 
 /**
- * @var sfbool abstract_texture_node::repeat_t_
+ * @var openvrml::sfbool openvrml::vrml97_node::abstract_texture_node::repeat_t_
  *
  * @brief repeatT field.
  */
@@ -1717,8 +1730,9 @@ void abstract_light_node::renderScoped(openvrml::viewer & viewer)
  * @param type  the node_type for the node instance.
  * @param scope the scope to which the node belongs.
  */
-abstract_texture_node::abstract_texture_node(const node_type & type,
-                                             const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::abstract_texture_node::
+abstract_texture_node(const node_type & type,
+                      const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     texture_node(type, scope),
@@ -1729,7 +1743,7 @@ abstract_texture_node::abstract_texture_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-abstract_texture_node::~abstract_texture_node() throw ()
+openvrml::vrml97_node::abstract_texture_node::~abstract_texture_node() throw ()
 {}
 
 /**
@@ -1738,7 +1752,7 @@ abstract_texture_node::~abstract_texture_node() throw ()
  * @return @c true if the texture should repeat in the <var>S</var> direction,
  *      @c false otherwise.
  */
-bool abstract_texture_node::repeat_s() const throw ()
+bool openvrml::vrml97_node::abstract_texture_node::repeat_s() const throw ()
 {
     return this->repeat_s_.value;
 }
@@ -1749,14 +1763,14 @@ bool abstract_texture_node::repeat_s() const throw ()
  * @return @c true if the texture should repeat in the <var>T</var> direction,
  *      @c false otherwise.
  */
-bool abstract_texture_node::repeat_t() const throw ()
+bool openvrml::vrml97_node::abstract_texture_node::repeat_t() const throw ()
 {
     return this->repeat_t_.value;
 }
 
 
 /**
- * @class anchor_class.
+ * @class openvrml::vrml97_node::anchor_class
  *
  * @brief Class object for Anchor nodes.
  */
@@ -1766,14 +1780,14 @@ bool abstract_texture_node::repeat_t() const throw ()
  *
  * @param browser the browser associated with this anchor_class.
  */
-anchor_class::anchor_class(openvrml::browser & browser):
+openvrml::vrml97_node::anchor_class::anchor_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-anchor_class::~anchor_class() throw ()
+openvrml::vrml97_node::anchor_class::~anchor_class() throw ()
 {}
 
 /**
@@ -1788,9 +1802,10 @@ anchor_class::~anchor_class() throw ()
  *                              supported by anchor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-anchor_class::do_create_type(const std::string & id,
-                          const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::anchor_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -1926,31 +1941,31 @@ anchor_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class anchor_node
+ * @class openvrml::vrml97_node::anchor_node
  *
  * @brief Represents Anchor node instances.
  */
 
 /**
- * @var anchor_node::anchor_class
+ * @var openvrml::vrml97_node::anchor_node::anchor_class
  *
  * @brief Class object for Anchor nodes.
  */
 
 /**
- * @var exposedfield<sfstring> anchor_node::description_
+ * @var openvrml::exposedfield<openvrml::sfstring> openvrml::vrml97_node::anchor_node::description_
  *
  * @brief description exposedField
  */
 
 /**
- * @var exposedfield<mfstring> anchor_node::parameter_
+ * @var openvrml::exposedfield<openvrml::mfstring> openvrml::vrml97_node::anchor_node::parameter_
  *
  * @brief parameter exposedField
  */
 
 /**
- * @var exposedfield<mfstring> anchor_node::url_
+ * @var openvrml::exposedfield<openvrml::mfstring> openvrml::vrml97_node::anchor_node::url_
  *
  * @brief url exposedField
  */
@@ -1961,8 +1976,9 @@ anchor_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope     the scope to which the node belongs.
  */
-anchor_node::anchor_node(const node_type & type,
-                         const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::anchor_node::
+anchor_node(const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
@@ -1977,7 +1993,7 @@ anchor_node::anchor_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-anchor_node::~anchor_node() throw ()
+openvrml::vrml97_node::anchor_node::~anchor_node() throw ()
 {}
 
 /**
@@ -1985,7 +2001,8 @@ anchor_node::~anchor_node() throw ()
  *
  * @return a pointer to this node.
  */
-anchor_node * anchor_node::to_anchor() const
+openvrml::vrml97_node::anchor_node *
+openvrml::vrml97_node::anchor_node::to_anchor() const
 {
     return const_cast<anchor_node *>(this);
 }
@@ -1993,11 +2010,12 @@ anchor_node * anchor_node::to_anchor() const
 /**
  * @brief Render the node.
  *
- * @param viewer    a Viewer.
+ * @param viewer    a viewer.
  * @param context   a rendering context.
  */
-void anchor_node::do_render_child(openvrml::viewer & viewer,
-                                  const rendering_context context)
+void
+openvrml::vrml97_node::anchor_node::
+do_render_child(openvrml::viewer & viewer, const rendering_context context)
 {
     viewer.set_sensitive(this);
 
@@ -2010,7 +2028,7 @@ void anchor_node::do_render_child(openvrml::viewer & viewer,
 /**
  * @brief Handle a click by loading the url.
  */
-void anchor_node::activate()
+void openvrml::vrml97_node::anchor_node::activate()
 {
     assert(this->scene());
     this->scene()->load_url(this->url_.mfstring::value,
@@ -2022,13 +2040,14 @@ void anchor_node::activate()
  *
  * @return the bounding volume associated with the node.
  */
-const bounding_volume & anchor_node::bounding_volume() const
+const openvrml::bounding_volume &
+openvrml::vrml97_node::anchor_node::bounding_volume() const
 {
     return this->group_node::bounding_volume();
 }
 
 /**
- * @class appearance_class
+ * @class openvrml::vrml97_node::appearance_class
  *
  * @brief Class object for Appearance nodes.
  */
@@ -2038,14 +2057,15 @@ const bounding_volume & anchor_node::bounding_volume() const
  *
  * @param browser the browser associated with this class object.
  */
-appearance_class::appearance_class(openvrml::browser & browser):
+openvrml::vrml97_node::appearance_class::
+appearance_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-appearance_class::~appearance_class() throw ()
+openvrml::vrml97_node::appearance_class::~appearance_class() throw ()
 {}
 
 /**
@@ -2061,9 +2081,10 @@ appearance_class::~appearance_class() throw ()
  *                                  not supported by appearance_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-appearance_class::do_create_type(const std::string & id,
-                              const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::appearance_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -2132,31 +2153,31 @@ appearance_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class appearance_node
+ * @class openvrml::vrml97_node::appearance_node
  *
  * @brief Appearance node instances.
  */
 
 /**
- * @var appearance_node::appearance_class
+ * @var openvrml::vrml97_node::appearance_node::appearance_class
  *
  * @brief Class object for Appearance nodes.
  */
 
 /**
- * @var exposedfield<sfnode> appearance_node::material_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::appearance_node::material_
  *
  * @brief material exposedField.
  */
 
 /**
- * @var exposedfield<sfnode> appearance_node::texture_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::appearance_node::texture_
  *
  * @brief texture exposedField.
  */
 
 /**
- * @var exposedfield<sfnode> appearance_node::texture_transform_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::appearance_node::texture_transform_
  *
  * @brief textureTransform exposedField.
  */
@@ -2167,8 +2188,9 @@ appearance_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-appearance_node::appearance_node(const node_type & type,
-                                 const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::appearance_node::
+appearance_node(const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::appearance_node(type, scope),
@@ -2180,7 +2202,7 @@ appearance_node::appearance_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-appearance_node::~appearance_node() throw ()
+openvrml::vrml97_node::appearance_node::~appearance_node() throw ()
 {}
 
 /**
@@ -2189,7 +2211,7 @@ appearance_node::~appearance_node() throw ()
  * @return @c true if the node or one of its children has been modified,
  *         @c false otherwise.
  */
-bool appearance_node::modified() const
+bool openvrml::vrml97_node::appearance_node::modified() const
 {
     return (this->node::modified()
             || (this->material_.sfnode::value
@@ -2206,7 +2228,8 @@ bool appearance_node::modified() const
  * @returns an sfnode object containing the Material node associated with
  *          this Appearance.
  */
-const node_ptr & appearance_node::material() const throw ()
+const openvrml::node_ptr &
+openvrml::vrml97_node::appearance_node::material() const throw ()
 {
     return this->material_.sfnode::value;
 }
@@ -2217,7 +2240,8 @@ const node_ptr & appearance_node::material() const throw ()
  * @return an sfnode object containing the texture node associated with
  *         this Appearance.
  */
-const node_ptr & appearance_node::texture() const throw ()
+const openvrml::node_ptr &
+openvrml::vrml97_node::appearance_node::texture() const throw ()
 {
     return this->texture_.sfnode::value;
 }
@@ -2228,14 +2252,16 @@ const node_ptr & appearance_node::texture() const throw ()
  * @return an sfnode object containing the TextureTransform node
  *         associated with this Appearance.
  */
-const node_ptr & appearance_node::texture_transform() const throw ()
+const openvrml::node_ptr &
+openvrml::vrml97_node::appearance_node::texture_transform() const throw ()
 {
     return this->texture_transform_.sfnode::value;
 }
 
 namespace {
-    void set_unlit_material(viewer & v)
+    void set_unlit_material(openvrml::viewer & v)
     {
+        using openvrml::color;
         static const float unlit_ambient_intensity(1);
         static const color unlit_diffuse_color(1, 1, 1);
         static const color unlit_emissive_color(1, 1, 1);
@@ -2257,8 +2283,9 @@ namespace {
  * @param v         viewer.
  * @param context   rendering_context.
  */
-void appearance_node::do_render_appearance(viewer & v,
-                                           rendering_context context)
+void
+openvrml::vrml97_node::appearance_node::
+do_render_appearance(viewer & v, rendering_context context)
 {
     openvrml::material_node * const material =
         node_cast<openvrml::material_node *>(
@@ -2306,7 +2333,7 @@ void appearance_node::do_render_appearance(viewer & v,
 }
 
 /**
- * @class audio_clip_class
+ * @class openvrml::vrml97_node::audio_clip_class
  *
  * @brief Class object for AudioClip nodes.
  */
@@ -2316,14 +2343,15 @@ void appearance_node::do_render_appearance(viewer & v,
  *
  * @param browser the browser associated with this class object.
  */
-audio_clip_class::audio_clip_class(openvrml::browser & browser):
+openvrml::vrml97_node::audio_clip_class::
+audio_clip_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-audio_clip_class::~audio_clip_class() throw ()
+openvrml::vrml97_node::audio_clip_class::~audio_clip_class() throw ()
 {}
 
 /**
@@ -2338,9 +2366,10 @@ audio_clip_class::~audio_clip_class() throw ()
  *                              supported by audio_clip_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-audio_clip_class::do_create_type(const std::string & id,
-                              const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::audio_clip_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -2482,7 +2511,7 @@ audio_clip_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class audio_clip_node
+ * @class openvrml::vrml97_node::audio_clip_node
  *
  * @brief AudioClip node instances.
  *
@@ -2490,67 +2519,67 @@ audio_clip_class::do_create_type(const std::string & id,
  */
 
 /**
- * @var audio_clip_node::audio_clip_class
+ * @var openvrml::vrml97_node::audio_clip_node::audio_clip_class
  *
  * @brief Class object for AudioClip nodes.
  */
 
 /**
- * @var exposedfield<sfstring> audio_clip_node::description_
+ * @var openvrml::exposedfield<openvrml::sfstring> openvrml::vrml97_node::audio_clip_node::description_
  *
  * @brief description exposedField.
  */
 
 /**
- * @var exposedfield<sfbool> audio_clip_node::loop_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::audio_clip_node::loop_
  *
  * @brief loop exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> audio_clip_node::pitch_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::audio_clip_node::pitch_
  *
  * @brief pitch exposedField.
  */
 
 /**
- * @var exposedfield<sftime> audio_clip_node::start_time_
+ * @var openvrml::exposedfield<openvrml::sftime> openvrml::vrml97_node::audio_clip_node::start_time_
  *
  * @brief startTime exposedField.
  */
 
 /**
- * @var exposedfield<sftime> audio_clip_node::stop_time_
+ * @var openvrml::exposedfield<openvrml::sftime> openvrml::vrml97_node::audio_clip_node::stop_time_
  *
  * @brief stopTime exposedField.
  */
 
 /**
- * @var exposedfield<mfstring> audio_clip_node::url_
+ * @var openvrml::exposedfield<openvrml::mfstring> openvrml::vrml97_node::audio_clip_node::url_
  *
  * @brief url exposedField.
  */
 
 /**
- * @var sftime audio_clip_node::duration_changed_
+ * @var openvrml::sftime openvrml::vrml97_node::audio_clip_node::duration_changed_
  *
  * @brief duration_changed eventOut value.
  */
 
 /**
- * @var sftime_emitter audio_clip_node::duration_changed_emitter_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::audio_clip_node::duration_changed_emitter_
  *
  * @brief duration_changed eventOut emitter.
  */
 
 /**
- * @var sfbool audio_clip_node::is_active_
+ * @var openvrml::sfbool openvrml::vrml97_node::audio_clip_node::is_active_
  *
  * @brief isActive eventOut value.
  */
 
 /**
- * @var sfbool_emitter audio_clip_node::is_active_emitter_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::audio_clip_node::is_active_emitter_
  *
  * @brief isActive eventOut emitter.
  */
@@ -2561,8 +2590,9 @@ audio_clip_class::do_create_type(const std::string & id,
  * @param type      the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-audio_clip_node::audio_clip_node(const node_type & type,
-                                 const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::audio_clip_node::
+audio_clip_node(const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     description_(*this),
@@ -2578,7 +2608,7 @@ audio_clip_node::audio_clip_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-audio_clip_node::~audio_clip_node() throw ()
+openvrml::vrml97_node::audio_clip_node::~audio_clip_node() throw ()
 {}
 
 /**
@@ -2586,7 +2616,8 @@ audio_clip_node::~audio_clip_node() throw ()
  *
  * @return a pointer to this node.
  */
-audio_clip_node* audio_clip_node::to_audio_clip() const
+openvrml::vrml97_node::audio_clip_node *
+openvrml::vrml97_node::audio_clip_node::to_audio_clip() const
 {
     return (audio_clip_node*)this;
 }
@@ -2598,7 +2629,7 @@ audio_clip_node* audio_clip_node::to_audio_clip() const
  *
  * @todo Implement me!
  */
-void audio_clip_node::update(double time)
+void openvrml::vrml97_node::audio_clip_node::update(double time)
 {}
 
 /**
@@ -2608,7 +2639,8 @@ void audio_clip_node::update(double time)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void audio_clip_node::do_initialize(const double timestamp)
+void
+openvrml::vrml97_node::audio_clip_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
@@ -2620,7 +2652,9 @@ void audio_clip_node::do_initialize(const double timestamp)
  *
  * @param timestamp the current time.
  */
-void audio_clip_node::do_shutdown(const double timestamp) throw ()
+void
+openvrml::vrml97_node::audio_clip_node::do_shutdown(const double timestamp)
+    throw ()
 {
     assert(this->scene());
     this->scene()->browser().remove_audio_clip(*this);
@@ -2628,25 +2662,25 @@ void audio_clip_node::do_shutdown(const double timestamp) throw ()
 
 
 /**
- * @class background_class
+ * @class openvrml::vrml97_node::background_class
  *
  * @brief Class object for Background nodes.
  */
 
 /**
- * @typedef background_class::bound_nodes_t
+ * @typedef openvrml::vrml97_node::background_class::bound_nodes_t
  *
  * @brief A bound Background node stack.
  */
 
 /**
- * @var background_node * background_class::first
+ * @var openvrml::vrml97_node::background_node * openvrml::vrml97_node::background_class::first
  *
  * @brief The first Background node in the initial scene graph.
  */
 
 /**
- * @var background_class::bound_nodes_t background_class::bound_nodes
+ * @var openvrml::vrml97_node::background_class::bound_nodes_t openvrml::vrml97_node::background_class::bound_nodes
  *
  * @brief The bound Background node stack.
  */
@@ -2656,7 +2690,8 @@ void audio_clip_node::do_shutdown(const double timestamp) throw ()
  *
  * @param browser the browser associated with this class object.
  */
-background_class::background_class(openvrml::browser & browser):
+openvrml::vrml97_node::background_class::
+background_class(openvrml::browser & browser):
     node_class(browser),
     first(0)
 {}
@@ -2664,7 +2699,7 @@ background_class::background_class(openvrml::browser & browser):
 /**
  * @brief Destroy.
  */
-background_class::~background_class() throw ()
+openvrml::vrml97_node::background_class::~background_class() throw ()
 {}
 
 /**
@@ -2675,7 +2710,9 @@ background_class::~background_class() throw ()
  *
  * @param background    a Background node.
  */
-void background_class::set_first(background_node & background) throw ()
+void
+openvrml::vrml97_node::background_class::
+set_first(background_node & background) throw ()
 {
     this->first = &background;
 }
@@ -2685,7 +2722,7 @@ void background_class::set_first(background_node & background) throw ()
  *
  * This function is called by <code>background_node::do_shutdown</code>.
  */
-void background_class::reset_first() throw ()
+void openvrml::vrml97_node::background_class::reset_first() throw ()
 {
     this->first = 0;
 }
@@ -2697,7 +2734,7 @@ void background_class::reset_first() throw ()
  *
  * @return @c true if the first node has already been set; @c false otherwise.
  */
-bool background_class::has_first() const throw ()
+bool openvrml::vrml97_node::background_class::has_first() const throw ()
 {
     return this->first;
 }
@@ -2709,7 +2746,9 @@ bool background_class::has_first() const throw ()
  *
  * @return @c true if @p background is the fist node; @c false otherwise.
  */
-bool background_class::is_first(background_node & background) throw ()
+bool
+openvrml::vrml97_node::background_class::is_first(background_node & background)
+    throw ()
 {
     return &background == this->first;
 }
@@ -2722,8 +2761,9 @@ bool background_class::is_first(background_node & background) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void background_class::bind(background_node & background,
-                            const double timestamp)
+void
+openvrml::vrml97_node::background_class::bind(background_node & background,
+                                              const double timestamp)
     throw (std::bad_alloc)
 {
     using std::find;
@@ -2767,8 +2807,9 @@ void background_class::bind(background_node & background,
  * @param background    the node to unbind.
  * @param timestamp     the current time.
  */
-void background_class::unbind(background_node & background,
-                              const double timestamp)
+void
+openvrml::vrml97_node::background_class::unbind(background_node & background,
+                                                const double timestamp)
     throw ()
 {
     using std::find;
@@ -2798,8 +2839,9 @@ void background_class::unbind(background_node & background,
  * @param timestamp         the current time.
  */
 void
-background_class::do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-                                const double timestamp)
+openvrml::vrml97_node::background_class::
+do_initialize(openvrml::viewpoint_node * initial_viewpoint,
+              const double timestamp)
     throw ()
 {
     if (this->first) {
@@ -2822,7 +2864,8 @@ background_class::do_initialize(openvrml::viewpoint_node * initial_viewpoint,
  *
  * @param v viewer.
  */
-void background_class::do_render(viewer & v) const throw ()
+void openvrml::vrml97_node::background_class::do_render(viewer & v) const
+    throw ()
 {
     if (this->bound_nodes.empty()) {
         //
@@ -2895,9 +2938,10 @@ void background_class::do_render(viewer & v) const throw ()
  *                                  supported by background_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-background_class::do_create_type(const std::string & id,
-                              const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::background_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -3119,13 +3163,13 @@ background_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class background_node
+ * @class openvrml::vrml97_node::background_node
  *
  * @brief Background node instances.
  */
 
 /**
- * @var background_node::background_class
+ * @var openvrml::vrml97_node::background_node::background_class
  *
  * @brief Class object for Background nodes.
  */
@@ -3133,7 +3177,7 @@ background_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class background_node::set_bind_listener
+ * @class openvrml::vrml97_node::background_node::set_bind_listener
  *
  * @brief set_bind eventIn listener.
  */
@@ -3143,14 +3187,16 @@ background_class::do_create_type(const std::string & id,
  *
  * @param node background_node.
  */
-background_node::set_bind_listener::set_bind_listener(background_node & node):
+openvrml::vrml97_node::background_node::set_bind_listener::
+set_bind_listener(background_node & node):
     sfbool_listener(node)
 {}
 
 /**
  * @brief Destroy.
  */
-background_node::set_bind_listener::~set_bind_listener() throw ()
+openvrml::vrml97_node::background_node::set_bind_listener::~set_bind_listener()
+    throw ()
 {}
 
 /**
@@ -3162,8 +3208,8 @@ background_node::set_bind_listener::~set_bind_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-background_node::set_bind_listener::do_process_event(const sfbool & value,
-                                                     const double timestamp)
+openvrml::vrml97_node::background_node::set_bind_listener::
+do_process_event(const sfbool & value, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -3185,7 +3231,7 @@ background_node::set_bind_listener::do_process_event(const sfbool & value,
 /**
  * @internal
  *
- * @class background_node::back_url_exposedfield
+ * @class openvrml::vrml97_node::background_node::back_url_exposedfield
  *
  * @brief backUrl exposedField implementation.
  */
@@ -3195,15 +3241,16 @@ background_node::set_bind_listener::do_process_event(const sfbool & value,
  *
  * @param node  background_node.
  */
-background_node::back_url_exposedfield::
+openvrml::vrml97_node::background_node::back_url_exposedfield::
 back_url_exposedfield(background_node & node) throw ():
-    exposedfield<mfstring>(node)
+    openvrml::exposedfield<openvrml::mfstring>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-background_node::back_url_exposedfield::~back_url_exposedfield() throw ()
+openvrml::vrml97_node::background_node::back_url_exposedfield::
+~back_url_exposedfield() throw ()
 {}
 
 /**
@@ -3215,7 +3262,7 @@ background_node::back_url_exposedfield::~back_url_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-background_node::back_url_exposedfield::
+openvrml::vrml97_node::background_node::back_url_exposedfield::
 event_side_effect(const mfstring & value,
                   const double timestamp)
     throw (std::bad_alloc)
@@ -3230,7 +3277,7 @@ event_side_effect(const mfstring & value,
 /**
  * @internal
  *
- * @class background_node::bottom_url_exposedfield
+ * @class openvrml::vrml97_node::background_node::bottom_url_exposedfield
  *
  * @brief bottomUrl exposedField implementation.
  */
@@ -3240,15 +3287,16 @@ event_side_effect(const mfstring & value,
  *
  * @param node  background_node.
  */
-background_node::bottom_url_exposedfield::
+openvrml::vrml97_node::background_node::bottom_url_exposedfield::
 bottom_url_exposedfield(background_node & node) throw ():
-    exposedfield<mfstring>(node)
+    openvrml::exposedfield<openvrml::mfstring>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-background_node::bottom_url_exposedfield::~bottom_url_exposedfield() throw ()
+openvrml::vrml97_node::background_node::bottom_url_exposedfield::
+~bottom_url_exposedfield() throw ()
 {}
 
 /**
@@ -3260,7 +3308,7 @@ background_node::bottom_url_exposedfield::~bottom_url_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-background_node::bottom_url_exposedfield::
+openvrml::vrml97_node::background_node::bottom_url_exposedfield::
 event_side_effect(const mfstring & value,
                   const double timestamp)
     throw (std::bad_alloc)
@@ -3275,7 +3323,7 @@ event_side_effect(const mfstring & value,
 /**
  * @internal
  *
- * @class background_node::front_url_exposedfield
+ * @class openvrml::vrml97_node::background_node::front_url_exposedfield
  *
  * @brief frontUrl exposedField implementation.
  */
@@ -3285,15 +3333,16 @@ event_side_effect(const mfstring & value,
  *
  * @param node  background_node.
  */
-background_node::front_url_exposedfield::
+openvrml::vrml97_node::background_node::front_url_exposedfield::
 front_url_exposedfield(background_node & node) throw ():
-    exposedfield<mfstring>(node)
+    openvrml::exposedfield<openvrml::mfstring>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-background_node::front_url_exposedfield::~front_url_exposedfield() throw ()
+openvrml::vrml97_node::background_node::front_url_exposedfield::
+~front_url_exposedfield() throw ()
 {}
 
 /**
@@ -3305,7 +3354,7 @@ background_node::front_url_exposedfield::~front_url_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-background_node::front_url_exposedfield::
+openvrml::vrml97_node::background_node::front_url_exposedfield::
 event_side_effect(const mfstring & value,
                   const double timestamp)
     throw (std::bad_alloc)
@@ -3320,7 +3369,7 @@ event_side_effect(const mfstring & value,
 /**
  * @internal
  *
- * @class background_node::left_url_exposedfield
+ * @class openvrml::vrml97_node::background_node::left_url_exposedfield
  *
  * @brief leftUrl exposedField implementation.
  */
@@ -3330,15 +3379,16 @@ event_side_effect(const mfstring & value,
  *
  * @param node  background_node.
  */
-background_node::left_url_exposedfield::
+openvrml::vrml97_node::background_node::left_url_exposedfield::
 left_url_exposedfield(background_node & node) throw ():
-    exposedfield<mfstring>(node)
+    openvrml::exposedfield<openvrml::mfstring>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-background_node::left_url_exposedfield::~left_url_exposedfield() throw ()
+openvrml::vrml97_node::background_node::left_url_exposedfield::
+~left_url_exposedfield() throw ()
 {}
 
 /**
@@ -3350,7 +3400,7 @@ background_node::left_url_exposedfield::~left_url_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-background_node::left_url_exposedfield::
+openvrml::vrml97_node::background_node::left_url_exposedfield::
 event_side_effect(const mfstring & value,
                   const double timestamp)
     throw (std::bad_alloc)
@@ -3365,7 +3415,7 @@ event_side_effect(const mfstring & value,
 /**
  * @internal
  *
- * @class background_node::right_url_exposedfield
+ * @class openvrml::vrml97_node::background_node::right_url_exposedfield
  *
  * @brief rightUrl exposedField implementation.
  */
@@ -3375,15 +3425,16 @@ event_side_effect(const mfstring & value,
  *
  * @param node  background_node.
  */
-background_node::right_url_exposedfield::
+openvrml::vrml97_node::background_node::right_url_exposedfield::
 right_url_exposedfield(background_node & node) throw ():
-    exposedfield<mfstring>(node)
+    openvrml::exposedfield<openvrml::mfstring>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-background_node::right_url_exposedfield::~right_url_exposedfield() throw ()
+openvrml::vrml97_node::background_node::right_url_exposedfield::
+~right_url_exposedfield() throw ()
 {}
 
 /**
@@ -3395,7 +3446,7 @@ background_node::right_url_exposedfield::~right_url_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-background_node::right_url_exposedfield::
+openvrml::vrml97_node::background_node::right_url_exposedfield::
 event_side_effect(const mfstring & value,
                   const double timestamp)
     throw (std::bad_alloc)
@@ -3410,7 +3461,7 @@ event_side_effect(const mfstring & value,
 /**
  * @internal
  *
- * @class background_node::top_url_exposedfield
+ * @class openvrml::vrml97_node::background_node::top_url_exposedfield
  *
  * @brief topUrl exposedField implementation.
  */
@@ -3420,15 +3471,16 @@ event_side_effect(const mfstring & value,
  *
  * @param node  background_node.
  */
-background_node::top_url_exposedfield::
+openvrml::vrml97_node::background_node::top_url_exposedfield::
 top_url_exposedfield(background_node & node) throw ():
-    exposedfield<mfstring>(node)
+    openvrml::exposedfield<openvrml::mfstring>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-background_node::top_url_exposedfield::~top_url_exposedfield() throw ()
+openvrml::vrml97_node::background_node::top_url_exposedfield::
+~top_url_exposedfield() throw ()
 {}
 
 /**
@@ -3440,7 +3492,7 @@ background_node::top_url_exposedfield::~top_url_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-background_node::top_url_exposedfield::
+openvrml::vrml97_node::background_node::top_url_exposedfield::
 event_side_effect(const mfstring & value,
                  const double timestamp)
     throw (std::bad_alloc)
@@ -3453,157 +3505,157 @@ event_side_effect(const mfstring & value,
 }
 
 /**
- * @var background_node::set_bind_listener background_node::set_bind_listener_
+ * @var openvrml::vrml97_node::background_node::set_bind_listener openvrml::vrml97_node::background_node::set_bind_listener_
  *
  * @brief set_bind eventIn handler.
  */
 
 /**
- * @var exposedfield<mffloat> background_node::ground_angle_
+ * @var openvrml::exposedfield<openvrml::mffloat> openvrml::vrml97_node::background_node::ground_angle_
  *
  * @brief groundAngle exposedField.
  */
 
 /**
- * @var exposedfield<mfcolor> background_node::ground_color_
+ * @var openvrml::exposedfield<openvrml::mfcolor> openvrml::vrml97_node::background_node::ground_color_
  *
  * @brief groundColor exposedField.
  */
 
 /**
- * @var background_node::back_url_exposedfield background_node::back_url_
+ * @var background_node::back_url_exposedfield openvrml::vrml97_node::background_node::back_url_
  *
  * @brief backUrl exposedField.
  */
 
 /**
- * @var background_node::bottom_url_exposedfield background_node::bottom_url_
+ * @var background_node::bottom_url_exposedfield openvrml::vrml97_node::background_node::bottom_url_
  *
  * @brief bottomUrl exposedField.
  */
 
 /**
- * @var background_node::front_url_exposedfield background_node::front_url_
+ * @var background_node::front_url_exposedfield openvrml::vrml97_node::background_node::front_url_
  *
  * @brief frontUrl exposedField.
  */
 
 /**
- * @var background_node::left_url_exposedfield background_node::left_url_
+ * @var background_node::left_url_exposedfield openvrml::vrml97_node::background_node::left_url_
  *
  * @brief leftUrl exposedField.
  */
 
 /**
- * @var background_node::right_url_exposedfield background_node::right_url_
+ * @var background_node::right_url_exposedfield openvrml::vrml97_node::background_node::right_url_
  *
  * @brief rightUrl exposedField.
  */
 
 /**
- * @var background_node::top_url_exposedfield background_node::top_url_
+ * @var background_node::top_url_exposedfield openvrml::vrml97_node::background_node::top_url_
  *
  * @brief topUrl exposedField.
  */
 
 /**
- * @var exposedfield<mffloat> background_node::sky_angle_
+ * @var openvrml::exposedfield<openvrml::mffloat> openvrml::vrml97_node::background_node::sky_angle_
  *
  * @brief skyAngle exposedField.
  */
 
 /**
- * @var exposedfield<mfcolor> background_node::sky_color_
+ * @var openvrml::exposedfield<openvrml::mfcolor> openvrml::vrml97_node::background_node::sky_color_
  *
  * @brief skyColor exposedField.
  */
 
 /**
- * @var sfbool background_node::is_bound_
+ * @var openvrml::sfbool openvrml::vrml97_node::background_node::is_bound_
  *
  * @brief isBound eventOut value.
  */
 
 /**
- * @var sfbool_emitter background_node::is_bound_emitter_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::background_node::is_bound_emitter_
  *
  * @brief isBound eventOut emitter.
  */
 
 /**
- * @var image background_node::front
+ * @var openvrml::image openvrml::vrml97_node::background_node::front
  *
  * @brief Front image.
  */
 
 /**
- * @var bool background_node::front_needs_update
+ * @var bool openvrml::vrml97_node::background_node::front_needs_update
  *
  * @brief Flag to indicate that the front image needs to be updated.
  */
 
 /**
- * @var image background_node::back
+ * @var openvrml::image openvrml::vrml97_node::background_node::back
  *
  * @brief Back image.
  */
 
 /**
- * @var bool background_node::back_needs_update
+ * @var bool openvrml::vrml97_node::background_node::back_needs_update
  *
  * @brief Flag to indicate that the back image needs to be updated.
  */
 
 /**
- * @var image background_node::left
+ * @var openvrml::image openvrml::vrml97_node::background_node::left
  *
  * @brief Left image.
  */
 
 /**
- * @var bool background_node::left_needs_update
+ * @var bool openvrml::vrml97_node::background_node::left_needs_update
  *
  * @brief Flag to indicate that the left image needs to be updated.
  */
 
 /**
- * @var image background_node::right
+ * @var openvrml::image openvrml::vrml97_node::background_node::right
  *
  * @brief Right image.
  */
 
 /**
- * @var bool background_node::right_needs_update
+ * @var bool openvrml::vrml97_node::background_node::right_needs_update
  *
  * @brief Flag to indicate that the right image needs to be updated.
  */
 
 /**
- * @var image background_node::top
+ * @var openvrml::image openvrml::vrml97_node::background_node::top
  *
  * @brief Top image.
  */
 
 /**
- * @var bool background_node::top_needs_update
+ * @var bool openvrml::vrml97_node::background_node::top_needs_update
  *
  * @brief Flag to indicate that the top image needs to be updated.
  */
 
 /**
- * @var image background_node::bottom
+ * @var openvrml::image openvrml::vrml97_node::background_node::bottom
  *
  * @brief Bottom image.
  */
 
 /**
- * @var bool background_node::bottom_needs_update
+ * @var bool openvrml::vrml97_node::background_node::bottom_needs_update
  *
  * @brief Flag to indicate that the bottom image needs to be updated.
  */
 
 /**
- * @var viewer::object_t background_node::viewerObject
+ * @var openvrml::viewer::object_t openvrml::vrml97_node::background_node::viewerObject
  *
  * @brief Handle for the renderer.
  */
@@ -3614,7 +3666,7 @@ event_side_effect(const mfstring & value,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-background_node::
+openvrml::vrml97_node::background_node::
 background_node(const node_type & type,
                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
@@ -3644,7 +3696,7 @@ background_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-background_node::~background_node() throw ()
+openvrml::vrml97_node::background_node::~background_node() throw ()
 {
     // remove d_viewerObject...
 }
@@ -3654,7 +3706,9 @@ background_node::~background_node() throw ()
  *
  * @param timestamp the current time.
  */
-void background_node::do_initialize(const double timestamp) throw ()
+void
+openvrml::vrml97_node::background_node::do_initialize(const double timestamp)
+    throw ()
 {
     assert(dynamic_cast<const background_class *>(&this->type().node_class()));
     background_class & nodeClass =
@@ -3670,7 +3724,9 @@ void background_node::do_initialize(const double timestamp) throw ()
  *
  * @param timestamp the current time.
  */
-void background_node::do_shutdown(const double timestamp) throw ()
+void
+openvrml::vrml97_node::background_node::do_shutdown(const double timestamp)
+    throw ()
 {
     background_class & node_class =
         const_cast<background_class &>(
@@ -3683,7 +3739,7 @@ void background_node::do_shutdown(const double timestamp) throw ()
 /**
  * @brief Called lazily to update texture data.
  */
-void background_node::update_textures()
+void openvrml::vrml97_node::background_node::update_textures()
 {
     if (this->front_needs_update) {
         if (this->front_url_.mfstring::value.empty()) {
@@ -3795,14 +3851,15 @@ void background_node::update_textures()
  *
  * @param browser the browser associated with this class object.
  */
-billboard_class::billboard_class(openvrml::browser & browser):
+openvrml::vrml97_node::billboard_class::
+billboard_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-billboard_class::~billboard_class() throw ()
+openvrml::vrml97_node::billboard_class::~billboard_class() throw ()
 {}
 
 /**
@@ -3817,9 +3874,10 @@ billboard_class::~billboard_class() throw ()
  *                                  supported by billboard_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-billboard_class::do_create_type(const std::string & id,
-                                const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::billboard_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -3918,25 +3976,25 @@ billboard_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class billboard_node
+ * @class openvrml::vrml97_node::billboard_node
  *
  * @brief Billboard node instances.
  */
 
 /**
- * @var billboard_node::billboard_class
+ * @var openvrml::vrml97_node::billboard_node::billboard_class
  *
  * @brief Class object for Billboard nodes.
  */
 
 /**
- * @var exposedfield<sfvec3f> billboard_node::axis_of_rotation_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::billboard_node::axis_of_rotation_
  *
  * @brief axisOfRotation exposedField.
  */
 
 /**
- * @var viewer::object_t billboard_node::xformObject
+ * @var openvrml::viewer::object_t openvrml::vrml97_node::billboard_node::xformObject
  *
  * @brief Handle for the renderer.
  */
@@ -3949,8 +4007,9 @@ billboard_class::do_create_type(const std::string & id,
  *
  * @return the bounding box transformation matrix.
  */
-const mat4f billboard_node::billboard_to_matrix(const billboard_node & node,
-                                                const mat4f & modelview)
+const openvrml::mat4f
+openvrml::vrml97_node::billboard_node::
+billboard_to_matrix(const billboard_node & node, const mat4f & modelview)
 {
     const mat4f inverse_modelview = modelview.inverse();
 
@@ -4024,8 +4083,9 @@ const mat4f billboard_node::billboard_to_matrix(const billboard_node & node,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-billboard_node::billboard_node(const node_type & type,
-                               const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::billboard_node::
+billboard_node(const node_type & type,
+               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
@@ -4037,7 +4097,7 @@ billboard_node::billboard_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-billboard_node::~billboard_node() throw ()
+openvrml::vrml97_node::billboard_node::~billboard_node() throw ()
 {
     // delete xformObject...
 }
@@ -4048,8 +4108,9 @@ billboard_node::~billboard_node() throw ()
  * @param viewer    a viewer.
  * @param context   the rendering context.
  */
-void billboard_node::do_render_child(openvrml::viewer & viewer,
-                                     rendering_context context)
+void
+openvrml::vrml97_node::billboard_node::
+do_render_child(openvrml::viewer & viewer, rendering_context context)
 {
     mat4f new_LM = context.matrix();
     mat4f LM = billboard_to_matrix(*this, new_LM);
@@ -4079,7 +4140,7 @@ void billboard_node::do_render_child(openvrml::viewer & viewer,
 
 
 /**
- * @class box_class
+ * @class openvrml::vrml97_node::box_class
  *
  * @brief Class object for Box nodes.
  */
@@ -4089,14 +4150,14 @@ void billboard_node::do_render_child(openvrml::viewer & viewer,
  *
  * @param browser the browser associated with this class object.
  */
-box_class::box_class(openvrml::browser & browser):
+openvrml::vrml97_node::box_class::box_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-box_class::~box_class() throw ()
+openvrml::vrml97_node::box_class::~box_class() throw ()
 {}
 
 /**
@@ -4111,9 +4172,10 @@ box_class::~box_class() throw ()
  *                                  supported by box_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-box_class::do_create_type(const std::string & id,
-                       const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::box_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface =
@@ -4142,25 +4204,25 @@ box_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class box_node
+ * @class openvrml::vrml97_node::box_node
  *
  * @brief Box node instances.
  */
 
 /**
- * @var box_node::box_class
+ * @var openvrml::vrml97_node::box_node::box_class
  *
  * @brief Class object for Box nodes.
  */
 
 /**
- * @var sfvec3f box_node::size
+ * @var openvrml::sfvec3f openvrml::vrml97_node::box_node::size
  *
  * @brief size field.
  */
 
 /**
- * @var bounding_sphere box_node::bsphere
+ * @var openvrml::bounding_sphere openvrml::vrml97_node::box_node::bsphere
  *
  * @brief Bounding volume.
  */
@@ -4171,8 +4233,9 @@ box_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-box_node::box_node(const node_type & type,
-                   const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::box_node::
+box_node(const node_type & type,
+         const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -4184,7 +4247,7 @@ box_node::box_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-box_node::~box_node() throw ()
+openvrml::vrml97_node::box_node::~box_node() throw ()
 {}
 
 /**
@@ -4195,8 +4258,9 @@ box_node::~box_node() throw ()
  *
  * @return display object identifier.
  */
-viewer::object_t box_node::do_render_geometry(openvrml::viewer & viewer,
-                                              const rendering_context context)
+openvrml::viewer::object_t
+openvrml::vrml97_node::box_node::
+do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
 {
     const viewer::object_t object_ref = viewer.insert_box(this->size.value);
     return object_ref;
@@ -4207,7 +4271,8 @@ viewer::object_t box_node::do_render_geometry(openvrml::viewer & viewer,
  *
  * @return the bounding volume associated with the node.
  */
-const bounding_volume & box_node::bounding_volume() const
+const openvrml::bounding_volume &
+openvrml::vrml97_node::box_node::bounding_volume() const
 {
     if (this->bounding_volume_dirty()) {
         const vec3f corner = this->size.value / 2.0f;
@@ -4220,7 +4285,7 @@ const bounding_volume & box_node::bounding_volume() const
 
 
 /**
- * @class collision_class
+ * @class openvrml::vrml97_node::collision_class
  *
  * @brief Class object for Collision nodes.
  */
@@ -4230,14 +4295,15 @@ const bounding_volume & box_node::bounding_volume() const
  *
  * @param browser the browser associated with this class object.
  */
-collision_class::collision_class(openvrml::browser & browser):
+openvrml::vrml97_node::collision_class::
+collision_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-collision_class::~collision_class() throw ()
+openvrml::vrml97_node::collision_class::~collision_class() throw ()
 {}
 
 /**
@@ -4252,9 +4318,10 @@ collision_class::~collision_class() throw ()
  *                                  supported by collision_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-collision_class::do_create_type(const std::string & id,
-                             const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::collision_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -4372,37 +4439,37 @@ collision_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class collision_node
+ * @class openvrml::vrml97_node::collision_node
  *
  * @brief Collision node instances.
  */
 
 /**
- * @var collision_node::collision_class
+ * @var openvrml::vrml97_node::collision_node::collision_class
  *
  * @brief Class object for Collision nodes.
  */
 
 /**
- * @var sfbool collision_node::collide_
+ * @var openvrml::sfbool openvrml::vrml97_node::collision_node::collide_
  *
  * @brief collide exposedField.
  */
 
 /**
- * @var sfnode collision_node::proxy_
+ * @var openvrml::sfnode openvrml::vrml97_node::collision_node::proxy_
  *
  * @brief proxy field.
  */
 
 /**
- * @var sftime collision_node::collide_time_
+ * @var openvrml::sftime openvrml::vrml97_node::collision_node::collide_time_
  *
  * @brief collideTime eventOut.
  */
 
 /**
- * @var sftime_emitter collision_node::collide_time_emitter_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::collision_node::collide_time_emitter_
  *
  * @brief collideTime eventOut.
  */
@@ -4413,8 +4480,9 @@ collision_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-collision_node::collision_node(const node_type & type,
-                               const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::collision_node::
+collision_node(const node_type & type,
+               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
@@ -4426,7 +4494,7 @@ collision_node::collision_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-collision_node::~collision_node() throw ()
+openvrml::vrml97_node::collision_node::~collision_node() throw ()
 {}
 
 /**
@@ -4435,7 +4503,7 @@ collision_node::~collision_node() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool collision_node::modified() const
+bool openvrml::vrml97_node::collision_node::modified() const
 {
     return (this->proxy_.value && this->proxy_.value->modified())
         || this->group_node::modified();
@@ -4443,7 +4511,7 @@ bool collision_node::modified() const
 
 
 /**
- * @class color_class
+ * @class openvrml::vrml97_node::color_class
  *
  * @brief Class object for Color nodes.
  */
@@ -4453,14 +4521,14 @@ bool collision_node::modified() const
  *
  * @param browser the browser associated with this node class object.
  */
-color_class::color_class(openvrml::browser & browser):
+openvrml::vrml97_node::color_class::color_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-color_class::~color_class() throw () {}
+openvrml::vrml97_node::color_class::~color_class() throw () {}
 
 /**
  * @brief Create a node_type.
@@ -4474,9 +4542,10 @@ color_class::~color_class() throw () {}
  *                                  supported by color_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-color_class::do_create_type(const std::string & id,
-                         const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::color_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface =
@@ -4513,19 +4582,19 @@ color_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class color_node
+ * @class openvrml::vrml97_node::color_node
  *
  * @brief Color node instances.
  */
 
 /**
- * @var color_node::color_class
+ * @var openvrml::vrml97_node::color_node::color_class
  *
  * @brief Class object for Color nodes.
  */
 
 /**
- * @var exposedfield<mfcolor> color_node::color_
+ * @var openvrml::exposedfield<openvrml::mfcolor> openvrml::vrml97_node::color_node::color_
  *
  * @brief color exposedField.
  */
@@ -4536,7 +4605,9 @@ color_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-color_node::color_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::color_node::
+color_node(const node_type & type,
+           const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::color_node(type, scope),
@@ -4546,7 +4617,7 @@ color_node::color_node(const node_type & type, const boost::shared_ptr<openvrml:
 /**
  * @brief Destroy.
  */
-color_node::~color_node() throw ()
+openvrml::vrml97_node::color_node::~color_node() throw ()
 {}
 
 /**
@@ -4554,14 +4625,15 @@ color_node::~color_node() throw ()
  *
  * @return the color array associated with the node.
  */
-const std::vector<color> & color_node::color() const throw ()
+const std::vector<openvrml::color> &
+openvrml::vrml97_node::color_node::color() const throw ()
 {
     return this->color_.mfcolor::value;
 }
 
 
 /**
- * @class color_interpolator_class
+ * @class openvrml::vrml97_node::color_interpolator_class
  *
  * @brief Class object for ColorInterpolator nodes.
  */
@@ -4571,15 +4643,16 @@ const std::vector<color> & color_node::color() const throw ()
  *
  * @param browser the browser associated with this class object.
  */
-color_interpolator_class::color_interpolator_class(
-    openvrml::browser & browser):
+openvrml::vrml97_node::color_interpolator_class::
+color_interpolator_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-color_interpolator_class::~color_interpolator_class() throw ()
+openvrml::vrml97_node::color_interpolator_class::~color_interpolator_class()
+    throw ()
 {}
 
 /**
@@ -4595,9 +4668,10 @@ color_interpolator_class::~color_interpolator_class() throw ()
  *                                  supported by color_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-color_interpolator_class::do_create_type(const std::string & id,
-                                      const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::color_interpolator_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -4674,13 +4748,13 @@ color_interpolator_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class color_interpolator_node
+ * @class openvrml::vrml97_node::color_interpolator_node
  *
  * @brief ColorInterpolator node instances.
  */
 
 /**
- * @var color_interpolator_node::color_interpolator_class
+ * @var openvrml::vrml97_node::color_interpolator_node::color_interpolator_class
  *
  * @brief Class object for ColorInterpolator nodes.
  */
@@ -4688,7 +4762,7 @@ color_interpolator_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class color_interpolator_node::set_fraction_listener
+ * @class openvrml::vrml97_node::color_interpolator_node::set_fraction_listener
  *
  * @brief set_fraction event handler.
  */
@@ -4698,7 +4772,7 @@ color_interpolator_class::do_create_type(const std::string & id,
  *
  * @param node color_interpolator_node.
  */
-color_interpolator_node::set_fraction_listener::
+openvrml::vrml97_node::color_interpolator_node::set_fraction_listener::
 set_fraction_listener(color_interpolator_node & node):
     sffloat_listener(node)
 {}
@@ -4706,7 +4780,8 @@ set_fraction_listener(color_interpolator_node & node):
 /**
  * @brief Destroy.
  */
-color_interpolator_node::set_fraction_listener::~set_fraction_listener()
+openvrml::vrml97_node::color_interpolator_node::set_fraction_listener::
+~set_fraction_listener()
     throw ()
 {}
 
@@ -4719,7 +4794,7 @@ color_interpolator_node::set_fraction_listener::~set_fraction_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-color_interpolator_node::set_fraction_listener::
+openvrml::vrml97_node::color_interpolator_node::set_fraction_listener::
 do_process_event(const sffloat & value, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -4780,31 +4855,31 @@ do_process_event(const sffloat & value, const double timestamp)
 }
 
 /**
- * @var color_interpolator_node::set_fraction_listener color_interpolator_node::set_fraction_listener_;
+ * @var openvrml::vrml97_node::color_interpolator_node::set_fraction_listener openvrml::vrml97_node::color_interpolator_node::set_fraction_listener_;
  *
  * @brief set_fraction event handler.
  */
 
 /**
- * @var exposedfield<mffloat> color_interpolator_node::key_
+ * @var openvrml::exposedfield<openvrml::mffloat> openvrml::vrml97_node::color_interpolator_node::key_
  *
  * @brief key exposedField.
  */
 
 /**
- * @var exposedfield<mfcolor> color_interpolator_node::key_value_
+ * @var openvrml::exposedfield<openvrml::mfcolor> openvrml::vrml97_node::color_interpolator_node::key_value_
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var sfcolor color_interpolator_node::value_
+ * @var openvrml::sfcolor openvrml::vrml97_node::color_interpolator_node::value_
  *
  * @brief Current sfcolor value.
  */
 
 /**
- * @var sfcolor_emitter color_interpolator_node::value_changed_
+ * @var openvrml::sfcolor_emitter openvrml::vrml97_node::color_interpolator_node::value_changed_
  *
  * @brief value_changed eventOut.
  */
@@ -4813,10 +4888,11 @@ do_process_event(const sffloat & value, const double timestamp)
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
-color_interpolator_node::color_interpolator_node(const node_type & type,
-                                                 const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::color_interpolator_node::
+color_interpolator_node(const node_type & type,
+                        const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -4829,12 +4905,13 @@ color_interpolator_node::color_interpolator_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-color_interpolator_node::~color_interpolator_node() throw ()
+openvrml::vrml97_node::color_interpolator_node::~color_interpolator_node()
+    throw ()
 {}
 
 
 /**
- * @class cone_class
+ * @class openvrml::vrml97_node::cone_class
  *
  * @brief Class object for Cone nodes.
  */
@@ -4844,13 +4921,14 @@ color_interpolator_node::~color_interpolator_node() throw ()
  *
  * @param browser the browser associated with this class object.
  */
-cone_class::cone_class(openvrml::browser & browser): node_class(browser)
+openvrml::vrml97_node::cone_class::cone_class(openvrml::browser & browser):
+    node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-cone_class::~cone_class() throw ()
+openvrml::vrml97_node::cone_class::~cone_class() throw ()
 {}
 
 /**
@@ -4865,9 +4943,10 @@ cone_class::~cone_class() throw ()
  *                                  supported by cone_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-cone_class::do_create_type(const std::string & id,
-                        const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::cone_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -4928,37 +5007,37 @@ cone_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class cone_node
+ * @class openvrml::vrml97_node::cone_node
  *
  * @brief Cone node instances.
  */
 
 /**
- * @var cone_node::cone_class
+ * @var openvrml::vrml97_node::cone_node::cone_class
  *
  * @brief Class object for Cone nodes.
  */
 
 /**
- * @var sfbool cone_node::bottom
+ * @var openvrml::sfbool openvrml::vrml97_node::cone_node::bottom
  *
  * @brief bottom field.
  */
 
 /**
- * @var sffloat cone_node::bottomRadius
+ * @var openvrml::sffloat openvrml::vrml97_node::cone_node::bottomRadius
  *
  * @brief bottomRadius field.
  */
 
 /**
- * @var sffloat cone_node::height
+ * @var openvrml::sffloat openvrml::vrml97_node::cone_node::height
  *
  * @brief height field.
  */
 
 /**
- * @var sfbool cone_node::side
+ * @var openvrml::sfbool openvrml::vrml97_node::cone_node::side
  *
  * @brief side field.
  */
@@ -4969,8 +5048,9 @@ cone_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-cone_node::cone_node(const node_type & type,
-                     const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::cone_node::
+cone_node(const node_type & type,
+          const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -4983,7 +5063,7 @@ cone_node::cone_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-cone_node::~cone_node() throw ()
+openvrml::vrml97_node::cone_node::~cone_node() throw ()
 {}
 
 /**
@@ -4992,8 +5072,9 @@ cone_node::~cone_node() throw ()
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-viewer::object_t cone_node::do_render_geometry(openvrml::viewer & viewer,
-                                               const rendering_context context)
+openvrml::viewer::object_t
+openvrml::vrml97_node::cone_node::
+do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
 {
     const viewer::object_t object_ref =
         viewer.insert_cone(this->height.value,
@@ -5005,9 +5086,9 @@ viewer::object_t cone_node::do_render_geometry(openvrml::viewer & viewer,
 
 
 /**
- * @class coordinate_class
+ * @class openvrml::vrml97_node::coordinate_class
  *
- * @brief Class object for Material nodes.
+ * @brief Class object for Coordinate nodes.
  */
 
 /**
@@ -5015,14 +5096,15 @@ viewer::object_t cone_node::do_render_geometry(openvrml::viewer & viewer,
  *
  * @param browser the browser associated with this node class object.
  */
-coordinate_class::coordinate_class(openvrml::browser & browser):
+openvrml::vrml97_node::coordinate_class::
+coordinate_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-coordinate_class::~coordinate_class() throw ()
+openvrml::vrml97_node::coordinate_class::~coordinate_class() throw ()
 {}
 
 /**
@@ -5037,8 +5119,8 @@ coordinate_class::~coordinate_class() throw ()
  *                                  supported by coordinate_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-coordinate_class::do_create_type(const std::string & id,
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::coordinate_class::do_create_type(const std::string & id,
                               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
@@ -5076,19 +5158,19 @@ coordinate_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class coordinate_node
+ * @class openvrml::vrml97_node::coordinate_node
  *
  * @brief Coordinate node instances.
  */
 
 /**
- * @var coordinate_node::coordinate_class
+ * @var openvrml::vrml97_node::coordinate_node::coordinate_class
  *
  * @brief Class object for Coordinate nodes.
  */
 
 /**
- * @var exposedfield<mfvec3f> coordinate_node::point_
+ * @var openvrml::exposedfield<openvrml::mfvec3f> openvrml::vrml97_node::coordinate_node::point_
  *
  * @brief point exposedField.
  */
@@ -5099,8 +5181,9 @@ coordinate_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope     the scope to which the node belongs.
  */
-coordinate_node::coordinate_node(const node_type & type,
-                                 const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::coordinate_node::
+coordinate_node(const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::coordinate_node(type, scope),
@@ -5110,7 +5193,7 @@ coordinate_node::coordinate_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-coordinate_node::~coordinate_node() throw ()
+openvrml::vrml97_node::coordinate_node::~coordinate_node() throw ()
 {}
 
 /**
@@ -5118,14 +5201,15 @@ coordinate_node::~coordinate_node() throw ()
  *
  * @return the array of points for this node.
  */
-const std::vector<vec3f> & coordinate_node::point() const throw ()
+const std::vector<openvrml::vec3f> &
+openvrml::vrml97_node::coordinate_node::point() const throw ()
 {
     return this->point_.mfvec3f::value;
 }
 
 
 /**
- * @class coordinate_interpolator_class
+ * @class openvrml::vrml97_node::coordinate_interpolator_class
  *
  * @brief Class object for CoordinateInterpolator nodes.
  */
@@ -5135,15 +5219,16 @@ const std::vector<vec3f> & coordinate_node::point() const throw ()
  *
  * @param browser the browser associated with this class object.
  */
-coordinate_interpolator_class::coordinate_interpolator_class(
-    openvrml::browser & browser):
+openvrml::vrml97_node::coordinate_interpolator_class::
+coordinate_interpolator_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-coordinate_interpolator_class::~coordinate_interpolator_class() throw ()
+openvrml::vrml97_node::coordinate_interpolator_class::
+~coordinate_interpolator_class() throw ()
 {}
 
 /**
@@ -5159,10 +5244,10 @@ coordinate_interpolator_class::~coordinate_interpolator_class() throw ()
  *                                  supported by coordinate_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-coordinate_interpolator_class::do_create_type(
-    const std::string & id,
-    const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::coordinate_interpolator_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -5238,13 +5323,13 @@ coordinate_interpolator_class::do_create_type(
 }
 
 /**
- * @class coordinate_interpolator_node
+ * @class openvrml::vrml97_node::coordinate_interpolator_node
  *
  * @brief CoordinateInterpolator node instances.
  */
 
 /**
- * @var class coordinate_interpolator_node::coordinate_interpolator_class
+ * @var class openvrml::vrml97_node::coordinate_interpolator_node::coordinate_interpolator_class
  *
  * @brief Class object for CoordinateInterpolator nodes.
  */
@@ -5252,7 +5337,7 @@ coordinate_interpolator_class::do_create_type(
 /**
  * @internal
  *
- * @class coordinate_interpolator_node::set_fraction_listener
+ * @class openvrml::vrml97_node::coordinate_interpolator_node::set_fraction_listener
  *
  * @brief set_fraction event handler.
  */
@@ -5262,7 +5347,7 @@ coordinate_interpolator_class::do_create_type(
  *
  * @param node  coordinate_interpolator_node.
  */
-coordinate_interpolator_node::set_fraction_listener::
+openvrml::vrml97_node::coordinate_interpolator_node::set_fraction_listener::
 set_fraction_listener(coordinate_interpolator_node & node):
     sffloat_listener(node)
 {}
@@ -5270,8 +5355,8 @@ set_fraction_listener(coordinate_interpolator_node & node):
 /**
  * @brief Destroy.
  */
-coordinate_interpolator_node::set_fraction_listener::~set_fraction_listener()
-    throw ()
+openvrml::vrml97_node::coordinate_interpolator_node::set_fraction_listener::
+~set_fraction_listener() throw ()
 {}
 
 /**
@@ -5283,7 +5368,7 @@ coordinate_interpolator_node::set_fraction_listener::~set_fraction_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-coordinate_interpolator_node::set_fraction_listener::
+openvrml::vrml97_node::coordinate_interpolator_node::set_fraction_listener::
 do_process_event(const sffloat & fraction, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -5337,31 +5422,31 @@ do_process_event(const sffloat & fraction, const double timestamp)
 }
 
 /**
- * @var coordinate_interpolator_node::set_fraction_listener coordinate_interpolator_node::set_fraction_listener_
+ * @var openvrml::vrml97_node::coordinate_interpolator_node::set_fraction_listener openvrml::vrml97_node::coordinate_interpolator_node::set_fraction_listener_
  *
  * @brief set_fraction event handler.
  */
 
 /**
- * @var exposedfield<mffloat> coordinate_interpolator_node::key_
+ * @var openvrml::exposedfield<openvrml::mffloat> openvrml::vrml97_node::coordinate_interpolator_node::key_
  *
  * @brief key exposedField.
  */
 
 /**
- * @var exposedfield<mfvec3f> coordinate_interpolator_node::key_value_
+ * @var openvrml::exposedfield<openvrml::mfvec3f> openvrml::vrml97_node::coordinate_interpolator_node::key_value_
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var mfvec3f coordinate_interpolator_node::value_
+ * @var openvrml::mfvec3f openvrml::vrml97_node::coordinate_interpolator_node::value_
  *
  * @brief Current value.
  */
 
 /**
- * @var mfvec3f_emitter coordinate_interpolator_node::value_changed_
+ * @var openvrml::mfvec3f_emitter openvrml::vrml97_node::coordinate_interpolator_node::value_changed_
  *
  * @brief value_changed eventOut.
  */
@@ -5372,9 +5457,9 @@ do_process_event(const sffloat & fraction, const double timestamp)
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-coordinate_interpolator_node::coordinate_interpolator_node(
-    const node_type & type,
-    const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::coordinate_interpolator_node::
+coordinate_interpolator_node(const node_type & type,
+                             const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -5387,12 +5472,13 @@ coordinate_interpolator_node::coordinate_interpolator_node(
 /**
  * @brief Destroy.
  */
-coordinate_interpolator_node::~coordinate_interpolator_node() throw ()
+openvrml::vrml97_node::coordinate_interpolator_node::
+~coordinate_interpolator_node() throw ()
 {}
 
 
 /**
- * @class cylinder_class
+ * @class openvrml::vrml97_node::cylinder_class
  *
  * @brief Class object for Cylinder nodes.
  */
@@ -5402,14 +5488,15 @@ coordinate_interpolator_node::~coordinate_interpolator_node() throw ()
  *
  * @param browser the browser associated with this class object.
  */
-cylinder_class::cylinder_class(openvrml::browser & browser):
+openvrml::vrml97_node::cylinder_class::
+cylinder_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-cylinder_class::~cylinder_class() throw ()
+openvrml::vrml97_node::cylinder_class::~cylinder_class() throw ()
 {}
 
 /**
@@ -5424,9 +5511,10 @@ cylinder_class::~cylinder_class() throw ()
  *                              supported by cylinder_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-cylinder_class::do_create_type(const std::string & id,
-                            const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::cylinder_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -5495,43 +5583,43 @@ cylinder_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class cylinder_node
+ * @class openvrml::vrml97_node::cylinder_node
  *
  * @brief Cylinder node instances.
  */
 
 /**
- * @var cylinder_node::cylinder_class
+ * @var openvrml::vrml97_node::cylinder_node::cylinder_class
  *
  * @brief Class object for Cylinder nodes.
  */
 
 /**
- * @var sfbool cylinder_node::bottom
+ * @var openvrml::sfbool openvrml::vrml97_node::cylinder_node::bottom
  *
  * @brief bottom field.
  */
 
 /**
- * @var sffloat cylinder_node::height
+ * @var openvrml::sffloat openvrml::vrml97_node::cylinder_node::height
  *
  * @brief height field.
  */
 
 /**
- * @var sffloat cylinder_node::radius
+ * @var openvrml::sffloat openvrml::vrml97_node::cylinder_node::radius
  *
  * @brief radius field.
  */
 
 /**
- * @var sfbool cylinder_node::side
+ * @var openvrml::sfbool openvrml::vrml97_node::cylinder_node::side
  *
  * @brief side field.
  */
 
 /**
- * @var sfbool cylinder_node::top
+ * @var openvrml::sfbool openvrml::vrml97_node::cylinder_node::top
  *
  * @brief top field.
  */
@@ -5542,8 +5630,9 @@ cylinder_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-cylinder_node::cylinder_node(const node_type & type,
-                             const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::cylinder_node::
+cylinder_node(const node_type & type,
+              const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -5557,7 +5646,7 @@ cylinder_node::cylinder_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-cylinder_node::~cylinder_node() throw ()
+openvrml::vrml97_node::cylinder_node::~cylinder_node() throw ()
 {
     // need access to viewer to remove d_viewerObject...
 }
@@ -5568,9 +5657,9 @@ cylinder_node::~cylinder_node() throw ()
  * @param viewer    a viewer.
  * @param context   the rendering context.
  */
-viewer::object_t
-cylinder_node::do_render_geometry(openvrml::viewer & viewer,
-                                  const rendering_context context)
+openvrml::viewer::object_t
+openvrml::vrml97_node::cylinder_node::
+do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
 {
     const viewer::object_t object_ref =
         viewer.insert_cylinder(this->height.value,
@@ -5583,7 +5672,7 @@ cylinder_node::do_render_geometry(openvrml::viewer & viewer,
 
 
 /**
- * @class cylinder_sensor_class
+ * @class openvrml::vrml97_node::cylinder_sensor_class
  *
  * @brief Class object for CylinderSensor nodes.
  */
@@ -5593,14 +5682,15 @@ cylinder_node::do_render_geometry(openvrml::viewer & viewer,
  *
  * @param browser the browser associated with this class object.
  */
-cylinder_sensor_class::cylinder_sensor_class(openvrml::browser & browser):
+openvrml::vrml97_node::cylinder_sensor_class::
+cylinder_sensor_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-cylinder_sensor_class::~cylinder_sensor_class() throw ()
+openvrml::vrml97_node::cylinder_sensor_class::~cylinder_sensor_class() throw ()
 {}
 
 /**
@@ -5616,9 +5706,10 @@ cylinder_sensor_class::~cylinder_sensor_class() throw ()
  *                                  supported by cylinder_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-cylinder_sensor_class::do_create_type(const std::string & id,
-                                   const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::cylinder_sensor_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -5769,113 +5860,113 @@ cylinder_sensor_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class cylinder_sensor_node
+ * @class openvrml::vrml97_node::cylinder_sensor_node
  *
  * @brief CylinderSensor node instances.
  */
 
 /**
- * @var cylinder_sensor_node::cylinder_sensor_class
+ * @var openvrml::vrml97_node::cylinder_sensor_node::cylinder_sensor_class
  *
  * @brief Class object for CylinderSensor nodes.
  */
 
 /**
- * @var exposedfield<sfbool> cylinder_sensor_node::auto_offset_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::cylinder_sensor_node::auto_offset_
  *
  * @brief autoOffset exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> cylinder_sensor_node::disk_angle_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::cylinder_sensor_node::disk_angle_
  *
  * @brief diskAngle exposedField.
  */
 
 /**
- * @var exposedfield<sfbool> cylinder_sensor_node::enabled_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::cylinder_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> cylinder_sensor_node::max_angle_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::cylinder_sensor_node::max_angle_
  *
  * @brief maxAngle exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> cylinder_sensor_node::min_angle_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::cylinder_sensor_node::min_angle_
  *
  * @brief minAngle exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> cylinder_sensor_node::offset_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::cylinder_sensor_node::offset_
  *
  * @brief offset exposedField.
  */
 
 /**
- * @var sfbool cylinder_sensor_node::is_active_
+ * @var openvrml::sfbool openvrml::vrml97_node::cylinder_sensor_node::is_active_
  *
  * @brief Active state.
  */
 
 /**
- * @var sfbool_emitter cylinder_sensor_node::is_active_emitter_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::cylinder_sensor_node::is_active_emitter_
  *
  * @brief isActive eventOut.
  */
 
 /**
- * @var sfrotation cylinder_sensor_node::rotation_changed_
+ * @var openvrml::sfrotation openvrml::vrml97_node::cylinder_sensor_node::rotation_changed_
  *
  * @brief Rotation state.
  */
 
 /**
- * @var sfrotation_emitter cylinder_sensor_node::rotation_changed_emitter_
+ * @var openvrml::sfrotation_emitter openvrml::vrml97_node::cylinder_sensor_node::rotation_changed_emitter_
  *
  * @brief rotation_changed eventOut.
  */
 
 /**
- * @var sfvec3f cylinder_sensor_node::track_point_changed_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::cylinder_sensor_node::track_point_changed_
  *
  * @brief Track point state.
  */
 
 /**
- * @var sfvec3f_emitter cylinder_sensor_node::track_point_changed_emitter_
+ * @var openvrml::sfvec3f_emitter openvrml::vrml97_node::cylinder_sensor_node::track_point_changed_emitter_
  *
  * @brief trackPoint_changed eventOut.
  */
 
 /**
- * @var float cylinder_sensor_node::rotation_val
+ * @var float openvrml::vrml97_node::cylinder_sensor_node::rotation_val
  *
  * @brief The rotation value.
  */
 
 /**
- * @var vec3f cylinder_sensor_node::activationPoint
+ * @var openvrml::vec3f openvrml::vrml97_node::cylinder_sensor_node::activationPoint
  *
  * @brief The activation point.
  */
 
 /**
- * @var bool cylinder_sensor_node::disk
+ * @var bool openvrml::vrml97_node::cylinder_sensor_node::disk
  */
 
 /**
- * @var mat4f cylinder_sensor_node::activationMatrix
+ * @var openvrml::mat4f openvrml::vrml97_node::cylinder_sensor_node::activationMatrix
  *
  * @brief Activation matrix.
  */
 
 /**
- * @var mat4f cylinder_sensor_node::modelview
+ * @var openvrml::mat4f openvrml::vrml97_node::cylinder_sensor_node::modelview
  *
  * @brief Modelview matrix.
  */
@@ -5886,8 +5977,9 @@ cylinder_sensor_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-cylinder_sensor_node::cylinder_sensor_node(const node_type & type,
-                                           const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::cylinder_sensor_node::
+cylinder_sensor_node(const node_type & type,
+                     const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -5909,7 +6001,7 @@ cylinder_sensor_node::cylinder_sensor_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-cylinder_sensor_node::~cylinder_sensor_node() throw ()
+openvrml::vrml97_node::cylinder_sensor_node::~cylinder_sensor_node() throw ()
 {}
 
 /**
@@ -5917,7 +6009,8 @@ cylinder_sensor_node::~cylinder_sensor_node() throw ()
  *
  * @return a pointer to the cylinder_sensor_node.
  */
-cylinder_sensor_node * cylinder_sensor_node::to_cylinder_sensor() const
+openvrml::vrml97_node::cylinder_sensor_node *
+openvrml::vrml97_node::cylinder_sensor_node::to_cylinder_sensor() const
 {
     return (cylinder_sensor_node*) this;
 }
@@ -5928,8 +6021,9 @@ cylinder_sensor_node * cylinder_sensor_node::to_cylinder_sensor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void cylinder_sensor_node::do_render_child(openvrml::viewer & viewer,
-                                           rendering_context context)
+void
+openvrml::vrml97_node::cylinder_sensor_node::
+do_render_child(openvrml::viewer & viewer, rendering_context context)
 {
     //
     // Store the modelview matrix which is calculated at the time of rendering
@@ -5941,9 +6035,9 @@ void cylinder_sensor_node::do_render_child(openvrml::viewer & viewer,
 /**
  * @brief Called in response to user interaction.
  */
-void cylinder_sensor_node::activate(double timestamp,
-                                    bool isActive,
-                                    double * p)
+void openvrml::vrml97_node::cylinder_sensor_node::activate(double timestamp,
+                                                           bool isActive,
+                                                           double * p)
 {
     using openvrml_::pi;
     using openvrml_::pi_2;
@@ -6034,14 +6128,14 @@ void cylinder_sensor_node::activate(double timestamp,
  *
  * @return @c true if the sensor is enabled; @c false otherwise.
  */
-bool cylinder_sensor_node::enabled() const
+bool openvrml::vrml97_node::cylinder_sensor_node::enabled() const
 {
     return this->enabled_.sfbool::value;
 }
 
 
 /**
- * @class directional_light_class
+ * @class openvrml::vrml97_node::directional_light_class
  *
  * @brief Class object for DirectionalLight nodes.
  */
@@ -6051,14 +6145,16 @@ bool cylinder_sensor_node::enabled() const
  *
  * @param browser the browser associated with this class object.
  */
-directional_light_class::directional_light_class(openvrml::browser & browser):
+openvrml::vrml97_node::directional_light_class::
+directional_light_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-directional_light_class::~directional_light_class() throw ()
+openvrml::vrml97_node::directional_light_class::~directional_light_class()
+    throw ()
 {}
 
 /**
@@ -6074,9 +6170,10 @@ directional_light_class::~directional_light_class() throw ()
  *                              supported by directional_light_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-directional_light_class::do_create_type(const std::string & id,
-                                     const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::directional_light_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -6181,19 +6278,19 @@ directional_light_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class directional_light_node
+ * @class openvrml::vrml97_node::directional_light_node
  *
  * @brief DirectionalLight node instances.
  */
 
 /**
- * @var directional_light_node::directional_light_class
+ * @var openvrml::vrml97_node::directional_light_node::directional_light_class
  *
  * @brief Class object for DirectionalLight nodes.
  */
 
 /**
- * @var exposedfield<sfvec3f> directional_light_node::direction_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::directional_light_node::direction_
  *
  * @brief direction exposedField.
  */
@@ -6204,8 +6301,9 @@ directional_light_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-directional_light_node::directional_light_node(const node_type & type,
-                                               const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::directional_light_node::
+directional_light_node(const node_type & type,
+                       const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_light_node(type, scope),
     direction_(*this, vec3f(0.0, 0.0, -1.0))
@@ -6214,7 +6312,9 @@ directional_light_node::directional_light_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-directional_light_node::~directional_light_node() throw () {}
+openvrml::vrml97_node::directional_light_node::~directional_light_node()
+    throw ()
+{}
 
 /**
  * @brief Render the node.
@@ -6224,8 +6324,9 @@ directional_light_node::~directional_light_node() throw () {}
  * @param viewer    a viewer.
  * @param context   a rendering context.
  */
-void directional_light_node::do_render_child(openvrml::viewer & viewer,
-                                    const rendering_context rc)
+void
+openvrml::vrml97_node::directional_light_node::
+do_render_child(openvrml::viewer & viewer, const rendering_context rc)
 {
     if (this->on_.sfbool::value) {
         viewer.insert_dir_light(this->ambient_intensity_.sffloat::value,
@@ -6238,7 +6339,7 @@ void directional_light_node::do_render_child(openvrml::viewer & viewer,
 
 
 /**
- * @class elevation_grid_class
+ * @class openvrml::vrml97_node::elevation_grid_class
  *
  * @brief Class object for ElevationGrid nodes.
  */
@@ -6248,14 +6349,15 @@ void directional_light_node::do_render_child(openvrml::viewer & viewer,
  *
  * @param browser the browser associated with this class object.
  */
-elevation_grid_class::elevation_grid_class(openvrml::browser & browser):
+openvrml::vrml97_node::elevation_grid_class::
+elevation_grid_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-elevation_grid_class::~elevation_grid_class() throw ()
+openvrml::vrml97_node::elevation_grid_class::~elevation_grid_class() throw ()
 {}
 
 /**
@@ -6271,9 +6373,10 @@ elevation_grid_class::~elevation_grid_class() throw ()
  *                                  supported by elevation_grid_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-elevation_grid_class::do_create_type(const std::string & id,
-                                  const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::elevation_grid_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -6453,13 +6556,13 @@ elevation_grid_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class elevation_grid_node
+ * @class openvrml::vrml97_node::elevation_grid_node
  *
  * @brief ElevationGrid node instances.
  */
 
 /**
- * @var elevation_grid_node::elevation_grid_class
+ * @var openvrml::vrml97_node::elevation_grid_node::elevation_grid_class
  *
  * @brief Class object for ElevationGrid nodes.
  */
@@ -6467,7 +6570,7 @@ elevation_grid_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class elevation_grid_node::set_height_listener
+ * @class openvrml::vrml97_node::elevation_grid_node::set_height_listener
  *
  * @brief set_height event handler.
  */
@@ -6477,7 +6580,7 @@ elevation_grid_class::do_create_type(const std::string & id,
  *
  * @param node  elevation_grid_node.
  */
-elevation_grid_node::set_height_listener::
+openvrml::vrml97_node::elevation_grid_node::set_height_listener::
 set_height_listener(elevation_grid_node & node):
     mffloat_listener(node)
 {}
@@ -6485,7 +6588,8 @@ set_height_listener(elevation_grid_node & node):
 /**
  * @brief Destroy.
  */
-elevation_grid_node::set_height_listener::~set_height_listener() throw ()
+openvrml::vrml97_node::elevation_grid_node::set_height_listener::
+~set_height_listener() throw ()
 {}
 
 /**
@@ -6497,8 +6601,8 @@ elevation_grid_node::set_height_listener::~set_height_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-elevation_grid_node::set_height_listener::do_process_event(const mffloat & height,
-                                                        const double timestamp)
+openvrml::vrml97_node::elevation_grid_node::set_height_listener::
+do_process_event(const mffloat & height, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -6514,85 +6618,85 @@ elevation_grid_node::set_height_listener::do_process_event(const mffloat & heigh
 }
 
 /**
- * @var elevation_grid_node::set_height_listener elevation_grid_node::set_height_listener_
+ * @var openvrml::vrml97_node::elevation_grid_node::set_height_listener openvrml::vrml97_node::elevation_grid_node::set_height_listener_
  *
  * @brief set_height eventIn handler.
  */
 
 /**
- * @var exposedfield<sfnode> elevation_grid_node::color_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::elevation_grid_node::color_
  *
  * @brief color exposedField.
  */
 
 /**
- * @var exposedfield<sfnode> elevation_grid_node::normal_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::elevation_grid_node::normal_
  *
  * @brief normal exposedField.
  */
 
 /**
- * @var exposedfield<sfnode> elevation_grid_node::tex_coord_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::elevation_grid_node::tex_coord_
  *
  * @brief texCoord exposedField.
  */
 
 /**
- * @var sfbool elevation_grid_node::ccw_
+ * @var openvrml::sfbool openvrml::vrml97_node::elevation_grid_node::ccw_
  *
  * @brief ccw field.
  */
 
 /**
- * @var sfbool elevation_grid_node::color_per_vertex_
+ * @var openvrml::sfbool openvrml::vrml97_node::elevation_grid_node::color_per_vertex_
  *
  * @brief colorPerVertex field.
  */
 
 /**
- * @var sffloat elevation_grid_node::crease_angle_
+ * @var openvrml::sffloat openvrml::vrml97_node::elevation_grid_node::crease_angle_
  *
  * @brief creaseAngle field.
  */
 
 /**
- * @var mffloat elevation_grid_node::height_
+ * @var openvrml::mffloat openvrml::vrml97_node::elevation_grid_node::height_
  *
  * @brief height field.
  */
 
 /**
- * @var sfbool elevation_grid_node::normal_per_vertex_
+ * @var openvrml::sfbool openvrml::vrml97_node::elevation_grid_node::normal_per_vertex_
  *
  * @brief normalPerVertex field.
  */
 
 /**
- * @var sfbool elevation_grid_node::solid_
+ * @var openvrml::sfbool openvrml::vrml97_node::elevation_grid_node::solid_
  *
  * @brief solid field.
  */
 
 /**
- * @var sfint32 elevation_grid_node::x_dimension_
+ * @var openvrml::sfint32 openvrml::vrml97_node::elevation_grid_node::x_dimension_
  *
  * @brief xDimension field.
  */
 
 /**
- * @var sffloat elevation_grid_node::x_spacing_
+ * @var openvrml::sffloat openvrml::vrml97_node::elevation_grid_node::x_spacing_
  *
  * @brief xSpacing field.
  */
 
 /**
- * @var sfint32 elevation_grid_node::z_dimension_
+ * @var openvrml::sfint32 openvrml::vrml97_node::elevation_grid_node::z_dimension_
  *
  * @brief zDimension field.
  */
 
 /**
- * @var sffloat elevation_grid_node::z_spacing_
+ * @var openvrml::sffloat openvrml::vrml97_node::,elevation_grid_node::z_spacing_
  *
  * @brief zSpacing field.
  */
@@ -6603,8 +6707,9 @@ elevation_grid_node::set_height_listener::do_process_event(const mffloat & heigh
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-elevation_grid_node::elevation_grid_node(const node_type & type,
-                                         const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::elevation_grid_node::
+elevation_grid_node(const node_type & type,
+                    const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -6625,7 +6730,7 @@ elevation_grid_node::elevation_grid_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-elevation_grid_node::~elevation_grid_node() throw ()
+openvrml::vrml97_node::elevation_grid_node::~elevation_grid_node() throw ()
 {}
 
 /**
@@ -6634,7 +6739,7 @@ elevation_grid_node::~elevation_grid_node() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool elevation_grid_node::modified() const
+bool openvrml::vrml97_node::elevation_grid_node::modified() const
 {
     return this->node::modified()
         || (this->color_.sfnode::value
@@ -6651,9 +6756,9 @@ bool elevation_grid_node::modified() const
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-viewer::object_t
-elevation_grid_node::do_render_geometry(openvrml::viewer & viewer,
-                                        const rendering_context context)
+openvrml::viewer::object_t
+openvrml::vrml97_node::elevation_grid_node::
+do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
 {
     viewer::object_t obj = 0;
 
@@ -6717,7 +6822,7 @@ elevation_grid_node::do_render_geometry(openvrml::viewer & viewer,
 
 
 /**
- * @class extrusion_class
+ * @class openvrml::vrml97_node::extrusion_class
  *
  * @brief Class object for Extrusion nodes.
  */
@@ -6727,14 +6832,15 @@ elevation_grid_node::do_render_geometry(openvrml::viewer & viewer,
  *
  * @param browser the browser associated with this class object.
  */
-extrusion_class::extrusion_class(openvrml::browser & browser):
+openvrml::vrml97_node::extrusion_class::
+extrusion_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-extrusion_class::~extrusion_class() throw ()
+openvrml::vrml97_node::extrusion_class::~extrusion_class() throw ()
 {}
 
 /**
@@ -6749,9 +6855,10 @@ extrusion_class::~extrusion_class() throw ()
  *                                  supported by extrusion_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-extrusion_class::do_create_type(const std::string & id,
-                             const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::extrusion_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -6916,13 +7023,13 @@ extrusion_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class extrusion_node
+ * @class openvrml::vrml97_node::extrusion_node
  *
  * @brief Extrusion node instances.
  */
 
 /**
- * @var extrusion_node::extrusion_class
+ * @var openvrml::vrml97_node::extrusion_node::extrusion_class
  *
  * @brief Class object for Extrusion nodes.
  */
@@ -6930,7 +7037,7 @@ extrusion_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class extrusion_node::set_cross_section_listener
+ * @class openvrml::vrml97_node::extrusion_node::set_cross_section_listener
  *
  * @brief set_crossSection event handler.
  */
@@ -6940,7 +7047,7 @@ extrusion_class::do_create_type(const std::string & id,
  *
  * @param node  extrusion_node.
  */
-extrusion_node::set_cross_section_listener::
+openvrml::vrml97_node::extrusion_node::set_cross_section_listener::
 set_cross_section_listener(extrusion_node & node):
     mfvec2f_listener(node)
 {}
@@ -6948,8 +7055,8 @@ set_cross_section_listener(extrusion_node & node):
 /**
  * @brief Destroy.
  */
-extrusion_node::set_cross_section_listener::~set_cross_section_listener()
-    throw ()
+openvrml::vrml97_node::extrusion_node::set_cross_section_listener::
+~set_cross_section_listener() throw ()
 {}
 
 /**
@@ -6961,7 +7068,7 @@ extrusion_node::set_cross_section_listener::~set_cross_section_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-extrusion_node::set_cross_section_listener::
+openvrml::vrml97_node::extrusion_node::set_cross_section_listener::
 do_process_event(const mfvec2f & cross_section, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -6978,7 +7085,7 @@ do_process_event(const mfvec2f & cross_section, const double timestamp)
 /**
  * @internal
  *
- * @class extrusion_node::set_orientation_listener
+ * @class openvrml::vrml97_node::extrusion_node::set_orientation_listener
  *
  * @brief set_orientation event handler.
  */
@@ -6988,7 +7095,7 @@ do_process_event(const mfvec2f & cross_section, const double timestamp)
  *
  * @param node  extrusion_node.
  */
-extrusion_node::set_orientation_listener::
+openvrml::vrml97_node::extrusion_node::set_orientation_listener::
 set_orientation_listener(extrusion_node & node):
     mfrotation_listener(node)
 {}
@@ -6996,8 +7103,8 @@ set_orientation_listener(extrusion_node & node):
 /**
  * @brief Destroy.
  */
-extrusion_node::set_orientation_listener::~set_orientation_listener()
-    throw ()
+openvrml::vrml97_node::extrusion_node::set_orientation_listener::
+~set_orientation_listener() throw ()
 {}
 
 /**
@@ -7009,7 +7116,7 @@ extrusion_node::set_orientation_listener::~set_orientation_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-extrusion_node::set_orientation_listener::
+openvrml::vrml97_node::extrusion_node::set_orientation_listener::
 do_process_event(const mfrotation & orientation, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -7026,7 +7133,7 @@ do_process_event(const mfrotation & orientation, const double timestamp)
 /**
  * @internal
  *
- * @class extrusion_node::set_scale_listener
+ * @class openvrml::vrml97_node::extrusion_node::set_scale_listener
  *
  * @brief set_scale event handler.
  */
@@ -7036,15 +7143,16 @@ do_process_event(const mfrotation & orientation, const double timestamp)
  *
  * @param node  extrusion_node.
  */
-extrusion_node::set_scale_listener::set_scale_listener(extrusion_node & node):
+openvrml::vrml97_node::extrusion_node::set_scale_listener::
+set_scale_listener(extrusion_node & node):
     mfvec2f_listener(node)
 {}
 
 /**
  * @brief Destroy.
  */
-extrusion_node::set_scale_listener::~set_scale_listener()
-    throw ()
+openvrml::vrml97_node::extrusion_node::set_scale_listener::
+~set_scale_listener() throw ()
 {}
 
 /**
@@ -7056,8 +7164,8 @@ extrusion_node::set_scale_listener::~set_scale_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-extrusion_node::set_scale_listener::do_process_event(const mfvec2f & scale,
-                                                  const double timestamp)
+openvrml::vrml97_node::extrusion_node::set_scale_listener::
+do_process_event(const mfvec2f & scale, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -7073,7 +7181,7 @@ extrusion_node::set_scale_listener::do_process_event(const mfvec2f & scale,
 /**
  * @internal
  *
- * @class extrusion_node::set_spine_listener
+ * @class openvrml::vrml97_node::extrusion_node::set_spine_listener
  *
  * @brief set_spine event handler.
  */
@@ -7083,15 +7191,16 @@ extrusion_node::set_scale_listener::do_process_event(const mfvec2f & scale,
  *
  * @param node  extrusion_node.
  */
-extrusion_node::set_spine_listener::set_spine_listener(extrusion_node & node):
+openvrml::vrml97_node::extrusion_node::set_spine_listener::
+set_spine_listener(extrusion_node & node):
     mfvec3f_listener(node)
 {}
 
 /**
  * @brief Destroy.
  */
-extrusion_node::set_spine_listener::~set_spine_listener()
-    throw ()
+openvrml::vrml97_node::extrusion_node::set_spine_listener::
+~set_spine_listener() throw ()
 {}
 
 /**
@@ -7103,8 +7212,8 @@ extrusion_node::set_spine_listener::~set_spine_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-extrusion_node::set_spine_listener::do_process_event(const mfvec3f & spine,
-                                                  const double timestamp)
+openvrml::vrml97_node::extrusion_node::set_spine_listener::
+do_process_event(const mfvec3f & spine, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -7118,100 +7227,114 @@ extrusion_node::set_spine_listener::do_process_event(const mfvec3f & spine,
 }
 
 /**
- * @var extrusion_node::set_cross_section_listener extrusion_node::set_cross_section_listener_
+ * @var openvrml::vrml97_node::extrusion_node::set_cross_section_listener openvrml::vrml97_node::extrusion_node::set_cross_section_listener_
  *
  * @brief set_crossSection eventIn handler.
  */
 
 /**
- * @var extrusion_node::set_orientation_listener extrusion_node::set_orientation_listener_
+ * @var openvrml::vrml97_node::extrusion_node::set_orientation_listener openvrml::vrml97_node::extrusion_node::set_orientation_listener_
  *
  * @brief set_orientation eventIn handler.
  */
 
 /**
- * @var extrusion_node::set_scale_listener extrusion_node::set_scale_listener_
+ * @var openvrml::vrml97_node::extrusion_node::set_scale_listener openvrml::vrml97_node::extrusion_node::set_scale_listener_
  *
  * @brief set_scale eventIn handler.
  */
 
 /**
- * @var extrusion_node::set_spine_listener extrusion_node::set_spine_listener_
+ * @var openvrml::vrml97_node::extrusion_node::set_spine_listener openvrml::vrml97_node::extrusion_node::set_spine_listener_
  *
  * @brief set_spine eventIn handler.
  */
 
 /**
- * @var sfbool extrusion_node::begin_cap_
+ * @var openvrml::sfbool openvrml::vrml97_node::extrusion_node::begin_cap_
  *
  * @brief beginCap field.
  */
 
 /**
- * @var sfbool extrusion_node::ccw_
+ * @var openvrml::sfbool openvrml::vrml97_node::extrusion_node::ccw_
  *
  * @brief ccw field.
  */
 
 /**
- * @var sfbool extrusion_node::convex_
+ * @var openvrml::sfbool openvrml::vrml97_node::extrusion_node::convex_
  *
  * @brief convex field.
  */
 
 /**
- * @var sffloat extrusion_node::crease_angle_
+ * @var openvrml::sffloat openvrml::vrml97_node::extrusion_node::crease_angle_
  *
  * @brief creaseAngle field.
  */
 
 /**
- * @var mfvec2f extrusion_node::cross_section_
+ * @var openvrml::mfvec2f openvrml::vrml97_node::extrusion_node::cross_section_
  *
  * @brief crossSection field.
  */
 
 /**
- * @var sfbool extrusion_node::end_cap_
+ * @var openvrml::sfbool openvrml::vrml97_node::extrusion_node::end_cap_
  *
  * @brief endCap field.
  */
 
 /**
- * @var mfrotation extrusion_node::orientation_
+ * @var openvrml::mfrotation openvrml::vrml97_node::extrusion_node::orientation_
  *
  * @brief orientation field.
  */
 
 /**
- * @var mfvec2f extrusion_node::scale_
+ * @var openvrml::mfvec2f openvrml::vrml97_node::extrusion_node::scale_
  *
  * @brief scale field.
  */
 
 /**
- * @var sfbool extrusion_node::solid_
+ * @var openvrml::sfbool openvrml::vrml97_node::extrusion_node::solid_
  *
  * @brief solid field.
  */
 
 /**
- * @var mfvec3f extrusion_node::spine_
+ * @var openvrml::mfvec3f openvrml::vrml97_node::extrusion_node::spine_
  *
  * @brief spine field.
  */
 
 namespace {
-    const vec2f extrusionDefaultCrossSection_[] = { vec2f(1.0, 1.0),
-                                                    vec2f(1.0, -1.0),
-                                                    vec2f(-1.0, -1.0),
-                                                    vec2f(-1.0, 1.0),
-                                                    vec2f(1.0, 1.0) };
-    const vec2f extrusionDefaultScale_[] = { vec2f(1.0, 1.0) };
-    const rotation extrusionDefaultOrientation_[] =
-            { rotation(0.0, 0.0, 1.0, 0.0) };
-    const vec3f extrusionDefaultSpine_[] = { vec3f(0.0, 0.0, 0.0),
-                                             vec3f(0.0, 1.0, 0.0) };
+    const openvrml::vec2f extrusionDefaultCrossSection_[] =
+    {
+        openvrml::vec2f(1.0, 1.0),
+        openvrml::vec2f(1.0, -1.0),
+        openvrml::vec2f(-1.0, -1.0),
+        openvrml::vec2f(-1.0, 1.0),
+        openvrml::vec2f(1.0, 1.0)
+    };
+
+    const openvrml::vec2f extrusionDefaultScale_[] =
+    {
+        openvrml::vec2f(1.0, 1.0)
+    };
+
+    const openvrml::rotation extrusionDefaultOrientation_[] =
+    {
+        openvrml::rotation(0.0, 0.0, 1.0, 0.0)
+    };
+
+    const openvrml::vec3f extrusionDefaultSpine_[] =
+    {
+        openvrml::vec3f(0.0, 0.0, 0.0),
+        openvrml::vec3f(0.0, 1.0, 0.0)
+    };
 }
 
 /**
@@ -7220,8 +7343,9 @@ namespace {
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-extrusion_node::extrusion_node(const node_type & type,
-                               const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::extrusion_node::
+extrusion_node(const node_type & type,
+               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -7246,7 +7370,7 @@ extrusion_node::extrusion_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-extrusion_node::~extrusion_node() throw () {}
+openvrml::vrml97_node::extrusion_node::~extrusion_node() throw () {}
 
 /**
  * @brief Insert this geometry into @p viewer's display list.
@@ -7254,9 +7378,9 @@ extrusion_node::~extrusion_node() throw () {}
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-viewer::object_t
-extrusion_node::do_render_geometry(openvrml::viewer & viewer,
-                                   const rendering_context context)
+openvrml::viewer::object_t
+openvrml::vrml97_node::extrusion_node::
+do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
 {
     viewer::object_t obj = 0;
     if (!this->cross_section_.value.empty() && this->spine_.value.size() > 1) {
@@ -7279,25 +7403,25 @@ extrusion_node::do_render_geometry(openvrml::viewer & viewer,
 
 
 /**
- * @class fog_class
+ * @class openvrml::vrml97_node::fog_class
  *
  * @brief Class object for Fog nodes.
  */
 
 /**
- * @typedef fog_class::bound_nodes_t
+ * @typedef openvrml::vrml97_node::fog_class::bound_nodes_t
  *
  * @brief A bound Fog node stack.
  */
 
 /**
- * @var fog_node * fog_class::first
+ * @var openvrml::vrml97_node::fog_node * openvrml::vrml97_node::fog_class::first
  *
  * @brief The first Fog node in the initial scene graph.
  */
 
 /**
- * @var fog_class::bound_nodes_t fog_class::bound_nodes
+ * @var openvrml::vrml97_node::fog_class::bound_nodes_t openvrml::vrml97_node::fog_class::bound_nodes
  *
  * @brief The bound Fog node stack.
  */
@@ -7307,7 +7431,7 @@ extrusion_node::do_render_geometry(openvrml::viewer & viewer,
  *
  * @param browser the browser associated with this class object.
  */
-fog_class::fog_class(openvrml::browser & browser):
+openvrml::vrml97_node::fog_class::fog_class(openvrml::browser & browser):
     node_class(browser),
     first(0)
 {}
@@ -7315,7 +7439,7 @@ fog_class::fog_class(openvrml::browser & browser):
 /**
  * @brief Destroy.
  */
-fog_class::~fog_class() throw ()
+openvrml::vrml97_node::fog_class::~fog_class() throw ()
 {}
 
 /**
@@ -7326,7 +7450,7 @@ fog_class::~fog_class() throw ()
  *
  * @param fog   a Fog node.
  */
-void fog_class::set_first(fog_node & fog) throw ()
+void openvrml::vrml97_node::fog_class::set_first(fog_node & fog) throw ()
 {
     this->first = &fog;
 }
@@ -7336,7 +7460,7 @@ void fog_class::set_first(fog_node & fog) throw ()
  *
  * This function is called by <code>fog_node::do_shutdown</code>.
  */
-void fog_class::reset_first() throw ()
+void openvrml::vrml97_node::fog_class::reset_first() throw ()
 {
     this->first = 0;
 }
@@ -7348,7 +7472,7 @@ void fog_class::reset_first() throw ()
  *
  * @return @c true if the first node has already been set; @c false otherwise.
  */
-bool fog_class::has_first() const throw ()
+bool openvrml::vrml97_node::fog_class::has_first() const throw ()
 {
     return this->first;
 }
@@ -7360,7 +7484,7 @@ bool fog_class::has_first() const throw ()
  *
  * @return @c true if @p fog is the fist node; @c false otherwise.
  */
-bool fog_class::is_first(fog_node & fog) throw ()
+bool openvrml::vrml97_node::fog_class::is_first(fog_node & fog) throw ()
 {
     return &fog == this->first;
 }
@@ -7371,7 +7495,8 @@ bool fog_class::is_first(fog_node & fog) throw ()
  * @param fog       the node to bind.
  * @param timestamp the current time.
  */
-void fog_class::bind(fog_node & fog, const double timestamp)
+void openvrml::vrml97_node::fog_class::bind(fog_node & fog,
+                                            const double timestamp)
     throw (std::bad_alloc)
 {
     using std::find;
@@ -7414,7 +7539,8 @@ void fog_class::bind(fog_node & fog, const double timestamp)
  * @param fog       the node to unbind.
  * @param timestamp the current time.
  */
-void fog_class::unbind(fog_node & fog, const double timestamp) throw ()
+void openvrml::vrml97_node::fog_class::unbind(fog_node & fog,
+                                              const double timestamp) throw ()
 {
     const bound_nodes_t::iterator pos =
         std::find(this->bound_nodes.begin(), this->bound_nodes.end(), &fog);
@@ -7439,8 +7565,10 @@ void fog_class::unbind(fog_node & fog, const double timestamp) throw ()
  * @param initial_viewpoint the viewpoint_node that should be bound initially.
  * @param timestamp         the current time.
  */
-void fog_class::do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-                              const double timestamp)
+void
+openvrml::vrml97_node::fog_class::
+do_initialize(openvrml::viewpoint_node * initial_viewpoint,
+              const double timestamp)
     throw ()
 {
     if (this->first) {
@@ -7463,7 +7591,7 @@ void fog_class::do_initialize(openvrml::viewpoint_node * initial_viewpoint,
  *
  * @param v a viewer.
  */
-void fog_class::do_render(viewer & v) const throw ()
+void openvrml::vrml97_node::fog_class::do_render(viewer & v) const throw ()
 {
     if (!this->bound_nodes.empty()) {
         fog_node & fog = dynamic_cast<fog_node &>(*this->bound_nodes.back());
@@ -7485,9 +7613,10 @@ void fog_class::do_render(viewer & v) const throw ()
  *                              supported by fog_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-fog_class::do_create_type(const std::string & id,
-                       const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::fog_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -7577,13 +7706,13 @@ fog_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class fog_node
+ * @class openvrml::vrml97_node::fog_node
  *
  * @brief Fog node instances.
  */
 
 /**
- * @var class fog_node::fog_class
+ * @var class openvrml::vrml97_node::fog_node::fog_class
  *
  * @brief Class object for Fog nodes.
  */
@@ -7591,7 +7720,7 @@ fog_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class fog_node::set_bind_listener
+ * @class openvrml::vrml97_node::fog_node::set_bind_listener
  *
  * @brief set_bind event handler.
  */
@@ -7601,14 +7730,16 @@ fog_class::do_create_type(const std::string & id,
  *
  * @param node  fog_node.
  */
-fog_node::set_bind_listener::set_bind_listener(fog_node & node):
+openvrml::vrml97_node::fog_node::set_bind_listener::
+set_bind_listener(fog_node & node):
     sfbool_listener(node)
 {}
 
 /**
  * @brief Destroy.
  */
-fog_node::set_bind_listener::~set_bind_listener() throw ()
+openvrml::vrml97_node::fog_node::set_bind_listener::~set_bind_listener()
+    throw ()
 {}
 
 /**
@@ -7619,8 +7750,9 @@ fog_node::set_bind_listener::~set_bind_listener() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void fog_node::set_bind_listener::do_process_event(const sfbool & bind,
-                                                   const double timestamp)
+void
+openvrml::vrml97_node::fog_node::set_bind_listener::
+do_process_event(const sfbool & bind, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -7639,37 +7771,37 @@ void fog_node::set_bind_listener::do_process_event(const sfbool & bind,
 }
 
 /**
- * @var fog_node::set_bind_listener fog_node::set_bind_listener_
+ * @var openvrml::vrml97_node::fog_node::set_bind_listener openvrml::vrml97_node::fog_node::set_bind_listener_
  *
  * @brief set_bind eventIn handler.
  */
 
 /**
- * @var exposedfield<sfcolor> fog_node::color_
+ * @var openvrml::exposedfield<openvrml::sfcolor> openvrml::vrml97_node::fog_node::color_
  *
  * @brief color exposedField.
  */
 
 /**
- * @var exposedfield<sfstring> fog_node::fog_type_
+ * @var openvrml::exposedfield<openvrml::sfstring> openvrml::vrml97_node::fog_node::fog_type_
  *
  * @brief fogType exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> fog_node::visibility_range_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::fog_node::visibility_range_
  *
  * @brief visibilityRange exposedField.
  */
 
 /**
- * @var sfbool fog_node::is_bound_
+ * @var openvrml::sfbool openvrml::vrml97_node::fog_node::is_bound_
  *
  * @brief isBound eventOut value.
  */
 
 /**
- * @var sfbool fog_node::is_bound_emitter_
+ * @var openvrml::sfbool openvrml::vrml97_node::fog_node::is_bound_emitter_
  *
  * @brief isBound eventOut emitter.
  */
@@ -7680,8 +7812,9 @@ void fog_node::set_bind_listener::do_process_event(const sfbool & bind,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-fog_node::fog_node(const node_type & type,
-                   const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::fog_node::
+fog_node(const node_type & type,
+         const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -7695,7 +7828,7 @@ fog_node::fog_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-fog_node::~fog_node() throw ()
+openvrml::vrml97_node::fog_node::~fog_node() throw ()
 {}
 
 /**
@@ -7703,7 +7836,8 @@ fog_node::~fog_node() throw ()
  *
  * @param timestamp the current time.
  */
-void fog_node::do_initialize(const double timestamp) throw ()
+void openvrml::vrml97_node::fog_node::do_initialize(const double timestamp)
+    throw ()
 {
     fog_class & nodeClass =
         const_cast<fog_class &>(
@@ -7718,7 +7852,8 @@ void fog_node::do_initialize(const double timestamp) throw ()
  *
  * @param timestamp the current time.
  */
-void fog_node::do_shutdown(const double timestamp) throw ()
+void openvrml::vrml97_node::fog_node::do_shutdown(const double timestamp)
+    throw ()
 {
     fog_class & node_class =
         const_cast<fog_class &>(
@@ -7730,7 +7865,7 @@ void fog_node::do_shutdown(const double timestamp) throw ()
 
 
 /**
- * @class font_style_class
+ * @class openvrml::vrml97_node::font_style_class
  *
  * @brief Class object for FontStyle nodes.
  */
@@ -7740,14 +7875,15 @@ void fog_node::do_shutdown(const double timestamp) throw ()
  *
  * @param browser the browser associated with this class object.
  */
-font_style_class::font_style_class(openvrml::browser & browser):
+openvrml::vrml97_node::font_style_class::
+font_style_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-font_style_class::~font_style_class() throw ()
+openvrml::vrml97_node::font_style_class::~font_style_class() throw ()
 {}
 
 /**
@@ -7762,9 +7898,10 @@ font_style_class::~font_style_class() throw ()
  *                                  supported by font_style_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-font_style_class::do_create_type(const std::string & id,
-                              const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::font_style_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -7875,67 +8012,67 @@ font_style_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class font_style_node
+ * @class openvrml::vrml97_node::font_style_node
  *
  * @brief FontStyle node instances.
  */
 
 /**
- * @var font_style_node::font_style_class
+ * @var openvrml::vrml97_node::font_style_node::font_style_class
  *
  * @brief Class object for FontStyle nodes.
  */
 
 /**
- * @var mfstring font_style_node::family_
+ * @var openvrml::mfstring openvrml::vrml97_node::font_style_node::family_
  *
  * @brief family field.
  */
 
 /**
- * @var sfbool font_style_node::horizontal_
+ * @var openvrml::sfbool openvrml::vrml97_node::font_style_node::horizontal_
  *
  * @brief horizontal field.
  */
 
 /**
- * @var mfstring font_style_node::justify_
+ * @var openvrml::mfstring openvrml::vrml97_node::font_style_node::justify_
  *
  * @brief justify field.
  */
 
 /**
- * @var sfstring font_style_node::language_
+ * @var openvrml::sfstring openvrml::vrml97_node::font_style_node::language_
  *
  * @brief language field.
  */
 
 /**
- * @var sfbool font_style_node::leftToRight
+ * @var openvrml::sfbool openvrml::vrml97_node::font_style_node::leftToRight
  *
  * @brief leftToRight field.
  */
 
 /**
- * @var sffloat font_style_node::size_
+ * @var openvrml::sffloat openvrml::vrml97_node::font_style_node::size_
  *
  * @brief size field.
  */
 
 /**
- * @var sffloat font_style_node::spacing_
+ * @var openvrml::sffloat openvrml::vrml97_node::font_style_node::spacing_
  *
  * @brief spacing field.
  */
 
 /**
- * @var sfstring font_style_node::style_
+ * @var openvrml::sfstring openvrml::vrml97_node::font_style_node::style_
  *
  * @brief style field.
  */
 
 /**
- * @var sfbool font_style_node::topToBottom
+ * @var openvrml::sfbool openvrml::vrml97_node::font_style_node::topToBottom
  *
  * @brief topToBottom field.
  */
@@ -7951,8 +8088,9 @@ namespace {
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-font_style_node::font_style_node(const node_type & type,
-                                 const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::font_style_node::
+font_style_node(const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::font_style_node(type, scope),
@@ -7969,7 +8107,7 @@ font_style_node::font_style_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-font_style_node::~font_style_node() throw ()
+openvrml::vrml97_node::font_style_node::~font_style_node() throw ()
 {}
 
 /**
@@ -7978,7 +8116,8 @@ font_style_node::~font_style_node() throw ()
  * @return an mfstring containing the font families that may be used for this
  *      font_style_node.
  */
-const std::vector<std::string> & font_style_node::family() const throw ()
+const std::vector<std::string> &
+openvrml::vrml97_node::font_style_node::family() const throw ()
 {
     return this->family_.value;
 }
@@ -7990,7 +8129,7 @@ const std::vector<std::string> & font_style_node::family() const throw ()
  * @return @c true if the text should be horizontal, or @c false if the text
  *      should be vertical.
  */
-bool font_style_node::horizontal() const throw ()
+bool openvrml::vrml97_node::font_style_node::horizontal() const throw ()
 {
     return this->horizontal_.value;
 }
@@ -8001,7 +8140,8 @@ bool font_style_node::horizontal() const throw ()
  * @return a string array describing the characteristics of the text
  *      justification.
  */
-const std::vector<std::string> & font_style_node::justify() const throw ()
+const std::vector<std::string> &
+openvrml::vrml97_node::font_style_node::justify() const throw ()
 {
     return this->justify_.value;
 }
@@ -8011,7 +8151,8 @@ const std::vector<std::string> & font_style_node::justify() const throw ()
  *
  * @return the language code.
  */
-const std::string & font_style_node::language() const throw ()
+const std::string & openvrml::vrml97_node::font_style_node::language() const
+    throw ()
 {
     return this->language_.value;
 }
@@ -8023,7 +8164,7 @@ const std::string & font_style_node::language() const throw ()
  * @return @c true if the text should be rendered left-to-right, or @c false if
  *      the text should be rendered right-to-left.
  */
-bool font_style_node::left_to_right() const throw ()
+bool openvrml::vrml97_node::font_style_node::left_to_right() const throw ()
 {
     return this->leftToRight.value;
 }
@@ -8033,7 +8174,7 @@ bool font_style_node::left_to_right() const throw ()
  *
  * @return the size of the text.
  */
-float font_style_node::size() const throw ()
+float openvrml::vrml97_node::font_style_node::size() const throw ()
 {
     return this->size_.value;
 }
@@ -8043,7 +8184,7 @@ float font_style_node::size() const throw ()
  *
  * @return the spacing for the text.
  */
-float font_style_node::spacing() const throw ()
+float openvrml::vrml97_node::font_style_node::spacing() const throw ()
 {
     return this->spacing_.value;
 }
@@ -8053,7 +8194,8 @@ float font_style_node::spacing() const throw ()
  *
  * @return an string descriptor of the text style.
  */
-const std::string & font_style_node::style() const throw ()
+const std::string & openvrml::vrml97_node::font_style_node::style() const
+    throw ()
 {
     return this->style_.value;
 }
@@ -8065,14 +8207,14 @@ const std::string & font_style_node::style() const throw ()
  * @return @c true if the text should be rendered top-to-bottom, or @c false if
  *      the text should be rendered bottom-to-top.
  */
-bool font_style_node::top_to_bottom() const throw ()
+bool openvrml::vrml97_node::font_style_node::top_to_bottom() const throw ()
 {
     return this->topToBottom.value;
 }
 
 
 /**
- * @class group_class
+ * @class openvrml::vrml97_node::group_class
  *
  * @brief Class object for Group nodes.
  */
@@ -8082,12 +8224,14 @@ bool font_style_node::top_to_bottom() const throw ()
  *
  * @param browser the browser associated with this node class object.
  */
-group_class::group_class(openvrml::browser & browser): node_class(browser) {}
+openvrml::vrml97_node::group_class::group_class(openvrml::browser & browser):
+    node_class(browser)
+{}
 
 /**
  * @brief Destroy.
  */
-group_class::~group_class() throw () {}
+openvrml::vrml97_node::group_class::~group_class() throw () {}
 
 /**
  * @brief Create a node_type.
@@ -8101,9 +8245,10 @@ group_class::~group_class() throw () {}
  *                              supported by group_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-group_class::do_create_type(const std::string & id,
-                         const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::group_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -8184,13 +8329,13 @@ group_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class group_node
+ * @class openvrml::vrml97_node::group_node
  *
  * @brief Represents Group node instances.
  */
 
 /**
- * @var group_node::group_class
+ * @var openvrml::vrml97_node::group_node::group_class
  *
  * @brief Class object for Group nodes.
  */
@@ -8198,7 +8343,7 @@ group_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class group_node::add_children_listener
+ * @class openvrml::vrml97_node::group_node::add_children_listener
  *
  * @brief addChildren event listener.
  */
@@ -8208,14 +8353,16 @@ group_class::do_create_type(const std::string & id,
  *
  * @param node  group_node.
  */
-group_node::add_children_listener::add_children_listener(group_node & node):
+openvrml::vrml97_node::group_node::add_children_listener::
+add_children_listener(group_node & node):
     mfnode_listener(node)
 {}
 
 /**
  * @brief Destroy.
  */
-group_node::add_children_listener::~add_children_listener() throw ()
+openvrml::vrml97_node::group_node::add_children_listener::
+~add_children_listener() throw ()
 {}
 
 /**
@@ -8229,8 +8376,9 @@ group_node::add_children_listener::~add_children_listener() throw ()
  *
  * @exception std::bad_alloc        if memory allocation fails.
  */
-void group_node::add_children_listener::do_process_event(const mfnode & value,
-                                                      const double timestamp)
+void
+openvrml::vrml97_node::group_node::add_children_listener::
+do_process_event(const mfnode & value, const double timestamp)
     throw (std::bad_alloc)
 {
     using std::vector;
@@ -8276,7 +8424,7 @@ void group_node::add_children_listener::do_process_event(const mfnode & value,
 /**
  * @internal
  *
- * @class group_node::remove_children_listener
+ * @class openvrml::vrml97_node::group_node::remove_children_listener
  *
  * @brief removeChildren event listener.
  */
@@ -8286,7 +8434,7 @@ void group_node::add_children_listener::do_process_event(const mfnode & value,
  *
  * @param node  group_node.
  */
-group_node::
+openvrml::vrml97_node::group_node::
 remove_children_listener::remove_children_listener(group_node & node):
     mfnode_listener(node)
 {}
@@ -8294,15 +8442,16 @@ remove_children_listener::remove_children_listener(group_node & node):
 /**
  * @brief Destroy.
  */
-group_node::remove_children_listener::~remove_children_listener() throw ()
+openvrml::vrml97_node::group_node::remove_children_listener::
+~remove_children_listener() throw ()
 {}
 
 /**
  * @brief Process an event.
  */
 void
-group_node::remove_children_listener::do_process_event(const mfnode & value,
-                                                    const double timestamp)
+openvrml::vrml97_node::group_node::remove_children_listener::
+do_process_event(const mfnode & value, const double timestamp)
     throw (std::bad_alloc)
 {
     using std::vector;
@@ -8328,7 +8477,7 @@ group_node::remove_children_listener::do_process_event(const mfnode & value,
 /**
  * @internal
  *
- * @class group_node::children_exposedfield
+ * @class openvrml::vrml97_node::group_node::children_exposedfield
  *
  * @brief children exposedField implementation.
  */
@@ -8338,23 +8487,24 @@ group_node::remove_children_listener::do_process_event(const mfnode & value,
  *
  * @param node  group_node.
  */
-group_node::children_exposedfield::children_exposedfield(openvrml::node & node)
-    throw ():
-    exposedfield<mfnode>(node)
+openvrml::vrml97_node::group_node::children_exposedfield::
+children_exposedfield(openvrml::node & node) throw ():
+    openvrml::exposedfield<openvrml::mfnode>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-group_node::children_exposedfield::~children_exposedfield() throw ()
+openvrml::vrml97_node::group_node::children_exposedfield::
+~children_exposedfield() throw ()
 {}
 
 /**
  * @brief Handle event.
  */
 void
-group_node::children_exposedfield::event_side_effect(const mfnode & value,
-                                                    const double timestamp)
+openvrml::vrml97_node::group_node::children_exposedfield::
+event_side_effect(const mfnode & value, const double timestamp)
     throw (std::bad_alloc)
 {
     using std::vector;
@@ -8385,43 +8535,43 @@ group_node::children_exposedfield::event_side_effect(const mfnode & value,
 }
 
 /**
- * @var sfvec3f group_node::bbox_center_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::group_node::bbox_center_
  *
  * @brief bboxCenter field.
  */
 
 /**
- * @var sfvec3f group_node::bbox_size_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::group_node::bbox_size_
  *
  * @brief bboxSize field.
  */
 
 /**
- * @var group_node::add_children_listener group_node::add_children_listener_
+ * @var openvrml::vrml97_node::group_node::add_children_listener openvrml::vrml97_node::group_node::add_children_listener_
  *
  * @brief addChildren eventIn handler.
  */
 
 /**
- * @var group_node::remove_children_listener group_node::remove_children_listener_
+ * @var openvrml::vrml97_node::group_node::remove_children_listener openvrml::vrml97_node::group_node::remove_children_listener_
  *
  * @brief removeChildren eventIn handler.
  */
 
 /**
- * @var group_node::children_exposedfield group_node::children_
+ * @var openvrml::vrml97_node::group_node::children_exposedfield openvrml::vrml97_node::group_node::children_
  *
  * @brief children exposedField.
  */
 
 /**
- * @var viewer::object_t group_node::viewerObject
+ * @var openvrml::viewer::object_t openvrml::vrml97_node::group_node::viewerObject
  *
  * @brief Handle for the renderer.
  */
 
 /**
- * @var bounding_sphere group_node::bsphere
+ * @var openvrml::vrml97_node::bounding_sphere openvrml::vrml97_node::group_node::bsphere
  *
  * @brief Cached copy of the bounding_sphere enclosing this node's children.
  */
@@ -8432,7 +8582,9 @@ group_node::children_exposedfield::event_side_effect(const mfnode & value,
  * @param type  the node_type associated with the node.
  * @param scope the scope to which the node belongs.
  */
-group_node::group_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::group_node::
+group_node(const node_type & type,
+           const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
@@ -8449,7 +8601,7 @@ group_node::group_node(const node_type & type, const boost::shared_ptr<openvrml:
 /**
  * @brief Destroy.
  */
-group_node::~group_node() throw ()
+openvrml::vrml97_node::group_node::~group_node() throw ()
 {
     // delete viewerObject...
 }
@@ -8460,7 +8612,7 @@ group_node::~group_node() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool group_node::modified() const
+bool openvrml::vrml97_node::group_node::modified() const
 {
     if (this->node::modified()) { return true; }
     for (size_t i = 0; i < this->children_.mfnode::value.size(); ++i) {
@@ -8477,8 +8629,9 @@ bool group_node::modified() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void group_node::do_render_child(openvrml::viewer & viewer,
-                                 rendering_context context)
+void
+openvrml::vrml97_node::group_node::do_render_child(openvrml::viewer & viewer,
+                                                   rendering_context context)
 {
     if (context.cull_flag != bounding_volume::inside) {
         assert(dynamic_cast<const bounding_sphere *>
@@ -8505,8 +8658,9 @@ void group_node::do_render_child(openvrml::viewer & viewer,
  * because children will already have done the culling, we don't need
  * to repeat it here.
  */
-void group_node::render_nocull(openvrml::viewer & viewer,
-                               rendering_context context)
+void
+openvrml::vrml97_node::group_node::render_nocull(openvrml::viewer & viewer,
+                                                 rendering_context context)
 {
     using std::vector;
 
@@ -8575,7 +8729,8 @@ void group_node::render_nocull(openvrml::viewer & viewer,
  *
  * @return the child nodes in the scene graph.
  */
-const std::vector<node_ptr> & group_node::children() const throw ()
+const std::vector<openvrml::node_ptr> &
+openvrml::vrml97_node::group_node::children() const throw ()
 {
     return this->children_.mfnode::value;
 }
@@ -8583,7 +8738,11 @@ const std::vector<node_ptr> & group_node::children() const throw ()
 /**
  * Pass on to enabled touchsensor child.
  */
-void group_node::activate(double time, bool isOver, bool isActive, double *p)
+void
+openvrml::vrml97_node::group_node::activate(double time,
+                                            bool isOver,
+                                            bool isActive,
+                                            double *p)
 {
     for (size_t i = 0; i < this->children_.mfnode::value.size(); ++i) {
         const node_ptr & node = this->children_.mfnode::value[i];
@@ -8610,7 +8769,8 @@ void group_node::activate(double time, bool isOver, bool isActive, double *p)
  *
  * @return the bounding volume associated with the node.
  */
-const bounding_volume & group_node::bounding_volume() const
+const openvrml::bounding_volume &
+openvrml::vrml97_node::group_node::bounding_volume() const
 {
     if (this->bounding_volume_dirty()) {
         const_cast<group_node *>(this)->recalc_bsphere();
@@ -8621,7 +8781,7 @@ const bounding_volume & group_node::bounding_volume() const
 /**
  * @brief Recalculate the bounding volume.
  */
-void group_node::recalc_bsphere()
+void openvrml::vrml97_node::group_node::recalc_bsphere()
 {
     this->bsphere = bounding_sphere();
     for (size_t i = 0; i < this->children_.mfnode::value.size(); ++i) {
@@ -8636,7 +8796,7 @@ void group_node::recalc_bsphere()
 
 
 /**
- * @class image_texture_class
+ * @class openvrml::vrml97_node::image_texture_class
  *
  * @brief Class object for ImageTexture nodes.
  */
@@ -8646,14 +8806,16 @@ void group_node::recalc_bsphere()
  *
  * @param browser the browser associated with this node class object.
  */
-image_texture_class::image_texture_class(openvrml::browser & browser):
+openvrml::vrml97_node::image_texture_class::
+image_texture_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-image_texture_class::~image_texture_class() throw () {}
+openvrml::vrml97_node::image_texture_class::~image_texture_class() throw ()
+{}
 
 /**
  * @brief Create a node_type.
@@ -8668,8 +8830,8 @@ image_texture_class::~image_texture_class() throw () {}
  *                                  supported by image_texture_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-image_texture_class::
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::image_texture_class::
 do_create_type(const std::string & id,
                const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
@@ -8731,13 +8893,13 @@ do_create_type(const std::string & id,
 }
 
 /**
- * @class image_texture_node
+ * @class openvrml::vrml97_node::image_texture_node
  *
  * @brief Represents ImageTexture node instances.
  */
 
 /**
- * @var class image_texture_node::image_texture_class
+ * @var class openvrml::vrml97_node::image_texture_node::image_texture_class
  *
  * @brief Class object for ImageTexture nodes.
  */
@@ -8745,7 +8907,7 @@ do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class image_texture_node::url_exposedfield
+ * @class openvrml::vrml97_node::image_texture_node::url_exposedfield
  *
  * @brief url exposedField.
  */
@@ -8755,15 +8917,16 @@ do_create_type(const std::string & id,
  *
  * @param node  image_texture_node.
  */
-image_texture_node::url_exposedfield::
+openvrml::vrml97_node::image_texture_node::url_exposedfield::
 url_exposedfield(image_texture_node & node):
-    exposedfield<mfstring>(node)
+    openvrml::exposedfield<openvrml::mfstring>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-image_texture_node::url_exposedfield::~url_exposedfield() throw ()
+openvrml::vrml97_node::image_texture_node::url_exposedfield::
+~url_exposedfield() throw ()
 {}
 
 /**
@@ -8775,8 +8938,8 @@ image_texture_node::url_exposedfield::~url_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-image_texture_node::url_exposedfield::event_side_effect(const mfstring & url,
-                                                       const double timestamp)
+openvrml::vrml97_node::image_texture_node::url_exposedfield::
+event_side_effect(const mfstring & url, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -8791,19 +8954,19 @@ image_texture_node::url_exposedfield::event_side_effect(const mfstring & url,
 }
 
 /**
- * @var image_texture_node::url_exposedfield image_texture_node::url_
+ * @var openvrml::vrml97_node::image_texture_node::url_exposedfield openvrml::vrml97_node::image_texture_node::url_
  *
  * @brief url exposedField.
  */
 
 /**
- * @var image image_texture_node::image_
+ * @var openvrml::image openvrml::vrml97_node::image_texture_node::image_
  *
  * @brief Image data.
  */
 
 /**
- * @var bool image_texture_node::texture_needs_update
+ * @var bool openvrml::vrml97_node::image_texture_node::texture_needs_update
  *
  * @brief Flag to indicate that image_texture_node::update_texture should be
  *        called.
@@ -8815,7 +8978,7 @@ image_texture_node::url_exposedfield::event_side_effect(const mfstring & url,
  * @param type  the node_type associated with the node.
  * @param scope the scope to which the node belongs.
  */
-image_texture_node::
+openvrml::vrml97_node::image_texture_node::
 image_texture_node(const node_type & type,
                    const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
@@ -8827,7 +8990,7 @@ image_texture_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-image_texture_node::~image_texture_node() throw ()
+openvrml::vrml97_node::image_texture_node::~image_texture_node() throw ()
 {
     // delete texObject...
 }
@@ -8837,7 +9000,8 @@ image_texture_node::~image_texture_node() throw ()
  *
  * @return the image.
  */
-const image & image_texture_node::image() const throw ()
+const openvrml::image &
+openvrml::vrml97_node::image_texture_node::image() const throw ()
 {
     return this->image_;
 }
@@ -8849,7 +9013,8 @@ const image & image_texture_node::image() const throw ()
  *
  * @return object identifier for the inserted texture.
  */
-viewer::texture_object_t image_texture_node::do_render_texture(viewer & v)
+openvrml::viewer::texture_object_t
+openvrml::vrml97_node::image_texture_node::do_render_texture(viewer & v)
 {
     this->update_texture();
     return v.insert_texture(this->image_,
@@ -8861,7 +9026,7 @@ viewer::texture_object_t image_texture_node::do_render_texture(viewer & v)
 /**
  * @brief Called to lazily update texture data.
  */
-void image_texture_node::update_texture()
+void openvrml::vrml97_node::image_texture_node::update_texture()
 {
     if (this->texture_needs_update) {
         if (!this->url_.mfstring::value.empty()) {
@@ -8880,7 +9045,7 @@ void image_texture_node::update_texture()
 
 
 /**
- * @class indexed_face_set_class
+ * @class openvrml::vrml97_node::indexed_face_set_class
  *
  * @brief Class object for IndexedFaceSet nodes.
  */
@@ -8890,14 +9055,16 @@ void image_texture_node::update_texture()
  *
  * @param browser the browser associated with this node class object.
  */
-indexed_face_set_class::indexed_face_set_class(openvrml::browser & browser):
+openvrml::vrml97_node::indexed_face_set_class::
+indexed_face_set_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-indexed_face_set_class::~indexed_face_set_class() throw ()
+openvrml::vrml97_node::indexed_face_set_class::~indexed_face_set_class()
+    throw ()
 {}
 
 /**
@@ -8913,9 +9080,10 @@ indexed_face_set_class::~indexed_face_set_class() throw ()
  *                              supported by indexed_face_set_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-indexed_face_set_class::do_create_type(const std::string & id,
-                                    const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::indexed_face_set_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -9144,7 +9312,7 @@ indexed_face_set_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class indexed_face_set_node
+ * @class openvrml::vrml97_node::indexed_face_set_node
  *
  * @brief Represents IndexedFaceSet node instances.
  */
@@ -9152,7 +9320,7 @@ indexed_face_set_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class indexed_face_set_node::set_normal_index_listener
+ * @class openvrml::vrml97_node::indexed_face_set_node::set_normal_index_listener
  *
  * @brief set_normalIndex event handler.
  */
@@ -9162,7 +9330,7 @@ indexed_face_set_class::do_create_type(const std::string & id,
  *
  * @param node  indexed_face_set_node.
  */
-indexed_face_set_node::set_normal_index_listener::
+openvrml::vrml97_node::indexed_face_set_node::set_normal_index_listener::
 set_normal_index_listener(indexed_face_set_node & node):
     mfint32_listener(node)
 {}
@@ -9170,7 +9338,7 @@ set_normal_index_listener(indexed_face_set_node & node):
 /**
  * @brief Destroy.
  */
-indexed_face_set_node::set_normal_index_listener::
+openvrml::vrml97_node::indexed_face_set_node::set_normal_index_listener::
 ~set_normal_index_listener() throw ()
 {}
 
@@ -9183,7 +9351,7 @@ indexed_face_set_node::set_normal_index_listener::
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-indexed_face_set_node::set_normal_index_listener::
+openvrml::vrml97_node::indexed_face_set_node::set_normal_index_listener::
 do_process_event(const mfint32 & normal_index,
               const double timestamp)
     throw (std::bad_alloc)
@@ -9202,7 +9370,7 @@ do_process_event(const mfint32 & normal_index,
 /**
  * @internal
  *
- * @class indexed_face_set_node::set_tex_coord_index_listener
+ * @class openvrml::vrml97_node::indexed_face_set_node::set_tex_coord_index_listener
  *
  * @brief set_coordIndex event handler.
  */
@@ -9212,7 +9380,7 @@ do_process_event(const mfint32 & normal_index,
  *
  * @param node  indexed_face_set_node.
  */
-indexed_face_set_node::set_tex_coord_index_listener::
+openvrml::vrml97_node::indexed_face_set_node::set_tex_coord_index_listener::
 set_tex_coord_index_listener(indexed_face_set_node & node):
     mfint32_listener(node)
 {}
@@ -9220,7 +9388,7 @@ set_tex_coord_index_listener(indexed_face_set_node & node):
 /**
  * @brief Destroy.
  */
-indexed_face_set_node::set_tex_coord_index_listener::
+openvrml::vrml97_node::indexed_face_set_node::set_tex_coord_index_listener::
 ~set_tex_coord_index_listener() throw ()
 {}
 
@@ -9233,7 +9401,7 @@ indexed_face_set_node::set_tex_coord_index_listener::
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-indexed_face_set_node::set_tex_coord_index_listener::
+openvrml::vrml97_node::indexed_face_set_node::set_tex_coord_index_listener::
 do_process_event(const mfint32 & tex_coord_index, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -9249,79 +9417,79 @@ do_process_event(const mfint32 & tex_coord_index, const double timestamp)
 }
 
 /**
- * @var indexed_face_set_node::indexed_face_set_class
+ * @var openvrml::vrml97_node::indexed_face_set_node::indexed_face_set_class
  *
  * @brief Class object for IndexedFaceSet nodes.
  */
 
 /**
- * @var indexed_face_set_node::set_normal_index_listener indexed_face_set_node::set_normal_index_listener_
+ * @var openvrml::vrml97_node::indexed_face_set_node::set_normal_index_listener openvrml::vrml97_node::indexed_face_set_node::set_normal_index_listener_
  *
  * @brief set_normalIndex eventIn handler.
  */
 
 /**
- * @var indexed_face_set_node::set_tex_coord_index_listener indexed_face_set_node::set_tex_coord_index_listener_
+ * @var openvrml::vrml97_node::indexed_face_set_node::set_tex_coord_index_listener openvrml::vrml97_node::indexed_face_set_node::set_tex_coord_index_listener_
  *
  * @brief set_texCoordIndex eventIn handler.
  */
 
 /**
- * @var exposedfield<sfnode> indexed_face_set_node::normal_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::indexed_face_set_node::normal_
  *
  * @brief normal exposedField.
  */
 
 /**
- * @var exposedfield<sfnode> indexed_face_set_node::tex_coord_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::indexed_face_set_node::tex_coord_
  *
  * @brief texCoord exposedField.
  */
 
 /**
- * @var sfbool indexed_face_set_node::ccw_
+ * @var openvrml::sfbool openvrml::vrml97_node::indexed_face_set_node::ccw_
  *
  * @brief ccw field.
  */
 
 /**
- * @var sfbool indexed_face_set_node::convex_
+ * @var openvrml::sfbool openvrml::vrml97_node::indexed_face_set_node::convex_
  *
  * @brief convex field.
  */
 
 /**
- * @var sffloat indexed_face_set_node::crease_angle_
+ * @var openvrml::sffloat openvrml::vrml97_node::indexed_face_set_node::crease_angle_
  *
  * @brief creaseAngle field.
  */
 
 /**
- * @var mfint32 indexed_face_set_node::normal_index_
+ * @var openvrml::mfint32 openvrml::vrml97_node::indexed_face_set_node::normal_index_
  *
  * @brief set_normalIndex eventIn.
  */
 
 /**
- * @var sfbool indexed_face_set_node::normal_per_vertex_
+ * @var openvrml::sfbool openvrml::vrml97_node::indexed_face_set_node::normal_per_vertex_
  *
  * @brief normalPerVertex field.
  */
 
 /**
- * @var sfbool indexed_face_set_node::solid_
+ * @var openvrml::sfbool openvrml::vrml97_node::indexed_face_set_node::solid_
  *
  * @brief solid field.
  */
 
 /**
- * @var mfint32 indexed_face_set_node::tex_coord_index_
+ * @var openvrml::mfint32 openvrml::vrml97_node::indexed_face_set_node::tex_coord_index_
  *
  * @brief set_texCoordIndex eventIn.
  */
 
 /**
- * @var bounding_sphere indexed_face_set_node::bsphere
+ * @var bounding_sphere openvrml::vrml97_node::indexed_face_set_node::bsphere
  *
  * @brief Bounding volume.
  */
@@ -9332,8 +9500,9 @@ do_process_event(const mfint32 & tex_coord_index, const double timestamp)
  * @param type  the node_type associated with the node.
  * @param scope     the scope to which the node belongs.
  */
-indexed_face_set_node::indexed_face_set_node(const node_type & type,
-                                             const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::indexed_face_set_node::
+indexed_face_set_node(const node_type & type,
+                      const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_indexed_set_node(type, scope),
     set_normal_index_listener_(*this),
@@ -9352,7 +9521,8 @@ indexed_face_set_node::indexed_face_set_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-indexed_face_set_node::~indexed_face_set_node() throw () {}
+openvrml::vrml97_node::indexed_face_set_node::~indexed_face_set_node() throw ()
+{}
 
 /**
  * @brief Determine whether the node has been modified.
@@ -9360,7 +9530,7 @@ indexed_face_set_node::~indexed_face_set_node() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool indexed_face_set_node::modified() const
+bool openvrml::vrml97_node::indexed_face_set_node::modified() const
 {
     return this->node::modified()
         || (this->color_.sfnode::value
@@ -9381,9 +9551,9 @@ bool indexed_face_set_node::modified() const
  *
  * @todo stripify, crease angle, generate normals ...
  */
-viewer::object_t
-indexed_face_set_node::do_render_geometry(openvrml::viewer & viewer,
-                                          const rendering_context context)
+openvrml::viewer::object_t
+openvrml::vrml97_node::indexed_face_set_node::
+do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
 {
     using std::vector;
 
@@ -9457,7 +9627,7 @@ indexed_face_set_node::do_render_geometry(openvrml::viewer & viewer,
 /**
  * @brief Recalculate the bounding volume.
  */
-void indexed_face_set_node::recalcBSphere()
+void openvrml::vrml97_node::indexed_face_set_node::recalcBSphere()
 {
     // take the bvolume of all the points. technically, we should figure
     // out just which points are used by the index and just use those,
@@ -9481,7 +9651,8 @@ void indexed_face_set_node::recalcBSphere()
  *
  * @return the bounding volume associated with the node.
  */
-const bounding_volume & indexed_face_set_node::bounding_volume() const
+const openvrml::bounding_volume &
+openvrml::vrml97_node::indexed_face_set_node::bounding_volume() const
 {
     if (this->bounding_volume_dirty()) {
         const_cast<indexed_face_set_node *>(this)->recalcBSphere();
@@ -9491,7 +9662,7 @@ const bounding_volume & indexed_face_set_node::bounding_volume() const
 
 
 /**
- * @class indexed_line_set_class
+ * @class openvrml::vrml97_node::indexed_line_set_class
  *
  * @brief Class object for IndexedLineSet nodes.
  */
@@ -9501,14 +9672,17 @@ const bounding_volume & indexed_face_set_node::bounding_volume() const
  *
  * @param browser the browser associated with this node class object.
  */
-indexed_line_set_class::indexed_line_set_class(openvrml::browser & browser):
+openvrml::vrml97_node::indexed_line_set_class::
+indexed_line_set_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-indexed_line_set_class::~indexed_line_set_class() throw () {}
+openvrml::vrml97_node::indexed_line_set_class::~indexed_line_set_class()
+    throw ()
+{}
 
 /**
  * @brief Create a node_type.
@@ -9523,9 +9697,10 @@ indexed_line_set_class::~indexed_line_set_class() throw () {}
  *                                  supported by indexed_line_set_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-indexed_line_set_class::do_create_type(const std::string & id,
-                                    const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::indexed_line_set_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -9630,13 +9805,13 @@ indexed_line_set_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class indexed_line_set_node
+ * @class openvrml::vrml97_node::indexed_line_set_node
  *
  * @brief Represents IndexedLineSet node instances.
  */
 
 /**
- * @var indexed_line_set_node::indexed_line_set_class
+ * @var openvrml::vrml97_node::indexed_line_set_node::indexed_line_set_class
  *
  * @brief Class object for IndexedLineSet nodes.
  */
@@ -9647,8 +9822,9 @@ indexed_line_set_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope the scope to which the node belongs.
  */
-indexed_line_set_node::indexed_line_set_node(const node_type & type,
-                                             const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::indexed_line_set_node::
+indexed_line_set_node(const node_type & type,
+                      const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_indexed_set_node(type, scope)
 {}
@@ -9656,7 +9832,7 @@ indexed_line_set_node::indexed_line_set_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-indexed_line_set_node::~indexed_line_set_node() throw ()
+openvrml::vrml97_node::indexed_line_set_node::~indexed_line_set_node() throw ()
 {}
 
 /**
@@ -9667,9 +9843,9 @@ indexed_line_set_node::~indexed_line_set_node() throw ()
  *
  * @todo colors
  */
-viewer::object_t
-indexed_line_set_node::do_render_geometry(openvrml::viewer & viewer,
-                                          const rendering_context context)
+openvrml::viewer::object_t
+openvrml::vrml97_node::indexed_line_set_node::
+do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
 {
     using std::vector;
 
@@ -9702,14 +9878,14 @@ indexed_line_set_node::do_render_geometry(openvrml::viewer & viewer,
  *
  * @return @c true.
  */
-bool indexed_line_set_node::do_emissive() const throw ()
+bool openvrml::vrml97_node::indexed_line_set_node::do_emissive() const throw ()
 {
     return true;
 }
 
 
 /**
- * @class inline_class
+ * @class openvrml::vrml97_node::inline_class
  *
  * @brief Class object for Inline nodes.
  */
@@ -9719,12 +9895,15 @@ bool indexed_line_set_node::do_emissive() const throw ()
  *
  * @param browser the browser associated with this node class object.
  */
-inline_class::inline_class(openvrml::browser & browser): node_class(browser) {}
+openvrml::vrml97_node::inline_class::inline_class(openvrml::browser & browser):
+    node_class(browser)
+{}
 
 /**
  * @brief Destroy.
  */
-inline_class::~inline_class() throw () {}
+openvrml::vrml97_node::inline_class::~inline_class() throw ()
+{}
 
 /**
  * @brief Create a node_type.
@@ -9738,9 +9917,10 @@ inline_class::~inline_class() throw () {}
  *                              supported by inline_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-inline_class::do_create_type(const std::string & id,
-                          const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::inline_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -9797,43 +9977,43 @@ inline_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class inline_node
+ * @class openvrml::vrml97_node::inline_node
  *
  * @brief Represents Inline node instances.
  */
 
 /**
- * @var inline_node::inline_class
+ * @var openvrml::vrml97_node::inline_node::inline_class
  *
  * @brief Class object for Inline nodes.
  */
 
 /**
- * @var sfvec3f inline_node::bbox_center_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::inline_node::bbox_center_
  *
  * @brief bboxCenter field.
  */
 
 /**
- * @var sfvec3f inline_node::bbox_size_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::inline_node::bbox_size_
  *
  * @brief bboxSize field.
  */
 
 /**
- * @var exposedfield<mfstring> inline_node::url_
+ * @var openvrml::exposedfield<openvrml::mfstring> openvrml::vrml97_node::inline_node::url_
  *
  * @brief url exposedField.
  */
 
 /**
- * @var scene * inline_node::inlineScene
+ * @var openvrml::scene * openvrml::vrml97_node::inline_node::inlineScene
  *
  * @brief The contained scene.
  */
 
 /**
- * @var bool inline_node::hasLoaded
+ * @var bool openvrml::vrml97_node::inline_node::hasLoaded
  *
  * @brief Flag to indicate whether the scene has been loaded.
  */
@@ -9844,8 +10024,9 @@ inline_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-inline_node::inline_node(const node_type & type,
-                         const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::inline_node::
+inline_node(const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
@@ -9860,7 +10041,7 @@ inline_node::inline_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-inline_node::~inline_node() throw ()
+openvrml::vrml97_node::inline_node::~inline_node() throw ()
 {}
 
 /**
@@ -9871,8 +10052,10 @@ inline_node::~inline_node() throw ()
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void inline_node::do_render_child(openvrml::viewer & viewer,
-                                  const rendering_context context)
+void
+openvrml::vrml97_node::inline_node::
+do_render_child(openvrml::viewer & viewer,
+                const rendering_context context)
 {
     this->load();
     if (this->inlineScene) { this->inlineScene->render(viewer, context); }
@@ -9883,9 +10066,10 @@ void inline_node::do_render_child(openvrml::viewer & viewer,
  *
  * @return the child nodes in the scene graph.
  */
-const std::vector<node_ptr> & inline_node::children() const throw ()
+const std::vector<openvrml::node_ptr> &
+openvrml::vrml97_node::inline_node::children() const throw ()
 {
-    static const std::vector<node_ptr> empty;
+    static const std::vector<openvrml::node_ptr> empty;
     return this->inlineScene
             ? this->inlineScene->nodes()
             : empty;
@@ -9894,7 +10078,10 @@ const std::vector<node_ptr> & inline_node::children() const throw ()
 /**
  * Pass on to enabled touchsensor child.
  */
-void inline_node::activate(double time, bool isOver, bool isActive, double *p)
+void openvrml::vrml97_node::inline_node::activate(double time,
+                                                  bool isOver,
+                                                  bool isActive,
+                                                  double *p)
 {
     const std::vector<node_ptr> & children = this->children();
     for (size_t i = 0; i < children.size(); ++i) {
@@ -9920,7 +10107,7 @@ void inline_node::activate(double time, bool isOver, bool isActive, double *p)
 /**
  * @brief Load the children from the URL.
  */
-void inline_node::load()
+void openvrml::vrml97_node::inline_node::load()
 {
     class inline_scene : public openvrml::scene {
     public:
@@ -9951,7 +10138,7 @@ void inline_node::load()
 
 
 /**
- * @class lod_class
+ * @class openvrml::vrml97_node::lod_class
  *
  * @brief Class object for LOD nodes.
  */
@@ -9961,12 +10148,15 @@ void inline_node::load()
  *
  * @param browser the browser associated with this node class object.
  */
-lod_class::lod_class(openvrml::browser & browser): node_class(browser) {}
+openvrml::vrml97_node::lod_class::lod_class(openvrml::browser & browser):
+    node_class(browser)
+{}
 
 /**
  * @brief Destroy.
  */
-lod_class::~lod_class() throw () {}
+openvrml::vrml97_node::lod_class::~lod_class() throw ()
+{}
 
 /**
  * @brief Create a node_type.
@@ -9980,9 +10170,10 @@ lod_class::~lod_class() throw () {}
  *                              supported by lod_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-lod_class::do_create_type(const std::string & id,
-                       const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::lod_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -10037,43 +10228,43 @@ lod_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class lod_node
+ * @class openvrml::vrml97_node::lod_node
  *
  * @brief Represents LOD node instances.
  */
 
 /**
- * @var lod_node::lod_class
+ * @var openvrml::vrml97_node::lod_node::lod_class
  *
  * @brief Class object for LOD nodes.
  */
 
 /**
- * @var exposedfield<mfnode> lod_node::level_
+ * @var openvrml::exposedfield<openvrml::mfnode> openvrml::vrml97_node::lod_node::level_
  *
  * @brief level exposedField.
  */
 
 /**
- * @var sfvec3f lod_node::center_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::lod_node::center_
  *
  * @brief center field.
  */
 
 /**
- * @var mffloat lod_node::range_
+ * @var openvrml::mffloat openvrml::vrml97_node::lod_node::range_
  *
  * @brief range field.
  */
 
 /**
- * @var mfnode lod_node::children_
+ * @var openvrml::mfnode openvrml::vrml97_node::lod_node::children_
  *
  * @brief Caches the active level for fast access by lod_node::children.
  */
 
 /**
- * @var bounding_sphere lod_node::bsphere
+ * @var openvrml::bounding_sphere openvrml::vrml97_node::lod_node::bsphere
  *
  * @brief Cached copy of the bounding_sphere enclosing this node's children.
  */
@@ -10084,7 +10275,9 @@ lod_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-lod_node::lod_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::lod_node::
+lod_node(const node_type & type,
+         const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
@@ -10098,7 +10291,7 @@ lod_node::lod_node(const node_type & type, const boost::shared_ptr<openvrml::sco
 /**
  * @brief Destroy.
  */
-lod_node::~lod_node() throw ()
+openvrml::vrml97_node::lod_node::~lod_node() throw ()
 {}
 
 /**
@@ -10107,7 +10300,7 @@ lod_node::~lod_node() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool lod_node::modified() const
+bool openvrml::vrml97_node::lod_node::modified() const
 {
     if (this->node::modified()) { return true; }
 
@@ -10126,8 +10319,10 @@ bool lod_node::modified() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void lod_node::do_render_child(openvrml::viewer & viewer,
-                      const rendering_context context)
+void
+openvrml::vrml97_node::lod_node::
+do_render_child(openvrml::viewer & viewer,
+                const rendering_context context)
 {
     this->node::modified(false);
     if (this->level_.mfnode::value.empty()) { return; }
@@ -10172,7 +10367,8 @@ void lod_node::do_render_child(openvrml::viewer & viewer,
  *
  * @return the bounding volume associated with the node.
  */
-const bounding_volume & lod_node::bounding_volume() const
+const openvrml::bounding_volume &
+openvrml::vrml97_node::lod_node::bounding_volume() const
 {
     if (this->bounding_volume_dirty()) {
         const_cast<lod_node *>(this)->recalcBSphere();
@@ -10185,7 +10381,8 @@ const bounding_volume & lod_node::bounding_volume() const
  *
  * @return the child nodes in the scene graph.
  */
-const std::vector<node_ptr> & lod_node::children() const throw ()
+const std::vector<openvrml::node_ptr> &
+openvrml::vrml97_node::lod_node::children() const throw ()
 {
     return this->children_.value;
 }
@@ -10193,7 +10390,10 @@ const std::vector<node_ptr> & lod_node::children() const throw ()
 /**
  * Pass on to enabled touchsensor child.
  */
-void lod_node::activate(double time, bool isOver, bool isActive, double *p)
+void openvrml::vrml97_node::lod_node::activate(double time,
+                                               bool isOver,
+                                               bool isActive,
+                                               double *p)
 {
     const std::vector<node_ptr> & children = this->children();
     const node_ptr & node = children[0];
@@ -10216,7 +10416,7 @@ void lod_node::activate(double time, bool isOver, bool isActive, double *p)
 /**
  * @brief Recalculate the bounding volume.
  */
-void lod_node::recalcBSphere()
+void openvrml::vrml97_node::lod_node::recalcBSphere()
 {
     this->bsphere = bounding_sphere();
 
@@ -10244,7 +10444,7 @@ void lod_node::recalcBSphere()
 
 
 /**
- * @class material_class
+ * @class openvrml::vrml97_node::material_class
  *
  * @brief Class object for Material nodes.
  */
@@ -10254,14 +10454,15 @@ void lod_node::recalcBSphere()
  *
  * @param browser the browser associated with this node class object.
  */
-material_class::material_class(openvrml::browser & browser):
+openvrml::vrml97_node::material_class::
+material_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-material_class::~material_class() throw ()
+openvrml::vrml97_node::material_class::~material_class() throw ()
 {}
 
 /**
@@ -10276,9 +10477,10 @@ material_class::~material_class() throw ()
  *                              supported by material_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-material_class::do_create_type(const std::string & id,
-                            const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::material_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -10401,49 +10603,49 @@ material_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class material_node
+ * @class openvrml::vrml97_node::material_node
  *
  * @brief Material node instances.
  */
 
 /**
- * @var material_node::material_class
+ * @var openvrml::vrml97_node::material_node::material_class
  *
  * @brief Class object for Material nodes.
  */
 
 /**
- * @var exposedfield<sffloat> material_node::ambient_intensity_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::material_node::ambient_intensity_
  *
  * @brief ambientIntensity exposedField.
  */
 
 /**
- * @var exposedfield<sfcolor> material_node::diffuse_color_
+ * @var openvrml::exposedfield<openvrml::sfcolor> openvrml::vrml97_node::material_node::diffuse_color_
  *
  * @brief diffuseColor exposedField.
  */
 
 /**
- * @var exposedfield<sfcolor> material_node::emissive_color_
+ * @var openvrml::exposedfield<openvrml::sfcolor> openvrml::vrml97_node::material_node::emissive_color_
  *
  * @brief emissiveColor exposedField.
  */
 
 /**
- * @var exposefield<sffloat> material_node::shininess_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::material_node::shininess_
  *
  * @brief shininess exposedField.
  */
 
 /**
- * @var exposedfield<sfcolor> material_node::specular_color_
+ * @var openvrml::exposedfield<openvrml::sfcolor> openvrml::vrml97_node::material_node::specular_color_
  *
  * @brief specularColor exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> material_node::transparency_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::material_node::transparency_
  *
  * @brief transparency exposedField.
  */
@@ -10454,8 +10656,9 @@ material_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with this node.
  * @param scope the scope to which the node belongs.
  */
-material_node::material_node(const node_type & type,
-                             const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::material_node::
+material_node(const node_type & type,
+              const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::material_node(type, scope),
@@ -10470,7 +10673,7 @@ material_node::material_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-material_node::~material_node() throw ()
+openvrml::vrml97_node::material_node::~material_node() throw ()
 {}
 
 /**
@@ -10478,7 +10681,7 @@ material_node::~material_node() throw ()
  *
  * @return the ambient intensity.
  */
-float material_node::ambient_intensity() const throw ()
+float openvrml::vrml97_node::material_node::ambient_intensity() const throw ()
 {
     return this->ambient_intensity_.sffloat::value;
 }
@@ -10488,7 +10691,8 @@ float material_node::ambient_intensity() const throw ()
  *
  * @return the diffuse color.
  */
-const color & material_node::diffuse_color() const throw ()
+const openvrml::color &
+openvrml::vrml97_node::material_node::diffuse_color() const throw ()
 {
     return this->diffuse_color_.sfcolor::value;
 }
@@ -10498,7 +10702,8 @@ const color & material_node::diffuse_color() const throw ()
  *
  * @return the emissive color.
  */
-const color & material_node::emissive_color() const throw ()
+const openvrml::color &
+openvrml::vrml97_node::material_node::emissive_color() const throw ()
 {
     return this->emissive_color_.sfcolor::value;
 }
@@ -10508,7 +10713,7 @@ const color & material_node::emissive_color() const throw ()
  *
  * @return the shininess.
  */
-float material_node::shininess() const throw ()
+float openvrml::vrml97_node::material_node::shininess() const throw ()
 {
     return this->shininess_.sffloat::value;
 }
@@ -10518,7 +10723,8 @@ float material_node::shininess() const throw ()
  *
  * @return the specular color.
  */
-const color & material_node::specular_color() const throw ()
+const openvrml::color &
+openvrml::vrml97_node::material_node::specular_color() const throw ()
 {
     return this->specular_color_.sfcolor::value;
 }
@@ -10528,14 +10734,14 @@ const color & material_node::specular_color() const throw ()
  *
  * @return the transparency.
  */
-float material_node::transparency() const throw ()
+float openvrml::vrml97_node::material_node::transparency() const throw ()
 {
     return this->transparency_.sffloat::value;
 }
 
 
 /**
- * @class movie_texture_class
+ * @class openvrml::vrml97_node::movie_texture_class
  *
  * @brief Class object for MovieTexture nodes.
  */
@@ -10545,14 +10751,15 @@ float material_node::transparency() const throw ()
  *
  * @param browser the browser associated with this class object.
  */
-movie_texture_class::movie_texture_class(openvrml::browser & browser):
+openvrml::vrml97_node::movie_texture_class::
+movie_texture_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-movie_texture_class::~movie_texture_class() throw ()
+openvrml::vrml97_node::movie_texture_class::~movie_texture_class() throw ()
 {}
 
 /**
@@ -10568,9 +10775,10 @@ movie_texture_class::~movie_texture_class() throw ()
  *                                  supported by movie_texture_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-movie_texture_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::movie_texture_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -10712,13 +10920,13 @@ movie_texture_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class movie_texture_node
+ * @class openvrml::vrml97_node::movie_texture_node
  *
  * @brief MovieTexture node instances.
  */
 
 /**
- * @var class movie_texture_node::movie_texture_class
+ * @var class openvrml::vrml97_node::movie_texture_node::movie_texture_class
  *
  * @brief Class object for MovieTexture nodes.
  */
@@ -10726,7 +10934,7 @@ movie_texture_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class movie_texture_node::set_speed_listener
+ * @class openvrml::vrml97_node::movie_texture_node::set_speed_listener
  *
  * @brief set_speed eventIn handler.
  *
@@ -10742,7 +10950,7 @@ movie_texture_class::do_create_type(const std::string & id,
  *
  * @param node  movie_texture_node.
  */
-movie_texture_node::set_speed_listener::
+openvrml::vrml97_node::movie_texture_node::set_speed_listener::
 set_speed_listener(movie_texture_node & node):
     sffloat_listener(node)
 {}
@@ -10750,7 +10958,8 @@ set_speed_listener(movie_texture_node & node):
 /**
  * @brief Destroy.
  */
-movie_texture_node::set_speed_listener::~set_speed_listener() throw ()
+openvrml::vrml97_node::movie_texture_node::set_speed_listener::
+~set_speed_listener() throw ()
 {}
 
 /**
@@ -10762,8 +10971,8 @@ movie_texture_node::set_speed_listener::~set_speed_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-movie_texture_node::set_speed_listener::do_process_event(const sffloat & speed,
-                                                      const double timestamp)
+openvrml::vrml97_node::movie_texture_node::set_speed_listener::
+do_process_event(const sffloat & speed, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -10784,73 +10993,73 @@ movie_texture_node::set_speed_listener::do_process_event(const sffloat & speed,
 }
 
 /**
- * @var exposedfield<sfbool> movie_texture_node::loop_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::movie_texture_node::loop_
  *
  * @brief loop exposedField.
  */
 
 /**
- * @var movie_texture_node::set_speed_listener movie_texture_node::set_speed_
+ * @var openvrml::vrml97_node::movie_texture_node::set_speed_listener openvrml::vrml97_node::movie_texture_node::set_speed_
  *
  * @brief set_speed event handler for the speed exposedField.
  */
 
 /**
- * @var sffloat movie_texture_node::speed_
+ * @var openvrml::sffloat openvrml::vrml97_node::movie_texture_node::speed_
  *
  * @brief Value for speed exposedField.
  */
 
 /**
- * @var sffloat_emitter movie_texture_node::speed_changed_
+ * @var openvrml::sffloat_emitter openvrml::vrml97_node::movie_texture_node::speed_changed_
  *
  * @brief speed_changed event emitter for the speed exposedField.
  */
 
 /**
- * @var exposedfield<sftime> movie_texture_node::start_time_
+ * @var openvrml::exposedfield<openvrml::sftime> openvrml::vrml97_node::movie_texture_node::start_time_
  *
  * @brief startTime exposedField.
  */
 
 /**
- * @var exposedfield<sftime> movie_texture_node::stop_time_
+ * @var openvrml::exposedfield<openvrml::sftime> openvrml::vrml97_node::movie_texture_node::stop_time_
  *
  * @brief stopTime exposedField.
  */
 
 /**
- * @var exposedfield<mfstring> movie_texture_node::url_
+ * @var openvrml::exposedfield<openvrml::mfstring> openvrml::vrml97_node::movie_texture_node::url_
  *
  * @brief url exposedField.
  */
 
 /**
- * @var sftime movie_texture_node::duration_
+ * @var openvrml::sftime openvrml::vrml97_node::movie_texture_node::duration_
  *
  * @brief duration value.
  */
 
 /**
- * @var sftime_emitter movie_texture_node::duration_changed_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::movie_texture_node::duration_changed_
  *
  * @brief duration_changed eventOut
  */
 
 /**
- * @var sfbool movie_texture_node::active_
+ * @var openvrml::sfbool openvrml::vrml97_node::movie_texture_node::active_
  *
  * @brief active state.
  */
 
 /**
- * @var sfbool_emitter movie_texture_node::is_active_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::movie_texture_node::is_active_
  *
  * @brief isActive eventOut.
  */
 
 /**
- * @var image movie_texture_node::image_
+ * @var openvrml::image openvrml::vrml97_node::movie_texture_node::image_
  *
  * @brief Frame data.
  */
@@ -10861,7 +11070,7 @@ movie_texture_node::set_speed_listener::do_process_event(const sffloat & speed,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-movie_texture_node::
+openvrml::vrml97_node::movie_texture_node::
 movie_texture_node(const node_type & type,
                    const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
@@ -10880,7 +11089,7 @@ movie_texture_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-movie_texture_node::~movie_texture_node() throw ()
+openvrml::vrml97_node::movie_texture_node::~movie_texture_node() throw ()
 {}
 
 /**
@@ -10888,7 +11097,8 @@ movie_texture_node::~movie_texture_node() throw ()
  *
  * @return a pointer to the movie_texture_node.
  */
-movie_texture_node* movie_texture_node::to_movie_texture() const
+openvrml::vrml97_node::movie_texture_node *
+openvrml::vrml97_node::movie_texture_node::to_movie_texture() const
 { return (movie_texture_node*) this; }
 
 /**
@@ -10896,7 +11106,7 @@ movie_texture_node* movie_texture_node::to_movie_texture() const
  *
  * @param time  the current time.
  */
-void movie_texture_node::update(const double time)
+void openvrml::vrml97_node::movie_texture_node::update(const double time)
 {
 # if 0
     if (this->modified()) {
@@ -11037,7 +11247,8 @@ void movie_texture_node::update(const double time)
  *
  * @return the image.
  */
-const image & movie_texture_node::image() const throw ()
+const openvrml::image &
+openvrml::vrml97_node::movie_texture_node::image() const throw ()
 {
     return this->image_;
 }
@@ -11049,7 +11260,9 @@ const image & movie_texture_node::image() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void movie_texture_node::do_initialize(const double timestamp)
+void
+openvrml::vrml97_node::movie_texture_node::
+do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
@@ -11061,7 +11274,9 @@ void movie_texture_node::do_initialize(const double timestamp)
  *
  * @param timestamp the current time.
  */
-void movie_texture_node::do_shutdown(const double timestamp) throw ()
+void
+openvrml::vrml97_node::movie_texture_node::do_shutdown(const double timestamp)
+    throw ()
 {
     assert(this->scene());
     this->scene()->browser().remove_movie(*this);
@@ -11074,7 +11289,8 @@ void movie_texture_node::do_shutdown(const double timestamp) throw ()
  *
  * @return object identifier for the inserted texture.
  */
-viewer::texture_object_t movie_texture_node::do_render_texture(viewer & v)
+openvrml::viewer::texture_object_t
+openvrml::vrml97_node::movie_texture_node::do_render_texture(viewer & v)
 {
 # if 0
     if (!this->img_ || this->frame < 0) { return 0; }
@@ -11098,25 +11314,25 @@ viewer::texture_object_t movie_texture_node::do_render_texture(viewer & v)
 
 
 /**
- * @class navigation_info_class
+ * @class openvrml::vrml97_node::navigation_info_class
  *
  * @brief Class object for NavigationInfo nodes.
  */
 
 /**
- * @typedef navigation_info_class::bound_nodes_t
+ * @typedef openvrml::vrml97_node::navigation_info_class::bound_nodes_t
  *
  * @brief A bound NavigationInfo node stack.
  */
 
 /**
- * @var navigation_info_node * navigation_info_class::first
+ * @var openvrml::vrml97_node::navigation_info_node * openvrml::vrml97_node::navigation_info_class::first
  *
  * @brief The first NavigationInfo node in the initial scene graph.
  */
 
 /**
- * @var navigation_info_class::bound_nodes_t navigation_info_class::bound_nodes
+ * @var openvrml::vrml97_node::navigation_info_class::bound_nodes_t openvrml::vrml97_node::navigation_info_class::bound_nodes
  *
  * @brief The bound NavigationInfo node stack.
  */
@@ -11126,7 +11342,8 @@ viewer::texture_object_t movie_texture_node::do_render_texture(viewer & v)
  *
  * @param browser the browser associated with this class object.
  */
-navigation_info_class::navigation_info_class(openvrml::browser & browser):
+openvrml::vrml97_node::navigation_info_class::
+navigation_info_class(openvrml::browser & browser):
     node_class(browser),
     first(0)
 {}
@@ -11134,7 +11351,7 @@ navigation_info_class::navigation_info_class(openvrml::browser & browser):
 /**
  * @brief Destroy.
  */
-navigation_info_class::~navigation_info_class() throw ()
+openvrml::vrml97_node::navigation_info_class::~navigation_info_class() throw ()
 {}
 
 /**
@@ -11145,7 +11362,9 @@ navigation_info_class::~navigation_info_class() throw ()
  *
  * @param nav_info    a Background node.
  */
-void navigation_info_class::set_first(navigation_info_node & nav_info) throw ()
+void
+openvrml::vrml97_node::navigation_info_class::
+set_first(navigation_info_node & nav_info) throw ()
 {
     this->first = &nav_info;
 }
@@ -11156,7 +11375,7 @@ void navigation_info_class::set_first(navigation_info_node & nav_info) throw ()
  *
  * This function is called by <code>navigation_info_node::do_shutdown</code>.
  */
-void navigation_info_class::reset_first() throw ()
+void openvrml::vrml97_node::navigation_info_class::reset_first() throw ()
 {
     this->first = 0;
 }
@@ -11168,7 +11387,7 @@ void navigation_info_class::reset_first() throw ()
  *
  * @return @c true if the first node has already been set; @c false otherwise.
  */
-bool navigation_info_class::has_first() const throw ()
+bool openvrml::vrml97_node::navigation_info_class::has_first() const throw ()
 {
     return this->first;
 }
@@ -11180,7 +11399,9 @@ bool navigation_info_class::has_first() const throw ()
  *
  * @return @c true if @p nav_info is the fist node; @c false otherwise.
  */
-bool navigation_info_class::is_first(navigation_info_node & nav_info) throw ()
+bool
+openvrml::vrml97_node::navigation_info_class::
+is_first(navigation_info_node & nav_info) throw ()
 {
     return &nav_info == this->first;
 }
@@ -11193,8 +11414,9 @@ bool navigation_info_class::is_first(navigation_info_node & nav_info) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void navigation_info_class::bind(navigation_info_node & nav_info,
-                                 const double timestamp)
+void
+openvrml::vrml97_node::navigation_info_class::
+bind(navigation_info_node & nav_info, const double timestamp)
     throw (std::bad_alloc)
 {
     using std::find;
@@ -11240,8 +11462,9 @@ void navigation_info_class::bind(navigation_info_node & nav_info,
  * @param nav_info    the node to unbind.
  * @param timestamp     the current time.
  */
-void navigation_info_class::unbind(navigation_info_node & nav_info,
-                                   const double timestamp)
+void
+openvrml::vrml97_node::navigation_info_class::
+unbind(navigation_info_node & nav_info, const double timestamp)
     throw ()
 {
     using std::find;
@@ -11275,7 +11498,7 @@ void navigation_info_class::unbind(navigation_info_node & nav_info,
  * @param timestamp         the current time.
  */
 void
-navigation_info_class::
+openvrml::vrml97_node::navigation_info_class::
 do_initialize(openvrml::viewpoint_node * initial_viewpoint,
               const double timestamp)
     throw ()
@@ -11306,9 +11529,10 @@ do_initialize(openvrml::viewpoint_node * initial_viewpoint,
  *                                  supported by navigation_info_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-navigation_info_class::do_create_type(const std::string & id,
-                                   const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::navigation_info_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -11431,13 +11655,13 @@ navigation_info_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class navigation_info_node
+ * @class openvrml::vrml97_node::navigation_info_node
  *
  * @brief NavigationInfo node instances.
  */
 
 /**
- * @var class navigation_info_node::navigation_info_class
+ * @var class openvrml::vrml97_node::navigation_info_node::navigation_info_class
  *
  * @brief Class object for NavigationInfo nodes.
  */
@@ -11445,7 +11669,7 @@ navigation_info_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class navigation_info_node::set_bind_listener
+ * @class openvrml::vrml97_node::navigation_info_node::set_bind_listener
  *
  * @brief set_bind eventIn handler.
  */
@@ -11455,7 +11679,7 @@ navigation_info_class::do_create_type(const std::string & id,
  *
  * @param node  navigation_info_node.
  */
-navigation_info_node::set_bind_listener::
+openvrml::vrml97_node::navigation_info_node::set_bind_listener::
 set_bind_listener(navigation_info_node & node):
     sfbool_listener(node)
 {}
@@ -11463,7 +11687,8 @@ set_bind_listener(navigation_info_node & node):
 /**
  * @brief Destroy.
  */
-navigation_info_node::set_bind_listener::~set_bind_listener() throw ()
+openvrml::vrml97_node::navigation_info_node::set_bind_listener::
+~set_bind_listener() throw ()
 {}
 
 /**
@@ -11475,7 +11700,7 @@ navigation_info_node::set_bind_listener::~set_bind_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-navigation_info_node::set_bind_listener::
+openvrml::vrml97_node::navigation_info_node::set_bind_listener::
 do_process_event(const sfbool & bind,
                  const double timestamp)
     throw (std::bad_alloc)
@@ -11498,49 +11723,49 @@ do_process_event(const sfbool & bind,
 }
 
 /**
- * @var navigation_info_node::set_bind_listener navigation_info_node::set_bind_listener_
+ * @var openvrml::vrml97_node::navigation_info_node::set_bind_listener openvrml::vrml97_node::navigation_info_node::set_bind_listener_
  *
  * @brief set_bind eventIn handler.
  */
 
 /**
- * @var exposedfield<mffloat> navigation_info_node::avatar_size_
+ * @var openvrml::exposedfield<openvrml::mffloat> openvrml::vrml97_node::navigation_info_node::avatar_size_
  *
  * @brief avatarSize exposedField.
  */
 
 /**
- * @var exposedfield<sfbool> navigation_info_node::headlight_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::navigation_info_node::headlight_
  *
  * @brief headlight exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> navigation_info_node::speed_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::navigation_info_node::speed_
  *
  * @brief speed exposedField.
  */
 
 /**
- * @var exposedfield<mfstring> navigation_info_node::type_
+ * @var openvrml::exposedfield<openvrml::mfstring> openvrml::vrml97_node::navigation_info_node::type_
  *
  * @brief type exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> navigation_info_node::visibility_limit_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::navigation_info_node::visibility_limit_
  *
  * @brief visibilityLimit exposedField.
  */
 
 /**
- * @var sfbool navigation_info_node::is_bound_
+ * @var openvrml::sfbool openvrml::vrml97_node::navigation_info_node::is_bound_
  *
  * @brief isBound eventOut value.
  */
 
 /**
- * @var sfbool_emitter navigation_info_node::is_bound_emitter_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::navigation_info_node::is_bound_emitter_
  *
  * @brief isBound eventOut emitter.
  */
@@ -11556,7 +11781,7 @@ namespace {
  * @param t     the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-navigation_info_node::
+openvrml::vrml97_node::navigation_info_node::
 navigation_info_node(const node_type & t,
                      const boost::shared_ptr<openvrml::scope> & scope):
     node(t, scope),
@@ -11577,7 +11802,7 @@ navigation_info_node(const node_type & t,
 /**
  * @brief Destroy.
  */
-navigation_info_node::~navigation_info_node() throw ()
+openvrml::vrml97_node::navigation_info_node::~navigation_info_node() throw ()
 {}
 
 /**
@@ -11585,7 +11810,8 @@ navigation_info_node::~navigation_info_node() throw ()
  *
  * @return the avatar size.
  */
-const std::vector<float> & navigation_info_node::avatar_size() const throw ()
+const std::vector<float> &
+openvrml::vrml97_node::navigation_info_node::avatar_size() const throw ()
 {
     return this->avatar_size_.mffloat::value;
 }
@@ -11595,7 +11821,7 @@ const std::vector<float> & navigation_info_node::avatar_size() const throw ()
  *
  * @return @c true if the headlight is on; @c false otherwise.
  */
-bool navigation_info_node::headlight() const throw ()
+bool openvrml::vrml97_node::navigation_info_node::headlight() const throw ()
 {
     return this->headlight_.sfbool::value;
 }
@@ -11605,7 +11831,7 @@ bool navigation_info_node::headlight() const throw ()
  *
  * @return the speed.
  */
-float navigation_info_node::speed() const throw ()
+float openvrml::vrml97_node::navigation_info_node::speed() const throw ()
 {
     return this->speed_.sffloat::value;
 }
@@ -11615,7 +11841,8 @@ float navigation_info_node::speed() const throw ()
  *
  * @return the navigation type.
  */
-const std::vector<std::string> & navigation_info_node::type() const throw ()
+const std::vector<std::string> &
+openvrml::vrml97_node::navigation_info_node::type() const throw ()
 {
     return this->type_.mfstring::value;
 }
@@ -11625,7 +11852,8 @@ const std::vector<std::string> & navigation_info_node::type() const throw ()
  *
  * @return the visibility limit.
  */
-float navigation_info_node::visibility_limit() const throw ()
+float openvrml::vrml97_node::navigation_info_node::visibility_limit() const
+    throw ()
 {
     return this->visibility_limit_.sffloat::value;
 }
@@ -11635,7 +11863,9 @@ float navigation_info_node::visibility_limit() const throw ()
  *
  * @param timestamp the current time.
  */
-void navigation_info_node::do_initialize(const double timestamp) throw ()
+void
+openvrml::vrml97_node::navigation_info_node::
+do_initialize(const double timestamp) throw ()
 {
     using boost::polymorphic_downcast;
 
@@ -11651,7 +11881,9 @@ void navigation_info_node::do_initialize(const double timestamp) throw ()
  *
  * @param timestamp the current time.
  */
-void navigation_info_node::do_shutdown(const double timestamp) throw ()
+void
+openvrml::vrml97_node::navigation_info_node::
+do_shutdown(const double timestamp) throw ()
 {
     using boost::polymorphic_downcast;
 
@@ -11666,7 +11898,7 @@ void navigation_info_node::do_shutdown(const double timestamp) throw ()
 
 
 /**
- * @class normal_class
+ * @class openvrml::vrml97_node::normal_class
  *
  * @brief Class object for Normal nodes.
  */
@@ -11676,14 +11908,14 @@ void navigation_info_node::do_shutdown(const double timestamp) throw ()
  *
  * @param browser the browser associated with this node class object.
  */
-normal_class::normal_class(openvrml::browser & browser):
+openvrml::vrml97_node::normal_class::normal_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-normal_class::~normal_class() throw ()
+openvrml::vrml97_node::normal_class::~normal_class() throw ()
 {}
 
 /**
@@ -11698,9 +11930,10 @@ normal_class::~normal_class() throw ()
  *                              supported by normal_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-normal_class::do_create_type(const std::string & id,
-                          const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::normal_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface =
@@ -11736,19 +11969,19 @@ normal_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class normal_node
+ * @class openvrml::vrml97_node::normal_node
  *
  * @brief Normal node instances.
  */
 
 /**
- * @var normal_node::normal_class
+ * @var openvrml::vrml97_node::normal_node::normal_class
  *
  * @brief Class object for Normal nodes.
  */
 
 /**
- * @var exposedfield<mfvec3f> normal_node::vector_
+ * @var openvrml::exposedfield<openvrml::mfvec3f> openvrml::vrml97_node::normal_node::vector_
  *
  * @brief vector exposedField.
  */
@@ -11759,7 +11992,9 @@ normal_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope     the scope to which the node belongs.
  */
-normal_node::normal_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::normal_node::
+normal_node(const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::normal_node(type, scope),
@@ -11769,7 +12004,7 @@ normal_node::normal_node(const node_type & type, const boost::shared_ptr<openvrm
 /**
  * @brief Destroy.
  */
-normal_node::~normal_node() throw ()
+openvrml::vrml97_node::normal_node::~normal_node() throw ()
 {}
 
 /**
@@ -11777,14 +12012,15 @@ normal_node::~normal_node() throw ()
  *
  * @return the array of normal vectors.
  */
-const std::vector<vec3f> & normal_node::vector() const throw ()
+const std::vector<openvrml::vec3f> &
+openvrml::vrml97_node::normal_node::vector() const throw ()
 {
     return this->vector_.mfvec3f::value;
 }
 
 
 /**
- * @class normal_interpolator_class
+ * @class openvrml::vrml97_node::normal_interpolator_class
  *
  * @brief Class object for NormalInterpolator nodes.
  */
@@ -11794,15 +12030,16 @@ const std::vector<vec3f> & normal_node::vector() const throw ()
  *
  * @param browser the browser associated with this class object.
  */
-normal_interpolator_class::normal_interpolator_class(
-    openvrml::browser & browser):
+openvrml::vrml97_node::normal_interpolator_class::
+normal_interpolator_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-normal_interpolator_class::~normal_interpolator_class() throw ()
+openvrml::vrml97_node::normal_interpolator_class::~normal_interpolator_class()
+    throw ()
 {}
 
 /**
@@ -11818,9 +12055,10 @@ normal_interpolator_class::~normal_interpolator_class() throw ()
  *                                  supported by normal_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-normal_interpolator_class::do_create_type(const std::string & id,
-                                       const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::normal_interpolator_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -11896,13 +12134,13 @@ normal_interpolator_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class normal_interpolator_node
+ * @class openvrml::vrml97_node::normal_interpolator_node
  *
  * @brief NormalInterpolator node instances.
  */
 
 /**
- * @var class normal_interpolator_node::normal_interpolator_class
+ * @var class openvrml::vrml97_node::normal_interpolator_node::normal_interpolator_class
  *
  * @brief Class object for NormalInterpolator nodes.
  */
@@ -11910,7 +12148,7 @@ normal_interpolator_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class normal_interpolator_node::set_fraction_listener
+ * @class openvrml::vrml97_node::normal_interpolator_node::set_fraction_listener
  *
  * @brief set_fraction eventIn handler.
  */
@@ -11920,7 +12158,7 @@ normal_interpolator_class::do_create_type(const std::string & id,
  *
  * @param node  normal_interpolator_node.
  */
-normal_interpolator_node::set_fraction_listener::
+openvrml::vrml97_node::normal_interpolator_node::set_fraction_listener::
 set_fraction_listener(normal_interpolator_node & node):
     sffloat_listener(node)
 {}
@@ -11928,7 +12166,8 @@ set_fraction_listener(normal_interpolator_node & node):
 /**
  * @brief Destroy.
  */
-normal_interpolator_node::set_fraction_listener::~set_fraction_listener()
+openvrml::vrml97_node::normal_interpolator_node::set_fraction_listener::
+~set_fraction_listener()
     throw ()
 {}
 
@@ -11941,7 +12180,7 @@ normal_interpolator_node::set_fraction_listener::~set_fraction_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-normal_interpolator_node::set_fraction_listener::
+openvrml::vrml97_node::normal_interpolator_node::set_fraction_listener::
 do_process_event(const sffloat & fraction, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -12014,31 +12253,31 @@ do_process_event(const sffloat & fraction, const double timestamp)
 }
 
 /**
- * @var normal_interpolator_node::set_fraction_listener normal_interpolator_node::set_fraction_listener_
+ * @var openvrml::vrml97_node::normal_interpolator_node::set_fraction_listener openvrml::vrml97_node::normal_interpolator_node::set_fraction_listener_
  *
  * @brief set_fraction eventIn handler.
  */
 
 /**
- * @var exposedfield<mffloat> normal_interpolator_node::key_
+ * @var openvrml::exposedfield<openvrml::mffloat> openvrml::vrml97_node::normal_interpolator_node::key_
  *
  * @brief key exposedField.
  */
 
 /**
- * @var exposedfield<mfvec3f> normal_interpolator_node::key_value_
+ * @var openvrml::exposedfield<openvrml::mfvec3f> openvrml::vrml97_node::normal_interpolator_node::key_value_
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var mfvec3f normal_interpolator_node::value_changed_
+ * @var openvrml::mfvec3f openvrml::vrml97_node::normal_interpolator_node::value_changed_
  *
  * @brief value_changed eventOut value.
  */
 
 /**
- * @var mfvec3f_emitter normal_interpolator_node::value_changed_emitter_
+ * @var openvrml::mfvec3f_emitter openvrml::vrml97_node::normal_interpolator_node::value_changed_emitter_
  *
  * @brief value_changed eventOut emitter.
  */
@@ -12049,8 +12288,9 @@ do_process_event(const sffloat & fraction, const double timestamp)
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-normal_interpolator_node::normal_interpolator_node(const node_type & type,
-                                                   const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::normal_interpolator_node::
+normal_interpolator_node(const node_type & type,
+                         const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -12063,12 +12303,13 @@ normal_interpolator_node::normal_interpolator_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-normal_interpolator_node::~normal_interpolator_node() throw ()
+openvrml::vrml97_node::normal_interpolator_node::~normal_interpolator_node()
+    throw ()
 {}
 
 
 /**
- * @class orientation_interpolator_class
+ * @class openvrml::vrml97_node::orientation_interpolator_class
  *
  * @brief Class object for OrientationInterpolator nodes.
  */
@@ -12078,7 +12319,7 @@ normal_interpolator_node::~normal_interpolator_node() throw ()
  *
  * @param browser the browser associated with this class object.
  */
-orientation_interpolator_class::
+openvrml::vrml97_node::orientation_interpolator_class::
 orientation_interpolator_class(openvrml::browser & browser):
     node_class(browser)
 {}
@@ -12086,7 +12327,8 @@ orientation_interpolator_class(openvrml::browser & browser):
 /**
  * @brief Destroy.
  */
-orientation_interpolator_class::~orientation_interpolator_class() throw ()
+openvrml::vrml97_node::orientation_interpolator_class::
+~orientation_interpolator_class() throw ()
 {}
 
 /**
@@ -12102,10 +12344,10 @@ orientation_interpolator_class::~orientation_interpolator_class() throw ()
  *                              supported by orientation_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-orientation_interpolator_class::
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::orientation_interpolator_class::
 do_create_type(const std::string & id,
-            const node_interface_set & interfaces) const
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -12183,13 +12425,13 @@ do_create_type(const std::string & id,
 }
 
 /**
- * @class orientation_interpolator_node
+ * @class openvrml::vrml97_node::orientation_interpolator_node
  *
  * @brief OrientationInterpolator node instances.
  */
 
 /**
- * @var class orientation_interpolator_node::orientation_interpolator_class
+ * @var class openvrml::vrml97_node::orientation_interpolator_node::orientation_interpolator_class
  *
  * @brief Class object for OrientationInterpolator nodes.
  */
@@ -12197,7 +12439,7 @@ do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class orientation_interpolator_node::set_fraction_listener
+ * @class openvrml::vrml97_node::orientation_interpolator_node::set_fraction_listener
  *
  * @brief set_fraction eventIn handler.
  */
@@ -12207,7 +12449,7 @@ do_create_type(const std::string & id,
  *
  * @param node  orientation_interpolator_node.
  */
-orientation_interpolator_node::set_fraction_listener::
+openvrml::vrml97_node::orientation_interpolator_node::set_fraction_listener::
 set_fraction_listener(orientation_interpolator_node & node):
     sffloat_listener(node)
 {}
@@ -12215,8 +12457,8 @@ set_fraction_listener(orientation_interpolator_node & node):
 /**
  * @brief Destroy.
  */
-orientation_interpolator_node::set_fraction_listener::~set_fraction_listener()
-    throw ()
+openvrml::vrml97_node::orientation_interpolator_node::set_fraction_listener::
+~set_fraction_listener() throw ()
 {}
 
 /**
@@ -12228,7 +12470,7 @@ orientation_interpolator_node::set_fraction_listener::~set_fraction_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-orientation_interpolator_node::set_fraction_listener::
+openvrml::vrml97_node::orientation_interpolator_node::set_fraction_listener::
 do_process_event(const sffloat & fraction, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -12303,31 +12545,31 @@ do_process_event(const sffloat & fraction, const double timestamp)
 }
 
 /**
- * @var orientation_interpolator_node::set_fraction_listener orientation_interpolator_node::set_fraction_listener_
+ * @var openvrml::vrml97_node::orientation_interpolator_node::set_fraction_listener openvrml::vrml97_node::orientation_interpolator_node::set_fraction_listener_
  *
  * @brief set_fraction eventIn handler.
  */
 
 /**
- * @var exposedfield<mffloat> orientation_interpolator_node::key_
+ * @var openvrml::exposedfield<openvrml::mffloat> openvrml::vrml97_node::orientation_interpolator_node::key_
  *
  * @brief key exposedField.
  */
 
 /**
- * @var exposedfield<mfrotation> orientation_interpolator_node::key_value_
+ * @var openvrml::exposedfield<openvrml::mfrotation> openvrml::vrml97_node::orientation_interpolator_node::key_value_
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var sfrotation orientation_interpolator_node::value_changed_
+ * @var openvrml::sfrotation openvrml::vrml97_node::orientation_interpolator_node::value_changed_
  *
  * @brief value_changed eventOut value.
  */
 
 /**
- * @var sfrotation_emitter orientation_interpolator_node::value_changed_emitter_
+ * @var openvrml::sfrotation_emitter openvrml::vrml97_node::orientation_interpolator_node::value_changed_emitter_
  *
  * @brief value_changed eventOut emitter.
  */
@@ -12338,9 +12580,10 @@ do_process_event(const sffloat & fraction, const double timestamp)
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-orientation_interpolator_node::
-orientation_interpolator_node(const node_type & type,
-                              const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::orientation_interpolator_node::
+orientation_interpolator_node(
+    const node_type & type,
+    const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -12353,12 +12596,13 @@ orientation_interpolator_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-orientation_interpolator_node::~orientation_interpolator_node() throw ()
+openvrml::vrml97_node::orientation_interpolator_node::
+~orientation_interpolator_node() throw ()
 {}
 
 
 /**
- * @class pixel_texture_class
+ * @class openvrml::vrml97_node::pixel_texture_class
  *
  * @brief Class object for PixelTexture nodes.
  */
@@ -12368,14 +12612,15 @@ orientation_interpolator_node::~orientation_interpolator_node() throw ()
  *
  * @param browser the browser associated with this class object.
  */
-pixel_texture_class::pixel_texture_class(openvrml::browser & browser):
+openvrml::vrml97_node::pixel_texture_class::
+pixel_texture_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-pixel_texture_class::~pixel_texture_class() throw ()
+openvrml::vrml97_node::pixel_texture_class::~pixel_texture_class() throw ()
 {}
 
 /**
@@ -12391,9 +12636,10 @@ pixel_texture_class::~pixel_texture_class() throw ()
  *                              supported by pixel_texture_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-pixel_texture_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::pixel_texture_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -12450,19 +12696,19 @@ pixel_texture_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class pixel_texture_node
+ * @class openvrml::vrml97_node::pixel_texture_node
  *
  * @brief Represents PixelTexture node instances.
  */
 
 /**
- * @var pixel_texture_node::pixel_texture_class
+ * @var openvrml::vrml97_node::pixel_texture_node::pixel_texture_class
  *
  * @brief Class object for PixelTexture nodes.
  */
 
 /**
- * @var sfimage pixel_texture_node::image_
+ * @var openvrml::sfimage openvrml::vrml97_node::pixel_texture_node::image_
  *
  * @brief image exposedField.
  */
@@ -12473,8 +12719,9 @@ pixel_texture_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope the scope to which the node belongs.
  */
-pixel_texture_node::pixel_texture_node(const node_type & type,
-                                       const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::pixel_texture_node::
+pixel_texture_node(const node_type & type,
+                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_texture_node(type, scope),
     image_(*this)
@@ -12483,7 +12730,7 @@ pixel_texture_node::pixel_texture_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-pixel_texture_node::~pixel_texture_node() throw ()
+openvrml::vrml97_node::pixel_texture_node::~pixel_texture_node() throw ()
 {
     // viewer.remove_texture_object(this->texObject); ...
 }
@@ -12493,7 +12740,8 @@ pixel_texture_node::~pixel_texture_node() throw ()
  *
  * @return the image.
  */
-const image & pixel_texture_node::image() const throw ()
+const openvrml::image &
+openvrml::vrml97_node::pixel_texture_node::image() const throw ()
 {
     return this->image_.sfimage::value;
 }
@@ -12505,7 +12753,8 @@ const image & pixel_texture_node::image() const throw ()
  *
  * @return object identifier for the inserted texture.
  */
-viewer::texture_object_t pixel_texture_node::do_render_texture(viewer & v)
+openvrml::viewer::texture_object_t
+openvrml::vrml97_node::pixel_texture_node::do_render_texture(viewer & v)
 {
     return v.insert_texture(this->image_.sfimage::value,
                             this->repeat_s_.value,
@@ -12515,7 +12764,7 @@ viewer::texture_object_t pixel_texture_node::do_render_texture(viewer & v)
 
 
 /**
- * @class plane_sensor_class
+ * @class openvrml::vrml97_node::plane_sensor_class
  *
  * @brief Class object for PlaneSensor nodes.
  */
@@ -12525,14 +12774,15 @@ viewer::texture_object_t pixel_texture_node::do_render_texture(viewer & v)
  *
  * @param browser the browser associated with this node class object.
  */
-plane_sensor_class::plane_sensor_class(openvrml::browser & browser):
+openvrml::vrml97_node::plane_sensor_class::
+plane_sensor_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-plane_sensor_class::~plane_sensor_class() throw ()
+openvrml::vrml97_node::plane_sensor_class::~plane_sensor_class() throw ()
 {}
 
 /**
@@ -12548,9 +12798,10 @@ plane_sensor_class::~plane_sensor_class() throw ()
  *                                  supported by plane_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-plane_sensor_class::do_create_type(const std::string & id,
-                                const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::plane_sensor_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -12684,7 +12935,7 @@ plane_sensor_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class plane_sensor_node
+ * @class openvrml::vrml97_node::plane_sensor_node
  *
  * The PlaneSensor node maps pointing device motion into two-dimensional
  * translation in a plane parallel to the <var>z</var>&nbsp;=&nbsp;0 plane of
@@ -12694,91 +12945,91 @@ plane_sensor_class::do_create_type(const std::string & id,
  */
 
 /**
- * @var plane_sensor_node::plane_sensor_class
+ * @var openvrml::vrml97_node::plane_sensor_node::plane_sensor_class
  *
  * @brief Class object for PlaneSensor instances.
  */
 
 /**
- * @var exposedfield<sfbool> plane_sensor_node::auto_offset_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::plane_sensor_node::auto_offset_
  *
  * @brief autoOffset exposedField.
  */
 
 /**
- * @var exposedfield<sfbool> plane_sensor_node::enabled_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::plane_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var exposedfield<sfvec2f> plane_sensor_node::max_position_
+ * @var openvrml::exposedfield<openvrml::sfvec2f> openvrml::vrml97_node::plane_sensor_node::max_position_
  *
  * @brief maxPosition exposedField.
  */
 
 /**
- * @var exposedfield<sfvec2f> plane_sensor_node::min_position_
+ * @var openvrml::exposedfield<openvrml::sfvec2f> openvrml::vrml97_node::plane_sensor_node::min_position_
  *
  * @brief minPosition exposedField.
  */
 
 /**
- * @var exposedfield<sfvec3f> plane_sensor_node::offset_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::plane_sensor_node::offset_
  *
  * @brief offset exposedField.
  */
 
 /**
- * @var sfbool plane_sensor_node::is_active_
+ * @var openvrml::sfbool openvrml::vrml97_node::plane_sensor_node::is_active_
  *
  * @brief isActive eventOut value.
  */
 
 /**
- * @var sfbool_emitter plane_sensor_node::is_active_emitter_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::plane_sensor_node::is_active_emitter_
  *
  * @brief isActive eventOut emitter.
  */
 
 /**
- * @var sfvec3f plane_sensor_node::track_point_changed_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::plane_sensor_node::track_point_changed_
  *
  * @brief trackPoint_changed eventOut value.
  */
 
 /**
- * @var sfvec3f_emitter plane_sensor_node::track_point_changed_emitter_
+ * @var openvrml::sfvec3f_emitter openvrml::vrml97_node::plane_sensor_node::track_point_changed_emitter_
  *
  * @brief trackPoint_changed eventOut emitter.
  */
 
 /**
- * @var sfvec3f plane_sensor_node::translation_changed_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::plane_sensor_node::translation_changed_
  *
  * @brief translation_changed eventOut value.
  */
 
 /**
- * @var sfvec3f_emitter plane_sensor_node::translation_changed_emitter_
+ * @var openvrml::sfvec3f_emitter openvrml::vrml97_node::plane_sensor_node::translation_changed_emitter_
  *
  * @brief translation_changed eventOut emitter.
  */
 
 /**
- * @var sfvec3f plane_sensor_node::activationPoint
+ * @var openvrml::sfvec3f openvrml::vrml97_node::plane_sensor_node::activationPoint
  *
  * @brief The point at which the PlaneSensor was activated.
  */
 
 /**
- * @var mat4f plane_sensor_node::activationMatrix
+ * @var openvrml::mat4f openvrml::vrml97_node::plane_sensor_node::activationMatrix
  *
  * @brief Activation matrix.
  */
 
 /**
- * @var mat4f plane_sensor_node::modelview
+ * @var openvrml::mat4f openvrml::vrml97_node::plane_sensor_node::modelview
  *
  * @brief The modelview matrix.
  */
@@ -12789,8 +13040,9 @@ plane_sensor_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope     the scope to which the node belongs.
  */
-plane_sensor_node::plane_sensor_node(const node_type & type,
-                                     const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::plane_sensor_node::
+plane_sensor_node(const node_type & type,
+                  const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -12810,7 +13062,7 @@ plane_sensor_node::plane_sensor_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-plane_sensor_node::~plane_sensor_node() throw ()
+openvrml::vrml97_node::plane_sensor_node::~plane_sensor_node() throw ()
 {}
 
 /**
@@ -12818,7 +13070,8 @@ plane_sensor_node::~plane_sensor_node() throw ()
  *
  * @return a pointer to the plane_sensor_node.
  */
-plane_sensor_node * plane_sensor_node::to_plane_sensor() const
+openvrml::vrml97_node::plane_sensor_node *
+openvrml::vrml97_node::plane_sensor_node::to_plane_sensor() const
 {
     return (plane_sensor_node*) this;
 }
@@ -12831,8 +13084,9 @@ plane_sensor_node * plane_sensor_node::to_plane_sensor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void plane_sensor_node::do_render_child(openvrml::viewer & viewer,
-                                        const rendering_context context)
+void
+openvrml::vrml97_node::plane_sensor_node::
+do_render_child(openvrml::viewer & viewer, const rendering_context context)
 {
     //
     // Store the ModelView matrix which is calculated at the time of rendering
@@ -12845,7 +13099,9 @@ void plane_sensor_node::do_render_child(openvrml::viewer & viewer,
  * @todo The local coords are computed for one instance; do we need to convert
  *       @p p to local coords for each instance (USE) of the sensor?
  */
-void plane_sensor_node::activate(double timestamp, bool isActive, double * p)
+void openvrml::vrml97_node::plane_sensor_node::activate(double timestamp,
+                                                        bool isActive,
+                                                        double * p)
 {
     // Become active
     if (isActive && !this->is_active_.value) {
@@ -12920,14 +13176,14 @@ void plane_sensor_node::activate(double timestamp, bool isActive, double * p)
  *
  * @return @c true if the PlaneSensor is enabled, @c false otherwise.
  */
-bool plane_sensor_node::enabled() const
+bool openvrml::vrml97_node::plane_sensor_node::enabled() const
 {
     return this->enabled_.sfbool::value;
 }
 
 
 /**
- * @class point_light_class
+ * @class openvrml::vrml97_node::point_light_class
  *
  * @brief Class object for PointLight nodes.
  */
@@ -12937,14 +13193,15 @@ bool plane_sensor_node::enabled() const
  *
  * @param browser the browser associated with this class object.
  */
-point_light_class::point_light_class(openvrml::browser & browser):
+openvrml::vrml97_node::point_light_class::
+point_light_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-point_light_class::~point_light_class() throw ()
+openvrml::vrml97_node::point_light_class::~point_light_class() throw ()
 {}
 
 /**
@@ -12959,9 +13216,10 @@ point_light_class::~point_light_class() throw ()
  *                                  supported by point_light_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-point_light_class::do_create_type(const std::string & id,
-                               const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::point_light_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -13100,31 +13358,31 @@ point_light_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class point_light_node
+ * @class openvrml::vrml97_node::point_light_node
  *
  * @brief PointLight node instances.
  */
 
 /**
- * @var point_light_node::point_light_class
+ * @var openvrml::vrml97_node::point_light_node::point_light_class
  *
  * @brief Class object for PointLight instances.
  */
 
 /**
- * @var exposedfield<sfvec3f> point_light_node::attenuation_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::point_light_node::attenuation_
  *
  * @brief attenuation exposedField.
  */
 
 /**
- * @var exposedfield<sfvec3f> point_light_node::location_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::point_light_node::location_
  *
  * @brief location exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> point_light_node::radius_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::point_light_node::radius_
  *
  * @brief radius exposedField.
  */
@@ -13133,10 +13391,11 @@ point_light_class::do_create_type(const std::string & id,
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
-point_light_node::point_light_node(const node_type & type,
-                       const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::point_light_node::
+point_light_node(const node_type & type,
+                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_light_node(type, scope),
     attenuation_(*this, vec3f(1.0, 0.0, 0.0)),
@@ -13147,7 +13406,7 @@ point_light_node::point_light_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-point_light_node::~point_light_node() throw ()
+openvrml::vrml97_node::point_light_node::~point_light_node() throw ()
 {}
 
 /**
@@ -13155,7 +13414,8 @@ point_light_node::~point_light_node() throw ()
  *
  * @return a pointer to the point_light_node.
  */
-point_light_node* point_light_node::to_point_light() const
+openvrml::vrml97_node::point_light_node *
+openvrml::vrml97_node::point_light_node::to_point_light() const
 {
     return (point_light_node*) this;
 }
@@ -13172,7 +13432,9 @@ point_light_node* point_light_node::to_point_light() const
  *
  * @param viewer    a viewer.
  */
-void point_light_node::renderScoped(openvrml::viewer & viewer)
+void
+openvrml::vrml97_node::point_light_node::
+renderScoped(openvrml::viewer & viewer)
 {
     if (this->on_.sfbool::value && this->radius_.sffloat::value > 0.0) {
         viewer.insert_point_light(this->ambient_intensity_.sffloat::value,
@@ -13192,7 +13454,8 @@ void point_light_node::renderScoped(openvrml::viewer & viewer)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void point_light_node::do_initialize(const double timestamp)
+void
+openvrml::vrml97_node::point_light_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
@@ -13204,7 +13467,9 @@ void point_light_node::do_initialize(const double timestamp)
  *
  * @param timestamp the current time.
  */
-void point_light_node::do_shutdown(const double timestamp) throw ()
+void
+openvrml::vrml97_node::point_light_node::do_shutdown(const double timestamp)
+    throw ()
 {
     assert(this->scene());
     this->scene()->browser().remove_scoped_light(*this);
@@ -13212,7 +13477,7 @@ void point_light_node::do_shutdown(const double timestamp) throw ()
 
 
 /**
- * @class point_set_class
+ * @class openvrml::vrml97_node::point_set_class
  *
  * @brief Class object for PointSet nodes.
  */
@@ -13222,14 +13487,15 @@ void point_light_node::do_shutdown(const double timestamp) throw ()
  *
  * @param browser the browser associated with this node_class.
  */
-point_set_class::point_set_class(openvrml::browser & browser):
+openvrml::vrml97_node::point_set_class::
+point_set_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-point_set_class::~point_set_class() throw ()
+openvrml::vrml97_node::point_set_class::~point_set_class() throw ()
 {}
 
 /**
@@ -13244,9 +13510,10 @@ point_set_class::~point_set_class() throw ()
  *                              supported by point_set_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-point_set_class::do_create_type(const std::string & id,
-                             const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::point_set_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -13299,31 +13566,31 @@ point_set_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class point_set_node
+ * @class openvrml::vrml97_node::point_set_node
  *
  * @brief Represents PointSet node instances.
  */
 
 /**
- * @var point_set_node::point_set_class
+ * @var openvrml::vrml97_node::point_set_node::point_set_class
  *
  * @brief Class object for PointSet instances.
  */
 
 /**
- * @var exposedfield<sfnode> point_set_node::color_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::point_set_node::color_
  *
  * @brief color exposedField.
  */
 
 /**
- * @var exposedfield<sfnode> point_set_node::coord_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::point_set_node::coord_
  *
  * @brief coord exposedField.
  */
 
 /**
- * @var bounding_sphere point_set_node::bsphere
+ * @var openvrml::bounding_sphere openvrml::vrml97_node::point_set_node::bsphere
  *
  * @brief Bounding volume.
  */
@@ -13334,8 +13601,9 @@ point_set_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope the scope to which the node belongs.
  */
-point_set_node::point_set_node(const node_type & type,
-                   const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::point_set_node::
+point_set_node(const node_type & type,
+               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -13348,7 +13616,7 @@ point_set_node::point_set_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-point_set_node::~point_set_node() throw ()
+openvrml::vrml97_node::point_set_node::~point_set_node() throw ()
 {}
 
 /**
@@ -13357,7 +13625,7 @@ point_set_node::~point_set_node() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool point_set_node::modified() const
+bool openvrml::vrml97_node::point_set_node::modified() const
 {
     return this->node::modified()
         || (this->color_.sfnode::value
@@ -13372,9 +13640,9 @@ bool point_set_node::modified() const
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-viewer::object_t
-point_set_node::do_render_geometry(openvrml::viewer & viewer,
-                                   const rendering_context context)
+openvrml::viewer::object_t
+openvrml::vrml97_node::point_set_node::
+do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
 {
     using std::vector;
 
@@ -13412,7 +13680,7 @@ point_set_node::do_render_geometry(openvrml::viewer & viewer,
  *
  * @return @c true.
  */
-bool point_set_node::do_emissive() const throw ()
+bool openvrml::vrml97_node::point_set_node::do_emissive() const throw ()
 {
     return true;
 }
@@ -13420,7 +13688,7 @@ bool point_set_node::do_emissive() const throw ()
 /**
  * @brief Recalculate the bounding volume.
  */
-void point_set_node::recalcBSphere()
+void openvrml::vrml97_node::point_set_node::recalcBSphere()
 {
     this->bsphere = bounding_sphere();
     openvrml::coordinate_node * const coordinateNode =
@@ -13441,7 +13709,8 @@ void point_set_node::recalcBSphere()
  *
  * @return the bounding volume associated with the node.
  */
-const bounding_volume & point_set_node::bounding_volume() const
+const openvrml::bounding_volume &
+openvrml::vrml97_node::point_set_node::bounding_volume() const
 {
     if (this->bounding_volume_dirty()) {
         const_cast<point_set_node *>(this)->recalcBSphere();
@@ -13451,7 +13720,7 @@ const bounding_volume & point_set_node::bounding_volume() const
 
 
 /**
- * @class position_interpolator_class
+ * @class openvrml::vrml97_node::position_interpolator_class
  *
  * @brief Class object for PositionInterpolator nodes.
  */
@@ -13461,7 +13730,7 @@ const bounding_volume & point_set_node::bounding_volume() const
  *
  * @param browser the browser associated with this node_class.
  */
-position_interpolator_class::
+openvrml::vrml97_node::position_interpolator_class::
 position_interpolator_class(openvrml::browser & browser):
     node_class(browser)
 {}
@@ -13469,7 +13738,8 @@ position_interpolator_class(openvrml::browser & browser):
 /**
  * @brief Destroy.
  */
-position_interpolator_class::~position_interpolator_class() throw ()
+openvrml::vrml97_node::position_interpolator_class::
+~position_interpolator_class() throw ()
 {}
 
 /**
@@ -13485,9 +13755,10 @@ position_interpolator_class::~position_interpolator_class() throw ()
  *                                  supported by position_interpolator_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-position_interpolator_class::do_create_type(const std::string & id,
-                                         const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::position_interpolator_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -13564,13 +13835,13 @@ position_interpolator_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class position_interpolator_node
+ * @class openvrml::vrml97_node::position_interpolator_node
  *
  * @brief PositionInterpolator node instances.
  */
 
 /**
- * @var class position_interpolator_node::position_interpolator_class
+ * @var class openvrml::vrml97_node::position_interpolator_node::position_interpolator_class
  *
  * @brief Class object for PositionInterpolator nodes.
  */
@@ -13578,7 +13849,7 @@ position_interpolator_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class position_interpolator_node::set_fraction_listener
+ * @class openvrml::vrml97_node::position_interpolator_node::set_fraction_listener
  *
  * @brief set_fraction eventIn handler.
  */
@@ -13588,7 +13859,7 @@ position_interpolator_class::do_create_type(const std::string & id,
  *
  * @param node  position_interpolator_node.
  */
-position_interpolator_node::set_fraction_listener::
+openvrml::vrml97_node::position_interpolator_node::set_fraction_listener::
 set_fraction_listener(position_interpolator_node & node):
     sffloat_listener(node)
 {}
@@ -13596,8 +13867,8 @@ set_fraction_listener(position_interpolator_node & node):
 /**
  * @brief Destroy.
  */
-position_interpolator_node::set_fraction_listener::~set_fraction_listener()
-    throw ()
+openvrml::vrml97_node::position_interpolator_node::set_fraction_listener::
+~set_fraction_listener() throw ()
 {}
 
 /**
@@ -13609,7 +13880,7 @@ position_interpolator_node::set_fraction_listener::~set_fraction_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-position_interpolator_node::set_fraction_listener::
+openvrml::vrml97_node::position_interpolator_node::set_fraction_listener::
 do_process_event(const sffloat & fraction, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -13650,31 +13921,31 @@ do_process_event(const sffloat & fraction, const double timestamp)
 }
 
 /**
- * @var position_interpolator_node::set_fraction_listener position_interpolator_node::set_fraction_listener_
+ * @var openvrml::vrml97_node::position_interpolator_node::set_fraction_listener openvrml::vrml97_node::position_interpolator_node::set_fraction_listener_
  *
  * @brief set_fraction eventIn handler.
  */
 
 /**
- * @var exposedfield<mffloat> position_interpolator_node::key_
+ * @var openvrml::exposedfield<openvrml::mffloat> openvrml::vrml97_node::position_interpolator_node::key_
  *
  * @brief key exposedField.
  */
 
 /**
- * @var exposedfield<mfvec3f> position_interpolator_node::key_value_
+ * @var openvrml::exposedfield<openvrml::mfvec3f> openvrml::vrml97_node::position_interpolator_node::key_value_
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var sfvec3f position_interpolator_node::value_changed_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::position_interpolator_node::value_changed_
  *
  * @brief value_changed eventOut value.
  */
 
 /**
- * @var sfvec3f_emitter position_interpolator_node::value_changed_emitter_
+ * @var openvrml::sfvec3f_emitter openvrml::vrml97_node::position_interpolator_node::value_changed_emitter_
  *
  * @brief value_changed eventOut emitter.
  */
@@ -13683,11 +13954,11 @@ do_process_event(const sffloat & fraction, const double timestamp)
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
-position_interpolator_node::position_interpolator_node(
-    const node_type & type,
-    const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::position_interpolator_node::
+position_interpolator_node(const node_type & type,
+                           const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -13700,12 +13971,13 @@ position_interpolator_node::position_interpolator_node(
 /**
  * @brief Destroy.
  */
-position_interpolator_node::~position_interpolator_node() throw ()
+openvrml::vrml97_node::position_interpolator_node::
+~position_interpolator_node() throw ()
 {}
 
 
 /**
- * @class proximity_sensor_class
+ * @class openvrml::vrml97_node::proximity_sensor_class
  *
  * @brief Class object for ProximitySensor nodes.
  */
@@ -13715,14 +13987,16 @@ position_interpolator_node::~position_interpolator_node() throw ()
  *
  * @param browser the browser associated with this node_class.
  */
-proximity_sensor_class::proximity_sensor_class(openvrml::browser & browser):
+openvrml::vrml97_node::proximity_sensor_class::
+proximity_sensor_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-proximity_sensor_class::~proximity_sensor_class() throw ()
+openvrml::vrml97_node::proximity_sensor_class::~proximity_sensor_class()
+    throw ()
 {}
 
 /**
@@ -13738,9 +14012,10 @@ proximity_sensor_class::~proximity_sensor_class() throw ()
  *                              supported by proximity_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-proximity_sensor_class::do_create_type(const std::string & id,
-                                    const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::proximity_sensor_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -13859,91 +14134,91 @@ proximity_sensor_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class proximity_sensor_node
+ * @class openvrml::vrml97_node::proximity_sensor_node
  *
  * @brief Represents ProximitySensor node instances.
  */
 
 /**
- * @var proximity_sensor_node::proximity_sensor_class
+ * @var openvrml::vrml97_node::proximity_sensor_node::proximity_sensor_class
  *
  * @brief Class object for ProximitySensor instances.
  */
 
 /**
- * @var exposedfield<sfvec3f> proximity_sensor_node::center_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::proximity_sensor_node::center_
  *
  * @brief center exposedField.
  */
 
 /**
- * @var exposedfield<sfbool> proximity_sensor_node::enabled_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::proximity_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var exposedfield<sfvec3f> proximity_sensor_node::size_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::proximity_sensor_node::size_
  *
  * @brief size exposedField.
  */
 
 /**
- * @var sfbool proximity_sensor_node::is_active_
+ * @var openvrml::sfbool openvrml::vrml97_node::proximity_sensor_node::is_active_
  *
  * @brief isActive eventOut value.
  */
 
 /**
- * @var sfbool_emitter proximity_sensor_node::is_active_emitter_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::proximity_sensor_node::is_active_emitter_
  *
  * @brief isActive eventOut emitter.
  */
 
 /**
- * @var sfvec3f proximity_sensor_node::position_changed_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::proximity_sensor_node::position_changed_
  *
  * @brief position_changed eventOut value.
  */
 
 /**
- * @var sfvec3f_emitter proximity_sensor_node::position_changed_emitter_
+ * @var openvrml::sfvec3f_emitter openvrml::vrml97_node::proximity_sensor_node::position_changed_emitter_
  *
  * @brief position_changed eventOut emitter.
  */
 
 /**
- * @var sfrotation proximity_sensor_node::orientation_changed_
+ * @var openvrml::sfrotation openvrml::vrml97_node::proximity_sensor_node::orientation_changed_
  *
  * @brief orientation_changed eventOut value.
  */
 
 /**
- * @var sfrotation proximity_sensor_node::orientation_changed_emitter_
+ * @var openvrml::sfrotation openvrml::vrml97_node::proximity_sensor_node::orientation_changed_emitter_
  *
  * @brief orientation_changed eventOut emitter.
  */
 
 /**
- * @var sftime proximity_sensor_node::enter_time_
+ * @var openvrml::sftime openvrml::vrml97_node::proximity_sensor_node::enter_time_
  *
  * @brief enterTime eventOut value.
  */
 
 /**
- * @var sftime_emitter proximity_sensor_node::enter_time_emitter_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::proximity_sensor_node::enter_time_emitter_
  *
  * @brief enterTime eventOut emitter.
  */
 
 /**
- * @var sftime proximity_sensor_node::exit_time_
+ * @var openvrml::sftime openvrml::vrml97_node::proximity_sensor_node::exit_time_
  *
  * @brief exitTime eventOut value.
  */
 
 /**
- * @var sftime_emitter proximity_sensor_node::exit_time_emitter_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::proximity_sensor_node::exit_time_emitter_
  *
  * @brief exitTime eventOut emitter.
  */
@@ -13954,8 +14229,9 @@ proximity_sensor_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope     the scope to which the node belongs.
  */
-proximity_sensor_node::proximity_sensor_node(const node_type & type,
-                                             const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::proximity_sensor_node::
+proximity_sensor_node(const node_type & type,
+                      const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -13977,7 +14253,7 @@ proximity_sensor_node::proximity_sensor_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-proximity_sensor_node::~proximity_sensor_node() throw ()
+openvrml::vrml97_node::proximity_sensor_node::~proximity_sensor_node() throw ()
 {}
 
 /**
@@ -14003,8 +14279,9 @@ proximity_sensor_node::~proximity_sensor_node() throw ()
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void proximity_sensor_node::do_render_child(openvrml::viewer & viewer,
-                                   const rendering_context context)
+void
+openvrml::vrml97_node::proximity_sensor_node::
+do_render_child(openvrml::viewer & viewer, const rendering_context context)
 {
     if (this->enabled_.sfbool::value
         && this->size_.sfvec3f::value.x() > 0.0
@@ -14071,7 +14348,7 @@ void proximity_sensor_node::do_render_child(openvrml::viewer & viewer,
 
 
 /**
- * @class scalar_interpolator_class
+ * @class openvrml::vrml97_node::scalar_interpolator_class
  *
  * @brief Class object for ScalarInterpolator nodes.
  */
@@ -14081,7 +14358,7 @@ void proximity_sensor_node::do_render_child(openvrml::viewer & viewer,
  *
  * @param browser the browser associated with this node_class.
  */
-scalar_interpolator_class::
+openvrml::vrml97_node::scalar_interpolator_class::
 scalar_interpolator_class(openvrml::browser & browser):
     node_class(browser)
 {}
@@ -14089,7 +14366,8 @@ scalar_interpolator_class(openvrml::browser & browser):
 /**
  * @brief Destroy.
  */
-scalar_interpolator_class::~scalar_interpolator_class() throw ()
+openvrml::vrml97_node::scalar_interpolator_class::~scalar_interpolator_class()
+    throw ()
 {}
 
 /**
@@ -14105,9 +14383,10 @@ scalar_interpolator_class::~scalar_interpolator_class() throw ()
  *                              supported by CoordinateInterpolatorClass.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-scalar_interpolator_class::do_create_type(const std::string & id,
-                                       const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::scalar_interpolator_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -14183,13 +14462,13 @@ scalar_interpolator_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class scalar_interpolator_node
+ * @class openvrml::vrml97_node::scalar_interpolator_node
  *
  * @brief ScalarInterpolator node instances.
  */
 
 /**
- * @var class scalar_interpolator_node::scalar_interpolator_class
+ * @var class openvrml::vrml97_node::scalar_interpolator_node::scalar_interpolator_class
  *
  * @brief Class object for ScalarInterpolator nodes.
  */
@@ -14197,7 +14476,7 @@ scalar_interpolator_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class scalar_interpolator_node::set_fraction_listener
+ * @class openvrml::vrml97_node::scalar_interpolator_node::set_fraction_listener
  *
  * @brief set_fraction eventIn handler.
  */
@@ -14207,7 +14486,7 @@ scalar_interpolator_class::do_create_type(const std::string & id,
  *
  * @param node  scalar_interpolator_node.
  */
-scalar_interpolator_node::set_fraction_listener::
+openvrml::vrml97_node::scalar_interpolator_node::set_fraction_listener::
 set_fraction_listener(scalar_interpolator_node & node):
     sffloat_listener(node)
 {}
@@ -14215,8 +14494,8 @@ set_fraction_listener(scalar_interpolator_node & node):
 /**
  * @brief Destroy.
  */
-scalar_interpolator_node::set_fraction_listener::~set_fraction_listener()
-    throw ()
+openvrml::vrml97_node::scalar_interpolator_node::set_fraction_listener::
+~set_fraction_listener() throw ()
 {}
 
 /**
@@ -14228,7 +14507,7 @@ scalar_interpolator_node::set_fraction_listener::~set_fraction_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-scalar_interpolator_node::set_fraction_listener::
+openvrml::vrml97_node::scalar_interpolator_node::set_fraction_listener::
 do_process_event(const sffloat & fraction, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -14268,31 +14547,31 @@ do_process_event(const sffloat & fraction, const double timestamp)
 }
 
 /**
- * @var scalar_interpolator_node::set_fraction_listener scalar_interpolator_node::set_fraction_listener_
+ * @var openvrml::vrml97_node::scalar_interpolator_node::set_fraction_listener openvrml::vrml97_node::scalar_interpolator_node::set_fraction_listener_
  *
  * @brief set_fraction eventIn handler.
  */
 
 /**
- * @var exposedfield<mffloat> scalar_interpolator_node::key_
+ * @var openvrml::exposedfield<openvrml::mffloat> openvrml::vrml97_node::scalar_interpolator_node::key_
  *
  * @brief key exposedField.
  */
 
 /**
- * @var exposedfield<mffloat> scalar_interpolator_node::key_value_
+ * @var openvrml::exposedfield<openvrml::mffloat> openvrml::vrml97_node::scalar_interpolator_node::key_value_
  *
  * @brief keyValue exposedField.
  */
 
 /**
- * @var sffloat scalar_interpolator_node::value_changed_
+ * @var openvrml::sffloat openvrml::vrml97_node::scalar_interpolator_node::value_changed_
  *
  * @brief value_changed eventOut value.
  */
 
 /**
- * @var sffloat_emitter scalar_interpolator_node::value_changed_emitter_
+ * @var openvrml::sffloat_emitter openvrml::vrml97_node::scalar_interpolator_node::value_changed_emitter_
  *
  * @brief value_changed eventOut emitter.
  */
@@ -14303,8 +14582,9 @@ do_process_event(const sffloat & fraction, const double timestamp)
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-scalar_interpolator_node::scalar_interpolator_node(const node_type & type,
-                                                   const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::scalar_interpolator_node::
+scalar_interpolator_node(const node_type & type,
+                         const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -14317,12 +14597,13 @@ scalar_interpolator_node::scalar_interpolator_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-scalar_interpolator_node::~scalar_interpolator_node() throw ()
+openvrml::vrml97_node::scalar_interpolator_node::~scalar_interpolator_node()
+    throw ()
 {}
 
 
 /**
- * @class shape_class
+ * @class openvrml::vrml97_node::shape_class
  *
  * @brief Class object for Shape nodes.
  */
@@ -14332,14 +14613,14 @@ scalar_interpolator_node::~scalar_interpolator_node() throw ()
  *
  * @param browser the browser associated with this node_class.
  */
-shape_class::shape_class(openvrml::browser & browser):
+openvrml::vrml97_node::shape_class::shape_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-shape_class::~shape_class() throw ()
+openvrml::vrml97_node::shape_class::~shape_class() throw ()
 {}
 
 /**
@@ -14354,9 +14635,10 @@ shape_class::~shape_class() throw ()
  *                              supported by shape_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-shape_class::do_create_type(const std::string & id,
-                         const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::shape_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -14409,31 +14691,31 @@ shape_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class shape_node
+ * @class openvrml::vrml97_node::shape_node
  *
  * @brief Represents Shape node instances.
  */
 
 /**
- * @var shape_node::shape_class
+ * @var openvrml::vrml97_node::shape_node::shape_class
  *
  * @brief Class object for Shape instances.
  */
 
 /**
- * @var exposedfield<sfnode> shape_node::appearance_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::shape_node::appearance_
  *
  * @brief appearance exposedField.
  */
 
 /**
- * @var exposedfield<sfnode> shape_node::geometry_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::shape_node::geometry_
  *
  * @brief geometry exposedField.
  */
 
 /**
- * @var viewer::object_t shape_node::viewerObject
+ * @var openvrml::viewer::object_t openvrml::vrml97_node::shape_node::viewerObject
  *
  * @brief A reference to the node's previously used rendering data.
  *
@@ -14448,7 +14730,9 @@ shape_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node.
  * @param scope     the scope to which the node belongs.
  */
-shape_node::shape_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::shape_node::
+shape_node(const node_type & type,
+           const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -14460,7 +14744,7 @@ shape_node::shape_node(const node_type & type, const boost::shared_ptr<openvrml:
 /**
  * @brief Destroy.
  */
-shape_node::~shape_node() throw ()
+openvrml::vrml97_node::shape_node::~shape_node() throw ()
 {
     // need viewer to free viewerObject ...
 }
@@ -14471,7 +14755,7 @@ shape_node::~shape_node() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool shape_node::modified() const
+bool openvrml::vrml97_node::shape_node::modified() const
 {
     return this->node::modified()
         || (this->geometry_.sfnode::value
@@ -14486,8 +14770,9 @@ bool shape_node::modified() const
  * @param viewer    a viewer.
  * @param context   a rendering context.
  */
-void shape_node::do_render_child(openvrml::viewer & viewer,
-                                 const rendering_context context)
+void
+openvrml::vrml97_node::shape_node::
+do_render_child(openvrml::viewer & viewer, const rendering_context context)
 {
     openvrml::appearance_node * const appearance =
         node_cast<openvrml::appearance_node *>(
@@ -14560,7 +14845,8 @@ void shape_node::do_render_child(openvrml::viewer & viewer,
  *
  * @return the bounding volume associated with the node.
  */
-const bounding_volume & shape_node::bounding_volume() const
+const openvrml::bounding_volume &
+openvrml::vrml97_node::shape_node::bounding_volume() const
 {
     //
     // just pass off to the geometry's getbvolume() method
@@ -14575,7 +14861,7 @@ const bounding_volume & shape_node::bounding_volume() const
 
 
 /**
- * @class sound_class
+ * @class openvrml::vrml97_node::sound_class
  *
  * @brief Class object for Sound nodes.
  */
@@ -14585,14 +14871,14 @@ const bounding_volume & shape_node::bounding_volume() const
  *
  * @param browser the browser associated with this node_class.
  */
-sound_class::sound_class(openvrml::browser & browser):
+openvrml::vrml97_node::sound_class::sound_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-sound_class::~sound_class() throw ()
+openvrml::vrml97_node::sound_class::~sound_class() throw ()
 {}
 
 /**
@@ -14607,9 +14893,10 @@ sound_class::~sound_class() throw ()
  *                                  supported by sound_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-sound_class::do_create_type(const std::string & id,
-                         const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::sound_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -14784,73 +15071,73 @@ sound_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class sound_node
+ * @class openvrml::vrml97_node::sound_node
  *
  * @brief Represents Sound node instances.
  */
 
 /**
- * @var sound_node::sound_class
+ * @var openvrml::vrml97_node::sound_node::sound_class
  *
  * @brief Class object for Sound instances.
  */
 
 /**
- * @var exposedfield<sfvec3f> sound_node::direction_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::sound_node::direction_
  *
  * @brief direction exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> sound_node::intensity_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::sound_node::intensity_
  *
  * @brief intensity exposedField.
  */
 
 /**
- * @var exposedfield<sfvec3f> sound_node::location_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::sound_node::location_
  *
  * @brief location exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> sound_node::max_back_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::sound_node::max_back_
  *
  * @brief maxBack exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> sound_node::max_front_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::sound_node::max_front_
  *
  * @brief maxFront exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> sound_node::min_back_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::sound_node::min_back_
  *
  * @brief minBack exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> sound_node::min_front_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::sound_node::min_front_
  *
  * @brief minFront exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> sound_node::priority_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::sound_node::priority_
  *
  * @brief priority exposedField.
  */
 
 /**
- * @var exposedfield<sfnode> sound_node::source_
+ * @var openvrml::exposedfield<openvrml::sfnode> openvrml::vrml97_node::sound_node::source_
  *
  * @brief source exposedField.
  */
 
 /**
- * @var sfbool sound_node::spatialize_
+ * @var openvrml::sfbool openvrml::vrml97_node::sound_node::spatialize_
  *
  * @brief spatialize field.
  */
@@ -14861,7 +15148,9 @@ sound_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the instance.
  * @param scope the scope associated with the instance.
  */
-sound_node::sound_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::sound_node::
+sound_node(const node_type & type,
+           const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -14880,7 +15169,7 @@ sound_node::sound_node(const node_type & type, const boost::shared_ptr<openvrml:
 /**
  * @brief Destroy.
  */
-sound_node::~sound_node() throw ()
+openvrml::vrml97_node::sound_node::~sound_node() throw ()
 {}
 
 /**
@@ -14889,8 +15178,9 @@ sound_node::~sound_node() throw ()
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void sound_node::do_render_child(openvrml::viewer & viewer,
-                        const rendering_context context)
+void
+openvrml::vrml97_node::sound_node::
+do_render_child(openvrml::viewer & viewer, const rendering_context context)
 {
     // If this clip has been modified, update the internal data
     if (this->source_.sfnode::value
@@ -14901,7 +15191,7 @@ void sound_node::do_render_child(openvrml::viewer & viewer,
 
 
 /**
- * @class sphere_class
+ * @class openvrml::vrml97_node::sphere_class
  *
  * @brief Class object for Sphere nodes.
  */
@@ -14911,14 +15201,14 @@ void sound_node::do_render_child(openvrml::viewer & viewer,
  *
  * @param browser the browser associated with this node_class.
  */
-sphere_class::sphere_class(openvrml::browser & browser):
+openvrml::vrml97_node::sphere_class::sphere_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-sphere_class::~sphere_class() throw ()
+openvrml::vrml97_node::sphere_class::~sphere_class() throw ()
 {}
 
 /**
@@ -14933,9 +15223,10 @@ sphere_class::~sphere_class() throw ()
  *                              supported by sphere_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-sphere_class::do_create_type(const std::string & id,
-                          const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::sphere_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface(node_interface::field_id,
@@ -14964,25 +15255,25 @@ sphere_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class sphere_node
+ * @class openvrml::vrml97_node::sphere_node
  *
  * @brief Sphere node instances.
  */
 
 /**
- * @var sphere_node::sphere_class
+ * @var openvrml::vrml97_node::sphere_node::sphere_class
  *
  * @brief Class object for Sphere instances.
  */
 
 /**
- * @var sffloat sphere_node::radius
+ * @var openvrml::sffloat openvrml::vrml97_node::sphere_node::radius
  *
  * @brief radius field.
  */
 
 /**
- * @var bounding_sphere sphere_node::bsphere
+ * @var openvrml::bounding_sphere openvrml::vrml97_node::sphere_node::bsphere
  *
  * @brief Bounding volume.
  */
@@ -14991,9 +15282,11 @@ sphere_class::do_create_type(const std::string & id,
  * @brief Construct.
  *
  * @param type  the node_type associated with the node instance.
- * @param scope     the scope to which the node belongs.
+ * @param scope the scope to which the node belongs.
  */
-sphere_node::sphere_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::sphere_node::
+sphere_node(const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -15005,7 +15298,7 @@ sphere_node::sphere_node(const node_type & type, const boost::shared_ptr<openvrm
 /**
  * @brief Destroy.
  */
-sphere_node::~sphere_node() throw ()
+openvrml::vrml97_node::sphere_node::~sphere_node() throw ()
 {}
 
 /**
@@ -15014,9 +15307,9 @@ sphere_node::~sphere_node() throw ()
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-viewer::object_t
-sphere_node::do_render_geometry(openvrml::viewer & viewer,
-                                const rendering_context context)
+openvrml::viewer::object_t
+openvrml::vrml97_node::sphere_node::
+do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
 {
     const viewer::object_t object_ref =
         viewer.insert_sphere(this->radius.value);
@@ -15028,7 +15321,8 @@ sphere_node::do_render_geometry(openvrml::viewer & viewer,
  *
  * @return the bounding volume associated with the node.
  */
-const bounding_volume & sphere_node::bounding_volume() const
+const openvrml::bounding_volume &
+openvrml::vrml97_node::sphere_node::bounding_volume() const
 {
     if (this->bounding_volume_dirty()) {
         const_cast<sphere_node *>(this)->bsphere.radius(this->radius.value);
@@ -15039,7 +15333,7 @@ const bounding_volume & sphere_node::bounding_volume() const
 
 
 /**
- * @class sphere_sensor_class
+ * @class openvrml::vrml97_node::sphere_sensor_class
  *
  * @brief Class object for SphereSensor nodes.
  */
@@ -15049,14 +15343,15 @@ const bounding_volume & sphere_node::bounding_volume() const
  *
  * @param browser the browser associated with this node_class.
  */
-sphere_sensor_class::sphere_sensor_class(openvrml::browser & browser):
+openvrml::vrml97_node::sphere_sensor_class::
+sphere_sensor_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-sphere_sensor_class::~sphere_sensor_class() throw ()
+openvrml::vrml97_node::sphere_sensor_class::~sphere_sensor_class() throw ()
 {}
 
 /**
@@ -15072,9 +15367,10 @@ sphere_sensor_class::~sphere_sensor_class() throw ()
  *                                  supported by sphere_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-sphere_sensor_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::sphere_sensor_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -15173,85 +15469,85 @@ sphere_sensor_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class sphere_sensor_node
+ * @class openvrml::vrml97_node::sphere_sensor_node
  *
  * @brief SphereSensor node instances.
  */
 
 /**
- * @var sphere_sensor_node::sphere_sensor_class
+ * @var openvrml::vrml97_node::sphere_sensor_node::sphere_sensor_class
  *
  * @brief Class object for SphereSensor instances.
  */
 
 /**
- * @var exposedfield<sfbool> sphere_sensor_node::auto_offset_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::sphere_sensor_node::auto_offset_
  *
  * @brief autoOffset exposedField.
  */
 
 /**
- * @var exposedfield<sfbool> sphere_sensor_node::enabled_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::sphere_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var exposedfield<sfrotation> sphere_sensor_node::offset_
+ * @var openvrml::exposedfield<openvrml::sfrotation> openvrml::vrml97_node::sphere_sensor_node::offset_
  *
  * @brief offset exposedField.
  */
 
 /**
- * @var sfbool sphere_sensor_node::is_active_
+ * @var openvrml::sfbool openvrml::vrml97_node::sphere_sensor_node::is_active_
  *
  * @brief isActive eventOut value.
  */
 
 /**
- * @var sfbool_emitter sphere_sensor_node::is_active_emitter_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::sphere_sensor_node::is_active_emitter_
  *
  * @brief isActive eventOut emitter.
  */
 
 /**
- * @var sfrotation sphere_sensor_node::rotation_changed_
+ * @var openvrml::sfrotation openvrml::vrml97_node::sphere_sensor_node::rotation_changed_
  *
  * @brief rotation_changed eventOut value.
  */
 
 /**
- * @var sfrotation_emitter sphere_sensor_node::rotation_changed_emitter_
+ * @var openvrml::sfrotation_emitter openvrml::vrml97_node::sphere_sensor_node::rotation_changed_emitter_
  *
  * @brief rotation_changed eventOut emitter.
  */
 
 /**
- * @var sfvec3f sphere_sensor_node::track_point_changed_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::sphere_sensor_node::track_point_changed_
  *
  * @brief trackPoint_changed eventOut.
  */
 
 /**
- * @var sfvec3f_emitter sphere_sensor_node::track_point_changed_emitter_
+ * @var openvrml::sfvec3f_emitter openvrml::vrml97_node::sphere_sensor_node::track_point_changed_emitter_
  *
  * @brief trackPoint_changed eventOut emitter.
  */
 
 /**
- * @var sfvec3f sphere_sensor_node::activationPoint
+ * @var openvrml::sfvec3f openvrml::vrml97_node::sphere_sensor_node::activationPoint
  *
  * @brief The start point of a drag operation.
  */
 
 /**
- * @var sfvec3f sphere_sensor_node::centerPoint
+ * @var openvrml::sfvec3f openvrml::vrml97_node::sphere_sensor_node::centerPoint
  *
  * @brief Center point.
  */
 
 /**
- * @var mat4f sphere_sensor_node::modelview
+ * @var openvrml::mat4f openvrml::vrml97_node::sphere_sensor_node::modelview
  *
  * @brief Modelview matrix.
  */
@@ -15262,8 +15558,9 @@ sphere_sensor_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-sphere_sensor_node::sphere_sensor_node(const node_type & type,
-                                       const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::sphere_sensor_node::
+sphere_sensor_node(const node_type & type,
+                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -15281,7 +15578,7 @@ sphere_sensor_node::sphere_sensor_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-sphere_sensor_node::~sphere_sensor_node() throw ()
+openvrml::vrml97_node::sphere_sensor_node::~sphere_sensor_node() throw ()
 {}
 
 /**
@@ -15289,7 +15586,8 @@ sphere_sensor_node::~sphere_sensor_node() throw ()
  *
  * @return a pointer to the node.
  */
-sphere_sensor_node * sphere_sensor_node::to_sphere_sensor() const
+openvrml::vrml97_node::sphere_sensor_node *
+openvrml::vrml97_node::sphere_sensor_node::to_sphere_sensor() const
 {
     return const_cast<sphere_sensor_node *>(this);
 }
@@ -15300,8 +15598,9 @@ sphere_sensor_node * sphere_sensor_node::to_sphere_sensor() const
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void sphere_sensor_node::do_render_child(openvrml::viewer & viewer,
-                                         const rendering_context context)
+void
+openvrml::vrml97_node::sphere_sensor_node::
+do_render_child(openvrml::viewer & viewer, const rendering_context context)
 {
     //
     // Store the ModelView matrix which is calculated at the time of rendering
@@ -15322,7 +15621,9 @@ void sphere_sensor_node::do_render_child(openvrml::viewer & viewer,
  *                  otherwise.
  * @param p         the pointing device position.
  */
-void sphere_sensor_node::activate(double timestamp, bool isActive, double * p)
+void openvrml::vrml97_node::sphere_sensor_node::activate(double timestamp,
+                                                         bool isActive,
+                                                         double * p)
 {
     // Become active
     if (isActive && !this->is_active_.value) {
@@ -15404,14 +15705,14 @@ void sphere_sensor_node::activate(double timestamp, bool isActive, double * p)
  *
  * @return @c true if the SphereSensor is enabled; @c false otherwise.
  */
-bool sphere_sensor_node::isEnabled() const throw ()
+bool openvrml::vrml97_node::sphere_sensor_node::isEnabled() const throw ()
 {
     return this->enabled_.sfbool::value;
 }
 
 
 /**
- * @class spot_light_class
+ * @class openvrml::vrml97_node::spot_light_class
  *
  * @brief Class object for SpotLight nodes.
  */
@@ -15421,14 +15722,15 @@ bool sphere_sensor_node::isEnabled() const throw ()
  *
  * @param browser the browser associated with this node_class.
  */
-spot_light_class::spot_light_class(openvrml::browser & browser):
+openvrml::vrml97_node::spot_light_class::
+spot_light_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-spot_light_class::~spot_light_class() throw ()
+openvrml::vrml97_node::spot_light_class::~spot_light_class() throw ()
 {}
 
 /**
@@ -15443,9 +15745,10 @@ spot_light_class::~spot_light_class() throw ()
  *                              supported by spot_light_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-spot_light_class::do_create_type(const std::string & id,
-                              const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::spot_light_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -15635,49 +15938,49 @@ spot_light_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class spot_light_node
+ * @class openvrml::vrml97_node::spot_light_node
  *
  * @brief SpotLight node instances.
  */
 
 /**
- * @var spot_light_node::spot_light_class
+ * @var openvrml::vrml97_node::spot_light_node::spot_light_class
  *
  * @brief Class object for SpotLight instances.
  */
 
 /**
- * @var exposedfield<sfvec3f> spot_light_node::attenuation_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::spot_light_node::attenuation_
  *
  * @brief attenuation exposedField.
  */
 
 /**
- * @var expoosedfield<sffloat> spot_light_node::beam_width_
+ * @var expoosedfield<sffloat> openvrml::vrml97_node::spot_light_node::beam_width_
  *
  * @brief beamWidth exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> spot_light_node::cut_off_angle_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::spot_light_node::cut_off_angle_
  *
  * @brief cutOffAngle exposedField.
  */
 
 /**
- * @var exposedfield<sfvec3f> spot_light_node::direction_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::spot_light_node::direction_
  *
  * @brief direction exposedField.
  */
 
 /**
- * @var exposedfield<sfvec3f> spot_light_node::location_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::spot_light_node::location_
  *
  * @brief location exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> spot_light_node::radius_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::spot_light_node::radius_
  *
  * @brief radius exposedField.
  */
@@ -15688,8 +15991,9 @@ spot_light_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the node instance.
  * @param scope the scope to which the node belongs.
  */
-spot_light_node::spot_light_node(const node_type & type,
-                                 const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::spot_light_node::
+spot_light_node(const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_light_node(type, scope),
     attenuation_(*this, vec3f(1.0, 0.0, 0.0)),
@@ -15703,7 +16007,7 @@ spot_light_node::spot_light_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-spot_light_node::~spot_light_node() throw ()
+openvrml::vrml97_node::spot_light_node::~spot_light_node() throw ()
 {}
 
 /**
@@ -15711,7 +16015,8 @@ spot_light_node::~spot_light_node() throw ()
  *
  * @return a pointer to the node.
  */
-spot_light_node * spot_light_node::to_spot_light() const
+openvrml::vrml97_node::spot_light_node *
+openvrml::vrml97_node::spot_light_node::to_spot_light() const
 {
     return const_cast<spot_light_node *>(this);
 }
@@ -15728,7 +16033,8 @@ spot_light_node * spot_light_node::to_spot_light() const
  *      parents and apply them before rendering. This is not easy with
  *      DEF/USEd nodes...
  */
-void spot_light_node::renderScoped(openvrml::viewer & viewer)
+void
+openvrml::vrml97_node::spot_light_node::renderScoped(openvrml::viewer & viewer)
 {
     if (this->on_.sfbool::value && this->radius_.sffloat::value > 0.0) {
         viewer.insert_spot_light(this->ambient_intensity_.sffloat::value,
@@ -15751,7 +16057,8 @@ void spot_light_node::renderScoped(openvrml::viewer & viewer)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void spot_light_node::do_initialize(const double timestamp)
+void
+openvrml::vrml97_node::spot_light_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
@@ -15763,7 +16070,9 @@ void spot_light_node::do_initialize(const double timestamp)
  *
  * @param timestamp the current time.
  */
-void spot_light_node::do_shutdown(const double timestamp) throw ()
+void
+openvrml::vrml97_node::spot_light_node::do_shutdown(const double timestamp)
+    throw ()
 {
     assert(this->scene());
     this->scene()->browser().remove_scoped_light(*this);
@@ -15771,7 +16080,7 @@ void spot_light_node::do_shutdown(const double timestamp) throw ()
 
 
 /**
- * @class switch_class
+ * @class openvrml::vrml97_node::switch_class
  *
  * @brief Class object for Switch nodes.
  */
@@ -15781,14 +16090,14 @@ void spot_light_node::do_shutdown(const double timestamp) throw ()
  *
  * @param browser the browser associated with this node_class.
  */
-switch_class::switch_class(openvrml::browser & browser):
+openvrml::vrml97_node::switch_class::switch_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-switch_class::~switch_class() throw ()
+openvrml::vrml97_node::switch_class::~switch_class() throw ()
 {}
 
 /**
@@ -15803,9 +16112,10 @@ switch_class::~switch_class() throw ()
  *                              supported by switch_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-switch_class::do_create_type(const std::string & id,
-                          const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::switch_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -15861,13 +16171,13 @@ switch_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class switch_node
+ * @class openvrml::vrml97_node::switch_node
  *
  * @brief Switch node instances.
  */
 
 /**
- * @var class switch_node::switch_class
+ * @var class openvrml::vrml97_node::switch_node::switch_class
  *
  * @brief Class object for Switch nodes.
  */
@@ -15875,7 +16185,7 @@ switch_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class switch_node::choice_exposedfield
+ * @class openvrml::vrml97_node::switch_node::choice_exposedfield
  *
  * @brief choice exposedField implementation.
  */
@@ -15885,14 +16195,16 @@ switch_class::do_create_type(const std::string & id,
  *
  * @param node  switch_node.
  */
-switch_node::choice_exposedfield::choice_exposedfield(switch_node & node):
-    exposedfield<mfnode>(node)
+openvrml::vrml97_node::switch_node::choice_exposedfield::
+choice_exposedfield(switch_node & node):
+    openvrml::exposedfield<openvrml::mfnode>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-switch_node::choice_exposedfield::~choice_exposedfield() throw ()
+openvrml::vrml97_node::switch_node::choice_exposedfield::~choice_exposedfield()
+    throw ()
 {}
 
 /**
@@ -15903,8 +16215,9 @@ switch_node::choice_exposedfield::~choice_exposedfield() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void switch_node::choice_exposedfield::event_side_effect(const mfnode & choice,
-                                                        const double timestamp)
+void
+openvrml::vrml97_node::switch_node::choice_exposedfield::
+event_side_effect(const mfnode & choice, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -15925,7 +16238,7 @@ void switch_node::choice_exposedfield::event_side_effect(const mfnode & choice,
 /**
  * @internal
  *
- * @class switch_node::which_choice_exposedfield
+ * @class openvrml::vrml97_node::switch_node::which_choice_exposedfield
  *
  * @brief choice exposedField implementation.
  */
@@ -15935,15 +16248,16 @@ void switch_node::choice_exposedfield::event_side_effect(const mfnode & choice,
  *
  * @param node  switch_node.
  */
-switch_node::which_choice_exposedfield::
+openvrml::vrml97_node::switch_node::which_choice_exposedfield::
 which_choice_exposedfield(switch_node & node):
-    exposedfield<sfint32>(node, -1)
+    openvrml::exposedfield<openvrml::sfint32>(node, -1)
 {}
 
 /**
  * @brief Destroy.
  */
-switch_node::which_choice_exposedfield::~which_choice_exposedfield() throw ()
+openvrml::vrml97_node::switch_node::which_choice_exposedfield::
+~which_choice_exposedfield() throw ()
 {}
 
 /**
@@ -15955,7 +16269,7 @@ switch_node::which_choice_exposedfield::~which_choice_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-switch_node::which_choice_exposedfield::
+openvrml::vrml97_node::switch_node::which_choice_exposedfield::
 event_side_effect(const sfint32 & which_choice,
                  const double timestamp)
     throw (std::bad_alloc)
@@ -15975,25 +16289,25 @@ event_side_effect(const sfint32 & which_choice,
 }
 
 /**
- * @var switch_node::choice_exposedfield switch_node::choice_
+ * @var openvrml::vrml97_node::switch_node::choice_exposedfield openvrml::vrml97_node::switch_node::choice_
  *
  * @brief choice exposedField.
  */
 
 /**
- * @var switch_node::which_choice_exposedfield switch_node::which_choice_
+ * @var openvrml::vrml97_node::switch_node::which_choice_exposedfield openvrml::vrml97_node::switch_node::which_choice_
  *
  * @brief whichChoice exposedField.
  */
 
 /**
- * @var mfnode switch_node::children_
+ * @var openvrml::mfnode openvrml::vrml97_node::switch_node::children_
  *
  * @brief The children currently in the scene graph.
  */
 
 /**
- * @var bounding_sphere switch_node::bsphere
+ * @var openvrml::bounding_sphere openvrml::vrml97_node::switch_node::bsphere
  *
  * @brief Cached copy of the bsphere enclosing this node's children.
  */
@@ -16004,7 +16318,9 @@ event_side_effect(const sfint32 & which_choice,
  * @param type  the node_type associated with the node instance.
  * @param scope     the scope to which the node belongs.
  */
-switch_node::switch_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::switch_node::
+switch_node(const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
@@ -16019,7 +16335,8 @@ switch_node::switch_node(const node_type & type, const boost::shared_ptr<openvrm
 /**
  * @brief Destroy.
  */
-switch_node::~switch_node() throw () {}
+openvrml::vrml97_node::switch_node::~switch_node() throw ()
+{}
 
 /**
  * @brief Determine whether the node has been modified.
@@ -16027,7 +16344,8 @@ switch_node::~switch_node() throw () {}
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool switch_node::modified() const {
+bool openvrml::vrml97_node::switch_node::modified() const
+{
     if (this->node::modified()) { return true; }
 
     long w = this->which_choice_.sfint32::value;
@@ -16045,8 +16363,9 @@ bool switch_node::modified() const {
  * @param viewer    a Viewer.
  * @param context   a rendering context.
  */
-void switch_node::do_render_child(openvrml::viewer & viewer,
-                                  const rendering_context context)
+void
+openvrml::vrml97_node::switch_node::
+do_render_child(openvrml::viewer & viewer, const rendering_context context)
 {
     assert(!this->children_.value.empty());
     child_node * const child =
@@ -16060,7 +16379,8 @@ void switch_node::do_render_child(openvrml::viewer & viewer,
  *
  * @return the bounding volume associated with the node.
  */
-const bounding_volume & switch_node::bounding_volume() const
+const openvrml::bounding_volume &
+openvrml::vrml97_node::switch_node::bounding_volume() const
 {
     if (this->bounding_volume_dirty()) {
         const_cast<switch_node *>(this)->recalcBSphere();
@@ -16073,7 +16393,8 @@ const bounding_volume & switch_node::bounding_volume() const
  *
  * @return the child nodes in the scene graph.
  */
-const std::vector<node_ptr> & switch_node::children() const throw ()
+const std::vector<openvrml::node_ptr> &
+openvrml::vrml97_node::switch_node::children() const throw ()
 {
     return this->children_.value;
 }
@@ -16081,7 +16402,10 @@ const std::vector<node_ptr> & switch_node::children() const throw ()
 /**
  * Pass on to enabled touchsensor child.
  */
-void switch_node::activate(double time, bool isOver, bool isActive, double *p)
+void openvrml::vrml97_node::switch_node::activate(double time,
+                                                  bool isOver,
+                                                  bool isActive,
+                                                  double *p)
 {
     const std::vector<node_ptr> & children = this->children();
     const node_ptr & node = children[0];
@@ -16104,7 +16428,7 @@ void switch_node::activate(double time, bool isOver, bool isActive, double *p)
 /**
  * @brief Recalculate the bounding volume.
  */
-void switch_node::recalcBSphere()
+void openvrml::vrml97_node::switch_node::recalcBSphere()
 {
     this->bsphere = bounding_sphere();
     long w = this->which_choice_.sfint32::value;
@@ -16120,13 +16444,13 @@ void switch_node::recalcBSphere()
 
 
 /**
- * @class text_class
+ * @class openvrml::vrml97_node::text_class
  *
  * @brief Class object for Text nodes.
  */
 
 /**
- * @var FT_Library text_class::freeTypeLibrary
+ * @var FT_Library openvrml::vrml97_node::text_class::freeTypeLibrary
  *
  * @brief FreeType library handle.
  *
@@ -16138,7 +16462,7 @@ void switch_node::recalcBSphere()
  *
  * @param browser the browser associated with this node_class.
  */
-text_class::text_class(openvrml::browser & browser):
+openvrml::vrml97_node::text_class::text_class(openvrml::browser & browser):
     node_class(browser)
 {
 # if OPENVRML_ENABLE_RENDER_TEXT_NODE
@@ -16153,7 +16477,7 @@ text_class::text_class(openvrml::browser & browser):
 /**
  * @brief Destroy.
  */
-text_class::~text_class() throw ()
+openvrml::vrml97_node::text_class::~text_class() throw ()
 {
 # if OPENVRML_ENABLE_RENDER_TEXT_NODE
     FT_Error error = 0;
@@ -16177,10 +16501,11 @@ text_class::~text_class() throw ()
  *                              supported by text_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-text_class::do_create_type(const std::string & id,
-                        const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::text_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
+    throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
         node_interface(node_interface::exposedfield_id,
@@ -16270,13 +16595,13 @@ text_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class text_node
+ * @class openvrml::vrml97_node::text_node
  *
  * @brief Text node instances.
  */
 
 /**
- * @var class text_node::text_class
+ * @var class openvrml::vrml97_node::text_node::text_class
  *
  * @brief Class object for Text nodes.
  */
@@ -16284,7 +16609,7 @@ text_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class text_node::string_exposedfield
+ * @class openvrml::vrml97_node::text_node::string_exposedfield
  *
  * @brief string exposedField implementation.
  */
@@ -16294,14 +16619,16 @@ text_class::do_create_type(const std::string & id,
  *
  * @param node  text_node.
  */
-text_node::string_exposedfield::string_exposedfield(text_node & node):
-    exposedfield<mfstring>(node)
+openvrml::vrml97_node::text_node::string_exposedfield::
+string_exposedfield(text_node & node):
+    openvrml::exposedfield<openvrml::mfstring>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-text_node::string_exposedfield::~string_exposedfield() throw ()
+openvrml::vrml97_node::text_node::string_exposedfield::
+~string_exposedfield() throw ()
 {}
 
 /**
@@ -16312,8 +16639,9 @@ text_node::string_exposedfield::~string_exposedfield() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void text_node::string_exposedfield::event_side_effect(const mfstring & string,
-                                                      const double timestamp)
+void
+openvrml::vrml97_node::text_node::string_exposedfield::
+event_side_effect(const mfstring & string, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -16328,7 +16656,7 @@ void text_node::string_exposedfield::event_side_effect(const mfstring & string,
 /**
  * @internal
  *
- * @class text_node::font_style_exposedfield
+ * @class openvrml::vrml97_node::text_node::font_style_exposedfield
  *
  * @brief fontStyle exposedField implementation.
  */
@@ -16338,14 +16666,16 @@ void text_node::string_exposedfield::event_side_effect(const mfstring & string,
  *
  * @param node  text_node.
  */
-text_node::font_style_exposedfield::font_style_exposedfield(text_node & node):
-    exposedfield<sfnode>(node)
+openvrml::vrml97_node::text_node::font_style_exposedfield::
+font_style_exposedfield(text_node & node):
+    openvrml::exposedfield<openvrml::sfnode>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-text_node::font_style_exposedfield::~font_style_exposedfield() throw ()
+openvrml::vrml97_node::text_node::font_style_exposedfield::
+~font_style_exposedfield() throw ()
 {}
 
 /**
@@ -16357,8 +16687,8 @@ text_node::font_style_exposedfield::~font_style_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-text_node::font_style_exposedfield::event_side_effect(const sfnode & font_style,
-                                                     const double timestamp)
+openvrml::vrml97_node::text_node::font_style_exposedfield::
+event_side_effect(const sfnode & font_style, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -16373,7 +16703,7 @@ text_node::font_style_exposedfield::event_side_effect(const sfnode & font_style,
 /**
  * @internal
  *
- * @class text_node::length_exposedfield
+ * @class openvrml::vrml97_node::text_node::length_exposedfield
  *
  * @brief length exposedField implementation.
  */
@@ -16383,14 +16713,16 @@ text_node::font_style_exposedfield::event_side_effect(const sfnode & font_style,
  *
  * @param node  text_node.
  */
-text_node::length_exposedfield::length_exposedfield(text_node & node):
-    exposedfield<mffloat>(node)
+openvrml::vrml97_node::text_node::length_exposedfield::
+length_exposedfield(text_node & node):
+    openvrml::exposedfield<openvrml::mffloat>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-text_node::length_exposedfield::~length_exposedfield() throw ()
+openvrml::vrml97_node::text_node::length_exposedfield::~length_exposedfield()
+    throw ()
 {}
 
 /**
@@ -16401,8 +16733,9 @@ text_node::length_exposedfield::~length_exposedfield() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void text_node::length_exposedfield::event_side_effect(const mffloat & length,
-                                                      const double timestamp)
+void
+openvrml::vrml97_node::text_node::length_exposedfield::
+event_side_effect(const mffloat & length, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -16416,7 +16749,7 @@ void text_node::length_exposedfield::event_side_effect(const mffloat & length,
 /**
  * @internal
  *
- * @class text_node::max_extent_exposedfield
+ * @class openvrml::vrml97_node::text_node::max_extent_exposedfield
  *
  * @brief maxExtent exposedField implementation.
  */
@@ -16426,14 +16759,16 @@ void text_node::length_exposedfield::event_side_effect(const mffloat & length,
  *
  * @param node  text_node.
  */
-text_node::max_extent_exposedfield::max_extent_exposedfield(text_node & node):
-    exposedfield<sffloat>(node)
+openvrml::vrml97_node::text_node::max_extent_exposedfield::
+max_extent_exposedfield(text_node & node):
+    openvrml::exposedfield<openvrml::sffloat>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-text_node::max_extent_exposedfield::~max_extent_exposedfield() throw ()
+openvrml::vrml97_node::text_node::max_extent_exposedfield::
+~max_extent_exposedfield() throw ()
 {}
 
 /**
@@ -16445,9 +16780,9 @@ text_node::max_extent_exposedfield::~max_extent_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-text_node::max_extent_exposedfield::
+openvrml::vrml97_node::text_node::max_extent_exposedfield::
 event_side_effect(const sffloat & max_extent,
-                 const double timestamp)
+                  const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -16459,25 +16794,25 @@ event_side_effect(const sffloat & max_extent,
 }
 
 /**
- * @var text_node::string_exposedfield text_node::string_
+ * @var openvrml::vrml97_node::text_node::string_exposedfield openvrml::vrml97_node::text_node::string_
  *
  * @brief string exposedField.
  */
 
 /**
- * @var text_node::font_style_exposedfield text_node::font_style_
+ * @var openvrml::vrml97_node::text_node::font_style_exposedfield openvrml::vrml97_node::text_node::font_style_
  *
  * @brief fontStyle exposedField.
  */
 
 /**
- * @var text_node::length_exposedfield text_node::length_
+ * @var openvrml::vrml97_node::text_node::length_exposedfield openvrml::vrml97_node::text_node::length_
  *
  * @brief length exposedField.
  */
 
 /**
- * @var text_node::max_extent_exposedfield text_node::max_extent_
+ * @var openvrml::vrml97_node::text_node::max_extent_exposedfield openvrml::vrml97_node::text_node::max_extent_
  *
  * @brief maxExtent exposedField.
  */
@@ -16485,32 +16820,32 @@ event_side_effect(const sffloat & max_extent,
 /**
  * @internal
  *
- * @struct text_node::glyph_geometry
+ * @struct openvrml::vrml97_node::text_node::glyph_geometry
  *
  * @brief Used to hold the geometry of individual glyphs.
  */
 
 /**
- * @var std::vector<vec2f> text_node::glyph_geometry::coord
+ * @var std::vector<openvrml::vec2f> openvrml::vrml97_node::text_node::glyph_geometry::coord
  *
  * @brief Glyph coordinates.
  */
 
 /**
- * @var std::vector<int32> text_node::glyph_geometry::coord_index
+ * @var std::vector<openvrml::int32> openvrml::vrml97_node::text_node::glyph_geometry::coord_index
  *
  * @brief Glyph coordinate indices.
  */
 
 /**
- * @var float text_node::glyph_geometry::advance_width
+ * @var float openvrml::vrml97_node::text_node::glyph_geometry::advance_width
  *
  * @brief The distance the pen should advance horizontally after drawing the
  *      glyph.
  */
 
 /**
- * @var float text_node::glyph_geometry::advance_height
+ * @var float openvrml::vrml97_node::text_node::glyph_geometry::advance_height
  *
  * @brief The distance the pen should advance vertically after drawing the
  *      glyph.
@@ -16533,7 +16868,9 @@ namespace {
      * @return 1 if the vertices are counter-clockwise, -1 if the vertices are
      *         clockwise, or 0 if the vertices are neither.
      */
-    int ccw_(const vec2f & p0, const vec2f & p1, const vec2f & p2) throw ()
+    int ccw_(const openvrml::vec2f & p0,
+             const openvrml::vec2f & p1,
+             const openvrml::vec2f & p2) throw ()
     {
         const float dx1 = p1.x() - p0.x();
         const float dy1 = p1.y() - p0.y();
@@ -16561,8 +16898,8 @@ namespace {
      *
      * @return @c true if the line segments intersect; @c false otherwise.
      */
-    bool intersect_(const vec2f & l0p0, const vec2f & l0p1,
-                    const vec2f & l1p0, const vec2f & l1p1)
+    bool intersect_(const openvrml::vec2f & l0p0, const openvrml::vec2f & l0p1,
+                    const openvrml::vec2f & l1p0, const openvrml::vec2f & l1p1)
         throw ()
     {
         return ccw_(l0p0, l0p1, l1p0) * ccw_(l0p0, l0p1, l1p1) <= 0
@@ -16582,12 +16919,14 @@ namespace {
      * @return @c true if the line segment defined by (@p v0, @p v1)
      *         intersects any line segment in @p contour; @c false otherwise.
      */
-    bool intersects_segment_in_contour(const vec2f & v0,
-                                       const vec2f & v1,
-                                       const std::vector<vec2f> & contour)
+    bool
+    intersects_segment_in_contour(const openvrml::vec2f & v0,
+                                  const openvrml::vec2f & v1,
+                                  const std::vector<openvrml::vec2f> & contour)
         throw ()
     {
         for (size_t j = 0; j < contour.size() - 1; ++j) {
+            using openvrml::vec2f;
             //
             // Endpoints of the segment to test for intersection.
             //
@@ -16626,13 +16965,16 @@ namespace {
      *         found.
      */
     long get_exterior_connecting_vertex_index_(
-        const std::vector<vec2f> & exterior_contour,
-        const std::vector<const std::vector<vec2f> *> & interior_contours,
-        const vec2f & interior_vertex)
+        const std::vector<openvrml::vec2f> & exterior_contour,
+        const std::vector<const std::vector<openvrml::vec2f> *> &
+            interior_contours,
+        const openvrml::vec2f & interior_vertex)
         throw ()
     {
         assert(exterior_contour.size() > 1);
         assert(!interior_contours.empty());
+
+        using openvrml::vec2f;
 
         typedef std::vector<const std::vector<vec2f> *> interior_contours_type;
 
@@ -16661,10 +17003,12 @@ namespace {
         return -1;
     }
 
-    bool inside_contour_(const std::vector<vec2f> & contour,
-                         const vec2f & point)
+    bool inside_contour_(const std::vector<openvrml::vec2f> & contour,
+                         const openvrml::vec2f & point)
         throw ()
     {
+        using openvrml::vec2f;
+
         bool result = false;
         const size_t nvert = contour.size();
         for (size_t i = 0, j = nvert - 1; i < nvert; j = i++) {
@@ -16682,17 +17026,18 @@ namespace {
 
     enum contour_type_ { exterior_, interior_ };
 
-    contour_type_ get_type_(const std::vector<vec2f> & contour,
-                            const std::vector<std::vector<vec2f> > & contours)
+    contour_type_
+    get_type_(const std::vector<openvrml::vec2f> & contour,
+              const std::vector<std::vector<openvrml::vec2f> > & contours)
         throw ()
     {
         using std::vector;
 
         assert(!contour.empty());
-        const vec2f & vertex = contour[0];
+        const openvrml::vec2f & vertex = contour[0];
 
         bool is_interior = false;
-        for (vector<vector<vec2f> >::const_iterator test_contour =
+        for (vector<vector<openvrml::vec2f> >::const_iterator test_contour =
                  contours.begin();
              test_contour != contours.end();
              ++test_contour) {
@@ -16707,15 +17052,15 @@ namespace {
     }
 
     struct polygon_ {
-        const std::vector<vec2f> * exterior;
-        std::vector<const std::vector<vec2f> *> interiors;
+        const std::vector<openvrml::vec2f> * exterior;
+        std::vector<const std::vector<openvrml::vec2f> *> interiors;
     };
 
-    struct inside_ : std::binary_function<const std::vector<vec2f> *,
-                                          const std::vector<vec2f> *,
+    struct inside_ : std::binary_function<const std::vector<openvrml::vec2f> *,
+                                          const std::vector<openvrml::vec2f> *,
                                           bool> {
-        bool operator()(const std::vector<vec2f> * const lhs,
-                        const std::vector<vec2f> * const rhs) const
+        bool operator()(const std::vector<openvrml::vec2f> * const lhs,
+                        const std::vector<openvrml::vec2f> * const rhs) const
         {
             assert(lhs);
             assert(rhs);
@@ -16729,10 +17074,11 @@ namespace {
     };
 
     const std::vector<polygon_>
-    get_polygons_(const std::vector<std::vector<vec2f> > & contours)
+    get_polygons_(const std::vector<std::vector<openvrml::vec2f> > & contours)
         throw (std::bad_alloc)
     {
         using std::vector;
+        using openvrml::vec2f;
         typedef std::multiset<const vector<vec2f> *, inside_>
             segregated_contours;
 
@@ -16782,8 +17128,8 @@ namespace {
         return polygons;
     }
 
-    long get_vertex_index_(const std::vector<vec2f> & vertices,
-                           const vec2f & vertex)
+    long get_vertex_index_(const std::vector<openvrml::vec2f> & vertices,
+                           const openvrml::vec2f & vertex)
         throw ()
     {
         for (size_t i = 0; i < vertices.size(); ++i) {
@@ -16806,16 +17152,17 @@ namespace {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-text_node::glyph_geometry::glyph_geometry(
-        const std::vector<std::vector<vec2f> > & contours,
-        const float advance_width,
-        const float advance_height)
+openvrml::vrml97_node::text_node::glyph_geometry::
+glyph_geometry(const std::vector<std::vector<openvrml::vec2f> > & contours,
+               const float advance_width,
+               const float advance_height)
     throw (std::bad_alloc):
     advance_width(advance_width),
     advance_height(advance_height)
 {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
     using std::vector;
+    using openvrml::vec2f;
 
     const vector<polygon_> polygons = get_polygons_(contours);
     for (vector<polygon_>::const_iterator polygon = polygons.begin();
@@ -16898,43 +17245,43 @@ text_node::glyph_geometry::glyph_geometry(
 /**
  * @internal
  *
- * @struct text_node::text_geometry
+ * @struct openvrml::vrml97_node::text_node::text_geometry
  *
  * @brief Holds the text geometry.
  */
 
 /**
- * @var std::vector<vec3f> text_node::text_geometry::coord
+ * @var std::vector<openvrml::vec3f> openvrml::vrml97_node::text_node::text_geometry::coord
  *
  * @brief Text geometry coordinates.
  */
 
 /**
- * @var std::vector<int32> text_node::text_geometry::coord_index
+ * @var std::vector<openvrml::int32> openvrml::vrml97_node::text_node::text_geometry::coord_index
  *
  * @brief Text geometry coordinate indices.
  */
 
 /**
- * @var std::vector<vec3f> text_node::text_geometry::normal
+ * @var std::vector<openvrml::vec3f> openvrml::vrml97_node::text_node::text_geometry::normal
  *
  * @brief Text geometry normals.
  */
 
 /**
- * @var std::vector<vec2f> text_node::text_geometry::tex_coord
+ * @var std::vector<openvrml::vec2f> openvrml::vrml97_node::text_node::text_geometry::tex_coord
  *
  * @brief Text geometry texture coordinates.
  */
 
 /**
- * @typedef text_node::ucs4_string_t
+ * @typedef openvrml::vrml97_node::text_node::ucs4_string_t
  *
  * @brief A vector of FcChar32 vectors.
  */
 
 /**
- * @typedef text_node::glyph_geometry_map_t
+ * @typedef openvrml::vrml97_node::text_node::glyph_geometry_map_t
  *
  * @brief Maps FT_UInts to glyph_geometry.
  *
@@ -16942,13 +17289,13 @@ text_node::glyph_geometry::glyph_geometry(
  */
 
 /**
- * @var text_node::ucs4_string_t text_node::ucs4_string
+ * @var openvrml::vrml97_node::text_node::ucs4_string_t openvrml::vrml97_node::text_node::ucs4_string
  *
  * @brief UCS-4 equivalent of the (UTF-8) data in @a string.
  */
 
 /**
- * @var FT_Face text_node::face
+ * @var FT_Face openvrml::vrml97_node::text_node::face
  *
  * @brief Handle to the font face.
  *
@@ -16956,7 +17303,7 @@ text_node::glyph_geometry::glyph_geometry(
  */
 
 /**
- * @var text_node::glyph_geometry_map_t text_node::glyph_geometry_map
+ * @var openvrml::vrml97_node::text_node::glyph_geometry_map_t openvrml::vrml97_node::text_node::glyph_geometry_map
  *
  * @brief Map of glyph indices to glyph_geometry.
  *
@@ -16967,7 +17314,7 @@ text_node::glyph_geometry::glyph_geometry(
  */
 
 /**
- * @var text_node::text_geometry text_node::text_geometry_
+ * @var openvrml::vrml97_node::text_node::text_geometry openvrml::vrml97_node::text_node::text_geometry_
  *
  * @brief The text geometry.
  */
@@ -16978,8 +17325,9 @@ text_node::glyph_geometry::glyph_geometry(
  * @param type  the node_type associated with the instance.
  * @param scope the scope that the new node will belong to.
  */
-text_node::text_node(const node_type & type,
-                     const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::text_node::
+text_node(const node_type & type,
+          const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     geometry_node(type, scope),
@@ -16993,7 +17341,7 @@ text_node::text_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-text_node::~text_node() throw ()
+openvrml::vrml97_node::text_node::~text_node() throw ()
 {}
 
 /**
@@ -17002,7 +17350,7 @@ text_node::~text_node() throw ()
  * @return @c true if the node or one of its children has been modified,
  *      @c false otherwise.
  */
-bool text_node::modified() const
+bool openvrml::vrml97_node::text_node::modified() const
 {
     return this->node::modified()
         || (this->font_style_.sfnode::value
@@ -17015,8 +17363,9 @@ bool text_node::modified() const
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-viewer::object_t text_node::do_render_geometry(openvrml::viewer & viewer,
-                                               const rendering_context context)
+openvrml::viewer::object_t
+openvrml::vrml97_node::text_node::
+do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
 {
     const viewer::object_t retval =
         viewer.insert_shell(viewer::mask_ccw,
@@ -17042,7 +17391,8 @@ viewer::object_t text_node::do_render_geometry(openvrml::viewer & viewer,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void text_node::do_initialize(const double timestamp) throw (std::bad_alloc)
+void openvrml::vrml97_node::text_node::do_initialize(const double timestamp)
+    throw (std::bad_alloc)
 {
     this->update_ucs4();
     this->update_face();
@@ -17054,7 +17404,8 @@ void text_node::do_initialize(const double timestamp) throw (std::bad_alloc)
  *
  * @param timestamp the current time.
  */
-void text_node::do_shutdown(const double timestamp) throw ()
+void openvrml::vrml97_node::text_node::do_shutdown(const double timestamp)
+    throw ()
 {
 # if OPENVRML_ENABLE_RENDER_TEXT_NODE
     if (this->face) {
@@ -17069,7 +17420,7 @@ void text_node::do_shutdown(const double timestamp) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void text_node::update_ucs4() throw (std::bad_alloc)
+void openvrml::vrml97_node::text_node::update_ucs4() throw (std::bad_alloc)
 {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
     this->ucs4_string.clear();
@@ -17237,7 +17588,7 @@ namespace {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void text_node::update_face() throw (std::bad_alloc)
+void openvrml::vrml97_node::text_node::update_face() throw (std::bad_alloc)
 {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
     static const char * const fcResultMessage[] = { "match",
@@ -17412,7 +17763,7 @@ namespace {
 
     struct GlyphContours_ {
         const float scale;
-        std::vector<std::vector<vec2f> > contours;
+        std::vector<std::vector<openvrml::vec2f> > contours;
 
         explicit GlyphContours_(float scale);
     };
@@ -17426,6 +17777,7 @@ namespace {
     int moveTo_(FT_Vector * const to, void * const user) throw ()
     {
         using std::vector;
+        using openvrml::vec2f;
         assert(user);
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
         try {
@@ -17443,7 +17795,7 @@ namespace {
     {
         assert(user);
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
-        const vec2f vertex(to->x * c.scale, to->y * c.scale);
+        const openvrml::vec2f vertex(to->x * c.scale, to->y * c.scale);
         try {
             c.contours.back().push_back(vertex);
         } catch (std::bad_alloc & ex) {
@@ -17478,16 +17830,16 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void evaluateCurve_(vec2f * const buffer,
+    void evaluateCurve_(openvrml::vec2f * const buffer,
                         const size_t npoints,
-                        std::vector<vec2f> & contour)
+                        std::vector<openvrml::vec2f> & contour)
         throw (std::bad_alloc)
     {
         for (size_t i = 1; i <= (1 / stepSize_); i++){
             const float t = i * stepSize_; // Parametric points 0 <= t <= 1
             for (size_t j = 1; j < npoints; j++) {
                 for (size_t k = 0; k < (npoints - j); k++) {
-                    vec2f & element = buffer[j * npoints + k];
+                    openvrml::vec2f & element = buffer[j * npoints + k];
                     element.x((1 - t) * buffer[(j - 1) * npoints + k][0]
                               + t * buffer[(j - 1) * npoints + k + 1][0]);
                     element.y((1 - t) * buffer[(j - 1) * npoints + k][1]
@@ -17507,6 +17859,7 @@ namespace {
         throw ()
     {
         using std::vector;
+        using openvrml::vec2f;
 
         assert(control);
         assert(to);
@@ -17542,6 +17895,7 @@ namespace {
         throw ()
     {
         using std::vector;
+        using openvrml::vec2f;
 
         assert(control1);
         assert(control2);
@@ -17579,7 +17933,7 @@ namespace {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void text_node::update_geometry() throw (std::bad_alloc)
+void openvrml::vrml97_node::text_node::update_geometry() throw (std::bad_alloc)
 {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
     using std::pair;
@@ -17899,7 +18253,7 @@ void text_node::update_geometry() throw (std::bad_alloc)
 
 
 /**
- * @class texture_coordinate_class
+ * @class openvrml::vrml97_node::texture_coordinate_class
  *
  * @brief Class object for TextureCoordinate nodes.
  */
@@ -17909,7 +18263,7 @@ void text_node::update_geometry() throw (std::bad_alloc)
  *
  * @param browser the browser associated with this node_class.
  */
-texture_coordinate_class::
+openvrml::vrml97_node::texture_coordinate_class::
 texture_coordinate_class(openvrml::browser & browser):
     node_class(browser)
 {}
@@ -17917,7 +18271,8 @@ texture_coordinate_class(openvrml::browser & browser):
 /**
  * @brief Destroy.
  */
-texture_coordinate_class::~texture_coordinate_class() throw ()
+openvrml::vrml97_node::texture_coordinate_class::~texture_coordinate_class()
+    throw ()
 {}
 
 /**
@@ -17929,13 +18284,14 @@ texture_coordinate_class::~texture_coordinate_class() throw ()
  * @return a boost::shared_ptr<node_type> to a node_type capable of creating TextureCoordinate
  *      nodes.
  *
- * @exception unsupported_interface  if @p interfaces includes an interface not
- *                              supported by texture_coordinate_class.
+ * @exception unsupported_interface if @p interfaces includes an interface not
+ *                                  supported by texture_coordinate_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-texture_coordinate_class::do_create_type(const std::string & id,
-                                      const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::texture_coordinate_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterface =
@@ -17972,19 +18328,19 @@ texture_coordinate_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class texture_coordinate_node
+ * @class openvrml::vrml97_node::texture_coordinate_node
  *
  * @brief TextureCoordinate node instances.
  */
 
 /**
- * @var texture_coordinate_node::texture_coordinate_class
+ * @var openvrml::vrml97_node::texture_coordinate_node::texture_coordinate_class
  *
  * @brief Class object for TextureCoordinate instances.
  */
 
 /**
- * @var exposedfield<mfvec2f> texture_coordinate_node::point_
+ * @var openvrml::exposedfield<openvrml::mfvec2f> openvrml::vrml97_node::texture_coordinate_node::point_
  *
  * @brief point exposedField.
  */
@@ -17995,8 +18351,9 @@ texture_coordinate_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the instance.
  * @param scope the scope that the new node will belong to.
  */
-texture_coordinate_node::texture_coordinate_node(const node_type & type,
-                                                 const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::texture_coordinate_node::
+texture_coordinate_node(const node_type & type,
+                        const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::texture_coordinate_node(type, scope),
@@ -18006,21 +18363,24 @@ texture_coordinate_node::texture_coordinate_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-texture_coordinate_node::~texture_coordinate_node() throw () {}
+openvrml::vrml97_node::texture_coordinate_node::~texture_coordinate_node()
+    throw ()
+{}
 
 /**
  * @brief Get the points encapsulated by this node.
  *
  * @return the mfvec2f array of points for this node.
  */
-const std::vector<vec2f> & texture_coordinate_node::point() const throw ()
+const std::vector<openvrml::vec2f> &
+openvrml::vrml97_node::texture_coordinate_node::point() const throw ()
 {
     return this->point_.mfvec2f::value;
 }
 
 
 /**
- * @class texture_transform_class
+ * @class openvrml::vrml97_node::texture_transform_class
  *
  * @brief Class object for TextureTransform nodes.
  */
@@ -18030,14 +18390,16 @@ const std::vector<vec2f> & texture_coordinate_node::point() const throw ()
  *
  * @param browser the browser associated with this node_class.
  */
-texture_transform_class::texture_transform_class(openvrml::browser & browser):
+openvrml::vrml97_node::texture_transform_class::
+texture_transform_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-texture_transform_class::~texture_transform_class() throw ()
+openvrml::vrml97_node::texture_transform_class::~texture_transform_class()
+    throw ()
 {}
 
 /**
@@ -18053,9 +18415,10 @@ texture_transform_class::~texture_transform_class() throw ()
  *                                  supported by texture_transform_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-texture_transform_class::do_create_type(const std::string & id,
-                                     const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::texture_transform_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -18143,37 +18506,37 @@ texture_transform_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class texture_transform_node
+ * @class openvrml::vrml97_node::texture_transform_node
  *
  * @brief TextureTransform node instances.
  */
 
 /**
- * @var texture_transform_node::texture_transform_class
+ * @var openvrml::vrml97_node::texture_transform_node::texture_transform_class
  *
  * @brief Class object for TextureTransform instances.
  */
 
 /**
- * @var exposedfield<sfvec2f> texture_transform_node::center_
+ * @var openvrml::exposedfield<openvrml::sfvec2f> openvrml::vrml97_node::texture_transform_node::center_
  *
  * @brief center exposedField.
  */
 
 /**
- * @var exposedfield<sffloat> texture_transform_node::rotation_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::texture_transform_node::rotation_
  *
  * @brief rotation exposedField.
  */
 
 /**
- * @var exposedfield<sfvec2f> texture_transform_node::scale_
+ * @var openvrml::exposedfield<openvrml::sfvec2f> openvrml::vrml97_node::texture_transform_node::scale_
  *
  * @brief scale exposedField.
  */
 
 /**
- * @var exposedfield<sfvec2f> texture_transform_node::translation_
+ * @var openvrml::exposedfield<openvrml::sfvec2f> openvrml::vrml97_node::texture_transform_node::translation_
  *
  * @brief translation exposedField.
  */
@@ -18184,8 +18547,9 @@ texture_transform_class::do_create_type(const std::string & id,
  * @param type      the node_type associated with the instance.
  * @param scope         the scope that the new node will belong to.
  */
-texture_transform_node::texture_transform_node(const node_type & type,
-                                               const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::texture_transform_node::
+texture_transform_node(const node_type & type,
+                       const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     openvrml::texture_transform_node(type, scope),
@@ -18198,7 +18562,8 @@ texture_transform_node::texture_transform_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-texture_transform_node::~texture_transform_node() throw ()
+openvrml::vrml97_node::texture_transform_node::~texture_transform_node()
+    throw ()
 {}
 
 /**
@@ -18206,7 +18571,9 @@ texture_transform_node::~texture_transform_node() throw ()
  *
  * @param v viewer.
  */
-void texture_transform_node::do_render_texture_transform(viewer & v)
+void
+openvrml::vrml97_node::texture_transform_node::
+do_render_texture_transform(viewer & v)
 {
     v.set_texture_transform(this->center_.sfvec2f::value,
                             this->rotation_.sffloat::value,
@@ -18216,7 +18583,7 @@ void texture_transform_node::do_render_texture_transform(viewer & v)
 
 
 /**
- * @class time_sensor_class
+ * @class openvrml::vrml97_node::time_sensor_class
  *
  * @brief Class object for TimeSensor nodes.
  */
@@ -18226,14 +18593,15 @@ void texture_transform_node::do_render_texture_transform(viewer & v)
  *
  * @param browser   the browser associated with this node_class.
  */
-time_sensor_class::time_sensor_class(openvrml::browser & browser):
+openvrml::vrml97_node::time_sensor_class::
+time_sensor_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-time_sensor_class::~time_sensor_class() throw ()
+openvrml::vrml97_node::time_sensor_class::~time_sensor_class() throw ()
 {}
 
 /**
@@ -18248,9 +18616,10 @@ time_sensor_class::~time_sensor_class() throw ()
  *                                  supported by time_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-time_sensor_class::do_create_type(const std::string & id,
-                               const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::time_sensor_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -18396,13 +18765,13 @@ time_sensor_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class time_sensor_node
+ * @class openvrml::vrml97_node::time_sensor_node
  *
  * @brief TimeSensor node instances.
  */
 
 /**
- * @var class time_sensor_node::time_sensor_class
+ * @var class openvrml::vrml97_node::time_sensor_node::time_sensor_class
  *
  * @brief Class object for TimeSensor nodes.
  */
@@ -18410,7 +18779,7 @@ time_sensor_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class time_sensor_node::set_cycle_interval_listener
+ * @class openvrml::vrml97_node::time_sensor_node::set_cycle_interval_listener
  *
  * @brief set_cycleInterval eventIn handler.
  */
@@ -18420,7 +18789,7 @@ time_sensor_class::do_create_type(const std::string & id,
  *
  * @param node  time_sensor_node.
  */
-time_sensor_node::set_cycle_interval_listener::
+openvrml::vrml97_node::time_sensor_node::set_cycle_interval_listener::
 set_cycle_interval_listener(time_sensor_node & node):
     sftime_listener(node)
 {}
@@ -18428,7 +18797,8 @@ set_cycle_interval_listener(time_sensor_node & node):
 /**
  * @brief Destroy.
  */
-time_sensor_node::set_cycle_interval_listener::~set_cycle_interval_listener()
+openvrml::vrml97_node::time_sensor_node::set_cycle_interval_listener::
+~set_cycle_interval_listener()
     throw ()
 {}
 
@@ -18441,7 +18811,7 @@ time_sensor_node::set_cycle_interval_listener::~set_cycle_interval_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-time_sensor_node::set_cycle_interval_listener::
+openvrml::vrml97_node::time_sensor_node::set_cycle_interval_listener::
 do_process_event(const sftime & cycle_interval, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -18461,7 +18831,7 @@ do_process_event(const sftime & cycle_interval, const double timestamp)
 /**
  * @internal
  *
- * @class time_sensor_node::enabled_exposedfield
+ * @class openvrml::vrml97_node::time_sensor_node::enabled_exposedfield
  *
  * @brief enabled exposedField implementation.
  */
@@ -18471,15 +18841,16 @@ do_process_event(const sftime & cycle_interval, const double timestamp)
  *
  * @param node  time_sensor_node.
  */
-time_sensor_node::enabled_exposedfield::
+openvrml::vrml97_node::time_sensor_node::enabled_exposedfield::
 enabled_exposedfield(time_sensor_node & node):
-    exposedfield<sfbool>(node, true)
+    openvrml::exposedfield<openvrml::sfbool>(node, true)
 {}
 
 /**
  * @brief Destroy.
  */
-time_sensor_node::enabled_exposedfield::~enabled_exposedfield()
+openvrml::vrml97_node::time_sensor_node::enabled_exposedfield::
+~enabled_exposedfield()
     throw ()
 {}
 
@@ -18492,7 +18863,7 @@ time_sensor_node::enabled_exposedfield::~enabled_exposedfield()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-time_sensor_node::enabled_exposedfield::
+openvrml::vrml97_node::time_sensor_node::enabled_exposedfield::
 event_side_effect(const sfbool & enabled, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -18538,7 +18909,7 @@ event_side_effect(const sfbool & enabled, const double timestamp)
 /**
  * @internal
  *
- * @class time_sensor_node::set_start_time_listener
+ * @class openvrml::vrml97_node::time_sensor_node::set_start_time_listener
  *
  * @brief set_startTime eventIn handler.
  */
@@ -18548,7 +18919,7 @@ event_side_effect(const sfbool & enabled, const double timestamp)
  *
  * @param node  time_sensor_node.
  */
-time_sensor_node::set_start_time_listener::
+openvrml::vrml97_node::time_sensor_node::set_start_time_listener::
 set_start_time_listener(time_sensor_node & node):
     sftime_listener(node)
 {}
@@ -18556,7 +18927,8 @@ set_start_time_listener(time_sensor_node & node):
 /**
  * @brief Destroy.
  */
-time_sensor_node::set_start_time_listener::~set_start_time_listener()
+openvrml::vrml97_node::time_sensor_node::set_start_time_listener::
+~set_start_time_listener()
     throw ()
 {}
 
@@ -18569,7 +18941,7 @@ time_sensor_node::set_start_time_listener::~set_start_time_listener()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-time_sensor_node::set_start_time_listener::
+openvrml::vrml97_node::time_sensor_node::set_start_time_listener::
 do_process_event(const sftime & start_time, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -18587,109 +18959,109 @@ do_process_event(const sftime & start_time, const double timestamp)
 }
 
 /**
- * @var time_sensor_node::set_cycle_interval_listener time_sensor_node::set_cycle_interval_listener_
+ * @var openvrml::vrml97_node::time_sensor_node::set_cycle_interval_listener openvrml::vrml97_node::time_sensor_node::set_cycle_interval_listener_
  *
  * @brief set_cycleInterval eventIn handler.
  */
 
 /**
- * @var sftime time_sensor_node::cycle_interval_
+ * @var openvrml::sftime openvrml::vrml97_node::time_sensor_node::cycle_interval_
  *
  * @brief cycleInterval exposedField value.
  */
 
 /**
- * @var sftime_emitter time_sensor_node::cycle_interval_changed_emitter_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::time_sensor_node::cycle_interval_changed_emitter_
  *
  * @brief cycleInterval_changed event emitter.
  */
 
 /**
- * @var enabled_exposedfield time_sensor_node::enabled_
+ * @var openvrml::vrml97_node::time_sensor_node::enabled_exposedfield openvrml::vrml97_node::time_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var exposedfield<sfbool> time_sensor_node::loop_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::time_sensor_node::loop_
  *
  * @brief loop exposedField.
  */
 
 /**
- * @var time_sensor_node::set_start_time_listener time_sensor_node::set_start_time_listener_
+ * @var openvrml::vrml97_node::time_sensor_node::set_start_time_listener openvrml::vrml97_node::time_sensor_node::set_start_time_listener_
  *
  * @brief set_startTime event handler.
  */
 
 /**
- * @var sftime time_sensor_node::start_time_
+ * @var openvrml::sftime openvrml::vrml97_node::time_sensor_node::start_time_
  *
  * @brief startTime exposedField value.
  */
 
 /**
- * @var sftime_emitter time_sensor_node::start_time_changed_emitter_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::time_sensor_node::start_time_changed_emitter_
  *
  * @brief startTime_changed event emitter.
  */
 
 /**
- * @var exposedfield<sftime> time_sensor_node::stop_time_
+ * @var openvrml::exposedfield<openvrml::sftime> openvrml::vrml97_node::time_sensor_node::stop_time_
  *
  * @brief stopTime exposedField.
  */
 
 /**
- * @var sftime time_sensor_node::cycle_time_
+ * @var openvrml::sftime openvrml::vrml97_node::time_sensor_node::cycle_time_
  *
  * @brief cycleTime eventOut value.
  */
 
 /**
- * @var sftime_emitter time_sensor_node::cycle_time_emitter_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::time_sensor_node::cycle_time_emitter_
  *
  * @brief cycleTime eventOut emitter.
  */
 
 /**
- * @var sffloat time_sensor_node::fraction_changed_
+ * @var openvrml::sffloat openvrml::vrml97_node::time_sensor_node::fraction_changed_
  *
  * @brief fraction_changed eventOut value.
  */
 
 /**
- * @var sffloat_emitter time_sensor_node::fraction_changed_emitter_
+ * @var openvrml::sffloat_emitter openvrml::vrml97_node::time_sensor_node::fraction_changed_emitter_
  *
  * @brief fraction_changed eventOut emitter.
  */
 
 /**
- * @var sfbool time_sensor_node::is_active_
+ * @var openvrml::sfbool openvrml::vrml97_node::time_sensor_node::is_active_
  *
  * @brief isActive eventOut value.
  */
 
 /**
- * @var sfbool_emitter time_sensor_node::is_active_emitter_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::time_sensor_node::is_active_emitter_
  *
  * @brief isActive eventOut emitter.
  */
 
 /**
- * @var sftime time_sensor_node::time_
+ * @var openvrml::sftime openvrml::vrml97_node::time_sensor_node::time_
  *
  * @brief time eventOut value.
  */
 
 /**
- * @var sftime_emitter time_sensor_node::time_emitter_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::time_sensor_node::time_emitter_
  *
  * @brief time eventOut emitter.
  */
 
 /**
- * @var double time_sensor_node::lastTime
+ * @var double openvrml::vrml97_node::time_sensor_node::lastTime
  *
  * @brief The timestamp previously received.
  */
@@ -18700,8 +19072,9 @@ do_process_event(const sftime & start_time, const double timestamp)
  * @param type      the node_type associated with the instance.
  * @param scope         the scope that the new node will belong to.
  */
-time_sensor_node::time_sensor_node(const node_type & type,
-                                   const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::time_sensor_node::
+time_sensor_node(const node_type & type,
+                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -18725,7 +19098,7 @@ time_sensor_node::time_sensor_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-time_sensor_node::~time_sensor_node() throw ()
+openvrml::vrml97_node::time_sensor_node::~time_sensor_node() throw ()
 {}
 
 /**
@@ -18733,7 +19106,8 @@ time_sensor_node::~time_sensor_node() throw ()
  *
  * @return a pointer to the object.
  */
-time_sensor_node * time_sensor_node::to_time_sensor() const
+openvrml::vrml97_node::time_sensor_node *
+openvrml::vrml97_node::time_sensor_node::to_time_sensor() const
 {
     return (time_sensor_node*) this;
 }
@@ -18746,7 +19120,7 @@ time_sensor_node * time_sensor_node::to_time_sensor() const
  * Should ensure continuous events are delivered before discrete ones
  * (such as cycleTime, isActive).
  */
-void time_sensor_node::update(const double currentTime)
+void openvrml::vrml97_node::time_sensor_node::update(const double currentTime)
 {
     sftime timeNow(currentTime);
 
@@ -18846,7 +19220,8 @@ void time_sensor_node::update(const double currentTime)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void time_sensor_node::do_initialize(const double timestamp)
+void
+openvrml::vrml97_node::time_sensor_node::do_initialize(const double timestamp)
     throw (std::bad_alloc)
 {
     assert(this->scene());
@@ -18858,7 +19233,9 @@ void time_sensor_node::do_initialize(const double timestamp)
  *
  * @param timestamp the current time.
  */
-void time_sensor_node::do_shutdown(const double timestamp) throw ()
+void
+openvrml::vrml97_node::time_sensor_node::do_shutdown(const double timestamp)
+    throw ()
 {
     assert(this->scene());
     this->scene()->browser().remove_time_sensor(*this);
@@ -18866,7 +19243,7 @@ void time_sensor_node::do_shutdown(const double timestamp) throw ()
 
 
 /**
- * @class touch_sensor_class
+ * @class openvrml::vrml97_node::touch_sensor_class
  *
  * @brief Class object for TouchSensor nodes.
  */
@@ -18876,14 +19253,15 @@ void time_sensor_node::do_shutdown(const double timestamp) throw ()
  *
  * @param browser the browser associated with this node_class.
  */
-touch_sensor_class::touch_sensor_class(openvrml::browser & browser):
+openvrml::vrml97_node::touch_sensor_class::
+touch_sensor_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-touch_sensor_class::~touch_sensor_class() throw ()
+openvrml::vrml97_node::touch_sensor_class::~touch_sensor_class() throw ()
 {}
 
 /**
@@ -18899,9 +19277,10 @@ touch_sensor_class::~touch_sensor_class() throw ()
  *                                  supported by touch_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-touch_sensor_class::do_create_type(const std::string & id,
-                                const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::touch_sensor_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -18998,91 +19377,91 @@ touch_sensor_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class touch_sensor_node
+ * @class openvrml::vrml97_node::touch_sensor_node
  *
  * @brief TouchSensor node instances.
  */
 
 /**
- * @var touch_sensor_node::touch_sensor_class
+ * @var openvrml::vrml97_node::touch_sensor_node::touch_sensor_class
  *
  * @brief Class object for TouchSensor instances.
  */
 
 /**
- * @var exposedfield<sfbool> touch_sensor_node::enabled_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::touch_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var sfvec3f touch_sensor_node::hit_normal_changed_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::touch_sensor_node::hit_normal_changed_
  *
  * @brief hitNormal_changed eventOut value.
  */
 
 /**
- * @var sfvec3f_emitter touch_sensor_node::hit_normal_changed_emitter_
+ * @var openvrml::sfvec3f_emitter openvrml::vrml97_node::touch_sensor_node::hit_normal_changed_emitter_
  *
  * @brief hitNormal_changed eventOut emitter.
  */
 
 /**
- * @var sfvec3f touch_sensor_node::hit_point_changed_
+ * @var openvrml::sfvec3f openvrml::vrml97_node::touch_sensor_node::hit_point_changed_
  *
  * @brief hitPoint_changed eventOut value.
  */
 
 /**
- * @var sfvec3f_emitter touch_sensor_node::hit_point_changed_emitter_
+ * @var openvrml::sfvec3f_emitter openvrml::vrml97_node::touch_sensor_node::hit_point_changed_emitter_
  *
  * @brief hitPoint_changed eventOut emitter.
  */
 
 /**
- * @var sfvec2f touch_sensor_node::hit_tex_coord_changed_
+ * @var openvrml::sfvec2f openvrml::vrml97_node::touch_sensor_node::hit_tex_coord_changed_
  *
  * @brief hitTexCoord_changed eventOut value.
  */
 
 /**
- * @var sfvec2f_emitter touch_sensor_node::hit_tex_coord_changed_emitter_
+ * @var openvrml::sfvec2f_emitter openvrml::vrml97_node::touch_sensor_node::hit_tex_coord_changed_emitter_
  *
  * @brief hitTexCoord_changed eventOut emitter.
  */
 
 /**
- * @var sfbool touch_sensor_node::is_active_
+ * @var openvrml::sfbool openvrml::vrml97_node::touch_sensor_node::is_active_
  *
  * @brief isActive eventOut value.
  */
 
 /**
- * @var sfbool_emitter touch_sensor_node::is_active_emitter_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::touch_sensor_node::is_active_emitter_
  *
  * @brief isActive eventOut emitter.
  */
 
 /**
- * @var sfbool touch_sensor_node::is_over_
+ * @var openvrml::sfbool openvrml::vrml97_node::touch_sensor_node::is_over_
  *
  * @brief isOver eventOut value.
  */
 
 /**
- * @var sfbool_emitter touch_sensor_node::is_over_emitter_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::touch_sensor_node::is_over_emitter_
  *
  * @brief isOver eventOut emitter.
  */
 
 /**
- * @var sftime touch_sensor_node::touch_time_
+ * @var openvrml::sftime openvrml::vrml97_node::touch_sensor_node::touch_time_
  *
  * @brief touchTime eventOut value.
  */
 
 /**
- * @var sftime_emitter touch_sensor_node::touch_time_emitter_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::touch_sensor_node::touch_time_emitter_
  *
  * @brief touchTime eventOut emitter.
  */
@@ -19090,11 +19469,12 @@ touch_sensor_class::do_create_type(const std::string & id,
 /**
  * @brief Construct.
  *
- * @param type      the node_type associated with the instance.
- * @param scope         the scope that the new node will belong to.
+ * @param type  the node_type associated with the instance.
+ * @param scope the scope that the new node will belong to.
  */
-touch_sensor_node::touch_sensor_node(const node_type & type,
-                                     const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::touch_sensor_node::
+touch_sensor_node(const node_type & type,
+                  const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -19115,7 +19495,7 @@ touch_sensor_node::touch_sensor_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-touch_sensor_node::~touch_sensor_node() throw ()
+openvrml::vrml97_node::touch_sensor_node::~touch_sensor_node() throw ()
 {}
 
 /**
@@ -19123,7 +19503,8 @@ touch_sensor_node::~touch_sensor_node() throw ()
  *
  * @return a pointer to the object.
  */
-touch_sensor_node* touch_sensor_node::to_touch_sensor() const
+openvrml::vrml97_node::touch_sensor_node *
+openvrml::vrml97_node::touch_sensor_node::to_touch_sensor() const
 {
     return (touch_sensor_node*) this;
 }
@@ -19131,8 +19512,10 @@ touch_sensor_node* touch_sensor_node::to_touch_sensor() const
 /**
  * @todo Doesn't compute the xxx_changed eventOuts yet...
  */
-void touch_sensor_node::activate(double timestamp, bool isOver, bool isActive,
-                                 double *)
+void openvrml::vrml97_node::touch_sensor_node::activate(double timestamp,
+                                                        bool isOver,
+                                                        bool isActive,
+                                                        double *)
 {
     if (isOver && !isActive && this->is_active_.value) {
         this->touch_time_.value = timestamp;
@@ -19157,14 +19540,14 @@ void touch_sensor_node::activate(double timestamp, bool isOver, bool isActive,
  *
  * @return @c true if the TouchSensor is enabled, @c false otherwise.
  */
-bool touch_sensor_node::enabled() const
+bool openvrml::vrml97_node::touch_sensor_node::enabled() const
 {
     return this->enabled_.sfbool::value;
 }
 
 
 /**
- * @class transform_class
+ * @class openvrml::vrml97_node::transform_class
  *
  * @brief Class object for Transform nodes.
  */
@@ -19174,14 +19557,15 @@ bool touch_sensor_node::enabled() const
  *
  * @param browser the browser associated with this node_class.
  */
-transform_class::transform_class(openvrml::browser & browser):
+openvrml::vrml97_node::transform_class::
+transform_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-transform_class::~transform_class() throw ()
+openvrml::vrml97_node::transform_class::~transform_class() throw ()
 {}
 
 /**
@@ -19196,9 +19580,10 @@ transform_class::~transform_class() throw ()
  *                              supported by transform_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-transform_class::do_create_type(const std::string & id,
-                             const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::transform_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -19375,13 +19760,13 @@ transform_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class transform_node
+ * @class openvrml::vrml97_node::transform_node
  *
  * @brief Transform node instances.
  */
 
 /**
- * @var class transform_node::transform_class
+ * @var class openvrml::vrml97_node::transform_node::transform_class
  *
  * @brief Class object for Transform nodes.
  */
@@ -19389,7 +19774,7 @@ transform_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class transform_node::center_exposedfield
+ * @class openvrml::vrml97_node::transform_node::center_exposedfield
  *
  * @brief center exposedField implementation.
  */
@@ -19399,15 +19784,16 @@ transform_class::do_create_type(const std::string & id,
  *
  * @param node  transform_node.
  */
-transform_node::center_exposedfield::
+openvrml::vrml97_node::transform_node::center_exposedfield::
 center_exposedfield(transform_node & node):
-    exposedfield<sfvec3f>(node)
+    openvrml::exposedfield<openvrml::sfvec3f>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-transform_node::center_exposedfield::~center_exposedfield() throw ()
+openvrml::vrml97_node::transform_node::center_exposedfield::
+~center_exposedfield() throw ()
 {}
 
 /**
@@ -19419,8 +19805,8 @@ transform_node::center_exposedfield::~center_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-transform_node::center_exposedfield::event_side_effect(const sfvec3f & center,
-                                                      const double timestamp)
+openvrml::vrml97_node::transform_node::center_exposedfield::
+event_side_effect(const sfvec3f & center, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -19435,7 +19821,7 @@ transform_node::center_exposedfield::event_side_effect(const sfvec3f & center,
 /**
  * @internal
  *
- * @class transform_node::rotation_exposedfield
+ * @class openvrml::vrml97_node::transform_node::rotation_exposedfield
  *
  * @brief rotation exposedField implementation.
  */
@@ -19445,15 +19831,16 @@ transform_node::center_exposedfield::event_side_effect(const sfvec3f & center,
  *
  * @param node  transform_node.
  */
-transform_node::rotation_exposedfield::
+openvrml::vrml97_node::transform_node::rotation_exposedfield::
 rotation_exposedfield(transform_node & node):
-    exposedfield<sfrotation>(node)
+    openvrml::exposedfield<openvrml::sfrotation>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-transform_node::rotation_exposedfield::~rotation_exposedfield() throw ()
+openvrml::vrml97_node::transform_node::rotation_exposedfield::
+~rotation_exposedfield() throw ()
 {}
 
 /**
@@ -19465,7 +19852,7 @@ transform_node::rotation_exposedfield::~rotation_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-transform_node::rotation_exposedfield::
+openvrml::vrml97_node::transform_node::rotation_exposedfield::
 event_side_effect(const sfrotation & rotation, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -19481,7 +19868,7 @@ event_side_effect(const sfrotation & rotation, const double timestamp)
 /**
  * @internal
  *
- * @class transform_node::scale_exposedfield
+ * @class openvrml::vrml97_node::transform_node::scale_exposedfield
  *
  * @brief scale exposedField implementation.
  */
@@ -19491,14 +19878,16 @@ event_side_effect(const sfrotation & rotation, const double timestamp)
  *
  * @param node  transform_node.
  */
-transform_node::scale_exposedfield::scale_exposedfield(transform_node & node):
-    exposedfield<sfvec3f>(node, vec3f(1.0f, 1.0f, 1.0f))
+openvrml::vrml97_node::transform_node::scale_exposedfield::
+scale_exposedfield(transform_node & node):
+    openvrml::exposedfield<openvrml::sfvec3f>(node, vec3f(1.0f, 1.0f, 1.0f))
 {}
 
 /**
  * @brief Destroy.
  */
-transform_node::scale_exposedfield::~scale_exposedfield() throw ()
+openvrml::vrml97_node::transform_node::scale_exposedfield::
+~scale_exposedfield() throw ()
 {}
 
 /**
@@ -19510,8 +19899,8 @@ transform_node::scale_exposedfield::~scale_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-transform_node::scale_exposedfield::event_side_effect(const sfvec3f & scale,
-                                                     const double timestamp)
+openvrml::vrml97_node::transform_node::scale_exposedfield::
+event_side_effect(const sfvec3f & scale, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -19526,7 +19915,7 @@ transform_node::scale_exposedfield::event_side_effect(const sfvec3f & scale,
 /**
  * @internal
  *
- * @class transform_node::scale_orientation_exposedfield
+ * @class openvrml::vrml97_node::transform_node::scale_orientation_exposedfield
  *
  * @brief scaleOrientation exposedField implementation.
  */
@@ -19536,15 +19925,15 @@ transform_node::scale_exposedfield::event_side_effect(const sfvec3f & scale,
  *
  * @param node  transform_node.
  */
-transform_node::scale_orientation_exposedfield::
+openvrml::vrml97_node::transform_node::scale_orientation_exposedfield::
 scale_orientation_exposedfield(transform_node & node):
-    exposedfield<sfrotation>(node)
+    openvrml::exposedfield<openvrml::sfrotation>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-transform_node::scale_orientation_exposedfield::
+openvrml::vrml97_node::transform_node::scale_orientation_exposedfield::
 ~scale_orientation_exposedfield() throw ()
 {}
 
@@ -19557,7 +19946,7 @@ transform_node::scale_orientation_exposedfield::
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-transform_node::scale_orientation_exposedfield::
+openvrml::vrml97_node::transform_node::scale_orientation_exposedfield::
 event_side_effect(const sfrotation & scale_orientation, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -19573,7 +19962,7 @@ event_side_effect(const sfrotation & scale_orientation, const double timestamp)
 /**
  * @internal
  *
- * @class transform_node::translation_exposedfield
+ * @class openvrml::vrml97_node::transform_node::translation_exposedfield
  *
  * @brief translation exposedField implementation.
  */
@@ -19583,15 +19972,16 @@ event_side_effect(const sfrotation & scale_orientation, const double timestamp)
  *
  * @param node  transform_node.
  */
-transform_node::translation_exposedfield::
+openvrml::vrml97_node::transform_node::translation_exposedfield::
 translation_exposedfield(transform_node & node):
-    exposedfield<sfvec3f>(node)
+    openvrml::exposedfield<openvrml::sfvec3f>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-transform_node::translation_exposedfield::~translation_exposedfield() throw ()
+openvrml::vrml97_node::transform_node::translation_exposedfield::
+~translation_exposedfield() throw ()
 {}
 
 /**
@@ -19603,7 +19993,7 @@ transform_node::translation_exposedfield::~translation_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-transform_node::translation_exposedfield::
+openvrml::vrml97_node::transform_node::translation_exposedfield::
 event_side_effect(const sfvec3f & translation, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -19617,49 +20007,49 @@ event_side_effect(const sfvec3f & translation, const double timestamp)
 }
 
 /**
- * @var transform_node::center_exposedfield transform_node::center_
+ * @var openvrml::vrml97_node::transform_node::center_exposedfield openvrml::vrml97_node::transform_node::center_
  *
  * @brief center exposedField.
  */
 
 /**
- * @var transform_node::rotation_exposedfield transform_node::rotation_
+ * @var openvrml::vrml97_node::transform_node::rotation_exposedfield openvrml::vrml97_node::transform_node::rotation_
  *
  * @brief rotation exposedField.
  */
 
 /**
- * @var transform_node::scale_exposedfield transform_node::scale_
+ * @var openvrml::vrml97_node::transform_node::scale_exposedfield openvrml::vrml97_node::transform_node::scale_
  *
  * @brief scale exposedField.
  */
 
 /**
- * @var transform_node::scale_orientation_exposedfield transform_node::scale_orientation_
+ * @var openvrml::vrml97_node::transform_node::scale_orientation_exposedfield openvrml::vrml97_node::transform_node::scale_orientation_
  *
  * @brief scaleOrientation exposedField.
  */
 
 /**
- * @var transform_node::translation_exposedfield transform_node::translation_
+ * @var openvrml::vrml97_node::transform_node::translation_exposedfield openvrml::vrml97_node::transform_node::translation_
  *
  * @brief translation exposedField.
  */
 
 /**
- * @var viewer::object_t transform_node::xformObject
+ * @var openvrml::viewer::object_t openvrml::vrml97_node::transform_node::xformObject
  *
  * @brief A handle to the renderer's representation of the Transform.
  */
 
 /**
- * @var mat4f transform_node::transform_
+ * @var openvrml::mat4f openvrml::vrml97_node::transform_node::transform_
  *
  * @brief Cached copy of this node's transformation.
  */
 
 /**
- * @var transform_node::transform_dirty
+ * @var bool openvrml::vrml97_node::transform_node::transform_dirty
  *
  * @brief Flag to indicate whether @a transform_ needs to be updated.
  */
@@ -19670,8 +20060,9 @@ event_side_effect(const sfvec3f & translation, const double timestamp)
  * @param type  the node_type associated with the instance.
  * @param scope the scope that the new node will belong to.
  */
-transform_node::transform_node(const node_type & type,
-                               const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::transform_node::
+transform_node(const node_type & type,
+               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope),
@@ -19691,7 +20082,7 @@ transform_node::transform_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-transform_node::~transform_node() throw ()
+openvrml::vrml97_node::transform_node::~transform_node() throw ()
 {
     // delete xformObject...
 }
@@ -19701,7 +20092,8 @@ transform_node::~transform_node() throw ()
  *
  * @return the transformation associated with the node.
  */
-const mat4f & transform_node::transform() const throw ()
+const openvrml::mat4f &
+openvrml::vrml97_node::transform_node::transform() const throw ()
 {
     this->update_transform();
     return this->transform_;
@@ -19713,8 +20105,9 @@ const mat4f & transform_node::transform() const throw ()
  * @param viewer    a Viewer.
  * @param context   the rendering context.
  */
-void transform_node::do_render_child(openvrml::viewer & viewer,
-                                     rendering_context context)
+void
+openvrml::vrml97_node::transform_node::
+do_render_child(openvrml::viewer & viewer, rendering_context context)
 {
     if (context.cull_flag != bounding_volume::inside) {
         assert(dynamic_cast<const bounding_sphere *>
@@ -19763,7 +20156,8 @@ void transform_node::do_render_child(openvrml::viewer & viewer,
  *
  * @return the bounding volume associated with the node.
  */
-const bounding_volume & transform_node::bounding_volume() const
+const openvrml::bounding_volume &
+openvrml::vrml97_node::transform_node::bounding_volume() const
 {
     if (this->bounding_volume_dirty()) {
         const_cast<transform_node *>(this)->recalc_bsphere();
@@ -19774,7 +20168,7 @@ const bounding_volume & transform_node::bounding_volume() const
 /**
  * @brief Recalculate the bounding volume.
  */
-void transform_node::recalc_bsphere()
+void openvrml::vrml97_node::transform_node::recalc_bsphere()
 {
     this->bsphere = bounding_sphere();
     for (size_t i = 0; i < this->children_.mfnode::value.size(); ++i) {
@@ -19796,7 +20190,7 @@ void transform_node::recalc_bsphere()
  *
  * @note P' = T × C × R × SR × S × -SR × -C × P
  */
-void transform_node::update_transform() const throw ()
+void openvrml::vrml97_node::transform_node::update_transform() const throw ()
 {
     if (this->transform_dirty) {
         this->transform_ =
@@ -19811,25 +20205,25 @@ void transform_node::update_transform() const throw ()
 
 
 /**
- * @class viewpoint_class
+ * @class openvrml::vrml97_node::viewpoint_class
  *
  * @brief Class object for Viewpoint nodes.
  */
 
 /**
- * @typedef viewpoint_class::bound_nodes_t
+ * @typedef openvrml::vrml97_node::viewpoint_class::bound_nodes_t
  *
  * @brief A stack of bound Viewpoint nodes.
  */
 
 /**
- * @var viewpoint_node * viewpoint_class::first
+ * @var openvrml::vrml97_node::viewpoint_node * openvrml::vrml97_node::viewpoint_class::first
  *
  * @brief The first Viewpoint node in the initial scene graph.
  */
 
 /**
- * @var viewpoint_class::bound_nodes_t viewpoint_class::bound_nodes
+ * @var openvrml::vrml97_node::viewpoint_class::bound_nodes_t openvrml::vrml97_node::viewpoint_class::bound_nodes
  *
  * @brief The stack of bound Viewpoint nodes.
  */
@@ -19839,7 +20233,8 @@ void transform_node::update_transform() const throw ()
  *
  * @param browser the browser associated with this node_class.
  */
-viewpoint_class::viewpoint_class(openvrml::browser & browser):
+openvrml::vrml97_node::viewpoint_class::
+viewpoint_class(openvrml::browser & browser):
     node_class(browser),
     first(0)
 {}
@@ -19847,7 +20242,7 @@ viewpoint_class::viewpoint_class(openvrml::browser & browser):
 /**
  * @brief Destroy.
  */
-viewpoint_class::~viewpoint_class() throw ()
+openvrml::vrml97_node::viewpoint_class::~viewpoint_class() throw ()
 {}
 
 /**
@@ -19858,7 +20253,9 @@ viewpoint_class::~viewpoint_class() throw ()
  *
  * @param viewpoint    a Viewpoint node.
  */
-void viewpoint_class::set_first(viewpoint_node & viewpoint) throw ()
+void
+openvrml::vrml97_node::viewpoint_class::set_first(viewpoint_node & viewpoint)
+    throw ()
 {
     assert(!this->has_first());
     this->first = &viewpoint;
@@ -19869,7 +20266,7 @@ void viewpoint_class::set_first(viewpoint_node & viewpoint) throw ()
  *
  * This function is called by <code>viewpoint_node::do_shutdown</code>.
  */
-void viewpoint_class::reset_first() throw ()
+void openvrml::vrml97_node::viewpoint_class::reset_first() throw ()
 {
     this->first = 0;
 }
@@ -19881,7 +20278,7 @@ void viewpoint_class::reset_first() throw ()
  *
  * @return @c true if the first node has already been set; @c false otherwise.
  */
-bool viewpoint_class::has_first() const throw ()
+bool openvrml::vrml97_node::viewpoint_class::has_first() const throw ()
 {
     return this->first;
 }
@@ -19893,7 +20290,9 @@ bool viewpoint_class::has_first() const throw ()
  *
  * @return @c true if @p viewpoint is the fist node; @c false otherwise.
  */
-bool viewpoint_class::is_first(viewpoint_node & viewpoint) throw ()
+bool
+openvrml::vrml97_node::viewpoint_class::is_first(viewpoint_node & viewpoint)
+    throw ()
 {
     return &viewpoint == this->first;
 }
@@ -19906,7 +20305,9 @@ bool viewpoint_class::is_first(viewpoint_node & viewpoint) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void viewpoint_class::bind(viewpoint_node & viewpoint, const double timestamp)
+void
+openvrml::vrml97_node::viewpoint_class::bind(viewpoint_node & viewpoint,
+                                             const double timestamp)
     throw (std::bad_alloc)
 {
     //
@@ -19950,8 +20351,8 @@ void viewpoint_class::bind(viewpoint_node & viewpoint, const double timestamp)
  * @param viewpoint    the node to unbind.
  * @param timestamp    the current time.
  */
-void viewpoint_class::unbind(viewpoint_node & viewpoint,
-                             const double timestamp)
+void openvrml::vrml97_node::viewpoint_class::unbind(viewpoint_node & viewpoint,
+                                                    const double timestamp)
     throw ()
 {
     const bound_nodes_t::iterator pos =
@@ -19984,8 +20385,9 @@ void viewpoint_class::unbind(viewpoint_node & viewpoint,
  * @param timestamp         the current time.
  */
 void
-viewpoint_class::do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-                               const double timestamp)
+openvrml::vrml97_node::viewpoint_class::
+do_initialize(openvrml::viewpoint_node * initial_viewpoint,
+              const double timestamp)
     throw ()
 {
     if (!initial_viewpoint) { initial_viewpoint = this->first; }
@@ -20014,9 +20416,10 @@ viewpoint_class::do_initialize(openvrml::viewpoint_node * initial_viewpoint,
  *                                  supported by viewpoint_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-viewpoint_class::do_create_type(const std::string & id,
-                             const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::viewpoint_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -20148,13 +20551,13 @@ viewpoint_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class viewpoint_node
+ * @class openvrml::vrml97_node::viewpoint_node
  *
  * @brief Viewpoint node instance.
  */
 
 /**
- * @var class viewpoint_node::viewpoint_class
+ * @var class openvrml::vrml97_node::viewpoint_node::viewpoint_class
  *
  * @brief Class object for Viewpoint nodes.
  */
@@ -20162,7 +20565,7 @@ viewpoint_class::do_create_type(const std::string & id,
 /**
  * @internal
  *
- * @class viewpoint_node::set_bind_listener
+ * @class openvrml::vrml97_node::viewpoint_node::set_bind_listener
  *
  * @brief set_bind eventIn listener.
  */
@@ -20172,14 +20575,16 @@ viewpoint_class::do_create_type(const std::string & id,
  *
  * @param node viewpoint_node.
  */
-viewpoint_node::set_bind_listener::set_bind_listener(viewpoint_node & node):
+openvrml::vrml97_node::viewpoint_node::set_bind_listener::
+set_bind_listener(viewpoint_node & node):
     sfbool_listener(node)
 {}
 
 /**
  * @brief Destroy.
  */
-viewpoint_node::set_bind_listener::~set_bind_listener() throw ()
+openvrml::vrml97_node::viewpoint_node::set_bind_listener::~set_bind_listener()
+    throw ()
 {}
 
 /**
@@ -20191,8 +20596,8 @@ viewpoint_node::set_bind_listener::~set_bind_listener() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-viewpoint_node::set_bind_listener::do_process_event(const sfbool & value,
-                                                    const double timestamp)
+openvrml::vrml97_node::viewpoint_node::set_bind_listener::
+do_process_event(const sfbool & value, const double timestamp)
     throw (std::bad_alloc)
 {
     try {
@@ -20214,7 +20619,7 @@ viewpoint_node::set_bind_listener::do_process_event(const sfbool & value,
 /**
  * @internal
  *
- * @class viewpoint_node::orientation_exposedfield
+ * @class openvrml::vrml97_node::viewpoint_node::orientation_exposedfield
  *
  * @brief orientation exposedField implementation.
  */
@@ -20224,15 +20629,16 @@ viewpoint_node::set_bind_listener::do_process_event(const sfbool & value,
  *
  * @param node viewpoint_node.
  */
-viewpoint_node::orientation_exposedfield::
+openvrml::vrml97_node::viewpoint_node::orientation_exposedfield::
 orientation_exposedfield(viewpoint_node & node):
-    exposedfield<sfrotation>(node)
+    openvrml::exposedfield<openvrml::sfrotation>(node)
 {}
 
 /**
  * @brief Destroy.
  */
-viewpoint_node::orientation_exposedfield::~orientation_exposedfield() throw ()
+openvrml::vrml97_node::viewpoint_node::orientation_exposedfield::
+~orientation_exposedfield() throw ()
 {}
 
 /**
@@ -20244,7 +20650,7 @@ viewpoint_node::orientation_exposedfield::~orientation_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-viewpoint_node::orientation_exposedfield::
+openvrml::vrml97_node::viewpoint_node::orientation_exposedfield::
 event_side_effect(const sfrotation & orientation, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -20259,7 +20665,7 @@ event_side_effect(const sfrotation & orientation, const double timestamp)
 /**
  * @internal
  *
- * @class viewpoint_node::position_exposedfield
+ * @class openvrml::vrml97_node::viewpoint_node::position_exposedfield
  *
  * @brief position exposedField implementation.
  */
@@ -20269,15 +20675,16 @@ event_side_effect(const sfrotation & orientation, const double timestamp)
  *
  * @param node viewpoint_node.
  */
-viewpoint_node::position_exposedfield::
+openvrml::vrml97_node::viewpoint_node::position_exposedfield::
 position_exposedfield(viewpoint_node & node):
-    exposedfield<sfvec3f>(node, vec3f(0.0f, 0.0f, 10.0f))
+    openvrml::exposedfield<openvrml::sfvec3f>(node, vec3f(0.0f, 0.0f, 10.0f))
 {}
 
 /**
  * @brief Destroy.
  */
-viewpoint_node::position_exposedfield::~position_exposedfield() throw ()
+openvrml::vrml97_node::viewpoint_node::position_exposedfield::
+~position_exposedfield() throw ()
 {}
 
 /**
@@ -20289,7 +20696,7 @@ viewpoint_node::position_exposedfield::~position_exposedfield() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-viewpoint_node::position_exposedfield::
+openvrml::vrml97_node::viewpoint_node::position_exposedfield::
 event_side_effect(const sfvec3f & position, const double timestamp)
     throw (std::bad_alloc)
 {
@@ -20302,86 +20709,86 @@ event_side_effect(const sfvec3f & position, const double timestamp)
 }
 
 /**
- * @var viewpoint_node::set_bind_listener viewpoint_node::set_bind_listener_
+ * @var openvrml::vrml97_node::viewpoint_node::set_bind_listener openvrml::vrml97_node::viewpoint_node::set_bind_listener_
  *
  * @brief set_bind eventIn handler.
  */
 
 /**
- * @var exposedfield<sffloat> viewpoint_node::field_of_view_
+ * @var openvrml::exposedfield<openvrml::sffloat> openvrml::vrml97_node::viewpoint_node::field_of_view_
  *
  * @brief fieldOfView exposedField.
  */
 
 /**
- * @var exposedfield<sfbool> viewpoint_node::jump_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::viewpoint_node::jump_
  *
  * @brief jump exposedField.
  */
 
 /**
- * @var viewpoint_node::orientation_exposedfield viewpoint_node::orientation_
+ * @var viewpoint_node::orientation_exposedfield openvrml::vrml97_node::viewpoint_node::orientation_
  *
  * @brief orientation exposedField.
  */
 
 /**
- * @var viewpoint_node::position_exposedfield viewpoint_node::position_
+ * @var viewpoint_node::position_exposedfield openvrml::vrml97_node::viewpoint_node::position_
  *
  * @brief position exposedField.
  */
 
 /**
- * @var sfstring viewpoint_node::description_
+ * @var openvrml::sfstring openvrml::vrml97_node::viewpoint_node::description_
  *
  * @brief description field.
  */
 
 /**
- * @var sfbool viewpoint_node::is_bound_
+ * @var openvrml::sfbool openvrml::vrml97_node::viewpoint_node::is_bound_
  *
  * @brief isBound eventOut value.
  */
 
 /**
- * @var sfbool_emitter viewpoint_node::is_bound_emitter_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::viewpoint_node::is_bound_emitter_
  *
  * @brief isBound eventOut emitter.
  */
 
 /**
- * @var sftime viewpoint_node::bind_time_
+ * @var openvrml::sftime openvrml::vrml97_node::viewpoint_node::bind_time_
  *
  * @brief bindTime eventOut value.
  */
 
 /**
- * @var sftime_emitter viewpoint_node::bind_time_emitter_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::viewpoint_node::bind_time_emitter_
  *
  * @brief bindTime eventOut emitter.
  */
 
 /**
- * @var mat4f viewpoint_node::parent_transform
+ * @var openvrml::mat4f openvrml::vrml97_node::viewpoint_node::parent_transform
  *
  * @brief The accumulated transformation applied by any parent nodes.
  */
 
 /**
- * @var mat4f viewpoint_node::final_transformation
+ * @var openvrml::mat4f openvrml::vrml97_node::viewpoint_node::final_transformation
  *
  * @brief The product of @a parent_transform and any transformation applied
  *        by the Viewpoint node.
  */
 
 /**
- * @var bool viewpoint_node::final_transformation_dirty
+ * @var bool openvrml::vrml97_node::viewpoint_node::final_transformation_dirty
  *
  * @brief Flag that indicates if @a final_transformation needs to be updated.
  */
 
 /**
- * @var mat4f viewpoint_node::user_view_transform_
+ * @var mat4f openvrml::vrml97_node::viewpoint_node::user_view_transform_
  *
  * @brief The transformation applied to the user view.
  *
@@ -20398,8 +20805,9 @@ namespace {
  * @param type      the node_type associated with the instance.
  * @param scope         the scope that the new node will belong to.
  */
-viewpoint_node::viewpoint_node(const node_type & type,
-                               const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::viewpoint_node::
+viewpoint_node(const node_type & type,
+               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     child_node(type, scope),
     abstract_base(type, scope),
@@ -20417,7 +20825,7 @@ viewpoint_node::viewpoint_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-viewpoint_node::~viewpoint_node() throw ()
+openvrml::vrml97_node::viewpoint_node::~viewpoint_node() throw ()
 {}
 
 /**
@@ -20427,7 +20835,8 @@ viewpoint_node::~viewpoint_node() throw ()
  * @return the transformation of the viewpoint_node in the global coordinate
  *      system.
  */
-const mat4f & viewpoint_node::transformation() const throw ()
+const openvrml::mat4f &
+openvrml::vrml97_node::viewpoint_node::transformation() const throw ()
 {
     this->update_final_transformation();
     return this->final_transformation;
@@ -20439,7 +20848,8 @@ const mat4f & viewpoint_node::transformation() const throw ()
  *
  * @return the transformation of the user view relative to the viewpoint_node.
  */
-const mat4f & viewpoint_node::user_view_transform() const throw ()
+const openvrml::mat4f &
+openvrml::vrml97_node::viewpoint_node::user_view_transform() const throw ()
 {
     return this->user_view_transform_;
 }
@@ -20450,7 +20860,9 @@ const mat4f & viewpoint_node::user_view_transform() const throw ()
  *
  * @param transform the new transformation.
  */
-void viewpoint_node::user_view_transform(const mat4f & transform) throw ()
+void
+openvrml::vrml97_node::viewpoint_node::
+user_view_transform(const mat4f & transform) throw ()
 {
     this->user_view_transform_ = transform;
 }
@@ -20460,7 +20872,8 @@ void viewpoint_node::user_view_transform(const mat4f & transform) throw ()
  *
  * @return the description.
  */
-const std::string & viewpoint_node::description() const throw ()
+const std::string & openvrml::vrml97_node::viewpoint_node::description() const
+    throw ()
 {
     return this->description_.value;
 }
@@ -20470,7 +20883,7 @@ const std::string & viewpoint_node::description() const throw ()
  *
  * @return the field of view in radians.
  */
-float viewpoint_node::field_of_view() const throw ()
+float openvrml::vrml97_node::viewpoint_node::field_of_view() const throw ()
 {
     return this->field_of_view_.sffloat::value;
 }
@@ -20480,7 +20893,8 @@ float viewpoint_node::field_of_view() const throw ()
  *
  * @return the orientation.
  */
-const sfrotation & viewpoint_node::orientation() const
+const openvrml::sfrotation &
+openvrml::vrml97_node::viewpoint_node::orientation() const
 {
     return this->orientation_;
 }
@@ -20490,7 +20904,8 @@ const sfrotation & viewpoint_node::orientation() const
  *
  * @return the position.
  */
-const sfvec3f & viewpoint_node::position() const
+const openvrml::sfvec3f &
+openvrml::vrml97_node::viewpoint_node::position() const
 {
     return this->position_;
 }
@@ -20500,7 +20915,9 @@ const sfvec3f & viewpoint_node::position() const
  *
  * @param timestamp the current time.
  */
-void viewpoint_node::do_initialize(const double timestamp) throw ()
+void
+openvrml::vrml97_node::viewpoint_node::do_initialize(const double timestamp)
+    throw ()
 {
     assert(this->scene());
     this->scene()->browser().add_viewpoint(*this);
@@ -20513,24 +20930,24 @@ void viewpoint_node::do_initialize(const double timestamp) throw ()
 
 namespace {
 
-    struct accumulate_transform_ : std::unary_function<node *, void> {
-        explicit accumulate_transform_(mat4f & transform) throw ():
+    struct accumulate_transform_ :
+        std::unary_function<openvrml::node *, void> {
+
+        explicit accumulate_transform_(openvrml::mat4f & transform) throw ():
             transform(&transform)
         {}
 
         void operator()(openvrml::node * node) const throw ()
         {
+            using openvrml::node_cast;
+            using openvrml::transform_node;
             assert(node);
-            openvrml::transform_node * const transformNode =
-                node_cast<openvrml::transform_node *>(node);
-            if (transformNode) {
-                *this->transform =
-                    transformNode->transform() * *this->transform;
-            }
+            transform_node * const t = node_cast<transform_node *>(node);
+            if (t) { *this->transform = t->transform() * *this->transform; }
         }
 
     private:
-        mat4f * transform;
+        openvrml::mat4f * transform;
     };
 }
 
@@ -20539,7 +20956,8 @@ namespace {
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void viewpoint_node::do_relocate() throw (std::bad_alloc)
+void openvrml::vrml97_node::viewpoint_node::do_relocate()
+    throw (std::bad_alloc)
 {
     assert(this->scene());
     const node_path path = this->scene()->browser().find_node(*this);
@@ -20555,7 +20973,8 @@ void viewpoint_node::do_relocate() throw (std::bad_alloc)
  *
  * @param timestamp the current time.
  */
-void viewpoint_node::do_shutdown(const double timestamp) throw ()
+void openvrml::vrml97_node::viewpoint_node::do_shutdown(const double timestamp)
+    throw ()
 {
     viewpoint_class & node_class =
         const_cast<viewpoint_class &>(
@@ -20573,7 +20992,8 @@ void viewpoint_node::do_shutdown(const double timestamp) throw ()
  * If @a final_transformation_dirty is @c true, update @a final_transformation
  * and sets @a final_transformation_dirty to @c false; otherwise, do nothing.
  */
-void viewpoint_node::update_final_transformation() const throw ()
+void openvrml::vrml97_node::viewpoint_node::update_final_transformation() const
+    throw ()
 {
     if (this->final_transformation_dirty) {
         static const vec3f scale(1.0, 1.0, 1.0);
@@ -20592,7 +21012,7 @@ void viewpoint_node::update_final_transformation() const throw ()
 
 
 /**
- * @class visibility_sensor_class
+ * @class openvrml::vrml97_node::visibility_sensor_class
  *
  * @brief Class object for VisibilitySensor nodes.
  */
@@ -20602,14 +21022,16 @@ void viewpoint_node::update_final_transformation() const throw ()
  *
  * @param browser the browser associated with this node_class.
  */
-visibility_sensor_class::visibility_sensor_class(openvrml::browser & browser):
+openvrml::vrml97_node::visibility_sensor_class::
+visibility_sensor_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-visibility_sensor_class::~visibility_sensor_class() throw ()
+openvrml::vrml97_node::visibility_sensor_class::~visibility_sensor_class()
+    throw ()
 {}
 
 /**
@@ -20625,9 +21047,10 @@ visibility_sensor_class::~visibility_sensor_class() throw ()
  *                                  supported by visibility_sensor_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-visibility_sensor_class::do_create_type(const std::string & id,
-                                     const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::visibility_sensor_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -20726,67 +21149,67 @@ visibility_sensor_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class visibility_sensor_node
+ * @class openvrml::vrml97_node::visibility_sensor_node
  *
  * @brief VisibilitySensor node instances.
  */
 
 /**
- * @var visibility_sensor_node::visibility_sensor_class
+ * @var openvrml::vrml97_node::visibility_sensor_node::visibility_sensor_class
  *
  * @brief Class object for VisibilitySensor instances.
  */
 
 /**
- * @var exposedfield<sfvec3f> visibility_sensor_node::center_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::visibility_sensor_node::center_
  *
  * @brief center exposedField.
  */
 
 /**
- * @var exposedfield<sfbool> visibility_sensor_node::enabled_
+ * @var openvrml::exposedfield<openvrml::sfbool> openvrml::vrml97_node::visibility_sensor_node::enabled_
  *
  * @brief enabled exposedField.
  */
 
 /**
- * @var exposedfield<sfvec3f> visibility_sensor_node::size_
+ * @var openvrml::exposedfield<openvrml::sfvec3f> openvrml::vrml97_node::visibility_sensor_node::size_
  *
  * @brief size exposedField.
  */
 
 /**
- * @var sfbool visibility_sensor_node::is_active_
+ * @var openvrml::sfbool openvrml::vrml97_node::visibility_sensor_node::is_active_
  *
  * @brief isActive eventOut value.
  */
 
 /**
- * @var sfbool_emitter visibility_sensor_node::is_active_emitter_
+ * @var openvrml::sfbool_emitter openvrml::vrml97_node::visibility_sensor_node::is_active_emitter_
  *
  * @brief isActive eventOut emitter.
  */
 
 /**
- * @var sftime visibility_sensor_node::enter_time_
+ * @var openvrml::sftime openvrml::vrml97_node::visibility_sensor_node::enter_time_
  *
  * @brief enterTime eventOut value.
  */
 
 /**
- * @var sftime_emitter visibility_sensor_node::enter_time_emitter_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::visibility_sensor_node::enter_time_emitter_
  *
  * @brief enterTime eventOut emitter.
  */
 
 /**
- * @var sftime visibility_sensor_node::exit_time_
+ * @var openvrml::sftime openvrml::vrml97_node::visibility_sensor_node::exit_time_
  *
  * @brief exitTime eventOut value.
  */
 
 /**
- * @var sftime_emitter visibility_sensor_node::exit_time_emitter_
+ * @var openvrml::sftime_emitter openvrml::vrml97_node::visibility_sensor_node::exit_time_emitter_
  *
  * @brief exitTime eventOut emitter.
  */
@@ -20797,8 +21220,9 @@ visibility_sensor_class::do_create_type(const std::string & id,
  * @param type      the node_type associated with the instance.
  * @param scope         the scope that the new node will belong to.
  */
-visibility_sensor_node::visibility_sensor_node(const node_type & type,
-                                               const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::visibility_sensor_node::
+visibility_sensor_node(const node_type & type,
+                       const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope),
@@ -20818,7 +21242,8 @@ visibility_sensor_node::visibility_sensor_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-visibility_sensor_node::~visibility_sensor_node() throw ()
+openvrml::vrml97_node::visibility_sensor_node::~visibility_sensor_node()
+    throw ()
 {}
 
 /**
@@ -20831,8 +21256,9 @@ visibility_sensor_node::~visibility_sensor_node() throw ()
  * @param viewer    viewer.
  * @param context   rendering_context.
  */
-void visibility_sensor_node::do_render_child(openvrml::viewer & viewer,
-                                             const rendering_context context)
+void
+openvrml::vrml97_node::visibility_sensor_node::
+do_render_child(openvrml::viewer & viewer, const rendering_context context)
 {
     if (this->enabled_.sfbool::value) {
         sftime timeNow(browser::current_time());
@@ -20892,7 +21318,7 @@ void visibility_sensor_node::do_render_child(openvrml::viewer & viewer,
 
 
 /**
- * @class world_info_class
+ * @class openvrml::vrml97_node::world_info_class
  *
  * @brief Class object for WorldInfo nodes.
  */
@@ -20902,14 +21328,15 @@ void visibility_sensor_node::do_render_child(openvrml::viewer & viewer,
  *
  * @param browser the browser associated with this node_class.
  */
-world_info_class::world_info_class(openvrml::browser & browser):
+openvrml::vrml97_node::world_info_class::
+world_info_class(openvrml::browser & browser):
     node_class(browser)
 {}
 
 /**
  * @brief Destroy.
  */
-world_info_class::~world_info_class() throw ()
+openvrml::vrml97_node::world_info_class::~world_info_class() throw ()
 {}
 
 /**
@@ -20924,9 +21351,10 @@ world_info_class::~world_info_class() throw ()
  *                                  supported by world_info_class.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const boost::shared_ptr<node_type>
-world_info_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+const boost::shared_ptr<openvrml::node_type>
+openvrml::vrml97_node::world_info_class::
+do_create_type(const std::string & id,
+               const node_interface_set & interfaces) const
     throw (unsupported_interface, std::bad_alloc)
 {
     static const node_interface supportedInterfaces[] = {
@@ -20967,25 +21395,25 @@ world_info_class::do_create_type(const std::string & id,
 }
 
 /**
- * @class world_info_node
+ * @class openvrml::vrml97_node::world_info_node
  *
  * @brief WorldInfo node instances.
  */
 
 /**
- * @var world_info_node::world_info_class
+ * @var openvrml::vrml97_node::world_info_node::world_info_class
  *
  * @brief Class object for WorldInfo instances.
  */
 
 /**
- * @var world_info_node::info
+ * @var openvrml::mfstring openvrml::vrml97_node::world_info_node::info
  *
- * @brief string field.
+ * @brief info field.
  */
 
 /**
- * @var world_info_node::title
+ * @var openvrml::sfstring openvrml::vrml97_node::world_info_node::title
  *
  * @brief title field.
  */
@@ -20996,8 +21424,9 @@ world_info_class::do_create_type(const std::string & id,
  * @param type  the node_type associated with the instance.
  * @param scope the scope that the new node will belong to.
  */
-world_info_node::world_info_node(const node_type & type,
-                                 const boost::shared_ptr<openvrml::scope> & scope):
+openvrml::vrml97_node::world_info_node::
+world_info_node(const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base(type, scope),
     child_node(type, scope)
@@ -21006,9 +21435,5 @@ world_info_node::world_info_node(const node_type & type,
 /**
  * @brief Destroy.
  */
-world_info_node::~world_info_node() throw ()
+openvrml::vrml97_node::world_info_node::~world_info_node() throw ()
 {}
-
-} // namespace vrml97_node
-
-} // namespace openvrml
