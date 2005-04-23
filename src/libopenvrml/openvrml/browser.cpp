@@ -5478,6 +5478,9 @@ struct openvrml::scene::load_scene {
         try {
             auto_ptr<resource_istream> in = scene.get_resource(url);
             if (!(*in)) { throw unreachable_url(); }
+            if (!scene.parent()) {
+                scene.browser().world_url(in->url());
+            }
             Vrml97Scanner scanner(*in);
             Vrml97Parser parser(scanner, in->url());
             parser.vrmlScene(scene.browser(), nodes);

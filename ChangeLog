@@ -1,3 +1,9 @@
+2005-04-23 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp:  When loading the root
+	scene, set browser::world_url as soon as we have a usable
+	stream.
+
 2005-04-21 Braden McDaniel  <braden@endoframe.com>
 
 	Changed convention for scoping definitions.  Definitions are now
