@@ -1,5 +1,11 @@
 2005-04-23 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::get_resource):  Fixed test to check whether
+	create_file_url should be called.
+
+2005-04-23 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp:  When loading the root
 	scene, set browser::world_url as soon as we have a usable
 	stream.

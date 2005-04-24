@@ -5733,10 +5733,10 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
             //
             const uri absolute_uri = !test_uri.scheme().empty()
                                    ? test_uri
-                                   : (this->parent() && !this->url().empty())
-                                        ? test_uri
-                                            .resolve_against(uri(this->url()))
-                                        : create_file_url(test_uri);
+                                   : (!this->parent() && this->url().empty())
+                                        ? create_file_url(test_uri)
+                                        : test_uri
+                                            .resolve_against(uri(this->url()));
 
             in = this->browser().get_resource(absolute_uri);
             if (!(*in)) { throw unreachable_url(); }
