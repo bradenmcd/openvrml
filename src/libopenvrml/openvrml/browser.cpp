@@ -24,6 +24,7 @@
 #   include <config.h>
 # endif
 
+# include <cerrno>
 # include <algorithm>
 # include <functional>
 # ifdef _WIN32
@@ -5358,7 +5359,29 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
 
 namespace {
 
-    const uri create_file_url(const uri & relative_uri) throw (std::bad_alloc)
+    class bad_path : public openvrml::bad_url {
+    public:
+        explicit bad_path(const std::string & message);
+        virtual ~bad_path() throw ();
+    };
+
+    bad_path::bad_path(const std::string & message):
+        openvrml::bad_url(message)
+    {}
+
+    bad_path::~bad_path() throw ()
+    {}
+
+    /**
+     * @brief Create an absolute "file" URL from a relative path.
+     *
+     * @param relative_uri  a relative URI.
+     *
+     * @exception bad_path          if @p relative_uri cannot be resolved.
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    const uri create_file_url(const uri & relative_uri)
+        throw (bad_path, std::bad_alloc)
     {
         assert(relative_uri.scheme().empty());
 
@@ -5375,32 +5398,30 @@ namespace {
             // the beginning of the buffer.
             //
             char buffer[_MAX_PATH] = { '/' };
-            char * resolvedPath =
+            char * resolved_path =
                 _fullpath(buffer + 1, relative_uri.path().c_str(), _MAX_PATH);
-            if (!resolvedPath) {
-                //
-                // XXX Failed; need to check errno to see what we should throw.
-                //
-                return uri(result);
+            if (!resolved_path) {
+                throw bad_path("cannot resolve \"" + relative_uri.path()
+                               + "\"");
             }
-            std::replace_if(resolvedPath,
-                            resolvedPath + strlen(resolvedPath) + 1,
+            std::replace_if(resolved_path,
+                            resolved_path + strlen(resolved_path) + 1,
                             bind2nd(equal_to<char>(), '\\'), '/');
             --resolvedPath;
-            assert(resolvedPath == buffer);
+            assert(resolved_path == buffer);
 # else
             char buffer[PATH_MAX];
-            const char * resolvedPath = realpath(relative_uri.path().c_str(),
-                                                 buffer);
-            if (!resolvedPath) {
-                //
-                // XXX Failed; need to check errno to see what we should throw.
-                //
-                return uri(result);
+            const char * resolved_path = realpath(relative_uri.path().c_str(),
+                                                  buffer);
+            if (!resolved_path) {
+                static const size_t buf_size = 256;
+                char buf[buf_size];
+                strerror_r(errno, buf, buf_size);
+                throw bad_path(buf);
             }
 # endif
 
-            result += resolvedPath;
+            result += resolved_path;
 
             const string query = relative_uri.query();
             if (!query.empty()) { result += '?' + query; }
@@ -5465,7 +5486,6 @@ struct openvrml::scene::load_scene {
     {}
         
     void operator()() const throw () try {
-        using std::auto_ptr;
         using std::string;
         using std::vector;
 
@@ -5476,7 +5496,7 @@ struct openvrml::scene::load_scene {
 
         vector<node_ptr> nodes;
         try {
-            auto_ptr<resource_istream> in = scene.get_resource(url);
+            std::auto_ptr<resource_istream> in = scene.get_resource(url);
             if (!(*in)) { throw unreachable_url(); }
             if (!scene.parent()) {
                 scene.browser().world_url(in->url());

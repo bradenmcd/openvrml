@@ -1,5 +1,10 @@
 2005-04-23 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp (create_file_url):
+	Throw an exception if realpath/_fullpath does not succeed.
+
+2005-04-23 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::scene::get_resource):  Fixed test to check whether
 	create_file_url should be called.
