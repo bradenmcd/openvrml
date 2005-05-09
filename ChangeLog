@@ -1,5 +1,10 @@
 2005-05-09 Braden McDaniel  <braden@endoframe.com>
 
+	* openvrml.pc.in:  Removed obsolete Z_LIBS configure
+	substitution.
+
+2005-05-09 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/Makefile.am:  Link with libboost_regex.
 	* src/libopenvrml/openvrml/browser.cpp:  Replaced Spirit URI
 	parser with boost::regex.  Alas, Spirit parsers are not thread-
