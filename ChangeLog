@@ -1,3 +1,10 @@
+2005-05-09 Braden McDaniel  <braden@endoframe.com>
+
+	Protect openvrml::scene::url_ with a separate mutex.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+
 2005-04-23 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp (create_file_url):

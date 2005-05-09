@@ -29,6 +29,7 @@
 #   include <string>
 #   include <boost/scoped_ptr.hpp>
 #   include <boost/thread/recursive_mutex.hpp>
+#   include <boost/thread/read_write_mutex.hpp>
 #   include <openvrml/script.h>
 
 namespace openvrml {
@@ -301,10 +302,13 @@ namespace openvrml {
     class scene : boost::noncopyable {
         struct load_scene;
 
-        mutable boost::recursive_mutex mutex_;
-        openvrml::browser * browser_;
+        openvrml::browser * const browser_;
         scene * const parent_;
+
+        mutable boost::recursive_mutex nodes_mutex_;
         std::vector<node_ptr> nodes_;
+
+        mutable boost::read_write_mutex url_mutex_;
         std::string url_;
 
     public:

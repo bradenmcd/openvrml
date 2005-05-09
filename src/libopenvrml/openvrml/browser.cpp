@@ -5324,18 +5324,16 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
  */
 
 /**
- * @var boost::recursive_mutex openvrml::scene::mutex_
+ * @internal
  *
- * @brief <code>scene</code> mutex.
- */
-
-/**
- * @var openvrml::browser * openvrml::scene::browser_
+ * @var openvrml::browser * const openvrml::scene::browser_
  *
  * @brief A reference to the browser associated with the scene.
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::scene * const openvrml::scene::parent_
  *
  * @brief A pointer to the parent scene.
@@ -5344,12 +5342,32 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
  */
 
 /**
+ * @internal
+ *
+ * @var boost::recursive_mutex openvrml::scene::nodes_mutex_
+ *
+ * @brief Mutex protecting @a nodes_.
+ */
+
+/**
+ * @internal
+ *
  * @var openvrml::mfnode openvrml::scene::nodes_
  *
  * @brief The nodes for the scene.
  */
 
 /**
+ * @internal
+ *
+ * @var boost::read_write_mutex openvrml::scene::url_mutex_
+ *
+ * @brief Mutex protecting @a url_.
+ */
+
+/**
+ * @internal
+ *
  * @var const std::string openvrml::scene::url_
  *
  * @brief The URI for the scene.
@@ -5447,7 +5465,8 @@ namespace {
  */
 openvrml::scene::scene(openvrml::browser & browser, scene * parent) throw ():
     browser_(&browser),
-    parent_(parent)
+    parent_(parent),
+    url_mutex_(boost::read_write_scheduling_policy::writer_priority)
 {}
 
 /**
@@ -5492,15 +5511,13 @@ struct openvrml::scene::load_scene {
         openvrml::scene & scene = *this->scene_;
         const vector<string> & url = *this->url_;
 
-        assert(scene.url().empty());
+        assert(scene.url_.empty());
 
         vector<node_ptr> nodes;
         try {
             std::auto_ptr<resource_istream> in = scene.get_resource(url);
             if (!(*in)) { throw unreachable_url(); }
-            if (!scene.parent()) {
-                scene.browser().world_url(in->url());
-            }
+            scene.url(in->url());
             Vrml97Scanner scanner(*in);
             Vrml97Parser parser(scanner, in->url());
             parser.vrmlScene(scene.browser(), nodes);
@@ -5563,7 +5580,7 @@ void openvrml::scene::load(const std::vector<std::string> & url)
  */
 void openvrml::scene::initialize(const double timestamp) throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
     for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {
@@ -5593,7 +5610,7 @@ void openvrml::scene::initialize(const double timestamp) throw (std::bad_alloc)
 void openvrml::scene::nodes(const std::vector<node_ptr> & n)
     throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
     this->nodes_ = n;
 }
 
@@ -5606,12 +5623,13 @@ void openvrml::scene::nodes(const std::vector<node_ptr> & n)
  */
 const std::string openvrml::scene::url() const throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    boost::read_write_mutex::scoped_read_lock lock(this->url_mutex_);
     using std::string;
-    return this->parent_
-        ? string(uri(this->url_)
-                 .resolve_against(uri(this->parent_->url())))
-        : this->url_;
+    const string result = this->parent_
+                        ? string(uri(this->url_)
+                                 .resolve_against(uri(this->parent_->url())))
+                        : this->url_;
+    return result;
 }
 
 /**
@@ -5629,7 +5647,7 @@ const std::string openvrml::scene::url() const throw (std::bad_alloc)
 void openvrml::scene::url(const std::string & str)
     throw (invalid_url, std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    boost::read_write_mutex::scoped_write_lock lock(this->url_mutex_);
     uri id(str); // Make sure we have a valid URI.
     this->url_ = str;
 }
@@ -5643,7 +5661,7 @@ void openvrml::scene::url(const std::string & str)
 void openvrml::scene::render(openvrml::viewer & viewer,
                              rendering_context context)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
     for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {
@@ -5683,8 +5701,6 @@ void openvrml::scene::load_url(const std::vector<std::string> & url,
                                const std::vector<std::string> & parameter)
     throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-
     using std::string;
 
     if (!url.empty()) {
@@ -5779,7 +5795,7 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
  */
 void openvrml::scene::shutdown(const double timestamp) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
     for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {
