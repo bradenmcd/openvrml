@@ -73,7 +73,7 @@ libopenvrml_la_LDFLAGS = \
         @FREETYPE_LIBS@ \
         @JS_LIBS@ \
         @JNI_LIBS@ \
-        -lboost_thread
+        -lboost_regex -lboost_thread
 
 libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
 
