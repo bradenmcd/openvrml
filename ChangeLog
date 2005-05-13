@@ -1,3 +1,10 @@
+2005-05-13 Braden McDaniel  <braden@endoframe.com>
+
+	Favor making virtual functions private.
+
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	* src/libopenvrml/openvrml/bounding_volume.h
+
 2005-05-09 Braden McDaniel  <braden@endoframe.com>
 
 	* openvrml.pc.in:  Added Boost libraries.
