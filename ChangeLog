@@ -1,5 +1,10 @@
 2005-05-13 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/bounding_volume.cpp:  Doc-comment
+	fixes.
+
+2005-05-13 Braden McDaniel  <braden@endoframe.com>
+
 	Favor making virtual functions private.
 
 	* src/libopenvrml/openvrml/bounding_volume.cpp

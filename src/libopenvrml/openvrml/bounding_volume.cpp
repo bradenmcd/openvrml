@@ -36,7 +36,6 @@
  * that are expected to be static. That probably means boxes for geometry and
  * spheres for grouping nodes.
  *
- * @see openvrml::node::render
  * @see openvrml::bounding_sphere
  * @see openvrml::axis_aligned_bounding_box
  */
@@ -208,7 +207,7 @@ void openvrml::bounding_volume::extend(const vec3f & p)
  */
 
 /**
- * @fn void openvrml::bounding_volume::extend(const bounding_sphere & b)
+ * @fn void openvrml::bounding_volume::do_extend(const bounding_sphere & b)
  *
  * @brief Called by
  *        <code>bounding_volume::extend(const bounding_volume &)</code>.
