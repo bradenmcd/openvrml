@@ -1306,16 +1306,6 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
- * @internal
- *
- * @var bool openvrml::node::bounding_volume_dirty_
- *
- * @brief Indicate whether the node's cached bounding volume needs updating.
- *
- * @see openvrml::node::bounding_volume_dirty
- */
-
-/**
  * @brief Construct.
  *
  * @param type  the node_type associated with the instance.
@@ -1327,7 +1317,6 @@ openvrml::node::node(const node_type & type,
     scope_(scope),
     scene_(0),
     modified_(false),
-    bounding_volume_dirty_(false),
     type_(type)
 {}
 
@@ -1628,6 +1617,20 @@ openvrml::script_node * openvrml::node::to_script() throw ()
  * @return 0
  */
 openvrml::appearance_node * openvrml::node::to_appearance() throw ()
+{
+    return 0;
+}
+
+/**
+ * @internal
+ *
+ * @brief Cast to a <code>bounded_volume_node</code>.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+openvrml::bounded_volume_node * openvrml::node::to_bounded_volume() throw ()
 {
     return 0;
 }
@@ -1989,73 +1992,6 @@ bool openvrml::node::modified() const
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->modified_;
-}
-
-/**
- * @brief Get this node's bounding volume.
- *
- * Nodes that have no bounding volume, or have a difficult to calculate
- * bvolume (like, say, Extrusion or Billboard) can just return an infinite
- * bsphere. Note that returning an infinite bvolume means that all the node's
- * ancestors will also end up with an infinite bvolume, and will never be
- * culled.
- *
- * @return a maximized bounding volume.
- */
-const openvrml::bounding_volume & openvrml::node::bounding_volume() const
-{
-    class default_bounding_volume : public bounding_sphere {
-    public:
-        default_bounding_volume()
-        {
-            this->maximize();
-        }
-    };
-
-    static const default_bounding_volume default_bvolume;
-
-    const_cast<node *>(this)->bounding_volume_dirty(false);
-    return default_bvolume;
-}
-
-
-/**
- * Override a node's calculated bounding volume. Not implemented.
- *
- * @todo Implement me!
- */
-void openvrml::node::bounding_volume(const openvrml::bounding_volume & v)
-{
-    // XXX Implement me!
-}
-
-/**
- * Indicate that a node's bounding volume needs to be recalculated
- * (or not). If a node's bvolume is invalid, then the bvolumes of
- * all that node's ancestors are also invalid. Normally, the node
- * itself will determine when its bvolume needs updating.
- */
-void openvrml::node::bounding_volume_dirty(const bool value)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    this->bounding_volume_dirty_ = value;
-    if (value) { // only if dirtying, not clearing
-        this->type_.node_class().browser().flags_need_updating = true;
-    }
-}
-
-/**
- * Return true if the node's bounding volume needs to be
- * recalculated.
- */
-bool openvrml::node::bounding_volume_dirty() const
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    if (this->type_.node_class().browser().flags_need_updating) {
-        this->type_.node_class().browser().update_flags();
-        this->type_.node_class().browser().flags_need_updating = false;
-    }
-    return this->bounding_volume_dirty_;
 }
 
 /**
@@ -2566,7 +2502,7 @@ bool openvrml::delete_route(node & from,
  */
 
 /**
- * @fn template <> openvrml::texture_node * node_cast<openvrml::texture_node *>(node * n) throw ()
+ * @fn template <> openvrml::texture_node * openvrml::node_cast<openvrml::texture_node *>(node * n) throw ()
  *
  * @brief Cast to a texture_node.
  *
@@ -2708,6 +2644,128 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance() throw ()
 
 
 /**
+ * @class openvrml::bounded_volume_node
+ *
+ * @ingroup nodes
+ *
+ * @brief Abstract base class for nodes that represent a bounded volume in the
+ *        scene graph.
+ */
+
+/**
+ * @internal
+ *
+ * @var bool openvrml::bounded_volume_node::bounding_volume_dirty_
+ *
+ * @brief Indicate whether the node's cached bounding volume needs updating.
+ */
+
+/**
+ * @brief Construct.
+ */
+openvrml::bounded_volume_node::
+bounded_volume_node(const node_type & type,
+                    const boost::shared_ptr<openvrml::scope> & scope) throw ():
+    node(type, scope),
+    bounding_volume_dirty_(false)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::bounded_volume_node::~bounded_volume_node() throw ()
+{}
+
+/**
+ * @brief Get this node's bounding volume.
+ *
+ * Nodes that have no bounding volume, or have a difficult to calculate
+ * bvolume (like, say, Extrusion or Billboard) can just return an infinite
+ * bsphere. Note that returning an infinite bvolume means that all the node's
+ * ancestors will also end up with an infinite bvolume, and will never be
+ * culled.
+ *
+ * Delegates to <code>bounded_volume_node::do_bounding_volume</code>.
+ *
+ * @return a maximized bounding volume.
+ */
+const openvrml::bounding_volume &
+openvrml::bounded_volume_node::bounding_volume() const
+{
+    const openvrml::bounding_volume & bv = this->do_bounding_volume();
+    this->bounding_volume_dirty_ = false;
+    return bv;
+}
+
+/**
+ * @brief Called by <code>bounded_volume_node::bounding_volume</code>.
+ *
+ * @return a maximized bounding volume.
+ */
+const openvrml::bounding_volume &
+openvrml::bounded_volume_node::do_bounding_volume() const
+{
+    class default_bounding_volume : public bounding_sphere {
+    public:
+        default_bounding_volume()
+        {
+            this->maximize();
+        }
+    };
+
+    static const default_bounding_volume default_bvolume;
+    return default_bvolume;
+}
+
+/**
+ * @brief Set whether the node's bounding volume needs to be recalculated.
+ *
+ * Indicate that a node's bounding volume needs to be recalculated (or not).
+ * If a node's bounding volume is invalid, then the bounding volumes of all
+ * that node's ancestors are also invalid. Normally, the node itself will
+ * determine when its bounding volume needs updating.
+ *
+ * @param value @c true if the node's bounding volume should be recalculated;
+ *              @c false otherwise.
+ */
+void openvrml::bounded_volume_node::bounding_volume_dirty(const bool value)
+{
+    boost::recursive_mutex::scoped_lock lock(this->mutex());
+    this->bounding_volume_dirty_ = value;
+    if (value) { // only if dirtying, not clearing
+        this->type().node_class().browser().flags_need_updating = true;
+    }
+}
+
+/**
+ * @brief Whether the node's bounding volume needs to be recalculated.
+ *
+ * @return @c true if the node's bounding volume needs to be recalculated;
+ *         @c false otherwise.
+ */
+bool openvrml::bounded_volume_node::bounding_volume_dirty() const
+{
+    boost::recursive_mutex::scoped_lock lock(this->mutex());
+    if (this->type().node_class().browser().flags_need_updating) {
+        this->type().node_class().browser().update_flags();
+        this->type().node_class().browser().flags_need_updating = false;
+    }
+    return this->bounding_volume_dirty_;
+}
+
+/**
+ * @brief Cast to an <code>bounded_volume_node</code>.
+ *
+ * @return a pointer to this <code>bounded_volume_node</code>.
+ */
+openvrml::bounded_volume_node *
+openvrml::bounded_volume_node::to_bounded_volume() throw ()
+{
+    return this;
+}
+
+
+/**
  * @class openvrml::child_node
  *
  * @ingroup nodes
@@ -2725,7 +2783,8 @@ openvrml::child_node::
 child_node(const node_type & type,
            const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
-    node(type, scope)
+    node(type, scope),
+    bounded_volume_node(type, scope)
 {}
 
 /**
@@ -3064,6 +3123,7 @@ geometry_node(const node_type & type,
               const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
+    bounded_volume_node(type, scope),
     geometry_reference(0)
 {}
 
@@ -3195,6 +3255,7 @@ grouping_node(const node_type & type,
               const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
+    bounded_volume_node(type, scope),
     child_node(type, scope)
 {}
 
@@ -3340,6 +3401,7 @@ navigation_info_node(const node_type & t,
                      const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(t, scope),
+    bounded_volume_node(t, scope),
     child_node(t, scope)
 {}
 
@@ -3736,6 +3798,7 @@ transform_node(const node_type & type,
                const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
+    bounded_volume_node(type, scope),
     child_node(type, scope),
     grouping_node(type, scope)
 {}
@@ -3784,6 +3847,7 @@ viewpoint_node(const node_type & type,
                const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
     node(type, scope),
+    bounded_volume_node(type, scope),
     child_node(type, scope)
 {}
 

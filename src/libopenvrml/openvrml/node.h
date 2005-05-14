@@ -259,6 +259,7 @@ namespace openvrml {
     class bounding_volume;
     class script_node;
     class appearance_node;
+    class bounded_volume_node;
     class child_node;
     class color_node;
     class coordinate_node;
@@ -307,6 +308,8 @@ namespace openvrml {
         friend script_node * node_cast<script_node *>(node * n) throw ();
         friend appearance_node * node_cast<appearance_node *>(node * n)
             throw ();
+        friend bounded_volume_node *
+        node_cast<bounded_volume_node *>(node * n) throw ();
         friend child_node * node_cast<child_node *>(node * n) throw ();
         friend color_node * node_cast<color_node *>(node * n) throw ();
         friend coordinate_node * node_cast<coordinate_node *>(node * n)
@@ -376,7 +379,6 @@ namespace openvrml {
         boost::shared_ptr<openvrml::scope> scope_;
         openvrml::scene * scene_;
         bool modified_;
-        bool bounding_volume_dirty_;
 
     public:
         virtual ~node() throw () = 0;
@@ -417,12 +419,6 @@ namespace openvrml {
         virtual bool modified() const;
         void modified(bool value);
 
-        virtual void bounding_volume(const openvrml::bounding_volume & v);
-        virtual const openvrml::bounding_volume & bounding_volume() const;
-
-        virtual void bounding_volume_dirty(bool f);
-        virtual bool bounding_volume_dirty() const;
-
     protected:
         static void emit_event(openvrml::event_emitter & emitter,
                                double timestamp)
@@ -448,6 +444,7 @@ namespace openvrml {
 
         virtual script_node * to_script() throw ();
         virtual appearance_node * to_appearance() throw ();
+        virtual bounded_volume_node * to_bounded_volume() throw ();
         virtual child_node * to_child() throw ();
         virtual color_node * to_color() throw ();
         virtual coordinate_node * to_coordinate() throw ();
@@ -503,6 +500,15 @@ namespace openvrml {
     {
         return n
             ? n->to_appearance()
+            : 0;
+    }
+
+    template <>
+    inline bounded_volume_node *
+    node_cast<bounded_volume_node *>(node * n) throw ()
+    {
+        return n
+            ? n->to_bounded_volume()
             : 0;
     }
 
@@ -654,7 +660,30 @@ namespace openvrml {
     };
 
 
-    class child_node : public virtual node {
+    class bounded_volume_node : public virtual node {
+        mutable bool bounding_volume_dirty_;
+
+    public:
+        virtual ~bounded_volume_node() throw ();
+
+        const openvrml::bounding_volume & bounding_volume() const;
+
+    protected:
+        bounded_volume_node(const node_type & type,
+                            const boost::shared_ptr<openvrml::scope> & scope)
+            throw ();
+
+        void bounding_volume_dirty(bool value);
+        bool bounding_volume_dirty() const;
+
+        virtual const openvrml::bounding_volume & do_bounding_volume() const;
+
+    private:
+        virtual bounded_volume_node * to_bounded_volume() throw ();
+    };
+
+
+    class child_node : public virtual bounded_volume_node {
     public:
         virtual ~child_node() throw () = 0;
 
@@ -734,7 +763,7 @@ namespace openvrml {
     };
 
 
-    class geometry_node : public virtual node {
+    class geometry_node : public virtual bounded_volume_node {
         viewer::object_t geometry_reference;
 
     public:

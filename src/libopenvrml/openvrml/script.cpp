@@ -56,7 +56,7 @@
  */
 
 /**
- * @var script_node & script::node
+ * @var openvrml::script_node & openvrml::script::node
  *
  * @brief A reference to the script_node that uses this script object.
  */
@@ -1213,6 +1213,7 @@ script_node(script_node_class & class_,
     throw (unsupported_interface, std::bad_cast, std::bad_alloc,
            std::invalid_argument):
     node(this->type, scope),
+    bounded_volume_node(this->type, scope),
     child_node(this->type, scope),
     type(class_),
     direct_output(false),

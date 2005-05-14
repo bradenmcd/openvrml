@@ -1,5 +1,16 @@
 2005-05-13 Braden McDaniel  <braden@endoframe.com>
 
+	Added abstract node type openvrml::bounded_volume_node.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
+2005-05-13 Braden McDaniel  <braden@endoframe.com>
+
 	Doc-comment fixes.
 
 	* src/libopenvrml/openvrml/field_value.cpp

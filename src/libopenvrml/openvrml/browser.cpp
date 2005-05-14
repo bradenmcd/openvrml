@@ -2455,6 +2455,7 @@ namespace {
     default_navigation_info::default_navigation_info(const null_node_type & t)
         throw ():
         node(t, null_scope_ptr),
+        bounded_volume_node(t, null_scope_ptr),
         child_node(t, null_scope_ptr),
         openvrml::navigation_info_node(t, null_scope_ptr)
     {}
@@ -2614,6 +2615,7 @@ namespace {
     default_viewpoint::default_viewpoint(const null_node_type & type)
         throw ():
         node(type, null_scope_ptr),
+        bounded_volume_node(type, null_scope_ptr),
         child_node(type, null_scope_ptr),
         viewpoint_node(type, null_scope_ptr)
     {}
@@ -3007,6 +3009,15 @@ openvrml::resource_istream::~resource_istream()
  * @brief Get the MIME content type associated with the stream.
  *
  * @return the MIME content type associated with the stream.
+ */
+
+/**
+ * @fn bool openvrml::resource_istream::data_available() const throw ()
+ *
+ * @brief Indicates whether data is available to be read from the stream.
+ *
+ * @return @c true if there is data in the stream buffer to be read; @c false
+ *         otherwise.
  */
 
 
@@ -3602,6 +3613,12 @@ void openvrml::browser::node_class_map::render(openvrml::viewer & v)
  * @var bool openvrml::browser::modified_
  *
  * @brief Flag to indicate whether the browser has been modified.
+ */
+
+/**
+ * @var boost::mutex openvrml::browser::modified_mutex_
+ *
+ * @brief Mutex protecting <code>browser::modified_</code>.
  */
 
 /**

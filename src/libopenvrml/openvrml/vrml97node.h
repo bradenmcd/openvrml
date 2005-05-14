@@ -221,7 +221,6 @@ namespace openvrml {
                        const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~group_node() throw ();
 
-            virtual const openvrml::bounding_volume & bounding_volume() const;
             virtual bool modified() const;
 
             virtual const std::vector<node_ptr> & children() const throw ();
@@ -236,6 +235,10 @@ namespace openvrml {
                                          rendering_context context);
 
             void recalc_bsphere();
+
+        private:
+            virtual const openvrml::bounding_volume &
+            do_bounding_volume() const;
         };
 
 
@@ -265,11 +268,12 @@ namespace openvrml {
 
             virtual anchor_node * to_anchor() const;
 
-            virtual const openvrml::bounding_volume & bounding_volume() const;
-
             void activate();
 
         private:
+            virtual const openvrml::bounding_volume &
+            do_bounding_volume() const;
+
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
         };
@@ -377,8 +381,9 @@ namespace openvrml {
                 throw ();
 
         private:
-            virtual void do_initialize(viewpoint_node * initial_viewpoint,
-                                       double timestamp) throw ();
+            virtual void
+            do_initialize(openvrml::viewpoint_node * initial_viewpoint,
+                          double timestamp) throw ();
             virtual void do_render(viewer & v) const throw ();
             virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
@@ -571,9 +576,10 @@ namespace openvrml {
             box_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~box_node() throw ();
 
-            virtual const openvrml::bounding_volume & bounding_volume() const;
-
         private:
+            virtual const openvrml::bounding_volume &
+            do_bounding_volume() const;
+
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
@@ -1061,8 +1067,9 @@ namespace openvrml {
             void unbind(fog_node & fog, double timestamp) throw ();
 
         private:
-            virtual void do_initialize(viewpoint_node * initialViewpoint,
-                                       double timestamp) throw ();
+            virtual void
+            do_initialize(openvrml::viewpoint_node * initialViewpoint,
+                          double timestamp) throw ();
             virtual void do_render(viewer & v) const throw ();
             virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
@@ -1254,9 +1261,11 @@ namespace openvrml {
             virtual ~indexed_face_set_node() throw ();
 
             virtual bool modified() const;
-            virtual const openvrml::bounding_volume & bounding_volume() const;
 
         private:
+            virtual const openvrml::bounding_volume &
+            do_bounding_volume() const;
+
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
@@ -1360,13 +1369,14 @@ namespace openvrml {
             virtual ~lod_node() throw ();
 
             virtual bool modified() const;
-            virtual const openvrml::bounding_volume & bounding_volume() const;
-
             virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 
         private:
+            virtual const openvrml::bounding_volume &
+            do_bounding_volume() const;
+
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
 
@@ -1495,8 +1505,9 @@ namespace openvrml {
                 throw ();
 
         private:
-            virtual void do_initialize(viewpoint_node * initial_viewpoint,
-                                       double timestamp) throw ();
+            virtual void
+            do_initialize(openvrml::viewpoint_node * initial_viewpoint,
+                          double timestamp) throw ();
             virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
@@ -1804,9 +1815,11 @@ namespace openvrml {
             virtual ~point_set_node() throw ();
 
             virtual bool modified() const;
-            virtual const openvrml::bounding_volume & bounding_volume() const;
 
         private:
+            virtual const openvrml::bounding_volume &
+            do_bounding_volume() const;
+
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
@@ -1966,9 +1979,11 @@ namespace openvrml {
             virtual ~shape_node() throw ();
 
             virtual bool modified() const;
-            virtual const openvrml::bounding_volume & bounding_volume() const;
 
         private:
+            virtual const openvrml::bounding_volume &
+            do_bounding_volume() const;
+
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
         };
@@ -2036,9 +2051,10 @@ namespace openvrml {
                         const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~sphere_node() throw ();
 
-            virtual const openvrml::bounding_volume & bounding_volume() const;
-
         private:
+            virtual const openvrml::bounding_volume &
+            do_bounding_volume() const;
+
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
@@ -2176,13 +2192,14 @@ namespace openvrml {
             virtual ~switch_node() throw ();
 
             virtual bool modified() const;
-            virtual const openvrml::bounding_volume & bounding_volume() const;
-
             virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 
         private:
+            virtual const openvrml::bounding_volume &
+            do_bounding_volume() const;
+
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
 
@@ -2582,11 +2599,12 @@ namespace openvrml {
                            const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~transform_node() throw ();
 
-            virtual const openvrml::bounding_volume & bounding_volume() const;
-
             virtual const mat4f & transform() const throw ();
 
         private:
+            virtual const openvrml::bounding_volume &
+            do_bounding_volume() const;
+
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
 
