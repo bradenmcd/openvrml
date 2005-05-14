@@ -2080,7 +2080,7 @@ bool openvrml::operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ()
  */
 
 /**
- * @typedef mffloat::value_type
+ * @typedef openvrml::mffloat::value_type
  *
  * @brief Type of @a value.
  */

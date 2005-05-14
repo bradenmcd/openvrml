@@ -101,7 +101,7 @@ namespace openvrml {
                               const std::vector<vec3f> & normal,
                               const std::vector<vec2f> & tex_coord) = 0;
         virtual object_t
-        insert_extrusion(unsigned int,
+        insert_extrusion(unsigned int mask,
                          const std::vector<vec3f> & spine,
                          const std::vector<vec2f> & cross_section,
                          const std::vector<rotation> & orientation,
