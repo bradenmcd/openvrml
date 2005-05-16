@@ -4589,6 +4589,13 @@ void openvrml::browser::render()
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (!this->viewer_) { return; }
 
+    //
+    // Per-node_class rendering happens before viewer::set_viewpoint is called
+    // This is important for things like background rendering, since
+    // viewer::insert_background must be called before viewer::set_viewpoint.
+    //
+    this->node_class_map_.render(*this->viewer_);
+
     if (this->new_view) {
         this->viewer_->reset_user_navigation();
         this->new_view = false;
@@ -4625,8 +4632,6 @@ void openvrml::browser::render()
                                  this->active_viewpoint_->field_of_view(),
                                  avatarSize,
                                  visibilityLimit);
-
-    this->node_class_map_.render(*this->viewer_);
 
     // Top level object
 

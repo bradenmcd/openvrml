@@ -1,3 +1,9 @@
+2005-05-16 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::render):  Do per-node_class rendering before
+	calling openvrml::viewer::set_viewpoint.
+
 2005-05-13 Braden McDaniel  <braden@endoframe.com>
 
 	Added abstract node type openvrml::bounded_volume_node.
