@@ -327,7 +327,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  */
 
 /**
- * @fn openvrml::node_interface_matches_eventin::result_type openvrml::node_interface_matches_eventin::operator()(const node_interface_matches_eventin::first_argument_type & interface, const node_interface_matches_eventin::second_argument_type & eventin_id) const
+ * @fn openvrml::node_interface_matches_eventin::result_type openvrml::node_interface_matches_eventin::operator()(const first_argument_type & interface, const second_argument_type & eventin_id) const
  *
  * @brief Determine if a node_interface matches an eventIn identifier.
  *
@@ -365,7 +365,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  */
 
 /**
- * @fn openvrml::node_interface_matches_eventout::result_type openvrml::node_interface_matches_eventout::operator()(const node_interface_matches_eventout::first_argument_type & interface, const node_interface_matches_eventout::second_argument_type & eventout_id) const
+ * @fn openvrml::node_interface_matches_eventout::result_type openvrml::node_interface_matches_eventout::operator()(const first_argument_type & interface, const second_argument_type & eventout_id) const
  *
  * @brief Determine if a node_interface matches an eventOut identifier.
  *
@@ -403,7 +403,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  */
 
 /**
- * @fn openvrml::node_interface_matches_exposedfield::result_type openvrml::node_interface_matches_exposedfield::operator()(const node_interface_matches_exposedfield::first_argument_type & interface, const node_interface_matches_exposedfield::second_argument_type & exposedfield_id) const
+ * @fn openvrml::node_interface_matches_exposedfield::result_type openvrml::node_interface_matches_exposedfield::operator()(const first_argument_type & interface, const second_argument_type & exposedfield_id) const
  *
  * @brief Determine if a node_interface matches an exposedField identifier.
  *
@@ -434,7 +434,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  */
 
 /**
- * @fn openvrml::node_interface_matches_field::result_type openvrml::node_interface_matches_field::operator()(const node_interface_matches_field::first_argument_type & interface, const node_interface_matches_field::second_argument_type & field_id) const
+ * @fn openvrml::node_interface_matches_field::result_type openvrml::node_interface_matches_field::operator()(const first_argument_type & interface, const second_argument_type & field_id) const
  *
  * @brief Determine if a node_interface matches an field identifier.
  *
@@ -478,7 +478,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  */
 
 /**
- * @fn openvrml::node_interface_compare::result_type openvrml::node_interface_compare::operator()(const node_interface_compare::first_argument_type & lhs, const node_interface_compare::second_argument_type & rhs) const
+ * @fn openvrml::node_interface_compare::result_type openvrml::node_interface_compare::operator()(const first_argument_type & lhs, const second_argument_type & rhs) const
  *
  * @brief Compare two node_interfaces based on their id.
  *
@@ -830,7 +830,7 @@ const openvrml::node_interface_set & openvrml::node_type::interfaces() const
  */
 const openvrml::node_ptr
 openvrml::node_type::
-create_node(const boost::shared_ptr<openvrml::scope> & scope,
+create_node(const boost::shared_ptr<scope> & scope,
             const initial_value_map & initial_values) const
     throw (unsupported_interface, std::bad_cast, std::bad_alloc)
 {
@@ -838,7 +838,7 @@ create_node(const boost::shared_ptr<openvrml::scope> & scope,
 }
 
 /**
- * @fn const openvrml::node_ptr openvrml::node_type::do_create_node(const boost::shared_ptr<openvrml::scope> & scope, const initial_value_map & initial_values) const throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+ * @fn const openvrml::node_ptr openvrml::node_type::do_create_node(const boost::shared_ptr<scope> & scope, const initial_value_map & initial_values) const throw (unsupported_interface, std::bad_cast, std::bad_alloc)
  *
  * @brief Create a new node with this <code>node_type</code>.
  *

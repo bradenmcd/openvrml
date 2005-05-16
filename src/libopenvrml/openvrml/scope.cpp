@@ -85,7 +85,7 @@
  * @p id should be the name of the PROTO to which the scope corresponds.
  */
 openvrml::scope::scope(const std::string & id,
-                       const boost::shared_ptr<openvrml::scope> & parent):
+                       const boost::shared_ptr<scope> & parent):
     id_(id),
     parent_(parent)
 {}

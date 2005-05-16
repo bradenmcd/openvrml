@@ -17199,7 +17199,7 @@ namespace {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::vrml97_node::text_node::glyph_geometry::
-glyph_geometry(const std::vector<std::vector<openvrml::vec2f> > & contours,
+glyph_geometry(const std::vector<std::vector<vec2f> > & contours,
                const float advance_width,
                const float advance_height)
     throw (std::bad_alloc):

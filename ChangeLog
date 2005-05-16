@@ -1,5 +1,13 @@
 2005-05-16 Braden McDaniel  <braden@endoframe.com>
 
+	Doc-comment fixes.
+
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
+2005-05-16 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::browser::render):  Do per-node_class rendering before
 	calling openvrml::viewer::set_viewpoint.
