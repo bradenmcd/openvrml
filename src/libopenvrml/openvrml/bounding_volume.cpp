@@ -161,6 +161,10 @@ intersect_frustum(const openvrml::frustum & frustum) const
 /**
  * @brief Extend the bounding_volume to enclose @p bv.
  *
+ * Delegates to
+ * <code>bounding_volume::do_extend(const bounding_sphere &)</code> and
+ * <code>bounding_volume::do_extend(const axis_alligned_bounding_box &)</code>.
+ *
  * @param bv    a bounding volume.
  */
 void openvrml::bounding_volume::extend(const bounding_volume & bv)
@@ -171,9 +175,9 @@ void openvrml::bounding_volume::extend(const bounding_volume & bv)
     const bounding_sphere * bs = 0;
     const axis_aligned_bounding_box * ab = 0;
     if ((bs = dynamic_cast<const bounding_sphere *>(&bv))) {
-        this->extend(*bs);
+        this->do_extend(*bs);
     } else if ((ab = dynamic_cast<const axis_aligned_bounding_box *>(&bv))) {
-        this->extend(*ab);
+        this->do_extend(*ab);
     }
 }
 

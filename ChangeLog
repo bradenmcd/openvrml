@@ -1,5 +1,11 @@
 2005-05-17 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	(openvrml::bounding_volume::extend):  Delegate to the
+	openvrml::bounding_volume::do_extend functions.
+
+2005-05-17 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/testsuite.at:  Properly quote VRML source.
 
 2005-05-17 Braden McDaniel  <braden@endoframe.com>
