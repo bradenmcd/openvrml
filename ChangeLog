@@ -1,5 +1,9 @@
 2005-05-17 Braden McDaniel  <braden@endoframe.com>
 
+	* tests/testsuite.at:  Properly quote VRML source.
+
+2005-05-17 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/node_interface_set.cpp:  Removed DejaGnu cruft.
 
 2005-05-16 Braden McDaniel  <braden@endoframe.com>
