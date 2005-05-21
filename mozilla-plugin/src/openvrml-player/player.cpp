@@ -522,9 +522,6 @@ namespace {
 
 int main(int argc, char * argv[])
 {
-    using std::cout;
-    using std::cerr;
-    using std::endl;
     using std::string;
     using std::vector;
     using boost::scoped_ptr;
@@ -563,6 +560,18 @@ int main(int argc, char * argv[])
 
     if (arguments.read_fd) {
         ::command_channel = g_io_channel_unix_new(arguments.read_fd);
+        GError * error = 0;
+        GIOStatus status = g_io_channel_set_encoding(::command_channel,
+                                                     0, // binary (no encoding)
+                                                     &error);
+        if (status != G_IO_STATUS_NORMAL) {
+            if (error) {
+                g_critical(error->message);
+                g_error_free(error);
+            }
+            return EXIT_FAILURE;
+        }
+                                                     
         g_io_add_watch(::command_channel,
                        G_IO_IN,
                        command_data_available,
