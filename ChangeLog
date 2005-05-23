@@ -1,5 +1,13 @@
 2005-05-23 Braden McDaniel  <braden@endoframe.com>
 
+	Use a named temporary for the thread function object in order to
+	satisfy some older compilers (gcc 3.3).
+
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	* src/libopenvrml/openvrml/browser.cpp
+
+2005-05-23 Braden McDaniel  <braden@endoframe.com>
+
 	Pass compiler/linker flags for pthreads when building
 	libopenvrml.
 

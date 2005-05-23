@@ -524,6 +524,7 @@ int main(int argc, char * argv[])
 {
     using std::string;
     using std::vector;
+    using boost::function0;
     using boost::scoped_ptr;
     using boost::shared_ptr;
     using boost::thread;
@@ -604,15 +605,15 @@ int main(int argc, char * argv[])
         bool succeeded =
             uninitialized_plugin_streambuf_set_.insert(initial_stream);
         g_return_val_if_fail(succeeded, EXIT_FAILURE);
-        initial_stream_reader_thread
-            .reset(threads.create_thread(initial_stream_reader(initial_stream,
-                                                               b)));
+        function0<void> f = initial_stream_reader(initial_stream, b);
+        initial_stream_reader_thread.reset(threads.create_thread(f));
     }
 
     viewer.timer_update();
 
+    function0<void> read_commands = command_istream_reader(command_in, b);
     scoped_ptr<thread> command_reader_thread(
-        threads.create_thread(command_istream_reader(command_in, b)));
+        threads.create_thread(read_commands));
 
     gtk_main();
 

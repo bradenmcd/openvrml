@@ -3126,7 +3126,8 @@ namespace {
 void openvrml::read_stream(std::auto_ptr<resource_istream> in,
                            std::auto_ptr<stream_listener> listener)
 {
-    boost::thread(stream_reader(in, listener));
+    boost::function0<void> f = stream_reader(in, listener);
+    boost::thread t(f);
 }
 
 /**
@@ -5235,7 +5236,8 @@ private:
 void openvrml::scene::load(const std::vector<std::string> & url)
     throw (boost::thread_resource_error, std::bad_alloc)
 {
-    boost::thread(load_scene(*this, url));
+    boost::function0<void> f = load_scene(*this, url);
+    boost::thread t(f);
 }
 
 /**
