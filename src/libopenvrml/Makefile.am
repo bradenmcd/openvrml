@@ -44,6 +44,7 @@ AM_CPPFLAGS = \
         -DOPENVRML_LIBDIR_=\"$(libdir)\" \
         -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\"
 AM_CXXFLAGS = \
+        @PTHREAD_CFLAGS@ \
         @FONTCONFIG_CFLAGS@ \
         @FREETYPE_CFLAGS@ \
         @JS_CFLAGS@
@@ -52,7 +53,7 @@ libopenvrml_la_SOURCES = \
         openvrml/basetypes.cpp \
         openvrml/field_value.cpp \
         openvrml/event.cpp \
-	openvrml/exposedfield.cpp \
+        openvrml/exposedfield.cpp \
         openvrml/scope.cpp \
         openvrml/node.cpp \
         openvrml/node_ptr.cpp \
@@ -73,7 +74,8 @@ libopenvrml_la_LDFLAGS = \
         @FREETYPE_LIBS@ \
         @JS_LIBS@ \
         @JNI_LIBS@ \
-        -lboost_regex -lboost_thread
+        -lboost_regex -lboost_thread \
+        @PTHREAD_LIBS@
 
 libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
 

@@ -1,3 +1,13 @@
+2005-05-23 Braden McDaniel  <braden@endoframe.com>
+
+	Pass compiler/linker flags for pthreads when building
+	libopenvrml.
+
+	* configure.ac
+	* mozilla-plugin/configure.ac
+	* mozilla-plugin/src/openvrml-player/Makefile.am
+	* src/libopenvrml/Makefile.am
+
 2005-05-21 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml-player/player.cpp (main):  Set the

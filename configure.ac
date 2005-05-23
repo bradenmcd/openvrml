@@ -55,6 +55,8 @@ AC_PATH_PROG([REZ], [Rez], [$PATH:/Developer/Tools])
 #
 # Checks for libraries/headers.
 #
+ACX_PTHREAD(, [AC_MSG_FAILURE([pthread support not found])])
+
 PKG_CHECK_MODULES([FONTCONFIG], [$REQUIRE_FONTCONFIG], , [have_fontconfig=no])
 AC_PATH_PROG([FREETYPE_CONFIG], [freetype-config])
 

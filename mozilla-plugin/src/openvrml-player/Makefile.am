@@ -5,7 +5,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/../src/libopenvrml-gl \
         -I$(mozincludedir) \
         -DGTK_DISABLE_DEPRECATED
-AM_CXXFLAGS = @GTK_CFLAGS@ @GL_CFLAGS@
+AM_CXXFLAGS = @PTHREAD_CFLAGS@ @GTK_CFLAGS@ @GL_CFLAGS@
 
 libexec_PROGRAMS = openvrml-player
 openvrml_player_SOURCES = player.cpp
@@ -18,4 +18,6 @@ openvrml_player_LDFLAGS = \
         -R@mozlibdir@ \
         @GTK_LIBS@ \
         @GL_LIBS@ \
-        -lXmu -lXt @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@
+        -lXmu -lXt @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@ \
+        -lboost_thread \
+        @PTHREAD_LIBS@
