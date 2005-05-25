@@ -3647,38 +3647,6 @@ void openvrml::browser::node_class_map::render(openvrml::viewer & v)
  */
 
 /**
- * @struct openvrml::browser::event
- *
- * @brief An event.
- *
- * An event has a value and a destination, and is associated with a time.
- */
-
-/**
- * @var double openvrml::browser::event::timestamp
- *
- * @brief The timestamp of the event.
- */
-
-/**
- * @var openvrml::field_value * openvrml::browser::event::value
- *
- * @brief The value associated with the event.
- */
-
-/**
- * @var openvrml::node_ptr openvrml::browser::event::to_node
- *
- * @brief The node the event is going to.
- */
-
-/**
- * @var std::string openvrml::browser::event::to_eventin
- *
- * @brief The eventIn of @a to_node the event is going to.
- */
-
-/**
  * @var openvrml::browser::scene_cb_list_t openvrml::browser::scene_callbacks
  *
  * @brief List of functions to call when the world is changed.
@@ -3688,38 +3656,6 @@ void openvrml::browser::node_class_map::render(openvrml::viewer & v)
  * @var double openvrml::browser::frame_rate_
  *
  * @brief Frame rate.
- */
-
-/**
- * @var openvrml::browser::max_events
- *
- * @brief The maximum number of events which may be queued.
- *
- * Each browser can have a limited number of pending events.
- * Repeatedly allocating/freeing events is slow (it would be
- * nice to get rid of the field cloning, too), and if there are
- * so many events pending, we are probably running too slow to
- * handle them effectively anyway.
- */
-
-/**
- * @var openvrml::browser::event openvrml::browser::event_mem
- *
- * @brief The event queue.
- *
- * @todo The event queue ought to be sorted by timestamp.
- */
-
-/**
- * @var size_t openvrml::browser::first_event
- *
- * @brief Index of the first pending event.
- */
-
-/**
- * @var size_t openvrml::browser::last_event
- *
- * @brief Index of the last pending event.
  */
 
 /**
@@ -3790,8 +3726,6 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
     delta_time(DEFAULT_DELTA),
     viewer_(0),
     frame_rate_(0.0),
-    first_event(0),
-    last_event(0),
     out(out),
     err(err),
     flags_need_updating(false)
@@ -4340,61 +4274,6 @@ double openvrml::browser::frame_rate() const
 }
 
 /**
- * @brief Queue an event for a node.
- *
- * Current events are in the array @a event_mem[first_event, last_event). If
- * @a first_event == @a last_event, the queue is empty. There is a fixed
- * maximum number of events. If we are so far behind that the queue is filled,
- * the oldest events get overwritten.
- */
-void openvrml::browser::queue_event(double timestamp,
-                                    field_value * value,
-                                    const node_ptr & to_node,
-                                    const std::string & to_eventin)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    event * e = &this->event_mem[this->last_event];
-    e->timestamp = timestamp;
-    e->value = value;
-    e->to_node = to_node;
-    e->to_eventin = to_eventin;
-    this->last_event = (this->last_event + 1) % max_events;
-
-    // If the event queue is full, discard the oldest (in terms of when it
-    // was put on the queue, not necessarily in terms of earliest timestamp).
-    if (this->last_event == this->first_event) {
-        e = &this->event_mem[this->last_event];
-        delete e->value;
-        this->first_event = (this->first_event + 1) % max_events;
-    }
-}
-
-/**
- * @brief Check if any events are waiting to be distributed.
- *
- * @return @c true if there are pending events, @c false otherwise.
- */
-bool openvrml::browser::events_pending()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    return this->first_event != this->last_event;
-}
-
-
-/**
- * @brief Discard all pending events
- */
-void openvrml::browser::flush_events()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    while (this->first_event != this->last_event) {
-        event *e = &this->event_mem[this->first_event];
-        this->first_event = (this->first_event + 1) % max_events;
-        delete e->value;
-    }
-}
-
-/**
  * Called by the viewer when the cursor passes over, clicks, drags, or
  * releases a sensitive object (an Anchor or another grouping node with
  * an enabled TouchSensor child).
@@ -4493,80 +4372,6 @@ bool openvrml::browser::update(double current_time)
     std::for_each(this->scripts.begin(), this->scripts.end(),
                   UpdatePolledNode_<script_node *>(current_time));
 
-    // Pass along events to their destinations
-    while (this->first_event != this->last_event) {
-        event * const e = &this->event_mem[this->first_event];
-        this->first_event = (this->first_event + 1) % max_events;
-
-        event_listener & listener = e->to_node->event_listener(e->to_eventin);
-        switch (e->value->type()) {
-        case field_value::sfbool_id:
-            process_event<sfbool>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::sfcolor_id:
-            process_event<sfcolor>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::sffloat_id:
-            process_event<sffloat>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::sfimage_id:
-            process_event<sfimage>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::sfint32_id:
-            process_event<sfint32>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::sfnode_id:
-            process_event<sfnode>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::sfrotation_id:
-            process_event<sfrotation>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::sfstring_id:
-            process_event<sfstring>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::sftime_id:
-            process_event<sftime>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::sfvec2f_id:
-            process_event<sfvec2f>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::sfvec3f_id:
-            process_event<sfvec3f>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::mfcolor_id:
-            process_event<mfcolor>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::mffloat_id:
-            process_event<mffloat>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::mfint32_id:
-            process_event<mfint32>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::mfnode_id:
-            process_event<mfnode>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::mfrotation_id:
-            process_event<mfrotation>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::mfstring_id:
-            process_event<mfstring>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::mftime_id:
-            process_event<mftime>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::mfvec2f_id:
-            process_event<mfvec2f>(listener, *e->value, e->timestamp);
-            break;
-        case field_value::mfvec3f_id:
-            process_event<mfvec3f>(listener, *e->value, e->timestamp);
-            break;
-        default:
-            assert(false);
-        }
-
-        delete e->value;
-    }
-
     // Signal a redisplay if necessary
     return this->modified();
 }
@@ -4661,9 +4466,6 @@ void openvrml::browser::render()
     this->frame_rate_ = this->viewer_->frame_rate();
 
     this->modified(false);
-
-    // If any events were generated during render (ugly...) do an update
-    if (this->events_pending()) { this->delta(0.0); }
 }
 
 /**

@@ -190,21 +190,9 @@ namespace openvrml {
     protected:
         typedef std::list<scene_cb> scene_cb_list_t;
 
-        struct event {
-            double timestamp;
-            field_value * value;
-            node_ptr to_node;
-            std::string to_eventin;
-        };
-
         scene_cb_list_t scene_callbacks;
 
         double frame_rate_;
-
-        enum { max_events = 400 };
-        event event_mem[max_events];
-        size_t first_event;
-        size_t last_event;
 
     public:
         static double current_time() throw ();
@@ -251,14 +239,6 @@ namespace openvrml {
 
         void sensitive_event(node * object, double timestamp,
                              bool is_over, bool is_active, double * point);
-
-        void queue_event(double timestamp, field_value * value,
-                         const node_ptr & toNode,
-                         const std::string & to_eventin);
-
-        bool events_pending();
-
-        void flush_events();
 
         double frame_rate() const;
 
