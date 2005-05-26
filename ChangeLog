@@ -1,3 +1,8 @@
+2005-05-26 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml-player/Makefile.am:  Conditionally
+	build openvrml-player.
+
 2005-05-25 Braden McDaniel  <braden@endoframe.com>
 
 	Removed cruft from the old event system.
