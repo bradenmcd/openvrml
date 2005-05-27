@@ -1,5 +1,10 @@
 2005-05-26 Braden McDaniel  <braden@endoframe.com>
 
+	* tests/Makefile.am:  Pass compiler flags for pthreads when
+	building the tests.
+
+2005-05-26 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml-player/Makefile.am:  Conditionally
 	build openvrml-player.
 
