@@ -64,16 +64,23 @@ PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
 
 AX_CHECK_GLU
 
-AM_PATH_SDL(, [have_sdl=yes], [have_sdl=no])
-
-#
-# sdl-config (which is used by AM_PATH_SDL above) emits an rpath flag pointing
-# at its library installation directory.  We don't want this, as it prevents
-# users from linking lookat against, for example, a locally compiled libGL when
-# a version of the library also exists in SDL's library installation directory,
-# typically /usr/lib.
-#
-SDL_LIBS=`echo $SDL_LIBS | sed 's/-Wl,-rpath,[[^ ]]* //'`
+AC_PATH_PROG([SDL_CONFIG], [sdl-config])
+have_sdl=no
+if test -n "${SDL_CONFIG}"; then
+    have_sdl=yes
+    SDL_CFLAGS=`$SDL_CONFIG --cflags`
+    SDL_LIBS=`$SDL_CONFIG --libs`
+    #
+    # sdl-config sometimes emits an rpath flag pointing at its library
+    # installation directory.  We don't want this, as it prevents users from
+    # linking sdl-viewer against, for example, a locally compiled libGL when a
+    # version of the library also exists in SDL's library installation
+    # directory, typically /usr/lib.
+    #
+    SDL_LIBS=`echo $SDL_LIBS | sed 's/-Wl,-rpath,[[^ ]]* //'`
+fi
+AC_SUBST([SDL_CFLAGS])
+AC_SUBST([SDL_LIBS])
 
 OV_CHECK_JNI
 

@@ -1,5 +1,12 @@
 2005-05-26 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac:  Check for sdl-config directly rather than using
+	AM_PATH_SDL.  AM_PATH_SDL is broken upstream and not fixed for
+	all distributions.  This can make life difficult for users
+	building from the repository.
+
+2005-05-26 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/Makefile.am:  Pass compiler flags for pthreads when
 	building the tests.
 
