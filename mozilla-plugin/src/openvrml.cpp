@@ -40,11 +40,6 @@
 # include <nsIDOMWindow.h>
 # include <dom/nsIDOMWindowInternal.h>
 # include <dom/nsIDOMLocation.h>
-# if defined MOZ_X11
-#   include <gdk/gdkx.h>
-# else
-#   error Unsupported toolkit.
-# endif
 # include "openvrml.h"
 
 namespace {
