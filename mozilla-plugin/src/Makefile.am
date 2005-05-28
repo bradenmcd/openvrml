@@ -2,8 +2,9 @@ SUBDIRS = openvrml-player
 
 AM_CPPFLAGS = \
         -I$(mozincludedir) \
+        -DGTK_DISABLE_DEPRECATED \
         -DOPENVRML_LIBEXECDIR_=\"$(libexecdir)\"
-AM_CXXFLAGS = @MOZILLA_PLUGIN_CFLAGS@
+AM_CXXFLAGS = @MOZILLA_PLUGIN_CFLAGS@ @GTK_CFLAGS@
 
 idldir = $(datadir)/idl/openvrml-@PACKAGE_VERSION@
 

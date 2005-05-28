@@ -1,5 +1,12 @@
 2005-05-28 Braden McDaniel  <braden@endoframe.com>
 
+	GTK+ compiler flags and #includes were not extraneous.
+
+	* mozilla-plugin/src/Makefile.am
+	* mozilla-plugin/src/openvrml.cpp
+
+2005-05-28 Braden McDaniel  <braden@endoframe.com>
+
 	Removed extraneous GTK+ compiler flags and #includes.
 
 	* mozilla-plugin/src/Makefile.am
