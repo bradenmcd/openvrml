@@ -24,12 +24,11 @@
 # include <memory>
 # include <sstream>
 # include <stdexcept>
+# include <vector>
 # include <sys/socket.h>
 # include <sys/wait.h>
 # include <boost/lexical_cast.hpp>
 # include <boost/noncopyable.hpp>
-# include <boost/spirit.hpp>
-# include <boost/spirit/phoenix.hpp>
 # include <mozilla-config.h>
 # include <npupp.h>
 # include <nsCOMPtr.h>
@@ -37,10 +36,8 @@
 # include <nsMemory.h>
 # include <nsString.h>
 # include <nsIConsoleService.h>
-# include <nsIDOMWindow.h>
-# include <dom/nsIDOMWindowInternal.h>
-# include <dom/nsIDOMLocation.h>
 # if defined MOZ_X11
+#   include <fcntl.h>
 #   include <gdk/gdkx.h>
 # else
 #   error Unsupported toolkit.
