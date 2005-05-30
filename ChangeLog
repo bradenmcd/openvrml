@@ -1,3 +1,8 @@
+2005-05-30 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp:  Abort the forked process if
+	openvrml-player cannot be started.
+
 2005-05-28 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp:  Removed unnecessary

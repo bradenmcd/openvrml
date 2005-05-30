@@ -1082,11 +1082,13 @@ namespace {
 
                 int result = close(this->out_pipe[1]);
                 if (result != 0) {
-                    _exit(EXIT_FAILURE);
+                    g_error("Failed to close write descriptor for "
+                            "openvrml-player's input pipe");
                 }
                 result = close(this->in_pipe[0]);
                 if (result != 0) {
-                    _exit(EXIT_FAILURE);
+                    g_error("Failed to close read descriptor for "
+                            "openvrml-player's output pipe");
                 }
 
                 const char * exec_path = getenv("OPENVRML_PLAYER");
@@ -1127,7 +1129,7 @@ namespace {
 
                 result = execv(argv[0], argv);
                 if (result < 0) {
-                    printerr(strerror(errno));
+                    g_error("Failed to start openvrml-player");
                 }
             } else if (this->player_pid > 0) {
                 int result = close(this->out_pipe[0]);
