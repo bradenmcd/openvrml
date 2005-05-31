@@ -3098,10 +3098,12 @@ namespace {
             while (*this->in_) {
                 std::vector<unsigned char> data;
                 while (this->in_->data_available()) {
-                    resource_istream::int_type c = this->in_->get();
-                    if (c != resource_istream::traits_type::eof()) {
+                    const resource_istream::int_type c = this->in_->get();
+                    if (resource_istream::traits_type::not_eof(c)) {
                         data.push_back(
                             resource_istream::traits_type::to_char_type(c));
+                    } else {
+                        break;
                     }
                 }
                 this->listener_->data_available(data);

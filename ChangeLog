@@ -1,3 +1,9 @@
+2005-05-31 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(stream_reader::operator()):  Break out of the inner loop if eof
+	is encountered.
+
 2005-05-30 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp:  Abort the forked process if
