@@ -1,3 +1,11 @@
+2005-06-02 Braden McDaniel  <braden@endoframe.com>
+
+	Don't tell doxygen to generate short file names.
+
+	* configure.ac:  Use ustar format for distributions to
+	accommodate longer file names.
+	* Doxyfile
+
 2005-04-20 Braden McDaniel  <braden@endoframe.com>
 
 	Updated package version to 0.15.7.
