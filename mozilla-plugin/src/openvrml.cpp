@@ -1674,7 +1674,7 @@ namespace {
 
                 int result = execv(argv[0], argv);
                 if (result < 0) {
-                    printerr(strerror(errno));
+                    g_error("Failed to start openvrml-player");
                 }
             } else if (this->player_pid < 0) {
                 printerr(strerror(errno));
