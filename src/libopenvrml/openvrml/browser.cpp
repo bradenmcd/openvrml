@@ -4607,6 +4607,14 @@ void browser::render()
 {
     if (!this->viewer_) { return; }
 
+    //
+    // Per-node_class rendering happens before viewer::set_viewpoint is called
+    // This is important for things like background rendering, since
+    // viewer::insert_background must be called before viewer::set_viewpoint.
+    //
+    std::for_each(this->node_class_map.begin(), this->node_class_map.end(),
+                  RenderNodeClass(*this->viewer_));
+
     if (this->new_view) {
         this->viewer_->reset_user_navigation();
         this->new_view = false;
@@ -4646,9 +4654,6 @@ void browser::render()
                                  this->active_viewpoint_->field_of_view(),
                                  avatarSize,
                                  visibilityLimit);
-
-    std::for_each(this->node_class_map.begin(), this->node_class_map.end(),
-                  RenderNodeClass(*this->viewer_));
 
     // Top level object
 
