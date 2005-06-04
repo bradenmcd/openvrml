@@ -7,7 +7,9 @@ AM_CPPFLAGS = \
         -DGTK_DISABLE_DEPRECATED
 AM_CXXFLAGS = @GTK_CFLAGS@ @GL_CFLAGS@
 
+if ENABLE_MOZILLA_PLUGIN
 libexec_PROGRAMS = openvrml-player
+endif
 openvrml_player_SOURCES = player.cpp
 openvrml_player_LDADD = \
         $(top_builddir)/../src/libopenvrml-gl/libopenvrml-gl.la \
@@ -19,3 +21,5 @@ openvrml_player_LDFLAGS = \
         @GTK_LIBS@ \
         @GL_LIBS@ \
         -lXmu -lXt @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@
+
+EXTRA_DIST = $(openvrml_player_SOURCES)
