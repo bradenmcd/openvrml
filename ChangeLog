@@ -1,5 +1,9 @@
 2005-06-04 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Doxyfile:  Updated for Doxygen 1.4.3.
+
+2005-06-04 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml.cpp:  Abort the forked process if
 	openvrml-player cannot be started.
 
