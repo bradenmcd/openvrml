@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 2000  Christopher K. St. John
+// Copyright (C) 1998  Chris Morley
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,32 +19,30 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# ifndef VRMLRENDERCONTEXT_H
-#   define VRMLRENDERCONTEXT_H
+# ifndef OPENVRML_SYSTEM_H
+#   define OPENVRML_SYSTEM_H
 
+#   include <cstddef>
+#   include <string>
 #   include <openvrml/common.h>
-#   include <openvrml/bounding_volume.h>
+#   include <boost/utility.hpp>
 
 namespace openvrml {
 
-    class mat4f;
+    class mfstring;
 
-    class rendering_context {
-        mat4f * modelview;
-
+    class system : boost::noncopyable {
     public:
-        bounding_volume::intersection cull_flag;
-        bool draw_bounding_spheres;
-
-        rendering_context();
-        rendering_context(bounding_volume::intersection cull_flag,
-                          mat4f & modelview);
-
-        // Use compiler-generated copy-ctor, dtor, operator=.
-
-        const mat4f & matrix() const;
-        void matrix(mat4f & modelview);
+        virtual ~system() throw ();
+        virtual bool load_url(const std::string & url,
+                              const mfstring & parameters);
+        virtual int connect_socket( const char *host, int port );
+        virtual const char *http_host(const char *url, int *port);
+        virtual const std::string http_fetch( const char *url );
+        virtual void remove_file( const char *fn );
     };
+
+    extern system * the_system;
 }
 
-# endif
+#endif // OPENVRML_SYSTEM_H

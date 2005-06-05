@@ -1,5 +1,4 @@
 AM_CPPFLAGS = -I$(top_srcdir)/src/libopenvrml
-AM_CXXFLAGS = @PTHREAD_CFLAGS@
 AM_LDFLAGS = @OPENVRML_RPATH@
 LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
@@ -9,27 +8,18 @@ TESTS = browser_basic \
         parse_anchor \
         node_interface_set
 
-noinst_LTLIBRARIES = libtest-openvrml.la
 noinst_PROGRAMS = $(TESTS) parse
-noinst_HEADERS = test_browser.h
-
-libtest_openvrml_la_SOURCES = test_browser.cpp
-libtest_openvrml_la_LIBADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
 browser_basic_SOURCES = browser_basic.cpp
-browser_basic_LDADD = libtest-openvrml.la
 
 browser_create_vrml_from_stream_SOURCES = browser_create_vrml_from_stream.cpp
-browser_create_vrml_from_stream_LDADD = libtest-openvrml.la
 
 parse_anchor_SOURCES = parse_anchor.cpp
-parse_anchor_LDADD = libtest-openvrml.la
 
 node_interface_set_SOURCES = node_interface_set.cpp
 node_interface_set_LDFLAGS = -lboost_unit_test_framework
 
 parse_SOURCES = parse.cpp
-parse_LDADD = libtest-openvrml.la
 
 EXTRA_DIST = \
         package.m4 \
@@ -53,3 +43,10 @@ $(srcdir)/package.m4: $(top_srcdir)/configure.ac
           echo 'm4_define([AT_PACKAGE_STRING],    [@PACKAGE_STRING@])'; \
           echo 'm4_define([AT_PACKAGE_BUGREPORT], [@PACKAGE_BUGREPORT@])'; \
         } > $(srcdir)/package.m4
+
+clean-local:
+	test ! -f $(TESTSUITE) || $(SHELL) $(TESTSUITE) --clean
+	rm -f *.tmp
+	rm -f -r autom4te.cache
+
+DISTCLEANFILES = atconfig

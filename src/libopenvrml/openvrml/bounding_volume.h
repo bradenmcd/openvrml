@@ -36,34 +36,23 @@ namespace openvrml {
     class bounding_volume {
     public:
         enum intersection {
+            inside = 1,
             outside = -1,
-            partial = 0,
-            inside = 1
+            partial = 0
         };
 
-        virtual ~bounding_volume() throw () = 0;
-
-        void maximize();
-        bool maximized() const throw ();
-        intersection
-        intersect_frustum(const openvrml::frustum & frustum) const;
-        void extend(const vec3f & p);
-        void extend(const bounding_volume & bv);
-        void enclose(const std::vector<vec3f> & points);
-        void ortho_transform(const mat4f & M);
-        void transform(const mat4f & M);
-
-    private:
-        virtual void do_maximize() = 0;
-        virtual bool do_maximized() const = 0;
+        virtual ~bounding_volume() = 0;
+        virtual void maximize() = 0;
+        virtual bool maximized() const = 0;
         virtual intersection
-        do_intersect_frustum(const openvrml::frustum & frustum) const = 0;
-        virtual void do_extend(const vec3f & p) = 0;
-        virtual void do_extend(const axis_aligned_bounding_box & bbox) = 0;
-        virtual void do_extend(const bounding_sphere & bs) = 0;
-        virtual void do_enclose(const std::vector<vec3f> & points) = 0;
-        virtual void do_ortho_transform(const mat4f & M) = 0;
-        virtual void do_transform(const mat4f & M) = 0;
+        intersect_frustum(const openvrml::frustum & frustum) const = 0;
+        virtual void extend(const bounding_volume & bv) = 0;
+        virtual void extend(const vec3f & p) = 0;
+        virtual void extend(const axis_aligned_bounding_box & bbox) = 0;
+        virtual void extend(const bounding_sphere & bs) = 0;
+        virtual void enclose(const std::vector<vec3f> & points) = 0;
+        virtual void ortho_transform(const mat4f & M) = 0;
+        virtual void transform(const mat4f & M) = 0;
     };
 
 
@@ -73,42 +62,45 @@ namespace openvrml {
 
     public:
         bounding_sphere();
-        virtual ~bounding_sphere() throw ();
+        virtual ~bounding_sphere();
+
+        virtual intersection
+        intersect_frustum(const openvrml::frustum & frustum) const;
+
+        virtual void extend(const bounding_volume & b);
+        virtual void extend(const vec3f & p);
+        virtual void extend(const axis_aligned_bounding_box & b);
+        virtual void extend(const bounding_sphere & b);
+        virtual void enclose(const std::vector<vec3f> & points);
+
+        virtual void maximize();
+        virtual bool maximized() const;
+
+        virtual void ortho_transform(const mat4f & t);
+        virtual void transform(const mat4f & t);
 
         void center(const vec3f & c);
         const vec3f & center() const;
+
         void radius(float r);
         float radius() const;
-
-    private:
-        virtual void do_maximize();
-        virtual bool do_maximized() const;
-        virtual intersection
-        do_intersect_frustum(const openvrml::frustum & frustum) const;
-        virtual void do_extend(const vec3f & p);
-        virtual void do_extend(const axis_aligned_bounding_box & b);
-        virtual void do_extend(const bounding_sphere & b);
-        virtual void do_enclose(const std::vector<vec3f> & points);
-        virtual void do_ortho_transform(const mat4f & t);
-        virtual void do_transform(const mat4f & t);
     };
 
 
     class axis_aligned_bounding_box : public bounding_volume {
     public:
-        virtual ~axis_aligned_bounding_box() throw ();
-
-    private:
-        virtual void do_maximize();
-        virtual bool do_maximized() const;
+        virtual ~axis_aligned_bounding_box();
         virtual intersection
-        do_intersect_frustum(const openvrml::frustum & frustum) const;
-        virtual void do_extend(const vec3f & p);
-        virtual void do_extend(const axis_aligned_bounding_box & b);
-        virtual void do_extend(const bounding_sphere & b);
-        virtual void do_enclose(const std::vector<vec3f> & points);
-        virtual void do_ortho_transform(const mat4f & M);
-        virtual void do_transform(const mat4f & M);
+        intersect_frustum(const openvrml::frustum & frustum) const;
+        virtual void extend(const bounding_volume & b);
+        virtual void extend(const vec3f & p);
+        virtual void extend(const axis_aligned_bounding_box & b);
+        virtual void extend(const bounding_sphere & b);
+        virtual void enclose(const std::vector<vec3f> & points);
+        virtual void maximize();
+        virtual bool maximized() const;
+        virtual void ortho_transform(const mat4f & M);
+        virtual void transform(const mat4f & M);
     };
 }
 

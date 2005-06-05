@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2004, 2005  Braden McDaniel
+// Copyright 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,8 +25,10 @@
 
 # include "event.h"
 
+namespace openvrml {
+
 /**
- * @class openvrml::event_listener
+ * @class event_listener
  *
  * @brief Abstract base class of event listeners.
  */
@@ -34,7 +36,7 @@
 /**
  * @internal
  *
- * @var openvrml::node & openvrml::event_listener::node_
+ * @var node & event_listener::node_
  *
  * @brief The <code>node</code> to which the <code>event_listener</code>
  *        belongs.
@@ -46,46 +48,35 @@
  * @param node  the <code>node</code> to which the <code>event_listener</code>
  *              belongs.
  */
-openvrml::event_listener::event_listener(openvrml::node & node) throw ():
+event_listener::event_listener(openvrml::node & node) throw ():
     node_(node)
 {}
 
 /**
  * @brief Destroy.
  */
-openvrml::event_listener::~event_listener() throw ()
+event_listener::~event_listener() throw ()
 {}
 
 /**
+ * @fn openvrml::node & event_listener::node() throw ()
+ *
  * @brief The <code>node</code> to which the <code>event_listener</code>
  *        belongs.
  *
  * @return the <code>node</code> to which the <code>event_listener</code>
  *         belongs.
  */
-openvrml::node & openvrml::event_listener::node() throw ()
-{
-    return this->node_;
-}
+
 
 /**
- * @fn openvrml::field_value::type_id openvrml::event_listener::type() const throw ()
- *
- * @brief The <code>field_value::type_id</code> for the type accepted by the
- *        event listener.
- *
- * @return The <code>field_value::type_id</code> for the type accepted by the
- *         event listener.
- */
-
-/**
- * @class openvrml::field_value_listener
+ * @class field_value_listener
  *
  * @brief Concrete event listener template.
  */
 
 /**
- * @fn openvrml::field_value_listener<FieldValue>::field_value_listener(openvrml::node & node) throw ()
+ * @fn field_value_listener<FieldValue>::field_value_listener(openvrml::node & node) throw ()
  *
  * @brief Construct.
  *
@@ -93,21 +84,13 @@ openvrml::node & openvrml::event_listener::node() throw ()
  */
 
 /**
- * @fn openvrml::field_value_listener<FieldValue>::~field_value_listener() throw ()
+ * @fn field_value_listener<FieldValue>::~field_value_listener() throw ()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn openvrml::field_value::type_id openvrml::field_value_listener<FieldValue>::type() const throw ()
- *
- * @brief <code>FieldValue::field_value_type_id</code>.
- *
- * @return <code>FieldValue::field_value_type_id</code>.
- */
-
-/**
- * @fn void openvrml::field_value_listener<FieldValue>::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void field_value_listener<FieldValue>::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
  * @brief Process an event.
  *
@@ -118,7 +101,7 @@ openvrml::node & openvrml::event_listener::node() throw ()
  */
 
 /**
- * @fn void openvrml::field_value_listener<FieldValue>::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void field_value_listener<FieldValue>::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
  * @brief Called by
  *      <code>field_value_listener&lt;FieldValue&gt;::do_process_event</code>.
@@ -132,134 +115,134 @@ openvrml::node & openvrml::event_listener::node() throw ()
  */
 
 /**
- * @typedef openvrml::sfbool_listener
+ * @typedef sfbool_listener
  *
  * @brief sfbool event listener.
  */
 
 /**
- * @typedef openvrml::sfcolor_listener
+ * @typedef sfcolor_listener
  *
  * @brief sfcolor event listener.
  */
 
 /**
- * @typedef openvrml::sffloat_listener
+ * @typedef sffloat_listener
  *
  * @brief sffloat event listener.
  */
 
 /**
- * @typedef openvrml::sfimage_listener
+ * @typedef sfimage_listener
  *
  * @brief sfimage event listener.
  */
 
 /**
- * @typedef openvrml::sfint32_listener
+ * @typedef sfint32_listener
  *
  * @brief sfint32 event listener.
  */
 
 /**
- * @typedef openvrml::sfnode_listener
+ * @typedef sfnode_listener
  *
  * @brief sfnode event listener.
  */
 
 /**
- * @typedef openvrml::sfrotation_listener
+ * @typedef sfrotation_listener
  *
  * @brief sfrotation event listener.
  */
 
 /**
- * @typedef openvrml::sfstring_listener
+ * @typedef sfstring_listener
  *
  * @brief sfstring event listener.
  */
 
 /**
- * @typedef openvrml::sftime_listener
+ * @typedef sftime_listener
  *
  * @brief sftime event listener.
  */
 
 /**
- * @typedef openvrml::sfvec2f_listener
+ * @typedef sfvec2f_listener
  *
  * @brief sfvec2f event listener.
  */
 
 /**
- * @typedef openvrml::sfvec3f_listener
+ * @typedef sfvec3f_listener
  *
  * @brief sfvec3f event listener.
  */
 
 /**
- * @typedef openvrml::mfcolor_listener
+ * @typedef mfcolor_listener
  *
  * @brief mfcolor event listener.
  */
 
 /**
- * @typedef openvrml::mffloat_listener
+ * @typedef mffloat_listener
  *
  * @brief mffloat event listener.
  */
 
 /**
- * @typedef openvrml::mfint32_listener
+ * @typedef mfint32_listener
  *
  * @brief mfint32 event listener.
  */
 
 /**
- * @typedef openvrml::mfnode_listener
+ * @typedef mfnode_listener
  *
  * @brief mfnode event listener.
  */
 
 /**
- * @typedef openvrml::mfrotation_listener
+ * @typedef mfrotation_listener
  *
  * @brief mfrotation event listener.
  */
 
 /**
- * @typedef openvrml::mfstring_listener
+ * @typedef mfstring_listener
  *
  * @brief mfstring event listener.
  */
 
 /**
- * @typedef openvrml::mftime_listener
+ * @typedef mftime_listener
  *
  * @brief mftime event listener.
  */
 
 /**
- * @typedef openvrml::mfvec2f_listener
+ * @typedef mfvec2f_listener
  *
  * @brief mfvec2f event listener.
  */
 
 /**
- * @typedef openvrml::mfvec3f_listener
+ * @typedef mfvec3f_listener
  *
  * @brief mfvec3f event listener.
  */
 
 
 /**
- * @class openvrml::event_emitter
+ * @class event_emitter
  *
  * @brief Abstract base class of event emitters.
  */
 
 /**
- * @var class openvrml::event_emitter::node
+ * @var class event_emitter::node
  *
  * @brief The implementation of <code>node</code> calls
  *        <code>event_emitter::emit_event</code>.
@@ -278,9 +261,8 @@ openvrml::node & openvrml::event_listener::node() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<openvrml::event_emitter>
-openvrml::event_emitter::create(const field_value & value)
-    throw (std::bad_alloc)
+std::auto_ptr<event_emitter>
+event_emitter::create(const field_value & value) throw (std::bad_alloc)
 {
     std::auto_ptr<event_emitter> emitter;
     switch (value.type()) {
@@ -368,27 +350,19 @@ openvrml::event_emitter::create(const field_value & value)
 /**
  * @internal
  *
- * @var boost::recursive_mutex openvrml::event_emitter::mutex_
- *
- * @brief Object mutex.
- */
-
-/**
- * @internal
- *
- * @var const openvrml::field_value & openvrml::event_emitter::value_
+ * @var const field_value & event_emitter::value_
  *
  * @brief A reference to the field_value for the event_emitter.
  */
 
 /**
- * @typedef openvrml::event_emitter::listener_set
+ * @typedef event_emitter::listener_set
  *
  * @brief Set of event_listeners.
  */
 
 /**
- * @var openvrml::event_emitter::listener_set openvrml::event_emitter::listeners_
+ * @var event_emitter::listener_set event_emitter::listeners_
  *
  * @brief The listeners registered for this emitter.
  *
@@ -397,7 +371,7 @@ openvrml::event_emitter::create(const field_value & value)
  */
 
 /**
- * @var double openvrml::event_emitter::last_time_
+ * @var double event_emitter::last_time_
  *
  * @brief The timestamp of the last event emitted.
  */
@@ -405,27 +379,17 @@ openvrml::event_emitter::create(const field_value & value)
 /**
  * @brief Construct.
  *
- * @param value <code>field_value</code> associated with this emitter.
+ * @param value field_value associated with this emitter.
  */
-openvrml::event_emitter::event_emitter(const field_value & value) throw ():
+event_emitter::event_emitter(const field_value & value) throw ():
     value_(value)
 {}
 
 /**
  * @brief Destroy.
  */
-openvrml::event_emitter::~event_emitter() throw ()
+event_emitter::~event_emitter() throw ()
 {}
-
-/**
- * @brief Get the mutex for the <code>event_emitter</code>.
- *
- * @return a reference to the <code>event_emitter</code>'s mutex.
- */
-boost::recursive_mutex & openvrml::event_emitter::mutex() const throw ()
-{
-    return this->mutex_;
-}
 
 /**
  * @brief A reference to the <code>field_value</code> for the
@@ -434,7 +398,7 @@ boost::recursive_mutex & openvrml::event_emitter::mutex() const throw ()
  * @return a reference to the <code>field_value</code> for the
  *         <code>event_emitter</code>.
  */
-const openvrml::field_value & openvrml::event_emitter::value() const throw ()
+const field_value & event_emitter::value() const throw ()
 {
     return this->value_;
 }
@@ -444,8 +408,7 @@ const openvrml::field_value & openvrml::event_emitter::value() const throw ()
  *
  * @return the set of registered event_listeners.
  */
-const openvrml::event_emitter::listener_set &
-openvrml::event_emitter::listeners() const throw ()
+const event_emitter::listener_set & event_emitter::listeners() const throw ()
 {
     return this->listeners_;
 }
@@ -455,8 +418,7 @@ openvrml::event_emitter::listeners() const throw ()
  *
  * @return the set of registered event_listeners.
  */
-openvrml::event_emitter::listener_set & openvrml::event_emitter::listeners()
-    throw ()
+event_emitter::listener_set & event_emitter::listeners() throw ()
 {
     return this->listeners_;
 }
@@ -466,9 +428,8 @@ openvrml::event_emitter::listener_set & openvrml::event_emitter::listeners()
  *
  * @return the timestamp of the last event emitted.
  */
-double openvrml::event_emitter::last_time() const throw ()
+double event_emitter::last_time() const throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->last_time_;
 }
 
@@ -477,14 +438,13 @@ double openvrml::event_emitter::last_time() const throw ()
  *
  * @param t the timestamp of the last event emitted.
  */
-void openvrml::event_emitter::last_time(const double t) throw ()
+void event_emitter::last_time(const double t) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->last_time_ = t;
 }
 
 /**
- * @fn void openvrml::event_emitter::emit_event(double timestamp) throw (std::bad_alloc)
+ * @fn void event_emitter::emit_event(double timestamp) throw (std::bad_alloc)
  *
  * @brief Emit an event.
  *
@@ -497,25 +457,25 @@ void openvrml::event_emitter::last_time(const double t) throw ()
 
 
 /**
- * @class openvrml::field_value_emitter
+ * @class field_value_emitter
  *
  * @brief Concrete event emitter template.
  */
 
 /**
- * @fn openvrml::field_value_emitter::field_value_emitter(const FieldValue & value) throw ()
+ * @fn field_value_emitter::field_value_emitter(const FieldValue & value) throw ()
  *
  * @brief Construct.
  */
 
 /**
- * @fn openvrml::field_value_emitter::~field_value_emitter() throw ()
+ * @fn field_value_emitter::~field_value_emitter() throw ()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn void openvrml::field_value_emitter::emit_event(double timestamp) throw (std::bad_alloc)
+ * @fn void field_value_emitter::emit_event(double timestamp) throw (std::bad_alloc)
  *
  * @brief Emit an event.
  *
@@ -525,7 +485,7 @@ void openvrml::event_emitter::last_time(const double t) throw ()
  */
 
 /**
- * @fn bool openvrml::field_value_emitter::add(field_value_listener<FieldValue> & listener) throw (std::bad_alloc)
+ * @fn bool field_value_emitter::add(field_value_listener<FieldValue> & listener) throw (std::bad_alloc)
  *
  * @brief Add an event listener.
  *
@@ -538,7 +498,7 @@ void openvrml::event_emitter::last_time(const double t) throw ()
  */
 
 /**
- * @fn bool openvrml::field_value_emitter::remove(field_value_listener<FieldValue> & listener)
+ * @fn bool field_value_emitter::remove(field_value_listener<FieldValue> & listener)
  *
  * @brief Remove an event listener.
  *
@@ -549,121 +509,123 @@ void openvrml::event_emitter::last_time(const double t) throw ()
  */
 
 /**
- * @typedef openvrml::sfbool_emitter
+ * @typedef sfbool_emitter
  *
  * @brief sfbool event emitter.
  */
 
 /**
- * @typedef openvrml::sfcolor_emitter
+ * @typedef sfcolor_emitter
  *
  * @brief sfcolor event emitter.
  */
 
 /**
- * @typedef openvrml::sffloat_emitter
+ * @typedef sffloat_emitter
  *
  * @brief sffloat event emitter.
  */
 
 /**
- * @typedef openvrml::sfimage_emitter
+ * @typedef sfimage_emitter
  *
  * @brief sfimage event emitter.
  */
 
 /**
- * @typedef openvrml::sfint32_emitter
+ * @typedef sfint32_emitter
  *
  * @brief sfint32 event emitter.
  */
 
 /**
- * @typedef openvrml::sfnode_emitter
+ * @typedef sfnode_emitter
  *
  * @brief sfnode event emitter.
  */
 
 /**
- * @typedef openvrml::sfrotation_emitter
+ * @typedef sfrotation_emitter
  *
  * @brief sfrotation event emitter.
  */
 
 /**
- * @typedef openvrml::sfstring_emitter
+ * @typedef sfstring_emitter
  *
  * @brief sfstring event emitter.
  */
 
 /**
- * @typedef openvrml::sftime_emitter
+ * @typedef sftime_emitter
  *
  * @brief sftime event emitter.
  */
 
 /**
- * @typedef openvrml::sfvec2f_emitter
+ * @typedef sfvec2f_emitter
  *
  * @brief sfvec2f event emitter.
  */
 
 /**
- * @typedef openvrml::sfvec3f_emitter
+ * @typedef sfvec3f_emitter
  *
  * @brief sfvec3f event emitter.
  */
 
 /**
- * @typedef openvrml::mfcolor_emitter
+ * @typedef mfcolor_emitter
  *
  * @brief mfcolor event emitter.
  */
 
 /**
- * @typedef openvrml::mffloat_emitter
+ * @typedef mffloat_emitter
  *
  * @brief mffloat event emitter.
  */
 
 /**
- * @typedef openvrml::mfint32_emitter
+ * @typedef mfint32_emitter
  *
  * @brief mfint32 event emitter.
  */
 
 /**
- * @typedef openvrml::mfnode_emitter
+ * @typedef mfnode_emitter
  *
  * @brief mfnode event emitter.
  */
 
 /**
- * @typedef openvrml::mfrotation_emitter
+ * @typedef mfrotation_emitter
  *
  * @brief mfrotation event emitter.
  */
 
 /**
- * @typedef openvrml::mfstring_emitter
+ * @typedef mfstring_emitter
  *
  * @brief mfstring event emitter.
  */
 
 /**
- * @typedef openvrml::mftime_emitter
+ * @typedef mftime_emitter
  *
  * @brief mftime event emitter.
  */
 
 /**
- * @typedef openvrml::mfvec2f_emitter
+ * @typedef mfvec2f_emitter
  *
  * @brief mfvec2f event emitter.
  */
 
 /**
- * @typedef openvrml::mfvec3f_emitter
+ * @typedef mfvec3f_emitter
  *
  * @brief mfvec3f event emitter.
  */
+
+} // namespace openvrml

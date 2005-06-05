@@ -65,11 +65,6 @@
 namespace {
     namespace openvrml_ {
 
-        const double pi     = 3.14159265358979323846;
-        const double pi_2   = 1.57079632679489661923;
-        const double pi_4   = 0.78539816339744830962;
-        const double inv_pi = 0.31830988618379067154;
-
         template <typename Float>
         inline Float fabs(const Float f)
         {
@@ -104,6 +99,87 @@ namespace {
             {
                 return a > b || fequal<Float>()(a, b);
             }
+        };
+
+        template <typename AdaptableBinaryFunction,
+                  typename AdaptableUnaryFunction1,
+                  typename AdaptableUnaryFunction2>
+        struct binary_compose :
+            std::unary_function<
+            typename AdaptableUnaryFunction1::argument_type,
+            typename AdaptableBinaryFunction::result_type> {
+
+            binary_compose(const AdaptableBinaryFunction & f,
+                           const AdaptableUnaryFunction1 & g1,
+                           const AdaptableUnaryFunction2 & g2):
+                f(f),
+                g1(g1),
+                g2(g2)
+            {}
+
+            typename AdaptableBinaryFunction::result_type
+            operator()(
+                const typename AdaptableUnaryFunction1::argument_type & arg)
+            {
+                return this->f(this->g1(arg), this->g2(arg));
+            }
+
+        private:
+            AdaptableBinaryFunction f;
+            AdaptableUnaryFunction1 g1;
+            AdaptableUnaryFunction2 g2;
+        };
+
+        template <typename AdaptableBinaryFunction,
+                  typename AdaptableUnaryFunction1,
+                  typename AdaptableUnaryFunction2>
+        binary_compose<AdaptableBinaryFunction,
+                       AdaptableUnaryFunction1,
+                       AdaptableUnaryFunction2>
+        compose2(const AdaptableBinaryFunction & f,
+                 const AdaptableUnaryFunction1 & g1,
+                 const AdaptableUnaryFunction2 & g2)
+        {
+            using boost::function_requires;
+            function_requires<boost::AdaptableBinaryFunctionConcept<
+                AdaptableBinaryFunction,
+                typename AdaptableBinaryFunction::result_type,
+                typename AdaptableBinaryFunction::first_argument_type,
+                typename AdaptableBinaryFunction::second_argument_type> >();
+            function_requires<boost::AdaptableUnaryFunctionConcept<
+                AdaptableUnaryFunction1,
+                typename AdaptableUnaryFunction1::result_type,
+                typename AdaptableUnaryFunction1::argument_type> >();
+            function_requires<boost::AdaptableUnaryFunctionConcept<
+                AdaptableUnaryFunction2,
+                typename AdaptableUnaryFunction1::result_type,
+                typename AdaptableUnaryFunction1::argument_type> >();
+            return binary_compose<AdaptableBinaryFunction,
+                                  AdaptableUnaryFunction1,
+                                  AdaptableUnaryFunction2>(f, g1, g2);
+        }
+
+        template <typename Arg, typename Result>
+        struct unary_function_base : std::unary_function<Arg, Result> {
+            virtual ~unary_function_base() {}
+            virtual Result operator()(const Arg & arg) const = 0;
+        };
+
+        template <typename Arg, typename Result>
+        struct unary_function_wrapper : std::unary_function<Arg, Result> {
+
+            explicit unary_function_wrapper(
+                const unary_function_base<Arg, Result> & function):
+                function(&function)
+            {}
+
+            Result operator()(const Arg & arg) const
+            {
+                return (*this->function)(arg);
+            }
+
+        private:
+            const unary_function_base<Arg, Result> * function;
         };
 
 
@@ -169,65 +245,6 @@ namespace {
         make_guard(const Function & function, const Param & param)
         {
             return scope_guard_impl1<Function, Param>(function, param);
-        }
-
-        template <typename Function,
-                  typename Param1,
-                  typename Param2,
-                  typename Param3>
-        class scope_guard_impl3 : public scope_guard_impl_base {
-            Function function;
-            const Param1 param1;
-            const Param2 param2;
-            const Param3 param3;
-
-        public:
-            scope_guard_impl3(const Function & function,
-                              const Param1 & param1,
-                              const Param2 & param2,
-                              const Param3 & param3);
-            ~scope_guard_impl3();
-        };
-
-        template <typename Function,
-                  typename Param1,
-                  typename Param2,
-                  typename Param3>
-        scope_guard_impl3<Function, Param1, Param2, Param3>::
-        scope_guard_impl3(const Function & function,
-                          const Param1 & param1,
-                          const Param2 & param2,
-                          const Param3 & param3):
-            function(function),
-            param1(param1),
-            param2(param2),
-            param3(param3)
-        {}
-
-        template <typename Function,
-                  typename Param1,
-                  typename Param2,
-                  typename Param3>
-        scope_guard_impl3<Function, Param1, Param2, Param3>::
-        ~scope_guard_impl3()
-        {
-            if (!this->dismissed) {
-                this->function(this->param1, this->param2, this->param3);
-            }
-        }
-
-        template <typename Function,
-                  typename Param1,
-                  typename Param2,
-                  typename Param3>
-        scope_guard_impl3<Function, Param1, Param2, Param3>
-        make_guard(const Function & function,
-                   const Param1 & param1,
-                   const Param2 & param2,
-                   const Param3 & param3)
-        {
-            return scope_guard_impl3<Function, Param1, Param2, Param3>(
-                function, param1, param2, param3);
         }
 
         template <typename Object, typename MemberFunction>

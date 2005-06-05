@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2004, 2005  Braden McDaniel
+// Copyright 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,10 +22,7 @@
 # ifndef OPENVRML_EVENT_H
 #   define OPENVRML_EVENT_H
 
-#   include <boost/thread/mutex.hpp>
-#   include <boost/thread/recursive_mutex.hpp>
 #   include <openvrml/field_value.h>
-#   include <openvrml/node.h>
 
 namespace openvrml {
 
@@ -37,12 +34,14 @@ namespace openvrml {
 
         openvrml::node & node() throw ();
 
-        virtual field_value::type_id type() const throw () = 0;
-
     protected:
         explicit event_listener(openvrml::node & node) throw ();
     };
 
+    inline node & event_listener::node() throw ()
+    {
+        return this->node_;
+    }
 
     template <typename FieldValue>
     class field_value_listener : public event_listener {
@@ -52,8 +51,6 @@ namespace openvrml {
         virtual ~field_value_listener() throw () = 0;
         void process_event(const FieldValue & value, double timestamp)
             throw (std::bad_alloc);
-
-        virtual field_value::type_id type() const throw ();
 
     protected:
         explicit field_value_listener(openvrml::node & node) throw ();
@@ -84,13 +81,6 @@ namespace openvrml {
         this->do_process_event(value, timestamp);
     }
 
-    template <typename FieldValue>
-    field_value::type_id field_value_listener<FieldValue>::type() const
-        throw ()
-    {
-        return FieldValue::field_value_type_id;
-    }
-
     typedef field_value_listener<sfbool> sfbool_listener;
     typedef field_value_listener<sfcolor> sfcolor_listener;
     typedef field_value_listener<sffloat> sffloat_listener;
@@ -116,7 +106,6 @@ namespace openvrml {
     class event_emitter : boost::noncopyable {
         friend class node;
 
-        mutable boost::recursive_mutex mutex_;
         const field_value & value_;
         std::set<event_listener *> listeners_;
         double last_time_;
@@ -134,7 +123,6 @@ namespace openvrml {
         double last_time() const throw ();
 
     protected:
-        boost::recursive_mutex & mutex() const throw ();
         listener_set & listeners() throw ();
         void last_time(double t) throw ();
 
@@ -143,7 +131,6 @@ namespace openvrml {
     private:
         virtual void emit_event(double timestamp) throw (std::bad_alloc) = 0;
     };
-
 
     template <typename FieldValue>
     class field_value_emitter : public event_emitter {
@@ -176,7 +163,6 @@ namespace openvrml {
     void field_value_emitter<FieldValue>::emit_event(const double timestamp)
         throw (std::bad_alloc)
     {
-        boost::recursive_mutex::scoped_lock lock(this->mutex());
         for (typename listener_set::iterator listener =
                  this->listeners().begin();
              listener != this->listeners().end();
@@ -195,7 +181,6 @@ namespace openvrml {
     field_value_emitter<FieldValue>::
     add(field_value_listener<FieldValue> & listener) throw (std::bad_alloc)
     {
-        boost::recursive_mutex::scoped_lock lock(this->mutex());
         return this->listeners().insert(&listener).second;
     }
 
@@ -204,7 +189,6 @@ namespace openvrml {
     field_value_emitter<FieldValue>::
     remove(field_value_listener<FieldValue> & listener) throw ()
     {
-        boost::recursive_mutex::scoped_lock lock(this->mutex());
         return (this->listeners().erase(&listener) > 0);
     }
 

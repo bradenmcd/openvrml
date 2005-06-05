@@ -88,7 +88,7 @@
 #   include <vrml_node_Node.h>
 #   include <vrml_node_Script.h>
 
-#   include <private.h>
+#   include "private.h"
 #   include "script.h"
 #   include "browser.h"
 #   include "node.h"
@@ -385,7 +385,7 @@ namespace {
  *
  * @param timestamp Time at which script is being initialized.
  */
-void ScriptJDK::do_initialize(const double timestamp)
+void ScriptJDK::initialize(const double timestamp)
 {
   const sftime arg(timestamp);
   const field_value * argv[] = { &arg };
@@ -399,9 +399,9 @@ void ScriptJDK::do_initialize(const double timestamp)
  * @param value Value of the event.
  * @param timestamp Time at which event occurred.
  */
-void ScriptJDK::do_process_event(const std::string & id,
-                                 const field_value & value,
-                                 const double timestamp)
+void ScriptJDK::process_event(const std::string & id,
+                              const field_value & value,
+                              const double timestamp)
 {
   const sftime timestampArg(timestamp);
   const field_value * argv[] = { &value, &timestampArg };
@@ -413,7 +413,7 @@ void ScriptJDK::do_process_event(const std::string & id,
  *
  * @param timestamp Time at which last event occurred.
  */
-void ScriptJDK::do_events_processed(const double timestamp)
+void ScriptJDK::events_processed(const double timestamp)
 {
   const sftime arg(timestamp);
   const field_value * argv[] = { &arg };
@@ -426,7 +426,7 @@ void ScriptJDK::do_events_processed(const double timestamp)
  *
  * @param timestamp Time at which script is being destroyed.
  */
-void ScriptJDK::do_shutdown(const double timestamp)
+void ScriptJDK::shutdown(const double timestamp)
 {
   const sftime arg(timestamp);
   const field_value * argv[] = { &arg };
@@ -6821,7 +6821,7 @@ jobject JNICALL Java_vrml_BaseNode_getBrowser(JNIEnv * const env,
         fid = getFid(env, jBrowser, "BrowserPtr", "I");
         if (!fid) return 0;
         env->SetIntField(jBrowser, fid,
-                         reinterpret_cast<int>(&node->scene()->browser()));
+                         reinterpret_cast<int>(&node->scene()->browser));
     } else {
         node * const n =
             reinterpret_cast<node *>(env->GetIntField(obj, fid));
@@ -6830,7 +6830,7 @@ jobject JNICALL Java_vrml_BaseNode_getBrowser(JNIEnv * const env,
         fid = getFid(env, jBrowser, "BrowserPtr", "I");
         if (!fid) { return 0; }
         env->SetIntField(jBrowser, fid,
-                         reinterpret_cast<int>(&n->scene()->browser()));
+                         reinterpret_cast<int>(&n->scene()->browser));
     }
     return jBrowser;
 }
