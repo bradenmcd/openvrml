@@ -1314,10 +1314,10 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
 openvrml::node::node(const node_type & type,
                      const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
+    type_(type),
     scope_(scope),
     scene_(0),
-    modified_(false),
-    type_(type)
+    modified_(false)
 {}
 
 namespace {
@@ -2256,6 +2256,8 @@ bool openvrml::add_route(node & from,
         case field_value::mfvec3f_id:
             added_route = add_listener<mfvec3f>(emitter, listener);
             break;
+        case field_value::invalid_type_id:
+            assert(false);
         }
     } catch (const bad_cast &) {
         throw field_value_type_mismatch();
@@ -2370,6 +2372,8 @@ bool openvrml::delete_route(node & from,
         case field_value::mfvec3f_id:
             deleted_route = remove_listener<mfvec3f>(emitter, listener);
             break;
+        case field_value::invalid_type_id:
+            assert(false);
         }
     } catch (const bad_cast &) {
         //

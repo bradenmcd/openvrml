@@ -1020,7 +1020,7 @@ namespace {
         jpeg_source_mgr & source_mgr = src.pub;
         image_stream_listener::jpeg_reader & reader = *src.reader;
 
-        if (num_bytes > source_mgr.bytes_in_buffer) {
+        if (size_t(num_bytes) > source_mgr.bytes_in_buffer) {
             reader.bytes_to_skip = num_bytes - source_mgr.bytes_in_buffer;
             source_mgr.next_input_byte += source_mgr.bytes_in_buffer;
             source_mgr.bytes_in_buffer = 0;
@@ -1218,7 +1218,6 @@ namespace {
         bool result = true;
 
         openvrml::image & image = this->stream_listener.image_;
-        const size_t bytes_per_row = image.comp() * image.x();
 
         while (this->cinfo_.output_scanline < this->cinfo_.output_height) {
             JDIMENSION scanlines_completed =
@@ -1544,8 +1543,8 @@ openvrml::vrml97_node::abstract_indexed_set_node::
 abstract_indexed_set_node(const node_type & type,
                           const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     geometry_node(type, scope),
     set_color_index_(*this),
     set_coord_index_(*this),
@@ -1628,8 +1627,8 @@ openvrml::vrml97_node::abstract_light_node::
 abstract_light_node(const node_type & type,
                     const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     ambient_intensity_(*this, 0.0),
     color_(*this, openvrml::color(1.0, 1.0, 1.0)),
@@ -2031,7 +2030,7 @@ do_render_child(openvrml::viewer & viewer, const rendering_context context)
 /**
  * @brief Handle a click by loading the url.
  */
-void openvrml::vrml97_node::anchor_node::activate()
+void openvrml::vrml97_node::anchor_node::activate_anchor()
 {
     assert(this->scene());
     this->scene()->load_url(this->url_.mfstring::value,
@@ -3673,8 +3672,8 @@ openvrml::vrml97_node::background_node::
 background_node(const node_type & type,
                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     set_bind_listener_(*this),
     ground_angle_(*this),
@@ -4242,8 +4241,8 @@ openvrml::vrml97_node::box_node::
 box_node(const node_type & type,
          const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     geometry_node(type, scope),
     size(vec3f(2.0, 2.0, 2.0))
 {
@@ -4901,8 +4900,8 @@ openvrml::vrml97_node::color_interpolator_node::
 color_interpolator_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     set_fraction_listener_(*this),
     key_(*this),
@@ -5060,8 +5059,8 @@ openvrml::vrml97_node::cone_node::
 cone_node(const node_type & type,
           const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     geometry_node(type, scope),
     bottom(true),
     bottomRadius(1.0),
@@ -5470,8 +5469,8 @@ openvrml::vrml97_node::coordinate_interpolator_node::
 coordinate_interpolator_node(const node_type & type,
                              const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     set_fraction_listener_(*this),
     key_(*this),
@@ -5644,8 +5643,8 @@ openvrml::vrml97_node::cylinder_node::
 cylinder_node(const node_type & type,
               const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     geometry_node(type, scope),
     bottom(true),
     height(2.0),
@@ -5992,8 +5991,8 @@ openvrml::vrml97_node::cylinder_sensor_node::
 cylinder_sensor_node(const node_type & type,
                      const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     auto_offset_(*this, true),
     disk_angle_(*this, 0.262f),
@@ -6724,8 +6723,8 @@ openvrml::vrml97_node::elevation_grid_node::
 elevation_grid_node(const node_type & type,
                     const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     geometry_node(type, scope),
     set_height_listener_(*this),
     color_(*this),
@@ -7361,8 +7360,8 @@ openvrml::vrml97_node::extrusion_node::
 extrusion_node(const node_type & type,
                const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     geometry_node(type, scope),
     set_cross_section_listener_(*this),
     set_orientation_listener_(*this),
@@ -7831,8 +7830,8 @@ openvrml::vrml97_node::fog_node::
 fog_node(const node_type & type,
          const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     set_bind_listener_(*this),
     color_(*this, openvrml::color(1.0, 1.0, 1.0)),
@@ -11812,9 +11811,9 @@ openvrml::vrml97_node::navigation_info_node::
 navigation_info_node(const node_type & t,
                      const boost::shared_ptr<openvrml::scope> & scope):
     node(t, scope),
-    abstract_base(t, scope),
     bounded_volume_node(t, scope),
     child_node(t, scope),
+    abstract_base(t, scope),
     openvrml::navigation_info_node(t, scope),
     set_bind_listener_(*this),
     avatar_size_(*this, std::vector<float>(navigation_avatar_size_,
@@ -12320,8 +12319,8 @@ openvrml::vrml97_node::normal_interpolator_node::
 normal_interpolator_node(const node_type & type,
                          const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     set_fraction_listener_(*this),
     key_(*this),
@@ -12614,8 +12613,8 @@ orientation_interpolator_node(
     const node_type & type,
     const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     set_fraction_listener_(*this),
     key_(*this),
@@ -13074,8 +13073,8 @@ openvrml::vrml97_node::plane_sensor_node::
 plane_sensor_node(const node_type & type,
                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     auto_offset_(*this, true),
     enabled_(*this, true),
@@ -13637,8 +13636,8 @@ openvrml::vrml97_node::point_set_node::
 point_set_node(const node_type & type,
                const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     geometry_node(type, scope),
     color_(*this),
     coord_(*this)
@@ -13993,8 +13992,8 @@ openvrml::vrml97_node::position_interpolator_node::
 position_interpolator_node(const node_type & type,
                            const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     set_fraction_listener_(*this),
     key_(*this),
@@ -14267,8 +14266,8 @@ openvrml::vrml97_node::proximity_sensor_node::
 proximity_sensor_node(const node_type & type,
                       const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     center_(*this, vec3f(0.0, 0.0, 0.0)),
     enabled_(*this, true),
@@ -14621,8 +14620,8 @@ openvrml::vrml97_node::scalar_interpolator_node::
 scalar_interpolator_node(const node_type & type,
                          const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     set_fraction_listener_(*this),
     key_(*this),
@@ -14770,8 +14769,8 @@ openvrml::vrml97_node::shape_node::
 shape_node(const node_type & type,
            const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     appearance_(*this),
     geometry_(*this),
@@ -15190,8 +15189,8 @@ openvrml::vrml97_node::sound_node::
 sound_node(const node_type & type,
            const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     direction_(*this, vec3f(0, 0, 1)),
     intensity_(*this, 1.0f),
@@ -15327,8 +15326,8 @@ openvrml::vrml97_node::sphere_node::
 sphere_node(const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     geometry_node(type, scope),
     radius(1.0)
 {
@@ -15602,8 +15601,8 @@ openvrml::vrml97_node::sphere_sensor_node::
 sphere_sensor_node(const node_type & type,
                    const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     auto_offset_(*this, true),
     enabled_(*this, true),
@@ -17375,8 +17374,8 @@ openvrml::vrml97_node::text_node::
 text_node(const node_type & type,
           const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     geometry_node(type, scope),
     string_(*this),
     font_style_(*this),
@@ -19123,8 +19122,8 @@ openvrml::vrml97_node::time_sensor_node::
 time_sensor_node(const node_type & type,
                  const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     set_cycle_interval_listener_(*this),
     cycle_interval_(1.0),
@@ -19524,8 +19523,8 @@ openvrml::vrml97_node::touch_sensor_node::
 touch_sensor_node(const node_type & type,
                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     enabled_(*this, true),
     hit_normal_changed_emitter_(this->hit_normal_changed_),
@@ -21278,8 +21277,8 @@ openvrml::vrml97_node::visibility_sensor_node::
 visibility_sensor_node(const node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope),
     center_(*this, vec3f(0.0, 0.0, 0.0)),
     enabled_(*this, true),
@@ -21483,8 +21482,8 @@ openvrml::vrml97_node::world_info_node::
 world_info_node(const node_type & type,
                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
-    abstract_base(type, scope),
     bounded_volume_node(type, scope),
+    abstract_base(type, scope),
     child_node(type, scope)
 {}
 

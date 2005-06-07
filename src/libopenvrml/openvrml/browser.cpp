@@ -3723,10 +3723,10 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
     default_navigation_info_(new default_navigation_info(*null_node_type_)),
     active_navigation_info_(
         node_cast<navigation_info_node *>(default_navigation_info_.get())),
-    modified_(false),
     new_view(false),
     delta_time(DEFAULT_DELTA),
     viewer_(0),
+    modified_(false),
     frame_rate_(0.0),
     out(out),
     err(err),
@@ -4295,7 +4295,7 @@ void openvrml::browser::sensitive_event(node * const n,
             // (ie, button up over the anchor after button down over the
             // anchor)
             //
-            if (is_active && is_over) { a->activate(); }
+            if (is_active && is_over) { a->activate_anchor(); }
         } else {
             //
             // The parent grouping node is registered for Touch/Drag Sensors.

@@ -264,7 +264,7 @@ openvrml::field_value::field_value() throw ()
  *
  * @param value field value to copy.
  */
-openvrml::field_value::field_value(const field_value & value) throw ()
+openvrml::field_value::field_value(const field_value &) throw ()
 {}
 
 /**
@@ -279,7 +279,7 @@ openvrml::field_value::~field_value() throw ()
  * @param value field value to assign.
  */
 openvrml::field_value &
-openvrml::field_value::operator=(const field_value & value) throw ()
+openvrml::field_value::operator=(const field_value &) throw ()
 {
     return *this;
 }

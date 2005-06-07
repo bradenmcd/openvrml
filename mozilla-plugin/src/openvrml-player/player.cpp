@@ -406,7 +406,6 @@ namespace {
         {
             using std::string;
 
-            char c;
             string command_line;
             while (getline(*this->in_, command_line)) {
                 using std::istringstream;

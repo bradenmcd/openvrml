@@ -101,29 +101,35 @@ namespace openvrml {
     struct FieldValueConcept {
         void constraints()
         {
-            boost::function_requires<boost::DefaultConstructibleConcept<T> >();
-            boost::function_requires<boost::CopyConstructibleConcept<T> >();
-            boost::function_requires<boost::AssignableConcept<T> >();
-            boost::function_requires<boost::EqualityComparableConcept<T> >();
+            using boost::function_requires;
+            using boost::ignore_unused_variable_warning;
 
+            using boost::DefaultConstructibleConcept;
+            using boost::CopyConstructibleConcept;
+            using boost::AssignableConcept;
+            using boost::EqualityComparableConcept;
+
+            function_requires<DefaultConstructibleConcept<T> >();
+            function_requires<CopyConstructibleConcept<T> >();
+            function_requires<AssignableConcept<T> >();
+            function_requires<EqualityComparableConcept<T> >();
+
+            function_requires<
+                DefaultConstructibleConcept<typename T::value_type> >();
+            function_requires<AssignableConcept<typename T::value_type> >();
+
+            //
+            // Make sure T inherits field_value (not virtually).
+            //
             field_value * base_ptr;
-            static_cast<T *>(base_ptr); // Make sure T inherits field_value.
-
-            //
-            // Make sure T::value_type is DefaultConstructible.
-            //
-            typename T::value_type v1;
-            typename T::value_type v2;
-
-            //
-            // Make sure T::value_type is Assignable.
-            //
-            v1 = v2;
+            T * fv = static_cast<T *>(base_ptr);
+            ignore_unused_variable_warning(fv);
 
             //
             // Make sure T::field_value_type_id exists.
             //
             field_value::type_id id = T::field_value_type_id;
+            ignore_unused_variable_warning(id);
         }
     };
 

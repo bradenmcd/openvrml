@@ -268,7 +268,7 @@ namespace openvrml {
 
             virtual anchor_node * to_anchor() const;
 
-            void activate();
+            void activate_anchor();
 
         private:
             virtual const openvrml::bounding_volume &

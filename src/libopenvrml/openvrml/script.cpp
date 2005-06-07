@@ -353,6 +353,8 @@ void openvrml::script::process_direct_output(double timestamp)
                 ->process_event(*polymorphic_downcast<mfvec3f *>(
                     output->second.get()), timestamp);
             break;
+        case field_value::invalid_type_id:
+            assert(false);
         }
     }
     this->direct_output_map_.clear();

@@ -332,15 +332,11 @@ namespace {
         return 0;
       }
 
-      bool eventIn = static_cast<bool>(env->GetBooleanField(obj, fid));
-
       if ((fid = getFid(env, obj, "isExposedField", "Z")) == 0)
       {
         // Should never occur
         return 0;
       }
-
-      bool exposedField = static_cast<bool>(env->GetBooleanField(obj, fid));
 
       if ((fid = getFid(env, obj, "FieldPtr", "I")) == 0)
       {
@@ -6850,13 +6846,13 @@ jobject JNICALL Java_vrml_node_Node_getEventIn(JNIEnv * const env,
                                                jobject obj,
                                                jstring jstrEventInName)
 {
-    const char *eventInName = env->GetStringUTFChars(jstrEventInName , 0);
     jfieldID fid = getFid(env, obj, "NodePtr", "I");
     if (!fid) return 0;
     node * n = reinterpret_cast<node*>(env->GetIntField(obj, fid));
     if (!n) { return 0; }
 
     /* Uncomment when getEventIn implementation is added to Node
+    const char *eventInName = env->GetStringUTFChars(jstrEventInName , 0);
     const field_value* field = pNode->getEventIn(eventInName);
 
     if (field == 0)

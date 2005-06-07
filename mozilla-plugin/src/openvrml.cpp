@@ -465,11 +465,6 @@ namespace {
 
 int32 NPP_WriteReady(const NPP instance, NPStream * const stream)
 {
-    if (instance) {
-        PluginInstance * pluginInstance =
-            static_cast<PluginInstance *>(instance->pdata);
-    }
-
     return STREAMBUFSIZE;
 }
 
@@ -514,9 +509,6 @@ void NPP_Print(const NPP instance, NPPrint * const printInfo)
     if (!printInfo) { return; }
 
     if (instance) {
-        PluginInstance * pluginInstance =
-                static_cast<PluginInstance *>(instance->pdata);
-
         if (printInfo->mode == NP_FULL) {
             /*
              * PLUGIN DEVELOPERS:
@@ -535,11 +527,11 @@ void NPP_Print(const NPP instance, NPPrint * const printInfo)
              *    etc.
              */
 
-            void * platformPrint = printInfo->print.fullPrint.platformPrint;
-            NPBool printOne = printInfo->print.fullPrint.printOne;
+            // void * platformPrint = printInfo->print.fullPrint.platformPrint;
+            // NPBool printOne = printInfo->print.fullPrint.printOne;
 
             /* Do the default*/
-            printInfo->print.fullPrint.pluginPrinted = false;
+            // printInfo->print.fullPrint.pluginPrinted = false;
         }
         else {    /* If not fullscreen, we must be embedded */
             /*
@@ -554,22 +546,14 @@ void NPP_Print(const NPP instance, NPPrint * const printInfo)
              *    device context.
              */
 
-            NPWindow * printWindow = &printInfo->print.embedPrint.window;
-            void * platformPrint = printInfo->print.embedPrint.platformPrint;
+            // NPWindow * printWindow = &printInfo->print.embedPrint.window;
+            // void * platformPrint = printInfo->print.embedPrint.platformPrint;
         }
     }
 }
 
 int16 NPP_HandleEvent(const NPP instance, void * const event)
 {
-    assert(instance);
-    assert(instance->pdata);
-    try {
-        PluginInstance * pluginInstance =
-            static_cast<PluginInstance *>(instance->pdata);
-    } catch (...) {
-        return false;
-    }
     return true;
 }
 
@@ -577,8 +561,7 @@ void NPP_URLNotify(const NPP instance,
                    const char * const url,
                    const NPReason reason,
                    void * const notifyData)
-{
-}
+{}
 
 jref NPP_GetJavaClass()
 {
