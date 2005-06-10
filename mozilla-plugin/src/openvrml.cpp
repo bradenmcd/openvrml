@@ -1186,7 +1186,7 @@ namespace {
             FD_ZERO(&errorfds);
             FD_SET(fd, &errorfds);
 
-            timeval timeout = {};
+            timeval timeout = { 0, 0 };
             int bits_set = select(fd + 1, &readfds, 0, &errorfds, &timeout);
             if (FD_ISSET(fd, &errorfds) || bits_set < 0) {
                 g_warning(strerror(errno));

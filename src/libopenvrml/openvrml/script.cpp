@@ -1825,9 +1825,24 @@ createFieldValueFromJsval(JSContext * cx, jsval val,
 
 namespace Global {
     JSClass jsclass = {
-        "global", 0,
-        JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_PropertyStub,
-        JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, JS_FinalizeStub
+        "global",         // name
+        0,                // flags
+        JS_PropertyStub,  // addProperty
+        JS_PropertyStub,  // delProperty
+        JS_PropertyStub,  // getProperty
+        JS_PropertyStub,  // setProperty
+        JS_EnumerateStub, // enumerate
+        JS_ResolveStub,   // resolve
+        JS_ConvertStub,   // convert
+        JS_FinalizeStub,  // finalize
+        0,                // getObjectOps
+        0,                // checkAccess
+        0,                // call
+        0,                // construct
+        0,                // xdrObject
+        0,                // hasInstance
+        0,                // mark
+        0                 // spare
     };
     JSBool print(JSContext *, JSObject *, uintN, jsval *, jsval *);
 
@@ -1835,9 +1850,24 @@ namespace Global {
 
 namespace Browser {
     JSClass jsclass = {
-        "Browser", 0,
-        JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_PropertyStub,
-        JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, JS_FinalizeStub
+        "Browser",        // name
+        0,                // flags
+        JS_PropertyStub,  // addProperty
+        JS_PropertyStub,  // delProperty
+        JS_PropertyStub,  // getProperty
+        JS_PropertyStub,  // setProperty
+        JS_EnumerateStub, // enumerate
+        JS_ResolveStub,   // resolve
+        JS_ConvertStub,   // convert
+        JS_FinalizeStub,  // finalize
+        0,                // getObjectOps
+        0,                // checkAccess
+        0,                // call
+        0,                // construct
+        0,                // xdrObject
+        0,                // hasInstance
+        0,                // mark
+        0                 // spare
     };
     JSBool getName(JSContext * cx, JSObject * obj,
                    uintN argc, jsval * argv, jsval * rval) throw ();
@@ -2477,8 +2507,14 @@ script::script(openvrml::script_node & node, const std::string & source)
     // "print" function; non-standard, but widely used.
     //
     static JSFunctionSpec globalFunctions[] = {
-        { "print", Global::print, 0 },
-        { 0, 0, 0 }
+        {
+            "print",       // name
+            Global::print, // call
+            0,             // nargs
+            0,             // flags
+            0              // extra
+        },
+        { 0, 0, 0, 0, 0 }
     };
     JSBool ok = JS_DefineFunctions(cx, globalObj, globalFunctions);
     assert(ok);
@@ -3036,19 +3072,93 @@ void script::defineBrowserObject() throw (std::bad_alloc)
     assert(globalObj);
 
     static JSFunctionSpec methods[] =
-            { { "getName", Browser::getName, 0 },
-              { "getVersion", Browser::getVersion, 0 },
-              { "getCurrentSpeed", Browser::getCurrentSpeed, 0 },
-              { "getCurrentFrameRate", Browser::getCurrentFrameRate, 0 },
-              { "getWorldURL", Browser::getWorldURL, 0 },
-              { "replaceWorld", Browser::replaceWorld, 1 },
-              { "createVrmlFromString", Browser::createVrmlFromString, 1 },
-              { "createVrmlFromURL", Browser::createVrmlFromURL, 3 },
-              { "addRoute", Browser::addRoute, 4 },
-              { "deleteRoute", Browser::deleteRoute, 4 },
-              { "loadURL", Browser::loadURL, 2 },
-              { "setDescription", Browser::setDescription, 1 },
-              { 0 } };
+        {
+            {
+                "getName",                     // name
+                Browser::getName,              // call
+                0,                             // nargs
+                0,                             // flags
+                0                              // extra
+            },
+            {
+                "getVersion",                  // name
+                Browser::getVersion,           // call
+                0,                             // nargs
+                0,                             // flags
+                0                              // extra
+            },
+            {
+                "getCurrentSpeed",             // name
+                Browser::getCurrentSpeed,      // call
+                0,                             // nargs
+                0,                             // flags
+                0                              // extra
+            },
+            {
+                "getCurrentFrameRate",         // name
+                Browser::getCurrentFrameRate,  // call
+                0,                             // nargs
+                0,                             // flags
+                0                              // extra
+            },
+            {
+                "getWorldURL",                 // name
+                Browser::getWorldURL,          // call
+                0,                             // nargs
+                0,                             // flags
+                0                              // extra
+            },
+            {
+                "replaceWorld",                // name
+                Browser::replaceWorld,         // call
+                1,                             // nargs
+                0,                             // flags
+                0                              // extra
+            },
+            {
+                "createVrmlFromString",        // name
+                Browser::createVrmlFromString, // call
+                1,                             // nargs
+                0,                             // flags
+                0                              // extra
+            },
+            {
+                "createVrmlFromURL",           // name
+                Browser::createVrmlFromURL,    // call
+                3,                             // nargs
+                0,                             // flags
+                0                              // extra
+            },
+            {
+                "addRoute",                    // name
+                Browser::addRoute,             // call
+                4,                             // nargs
+                0,                             // flags
+                0,                             // extra
+            },
+            {
+                "deleteRoute",                 // name
+                Browser::deleteRoute,          // call
+                4,                             // nargs
+                0,                             // flags
+                0                              // extra
+            },
+            {
+                "loadURL",                     // name
+                Browser::loadURL,              // call
+                2,                             // nargs
+                0,                             // flags
+                0,                             // extra
+            },
+            {
+                "setDescription",              // name
+                Browser::setDescription,       // call
+                1,                             // nargs
+                0,                             // flags
+                0                              // extra
+            },
+            { 0, 0, 0, 0, 0 }
+        };
 
     JSObject * const browserObj =
             JS_DefineObject(this->cx, globalObj,
@@ -3806,16 +3916,24 @@ JSBool sfield::toString(JSContext * const cx, JSObject * const obj,
 }
 
 JSClass SFColor::jsclass = {
-    "SFColor",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getProperty,
-    setProperty,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "SFColor",           // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getProperty,         // getProperty
+    setProperty,         // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSObject * SFColor::initClass(JSContext * const cx, JSObject * const obj)
@@ -4058,10 +4176,26 @@ JSBool SFColor::getHSV(JSContext * const cx,
 }
 
 
-JSClass SFImage::jsclass =
-        { "SFImage", JSCLASS_HAS_PRIVATE,
-          JS_PropertyStub, JS_PropertyStub, getProperty, setProperty,
-          JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, finalize };
+JSClass SFImage::jsclass = {
+    "SFImage",           // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getProperty,         // getProperty
+    setProperty,         // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
+};
 
 JSObject * SFImage::initClass(JSContext * const cx, JSObject * const obj)
     throw ()
@@ -4291,29 +4425,45 @@ JSBool SFImage::setProperty(JSContext *, JSObject *, jsval , jsval *)
 }
 
 JSClass SFNode::jsclass = {
-    "SFNode",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getProperty,
-    JS_PropertyStub,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "SFNode",            // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getProperty,         // getProperty
+    JS_PropertyStub,     // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSClass SFNode::direct_output_jsclass = {
-    "SFNode",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getProperty,
-    setProperty,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "SFNode",            // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getProperty,         // getProperty
+    setProperty,         // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSObject * SFNode::initClass(JSContext * const cx,
@@ -4559,16 +4709,24 @@ JSBool SFNode::setProperty(JSContext * const cx,
 
 
 JSClass SFRotation::jsclass = {
-    "SFRotation",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getProperty,
-    setProperty,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "SFRotation",        // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getProperty,         // getProperty
+    setProperty,         // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSObject * SFRotation::initClass(JSContext * const cx,
@@ -5094,16 +5252,24 @@ JSBool SFRotation::slerp(JSContext * const cx,
 
 
 JSClass SFVec2f::jsclass = {
-    "SFVec2f",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getProperty,
-    setProperty,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "SFVec2f",           // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getProperty,         // getProperty
+    setProperty,         // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSObject * SFVec2f::initClass(JSContext * const cx, JSObject * const obj)
@@ -5600,16 +5766,24 @@ JSBool SFVec2f::subtract(JSContext * const cx,
 }
 
 JSClass SFVec3f::jsclass = {
-    "SFVec3f",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getProperty,
-    setProperty,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "SFVec3f",           // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getProperty,         // getProperty
+    setProperty,         // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSObject * SFVec3f::initClass(JSContext * const cx, JSObject * const obj)
@@ -6683,12 +6857,26 @@ void MFJSDouble<Subclass>::finalize(JSContext * const cx, JSObject * const obj)
     }
 }
 
-JSClass MFColor::jsclass =
-        { "MFColor", JSCLASS_HAS_PRIVATE,
-          JS_PropertyStub, JS_PropertyStub,
-          getElement, setElement,
-          JS_EnumerateStub, JS_ResolveStub,
-          JS_ConvertStub, finalize };
+JSClass MFColor::jsclass = {
+    "MFColor",           // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getElement,          // getProperty
+    setElement,          // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
+};
 
 JSClass & MFColor::sfjsclass = SFColor::jsclass;
 
@@ -6748,16 +6936,24 @@ JSBool MFColor::toJsval(const std::vector<openvrml::color> & colors,
 }
 
 JSClass MFFloat::jsclass = {
-    "MFFloat",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getElement,
-    setElement,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "MFFloat",           // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getElement,          // getElement
+    setElement,          // setElement
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSBool MFFloat::toJsval(const std::vector<float> & floats,
@@ -6810,16 +7006,24 @@ MFFloat::createFromJSObject(JSContext * const cx, JSObject * const obj)
 }
 
 JSClass MFInt32::jsclass = {
-    "MFInt32",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getElement,
-    setElement,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "MFInt32",           // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getElement,          // getProperty
+    setElement,          // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSObject * MFInt32::initClass(JSContext * const cx, JSObject * const obj) {
@@ -7038,16 +7242,24 @@ void MFInt32::finalize(JSContext * const cx, JSObject * const obj)
 }
 
 JSClass MFNode::jsclass = {
-    "MFNode",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getElement,
-    setElement,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "MFNode",            // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getElement,          // getProperty
+    setElement,          // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSObject * MFNode::initClass(JSContext * const cx, JSObject * const obj)
@@ -7349,16 +7561,24 @@ void MFNode::finalize(JSContext * const cx, JSObject * const obj)
 }
 
 JSClass MFRotation::jsclass = {
-    "MFRotation",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getElement,
-    setElement,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "MFRotation",        // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getElement,          // getProperty
+    setElement,          // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSClass & MFRotation::sfjsclass = SFRotation::jsclass;
@@ -7418,16 +7638,24 @@ MFRotation::createFromJSObject(JSContext * const cx, JSObject * const obj)
 }
 
 JSClass MFString::jsclass = {
-    "MFString",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getElement,
-    setElement,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "MFString",          // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getElement,          // getProperty
+    setElement,          // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSObject * MFString::initClass(JSContext * const cx, JSObject * const obj)
@@ -7681,16 +7909,24 @@ void MFString::finalize(JSContext * const cx, JSObject * const obj)
 }
 
 JSClass MFTime::jsclass = {
-    "MFTime",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getElement,
-    setElement,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "MFTime",            // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getElement,          // getProperty
+    setElement,          // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSBool MFTime::toJsval(const std::vector<double> & times,
@@ -7739,16 +7975,24 @@ MFTime::createFromJSObject(JSContext * const cx, JSObject * const obj)
 }
 
 JSClass MFVec2f::jsclass = {
-    "MFVec2f",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getElement,
-    setElement,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "MFVec2f",           // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getElement,          // getProperty
+    setElement,          // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSClass & MFVec2f::sfjsclass = SFVec2f::jsclass;
@@ -7807,16 +8051,24 @@ MFVec2f::createFromJSObject(JSContext * const cx, JSObject * const obj)
 }
 
 JSClass MFVec3f::jsclass = {
-    "MFVec3f",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getElement,
-    setElement,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "MFVec3f",           // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getElement,          // getProperty
+    setElement,          // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSClass & MFVec3f::sfjsclass = SFVec3f::jsclass;
@@ -7877,16 +8129,24 @@ MFVec3f::createFromJSObject(JSContext * const cx, JSObject * const obj)
 }
 
 JSClass VrmlMatrix::Row::jsclass = {
-    "VrmlMatrixRow_",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getElement,
-    setElement,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    JS_FinalizeStub
+    "VrmlMatrixRow_",    // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getElement,          // getProperty
+    setElement,          // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    JS_FinalizeStub,     // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSObject * VrmlMatrix::Row::initClass(JSContext * const cx,
@@ -7957,16 +8217,24 @@ JSBool VrmlMatrix::Row::setElement(JSContext * const cx, JSObject * const obj,
 }
 
 JSClass VrmlMatrix::jsclass = {
-    "VrmlMatrix",
-    JSCLASS_HAS_PRIVATE,
-    JS_PropertyStub,
-    JS_PropertyStub,
-    getElement,
-    setElement,
-    JS_EnumerateStub,
-    JS_ResolveStub,
-    JS_ConvertStub,
-    finalize
+    "VrmlMatrix",        // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getElement,          // getProperty
+    setElement,          // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
 };
 
 JSObject * VrmlMatrix::initClass(JSContext * const cx, JSObject * const obj)

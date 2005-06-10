@@ -16264,11 +16264,11 @@ event_side_effect(const mfnode & choice, const double timestamp)
     try {
         switch_node & node = dynamic_cast<switch_node &>(this->node());
 
-        const size_t which_choice = size_t(node.which_choice_.sfint32::value);
+        const int32 which_choice = node.which_choice_.sfint32::value;
         assert(!node.children_.value.empty());
         node.children_.value[0] =
             (which_choice >= 0
-             && which_choice < node.choice_.mfnode::value.size())
+             && which_choice < int32(node.choice_.mfnode::value.size()))
             ? node.choice_.mfnode::value[which_choice]
             : node_ptr(0);
     } catch (std::bad_cast & ex) {
@@ -18040,9 +18040,12 @@ void openvrml::vrml97_node::text_node::update_geometry() throw (std::bad_alloc)
             vector<int32> coordIndex;
             float xMin, xMax;
             float yMin, yMax;
+
+            LineGeometry(): xMin(0.0), xMax(0.0), yMin(0.0), yMax(0.0)
+            {}
         };
 
-        LineGeometry lineGeometry = {};
+        LineGeometry lineGeometry;
         for (vector<FcChar32>::const_iterator character = string->begin();
                 character != string->end(); ++character) {
             assert(this->face);

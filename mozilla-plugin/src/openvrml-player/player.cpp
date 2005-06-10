@@ -74,23 +74,26 @@ namespace {
             gtk_socket_id_id,
             "GTK_SOCKET_ID",
             0,
-            "GtkSocket id"
+            "GtkSocket id",
+            0
         },
         {
             "read-fd",
             read_fd_id,
             "READ_FD",
             0,
-            "file descriptor for reading commands"
+            "file descriptor for reading commands",
+            0
         },
         {
             "write-fd",
             write_fd_id,
             "WRITE_FD",
             0,
-            "file descriptor for writing commands"
+            "file descriptor for writing commands",
+            0
         },
-        {}
+        { 0, 0, 0, 0, 0, 0 }
     };
 
     struct arguments {
@@ -893,7 +896,7 @@ namespace {
             FD_ZERO(&errorfds);
             FD_SET(fd, &errorfds);
 
-            timeval timeout = {};
+            timeval timeout = { 0, 0 };
             int bits_set = select(fd + 1, &readfds, 0, &errorfds, &timeout);
             if (FD_ISSET(fd, &errorfds) || bits_set < 0) {
                 g_warning(strerror(errno));

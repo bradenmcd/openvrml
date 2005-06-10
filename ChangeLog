@@ -1,3 +1,12 @@
+2005-06-10 Braden McDaniel  <braden@endoframe.com>
+
+	Fixes for gcc warnings.
+
+	* mozilla-plugin/src/openvrml.cpp
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
 2005-06-07 Braden McDaniel  <braden@endoframe.com>
 
 	Fixes for gcc warnings.
