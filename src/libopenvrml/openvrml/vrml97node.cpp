@@ -628,6 +628,7 @@ namespace {
 
         class image_reader {
         public:
+            virtual ~image_reader() throw () = 0;
             void read(const std::vector<unsigned char> & data);
 
         private:
@@ -730,6 +731,9 @@ namespace {
         virtual void
         do_data_available(const std::vector<unsigned char> & data);
     };
+
+    image_stream_listener::image_reader::~image_reader() throw ()
+    {}
 
     void
     image_stream_listener::image_reader::

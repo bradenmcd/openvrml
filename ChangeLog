@@ -1,3 +1,8 @@
+2005-06-16 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp:  Added virtual
+	destructor to image_stream_listener::image_reader.
+
 2005-06-10 Braden McDaniel  <braden@endoframe.com>
 
 	Fixes for gcc warnings.
