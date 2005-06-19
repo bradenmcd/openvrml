@@ -2042,17 +2042,6 @@ void openvrml::vrml97_node::anchor_node::activate_anchor()
 }
 
 /**
- * @brief Get the bounding volume.
- *
- * @return the bounding volume associated with the node.
- */
-const openvrml::bounding_volume &
-openvrml::vrml97_node::anchor_node::do_bounding_volume() const
-{
-    return this->group_node::bounding_volume();
-}
-
-/**
  * @class openvrml::vrml97_node::appearance_class
  *
  * @brief Class object for Appearance nodes.

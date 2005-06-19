@@ -1,3 +1,11 @@
+2005-06-19 Braden McDaniel  <braden@endoframe.com>
+
+	openvrml::vrml97_node::anchor_node doesn't need to override
+	openvrml::bounded_volume_node::do_bounding_volume.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
 2005-06-16 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp:  Added virtual

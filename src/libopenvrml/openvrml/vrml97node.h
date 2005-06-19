@@ -233,12 +233,10 @@ namespace openvrml {
         protected:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
-            void recalc_bsphere();
-
-        private:
             virtual const openvrml::bounding_volume &
             do_bounding_volume() const;
+
+            void recalc_bsphere();
         };
 
 
@@ -271,9 +269,6 @@ namespace openvrml {
             void activate_anchor();
 
         private:
-            virtual const openvrml::bounding_volume &
-            do_bounding_volume() const;
-
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
         };
