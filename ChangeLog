@@ -1,3 +1,12 @@
+2005-06-20 Braden McDaniel  <braden@endoframe.com>
+
+	Added openvrml::browser_event, openvrml::browser_listener.
+	openvrml::browser now emits an openvrml::browser_event when
+	the world is initialized and shut down.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+
 2005-06-19 Braden McDaniel  <braden@endoframe.com>
 
 	openvrml::vrml97_node::anchor_node doesn't need to override

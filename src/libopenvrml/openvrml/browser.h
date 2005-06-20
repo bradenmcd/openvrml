@@ -115,6 +115,41 @@ namespace openvrml {
     };
 
 
+    class browser;
+
+    class browser_event {
+        friend class browser;
+
+    public:
+        enum type_id {
+            initialized = 1,
+            shutdown = 2
+        };
+
+    private:
+        browser * source_;
+        type_id id_;
+
+        browser_event(browser & b, type_id id) throw ();
+
+    public:
+        type_id id() const throw ();
+        browser & source() const throw ();
+    };
+
+
+    class browser_listener {
+        friend class browser;
+
+    public:
+        virtual ~browser_listener() throw () = 0;
+
+    private:
+        void browser_changed(const browser_event & event);
+        virtual void do_browser_changed(const browser_event & event) = 0;
+    };
+
+
     class viewer;
     class scene;
     class null_node_class;
@@ -155,14 +190,6 @@ namespace openvrml {
             node_class_map(const node_class_map & map);            
         };
 
-    public:
-        enum cb_reason {
-            destroy_world_id,
-            replace_world_id
-        };
-
-        typedef void (*scene_cb)(cb_reason reason);
-
     private:
         mutable boost::recursive_mutex mutex_;
         std::auto_ptr<null_node_class> null_node_class_;
@@ -180,6 +207,7 @@ namespace openvrml {
         std::list<node *> timers;
         std::list<node *> audio_clips;
         std::list<node *> movies;
+        std::set<browser_listener *> listeners_;
         bool new_view;
         double delta_time;
         openvrml::viewer * viewer_;
@@ -188,10 +216,6 @@ namespace openvrml {
         mutable boost::mutex modified_mutex_;
 
     protected:
-        typedef std::list<scene_cb> scene_cb_list_t;
-
-        scene_cb_list_t scene_callbacks;
-
         double frame_rate_;
 
     public:
@@ -234,8 +258,8 @@ namespace openvrml {
         void create_vrml_from_url(const std::vector<std::string> & url,
                                   const node_ptr & node,
                                   const std::string & event);
-
-        void add_world_changed_callback(scene_cb);
+        bool add_listener(browser_listener & listener) throw (std::bad_alloc);
+        bool remove_listener(browser_listener & listener) throw ();
 
         void sensitive_event(node * object, double timestamp,
                              bool is_over, bool is_active, double * point);
@@ -271,7 +295,6 @@ namespace openvrml {
 
     protected:
         bool headlight_on();
-        void do_callbacks(cb_reason reason);
 
     private:
         virtual std::auto_ptr<resource_istream>
@@ -317,11 +340,6 @@ namespace openvrml {
     private:
         virtual void scene_loaded();
     };
-
-    inline const std::vector<node_ptr> & scene::nodes() const throw()
-    {
-        return this->nodes_;
-    }
 }
 
 # endif // OPENVRML_BROWSER_H

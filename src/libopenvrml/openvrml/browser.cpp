@@ -35,6 +35,7 @@
 # endif
 # include <boost/bind.hpp>
 # include <boost/cast.hpp>
+# include <boost/functional.hpp>
 # include <boost/regex.hpp>
 # include <boost/shared_ptr.hpp>
 # include <boost/thread/thread.hpp>
@@ -3205,6 +3206,139 @@ openvrml::viewer_in_use::~viewer_in_use() throw ()
 
 
 /**
+ * @class openvrml::browser_event
+ *
+ * @brief A <code>browser</code>-wide event.
+ */
+
+/**
+ * @var openvrml::browser_event::browser
+ *
+ * @brief Only <code>browser</code>s can construct <code>browser_event</code>s.
+ */
+
+/**
+ * @enum openvrml::browser_event::type_id
+ *
+ * @brief <code>browser_event</code> type identifier.
+ */
+
+/**
+ * @var openvrml::browser_event::initialized
+ *
+ * @brief An <code>initialized</code> event is sent once the world has loaded
+ *        and all nodes in the initial scene have been initialized.
+ */
+
+/**
+ * @var openvrml::browser_event::shutdown
+ *
+ * @brief A <code>shutdown</code> event is sent once all of the nodes in the
+ *        scene have been shut down.
+ */
+
+/**
+ * @var openvrml::browser_event::url_error
+ *
+ * @brief A <code>url_error</code> event is sent if no alternative URL can be
+ *        resolved to load a world.
+ */
+
+/**
+ * @internal
+ *
+ * @var openvrml::browser * openvrml::browser_event::source_
+ *
+ * @brief The <code>browser</code> from which the event originated.
+ */
+
+/**
+ * @internal
+ *
+ * @var openvrml::browser_event::type_id openvrml::browser_event::id_
+ *
+ * @brief Event type identifier.
+ */
+
+/**
+ * @internal
+ *
+ * @brief Construct.
+ *
+ * @param b     the <code>browser</code> from which the event originated.
+ * @param id    the event type.
+ */
+openvrml::browser_event::browser_event(browser & b, type_id id) throw ():
+    source_(&b),
+    id_(id)
+{}
+
+/**
+ * @brief Event type identifier.
+ *
+ * @return the event type identifier.
+ */
+openvrml::browser_event::type_id openvrml::browser_event::id() const throw ()
+{
+    return this->id_;
+}
+
+/**
+ * @brief The <code>browser</code> that emitted the event.
+ *
+ * @return the <code>browser</code> that emitted the event.
+ */
+openvrml::browser & openvrml::browser_event::source() const throw ()
+{
+    return *this->source_;
+}
+
+
+/**
+ * @class openvrml::browser_listener
+ *
+ * @brief This class should be inherited by classes that want to listen for
+ *        <code>browser_event</code>s.
+ */
+
+/**
+ * @internal
+ *
+ * @var openvrml::browser_listener::browser
+ *
+ * @brief <code>browser</code> instances need to call
+ *        <code>browser_listener::browser_changed</code>.
+ */
+
+/**
+ * @brief Destroy.
+ */
+openvrml::browser_listener::~browser_listener() throw ()
+{}
+
+/**
+ * @internal
+ *
+ * @brief Send a <code>browser_event</code>.
+ *
+ * This function delegates to
+ * <code>browser_listener::do_browser_changed</code>.
+ *
+ * @param event the <code>browser_event</code> to send.
+ */
+void openvrml::browser_listener::browser_changed(const browser_event & event)
+{
+    this->do_browser_changed(event);
+}
+
+/**
+ * @fn void openvrml::browser_listener::do_browser_changed(const browser_event & event)
+ *
+ * @param event the <code>browser_event</code> to send.
+ */
+
+
+/**
  * @class openvrml::browser
  *
  * @brief Encapsulates a VRML browser.
@@ -3488,33 +3622,6 @@ void openvrml::browser::node_class_map::render(openvrml::viewer & v)
 }
 
 /**
- * @enum openvrml::browser::cb_reason
- *
- * @brief Valid reasons for browser callback.
- */
-
-/**
- * @var openvrml::browser::cb_reason browser::destroy_world_id
- *
- * @brief Destroy the world.
- */
-
-/**
- * @var openvrml::browser::cb_reason browser::replace_world_id
- *
- * @brief Replace the world.
- */
-
-/**
- * @typedef openvrml::browser::scene_cb
- *
- * @brief A pointer to a browser callback function.
- *
- * The callback function provoides a way to let the app know when a world is
- * loaded, changed, etc.
- */
-
-/**
  * @var boost::recursive_mutex openvrml::browser::mutex_
  *
  * @brief Object mutex.
@@ -3640,18 +3747,6 @@ void openvrml::browser::node_class_map::render(openvrml::viewer & v)
  * @var openvrml::openvrml::viewer * openvrml::browser::viewer_
  *
  * @brief The current <code>viewer</code>.
- */
-
-/**
- * @typedef openvrml::browser::scene_cb_list_t
- *
- * @brief List of functions to call when the world is changed.
- */
-
-/**
- * @var openvrml::browser::scene_cb_list_t openvrml::browser::scene_callbacks
- *
- * @brief List of functions to call when the world is changed.
  */
 
 /**
@@ -4153,11 +4248,19 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
             }
             this->browser().modified(true);
             this->browser().new_view = true; // Force resetUserNav
+
+            using std::for_each;
+
+            for_each(this->browser().listeners_.begin(),
+                     this->browser().listeners_.end(),
+                     boost::bind2nd(
+                         boost::mem_fun(&browser_listener::browser_changed),
+                         browser_event(this->browser(),
+                                       browser_event::initialized)));
         }
     };
 
     using std::for_each;
-    using std::list;
 
     const double now = browser::current_time();
 
@@ -4165,6 +4268,9 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
     // Clear out the current scene.
     //
     if (this->scene_) { this->scene_->shutdown(now); }
+    for_each(this->listeners_.begin(), this->listeners_.end(),
+             boost::bind2nd(boost::mem_fun(&browser_listener::browser_changed),
+                            browser_event(*this, browser_event::shutdown)));
     this->scene_.reset();
     this->active_viewpoint_ =
         node_cast<viewpoint_node *>(this->default_viewpoint_.get());
@@ -4240,28 +4346,34 @@ openvrml::browser::create_vrml_from_url(const std::vector<std::string> & url,
 {}
 
 /**
- * @brief Execute browser callback functions.
+ * @brief Add a listener for <code>browser_event</code>s.
  *
- * @param reason    the cb_reason to pass to the callback functions.
+ * @param listener  a <code>browser_listener</code>.
+ *
+ * @return @c true if @p listener is added successfully; @c false otherwise (if
+ *         @p listener is already listening for events from the
+ *         <code>browser</code>).
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::browser::do_callbacks(const cb_reason reason)
+bool openvrml::browser::add_listener(browser_listener & listener)
+    throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    scene_cb_list_t::iterator cb, cbend = this->scene_callbacks.end();
-    for (cb = this->scene_callbacks.begin(); cb != cbend; ++cb) {
-        (*cb)(reason);
-    }
+    return this->listeners_.insert(&listener).second;
 }
 
 /**
- * @brief Add a callback function to be called when the world changes.
+ * @brief Remove a listener for <code>browser_event</code>s.
  *
- * @param cb    a browser callback function.
+ * @param listener  a <code>browser_listener</code>.
+ *
+ * @return @c true if @p listener is removed successfully; @c false otherwise
+ *         (if @p listener is not listening for events from the
+ *         <code>browser</code>).
  */
-void openvrml::browser::add_world_changed_callback(const scene_cb cb)
+bool openvrml::browser::remove_listener(browser_listener & listener) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    this->scene_callbacks.push_front(cb);
+    return this->listeners_.erase(&listener) > 0;
 }
 
 /**
@@ -5066,12 +5178,15 @@ void openvrml::scene::initialize(const double timestamp) throw (std::bad_alloc)
 }
 
 /**
- * @fn const std::vector<node_ptr> & openvrml::scene::nodes() const throw ()
- *
  * @brief Root nodes for the scene.
  *
  * @return the root nodes for the scene.
  */
+const std::vector<node_ptr> & scene::nodes() const throw()
+{
+    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
+    return this->nodes_;
+}
 
 /**
  * @brief Set the root nodes for the scene.
