@@ -1638,7 +1638,7 @@ namespace {
             // The plug-in window is unchanged. Resize the window and exit.
             //
         } else {
-            this->window = GdkNativeWindow(window.window);
+            this->window = GdkNativeWindow(ptrdiff_t(window.window));
 
             this->player_pid = fork();
             if (this->player_pid == 0) {

@@ -1,3 +1,9 @@
+2005-07-03 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp:  In order to be 64-bit clean,
+	first construct a ptrdiff_t from a void* before converting it to
+	a potentially smaller integral type.
+
 2005-06-05 Braden McDaniel  <braden@endoframe.com>
 
 	Updated package version to 0.15.8.
