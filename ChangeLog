@@ -1,3 +1,13 @@
+2005-07-03 Braden McDaniel  <braden@endoframe.com>
+
+	Merged changes from 0.15.8 release.
+
+	* NEWS:  Updated for 0.15.8 release.
+	* configure.ac:  Use "pax" tar format.
+	* doc/Doxyfile:  Updated for Doxygen 1.4.3; don't use short file
+	names.
+	* tests/Makefile.am:  Added clean rules for tests.
+
 2005-06-20 Braden McDaniel  <braden@endoframe.com>
 
 	Added openvrml::browser_event, openvrml::browser_listener.

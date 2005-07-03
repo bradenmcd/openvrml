@@ -53,3 +53,10 @@ $(srcdir)/package.m4: $(top_srcdir)/configure.ac
           echo 'm4_define([AT_PACKAGE_STRING],    [@PACKAGE_STRING@])'; \
           echo 'm4_define([AT_PACKAGE_BUGREPORT], [@PACKAGE_BUGREPORT@])'; \
         } > $(srcdir)/package.m4
+
+clean-local:
+	test ! -f $(TESTSUITE) || $(SHELL) $(TESTSUITE) --clean
+	rm -f *.tmp
+	rm -f -r autom4te.cache
+
+DISTCLEANFILES = atconfig

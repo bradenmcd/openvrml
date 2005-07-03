@@ -24,7 +24,7 @@ AC_CONFIG_FILES([Makefile]
                 [openvrml.spec])
 
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.7 foreign subdir-objects check-news])
+AM_INIT_AUTOMAKE([1.7 foreign subdir-objects check-news tar-pax])
 AM_CONFIG_HEADER([config.h])
 
 #
