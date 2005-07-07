@@ -411,7 +411,7 @@ NPError NPP_NewStream(const NPP instance,
         *static_cast<PluginInstance *>(instance->pdata);
 
     std::ostringstream command;
-    command << "new-stream " << unsigned(stream) << ' ' << type << ' '
+    command << "new-stream " << ptrdiff_t(stream) << ' ' << type << ' '
             << stream->url << '\n';
     ssize_t bytes_written = write(pluginInstance.out(),
                                   command.str().data(),
@@ -433,7 +433,7 @@ NPError NPP_DestroyStream(const NPP instance,
         static_cast<PluginInstance *>(instance->pdata);
 
     std::ostringstream command;
-    command << "destroy-stream " << unsigned(stream) << '\n';
+    command << "destroy-stream " << ptrdiff_t(stream) << '\n';
     ssize_t bytes_written = write(pluginInstance->out(),
                                   command.str().data(),
                                   command.str().length());
@@ -481,7 +481,7 @@ int32 NPP_Write(const NPP instance,
         static_cast<PluginInstance *>(instance->pdata);
 
     std::ostringstream command;
-    command << "write " << unsigned(stream) << ' ' << offset << ' ' << len
+    command << "write " << ptrdiff_t(stream) << ' ' << offset << ' ' << len
             << '\n';
     for (int32 i = 0; i < len; ++i) {
         command.put(static_cast<char *>(buffer)[i]);
