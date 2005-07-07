@@ -34,17 +34,12 @@
 #   include <sys/time.h>
 # endif
 # include <boost/bind.hpp>
-# include <boost/cast.hpp>
 # include <boost/functional.hpp>
 # include <boost/regex.hpp>
-# include <boost/shared_ptr.hpp>
 # include <boost/thread/thread.hpp>
 # include <boost/utility.hpp>
 # include <private.h>
 # include "browser.h"
-# include "viewer.h"
-# include "scope.h"
-# include "script.h"
 # include "vrml97node.h"
 
 namespace openvrml {

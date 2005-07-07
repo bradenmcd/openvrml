@@ -25,8 +25,6 @@
 # endif
 
 # include <private.h>
-# include "script.h"
-# include "scope.h"
 # include "browser.h"
 # include "ScriptJDK.h"
 

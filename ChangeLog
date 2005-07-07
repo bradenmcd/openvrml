@@ -2,6 +2,15 @@
 
 	Clean-up of inclusions.
 
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
+2005-07-07 Braden McDaniel  <braden@endoframe.com>
+
+	Clean-up of inclusions.
+
 	* src/libopenvrml/openvrml/bounding_volume.h
 	* src/libopenvrml/openvrml/browser.h
 	* src/libopenvrml/openvrml/event.h

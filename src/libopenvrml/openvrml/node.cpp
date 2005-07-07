@@ -29,8 +29,6 @@
 # include <boost/bind.hpp>
 # include <boost/lexical_cast.hpp>
 # include "private.h"
-# include "node.h"
-# include "scope.h"
 # include "browser.h"
 
 /**

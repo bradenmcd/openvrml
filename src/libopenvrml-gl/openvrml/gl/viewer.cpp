@@ -43,11 +43,8 @@
 # ifndef NDEBUG
 #   include <iostream>
 # endif
-# include <boost/scoped_ptr.hpp>
 # include <openvrml/browser.h>
 # include <openvrml/vrml97node.h>
-# include <openvrml/bounding_volume.h>
-
 # include "viewer.h"
 
 // Textures are now done using OGL1.1 bindTexture API rather than
