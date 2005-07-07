@@ -176,9 +176,9 @@ AC_SUBST([GRE_PATH])
 # Script node Java support
 #
 AC_ARG_ENABLE([script-node-java],
-              [AC_HELP_STRING([--disable-script-node-java],
-                              [disable Script node Java support])])
-if test "X$enable_script_node_java" != "Xno"; then
+              [AC_HELP_STRING([--enable-script-node-java],
+                              [enable Script node Java support])])
+if test "X$enable_script_node_java" = "Xyes"; then
   if test "X$no_jni" = "Xyes"; then
     AC_MSG_FAILURE([The Java Native Interface is required for Script node Java support.])
   fi
@@ -186,7 +186,7 @@ if test "X$enable_script_node_java" != "Xno"; then
             [Defined if Script node Java support is enabled.])
 fi
 AM_CONDITIONAL([ENABLE_SCRIPT_NODE_JAVA],
-               [test "X$enable_script_node_java" != "Xno"])
+               [test "X$enable_script_node_java" = "Xyes"])
 
 #
 # build GL renderer

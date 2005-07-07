@@ -1052,7 +1052,7 @@ namespace {
             // The plug-in window is unchanged. Resize the window and exit.
             //
         } else {
-            this->window = GdkNativeWindow(window.window);
+            this->window = GdkNativeWindow(ptrdiff_t(window.window));
 
             fcntl(this->out_pipe[0], F_SETFD, 0);
             fcntl(this->in_pipe[1], F_SETFD, 0);

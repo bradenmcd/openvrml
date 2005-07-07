@@ -1,5 +1,21 @@
 2005-07-06 Braden McDaniel  <braden@endoframe.com>
 
+	Merged changes from 0.15.9 release.
+
+	* NEWS:  Updated for 0.15.9 release.
+	* README:  Disable Script node Java support by default.
+	* configure.ac:  Check for sdl-config directly rather than using
+	AM_PATH_SDL.  AM_PATH_SDL is broken upstream and not fixed for
+	all distributions.  This can make life difficult for users
+	building from the repository.  Disable Script node Java support
+	by default; this code is not 64-bit clean and needs to be
+	substantially redesigned in order to be so.
+	* mozilla-plugin/src/openvrml.cpp:  In order to be 64-bit clean,
+	first construct a ptrdiff_t from a void* before converting it to
+	a potentially smaller integral type.
+
+2005-07-06 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(stream_reader::operator()):  Don't use char_traits<>::not_eof
 	for comparison; that's not what it does.
