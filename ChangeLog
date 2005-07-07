@@ -1,3 +1,9 @@
+2005-07-06 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(stream_reader::operator()):  Don't use char_traits<>::not_eof
+	for comparison; that's not what it does.
+
 2005-07-03 Braden McDaniel  <braden@endoframe.com>
 
 	Merged changes from 0.15.8 release.

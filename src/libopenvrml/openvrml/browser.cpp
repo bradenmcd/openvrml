@@ -3100,7 +3100,7 @@ namespace {
                 std::vector<unsigned char> data;
                 while (this->in_->data_available()) {
                     const resource_istream::int_type c = this->in_->get();
-                    if (resource_istream::traits_type::not_eof(c)) {
+                    if (c != resource_istream::traits_type::eof()) {
                         data.push_back(
                             resource_istream::traits_type::to_char_type(c));
                     } else {
