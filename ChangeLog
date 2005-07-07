@@ -1,3 +1,14 @@
+2005-07-06 Braden McDaniel  <braden@endoframe.com>
+
+	Updated package version to 0.15.9.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* mozilla-plugin/configure.ac
+
 2005-07-03 Braden McDaniel  <braden@endoframe.com>
 
 	Disable Script node Java support by default.  This code is not

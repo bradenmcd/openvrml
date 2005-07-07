@@ -1,5 +1,5 @@
 AC_PREREQ([2.53])
-AC_INIT([OpenVRML Mozilla Plugin], [0.15.8],
+AC_INIT([OpenVRML Mozilla Plugin], [0.15.9],
         [openvrml-develop@lists.sourceforge.net])
 AC_COPYRIGHT([Portions copyright 2004, 2005 Braden McDaniel])
 AC_CONFIG_SUBDIRS([lib/gtkglext])
