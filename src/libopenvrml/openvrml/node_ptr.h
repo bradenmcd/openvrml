@@ -25,6 +25,7 @@
 #   include <cassert>
 #   include <map>
 #   include <memory>
+#   include <openvrml/common.h>
 
 namespace openvrml {
 

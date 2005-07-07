@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 2000  Christopher K. St. John
+// Copyright (C) 2001  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,32 +19,15 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# ifndef VRMLRENDERCONTEXT_H
-#   define VRMLRENDERCONTEXT_H
-
-#   include <openvrml/common.h>
-#   include <openvrml/bounding_volume.h>
+# ifndef OPENVRML_COMMON_H
+#   define OPENVRML_COMMON_H
 
 namespace openvrml {
 
-    class mat4f;
-
-    class rendering_context {
-        mat4f * modelview;
-
-    public:
-        bounding_volume::intersection cull_flag;
-        bool draw_bounding_spheres;
-
-        rendering_context();
-        rendering_context(bounding_volume::intersection cull_flag,
-                          mat4f & modelview);
-
-        // Use compiler-generated copy-ctor, dtor, operator=.
-
-        const mat4f & matrix() const;
-        void matrix(mat4f & modelview);
-    };
+    const double pi     = 3.14159265358979323846;
+    const double pi_2   = 1.57079632679489661923;
+    const double pi_4   = 0.78539816339744830962;
+    const double inv_pi = 0.31830988618379067154;
 }
 
 # endif

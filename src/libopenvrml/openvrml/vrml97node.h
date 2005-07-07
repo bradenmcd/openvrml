@@ -4,7 +4,7 @@
 //
 // Copyright 1998  Chris Morley
 // Copyright 1999  Kumaran Santhanam
-// Copyright 2001, 2002, 2003, 2004, 2005  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,9 @@
 # ifndef OPENVRML_VRML97NODE_H
 #   define OPENVRML_VRML97NODE_H
 
+#   include <openvrml/common.h>
 #   include <openvrml/node.h>
+#   include <openvrml/img.h>
 #   include <openvrml/bounding_volume.h>
 #   include <openvrml/exposedfield.h>
 
@@ -42,8 +44,7 @@ namespace openvrml {
             virtual ~abstract_base() throw () = 0;
 
         protected:
-            abstract_base(const node_type & type,
-                          const boost::shared_ptr<openvrml::scope> & scope);
+            abstract_base(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
 
         private:
             virtual const field_value & do_field(const std::string & id) const
@@ -102,9 +103,8 @@ namespace openvrml {
             virtual const color_node * color() const throw ();
 
         protected:
-            abstract_indexed_set_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            abstract_indexed_set_node(const node_type & type,
+                                      const boost::shared_ptr<openvrml::scope> & scope);
         };
 
 
@@ -128,9 +128,8 @@ namespace openvrml {
             const openvrml::color & color() const throw ();
 
         protected:
-            abstract_light_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            abstract_light_node(const node_type & type,
+                                const boost::shared_ptr<openvrml::scope> & scope);
         };
 
 
@@ -150,9 +149,8 @@ namespace openvrml {
             virtual bool repeat_t() const throw ();
 
         protected:
-            abstract_texture_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            abstract_texture_node(const node_type & type,
+                                  const boost::shared_ptr<openvrml::scope> & scope);
         };
 
 
@@ -162,7 +160,7 @@ namespace openvrml {
             virtual ~group_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -217,10 +215,10 @@ namespace openvrml {
             bounding_sphere bsphere;
 
         public:
-            group_node(const node_type & type,
-                       const boost::shared_ptr<openvrml::scope> & scope);
+            group_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~group_node() throw ();
 
+            virtual const openvrml::bounding_volume & bounding_volume() const;
             virtual bool modified() const;
 
             virtual const std::vector<node_ptr> & children() const throw ();
@@ -233,8 +231,6 @@ namespace openvrml {
         protected:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-            virtual const openvrml::bounding_volume &
-            do_bounding_volume() const;
 
             void recalc_bsphere();
         };
@@ -246,7 +242,7 @@ namespace openvrml {
             virtual ~anchor_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -266,7 +262,9 @@ namespace openvrml {
 
             virtual anchor_node * to_anchor() const;
 
-            void activate_anchor();
+            virtual const openvrml::bounding_volume & bounding_volume() const;
+
+            void activate();
 
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
@@ -280,7 +278,7 @@ namespace openvrml {
             virtual ~appearance_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -319,7 +317,7 @@ namespace openvrml {
             virtual ~audio_clip_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -367,20 +365,17 @@ namespace openvrml {
             virtual ~background_class() throw ();
 
             void set_first(background_node & background) throw ();
-            void reset_first() throw ();
             bool has_first() const throw ();
-            bool is_first(background_node & background) throw ();
             void bind(background_node & background, double timestamp)
                 throw (std::bad_alloc);
             void unbind(background_node & background, double timestamp)
                 throw ();
 
         private:
-            virtual void
-            do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-                          double timestamp) throw ();
+            virtual void do_initialize(viewpoint_node * initialViewpoint,
+                                       double timestamp) throw ();
             virtual void do_render(viewer & v) const throw ();
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -521,7 +516,7 @@ namespace openvrml {
             virtual ~billboard_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -553,7 +548,7 @@ namespace openvrml {
             virtual ~box_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -571,10 +566,9 @@ namespace openvrml {
             box_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~box_node() throw ();
 
-        private:
-            virtual const openvrml::bounding_volume &
-            do_bounding_volume() const;
+            virtual const openvrml::bounding_volume & bounding_volume() const;
 
+        private:
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
@@ -587,7 +581,7 @@ namespace openvrml {
             virtual ~collision_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -615,7 +609,7 @@ namespace openvrml {
             virtual ~color_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -646,7 +640,7 @@ namespace openvrml {
             virtual ~color_interpolator_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -686,7 +680,7 @@ namespace openvrml {
             virtual ~cone_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -719,7 +713,7 @@ namespace openvrml {
             virtual ~coordinate_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -751,7 +745,7 @@ namespace openvrml {
             virtual ~coordinate_interpolator_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -792,7 +786,7 @@ namespace openvrml {
             virtual ~cylinder_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -826,7 +820,7 @@ namespace openvrml {
             virtual ~cylinder_sensor_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -878,7 +872,7 @@ namespace openvrml {
             virtual ~directional_light_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -906,7 +900,7 @@ namespace openvrml {
             virtual ~elevation_grid_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -962,7 +956,7 @@ namespace openvrml {
             virtual ~extrusion_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -1055,18 +1049,15 @@ namespace openvrml {
             virtual ~fog_class() throw ();
 
             void set_first(fog_node & fog) throw ();
-            void reset_first() throw ();
             bool has_first() const throw ();
-            bool is_first(fog_node & fog) throw ();
             void bind(fog_node & fog, double timestamp) throw (std::bad_alloc);
             void unbind(fog_node & fog, double timestamp) throw ();
 
         private:
-            virtual void
-            do_initialize(openvrml::viewpoint_node * initialViewpoint,
-                          double timestamp) throw ();
+            virtual void do_initialize(viewpoint_node * initialViewpoint,
+                                       double timestamp) throw ();
             virtual void do_render(viewer & v) const throw ();
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -1110,7 +1101,7 @@ namespace openvrml {
             virtual ~font_style_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -1157,7 +1148,7 @@ namespace openvrml {
             virtual ~image_texture_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -1183,12 +1174,12 @@ namespace openvrml {
             bool texture_needs_update;
 
         public:
-            image_texture_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            image_texture_node(const node_type & type,
+                               const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~image_texture_node() throw ();
 
             virtual const openvrml::image & image() const throw ();
+            virtual size_t frames() const throw ();
 
         private:
             virtual viewer::texture_object_t do_render_texture(viewer & v);
@@ -1203,7 +1194,7 @@ namespace openvrml {
             virtual ~indexed_face_set_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -1256,11 +1247,9 @@ namespace openvrml {
             virtual ~indexed_face_set_node() throw ();
 
             virtual bool modified() const;
+            virtual const openvrml::bounding_volume & bounding_volume() const;
 
         private:
-            virtual const openvrml::bounding_volume &
-            do_bounding_volume() const;
-
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
@@ -1275,7 +1264,7 @@ namespace openvrml {
             virtual ~indexed_line_set_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -1304,7 +1293,7 @@ namespace openvrml {
             virtual ~inline_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -1321,9 +1310,10 @@ namespace openvrml {
             bool hasLoaded;
 
         public:
-            inline_node(const node_type & type,
-                        const boost::shared_ptr<openvrml::scope> & scope);
+            inline_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~inline_node() throw ();
+
+            virtual inline_node * to_inline() const;
 
             virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
@@ -1343,7 +1333,7 @@ namespace openvrml {
             virtual ~lod_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -1364,14 +1354,13 @@ namespace openvrml {
             virtual ~lod_node() throw ();
 
             virtual bool modified() const;
+            virtual const openvrml::bounding_volume & bounding_volume() const;
+
             virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 
         private:
-            virtual const openvrml::bounding_volume &
-            do_bounding_volume() const;
-
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
 
@@ -1385,7 +1374,7 @@ namespace openvrml {
             virtual ~material_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -1424,7 +1413,7 @@ namespace openvrml {
             virtual ~movie_texture_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -1456,12 +1445,14 @@ namespace openvrml {
             sfbool active_;
             sfbool_emitter is_active_;
 
+            img * img_;
             openvrml::image image_;
+            int frame, lastFrame;
+            double lastFrameTime;
 
         public:
-            movie_texture_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            movie_texture_node(const node_type & type,
+                               const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~movie_texture_node() throw ();
 
             virtual movie_texture_node * to_movie_texture() const;
@@ -1469,6 +1460,7 @@ namespace openvrml {
             void update(double time);
 
             virtual const openvrml::image & image() const throw ();
+            virtual size_t frames() const throw ();
 
         private:
             virtual void do_initialize(double timestamp)
@@ -1478,39 +1470,20 @@ namespace openvrml {
         };
 
 
-        class navigation_info_node;
-
         class navigation_info_class : public node_class {
-            typedef std::vector<navigation_info_node *> bound_nodes_t;
-
-            navigation_info_node * first;
-            bound_nodes_t bound_nodes;
-
         public:
             explicit navigation_info_class(openvrml::browser & browser);
             virtual ~navigation_info_class() throw ();
 
-            void set_first(navigation_info_node & nav_info) throw ();
-            void reset_first() throw ();
-            bool has_first() const throw ();
-            bool is_first(navigation_info_node & nav_info) throw ();
-            void bind(navigation_info_node & nav_info, double timestamp)
-                throw (std::bad_alloc);
-            void unbind(navigation_info_node & nav_info, double timestamp)
-                throw ();
-
         private:
-            virtual void
-            do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-                          double timestamp) throw ();
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
         };
 
         class navigation_info_node : public abstract_base,
-                                     public openvrml::navigation_info_node {
+                                     public child_node {
             friend class navigation_info_class;
 
             class set_bind_listener : public sfbool_listener {
@@ -1534,19 +1507,20 @@ namespace openvrml {
             sfbool_emitter is_bound_emitter_;
 
         public:
-            navigation_info_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            navigation_info_node(const node_type & type,
+                                 const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~navigation_info_node() throw ();
 
-            virtual const std::vector<float> & avatar_size() const throw ();
-            virtual bool headlight() const throw ();
-            virtual float speed() const throw ();
-            virtual const std::vector<std::string> & type() const throw ();
-            virtual float visibility_limit() const throw ();
+            virtual navigation_info_node * to_navigation_info() const;
+
+            const float * avatar_size() const;
+            bool headlight() const;
+            float speed() const;
+            float visibility_limit() const;
 
         private:
-            virtual void do_initialize(double timestamp) throw ();
+            virtual void do_initialize(double timestamp)
+                throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
         };
 
@@ -1557,7 +1531,7 @@ namespace openvrml {
             virtual ~normal_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -1570,8 +1544,7 @@ namespace openvrml {
             exposedfield<mfvec3f> vector_;
 
         public:
-            normal_node(const node_type & type,
-                        const boost::shared_ptr<openvrml::scope> & scope);
+            normal_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~normal_node() throw ();
 
             //
@@ -1587,7 +1560,7 @@ namespace openvrml {
             virtual ~normal_interpolator_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -1616,9 +1589,8 @@ namespace openvrml {
             mfvec3f_emitter value_changed_emitter_;
 
         public:
-            normal_interpolator_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            normal_interpolator_node(const node_type & type,
+                                     const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~normal_interpolator_node() throw ();
         };
 
@@ -1630,7 +1602,7 @@ namespace openvrml {
             virtual ~orientation_interpolator_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -1659,9 +1631,8 @@ namespace openvrml {
             sfrotation_emitter value_changed_emitter_;
 
         public:
-            orientation_interpolator_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            orientation_interpolator_node(const node_type & type,
+                                          const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~orientation_interpolator_node() throw ();
         };
 
@@ -1672,7 +1643,7 @@ namespace openvrml {
             virtual ~pixel_texture_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -1684,12 +1655,12 @@ namespace openvrml {
             exposedfield<sfimage> image_;
 
         public:
-            pixel_texture_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            pixel_texture_node(const node_type & type,
+                               const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~pixel_texture_node() throw ();
 
             virtual const openvrml::image & image() const throw ();
+            virtual size_t frames() const throw ();
 
         private:
             virtual viewer::texture_object_t do_render_texture(viewer & v);
@@ -1702,7 +1673,7 @@ namespace openvrml {
             virtual ~plane_sensor_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -1730,9 +1701,8 @@ namespace openvrml {
             mat4f modelview;
 
         public:
-            plane_sensor_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            plane_sensor_node(const node_type & type,
+                              const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~plane_sensor_node() throw ();
 
             virtual plane_sensor_node * to_plane_sensor() const;
@@ -1753,7 +1723,7 @@ namespace openvrml {
             virtual ~point_light_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -1767,9 +1737,7 @@ namespace openvrml {
             exposedfield<sffloat> radius_;
 
         public:
-            point_light_node(
-                const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope);
+            point_light_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~point_light_node() throw ();
 
             virtual point_light_node * to_point_light() const;
@@ -1789,7 +1757,7 @@ namespace openvrml {
             virtual ~point_set_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interface) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -1810,11 +1778,9 @@ namespace openvrml {
             virtual ~point_set_node() throw ();
 
             virtual bool modified() const;
+            virtual const openvrml::bounding_volume & bounding_volume() const;
 
         private:
-            virtual const openvrml::bounding_volume &
-            do_bounding_volume() const;
-
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
@@ -1830,7 +1796,7 @@ namespace openvrml {
             virtual ~position_interpolator_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -1871,7 +1837,7 @@ namespace openvrml {
             virtual ~proximity_sensor_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -1912,7 +1878,7 @@ namespace openvrml {
             virtual ~scalar_interpolator_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -1953,7 +1919,7 @@ namespace openvrml {
             virtual ~shape_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -1974,11 +1940,9 @@ namespace openvrml {
             virtual ~shape_node() throw ();
 
             virtual bool modified() const;
+            virtual const openvrml::bounding_volume & bounding_volume() const;
 
         private:
-            virtual const openvrml::bounding_volume &
-            do_bounding_volume() const;
-
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
         };
@@ -1990,7 +1954,7 @@ namespace openvrml {
             virtual ~sound_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interface) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -2028,7 +1992,7 @@ namespace openvrml {
             virtual ~sphere_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -2046,10 +2010,9 @@ namespace openvrml {
                         const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~sphere_node() throw ();
 
-        private:
-            virtual const openvrml::bounding_volume &
-            do_bounding_volume() const;
+            virtual const openvrml::bounding_volume & bounding_volume() const;
 
+        private:
             virtual viewer::object_t
             do_render_geometry(openvrml::viewer & viewer,
                                rendering_context context);
@@ -2062,7 +2025,7 @@ namespace openvrml {
             virtual ~sphere_sensor_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -2108,7 +2071,7 @@ namespace openvrml {
             virtual ~spot_light_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -2145,7 +2108,7 @@ namespace openvrml {
             virtual ~switch_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                     throw (unsupported_interface, std::bad_alloc);
@@ -2187,14 +2150,13 @@ namespace openvrml {
             virtual ~switch_node() throw ();
 
             virtual bool modified() const;
+            virtual const openvrml::bounding_volume & bounding_volume() const;
+
             virtual const std::vector<node_ptr> & children() const throw ();
             virtual void activate(double timestamp, bool over, bool active,
                                   double * p);
 
         private:
-            virtual const openvrml::bounding_volume &
-            do_bounding_volume() const;
-
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
 
@@ -2210,7 +2172,7 @@ namespace openvrml {
             virtual ~text_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -2319,7 +2281,7 @@ namespace openvrml {
             virtual ~texture_coordinate_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -2351,7 +2313,7 @@ namespace openvrml {
             virtual ~texture_transform_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -2384,7 +2346,7 @@ namespace openvrml {
             virtual ~time_sensor_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -2469,7 +2431,7 @@ namespace openvrml {
             virtual ~touch_sensor_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -2512,7 +2474,7 @@ namespace openvrml {
             virtual ~transform_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -2594,12 +2556,11 @@ namespace openvrml {
                            const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~transform_node() throw ();
 
+            virtual const openvrml::bounding_volume & bounding_volume() const;
+
             virtual const mat4f & transform() const throw ();
 
         private:
-            virtual const openvrml::bounding_volume &
-            do_bounding_volume() const;
-
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
 
@@ -2621,19 +2582,18 @@ namespace openvrml {
             virtual ~viewpoint_class() throw ();
 
             void set_first(viewpoint_node & viewpoint) throw ();
-            void reset_first() throw ();
             bool has_first() const throw ();
-            bool is_first(viewpoint_node & viewpoint) throw ();
             void bind(viewpoint_node & viewpoint, double timestamp)
                 throw (std::bad_alloc);
             void unbind(viewpoint_node & viewpoint, double timestamp) throw ();
 
-        private:
             virtual void
             do_initialize(openvrml::viewpoint_node * initial_viewpoint,
                           double timestamp)
                 throw ();
-            virtual const boost::shared_ptr<node_type>
+
+        private:
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -2693,8 +2653,7 @@ namespace openvrml {
             mat4f user_view_transform_;
 
         public:
-            viewpoint_node(const node_type & type,
-                           const boost::shared_ptr<openvrml::scope> & scope);
+            viewpoint_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~viewpoint_node() throw ();
 
             virtual const mat4f & transformation() const throw ();
@@ -2722,7 +2681,7 @@ namespace openvrml {
             virtual ~visibility_sensor_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);
@@ -2760,7 +2719,7 @@ namespace openvrml {
             virtual ~world_info_class() throw ();
 
         private:
-            virtual const boost::shared_ptr<node_type>
+            virtual const node_type_ptr
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
                 throw (unsupported_interface, std::bad_alloc);

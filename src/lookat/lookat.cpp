@@ -1,8 +1,8 @@
 // -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
 //
-// sdl-viewer
+// lookat
 //
-// Copyright 2003, 2004, 2005  Braden McDaniel
+// Copyright 2003  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,8 +24,6 @@
 # endif
 
 # include <iostream>
-# include <fstream>
-# include <boost/algorithm/string/predicate.hpp>
 # include <SDL.h>
 # include <openvrml/browser.h>
 # include <openvrml/gl/viewer.h>
@@ -33,16 +31,6 @@
 extern "C" Uint32 update_timer_callback(Uint32 interval, void * param);
 
 namespace {
-
-    class browser : public openvrml::browser {
-    public:
-        browser();
-
-    private:
-        virtual std::auto_ptr<openvrml::resource_istream>
-        do_get_resource(const std::string & uri);
-    };
-
 
     class sdl_error : public std::runtime_error {
     public:
@@ -79,119 +67,63 @@ namespace {
 
 int main(int argc, char * argv[])
 {
+    using std::exception;
     using std::cerr;
+    using std::cout;
     using std::endl;
-
-    if (argc < 2) {
-        cerr << "Usage: " << argv[0] << " URL" << endl;
-        return EXIT_FAILURE;
-    }
+    using std::string;
+    using std::vector;
 
     try {
-        using std::string;
-        using std::vector;
+        using openvrml::browser;
 
-        const string url = argv[1];
+        string inputUrl;
+        string inputName;
 
-        sdl_viewer v(url);
-        browser b;
+        const char * const usage = " file.wrl\n";
+
+        for (int i = 1; i < argc; ++i) {
+            if (*argv[i] == '-') {
+                if (strcmp(argv[i], "-url") == 0) {
+                    inputUrl = argv[++i];
+                } else {
+                    cerr << "Error: unrecognized option " << argv[i] << '\n';
+                    cerr << "Usage: " << argv[0] << usage << endl;
+                    exit(EXIT_FAILURE);
+                }
+            } else if (inputName.empty()) {
+                inputName = argv[i];
+            } else {
+                cerr << "Usage: " << argv[0] << usage << endl;
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        if (inputName.empty()) {
+            if (inputUrl.empty()) {
+                inputName = inputUrl;
+            } else {
+                inputName = inputUrl = "-"; // Read stdin
+            }
+        }
+
+        if (inputUrl.empty()) { inputUrl = inputName; }
+
+        sdl_viewer v(inputUrl);
+        browser b(cout, cerr);
         b.viewer(&v);
 
-        vector<string> uri(1, url);
+        vector<string> uri(1, inputUrl);
         vector<string> parameter;
         b.load_url(uri, parameter);
 
         v.run();
     } catch (std::exception & ex) {
         cerr << ex.what() << endl;
-        throw;
     }
 }
 
 namespace {
-
-    browser::browser():
-        openvrml::browser(std::cout, std::cerr)
-    {}
-
-    std::auto_ptr<openvrml::resource_istream>
-    browser::do_get_resource(const std::string & uri)
-    {
-        using std::auto_ptr;
-        using std::invalid_argument;
-        using std::string;
-        using openvrml::resource_istream;
-
-        class file_resource_istream : public resource_istream {
-            std::string url_;
-            std::filebuf buf_;
-
-        public:
-            explicit file_resource_istream(const std::string & path):
-                resource_istream(&this->buf_)
-            {
-                this->buf_.open(path.c_str(), ios_base::in);
-            }
-
-            void url(const std::string & str) throw (std::bad_alloc)
-            {
-                this->url_ = str;
-            }
-
-            virtual const std::string url() const throw ()
-            {
-                return this->url_;
-            }
-
-            virtual const std::string type() const throw ()
-            {
-                //
-                // A real application should use OS facilities for this.  This
-                // is a crude hack because sdl-viewer uses std::filebuf in
-                // order to remain simple and portable.
-                //
-                using std::string;
-                using boost::algorithm::iequals;
-                string media_type = "application/octet-stream";
-                const string::size_type dot_pos = this->url_.rfind('.');
-                if (dot_pos == string::npos
-                    || this->url_.size() < dot_pos + 1) {
-                    return media_type;
-                }
-                const string ext = this->url_.substr(dot_pos + 1);
-                if (iequals(ext, "wrl")) {
-                    media_type = "model/vrml";
-                } else if (iequals(ext, "png")) {
-                    media_type = "image/png";
-                } else if (iequals(ext, "jpg") || iequals(ext, "jpeg")) {
-                    media_type = "image/jpeg";
-                }
-                return media_type;
-            }
-
-            virtual bool data_available() const throw ()
-            {
-                return !!(*this);
-            }
-        };
-
-        const string scheme = uri.substr(0, uri.find_first_of(':'));
-        if (scheme != "file") {
-            throw invalid_argument('\"' + scheme + "\" URI scheme not "
-                                   "supported");
-        }
-        //
-        // file://
-        //        ^
-        // 01234567
-        //
-        string path = uri.substr(uri.find_first_of('/', 7));
-
-        auto_ptr<resource_istream> in(new file_resource_istream(path));
-        static_cast<file_resource_istream *>(in.get())->url(uri);
-
-        return in;
-    }
 
     sdl_error::sdl_error(const std::string & message):
         std::runtime_error(message)
