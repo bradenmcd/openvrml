@@ -1,5 +1,16 @@
 2005-07-07 Braden McDaniel  <braden@endoframe.com>
 
+	Clean-up of inclusions.
+
+	* src/libopenvrml/openvrml/bounding_volume.h
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/event.h
+	* src/libopenvrml/openvrml/field_value.h
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/vrml97node.h
+
+2005-07-07 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglquery-x11.c:  Removed
 	inadvertently added tab character.
 

@@ -23,12 +23,6 @@
 # ifndef OPENVRML_BROWSER_H
 #   define OPENVRML_BROWSER_H
 
-#   include <iosfwd>
-#   include <list>
-#   include <map>
-#   include <string>
-#   include <boost/scoped_ptr.hpp>
-#   include <boost/thread/recursive_mutex.hpp>
 #   include <boost/thread/read_write_mutex.hpp>
 #   include <openvrml/script.h>
 

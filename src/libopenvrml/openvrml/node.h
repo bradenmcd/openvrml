@@ -26,11 +26,8 @@
 #   include <deque>
 #   include <list>
 #   include <set>
-#   include <stdexcept>
 #   include <utility>
-#   include <boost/shared_ptr.hpp>
 #   include <boost/thread/recursive_mutex.hpp>
-#   include <boost/utility.hpp>
 #   include <openvrml/field_value.h>
 #   include <openvrml/viewer.h>
 #   include <openvrml/rendering_context.h>

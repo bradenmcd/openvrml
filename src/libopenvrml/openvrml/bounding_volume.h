@@ -22,8 +22,6 @@
 # ifndef OPENVRML_BVOLUME_H
 #   define OPENVRML_BVOLUME_H
 
-#   include <iosfwd>
-#   include <vector>
 #   include <openvrml/basetypes.h>
 
 namespace openvrml {

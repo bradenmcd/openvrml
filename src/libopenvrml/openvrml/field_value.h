@@ -24,11 +24,8 @@
 #   define OPENVRML_FIELD_VALUE_H
 
 #   include <memory>
-#   include <set>
-#   include <stdexcept>
 #   include <string>
 #   include <typeinfo>
-#   include <boost/cast.hpp>
 #   include <boost/concept_check.hpp>
 #   include <boost/shared_ptr.hpp>
 #   include <boost/utility.hpp>

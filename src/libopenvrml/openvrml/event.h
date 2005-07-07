@@ -22,12 +22,14 @@
 # ifndef OPENVRML_EVENT_H
 #   define OPENVRML_EVENT_H
 
-#   include <boost/thread/mutex.hpp>
+#   include <set>
+#   include <boost/cast.hpp>
 #   include <boost/thread/recursive_mutex.hpp>
 #   include <openvrml/field_value.h>
-#   include <openvrml/node.h>
 
 namespace openvrml {
+
+    class node;
 
     class event_listener : boost::noncopyable {
         openvrml::node & node_;
