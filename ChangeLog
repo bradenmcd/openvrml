@@ -1,5 +1,10 @@
 2005-07-07 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglquery-x11.c:  Removed
+	inadvertently added tab character.
+
+2005-07-07 Braden McDaniel  <braden@endoframe.com>
+
 	Fixed warnings and 64-bit cleanliness issues noted by gcc 4.0.
 
 	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglquery-x11.c
