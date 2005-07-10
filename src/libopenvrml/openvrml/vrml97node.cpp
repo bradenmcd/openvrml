@@ -3837,7 +3837,7 @@ void openvrml::vrml97_node::background_node::update_textures()
 
 
 /**
- * @class billboard_class
+ * @class openvrml::billboard_class
  *
  * @brief Class object for Billboard nodes.
  */

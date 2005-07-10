@@ -3233,13 +3233,6 @@ openvrml::viewer_in_use::~viewer_in_use() throw ()
  */
 
 /**
- * @var openvrml::browser_event::url_error
- *
- * @brief A <code>url_error</code> event is sent if no alternative URL can be
- *        resolved to load a world.
- */
-
-/**
  * @internal
  *
  * @var openvrml::browser * openvrml::browser_event::source_
@@ -3617,42 +3610,56 @@ void openvrml::browser::node_class_map::render(openvrml::viewer & v)
 }
 
 /**
+ * @internal
+ *
  * @var boost::recursive_mutex openvrml::browser::mutex_
  *
  * @brief Object mutex.
  */
 
 /**
+ * @internal
+ *
  * @var std::auto_ptr<openvrml::null_node_class> openvrml::browser::null_node_class_
  *
  * @brief "Null" class object for default nodes (e.g., default_viewpoint).
  */
 
 /**
+ * @internal
+ *
  * @var std::auto_ptr<openvrml::null_node_type> openvrml::browser::null_node_type_
  *
  * @brief "Null" type object for default nodes (e.g., default_viewpoint).
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::browser::node_class_map openvrml::browser::node_class_map_
  *
  * @brief A map of URIs to node implementations.
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::script_node_class openvrml::browser::script_node_class_
  *
- * @brief node_class for Script nodes in the browser.
+ * @brief <code>node_class</code> for Script nodes in the browser.
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::scene * openvrml::browser::scene_
  *
  * @brief Pointer to the root scene.
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::node_ptr openvrml::browser::default_viewpoint_
  *
  * @brief The "default" viewpoint_node used when no viewpoint_node in the scene
@@ -3660,12 +3667,16 @@ void openvrml::browser::node_class_map::render(openvrml::viewer & v)
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::viewpoint_node * openvrml::browser::active_viewpoint_
  *
  * @brief The currently "active" viewpoint_node.
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::node_ptr openvrml::browser::default_navigation_info_
  *
  * @brief The "default" navigation_info_node used when no navigation_info_node
@@ -3673,45 +3684,71 @@ void openvrml::browser::node_class_map::render(openvrml::viewer & v)
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::navigation_info_node * openvrml::browser::active_navigation_info_
  *
  * @brief The currently "active" navigation_info_node.
  */
 
 /**
+ * @internal
+ *
  * @var std::list<openvrml::viewpoint_node *> openvrml::browser::viewpoint_list
  *
  * @brief A list of all the Viewpoint nodes in the browser.
  */
 
 /**
+ * @internal
+ *
  * @var std::list<openvrml::node *> openvrml::browser::scoped_lights
  *
  * @brief A list of all the scoped light nodes in the browser.
  */
 
 /**
+ * @internal
+ *
  * @var std::list<openvrml::script_node *> openvrml::browser::scripts
  *
  * @brief A list of all the Script nodes in the browser.
  */
 
 /**
+ * @internal
+ *
  * @var std::list<openvrml::node *> openvrml::browser::timers
  *
  * @brief A list of all the TimeSensor nodes in the browser.
  */
 
 /**
+ * @internal
+ *
  * @var std::list<openvrml::node *> openvrml::browser::audio_clips
  *
  * @brief A list of all the AudioClip nodes in the browser.
  */
 
 /**
+ * @internal
+ *
  * @var std::list<openvrml::node *> openvrml::browser::movies
  *
  * @brief A list of all the MovieTexture nodes in the browser.
+ */
+
+/**
+ * @internal
+ *
+ * @var std::set<openvrml::browser_listener *> openvrml::browser::listeners_
+ *
+ * @brief The set of <code>browser_listener</code>s that will receive
+ *        <code>browser_event</code>s.
+ *
+ * @sa openvrml::browser::add_listener
+ * @sa openvrml::browser::remove_listener
  */
 
 /**
