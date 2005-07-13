@@ -196,7 +196,7 @@ namespace openvrml {
         const node_ptr default_navigation_info_;
         navigation_info_node * active_navigation_info_;
         std::list<viewpoint_node *> viewpoint_list;
-        std::list<node *> scoped_lights;
+        std::list<scoped_light_node *> scoped_lights;
         std::list<script_node *> scripts;
         std::list<node *> timers;
         std::list<node *> audio_clips;
@@ -270,8 +270,8 @@ namespace openvrml {
         void delta(double d);
         double delta() const;
 
-        void add_scoped_light(vrml97_node::abstract_light_node &);
-        void remove_scoped_light(vrml97_node::abstract_light_node &);
+        void add_scoped_light(scoped_light_node &);
+        void remove_scoped_light(scoped_light_node &);
 
         void add_time_sensor(vrml97_node::time_sensor_node &);
         void remove_time_sensor(vrml97_node::time_sensor_node &);

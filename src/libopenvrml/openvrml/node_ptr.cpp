@@ -99,6 +99,7 @@ namespace {
         class dummy_listener : public openvrml::sfbool_listener {
         public:
             dummy_listener(self_ref_node & n):
+                openvrml::event_listener(n),
                 openvrml::sfbool_listener(n)
             {}
 
@@ -106,6 +107,11 @@ namespace {
             {}
 
         private:
+            virtual const std::string do_eventin_id() const throw ()
+            {
+                return std::string();
+            }
+
             virtual void do_process_event(const openvrml::sfbool & value,
                                           double timestamp)
                 throw (std::bad_alloc)
@@ -120,8 +126,22 @@ namespace {
     self_ref_node::do_event_emitter(const std::string & id)
         throw (openvrml::unsupported_interface)
     {
+        class dummy_emitter : public openvrml::sfbool_emitter {
+        public:
+            explicit dummy_emitter(const openvrml::sfbool & value):
+                openvrml::event_emitter(value),
+                openvrml::sfbool_emitter(value)
+            {}
+
+        private:
+            virtual const std::string do_eventout_id() const throw ()
+            {
+                return std::string();
+            }            
+        };
+
         openvrml::sfbool val;
-        static openvrml::sfbool_emitter emitter(val);
+        static dummy_emitter emitter(val);
         return emitter;
     }
 }

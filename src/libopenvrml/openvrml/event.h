@@ -32,22 +32,26 @@ namespace openvrml {
     class node;
 
     class event_listener : boost::noncopyable {
-        openvrml::node & node_;
+        openvrml::node * node_;
 
     public:
         virtual ~event_listener() throw () = 0;
 
-        openvrml::node & node() throw ();
+        openvrml::node & node() const throw ();
+        const std::string eventin_id() const throw ();
 
         virtual field_value::type_id type() const throw () = 0;
 
     protected:
         explicit event_listener(openvrml::node & node) throw ();
+
+    private:
+        virtual const std::string do_eventin_id() const throw () = 0;
     };
 
 
     template <typename FieldValue>
-    class field_value_listener : public event_listener {
+    class field_value_listener : public virtual event_listener {
         BOOST_CLASS_REQUIRE(FieldValue, openvrml, FieldValueConcept);
 
     public:
@@ -126,12 +130,10 @@ namespace openvrml {
     public:
         typedef std::set<event_listener *> listener_set;
 
-        static std::auto_ptr<event_emitter> create(const field_value & value)
-            throw (std::bad_alloc);
-
         virtual ~event_emitter() throw () = 0;
 
         const field_value & value() const throw ();
+        const std::string eventout_id() const throw ();
         const listener_set & listeners() const throw ();
         double last_time() const throw ();
 
@@ -143,17 +145,18 @@ namespace openvrml {
         explicit event_emitter(const field_value & value) throw ();
 
     private:
+        virtual const std::string do_eventout_id() const throw () = 0;
         virtual void emit_event(double timestamp) throw (std::bad_alloc) = 0;
     };
 
 
     template <typename FieldValue>
-    class field_value_emitter : public event_emitter {
+    class field_value_emitter : public virtual event_emitter {
         BOOST_CLASS_REQUIRE(FieldValue, openvrml, FieldValueConcept);
 
     public:
         explicit field_value_emitter(const FieldValue & value) throw ();
-        virtual ~field_value_emitter() throw ();
+        virtual ~field_value_emitter() throw () = 0;
 
         bool add(field_value_listener<FieldValue> & listener)
             throw (std::bad_alloc);
@@ -185,8 +188,8 @@ namespace openvrml {
              ++listener) {
             using boost::polymorphic_downcast;
             assert(*listener);
-            polymorphic_downcast<field_value_listener<FieldValue> *>(*listener)
-                ->process_event(
+            dynamic_cast<field_value_listener<FieldValue> &>(**listener)
+                .process_event(
                     *polymorphic_downcast<const FieldValue *>(&this->value()),
                     timestamp);
         }

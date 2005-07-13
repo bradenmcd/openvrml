@@ -263,9 +263,11 @@ namespace openvrml {
     class font_style_node;
     class geometry_node;
     class grouping_node;
+    class light_node;
     class material_node;
     class navigation_info_node;
     class normal_node;
+    class scoped_light_node;
     class sound_source_node;
     class texture_node;
     class texture_coordinate_node;
@@ -277,12 +279,9 @@ namespace openvrml {
         class anchor_node;
         class audio_clip_node;
         class cylinder_sensor_node;
-        class abstract_light_node;
         class movie_texture_node;
         class plane_sensor_node;
-        class point_light_node;
         class sphere_sensor_node;
-        class spot_light_node;
         class time_sensor_node;
         class touch_sensor_node;
     }
@@ -315,10 +314,13 @@ namespace openvrml {
             throw ();
         friend geometry_node * node_cast<geometry_node *>(node * n) throw ();
         friend grouping_node * node_cast<grouping_node *>(node * n) throw ();
+        friend light_node * node_cast<light_node *>(node * n) throw ();
         friend material_node * node_cast<material_node *>(node * n) throw ();
         friend navigation_info_node *
         node_cast<navigation_info_node *>(node * n) throw ();
         friend normal_node * node_cast<normal_node *>(node * n) throw ();
+        friend scoped_light_node * node_cast<scoped_light_node *>(node * n)
+            throw ();
         friend sound_source_node * node_cast<sound_source_node *>(node * n)
             throw ();
         friend texture_node * node_cast<texture_node *>(node * n) throw ();
@@ -404,12 +406,9 @@ namespace openvrml {
         virtual vrml97_node::anchor_node * to_anchor() const;
         virtual vrml97_node::audio_clip_node * to_audio_clip() const;
         virtual vrml97_node::cylinder_sensor_node * to_cylinder_sensor() const;
-        virtual vrml97_node::abstract_light_node * to_light() const;
         virtual vrml97_node::movie_texture_node * to_movie_texture() const;
         virtual vrml97_node::plane_sensor_node * to_plane_sensor() const;
-        virtual vrml97_node::point_light_node * to_point_light() const;
         virtual vrml97_node::sphere_sensor_node * to_sphere_sensor() const;
-        virtual vrml97_node::spot_light_node * to_spot_light() const;
         virtual vrml97_node::time_sensor_node * to_time_sensor() const;
         virtual vrml97_node::touch_sensor_node * to_touch_sensor() const;
 
@@ -448,9 +447,11 @@ namespace openvrml {
         virtual font_style_node * to_font_style() throw () ;
         virtual geometry_node * to_geometry() throw ();
         virtual grouping_node * to_grouping() throw ();
+        virtual light_node * to_light() throw ();
         virtual material_node * to_material() throw ();
         virtual navigation_info_node * to_navigation_info() throw ();
         virtual normal_node * to_normal() throw ();
+        virtual scoped_light_node * to_scoped_light() throw ();
         virtual sound_source_node * to_sound_source() throw ();
         virtual texture_node * to_texture() throw ();
         virtual texture_coordinate_node * to_texture_coordinate() throw ();
@@ -558,6 +559,14 @@ namespace openvrml {
     }
 
     template <>
+    inline light_node * node_cast<light_node *>(node * n) throw ()
+    {
+        return n
+            ? n->to_light()
+            : 0;
+    }
+
+    template <>
     inline material_node * node_cast<material_node *>(node * n) throw ()
     {
         return n
@@ -579,6 +588,15 @@ namespace openvrml {
     {
         return n
             ? n->to_navigation_info()
+            : 0;
+    }
+
+    template <>
+    inline scoped_light_node * node_cast<scoped_light_node *>(node * n)
+        throw ()
+    {
+        return n
+            ? n->to_scoped_light()
             : 0;
     }
 
@@ -803,6 +821,20 @@ namespace openvrml {
     };
 
 
+    class light_node : public virtual child_node {
+    public:
+        virtual ~light_node() throw () = 0;
+
+    protected:
+        light_node(const node_type & type,
+                   const boost::shared_ptr<openvrml::scope> & scope)
+            throw ();
+
+    private:
+        virtual light_node * to_light() throw ();
+    };
+
+
     class material_node : public virtual node {
     public:
         virtual ~material_node() throw () = 0;
@@ -856,6 +888,23 @@ namespace openvrml {
 
     private:
         virtual normal_node * to_normal() throw ();
+    };
+
+
+    class scoped_light_node : public virtual light_node {
+    public:
+        virtual ~scoped_light_node() throw () = 0;
+
+        void render_scoped_light(viewer & v);
+
+    protected:
+        scoped_light_node(const node_type & type,
+                          const boost::shared_ptr<openvrml::scope> & scope)
+            throw ();
+
+    private:
+        virtual scoped_light_node * to_scoped_light() throw ();
+        virtual void do_render_scoped_light(viewer & v) = 0;
     };
 
 

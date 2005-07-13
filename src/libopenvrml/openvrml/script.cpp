@@ -252,103 +252,103 @@ void openvrml::script::process_direct_output(double timestamp)
         using boost::polymorphic_downcast;
         switch (output->first->type()) {
         case field_value::sfbool_id:
-            polymorphic_downcast<sfbool_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfbool *>(
+            dynamic_cast<sfbool_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<sfbool *>(
                     output->second.get()), timestamp);
             break;
         case field_value::sfcolor_id:
-            polymorphic_downcast<sfcolor_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfcolor *>(
+            dynamic_cast<sfcolor_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<sfcolor *>(
                     output->second.get()), timestamp);
             break;
         case field_value::sffloat_id:
-            polymorphic_downcast<sffloat_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sffloat *>(
+            dynamic_cast<sffloat_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<sffloat *>(
                     output->second.get()), timestamp);
             break;
         case field_value::sfimage_id:
-            polymorphic_downcast<sfimage_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfimage *>(
+            dynamic_cast<sfimage_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<sfimage *>(
                     output->second.get()), timestamp);
             break;
         case field_value::sfint32_id:
-            polymorphic_downcast<sfint32_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfint32 *>(
+            dynamic_cast<sfint32_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<sfint32 *>(
                     output->second.get()), timestamp);
             break;
         case field_value::sfnode_id:
-            polymorphic_downcast<sfnode_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfnode *>(
+            dynamic_cast<sfnode_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<sfnode *>(
                     output->second.get()), timestamp);
             break;
         case field_value::sfrotation_id:
-            polymorphic_downcast<sfrotation_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfrotation *>(
+            dynamic_cast<sfrotation_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<sfrotation *>(
                     output->second.get()), timestamp);
             break;
         case field_value::sfstring_id:
-            polymorphic_downcast<sfstring_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfstring *>(
+            dynamic_cast<sfstring_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<sfstring *>(
                     output->second.get()), timestamp);
             break;
         case field_value::sftime_id:
-            polymorphic_downcast<sftime_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sftime *>(
+            dynamic_cast<sftime_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<sftime *>(
                     output->second.get()), timestamp);
             break;
         case field_value::sfvec2f_id:
-            polymorphic_downcast<sfvec2f_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfvec2f *>(
+            dynamic_cast<sfvec2f_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<sfvec2f *>(
                     output->second.get()), timestamp);
             break;
         case field_value::sfvec3f_id:
-            polymorphic_downcast<sfvec3f_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<sfvec3f *>(
+            dynamic_cast<sfvec3f_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<sfvec3f *>(
                     output->second.get()), timestamp);
             break;
         case field_value::mfcolor_id:
-            polymorphic_downcast<mfcolor_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfcolor *>(
+            dynamic_cast<mfcolor_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<mfcolor *>(
                     output->second.get()), timestamp);
             break;
         case field_value::mffloat_id:
-            polymorphic_downcast<mffloat_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mffloat *>(
+            dynamic_cast<mffloat_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<mffloat *>(
                     output->second.get()), timestamp);
             break;
         case field_value::mfint32_id:
-            polymorphic_downcast<mfint32_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfint32 *>(
+            dynamic_cast<mfint32_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<mfint32 *>(
                     output->second.get()), timestamp);
             break;
         case field_value::mfnode_id:
-            polymorphic_downcast<mfnode_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfnode *>(
+            dynamic_cast<mfnode_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<mfnode *>(
                     output->second.get()), timestamp);
             break;
         case field_value::mfrotation_id:
-            polymorphic_downcast<mfrotation_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfrotation *>(
+            dynamic_cast<mfrotation_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<mfrotation *>(
                     output->second.get()), timestamp);
             break;
         case field_value::mfstring_id:
-            polymorphic_downcast<mfstring_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfstring *>(
+            dynamic_cast<mfstring_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<mfstring *>(
                     output->second.get()), timestamp);
             break;
         case field_value::mftime_id:
-            polymorphic_downcast<mftime_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mftime *>(
+            dynamic_cast<mftime_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<mftime *>(
                     output->second.get()), timestamp);
             break;
         case field_value::mfvec2f_id:
-            polymorphic_downcast<mfvec2f_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfvec2f *>(
+            dynamic_cast<mfvec2f_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<mfvec2f *>(
                     output->second.get()), timestamp);
             break;
         case field_value::mfvec3f_id:
-            polymorphic_downcast<mfvec3f_listener *>(output->first)
-                ->process_event(*polymorphic_downcast<mfvec3f *>(
+            dynamic_cast<mfvec3f_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<mfvec3f *>(
                     output->second.get()), timestamp);
             break;
         case field_value::invalid_type_id:
@@ -463,7 +463,7 @@ openvrml::script_node::eventout::eventout(const field_value::type_id type,
     node_(node),
     value_(field_value::create(type)),
     modified_(false),
-    emitter_(openvrml::event_emitter::create(*this->value_))
+    emitter_(create_emitter(node, *this->value_))
 {}
 
 /**
@@ -740,6 +740,14 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  */
 
 /**
+ * @fn const std::string openvrml::script_node::script_event_listener::do_eventin_id() const throw ()
+ *
+ * @brief The associated eventIn identifier.
+ *
+ * @return the associated eventIn identifier.
+ */
+
+/**
  * @fn void openvrml::script_node::script_event_listener::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
  * @brief Process an event.
@@ -1000,6 +1008,134 @@ openvrml::script_node::create_listener(const field_value::type_id type,
 /**
  * @internal
  *
+ * @brief Create a Script node event emitter.
+ *
+ * @param node  the containing <code>script_node</code>.
+ * @param value the node field value associated with the emitter.
+ *
+ * @return a Script node event emitter.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<openvrml::event_emitter>
+openvrml::script_node::create_emitter(script_node & node,
+                                      const openvrml::field_value & value)
+    throw (std::bad_alloc)
+{
+    using namespace openvrml;
+    using boost::polymorphic_downcast;
+
+    std::auto_ptr<openvrml::event_emitter> emitter;
+    switch (value.type()) {
+    case field_value::sfbool_id:
+        emitter.reset(new script_event_emitter<sfbool>(
+                          node,
+                          *polymorphic_downcast<const sfbool *>(&value)));
+        break;
+    case field_value::sfcolor_id:
+        emitter.reset(new script_event_emitter<sfcolor>(
+                          node,
+                          *polymorphic_downcast<const sfcolor *>(&value)));
+        break;
+    case field_value::sffloat_id:
+        emitter.reset(new script_event_emitter<sffloat>(
+                          node,
+                          *polymorphic_downcast<const sffloat *>(&value)));
+        break;
+    case field_value::sfimage_id:
+        emitter.reset(new script_event_emitter<sfimage>(
+                          node,
+                          *polymorphic_downcast<const sfimage *>(&value)));
+        break;
+    case field_value::sfint32_id:
+        emitter.reset(new script_event_emitter<sfint32>(
+                          node,
+                          *polymorphic_downcast<const sfint32 *>(&value)));
+        break;
+    case field_value::sfnode_id:
+        emitter.reset(new script_event_emitter<sfnode>(
+                          node,
+                          *polymorphic_downcast<const sfnode *>(&value)));
+        break;
+    case field_value::sfstring_id:
+        emitter.reset(new script_event_emitter<sfstring>(
+                          node,
+                          *polymorphic_downcast<const sfstring *>(&value)));
+        break;
+    case field_value::sfrotation_id:
+        emitter.reset(new script_event_emitter<sfrotation>(
+                          node,
+                          *polymorphic_downcast<const sfrotation *>(&value)));
+        break;
+    case field_value::sftime_id:
+        emitter.reset(new script_event_emitter<sftime>(
+                          node,
+                          *polymorphic_downcast<const sftime *>(&value)));
+        break;
+    case field_value::sfvec2f_id:
+        emitter.reset(new script_event_emitter<sfvec2f>(
+                          node,
+                          *polymorphic_downcast<const sfvec2f *>(&value)));
+        break;
+    case field_value::sfvec3f_id:
+        emitter.reset(new script_event_emitter<sfvec3f>(
+                          node,
+                          *polymorphic_downcast<const sfvec3f *>(&value)));
+        break;
+    case field_value::mfcolor_id:
+        emitter.reset(new script_event_emitter<mfcolor>(
+                          node,
+                          *polymorphic_downcast<const mfcolor *>(&value)));
+        break;
+    case field_value::mffloat_id:
+        emitter.reset(new script_event_emitter<mffloat>(
+                          node,
+                          *polymorphic_downcast<const mffloat *>(&value)));
+        break;
+    case field_value::mfint32_id:
+        emitter.reset(new script_event_emitter<mfint32>(
+                          node,
+                          *polymorphic_downcast<const mfint32 *>(&value)));
+        break;
+    case field_value::mfnode_id:
+        emitter.reset(new script_event_emitter<mfnode>(
+                          node,
+                          *polymorphic_downcast<const mfnode *>(&value)));
+        break;
+    case field_value::mfstring_id:
+        emitter.reset(new script_event_emitter<mfstring>(
+                          node,
+                          *polymorphic_downcast<const mfstring *>(&value)));
+        break;
+    case field_value::mfrotation_id:
+        emitter.reset(new script_event_emitter<mfrotation>(
+                          node,
+                          *polymorphic_downcast<const mfrotation *>(&value)));
+        break;
+    case field_value::mftime_id:
+        emitter.reset(new script_event_emitter<mftime>(
+                          node,
+                          *polymorphic_downcast<const mftime *>(&value)));
+        break;
+    case field_value::mfvec2f_id:
+        emitter.reset(new script_event_emitter<mfvec2f>(
+                          node,
+                          *polymorphic_downcast<const mfvec2f *>(&value)));
+        break;
+    case field_value::mfvec3f_id:
+        emitter.reset(new script_event_emitter<mfvec3f>(
+                          node,
+                          *polymorphic_downcast<const mfvec3f *>(&value)));
+        break;
+    default:
+        assert(false);
+    }
+    return emitter;
+}
+
+/**
+ * @internal
+ *
  * @class openvrml::script_node::set_url_listener_t
  *
  * @brief set_url event listener.
@@ -1012,6 +1148,7 @@ openvrml::script_node::create_listener(const field_value::type_id type,
  */
 openvrml::script_node::set_url_listener_t::
 set_url_listener_t(script_node & node):
+    event_listener(node),
     openvrml::mfstring_listener(node)
 {}
 
@@ -1020,6 +1157,17 @@ set_url_listener_t(script_node & node):
  */
 openvrml::script_node::set_url_listener_t::~set_url_listener_t() throw ()
 {}
+
+/**
+ * @brief Get the eventIn identifier.
+ *
+ * @return the eventIn identifier.
+ */
+const std::string
+openvrml::script_node::set_url_listener_t::do_eventin_id() const throw ()
+{
+    return "set_url";
+}
 
 /**
  * @brief Process an event.
@@ -1045,7 +1193,43 @@ do_process_event(const mfstring & value, const double timestamp)
     //
     // url is an exposedField.
     //
-    node::emit_event(script_node.url_changed_emitter, timestamp);
+    node::emit_event(script_node.url_changed_emitter_, timestamp);
+}
+
+/**
+ * @internal
+ *
+ * @class openvrml::script_node::url_changed_emitter
+ *
+ * @brief url_changed event emitter.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param value the associated field value.
+ */
+openvrml::script_node::url_changed_emitter::
+url_changed_emitter(const mfstring & value) throw ():
+    openvrml::event_emitter(value),
+    openvrml::mfstring_emitter(value)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::script_node::url_changed_emitter::~url_changed_emitter() throw ()
+{}
+
+/**
+ * @brief The eventOut identifier.
+ *
+ * @return the eventOut identifier.
+ */
+const std::string
+openvrml::script_node::url_changed_emitter::do_eventout_id() const throw ()
+{
+    return "url_changed";
 }
 
 /**
@@ -1102,7 +1286,7 @@ do_process_event(const mfstring & value, const double timestamp)
 /**
  * @internal
  *
- * @var openvrml::mfstring_emitter openvrml::script_node::url_changed_emitter
+ * @var openvrml::script_node::url_changed_emitter openvrml::script_node::url_changed_emitter_
  *
  * @brief url_changed eventOut emitter.
  */
@@ -1219,7 +1403,7 @@ script_node(script_node_class & class_,
     direct_output(false),
     must_evaluate(false),
     set_url_listener(*this),
-    url_changed_emitter(this->url_),
+    url_changed_emitter_(this->url_),
     script_(0),
     events_received(0)
 {
@@ -1577,7 +1761,7 @@ openvrml::script_node::do_event_emitter(const std::string & id)
 {
     openvrml::event_emitter * result = 0;
     if (id == "url" || id == "url_changed") {
-        result = &this->url_changed_emitter;
+        result = &this->url_changed_emitter_;
     } else {
         eventout_map_t::iterator pos;
         const eventout_map_t::iterator end = this->eventout_map_.end();

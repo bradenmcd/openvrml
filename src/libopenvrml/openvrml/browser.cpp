@@ -226,6 +226,9 @@ namespace {
             virtual void do_process_event(const FieldValue & value,
                                           double timestamp)
                 throw (std::bad_alloc);
+
+        private:
+            const std::string do_eventin_id() const throw ();
         };
 
         static boost::shared_ptr<openvrml::event_listener>
@@ -243,9 +246,9 @@ namespace {
         protected:
             class listener_t : public field_value_listener<FieldValue> {
                 proto_eventout & emitter;
-                proto_node & node;
 
             public:
+                proto_node & node;
                 FieldValue value;
 
                 listener_t(proto_eventout & emitter,
@@ -254,6 +257,7 @@ namespace {
                 virtual ~listener_t() throw ();
 
             private:
+                virtual const std::string do_eventin_id() const throw ();
                 virtual void do_process_event(const FieldValue & value,
                                               double timestamp)
                     throw (std::bad_alloc);
@@ -270,6 +274,9 @@ namespace {
             virtual ~proto_eventout() throw ();
 
             bool is(event_emitter_type & emitter) throw (std::bad_alloc);
+
+        private:
+            const std::string do_eventout_id() const throw ();
         };
 
         static boost::shared_ptr<openvrml::event_emitter>
@@ -306,10 +313,46 @@ namespace {
 
         typedef boost::shared_ptr<openvrml::event_listener> eventin_ptr;
         typedef std::map<std::string, eventin_ptr> eventin_map_t;
+
+        struct proto_eventin_equal_to :
+            std::unary_function<eventin_map_t::value_type, bool> {
+
+            explicit proto_eventin_equal_to(
+                const openvrml::event_listener & listener):
+                listener_(&listener)
+            {}
+
+            bool operator()(const eventin_map_t::value_type & arg) const
+            {
+                return this->listener_ == arg.second.get();
+            }
+
+        private:
+            const openvrml::event_listener * listener_;
+        };
+
         eventin_map_t eventin_map;
 
         typedef boost::shared_ptr<openvrml::event_emitter> eventout_ptr;
         typedef std::map<std::string, eventout_ptr> eventout_map_t;
+
+        struct proto_eventout_equal_to :
+            std::unary_function<eventout_map_t::value_type, bool> {
+
+            explicit proto_eventout_equal_to(
+                const openvrml::event_emitter & emitter):
+                emitter_(&emitter)
+            {}
+
+            bool operator()(const eventout_map_t::value_type & arg) const
+            {
+                return this->emitter_ == arg.second.get();
+            }
+
+        private:
+            const openvrml::event_emitter * emitter_;
+        };
+
         eventout_map_t eventout_map;
 
     public:
@@ -948,6 +991,7 @@ namespace {
      */
     template <typename FieldValue>
     proto_node::proto_eventin<FieldValue>::proto_eventin(proto_node & node):
+        openvrml::event_listener(node),
         field_value_listener<FieldValue>(node)
     {}
 
@@ -979,6 +1023,19 @@ namespace {
              ++listener) {
             (*listener)->process_event(value, timestamp);
         }
+    }
+
+    template <typename FieldValue>
+    const std::string
+    proto_node::proto_eventin<FieldValue>::do_eventin_id() const throw ()
+    {
+        using boost::polymorphic_downcast;
+        proto_node & n = *polymorphic_downcast<proto_node *>(&this->node());
+        eventin_map_t::const_iterator pos =
+            std::find_if(n.eventin_map.begin(), n.eventin_map.end(),
+                         proto_eventin_equal_to(*this));
+        assert(pos != n.eventin_map.end());
+        return pos->first;
     }
 
     /**
@@ -1109,128 +1166,103 @@ namespace {
         switch (field_type) {
         case field_value::sfbool_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<sfbool> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<sfbool_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<sfbool> &>(interface_eventin)
+                .is(dynamic_cast<sfbool_listener &>(impl_eventin));
             break;
         case field_value::sfcolor_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<sfcolor> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<sfcolor_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<sfcolor> &>(interface_eventin)
+                .is(dynamic_cast<sfcolor_listener &>(impl_eventin));
             break;
         case field_value::sffloat_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<sffloat> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<sffloat_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<sffloat> &>(interface_eventin)
+                .is(dynamic_cast<sffloat_listener &>(impl_eventin));
             break;
         case field_value::sfimage_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<sfimage> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<sfimage_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<sfimage> &>(interface_eventin)
+                .is(dynamic_cast<sfimage_listener &>(impl_eventin));
             break;
         case field_value::sfint32_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<sfint32> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<sfint32_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<sfint32> &>(interface_eventin)
+                .is(dynamic_cast<sfint32_listener &>(impl_eventin));
             break;
         case field_value::sfnode_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<sfnode> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<sfnode_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<sfnode> &>(interface_eventin)
+                .is(dynamic_cast<sfnode_listener &>(impl_eventin));
             break;
         case field_value::sfrotation_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<sfrotation> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<sfrotation_listener *>(
-                         &impl_eventin));
+                dynamic_cast<proto_eventin<sfrotation> &>(interface_eventin)
+                .is(dynamic_cast<sfrotation_listener &>(impl_eventin));
             break;
         case field_value::sfstring_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<sfstring> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<sfstring_listener *>(
-                         &impl_eventin));
+                dynamic_cast<proto_eventin<sfstring> &>(interface_eventin)
+                .is(dynamic_cast<sfstring_listener &>(impl_eventin));
             break;
         case field_value::sftime_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<sftime> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<sftime_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<sftime> &>(interface_eventin)
+                .is(dynamic_cast<sftime_listener &>(impl_eventin));
             break;
         case field_value::sfvec2f_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<sfvec2f> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<sfvec2f_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<sfvec2f> &>(interface_eventin)
+                .is(dynamic_cast<sfvec2f_listener &>(impl_eventin));
             break;
         case field_value::sfvec3f_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<sfvec3f> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<sfvec3f_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<sfvec3f> &>(interface_eventin)
+                .is(dynamic_cast<sfvec3f_listener &>(impl_eventin));
             break;
         case field_value::mfcolor_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<mfcolor> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<mfcolor_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<mfcolor> &>(interface_eventin)
+                .is(dynamic_cast<mfcolor_listener &>(impl_eventin));
             break;
         case field_value::mffloat_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<mffloat> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<mffloat_listener *>(
-                         &impl_eventin));
+                dynamic_cast<proto_eventin<mffloat> &>(interface_eventin)
+                .is(dynamic_cast<mffloat_listener &>(impl_eventin));
             break;
         case field_value::mfint32_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<mfint32> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<mfint32_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<mfint32> &>(interface_eventin)
+                .is(dynamic_cast<mfint32_listener &>(impl_eventin));
             break;
         case field_value::mfnode_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<mfnode> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<mfnode_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<mfnode> &>(interface_eventin)
+                .is(dynamic_cast<mfnode_listener &>(impl_eventin));
             break;
         case field_value::mfrotation_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<mfrotation> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<mfrotation_listener *>(
-                         &impl_eventin));
+                dynamic_cast<proto_eventin<mfrotation> &>(interface_eventin)
+                .is(dynamic_cast<mfrotation_listener &>(impl_eventin));
             break;
         case field_value::mfstring_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<mfstring> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<mfstring_listener *>(
-                         &impl_eventin));
+                dynamic_cast<proto_eventin<mfstring> &>(interface_eventin)
+                .is(dynamic_cast<mfstring_listener &>(impl_eventin));
             break;
         case field_value::mftime_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<mftime> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<mftime_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<mftime> &>(interface_eventin)
+                .is(dynamic_cast<mftime_listener &>(impl_eventin));
             break;
         case field_value::mfvec2f_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<mfvec2f> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<mfvec2f_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<mfvec2f> &>(interface_eventin)
+                .is(dynamic_cast<mfvec2f_listener &>(impl_eventin));
             break;
         case field_value::mfvec3f_id:
             succeeded =
-                polymorphic_downcast<proto_eventin<mfvec3f> *>(
-                    &interface_eventin)
-                ->is(*polymorphic_downcast<mfvec3f_listener *>(&impl_eventin));
+                dynamic_cast<proto_eventin<mfvec3f> &>(interface_eventin)
+                .is(dynamic_cast<mfvec3f_listener &>(impl_eventin));
             break;
         default:
             assert(false);
@@ -1291,6 +1323,7 @@ namespace {
     listener_t(proto_eventout & emitter,
                proto_node & node,
                const FieldValue & initial_value):
+        openvrml::event_listener(node),
         field_value_listener<FieldValue>(node),
         emitter(emitter),
         node(node),
@@ -1303,6 +1336,17 @@ namespace {
     template <typename FieldValue>
     proto_node::proto_eventout<FieldValue>::listener_t::~listener_t() throw ()
     {}
+
+    /**
+     * @brief Get the associated eventIn identifier.
+     */
+    template <typename FieldValue>
+    const std::string
+    proto_node::proto_eventout<FieldValue>::listener_t::do_eventin_id() const
+        throw ()
+    {
+        return "<proto_node::proto_eventout::listener_t>";
+    }
 
     /**
      * @brief Process event.
@@ -1359,6 +1403,7 @@ namespace {
     template <typename FieldValue>
     proto_node::proto_eventout<FieldValue>::
     proto_eventout(proto_node & node, const FieldValue & initial_value):
+        openvrml::event_emitter(this->listener.value),
         field_value_emitter<FieldValue>(this->listener.value),
         listener(*this, node, initial_value)
     {}
@@ -1387,6 +1432,18 @@ namespace {
     is(event_emitter_type & emitter) throw (std::bad_alloc)
     {
         return emitter.add(this->listener);
+    }
+
+    template <typename FieldValue>
+    const std::string
+    proto_node::proto_eventout<FieldValue>::do_eventout_id() const throw ()
+    {
+        proto_node & n = this->listener.node;
+        eventout_map_t::const_iterator pos =
+            std::find_if(n.eventout_map.begin(), n.eventout_map.end(),
+                         proto_eventout_equal_to(*this));
+        assert(pos != n.eventout_map.end());
+        return pos->first;
     }
 
     /**
@@ -1499,128 +1556,103 @@ namespace {
         switch (field_type) {
         case field_value::sfbool_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<sfbool> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<sfbool_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<sfbool> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfbool_emitter *>(&impl_eventout));
             break;
         case field_value::sfcolor_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<sfcolor> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<sfcolor_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<sfcolor> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfcolor_emitter *>(&impl_eventout));
             break;
         case field_value::sffloat_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<sffloat> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<sffloat_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<sffloat> *>(&interface_eventout)
+                ->is(*dynamic_cast<sffloat_emitter *>(&impl_eventout));
             break;
         case field_value::sfimage_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<sfimage> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<sfimage_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<sfimage> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfimage_emitter *>(&impl_eventout));
             break;
         case field_value::sfint32_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<sfint32> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<sfint32_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<sfint32> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfint32_emitter *>(&impl_eventout));
             break;
         case field_value::sfnode_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<sfnode> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<sfnode_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<sfnode> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfnode_emitter *>(&impl_eventout));
             break;
         case field_value::sfrotation_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<sfrotation> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<sfrotation_emitter *>(
-                         &impl_eventout));
+                dynamic_cast<proto_eventout<sfrotation> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfrotation_emitter *>(&impl_eventout));
             break;
         case field_value::sfstring_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<sfstring> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<sfstring_emitter *>(
-                         &impl_eventout));
+                dynamic_cast<proto_eventout<sfstring> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfstring_emitter *>(&impl_eventout));
             break;
         case field_value::sftime_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<sftime> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<sftime_emitter *>(
-                         &impl_eventout));
+                dynamic_cast<proto_eventout<sftime> *>(&interface_eventout)
+                ->is(*dynamic_cast<sftime_emitter *>(&impl_eventout));
             break;
         case field_value::sfvec2f_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<sfvec2f> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<sfvec2f_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<sfvec2f> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfvec2f_emitter *>(&impl_eventout));
             break;
         case field_value::sfvec3f_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<sfvec3f> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<sfvec3f_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<sfvec3f> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfvec3f_emitter *>(&impl_eventout));
             break;
         case field_value::mfcolor_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<mfcolor> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<mfcolor_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<mfcolor> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfcolor_emitter *>(&impl_eventout));
             break;
         case field_value::mffloat_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<mffloat> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<mffloat_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<mffloat> *>(&interface_eventout)
+                ->is(*dynamic_cast<mffloat_emitter *>(&impl_eventout));
             break;
         case field_value::mfint32_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<mfint32> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<mfint32_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<mfint32> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfint32_emitter *>(&impl_eventout));
             break;
         case field_value::mfnode_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<mfnode> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<mfnode_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<mfnode> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfnode_emitter *>(&impl_eventout));
             break;
         case field_value::mfrotation_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<mfrotation> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<mfrotation_emitter *>(
-                         &impl_eventout));
+                dynamic_cast<proto_eventout<mfrotation> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfrotation_emitter *>(&impl_eventout));
             break;
         case field_value::mfstring_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<mfstring> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<mfstring_emitter *>(
-                         &impl_eventout));
+                dynamic_cast<proto_eventout<mfstring> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfstring_emitter *>(&impl_eventout));
             break;
         case field_value::mftime_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<mftime> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<mftime_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<mftime> *>(&interface_eventout)
+                ->is(*dynamic_cast<mftime_emitter *>(&impl_eventout));
             break;
         case field_value::mfvec2f_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<mfvec2f> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<mfvec2f_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<mfvec2f> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfvec2f_emitter *>(&impl_eventout));
             break;
         case field_value::mfvec3f_id:
             succeeded =
-                polymorphic_downcast<proto_eventout<mfvec3f> *>(
-                    &interface_eventout)
-                ->is(*polymorphic_downcast<mfvec3f_emitter *>(&impl_eventout));
+                dynamic_cast<proto_eventout<mfvec3f> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfvec3f_emitter *>(&impl_eventout));
             break;
         default:
             assert(false);
@@ -1646,6 +1678,8 @@ namespace {
     template <typename FieldValue>
     proto_node::proto_exposedfield<FieldValue>::
     proto_exposedfield(proto_node & node, const FieldValue & initial_value):
+        openvrml::event_listener(node),
+        openvrml::event_emitter(this->listener.value),
         proto_eventin<FieldValue>(node),
         proto_eventout<FieldValue>(node, initial_value)
     {}
@@ -4270,8 +4304,7 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
                     event_listener & listener =
                         this->browser().active_viewpoint_
                         ->event_listener("set_bind");
-                    assert(dynamic_cast<sfbool_listener *>(&listener));
-                    static_cast<sfbool_listener &>(listener)
+                    dynamic_cast<sfbool_listener &>(listener)
                         .process_event(sfbool(true), now);
                 }
             } catch (std::exception & ex) {
@@ -4593,11 +4626,10 @@ void openvrml::browser::render()
     rc.draw_bounding_spheres = true;
 
     // Do the browser-level lights (Points and Spots)
-    std::list<node *>::iterator li, end = this->scoped_lights.end();
-    for (li = this->scoped_lights.begin(); li != end; ++li) {
-        vrml97_node::abstract_light_node * x = (*li)->to_light();
-        if (x) { x->renderScoped(*this->viewer_); }
-    }
+    std::for_each(this->scoped_lights.begin(), this->scoped_lights.end(),
+                  boost::bind2nd(
+                      boost::mem_fun(&scoped_light_node::render_scoped_light),
+                      *this->viewer_));
 
     //
     // Render the nodes.  scene_ may be 0 if the world failed to load.
@@ -4667,7 +4699,7 @@ double openvrml::browser::delta() const
  * @pre @p light is not in the list of light nodes for the browser.
  */
 void
-openvrml::browser::add_scoped_light(vrml97_node::abstract_light_node & light)
+openvrml::browser::add_scoped_light(scoped_light_node & light)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(std::find(this->scoped_lights.begin(), this->scoped_lights.end(),
@@ -4684,12 +4716,13 @@ openvrml::browser::add_scoped_light(vrml97_node::abstract_light_node & light)
  */
 void
 openvrml::browser::
-remove_scoped_light(vrml97_node::abstract_light_node & light)
+remove_scoped_light(scoped_light_node & light)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(!this->scoped_lights.empty());
-    const std::list<node *>::iterator end = this->scoped_lights.end();
-    const std::list<node *>::iterator pos =
+    const std::list<scoped_light_node *>::iterator end =
+        this->scoped_lights.end();
+    const std::list<scoped_light_node *>::iterator pos =
             std::find(this->scoped_lights.begin(), end, &light);
     assert(pos != end);
     this->scoped_lights.erase(pos);

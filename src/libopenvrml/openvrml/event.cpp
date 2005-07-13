@@ -34,7 +34,7 @@
 /**
  * @internal
  *
- * @var openvrml::node & openvrml::event_listener::node_
+ * @var openvrml::node * openvrml::event_listener::node_
  *
  * @brief The <code>node</code> to which the <code>event_listener</code>
  *        belongs.
@@ -47,7 +47,7 @@
  *              belongs.
  */
 openvrml::event_listener::event_listener(openvrml::node & node) throw ():
-    node_(node)
+    node_(&node)
 {}
 
 /**
@@ -63,10 +63,32 @@ openvrml::event_listener::~event_listener() throw ()
  * @return the <code>node</code> to which the <code>event_listener</code>
  *         belongs.
  */
-openvrml::node & openvrml::event_listener::node() throw ()
+openvrml::node & openvrml::event_listener::node() const throw ()
 {
-    return this->node_;
+    return *this->node_;
 }
+
+/**
+ * @brief The associated eventIn identifier.
+ *
+ * This function delegates to <code>event_listener::do_eventin_id</code>.
+ *
+ * @return the associated eventIn identifier.
+ */
+const std::string openvrml::event_listener::eventin_id() const throw ()
+{
+    return this->do_eventin_id();
+}
+
+/**
+ * @fn const std::string openvrml::event_listener::do_eventin_id() const throw ()
+ *
+ * @brief The associated eventIn identifier.
+ *
+ * Concrete subclasses must implement this function.
+ *
+ * @return the associated eventIn identifier.
+ */
 
 /**
  * @fn openvrml::field_value::type_id openvrml::event_listener::type() const throw ()
@@ -270,102 +292,6 @@ openvrml::node & openvrml::event_listener::node() throw ()
  */
 
 /**
- * @brief Create an event_emitter.
- *
- * @param value value to emit.
- *
- * @return an event_emitter.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-std::auto_ptr<openvrml::event_emitter>
-openvrml::event_emitter::create(const field_value & value)
-    throw (std::bad_alloc)
-{
-    std::auto_ptr<event_emitter> emitter;
-    switch (value.type()) {
-    case field_value::sfbool_id:
-        emitter.reset(new sfbool_emitter(static_cast<const sfbool &>(value)));
-        break;
-    case field_value::sfcolor_id:
-        emitter.reset(
-            new sfcolor_emitter(static_cast<const sfcolor &>(value)));
-        break;
-    case field_value::sffloat_id:
-        emitter.reset(
-            new sffloat_emitter(static_cast<const sffloat &>(value)));
-        break;
-    case field_value::sfimage_id:
-        emitter.reset(
-            new sfimage_emitter(static_cast<const sfimage &>(value)));
-        break;
-    case field_value::sfint32_id:
-        emitter.reset(
-            new sfint32_emitter(static_cast<const sfint32 &>(value)));
-        break;
-    case field_value::sfnode_id:
-        emitter.reset(new sfnode_emitter(static_cast<const sfnode &>(value)));
-        break;
-    case field_value::sfstring_id:
-        emitter.reset(
-            new sfstring_emitter(static_cast<const sfstring &>(value)));
-        break;
-    case field_value::sfrotation_id:
-        emitter.reset(
-            new sfrotation_emitter(static_cast<const sfrotation &>(value)));
-        break;
-    case field_value::sftime_id:
-        emitter.reset(new sftime_emitter(static_cast<const sftime &>(value)));
-        break;
-    case field_value::sfvec2f_id:
-        emitter.reset(
-            new sfvec2f_emitter(static_cast<const sfvec2f &>(value)));
-        break;
-    case field_value::sfvec3f_id:
-        emitter.reset(
-            new sfvec3f_emitter(static_cast<const sfvec3f &>(value)));
-        break;
-    case field_value::mfcolor_id:
-        emitter.reset(
-            new mfcolor_emitter(static_cast<const mfcolor &>(value)));
-        break;
-    case field_value::mffloat_id:
-        emitter.reset(
-            new mffloat_emitter(static_cast<const mffloat &>(value)));
-        break;
-    case field_value::mfint32_id:
-        emitter.reset(
-            new mfint32_emitter(static_cast<const mfint32 &>(value)));
-        break;
-    case field_value::mfnode_id:
-        emitter.reset(new mfnode_emitter(static_cast<const mfnode &>(value)));
-        break;
-    case field_value::mfstring_id:
-        emitter.reset(
-            new mfstring_emitter(static_cast<const mfstring &>(value)));
-        break;
-    case field_value::mfrotation_id:
-        emitter.reset(
-            new mfrotation_emitter(static_cast<const mfrotation &>(value)));
-        break;
-    case field_value::mftime_id:
-        emitter.reset(new mftime_emitter(static_cast<const mftime &>(value)));
-        break;
-    case field_value::mfvec2f_id:
-        emitter.reset(
-            new mfvec2f_emitter(static_cast<const mfvec2f &>(value)));
-        break;
-    case field_value::mfvec3f_id:
-        emitter.reset(
-            new mfvec3f_emitter(static_cast<const mfvec3f &>(value)));
-        break;
-    default:
-        assert(false);
-    }
-    return emitter;
-}
-
-/**
  * @internal
  *
  * @var boost::recursive_mutex openvrml::event_emitter::mutex_
@@ -438,6 +364,28 @@ const openvrml::field_value & openvrml::event_emitter::value() const throw ()
 {
     return this->value_;
 }
+
+/**
+ * @brief The associated eventOut identifier.
+ *
+ * This function delegates to <code>event_emitter::do_eventout_id</code>.
+ *
+ * @return the associated eventOut identifier.
+ */
+const std::string openvrml::event_emitter::eventout_id() const throw ()
+{
+    return this->do_eventout_id();
+}
+
+/**
+ * @fn const std::string openvrml::event_emitter::do_eventout_id() const throw ()
+ *
+ * @brief The associated eventOut identifier.
+ *
+ * Concrete subclasses must implement this function.
+ *
+ * @return the associated eventOut identifier.
+ */
 
 /**
  * @brief Registered listeners.

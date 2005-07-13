@@ -1,3 +1,27 @@
+2005-07-13 Braden McDaniel  <braden@endoframe.com>
+
+	Added member functions to openvrml::event_listener and
+	openvrml::event_emitter to get the eventIn and eventOut
+	identifiers, respectively.  This had some unpleasant side-
+	effects; principally, many templates were moved from
+	src/libopenvrml/openvrml/vrml97node.cpp to
+	src/libopenvrml/openvrml/vrml97node.h.  Future revisions
+	will improve this situation.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/event.h
+	* src/libopenvrml/openvrml/exposedfield.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/node_ptr.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
 2005-07-10 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment improvements.

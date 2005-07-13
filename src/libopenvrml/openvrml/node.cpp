@@ -1720,6 +1720,20 @@ openvrml::grouping_node * openvrml::node::to_grouping() throw ()
 /**
  * @internal
  *
+ * @brief Cast to a light_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+openvrml::light_node * openvrml::node::to_light() throw ()
+{
+    return 0;
+}
+
+/**
+ * @internal
+ *
  * @brief Cast to a material_node.
  *
  * Default implementation returns 0.
@@ -1755,6 +1769,18 @@ openvrml::navigation_info_node * openvrml::node::to_navigation_info() throw ()
  * @return 0
  */
 openvrml::normal_node * openvrml::node::to_normal() throw ()
+{
+    return 0;
+}
+
+/**
+ * @internal
+ *
+ * @brief Cast to a <code>scoped_light_node</code>.
+ *
+ * @return 0.
+ */
+openvrml::scoped_light_node * openvrml::node::to_scoped_light() throw ()
 {
     return 0;
 }
@@ -1866,16 +1892,6 @@ openvrml::vrml97_node::audio_clip_node * openvrml::node::to_audio_clip() const
 }
 
 /**
- * @brief Cast to an abstract_light_node.
- *
- * @return 0.
- */
-openvrml::vrml97_node::abstract_light_node * openvrml::node::to_light() const
-{
-    return 0;
-}
-
-/**
  * @brief Cast to a movie_texture_node.
  *
  * @return 0.
@@ -1915,28 +1931,6 @@ openvrml::node::to_sphere_sensor() const
  */
 openvrml::vrml97_node::cylinder_sensor_node *
 openvrml::node::to_cylinder_sensor() const
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a point_light_node.
- *
- * @return 0.
- */
-openvrml::vrml97_node::point_light_node *
-openvrml::node::to_point_light() const
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a spot_light_node.
- *
- * @return 0.
- */
-openvrml::vrml97_node::spot_light_node *
-openvrml::node::to_spot_light() const
 {
     return 0;
 }
@@ -2151,7 +2145,7 @@ namespace {
     {
         using openvrml::field_value_emitter;
         using openvrml::field_value_listener;
-        return static_cast<field_value_emitter<FieldValue> &>(emitter)
+        return dynamic_cast<field_value_emitter<FieldValue> &>(emitter)
             .add(dynamic_cast<field_value_listener<FieldValue> &>(listener));
     }
 }
@@ -2271,7 +2265,7 @@ namespace {
     {
         using openvrml::field_value_emitter;
         using openvrml::field_value_listener;
-        return static_cast<field_value_emitter<FieldValue> &>(emitter).remove(
+        return dynamic_cast<field_value_emitter<FieldValue> &>(emitter).remove(
             dynamic_cast<field_value_listener<FieldValue> &>(listener));
     }
 }
@@ -3299,6 +3293,46 @@ openvrml::grouping_node * openvrml::grouping_node::to_grouping() throw ()
 
 
 /**
+ * @class openvrml::light_node
+ *
+ * @ingroup nodes
+ *
+ * @brief Abstract base class for light nodes.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param type  the node_type associated with the node.
+ * @param scope the scope the node belongs to.
+ */
+openvrml::light_node::
+light_node(const node_type & type,
+           const boost::shared_ptr<openvrml::scope> & scope)
+    throw ():
+    node(type, scope),
+    bounded_volume_node(type, scope),
+    child_node(type, scope)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::light_node::~light_node() throw ()
+{}
+
+/**
+ * @brief Cast to a light_node.
+ *
+ * @return a pointer to this light_node.
+ */
+openvrml::light_node * openvrml::light_node::to_light() throw ()
+{
+    return this;
+}
+
+
+/**
  * @class openvrml::material_node
  *
  * @ingroup nodes
@@ -3508,6 +3542,65 @@ openvrml::normal_node * openvrml::normal_node::to_normal() throw ()
  * @brief Get the array of normal vectors.
  *
  * @return the array of normal vectors.
+ */
+
+
+/**
+ * @class openvrml::scoped_light_node
+ *
+ * A light that falls within a specified area.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param type  the <code>node_type</code>.
+ * @param scope the <code>scope</code> to which the node belongs.
+ */
+openvrml::scoped_light_node::
+scoped_light_node(const node_type & type,
+                  const boost::shared_ptr<openvrml::scope> & scope) throw ():
+    node(type, scope),
+    bounded_volume_node(type, scope),
+    child_node(type, scope),
+    light_node(type, scope)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::scoped_light_node::~scoped_light_node() throw ()
+{}
+
+/**
+ * @brief Render the light.
+ *
+ * Delegates to <code>scoped_light_node::do_render_scoped_light</code>
+ *
+ * @param v a viewer.
+ */
+void openvrml::scoped_light_node::render_scoped_light(viewer & v)
+{
+    this->do_render_scoped_light(v);
+}
+
+/**
+ * @brief Convert to a <code>scoped_light_node</code>.
+ *
+ * @return a pointer to the instance.
+ */
+openvrml::scoped_light_node * openvrml::scoped_light_node::to_scoped_light()
+    throw ()
+{
+    return this;
+}
+
+/**
+ * @fn void openvrml::scoped_light_node::do_render_scoped_light(viewer & v)
+ *
+ * @brief Render the light.
+ *
+ * @param v a <code>viewer</code>.
  */
 
 
