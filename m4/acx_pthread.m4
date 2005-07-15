@@ -187,7 +187,7 @@ if test "x$acx_pthread_ok" = xyes; then
 	AC_MSG_CHECKING([for joinable pthread attribute])
 	attr_name=unknown
 	for attr in PTHREAD_CREATE_JOINABLE PTHREAD_CREATE_UNDETACHED; do
-	    AC_TRY_LINK([#include <pthread.h>], [int attr=$attr;],
+	    AC_TRY_LINK([#include <pthread.h>], [int attr; attr=$attr;],
                         [attr_name=$attr; break])
 	done
         AC_MSG_RESULT($attr_name)

@@ -1,5 +1,10 @@
 2005-07-15 Braden McDaniel  <braden@endoframe.com>
 
+	* m4/acx_pthread.m4:  Fixed ACX_PTHREAD to work with gcc's
+	-Werror flag.
+
+2005-07-15 Braden McDaniel  <braden@endoframe.com>
+
 	* m4/acx_pthread.m4:  Updated ACX_PTHREAD macro to version 1.7.
 
 2005-07-13 Braden McDaniel  <braden@endoframe.com>
