@@ -1814,8 +1814,7 @@ void openvrml::script_node::do_shutdown(const double timestamp) throw ()
  * @param context   generic context argument; holds things like the accumulated
  *                  modelview transform.
  */
-void openvrml::script_node::do_render_child(viewer & v,
-                                            rendering_context context)
+void openvrml::script_node::do_render_child(viewer &, rendering_context)
 {}
 
 # if OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
@@ -2165,7 +2164,7 @@ public:
 
 private:
     static JSBool construct(JSContext * cx, JSObject * obj,
-	                    uintN argc, jsval * argv, jsval * rval) throw ();
+                            uintN argc, jsval * argv, jsval * rval) throw ();
     static JSBool initObject(JSContext * cx, JSObject * obj,
                              uintN argc, jsval * argv) throw ();
     static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
@@ -2215,7 +2214,7 @@ public:
 
 private:
     static JSBool construct(JSContext * cx, JSObject * obj,
-	                    uintN argc, jsval * argv, jsval *) throw ();
+                            uintN argc, jsval * argv, jsval *) throw ();
     static JSBool initObject(JSContext * cx, JSObject * obj,
                              uintN argc, jsval * argv) throw ();
     static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
@@ -2250,7 +2249,7 @@ public:
 
 private:
     static JSBool constructor(JSContext * cx, JSObject * obj,
-	                      uintN argc, jsval * argv, jsval * rval) throw ();
+                              uintN argc, jsval * argv, jsval * rval) throw ();
     static JSBool initObject(JSContext * cx, JSObject * obj,
                              uintN argc, jsval * argv) throw ();
     static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
@@ -2354,7 +2353,7 @@ public:
 
 protected:
     static JSBool construct(JSContext * cx, JSObject * obj,
-	                    uintN argc, jsval * argv, jsval * vp) throw ();
+                            uintN argc, jsval * argv, jsval * vp) throw ();
     static JSBool setElement(JSContext * cx, JSObject * obj,
                              jsval id, jsval * vp) throw ();
     static JSBool setLength(JSContext * cx, JSObject * obj,
@@ -2380,7 +2379,7 @@ public:
 
 protected:
     static JSBool construct(JSContext * cx, JSObject * obj,
-	                    uintN argc, jsval * argv, jsval * vp) throw ();
+                            uintN argc, jsval * argv, jsval * vp) throw ();
     static JSBool setElement(JSContext * cx, JSObject * obj,
                              jsval id, jsval * vp) throw ();
     static JSBool setLength(JSContext * cx, JSObject * obj,
@@ -2433,7 +2432,7 @@ public:
 
 private:
     static JSBool construct(JSContext * cx, JSObject * obj,
-	                    uintN argc, jsval * argv,
+                            uintN argc, jsval * argv,
                             jsval * vp);
     static JSBool initObject(JSContext * cx, JSObject * obj,
                              uintN argc, jsval * argv);
@@ -2464,7 +2463,7 @@ public:
 
 private:
     static JSBool construct(JSContext * cx, JSObject * obj,
-	                    uintN argc, jsval * argv,
+                            uintN argc, jsval * argv,
                             jsval * vp) throw ();
     static JSBool initObject(JSContext * cx, JSObject * obj,
                              uintN argc, jsval * argv) throw ();
@@ -2504,7 +2503,7 @@ public:
 
 private:
     static JSBool construct(JSContext * cx, JSObject * obj,
-	                    uintN argc, jsval * argv,
+                            uintN argc, jsval * argv,
                             jsval * vp) throw ();
     static JSBool initObject(JSContext * cx, JSObject * obj,
                              uintN argc, jsval * argv) throw ();
@@ -2572,7 +2571,7 @@ public:
         static JSObject * initClass(JSContext * cx, JSObject * obj)
             throw ();
         static JSBool construct(JSContext * cx, JSObject * obj,
-	                        uintN argc, jsval * argv,
+                                uintN argc, jsval * argv,
                                 jsval * vp)
             throw ();
         static JSBool getElement(JSContext * cx, JSObject * obj,
@@ -2587,7 +2586,7 @@ public:
 
     static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
     static JSBool construct(JSContext * cx, JSObject * obj,
-	                    uintN argc, jsval * argv,
+                            uintN argc, jsval * argv,
                             jsval * vp)
         throw ();
     static JSBool initObject(JSContext * cx, JSObject * obj,
@@ -2901,7 +2900,7 @@ jsval script::vrmlFieldToJSVal(const openvrml::field_value & fieldValue)
         {
             using openvrml::sfbool;
             const sfbool & b = static_cast<const sfbool &>(fieldValue);
-	    rval = BOOLEAN_TO_JSVAL(b.value);
+            rval = BOOLEAN_TO_JSVAL(b.value);
         }
         break;
 
@@ -2918,7 +2917,7 @@ jsval script::vrmlFieldToJSVal(const openvrml::field_value & fieldValue)
     case field_value::sffloat_id:
         {
             using openvrml::sffloat;
-	    const sffloat & f = static_cast<const sffloat &>(fieldValue);
+            const sffloat & f = static_cast<const sffloat &>(fieldValue);
             if (!JS_NewDoubleValue(cx, f.value, &rval)) { rval = JSVAL_NULL; }
         }
         break;
@@ -2975,7 +2974,7 @@ jsval script::vrmlFieldToJSVal(const openvrml::field_value & fieldValue)
 
     case field_value::sftime_id:
         {
-	    const openvrml::sftime & sftime =
+            const openvrml::sftime & sftime =
                     static_cast<const openvrml::sftime &>(fieldValue);
             if (!JS_NewDoubleValue(cx, sftime.value, &rval)) {
                 rval = JSVAL_NULL;
@@ -3106,7 +3105,7 @@ jsval script::vrmlFieldToJSVal(const openvrml::field_value & fieldValue)
 // Must assign the proper type to eventOuts
 
 JSBool eventOut_setProperty(JSContext * const cx,
-                            JSObject * const obj,
+                            JSObject *,
                             const jsval id,
                             jsval * const val)
     throw ()
@@ -3160,7 +3159,7 @@ JSBool eventOut_setProperty(JSContext * const cx,
 }
 
 JSBool script::field_setProperty(JSContext * const cx,
-                                 JSObject * const obj,
+                                 JSObject *,
                                  const jsval id,
                                  jsval * const val)
     throw ()
@@ -3621,7 +3620,7 @@ JSBool print(JSContext * const cx, JSObject *,
 namespace Browser {
 
 JSBool getName(JSContext * const cx, JSObject *,
-	       uintN, jsval *, jsval * const rval)
+               uintN, jsval *, jsval * const rval)
     throw ()
 {
     js_::script * const script =
@@ -3635,7 +3634,7 @@ JSBool getName(JSContext * const cx, JSObject *,
 }
 
 JSBool getVersion(JSContext * const cx, JSObject *,
-		  uintN, jsval *, jsval * const rval)
+                  uintN, jsval *, jsval * const rval)
     throw ()
 {
     js_::script * const script =
@@ -3702,9 +3701,9 @@ JSBool getWorldURL(JSContext * const cx,
 
 JSBool loadURL(JSContext * const cx,
                JSObject *,
-               const uintN argc,
+               uintN,
                jsval * const argv,
-               jsval * const rval)
+               jsval *)
     throw ()
 {
     using std::auto_ptr;
@@ -3749,7 +3748,7 @@ JSBool loadURL(JSContext * const cx,
 
 JSBool replaceWorld(JSContext * const cx,
                     JSObject *,
-                    const uintN argc,
+                    uintN,
                     jsval * const argv,
                     jsval * const rval)
     throw ()
@@ -3781,7 +3780,7 @@ JSBool replaceWorld(JSContext * const cx,
 
 JSBool createVrmlFromString(JSContext * const cx,
                             JSObject * const obj,
-			    const uintN argc,
+                            uintN,
                             jsval * const argv,
                             jsval * const rval)
     throw ()
@@ -3822,11 +3821,11 @@ JSBool createVrmlFromString(JSContext * const cx,
 
 // createVrmlFromURL( MFString url, SFNode node, SFString event )
 
-JSBool createVrmlFromURL(JSContext * const cx,
+JSBool createVrmlFromURL(JSContext *,
                          JSObject *,
-			 const uintN argc,
-                         jsval * const argv,
-                         jsval * const rval)
+                         uintN,
+                         jsval *,
+                         jsval *)
     throw ()
 {
 # if 0
@@ -3894,7 +3893,7 @@ JSBool createVrmlFromURL(JSContext * const cx,
 
 JSBool addRoute(JSContext * const cx,
                 JSObject *,
-                const uintN argc,
+                uintN,
                 jsval * const argv,
                 jsval * const rval)
     throw ()
@@ -3969,7 +3968,7 @@ JSBool addRoute(JSContext * const cx,
 
 JSBool deleteRoute(JSContext * const cx,
                    JSObject *,
-                   const uintN argc,
+                   uintN,
                    jsval * const argv,
                    jsval * const rval)
     throw ()
@@ -4023,7 +4022,7 @@ JSBool deleteRoute(JSContext * const cx,
 
 JSBool setDescription(JSContext * const cx,
                       JSObject *,
-		      const uintN argc,
+                      uintN,
                       jsval * const argv,
                       jsval * const rval)
     throw ()
@@ -4190,7 +4189,7 @@ SFColor::createFromJSObject(JSContext * const cx, JSObject * const obj)
 
 JSBool SFColor::construct(JSContext * const cx,
                           JSObject * obj,
-	                  const uintN argc,
+                          const uintN argc,
                           jsval * const argv,
                           jsval * const rval)
     throw ()
@@ -4308,7 +4307,7 @@ JSBool SFColor::setProperty(JSContext * const cx,
 
 JSBool SFColor::setHSV(JSContext * const cx,
                        JSObject * const obj,
-                       const uintN argc,
+                       uintN,
                        jsval * const argv,
                        jsval * const rval)
     throw ()
@@ -4460,7 +4459,7 @@ SFImage::createFromJSObject(JSContext * const cx, JSObject * const obj)
 
 JSBool SFImage::construct(JSContext * const cx,
                           JSObject * obj,
-	                  const uintN argc,
+                          const uintN argc,
                           jsval * const argv,
                           jsval * const rval)
     throw ()
@@ -5012,14 +5011,14 @@ JSBool SFRotation::initObject(JSContext * const cx,
     jsdouble x = 0.0, y = 1.0, z = 0.0, angle = 0.0;
     if (argc > 0) {
         if (JSVAL_IS_NUMBER(argv[0])) {
-	    if (!JS_ValueToNumber(cx, argv[0], &x)) { return JS_FALSE; }
-	    if (argc > 1) {
+            if (!JS_ValueToNumber(cx, argv[0], &x)) { return JS_FALSE; }
+            if (argc > 1) {
                 if (!JSVAL_IS_NUMBER(argv[1])
                         || !JS_ValueToNumber(cx, argv[1], &y)) {
                     return JS_FALSE;
                 }
 
-	        if (argc > 2) {
+                if (argc > 2) {
                     if (!JSVAL_IS_NUMBER(argv[2])
                             || !JS_ValueToNumber(cx, argv[2], &z)) {
                         return JS_FALSE;
@@ -5234,7 +5233,7 @@ JSBool SFRotation::inverse(JSContext * const cx,
 
 JSBool SFRotation::multiply(JSContext * const cx,
                             JSObject * const obj,
-                            const uintN argc,
+                            uintN,
                             jsval * const argv,
                             jsval * const rval)
     throw ()
@@ -5285,9 +5284,9 @@ JSBool SFRotation::multiply(JSContext * const cx,
 
 JSBool SFRotation::multVec(JSContext * const cx,
                            JSObject * const obj,
-                           const uintN argc,
+                           uintN,
                            jsval * const argv,
-	                   jsval * const rval)
+                           jsval * const rval)
     throw ()
 {
     assert(JS_GetPrivate(cx, obj));
@@ -5340,7 +5339,7 @@ JSBool SFRotation::multVec(JSContext * const cx,
 
 JSBool SFRotation::setAxis(JSContext * const cx,
                            JSObject * const obj,
-                           const uintN argc,
+                           uintN,
                            jsval * const argv,
                            jsval * const rval)
     throw ()
@@ -5376,7 +5375,7 @@ JSBool SFRotation::setAxis(JSContext * const cx,
 
 JSBool SFRotation::slerp(JSContext * const cx,
                          JSObject * const obj,
-                         const uintN argc,
+                         uintN,
                          jsval * const argv,
                          jsval * const rval)
     throw ()
@@ -5634,7 +5633,7 @@ JSBool SFVec2f::setProperty(JSContext * const cx,
 
 JSBool SFVec2f::add(JSContext * const cx,
                     JSObject * const obj,
-                    const uintN argc,
+                    uintN,
                     jsval * const argv,
                     jsval * const rval)
     throw ()
@@ -5686,7 +5685,7 @@ JSBool SFVec2f::add(JSContext * const cx,
 
 JSBool SFVec2f::divide(JSContext * const cx,
                        JSObject * const obj,
-                       const uintN argc,
+                       uintN,
                        jsval * const argv,
                        jsval * const rval)
     throw ()
@@ -5728,7 +5727,7 @@ JSBool SFVec2f::divide(JSContext * const cx,
 
 JSBool SFVec2f::dot(JSContext * const cx,
                     JSObject * const obj,
-                    const uintN argc,
+                    uintN,
                     jsval * const argv,
                     jsval * const rval)
     throw ()
@@ -5783,7 +5782,7 @@ JSBool SFVec2f::length(JSContext * const cx,
 
 JSBool SFVec2f::multiply(JSContext * const cx,
                          JSObject * const obj,
-                         const uintN argc,
+                         uintN,
                          jsval * const argv,
                          jsval * const rval)
     throw ()
@@ -5897,7 +5896,7 @@ JSBool SFVec2f::normalize(JSContext * const cx,
 
 JSBool SFVec2f::subtract(JSContext * const cx,
                          JSObject * const obj,
-                         const uintN argc,
+                         uintN,
                          jsval * const argv,
                          jsval * const rval)
     throw ()
@@ -6154,7 +6153,7 @@ JSBool SFVec3f::setProperty(JSContext * const cx,
 
 JSBool SFVec3f::add(JSContext * const cx,
                     JSObject * const obj,
-                    const uintN argc,
+                    uintN,
                     jsval * const argv,
                     jsval * const rval)
     throw ()
@@ -6206,7 +6205,7 @@ JSBool SFVec3f::add(JSContext * const cx,
 
 JSBool SFVec3f::cross(JSContext * const cx,
                       JSObject * const obj,
-                      const uintN argc,
+                      uintN,
                       jsval * const argv,
                       jsval * const rval)
     throw ()
@@ -6258,7 +6257,7 @@ JSBool SFVec3f::cross(JSContext * const cx,
 
 JSBool SFVec3f::divide(JSContext * const cx,
                        JSObject * const obj,
-                       const uintN argc,
+                       uintN,
                        jsval * const argv,
                        jsval * const rval)
     throw ()
@@ -6300,7 +6299,7 @@ JSBool SFVec3f::divide(JSContext * const cx,
 
 JSBool SFVec3f::dot(JSContext * const cx,
                     JSObject * const obj,
-                    const uintN argc,
+                    uintN,
                     jsval * const argv,
                     jsval * const rval)
     throw ()
@@ -6355,7 +6354,7 @@ JSBool SFVec3f::length(JSContext * const cx,
 
 JSBool SFVec3f::multiply(JSContext * const cx,
                          JSObject * const obj,
-                         const uintN argc,
+                         uintN,
                          jsval * const argv,
                          jsval * const rval)
     throw ()
@@ -6467,8 +6466,10 @@ JSBool SFVec3f::normalize(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec3f::subtract(JSContext * const cx, JSObject * const obj,
-                         const uintN argc, jsval * const argv,
+JSBool SFVec3f::subtract(JSContext * const cx,
+                         JSObject * const obj,
+                         uintN,
+                         jsval * const argv,
                          jsval * const rval)
     throw ()
 {
@@ -6572,12 +6573,17 @@ JSBool MField::getElement(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool MField::getLength(JSContext * const cx, JSObject * const obj,
-                         const jsval id, jsval * const vp) throw () {
+JSBool MField::getLength(JSContext * const cx,
+                         JSObject * const obj,
+                         jsval,
+                         jsval * const vp)
+    throw ()
+{
     assert(cx);
     assert(obj);
     assert(vp);
-    const MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+    const MFData * const mfdata =
+        static_cast<MFData *>(JS_GetPrivate(cx, obj));
     assert(mfdata);
 
     *vp = INT_TO_JSVAL(mfdata->array.size());
@@ -6612,7 +6618,7 @@ JSObject * MFJSObject<Subclass>::initClass(JSContext * const cx,
 template <typename Subclass>
 JSBool MFJSObject<Subclass>::construct(JSContext * const cx,
                                        JSObject * obj,
-	                               const uintN argc,
+                                       const uintN argc,
                                        jsval * const argv,
                                        jsval * const rval)
     throw ()
@@ -6849,7 +6855,7 @@ JSObject * MFJSDouble<Subclass>::initClass(JSContext * const cx,
 template <typename Subclass>
 JSBool MFJSDouble<Subclass>::construct(JSContext * const cx,
                                        JSObject * obj,
-	                               const uintN argc,
+                                       const uintN argc,
                                        jsval * const argv,
                                        jsval * rval)
     throw ()
@@ -6937,7 +6943,7 @@ JSBool MFJSDouble<Subclass>::setElement(JSContext * const cx,
 template <typename Subclass>
 JSBool MFJSDouble<Subclass>::setLength(JSContext * const cx,
                                        JSObject * const obj,
-                                       const jsval id,
+                                       jsval,
                                        jsval * const vp)
     throw ()
 {
@@ -7277,7 +7283,7 @@ MFInt32::createFromJSObject(JSContext * const cx, JSObject * const obj)
 }
 
 JSBool MFInt32::construct(JSContext * const cx, JSObject * obj,
-	                  const uintN argc, jsval * const argv,
+                          const uintN argc, jsval * const argv,
                           jsval * const rval)
 {
     assert(cx);
@@ -7366,7 +7372,7 @@ JSBool MFInt32::setElement(JSContext * const cx,
 
 JSBool MFInt32::setLength(JSContext * const cx,
                           JSObject * const obj,
-                          const jsval id,
+                          jsval,
                           jsval * const vp)
 {
     assert(cx);
@@ -7629,7 +7635,7 @@ JSBool MFNode::setElement(JSContext * const cx,
 
 JSBool MFNode::setLength(JSContext * const cx,
                          JSObject * const obj,
-                         const jsval id,
+                         jsval,
                          jsval * const vp)
     throw ()
 {
@@ -7700,8 +7706,8 @@ JSBool MFNode::setLength(JSContext * const cx,
 
 JSBool MFNode::toString(JSContext * const cx,
                         JSObject * const obj,
-                        const uintN argc,
-                        jsval * const argv,
+                        uintN,
+                        jsval *,
                         jsval * const rval)
     throw ()
 {
@@ -7912,7 +7918,7 @@ MFString::createFromJSObject(JSContext * const cx, JSObject * const obj)
 
 JSBool MFString::construct(JSContext * const cx,
                            JSObject * obj,
-	                   const uintN argc,
+                           const uintN argc,
                            jsval * const argv,
                            jsval * const rval)
     throw ()
@@ -7998,7 +8004,7 @@ JSBool MFString::setElement(JSContext * const cx,
 
 JSBool MFString::setLength(JSContext * const cx,
                            JSObject * const obj,
-                           const jsval id,
+                           jsval,
                            jsval * const vp)
     throw ()
 {
@@ -8343,8 +8349,8 @@ JSObject * VrmlMatrix::Row::initClass(JSContext * const cx,
 
 JSBool VrmlMatrix::Row::construct(JSContext * const cx,
                                   JSObject * obj,
-                                  const uintN argc,
-                                  jsval * const argv,
+                                  uintN,
+                                  jsval *,
                                   jsval * const rval)
     throw ()
 {
@@ -8515,10 +8521,7 @@ JSBool VrmlMatrix::getElement(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool VrmlMatrix::setElement(JSContext * const cx,
-                              JSObject * const obj,
-                              const jsval id,
-                              jsval * const vp)
+JSBool VrmlMatrix::setElement(JSContext *, JSObject *, jsval, jsval *)
     throw ()
 {
     return JS_TRUE;
@@ -8678,8 +8681,8 @@ JSBool VrmlMatrix::getTransform(JSContext * const cx,
 
 JSBool VrmlMatrix::inverse(JSContext * const cx,
                            JSObject * const obj,
-                           const uintN argc,
-                           jsval * const argv,
+                           uintN,
+                           jsval *,
                            jsval * const rval)
     throw ()
 {
@@ -8704,8 +8707,8 @@ JSBool VrmlMatrix::inverse(JSContext * const cx,
 
 JSBool VrmlMatrix::transpose(JSContext * const cx,
                              JSObject * const obj,
-                             const uintN argc,
-                             jsval * const argv,
+                             uintN,
+                             jsval *,
                              jsval * const rval)
     throw ()
 {
@@ -8730,7 +8733,7 @@ JSBool VrmlMatrix::transpose(JSContext * const cx,
 
 JSBool VrmlMatrix::multLeft(JSContext * const cx,
                             JSObject * const obj,
-                            const uintN argc,
+                            uintN,
                             jsval * const argv,
                             jsval * const rval)
     throw ()
@@ -8746,24 +8749,29 @@ JSBool VrmlMatrix::multLeft(JSContext * const cx,
         return JS_FALSE;
     }
 
-    const mat4f * const argMat =
-        static_cast<mat4f *>(JS_GetPrivate(cx, arg_obj));
-    assert(argMat);
+    void * arg_obj_private_data = JS_GetPrivate(cx, arg_obj);
+    assert(arg_obj_private_data);
+    const mat4f & argMat = *static_cast<mat4f *>(arg_obj_private_data);
 
-    const mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
-    assert(thisMat);
+    void * obj_private_data = JS_GetPrivate(cx, obj);
+    assert(obj_private_data);
+    const mat4f & thisMat = *static_cast<mat4f *>(obj_private_data);
 
     //
     // Construct the result object.
     //
-    JSObject * const robj = JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+    JSObject * const robj = JS_ConstructObject(cx,
+                                               &VrmlMatrix::jsclass,
+                                               0,
                                                JS_GetParent(cx, obj));
     if (!robj) { return JS_FALSE; }
+    void * robj_private_data = JS_GetPrivate(cx, robj);
+    assert(robj_private_data);
+    mat4f & resultMat = *static_cast<mat4f *>(robj_private_data);
 
-    mat4f * const resultMat = static_cast<mat4f *>(JS_GetPrivate(cx, robj));
-    assert(resultMat);
+    resultMat = argMat * thisMat;
 
-    *resultMat = *argMat * *thisMat;
+    *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
 }
 
@@ -8795,20 +8803,24 @@ JSBool VrmlMatrix::multRight(JSContext * const cx,
     //
     // Construct the result object.
     //
-    JSObject * const robj = JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+    JSObject * const robj = JS_ConstructObject(cx,
+                                               &VrmlMatrix::jsclass,
+                                               0,
                                                JS_GetParent(cx, obj));
     if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    mat4f & resultMat = *static_cast<mat4f *>(JS_GetPrivate(cx, robj));
+    void * private_data = JS_GetPrivate(cx, robj);
+    assert(private_data);
+    mat4f & resultMat = *static_cast<mat4f *>(private_data);
 
     resultMat = thisMat * argMat;
+
+    *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
 }
 
 JSBool VrmlMatrix::multVecMatrix(JSContext * const cx,
                                  JSObject * const obj,
-                                 const uintN argc,
+                                 uintN,
                                  jsval * const argv,
                                  jsval * const rval)
     throw ()
@@ -8861,7 +8873,7 @@ JSBool VrmlMatrix::multVecMatrix(JSContext * const cx,
 
 JSBool VrmlMatrix::multMatrixVec(JSContext * const cx,
                                  JSObject * const obj,
-                                 const uintN argc,
+                                 uintN,
                                  jsval * const argv,
                                  jsval * const rval)
     throw ()
@@ -8911,8 +8923,8 @@ JSBool VrmlMatrix::multMatrixVec(JSContext * const cx,
 
 JSBool VrmlMatrix::toString(JSContext * const cx,
                             JSObject * const obj,
-                            const uintN argc,
-                            jsval * const argv,
+                            uintN,
+                            jsval *,
                             jsval * const rval)
     throw ()
 {

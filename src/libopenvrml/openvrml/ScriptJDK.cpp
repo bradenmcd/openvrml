@@ -580,7 +580,7 @@ jobject JNICALL Java_vrml_Field_clone(JNIEnv * env, jobject obj)
  * @param reserved unused.
  * @return JNI Version needed by native library.
  */
-jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
+jint JNICALL JNI_OnLoad(JavaVM *, void *)
 {
   return JNI_VERSION_1_2;
 }
@@ -591,9 +591,8 @@ jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
  * @param vm Java VM.
  * @param reserved unused.
  */
-void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved)
-{
-}
+void JNICALL JNI_OnUnload(JavaVM *, void *)
+{}
 
 /**
  * @brief JNI implementation of ConstSFBool::CreateObject.
@@ -3909,10 +3908,12 @@ jobject JNICALL Java_vrml_field_MFNode_get1Value
  *
  * @todo Implement me!
  */
-void JNICALL Java_vrml_field_MFNode_setValue__I_3Lvrml_BaseNode_2
-  (JNIEnv *env, jobject obj, jint size, jobjectArray basenode)
-{
-}
+void JNICALL
+Java_vrml_field_MFNode_setValue__I_3Lvrml_BaseNode_2(JNIEnv *,
+                                                     jobject,
+                                                     jint,
+                                                     jobjectArray)
+{}
 
 void JNICALL
 Java_vrml_field_MFNode_setValue__Lvrml_field_MFNode_2(JNIEnv * env,
@@ -4804,7 +4805,7 @@ jstring JNICALL Java_vrml_field_MFString_get1Value
 void JNICALL
 Java_vrml_field_MFString_setValue__I_3Ljava_lang_String_2(JNIEnv * env,
                                                           jobject obj,
-                                                          jint size,
+                                                          jint,
                                                           jobjectArray jarr)
 {
     try {
@@ -6844,7 +6845,7 @@ jobject JNICALL Java_vrml_BaseNode_getBrowser(JNIEnv * const env,
  */
 jobject JNICALL Java_vrml_node_Node_getEventIn(JNIEnv * const env,
                                                jobject obj,
-                                               jstring jstrEventInName)
+                                               jstring /* jstrEventInName */)
 {
     jfieldID fid = getFid(env, obj, "NodePtr", "I");
     if (!fid) return 0;
@@ -6885,8 +6886,9 @@ jobject JNICALL Java_vrml_node_Node_getEventIn(JNIEnv * const env,
  * @todo Implement me. Need to throw InvalidEventOutException
  * if eventOut not present.
  */
-jobject JNICALL Java_vrml_node_Node_getEventOut
-  (JNIEnv *env, jobject obj, jstring jstrEventOutName)
+jobject JNICALL Java_vrml_node_Node_getEventOut(JNIEnv * /* env */,
+                                                jobject /* obj */,
+                                                jstring /* jstrEventOutName */)
 {
   /*
   const char *eventOutName = env->GetStringUTFChars(jstrEventOutName , 0);
@@ -6924,8 +6926,10 @@ jobject JNICALL Java_vrml_node_Node_getEventOut
  * @todo Implement me. Need to throw InvalidEventOutException
  * if eventOut not present.
  */
-jobject JNICALL Java_vrml_node_Node_getExposedField
-  (JNIEnv *env, jobject obj, jstring jstrExposedFieldName)
+jobject JNICALL
+Java_vrml_node_Node_getExposedField(JNIEnv * /* env */,
+                                    jobject /* obj */,
+                                    jstring /* jstrExposedFieldName */)
 {
   /*
   const char *exposedFieldName =
@@ -7198,8 +7202,9 @@ jstring JNICALL Java_vrml_Browser_getWorldURL(JNIEnv * const env,
  *
  * @todo Implement me!
  */
-void JNICALL Java_vrml_Browser_replaceWorld
-  (JNIEnv *env, jobject obj, jobjectArray basenodes)
+void JNICALL Java_vrml_Browser_replaceWorld(JNIEnv * /* env */,
+                                            jobject /* obj */,
+                                            jobjectArray /* basenodes */)
 {
   // First check if mustEvaluate is set, if not then method
   // should not continue.
@@ -7219,7 +7224,7 @@ void JNICALL Java_vrml_Browser_replaceWorld
 jobjectArray JNICALL
 Java_vrml_Browser_createVrmlFromString(JNIEnv * const env,
                                        const jobject obj,
-                                       const jstring vrmlSyntax)
+                                       const jstring /* vrmlSyntax */)
 {
   const jfieldID fid = getFid(env, obj, "BrowserPtr", "I");
   if (!fid) return 0;
@@ -7241,11 +7246,12 @@ Java_vrml_Browser_createVrmlFromString(JNIEnv * const env,
  * @todo Implement me!  This method should throw an
  *       InvalidVRMLSyntaxException if the syntax is invalid.
  */
-void JNICALL Java_vrml_Browser_createVrmlFromURL
-  (JNIEnv *env, jobject obj, jobjectArray urls,
-   jobject basenode, jstring event)
-{
-}
+void JNICALL Java_vrml_Browser_createVrmlFromURL(JNIEnv * /* env */,
+                                                 jobject /* obj */,
+                                                 jobjectArray /* urls */,
+                                                 jobject /* basenode */,
+                                                 jstring /* event */)
+{}
 
 /**
  * @brief JNI implementation of Browser::addRoute.
@@ -7262,7 +7268,7 @@ void JNICALL Java_vrml_Browser_createVrmlFromURL
  *       if directOutput is set, if it isn't, don't continue.
  */
 void JNICALL Java_vrml_Browser_addRoute(JNIEnv * const env,
-                                        jobject obj,
+                                        jobject,
                                         jobject fromNodeObj,
                                         jstring fromEventOut,
                                         jobject toNodeObj,
@@ -7301,7 +7307,7 @@ void JNICALL Java_vrml_Browser_addRoute(JNIEnv * const env,
  *       if directOutput is set, if it isn't, don't continue.
  */
 void JNICALL Java_vrml_Browser_deleteRoute(JNIEnv * const env,
-                                           jobject obj,
+                                           jobject,
                                            jobject fromNodeObj,
                                            jstring fromEventOut,
                                            jobject toNodeObj,

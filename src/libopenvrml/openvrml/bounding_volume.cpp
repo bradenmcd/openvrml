@@ -493,7 +493,7 @@ void openvrml::bounding_sphere::do_extend(const vec3f & p)
  * @param bbox  an axis-aligned bounding box
  */
 void
-openvrml::bounding_sphere::do_extend(const axis_aligned_bounding_box & bbox)
+openvrml::bounding_sphere::do_extend(const axis_aligned_bounding_box &)
 {}
 
 /**
@@ -759,7 +759,7 @@ openvrml::axis_aligned_bounding_box::~axis_aligned_bounding_box() throw ()
  */
 openvrml::bounding_volume::intersection
 openvrml::axis_aligned_bounding_box::
-do_intersect_frustum(const openvrml::frustum & frustum) const
+do_intersect_frustum(const openvrml::frustum &) const
 {
     return bounding_volume::partial;
 }
@@ -767,7 +767,7 @@ do_intersect_frustum(const openvrml::frustum & frustum) const
 /**
  * @todo Implement me!
  */
-void openvrml::axis_aligned_bounding_box::do_extend(const vec3f & p)
+void openvrml::axis_aligned_bounding_box::do_extend(const vec3f &)
 {}
 
 /**
@@ -775,13 +775,13 @@ void openvrml::axis_aligned_bounding_box::do_extend(const vec3f & p)
  */
 void
 openvrml::axis_aligned_bounding_box::
-do_extend(const axis_aligned_bounding_box & b)
+do_extend(const axis_aligned_bounding_box &)
 {}
 
 /**
  * @todo Implement me!
  */
-void openvrml::axis_aligned_bounding_box::do_extend(const bounding_sphere& b)
+void openvrml::axis_aligned_bounding_box::do_extend(const bounding_sphere &)
 {}
 
 /**
@@ -795,7 +795,7 @@ void openvrml::axis_aligned_bounding_box::do_extend(const bounding_sphere& b)
  */
 void
 openvrml::axis_aligned_bounding_box::
-do_enclose(const std::vector<vec3f> & points)
+do_enclose(const std::vector<vec3f> &)
 {}
 
 /**
@@ -815,11 +815,11 @@ bool openvrml::axis_aligned_bounding_box::do_maximized() const
 /**
  * @brief Implement me!
  */
-void openvrml::axis_aligned_bounding_box::do_ortho_transform(const mat4f & M)
+void openvrml::axis_aligned_bounding_box::do_ortho_transform(const mat4f &)
 {}
 
 /**
  * @brief Implement me!
  */
-void openvrml::axis_aligned_bounding_box::do_transform(const mat4f & M)
+void openvrml::axis_aligned_bounding_box::do_transform(const mat4f &)
 {}

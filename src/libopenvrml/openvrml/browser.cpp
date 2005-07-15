@@ -2552,15 +2552,15 @@ namespace {
         return 0.0;
     }
 
-    void default_navigation_info::do_field(const std::string & id,
-                                           const field_value & value)
+    void default_navigation_info::do_field(const std::string &,
+                                           const field_value &)
         throw ()
     {
         assert(false);
     }
 
     const field_value &
-    default_navigation_info::do_field(const std::string & id) const
+    default_navigation_info::do_field(const std::string &) const
         throw ()
     {
         assert(false);
@@ -2568,16 +2568,16 @@ namespace {
         return value;
     }
 
-    void default_navigation_info::do_process_event(const std::string & id,
-                                                   const field_value & value,
-                                                   double timestamp)
+    void default_navigation_info::do_process_event(const std::string &,
+                                                   const field_value &,
+                                                   double)
         throw ()
     {
         assert(false);
     }
 
     const field_value &
-    default_navigation_info::do_eventout(const std::string & id) const throw ()
+    default_navigation_info::do_eventout(const std::string &) const throw ()
     {
         assert(false);
         static const sfbool value;
@@ -2694,15 +2694,15 @@ namespace {
         return fieldOfView;
     }
 
-    void default_viewpoint::do_field(const std::string & id,
-                                     const field_value & value)
+    void default_viewpoint::do_field(const std::string &,
+                                     const field_value &)
         throw ()
     {
         assert(false);
     }
 
     const field_value &
-    default_viewpoint::do_field(const std::string & id) const
+    default_viewpoint::do_field(const std::string &) const
         throw ()
     {
         assert(false);
@@ -2710,16 +2710,16 @@ namespace {
         return value;
     }
 
-    void default_viewpoint::do_process_event(const std::string & id,
-                                             const field_value & value,
-                                             double timestamp)
+    void default_viewpoint::do_process_event(const std::string &,
+                                             const field_value &,
+                                             double)
         throw ()
     {
         assert(false);
     }
 
     const field_value &
-    default_viewpoint::do_eventout(const std::string & id) const throw ()
+    default_viewpoint::do_eventout(const std::string &) const throw ()
     {
         assert(false);
         static const sfbool value;
@@ -3964,7 +3964,7 @@ const openvrml::node_path openvrml::browser::find_node(const node & n) const
             if (&n == &this->objectiveNode) { this->halt_traversal(); }
         }
 
-        virtual void on_leaving(node & n) throw ()
+        virtual void on_leaving(node &) throw ()
         {
             if (!this->halted()) { this->nodePath.pop_back(); }
         }
@@ -4254,7 +4254,7 @@ void openvrml::browser::replace_world(const std::vector<node_ptr> & nodes)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void openvrml::browser::load_url(const std::vector<std::string> & url,
-                                 const std::vector<std::string> & parameter)
+                                 const std::vector<std::string> &)
     throw (std::bad_alloc)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
@@ -4405,9 +4405,10 @@ openvrml::browser::create_vrml_from_stream(std::istream & in)
  * @todo Implement me!
  */
 void
-openvrml::browser::create_vrml_from_url(const std::vector<std::string> & url,
-                                        const node_ptr & node,
-                                        const std::string & event)
+openvrml::browser::
+create_vrml_from_url(const std::vector<std::string> & /* url */,
+                     const node_ptr & /* node */,
+                     const std::string & /* event */)
 {}
 
 /**
@@ -7196,8 +7197,7 @@ openvrml::null_node_class::~null_node_class() throw ()
 
 const boost::shared_ptr<openvrml::node_type>
 openvrml::null_node_class::
-do_create_type(const std::string & id,
-               const node_interface_set & interfaces) const
+do_create_type(const std::string &, const node_interface_set &) const
     throw ()
 {
     assert(false);
@@ -7223,8 +7223,8 @@ openvrml::null_node_type::do_interfaces() const throw ()
 
 const openvrml::node_ptr
 openvrml::null_node_type::
-do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
-               const initial_value_map & initial_values) const
+do_create_node(const boost::shared_ptr<openvrml::scope> &,
+               const initial_value_map &) const
     throw ()
 {
     assert(false);

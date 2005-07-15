@@ -1,5 +1,24 @@
 2005-07-15 Braden McDaniel  <braden@endoframe.com>
 
+	Fixes for gcc warnings.
+
+	* examples/sdl_viewer.cpp
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglconfig-x11.c
+	* mozilla-plugin/src/openvrml.cpp
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	* src/libopenvrml/openvrml/ScriptJDK.cpp
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/exposedfield.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node_ptr.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
+2005-07-15 Braden McDaniel  <braden@endoframe.com>
+
 	* m4/acx_pthread.m4:  Fixed ACX_PTHREAD to work with gcc's
 	-Werror flag.
 

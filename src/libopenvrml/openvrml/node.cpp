@@ -631,8 +631,7 @@ void openvrml::node_class::initialize(viewpoint_node * initial_viewpoint,
  *
  * @sa node_class::initialize
  */
-void openvrml::node_class::do_initialize(viewpoint_node * initial_viewpoint,
-                                         const double time)
+void openvrml::node_class::do_initialize(viewpoint_node *, double)
     throw ()
 {}
 
@@ -657,7 +656,7 @@ void openvrml::node_class::render(viewer & v) const throw ()
  *
  * @sa node_class::render
  */
-void openvrml::node_class::do_render(viewer & v) const throw ()
+void openvrml::node_class::do_render(viewer &) const throw ()
 {}
 
 /**
@@ -2089,7 +2088,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const node & n)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::node::do_initialize(const double timestamp)
+void openvrml::node::do_initialize(double)
     throw (std::bad_alloc)
 {}
 
@@ -2134,7 +2133,7 @@ void openvrml::node::do_initialize(const double timestamp)
  *
  * @param timestamp the current time.
  */
-void openvrml::node::do_shutdown(const double timestamp) throw ()
+void openvrml::node::do_shutdown(double) throw ()
 {}
 
 namespace {
@@ -2600,8 +2599,8 @@ void openvrml::appearance_node::render_appearance(viewer & v,
  * @param v         viewer.
  * @param context   rendering_context.
  */
-void openvrml::appearance_node::do_render_appearance(viewer & v,
-                                                     rendering_context context)
+void
+openvrml::appearance_node::do_render_appearance(viewer &, rendering_context)
 {}
 
 /**
@@ -2861,8 +2860,7 @@ void openvrml::child_node::render_child(viewer & v,
  * @param context   generic context argument; holds things like the accumulated
  *                  modelview transform.
  */
-void openvrml::child_node::do_render_child(viewer & v,
-                                           rendering_context context)
+void openvrml::child_node::do_render_child(viewer &, rendering_context)
 {}
 
 /**
@@ -3201,8 +3199,7 @@ bool openvrml::geometry_node::emissive() const throw ()
  * @return object identifier for the inserted geometry.
  */
 openvrml::viewer::object_t
-openvrml::geometry_node::do_render_geometry(viewer & v,
-                                            rendering_context context)
+openvrml::geometry_node::do_render_geometry(viewer &, rendering_context)
 {
     return 0;
 }
@@ -3723,7 +3720,7 @@ openvrml::texture_node::render_texture(viewer & v)
  * @return object identifier for the inserted texture.
  */
 openvrml::viewer::texture_object_t
-openvrml::texture_node::do_render_texture(viewer & v)
+openvrml::texture_node::do_render_texture(viewer &)
 {
     return 0;
 }
@@ -3858,7 +3855,7 @@ void openvrml::texture_transform_node::render_texture_transform(viewer & v)
  *
  * @param v viewer.
  */
-void openvrml::texture_transform_node::do_render_texture_transform(viewer & v)
+void openvrml::texture_transform_node::do_render_texture_transform(viewer &)
 {}
 
 /**
@@ -4237,7 +4234,7 @@ void openvrml::node_traverser::do_traversal(node & n)
  *
  * @param n  the <code>node</code> currently being traversed.
  */
-void openvrml::node_traverser::on_entering(node & n)
+void openvrml::node_traverser::on_entering(node &)
 {}
 
 /**
@@ -4246,5 +4243,5 @@ void openvrml::node_traverser::on_entering(node & n)
  *
  * @param n  the <code>node</code> currently being traversed.
  */
-void openvrml::node_traverser::on_leaving(node & n)
+void openvrml::node_traverser::on_leaving(node &)
 {}

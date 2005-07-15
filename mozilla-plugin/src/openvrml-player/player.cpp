@@ -860,7 +860,7 @@ namespace {
     }
 
     gboolean command_data_available(GIOChannel * source,
-                                    GIOCondition condition,
+                                    GIOCondition,
                                     gpointer data)
     {
         command_streambuf & streambuf =
@@ -909,7 +909,7 @@ namespace {
 } // namespace
 
 
-gboolean realize(GtkWidget * widget, GdkEvent * event, gpointer data)
+gboolean realize(GtkWidget *, GdkEvent *, gpointer)
 {
     return true;
 }
@@ -933,7 +933,7 @@ gboolean expose_event(GtkWidget * const widget,
 }
 
 gboolean configure_event(GtkWidget * const widget,
-                         GdkEventConfigure * const event,
+                         GdkEventConfigure *,
                          const gpointer data)
 {
     GdkGLDrawable * const gl_drawable = gtk_widget_get_gl_drawable(widget);

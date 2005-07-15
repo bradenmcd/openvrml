@@ -349,7 +349,7 @@ namespace {
         SDL_PushEvent(&redraw_event);
     }
 
-    void sdl_viewer::set_cursor(const cursor_style c)
+    void sdl_viewer::set_cursor(cursor_style)
     {}
 
     void sdl_viewer::swap_buffers()
@@ -357,7 +357,7 @@ namespace {
         SDL_GL_SwapBuffers();
     }
 
-    Uint32 update_timer_callback(const Uint32 interval, void * const param)
+    Uint32 update_timer_callback(Uint32 /* interval */, void * const param)
     {
         sdl_viewer & v = *static_cast<sdl_viewer *>(param);
         SDL_RemoveTimer(v.update_timer_id);

@@ -658,8 +658,8 @@ namespace openvrml {
         exposedfield(openvrml::node & node,
                      const typename FieldValue::value_type & value):
             openvrml::event_listener(node),
-            event_listener_base<Derived>(node),
             openvrml::event_emitter(static_cast<const field_value &>(*this)),
+            event_listener_base<Derived>(node),
             event_emitter_base<Derived>(
                 node,
                 static_cast<const field_value &>(*this)),
@@ -1207,7 +1207,7 @@ namespace openvrml {
         template <typename Derived>
         void
         abstract_indexed_set_node<Derived>::set_color_index_listener::
-        do_process_event(const mfint32 & color_index, const double timestamp)
+        do_process_event(const mfint32 & color_index, double)
             throw (std::bad_alloc)
         {
             abstract_indexed_set_node * abstract_indexed_set =
@@ -1233,7 +1233,7 @@ namespace openvrml {
         template <typename Derived>
         void
         abstract_indexed_set_node<Derived>::set_coord_index_listener::
-        do_process_event(const mfint32 & coord_index, const double timestamp)
+        do_process_event(const mfint32 & coord_index, double)
             throw (std::bad_alloc)
         {
             abstract_indexed_set_node * abstract_indexed_set =
@@ -1314,9 +1314,9 @@ namespace openvrml {
                             const boost::shared_ptr<openvrml::scope> & scope):
             node(type, scope),
             bounded_volume_node(type, scope),
-            abstract_base<Derived>(type, scope),
             child_node(type, scope),
             light_node(type, scope),
+            abstract_base<Derived>(type, scope),
             ambient_intensity_(*this, 0.0),
             color_(*this, openvrml::color(1.0, 1.0, 1.0)),
             intensity_(*this, 1.0),
@@ -1599,7 +1599,7 @@ namespace openvrml {
         template <typename Derived>
         void
         grouping_node_base<Derived>::children_exposedfield::
-        event_side_effect(const mfnode & value, const double timestamp)
+        event_side_effect(const mfnode & value, double)
             throw (std::bad_alloc)
         {
             using std::vector;

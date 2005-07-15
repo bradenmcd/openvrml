@@ -294,7 +294,7 @@ namespace {
     void openvrml_png_row_callback(png_structp png_ptr,
                                    png_bytep new_row,
                                    png_uint_32 row_num,
-                                   int pass)
+                                   int /* pass */)
     {
         if (!new_row) { return; }
 
@@ -343,9 +343,8 @@ namespace {
         copy(new_row, new_row + bytes_per_row, reader.old_row.begin());
     }
 
-    void openvrml_png_end_callback(png_structp png_ptr, png_infop info_ptr)
-    {
-    }
+    void openvrml_png_end_callback(png_structp, png_infop)
+    {}
 
     image_stream_listener::png_reader::
     png_reader(image_stream_listener & stream_listener):
@@ -398,9 +397,8 @@ namespace {
 # endif // defined OPENVRML_ENABLE_PNG_TEXTURES
 
 # ifdef OPENVRML_ENABLE_JPEG_TEXTURES
-    void openvrml_jpeg_init_source(j_decompress_ptr cinfo)
-    {
-    }
+    void openvrml_jpeg_init_source(j_decompress_ptr)
+    {}
 
     boolean openvrml_jpeg_fill_input_buffer(j_decompress_ptr cinfo)
     {
@@ -485,9 +483,8 @@ namespace {
         }
     }
 
-    void openvrml_jpeg_term_source(j_decompress_ptr cinfo)
-    {
-    }
+    void openvrml_jpeg_term_source(j_decompress_ptr)
+    {}
 
     image_stream_listener::jpeg_reader::
     jpeg_reader(image_stream_listener & stream_listener):
@@ -719,7 +716,7 @@ namespace {
     {}
 
     void
-    image_stream_listener::do_stream_available(const std::string & uri,
+    image_stream_listener::do_stream_available(const std::string & /* uri */,
                                                const std::string & media_type)
     {
         using boost::algorithm::iequals;
@@ -2340,7 +2337,7 @@ namespace {
  */
 void
 openvrml::vrml97_node::appearance_node::
-do_render_appearance(viewer & v, rendering_context context)
+do_render_appearance(viewer & v, rendering_context)
 {
     openvrml::material_node * const material =
         node_cast<openvrml::material_node *>(
@@ -2699,7 +2696,7 @@ openvrml::vrml97_node::audio_clip_node::to_audio_clip() const
  *
  * @todo Implement me!
  */
-void openvrml::vrml97_node::audio_clip_node::update(double time)
+void openvrml::vrml97_node::audio_clip_node::update(double)
 {}
 
 /**
@@ -2710,7 +2707,7 @@ void openvrml::vrml97_node::audio_clip_node::update(double time)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-openvrml::vrml97_node::audio_clip_node::do_initialize(const double timestamp)
+openvrml::vrml97_node::audio_clip_node::do_initialize(double)
     throw (std::bad_alloc)
 {
     assert(this->scene());
@@ -2723,8 +2720,7 @@ openvrml::vrml97_node::audio_clip_node::do_initialize(const double timestamp)
  * @param timestamp the current time.
  */
 void
-openvrml::vrml97_node::audio_clip_node::do_shutdown(const double timestamp)
-    throw ()
+openvrml::vrml97_node::audio_clip_node::do_shutdown(double) throw ()
 {
     assert(this->scene());
     this->scene()->browser().remove_audio_clip(*this);
@@ -2910,9 +2906,7 @@ openvrml::vrml97_node::background_class::unbind(background_node & background,
  */
 void
 openvrml::vrml97_node::background_class::
-do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-              const double timestamp)
-    throw ()
+do_initialize(openvrml::viewpoint_node *, const double timestamp) throw ()
 {
     if (this->first) {
         try {
@@ -3347,8 +3341,7 @@ openvrml::vrml97_node::background_node::back_url_exposedfield::
  */
 void
 openvrml::vrml97_node::background_node::back_url_exposedfield::
-event_side_effect(const mfstring & value,
-                  const double timestamp)
+event_side_effect(const mfstring &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -3396,8 +3389,7 @@ openvrml::vrml97_node::background_node::bottom_url_exposedfield::
  */
 void
 openvrml::vrml97_node::background_node::bottom_url_exposedfield::
-event_side_effect(const mfstring & value,
-                  const double timestamp)
+event_side_effect(const mfstring &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -3445,8 +3437,7 @@ openvrml::vrml97_node::background_node::front_url_exposedfield::
  */
 void
 openvrml::vrml97_node::background_node::front_url_exposedfield::
-event_side_effect(const mfstring & value,
-                  const double timestamp)
+event_side_effect(const mfstring &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -3494,8 +3485,7 @@ openvrml::vrml97_node::background_node::left_url_exposedfield::
  */
 void
 openvrml::vrml97_node::background_node::left_url_exposedfield::
-event_side_effect(const mfstring & value,
-                  const double timestamp)
+event_side_effect(const mfstring &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -3543,8 +3533,7 @@ openvrml::vrml97_node::background_node::right_url_exposedfield::
  */
 void
 openvrml::vrml97_node::background_node::right_url_exposedfield::
-event_side_effect(const mfstring & value,
-                  const double timestamp)
+event_side_effect(const mfstring &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -3592,8 +3581,7 @@ openvrml::vrml97_node::background_node::top_url_exposedfield::
  */
 void
 openvrml::vrml97_node::background_node::top_url_exposedfield::
-event_side_effect(const mfstring & value,
-                 const double timestamp)
+event_side_effect(const mfstring &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -3807,9 +3795,7 @@ openvrml::vrml97_node::background_node::~background_node() throw ()
  *
  * @param timestamp the current time.
  */
-void
-openvrml::vrml97_node::background_node::do_initialize(const double timestamp)
-    throw ()
+void openvrml::vrml97_node::background_node::do_initialize(double) throw ()
 {
     assert(dynamic_cast<const background_class *>(&this->type().node_class()));
     background_class & nodeClass =
@@ -4359,14 +4345,14 @@ openvrml::vrml97_node::box_node::~box_node() throw ()
 /**
  * @brief Insert this geometry into @p viewer's display list.
  *
- * @param viewer    a Viewer.
+ * @param viewer    a viewer.
  * @param context   the rendering context.
  *
  * @return display object identifier.
  */
 openvrml::viewer::object_t
 openvrml::vrml97_node::box_node::
-do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
+do_render_geometry(openvrml::viewer & viewer, rendering_context)
 {
     const viewer::object_t object_ref = viewer.insert_box(this->size.value);
     return object_ref;
@@ -5194,12 +5180,12 @@ openvrml::vrml97_node::cone_node::~cone_node() throw ()
 /**
  * @brief Insert this geometry into @p viewer's display list.
  *
- * @param viewer    a Viewer.
+ * @param viewer    a viewer.
  * @param context   the rendering context.
  */
 openvrml::viewer::object_t
 openvrml::vrml97_node::cone_node::
-do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
+do_render_geometry(openvrml::viewer & viewer, rendering_context)
 {
     const viewer::object_t object_ref =
         viewer.insert_cone(this->height.value,
@@ -5802,7 +5788,7 @@ openvrml::vrml97_node::cylinder_node::~cylinder_node() throw ()
  */
 openvrml::viewer::object_t
 openvrml::vrml97_node::cylinder_node::
-do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
+do_render_geometry(openvrml::viewer & viewer, rendering_context)
 {
     const viewer::object_t object_ref =
         viewer.insert_cylinder(this->height.value,
@@ -6194,12 +6180,12 @@ openvrml::vrml97_node::cylinder_sensor_node::to_cylinder_sensor() const
 /**
  * @brief Render the node.
  *
- * @param viewer    a Viewer.
+ * @param viewer    a viewer.
  * @param context   a rendering context.
  */
 void
 openvrml::vrml97_node::cylinder_sensor_node::
-do_render_child(openvrml::viewer & viewer, rendering_context context)
+do_render_child(openvrml::viewer &, rendering_context context)
 {
     //
     // Store the modelview matrix which is calculated at the time of rendering
@@ -6525,7 +6511,7 @@ openvrml::vrml97_node::directional_light_node::~directional_light_node()
  */
 void
 openvrml::vrml97_node::directional_light_node::
-do_render_child(openvrml::viewer & viewer, const rendering_context rc)
+do_render_child(openvrml::viewer & viewer, rendering_context)
 {
     if (this->on_.sfbool::value) {
         viewer.insert_dir_light(this->ambient_intensity_.sffloat::value,
@@ -6812,7 +6798,7 @@ openvrml::vrml97_node::elevation_grid_node::set_height_listener::
  */
 void
 openvrml::vrml97_node::elevation_grid_node::set_height_listener::
-do_process_event(const mffloat & height, const double timestamp)
+do_process_event(const mffloat & height, double)
     throw (std::bad_alloc)
 {
     try {
@@ -6969,7 +6955,7 @@ bool openvrml::vrml97_node::elevation_grid_node::modified() const
  */
 openvrml::viewer::object_t
 openvrml::vrml97_node::elevation_grid_node::
-do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
+do_render_geometry(openvrml::viewer & viewer, rendering_context)
 {
     viewer::object_t obj = 0;
 
@@ -7282,8 +7268,7 @@ openvrml::vrml97_node::extrusion_node::set_cross_section_listener::
  */
 void
 openvrml::vrml97_node::extrusion_node::set_cross_section_listener::
-do_process_event(const mfvec2f & cross_section, const double timestamp)
-    throw (std::bad_alloc)
+do_process_event(const mfvec2f & cross_section, double) throw (std::bad_alloc)
 {
     try {
         extrusion_node & extrusion =
@@ -7332,8 +7317,7 @@ openvrml::vrml97_node::extrusion_node::set_orientation_listener::
  */
 void
 openvrml::vrml97_node::extrusion_node::set_orientation_listener::
-do_process_event(const mfrotation & orientation, const double timestamp)
-    throw (std::bad_alloc)
+do_process_event(const mfrotation & orientation, double) throw (std::bad_alloc)
 {
     try {
         extrusion_node & extrusion =
@@ -7382,8 +7366,7 @@ openvrml::vrml97_node::extrusion_node::set_scale_listener::
  */
 void
 openvrml::vrml97_node::extrusion_node::set_scale_listener::
-do_process_event(const mfvec2f & scale, const double timestamp)
-    throw (std::bad_alloc)
+do_process_event(const mfvec2f & scale, double) throw (std::bad_alloc)
 {
     try {
         extrusion_node & extrusion =
@@ -7432,8 +7415,7 @@ openvrml::vrml97_node::extrusion_node::set_spine_listener::
  */
 void
 openvrml::vrml97_node::extrusion_node::set_spine_listener::
-do_process_event(const mfvec3f & spine, const double timestamp)
-    throw (std::bad_alloc)
+do_process_event(const mfvec3f & spine, double) throw (std::bad_alloc)
 {
     try {
         extrusion_node & extrusion =
@@ -7600,7 +7582,7 @@ openvrml::vrml97_node::extrusion_node::~extrusion_node() throw () {}
  */
 openvrml::viewer::object_t
 openvrml::vrml97_node::extrusion_node::
-do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
+do_render_geometry(openvrml::viewer & viewer, rendering_context)
 {
     viewer::object_t obj = 0;
     if (!this->cross_section_.value.empty() && this->spine_.value.size() > 1) {
@@ -7787,9 +7769,7 @@ void openvrml::vrml97_node::fog_class::unbind(fog_node & fog,
  */
 void
 openvrml::vrml97_node::fog_class::
-do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-              const double timestamp)
-    throw ()
+do_initialize(openvrml::viewpoint_node *, const double timestamp) throw ()
 {
     if (this->first) {
         try {
@@ -8068,7 +8048,7 @@ openvrml::vrml97_node::fog_node::~fog_node() throw ()
  *
  * @param timestamp the current time.
  */
-void openvrml::vrml97_node::fog_node::do_initialize(const double timestamp)
+void openvrml::vrml97_node::fog_node::do_initialize(double)
     throw ()
 {
     fog_class & nodeClass =
@@ -8738,7 +8718,7 @@ openvrml::vrml97_node::image_texture_node::url_exposedfield::
  */
 void
 openvrml::vrml97_node::image_texture_node::url_exposedfield::
-event_side_effect(const mfstring & url, const double timestamp)
+event_side_effect(const mfstring & url, double)
     throw (std::bad_alloc)
 {
     try {
@@ -9168,8 +9148,7 @@ openvrml::vrml97_node::indexed_face_set_node::set_normal_index_listener::
  */
 void
 openvrml::vrml97_node::indexed_face_set_node::set_normal_index_listener::
-do_process_event(const mfint32 & normal_index,
-              const double timestamp)
+do_process_event(const mfint32 & normal_index, double)
     throw (std::bad_alloc)
 {
     try {
@@ -9220,7 +9199,7 @@ openvrml::vrml97_node::indexed_face_set_node::set_tex_coord_index_listener::
  */
 void
 openvrml::vrml97_node::indexed_face_set_node::set_tex_coord_index_listener::
-do_process_event(const mfint32 & tex_coord_index, const double timestamp)
+do_process_event(const mfint32 & tex_coord_index, double)
     throw (std::bad_alloc)
 {
     try {
@@ -9671,7 +9650,7 @@ openvrml::vrml97_node::indexed_line_set_node::~indexed_line_set_node() throw ()
  */
 openvrml::viewer::object_t
 openvrml::vrml97_node::indexed_line_set_node::
-do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
+do_render_geometry(openvrml::viewer & viewer, rendering_context)
 {
     using std::vector;
 
@@ -10973,7 +10952,7 @@ openvrml::vrml97_node::movie_texture_node::to_movie_texture() const
  *
  * @param time  the current time.
  */
-void openvrml::vrml97_node::movie_texture_node::update(const double time)
+void openvrml::vrml97_node::movie_texture_node::update(double /* time */)
 {
 # if 0
     if (this->modified()) {
@@ -11128,8 +11107,7 @@ openvrml::vrml97_node::movie_texture_node::image() const throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-openvrml::vrml97_node::movie_texture_node::
-do_initialize(const double timestamp)
+openvrml::vrml97_node::movie_texture_node::do_initialize(double)
     throw (std::bad_alloc)
 {
     assert(this->scene());
@@ -11142,7 +11120,7 @@ do_initialize(const double timestamp)
  * @param timestamp the current time.
  */
 void
-openvrml::vrml97_node::movie_texture_node::do_shutdown(const double timestamp)
+openvrml::vrml97_node::movie_texture_node::do_shutdown(double)
     throw ()
 {
     assert(this->scene());
@@ -11157,7 +11135,7 @@ openvrml::vrml97_node::movie_texture_node::do_shutdown(const double timestamp)
  * @return object identifier for the inserted texture.
  */
 openvrml::viewer::texture_object_t
-openvrml::vrml97_node::movie_texture_node::do_render_texture(viewer & v)
+openvrml::vrml97_node::movie_texture_node::do_render_texture(viewer & /* v */)
 {
 # if 0
     if (!this->img_ || this->frame < 0) { return 0; }
@@ -11366,8 +11344,7 @@ unbind(navigation_info_node & nav_info, const double timestamp)
  */
 void
 openvrml::vrml97_node::navigation_info_class::
-do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-              const double timestamp)
+do_initialize(openvrml::viewpoint_node *, const double timestamp)
     throw ()
 {
     if (this->first) {
@@ -11758,8 +11735,7 @@ float openvrml::vrml97_node::navigation_info_node::visibility_limit() const
  * @param timestamp the current time.
  */
 void
-openvrml::vrml97_node::navigation_info_node::
-do_initialize(const double timestamp) throw ()
+openvrml::vrml97_node::navigation_info_node::do_initialize(double) throw ()
 {
     using boost::polymorphic_downcast;
 
@@ -13027,7 +13003,7 @@ openvrml::vrml97_node::plane_sensor_node::to_plane_sensor() const
  */
 void
 openvrml::vrml97_node::plane_sensor_node::
-do_render_child(openvrml::viewer & viewer, const rendering_context context)
+do_render_child(openvrml::viewer &, const rendering_context context)
 {
     //
     // Store the ModelView matrix which is calculated at the time of rendering
@@ -13403,7 +13379,7 @@ openvrml::vrml97_node::point_light_node::do_render_scoped_light(viewer & v)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-openvrml::vrml97_node::point_light_node::do_initialize(const double timestamp)
+openvrml::vrml97_node::point_light_node::do_initialize(double)
     throw (std::bad_alloc)
 {
     assert(this->scene());
@@ -13416,7 +13392,7 @@ openvrml::vrml97_node::point_light_node::do_initialize(const double timestamp)
  * @param timestamp the current time.
  */
 void
-openvrml::vrml97_node::point_light_node::do_shutdown(const double timestamp)
+openvrml::vrml97_node::point_light_node::do_shutdown(double)
     throw ()
 {
     assert(this->scene());
@@ -15213,7 +15189,8 @@ openvrml::vrml97_node::sound_node::~sound_node() throw ()
  */
 void
 openvrml::vrml97_node::sound_node::
-do_render_child(openvrml::viewer & viewer, const rendering_context context)
+do_render_child(openvrml::viewer & /* viewer */,
+                const rendering_context /* context */)
 {
     // If this clip has been modified, update the internal data
     if (this->source_.sfnode::value
@@ -15343,7 +15320,7 @@ openvrml::vrml97_node::sphere_node::~sphere_node() throw ()
  */
 openvrml::viewer::object_t
 openvrml::vrml97_node::sphere_node::
-do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
+do_render_geometry(openvrml::viewer & viewer, rendering_context)
 {
     const viewer::object_t object_ref =
         viewer.insert_sphere(this->radius.value);
@@ -15642,12 +15619,12 @@ openvrml::vrml97_node::sphere_sensor_node::to_sphere_sensor() const
 /**
  * @brief Render the node.
  *
- * @param viewer    a Viewer.
+ * @param viewer    a viewer.
  * @param context   a rendering context.
  */
 void
 openvrml::vrml97_node::sphere_sensor_node::
-do_render_child(openvrml::viewer & viewer, const rendering_context context)
+do_render_child(openvrml::viewer &, const rendering_context context)
 {
     //
     // Store the ModelView matrix which is calculated at the time of rendering
@@ -16119,7 +16096,7 @@ openvrml::vrml97_node::spot_light_node::do_render_scoped_light(viewer & v)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-openvrml::vrml97_node::spot_light_node::do_initialize(const double timestamp)
+openvrml::vrml97_node::spot_light_node::do_initialize(double)
     throw (std::bad_alloc)
 {
     assert(this->scene());
@@ -16132,7 +16109,7 @@ openvrml::vrml97_node::spot_light_node::do_initialize(const double timestamp)
  * @param timestamp the current time.
  */
 void
-openvrml::vrml97_node::spot_light_node::do_shutdown(const double timestamp)
+openvrml::vrml97_node::spot_light_node::do_shutdown(double)
     throw ()
 {
     assert(this->scene());
@@ -16280,8 +16257,7 @@ openvrml::vrml97_node::switch_node::choice_exposedfield::~choice_exposedfield()
  */
 void
 openvrml::vrml97_node::switch_node::choice_exposedfield::
-event_side_effect(const mfnode & choice, const double timestamp)
-    throw (std::bad_alloc)
+event_side_effect(const mfnode &, double) throw (std::bad_alloc)
 {
     try {
         switch_node & node =
@@ -16336,8 +16312,7 @@ openvrml::vrml97_node::switch_node::which_choice_exposedfield::
  */
 void
 openvrml::vrml97_node::switch_node::which_choice_exposedfield::
-event_side_effect(const sfint32 & which_choice,
-                 const double timestamp)
+event_side_effect(const sfint32 & which_choice, double)
     throw (std::bad_alloc)
 {
     try {
@@ -16714,7 +16689,7 @@ openvrml::vrml97_node::text_node::string_exposedfield::
  */
 void
 openvrml::vrml97_node::text_node::string_exposedfield::
-event_side_effect(const mfstring & string, const double timestamp)
+event_side_effect(const mfstring &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -16764,7 +16739,7 @@ openvrml::vrml97_node::text_node::font_style_exposedfield::
  */
 void
 openvrml::vrml97_node::text_node::font_style_exposedfield::
-event_side_effect(const sfnode & font_style, const double timestamp)
+event_side_effect(const sfnode &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -16814,7 +16789,7 @@ openvrml::vrml97_node::text_node::length_exposedfield::~length_exposedfield()
  */
 void
 openvrml::vrml97_node::text_node::length_exposedfield::
-event_side_effect(const mffloat & length, const double timestamp)
+event_side_effect(const mffloat &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -16863,8 +16838,7 @@ openvrml::vrml97_node::text_node::max_extent_exposedfield::
  */
 void
 openvrml::vrml97_node::text_node::max_extent_exposedfield::
-event_side_effect(const sffloat & max_extent,
-                  const double timestamp)
+event_side_effect(const sffloat &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -17449,7 +17423,7 @@ bool openvrml::vrml97_node::text_node::modified() const
  */
 openvrml::viewer::object_t
 openvrml::vrml97_node::text_node::
-do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
+do_render_geometry(openvrml::viewer & viewer, rendering_context)
 {
     const viewer::object_t retval =
         viewer.insert_shell(viewer::mask_ccw,
@@ -17475,7 +17449,7 @@ do_render_geometry(openvrml::viewer & viewer, const rendering_context context)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::vrml97_node::text_node::do_initialize(const double timestamp)
+void openvrml::vrml97_node::text_node::do_initialize(double)
     throw (std::bad_alloc)
 {
     this->update_ucs4();
@@ -17488,7 +17462,7 @@ void openvrml::vrml97_node::text_node::do_initialize(const double timestamp)
  *
  * @param timestamp the current time.
  */
-void openvrml::vrml97_node::text_node::do_shutdown(const double timestamp)
+void openvrml::vrml97_node::text_node::do_shutdown(double)
     throw ()
 {
 # if OPENVRML_ENABLE_RENDER_TEXT_NODE
@@ -17698,7 +17672,7 @@ void openvrml::vrml97_node::text_node::update_face() throw (std::bad_alloc)
         // client apps do this by defining some macros, but that's too much
         // trouble for now.
         //
-        explicit FreeTypeError(const FT_Error error):
+        explicit FreeTypeError(FT_Error):
             std::runtime_error("FreeType error.")
         {}
 
@@ -19349,7 +19323,7 @@ void openvrml::vrml97_node::time_sensor_node::update(const double currentTime)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void
-openvrml::vrml97_node::time_sensor_node::do_initialize(const double timestamp)
+openvrml::vrml97_node::time_sensor_node::do_initialize(double)
     throw (std::bad_alloc)
 {
     assert(this->scene());
@@ -19362,7 +19336,7 @@ openvrml::vrml97_node::time_sensor_node::do_initialize(const double timestamp)
  * @param timestamp the current time.
  */
 void
-openvrml::vrml97_node::time_sensor_node::do_shutdown(const double timestamp)
+openvrml::vrml97_node::time_sensor_node::do_shutdown(double)
     throw ()
 {
     assert(this->scene());
@@ -19946,7 +19920,7 @@ openvrml::vrml97_node::transform_node::center_exposedfield::
  */
 void
 openvrml::vrml97_node::transform_node::center_exposedfield::
-event_side_effect(const sfvec3f & center, const double timestamp)
+event_side_effect(const sfvec3f &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -19996,7 +19970,7 @@ openvrml::vrml97_node::transform_node::rotation_exposedfield::
  */
 void
 openvrml::vrml97_node::transform_node::rotation_exposedfield::
-event_side_effect(const sfrotation & rotation, const double timestamp)
+event_side_effect(const sfrotation &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -20046,7 +20020,7 @@ openvrml::vrml97_node::transform_node::scale_exposedfield::
  */
 void
 openvrml::vrml97_node::transform_node::scale_exposedfield::
-event_side_effect(const sfvec3f & scale, const double timestamp)
+event_side_effect(const sfvec3f &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -20096,8 +20070,7 @@ openvrml::vrml97_node::transform_node::scale_orientation_exposedfield::
  */
 void
 openvrml::vrml97_node::transform_node::scale_orientation_exposedfield::
-event_side_effect(const sfrotation & scale_orientation, const double timestamp)
-    throw (std::bad_alloc)
+event_side_effect(const sfrotation &, double) throw (std::bad_alloc)
 {
     try {
         transform_node & node =
@@ -20146,7 +20119,7 @@ openvrml::vrml97_node::transform_node::translation_exposedfield::
  */
 void
 openvrml::vrml97_node::transform_node::translation_exposedfield::
-event_side_effect(const sfvec3f & translation, const double timestamp)
+event_side_effect(const sfvec3f &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -20820,7 +20793,7 @@ openvrml::vrml97_node::viewpoint_node::orientation_exposedfield::
  */
 void
 openvrml::vrml97_node::viewpoint_node::orientation_exposedfield::
-event_side_effect(const sfrotation & orientation, const double timestamp)
+event_side_effect(const sfrotation &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -20869,7 +20842,7 @@ openvrml::vrml97_node::viewpoint_node::position_exposedfield::
  */
 void
 openvrml::vrml97_node::viewpoint_node::position_exposedfield::
-event_side_effect(const sfvec3f & position, const double timestamp)
+event_side_effect(const sfvec3f &, double)
     throw (std::bad_alloc)
 {
     try {
@@ -21090,7 +21063,7 @@ openvrml::vrml97_node::viewpoint_node::position() const
  * @param timestamp the current time.
  */
 void
-openvrml::vrml97_node::viewpoint_node::do_initialize(const double timestamp)
+openvrml::vrml97_node::viewpoint_node::do_initialize(double)
     throw ()
 {
     assert(this->scene());
@@ -21447,7 +21420,7 @@ openvrml::vrml97_node::visibility_sensor_node::~visibility_sensor_node()
  */
 void
 openvrml::vrml97_node::visibility_sensor_node::
-do_render_child(openvrml::viewer & viewer, const rendering_context context)
+do_render_child(openvrml::viewer & viewer, rendering_context)
 {
     if (this->enabled_.sfbool::value) {
         sftime timeNow(browser::current_time());

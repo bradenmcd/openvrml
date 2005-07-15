@@ -236,7 +236,7 @@ NPError NP_Shutdown()
     return NPERR_NO_ERROR;
 }
 
-NPError NP_GetValue(void * future, NPPVariable variable, void * value)
+NPError NP_GetValue(void *, NPPVariable variable, void * value)
 {
     NPError err = NPERR_NO_ERROR;
     switch (variable) {
@@ -311,13 +311,13 @@ void NPP_Shutdown()
  *
  * @see http://devedge.netscape.com/library/manuals/2002/plugin/1.0/npp_api8.html#999289
  */
-NPError NPP_New(const NPMIMEType pluginType,
+NPError NPP_New(const NPMIMEType,
                 const NPP instance,
-                const uint16 mode,
-                const int16 argc,
-                char * argn[],
-                char * argv[],
-                NPSavedData * saved)
+                uint16 /* mode */,
+                int16 /* argc */,
+                char * /* argn */[],
+                char * /* argv */[],
+                NPSavedData *)
 {
     if (!instance) { return NPERR_INVALID_INSTANCE_ERROR; }
 
@@ -367,7 +367,7 @@ NPError NPP_New(const NPMIMEType pluginType,
  *
  * @see http://developer.netscape.com/docs/manuals/communicator/plugin/pgfns.htm#1006838
  */
-NPError NPP_Destroy(const NPP instance, NPSavedData * * const save)
+NPError NPP_Destroy(const NPP instance, NPSavedData **)
 {
     if (!instance) { return NPERR_INVALID_INSTANCE_ERROR; }
 
@@ -400,7 +400,7 @@ NPError NPP_SetWindow(const NPP instance, NPWindow * const window)
 NPError NPP_NewStream(const NPP instance,
                       const NPMIMEType type,
                       NPStream * const stream,
-                      const NPBool seekable,
+                      NPBool /* seekable */,
                       uint16 * const stype)
 {
     if (!instance) { return NPERR_INVALID_INSTANCE_ERROR; }
@@ -425,7 +425,7 @@ NPError NPP_NewStream(const NPP instance,
 
 NPError NPP_DestroyStream(const NPP instance,
                           NPStream * const stream,
-                          const NPError reason)
+                          NPError /* reason */)
 {
     if (!instance || !instance->pdata) { return NPERR_INVALID_INSTANCE_ERROR; }
 
@@ -463,7 +463,7 @@ namespace {
                                        * ignore it) */
 }
 
-int32 NPP_WriteReady(const NPP instance, NPStream * const stream)
+int32 NPP_WriteReady(NPP, NPStream *)
 {
     return STREAMBUFSIZE;
 }
@@ -498,8 +498,8 @@ int32 NPP_Write(const NPP instance,
 }
 
 void NPP_StreamAsFile(const NPP instance,
-                      NPStream * const stream,
-                      const char * const fname)
+                      NPStream *,
+                      const char * /* fname */)
 {
     assert(instance);
 }
@@ -552,15 +552,15 @@ void NPP_Print(const NPP instance, NPPrint * const printInfo)
     }
 }
 
-int16 NPP_HandleEvent(const NPP instance, void * const event)
+int16 NPP_HandleEvent(NPP, void * /* event */)
 {
     return true;
 }
 
-void NPP_URLNotify(const NPP instance,
-                   const char * const url,
-                   const NPReason reason,
-                   void * const notifyData)
+void NPP_URLNotify(NPP,
+                   const char * /* url */,
+                   NPReason,
+                   void * /* notifyData */)
 {}
 
 jref NPP_GetJavaClass()
@@ -613,9 +613,7 @@ NPError NPP_GetValue(const NPP instance,
     return err;
 }
 
-NPError NPP_SetValue(const NPP instance,
-                     const NPNVariable variable,
-                     void * const value)
+NPError NPP_SetValue(NPP, NPNVariable, void * /* value */)
 {
     return NPERR_NO_ERROR;
 }
@@ -841,35 +839,35 @@ namespace {
         return NS_OK;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetInterfaces(PRUint32 * count,
-                                                nsIID *** array)
+    NS_IMETHODIMP ScriptablePeer::GetInterfaces(PRUint32 * /* count */,
+                                                nsIID *** /* array */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetHelperForLanguage(PRUint32 language,
-                                                       nsISupports ** _retval)
+    NS_IMETHODIMP ScriptablePeer::GetHelperForLanguage(PRUint32 /* language */,
+                                                       nsISupports ** /* _retval */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetContractID(char ** aContractID)
+    NS_IMETHODIMP ScriptablePeer::GetContractID(char ** /* aContractID */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
     NS_IMETHODIMP
-    ScriptablePeer::GetClassDescription(char ** aClassDescription)
+    ScriptablePeer::GetClassDescription(char ** /* aClassDescription */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetClassID(nsCID ** aClassID)
+    NS_IMETHODIMP ScriptablePeer::GetClassID(nsCID ** /* aClassID */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetClassIDNoAlloc(nsCID * aClassIDNoAlloc)
+    NS_IMETHODIMP ScriptablePeer::GetClassIDNoAlloc(nsCID * /* aClassIDNoAlloc */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
@@ -907,74 +905,74 @@ namespace {
         return NS_OK;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetCurrentSpeed(float * _retval)
+    NS_IMETHODIMP ScriptablePeer::GetCurrentSpeed(float * /* _retval */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetCurrentFrameRate(float * _retval)
+    NS_IMETHODIMP ScriptablePeer::GetCurrentFrameRate(float * /* _retval */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetWorldURL(char ** _retval)
+    NS_IMETHODIMP ScriptablePeer::GetWorldURL(char ** /* _retval */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::ReplaceWorld(PRUint32 nodeArraySize,
-                                               VrmlNode ** nodeArray)
+    NS_IMETHODIMP ScriptablePeer::ReplaceWorld(PRUint32 /* nodeArraySize */,
+                                               VrmlNode ** /* nodeArray */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::LoadURL(PRUint32 urlArraySize,
-                                          const char ** url,
-                                          PRUint32 paramArraySize,
-                                          const char ** parameter)
+    NS_IMETHODIMP ScriptablePeer::LoadURL(PRUint32 /* urlArraySize */,
+                                          const char ** /* url */,
+                                          PRUint32 /* paramArraySize */,
+                                          const char ** /* parameter */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::SetDescription(const char * description)
+    NS_IMETHODIMP ScriptablePeer::SetDescription(const char * /* description */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
     NS_IMETHODIMP
-    ScriptablePeer::CreateVrmlFromString(const char * vrmlSyntax,
-                                         PRUint32 * nodeArraySize,
-                                         VrmlNode *** nodeArray)
+    ScriptablePeer::CreateVrmlFromString(const char * /* vrmlSyntax */,
+                                         PRUint32 * /* nodeArraySize */,
+                                         VrmlNode *** /* nodeArray */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::CreateVrmlFromURL(PRUint32 urlArraySize,
-                                                    const char ** url,
-                                                    VrmlNode * node,
-                                                    const char * event)
+    NS_IMETHODIMP ScriptablePeer::CreateVrmlFromURL(PRUint32 /* urlArraySize */,
+                                                    const char ** /* url */,
+                                                    VrmlNode * /* node */,
+                                                    const char * /* event */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetNode(const char * name,
-                                          VrmlNode ** _retval)
+    NS_IMETHODIMP ScriptablePeer::GetNode(const char * /* name */,
+                                          VrmlNode ** /* _retval */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::AddRoute(VrmlNode * fromNode,
-                                           const char * fromEventOut,
-                                           VrmlNode * toNode,
-                                           const char * toEventIn)
+    NS_IMETHODIMP ScriptablePeer::AddRoute(VrmlNode * /* fromNode */,
+                                           const char * /* fromEventOut */,
+                                           VrmlNode * /* toNode */,
+                                           const char * /* toEventIn */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
-    NS_IMETHODIMP ScriptablePeer::DeleteRoute(VrmlNode * fromNode,
-                                              const char * fromEventOut,
-                                              VrmlNode * toNode,
-                                              const char * toEvent)
+    NS_IMETHODIMP ScriptablePeer::DeleteRoute(VrmlNode * /* fromNode */,
+                                              const char * /* fromEventOut */,
+                                              VrmlNode * /* toNode */,
+                                              const char * /* toEvent */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
@@ -995,13 +993,13 @@ namespace {
     }
 
     NS_IMETHODIMP
-    ScriptablePeer::AddBrowserListener(VrmlBrowserListener * listener)
+    ScriptablePeer::AddBrowserListener(VrmlBrowserListener * /* listener */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
 
     NS_IMETHODIMP
-    ScriptablePeer::RemoveBrowserListener(VrmlBrowserListener * listener)
+    ScriptablePeer::RemoveBrowserListener(VrmlBrowserListener * /* listener */)
     {
         return NS_ERROR_NOT_IMPLEMENTED;
     }
@@ -1135,7 +1133,7 @@ namespace {
         }
     }
 
-    void PluginInstance::HandleEvent(void * event) throw ()
+    void PluginInstance::HandleEvent(void *) throw ()
     {}
 
     int PluginInstance::in() const throw ()
@@ -1149,7 +1147,7 @@ namespace {
     }
 
     gboolean request_data_available(GIOChannel * source,
-                                    GIOCondition condition,
+                                    GIOCondition,
                                     gpointer data)
     {
         using std::string;

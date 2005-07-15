@@ -64,7 +64,8 @@ gdk_gl_config_impl_x11_get_type (void)
         NULL,                   /* class_data */
         sizeof (GdkGLConfigImplX11),
         0,                      /* n_preallocs */
-        (GInstanceInitFunc) NULL
+        (GInstanceInitFunc) NULL,
+	(const GTypeValueTable *) NULL
       };
 
       type = g_type_register_static (GDK_TYPE_GL_CONFIG,

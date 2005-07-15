@@ -314,8 +314,8 @@ extern "C" void OPENVRML_GL_CALLBACK_ shell_tess_vertex(void * vertex_data)
 
 extern "C" void OPENVRML_GL_CALLBACK_
 shell_tess_combine(GLdouble coords[3],
-                   void * vertex_data[4],
-                   GLfloat weight[4],
+                   void *[4],
+                   GLfloat[4],
                    void ** outData,
                    void * user_data)
 {
@@ -1034,8 +1034,7 @@ namespace {
  *
  * @return 0.
  */
-viewer::object_t viewer::begin_object(const char *,
-                                      bool retain)
+viewer::object_t viewer::begin_object(const char *, bool)
 {
     // Finish setup stuff before first object
     if (1 == ++this->objects) {
