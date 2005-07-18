@@ -1,3 +1,11 @@
+2005-07-18 Braden McDaniel  <braden@endoframe.com>
+
+	Use covariant return types when overriding
+	openvrml::field_value::assign.
+
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/field_value.h
+
 2005-07-15 Braden McDaniel  <braden@endoframe.com>
 
 	Fixes for gcc warnings.

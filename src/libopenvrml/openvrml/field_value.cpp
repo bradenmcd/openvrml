@@ -562,7 +562,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfbool::clone() const
  *
  * @exception std::bad_cast if @p value is not an sfbool.
  */
-openvrml::field_value & openvrml::sfbool::assign(const field_value & value)
+openvrml::sfbool & openvrml::sfbool::assign(const field_value & value)
     throw (std::bad_cast)
 {
     return (*this = dynamic_cast<const sfbool &>(value));
@@ -687,7 +687,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfcolor::clone() const
  *
  * @exception std::bad_cast if @p value is not an SFColor.
  */
-openvrml::field_value & openvrml::sfcolor::assign(const field_value & value)
+openvrml::sfcolor & openvrml::sfcolor::assign(const field_value & value)
     throw (std::bad_cast)
 {
     return (*this = dynamic_cast<const sfcolor &>(value));
@@ -822,7 +822,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sffloat::clone() const
  *
  * @exception std::bad_cast if @p value is not an sffloat.
  */
-openvrml::field_value & openvrml::sffloat::assign(const field_value & value)
+openvrml::sffloat & openvrml::sffloat::assign(const field_value & value)
     throw (std::bad_cast)
 {
     return (*this = dynamic_cast<const sffloat &>(value));
@@ -950,7 +950,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfimage::clone() const
  * @exception std::bad_cast  if @p value is not an sfimage.
  * @exception std::bad_alloc if memory allocation fails.
  */
-openvrml::field_value & openvrml::sfimage::assign(const field_value & value)
+openvrml::sfimage & openvrml::sfimage::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const sfimage &>(value));
@@ -1075,7 +1075,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfint32::clone() const
  *
  * @exception std::bad_cast if @p value is not an sfint32.
  */
-openvrml::field_value & openvrml::sfint32::assign(const field_value & value)
+openvrml::sfint32 & openvrml::sfint32::assign(const field_value & value)
     throw (std::bad_cast)
 {
     return (*this = dynamic_cast<const sfint32 &>(value));
@@ -1204,7 +1204,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfnode::clone() const
  *
  * @exception std::bad_cast if @p value is not an sfnode.
  */
-openvrml::field_value & openvrml::sfnode::assign(const field_value & value)
+openvrml::sfnode & openvrml::sfnode::assign(const field_value & value)
     throw (std::bad_cast)
 {
     return (*this = dynamic_cast<const sfnode &>(value));
@@ -1333,7 +1333,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfrotation::clone() const
  *
  * @exception std::bad_cast if @p value is not an sfrotation.
  */
-openvrml::field_value & openvrml::sfrotation::assign(const field_value & value)
+openvrml::sfrotation & openvrml::sfrotation::assign(const field_value & value)
     throw (std::bad_cast)
 {
     return (*this = dynamic_cast<const sfrotation &>(value));
@@ -1463,7 +1463,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfstring::clone() const
  * @exception std::bad_cast     if @p value is not an sfstring.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::field_value & openvrml::sfstring::assign(const field_value & value)
+openvrml::sfstring & openvrml::sfstring::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const sfstring &>(value));
@@ -1588,7 +1588,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sftime::clone() const
  *
  * @exception std::bad_cast if @p value is not an sftime.
  */
-openvrml::field_value & openvrml::sftime::assign(const field_value & value)
+openvrml::sftime & openvrml::sftime::assign(const field_value & value)
     throw (std::bad_cast)
 {
     return (*this = dynamic_cast<const sftime &>(value));
@@ -1714,7 +1714,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfvec2f::clone() const
  *
  * @exception std::bad_cast if @p value is not an sfvec2f.
  */
-openvrml::field_value & openvrml::sfvec2f::assign(const field_value & value)
+openvrml::sfvec2f & openvrml::sfvec2f::assign(const field_value & value)
     throw (std::bad_cast)
 {
     return (*this = dynamic_cast<const sfvec2f &>(value));
@@ -1839,7 +1839,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfvec3f::clone() const
  *
  * @exception std::bad_cast if @p value is not an SFBool.
  */
-openvrml::field_value & openvrml::sfvec3f::assign(const field_value & value)
+openvrml::sfvec3f & openvrml::sfvec3f::assign(const field_value & value)
     throw (std::bad_cast)
 {
     return (*this = dynamic_cast<const sfvec3f &>(value));
@@ -1999,7 +1999,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfcolor::clone() const
  * @exception std::bad_cast     if  @p value is not an mfcolor object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::field_value & openvrml::mfcolor::assign(const field_value & value)
+openvrml::mfcolor & openvrml::mfcolor::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfcolor &>(value));
@@ -2169,7 +2169,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mffloat::clone() const
  * @exception std::bad_cast     if  @p value is not an mffloat object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::field_value & openvrml::mffloat::assign(const field_value & value)
+openvrml::mffloat & openvrml::mffloat::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mffloat &>(value));
@@ -2339,7 +2339,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfint32::clone() const
  * @exception std::bad_cast     if  @p value is not an mfint32 object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::field_value & openvrml::mfint32::assign(const field_value & value)
+openvrml::mfint32 & openvrml::mfint32::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfint32 &>(value));
@@ -2509,7 +2509,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfnode::clone() const
  * @exception std::bad_cast     if  @p value is not an mfnode object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::field_value & openvrml::mfnode::assign(const field_value & value)
+openvrml::mfnode & openvrml::mfnode::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfnode &>(value));
@@ -2682,7 +2682,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfrotation::clone() const
  * @exception std::bad_cast     if  @p value is not an mfrotation object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::field_value & openvrml::mfrotation::assign(const field_value & value)
+openvrml::mfrotation & openvrml::mfrotation::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfrotation &>(value));
@@ -2855,7 +2855,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfstring::clone() const
  * @exception std::bad_cast     if  @p value is not an mfstring object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::field_value & openvrml::mfstring::assign(const field_value & value)
+openvrml::mfstring & openvrml::mfstring::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfstring &>(value));
@@ -3027,7 +3027,7 @@ openvrml::mftime::clone() const throw (std::bad_alloc)
  *                              object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::field_value & openvrml::mftime::assign(const field_value & value)
+openvrml::mftime & openvrml::mftime::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mftime &>(value));
@@ -3198,7 +3198,7 @@ openvrml::mfvec2f::clone() const throw (std::bad_alloc)
  * @exception std::bad_cast     if  @p value is not an mfvec2f object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::field_value & openvrml::mfvec2f::assign(const field_value & value)
+openvrml::mfvec2f & openvrml::mfvec2f::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfvec2f &>(value));
@@ -3370,7 +3370,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfvec3f::clone() const
  *                              object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::field_value & openvrml::mfvec3f::assign(const field_value & value)
+openvrml::mfvec3f & openvrml::mfvec3f::assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfvec3f &>(value));

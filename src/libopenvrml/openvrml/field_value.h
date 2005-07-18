@@ -146,7 +146,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual sfbool & assign(const field_value & value)
             throw (std::bad_cast);
         virtual type_id type() const throw ();
 
@@ -173,7 +173,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual sfcolor & assign(const field_value & value)
             throw (std::bad_cast);
         virtual type_id type() const throw ();
 
@@ -200,7 +200,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual sffloat & assign(const field_value & value)
             throw (std::bad_cast);
         virtual type_id type() const throw ();
 
@@ -227,7 +227,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual sfimage & assign(const field_value & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual type_id type() const throw ();
 
@@ -254,7 +254,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual sfint32 & assign(const field_value & value)
             throw (std::bad_cast);
         virtual type_id type() const throw ();
 
@@ -281,7 +281,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual sfnode & assign(const field_value & value)
             throw (std::bad_cast);
         virtual type_id type() const throw ();
 
@@ -308,7 +308,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual sfrotation & assign(const field_value & value)
             throw (std::bad_cast);
         virtual type_id type() const throw ();
 
@@ -336,7 +336,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual sfstring & assign(const field_value & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual type_id type() const throw ();
 
@@ -363,7 +363,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual sftime & assign(const field_value & value)
             throw (std::bad_cast);
         virtual type_id type() const throw ();
 
@@ -390,7 +390,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual sfvec2f & assign(const field_value & value)
             throw (std::bad_cast);
         virtual type_id type() const throw ();
 
@@ -417,7 +417,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual sfvec3f & assign(const field_value & value)
             throw (std::bad_cast);
         virtual type_id type() const throw ();
 
@@ -450,7 +450,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual mfcolor & assign(const field_value & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual type_id type() const throw ();
 
@@ -492,7 +492,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual mffloat & assign(const field_value & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual type_id type() const throw ();
 
@@ -533,7 +533,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual mfint32 & assign(const field_value & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual type_id type() const throw ();
 
@@ -575,7 +575,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual mfnode & assign(const field_value & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual type_id type() const throw ();
 
@@ -617,7 +617,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual mfrotation & assign(const field_value & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual type_id type() const throw ();
 
@@ -659,7 +659,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual mfstring & assign(const field_value & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual type_id type() const throw ();
 
@@ -701,7 +701,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual mftime & assign(const field_value & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual type_id type() const throw ();
 
@@ -743,7 +743,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual mfvec2f & assign(const field_value & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual type_id type() const throw ();
 
@@ -785,7 +785,7 @@ namespace openvrml {
 
         virtual std::auto_ptr<field_value> clone() const
             throw (std::bad_alloc);
-        virtual field_value & assign(const field_value & value)
+        virtual mfvec3f & assign(const field_value & value)
             throw (std::bad_cast, std::bad_alloc);
         virtual type_id type() const throw ();
 
