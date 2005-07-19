@@ -502,7 +502,7 @@ namespace openvrml {
             openvrml::node & node() const throw ();
 
         protected:
-            event_emitter_base(openvrml::node & node,
+            event_emitter_base(openvrml::node & n,
                                const field_value & value)
                 throw ();
 
@@ -538,10 +538,10 @@ namespace openvrml {
 
         template <typename Node>
         event_emitter_base<Node>::
-        event_emitter_base(openvrml::node & node, const field_value & value)
+        event_emitter_base(openvrml::node & n, const field_value & value)
             throw ():
             event_emitter(value),
-            node_(&node)
+            node_(&n)
         {}
 
         template <typename Node>

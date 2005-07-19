@@ -1185,7 +1185,7 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  * @brief Abstract base for <code>event_listener</code> implementations.
  *
  * <code>event_listener_base</code> implements
- * <code>event_listener::do_event_id</code>.
+ * <code>event_listener::do_eventin_id</code>.
  */
 
 /**
@@ -1255,6 +1255,98 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  * @brief The associated eventIn identifier.
  *
  * @return the associated eventIn identifier.
+ */
+
+
+/**
+ * @class openvrml::vrml97_node::event_emitter_base
+ *
+ * @brief Abstract base for <code>event_emitter</code> implementations.
+ *
+ * <code>event_emitter_base</code> implements
+ * <code>event_listener::do_eventout_id</code>.
+ */
+
+/**
+ * @var openvrml::node * openvrml::vrml97_node::event_emitter_base<Node>::node_
+ *
+ * @brief The node with which the <code>event_emitter</code> is associated.
+ */
+
+/**
+ * @typedef openvrml::vrml97_node::vrml97_node_type_impl<Node> openvrml::vrml97_node::event_emitter_base<Node>::node_type_t
+ *
+ * @brief The concrete <code>node_type</code>.
+ */
+
+/**
+ * @typedef openvrml::vrml97_node::event_emitter_base<Node>::node_type_t::event_emitter_map_t openvrml::vrml97_node::event_emitter_base<Node>::event_emitter_map_t
+ *
+ * @brief The map of <code>event_emitter</code>s.
+ */
+
+/**
+ * @struct openvrml::vrml97_node::event_emitter_base::event_emitter_equal_to
+ *
+ * @brief A model of
+ *        <a href="http://www.sgi.com/tech/stl/AdaptablePredicate.html">
+ *        Adaptable Predicate</a>.
+ *
+ * @par Model of
+ * <a href="http://www.sgi.com/tech/stl/AdaptablePredicate.html">Adaptable
+ * Predicate</a>
+ */
+
+/**
+ * @var const openvrml::vrml97_node::event_emitter_base<Node> * openvrml::vrml97_node::event_emitter_base<Node>::event_emitter_equal_to::emitter_
+ *
+ * @brief The <code>event_emitter</code> to test against.
+ */
+
+/**
+ * @fn openvrml::vrml97_node::event_emitter_base<Node>::event_emitter_equal_to::event_emitter_equal_to(const event_emitter_base<Node> & emitter)
+ *
+ * @brief Construct.
+ *
+ * @param emitter   the <code>event_emitter</code>.
+ */
+
+/**
+ * @fn bool openvrml::vrml97_node::event_emitter_base<Node>::event_emitter_equal_to::operator()(const typename event_emitter_equal_to::argument_type & arg) const
+ *
+ * @brief Test whether the <code>event_emitter</code> dereferenced from
+ *        @p arg.second is the same one the function object was constructed
+ *        with.
+ */
+
+/**
+ * @fn openvrml::vrml97_node::event_emitter_base<Node>::event_emitter_base(openvrml::node & n, const field_value & value) throw ()
+ *
+ * @brief Construct.
+ *
+ * @param n     the <code>node</code> associated with the
+ *              <code>event_emitter</code>.
+ * @param value the field value associated with the <code>event_emitter</code>.
+ */
+
+/**
+ * @fn openvrml::vrml97_node::event_emitter_base<Node>::event_emitter_base() throw ()
+ *
+ * @brief Destroy.
+ */
+
+/**
+ * @fn openvrml::node & openvrml::vrml97_node::event_emitter_base<Node>::node() const throw ()
+ *
+ * @brief The node with which the <code>event_emitter</code> is associated.
+ */
+
+/**
+ * @fn const std::string openvrml::vrml97_node::event_emitter_base<Node>::do_eventout_id() const throw ()
+ *
+ * @brief The associated eventOut identifier.
+ *
+ * @return the associated eventOut identifier.
  */
 
 
@@ -1584,7 +1676,7 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn template <typename Derived> openvrml::vrml97_node::abstract_texture_node<Derived>::abstract_texture_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
+ * @fn openvrml::vrml97_node::abstract_texture_node<Derived>::abstract_texture_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
  *
  * @brief Construct.
  *
@@ -1593,13 +1685,13 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn template <typename Derived> openvrml::vrml97_node::abstract_texture_node<Derived>::~abstract_texture_node() throw ()
+ * @fn openvrml::vrml97_node::abstract_texture_node<Derived>::~abstract_texture_node() throw ()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn template <typename Derived> bool openvrml::vrml97_node::abstract_texture_node<Derived>::repeat_s() const throw ()
+ * @fn bool openvrml::vrml97_node::abstract_texture_node<Derived>::repeat_s() const throw ()
  *
  * @brief Get the repeatS flag.
  *
@@ -1608,7 +1700,7 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn template <typename Derived> bool openvrml::vrml97_node::abstract_texture_node<Derived>::repeat_t() const throw ()
+ * @fn bool openvrml::vrml97_node::abstract_texture_node<Derived>::repeat_t() const throw ()
  *
  * @brief Get the repeatT flag.
  *
@@ -1662,13 +1754,13 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
 /**
  * @internal
  *
- * @class openvrml::vrml97_node::group_node::remove_children_listener
+ * @class openvrml::vrml97_node::grouping_node_base::remove_children_listener
  *
  * @brief removeChildren event listener.
  */
 
 /**
- * @fn template <typename Derived> openvrml::vrml97_node::grouping_node_base<Derived>::remove_children_listener::remove_children_listener(grouping_node_base<Derived> & node)
+ * @fn openvrml::vrml97_node::grouping_node_base<Derived>::remove_children_listener::remove_children_listener(grouping_node_base<Derived> & node)
  *
  * @brief Construct.
  *
@@ -1676,13 +1768,13 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn template <typename Derived> openvrml::vrml97_node::grouping_node_base<Derived>::remove_children_listener::~remove_children_listener() throw ()
+ * @fn openvrml::vrml97_node::grouping_node_base<Derived>::remove_children_listener::~remove_children_listener() throw ()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn template <typename Derived> void openvrml::vrml97_node::grouping_node_base<Derived>::remove_children_listener::do_process_event(const mfnode & value, const double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::vrml97_node::grouping_node_base<Derived>::remove_children_listener::do_process_event(const mfnode & value, const double timestamp) throw (std::bad_alloc)
  *
  * @brief Process an event.
  */
@@ -1696,7 +1788,7 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn template <typename Derived> openvrml::vrml97_node::grouping_node_base<Derived>::children_exposedfield::children_exposedfield(openvrml::node & node) throw ()
+ * @fn openvrml::vrml97_node::grouping_node_base<Derived>::children_exposedfield::children_exposedfield(openvrml::node & node) throw ()
  *
  * @brief Construct.
  *
@@ -1704,13 +1796,13 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn template <typename Derived> openvrml::vrml97_node::grouping_node_base<Derived>::children_exposedfield::~children_exposedfield() throw ()
+ * @fn openvrml::vrml97_node::grouping_node_base<Derived>::children_exposedfield::~children_exposedfield() throw ()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn template <typename Derived> void openvrml::vrml97_node::grouping_node_base<Derived>::children_exposedfield::event_side_effect(const mfnode & value, const double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::vrml97_node::grouping_node_base<Derived>::children_exposedfield::event_side_effect(const mfnode & value, const double timestamp) throw (std::bad_alloc)
  *
  * @brief Handle event.
  */
@@ -1758,7 +1850,7 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn template <typename Derived> openvrml::vrml97_node::grouping_node_base<Derived>::grouping_node_base(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
+ * @fn openvrml::vrml97_node::grouping_node_base<Derived>::grouping_node_base(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
  *
  * @brief Construct.
  *
@@ -1767,13 +1859,13 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn template <typename Derived> openvrml::vrml97_node::grouping_node_base<Derived>::~grouping_node_base() throw ()
+ * @fn openvrml::vrml97_node::grouping_node_base<Derived>::~grouping_node_base() throw ()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn template <typename Derived> bool openvrml::vrml97_node::grouping_node_base<Derived>::modified() const
+ * @fn bool openvrml::vrml97_node::grouping_node_base<Derived>::modified() const
  *
  * @brief Determine whether the node has been modified.
  *
@@ -1782,7 +1874,7 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn template <typename Derived> void openvrml::vrml97_node::grouping_node_base<Derived>::do_render_child(openvrml::viewer & viewer, rendering_context context)
+ * @fn void openvrml::vrml97_node::grouping_node_base<Derived>::do_render_child(openvrml::viewer & viewer, rendering_context context)
  *
  * @brief Render the node.
  *
@@ -1793,14 +1885,14 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn template <typename Derived> void openvrml::vrml97_node::grouping_node_base<Derived>::render_nocull(openvrml::viewer & viewer, rendering_context context)
+ * @fn void openvrml::vrml97_node::grouping_node_base<Derived>::render_nocull(openvrml::viewer & viewer, rendering_context context)
  *
  * because children will already have done the culling, we don't need
  * to repeat it here.
  */
 
 /**
- * @fn template <typename Derived> const std::vector<openvrml::node_ptr> & openvrml::vrml97_node::grouping_node_base<Derived>::children() const throw ()
+ * @fn const std::vector<openvrml::node_ptr> & openvrml::vrml97_node::grouping_node_base<Derived>::children() const throw ()
  *
  * @brief Get the children in the scene graph.
  *
@@ -1808,13 +1900,13 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn template <typename Derived> void openvrml::vrml97_node::grouping_node_base<Derived>::activate(double time, bool isOver, bool isActive, double *p)
+ * @fn void openvrml::vrml97_node::grouping_node_base<Derived>::activate(double time, bool isOver, bool isActive, double *p)
  *
  * Pass on to enabled touchsensor child.
  */
 
 /**
- * @fn template <typename Derived> const openvrml::bounding_volume & openvrml::vrml97_node::grouping_node_base<Derived>::do_bounding_volume() const
+ * @fn const openvrml::bounding_volume & openvrml::vrml97_node::grouping_node_base<Derived>::do_bounding_volume() const
  *
  * @brief Get the bounding volume.
  *
@@ -1822,7 +1914,7 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn template <typename Derived> void openvrml::vrml97_node::grouping_node_base<Derived>::recalc_bsphere()
+ * @fn void openvrml::vrml97_node::grouping_node_base<Derived>::recalc_bsphere()
  *
  * @brief Recalculate the bounding volume.
  */

@@ -1,3 +1,10 @@
+2005-07-19 Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment improvements.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
 2005-07-18 Braden McDaniel  <braden@endoframe.com>
 
 	Use covariant return types when overriding
