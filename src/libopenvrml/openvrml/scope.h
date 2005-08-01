@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright (C) 1998  Chris Morley
-// Copyright (C) 2002  Braden McDaniel
+// Copyright (C) 2002, 2005  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,6 +31,7 @@
 
 namespace openvrml {
 
+    class node;
     class node_type;
 
     class scope : boost::noncopyable {

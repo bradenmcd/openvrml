@@ -1,3 +1,8 @@
+2005-07-31 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/scope.h:  Forward declare
+	openvrml::node.
+
 2005-07-19 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment improvements.
