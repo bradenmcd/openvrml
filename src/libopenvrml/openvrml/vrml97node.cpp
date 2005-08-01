@@ -33,7 +33,6 @@
 #   include <jpeglib.h>
 # endif
 # include <algorithm>
-# include <iostream>
 # include <iterator>
 # include <limits>
 # include <boost/algorithm/string/predicate.hpp>
