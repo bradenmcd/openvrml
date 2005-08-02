@@ -23,7 +23,6 @@
 # include <list>
 # include <memory>
 # include <stdexcept>
-# include <sys/wait.h>
 # include <boost/lexical_cast.hpp>
 # include <boost/noncopyable.hpp>
 # include <boost/spirit.hpp>
@@ -39,6 +38,9 @@
 # include <dom/nsIDOMWindowInternal.h>
 # include <dom/nsIDOMLocation.h>
 # if defined MOZ_X11
+#   include <signal.h>
+#   include <sys/types.h>
+#   include <sys/wait.h>
 #   include <gdk/gdkx.h>
 # else
 #   error Unsupported toolkit.

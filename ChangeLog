@@ -1,5 +1,13 @@
 2005-08-02 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml.cpp:  Bug report from
+	<tthierry@users.sourceforge.net>--include <signal.h> and
+	<sys/types.h> in order to use kill.  This is probably simply
+	correct from a POSIX standpoint; and apparently it is required
+	for FreeBSD.
+
+2005-08-02 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/scope.h:  Forward declare
 	openvrml::node.
 
