@@ -31,6 +31,7 @@
 
 namespace openvrml {
 
+    class node;
     class node_type;
     typedef boost::shared_ptr<node_type> node_type_ptr;
 
