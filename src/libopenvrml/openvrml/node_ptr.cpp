@@ -20,54 +20,54 @@
 //
 
 # include <cassert>
-# include <boost/thread/recursive_mutex.hpp>
 # include "node_ptr.h"
 # include "browser.h"
 
+namespace openvrml {
+
 /**
- * @class openvrml::node_ptr
+ * @class node_ptr
  *
- * @brief A reference-counted smart pointer for <code>node</code>s.
+ * @brief A reference-counted smart pointer for
+ *        @link openvrml::node nodes@endlink.
  */
 
 /**
- * @var openvrml::node_ptr::script_node
+ * @var node_ptr::script_node
  *
- * @brief Script nodes can be self-referential, so <code>node_ptr</code> works
- *        some special magic.
+ * @brief Script nodes can be self-referential, so node_ptr works some special
+ *      magic.
  */
 
 namespace {
     typedef std::map<openvrml::node *, size_t> count_map_t;
     count_map_t count_map;
-    boost::recursive_mutex count_map_mutex;
 }
 
 /**
  * @internal
  *
- * @var std::map<node *, size_t>::value_type * openvrml::node_ptr::count_ptr
+ * @var std::map<node *, size_t>::value_type * node_ptr::count_ptr
  *
  * @brief Pointer to an entry in count_map.
  */
 
 namespace {
 
-    class self_ref_node : public openvrml::node {
+    class self_ref_node : public node {
     public:
         self_ref_node();
         virtual ~self_ref_node() throw ();
 
     private:
-        virtual const openvrml::field_value &
-        do_field(const std::string & id) const
-            throw (openvrml::unsupported_interface);
+        virtual const field_value & do_field(const std::string & id) const
+            throw (unsupported_interface);
         virtual openvrml::event_listener &
         do_event_listener(const std::string & id)
-            throw (openvrml::unsupported_interface);
+            throw (unsupported_interface);
         virtual openvrml::event_emitter &
         do_event_emitter(const std::string & id)
-            throw (openvrml::unsupported_interface);
+            throw (unsupported_interface);
     };
 
     //
@@ -76,43 +76,35 @@ namespace {
     //
     char not_remotely_a_node_type;
     self_ref_node::self_ref_node():
-        node(reinterpret_cast<const openvrml::node_type &>(
-                 not_remotely_a_node_type),
+        node(reinterpret_cast<const node_type &>(not_remotely_a_node_type),
              boost::shared_ptr<openvrml::scope>())
     {}
 
     self_ref_node::~self_ref_node() throw ()
     {}
 
-    const openvrml::field_value &
-    self_ref_node::do_field(const std::string &) const
-        throw (openvrml::unsupported_interface)
+    const field_value & self_ref_node::do_field(const std::string & id) const
+        throw (unsupported_interface)
     {
-        static const openvrml::sfbool val;
+        static const sfbool val;
         return val;
     }
 
-    openvrml::event_listener &
-    self_ref_node::do_event_listener(const std::string &)
-        throw (openvrml::unsupported_interface)
+    event_listener & self_ref_node::do_event_listener(const std::string & id)
+        throw (unsupported_interface)
     {
-        class dummy_listener : public openvrml::sfbool_listener {
+        class dummy_listener : public sfbool_listener {
         public:
             dummy_listener(self_ref_node & n):
-                openvrml::event_listener(n),
-                openvrml::sfbool_listener(n)
+                sfbool_listener(n)
             {}
 
             virtual ~dummy_listener() throw ()
             {}
 
         private:
-            virtual const std::string do_eventin_id() const throw ()
-            {
-                return std::string();
-            }
-
-            virtual void do_process_event(const openvrml::sfbool &, double)
+            virtual void do_process_event(const sfbool & value,
+                                          double timestamp)
                 throw (std::bad_alloc)
             {}
         };
@@ -121,26 +113,11 @@ namespace {
         return listener;
     }
 
-    openvrml::event_emitter &
-    self_ref_node::do_event_emitter(const std::string &)
-        throw (openvrml::unsupported_interface)
+    event_emitter & self_ref_node::do_event_emitter(const std::string & id)
+        throw (unsupported_interface)
     {
-        class dummy_emitter : public openvrml::sfbool_emitter {
-        public:
-            explicit dummy_emitter(const openvrml::sfbool & value):
-                openvrml::event_emitter(value),
-                openvrml::sfbool_emitter(value)
-            {}
-
-        private:
-            virtual const std::string do_eventout_id() const throw ()
-            {
-                return std::string();
-            }            
-        };
-
-        openvrml::sfbool val;
-        static dummy_emitter emitter(val);
+        sfbool val;
+        static sfbool_emitter emitter(val);
         return emitter;
     }
 }
@@ -151,7 +128,7 @@ namespace {
  * One should never attempt to dereference this value. It is useful only
  * for comparison.
  */
-const openvrml::node_ptr openvrml::node_ptr::self(new self_ref_node);
+const node_ptr node_ptr::self(new self_ref_node);
 
 /**
  * @brief Construct.
@@ -160,10 +137,9 @@ const openvrml::node_ptr openvrml::node_ptr::self(new self_ref_node);
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::node_ptr::node_ptr(node * const node) throw (std::bad_alloc):
+node_ptr::node_ptr(node * const node) throw (std::bad_alloc):
     count_ptr(0)
 {
-    boost::recursive_mutex::scoped_lock lock(count_map_mutex);
     if (node) {
         count_map_t::iterator pos = count_map.find(node);
         if (pos == count_map.end()) {
@@ -183,29 +159,28 @@ openvrml::node_ptr::node_ptr(node * const node) throw (std::bad_alloc):
  *
  * @param ptr
  */
-openvrml::node_ptr::node_ptr(const node_ptr & ptr) throw ():
+node_ptr::node_ptr(const node_ptr & ptr) throw ():
     count_ptr(ptr.count_ptr)
 {
-    boost::recursive_mutex::scoped_lock lock(count_map_mutex);
     if (this->count_ptr) {
         ++this->count_ptr->second;
     }
 }
 
 /**
- * @fn openvrml::node_ptr::~node_ptr()
+ * @fn node_ptr::~node_ptr()
  *
  * @brief Destructor.
  */
 
 /**
- * @fn openvrml::node_ptr::operator bool() const
+ * @fn node_ptr::operator bool() const
  *
  * @brief Automatic conversion to bool.
  */
 
 /**
- * @fn openvrml::node_ptr & openvrml::node_ptr::operator=(const node_ptr &)
+ * @fn node_ptr & node_ptr::operator=(const node_ptr &)
  *
  * @brief Assignment operator.
  *
@@ -213,7 +188,7 @@ openvrml::node_ptr::node_ptr(const node_ptr & ptr) throw ():
  */
 
 /**
- * @fn openvrml::node & openvrml::node_ptr::operator*() const
+ * @fn node & node_ptr::operator*() const
  *
  * @brief Dereference operator.
  *
@@ -221,13 +196,13 @@ openvrml::node_ptr::node_ptr(const node_ptr & ptr) throw ():
  */
 
 /**
- * @fn openvrml::node * openvrml::node_ptr::operator->() const
+ * @fn node * node_ptr::operator->() const
  *
  * @brief Access a method of the node.
  */
 
 /**
- * @fn openvrml::node * openvrml::node_ptr::get() const
+ * @fn node * node_ptr::get() const
  *
  * @brief Get a raw pointer to the node.
  *
@@ -235,7 +210,7 @@ openvrml::node_ptr::node_ptr(const node_ptr & ptr) throw ():
  */
 
 /**
- * @fn void openvrml::node_ptr::swap(node_ptr & ptr) throw ()
+ * @fn void node_ptr::swap(node_ptr & ptr) throw ()
  *
  * @brief Swap the values of the node_ptr and @p ptr.
  */
@@ -247,9 +222,8 @@ openvrml::node_ptr::node_ptr(const node_ptr & ptr) throw ():
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::node_ptr::reset(node * const node) throw (std::bad_alloc)
+void node_ptr::reset(node * const node) throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(count_map_mutex);
     if (this->count_ptr && this->count_ptr->first == node) {
         return;
     }
@@ -271,9 +245,8 @@ void openvrml::node_ptr::reset(node * const node) throw (std::bad_alloc)
  * Decrement the reference count; if it drops to zero, call node::shutdown
  * on the node, delete the node, and remove its entry from the count map.
  */
-void openvrml::node_ptr::dispose() throw ()
+void node_ptr::dispose() throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(count_map_mutex);
     if (this->count_ptr) {
         --this->count_ptr->second;
         if (this->count_ptr->second == 0) {
@@ -290,11 +263,8 @@ void openvrml::node_ptr::dispose() throw ()
  *
  * @param count_ptr a pointer to an entry in the count map to share.
  */
-void
-openvrml::node_ptr::share(std::map<node *, size_t>::value_type * count_ptr)
-    throw ()
+void node_ptr::share(std::map<node *, size_t>::value_type * count_ptr) throw ()
 {
-    boost::recursive_mutex::scoped_lock lock(count_map_mutex);
     if (this->count_ptr != count_ptr) {
         if (count_ptr) { ++count_ptr->second; }
         this->dispose();
@@ -311,7 +281,7 @@ openvrml::node_ptr::share(std::map<node *, size_t>::value_type * count_ptr)
  * @return @c true if @p lhs and @p rhs point to the same node; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const node_ptr & lhs, const node_ptr & rhs) throw ()
+bool operator==(const node_ptr & lhs, const node_ptr & rhs) throw ()
 {
     return lhs.count_ptr == rhs.count_ptr;
 }
@@ -327,7 +297,9 @@ bool openvrml::operator==(const node_ptr & lhs, const node_ptr & rhs) throw ()
  * @return @c true if @p lhs and @p rhs point to different
  *         @link openvrml::node nodes@endlink; @c false otherwise.
  */
-bool openvrml::operator!=(const node_ptr & lhs, const node_ptr & rhs) throw ()
+bool operator!=(const node_ptr & lhs, const node_ptr & rhs) throw ()
 {
     return !(lhs == rhs);
 }
+
+} // namespace openvrml

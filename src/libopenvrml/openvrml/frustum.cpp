@@ -23,12 +23,14 @@
 #   include <config.h>
 # endif
 
-# include <private.h>
+# include "private.h"
 # include "basetypes.h"
 # include "frustum.h"
 
+namespace openvrml {
+
 /**
- * @class openvrml::frustum
+ * @class frustum
  *
  * @brief A view frustum.
  *
@@ -38,36 +40,36 @@
  * the volume of virtual space visible through the on-screen window when using
  * a perspective projection.
  *
- * @see openvrml::node::render
- * @see openvrml::viewer
+ * @see node::render
+ * @see viewer
  */
 
 /**
- * @var openvrml::frustum::fovy
+ * @var frustum::fovy
  *
  * @brief Vertical field of view.
  */
 
 /**
- * @var openvrml::frustum::fovx
+ * @var frustum::fovx
  *
  * @brief Horizontal field of view.
  */
 
 /**
- * @var openvrml::frustum::z_near
+ * @var frustum::z_near
  *
  * @brief Distance to the near clipping plane.
  */
 
 /**
- * @var openvrml::frustum::z_far
+ * @var frustum::z_far
  *
  * @brief Distance to the far clipping plane.
  */
 
 /**
- * @var openvrml::frustum::left_plane
+ * @var frustum::left_plane
  *
  * @brief Left (looking down -z) side clip plane.
  *
@@ -77,19 +79,19 @@
  */
 
 /**
- * @var openvrml::frustum::right_plane
+ * @var frustum::right_plane
  *
  * @brief Right clipping plane.
  */
 
 /**
- * @var openvrml::frustum::top_plane
+ * @var frustum::top_plane
  *
  * @brief Top clipping plane.
  */
 
 /**
- * @var openvrml::frustum::bot_plane
+ * @var frustum::bot_plane
  *
  * @brief Bottom clipping plane.
  */
@@ -99,7 +101,7 @@
  *
  * fovy, fovx, near and far all get set to -1.
  */
-openvrml::frustum::frustum():
+frustum::frustum():
     fovy(-1),
     fovx(-1),
     z_near(-1),
@@ -121,11 +123,8 @@ openvrml::frustum::frustum():
  * @param z_far     distance to far clip plane.
  *
  */
-openvrml::frustum::frustum(float fovy,
-                           float aspect,
-                           double z_near,
-                           double z_far):
-    fovy(float((fovy / 360.0) * 2.0 * openvrml_::pi)),
+frustum::frustum(float fovy, float aspect, double z_near, double z_far):
+    fovy(float((fovy / 360.0) * 2.0 * pi)),
     fovx(float(2.0 * atan(float(tan(this->fovy / 2.0)) * aspect))),
     z_near(z_near),
     z_far(z_far)
@@ -138,7 +137,7 @@ openvrml::frustum::frustum(float fovy,
  *
  * The plane equations are derived from the other members.
  */
-void openvrml::frustum::update()
+void frustum::update()
 {
     // figure out the corners of the near clipping plane, then use the
     // vectors from the eyepoint to the four corners to figure out the
@@ -213,3 +212,5 @@ void openvrml::frustum::update()
     bot_plane[2] = top_plane[2];
     bot_plane[3] = 0;
 }
+
+} // namespace openvrml

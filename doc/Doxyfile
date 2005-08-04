@@ -1,10 +1,10 @@
-# Doxyfile 1.4.3
+# Doxyfile 1.4.4
 
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = OpenVRML
-PROJECT_NUMBER         = 0.15.99
+PROJECT_NUMBER         = 0.15.10
 OUTPUT_DIRECTORY       = 
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English

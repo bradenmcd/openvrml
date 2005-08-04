@@ -1,5 +1,5 @@
 AC_PREREQ([2.53])
-AC_INIT([OpenVRML Mozilla Plugin], [0.15.99],
+AC_INIT([OpenVRML Mozilla Plugin], [0.15.10],
         [openvrml-develop@lists.sourceforge.net])
 AC_COPYRIGHT([Portions copyright 2004, 2005 Braden McDaniel])
 AC_CONFIG_SUBDIRS([lib/gtkglext])
@@ -15,8 +15,6 @@ AC_DISABLE_STATIC
 AC_ENABLE_SHARED
 enable_shared=yes
 AC_PROG_LIBTOOL
-
-ACX_PTHREAD(, [AC_MSG_FAILURE([pthread support not found])])
 
 PKG_CHECK_MODULES([MOZILLA_XPCOM], [mozilla-xpcom], , [have_mozilla_xpcom=no])
 if test "X$PKG_CONFIG" != "Xno" -a -z "MOZILLA_XPCOM_PKG_ERRORS"; then

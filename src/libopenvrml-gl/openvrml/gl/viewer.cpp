@@ -40,11 +40,11 @@
 
 # include <cmath>
 # include <limits>
-# ifndef NDEBUG
-#   include <iostream>
-# endif
+# include <boost/scoped_ptr.hpp>
 # include <openvrml/browser.h>
 # include <openvrml/vrml97node.h>
+# include <openvrml/bounding_volume.h>
+
 # include "viewer.h"
 
 // Textures are now done using OGL1.1 bindTexture API rather than
@@ -81,11 +81,6 @@
 # endif
 
 namespace {
-
-    const double pi     = 3.14159265358979323846;
-    const double pi_2   = 1.57079632679489661923;
-    const double pi_4   = 0.78539816339744830962;
-    const double inv_pi = 0.31830988618379067154;
 
     template <typename Float>
     inline Float fabs(const Float f)
@@ -314,8 +309,8 @@ extern "C" void OPENVRML_GL_CALLBACK_ shell_tess_vertex(void * vertex_data)
 
 extern "C" void OPENVRML_GL_CALLBACK_
 shell_tess_combine(GLdouble coords[3],
-                   void *[4],
-                   GLfloat[4],
+                   void * vertex_data[4],
+                   GLfloat weight[4],
                    void ** outData,
                    void * user_data)
 {
@@ -1034,7 +1029,8 @@ namespace {
  *
  * @return 0.
  */
-viewer::object_t viewer::begin_object(const char *, bool)
+viewer::object_t viewer::begin_object(const char *,
+                                      bool retain)
 {
     // Finish setup stuff before first object
     if (1 == ++this->objects) {
@@ -1525,6 +1521,8 @@ namespace {
                          float tc[][3],
                          int faces[])
     {
+        using openvrml::pi;
+
         double angle, x, y;
         int i, polyIndex;
 
@@ -2941,6 +2939,9 @@ namespace {
                        float tc[][3],
                        int *faces)
     {
+        using openvrml::pi;
+        using openvrml::pi_2;
+
         double r, angle, x, y, z;
         int i, j, polyIndex;
 
@@ -3881,12 +3882,13 @@ void viewer::zoom(const float z)
     glGetIntegerv (GL_VIEWPORT, viewport);
     glGetDoublev (GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev (GL_PROJECTION_MATRIX, projection);
-    navigation_info_node & nav_info =
-        this->browser()->active_navigation_info();
+    vrml97_node::navigation_info_node * const nav =
+        this->browser()->bindable_navigation_info_top();
     GLdouble x_c = this->win_width / 2;
     GLdouble y_c = this->win_height / 2;
     GLdouble z_c = 0.5;
-    float visibilityLimit = nav_info.visibility_limit();
+    float visibilityLimit = 0.0;
+    if (nav) { visibilityLimit = nav->visibility_limit(); }
     if (fequal<float>()(visibilityLimit, 0.0f)) { visibilityLimit = 30000.0; }
     GLdouble ox, oy, oz;
     gluUnProject(x_c, y_c, z_c,
@@ -3907,7 +3909,8 @@ void viewer::zoom(const float z)
     double dist = dx * dx + dy * dy + dz * dz;
     if (dist < 1.0e-25) { return; }
     dist = sqrt(dist);
-    float speed = nav_info.speed();
+    float speed = 1.0;
+    if (nav) { speed = nav->speed(); }
     dist = speed / dist;
     if (fequal<float>()(float(dist), 0.0f)) { return; }
     dx *= dist;
@@ -3996,11 +3999,9 @@ void viewer::handleKey(int key)
                 ++pos;
                 if (pos == viewpoints.end()) { pos = viewpoints.begin(); }
                 event_listener & listener = (*pos)->event_listener("set_bind");
-                sfbool_listener * sfb_listener =
-                    dynamic_cast<sfbool_listener *>(&listener);
-                assert(sfb_listener);
-                sfb_listener->process_event(sfbool(true),
-                                            browser::current_time());
+                assert(dynamic_cast<sfbool_listener *>(&listener));
+                static_cast<sfbool_listener &>(listener)
+                    .process_event(sfbool(true), browser::current_time());
             }
         }
         this->post_redraw();
@@ -4021,11 +4022,9 @@ void viewer::handleKey(int key)
                 }
                 --pos;
                 event_listener & listener = (*pos)->event_listener("set_bind");
-                sfbool_listener * sfb_listener =
-                    dynamic_cast<sfbool_listener *>(&listener);
-                assert(sfb_listener);
-                sfb_listener->process_event(sfbool(true),
-                                            browser::current_time());
+                assert(dynamic_cast<sfbool_listener *>(&listener));
+                static_cast<sfbool_listener &>(listener)
+                    .process_event(sfbool(true), browser::current_time());
             }
         }
         this->post_redraw();

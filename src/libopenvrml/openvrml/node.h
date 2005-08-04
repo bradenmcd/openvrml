@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2002, 2003, 2004, 2005  Braden McDaniel
+// Copyright 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,10 +24,13 @@
 #   define OPENVRML_NODE_H
 
 #   include <deque>
+#   include <iostream>
 #   include <list>
 #   include <set>
+#   include <stdexcept>
 #   include <utility>
-#   include <boost/thread/recursive_mutex.hpp>
+#   include <boost/shared_ptr.hpp>
+#   include <boost/utility.hpp>
 #   include <openvrml/field_value.h>
 #   include <openvrml/viewer.h>
 #   include <openvrml/rendering_context.h>
@@ -180,6 +183,7 @@ namespace openvrml {
     class browser;
     class viewpoint_node;
     class node_type;
+    typedef boost::shared_ptr<node_type> node_type_ptr;
 
     class node_class : boost::noncopyable {
         openvrml::browser * browser_;
@@ -191,7 +195,7 @@ namespace openvrml {
         void initialize(viewpoint_node * initial_viewpoint, double time)
             throw ();
         void render(viewer & v) const throw ();
-        const boost::shared_ptr<node_type>
+        const node_type_ptr
         create_type(const std::string & id,
                     const node_interface_set & interfaces)
             throw (unsupported_interface, std::bad_alloc);
@@ -204,11 +208,13 @@ namespace openvrml {
                                    double time)
             throw ();
         virtual void do_render(viewer & v) const throw ();
-        virtual const boost::shared_ptr<node_type>
+        virtual const node_type_ptr
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc) = 0;
     };
+
+    typedef boost::shared_ptr<node_class> node_class_ptr;
 
 
     typedef std::map<std::string, boost::shared_ptr<field_value> >
@@ -256,18 +262,14 @@ namespace openvrml {
     class bounding_volume;
     class script_node;
     class appearance_node;
-    class bounded_volume_node;
     class child_node;
     class color_node;
     class coordinate_node;
     class font_style_node;
     class geometry_node;
     class grouping_node;
-    class light_node;
     class material_node;
-    class navigation_info_node;
     class normal_node;
-    class scoped_light_node;
     class sound_source_node;
     class texture_node;
     class texture_coordinate_node;
@@ -279,9 +281,13 @@ namespace openvrml {
         class anchor_node;
         class audio_clip_node;
         class cylinder_sensor_node;
+        class abstract_light_node;
         class movie_texture_node;
+        class navigation_info_node;
         class plane_sensor_node;
+        class point_light_node;
         class sphere_sensor_node;
+        class spot_light_node;
         class time_sensor_node;
         class touch_sensor_node;
     }
@@ -296,16 +302,14 @@ namespace openvrml {
     class event_listener;
     class event_emitter;
 
-    template <typename FieldValue> class field_value_listener;
-    template <typename FieldValue> class exposedfield;
+    template <typename FieldValue>
+    class exposedfield;
 
     class node : boost::noncopyable {
         friend std::ostream & operator<<(std::ostream & out, const node & n);
         friend script_node * node_cast<script_node *>(node * n) throw ();
         friend appearance_node * node_cast<appearance_node *>(node * n)
             throw ();
-        friend bounded_volume_node *
-        node_cast<bounded_volume_node *>(node * n) throw ();
         friend child_node * node_cast<child_node *>(node * n) throw ();
         friend color_node * node_cast<color_node *>(node * n) throw ();
         friend coordinate_node * node_cast<coordinate_node *>(node * n)
@@ -314,13 +318,8 @@ namespace openvrml {
             throw ();
         friend geometry_node * node_cast<geometry_node *>(node * n) throw ();
         friend grouping_node * node_cast<grouping_node *>(node * n) throw ();
-        friend light_node * node_cast<light_node *>(node * n) throw ();
         friend material_node * node_cast<material_node *>(node * n) throw ();
-        friend navigation_info_node *
-        node_cast<navigation_info_node *>(node * n) throw ();
         friend normal_node * node_cast<normal_node *>(node * n) throw ();
-        friend scoped_light_node * node_cast<scoped_light_node *>(node * n)
-            throw ();
         friend sound_source_node * node_cast<sound_source_node *>(node * n)
             throw ();
         friend texture_node * node_cast<texture_node *>(node * n) throw ();
@@ -330,27 +329,6 @@ namespace openvrml {
         node_cast<texture_transform_node *>(node * n) throw ();
         friend transform_node * node_cast<transform_node *>(node * n) throw ();
         friend viewpoint_node * node_cast<viewpoint_node *>(node * n) throw ();
-
-        friend class field_value_listener<sfbool>;
-        friend class field_value_listener<sfcolor>;
-        friend class field_value_listener<sffloat>;
-        friend class field_value_listener<sfimage>;
-        friend class field_value_listener<sfint32>;
-        friend class field_value_listener<sfnode>;
-        friend class field_value_listener<sfrotation>;
-        friend class field_value_listener<sfstring>;
-        friend class field_value_listener<sftime>;
-        friend class field_value_listener<sfvec2f>;
-        friend class field_value_listener<sfvec3f>;
-        friend class field_value_listener<mfcolor>;
-        friend class field_value_listener<mffloat>;
-        friend class field_value_listener<mfint32>;
-        friend class field_value_listener<mfnode>;
-        friend class field_value_listener<mfrotation>;
-        friend class field_value_listener<mfstring>;
-        friend class field_value_listener<mftime>;
-        friend class field_value_listener<mfvec2f>;
-        friend class field_value_listener<mfvec3f>;
 
         friend class exposedfield<sfbool>;
         friend class exposedfield<sfcolor>;
@@ -373,11 +351,11 @@ namespace openvrml {
         friend class exposedfield<mfvec2f>;
         friend class exposedfield<mfvec3f>;
 
-        mutable boost::recursive_mutex mutex_;
         const node_type & type_;
         boost::shared_ptr<openvrml::scope> scope_;
         openvrml::scene * scene_;
         bool modified_;
+        bool bounding_volume_dirty_;
 
     public:
         virtual ~node() throw () = 0;
@@ -406,25 +384,33 @@ namespace openvrml {
         virtual vrml97_node::anchor_node * to_anchor() const;
         virtual vrml97_node::audio_clip_node * to_audio_clip() const;
         virtual vrml97_node::cylinder_sensor_node * to_cylinder_sensor() const;
+        virtual vrml97_node::abstract_light_node * to_light() const;
         virtual vrml97_node::movie_texture_node * to_movie_texture() const;
+        virtual vrml97_node::navigation_info_node * to_navigation_info() const;
         virtual vrml97_node::plane_sensor_node * to_plane_sensor() const;
+        virtual vrml97_node::point_light_node * to_point_light() const;
         virtual vrml97_node::sphere_sensor_node * to_sphere_sensor() const;
+        virtual vrml97_node::spot_light_node * to_spot_light() const;
         virtual vrml97_node::time_sensor_node * to_time_sensor() const;
         virtual vrml97_node::touch_sensor_node * to_touch_sensor() const;
 
         virtual bool modified() const;
         void modified(bool value);
 
-    protected:
-        static void emit_event(openvrml::event_emitter & emitter,
-                               double timestamp)
-            throw (std::bad_alloc);
+        virtual void bounding_volume(const openvrml::bounding_volume & v);
+        virtual const openvrml::bounding_volume & bounding_volume() const;
 
+        virtual void bounding_volume_dirty(bool f);
+        virtual bool bounding_volume_dirty() const;
+
+    protected:
         node(const node_type & type,
              const boost::shared_ptr<openvrml::scope> & scope)
             throw ();
 
-        boost::recursive_mutex & mutex() const throw ();
+        static void emit_event(openvrml::event_emitter & emitter,
+                               double timestamp)
+            throw (std::bad_alloc);
 
     private:
         virtual void do_initialize(double timestamp) throw (std::bad_alloc);
@@ -440,18 +426,14 @@ namespace openvrml {
 
         virtual script_node * to_script() throw ();
         virtual appearance_node * to_appearance() throw ();
-        virtual bounded_volume_node * to_bounded_volume() throw ();
         virtual child_node * to_child() throw ();
         virtual color_node * to_color() throw ();
         virtual coordinate_node * to_coordinate() throw ();
         virtual font_style_node * to_font_style() throw () ;
         virtual geometry_node * to_geometry() throw ();
         virtual grouping_node * to_grouping() throw ();
-        virtual light_node * to_light() throw ();
         virtual material_node * to_material() throw ();
-        virtual navigation_info_node * to_navigation_info() throw ();
         virtual normal_node * to_normal() throw ();
-        virtual scoped_light_node * to_scoped_light() throw ();
         virtual sound_source_node * to_sound_source() throw ();
         virtual texture_node * to_texture() throw ();
         virtual texture_coordinate_node * to_texture_coordinate() throw ();
@@ -468,11 +450,6 @@ namespace openvrml {
     inline openvrml::scene * node::scene() const throw ()
     {
         return this->scene_;
-    }
-
-    inline boost::recursive_mutex & node::mutex() const throw ()
-    {
-        return this->mutex_;
     }
 
 
@@ -498,15 +475,6 @@ namespace openvrml {
     {
         return n
             ? n->to_appearance()
-            : 0;
-    }
-
-    template <>
-    inline bounded_volume_node *
-    node_cast<bounded_volume_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_bounded_volume()
             : 0;
     }
 
@@ -559,14 +527,6 @@ namespace openvrml {
     }
 
     template <>
-    inline light_node * node_cast<light_node *>(node * n) throw ()
-    {
-        return n
-            ? n->to_light()
-            : 0;
-    }
-
-    template <>
     inline material_node * node_cast<material_node *>(node * n) throw ()
     {
         return n
@@ -579,24 +539,6 @@ namespace openvrml {
     {
         return n
             ? n->to_normal()
-            : 0;
-    }
-
-    template <>
-    inline navigation_info_node * node_cast<navigation_info_node *>(node * n)
-        throw ()
-    {
-        return n
-            ? n->to_navigation_info()
-            : 0;
-    }
-
-    template <>
-    inline scoped_light_node * node_cast<scoped_light_node *>(node * n)
-        throw ()
-    {
-        return n
-            ? n->to_scoped_light()
             : 0;
     }
 
@@ -675,30 +617,7 @@ namespace openvrml {
     };
 
 
-    class bounded_volume_node : public virtual node {
-        mutable bool bounding_volume_dirty_;
-
-    public:
-        virtual ~bounded_volume_node() throw ();
-
-        const openvrml::bounding_volume & bounding_volume() const;
-
-    protected:
-        bounded_volume_node(const node_type & type,
-                            const boost::shared_ptr<openvrml::scope> & scope)
-            throw ();
-
-        void bounding_volume_dirty(bool value);
-        bool bounding_volume_dirty() const;
-
-        virtual const openvrml::bounding_volume & do_bounding_volume() const;
-
-    private:
-        virtual bounded_volume_node * to_bounded_volume() throw ();
-    };
-
-
-    class child_node : public virtual bounded_volume_node {
+    class child_node : public virtual node {
     public:
         virtual ~child_node() throw () = 0;
 
@@ -778,7 +697,7 @@ namespace openvrml {
     };
 
 
-    class geometry_node : public virtual bounded_volume_node {
+    class geometry_node : public virtual node {
         viewer::object_t geometry_reference;
 
     public:
@@ -821,20 +740,6 @@ namespace openvrml {
     };
 
 
-    class light_node : public virtual child_node {
-    public:
-        virtual ~light_node() throw () = 0;
-
-    protected:
-        light_node(const node_type & type,
-                   const boost::shared_ptr<openvrml::scope> & scope)
-            throw ();
-
-    private:
-        virtual light_node * to_light() throw ();
-    };
-
-
     class material_node : public virtual node {
     public:
         virtual ~material_node() throw () = 0;
@@ -856,26 +761,6 @@ namespace openvrml {
     };
 
 
-    class navigation_info_node : public virtual child_node {
-    public:
-        virtual ~navigation_info_node() throw () = 0;
-
-        virtual const std::vector<float> & avatar_size() const throw () = 0;
-        virtual bool headlight() const throw () = 0;
-        virtual float speed() const throw () = 0;
-        virtual const std::vector<std::string> & type() const throw () = 0;
-        virtual float visibility_limit() const throw () = 0;
-
-    protected:
-        navigation_info_node(const node_type & type,
-                             const boost::shared_ptr<openvrml::scope> & scope)
-            throw ();
-
-    private:
-        virtual navigation_info_node * to_navigation_info() throw ();
-    };
-
-
     class normal_node : public virtual node {
     public:
         virtual ~normal_node() throw () = 0;
@@ -888,23 +773,6 @@ namespace openvrml {
 
     private:
         virtual normal_node * to_normal() throw ();
-    };
-
-
-    class scoped_light_node : public virtual light_node {
-    public:
-        virtual ~scoped_light_node() throw () = 0;
-
-        void render_scoped_light(viewer & v);
-
-    protected:
-        scoped_light_node(const node_type & type,
-                          const boost::shared_ptr<openvrml::scope> & scope)
-            throw ();
-
-    private:
-        virtual scoped_light_node * to_scoped_light() throw ();
-        virtual void do_render_scoped_light(viewer & v) = 0;
     };
 
 
@@ -931,6 +799,7 @@ namespace openvrml {
         viewer::texture_object_t render_texture(viewer & v);
 
         virtual const openvrml::image & image() const throw () = 0;
+        virtual size_t frames() const throw () = 0;
         virtual bool repeat_s() const throw () = 0;
         virtual bool repeat_t() const throw () = 0;
 

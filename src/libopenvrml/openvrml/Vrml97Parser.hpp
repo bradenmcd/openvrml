@@ -108,7 +108,7 @@ namespace openvrml ANTLR_LBRACE
 #line 109 "Vrml97Parser.hpp"
 class CUSTOM_API Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
 {
-#line 606 "Vrml97Parser.g"
+#line 607 "Vrml97Parser.g"
 
 public:
     Vrml97Parser(antlr::TokenStream & lexer, const std::string & uri):
@@ -169,8 +169,7 @@ public:
      const std::string & node_id
 	);
 	public: void externproto(
-		openvrml::browser & browser,
-            const boost::shared_ptr<openvrml::scope> & scope
+		openvrml::browser & browser, const boost::shared_ptr<openvrml::scope> & scope
 	);
 	public: void proto(
 		openvrml::browser & browser, const boost::shared_ptr<openvrml::scope> & scope
@@ -194,7 +193,7 @@ public:
 	public: node_interface::type_id  eventInterfaceType();
 	public: openvrml::field_value::type_id  fieldType();
 	public: node_interface::type_id  fieldInterfaceType();
-	public: boost::shared_ptr<field_value>  fieldValue(
+	public: openvrml::field_value_ptr  fieldValue(
 		openvrml::browser & browser,
            const boost::shared_ptr<openvrml::scope> & scope,
            const openvrml::field_value::type_id ft,
@@ -248,12 +247,11 @@ public:
                            const std::string & node_id
 	);
 	public: void scriptFieldInterfaceDeclaration(
-		
-    browser & b,
-    const boost::shared_ptr<openvrml::scope> & scope,
-    node_interface_set & interfaces,
-    initial_value_map & initial_values,
-    const std::string & script_node_id
+		browser & b,
+                                const boost::shared_ptr<openvrml::scope> & scope,
+                                node_interface_set & interfaces,
+                                initial_value_map & initial_values,
+                                const std::string & script_node_id
 	);
 	public: void protoNodeBodyElement(
 		openvrml::browser & browser,
@@ -276,7 +274,7 @@ public:
                                 initial_value_map & initial_values,
                                 is_list & is_mappings
 	);
-	public: boost::shared_ptr<field_value>  protoFieldValue(
+	public: field_value_ptr  protoFieldValue(
 		openvrml::browser & browser,
                 const boost::shared_ptr<openvrml::scope> & scope,
                 const node_interface_set & proto_interfaces,
@@ -301,16 +299,16 @@ public:
     const std::string & script_node_id,
     is_list & is_mappings
 	);
-	public: boost::shared_ptr<field_value>  nodeFieldValue(
+	public: openvrml::field_value_ptr  nodeFieldValue(
 		openvrml::browser & browser,
                const boost::shared_ptr<openvrml::scope> & scope,
                openvrml::field_value::type_id ft,
                const std::string & script_node_id
 	);
-	public: boost::shared_ptr<field_value>  nonNodeFieldValue(
+	public: openvrml::field_value_ptr  nonNodeFieldValue(
 		openvrml::field_value::type_id ft
 	);
-	public: boost::shared_ptr<field_value>  protoNodeFieldValue(
+	public: field_value_ptr  protoNodeFieldValue(
 		openvrml::browser & browser,
                     const boost::shared_ptr<openvrml::scope> & scope,
                     const node_interface_set & proto_interfaces,
@@ -319,35 +317,35 @@ public:
                     field_value::type_id ft,
                     const std::string & script_node_id
 	);
-	public: boost::shared_ptr<field_value>  sfBoolValue();
-	public: boost::shared_ptr<field_value>  sfColorValue();
-	public: boost::shared_ptr<field_value>  sfFloatValue();
-	public: boost::shared_ptr<field_value>  sfImageValue();
-	public: boost::shared_ptr<field_value>  sfInt32Value();
-	public: boost::shared_ptr<field_value>  sfRotationValue();
-	public: boost::shared_ptr<field_value>  sfStringValue();
-	public: boost::shared_ptr<field_value>  sfTimeValue();
-	public: boost::shared_ptr<field_value>  sfVec2fValue();
-	public: boost::shared_ptr<field_value>  sfVec3fValue();
-	public: boost::shared_ptr<field_value>  mfColorValue();
-	public: boost::shared_ptr<field_value>  mfFloatValue();
-	public: boost::shared_ptr<field_value>  mfInt32Value();
-	public: boost::shared_ptr<field_value>  mfRotationValue();
-	public: boost::shared_ptr<field_value>  mfStringValue();
-	public: boost::shared_ptr<field_value>  mfTimeValue();
-	public: boost::shared_ptr<field_value>  mfVec2fValue();
-	public: boost::shared_ptr<field_value>  mfVec3fValue();
-	public: boost::shared_ptr<field_value>  sfNodeValue(
+	public: openvrml::field_value_ptr  sfBoolValue();
+	public: openvrml::field_value_ptr  sfColorValue();
+	public: openvrml::field_value_ptr  sfFloatValue();
+	public: openvrml::field_value_ptr  sfImageValue();
+	public: openvrml::field_value_ptr  sfInt32Value();
+	public: openvrml::field_value_ptr  sfRotationValue();
+	public: openvrml::field_value_ptr  sfStringValue();
+	public: openvrml::field_value_ptr  sfTimeValue();
+	public: openvrml::field_value_ptr  sfVec2fValue();
+	public: openvrml::field_value_ptr  sfVec3fValue();
+	public: openvrml::field_value_ptr  mfColorValue();
+	public: openvrml::field_value_ptr  mfFloatValue();
+	public: openvrml::field_value_ptr  mfInt32Value();
+	public: field_value_ptr  mfRotationValue();
+	public: openvrml::field_value_ptr  mfStringValue();
+	public: openvrml::field_value_ptr  mfTimeValue();
+	public: openvrml::field_value_ptr  mfVec2fValue();
+	public: openvrml::field_value_ptr  mfVec3fValue();
+	public: openvrml::field_value_ptr  sfNodeValue(
 		openvrml::browser & browser,
             const boost::shared_ptr<openvrml::scope> & scope,
             const std::string & script_node_id
 	);
-	public: boost::shared_ptr<field_value>  mfNodeValue(
+	public: openvrml::field_value_ptr  mfNodeValue(
 		openvrml::browser & browser,
             const boost::shared_ptr<openvrml::scope> & scope,
             const std::string & script_node_id
 	);
-	public: boost::shared_ptr<field_value>  protoSfNodeValue(
+	public: field_value_ptr  protoSfNodeValue(
 		openvrml::browser & browser,
                  const boost::shared_ptr<openvrml::scope> & scope,
                  const node_interface_set & proto_interfaces,
@@ -355,7 +353,7 @@ public:
                  proto_node_class::routes_t & routes,
                  const std::string & script_node_id
 	);
-	public: boost::shared_ptr<field_value>  protoMfNodeValue(
+	public: field_value_ptr  protoMfNodeValue(
 		openvrml::browser & browser,
                  const boost::shared_ptr<openvrml::scope> & scope,
                  const node_interface_set & proto_interfaces,

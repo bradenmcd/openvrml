@@ -50,8 +50,6 @@ namespace openvrml {
     inline exposedfield<FieldValue>::exposedfield(
         openvrml::node & node,
         const typename FieldValue::value_type & value):
-        event_listener(node),
-        event_emitter(static_cast<const field_value &>(*this)),
         FieldValue(value),
         field_value_listener<FieldValue>(node),
         field_value_emitter<FieldValue>(static_cast<FieldValue &>(*this))
@@ -75,7 +73,8 @@ namespace openvrml {
 
     template <typename FieldValue>
     inline void
-    exposedfield<FieldValue>::event_side_effect(const FieldValue &, double)
+    exposedfield<FieldValue>::event_side_effect(const FieldValue & value,
+                                                const double timestamp)
         throw (std::bad_alloc)
     {}
 }

@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,25 +24,46 @@
 #   include <config.h>
 # endif
 
-# include <cerrno>
+# include <cstdlib>
+# include <cctype>
+# include <cstring>
 # include <algorithm>
+# include <fstream>
 # include <functional>
+# include <sstream>
+# include <stack>
 # ifdef _WIN32
 #   include <sys/timeb.h>
 #   include <time.h>
 # else
 #   include <sys/time.h>
 # endif
-# include <boost/bind.hpp>
-# include <boost/functional.hpp>
-# include <boost/regex.hpp>
-# include <boost/thread/thread.hpp>
+# include <boost/cast.hpp>
+# include <boost/shared_ptr.hpp>
+# include <boost/spirit.hpp>
+# include <boost/spirit/phoenix.hpp>
 # include <boost/utility.hpp>
-# include <private.h>
+# ifdef OPENVRML_ENABLE_GZIP
+#   include <zlib.h>
+# endif
+# include "private.h"
 # include "browser.h"
+# include "viewer.h"
+# include "scope.h"
+# include "script.h"
+# include "system.h"
 # include "vrml97node.h"
 
 namespace openvrml {
+
+    class Vrml97RootScope : public scope {
+    public:
+        Vrml97RootScope(const browser & browser,
+                        const std::string & uri = std::string())
+            throw (std::bad_alloc);
+        virtual ~Vrml97RootScope() throw ();
+    };
+
 
     class null_node_class : public node_class {
     public:
@@ -50,7 +71,7 @@ namespace openvrml {
         virtual ~null_node_class() throw ();
 
     private:
-        virtual const boost::shared_ptr<node_type>
+        virtual const node_type_ptr
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
             throw ();
@@ -156,7 +177,7 @@ namespace {
             const routes_t & routes);
         virtual ~proto_node_class() throw ();
 
-        virtual const boost::shared_ptr<node_type>
+        virtual const node_type_ptr
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc);
@@ -217,9 +238,6 @@ namespace {
             virtual void do_process_event(const FieldValue & value,
                                           double timestamp)
                 throw (std::bad_alloc);
-
-        private:
-            const std::string do_eventin_id() const throw ();
         };
 
         static boost::shared_ptr<openvrml::event_listener>
@@ -237,9 +255,9 @@ namespace {
         protected:
             class listener_t : public field_value_listener<FieldValue> {
                 proto_eventout & emitter;
+                proto_node & node;
 
             public:
-                proto_node & node;
                 FieldValue value;
 
                 listener_t(proto_eventout & emitter,
@@ -248,7 +266,6 @@ namespace {
                 virtual ~listener_t() throw ();
 
             private:
-                virtual const std::string do_eventin_id() const throw ();
                 virtual void do_process_event(const FieldValue & value,
                                               double timestamp)
                     throw (std::bad_alloc);
@@ -265,9 +282,6 @@ namespace {
             virtual ~proto_eventout() throw ();
 
             bool is(event_emitter_type & emitter) throw (std::bad_alloc);
-
-        private:
-            const std::string do_eventout_id() const throw ();
         };
 
         static boost::shared_ptr<openvrml::event_emitter>
@@ -304,46 +318,10 @@ namespace {
 
         typedef boost::shared_ptr<openvrml::event_listener> eventin_ptr;
         typedef std::map<std::string, eventin_ptr> eventin_map_t;
-
-        struct proto_eventin_equal_to :
-            std::unary_function<eventin_map_t::value_type, bool> {
-
-            explicit proto_eventin_equal_to(
-                const openvrml::event_listener & listener):
-                listener_(&listener)
-            {}
-
-            bool operator()(const eventin_map_t::value_type & arg) const
-            {
-                return this->listener_ == arg.second.get();
-            }
-
-        private:
-            const openvrml::event_listener * listener_;
-        };
-
         eventin_map_t eventin_map;
 
         typedef boost::shared_ptr<openvrml::event_emitter> eventout_ptr;
         typedef std::map<std::string, eventout_ptr> eventout_map_t;
-
-        struct proto_eventout_equal_to :
-            std::unary_function<eventout_map_t::value_type, bool> {
-
-            explicit proto_eventout_equal_to(
-                const openvrml::event_emitter & emitter):
-                emitter_(&emitter)
-            {}
-
-            bool operator()(const eventout_map_t::value_type & arg) const
-            {
-                return this->emitter_ == arg.second.get();
-            }
-
-        private:
-            const openvrml::event_emitter * emitter_;
-        };
-
         eventout_map_t eventout_map;
 
     public:
@@ -761,7 +739,7 @@ namespace {
                                     matches_is_target(
                                         is_target(*n, interface->id)));
                         if (is_mapping != this->node_class.is_map.end()) {
-                            using boost::bind;
+                            using openvrml_::compose2;
                             using std::logical_or;
                             //
                             // If an exposedField in the implementation is IS'd
@@ -775,13 +753,11 @@ namespace {
                                 proto_interface =
                                 find_if(this->node_class.interfaces.begin(),
                                         this->node_class.interfaces.end(),
-                                        bind(logical_or<bool>(),
-                                             bind(node_interface_matches_exposedfield(),
-                                                  _1,
-                                                  is_mapping->first),
-                                             bind(node_interface_matches_field(),
-                                                  _1,
-                                                  is_mapping->first)));
+                                        compose2(logical_or<bool>(),
+                                                 bind2nd(node_interface_matches_exposedfield(),
+                                                         is_mapping->first),
+                                                 bind2nd(node_interface_matches_field(),
+                                                         is_mapping->first)));
 
                             if (proto_interface
                                 != this->node_class.interfaces.end()) {
@@ -982,7 +958,6 @@ namespace {
      */
     template <typename FieldValue>
     proto_node::proto_eventin<FieldValue>::proto_eventin(proto_node & node):
-        openvrml::event_listener(node),
         field_value_listener<FieldValue>(node)
     {}
 
@@ -1014,19 +989,6 @@ namespace {
              ++listener) {
             (*listener)->process_event(value, timestamp);
         }
-    }
-
-    template <typename FieldValue>
-    const std::string
-    proto_node::proto_eventin<FieldValue>::do_eventin_id() const throw ()
-    {
-        using boost::polymorphic_downcast;
-        proto_node & n = *polymorphic_downcast<proto_node *>(&this->node());
-        eventin_map_t::const_iterator pos =
-            std::find_if(n.eventin_map.begin(), n.eventin_map.end(),
-                         proto_eventin_equal_to(*this));
-        assert(pos != n.eventin_map.end());
-        return pos->first;
     }
 
     /**
@@ -1157,103 +1119,128 @@ namespace {
         switch (field_type) {
         case field_value::sfbool_id:
             succeeded =
-                dynamic_cast<proto_eventin<sfbool> &>(interface_eventin)
-                .is(dynamic_cast<sfbool_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<sfbool> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfbool_listener *>(&impl_eventin));
             break;
         case field_value::sfcolor_id:
             succeeded =
-                dynamic_cast<proto_eventin<sfcolor> &>(interface_eventin)
-                .is(dynamic_cast<sfcolor_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<sfcolor> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfcolor_listener *>(&impl_eventin));
             break;
         case field_value::sffloat_id:
             succeeded =
-                dynamic_cast<proto_eventin<sffloat> &>(interface_eventin)
-                .is(dynamic_cast<sffloat_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<sffloat> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sffloat_listener *>(&impl_eventin));
             break;
         case field_value::sfimage_id:
             succeeded =
-                dynamic_cast<proto_eventin<sfimage> &>(interface_eventin)
-                .is(dynamic_cast<sfimage_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<sfimage> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfimage_listener *>(&impl_eventin));
             break;
         case field_value::sfint32_id:
             succeeded =
-                dynamic_cast<proto_eventin<sfint32> &>(interface_eventin)
-                .is(dynamic_cast<sfint32_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<sfint32> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfint32_listener *>(&impl_eventin));
             break;
         case field_value::sfnode_id:
             succeeded =
-                dynamic_cast<proto_eventin<sfnode> &>(interface_eventin)
-                .is(dynamic_cast<sfnode_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<sfnode> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfnode_listener *>(&impl_eventin));
             break;
         case field_value::sfrotation_id:
             succeeded =
-                dynamic_cast<proto_eventin<sfrotation> &>(interface_eventin)
-                .is(dynamic_cast<sfrotation_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<sfrotation> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfrotation_listener *>(
+                         &impl_eventin));
             break;
         case field_value::sfstring_id:
             succeeded =
-                dynamic_cast<proto_eventin<sfstring> &>(interface_eventin)
-                .is(dynamic_cast<sfstring_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<sfstring> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfstring_listener *>(
+                         &impl_eventin));
             break;
         case field_value::sftime_id:
             succeeded =
-                dynamic_cast<proto_eventin<sftime> &>(interface_eventin)
-                .is(dynamic_cast<sftime_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<sftime> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sftime_listener *>(&impl_eventin));
             break;
         case field_value::sfvec2f_id:
             succeeded =
-                dynamic_cast<proto_eventin<sfvec2f> &>(interface_eventin)
-                .is(dynamic_cast<sfvec2f_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<sfvec2f> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfvec2f_listener *>(&impl_eventin));
             break;
         case field_value::sfvec3f_id:
             succeeded =
-                dynamic_cast<proto_eventin<sfvec3f> &>(interface_eventin)
-                .is(dynamic_cast<sfvec3f_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<sfvec3f> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<sfvec3f_listener *>(&impl_eventin));
             break;
         case field_value::mfcolor_id:
             succeeded =
-                dynamic_cast<proto_eventin<mfcolor> &>(interface_eventin)
-                .is(dynamic_cast<mfcolor_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<mfcolor> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfcolor_listener *>(&impl_eventin));
             break;
         case field_value::mffloat_id:
             succeeded =
-                dynamic_cast<proto_eventin<mffloat> &>(interface_eventin)
-                .is(dynamic_cast<mffloat_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<mffloat> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mffloat_listener *>(
+                         &impl_eventin));
             break;
         case field_value::mfint32_id:
             succeeded =
-                dynamic_cast<proto_eventin<mfint32> &>(interface_eventin)
-                .is(dynamic_cast<mfint32_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<mfint32> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfint32_listener *>(&impl_eventin));
             break;
         case field_value::mfnode_id:
             succeeded =
-                dynamic_cast<proto_eventin<mfnode> &>(interface_eventin)
-                .is(dynamic_cast<mfnode_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<mfnode> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfnode_listener *>(&impl_eventin));
             break;
         case field_value::mfrotation_id:
             succeeded =
-                dynamic_cast<proto_eventin<mfrotation> &>(interface_eventin)
-                .is(dynamic_cast<mfrotation_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<mfrotation> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfrotation_listener *>(
+                         &impl_eventin));
             break;
         case field_value::mfstring_id:
             succeeded =
-                dynamic_cast<proto_eventin<mfstring> &>(interface_eventin)
-                .is(dynamic_cast<mfstring_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<mfstring> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfstring_listener *>(
+                         &impl_eventin));
             break;
         case field_value::mftime_id:
             succeeded =
-                dynamic_cast<proto_eventin<mftime> &>(interface_eventin)
-                .is(dynamic_cast<mftime_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<mftime> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mftime_listener *>(&impl_eventin));
             break;
         case field_value::mfvec2f_id:
             succeeded =
-                dynamic_cast<proto_eventin<mfvec2f> &>(interface_eventin)
-                .is(dynamic_cast<mfvec2f_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<mfvec2f> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfvec2f_listener *>(&impl_eventin));
             break;
         case field_value::mfvec3f_id:
             succeeded =
-                dynamic_cast<proto_eventin<mfvec3f> &>(interface_eventin)
-                .is(dynamic_cast<mfvec3f_listener &>(impl_eventin));
+                polymorphic_downcast<proto_eventin<mfvec3f> *>(
+                    &interface_eventin)
+                ->is(*polymorphic_downcast<mfvec3f_listener *>(&impl_eventin));
             break;
         default:
             assert(false);
@@ -1314,7 +1301,6 @@ namespace {
     listener_t(proto_eventout & emitter,
                proto_node & node,
                const FieldValue & initial_value):
-        openvrml::event_listener(node),
         field_value_listener<FieldValue>(node),
         emitter(emitter),
         node(node),
@@ -1327,17 +1313,6 @@ namespace {
     template <typename FieldValue>
     proto_node::proto_eventout<FieldValue>::listener_t::~listener_t() throw ()
     {}
-
-    /**
-     * @brief Get the associated eventIn identifier.
-     */
-    template <typename FieldValue>
-    const std::string
-    proto_node::proto_eventout<FieldValue>::listener_t::do_eventin_id() const
-        throw ()
-    {
-        return "<proto_node::proto_eventout::listener_t>";
-    }
 
     /**
      * @brief Process event.
@@ -1394,7 +1369,6 @@ namespace {
     template <typename FieldValue>
     proto_node::proto_eventout<FieldValue>::
     proto_eventout(proto_node & node, const FieldValue & initial_value):
-        openvrml::event_emitter(this->listener.value),
         field_value_emitter<FieldValue>(this->listener.value),
         listener(*this, node, initial_value)
     {}
@@ -1423,18 +1397,6 @@ namespace {
     is(event_emitter_type & emitter) throw (std::bad_alloc)
     {
         return emitter.add(this->listener);
-    }
-
-    template <typename FieldValue>
-    const std::string
-    proto_node::proto_eventout<FieldValue>::do_eventout_id() const throw ()
-    {
-        proto_node & n = this->listener.node;
-        eventout_map_t::const_iterator pos =
-            std::find_if(n.eventout_map.begin(), n.eventout_map.end(),
-                         proto_eventout_equal_to(*this));
-        assert(pos != n.eventout_map.end());
-        return pos->first;
     }
 
     /**
@@ -1547,103 +1509,128 @@ namespace {
         switch (field_type) {
         case field_value::sfbool_id:
             succeeded =
-                dynamic_cast<proto_eventout<sfbool> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfbool_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<sfbool> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfbool_emitter *>(&impl_eventout));
             break;
         case field_value::sfcolor_id:
             succeeded =
-                dynamic_cast<proto_eventout<sfcolor> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfcolor_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<sfcolor> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfcolor_emitter *>(&impl_eventout));
             break;
         case field_value::sffloat_id:
             succeeded =
-                dynamic_cast<proto_eventout<sffloat> *>(&interface_eventout)
-                ->is(*dynamic_cast<sffloat_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<sffloat> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sffloat_emitter *>(&impl_eventout));
             break;
         case field_value::sfimage_id:
             succeeded =
-                dynamic_cast<proto_eventout<sfimage> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfimage_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<sfimage> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfimage_emitter *>(&impl_eventout));
             break;
         case field_value::sfint32_id:
             succeeded =
-                dynamic_cast<proto_eventout<sfint32> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfint32_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<sfint32> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfint32_emitter *>(&impl_eventout));
             break;
         case field_value::sfnode_id:
             succeeded =
-                dynamic_cast<proto_eventout<sfnode> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfnode_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<sfnode> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfnode_emitter *>(&impl_eventout));
             break;
         case field_value::sfrotation_id:
             succeeded =
-                dynamic_cast<proto_eventout<sfrotation> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfrotation_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<sfrotation> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfrotation_emitter *>(
+                         &impl_eventout));
             break;
         case field_value::sfstring_id:
             succeeded =
-                dynamic_cast<proto_eventout<sfstring> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfstring_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<sfstring> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfstring_emitter *>(
+                         &impl_eventout));
             break;
         case field_value::sftime_id:
             succeeded =
-                dynamic_cast<proto_eventout<sftime> *>(&interface_eventout)
-                ->is(*dynamic_cast<sftime_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<sftime> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sftime_emitter *>(
+                         &impl_eventout));
             break;
         case field_value::sfvec2f_id:
             succeeded =
-                dynamic_cast<proto_eventout<sfvec2f> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfvec2f_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<sfvec2f> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfvec2f_emitter *>(&impl_eventout));
             break;
         case field_value::sfvec3f_id:
             succeeded =
-                dynamic_cast<proto_eventout<sfvec3f> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfvec3f_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<sfvec3f> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<sfvec3f_emitter *>(&impl_eventout));
             break;
         case field_value::mfcolor_id:
             succeeded =
-                dynamic_cast<proto_eventout<mfcolor> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfcolor_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<mfcolor> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfcolor_emitter *>(&impl_eventout));
             break;
         case field_value::mffloat_id:
             succeeded =
-                dynamic_cast<proto_eventout<mffloat> *>(&interface_eventout)
-                ->is(*dynamic_cast<mffloat_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<mffloat> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mffloat_emitter *>(&impl_eventout));
             break;
         case field_value::mfint32_id:
             succeeded =
-                dynamic_cast<proto_eventout<mfint32> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfint32_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<mfint32> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfint32_emitter *>(&impl_eventout));
             break;
         case field_value::mfnode_id:
             succeeded =
-                dynamic_cast<proto_eventout<mfnode> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfnode_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<mfnode> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfnode_emitter *>(&impl_eventout));
             break;
         case field_value::mfrotation_id:
             succeeded =
-                dynamic_cast<proto_eventout<mfrotation> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfrotation_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<mfrotation> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfrotation_emitter *>(
+                         &impl_eventout));
             break;
         case field_value::mfstring_id:
             succeeded =
-                dynamic_cast<proto_eventout<mfstring> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfstring_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<mfstring> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfstring_emitter *>(
+                         &impl_eventout));
             break;
         case field_value::mftime_id:
             succeeded =
-                dynamic_cast<proto_eventout<mftime> *>(&interface_eventout)
-                ->is(*dynamic_cast<mftime_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<mftime> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mftime_emitter *>(&impl_eventout));
             break;
         case field_value::mfvec2f_id:
             succeeded =
-                dynamic_cast<proto_eventout<mfvec2f> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfvec2f_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<mfvec2f> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfvec2f_emitter *>(&impl_eventout));
             break;
         case field_value::mfvec3f_id:
             succeeded =
-                dynamic_cast<proto_eventout<mfvec3f> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfvec3f_emitter *>(&impl_eventout));
+                polymorphic_downcast<proto_eventout<mfvec3f> *>(
+                    &interface_eventout)
+                ->is(*polymorphic_downcast<mfvec3f_emitter *>(&impl_eventout));
             break;
         default:
             assert(false);
@@ -1669,8 +1656,6 @@ namespace {
     template <typename FieldValue>
     proto_node::proto_exposedfield<FieldValue>::
     proto_exposedfield(proto_node & node, const FieldValue & initial_value):
-        openvrml::event_listener(node),
-        openvrml::event_emitter(this->listener.value),
         proto_eventin<FieldValue>(node),
         proto_eventout<FieldValue>(node, initial_value)
     {}
@@ -2424,173 +2409,13 @@ namespace {
     proto_node_class::~proto_node_class() throw ()
     {}
 
-    const boost::shared_ptr<node_type>
+    const node_type_ptr
     proto_node_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        return boost::shared_ptr<node_type>(new proto_node_type(*this, id, interfaces));
-    }
-
-
-    class default_navigation_info : public navigation_info_node {
-    public:
-        explicit default_navigation_info(const null_node_type & type) throw ();
-        virtual ~default_navigation_info() throw ();
-
-        virtual const std::vector<float> & avatar_size() const throw ();
-        virtual bool headlight() const throw ();
-        virtual float speed() const throw ();
-        virtual const std::vector<std::string> & type() const throw ();
-        virtual float visibility_limit() const throw ();
-
-    private:
-        virtual void do_field(const std::string & id,
-                              const field_value & value)
-            throw ();
-        virtual const field_value & do_field(const std::string & id) const
-            throw ();
-        virtual void do_process_event(const std::string & id,
-                                      const field_value & value,
-                                      double timestamp)
-            throw ();
-        virtual const field_value & do_eventout(const std::string & id) const
-            throw ();
-
-        virtual openvrml::event_listener &
-        do_event_listener(const std::string & id)
-            throw (unsupported_interface);
-        virtual openvrml::event_emitter &
-        do_event_emitter(const std::string & id)
-            throw (unsupported_interface);
-    };
-
-    const boost::shared_ptr<openvrml::scope> null_scope_ptr;
-
-    /**
-     * @brief Construct.
-     *
-     * @param t node type.
-     */
-    default_navigation_info::default_navigation_info(const null_node_type & t)
-        throw ():
-        node(t, null_scope_ptr),
-        bounded_volume_node(t, null_scope_ptr),
-        child_node(t, null_scope_ptr),
-        openvrml::navigation_info_node(t, null_scope_ptr)
-    {}
-
-    /**
-     * @brief Destroy
-     */
-    default_navigation_info::~default_navigation_info() throw ()
-    {}
-
-    /**
-     * @brief The avatar dimensions.
-     *
-     * @return [0.25, 1.6, 0.75]
-     */
-    const std::vector<float> & default_navigation_info::avatar_size() const
-        throw ()
-    {
-        static const float array[] = { 0.25, 1.6, 0.75 };
-        static const std::vector<float> vec(array, array + 3);
-        return vec;
-    }
-
-    /**
-     * @brief The headlight state.
-     *
-     * @return @c true
-     */
-    bool default_navigation_info::headlight() const throw ()
-    {
-        return true;
-    }
-
-    /**
-     * @brief The speed of the user view.
-     *
-     * @return 1.0
-     */
-    float default_navigation_info::speed() const throw ()
-    {
-        return 1.0;
-    }
-
-    /**
-     * @brief The navigation type.
-     *
-     * @return ["WALK", "ANY"]
-     */
-    const std::vector<std::string> & default_navigation_info::type() const
-        throw ()
-    {
-        static const char * array[] = { "WALK", "ANY" };
-        static const std::vector<std::string> vec(array, array + 2);
-        return vec;
-    }
-
-    /**
-     * @brief The visibility limit.
-     *
-     * @return 0.0
-     */
-    float default_navigation_info::visibility_limit() const throw ()
-    {
-        return 0.0;
-    }
-
-    void default_navigation_info::do_field(const std::string &,
-                                           const field_value &)
-        throw ()
-    {
-        assert(false);
-    }
-
-    const field_value &
-    default_navigation_info::do_field(const std::string &) const
-        throw ()
-    {
-        assert(false);
-        static const sfbool value;
-        return value;
-    }
-
-    void default_navigation_info::do_process_event(const std::string &,
-                                                   const field_value &,
-                                                   double)
-        throw ()
-    {
-        assert(false);
-    }
-
-    const field_value &
-    default_navigation_info::do_eventout(const std::string &) const throw ()
-    {
-        assert(false);
-        static const sfbool value;
-        return value;
-    }
-
-    event_listener &
-    default_navigation_info::do_event_listener(const std::string & id)
-        throw (unsupported_interface)
-    {
-        assert(false);
-        throw unsupported_interface(this->node::type(), id);
-        return *static_cast<openvrml::event_listener *>(0);
-    }
-
-    event_emitter &
-    default_navigation_info::do_event_emitter(const std::string & id)
-        throw (unsupported_interface)
-    {
-        assert(false);
-        throw unsupported_interface(this->node::type(), id);
-        return *static_cast<openvrml::event_emitter *>(0);
+        return node_type_ptr(new proto_node_type(*this, id, interfaces));
     }
 
 
@@ -2598,7 +2423,7 @@ namespace {
         mat4f userViewTransform;
 
     public:
-        explicit default_viewpoint(const null_node_type & type) throw ();
+        explicit default_viewpoint(const null_node_type & nodeType) throw ();
         virtual ~default_viewpoint() throw ();
 
         virtual const mat4f & transformation() const throw ();
@@ -2628,21 +2453,22 @@ namespace {
             throw (unsupported_interface);
     };
 
+    static const boost::shared_ptr<openvrml::scope> null_scope_ptr;
+
     /**
-     * @brief Construct.
+     * @brief Constructor.
      *
      * @param type  the browser's null_node_type instance.
      */
     default_viewpoint::default_viewpoint(const null_node_type & type)
         throw ():
         node(type, null_scope_ptr),
-        bounded_volume_node(type, null_scope_ptr),
         child_node(type, null_scope_ptr),
         viewpoint_node(type, null_scope_ptr)
     {}
 
     /**
-     * @brief Destroy.
+     * @brief Destructor.
      */
     default_viewpoint::~default_viewpoint() throw ()
     {}
@@ -2685,15 +2511,15 @@ namespace {
         return fieldOfView;
     }
 
-    void default_viewpoint::do_field(const std::string &,
-                                     const field_value &)
+    void default_viewpoint::do_field(const std::string & id,
+                                     const field_value & value)
         throw ()
     {
         assert(false);
     }
 
     const field_value &
-    default_viewpoint::do_field(const std::string &) const
+    default_viewpoint::do_field(const std::string & id) const
         throw ()
     {
         assert(false);
@@ -2701,16 +2527,16 @@ namespace {
         return value;
     }
 
-    void default_viewpoint::do_process_event(const std::string &,
-                                             const field_value &,
-                                             double)
+    void default_viewpoint::do_process_event(const std::string & id,
+                                             const field_value & value,
+                                             double timestamp)
         throw ()
     {
         assert(false);
     }
 
     const field_value &
-    default_viewpoint::do_eventout(const std::string &) const throw ()
+    default_viewpoint::do_eventout(const std::string & id) const throw ()
     {
         assert(false);
         static const sfbool value;
@@ -2735,19 +2561,89 @@ namespace {
         return *static_cast<openvrml::event_emitter *>(0);
     }
 
-
     class uri {
-        static const boost::regex regex_;
-        enum subexpression_index {
-            scheme_ = 2,
-            scheme_specific_part_ = 3,
-            authority_ = 5,
-            path_ = 6,
-            query_ = 7,
-            fragment_ = 10
+        struct grammar : public boost::spirit::grammar<grammar> {
+            struct absolute_uri_closure :
+                boost::spirit::closure<absolute_uri_closure,
+                                       std::string::const_iterator,
+                                       std::string::const_iterator> {
+                member1 scheme_begin;
+                member2 scheme_end;
+            };
+
+            struct server_closure :
+                boost::spirit::closure<server_closure,
+                                       std::string::const_iterator,
+                                       std::string::const_iterator> {
+                member1 userinfo_begin;
+                member2 userinfo_end;
+            };
+
+            template <typename ScannerT>
+            struct definition {
+                typedef boost::spirit::rule<ScannerT> rule_type;
+                typedef boost::spirit::rule<ScannerT,
+                                            absolute_uri_closure::context_t>
+                    absolute_uri_rule_type;
+                typedef boost::spirit::rule<ScannerT,
+                                            server_closure::context_t>
+                    server_rule_type;
+
+                rule_type uri_reference;
+                absolute_uri_rule_type absolute_uri;
+                rule_type relative_uri;
+                rule_type hier_part;
+                rule_type opaque_part;
+                rule_type uric_no_slash;
+                rule_type net_path;
+                rule_type abs_path;
+                rule_type rel_path;
+                rule_type rel_segment;
+                rule_type scheme;
+                rule_type authority;
+                rule_type reg_name;
+                server_rule_type server;
+                rule_type userinfo;
+                rule_type hostport;
+                rule_type host;
+                rule_type hostname;
+                rule_type domainlabel;
+                rule_type toplabel;
+                rule_type ipv4address;
+                rule_type port;
+                rule_type path_segments;
+                rule_type segment;
+                rule_type param;
+                rule_type pchar;
+                rule_type query;
+                rule_type fragment;
+                rule_type uric;
+                rule_type reserved;
+                rule_type unreserved;
+                rule_type mark;
+                rule_type escaped;
+
+                explicit definition(const grammar & self);
+
+                const boost::spirit::rule<ScannerT> & start() const;
+            };
+
+            mutable uri & uri_ref;
+
+            explicit grammar(uri & uri_ref) throw ();
         };
-        boost::smatch match_results_;
+
         std::string str_;
+        std::string::const_iterator scheme_begin, scheme_end;
+        std::string::const_iterator scheme_specific_part_begin,
+                                    scheme_specific_part_end;
+        std::string::const_iterator authority_begin, authority_end;
+        std::string::const_iterator userinfo_begin, userinfo_end;
+        std::string::const_iterator host_begin, host_end;
+        std::string::const_iterator port_begin, port_end;
+        std::string::const_iterator path_begin, path_end;
+        std::string::const_iterator query_begin, query_end;
+        std::string::const_iterator fragment_begin, fragment_end;
 
     public:
         uri() throw (std::bad_alloc);
@@ -2770,16 +2666,297 @@ namespace {
             throw (std::bad_alloc);
     };
 
-    const boost::regex uri::regex_(
-        "^(([^:/?#]+):)?((//([^/?#]*))?([^?#]*)([?]([^#]*))?(#(.*))?)");
-    //    |+- scheme    ||  |          |       |   |        | +- fragment-id
-    //    +- scheme ':' ||  |          |       |   |        +- '#' fragment-id
-    //                  ||  |          |       |   +- query
-    //                  ||  |          |       +- '?' query
-    //                  ||  |          +- path
-    //                  ||  +- authority
-    //                  |+- "//" authority
-    //                  +- scheme-specific-part
+    uri::grammar::grammar(uri & uri_ref) throw ():
+        uri_ref(uri_ref)
+    {}
+
+    template <typename ScannerT>
+    uri::grammar::definition<ScannerT>::definition(const grammar & self)
+    {
+        using namespace boost::spirit;
+        using namespace phoenix;
+
+        BOOST_SPIRIT_DEBUG_NODE(uri_reference);
+        BOOST_SPIRIT_DEBUG_NODE(absolute_uri);
+        BOOST_SPIRIT_DEBUG_NODE(relative_uri);
+        BOOST_SPIRIT_DEBUG_NODE(hier_part);
+        BOOST_SPIRIT_DEBUG_NODE(opaque_part);
+        BOOST_SPIRIT_DEBUG_NODE(uric_no_slash);
+        BOOST_SPIRIT_DEBUG_NODE(net_path);
+        BOOST_SPIRIT_DEBUG_NODE(abs_path);
+        BOOST_SPIRIT_DEBUG_NODE(rel_path);
+        BOOST_SPIRIT_DEBUG_NODE(rel_segment);
+        BOOST_SPIRIT_DEBUG_NODE(scheme);
+        BOOST_SPIRIT_DEBUG_NODE(authority);
+        BOOST_SPIRIT_DEBUG_NODE(reg_name);
+        BOOST_SPIRIT_DEBUG_NODE(server);
+        BOOST_SPIRIT_DEBUG_NODE(userinfo);
+        BOOST_SPIRIT_DEBUG_NODE(hostport);
+        BOOST_SPIRIT_DEBUG_NODE(host);
+        BOOST_SPIRIT_DEBUG_NODE(hostname);
+        BOOST_SPIRIT_DEBUG_NODE(domainlabel);
+        BOOST_SPIRIT_DEBUG_NODE(toplabel);
+        BOOST_SPIRIT_DEBUG_NODE(ipv4address);
+        BOOST_SPIRIT_DEBUG_NODE(port);
+        BOOST_SPIRIT_DEBUG_NODE(path_segments);
+        BOOST_SPIRIT_DEBUG_NODE(segment);
+        BOOST_SPIRIT_DEBUG_NODE(param);
+        BOOST_SPIRIT_DEBUG_NODE(pchar);
+        BOOST_SPIRIT_DEBUG_NODE(query);
+        BOOST_SPIRIT_DEBUG_NODE(fragment);
+        BOOST_SPIRIT_DEBUG_NODE(uric);
+        BOOST_SPIRIT_DEBUG_NODE(reserved);
+        BOOST_SPIRIT_DEBUG_NODE(unreserved);
+        BOOST_SPIRIT_DEBUG_NODE(mark);
+        BOOST_SPIRIT_DEBUG_NODE(escaped);
+
+        uri & uri_ref = self.uri_ref;
+
+        uri_reference
+            =   !(absolute_uri | relative_uri) >> !('#' >> fragment)
+            ;
+
+        absolute_uri
+            =   (scheme[
+                    absolute_uri.scheme_begin = arg1,
+                    absolute_uri.scheme_end = arg2
+                ] >> ':')[
+                    var(uri_ref.scheme_begin) = absolute_uri.scheme_begin,
+                    var(uri_ref.scheme_end) = absolute_uri.scheme_end
+                ] >> (hier_part | opaque_part)[
+                    var(uri_ref.scheme_specific_part_begin) = arg1,
+                    var(uri_ref.scheme_specific_part_end) = arg2
+                ]
+            ;
+
+        relative_uri
+            =   (net_path | abs_path | rel_path) >> !('?' >> query)
+            ;
+
+        hier_part
+            =   (net_path | abs_path) >> !('?' >> query)
+            ;
+
+        opaque_part
+            =   uric_no_slash >> *uric
+            ;
+
+        uric_no_slash
+            =   unreserved
+            |   escaped
+            |   ';'
+            |   '?'
+            |   ':'
+            |   '@'
+            |   '&'
+            |   '='
+            |   '+'
+            |   '$'
+            |   ','
+            ;
+
+        net_path
+            =   "//" >> authority >> !abs_path
+            ;
+
+        abs_path
+            =   ('/' >> path_segments)[
+                    var(uri_ref.path_begin) = arg1,
+                    var(uri_ref.path_end) = arg2
+                ]
+            ;
+
+        rel_path
+            =   (rel_segment >> !abs_path)[
+                    var(uri_ref.path_begin) = arg1,
+                    var(uri_ref.path_end) = arg2
+                ]
+            ;
+
+        rel_segment
+            =  +(   unreserved
+                |   escaped
+                |   ';'
+                |   '@'
+                |   '&'
+                |   '='
+                |   '+'
+                |   '$'
+                |   ','
+                )
+            ;
+
+        scheme
+            =   (alpha_p >> *(alpha_p | digit_p | '+' | '-' | '.'))
+            ;
+
+        authority
+            =   (server | reg_name)[
+                    var(uri_ref.authority_begin) = arg1,
+                    var(uri_ref.authority_end) = arg2
+                ]
+            ;
+
+        reg_name
+            =  +(   unreserved
+                |   escaped
+                |   '$'
+                |   ','
+                |   ';'
+                |   ':'
+                |   '@'
+                |   '&'
+                |   '='
+                |   '+'
+                )
+            ;
+
+        server
+            =  !(
+                    !(userinfo[
+                        server.userinfo_begin = arg1,
+                        server.userinfo_end = arg2
+                    ] >> '@')[
+                        var(uri_ref.userinfo_begin) = server.userinfo_begin,
+                        var(uri_ref.userinfo_end) = server.userinfo_end
+                    ]
+                    >> hostport
+                )
+            ;
+
+        userinfo
+            =  *(   unreserved
+                |   escaped
+                |   ';'
+                |   ':'
+                |   '&'
+                |   '='
+                |   '+'
+                |   '$'
+                |   ','
+                )
+            ;
+
+        hostport
+            =   host >> !(':' >> port)
+            ;
+
+        host
+            =   (hostname | ipv4address)[
+                    var(uri_ref.host_begin) = arg1,
+                    var(uri_ref.host_end) = arg2
+                ]
+            ;
+
+        hostname
+            =   *(domainlabel >> '.') >> toplabel >> !ch_p('.')
+            ;
+
+        domainlabel
+            =   alnum_p >> *(*ch_p('-') >> alnum_p)
+            ;
+
+        toplabel
+            =   alpha_p >> *(*ch_p('-') >> alnum_p)
+            ;
+
+        ipv4address
+            =   +digit_p >> '.' >> +digit_p >> '.' >> +digit_p >> '.'
+                >> +digit_p
+            ;
+
+        port
+            =   (*digit_p)[
+                    var(uri_ref.port_begin) = arg1,
+                    var(uri_ref.port_end) = arg2
+                ]
+            ;
+
+        path_segments
+            =   segment >> *('/' >> segment)
+            ;
+
+        segment
+            =   *pchar >> *(';' >> param)
+            ;
+
+        param
+            =   *pchar
+            ;
+
+        pchar
+            =   unreserved
+            |   escaped
+            |   ':'
+            |   '@'
+            |   '&'
+            |   '='
+            |   '+'
+            |   '$'
+            |   ','
+            ;
+
+        query
+            =   (*uric)[
+                    var(uri_ref.query_begin) = arg1,
+                    var(uri_ref.query_end) = arg2
+                ]
+            ;
+
+        fragment
+            =   (*uric)[
+                    var(uri_ref.fragment_begin) = arg1,
+                    var(uri_ref.fragment_end) = arg2
+                ]
+            ;
+
+        uric
+            =   reserved
+            |   unreserved
+            |   escaped
+            ;
+
+        reserved
+            =   ch_p(';')
+            |   '/'
+            |   '?'
+            |   ':'
+            |   '@'
+            |   '&'
+            |   '='
+            |   '+'
+            |   '$'
+            |   ','
+            ;
+
+        unreserved
+            =   alnum_p
+            |   mark
+            ;
+
+        mark
+            =   ch_p('-')
+            |   '_'
+            |   '.'
+            |   '!'
+            |   '~'
+            |   '*'
+            |   '\''
+            |   '('
+            |   ')'
+            ;
+
+        escaped
+            =   '%' >> xdigit_p >> xdigit_p
+            ;
+    }
+
+    template <typename ScannerT>
+    const boost::spirit::rule<ScannerT> &
+    uri::grammar::definition<ScannerT>::start() const
+    {
+        return uri_reference;
+    }
 
     uri::uri() throw (std::bad_alloc)
     {}
@@ -2788,7 +2965,15 @@ namespace {
         throw (openvrml::invalid_url, std::bad_alloc):
         str_(str)
     {
-        if (!regex_match(this->str_, this->match_results_, uri::regex_)) {
+        using std::string;
+        using namespace boost::spirit;
+
+        grammar g(*this);
+
+        string::const_iterator begin = this->str_.begin();
+        string::const_iterator end = this->str_.end();
+
+        if (!parse(begin, end, g, space_p).full) {
             throw openvrml::invalid_url();
         }
     }
@@ -2800,55 +2985,49 @@ namespace {
 
     const std::string uri::scheme() const throw (std::bad_alloc)
     {
-        return std::string(this->match_results_[scheme_].first,
-                           this->match_results_[scheme_].second);
+        return std::string(this->scheme_begin, this->scheme_end);
     }
 
     const std::string uri::scheme_specific_part() const
         throw (std::bad_alloc)
     {
-        return std::string(
-            this->match_results_[scheme_specific_part_].first,
-            this->match_results_[scheme_specific_part_].second);
+        return std::string(this->scheme_specific_part_begin,
+                           this->scheme_specific_part_end);
     }
 
     const std::string uri::authority() const throw (std::bad_alloc)
     {
-        return std::string(this->match_results_[authority_].first,
-                           this->match_results_[authority_].second);
+        return std::string(this->authority_begin, this->authority_end);
     }
 
     const std::string uri::userinfo() const throw (std::bad_alloc)
     {
-        return std::string();
+        return std::string(this->userinfo_begin, this->userinfo_end);
     }
 
     const std::string uri::host() const throw (std::bad_alloc)
     {
-        return std::string();
+        return std::string(this->host_begin, this->host_end);
     }
 
     const std::string uri::port() const throw (std::bad_alloc)
     {
-        return std::string();
+        return std::string(this->port_begin, this->port_end);
     }
 
     const std::string uri::path() const throw (std::bad_alloc)
     {
-        return std::string(this->match_results_[path_].first,
-                           this->match_results_[path_].second);
+        return std::string(this->path_begin, this->path_end);
     }
 
     const std::string uri::query() const throw (std::bad_alloc)
     {
-        return std::string(this->match_results_[query_].first,
-                           this->match_results_[query_].second);
+        return std::string(this->query_begin, this->query_end);
     }
 
     const std::string uri::fragment() const throw (std::bad_alloc)
     {
-        return std::string(this->match_results_[fragment_].first,
-                           this->match_results_[fragment_].second);
+        return std::string(this->fragment_begin, this->fragment_end);
     }
 
     const uri uri::resolve_against(const uri & absolute_uri) const
@@ -2945,6 +3124,196 @@ namespace {
 
         return result_uri;
     }
+
+
+# ifdef OPENVRML_ENABLE_GZIP
+    namespace z {
+
+        typedef int level;
+        const level no_compression      = Z_NO_COMPRESSION;
+        const level best_speed          = Z_BEST_SPEED;
+        const level best_compression    = Z_BEST_COMPRESSION;
+        const level default_compression = Z_DEFAULT_COMPRESSION;
+
+        enum strategy {
+            default_strategy    = Z_DEFAULT_STRATEGY,
+            filtered            = Z_FILTERED,
+            huffman_only        = Z_HUFFMAN_ONLY
+        };
+
+        class filebuf : public std::streambuf {
+            enum { buffer_size = 16384 };
+            char buffer[buffer_size];
+            gzFile file;
+
+        public:
+            filebuf();
+            virtual ~filebuf();
+
+            bool is_open() const;
+            filebuf * open(const char * path, int mode,
+                           level = default_compression,
+                           strategy = default_strategy);
+            filebuf * close();
+
+        protected:
+            virtual int underflow();
+            virtual int overflow(int = EOF);
+        };
+
+        class ifstream : public std::istream {
+            filebuf fbuf;
+
+        public:
+            ifstream();
+            explicit ifstream(const char * path, level = default_compression,
+                              strategy = default_strategy);
+            virtual ~ifstream();
+
+            filebuf * rdbuf() const;
+            bool is_open() const;
+            void open(const char * path, level = default_compression,
+                      strategy = default_strategy);
+            void close();
+        };
+
+        //
+        // filebuf
+        //
+
+        int const lookback(4);
+
+        filebuf::filebuf(): file(0) {
+            this->setg(this->buffer + lookback,  // beginning of putback area
+                       this->buffer + lookback,  // read position
+                       this->buffer + lookback); // end position
+        }
+
+        filebuf::~filebuf() {
+            this->close();
+        }
+
+        bool filebuf::is_open() const {
+            return (this->file != 0);
+        }
+
+        filebuf * filebuf::open(const char * path,
+                                const int mode,
+                                const level comp_level,
+                                const strategy comp_strategy) {
+            using std::ios;
+
+            if (this->file) { return 0; }
+
+            //
+            // zlib only supports the "rb" and "wb" modes, so we bail on anything
+            // else.
+            //
+            static const char read_mode_string[] = "rb";
+            static const char write_mode_string[] = "wb";
+            const char * mode_string = 0;
+            if (mode == (ios::binary | ios::in)) {
+                mode_string = read_mode_string;
+            } else if (   (mode == (ios::binary | ios::out))
+                       || (mode == (ios::binary | ios::out | ios::trunc))) {
+                mode_string = write_mode_string;
+            } else {
+                return 0;
+            }
+
+            this->file = gzopen(path, mode_string);
+            if (!this->file) { return 0; }
+
+            gzsetparams(this->file, comp_level, comp_strategy);
+            return this;
+        }
+
+        filebuf * filebuf::close() {
+            if (!this->file) { return 0; }
+            gzclose(this->file);
+            this->file = 0;
+            return this;
+        }
+
+        int filebuf::underflow() {
+            if (this->gptr() < this->egptr()) { return *this->gptr(); }
+
+            //
+            // Process the size of the putback area; use the number of characters read,
+            // but at most four.
+            //
+            int num_putback = this->gptr() - this->eback();
+            if (num_putback > lookback) { num_putback = lookback; }
+
+            std::copy(this->gptr() - num_putback, this->gptr(),
+                      this->buffer + (lookback - num_putback));
+
+            //
+            // Read new characters.
+            //
+            int num = gzread(this->file,
+                             this->buffer + lookback,
+                             filebuf::buffer_size - lookback);
+
+            if (num <= 0) { return EOF; } // Error condition or end of file.
+
+            //
+            // Reset the buffer pointers.
+            //
+            this->setg(buffer + (lookback - num_putback), // Beginning of putback area.
+                       buffer + lookback,                 // Read position.
+                       buffer + lookback + num);          // End of buffer.
+
+            //
+            // Return the next character.
+            //
+            return *this->gptr();
+        }
+
+        int filebuf::overflow(int c) {
+            //
+            // This probably ought to be buffered, but this will do for now.
+            //
+            if (c != EOF) {
+                if (gzputc(file, c) == -1) { return EOF; }
+            }
+            return c;
+        }
+
+
+        //
+        // ifstream
+        //
+
+        ifstream::ifstream(): std::basic_istream<char>(&fbuf) {}
+
+        ifstream::ifstream(const char * path, level lev, strategy strat):
+                std::basic_istream<char>(&fbuf) {
+            this->open(path, lev, strat);
+        }
+
+        ifstream::~ifstream() {}
+
+        filebuf * ifstream::rdbuf() const {
+            return const_cast<filebuf *>(&this->fbuf);
+        }
+
+        bool ifstream::is_open() const { return this->fbuf.is_open(); }
+
+        void ifstream::open(const char * path, level lev, strategy strat) {
+            using std::ios;
+            if (!this->fbuf.open(path, ios::binary | ios::in, lev, strat)) {
+#   ifdef _WIN32
+                this->clear(failbit);
+#   else
+                this->setstate(failbit);
+#   endif
+            }
+        }
+
+        void ifstream::close() { this->fbuf.close(); }
+    }
+# endif // OPENVRML_ENABLE_GZIP
 } // namespace
 
 //
@@ -2965,215 +3334,53 @@ namespace {
  *
  * @brief The OpenVRML Runtime Library
  */
+namespace openvrml {
 
 /**
- * @var const double openvrml::pi
+ * @var const double pi
  *
  * @brief pi
  */
 
 /**
- * @var const double openvrml::pi_2
+ * @var const double pi_2
  *
  * @brief pi/2
  */
 
 /**
- * @var const double openvrml::pi_4
+ * @var const double pi_4
  *
  * @brief pi/4
  */
 
 /**
- * @var const double openvrml::inv_pi
+ * @var const double inv_pi
  *
  * @brief 1/pi
  */
 
 /**
- * @class openvrml::resource_istream
- *
- * @brief An abstract input stream for network resources.
- *
- * <code>resource_istream</code> inherits <code>std::istream</code>, adding
- * functions to get the URI and the MIME content type associated with the
- * stream. Users of the library must provide an implementation of this class,
- * to be returned from <code>openvrml::browser::do_get_resource</code>.
- */
-
-/**
- * @brief Construct.
- *
- * @param streambuf a stream buffer.
- */
-openvrml::resource_istream::resource_istream(std::streambuf * streambuf):
-    std::istream(streambuf)
-{}
-
-/**
- * @brief Destroy.
- */
-openvrml::resource_istream::~resource_istream()
-{}
-
-/**
- * @fn const std::string openvrml::resource_istream::url() const throw ()
- *
- * @brief Get the URL associated with the stream.
- *
- * @return the URL associated with the stream.
- */
-
-/**
- * @fn const std::string openvrml::resource_istream::type() const throw ()
- *
- * @brief Get the MIME content type associated with the stream.
- *
- * @return the MIME content type associated with the stream.
- */
-
-/**
- * @fn bool openvrml::resource_istream::data_available() const throw ()
- *
- * @brief Indicates whether data is available to be read from the stream.
- *
- * @return @c true if there is data in the stream buffer to be read; @c false
- *         otherwise.
- */
-
-
-/**
- * @class openvrml::stream_listener
- *
- * @brief An interface to simplify asynchronously reading a
- *        <code>resource_istream</code>.
- */
-
-/**
- * @brief Destroy.
- */
-openvrml::stream_listener::~stream_listener() throw ()
-{}
-
-/**
- * @brief Called once the stream is available for use.
- *
- * This function calls <code>stream_listener::do_stream_available</code>.
- *
- * @param uri           the URI associated with the stream.
- * @param media_type    the MIME media type for the stream.
- */
-void
-openvrml::stream_listener::stream_available(const std::string & uri,
-                                            const std::string & media_type)
-{
-    this->do_stream_available(uri, media_type);
-}
-
-/**
- * @fn void openvrml::stream_listener::do_stream_available(const std::string & uri, const std::string & media_type)
- *
- * @brief Called by <code>stream_listener::stream_available</code>.
- *
- * Concrete <code>stream_listener</code>s must override this function.
- *
- * @param uri           the URI associated with the stream.
- * @param media_type    the MIME media type for the stream.
- */
-
-/**
- * @brief Called when data is available.
- *
- * This function calls <code>stream_listener::do_data_available</code>.
- *
- * @param data  the data.
- */
-void
-openvrml::stream_listener::
-data_available(const std::vector<unsigned char> & data)
-{
-    this->do_data_available(data);
-}
-
-/**
- * @fn void openvrml::stream_listener::do_data_available(const std::vector<unsigned char> & data)
- *
- * @brief Called by <code>stream_listener::data_available</code>
- *
- * @param data  the data.
- */
-
-namespace {
-
-    struct stream_reader {
-        stream_reader(std::auto_ptr<openvrml::resource_istream> in,
-                      std::auto_ptr<openvrml::stream_listener> listener):
-            in_(in),
-            listener_(listener)
-        {}
-
-        void operator()() const
-        {
-            this->listener_->stream_available(this->in_->url(),
-                                              this->in_->type());
-            while (*this->in_) {
-                std::vector<unsigned char> data;
-                while (this->in_->data_available()) {
-                    const resource_istream::int_type c = this->in_->get();
-                    if (c != resource_istream::traits_type::eof()) {
-                        data.push_back(
-                            resource_istream::traits_type::to_char_type(c));
-                    } else {
-                        break;
-                    }
-                }
-                this->listener_->data_available(data);
-            }
-        }
-
-    private:
-        boost::shared_ptr<openvrml::resource_istream> in_;
-        boost::shared_ptr<openvrml::stream_listener> listener_;
-    };
-}
-
-/**
- * @brief Read a stream in a new thread.
- *
- * <code>read_stream</code> takes ownership of its arguments; the resources
- * are released when reading the stream completes and the thread terminates.
- *
- * @param in        an input stream.
- * @param listener  a stream listener.
- */
-void openvrml::read_stream(std::auto_ptr<resource_istream> in,
-                           std::auto_ptr<stream_listener> listener)
-{
-    boost::function0<void> f = stream_reader(in, listener);
-    boost::thread t(f);
-}
-
-/**
- * @class openvrml::invalid_vrml
+ * @class invalid_vrml
  *
  * @brief Exception thrown when the parser fails due to errors in the VRML
- *        input.
+ *      input.
  */
 
 /**
- * @var const std::string openvrml::invalid_vrml::url
+ * @var const std::string invalid_vrml::url
  *
  * @brief Resource identifier.
  */
 
 /**
- * @var size_t openvrml::invalid_vrml::line
+ * @var size_t invalid_vrml::line
  *
  * @brief Line number.
  */
 
 /**
- * @var size_t openvrml::invalid_vrml::column
+ * @var size_t invalid_vrml::column
  *
  * @brief Column number.
  */
@@ -3186,10 +3393,10 @@ void openvrml::read_stream(std::auto_ptr<resource_istream> in,
  * @param column    column number where the error was detected.
  * @param message   description of the error.
  */
-openvrml::invalid_vrml::invalid_vrml(const std::string & url,
-                                     const size_t line,
-                                     const size_t column,
-                                     const std::string & message):
+invalid_vrml::invalid_vrml(const std::string & url,
+                           const size_t line,
+                           const size_t column,
+                           const std::string & message):
     std::runtime_error(message),
     url(url),
     line(line),
@@ -3199,12 +3406,12 @@ openvrml::invalid_vrml::invalid_vrml(const std::string & url,
 /**
  * @brief Destroy.
  */
-openvrml::invalid_vrml::~invalid_vrml() throw ()
+invalid_vrml::~invalid_vrml() throw ()
 {}
 
 
 /**
- * @class openvrml::viewer_in_use
+ * @class viewer_in_use
  *
  * @brief Exception thrown when attempting to associate a <code>viewer</code>
  *        with a <code>browser</code> when the <code>viewer</code> is already
@@ -3214,402 +3421,1172 @@ openvrml::invalid_vrml::~invalid_vrml() throw ()
 /**
  * @brief Construct.
  */
-openvrml::viewer_in_use::viewer_in_use():
+viewer_in_use::viewer_in_use():
     std::invalid_argument("viewer in use")
 {}
 
 /**
  * @brief Destroy.
  */
-openvrml::viewer_in_use::~viewer_in_use() throw ()
+viewer_in_use::~viewer_in_use() throw ()
 {}
 
 
 /**
- * @class openvrml::browser_event
- *
- * @brief A <code>browser</code>-wide event.
- */
-
-/**
- * @var openvrml::browser_event::browser
- *
- * @brief Only <code>browser</code>s can construct <code>browser_event</code>s.
- */
-
-/**
- * @enum openvrml::browser_event::type_id
- *
- * @brief <code>browser_event</code> type identifier.
- */
-
-/**
- * @var openvrml::browser_event::initialized
- *
- * @brief An <code>initialized</code> event is sent once the world has loaded
- *        and all nodes in the initial scene have been initialized.
- */
-
-/**
- * @var openvrml::browser_event::shutdown
- *
- * @brief A <code>shutdown</code> event is sent once all of the nodes in the
- *        scene have been shut down.
- */
-
-/**
- * @internal
- *
- * @var openvrml::browser * openvrml::browser_event::source_
- *
- * @brief The <code>browser</code> from which the event originated.
- */
-
-/**
- * @internal
- *
- * @var openvrml::browser_event::type_id openvrml::browser_event::id_
- *
- * @brief Event type identifier.
- */
-
-/**
- * @internal
- *
- * @brief Construct.
- *
- * @param b     the <code>browser</code> from which the event originated.
- * @param id    the event type.
- */
-openvrml::browser_event::browser_event(browser & b, type_id id) throw ():
-    source_(&b),
-    id_(id)
-{}
-
-/**
- * @brief Event type identifier.
- *
- * @return the event type identifier.
- */
-openvrml::browser_event::type_id openvrml::browser_event::id() const throw ()
-{
-    return this->id_;
-}
-
-/**
- * @brief The <code>browser</code> that emitted the event.
- *
- * @return the <code>browser</code> that emitted the event.
- */
-openvrml::browser & openvrml::browser_event::source() const throw ()
-{
-    return *this->source_;
-}
-
-
-/**
- * @class openvrml::browser_listener
- *
- * @brief This class should be inherited by classes that want to listen for
- *        <code>browser_event</code>s.
- */
-
-/**
- * @internal
- *
- * @var openvrml::browser_listener::browser
- *
- * @brief <code>browser</code> instances need to call
- *        <code>browser_listener::browser_changed</code>.
- */
-
-/**
- * @brief Destroy.
- */
-openvrml::browser_listener::~browser_listener() throw ()
-{}
-
-/**
- * @internal
- *
- * @brief Send a <code>browser_event</code>.
- *
- * This function delegates to
- * <code>browser_listener::do_browser_changed</code>.
- *
- * @param event the <code>browser_event</code> to send.
- */
-void openvrml::browser_listener::browser_changed(const browser_event & event)
-{
-    this->do_browser_changed(event);
-}
-
-/**
- * @fn void openvrml::browser_listener::do_browser_changed(const browser_event & event)
- *
- * @param event the <code>browser_event</code> to send.
- */
-
-
-/**
- * @class openvrml::browser
+ * @class browser
  *
  * @brief Encapsulates a VRML browser.
  */
 
 /**
- * @var openvrml::browser::Vrml97Parser
+ * @var browser::Vrml97Parser
  *
  * @brief VRML97 parser generated by ANTLR.
  */
 
 /**
- * @internal
+ * @var browser::Vrml97RootScope
  *
- * @class openvrml::browser::node_class_map
- *
- * @brief The map of <code>node_class</code>es.
+ * @brief Root scope that is initialized with the VRML97 node types.
  */
 
 /**
- * @var boost::mutex openvrml::browser::node_class_map::mutex_
+ * @var browser::Vrml97Parser
  *
- * @brief Object mutex.
+ * @brief VRML97 parser generated by ANTLR.
  */
 
 /**
- * @typedef openvrml::browser::node_class_map::map_t
+ * @var browser::Vrml97RootScope
  *
- * @brief Map type.
+ * @brief Root scope that is initialized with the VRML97 node types.
  */
 
 /**
- * @var openvrml::browser::node_class_map::map_t browser::node_class_map::map_
+ * @enum browser::cb_reason
  *
- * @brief Map.
+ * @brief Valid reasons for browser callback.
  */
 
 /**
- * @brief Construct.
+ * @var browser::cb_reason browser::destroy_world_id
  *
- * @param b the <code>browser</code>.
+ * @brief Destroy the world.
  */
-openvrml::browser::node_class_map::node_class_map(browser & b)
+
+/**
+ * @var browser::cb_reason browser::replace_world_id
+ *
+ * @brief Replace the world.
+ */
+
+/**
+ * @typedef browser::scene_cb
+ *
+ * @brief A pointer to a browser callback function.
+ *
+ * The callback function provoides a way to let the app know when a world is
+ * loaded, changed, etc.
+ */
+
+/**
+ * @var std::auto_ptr<null_node_class> browser::null_node_class_
+ *
+ * @brief "Null" class object for default nodes (e.g., default_viewpoint).
+ */
+
+/**
+ * @var std::auto_ptr<null_node_type> browser::null_node_type_
+ *
+ * @brief "Null" type object for default nodes (e.g., default_viewpoint).
+ */
+
+/**
+ * @typedef browser::node_class_map_t
+ *
+ * @brief Maps URIs to @link node_class node_classes@endlink.
+ */
+
+/**
+ * @var browser::node_class_map_t browser::node_class_map
+ *
+ * @brief A map of URIs to node implementations.
+ */
+
+/**
+ * @var script_node_class browser::script_node_class_
+ *
+ * @brief node_class for Script nodes in the browser.
+ */
+
+/**
+ * @var scene * browser::scene_
+ *
+ * @brief Pointer to the root scene.
+ */
+
+/**
+ * @var node_ptr browser::default_viewpoint_
+ *
+ * @brief The "default" viewpoint_node used when no viewpoint_node in the scene
+ *        is bound.
+ */
+
+/**
+ * @var viewpoint_node * browser::active_viewpoint_
+ *
+ * @brief The currently "active" viewpoint_node.
+ */
+
+/**
+ * @var std::list<viewpoint_node *> browser::viewpoint_list
+ *
+ * @brief A list of all the Viewpoint nodes in the browser.
+ */
+
+/**
+ * @typedef browser::bind_stack_t
+ *
+ * @brief A list of bound nodes.
+ */
+
+/**
+ * @var browser::bind_stack_t browser::navigation_info_stack
+ *
+ * @brief The stack of bound NavigationInfo nodes.
+ */
+
+/**
+ * @var std::list<node *> browser::navigation_infos
+ *
+ * @brief A list of all the NavigationInfo nodes in the browser.
+ */
+
+/**
+ * @var std::list<node *> browser::scoped_lights
+ *
+ * @brief A list of all the scoped light nodes in the browser.
+ */
+
+/**
+ * @var std::list<script_node *> browser::scripts
+ *
+ * @brief A list of all the Script nodes in the browser.
+ */
+
+/**
+ * @var std::list<node *> browser::timers
+ *
+ * @brief A list of all the TimeSensor nodes in the browser.
+ */
+
+/**
+ * @var std::list<node *> browser::audio_clips
+ *
+ * @brief A list of all the AudioClip nodes in the browser.
+ */
+
+/**
+ * @var std::list<node *> browser::movies
+ *
+ * @brief A list of all the MovieTexture nodes in the browser.
+ */
+
+/**
+ * @var bool browser::modified_
+ *
+ * @brief Flag to indicate whether the browser has been modified.
+ */
+
+/**
+ * @var bool browser::new_view
+ *
+ * @brief Flag to indicate if the user has changed to a new view.
+ */
+
+/**
+ * @var double browser::delta_time
+ *
+ * @brief Time elapsed since the last update.
+ */
+
+/**
+ * @var openvrml::viewer * browser::viewer_
+ *
+ * @brief The current <code>viewer</code>.
+ */
+
+/**
+ * @typedef browser::scene_cb_list_t
+ *
+ * @brief List of functions to call when the world is changed.
+ */
+
+/**
+ * @struct browser::event
+ *
+ * @brief An event.
+ *
+ * An event has a value and a destination, and is associated with a time.
+ */
+
+/**
+ * @var double browser::event::timestamp
+ *
+ * @brief The timestamp of the event.
+ */
+
+/**
+ * @var field_value * browser::event::value
+ *
+ * @brief The value associated with the event.
+ */
+
+/**
+ * @var node_ptr browser::event::to_node
+ *
+ * @brief The node the event is going to.
+ */
+
+/**
+ * @var std::string browser::event::to_eventin
+ *
+ * @brief The eventIn of @a to_node the event is going to.
+ */
+
+/**
+ * @var browser::scene_cb_list_t browser::scene_callbacks
+ *
+ * @brief List of functions to call when the world is changed.
+ */
+
+/**
+ * @var double browser::frame_rate_
+ *
+ * @brief Frame rate.
+ */
+
+/**
+ * @var browser::max_events
+ *
+ * @brief The maximum number of events which may be queued.
+ *
+ * Each browser can have a limited number of pending events.
+ * Repeatedly allocating/freeing events is slow (it would be
+ * nice to get rid of the field cloning, too), and if there are
+ * so many events pending, we are probably running too slow to
+ * handle them effectively anyway.
+ */
+
+/**
+ * @var browser::event browser::event_mem
+ *
+ * @brief The event queue.
+ *
+ * @todo The event queue ought to be sorted by timestamp.
+ */
+
+/**
+ * @var size_t browser::first_event
+ *
+ * @brief Index of the first pending event.
+ */
+
+/**
+ * @var size_t browser::last_event
+ *
+ * @brief Index of the last pending event.
+ */
+
+/**
+ * @brief Get the current time.
+ */
+double browser::current_time() throw ()
 {
-    using namespace vrml97_node;
-    this->map_["urn:X-openvrml:node:Anchor"] =
-        boost::shared_ptr<node_class>(new anchor_class(b));
-    this->map_["urn:X-openvrml:node:Appearance"] =
-        boost::shared_ptr<node_class>(new appearance_class(b));
-    this->map_["urn:X-openvrml:node:AudioClip"] =
-        boost::shared_ptr<node_class>(new audio_clip_class(b));
-    this->map_["urn:X-openvrml:node:Background"] =
-        boost::shared_ptr<node_class>(new background_class(b));
-    this->map_["urn:X-openvrml:node:Billboard"] =
-        boost::shared_ptr<node_class>(new billboard_class(b));
-    this->map_["urn:X-openvrml:node:Box"] =
-        boost::shared_ptr<node_class>(new box_class(b));
-    this->map_["urn:X-openvrml:node:Collision"] =
-        boost::shared_ptr<node_class>(new collision_class(b));
-    this->map_["urn:X-openvrml:node:Color"] =
-        boost::shared_ptr<node_class>(new color_class(b));
-    this->map_["urn:X-openvrml:node:ColorInterpolator"] =
-        boost::shared_ptr<node_class>(new color_interpolator_class(b));
-    this->map_["urn:X-openvrml:node:Cone"] =
-        boost::shared_ptr<node_class>(new cone_class(b));
-    this->map_["urn:X-openvrml:node:Coordinate"] =
-        boost::shared_ptr<node_class>(new coordinate_class(b));
-    this->map_["urn:X-openvrml:node:CoordinateInterpolator"] =
-        boost::shared_ptr<node_class>(new coordinate_interpolator_class(b));
-    this->map_["urn:X-openvrml:node:Cylinder"] =
-        boost::shared_ptr<node_class>(new cylinder_class(b));
-    this->map_["urn:X-openvrml:node:CylinderSensor"] =
-        boost::shared_ptr<node_class>(new cylinder_sensor_class(b));
-    this->map_["urn:X-openvrml:node:DirectionalLight"] =
-        boost::shared_ptr<node_class>(new directional_light_class(b));
-    this->map_["urn:X-openvrml:node:ElevationGrid"] =
-        boost::shared_ptr<node_class>(new elevation_grid_class(b));
-    this->map_["urn:X-openvrml:node:Extrusion"] =
-        boost::shared_ptr<node_class>(new extrusion_class(b));
-    this->map_["urn:X-openvrml:node:Fog"] =
-        boost::shared_ptr<node_class>(new fog_class(b));
-    this->map_["urn:X-openvrml:node:FontStyle"] =
-        boost::shared_ptr<node_class>(new font_style_class(b));
-    this->map_["urn:X-openvrml:node:Group"] =
-        boost::shared_ptr<node_class>(new group_class(b));
-    this->map_["urn:X-openvrml:node:ImageTexture"] =
-        boost::shared_ptr<node_class>(new image_texture_class(b));
-    this->map_["urn:X-openvrml:node:IndexedFaceSet"] =
-        boost::shared_ptr<node_class>(new indexed_face_set_class(b));
-    this->map_["urn:X-openvrml:node:IndexedLineSet"] =
-        boost::shared_ptr<node_class>(new indexed_line_set_class(b));
-    this->map_["urn:X-openvrml:node:Inline"] =
-        boost::shared_ptr<node_class>(new inline_class(b));
-    this->map_["urn:X-openvrml:node:LOD"] =
-        boost::shared_ptr<node_class>(new lod_class(b));
-    this->map_["urn:X-openvrml:node:Material"] =
-        boost::shared_ptr<node_class>(new material_class(b));
-    this->map_["urn:X-openvrml:node:MovieTexture"] =
-        boost::shared_ptr<node_class>(new movie_texture_class(b));
-    this->map_["urn:X-openvrml:node:NavigationInfo"] =
-        boost::shared_ptr<node_class>(new navigation_info_class(b));
-    this->map_["urn:X-openvrml:node:Normal"] =
-        boost::shared_ptr<node_class>(new normal_class(b));
-    this->map_["urn:X-openvrml:node:NormalInterpolator"] =
-        boost::shared_ptr<node_class>(new normal_interpolator_class(b));
-    this->map_["urn:X-openvrml:node:OrientationInterpolator"] =
-        boost::shared_ptr<node_class>(new orientation_interpolator_class(b));
-    this->map_["urn:X-openvrml:node:PixelTexture"] =
-        boost::shared_ptr<node_class>(new pixel_texture_class(b));
-    this->map_["urn:X-openvrml:node:PlaneSensor"] =
-        boost::shared_ptr<node_class>(new plane_sensor_class(b));
-    this->map_["urn:X-openvrml:node:PointLight"] =
-        boost::shared_ptr<node_class>(new point_light_class(b));
-    this->map_["urn:X-openvrml:node:PointSet"] =
-        boost::shared_ptr<node_class>(new point_set_class(b));
-    this->map_["urn:X-openvrml:node:PositionInterpolator"] =
-        boost::shared_ptr<node_class>(new position_interpolator_class(b));
-    this->map_["urn:X-openvrml:node:ProximitySensor"] =
-        boost::shared_ptr<node_class>(new proximity_sensor_class(b));
-    this->map_["urn:X-openvrml:node:ScalarInterpolator"] =
-        boost::shared_ptr<node_class>(new scalar_interpolator_class(b));
-    this->map_["urn:X-openvrml:node:Shape"] =
-        boost::shared_ptr<node_class>(new shape_class(b));
-    this->map_["urn:X-openvrml:node:Sound"] =
-        boost::shared_ptr<node_class>(new sound_class(b));
-    this->map_["urn:X-openvrml:node:Sphere"] =
-        boost::shared_ptr<node_class>(new sphere_class(b));
-    this->map_["urn:X-openvrml:node:SphereSensor"] =
-        boost::shared_ptr<node_class>(new sphere_sensor_class(b));
-    this->map_["urn:X-openvrml:node:SpotLight"] =
-        boost::shared_ptr<node_class>(new spot_light_class(b));
-    this->map_["urn:X-openvrml:node:Switch"] =
-        boost::shared_ptr<node_class>(new switch_class(b));
-    this->map_["urn:X-openvrml:node:Text"] =
-        boost::shared_ptr<node_class>(new text_class(b));
-    this->map_["urn:X-openvrml:node:TextureCoordinate"] =
-        boost::shared_ptr<node_class>(new texture_coordinate_class(b));
-    this->map_["urn:X-openvrml:node:TextureTransform"] =
-        boost::shared_ptr<node_class>(new texture_transform_class(b));
-    this->map_["urn:X-openvrml:node:TimeSensor"] =
-        boost::shared_ptr<node_class>(new time_sensor_class(b));
-    this->map_["urn:X-openvrml:node:TouchSensor"] =
-        boost::shared_ptr<node_class>(new touch_sensor_class(b));
-    this->map_["urn:X-openvrml:node:Transform"] =
-        boost::shared_ptr<node_class>(new transform_class(b));
-    this->map_["urn:X-openvrml:node:Viewpoint"] =
-        boost::shared_ptr<node_class>(new viewpoint_class(b));
-    this->map_["urn:X-openvrml:node:VisibilitySensor"] =
-        boost::shared_ptr<node_class>(new visibility_sensor_class(b));
-    this->map_["urn:X-openvrml:node:WorldInfo"] =
-        boost::shared_ptr<node_class>(new world_info_class(b));
+    double currentTime;
+# ifdef _WIN32
+    _timeb timebuffer;
+    _ftime(&timebuffer);
+    currentTime = double(timebuffer.time) + 1.0e-3 * double(timebuffer.millitm);
+# else
+    timeval tv;
+    const int result = gettimeofday(&tv, 0);
+    assert(result == 0);
+
+    currentTime = double(tv.tv_sec) + 1.0e-6 * double(tv.tv_usec);
+# endif
+    return currentTime;
 }
 
 /**
- * @fn openvrml::browser::node_class_map::node_class_map(const node_class_map &)
+ * @var std::ostream & browser::out
  *
- * @brief Not implemented.
+ * @brief Output stream, generally for console output.
  */
 
 /**
- * @brief Assign.
+ * @var std::ostream & browser::err
  *
- * @param map   the value to assign.
+ * @brief Error output stream.
  */
-openvrml::browser::node_class_map &
-openvrml::browser::node_class_map::operator=(const node_class_map & map)
+
+/**
+ * @var bool browser::flags_need_updating
+ *
+ * @brief Set by node::setBVolumeDirty on any node in this browser graph,
+ *      cleared by update_flags.
+ *
+ * @c true if the bvolume dirty flag has been set on a node in the
+ * browser graph, but has not yet been propegated to that node's
+ * ancestors.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param out   output stream for console output.
+ * @param err   output stream for error console output.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+browser::browser(std::ostream & out, std::ostream & err)
+    throw (std::bad_alloc):
+    null_node_class_(new null_node_class(*this)),
+    null_node_type_(new null_node_type(*null_node_class_)),
+    script_node_class_(*this),
+    scene_(0),
+    default_viewpoint_(new default_viewpoint(*null_node_type_)),
+    active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint_.get())),
+    modified_(false),
+    new_view(false),
+    delta_time(DEFAULT_DELTA),
+    viewer_(0),
+    frame_rate_(0.0),
+    first_event(0),
+    last_event(0),
+    out(out),
+    err(err),
+    flags_need_updating(false)
 {
-    boost::mutex::scoped_lock my_lock(this->mutex_), map_lock(map.mutex_);
-    map_t temp(map.map_);
-    swap(this->map_, temp);
-    return *this;
+    assert(this->active_viewpoint_);
+    this->init_node_class_map();
 }
+
+/**
+ * @brief Destructor.
+ */
+browser::~browser() throw ()
+{
+    const double now = browser::current_time();
+
+    if (this->scene_) { this->scene_->shutdown(now); }
+    delete this->scene_;
+    this->scene_ = 0;
+    this->navigation_info_stack.clear();
+    assert(this->viewpoint_list.empty());
+    assert(this->navigation_infos.empty());
+    assert(this->scoped_lights.empty());
+    assert(this->scripts.empty());
+    assert(this->timers.empty());
+    assert(this->audio_clips.empty());
+    assert(this->movies.empty());
+    this->node_class_map.clear();
+}
+
+/**
+ * @brief Get the root nodes for the browser.
+ *
+ * @return the root nodes for the browser.
+ */
+const std::vector<node_ptr> & browser::root_nodes() const throw ()
+{
+    assert(this->scene_);
+    return this->scene_->nodes();
+}
+
+/**
+ * @brief Get the path to a node in the scene graph.
+ *
+ * @param n  the objective node.
+ *
+ * @return the path to @p node, starting with a root node, and ending with
+ *         @p node. If @p node is not in the scene graph, the returned
+ *         node_path is empty.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+const node_path browser::find_node(const node & n) const
+    throw (std::bad_alloc)
+{
+    assert(this->scene_);
+
+    class FindNodeTraverser : public node_traverser {
+        const node & objectiveNode;
+        node_path & nodePath;
+
+    public:
+        FindNodeTraverser(const node & objectiveNode, node_path & nodePath)
+            throw ():
+            objectiveNode(objectiveNode),
+            nodePath(nodePath)
+        {}
+
+        virtual ~FindNodeTraverser() throw()
+        {}
+
+    private:
+        virtual void on_entering(node & n) throw (std::bad_alloc)
+        {
+            this->nodePath.push_back(&n);
+            if (&n == &this->objectiveNode) { this->halt_traversal(); }
+        }
+
+        virtual void on_leaving(node & n) throw ()
+        {
+            if (!this->halted()) { this->nodePath.pop_back(); }
+        }
+    };
+
+    node_path nodePath;
+    FindNodeTraverser(n, nodePath).traverse(this->scene_->nodes());
+    return nodePath;
+}
+
+/**
+ * @brief Get the active viewpoint_node.
+ *
+ * The active viewpoint_node is the one currently associated with the user
+ * view.
+ *
+ * @return the active viewpoint_node.
+ */
+viewpoint_node & browser::active_viewpoint() const throw ()
+{
+    return *this->active_viewpoint_;
+}
+
+/**
+ * @brief Set the active viewpoint_node.
+ *
+ * @param viewpoint a viewpoint_node.
+ */
+void browser::active_viewpoint(viewpoint_node & viewpoint) throw ()
+{
+    this->active_viewpoint_ = &viewpoint;
+}
+
+/**
+ * @brief Reset the active viewpoint_node to the default.
+ */
+void browser::reset_default_viewpoint() throw ()
+{
+    assert(this->default_viewpoint_);
+    this->active_viewpoint_ =
+        node_cast<viewpoint_node *>(this->default_viewpoint_.get());
+    assert(this->active_viewpoint_);
+}
+
+/**
+ * @brief Add a viewpoint_node to the list of viewpoint_nodes for the browser.
+ *
+ * @param viewpoint a viewpoint_node.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @pre @p viewpoint is not in the list of viewpoint_nodes for the browser.
+ */
+void browser::add_viewpoint(viewpoint_node & viewpoint) throw (std::bad_alloc)
+{
+    assert(std::find(this->viewpoint_list.begin(), this->viewpoint_list.end(),
+                     &viewpoint) == this->viewpoint_list.end());
+    this->viewpoint_list.push_back(&viewpoint);
+}
+
+/**
+ * @brief Remove a viewpoint_node from the list of viewpoint_nodes for the
+ *      browser.
+ *
+ * @param viewpoint a viewpoint_node.
+ *
+ * @pre @p viewpoint is in the list of viewpoint_nodes for the browser.
+ */
+void browser::remove_viewpoint(viewpoint_node & viewpoint) throw ()
+{
+    assert(!this->viewpoint_list.empty());
+    typedef std::list<viewpoint_node *> viewpoint_list_t;
+    const viewpoint_list_t::iterator end = this->viewpoint_list.end();
+    const viewpoint_list_t::iterator pos =
+            std::find(this->viewpoint_list.begin(), end, &viewpoint);
+    assert(pos != end);
+    this->viewpoint_list.erase(pos);
+}
+
+/**
+ * @brief Get the list of @link viewpoint_node viewpoint_nodes@endlink for the
+ *      world.
+ *
+ * @return the list of @link viewpoint_node viewpoint_nodes@endlink for the
+ *      world.
+ */
+const std::list<viewpoint_node *> & browser::viewpoints() const throw ()
+{
+    return this->viewpoint_list;
+}
+
+/**
+ * @brief Set the current <code>viewer</code>.
+ *
+ * @param v <code>viewer</code>.
+ *
+ * @exception viewer_in_use if @p v is already associated with a
+ *                          <code>browser</code>.
+ */
+void browser::viewer(openvrml::viewer * v) throw (viewer_in_use)
+{
+    if (v && v->browser_) { throw viewer_in_use(); }
+    if (this->viewer_) { this->viewer_->browser_ = 0; }
+    this->viewer_ = v;
+    if (v) { v->browser_ = this; }
+}
+
+/**
+ * @brief The current <code>viewer</code>.
+ *
+ * @return the current <code>viewer</code>.
+ */
+viewer * browser::viewer() throw ()
+{
+    return this->viewer_;
+}
+
+/**
+ * @brief Get the browser name.
+ *
+ * @return "OpenVRML"
+ *
+ * Specific browsers may wish to override this method.
+ */
+const char * browser::name() const throw ()
+{
+    return "OpenVRML";
+}
+
+/**
+ * @brief Get the browser version.
+ *
+ * @return the version of openvrml.
+ *
+ * Specific browsers may wish to override this method.
+ */
+const char * browser::version() const throw ()
+{
+    return PACKAGE_VERSION;
+}
+
+/**
+ * @brief Get the average navigation speed in meters per second.
+ *
+ * @return the average navigation speed.
+ */
+float browser::current_speed()
+{
+    vrml97_node::navigation_info_node * const navInfo =
+        bindable_navigation_info_top();
+    if (navInfo) { return navInfo->speed(); }
+    return 0.0f;
+}
+
+/**
+ * @brief Get the URI for the world.
+ *
+ * @return the URI for the world.
+ */
+const std::string browser::world_url() const throw (std::bad_alloc)
+{
+    static const std::string empty_string;
+    return this->scene_
+        ? this->scene_->url() // Throws std::bad_alloc.
+        : empty_string;
+}
+
+/**
+ * @todo Implement me!
+ */
+void browser::replace_world(const std::vector<node_ptr> & nodes)
+{}
 
 namespace {
-    typedef std::map<std::string, boost::shared_ptr<openvrml::node_class> >
-        node_class_map_t;
+    typedef std::map<std::string, node_class_ptr> node_class_map_t;
 
-    struct init_node_class : std::unary_function<void,
-                                                 node_class_map_t::value_type>
+    struct InitNodeClass : std::unary_function<void,
+                                               node_class_map_t::value_type>
     {
-        init_node_class(openvrml::viewpoint_node * initial_viewpoint,
-                        const double time)
+        explicit InitNodeClass(viewpoint_node * initialViewpoint,
+                               const double time)
             throw ():
-            initial_viewpoint_(initial_viewpoint),
-            time_(time)
+            initialViewpoint(initialViewpoint),
+            time(time)
         {}
 
         void operator()(const node_class_map_t::value_type & value) const
             throw ()
         {
             assert(value.second);
-            value.second->initialize(this->initial_viewpoint_, this->time_);
+            value.second->initialize(this->initialViewpoint, this->time);
         }
 
     private:
-        openvrml::viewpoint_node * initial_viewpoint_;
-        double time_;
+        viewpoint_node * initialViewpoint;
+        double time;
     };
 }
 
 /**
- * @brief Initialize the <code>node_class</code>es.
+ * @brief Load a resource into the browser.
  *
- * @param initial_viewpoint the viewpoint_node that should be initially active.
- * @param timestamp         the current time.
+ * The default implementation of this method simply loads a VRML world
+ * into the browser.  If the resource at @p url is not a VRML world, this
+ * method as no effect.
+ *
+ * Implementations should override this method to handle non-VRML resources,
+ * handing them off to a Web browser or other appropriate handler.
+ *
+ * @param url       a URI.
+ * @param parameter parameters for @p url.
+ *
+ * @todo Make this asynchronous.
  */
-void
-openvrml::browser::node_class_map::init(viewpoint_node * initial_viewpoint,
-                                        const double timestamp)
+void browser::load_url(const std::vector<std::string> & url,
+                       const std::vector<std::string> & parameter)
+    throw (std::bad_alloc)
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
-    for_each(this->map_.begin(), this->map_.end(),
-             init_node_class(initial_viewpoint, timestamp));
+    using std::for_each;
+    using std::list;
+    using std::string;
+
+    const double now = browser::current_time();
+
+    //
+    // Clear out the current scene.
+    //
+    if (this->scene_) { this->scene_->shutdown(now); }
+    delete this->scene_;
+    this->scene_ = 0;
+    this->active_viewpoint_ =
+        node_cast<viewpoint_node *>(this->default_viewpoint_.get());
+    this->navigation_info_stack.clear();
+    assert(this->viewpoint_list.empty());
+    assert(this->navigation_infos.empty());
+    assert(this->scoped_lights.empty());
+    assert(this->scripts.empty());
+    assert(this->timers.empty());
+    assert(this->audio_clips.empty());
+    assert(this->movies.empty());
+    this->node_class_map.clear();
+
+    //
+    // Create the new scene.
+    //
+    this->init_node_class_map();
+    try {
+        this->scene_ = new scene(*this, url);
+        this->scene_->initialize(now);
+
+        //
+        // Get the initial viewpoint_node, if any was specified.
+        //
+        viewpoint_node * initialViewpoint = 0;
+        const string viewpointNodeId = uri(this->scene_->url()).fragment();
+        if (!viewpointNodeId.empty()) {
+            if (!this->scene_->nodes().empty()) {
+                const node_ptr & n = this->scene_->nodes()[0];
+                if (n) {
+                    node * const vp = n->scope()->find_node(viewpointNodeId);
+                    initialViewpoint = dynamic_cast<viewpoint_node *>(vp);
+                }
+            }
+        }
+
+        //
+        // Initialize the node_classes.
+        //
+        for_each(this->node_class_map.begin(), this->node_class_map.end(),
+                 InitNodeClass(initialViewpoint, now));
+
+        //
+        // Send initial bind events to bindable nodes.
+        //
+        if (!this->navigation_infos.empty()) {
+            assert(this->navigation_infos.front());
+            event_listener & listener =
+                navigation_infos.front()->event_listener("set_bind");
+            assert(dynamic_cast<sfbool_listener *>(&listener));
+            static_cast<sfbool_listener &>(listener)
+                .process_event(sfbool(true), now);
+        }
+
+        if (this->active_viewpoint_
+            != node_cast<viewpoint_node *>(this->default_viewpoint_.get())) {
+            event_listener & listener =
+                this->active_viewpoint_->event_listener("set_bind");
+            assert(dynamic_cast<sfbool_listener *>(&listener));
+            static_cast<sfbool_listener &>(listener)
+                .process_event(sfbool(true), now);
+        }
+    } catch (invalid_vrml & ex) {
+        this->err << ex.url << ':' << ex.line << ':' << ex.column
+                  << ": error: " << ex.what() << std::endl;
+    } catch (no_alternative_url & ex) {
+        this->err << ex.what() << std::endl;
+    }
+    this->modified(true);
+    this->new_view = true; // Force resetUserNav
 }
 
 /**
- * @brief Insert a <code>node_class</code>.
+ * @brief Send a string to the user interface.
  *
- * This operation will "fail" silently. That is, if a <code>node_class</code>
- * corresponding to @p id already exists in the map, the existing element will
- * simply be returned.
+ * The default implementation of this method simply prints @p description to
+ * @a out.  Subclasses can override this method to direct messages to an
+ * application's UI; for instance, a status bar.
  *
- * @param id            the implementation identifier.
- * @param node_class    a <code>node_class</code>.
- *
- * @return the element in the node_class_map corresponding to @p id.
+ * @param description   a string.
  */
-const boost::shared_ptr<node_class>
-openvrml::browser::node_class_map::
-insert(const std::string & id,
-       const boost::shared_ptr<node_class> & node_class)
+void browser::description(const std::string & description)
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
-    return this->map_.insert(make_pair(id, node_class)).first->second;
+    this->out << description << std::endl;
 }
 
 /**
- * @brief Find a <code>node_class</code>.
+ * @brief Generate nodes from a stream of VRML syntax.
  *
- * @param id    an implementation id.
+ * In addition to the exceptions listed, this method may throw any
+ * exception that may result from reading the input stream.
  *
- * @return the <code>node_class</code> corresponding to @p id, or a null
- *         pointer if no such <code>node_class</code> exists in the map.
+ * @param in    an input stream.
+ *
+ * @return the root nodes generated from @p in.
+ *
+ * @exception invalid_vrml      if @p in has invalid VRML syntax.
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-const boost::shared_ptr<openvrml::node_class>
-openvrml::browser::node_class_map::find(const std::string & id) const
+const std::vector<node_ptr> browser::create_vrml_from_stream(std::istream & in)
 {
-    const map_t::const_iterator pos = this->map_.find(id);
-    return (pos != this->map_.end())
-        ? pos->second
-        : boost::shared_ptr<node_class>();
+    std::vector<node_ptr> nodes;
+    try {
+        Vrml97Scanner scanner(in);
+        Vrml97Parser parser(scanner, "");
+        parser.vrmlScene(*this, nodes);
+    } catch (antlr::RecognitionException & ex) {
+        throw invalid_vrml(ex.getFilename(),
+                           ex.getLine(),
+                           ex.getColumn(),
+                           ex.getMessage());
+    } catch (antlr::ANTLRException & ex) {
+        throw std::runtime_error(ex.getMessage());
+    }
+    return nodes;
+}
+
+/**
+ * @todo Implement me!
+ */
+void browser::create_vrml_from_url(const std::vector<std::string> & url,
+                                   const node_ptr & node,
+                                   const std::string & event)
+{}
+
+/**
+ * @brief Initialize the node_class map with the available node
+ *        implementations.
+ */
+void browser::init_node_class_map() {
+    using namespace vrml97_node;
+    this->node_class_map["urn:X-openvrml:node:Anchor"] =
+        node_class_ptr(new anchor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Appearance"] =
+        node_class_ptr(new appearance_class(*this));
+    this->node_class_map["urn:X-openvrml:node:AudioClip"] =
+        node_class_ptr(new audio_clip_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Background"] =
+        node_class_ptr(new background_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Billboard"] =
+        node_class_ptr(new billboard_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Box"] =
+        node_class_ptr(new box_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Collision"] =
+        node_class_ptr(new collision_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Color"] =
+        node_class_ptr(new color_class(*this));
+    this->node_class_map["urn:X-openvrml:node:ColorInterpolator"] =
+        node_class_ptr(new color_interpolator_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Cone"] =
+        node_class_ptr(new cone_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Coordinate"] =
+        node_class_ptr(new coordinate_class(*this));
+    this->node_class_map["urn:X-openvrml:node:CoordinateInterpolator"] =
+        node_class_ptr(new coordinate_interpolator_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Cylinder"] =
+        node_class_ptr(new cylinder_class(*this));
+    this->node_class_map["urn:X-openvrml:node:CylinderSensor"] =
+        node_class_ptr(new cylinder_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:DirectionalLight"] =
+        node_class_ptr(new directional_light_class(*this));
+    this->node_class_map["urn:X-openvrml:node:ElevationGrid"] =
+        node_class_ptr(new elevation_grid_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Extrusion"] =
+        node_class_ptr(new extrusion_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Fog"] =
+        node_class_ptr(new fog_class(*this));
+    this->node_class_map["urn:X-openvrml:node:FontStyle"] =
+        node_class_ptr(new font_style_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Group"] =
+        node_class_ptr(new group_class(*this));
+    this->node_class_map["urn:X-openvrml:node:ImageTexture"] =
+        node_class_ptr(new image_texture_class(*this));
+    this->node_class_map["urn:X-openvrml:node:IndexedFaceSet"] =
+        node_class_ptr(new indexed_face_set_class(*this));
+    this->node_class_map["urn:X-openvrml:node:IndexedLineSet"] =
+        node_class_ptr(new indexed_line_set_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Inline"] =
+        node_class_ptr(new inline_class(*this));
+    this->node_class_map["urn:X-openvrml:node:LOD"] =
+        node_class_ptr(new lod_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Material"] =
+        node_class_ptr(new material_class(*this));
+    this->node_class_map["urn:X-openvrml:node:MovieTexture"] =
+        node_class_ptr(new movie_texture_class(*this));
+    this->node_class_map["urn:X-openvrml:node:NavigationInfo"] =
+        node_class_ptr(new navigation_info_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Normal"] =
+        node_class_ptr(new normal_class(*this));
+    this->node_class_map["urn:X-openvrml:node:NormalInterpolator"] =
+        node_class_ptr(new normal_interpolator_class(*this));
+    this->node_class_map["urn:X-openvrml:node:OrientationInterpolator"] =
+        node_class_ptr(new orientation_interpolator_class(*this));
+    this->node_class_map["urn:X-openvrml:node:PixelTexture"] =
+        node_class_ptr(new pixel_texture_class(*this));
+    this->node_class_map["urn:X-openvrml:node:PlaneSensor"] =
+        node_class_ptr(new plane_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:PointLight"] =
+        node_class_ptr(new point_light_class(*this));
+    this->node_class_map["urn:X-openvrml:node:PointSet"] =
+        node_class_ptr(new point_set_class(*this));
+    this->node_class_map["urn:X-openvrml:node:PositionInterpolator"] =
+        node_class_ptr(new position_interpolator_class(*this));
+    this->node_class_map["urn:X-openvrml:node:ProximitySensor"] =
+        node_class_ptr(new proximity_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:ScalarInterpolator"] =
+        node_class_ptr(new scalar_interpolator_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Shape"] =
+        node_class_ptr(new shape_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Sound"] =
+        node_class_ptr(new sound_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Sphere"] =
+        node_class_ptr(new sphere_class(*this));
+    this->node_class_map["urn:X-openvrml:node:SphereSensor"] =
+        node_class_ptr(new sphere_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:SpotLight"] =
+        node_class_ptr(new spot_light_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Switch"] =
+        node_class_ptr(new switch_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Text"] =
+        node_class_ptr(new text_class(*this));
+    this->node_class_map["urn:X-openvrml:node:TextureCoordinate"] =
+        node_class_ptr(new texture_coordinate_class(*this));
+    this->node_class_map["urn:X-openvrml:node:TextureTransform"] =
+        node_class_ptr(new texture_transform_class(*this));
+    this->node_class_map["urn:X-openvrml:node:TimeSensor"] =
+        node_class_ptr(new time_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:TouchSensor"] =
+        node_class_ptr(new touch_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Transform"] =
+        node_class_ptr(new transform_class(*this));
+    this->node_class_map["urn:X-openvrml:node:Viewpoint"] =
+        node_class_ptr(new viewpoint_class(*this));
+    this->node_class_map["urn:X-openvrml:node:VisibilitySensor"] =
+        node_class_ptr(new visibility_sensor_class(*this));
+    this->node_class_map["urn:X-openvrml:node:WorldInfo"] =
+        node_class_ptr(new world_info_class(*this));
+}
+
+/**
+ * @brief Execute browser callback functions.
+ *
+ * @param reason    the cb_reason to pass to the callback functions.
+ */
+void browser::do_callbacks(const cb_reason reason)
+{
+    scene_cb_list_t::iterator cb, cbend = this->scene_callbacks.end();
+    for (cb = this->scene_callbacks.begin(); cb != cbend; ++cb) {
+        (*cb)(reason);
+    }
+}
+
+/**
+ * @brief Add a callback function to be called when the world changes.
+ *
+ * @param cb    a browser callback function.
+ */
+void browser::add_world_changed_callback(const scene_cb cb)
+{
+    this->scene_callbacks.push_front(cb);
+}
+
+/**
+ * @brief Get the current frame rate.
+ *
+ * @return the current frame rate.
+ */
+double browser::frame_rate() const
+{
+    return this->frame_rate_;
+}
+
+/**
+ * @brief Queue an event for a node.
+ *
+ * Current events are in the array @a event_mem[first_event, last_event). If
+ * @a first_event == @a last_event, the queue is empty. There is a fixed
+ * maximum number of events. If we are so far behind that the queue is filled,
+ * the oldest events get overwritten.
+ */
+void browser::queue_event(double timestamp,
+                          field_value * value,
+                          const node_ptr & to_node,
+                          const std::string & to_eventin)
+{
+    event * e = &this->event_mem[this->last_event];
+    e->timestamp = timestamp;
+    e->value = value;
+    e->to_node = to_node;
+    e->to_eventin = to_eventin;
+    this->last_event = (this->last_event + 1) % max_events;
+
+    // If the event queue is full, discard the oldest (in terms of when it
+    // was put on the queue, not necessarily in terms of earliest timestamp).
+    if (this->last_event == this->first_event) {
+        e = &this->event_mem[this->last_event];
+        delete e->value;
+        this->first_event = (this->first_event + 1) % max_events;
+    }
+}
+
+/**
+ * @brief Check if any events are waiting to be distributed.
+ *
+ * @return @c true if there are pending events, @c false otherwise.
+ */
+bool browser::events_pending()
+{
+    return this->first_event != this->last_event;
+}
+
+
+/**
+ * @brief Discard all pending events
+ */
+void browser::flush_events()
+{
+    while (this->first_event != this->last_event) {
+        event *e = &this->event_mem[this->first_event];
+        this->first_event = (this->first_event + 1) % max_events;
+        delete e->value;
+    }
+}
+
+/**
+ * Called by the viewer when the cursor passes over, clicks, drags, or
+ * releases a sensitive object (an Anchor or another grouping node with
+ * an enabled TouchSensor child).
+ */
+void browser::sensitive_event(node * const n,
+                              const double timestamp,
+                              const bool is_over,
+                              const bool is_active,
+                              double * const point)
+{
+    if (n) {
+        vrml97_node::anchor_node * a = n->to_anchor();
+        if (a) {
+            //
+            // This should really be (isOver && !isActive && n->wasActive)
+            // (ie, button up over the anchor after button down over the
+            // anchor)
+            //
+            if (is_active && is_over) { a->activate(); }
+        } else {
+            //
+            // The parent grouping node is registered for Touch/Drag Sensors.
+            //
+            grouping_node * const g = node_cast<grouping_node *>(n);
+            if (g) {
+                g->activate(timestamp, is_over, is_active, point);
+                this->modified(true);
+            }
+        }
+    }
+}
+
+namespace {
+    template <typename T>
+    struct UpdatePolledNode_ : std::unary_function<T, void> {
+        explicit UpdatePolledNode_(double time): time(time) {}
+
+        void operator()(T node) const { node->update(time); }
+
+    private:
+        double time;
+    };
+
+    template <typename FieldValue>
+    void process_event(event_listener & listener,
+                       const field_value & value,
+                       const double timestamp)
+    {
+        assert(dynamic_cast<field_value_listener<FieldValue> *>(&listener));
+        assert(dynamic_cast<const FieldValue *>(&value));
+        static_cast<field_value_listener<FieldValue> &>(listener)
+            .process_event(static_cast<const FieldValue &>(value), timestamp);
+    }
+}
+
+/**
+ * @brief Process events (update the browser).
+ *
+ * This method should be called after each frame is rendered.
+ *
+ * @return @c true if the browser needs to be rerendered, @c false otherwise.
+ */
+bool browser::update(double current_time)
+{
+    if (current_time <= 0.0) { current_time = browser::current_time(); }
+
+    this->delta_time = DEFAULT_DELTA;
+
+    // Update each of the timers.
+    std::list<node *>::iterator i, end = this->timers.end();
+    for (i = this->timers.begin(); i != end; ++i) {
+        vrml97_node::time_sensor_node * t = (*i)->to_time_sensor();
+        if (t) { t->update(current_time); }
+    }
+
+    // Update each of the clips.
+    end = this->audio_clips.end();
+    for (i = this->audio_clips.begin(); i != end; ++i) {
+        vrml97_node::audio_clip_node * c = (*i)->to_audio_clip();
+        if (c) { c->update(current_time); }
+    }
+
+    // Update each of the movies.
+    end = this->movies.end();
+    for (i = this->movies.begin(); i != end; ++i) {
+        vrml97_node::movie_texture_node * m = (*i)->to_movie_texture();
+        if (m) { m->update(current_time); }
+    }
+
+    //
+    // Update each of the scripts.
+    //
+    std::for_each(this->scripts.begin(), this->scripts.end(),
+                  UpdatePolledNode_<script_node *>(current_time));
+
+    // Pass along events to their destinations
+    while (this->first_event != this->last_event) {
+        event * const e = &this->event_mem[this->first_event];
+        this->first_event = (this->first_event + 1) % max_events;
+
+        event_listener & listener = e->to_node->event_listener(e->to_eventin);
+        switch (e->value->type()) {
+        case field_value::sfbool_id:
+            process_event<sfbool>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfcolor_id:
+            process_event<sfcolor>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sffloat_id:
+            process_event<sffloat>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfimage_id:
+            process_event<sfimage>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfint32_id:
+            process_event<sfint32>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfnode_id:
+            process_event<sfnode>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfrotation_id:
+            process_event<sfrotation>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfstring_id:
+            process_event<sfstring>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sftime_id:
+            process_event<sftime>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfvec2f_id:
+            process_event<sfvec2f>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::sfvec3f_id:
+            process_event<sfvec3f>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfcolor_id:
+            process_event<mfcolor>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mffloat_id:
+            process_event<mffloat>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfint32_id:
+            process_event<mfint32>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfnode_id:
+            process_event<mfnode>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfrotation_id:
+            process_event<mfrotation>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfstring_id:
+            process_event<mfstring>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mftime_id:
+            process_event<mftime>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfvec2f_id:
+            process_event<mfvec2f>(listener, *e->value, e->timestamp);
+            break;
+        case field_value::mfvec3f_id:
+            process_event<mfvec3f>(listener, *e->value, e->timestamp);
+            break;
+        default:
+            assert(false);
+        }
+
+        delete e->value;
+    }
+
+    // Signal a redisplay if necessary
+    return this->modified();
+}
+
+/**
+ * @brief Indicate whether the headlight is on.
+ *
+ * @return @c true if the headlight is on; @c false otherwise.
+ */
+bool browser::headlight_on()
+{
+    vrml97_node::navigation_info_node * const navInfo =
+        this->bindable_navigation_info_top();
+    if (navInfo) { return navInfo->headlight(); }
+    return true;
 }
 
 namespace {
 
-    struct render_node_class :
+    struct RenderNodeClass :
             std::unary_function<void, node_class_map_t::value_type> {
-        explicit render_node_class(openvrml::viewer & viewer):
+        explicit RenderNodeClass(openvrml::viewer & viewer):
             viewer(&viewer)
         {}
 
@@ -3624,25 +4601,835 @@ namespace {
 }
 
 /**
- * @brief Render the <code>node_class</code>es.
- *
- * @param v a viewer.
+ * @brief Draw this browser into the specified viewer
  */
-void openvrml::browser::node_class_map::render(openvrml::viewer & v)
+void browser::render()
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
-    for_each(this->map_.begin(), this->map_.end(), render_node_class(v));
+    if (!this->viewer_) { return; }
+
+    //
+    // Per-node_class rendering happens before viewer::set_viewpoint is called
+    // This is important for things like background rendering, since
+    // viewer::insert_background must be called before viewer::set_viewpoint.
+    //
+    std::for_each(this->node_class_map.begin(), this->node_class_map.end(),
+                  RenderNodeClass(*this->viewer_));
+
+    if (this->new_view) {
+        this->viewer_->reset_user_navigation();
+        this->new_view = false;
+    }
+    float avatarSize = 0.25;
+    float visibilityLimit = 0.0;
+    vrml97_node::navigation_info_node * ni =
+        this->bindable_navigation_info_top();
+    if (ni) {
+        avatarSize = ni->avatar_size()[0];
+        visibilityLimit = ni->visibility_limit();
+    }
+
+    // Activate the headlight.
+    // ambient is supposed to be 0 according to the spec...
+    if (this->headlight_on()) {
+        static const color color(1.0, 1.0, 1.0);
+        static const vec3f direction(0.0, 0.0, -1.0);
+        static const float ambientIntensity = 0.3f;
+        static const float intensity = 1.0;
+
+        this->viewer_->insert_dir_light(ambientIntensity,
+                                        intensity,
+                                        color,
+                                        direction);
+    }
+
+    // sets the viewpoint transformation
+    //
+    const mat4f t = this->active_viewpoint_->user_view_transform()
+                    * this->active_viewpoint_->transformation();
+    vec3f position, scale;
+    rotation orientation;
+    t.transformation(position, orientation, scale);
+    this->viewer_->set_viewpoint(position,
+                                 orientation,
+                                 this->active_viewpoint_->field_of_view(),
+                                 avatarSize,
+                                 visibilityLimit);
+
+    // Top level object
+
+    this->viewer_->begin_object(0);
+    mat4f modelview = t.inverse();
+    rendering_context rc(bounding_volume::partial, modelview);
+    rc.draw_bounding_spheres = true;
+
+    // Do the browser-level lights (Points and Spots)
+    std::list<node *>::iterator li, end = this->scoped_lights.end();
+    for (li = this->scoped_lights.begin(); li != end; ++li) {
+        vrml97_node::abstract_light_node * x = (*li)->to_light();
+        if (x) { x->renderScoped(*this->viewer_); }
+    }
+
+    //
+    // Render the nodes.  scene_ may be 0 if the world failed to load.
+    //
+    if (this->scene_) {
+        this->scene_->render(*this->viewer_, rc);
+    }
+
+    this->viewer_->end_object();
+
+    // This is actually one frame late...
+    this->frame_rate_ = this->viewer_->frame_rate();
+
+    this->modified(false);
+
+    // If any events were generated during render (ugly...) do an update
+    if (this->events_pending()) { this->delta(0.0); }
 }
+
+/**
+ * @brief Indicate whether rendering is necessary.
+ *
+ * @param value @c true to indicate that the browser state has changed and
+ *              rerendering is necessary; @c false once rendering has occurred.
+ */
+void browser::modified(const bool value)
+{
+    this->modified_ = value;
+}
+
+/**
+ * @brief Check if the browser has been modified.
+ *
+ * @return @c true if the browser has been modified, @c false otherwise.
+ */
+bool browser::modified() const
+{
+    return this->modified_;
+}
+
+/**
+ * @brief Set the time until the next update is needed.
+ *
+ * @param d a time interval.
+ */
+void browser::delta(const double d)
+{
+    if (d < this->delta_time) { this->delta_time = d; }
+}
+
+/**
+ * @brief Get the time interval between browser updates.
+ *
+ * @return the time interval between browser updates.
+ */
+double browser::delta() const
+{
+    return this->delta_time;
+}
+
+/**
+ * @brief Get the top node of a bind_stack_t.
+ *
+ * @return the top node of @p stack.
+ */
+const node_ptr browser::bindable_top(const bind_stack_t & stack)
+{
+    return stack.empty() ? node_ptr(0) : stack.front();
+}
+
+/**
+ * @brief Push a node onto a bind_stack_t.
+ *
+ * @param stack the bind_stack_t onto which to push @p node.
+ * @param node  the node to push onto @p stack.
+ */
+void browser::bindable_push(bind_stack_t & stack, const node_ptr & node)
+{
+    this->bindable_remove(stack, node); // Remove any existing reference
+    stack.push_front(node);
+    this->modified(true);
+}
+
+/**
+ * @brief Remove a node from a bind_stack_t.
+ *
+ * @param stack the bind_stack_t from which to remove @p node.
+ * @param node  the node to remove from @p stack.
+ */
+void browser::bindable_remove(bind_stack_t & stack, const node_ptr & node)
+{
+    const bind_stack_t::iterator pos =
+        std::find(stack.begin(), stack.end(), node);
+    if (pos != stack.end()) {
+        stack.erase(pos);
+        this->modified(true);
+    }
+}
+
+/**
+ * @brief Add a NavigationInfo node to the list of NavigationInfo nodes for the
+ *      browser.
+ *
+ * @param node a NavigationInfo node.
+ *
+ * @pre @p node is not in the list of NavigationInfo nodes for the browser.
+ */
+void browser::add_navigation_info(vrml97_node::navigation_info_node & node)
+{
+    assert(std::find(this->navigation_infos.begin(),
+                     this->navigation_infos.end(), &node)
+            == this->navigation_infos.end());
+    this->navigation_infos.push_back(&node);
+}
+
+/**
+ * @brief Remove a NavigationInfo node from the list of NavigationInfo nodes
+ *      for the browser.
+ *
+ * @param n  a NavigationInfo node.
+ *
+ * @pre @p n is in the list of NavigationInfo nodes for the browser.
+ */
+void browser::remove_navigation_info(vrml97_node::navigation_info_node & n)
+{
+    assert(!this->navigation_infos.empty());
+    const std::list<node *>::iterator end = this->navigation_infos.end();
+    const std::list<node *>::iterator pos =
+            std::find(this->navigation_infos.begin(), end, &n);
+    assert(pos != end);
+    this->navigation_infos.erase(pos);
+}
+
+/**
+ * @brief Get the active node on the bound NavigationInfo stack.
+ *
+ * @return the active node on the bound NavigationInfo stack.
+ */
+vrml97_node::navigation_info_node * browser::bindable_navigation_info_top()
+{
+    node * const n = this->bindable_top(this->navigation_info_stack).get();
+    return n ? n->to_navigation_info() : 0;
+}
+
+/**
+ * @brief Push a NavigationInfo node onto the bound NavigationInfo node stack.
+ *
+ * @param n a NavigationInfo node.
+ */
+void browser::bindable_push(vrml97_node::navigation_info_node * n)
+{
+    this->bindable_push(this->navigation_info_stack, node_ptr(n));
+}
+
+/**
+ * @brief Remove a NavigationInfo node from the bound NavigationInfo node
+ *        stack.
+ *
+ * @param n a NavigationInfo node.
+ */
+void browser::bindable_remove(vrml97_node::navigation_info_node * n)
+{
+    this->bindable_remove(this->navigation_info_stack, node_ptr(n));
+}
+
+/**
+ * @brief Add a scoped light node to the browser.
+ *
+ * @param light a light node.
+ *
+ * @pre @p light is not in the list of light nodes for the browser.
+ */
+void browser::add_scoped_light(vrml97_node::abstract_light_node & light) {
+    assert(std::find(this->scoped_lights.begin(), this->scoped_lights.end(),
+                     &light) == this->scoped_lights.end());
+    this->scoped_lights.push_back(&light);
+}
+
+/**
+ * @brief Remove a scoped light node from the browser.
+ *
+ * @param light the light node to remove.
+ *
+ * @pre @p light is in the list of light nodes for the browser.
+ */
+void browser::remove_scoped_light(vrml97_node::abstract_light_node & light)
+{
+    assert(!this->scoped_lights.empty());
+    const std::list<node *>::iterator end = this->scoped_lights.end();
+    const std::list<node *>::iterator pos =
+            std::find(this->scoped_lights.begin(), end, &light);
+    assert(pos != end);
+    this->scoped_lights.erase(pos);
+}
+
+/**
+ * @brief Add a MovieTexture node to the browser.
+ *
+ * @param movie a MovieTexture node.
+ *
+ * @pre @p movie is not in the list of MovieTexture nodes for the browser.
+ */
+void browser::add_movie(vrml97_node::movie_texture_node & movie) {
+    assert(std::find(this->movies.begin(), this->movies.end(), &movie)
+            == this->movies.end());
+    this->movies.push_back(&movie);
+}
+
+/**
+ * @brief Remove a movie_texture node from the browser.
+ *
+ * @param movie the movie_texture node to remove.
+ *
+ * @pre @p movie is in the list of movie_texture nodes for the browser.
+ */
+void browser::remove_movie(vrml97_node::movie_texture_node & movie)
+{
+    assert(!this->movies.empty());
+    const std::list<node *>::iterator end = this->movies.end();
+    const std::list<node *>::iterator pos =
+            std::find(this->movies.begin(), end, &movie);
+    assert(pos != end);
+    this->movies.erase(pos);
+}
+
+/**
+ * @brief Add a Script node to the browser.
+ *
+ * @param script    a Script node.
+ *
+ * @pre @p script is not in the list of Script nodes for the browser.
+ */
+void browser::add_script(script_node & script) {
+    assert(std::find(this->scripts.begin(), this->scripts.end(), &script)
+            == this->scripts.end());
+    this->scripts.push_back(&script);
+}
+
+/**
+ * @brief Remove a Script node from the browser.
+ *
+ * @param script    the Script node to remove.
+ *
+ * @pre @p script is in the list of Script nodes for the browser.
+ */
+void browser::remove_script(script_node & script) {
+    assert(!this->scripts.empty());
+    typedef std::list<script_node *> script_node_list_t;
+    const script_node_list_t::iterator end = this->scripts.end();
+    const script_node_list_t::iterator pos =
+            std::find(this->scripts.begin(), end, &script);
+    assert(pos != end);
+    this->scripts.erase(pos);
+}
+
+/**
+ * @brief Add a TimeSensor node to the browser.
+ *
+ * @param timer a TimeSensor node.
+ *
+ * @pre @p timer is not in the list of TimeSensor nodes for the browser.
+ */
+void browser::add_time_sensor(vrml97_node::time_sensor_node & timer)
+{
+    assert(std::find(this->timers.begin(), this->timers.end(), &timer)
+           == this->timers.end());
+    this->timers.push_back(&timer);
+}
+
+/**
+ * @brief Remove a time_sensor node from the browser.
+ *
+ * @param timer the time_sensor node to remove.
+ *
+ * @pre @p timer is in the list of time_sensor nodes for the browser.
+ */
+void browser::remove_time_sensor(vrml97_node::time_sensor_node & timer)
+{
+    assert(!this->timers.empty());
+    const std::list<node *>::iterator end = this->timers.end();
+    const std::list<node *>::iterator pos =
+            std::find(this->timers.begin(), end, &timer);
+    assert(pos != end);
+    this->timers.erase(pos);
+}
+
+
+/**
+ * @brief Add an AudioClip node to the browser.
+ *
+ * @param audio_clip    an audio_clip node.
+ *
+ * @pre @p audio_clip is not in the list of audio_clip nodes for the browser.
+ */
+void browser::add_audio_clip(vrml97_node::audio_clip_node & audio_clip)
+{
+    assert(std::find(this->audio_clips.begin(), this->audio_clips.end(),
+                     &audio_clip) == this->audio_clips.end());
+    this->audio_clips.push_back(&audio_clip);
+}
+
+/**
+ * @brief Remove an audio_clip node from the browser.
+ *
+ * @param audio_clip    the audio_clip node to remove.
+ *
+ * @pre @p audio_clip is in the list of audio_clip nodes for the browser.
+ */
+void browser::remove_audio_clip(vrml97_node::audio_clip_node & audio_clip)
+{
+    assert(!this->audio_clips.empty());
+    const std::list<node *>::iterator end = this->audio_clips.end();
+    const std::list<node *>::iterator pos =
+            std::find(this->audio_clips.begin(), end, &audio_clip);
+    assert(pos != end);
+    this->audio_clips.erase(pos);
+}
+
+
+/**
+ * @brief Propagate the bvolume dirty flag from children to ancestors.
+ *
+ * The invariant is that if a node's bounding volume is out of date,
+ * then the bounding volumes of all that nodes's ancestors must be
+ * out of date. However, Node does not maintain a parent pointer. So
+ * we must do a traversal of the entire browser graph to do the propagation.
+ *
+ * @see node::setBVolumeDirty
+ * @see node::isBVolumeDirty
+ */
+void browser::update_flags()
+{
+//  Node* root = this->getRoot();
+//  root->updateModified(0x002);
+}
+
+
+/**
+ * @class bad_url
+ *
+ * @brief Thrown when there is a problem resolving a URI.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param message   Informative text.
+ */
+bad_url::bad_url(const std::string & message):
+    std::runtime_error(message)
+{}
+
+/**
+ * @brief Destroy.
+ */
+bad_url::~bad_url() throw ()
+{}
+
+
+/**
+ * @class invalid_url
+ *
+ * @brief Thrown when parsing a URI fails.
+ */
+
+/**
+ * @brief Construct.
+ */
+invalid_url::invalid_url():
+    bad_url("Invalid URI.")
+{}
+
+/**
+ * @brief Destroy.
+ */
+invalid_url::~invalid_url() throw ()
+{}
+
+
+/**
+ * @class unreachable_url
+ *
+ * @brief Thrown when a URI cannot be reached.
+ */
+
+/**
+ * @brief Construct.
+ */
+unreachable_url::unreachable_url():
+    bad_url("Unreachable URI.")
+{}
+
+/**
+ * @brief Destroy.
+ */
+unreachable_url::~unreachable_url() throw ()
+{}
+
+
+/**
+ * @class no_alternative_url
+ *
+ * @brief Exception thrown when no URI in an alternative URI list can be
+ *        resolved.
+ */
+
+/**
+ * @brief Construct.
+ */
+no_alternative_url::no_alternative_url():
+    bad_url("No alternative URI could be resolved.")
+{}
+
+/**
+ * @brief Destroy.
+ */
+no_alternative_url::~no_alternative_url() throw ()
+{}
+
+
+/**
+ * @class scene
+ *
+ * @brief A scene in the VRML world.
+ */
+
+/**
+ * @var mfnode scene::nodes_
+ *
+ * @brief The nodes for the scene.
+ */
+
+/**
+ * @var const std::string scene::url_
+ *
+ * @brief The URI for the scene.
+ *
+ * @a uri may be a relative or an absolute reference.
+ */
+
+/**
+ * @var browser & scene::browser
+ *
+ * @brief A reference to the browser associated with the scene.
+ */
+
+/**
+ * @var scene * const scene::parent
+ *
+ * @brief A pointer to the parent scene.
+ *
+ * If the scene is the root scene, @a parent will be 0.
+ */
+
+namespace {
+
+# ifdef _WIN32
+    struct IsBackslash : std::unary_function<char, bool> {
+        bool operator()(const char c) const throw ()
+        {
+            return c == '\\';
+        }
+    };
+# endif
+
+    const uri createFileURL(const uri & relative_uri) throw (std::bad_alloc)
+    {
+        assert(relative_uri.scheme().empty());
+
+        using std::string;
+
+        string result = "file://";
+        uri result_uri;
+
+        try {
+# ifdef _WIN32
+            //
+            // _fullpath returns a string starting with the drive letter; for
+            // the URL, the path must begin with a '/'. So we simply put one at
+            // the beginning of the buffer.
+            //
+            char buffer[_MAX_PATH] = { '/' };
+            char * resolvedPath =
+                _fullpath(buffer + 1, relative_uri.path().c_str(), _MAX_PATH);
+            if (!resolvedPath) {
+                //
+                // XXX Failed; need to check errno to see what we should throw.
+                //
+                return uri(result);
+            }
+            std::replace_if(resolvedPath,
+                            resolvedPath + strlen(resolvedPath) + 1,
+                            IsBackslash(), '/');
+            --resolvedPath;
+            assert(resolvedPath == buffer);
+# else
+            char buffer[PATH_MAX];
+            const char * resolvedPath = realpath(relative_uri.path().c_str(),
+                                                 buffer);
+            if (!resolvedPath) {
+                //
+                // XXX Failed; need to check errno to see what we should throw.
+                //
+                return uri(result);
+            }
+# endif
+
+            result += resolvedPath;
+
+            const string query = relative_uri.query();
+            if (!query.empty()) { result += '?' + query; }
+
+            const string fragment = relative_uri.fragment();
+            if (!fragment.empty()) { result += '#' + fragment; }
+
+            result_uri = uri(result);
+
+        } catch (invalid_url &) {
+            assert(false); // If we constructed a bad URI, something is wrong.
+        }
+
+        return result_uri;
+    }
+}
+
+/**
+ * @brief Construct a scene from a URI.
+ *
+ * @param browser   the browser associated with the scene.
+ * @param url       the URI for the scene.
+ * @param parent    the parent scene.
+ *
+ * @exception invalid_vrml      if there is a syntax error in the VRML input.
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+scene::scene(openvrml::browser & browser,
+             const std::vector<std::string> & url,
+             scene * parent)
+    throw (invalid_vrml, no_alternative_url, std::bad_alloc):
+    browser(browser),
+    parent(parent)
+{
+    using std::istream;
+    using std::string;
+    using std::vector;
+
+    string absoluteURI;
+    for (vector<string>::size_type i = 0; i < url.size(); ++i) {
+        try {
+            //
+            // Throw invalid_url if it isn't a valid URI.
+            //
+            uri testURI(url[i]);
+
+            const bool absolute = !testURI.scheme().empty();
+            if (absolute) {
+                absoluteURI = testURI;
+            } else if (!parent) {
+                //
+                // If we have a relative reference and the parent is null, then
+                // assume the reference is to the local file system: convert
+                // the relative reference to a file URL.
+                //
+                absoluteURI = createFileURL(testURI);
+            } else {
+                //
+                // If we have a relative URI and parent is not null, try to
+                // resolve the relative reference against the parent's URI.
+                //
+                absoluteURI = testURI.resolve_against(uri(parent->url()));
+            }
+
+            doc2 doc(absoluteURI);
+            istream & in = doc.input_stream();
+            if (!in) { throw unreachable_url(); }
+            try {
+                Vrml97Scanner scanner(in);
+                Vrml97Parser parser(scanner, absoluteURI);
+                parser.vrmlScene(browser, this->nodes_);
+            } catch (antlr::RecognitionException & ex) {
+                throw invalid_vrml(ex.getFilename(),
+                                   ex.getLine(),
+                                   ex.getColumn(),
+                                   ex.getMessage());
+            } catch (antlr::ANTLRException & ex) {
+                browser.err << ex.getMessage() << std::endl;
+            } catch (std::bad_alloc &) {
+                throw;
+            } catch (...) {
+                throw unreachable_url();
+            }
+        } catch (bad_url & ex) {
+            browser.err << ex.what() << std::endl;
+            continue;
+        }
+        //
+        // If this is the root scene (that is, the parent is null), then
+        // this->uri must be the absolute URI.
+        //
+        this->url_ = parent
+            ? url[i]
+            : absoluteURI;
+        break;
+    }
+    if (this->url_.empty()) { throw no_alternative_url(); }
+}
+
+/**
+ * @brief Initialize the scene.
+ *
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void scene::initialize(const double timestamp) throw (std::bad_alloc)
+{
+    for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
+         node != this->nodes_.end();
+         ++node) {
+        assert(*node);
+        (*node)->initialize(*this, timestamp);
+        child_node * const child = node_cast<child_node *>(node->get());
+        assert(child);
+        child->relocate();
+    }
+}
+
+/**
+ * @fn const std::vector<node_ptr> & scene::nodes() const throw ()
+ *
+ * @brief Root nodes for the scene.
+ *
+ * @return the root nodes for the scene.
+ */
+
+/**
+ * @brief Get the absolute URI for the scene.
+ *
+ * @return the absolute URI for the scene.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+const std::string scene::url() const throw (std::bad_alloc)
+{
+    using std::string;
+    return this->parent
+            ? string(uri(this->url_).resolve_against(uri(this->parent->url())))
+            : this->url_;
+}
+
+/**
+ * @brief Render the scene.
+ *
+ * @param viewer    a Viewer to render to.
+ * @param context   a rendering_context.
+ */
+void scene::render(openvrml::viewer & viewer, rendering_context context)
+{
+    for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
+         node != this->nodes_.end();
+         ++node) {
+        assert(*node);
+        child_node * child = node_cast<child_node *>(node->get());
+        if (child) { child->render_child(viewer, context); }
+    }
+}
+
+/**
+ * @brief Load a resource into @a browser.
+ *
+ * This method simply resolves any relative references in @p uri and calls
+ * browser::load_url.
+ *
+ * @note There are a couple of edge cases here where we are probably doing the
+ *      wrong thing:
+ *       - If there is a URI in the list of the form "#NodeId" and it is not
+ *         the first URI in the list, this URI will be loaded as if it were a
+ *         new world rather than as a Viewpoint that should simply be bound.
+ *       - If the first URI in the list is of the form "#NodeId" and no
+ *         Viewpoint named "NodeId" exists in the scene, this method will not
+ *         try any subsequent URIs in the list.
+ *
+ * @param url       an array of URIs. Per VRML97 convention, the first resource
+ *                  in the sequence that can be reached will be loaded into the
+ *                  browser.
+ * @param parameter an array of parameters to be associated with the URIs in
+ *                  @p uri.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @todo This method currently fails silently if any of the URIs in @p url is
+ *      invalid. Should this throw invalid_url?
+ */
+void scene::load_url(const std::vector<std::string> & url,
+                     const std::vector<std::string> & parameter)
+    throw (std::bad_alloc)
+{
+    using std::string;
+
+    if (!url.empty()) {
+        if (url[0][0] == '#') {
+# if 0
+            //
+            // If the first element in uri is a Viewpoint name, bind the
+            // Viewpoint.
+            //
+            this->browser.setViewpoint(uri[0].substr(1));
+# endif
+        } else {
+            std::vector<std::string> absoluteURIs(url.size());
+            for (size_t i = 0; i < absoluteURIs.size(); ++i) {
+                try {
+                    const uri urlElement(url[i]);
+                    const string value =
+                        urlElement.scheme().empty()
+                            ? urlElement.resolve_against(uri(this->url()))
+                            : urlElement;
+                    absoluteURIs[i] = value;
+                } catch (invalid_url & ex) {
+                    OPENVRML_PRINT_EXCEPTION_(ex);
+                }
+            }
+            this->browser.load_url(absoluteURIs, parameter);
+        }
+    }
+}
+
+/**
+ * @brief Shut down the nodes in the scene.
+ *
+ * This function @b must be called before the scene is destroyed.
+ *
+ * @param timestamp the current time.
+ */
+void scene::shutdown(const double timestamp) throw ()
+{
+    for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
+         node != this->nodes_.end();
+         ++node) {
+        if (*node) { (*node)->shutdown(timestamp); }
+    }
+}
+
+
+/**
+ * @internal
+ *
+ * @class Vrml97RootScope
+ *
+ * @brief Root namespace for VRML97 browsers.
+ *
+ * Vrml97RootScope is initialized with the VRML97 node types.
+ */
 
 namespace {
     /**
      * @internal
      */
-    class vrml97_node_interface_set_ : public openvrml::node_interface_set {
+    class vrml97_node_interface_set_ : public node_interface_set {
     public:
-        vrml97_node_interface_set_(
-            const openvrml::node_interface * const begin,
-            const openvrml::node_interface * const end)
+        vrml97_node_interface_set_(const node_interface * const begin,
+                                   const node_interface * const end)
         {
             this->insert(begin, end);
         }
@@ -3650,14 +5437,21 @@ namespace {
 }
 
 /**
- * @brief Create a root scope.
+ * @brief Constructor.
+ *
+ * @param browser   the browser object.
+ * @param uri       the URI associated with the stream being read.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-std::auto_ptr<openvrml::scope>
-openvrml::browser::create_root_scope(const std::string & uri)
-    throw (std::bad_alloc)
+Vrml97RootScope::Vrml97RootScope(const browser & browser,
+                                 const std::string & uri)
+    throw (std::bad_alloc):
+    scope(uri)
 {
-    std::auto_ptr<scope> root_scope(new scope(uri));
-    boost::shared_ptr<openvrml::node_class> node_class;
+    const browser::node_class_map_t & nodeClassMap = browser.node_class_map;
+    browser::node_class_map_t::const_iterator pos;
+
     try {
         //
         // Anchor node
@@ -3691,11 +5485,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 8);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Anchor");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Anchor",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Anchor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Anchor", interface_set));
         }
 
         //
@@ -3715,11 +5507,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 3);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Appearance");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Appearance",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Appearance");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Appearance",
+                                                    interface_set));
         }
 
         //
@@ -3754,11 +5545,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 8);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:AudioClip");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("AudioClip",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:AudioClip");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("AudioClip",
+                                                    interface_set));
         }
 
         //
@@ -3805,11 +5595,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 12);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Background");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Background",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Background");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Background",
+                                                    interface_set));
         }
 
         //
@@ -3838,11 +5627,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 6);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Billboard");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Billboard",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Billboard");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Billboard",
+                                                    interface_set));
         }
 
         //
@@ -3855,10 +5643,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                "size");
             static const vrml97_node_interface_set_
                 interface_set(&interface, &interface + 1);
-            node_class = this->node_class_map_.find("urn:X-openvrml:node:Box");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Box",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Box");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Box", interface_set));
         }
 
         //
@@ -3893,11 +5680,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 8);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Collision");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Collision",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Collision");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Collision",
+                                                    interface_set));
         }
 
         //
@@ -3910,11 +5696,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                "color");
             static const vrml97_node_interface_set_
                 interface_set(&interface, &interface + 1);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Color");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Color",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Color");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Color", interface_set));
         }
 
         //
@@ -3937,11 +5721,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:ColorInterpolator");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("ColorInterpolator",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:ColorInterpolator");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ColorInterpolator",
+                                                    interface_set));
         }
 
         //
@@ -3964,11 +5747,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Cone");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Cone",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Cone");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Cone", interface_set));
         }
 
         //
@@ -3981,11 +5762,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                "point");
             static const vrml97_node_interface_set_
                 interface_set(&interface, &interface + 1);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Coordinate");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Coordinate",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Coordinate");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Coordinate",
+                                                    interface_set));
         }
 
         //
@@ -4008,12 +5788,11 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = this->node_class_map_
+            pos = nodeClassMap
                 .find("urn:X-openvrml:node:CoordinateInterpolator");
-            assert(node_class);
-            root_scope->add_type(
-                node_class->create_type("CoordinateInterpolator",
-                                        interface_set));
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("CoordinateInterpolator",
+                                                    interface_set));
         }
 
         //
@@ -4039,11 +5818,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 5);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Cylinder");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Cylinder",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Cylinder");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Cylinder",
+                                                    interface_set));
         }
 
         //
@@ -4081,11 +5859,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 9);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:CylinderSensor");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("CylinderSensor",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:CylinderSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("CylinderSensor",
+                                                    interface_set));
         }
 
         //
@@ -4111,11 +5888,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 5);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:DirectionalLight");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("DirectionalLight",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:DirectionalLight");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("DirectionalLight",
+                                                    interface_set));
         }
 
         //
@@ -4168,11 +5944,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 14);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:ElevationGrid");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("ElevationGrid",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:ElevationGrid");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ElevationGrid",
+                                                    interface_set));
         }
 
         //
@@ -4225,11 +6000,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 14);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Extrusion");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Extrusion",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Extrusion");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Extrusion",
+                                                    interface_set));
         }
 
         //
@@ -4255,10 +6029,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 5);
-            node_class = this->node_class_map_.find("urn:X-openvrml:node:Fog");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Fog",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Fog");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Fog", interface_set));
         }
 
         //
@@ -4296,11 +6069,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 9);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:FontStyle");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("FontStyle",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:FontStyle");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("FontStyle",
+                                                    interface_set));
         }
 
         //
@@ -4326,11 +6098,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 5);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Group");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Group",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Group");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Group",
+                                                    interface_set));
         }
 
         //
@@ -4350,11 +6121,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 3);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:ImageTexture");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("ImageTexture",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:ImageTexture");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ImageTexture",
+                                                    interface_set));
         }
 
         //
@@ -4419,11 +6189,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 18);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:IndexedFaceSet");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("IndexedFaceSet",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:IndexedFaceSet");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("IndexedFaceSet",
+                                                    interface_set));
         }
 
         //
@@ -4455,11 +6224,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 7);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:IndexedLineSet");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("IndexedLineSet",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:IndexedLineSet");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("IndexedLineSet",
+                                                    interface_set));
         }
 
         //
@@ -4479,11 +6247,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 3);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Inline");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Inline",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Inline");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Inline", interface_set));
         }
 
         //
@@ -4503,10 +6269,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 3);
-            node_class = this->node_class_map_.find("urn:X-openvrml:node:LOD");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("LOD",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:LOD");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("LOD", interface_set));
         }
 
         //
@@ -4535,11 +6300,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 6);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Material");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Material",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Material");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Material",
+                                                    interface_set));
         }
 
         //
@@ -4577,11 +6341,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 9);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:MovieTexture");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("MovieTexture",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:MovieTexture");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("MovieTexture",
+                                                    interface_set));
         }
 
         //
@@ -4613,11 +6376,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 7);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:NavigationInfo");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("NavigationInfo",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:NavigationInfo");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("NavigationInfo",
+                                                    interface_set));
         }
 
         //
@@ -4630,11 +6392,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                "vector");
             static const vrml97_node_interface_set_
                 interface_set(&interface, &interface + 1);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Normal");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Normal",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Normal");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Normal",
+                                                    interface_set));
         }
 
         //
@@ -4657,11 +6418,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:NormalInterpolator");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("NormalInterpolator",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:NormalInterpolator");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("NormalInterpolator",
+                                                    interface_set));
         }
 
         //
@@ -4684,12 +6444,11 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = this->node_class_map_
+            pos = nodeClassMap
                 .find("urn:X-openvrml:node:OrientationInterpolator");
-            assert(node_class);
-            root_scope->add_type(
-                node_class->create_type("OrientationInterpolator",
-                                        interface_set));
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("OrientationInterpolator",
+                                                    interface_set));
         }
 
         //
@@ -4709,11 +6468,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 3);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:PixelTexture");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("PixelTexture",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:PixelTexture");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PixelTexture",
+                                                    interface_set));
         }
 
         //
@@ -4748,11 +6506,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 8);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:PlaneSensor");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("PlaneSensor",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:PlaneSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PlaneSensor",
+                                                    interface_set));
         }
 
         //
@@ -4784,11 +6541,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 7);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:PointLight");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("PointLight",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:PointLight");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PointLight",
+                                                    interface_set));
         }
 
         //
@@ -4805,11 +6561,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 2);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:PointSet");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("PointSet",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:PointSet");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PointSet",
+                                                    interface_set));
         }
 
         //
@@ -4832,12 +6587,11 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = this->node_class_map_
+            pos = nodeClassMap
                 .find("urn:X-openvrml:node:PositionInterpolator");
-            assert(node_class);
-            root_scope->add_type(
-                node_class->create_type("PositionInterpolator",
-                                        interface_set));
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("PositionInterpolator",
+                                                    interface_set));
         }
 
         //
@@ -4872,11 +6626,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 8);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:ProximitySensor");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("ProximitySensor",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:ProximitySensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ProximitySensor",
+                                                    interface_set));
         }
 
         //
@@ -4899,11 +6652,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:ScalarInterpolator");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("ScalarInterpolator",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:ScalarInterpolator");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("ScalarInterpolator",
+                                                    interface_set));
         }
 
         //
@@ -4920,11 +6672,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 2);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Shape");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Shape",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Shape");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Shape", interface_set));
         }
 
         //
@@ -4965,11 +6715,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 10);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Sound");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Sound",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Sound");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Sound", interface_set));
         }
 
         //
@@ -4982,11 +6730,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                "radius");
             static const vrml97_node_interface_set_
                 interface_set(&interface, &interface + 1);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Sphere");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Sphere",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Sphere");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Sphere", interface_set));
         }
 
         //
@@ -5015,11 +6761,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 6);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:SphereSensor");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("SphereSensor",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:SphereSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("SphereSensor",
+                                                    interface_set));
         }
 
         //
@@ -5060,11 +6805,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 10);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:SpotLight");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("SpotLight",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:SpotLight");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("SpotLight",
+                                                    interface_set));
         }
 
         //
@@ -5081,11 +6825,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 2);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Switch");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Switch",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Switch");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Switch", interface_set));
         }
 
         //
@@ -5108,11 +6850,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Text");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Text",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Text");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Text", interface_set));
         }
 
         //
@@ -5125,11 +6865,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                "point");
             static const vrml97_node_interface_set_
                 interface_set(&interface, &interface + 1);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:TextureCoordinate");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("TextureCoordinate",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:TextureCoordinate");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("TextureCoordinate",
+                                                    interface_set));
         }
 
         //
@@ -5152,11 +6891,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 4);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:TextureTransform");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("TextureTransform",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:TextureTransform");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("TextureTransform",
+                                                    interface_set));
         }
 
         //
@@ -5194,11 +6932,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 9);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:TimeSensor");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("TimeSensor",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:TimeSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("TimeSensor",
+                                                    interface_set));
         }
 
         //
@@ -5230,11 +6967,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 7);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:TouchSensor");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("TouchSensor",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:TouchSensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("TouchSensor",
+                                                    interface_set));
         }
 
         //
@@ -5275,11 +7011,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 10);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Transform");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Transform",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Transform");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Transform",
+                                                    interface_set));
         }
 
         //
@@ -5314,11 +7049,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 8);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:Viewpoint");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("Viewpoint",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:Viewpoint");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("Viewpoint",
+                                                    interface_set));
         }
 
         //
@@ -5347,11 +7081,10 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 6);
-            node_class = this->node_class_map_
-                .find("urn:X-openvrml:node:VisibilitySensor");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("VisibilitySensor",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:VisibilitySensor");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("VisibilitySensor",
+                                                    interface_set));
         }
 
         //
@@ -5368,1883 +7101,842 @@ openvrml::browser::create_root_scope(const std::string & uri)
             };
             static const vrml97_node_interface_set_
                 interface_set(interfaces, interfaces + 2);
-            node_class =
-                this->node_class_map_.find("urn:X-openvrml:node:WorldInfo");
-            assert(node_class);
-            root_scope->add_type(node_class->create_type("WorldInfo",
-                                                         interface_set));
+            pos = nodeClassMap.find("urn:X-openvrml:node:WorldInfo");
+            assert(pos != nodeClassMap.end());
+            this->add_type(pos->second->create_type("WorldInfo",
+                                                    interface_set));
         }
     } catch (std::invalid_argument & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
     }
-    return root_scope;
 }
 
-/**
- * @internal
- *
- * @var boost::recursive_mutex openvrml::browser::mutex_
- *
- * @brief Object mutex.
- */
+Vrml97RootScope::~Vrml97RootScope() throw () {}
 
-/**
- * @internal
- *
- * @var std::auto_ptr<openvrml::null_node_class> openvrml::browser::null_node_class_
- *
- * @brief "Null" class object for default nodes (e.g., default_viewpoint).
- */
 
-/**
- * @internal
- *
- * @var std::auto_ptr<openvrml::null_node_type> openvrml::browser::null_node_type_
- *
- * @brief "Null" type object for default nodes (e.g., default_viewpoint).
- */
-
-/**
- * @internal
- *
- * @var openvrml::browser::node_class_map openvrml::browser::node_class_map_
- *
- * @brief A map of URIs to node implementations.
- */
-
-/**
- * @internal
- *
- * @var openvrml::script_node_class openvrml::browser::script_node_class_
- *
- * @brief <code>node_class</code> for Script nodes in the browser.
- */
-
-/**
- * @internal
- *
- * @var openvrml::scene * openvrml::browser::scene_
- *
- * @brief Pointer to the root scene.
- */
-
-/**
- * @internal
- *
- * @var openvrml::node_ptr openvrml::browser::default_viewpoint_
- *
- * @brief The "default" viewpoint_node used when no viewpoint_node in the scene
- *        is bound.
- */
-
-/**
- * @internal
- *
- * @var openvrml::viewpoint_node * openvrml::browser::active_viewpoint_
- *
- * @brief The currently "active" viewpoint_node.
- */
-
-/**
- * @internal
- *
- * @var openvrml::node_ptr openvrml::browser::default_navigation_info_
- *
- * @brief The "default" navigation_info_node used when no navigation_info_node
- *        in the scene is bound.
- */
-
-/**
- * @internal
- *
- * @var openvrml::navigation_info_node * openvrml::browser::active_navigation_info_
- *
- * @brief The currently "active" navigation_info_node.
- */
-
-/**
- * @internal
- *
- * @var std::list<openvrml::viewpoint_node *> openvrml::browser::viewpoint_list
- *
- * @brief A list of all the Viewpoint nodes in the browser.
- */
-
-/**
- * @internal
- *
- * @var std::list<openvrml::node *> openvrml::browser::scoped_lights
- *
- * @brief A list of all the scoped light nodes in the browser.
- */
-
-/**
- * @internal
- *
- * @var std::list<openvrml::script_node *> openvrml::browser::scripts
- *
- * @brief A list of all the Script nodes in the browser.
- */
-
-/**
- * @internal
- *
- * @var std::list<openvrml::node *> openvrml::browser::timers
- *
- * @brief A list of all the TimeSensor nodes in the browser.
- */
-
-/**
- * @internal
- *
- * @var std::list<openvrml::node *> openvrml::browser::audio_clips
- *
- * @brief A list of all the AudioClip nodes in the browser.
- */
-
-/**
- * @internal
- *
- * @var std::list<openvrml::node *> openvrml::browser::movies
- *
- * @brief A list of all the MovieTexture nodes in the browser.
- */
-
-/**
- * @internal
- *
- * @var std::set<openvrml::browser_listener *> openvrml::browser::listeners_
- *
- * @brief The set of <code>browser_listener</code>s that will receive
- *        <code>browser_event</code>s.
- *
- * @sa openvrml::browser::add_listener
- * @sa openvrml::browser::remove_listener
- */
-
-/**
- * @var bool openvrml::browser::modified_
- *
- * @brief Flag to indicate whether the browser has been modified.
- */
-
-/**
- * @var boost::mutex openvrml::browser::modified_mutex_
- *
- * @brief Mutex protecting <code>browser::modified_</code>.
- */
-
-/**
- * @var bool openvrml::browser::new_view
- *
- * @brief Flag to indicate if the user has changed to a new view.
- */
-
-/**
- * @var double openvrml::browser::delta_time
- *
- * @brief Time elapsed since the last update.
- */
-
-/**
- * @var openvrml::openvrml::viewer * openvrml::browser::viewer_
- *
- * @brief The current <code>viewer</code>.
- */
-
-/**
- * @var double openvrml::browser::frame_rate_
- *
- * @brief Frame rate.
- */
-
-/**
- * @brief Get the current time.
- */
-double openvrml::browser::current_time() throw ()
-{
-    double currentTime;
-# ifdef _WIN32
-    _timeb timebuffer;
-    _ftime(&timebuffer);
-    currentTime = double(timebuffer.time) + 1.0e-3 * double(timebuffer.millitm);
-# else
-    timeval tv;
-    const int result = gettimeofday(&tv, 0);
-    assert(result == 0);
-
-    currentTime = double(tv.tv_sec) + 1.0e-6 * double(tv.tv_usec);
-# endif
-    return currentTime;
-}
-
-/**
- * @var std::ostream & openvrml::browser::out
- *
- * @brief Output stream, generally for console output.
- */
-
-/**
- * @var std::ostream & openvrml::browser::err
- *
- * @brief Error output stream.
- */
-
-/**
- * @var bool openvrml::browser::flags_need_updating
- *
- * @brief Set by node::bounding_volume_dirty on any node in this browser graph,
- *      cleared by update_flags.
- *
- * @c true if the bvolume dirty flag has been set on a node in the
- * browser graph, but has not yet been propegated to that node's
- * ancestors.
- */
-
-/**
- * @brief Constructor.
- *
- * @param out   output stream for console output.
- * @param err   output stream for error console output.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-openvrml::browser::browser(std::ostream & out, std::ostream & err)
-    throw (std::bad_alloc):
-    null_node_class_(new null_node_class(*this)),
-    null_node_type_(new null_node_type(*null_node_class_)),
-    node_class_map_(*this),
-    script_node_class_(*this),
-    scene_(new scene(*this)),
-    default_viewpoint_(new default_viewpoint(*null_node_type_)),
-    active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint_.get())),
-    default_navigation_info_(new default_navigation_info(*null_node_type_)),
-    active_navigation_info_(
-        node_cast<navigation_info_node *>(default_navigation_info_.get())),
-    new_view(false),
-    delta_time(DEFAULT_DELTA),
-    viewer_(0),
-    modified_(false),
-    frame_rate_(0.0),
-    out(out),
-    err(err),
-    flags_need_updating(false)
-{
-    assert(this->active_viewpoint_);
-    assert(this->active_navigation_info_);
-}
-
-/**
- * @brief Destructor.
- */
-openvrml::browser::~browser() throw ()
-{
-    const double now = browser::current_time();
-
-    if (this->scene_) { this->scene_->shutdown(now); }
-    assert(this->viewpoint_list.empty());
-    assert(this->scoped_lights.empty());
-    assert(this->scripts.empty());
-    assert(this->timers.empty());
-    assert(this->audio_clips.empty());
-    assert(this->movies.empty());
-}
-
-/**
- * @brief Get the root nodes for the browser.
- *
- * @return the root nodes for the browser.
- */
-const std::vector<openvrml::node_ptr> & openvrml::browser::root_nodes() const
-    throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->scene_);
-    return this->scene_->nodes();
-}
-
-/**
- * @brief Get the path to a node in the scene graph.
- *
- * @param n  the objective node.
- *
- * @return the path to @p node, starting with a root node, and ending with
- *         @p node. If @p node is not in the scene graph, the returned
- *         node_path is empty.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-const openvrml::node_path openvrml::browser::find_node(const node & n) const
-    throw (std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->scene_);
-
-    class FindNodeTraverser : public node_traverser {
-        const node & objectiveNode;
-        node_path & nodePath;
-
-    public:
-        FindNodeTraverser(const node & objectiveNode, node_path & nodePath)
-            throw ():
-            objectiveNode(objectiveNode),
-            nodePath(nodePath)
-        {}
-
-        virtual ~FindNodeTraverser() throw()
-        {}
-
-    private:
-        virtual void on_entering(node & n) throw (std::bad_alloc)
-        {
-            this->nodePath.push_back(&n);
-            if (&n == &this->objectiveNode) { this->halt_traversal(); }
-        }
-
-        virtual void on_leaving(node &) throw ()
-        {
-            if (!this->halted()) { this->nodePath.pop_back(); }
-        }
-    };
-
-    node_path nodePath;
-    FindNodeTraverser(n, nodePath).traverse(this->scene_->nodes());
-    return nodePath;
-}
-
-/**
- * @brief Get the active viewpoint_node.
- *
- * The active viewpoint_node is the one currently associated with the user
- * view.
- *
- * @return the active viewpoint_node.
- */
-openvrml::viewpoint_node & openvrml::browser::active_viewpoint() const throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    return *this->active_viewpoint_;
-}
-
-/**
- * @brief Set the active viewpoint_node.
- *
- * @param viewpoint a viewpoint_node.
- */
-void openvrml::browser::active_viewpoint(viewpoint_node & viewpoint) throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    this->active_viewpoint_ = &viewpoint;
-}
-
-/**
- * @brief Reset the active viewpoint_node to the default.
- */
-void openvrml::browser::reset_default_viewpoint() throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->default_viewpoint_);
-    this->active_viewpoint_ =
-        node_cast<viewpoint_node *>(this->default_viewpoint_.get());
-    assert(this->active_viewpoint_);
-}
-
-/**
- * @brief Get the active navigation_info_node.
- *
- * The active navigation_info_node is the one currently associated with the
- * user view.
- *
- * @return the active navigation_info_node.
- */
-openvrml::navigation_info_node &
-openvrml::browser::active_navigation_info() const throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    return *this->active_navigation_info_;
-}
-
-/**
- * @brief Set the active navigation_info_node.
- *
- * @param nav_info a navigation_info_node.
- */
-void openvrml::browser::active_navigation_info(navigation_info_node & nav_info)
-    throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    this->active_navigation_info_ = &nav_info;
-}
-
-/**
- * @brief Reset the active navigation_info_node to the default.
- */
-void openvrml::browser::reset_default_navigation_info() throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->default_navigation_info_);
-    this->active_navigation_info_ =
-        node_cast<navigation_info_node *>(
-            this->default_navigation_info_.get());
-    assert(this->active_navigation_info_);
-}
-
-/**
- * @brief Add a viewpoint_node to the list of viewpoint_nodes for the browser.
- *
- * @param viewpoint a viewpoint_node.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- *
- * @pre @p viewpoint is not in the list of viewpoint_nodes for the browser.
- */
-void openvrml::browser::add_viewpoint(viewpoint_node & viewpoint)
-    throw (std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(std::find(this->viewpoint_list.begin(), this->viewpoint_list.end(),
-                     &viewpoint) == this->viewpoint_list.end());
-    this->viewpoint_list.push_back(&viewpoint);
-}
-
-/**
- * @brief Remove a viewpoint_node from the list of viewpoint_nodes for the
- *      browser.
- *
- * @param viewpoint a viewpoint_node.
- *
- * @pre @p viewpoint is in the list of viewpoint_nodes for the browser.
- */
-void openvrml::browser::remove_viewpoint(viewpoint_node & viewpoint) throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(!this->viewpoint_list.empty());
-    typedef std::list<viewpoint_node *> viewpoint_list_t;
-    const viewpoint_list_t::iterator end = this->viewpoint_list.end();
-    const viewpoint_list_t::iterator pos =
-            std::find(this->viewpoint_list.begin(), end, &viewpoint);
-    assert(pos != end);
-    this->viewpoint_list.erase(pos);
-}
-
-/**
- * @brief Get the list of @link viewpoint_node viewpoint_nodes@endlink for the
- *      world.
- *
- * @return the list of @link viewpoint_node viewpoint_nodes@endlink for the
- *      world.
- */
-const std::list<openvrml::viewpoint_node *> &
-openvrml::browser::viewpoints() const throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    return this->viewpoint_list;
-}
-
-/**
- * @brief Set the current <code>viewer</code>.
- *
- * @param v <code>viewer</code>.
- *
- * @exception viewer_in_use if @p v is already associated with a
- *                          <code>browser</code>.
- */
-void openvrml::browser::viewer(openvrml::viewer * v) throw (viewer_in_use)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    if (v && v->browser_) { throw viewer_in_use(); }
-    if (this->viewer_) { this->viewer_->browser_ = 0; }
-    this->viewer_ = v;
-    if (v) { v->browser_ = this; }
-}
-
-/**
- * @brief The current <code>viewer</code>.
- *
- * @return the current <code>viewer</code>.
- */
-openvrml::viewer * openvrml::browser::viewer() const throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    return this->viewer_;
-}
-
-/**
- * @brief Fetch a network resource.
- *
- * @param uri   a Uniform Resource Identifier.
- *
- * @return the requested resource as a stream.
- */
-std::auto_ptr<openvrml::resource_istream>
-openvrml::browser::get_resource(const std::string & uri)
-{
-    return this->do_get_resource(uri);
-}
-
-/**
- * @brief Fetch a network resource.
- *
- * Called by <code>browser::get_resource</code>.
- *
- * @param uri   a Uniform Resource Identifier.
- *
- * @return the requested resource as a stream.
- *
- * @fn std::auto_ptr<openvrml::resource_istream> browser::do_get_resource(const std::string & uri)
- */
-
-/**
- * @brief Get the browser name.
- *
- * @return "OpenVRML"
- *
- * Specific browsers may wish to override this method.
- */
-const char * openvrml::browser::name() const throw ()
-{
-    return "OpenVRML";
-}
-
-/**
- * @brief Get the browser version.
- *
- * @return the version of openvrml.
- *
- * Specific browsers may wish to override this method.
- */
-const char * openvrml::browser::version() const throw ()
-{
-    return PACKAGE_VERSION;
-}
-
-/**
- * @brief Get the average navigation speed in meters per second.
- *
- * @return the average navigation speed.
- */
-float openvrml::browser::current_speed()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    navigation_info_node & nav_info = this->active_navigation_info();
-    return nav_info.speed();
-}
-
-/**
- * @brief Get the URI for the world.
- *
- * @return the URI for the world.
- */
-const std::string openvrml::browser::world_url() const throw (std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->scene_);
-    return this->scene_->url(); // Throws std::bad_alloc.
-}
-
-/**
- * @brief Set the URI for the world.
- *
- * This function does nothing other than change the URI returned by
- * the browser::world_url accessor. It does not result in loading a new world.
- *
- * @param str   a valid URI.
- *
- * @exception invalid_url       if @p str is not a valid URI.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void openvrml::browser::world_url(const std::string & str)
-    throw (invalid_url, std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->scene_);
-    this->scene_->url(str);
-}
-
-/**
- * @brief Replace the root nodes of the world.
- *
- * @param nodes new root nodes for the world.
- */
-void openvrml::browser::replace_world(const std::vector<node_ptr> & nodes)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    const double now = browser::current_time();
-    this->scene_->shutdown(now);
-    this->scene_->nodes(nodes);
-    this->scene_->initialize(now);
-    //
-    // Initialize the node_classes.
-    //
-    static viewpoint_node * const initial_viewpoint = 0;
-    this->node_class_map_.init(initial_viewpoint, now);
-    this->modified(true);
-    this->new_view = true; // Force resetUserNav
-}
-
-/**
- * @brief Load a VRML world into the browser.
- *
- * @param url       a URI.
- * @param parameter parameters for @p url.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void openvrml::browser::load_url(const std::vector<std::string> & url,
-                                 const std::vector<std::string> &)
-    throw (std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-
-    class root_scene : public openvrml::scene {
-    public:
-        explicit root_scene(openvrml::browser & b):
-            scene(b, 0)
-        {}
-
-    private:
-        virtual void scene_loaded()
-        {
-            boost::recursive_mutex::scoped_lock lock(this->browser().mutex_);
-
-            try {
-                using std::string;
-
-                const double now = browser::current_time();
-                this->initialize(now);
-
-                //
-                // Get the initial viewpoint_node, if any was specified.
-                //
-                viewpoint_node * initial_viewpoint = 0;
-                const string viewpoint_node_id = uri(this->url()).fragment();
-                if (!viewpoint_node_id.empty()) {
-                    if (!this->nodes().empty()) {
-                        const node_ptr & n = this->nodes()[0];
-                        if (n) {
-                            node * const vp =
-                                n->scope()->find_node(viewpoint_node_id);
-                            initial_viewpoint =
-                                dynamic_cast<viewpoint_node *>(vp);
-                        }
-                    }
-                }
-
-                //
-                // Initialize the node_classes.
-                //
-                this->browser().node_class_map_.init(initial_viewpoint, now);
-
-                if (this->browser().active_viewpoint_
-                    != node_cast<viewpoint_node *>(
-                        this->browser().default_viewpoint_.get())) {
-                    event_listener & listener =
-                        this->browser().active_viewpoint_
-                        ->event_listener("set_bind");
-                    dynamic_cast<sfbool_listener &>(listener)
-                        .process_event(sfbool(true), now);
-                }
-            } catch (std::exception & ex) {
-                std::ostream & err = this->browser().err;
-                err << ex.what() << std::endl;
-            }
-            this->browser().modified(true);
-            this->browser().new_view = true; // Force resetUserNav
-
-            using std::for_each;
-
-            for_each(this->browser().listeners_.begin(),
-                     this->browser().listeners_.end(),
-                     boost::bind2nd(
-                         boost::mem_fun(&browser_listener::browser_changed),
-                         browser_event(this->browser(),
-                                       browser_event::initialized)));
-        }
-    };
-
-    using std::for_each;
-
-    const double now = browser::current_time();
-
-    //
-    // Clear out the current scene.
-    //
-    if (this->scene_) { this->scene_->shutdown(now); }
-    for_each(this->listeners_.begin(), this->listeners_.end(),
-             boost::bind2nd(boost::mem_fun(&browser_listener::browser_changed),
-                            browser_event(*this, browser_event::shutdown)));
-    this->scene_.reset();
-    this->active_viewpoint_ =
-        node_cast<viewpoint_node *>(this->default_viewpoint_.get());
-    assert(this->viewpoint_list.empty());
-    assert(this->scoped_lights.empty());
-    assert(this->scripts.empty());
-    assert(this->timers.empty());
-    assert(this->audio_clips.empty());
-    assert(this->movies.empty());
-
-    //
-    // Create the new scene.
-    //
-    node_class_map new_map(*this);
-    this->node_class_map_ = new_map;
-    this->scene_.reset(new root_scene(*this));
-    this->scene_->load(url);
-}
-
-/**
- * @brief Send a string to the user interface.
- *
- * The default implementation of this method simply prints @p description to
- * @a out.  Subclasses can override this method to direct messages to an
- * application's UI; for instance, a status bar.
- *
- * @param description   a string.
- */
-void openvrml::browser::description(const std::string & description)
-{
-    this->out << description << std::endl;
-}
-
-/**
- * @brief Generate nodes from a stream of VRML syntax.
- *
- * In addition to the exceptions listed, this method may throw any
- * exception that may result from reading the input stream.
- *
- * @param in    an input stream.
- *
- * @return the root nodes generated from @p in.
- *
- * @exception invalid_vrml      if @p in has invalid VRML syntax.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-const std::vector<openvrml::node_ptr>
-openvrml::browser::create_vrml_from_stream(std::istream & in)
-{
-    std::vector<node_ptr> nodes;
-    try {
-        Vrml97Scanner scanner(in);
-        Vrml97Parser parser(scanner, "");
-        parser.vrmlScene(*this, nodes);
-    } catch (antlr::RecognitionException & ex) {
-        throw invalid_vrml(ex.getFilename(),
-                           ex.getLine(),
-                           ex.getColumn(),
-                           ex.getMessage());
-    } catch (antlr::ANTLRException & ex) {
-        throw std::runtime_error(ex.getMessage());
-    }
-    return nodes;
-}
-
-/**
- * @todo Implement me!
- */
-void
-openvrml::browser::
-create_vrml_from_url(const std::vector<std::string> & /* url */,
-                     const node_ptr & /* node */,
-                     const std::string & /* event */)
-{}
-
-/**
- * @brief Add a listener for <code>browser_event</code>s.
- *
- * @param listener  a <code>browser_listener</code>.
- *
- * @return @c true if @p listener is added successfully; @c false otherwise (if
- *         @p listener is already listening for events from the
- *         <code>browser</code>).
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-bool openvrml::browser::add_listener(browser_listener & listener)
-    throw (std::bad_alloc)
-{
-    return this->listeners_.insert(&listener).second;
-}
-
-/**
- * @brief Remove a listener for <code>browser_event</code>s.
- *
- * @param listener  a <code>browser_listener</code>.
- *
- * @return @c true if @p listener is removed successfully; @c false otherwise
- *         (if @p listener is not listening for events from the
- *         <code>browser</code>).
- */
-bool openvrml::browser::remove_listener(browser_listener & listener) throw ()
-{
-    return this->listeners_.erase(&listener) > 0;
-}
-
-/**
- * @brief Get the current frame rate.
- *
- * @return the current frame rate.
- */
-double openvrml::browser::frame_rate() const
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    return this->frame_rate_;
-}
-
-/**
- * Called by the viewer when the cursor passes over, clicks, drags, or
- * releases a sensitive object (an Anchor or another grouping node with
- * an enabled TouchSensor child).
- */
-void openvrml::browser::sensitive_event(node * const n,
-                                        const double timestamp,
-                                        const bool is_over,
-                                        const bool is_active,
-                                        double * const point)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    if (n) {
-        vrml97_node::anchor_node * a = n->to_anchor();
-        if (a) {
-            //
-            // This should really be (isOver && !isActive && n->wasActive)
-            // (ie, button up over the anchor after button down over the
-            // anchor)
-            //
-            if (is_active && is_over) { a->activate_anchor(); }
-        } else {
-            //
-            // The parent grouping node is registered for Touch/Drag Sensors.
-            //
-            grouping_node * const g = node_cast<grouping_node *>(n);
-            if (g) {
-                g->activate(timestamp, is_over, is_active, point);
-                this->modified(true);
-            }
-        }
-    }
-}
-
-namespace {
-    template <typename T>
-    struct UpdatePolledNode_ : std::unary_function<T, void> {
-        explicit UpdatePolledNode_(double time): time(time) {}
-
-        void operator()(T node) const { node->update(time); }
-
-    private:
-        double time;
-    };
-
-    template <typename FieldValue>
-    void process_event(event_listener & listener,
-                       const field_value & value,
-                       const double timestamp)
-    {
-        assert(dynamic_cast<field_value_listener<FieldValue> *>(&listener));
-        assert(dynamic_cast<const FieldValue *>(&value));
-        static_cast<field_value_listener<FieldValue> &>(listener)
-            .process_event(static_cast<const FieldValue &>(value), timestamp);
-    }
-}
-
-/**
- * @brief Process events (update the browser).
- *
- * This method should be called after each frame is rendered.
- *
- * @return @c true if the browser needs to be rerendered, @c false otherwise.
- */
-bool openvrml::browser::update(double current_time)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-
-    if (current_time <= 0.0) { current_time = browser::current_time(); }
-
-    this->delta_time = DEFAULT_DELTA;
-
-    // Update each of the timers.
-    std::list<node *>::iterator i, end = this->timers.end();
-    for (i = this->timers.begin(); i != end; ++i) {
-        vrml97_node::time_sensor_node * t = (*i)->to_time_sensor();
-        if (t) { t->update(current_time); }
-    }
-
-    // Update each of the clips.
-    end = this->audio_clips.end();
-    for (i = this->audio_clips.begin(); i != end; ++i) {
-        vrml97_node::audio_clip_node * c = (*i)->to_audio_clip();
-        if (c) { c->update(current_time); }
-    }
-
-    // Update each of the movies.
-    end = this->movies.end();
-    for (i = this->movies.begin(); i != end; ++i) {
-        vrml97_node::movie_texture_node * m = (*i)->to_movie_texture();
-        if (m) { m->update(current_time); }
-    }
-
-    //
-    // Update each of the scripts.
-    //
-    std::for_each(this->scripts.begin(), this->scripts.end(),
-                  UpdatePolledNode_<script_node *>(current_time));
-
-    // Signal a redisplay if necessary
-    return this->modified();
-}
-
-/**
- * @brief Indicate whether the headlight is on.
- *
- * @return @c true if the headlight is on; @c false otherwise.
- */
-bool openvrml::browser::headlight_on()
-{
-    navigation_info_node & nav_info = this->active_navigation_info();
-    return nav_info.headlight();
-}
-
-/**
- * @brief Draw this browser into the specified viewer
- */
-void openvrml::browser::render()
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    if (!this->viewer_) { return; }
-
-    //
-    // Per-node_class rendering happens before viewer::set_viewpoint is called
-    // This is important for things like background rendering, since
-    // viewer::insert_background must be called before viewer::set_viewpoint.
-    //
-    this->node_class_map_.render(*this->viewer_);
-
-    if (this->new_view) {
-        this->viewer_->reset_user_navigation();
-        this->new_view = false;
-    }
-    navigation_info_node & nav_info = this->active_navigation_info();
-    const float avatarSize = nav_info.avatar_size().empty()
-        ? 0.25
-        : nav_info.avatar_size()[0];
-    const float visibilityLimit = nav_info.visibility_limit();
-
-    // Activate the headlight.
-    // ambient is supposed to be 0 according to the spec...
-    if (this->headlight_on()) {
-        static const color color(1.0, 1.0, 1.0);
-        static const vec3f direction(0.0, 0.0, -1.0);
-        static const float ambientIntensity = 0.3f;
-        static const float intensity = 1.0;
-
-        this->viewer_->insert_dir_light(ambientIntensity,
-                                        intensity,
-                                        color,
-                                        direction);
-    }
-
-    // sets the viewpoint transformation
-    //
-    const mat4f t = this->active_viewpoint_->user_view_transform()
-                    * this->active_viewpoint_->transformation();
-    vec3f position, scale;
-    rotation orientation;
-    t.transformation(position, orientation, scale);
-    this->viewer_->set_viewpoint(position,
-                                 orientation,
-                                 this->active_viewpoint_->field_of_view(),
-                                 avatarSize,
-                                 visibilityLimit);
-
-    // Top level object
-
-    this->viewer_->begin_object(0);
-    mat4f modelview = t.inverse();
-    rendering_context rc(bounding_volume::partial, modelview);
-    rc.draw_bounding_spheres = true;
-
-    // Do the browser-level lights (Points and Spots)
-    std::for_each(this->scoped_lights.begin(), this->scoped_lights.end(),
-                  boost::bind2nd(
-                      boost::mem_fun(&scoped_light_node::render_scoped_light),
-                      *this->viewer_));
-
-    //
-    // Render the nodes.  scene_ may be 0 if the world failed to load.
-    //
-    if (this->scene_) {
-        this->scene_->render(*this->viewer_, rc);
-    }
-
-    this->viewer_->end_object();
-
-    // This is actually one frame late...
-    this->frame_rate_ = this->viewer_->frame_rate();
-
-    this->modified(false);
-}
-
-/**
- * @brief Indicate whether rendering is necessary.
- *
- * @param value @c true to indicate that the browser state has changed and
- *              rerendering is necessary; @c false once rendering has occurred.
- */
-void openvrml::browser::modified(const bool value)
-{
-    boost::mutex::scoped_lock lock(this->modified_mutex_);
-    this->modified_ = value;
-}
-
-/**
- * @brief Check if the browser has been modified.
- *
- * @return @c true if the browser has been modified, @c false otherwise.
- */
-bool openvrml::browser::modified() const
-{
-    boost::mutex::scoped_lock lock(this->modified_mutex_);
-    return this->modified_;
-}
-
-/**
- * @brief Set the time until the next update is needed.
- *
- * @param d a time interval.
- */
-void openvrml::browser::delta(const double d)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    if (d < this->delta_time) { this->delta_time = d; }
-}
-
-/**
- * @brief Get the time interval between browser updates.
- *
- * @return the time interval between browser updates.
- */
-double openvrml::browser::delta() const
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    return this->delta_time;
-}
-
-/**
- * @brief Add a scoped light node to the browser.
- *
- * @param light a light node.
- *
- * @pre @p light is not in the list of light nodes for the browser.
- */
-void
-openvrml::browser::add_scoped_light(scoped_light_node & light)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(std::find(this->scoped_lights.begin(), this->scoped_lights.end(),
-                     &light) == this->scoped_lights.end());
-    this->scoped_lights.push_back(&light);
-}
-
-/**
- * @brief Remove a scoped light node from the browser.
- *
- * @param light the light node to remove.
- *
- * @pre @p light is in the list of light nodes for the browser.
- */
-void
-openvrml::browser::
-remove_scoped_light(scoped_light_node & light)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(!this->scoped_lights.empty());
-    const std::list<scoped_light_node *>::iterator end =
-        this->scoped_lights.end();
-    const std::list<scoped_light_node *>::iterator pos =
-            std::find(this->scoped_lights.begin(), end, &light);
-    assert(pos != end);
-    this->scoped_lights.erase(pos);
-}
-
-/**
- * @brief Add a MovieTexture node to the browser.
- *
- * @param movie a MovieTexture node.
- *
- * @pre @p movie is not in the list of MovieTexture nodes for the browser.
- */
-void openvrml::browser::add_movie(vrml97_node::movie_texture_node & movie)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(std::find(this->movies.begin(), this->movies.end(), &movie)
-            == this->movies.end());
-    this->movies.push_back(&movie);
-}
-
-/**
- * @brief Remove a movie_texture node from the browser.
- *
- * @param movie the movie_texture node to remove.
- *
- * @pre @p movie is in the list of movie_texture nodes for the browser.
- */
-void openvrml::browser::remove_movie(vrml97_node::movie_texture_node & movie)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(!this->movies.empty());
-    const std::list<node *>::iterator end = this->movies.end();
-    const std::list<node *>::iterator pos =
-            std::find(this->movies.begin(), end, &movie);
-    assert(pos != end);
-    this->movies.erase(pos);
-}
-
-/**
- * @brief Add a Script node to the browser.
- *
- * @param script    a Script node.
- *
- * @pre @p script is not in the list of Script nodes for the browser.
- */
-void openvrml::browser::add_script(script_node & script)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(std::find(this->scripts.begin(), this->scripts.end(), &script)
-            == this->scripts.end());
-    this->scripts.push_back(&script);
-}
-
-/**
- * @brief Remove a Script node from the browser.
- *
- * @param script    the Script node to remove.
- *
- * @pre @p script is in the list of Script nodes for the browser.
- */
-void openvrml::browser::remove_script(script_node & script)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(!this->scripts.empty());
-    typedef std::list<script_node *> script_node_list_t;
-    const script_node_list_t::iterator end = this->scripts.end();
-    const script_node_list_t::iterator pos =
-            std::find(this->scripts.begin(), end, &script);
-    assert(pos != end);
-    this->scripts.erase(pos);
-}
-
-/**
- * @brief Add a TimeSensor node to the browser.
- *
- * @param timer a TimeSensor node.
- *
- * @pre @p timer is not in the list of TimeSensor nodes for the browser.
- */
-void openvrml::browser::add_time_sensor(vrml97_node::time_sensor_node & timer)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(std::find(this->timers.begin(), this->timers.end(), &timer)
-           == this->timers.end());
-    this->timers.push_back(&timer);
-}
-
-/**
- * @brief Remove a time_sensor node from the browser.
- *
- * @param timer the time_sensor node to remove.
- *
- * @pre @p timer is in the list of time_sensor nodes for the browser.
- */
-void
-openvrml::browser::remove_time_sensor(vrml97_node::time_sensor_node & timer)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(!this->timers.empty());
-    const std::list<node *>::iterator end = this->timers.end();
-    const std::list<node *>::iterator pos =
-            std::find(this->timers.begin(), end, &timer);
-    assert(pos != end);
-    this->timers.erase(pos);
-}
-
-
-/**
- * @brief Add an AudioClip node to the browser.
- *
- * @param audio_clip    an audio_clip node.
- *
- * @pre @p audio_clip is not in the list of audio_clip nodes for the browser.
- */
-void
-openvrml::browser::add_audio_clip(vrml97_node::audio_clip_node & audio_clip)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(std::find(this->audio_clips.begin(), this->audio_clips.end(),
-                     &audio_clip) == this->audio_clips.end());
-    this->audio_clips.push_back(&audio_clip);
-}
-
-/**
- * @brief Remove an audio_clip node from the browser.
- *
- * @param audio_clip    the audio_clip node to remove.
- *
- * @pre @p audio_clip is in the list of audio_clip nodes for the browser.
- */
-void browser::remove_audio_clip(vrml97_node::audio_clip_node & audio_clip)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(!this->audio_clips.empty());
-    const std::list<node *>::iterator end = this->audio_clips.end();
-    const std::list<node *>::iterator pos =
-            std::find(this->audio_clips.begin(), end, &audio_clip);
-    assert(pos != end);
-    this->audio_clips.erase(pos);
-}
-
-
-/**
- * @brief Propagate the bvolume dirty flag from children to ancestors.
- *
- * The invariant is that if a node's bounding volume is out of date,
- * then the bounding volumes of all that nodes's ancestors must be
- * out of date. However, Node does not maintain a parent pointer. So
- * we must do a traversal of the entire browser graph to do the propagation.
- *
- * @see node::setBVolumeDirty
- * @see node::isBVolumeDirty
- */
-void openvrml::browser::update_flags()
-{
-//  Node* root = this->getRoot();
-//  root->updateModified(0x002);
-}
-
-
-/**
- * @class openvrml::bad_url
- *
- * @brief Thrown when there is a problem resolving a URI.
- */
-
-/**
- * @brief Construct.
- *
- * @param message   Informative text.
- */
-openvrml::bad_url::bad_url(const std::string & message):
-    std::runtime_error(message)
-{}
-
-/**
- * @brief Destroy.
- */
-openvrml::bad_url::~bad_url() throw ()
-{}
-
-
-/**
- * @class openvrml::invalid_url
- *
- * @brief Thrown when parsing a URI fails.
- */
-
-/**
- * @brief Construct.
- */
-openvrml::invalid_url::invalid_url():
-    bad_url("Invalid URI.")
-{}
-
-/**
- * @brief Destroy.
- */
-openvrml::invalid_url::~invalid_url() throw ()
-{}
-
-
-/**
- * @class unreachable_url
- *
- * @brief Thrown when a URI cannot be reached.
- */
-
-/**
- * @brief Construct.
- */
-openvrml::unreachable_url::unreachable_url():
-    bad_url("Unreachable URI.")
-{}
-
-/**
- * @brief Destroy.
- */
-openvrml::unreachable_url::~unreachable_url() throw ()
-{}
-
-
-/**
- * @class openvrml::no_alternative_url
- *
- * @brief Exception thrown when no URI in an alternative URI list can be
- *        resolved.
- */
-
-/**
- * @brief Construct.
- */
-openvrml::no_alternative_url::no_alternative_url():
-    bad_url("No alternative URI could be resolved.")
-{}
-
-/**
- * @brief Destroy.
- */
-openvrml::no_alternative_url::~no_alternative_url() throw ()
-{}
-
-
-/**
- * @class openvrml::scene
- *
- * @brief A scene in the VRML world.
- */
-
-/**
- * @internal
- *
- * @var openvrml::browser * const openvrml::scene::browser_
- *
- * @brief A reference to the browser associated with the scene.
- */
-
-/**
- * @internal
- *
- * @var openvrml::scene * const openvrml::scene::parent_
- *
- * @brief A pointer to the parent scene.
- *
- * If the scene is the root scene, @a parent will be 0.
- */
-
-/**
- * @internal
- *
- * @var boost::recursive_mutex openvrml::scene::nodes_mutex_
- *
- * @brief Mutex protecting @a nodes_.
- */
-
-/**
- * @internal
- *
- * @var openvrml::mfnode openvrml::scene::nodes_
- *
- * @brief The nodes for the scene.
- */
-
-/**
- * @internal
- *
- * @var boost::read_write_mutex openvrml::scene::url_mutex_
- *
- * @brief Mutex protecting @a url_.
- */
-
-/**
- * @internal
- *
- * @var const std::string openvrml::scene::url_
- *
- * @brief The URI for the scene.
- *
- * @a uri may be a relative or an absolute reference.
- */
-
-namespace {
-
-    class bad_path : public openvrml::bad_url {
-    public:
-        explicit bad_path(const std::string & message);
-        virtual ~bad_path() throw ();
-    };
-
-    bad_path::bad_path(const std::string & message):
-        openvrml::bad_url(message)
-    {}
-
-    bad_path::~bad_path() throw ()
-    {}
-
-    /**
-     * @brief Create an absolute "file" URL from a relative path.
-     *
-     * @param relative_uri  a relative URI.
-     *
-     * @exception bad_path          if @p relative_uri cannot be resolved.
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    const uri create_file_url(const uri & relative_uri)
-        throw (bad_path, std::bad_alloc)
-    {
-        assert(relative_uri.scheme().empty());
-
-        using std::string;
-
-        string result = "file://";
-        uri result_uri;
-
-        try {
-# ifdef _WIN32
-            //
-            // _fullpath returns a string starting with the drive letter; for
-            // the URL, the path must begin with a '/'. So we simply put one at
-            // the beginning of the buffer.
-            //
-            char buffer[_MAX_PATH] = { '/' };
-            char * resolved_path =
-                _fullpath(buffer + 1, relative_uri.path().c_str(), _MAX_PATH);
-            if (!resolved_path) {
-                throw bad_path("cannot resolve \"" + relative_uri.path()
-                               + "\"");
-            }
-            std::replace_if(resolved_path,
-                            resolved_path + strlen(resolved_path) + 1,
-                            bind2nd(equal_to<char>(), '\\'), '/');
-            --resolvedPath;
-            assert(resolved_path == buffer);
-# else
-            char buffer[PATH_MAX];
-            const char * resolved_path = realpath(relative_uri.path().c_str(),
-                                                  buffer);
-            if (!resolved_path) {
-                static const size_t buf_size = 256;
-                char buf[buf_size];
-                strerror_r(errno, buf, buf_size);
-                throw bad_path(buf);
-            }
-# endif
-
-            result += resolved_path;
-
-            const string query = relative_uri.query();
-            if (!query.empty()) { result += '?' + query; }
-
-            const string fragment = relative_uri.fragment();
-            if (!fragment.empty()) { result += '#' + fragment; }
-
-            result_uri = uri(result);
-
-        } catch (invalid_url &) {
-            assert(false); // If we constructed a bad URI, something is wrong.
-        }
-
-        return result_uri;
-    }
-}
-
-/**
- * @brief Construct.
- *
- * @param browser   the browser associated with the scene.
- * @param parent    the parent scene.
- */
-openvrml::scene::scene(openvrml::browser & browser, scene * parent) throw ():
-    browser_(&browser),
-    parent_(parent),
-    url_mutex_(boost::read_write_scheduling_policy::writer_priority)
-{}
-
-/**
- * @brief Destroy.
- */
-openvrml::scene::~scene() throw ()
-{}
-
-/**
- * @brief Get the associated <code>browser</code>.
- *
- * @return the associated <code>browser</code>.
- */
-openvrml::browser & openvrml::scene::browser() const throw ()
-{
-    return *this->browser_;
-}
-
-/**
- * @brief Get the parent <code>scene</code>.
- *
- * @return the parent <code>scene</code>, or 0 if this is the root
- *         <code>scene</code>.
- */
-openvrml::scene * openvrml::scene::parent() const throw ()
-{
-    return this->parent_;
-}
-
-struct openvrml::scene::load_scene {
-
-    load_scene(openvrml::scene & scene,
-               const std::vector<std::string> & url):
-        scene_(&scene),
-        url_(&url)
-    {}
-        
-    void operator()() const throw () try {
-        using std::string;
-        using std::vector;
-
-        openvrml::scene & scene = *this->scene_;
-        const vector<string> & url = *this->url_;
-
-        assert(scene.url_.empty());
-
-        vector<node_ptr> nodes;
-        try {
-            std::auto_ptr<resource_istream> in = scene.get_resource(url);
-            if (!(*in)) { throw unreachable_url(); }
-            scene.url(in->url());
-            Vrml97Scanner scanner(*in);
-            Vrml97Parser parser(scanner, in->url());
-            parser.vrmlScene(scene.browser(), nodes);
-        } catch (antlr::RecognitionException & ex) {
-            throw invalid_vrml(ex.getFilename(),
-                               ex.getLine(),
-                               ex.getColumn(),
-                               ex.getMessage());
-        } catch (antlr::ANTLRException & ex) {
-            scene.browser().err << ex.getMessage() << std::endl;
-        } catch (std::bad_alloc & ex) {
-            scene.browser().err << ex.what() << std::endl;
-            throw unreachable_url();
-        } catch (...) {
-            throw unreachable_url();
-        }
-        scene.nodes(nodes);
-        scene.scene_loaded();
-    } catch (std::exception & ex) {
-        this->scene_->browser().err << ex.what() << std::endl;
-    }
-
-private:
-    openvrml::scene * const scene_;
-    const std::vector<std::string> * const url_;
-};
-
-/**
- * @brief Load a world.
- *
- * The world specified by @p url is loaded asynchronously.
- * <code>scene::scene_loaded</code> is called when loading the world has
- * completed (i.e., when <code>scene::nodes</code> will return the world's
- * root <code>node</code>s).
- *
- * As this function executes asynchronously, note that it will not throw upon
- * encountering a malformed or unreachable URI, or syntactically incorrect
- * VRML.
- *
- * @param url   the URI for the world.  Per VRML97 convention, this is a list
- *              of alternative URIs.  The first one in the list to load
- *              successfully is used.
- *
- * @exception boost::thread_resource_error  if a new thread of execution cannot
- *                                          be started.
- * @exception std::bad_alloc                if memory allocation fails.
- */
-void openvrml::scene::load(const std::vector<std::string> & url)
-    throw (boost::thread_resource_error, std::bad_alloc)
-{
-    boost::function0<void> f = load_scene(*this, url);
-    boost::thread t(f);
-}
-
-/**
- * @brief Initialize the scene.
- *
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void openvrml::scene::initialize(const double timestamp) throw (std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
-    for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
-         node != this->nodes_.end();
-         ++node) {
-        assert(*node);
-        (*node)->initialize(*this, timestamp);
-        child_node * const child = node_cast<child_node *>(node->get());
-        assert(child);
-        child->relocate();
-    }
-}
-
-/**
- * @brief Root nodes for the scene.
- *
- * @return the root nodes for the scene.
- */
-const std::vector<node_ptr> & scene::nodes() const throw()
-{
-    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
-    return this->nodes_;
-}
-
-/**
- * @brief Set the root nodes for the scene.
- *
- * @param n the new root nodes for the scene.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void openvrml::scene::nodes(const std::vector<node_ptr> & n)
-    throw (std::bad_alloc)
-{
-    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
-    this->nodes_ = n;
-}
-
-/**
- * @brief Get the absolute URI for the scene.
- *
- * @return the absolute URI for the scene.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-const std::string openvrml::scene::url() const throw (std::bad_alloc)
-{
-    boost::read_write_mutex::scoped_read_lock lock(this->url_mutex_);
-    using std::string;
-    const string result = this->parent_
-                        ? string(uri(this->url_)
-                                 .resolve_against(uri(this->parent_->url())))
-                        : this->url_;
-    return result;
-}
-
-/**
- * @brief Set the URI for the scene.
- *
- * Generally this function is used in conjunction with the two-argument
- * constructor (that does not take an alternative URI list) and the
- * scene::nodes mutator function.
- *
- * @param str   a valid URI.
- *
- * @exception invalid_url       if @p str is not a valid URI.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void openvrml::scene::url(const std::string & str)
-    throw (invalid_url, std::bad_alloc)
-{
-    boost::read_write_mutex::scoped_write_lock lock(this->url_mutex_);
-    uri id(str); // Make sure we have a valid URI.
-    this->url_ = str;
-}
-
-/**
- * @brief Render the scene.
- *
- * @param viewer    a viewer to render to.
- * @param context   a rendering_context.
- */
-void openvrml::scene::render(openvrml::viewer & viewer,
-                             rendering_context context)
-{
-    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
-    for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
-         node != this->nodes_.end();
-         ++node) {
-        assert(*node);
-        child_node * child = node_cast<child_node *>(node->get());
-        if (child) { child->render_child(viewer, context); }
-    }
-}
-
-/**
- * @brief Load a resource into @a browser.
- *
- * This method simply resolves any relative references in @p uri and calls
- * browser::load_url.
- *
- * @note There are a couple of edge cases here where we are probably doing the
- *      wrong thing:
- *       - If there is a URI in the list of the form "#NodeId" and it is not
- *         the first URI in the list, this URI will be loaded as if it were a
- *         new world rather than as a Viewpoint that should simply be bound.
- *       - If the first URI in the list is of the form "#NodeId" and no
- *         Viewpoint named "NodeId" exists in the scene, this method will not
- *         try any subsequent URIs in the list.
- *
- * @param url       an array of URIs. Per VRML97 convention, the first resource
- *                  in the sequence that can be reached will be loaded into the
- *                  browser.
- * @param parameter an array of parameters to be associated with the URIs in
- *                  @p uri.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- *
- * @todo This method currently fails silently if any of the URIs in @p url is
- *      invalid. Should this throw invalid_url?
- */
-void openvrml::scene::load_url(const std::vector<std::string> & url,
-                               const std::vector<std::string> & parameter)
-    throw (std::bad_alloc)
-{
-    using std::string;
-
-    if (!url.empty()) {
-        if (url[0][0] == '#') {
-# if 0
-            //
-            // If the first element in uri is a Viewpoint name, bind the
-            // Viewpoint.
-            //
-            this->browser_->setViewpoint(uri[0].substr(1));
-# endif
-        } else {
-            std::vector<std::string> absoluteURIs(url.size());
-            for (size_t i = 0; i < absoluteURIs.size(); ++i) {
-                try {
-                    const uri urlElement(url[i]);
-                    const string value =
-                        urlElement.scheme().empty()
-                            ? urlElement.resolve_against(uri(this->url()))
-                            : urlElement;
-                    absoluteURIs[i] = value;
-                } catch (invalid_url & ex) {
-                    OPENVRML_PRINT_EXCEPTION_(ex);
-                }
-            }
-            this->browser_->load_url(absoluteURIs, parameter);
-        }
-    }
-}
-
-/**
- * @brief Get a resource using a list of alternative URIs.
- *
- * Relative URIs in @p url are resolved against the absolute URI of the
- * <code>scene</code>.
- *
- * @param url   a list of alternative URIs.
- *
- * @return the resource.
- *
- * @exception no_alternative_url    if none of the elements of @p url can be
- *                                  resolved.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-std::auto_ptr<resource_istream>
-openvrml::scene::get_resource(const std::vector<std::string> & url) const
-    throw (no_alternative_url, std::bad_alloc)
-{
-    using std::string;
-    using std::vector;
-
-    std::auto_ptr<resource_istream> in;
-
-    for (vector<string>::size_type i = 0; i < url.size(); ++i) {
-        try {
-            //
-            // Throw invalid_url if it isn't a valid URI.
-            //
-            uri test_uri(url[i]);
-
-            //
-            // If we have a relative reference, resolve it against this->url();
-            // unless the parent is null and this->url() is empty, in which
-            // case we are loading the root scene.  In that case, construct an
-            // absolute file URL.
-            //
-            const uri absolute_uri = !test_uri.scheme().empty()
-                                   ? test_uri
-                                   : (!this->parent() && this->url().empty())
-                                        ? create_file_url(test_uri)
-                                        : test_uri
-                                            .resolve_against(uri(this->url()));
-
-            in = this->browser().get_resource(absolute_uri);
-            if (!(*in)) { throw unreachable_url(); }
-            break;
-        } catch (bad_url & ex) {
-            this->browser().err << ex.what() << std::endl;
-            continue;
-        }
-    }
-    if (!in.get()) { throw no_alternative_url(); }
-    return in;
-}
-
-/**
- * @brief Shut down the nodes in the scene.
- *
- * This function @b must be called before the scene is destroyed.
- *
- * @param timestamp the current time.
- */
-void openvrml::scene::shutdown(const double timestamp) throw ()
-{
-    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
-    for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
-         node != this->nodes_.end();
-         ++node) {
-        if (*node) { (*node)->shutdown(timestamp); }
-    }
-}
-
-/**
- * @brief Function called once the scene has been loaded.
- *
- * <code>scene::load</code> calls this function once the scene has finished
- * loading. The default implementation does nothing.
- */
-void openvrml::scene::scene_loaded()
-{}
-
-
-openvrml::null_node_class::null_node_class(openvrml::browser & browser)
-    throw ():
+null_node_class::null_node_class(openvrml::browser & browser) throw ():
     node_class(browser)
 {}
 
-openvrml::null_node_class::~null_node_class() throw ()
+null_node_class::~null_node_class() throw ()
 {}
 
-const boost::shared_ptr<openvrml::node_type>
-openvrml::null_node_class::
-do_create_type(const std::string &, const node_interface_set &) const
+const node_type_ptr
+null_node_class::do_create_type(const std::string & id,
+                                const node_interface_set & interfaces) const
     throw ()
 {
     assert(false);
-    static const boost::shared_ptr<node_type> nodeType;
+    static const node_type_ptr nodeType;
     return nodeType;
 }
 
 
-openvrml::null_node_type::null_node_type(null_node_class & nodeClass) throw ():
+null_node_type::null_node_type(null_node_class & nodeClass) throw ():
     node_type(nodeClass, std::string())
 {}
 
-openvrml::null_node_type::~null_node_type() throw ()
+null_node_type::~null_node_type() throw ()
 {}
 
-const openvrml::node_interface_set &
-openvrml::null_node_type::do_interfaces() const throw ()
+const node_interface_set & null_node_type::do_interfaces() const throw ()
 {
     assert(false);
     static const node_interface_set interfaces;
     return interfaces;
 }
 
-const openvrml::node_ptr
-openvrml::null_node_type::
-do_create_node(const boost::shared_ptr<openvrml::scope> &,
-               const initial_value_map &) const
+const node_ptr
+null_node_type::
+do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
+               const initial_value_map & initial_values) const
     throw ()
 {
     assert(false);
     static const node_ptr node;
     return node;
 }
+
+
+/**
+ * @class doc
+ *
+ * @brief A class to contain document references.
+ *
+ * This is just a shell until a real http protocol library is found...
+ */
+
+/**
+ * @var char * doc::url_
+ *
+ * @brief The URL.
+ */
+
+/**
+ * @var std::ostream * doc::out_
+ *
+ * @brief A pointer to a std::ostream used for writing the resource.
+ */
+
+/**
+ * @var FILE * doc::fp_
+ *
+ * @brief A file descriptor for reading the local copy of the resource.
+ */
+
+/**
+ * @var char * doc::tmpfile_
+ *
+ * @brief Name of the temporary file created for the local copy of the
+ *        resource.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param url       an HTTP or file URL.
+ * @param relative  the doc that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+doc::doc(const std::string & url, const doc * relative):
+    url_(0),
+    out_(0),
+    fp_(0),
+    tmpfile_(0)
+{
+    if (!url.empty()) { this->seturl(url.c_str(), relative); }
+}
+
+/**
+ * @brief Constructor.
+ *
+ * @param url       an HTTP or file URL.
+ * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+doc::doc(const std::string & url, const doc2 * relative):
+    url_(0),
+    out_(0),
+    fp_(0),
+    tmpfile_(0)
+{
+    if (!url.empty()) { this->seturl(url.c_str(), relative); }
+}
+
+/**
+ * @brief Destructor.
+ */
+doc::~doc()
+{
+    delete [] this->url_;
+    delete this->out_;
+    if (this->tmpfile_) {
+        the_system->remove_file(this->tmpfile_);
+        delete [] this->tmpfile_;
+    }
+}
+
+namespace {
+    const char * stripProtocol(const char *url)
+    {
+      const char *s = url;
+
+#ifdef _WIN32
+      if (strncmp(s+1,":/",2) == 0) return url;
+#endif
+
+      // strip off protocol if any
+      while (*s && isalpha(*s)) ++s;
+
+      if (*s == ':')
+        return s + 1;
+
+      return url;
+    }
+
+    bool isAbsolute(const char *url)
+    {
+      const char *s = stripProtocol(url);
+      return ( *s == '/' || *(s+1) == ':' );
+    }
+}
+
+/**
+  * @brief Set the URL.
+ *
+ * @param url       the new URL.
+ * @param relative  the doc that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+void doc::seturl(const char * const url, const doc * const relative)
+{
+  delete [] url_;
+  url_ = 0;
+
+  if (url)
+  {
+      const char *path = "";
+
+#ifdef _WIN32
+// Convert windows path stream to standard URL
+	  char *p = (char *)url;
+	  for(;*p != '\0';p++)
+		  if(*p == '\\')*p = '/';
+#endif
+
+      if ( relative && ! isAbsolute(url) )
+	    path = relative->url_path();
+
+      url_ = new char[strlen(path) + strlen(url) + 1];
+      strcpy(url_, path);
+
+      if (strlen(url)>2 && url[0] == '.' && url[1] == '/')
+        strcat(url_, url+2); // skip "./"
+      else
+        strcat(url_, url);
+  }
+}
+
+/**
+ * @brief Set the URL.
+ *
+ * @param url       the new URL.
+ * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+void doc::seturl(const char * const url, const doc2 * const relative)
+{
+    delete [] this->url_;
+    this->url_ = 0;
+
+    if (url) {
+        std::string path;
+
+#ifdef _WIN32
+        // Convert windows path stream to standard URL
+        char *p = (char *)url;
+        for (; *p != '\0'; p++) { if (*p == '\\') { *p = '/'; } }
+#endif
+
+        if (relative && !isAbsolute(url)) { path = relative->url_path(); }
+
+        this->url_ = new char[path.length() + strlen(url) + 1];
+        strcpy(this->url_, path.c_str());
+
+        if (strlen(url) > 2 && url[0] == '.' && url[1] == '/') {
+            strcat(this->url_, url + 2); // skip "./"
+        } else {
+            strcat(this->url_, url);
+        }
+    }
+}
+
+/**
+ * @brief Get the URL.
+ *
+ * @return the URL.
+ */
+const char * doc::url() const { return url_; }
+
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      without its extension.
+ *
+ * @return the portion of the last path element preceding the last '.' in the
+ *      path, or an empty string if the last path element is empty.
+ */
+const char * doc::url_base() const
+{
+  if (! url_) return "";
+
+  static char path[1024];
+  char *p, *s = path;
+  strncpy(path, url_, sizeof(path)-1);
+  path[sizeof(path)-1] = '\0';
+  if ((p = strrchr(s, '/')) != 0)
+    s = p+1;
+  else if ((p = strchr(s, ':')) != 0)
+    s = p+1;
+
+  if ((p = strrchr(s, '.')) != 0)
+    *p = '\0';
+
+  return s;
+}
+
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      extension.
+ *
+ * @return the portion of the last path element succeeding the last '.' in the
+ *      path, or an empty string if the last path element includes no '.'.
+ */
+const char * doc::url_ext() const
+{
+  if (! url_) return "";
+
+  static char ext[20];
+  char *p;
+
+  if ((p = strrchr(url_, '.')) != 0)
+    {
+      strncpy(ext, p+1, sizeof(ext)-1);
+      ext[sizeof(ext)-1] = '\0';
+    }
+  else
+    ext[0] = '\0';
+
+  return &ext[0];
+}
+
+/**
+ * @brief Get the URL without the last component of the path.
+ *
+ * In spite of its name, this method does not return the URL's path.
+ *
+ * @return the portion of the URL including the scheme, the authority, and all
+ *      but the last component of the path.
+ */
+const char * doc::url_path() const
+{
+  if (! url_) return "";
+
+  static char path[1024];
+
+  strcpy(path, url_);
+  char *slash;
+  if ((slash = strrchr(path, '/')) != 0)
+    *(slash+1) = '\0';
+  else
+    path[0] = '\0';
+  return &path[0];
+}
+
+/**
+ * @brief Get the URL scheme.
+ *
+ * @return the URL scheme.
+ */
+const char * doc::url_protocol() const
+{
+  if (url_)
+    {
+      static char protocol[12];
+      const char *s = url_;
+
+#ifdef _WIN32
+      if (strncmp(s+1,":/",2) == 0) return "file";
+#endif
+
+      for (unsigned int i=0; i<sizeof(protocol); ++i, ++s)
+	{
+	  if (*s == 0 || ! isalpha(*s))
+	    {
+	      protocol[i] = '\0';
+	      break;
+	    }
+	  protocol[i] = tolower(*s);
+	}
+      protocol[sizeof(protocol)-1] = '\0';
+      if (*s == ':')
+	return protocol;
+    }
+
+  return "file";
+}
+
+/**
+ * @brief Get the fragment identifier.
+ *
+ * @return the fragment identifier, including the leading '#', or an empty
+ *      string if there is no fragment identifier.
+ */
+const char * doc::url_modifier() const
+{
+  char *mod = url_ ? strrchr(url_,'#') : 0;
+  return mod;
+}
+
+/**
+ * @brief Get the fully qualified name of a local file that is the downloaded
+ *      resource at @a url_.
+ *
+ * @return the fully qualified name of a local file that is the downloaded
+ *      resource at @a url_.
+ */
+const char * doc::local_name()
+{
+  static char buf[1024];
+  if (filename(buf, sizeof(buf)))
+    return &buf[0];
+  return 0;
+}
+
+/**
+ * @brief Get the path of the local file that is the downloaded resource at
+ *      @a url_.
+ *
+ * @return the path of the local file that is the downloaded resource at
+ *      @a url_.
+ */
+const char * doc::local_path()
+{
+  static char buf[1024];
+  if (filename(buf, sizeof(buf)))
+    {
+      char *s = strrchr(buf, '/');
+      if (s) *(s+1) = '\0';
+      return &buf[0];
+    }
+  return 0;
+}
+
+/**
+ * @brief Converts a url into a local filename.
+ *
+ * @retval fn   a character buffer to hold the local filename.
+ * @param nfn   the number of elements in the buffer @p fn points to.
+ */
+bool doc::filename(char * fn, int nfn)
+{
+    using std::string;
+
+    fn[0] = '\0';
+
+    string s = stripProtocol(this->url_);
+    char * e = 0;
+
+    if ((e = strrchr(s.c_str(),'#')) != 0) { *e = '\0'; }
+
+    const char *protocol = url_protocol();
+
+    // Get a local copy of http files
+    if (strcmp(protocol, "http") == 0) {
+        if (tmpfile_) {
+            // Already fetched it
+            s = tmpfile_;
+        } else if (!(s = the_system->http_fetch(this->url_)).empty()) {
+            tmpfile_ = new char[s.length() + 1];
+            strcpy(tmpfile_, s.c_str());
+            s = tmpfile_;
+	}
+    }
+
+    // Unrecognized protocol (need ftp here...)
+    else if (strcmp(protocol, "file") != 0) {
+        s.clear();
+    }
+
+#ifdef _WIN32
+  // Does not like "//C:" skip "// "
+    if (!s.empty()) {
+        if(s.length() > 2 && s[0] == '/' && s[1] == '/') { s = s.substr(2); }
+    }
+#endif
+
+    if (!s.empty()) {
+        strncpy(fn, s.c_str(), nfn - 1);
+        fn[nfn - 1] = '\0';
+    }
+
+    if (e) { *e = '#'; }
+
+    return !s.empty();
+}
+
+/**
+ * @brief Open a file.
+ *
+ * @return a pointer to a FILE struct for the opened file.
+ *
+ * Having both fopen and outputStream is dumb.
+ */
+FILE *doc::fopen(const char *mode)
+{
+    if (this->fp_) {
+        OPENVRML_PRINT_MESSAGE_(std::string(this->url_ ? this->url_ : "")
+                                + "is already open.");
+    }
+
+    char fn[256];
+    if (filename(fn, sizeof(fn))) {
+        if (strcmp(fn, "-") == 0) {
+            if (*mode == 'r') {
+                fp_ = stdin;
+            } else if (*mode == 'w') {
+                fp_ = stdout;
+            }
+        } else {
+            fp_ = ::fopen( fn, mode );
+        }
+    }
+    return fp_;
+}
+
+/**
+ * @brief Close a file.
+ *
+ * Closes the file opened with doc::fopen.
+ */
+void doc::fclose()
+{
+  if (fp_ && (strcmp(url_, "-") != 0) && (strncmp(url_, "-#", 2) != 0))
+    ::fclose(fp_);
+
+  fp_ = 0;
+  if (tmpfile_)
+    {
+      the_system->remove_file(tmpfile_);
+      delete [] tmpfile_;
+      tmpfile_ = 0;
+    }
+}
+
+/**
+ * @brief Get an output stream for writing to the resource.
+ *
+ * @return an output stream.
+ */
+std::ostream & doc::output_stream()
+{
+    this->out_ = new std::ofstream(stripProtocol(url_), std::ios::out);
+    return *this->out_;
+}
+
+
+/**
+ * @class doc2
+ *
+ * @brief A class to contain document references.
+ *
+ * doc2 is a hack of doc. When the ANTLR parser was added to OpenVRML, a doc
+ * work-alike was needed that would read from a std::istream instead of a C
+ * @c FILE @c *. doc2's purpose is to fill that need, and to remind us through
+ * its ugliness just how badly both it and doc need to be replaced with an I/O
+ * solution that doesn't suck.
+ */
+
+/**
+ * @var char * doc2::url_
+ *
+ * @brief The URL.
+ */
+
+/**
+ * @var char * doc2::tmpfile_
+ *
+ * @brief Name of the temporary file created for the local copy of the
+ *        resource.
+ */
+
+/**
+ * @var std::istream * doc2::istm_
+ *
+ * @brief A file descriptor for reading the local copy of the resource.
+ */
+
+/**
+ * @var std::ostream * doc2::ostm_
+ *
+ * @brief A pointer to a std::ostream used for writing the resource.
+ */
+
+/**
+ * @brief Constructor.
+ *
+ * @param url       an HTTP or file URL.
+ * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+doc2::doc2(const std::string & url, const doc2 * relative):
+    tmpfile_(0),
+    istm_(0),
+    ostm_(0)
+{
+    if (!url.empty()) {
+        this->seturl(url, relative);
+    }
+}
+
+/**
+ * @brief Destructor.
+ */
+doc2::~doc2()
+{
+    delete istm_;
+    delete ostm_;
+    if (tmpfile_) {
+        the_system->remove_file(tmpfile_);
+        delete [] tmpfile_;
+    }
+}
+
+namespace {
+    const std::string stripProtocol(const std::string & url) {
+        using std::string;
+        const string::size_type colonPos = url.find_first_of(':');
+        return (colonPos != string::npos)
+                ? url.substr(colonPos + 1)
+                : url;
+    }
+
+    bool isAbsolute(const std::string & url) {
+        return stripProtocol(url)[0] == '/';
+    }
+}
+
+/**
+ * @brief Set the URL.
+ *
+ * @param url       the new URL.
+ * @param relative  the doc2 that @p url is relative to, or 0 if @p url is an
+ *                  absolute URL.
+ */
+void doc2::seturl(const std::string & url, const doc2 * relative) {
+    using std::string;
+
+    this->url_ = string();
+
+    if (!url.empty()) {
+
+        delete this->istm_;
+        this->istm_ = 0;
+        delete this->ostm_;
+        this->ostm_ = 0;
+
+        string path;
+
+        if (relative && !isAbsolute(url)) {
+            path = relative->url_path();
+        }
+
+        this->url_ = path;
+
+        if (url.length() > 2 && url[0] == '.' && url[1] == '/') {
+            this->url_ += url.substr(2);
+        } else {
+            this->url_ += url;
+        }
+    }
+}
+
+/**
+ * @brief Get the URL.
+ *
+ * @return the URL.
+ */
+const std::string doc2::url() const { return this->url_; }
+
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      without its extension.
+ *
+ * @return the portion of the last path element preceding the last '.' in the
+ *      path, or an empty string if the last path element is empty.
+ */
+const std::string doc2::url_base() const {
+    using std::string;
+
+    string::size_type lastSlashPos = this->url_.find_last_of('/');
+    string::size_type lastDotPos = this->url_.find_last_of('.');
+
+    string::size_type beginPos = (lastSlashPos != string::npos)
+                               ? lastSlashPos + 1
+                               : 0;
+    string::size_type length = (lastDotPos != string::npos)
+                             ? lastDotPos - beginPos
+                             : this->url_.length() - 1 - beginPos;
+
+    return (beginPos < this->url_.length())
+            ? this->url_.substr(beginPos, length)
+            : "";
+}
+
+/**
+ * @brief Get the portion of the path likely to correspond to a file name
+ *      extension.
+ *
+ * @return the portion of the last path element succeeding the last '.' in the
+ *      path, or an empty string if the last path element includes no '.'.
+ */
+const std::string doc2::url_ext() const {
+    using std::string;
+    string::size_type lastDotPos = this->url_.find_last_of('.');
+    return (lastDotPos != string::npos)
+            ? this->url_.substr(lastDotPos + 1)
+            : "";
+}
+
+/**
+ * @brief Get the URL without the last component of the path.
+ *
+ * In spite of its name, this method does not return the URL's path.
+ *
+ * @return the portion of the URL including the scheme, the authority, and all
+ *      but the last component of the path.
+ */
+const std::string doc2::url_path() const {
+    using std::string;
+
+    string::size_type lastSlashPos = this->url_.find_last_of('/');
+
+    return (lastSlashPos != string::npos)
+            ? this->url_.substr(0, lastSlashPos + 1)
+            : this->url_;
+}
+
+/**
+ * @brief Get the URL scheme.
+ *
+ * @return the URL scheme.
+ */
+const std::string doc2::url_protocol() const {
+    using std::string;
+
+    string::size_type firstColonPos = this->url_.find_first_of(':');
+    return (firstColonPos != string::npos)
+            ? this->url_.substr(0, firstColonPos)
+            : "file";
+}
+
+/**
+ * @brief Get the fragment identifier.
+ *
+ * @return the fragment identifier, including the leading '#', or an empty
+ *      string if there is no fragment identifier.
+ */
+const std::string doc2::url_modifier() const {
+    using std::string;
+    string::size_type lastHashPos = this->url_.find_last_of('#');
+    return (lastHashPos != string::npos)
+            ? this->url_.substr(lastHashPos)
+            : "";
+}
+
+/**
+ * @brief Get the fully qualified name of a local file that is the downloaded
+ *      resource at @a url_.
+ *
+ * @return the fully qualified name of a local file that is the downloaded
+ *      resource at @a url_.
+ */
+const char * doc2::local_name() {
+    static char buf[1024];
+    if (filename(buf, sizeof(buf))) { return buf; }
+    return 0;
+}
+
+/**
+ * @brief Get the path of the local file that is the downloaded resource at
+ *      @a url_.
+ *
+ * @return the path of the local file that is the downloaded resource at
+ *      @a url_.
+ */
+const char * doc2::local_path() {
+    static char buf[1024];
+
+    if (filename(buf, sizeof(buf))) {
+
+        char * s = strrchr(buf, '/');
+        if (s) {
+            *(s+1) = '\0';
+        }
+
+        return buf;
+    }
+
+    return 0;
+}
+
+/**
+ * @brief Get an input stream for the resource.
+ *
+ * @return an input stream for the resource.
+ */
+std::istream & doc2::input_stream() {
+    if (!this->istm_) {
+
+        char fn[256];
+
+        this->filename(fn, sizeof(fn));
+        if (strcmp(fn, "-") == 0) {
+            this->istm_ = &std::cin;
+        } else {
+# ifdef OPENVRML_ENABLE_GZIP
+            this->istm_ = new z::ifstream(fn);
+# else
+            this->istm_ = new std::ifstream(fn);
+# endif
+        }
+    }
+
+    return *this->istm_;
+}
+
+/**
+ * @brief Get an output stream for the resource.
+ *
+ * @return an output stream for the resource.
+ */
+std::ostream & doc2::output_stream() {
+    if (!ostm_) {
+        ostm_ = new std::ofstream(stripProtocol(url_).c_str(), std::ios::out);
+    }
+    return *this->ostm_;
+}
+
+/**
+ * @brief Converts a url into a local filename.
+ *
+ * @retval fn   a character buffer to hold the local filename.
+ * @param nfn   the number of elements in the buffer @p fn points to.
+ */
+bool doc2::filename(char * fn, const size_t nfn) {
+    using std::copy;
+    using std::string;
+
+    fn[0] = '\0';
+
+    string s;
+
+    const string protocol = this->url_protocol();
+
+    if (protocol == "file") {
+# ifdef _WIN32
+        string name = uri(this->url_).path().substr(1);
+# else
+        string name = uri(this->url_).path();
+# endif
+        size_t len = (name.length() < (nfn - 1))
+                   ? name.length()
+                   : nfn - 1;
+        copy(name.begin(), name.begin() + len, fn);
+        fn[len] = '\0';
+        return true;
+    } else if (protocol == "http") {
+        //
+        // Get a local copy of http files.
+        //
+        if (this->tmpfile_) {    // Already fetched it
+            s = this->tmpfile_;
+        } else if (!(s = the_system->http_fetch(this->url_.c_str())).empty()) {
+            tmpfile_ = new char[s.length() + 1];
+            strcpy(tmpfile_, s.c_str());
+            s = tmpfile_;
+        }
+    }
+    // Unrecognized protocol (need ftp here...)
+    else {
+        s.clear();
+    }
+
+    if (!s.empty()) {
+        strncpy(fn, s.c_str(), nfn - 1);
+        fn[nfn-1] = '\0';
+    }
+
+    return !s.empty();
+}
+
+} // namespace openvrml

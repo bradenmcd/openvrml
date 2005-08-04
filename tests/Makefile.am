@@ -1,5 +1,4 @@
 AM_CPPFLAGS = -I$(top_srcdir)/src/libopenvrml
-AM_CXXFLAGS = @PTHREAD_CFLAGS@
 AM_LDFLAGS = @OPENVRML_RPATH@
 LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
@@ -9,27 +8,18 @@ TESTS = browser_basic \
         parse_anchor \
         node_interface_set
 
-noinst_LTLIBRARIES = libtest-openvrml.la
 noinst_PROGRAMS = $(TESTS) parse
-noinst_HEADERS = test_browser.h
-
-libtest_openvrml_la_SOURCES = test_browser.cpp
-libtest_openvrml_la_LIBADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
 browser_basic_SOURCES = browser_basic.cpp
-browser_basic_LDADD = libtest-openvrml.la
 
 browser_create_vrml_from_stream_SOURCES = browser_create_vrml_from_stream.cpp
-browser_create_vrml_from_stream_LDADD = libtest-openvrml.la
 
 parse_anchor_SOURCES = parse_anchor.cpp
-parse_anchor_LDADD = libtest-openvrml.la
 
 node_interface_set_SOURCES = node_interface_set.cpp
 node_interface_set_LDFLAGS = -lboost_unit_test_framework
 
 parse_SOURCES = parse.cpp
-parse_LDADD = libtest-openvrml.la
 
 EXTRA_DIST = \
         package.m4 \
