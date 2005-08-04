@@ -47,8 +47,6 @@ namespace openvrml {
                        const boost::shared_ptr<scope> & parent =
                        boost::shared_ptr<scope>());
 
-        virtual ~scope();
-
         const std::string & id() const throw ();
 
         const boost::shared_ptr<scope> & parent() const throw ();

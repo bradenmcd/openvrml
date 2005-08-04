@@ -91,12 +91,6 @@ openvrml::scope::scope(const std::string & id,
 {}
 
 /**
- * @brief Destroy.
- */
-openvrml::scope::~scope()
-{}
-
-/**
  * @brief <code>scope</code> identifier.
  *
  * @return the <code>scope</code> identifier.

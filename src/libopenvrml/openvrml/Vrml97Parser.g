@@ -618,10 +618,11 @@ vrmlScene[openvrml::browser & browser,
           std::vector<node_ptr> & nodes]
 options { defaultErrorHandler=false; }
 {
-    const boost::shared_ptr<openvrml::scope>
-        scope(new browser::vrml97_root_scope(browser, this->uri));
+    std::auto_ptr<openvrml::scope> root_scope_auto_ptr =
+        browser.create_root_scope(this->uri);
+    const boost::shared_ptr<openvrml::scope> root_scope(root_scope_auto_ptr);
 }
-    :   (statement[browser, nodes, scope])*
+    :   (statement[browser, nodes, root_scope])*
     ;
 
 statement[openvrml::browser & browser,

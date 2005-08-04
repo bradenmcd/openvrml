@@ -1,3 +1,17 @@
+2005-08-03 Braden McDaniel  <braden@endoframe.com>
+
+	Removed virtual destructor from openvrml::scope.  The only
+	reason it was there was to accommodate an implementation
+	detail in OpenVRML.  In general there's no need for
+	openvrml::scope to be a base class.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/scope.h
+
 2005-07-31 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp:  Removed

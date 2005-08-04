@@ -152,8 +152,6 @@ namespace openvrml {
     class browser : boost::noncopyable {
         friend class Vrml97Parser;
 
-        class vrml97_root_scope;
-
         class node_class_map {
             mutable boost::mutex mutex_;
             typedef std::map<std::string, boost::shared_ptr<node_class> >
@@ -184,7 +182,6 @@ namespace openvrml {
             node_class_map(const node_class_map & map);            
         };
 
-    private:
         mutable boost::recursive_mutex mutex_;
         std::auto_ptr<null_node_class> null_node_class_;
         std::auto_ptr<null_node_type> null_node_type_;
@@ -291,6 +288,9 @@ namespace openvrml {
         bool headlight_on();
 
     private:
+        std::auto_ptr<scope>
+        create_root_scope(const std::string & uri) throw (std::bad_alloc);
+
         virtual std::auto_ptr<resource_istream>
         do_get_resource(const std::string & uri) = 0;
     };
