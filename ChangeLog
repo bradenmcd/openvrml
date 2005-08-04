@@ -1,3 +1,14 @@
+2005-08-04 Braden McDaniel  <braden@endoframe.com>
+
+	Updated package version to 0.15.10.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* mozilla-plugin/configure.ac
+
 2005-08-03 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/Doxyfile:  Updated for Doxygen 1.4.4.
