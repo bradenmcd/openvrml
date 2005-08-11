@@ -53,7 +53,7 @@ namespace {
 
 namespace {
 
-    class self_ref_node : public openvrml::node {
+    class OPENVRML_LOCAL self_ref_node : public openvrml::node {
     public:
         self_ref_node();
         virtual ~self_ref_node() throw ();

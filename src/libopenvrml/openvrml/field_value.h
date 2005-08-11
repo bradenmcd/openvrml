@@ -36,10 +36,10 @@ namespace openvrml {
 
     class field_value;
 
-    std::ostream & operator<<(std::ostream & out,
-                              const field_value & value);
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const field_value & value);
 
-    class field_value {
+    class OPENVRML_API field_value {
         friend std::ostream & operator<<(std::ostream & out,
                                          const field_value & value);
 
@@ -88,10 +88,10 @@ namespace openvrml {
         virtual void print(std::ostream & out) const = 0;
     };
 
-    std::ostream & operator<<(std::ostream & out,
-                              field_value::type_id type_id);
-    std::istream & operator>>(std::istream & in,
-                              field_value::type_id & type_id);
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           field_value::type_id type_id);
+    OPENVRML_API std::istream & operator>>(std::istream & in,
+                                           field_value::type_id & type_id);
 
 
     template <typename T>
@@ -131,7 +131,7 @@ namespace openvrml {
     };
 
 
-    class sfbool : public field_value {
+    class OPENVRML_API sfbool : public field_value {
     public:
         typedef bool value_type;
 
@@ -154,11 +154,13 @@ namespace openvrml {
         virtual void print(std::ostream & out) const;
     };
 
-    bool operator==(const sfbool & lhs, const sfbool & rhs) throw ();
-    bool operator!=(const sfbool & lhs, const sfbool & rhs) throw ();
+    OPENVRML_API bool operator==(const sfbool & lhs, const sfbool & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfbool & lhs, const sfbool & rhs)
+        throw ();
 
 
-    class sfcolor : public field_value {
+    class OPENVRML_API sfcolor : public field_value {
     public:
         typedef color value_type;
 
@@ -181,11 +183,13 @@ namespace openvrml {
         virtual void print(std::ostream & out) const;
     };
 
-    bool operator==(const sfcolor & lhs, const sfcolor & rhs) throw ();
-    bool operator!=(const sfcolor & lhs, const sfcolor & rhs) throw ();
+    OPENVRML_API bool operator==(const sfcolor & lhs, const sfcolor & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfcolor & lhs, const sfcolor & rhs)
+        throw ();
 
 
-    class sffloat : public field_value {
+    class OPENVRML_API sffloat : public field_value {
     public:
         typedef float value_type;
 
@@ -208,11 +212,13 @@ namespace openvrml {
         virtual void print(std::ostream & out) const;
     };
 
-    bool operator==(const sffloat & lhs, const sffloat & rhs) throw ();
-    bool operator!=(const sffloat & lhs, const sffloat & rhs) throw ();
+    OPENVRML_API bool operator==(const sffloat & lhs, const sffloat & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sffloat & lhs, const sffloat & rhs)
+        throw ();
 
 
-    class sfimage : public field_value {
+    class OPENVRML_API sfimage : public field_value {
     public:
         typedef image value_type;
 
@@ -235,11 +241,13 @@ namespace openvrml {
         virtual void print(std::ostream & out) const;
     };
 
-    bool operator==(const sfimage & lhs, const sfimage & rhs) throw ();
-    bool operator!=(const sfimage & lhs, const sfimage & rhs) throw ();
+    OPENVRML_API bool operator==(const sfimage & lhs, const sfimage & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfimage & lhs, const sfimage & rhs)
+        throw ();
 
 
-    class sfint32 : public field_value {
+    class OPENVRML_API sfint32 : public field_value {
     public:
         typedef int32 value_type;
 
@@ -262,11 +270,13 @@ namespace openvrml {
         virtual void print(std::ostream &) const;
     };
 
-    bool operator==(const sfint32 & lhs, const sfint32 & rhs) throw ();
-    bool operator!=(const sfint32 & lhs, const sfint32 & rhs) throw ();
+    OPENVRML_API bool operator==(const sfint32 & lhs, const sfint32 & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfint32 & lhs, const sfint32 & rhs)
+        throw ();
 
 
-    class sfnode : public field_value {
+    class OPENVRML_API sfnode : public field_value {
     public:
         typedef node_ptr value_type;
 
@@ -289,11 +299,13 @@ namespace openvrml {
         virtual void print(std::ostream &) const;
     };
 
-    bool operator==(const sfnode & lhs, const sfnode & rhs) throw ();
-    bool operator!=(const sfnode & lhs, const sfnode & rhs) throw ();
+    OPENVRML_API bool operator==(const sfnode & lhs, const sfnode & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfnode & lhs, const sfnode & rhs)
+        throw ();
 
 
-    class sfrotation : public field_value {
+    class OPENVRML_API sfrotation : public field_value {
     public:
         typedef rotation value_type;
 
@@ -316,11 +328,15 @@ namespace openvrml {
         virtual void print(std::ostream & out) const;
     };
 
-    bool operator==(const sfrotation & lhs, const sfrotation & rhs) throw ();
-    bool operator!=(const sfrotation & lhs, const sfrotation & rhs) throw ();
+    OPENVRML_API bool operator==(const sfrotation & lhs,
+                                 const sfrotation & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfrotation & lhs,
+                                 const sfrotation & rhs)
+        throw ();
 
 
-    class sfstring : public field_value {
+    class OPENVRML_API sfstring : public field_value {
     public:
         typedef std::string value_type;
 
@@ -344,11 +360,13 @@ namespace openvrml {
         virtual void print(std::ostream &) const;
     };
 
-    bool operator==(const sfstring & lhs, const sfstring & rhs) throw ();
-    bool operator!=(const sfstring & lhs, const sfstring & rhs) throw ();
+    OPENVRML_API bool operator==(const sfstring & lhs, const sfstring & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfstring & lhs, const sfstring & rhs)
+        throw ();
 
 
-    class sftime : public field_value {
+    class OPENVRML_API sftime : public field_value {
     public:
         typedef double value_type;
 
@@ -371,11 +389,13 @@ namespace openvrml {
         virtual void print(std::ostream &) const;
     };
 
-    bool operator==(const sftime & lhs, const sftime & rhs) throw ();
-    bool operator!=(const sftime & lhs, const sftime & rhs) throw ();
+    OPENVRML_API bool operator==(const sftime & lhs, const sftime & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sftime & lhs, const sftime & rhs)
+        throw ();
 
 
-    class sfvec2f : public field_value {
+    class OPENVRML_API sfvec2f : public field_value {
     public:
         typedef vec2f value_type;
 
@@ -398,11 +418,13 @@ namespace openvrml {
         virtual void print(std::ostream &) const;
     };
 
-    bool operator==(const sfvec2f & lhs, const sfvec2f & rhs) throw ();
-    bool operator!=(const sfvec2f & lhs, const sfvec2f & rhs) throw ();
+    OPENVRML_API bool operator==(const sfvec2f & lhs, const sfvec2f & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfvec2f & lhs, const sfvec2f & rhs)
+        throw ();
 
 
-    class sfvec3f : public field_value {
+    class OPENVRML_API sfvec3f : public field_value {
     public:
         typedef vec3f value_type;
 
@@ -425,11 +447,13 @@ namespace openvrml {
         virtual void print(std::ostream &) const;
     };
 
-    bool operator==(const sfvec3f & lhs, const sfvec3f & rhs) throw ();
-    bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs) throw ();
+    OPENVRML_API bool operator==(const sfvec3f & lhs, const sfvec3f & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs)
+        throw ();
 
 
-    class mfcolor : public field_value {
+    class OPENVRML_API mfcolor : public field_value {
     public:
         typedef std::vector<color> value_type;
 
@@ -467,11 +491,13 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    bool operator==(const mfcolor & lhs, const mfcolor & rhs) throw ();
-    bool operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ();
+    OPENVRML_API bool operator==(const mfcolor & lhs, const mfcolor & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfcolor & lhs, const mfcolor & rhs)
+        throw ();
 
 
-    class mffloat : public field_value {
+    class OPENVRML_API mffloat : public field_value {
     public:
         typedef std::vector<float> value_type;
 
@@ -509,11 +535,13 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    bool operator==(const mffloat & lhs, const mffloat & rhs) throw ();
-    bool operator!=(const mffloat & lhs, const mffloat & rhs) throw ();
+    OPENVRML_API bool operator==(const mffloat & lhs, const mffloat & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mffloat & lhs, const mffloat & rhs)
+        throw ();
 
 
-    class mfint32 : public field_value {
+    class OPENVRML_API mfint32 : public field_value {
     public:
         typedef std::vector<int32> value_type;
 
@@ -550,11 +578,13 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    bool operator==(const mfint32 & lhs, const mfint32 & rhs) throw ();
-    bool operator!=(const mfint32 & lhs, const mfint32 & rhs) throw ();
+    OPENVRML_API bool operator==(const mfint32 & lhs, const mfint32 & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfint32 & lhs, const mfint32 & rhs)
+        throw ();
 
 
-    class mfnode : public field_value {
+    class OPENVRML_API mfnode : public field_value {
     public:
         typedef std::vector<node_ptr> value_type;
 
@@ -592,11 +622,13 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    bool operator==(const mfnode & lhs, const mfnode & rhs) throw ();
-    bool operator!=(const mfnode & lhs, const mfnode & rhs) throw ();
+    OPENVRML_API bool operator==(const mfnode & lhs, const mfnode & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfnode & lhs, const mfnode & rhs)
+        throw ();
 
 
-    class mfrotation : public field_value {
+    class OPENVRML_API mfrotation : public field_value {
     public:
         typedef std::vector<rotation> value_type;
 
@@ -634,11 +666,15 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    bool operator==(const mfrotation & lhs, const mfrotation & rhs) throw ();
-    bool operator!=(const mfrotation & lhs, const mfrotation & rhs) throw ();
+    OPENVRML_API bool operator==(const mfrotation & lhs,
+                                 const mfrotation & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfrotation & lhs,
+                                 const mfrotation & rhs)
+        throw ();
 
 
-    class mfstring : public field_value {
+    class OPENVRML_API mfstring : public field_value {
     public:
         typedef std::vector<std::string> value_type;
 
@@ -676,11 +712,13 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    bool operator==(const mfstring & lhs, const mfstring & rhs) throw ();
-    bool operator!=(const mfstring & lhs, const mfstring & rhs) throw ();
+    OPENVRML_API bool operator==(const mfstring & lhs, const mfstring & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfstring & lhs, const mfstring & rhs)
+        throw ();
 
 
-    class mftime : public field_value {
+    class OPENVRML_API mftime : public field_value {
     public:
         typedef std::vector<double> value_type;
 
@@ -718,11 +756,13 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    bool operator==(const mftime & lhs, const mftime & rhs) throw ();
-    bool operator!=(const mftime & lhs, const mftime & rhs) throw ();
+    OPENVRML_API bool operator==(const mftime & lhs, const mftime & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mftime & lhs, const mftime & rhs)
+        throw ();
 
 
-    class mfvec2f : public field_value {
+    class OPENVRML_API mfvec2f : public field_value {
     public:
         typedef std::vector<vec2f> value_type;
 
@@ -760,11 +800,13 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    bool operator==(const mfvec2f & lhs, const mfvec2f & rhs) throw ();
-    bool operator!=(const mfvec2f & lhs, const mfvec2f & rhs) throw ();
+    OPENVRML_API bool operator==(const mfvec2f & lhs, const mfvec2f & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfvec2f & lhs, const mfvec2f & rhs)
+        throw ();
 
 
-    class mfvec3f : public field_value {
+    class OPENVRML_API mfvec3f : public field_value {
     public:
         typedef std::vector<vec3f> value_type;
 
@@ -802,62 +844,66 @@ namespace openvrml {
         function_requires<InputIteratorConcept<InputIterator> >();
     }
 
-    bool operator==(const mfvec3f & lhs, const mfvec3f & rhs) throw ();
-    bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs) throw ();
+    OPENVRML_API bool operator==(const mfvec3f & lhs, const mfvec3f & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs)
+        throw ();
 }
 
 namespace std {
 
     template <>
-    inline void swap(openvrml::mfcolor & a, openvrml::mfcolor & b)
+    OPENVRML_API inline void swap(openvrml::mfcolor & a, openvrml::mfcolor & b)
     {
         a.value.swap(b.value);
     }
 
     template <>
-    inline void swap(openvrml::mffloat & a, openvrml::mffloat & b)
+    OPENVRML_API inline void swap(openvrml::mffloat & a, openvrml::mffloat & b)
     {
         a.value.swap(b.value);
     }
 
     template <>
-    inline void swap(openvrml::mfint32 & a, openvrml::mfint32 & b)
+    OPENVRML_API inline void swap(openvrml::mfint32 & a, openvrml::mfint32 & b)
     {
         a.value.swap(b.value);
     }
 
     template <>
-    inline void swap(openvrml::mfnode & a, openvrml::mfnode & b)
+    OPENVRML_API inline void swap(openvrml::mfnode & a, openvrml::mfnode & b)
     {
         a.value.swap(b.value);
     }
 
     template <>
-    inline void swap(openvrml::mfrotation & a, openvrml::mfrotation & b)
+    OPENVRML_API inline void swap(openvrml::mfrotation & a,
+                                  openvrml::mfrotation & b)
     {
         a.value.swap(b.value);
     }
 
     template <>
-    inline void swap(openvrml::mfstring & a, openvrml::mfstring & b)
+    OPENVRML_API inline void swap(openvrml::mfstring & a,
+                                  openvrml::mfstring & b)
     {
         a.value.swap(b.value);
     }
 
     template <>
-    inline void swap(openvrml::mftime & a, openvrml::mftime & b)
+    OPENVRML_API inline void swap(openvrml::mftime & a, openvrml::mftime & b)
     {
         a.value.swap(b.value);
     }
 
     template <>
-    inline void swap(openvrml::mfvec2f & a, openvrml::mfvec2f & b)
+    OPENVRML_API inline void swap(openvrml::mfvec2f & a, openvrml::mfvec2f & b)
     {
         a.value.swap(b.value);
     }
 
     template <>
-    inline void swap(openvrml::mfvec3f & a, openvrml::mfvec3f & b)
+    OPENVRML_API inline void swap(openvrml::mfvec3f & a, openvrml::mfvec3f & b)
     {
         a.value.swap(b.value);
     }

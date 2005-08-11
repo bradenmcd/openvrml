@@ -28,7 +28,7 @@
 
 namespace openvrml {
 
-    class resource_istream : public std::istream {
+    class OPENVRML_API resource_istream : public std::istream {
     public:
         virtual ~resource_istream() = 0;
         virtual const std::string url() const throw () = 0;
@@ -40,7 +40,7 @@ namespace openvrml {
     };
 
 
-    class stream_listener {
+    class OPENVRML_API stream_listener {
     public:
         virtual ~stream_listener() throw () = 0;
 
@@ -56,11 +56,11 @@ namespace openvrml {
         do_data_available(const std::vector<unsigned char> & data) = 0;
     };
 
-    void read_stream(std::auto_ptr<resource_istream> in,
-                     std::auto_ptr<stream_listener> listener);
+    OPENVRML_API void read_stream(std::auto_ptr<resource_istream> in,
+                                  std::auto_ptr<stream_listener> listener);
 
 
-    class invalid_vrml : public std::runtime_error {
+    class OPENVRML_API invalid_vrml : public std::runtime_error {
     public:
         const std::string url;
         const size_t line;
@@ -74,35 +74,35 @@ namespace openvrml {
     };
 
 
-    class viewer_in_use : public std::invalid_argument {
+    class OPENVRML_API viewer_in_use : public std::invalid_argument {
     public:
         viewer_in_use();
         virtual ~viewer_in_use() throw ();
     };
 
 
-    class bad_url : public std::runtime_error {
+    class OPENVRML_API bad_url : public std::runtime_error {
     public:
         bad_url(const std::string & message);
         virtual ~bad_url() throw ();
     };
 
 
-    class invalid_url : public bad_url {
+    class OPENVRML_API invalid_url : public bad_url {
     public:
         invalid_url();
         virtual ~invalid_url() throw ();
     };
 
 
-    class unreachable_url : public bad_url {
+    class OPENVRML_API unreachable_url : public bad_url {
     public:
         unreachable_url();
         virtual ~unreachable_url() throw ();
     };
 
 
-    class no_alternative_url : public bad_url {
+    class OPENVRML_API no_alternative_url : public bad_url {
     public:
         no_alternative_url();
         virtual ~no_alternative_url() throw ();
@@ -111,7 +111,7 @@ namespace openvrml {
 
     class browser;
 
-    class browser_event {
+    class OPENVRML_API browser_event {
         friend class browser;
 
     public:
@@ -124,7 +124,7 @@ namespace openvrml {
         browser * source_;
         type_id id_;
 
-        browser_event(browser & b, type_id id) throw ();
+        OPENVRML_LOCAL browser_event(browser & b, type_id id) throw ();
 
     public:
         type_id id() const throw ();
@@ -132,14 +132,14 @@ namespace openvrml {
     };
 
 
-    class browser_listener {
+    class OPENVRML_API browser_listener {
         friend class browser;
 
     public:
         virtual ~browser_listener() throw () = 0;
 
     private:
-        void browser_changed(const browser_event & event);
+        OPENVRML_LOCAL void browser_changed(const browser_event & event);
         virtual void do_browser_changed(const browser_event & event) = 0;
     };
 
@@ -149,7 +149,7 @@ namespace openvrml {
     class null_node_class;
     class null_node_type;
 
-    class browser : boost::noncopyable {
+    class OPENVRML_API browser : boost::noncopyable {
         friend class Vrml97Parser;
 
         class node_class_map {
@@ -179,7 +179,7 @@ namespace openvrml {
             // No convenient way to make copy-construction thread-safe, and we
             // don't really need it.
             //
-            node_class_map(const node_class_map & map);            
+            node_class_map(const node_class_map & map);
         };
 
         mutable boost::recursive_mutex mutex_;
@@ -289,7 +289,7 @@ namespace openvrml {
         bool headlight_on();
 
     private:
-        std::auto_ptr<scope>
+        OPENVRML_LOCAL std::auto_ptr<scope>
         create_root_scope(const std::string & uri) throw (std::bad_alloc);
 
         virtual std::auto_ptr<resource_istream>
@@ -297,7 +297,7 @@ namespace openvrml {
     };
 
 
-    class scene : boost::noncopyable {
+    class OPENVRML_API scene : boost::noncopyable {
         struct load_scene;
 
         openvrml::browser * const browser_;

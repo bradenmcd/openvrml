@@ -28,9 +28,9 @@
 namespace openvrml {
 
     template <typename FieldValue>
-    class exposedfield : public FieldValue,
-                         public field_value_listener<FieldValue>,
-                         public field_value_emitter<FieldValue> {
+    class OPENVRML_API exposedfield : public FieldValue,
+                                      public field_value_listener<FieldValue>,
+                                      public field_value_emitter<FieldValue> {
     public:
         exposedfield(openvrml::node & node,
                      const typename FieldValue::value_type & value =

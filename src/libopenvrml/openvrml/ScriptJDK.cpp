@@ -108,7 +108,7 @@ namespace {
     *
     * @brief Used to store events to be processed by the JSAI code.
     */
-    class VrmlEvent {
+    class OPENVRML_LOCAL VrmlEvent {
         double d_timeStamp;
         std::string d_eventName;
         field_value *d_value;
@@ -294,7 +294,10 @@ namespace {
      * @param sig Data type of member
      * @return JNI fieldID of member on the given object
      */
-    jfieldID getFid(JNIEnv *env, jobject obj, char *membername, char *sig)
+    OPENVRML_LOCAL jfieldID getFid(JNIEnv * env,
+                                   jobject obj,
+                                   char * membername,
+                                   char * sig)
     {
         assert(obj);
         jclass clazz = env->GetObjectClass(obj);
@@ -313,7 +316,7 @@ namespace {
      * @todo This method needs to be revisited. We immediately set the
      *       modified flag on eventOuts even though nothing has been set yet.
      */
-    field_value * getFieldValue(JNIEnv *env, jobject obj)
+    OPENVRML_LOCAL field_value * getFieldValue(JNIEnv *env, jobject obj)
     {
       field_value * fieldPtr;
       jfieldID fid;
@@ -364,7 +367,7 @@ namespace {
      * @param obj JNI version of a Java field object
      * @return String representation of a VRML field
      */
-    jstring fieldToString(JNIEnv *env, jobject obj)
+    OPENVRML_LOCAL jstring fieldToString(JNIEnv *env, jobject obj)
     {
         std::ostringstream os;
         field_value * field = getFieldValue(env, obj);

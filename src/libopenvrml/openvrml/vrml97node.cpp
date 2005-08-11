@@ -71,7 +71,9 @@ namespace {
     extern "C" void openvrml_jpeg_term_source(j_decompress_ptr cinfo);
 # endif
 
-    class image_stream_listener : public openvrml::stream_listener {
+    class OPENVRML_LOCAL image_stream_listener :
+        public openvrml::stream_listener {
+
         boost::recursive_mutex & node_mutex_;
         openvrml::image & image_;
         openvrml::node & node_;
@@ -2396,7 +2398,7 @@ openvrml::vrml97_node::appearance_node::texture_transform() const throw ()
 }
 
 namespace {
-    void set_unlit_material(openvrml::viewer & v)
+    OPENVRML_LOCAL void set_unlit_material(openvrml::viewer & v)
     {
         using openvrml::color;
         static const float unlit_ambient_intensity(1);
@@ -16890,9 +16892,10 @@ namespace {
      * @return 1 if the vertices are counter-clockwise, -1 if the vertices are
      *         clockwise, or 0 if the vertices are neither.
      */
-    int ccw_(const openvrml::vec2f & p0,
-             const openvrml::vec2f & p1,
-             const openvrml::vec2f & p2) throw ()
+    OPENVRML_LOCAL int ccw_(const openvrml::vec2f & p0,
+                            const openvrml::vec2f & p1,
+                            const openvrml::vec2f & p2)
+        throw ()
     {
         const float dx1 = p1.x() - p0.x();
         const float dy1 = p1.y() - p0.y();
@@ -16920,8 +16923,10 @@ namespace {
      *
      * @return @c true if the line segments intersect; @c false otherwise.
      */
-    bool intersect_(const openvrml::vec2f & l0p0, const openvrml::vec2f & l0p1,
-                    const openvrml::vec2f & l1p0, const openvrml::vec2f & l1p1)
+    OPENVRML_LOCAL bool intersect_(const openvrml::vec2f & l0p0,
+                                   const openvrml::vec2f & l0p1,
+                                   const openvrml::vec2f & l1p0,
+                                   const openvrml::vec2f & l1p1)
         throw ()
     {
         return ccw_(l0p0, l0p1, l1p0) * ccw_(l0p0, l0p1, l1p1) <= 0
@@ -16941,7 +16946,7 @@ namespace {
      * @return @c true if the line segment defined by (@p v0, @p v1)
      *         intersects any line segment in @p contour; @c false otherwise.
      */
-    bool
+    OPENVRML_LOCAL bool
     intersects_segment_in_contour(const openvrml::vec2f & v0,
                                   const openvrml::vec2f & v1,
                                   const std::vector<openvrml::vec2f> & contour)
@@ -16986,7 +16991,7 @@ namespace {
      *         the exterior connecting vertex, or -1 if no such vertex is
      *         found.
      */
-    long get_exterior_connecting_vertex_index_(
+    OPENVRML_LOCAL long get_exterior_connecting_vertex_index_(
         const std::vector<openvrml::vec2f> & exterior_contour,
         const std::vector<const std::vector<openvrml::vec2f> *> &
             interior_contours,
@@ -17025,8 +17030,9 @@ namespace {
         return -1;
     }
 
-    bool inside_contour_(const std::vector<openvrml::vec2f> & contour,
-                         const openvrml::vec2f & point)
+    OPENVRML_LOCAL bool
+    inside_contour_(const std::vector<openvrml::vec2f> & contour,
+                    const openvrml::vec2f & point)
         throw ()
     {
         using openvrml::vec2f;
@@ -17048,7 +17054,7 @@ namespace {
 
     enum contour_type_ { exterior_, interior_ };
 
-    contour_type_
+    OPENVRML_LOCAL contour_type_
     get_type_(const std::vector<openvrml::vec2f> & contour,
               const std::vector<std::vector<openvrml::vec2f> > & contours)
         throw ()
@@ -17073,14 +17079,15 @@ namespace {
             : exterior_;
     }
 
-    struct polygon_ {
+    struct OPENVRML_LOCAL polygon_ {
         const std::vector<openvrml::vec2f> * exterior;
         std::vector<const std::vector<openvrml::vec2f> *> interiors;
     };
 
-    struct inside_ : std::binary_function<const std::vector<openvrml::vec2f> *,
-                                          const std::vector<openvrml::vec2f> *,
-                                          bool> {
+    struct OPENVRML_LOCAL inside_ :
+        std::binary_function<const std::vector<openvrml::vec2f> *,
+                             const std::vector<openvrml::vec2f> *,
+                             bool> {
         bool operator()(const std::vector<openvrml::vec2f> * const lhs,
                         const std::vector<openvrml::vec2f> * const rhs) const
         {
@@ -17095,7 +17102,7 @@ namespace {
         }
     };
 
-    const std::vector<polygon_>
+    OPENVRML_LOCAL const std::vector<polygon_>
     get_polygons_(const std::vector<std::vector<openvrml::vec2f> > & contours)
         throw (std::bad_alloc)
     {
@@ -17150,8 +17157,9 @@ namespace {
         return polygons;
     }
 
-    long get_vertex_index_(const std::vector<openvrml::vec2f> & vertices,
-                           const openvrml::vec2f & vertex)
+    OPENVRML_LOCAL long
+    get_vertex_index_(const std::vector<openvrml::vec2f> & vertices,
+                      const openvrml::vec2f & vertex)
         throw ()
     {
         for (size_t i = 0; i < vertices.size(); ++i) {
@@ -17487,7 +17495,7 @@ namespace {
     // FcChar8_traits is a model of the standard library Character Traits
     // concept.
     //
-    struct FcChar8_traits {
+    struct OPENVRML_LOCAL FcChar8_traits {
         typedef unsigned char char_type;
         typedef int int_type;
         typedef std::streampos pos_type;
@@ -17784,7 +17792,7 @@ void openvrml::vrml97_node::text_node::update_face() throw (std::bad_alloc)
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 namespace {
 
-    struct GlyphContours_ {
+    struct OPENVRML_LOCAL GlyphContours_ {
         const float scale;
         std::vector<std::vector<openvrml::vec2f> > contours;
 
@@ -17797,7 +17805,8 @@ namespace {
 
     const float stepSize_ = 0.2;
 
-    int moveTo_(FT_Vector * const to, void * const user) throw ()
+    OPENVRML_LOCAL int moveTo_(FT_Vector * const to, void * const user)
+        throw ()
     {
         using std::vector;
         using openvrml::vec2f;
@@ -17814,7 +17823,8 @@ namespace {
         return 0;
     }
 
-    int lineTo_(FT_Vector * const to, void * const user) throw ()
+    OPENVRML_LOCAL int lineTo_(FT_Vector * const to, void * const user)
+        throw ()
     {
         assert(user);
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
@@ -17853,9 +17863,9 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void evaluateCurve_(openvrml::vec2f * const buffer,
-                        const size_t npoints,
-                        std::vector<openvrml::vec2f> & contour)
+    OPENVRML_LOCAL void evaluateCurve_(openvrml::vec2f * const buffer,
+                                       const size_t npoints,
+                                       std::vector<openvrml::vec2f> & contour)
         throw (std::bad_alloc)
     {
         for (size_t i = 1; i <= (1 / stepSize_); i++){
@@ -17876,9 +17886,9 @@ namespace {
         }
     }
 
-    int conicTo_(FT_Vector * const control,
-                 FT_Vector * const to,
-                 void * const user)
+    OPENVRML_LOCAL int conicTo_(FT_Vector * const control,
+                                FT_Vector * const to,
+                                void * const user)
         throw ()
     {
         using std::vector;
@@ -17911,10 +17921,10 @@ namespace {
         return 0;
     }
 
-    int cubicTo_(FT_Vector * const control1,
-                 FT_Vector * const control2,
-                 FT_Vector * const to,
-                 void * const user)
+    OPENVRML_LOCAL int cubicTo_(FT_Vector * const control1,
+                                FT_Vector * const control2,
+                                FT_Vector * const to,
+                                void * const user)
         throw ()
     {
         using std::vector;
@@ -21024,7 +21034,7 @@ openvrml::vrml97_node::viewpoint_node::do_initialize(double)
 
 namespace {
 
-    struct accumulate_transform_ :
+    struct OPENVRML_LOCAL accumulate_transform_ :
         std::unary_function<openvrml::node *, void> {
 
         explicit accumulate_transform_(openvrml::mat4f & transform) throw ():

@@ -22,6 +22,7 @@
 # ifndef OPENVRML_GL_VIEWER_H
 #   define OPENVRML_GL_VIEWER_H
 
+#   include <openvrml-gl-common.h>
 #   include <stack>
 #   include <openvrml/viewer.h>
 
@@ -34,7 +35,7 @@ namespace openvrml {
 
     namespace gl {
 
-        class viewer : public openvrml::viewer {
+        class OPENVRML_GL_API viewer : public openvrml::viewer {
         public:
             enum { max_lights = 8 };
 

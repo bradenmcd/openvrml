@@ -1,5 +1,45 @@
 2005-08-11 Braden McDaniel  <braden@endoframe.com>
 
+	Initial support for gcc 4.0's symbol visibility attribute.
+
+	* configure.ac
+	* examples/Makefile.am
+	* m4/Makefile.am
+	* m4/ov_cxx_visibility.m4:  Added file.
+	* mozilla-plugin/src/openvrml-player/Makefile.am
+	* src/libopenvrml/Makefile.am
+	* src/libopenvrml/openvrml-common.h:  Added file.
+	* src/libopenvrml/openvrml-config.h.in:  Added file.
+	* src/libopenvrml/private.h
+	* src/libopenvrml/openvrml/ScriptJDK.cpp
+	* src/libopenvrml/openvrml/basetypes.h
+	* src/libopenvrml/openvrml/bounding_volume.h
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/event.h
+	* src/libopenvrml/openvrml/exposedfield.h
+	* src/libopenvrml/openvrml/field_value.h
+	* src/libopenvrml/openvrml/frustum.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/node_ptr.cpp
+	* src/libopenvrml/openvrml/node_ptr.h
+	* src/libopenvrml/openvrml/rendering_context.h
+	* src/libopenvrml/openvrml/scope.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+	* src/libopenvrml/openvrml/viewer.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+	* src/libopenvrml-gl/Makefile.am
+	* src/libopenvrml-gl/openvrml-gl-common.h:  Added file.
+	* src/libopenvrml-gl/openvrml-gl-config.h.in:  Added file.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+	* tests/Makefile.am
+
+2005-08-11 Braden McDaniel  <braden@endoframe.com>
+
 	Added abstract node type openvrml::pointing_device_sensor_node.
 	Anchor, CylinderSensor, PlaneSensor, SphereSensor, and
 	TouchSensor implementations now inherit this type.

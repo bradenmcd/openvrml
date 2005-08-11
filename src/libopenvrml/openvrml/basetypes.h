@@ -23,6 +23,7 @@
 # ifndef OPENVRML_BASETYPES_H
 #   define OPENVRML_BASETYPES_H
 
+#   include <openvrml-common.h>
 #   include <cassert>
 #   include <cmath>
 #   include <cstddef>
@@ -39,7 +40,7 @@ namespace openvrml {
     typedef int32_t int32;
 #   endif
 
-    class color {
+    class OPENVRML_API color {
         float rgb[3];
 
     public:
@@ -61,9 +62,12 @@ namespace openvrml {
         void hsv(float h, float s, float v) throw ();
     };
 
-    bool operator==(const color & lhs, const color & rhs) throw ();
-    bool operator!=(const color & lhs, const color & rhs) throw ();
-    std::ostream & operator<<(std::ostream & out, const color & c);
+    OPENVRML_API bool operator==(const color & lhs, const color & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const color & lhs, const color & rhs)
+        throw ();
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const color & c);
 
     inline const float & color::operator[](const size_t index) const throw ()
     {
@@ -102,7 +106,7 @@ namespace openvrml {
     }
 
 
-    class vec2f {
+    class OPENVRML_API vec2f {
         float vec[2];
 
     public:
@@ -130,14 +134,19 @@ namespace openvrml {
         const vec2f normalize() const throw ();
     };
 
-    const vec2f operator*(const vec2f & lhs, float rhs) throw ();
-    const vec2f operator*(float lhs, const vec2f & rhs) throw ();
-    const vec2f operator/(const vec2f & lhs, float rhs) throw ();
-    const vec2f operator+(const vec2f & lhs, const vec2f & rhs) throw ();
-    const vec2f operator-(const vec2f & lhs, const vec2f & rhs) throw ();
-    bool operator==(const vec2f & lhs, const vec2f & rhs) throw ();
-    bool operator!=(const vec2f & lhs, const vec2f & rhs) throw ();
-    std::ostream & operator<<(std::ostream & out, const vec2f & v);
+    OPENVRML_API const vec2f operator*(const vec2f & lhs, float rhs) throw ();
+    OPENVRML_API const vec2f operator*(float lhs, const vec2f & rhs) throw ();
+    OPENVRML_API const vec2f operator/(const vec2f & lhs, float rhs) throw ();
+    OPENVRML_API const vec2f operator+(const vec2f & lhs, const vec2f & rhs)
+        throw ();
+    OPENVRML_API const vec2f operator-(const vec2f & lhs, const vec2f & rhs)
+        throw ();
+    OPENVRML_API bool operator==(const vec2f & lhs, const vec2f & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const vec2f & lhs, const vec2f & rhs)
+        throw ();
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const vec2f & v);
 
     inline const float & vec2f::operator[](const size_t index) const throw ()
     {
@@ -178,7 +187,7 @@ namespace openvrml {
 
     class mat4f;
 
-    class vec3f {
+    class OPENVRML_API vec3f {
         float vec[3];
 
     public:
@@ -210,17 +219,28 @@ namespace openvrml {
         const vec3f normalize() const throw ();
     };
 
-    const vec3f operator*(const vec3f & lhs, const vec3f & rhs) throw ();
-    const vec3f operator*(const vec3f & lhs, const float rhs) throw ();
-    const vec3f operator*(const float lhs, const vec3f & rhs) throw ();
-    const vec3f operator*(const vec3f & vec, const mat4f & mat) throw ();
-    const vec3f operator*(const mat4f & mat, const vec3f & vec) throw ();
-    const vec3f operator/(const vec3f & lhs, const float rhs) throw ();
-    const vec3f operator+(const vec3f & lhs, const vec3f & rhs) throw ();
-    const vec3f operator-(const vec3f & lhs, const vec3f & rhs) throw ();
-    bool operator==(const vec3f & lhs, const vec3f & rhs) throw ();
-    bool operator!=(const vec3f & lhs, const vec3f & rhs) throw ();
-    std::ostream & operator<<(std::ostream & out, const vec3f & v);
+    OPENVRML_API const vec3f operator*(const vec3f & lhs, const vec3f & rhs)
+        throw ();
+    OPENVRML_API const vec3f operator*(const vec3f & lhs, const float rhs)
+        throw ();
+    OPENVRML_API const vec3f operator*(const float lhs, const vec3f & rhs)
+        throw ();
+    OPENVRML_API const vec3f operator*(const vec3f & vec, const mat4f & mat)
+        throw ();
+    OPENVRML_API const vec3f operator*(const mat4f & mat, const vec3f & vec)
+        throw ();
+    OPENVRML_API const vec3f operator/(const vec3f & lhs, const float rhs)
+        throw ();
+    OPENVRML_API const vec3f operator+(const vec3f & lhs, const vec3f & rhs)
+        throw ();
+    OPENVRML_API const vec3f operator-(const vec3f & lhs, const vec3f & rhs)
+        throw ();
+    OPENVRML_API bool operator==(const vec3f & lhs, const vec3f & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const vec3f & lhs, const vec3f & rhs)
+        throw ();
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const vec3f & v);
 
     inline const float & vec3f::operator[](const size_t index) const throw ()
     {
@@ -276,7 +296,7 @@ namespace openvrml {
 
     class quatf;
 
-    class rotation {
+    class OPENVRML_API rotation {
         float rot[4];
 
     public:
@@ -308,11 +328,15 @@ namespace openvrml {
             throw ();
     };
 
-    const rotation operator*(const rotation & lhs, const rotation & rhs)
+    const rotation OPENVRML_API operator*(const rotation & lhs,
+                                          const rotation & rhs)
         throw ();
-    bool operator==(const rotation & lhs, const rotation & rhs) throw ();
-    bool operator!=(const rotation & lhs, const rotation & rhs) throw ();
-    std::ostream & operator<<(std::ostream & out, const rotation & r);
+    OPENVRML_API bool operator==(const rotation & lhs, const rotation & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const rotation & lhs, const rotation & rhs)
+        throw ();
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const rotation & r);
 
     inline const float & rotation::operator[](const size_t index) const
         throw ()
@@ -352,7 +376,7 @@ namespace openvrml {
     }
 
 
-    class mat4f {
+    class OPENVRML_API mat4f {
         float mat[4][4];
 
     public:
@@ -394,8 +418,10 @@ namespace openvrml {
         float det() const throw ();
     };
 
-    bool operator==(const mat4f & lhs, const mat4f & rhs) throw ();
-    bool operator!=(const mat4f & lhs, const mat4f & rhs) throw ();
+    OPENVRML_API bool operator==(const mat4f & lhs, const mat4f & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mat4f & lhs, const mat4f & rhs)
+        throw ();
 
     inline float (&mat4f::operator[](size_t index) throw ())[4]
     {
@@ -409,13 +435,17 @@ namespace openvrml {
         return this->mat[index];
     }
 
-    const mat4f operator*(const mat4f & lhs, const mat4f & rhs) throw ();
-    const mat4f operator*(const mat4f & mat, float scalar) throw ();
-    const mat4f operator*(float scalar, const mat4f & mat) throw ();
-    std::ostream & operator<<(std::ostream & out, const mat4f & mat);
+    OPENVRML_API const mat4f operator*(const mat4f & lhs, const mat4f & rhs)
+        throw ();
+    OPENVRML_API const mat4f operator*(const mat4f & mat, float scalar)
+        throw ();
+    OPENVRML_API const mat4f operator*(float scalar, const mat4f & mat)
+        throw ();
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const mat4f & mat);
 
 
-    class quatf {
+    class OPENVRML_API quatf {
         float quat[4];
 
     public:
@@ -452,15 +482,24 @@ namespace openvrml {
         const quatf normalize() const throw ();
     };
 
-    const quatf operator*(const quatf & lhs, const quatf & rhs) throw ();
-    const quatf operator*(const quatf & quat, const float scalar) throw ();
-    const quatf operator*(const float scalar, const quatf & quat) throw ();
-    const quatf operator/(const quatf & quat, const float scalar) throw ();
-    const quatf operator+(const quatf & lhs, const quatf & rhs) throw ();
-    const quatf operator-(const quatf & lhs, const quatf & rhs) throw ();
-    bool operator==(const quatf & lhs, const quatf & rhs) throw ();
-    bool operator!=(const quatf & lhs, const quatf & rhs) throw ();
-    std::ostream & operator<<(std::ostream & out, const quatf & quat);
+    OPENVRML_API const quatf operator*(const quatf & lhs, const quatf & rhs)
+        throw ();
+    OPENVRML_API const quatf operator*(const quatf & quat, const float scalar)
+        throw ();
+    OPENVRML_API const quatf operator*(const float scalar, const quatf & quat)
+        throw ();
+    OPENVRML_API const quatf operator/(const quatf & quat, const float scalar)
+        throw ();
+    OPENVRML_API const quatf operator+(const quatf & lhs, const quatf & rhs)
+        throw ();
+    OPENVRML_API const quatf operator-(const quatf & lhs, const quatf & rhs)
+        throw ();
+    OPENVRML_API bool operator==(const quatf & lhs, const quatf & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const quatf & lhs, const quatf & rhs)
+        throw ();
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const quatf & quat);
 
     inline const float & quatf::operator[](size_t index) const throw ()
     {
@@ -515,7 +554,7 @@ namespace openvrml {
     }
 
 
-    class image {
+    class OPENVRML_API image {
         size_t x_;
         size_t y_;
         size_t comp_;
@@ -557,8 +596,10 @@ namespace openvrml {
         void pixel(size_t x, size_t y, int32 value) throw ();
     };
 
-    bool operator==(const image & lhs, const image & rhs) throw ();
-    bool operator!=(const image & lhs, const image & rhs) throw ();
+    OPENVRML_API bool operator==(const image & lhs, const image & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const image & lhs, const image & rhs)
+        throw ();
 
     template <typename InputIterator>
     image::image(const size_t x,
@@ -650,14 +691,15 @@ namespace openvrml {
         this->pixel(y * this->x_ + x, value);
     }
 
-    std::ostream & operator<<(std::ostream & out, const image & img);
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const image & img);
 
 } // namespace openvrml
 
 namespace std {
 
     template <>
-    inline void swap(openvrml::image & a, openvrml::image & b)
+    OPENVRML_API inline void swap(openvrml::image & a, openvrml::image & b)
     {
         a.swap(b);
     }

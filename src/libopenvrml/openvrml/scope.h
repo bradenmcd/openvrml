@@ -23,6 +23,7 @@
 # ifndef OPENVRML_SCOPE_H
 #   define OPENVRML_SCOPE_H
 
+#   include <openvrml-common.h>
 #   include <list>
 #   include <map>
 #   include <string>
@@ -34,7 +35,7 @@ namespace openvrml {
     class node;
     class node_type;
 
-    class scope : boost::noncopyable {
+    class OPENVRML_API scope : boost::noncopyable {
         friend class node;
 
         std::list<boost::shared_ptr<node_type> > node_type_list;

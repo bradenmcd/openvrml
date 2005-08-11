@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright (C) 2000  Christopher K. St. John
+// Copyright 2005  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,28 +19,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# ifndef OPENVRML_FRUSTUM_H
-#   define OPENVRML_FRUSTUM_H
+# ifndef OPENVRML_CONFIG_H
+#  define OPENVRML_CONFIG_H
 
-namespace openvrml {
+#  define OPENVRML_API @OPENVRML_API@
+#  define OPENVRML_LOCAL @OPENVRML_LOCAL@
 
-    class OPENVRML_API frustum {
-    public:
-        float fovy;
-        float fovx;
-        double z_near;
-        double z_far;
-        float left_plane[4];
-        float right_plane[4];
-        float top_plane[4];
-        float bot_plane[4];
-
-        frustum();
-        frustum(float fovy, float aspect, double z_near, double z_far);
-
-    private:
-        void update();
-    };
-}
-
-# endif // OPENVRML_FRUSTUM_H
+# endif // ifndef OPENVRML_CONFIG_H

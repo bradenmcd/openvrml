@@ -31,7 +31,7 @@ namespace openvrml {
 
     class node;
 
-    class event_listener : boost::noncopyable {
+    class OPENVRML_API event_listener : boost::noncopyable {
         openvrml::node * node_;
 
     public:
@@ -51,7 +51,7 @@ namespace openvrml {
 
 
     template <typename FieldValue>
-    class field_value_listener : public virtual event_listener {
+    class OPENVRML_API field_value_listener : public virtual event_listener {
         BOOST_CLASS_REQUIRE(FieldValue, openvrml, FieldValueConcept);
 
     public:
@@ -119,7 +119,7 @@ namespace openvrml {
     typedef field_value_listener<mfvec3f> mfvec3f_listener;
 
 
-    class event_emitter : boost::noncopyable {
+    class OPENVRML_API event_emitter : boost::noncopyable {
         friend class node;
 
         mutable boost::recursive_mutex mutex_;
@@ -151,7 +151,7 @@ namespace openvrml {
 
 
     template <typename FieldValue>
-    class field_value_emitter : public virtual event_emitter {
+    class OPENVRML_API field_value_emitter : public virtual event_emitter {
         BOOST_CLASS_REQUIRE(FieldValue, openvrml, FieldValueConcept);
 
     public:

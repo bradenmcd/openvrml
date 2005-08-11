@@ -1,7 +1,9 @@
 AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/gtkglext \
         -I$(top_builddir)/lib/gtkglext/gdk \
+        -I$(top_builddir)/../src/libopenvrml \
         -I$(top_srcdir)/../src/libopenvrml \
+        -I$(top_builddir)/../src/libopenvrml-gl \
         -I$(top_srcdir)/../src/libopenvrml-gl \
         -I$(mozincludedir) \
         -DGTK_DISABLE_DEPRECATED

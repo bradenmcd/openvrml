@@ -35,7 +35,7 @@
 
 namespace openvrml {
 
-    class node_interface {
+    class OPENVRML_API node_interface {
     public:
         enum type_id {
             invalid_type_id,
@@ -54,23 +54,26 @@ namespace openvrml {
                        const std::string & id);
     };
 
-    std::ostream & operator<<(std::ostream & out,
-                              node_interface::type_id type);
-    std::istream & operator>>(std::istream & in,
-                              node_interface::type_id & type);
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           node_interface::type_id type);
+    OPENVRML_API std::istream & operator>>(std::istream & in,
+                                           node_interface::type_id & type);
 
-    bool operator==(const node_interface & lhs, const node_interface & rhs)
+    OPENVRML_API bool operator==(const node_interface & lhs,
+                                 const node_interface & rhs)
         throw ();
-    bool operator!=(const node_interface & lhs, const node_interface & rhs)
+    OPENVRML_API bool operator!=(const node_interface & lhs,
+                                 const node_interface & rhs)
         throw ();
 
-    std::ostream & operator<<(std::ostream & out,
-                              const node_interface & interface);
-    std::istream & operator>>(std::istream & in, node_interface & interface);
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const node_interface & interface);
+    OPENVRML_API std::istream & operator>>(std::istream & in,
+                                           node_interface & interface);
 
     class node_type;
 
-    class unsupported_interface : public std::logic_error {
+    class OPENVRML_API unsupported_interface : public std::logic_error {
     public:
         explicit unsupported_interface(const node_interface & interface)
             throw ();
@@ -85,7 +88,7 @@ namespace openvrml {
     };
 
 
-    struct node_interface_matches_eventin :
+    struct OPENVRML_API node_interface_matches_eventin :
         std::binary_function<node_interface, std::string, bool> {
         result_type operator()(const first_argument_type & interface,
                                const second_argument_type & eventin_id) const
@@ -101,7 +104,7 @@ namespace openvrml {
     };
 
 
-    struct node_interface_matches_eventout :
+    struct OPENVRML_API node_interface_matches_eventout :
         std::binary_function<node_interface, std::string, bool> {
         result_type operator()(const first_argument_type & interface,
                                const second_argument_type & eventout_id) const
@@ -117,7 +120,7 @@ namespace openvrml {
     };
 
 
-    struct node_interface_matches_exposedfield :
+    struct OPENVRML_API node_interface_matches_exposedfield :
         std::binary_function<node_interface, std::string, bool> {
         result_type
         operator()(const first_argument_type & interface,
@@ -129,7 +132,7 @@ namespace openvrml {
     };
 
 
-    struct node_interface_matches_field :
+    struct OPENVRML_API node_interface_matches_field :
         std::binary_function<node_interface, std::string, bool> {
         result_type operator()(const first_argument_type & interface,
                                const second_argument_type & field_id) const
@@ -141,7 +144,7 @@ namespace openvrml {
     };
 
 
-    struct node_interface_compare :
+    struct OPENVRML_API node_interface_compare :
         std::binary_function<node_interface, node_interface, bool> {
 
         result_type operator()(const first_argument_type & lhs,
@@ -171,7 +174,7 @@ namespace openvrml {
     typedef std::set<node_interface, node_interface_compare>
         node_interface_set;
 
-    const node_interface_set::const_iterator
+    OPENVRML_API const node_interface_set::const_iterator
     find_interface(const node_interface_set & interfaces,
                    const std::string & id)
         throw ();
@@ -181,7 +184,7 @@ namespace openvrml {
     class viewpoint_node;
     class node_type;
 
-    class node_class : boost::noncopyable {
+    class OPENVRML_API node_class : boost::noncopyable {
         openvrml::browser * browser_;
 
     public:
@@ -215,7 +218,7 @@ namespace openvrml {
         initial_value_map;
 
 
-    class node_type : boost::noncopyable {
+    class OPENVRML_API node_type : boost::noncopyable {
         const openvrml::node_class & node_class_;
         const std::string id_;
 
@@ -243,7 +246,7 @@ namespace openvrml {
     };
 
 
-    class field_value_type_mismatch : public std::logic_error {
+    class OPENVRML_API field_value_type_mismatch : public std::logic_error {
     public:
         field_value_type_mismatch();
         virtual ~field_value_type_mismatch() throw ();
@@ -284,10 +287,10 @@ namespace openvrml {
 
     class scene;
 
-    std::ostream & operator<<(std::ostream & out, const node & n);
+    OPENVRML_API std::ostream & operator<<(std::ostream & out, const node & n);
 
     template <typename To>
-    To node_cast(node * n) throw ();
+    OPENVRML_API To node_cast(node * n) throw ();
 
     class event_listener;
     class event_emitter;
@@ -295,7 +298,7 @@ namespace openvrml {
     template <typename FieldValue> class field_value_listener;
     template <typename FieldValue> class exposedfield;
 
-    class node : boost::noncopyable {
+    class OPENVRML_API node : boost::noncopyable {
         friend std::ostream & operator<<(std::ostream & out, const node & n);
         friend script_node * node_cast<script_node *>(node * n) throw ();
         friend appearance_node * node_cast<appearance_node *>(node * n)
@@ -471,17 +474,18 @@ namespace openvrml {
     }
 
 
-    bool add_route(node & from, const std::string & eventout,
-                   node & to, const std::string & eventin)
+    OPENVRML_API bool add_route(node & from, const std::string & eventout,
+                                node & to, const std::string & eventin)
         throw (std::bad_alloc, unsupported_interface,
                field_value_type_mismatch);
 
-    bool delete_route(node & from, const std::string & eventout,
-                      node & to, const std::string & eventin)
+    OPENVRML_API bool delete_route(node & from, const std::string & eventout,
+                                   node & to, const std::string & eventin)
         throw (unsupported_interface);
 
     template <>
-    inline script_node * node_cast<script_node *>(node * n) throw ()
+    OPENVRML_API inline script_node * node_cast<script_node *>(node * n)
+        throw ()
     {
         return n
             ? n->to_script()
@@ -489,7 +493,8 @@ namespace openvrml {
     }
 
     template <>
-    inline appearance_node * node_cast<appearance_node *>(node * n) throw ()
+    OPENVRML_API inline appearance_node *
+    node_cast<appearance_node *>(node * n) throw ()
     {
         return n
             ? n->to_appearance()
@@ -497,7 +502,7 @@ namespace openvrml {
     }
 
     template <>
-    inline bounded_volume_node *
+    OPENVRML_API inline bounded_volume_node *
     node_cast<bounded_volume_node *>(node * n) throw ()
     {
         return n
@@ -506,7 +511,7 @@ namespace openvrml {
     }
 
     template <>
-    inline child_node * node_cast<child_node *>(node * n) throw ()
+    OPENVRML_API inline child_node * node_cast<child_node *>(node * n) throw ()
     {
         return n
             ? n->to_child()
@@ -514,7 +519,7 @@ namespace openvrml {
     }
 
     template <>
-    inline color_node * node_cast<color_node *>(node * n) throw ()
+    OPENVRML_API inline color_node * node_cast<color_node *>(node * n) throw ()
     {
         return n
             ? n->to_color()
@@ -522,7 +527,8 @@ namespace openvrml {
     }
 
     template <>
-    inline coordinate_node * node_cast<coordinate_node *>(node * n) throw ()
+    OPENVRML_API inline coordinate_node *
+    node_cast<coordinate_node *>(node * n) throw ()
     {
         return n
             ? n->to_coordinate()
@@ -530,7 +536,8 @@ namespace openvrml {
     }
 
     template <>
-    inline font_style_node * node_cast<font_style_node *>(node * n) throw ()
+    OPENVRML_API inline font_style_node *
+    node_cast<font_style_node *>(node * n) throw ()
     {
         return n
             ? n->to_font_style()
@@ -538,7 +545,8 @@ namespace openvrml {
     }
 
     template <>
-    inline geometry_node * node_cast<geometry_node *>(node * n) throw ()
+    OPENVRML_API inline geometry_node * node_cast<geometry_node *>(node * n)
+        throw ()
     {
         return n
             ? n->to_geometry()
@@ -546,7 +554,8 @@ namespace openvrml {
     }
 
     template <>
-    inline grouping_node * node_cast<grouping_node *>(node * n) throw ()
+    OPENVRML_API inline grouping_node * node_cast<grouping_node *>(node * n)
+        throw ()
     {
         return n
             ? n->to_grouping()
@@ -554,7 +563,7 @@ namespace openvrml {
     }
 
     template <>
-    inline light_node * node_cast<light_node *>(node * n) throw ()
+    OPENVRML_API inline light_node * node_cast<light_node *>(node * n) throw ()
     {
         return n
             ? n->to_light()
@@ -562,7 +571,8 @@ namespace openvrml {
     }
 
     template <>
-    inline material_node * node_cast<material_node *>(node * n) throw ()
+    OPENVRML_API inline material_node * node_cast<material_node *>(node * n)
+        throw ()
     {
         return n
             ? n->to_material()
@@ -570,7 +580,8 @@ namespace openvrml {
     }
 
     template <>
-    inline navigation_info_node * node_cast<navigation_info_node *>(node * n)
+    OPENVRML_API inline navigation_info_node *
+    node_cast<navigation_info_node *>(node * n)
         throw ()
     {
         return n
@@ -579,7 +590,8 @@ namespace openvrml {
     }
 
     template <>
-    inline normal_node * node_cast<normal_node *>(node * n) throw ()
+    OPENVRML_API inline normal_node * node_cast<normal_node *>(node * n)
+        throw ()
     {
         return n
             ? n->to_normal()
@@ -587,7 +599,7 @@ namespace openvrml {
     }
 
     template <>
-    inline pointing_device_sensor_node *
+    OPENVRML_API inline pointing_device_sensor_node *
     node_cast<pointing_device_sensor_node *>(node * n) throw ()
     {
         return n
@@ -596,8 +608,8 @@ namespace openvrml {
     }
 
     template <>
-    inline scoped_light_node * node_cast<scoped_light_node *>(node * n)
-        throw ()
+    OPENVRML_API inline scoped_light_node *
+    node_cast<scoped_light_node *>(node * n) throw ()
     {
         return n
             ? n->to_scoped_light()
@@ -605,8 +617,8 @@ namespace openvrml {
     }
 
     template <>
-    inline sound_source_node * node_cast<sound_source_node *>(node * n)
-        throw ()
+    OPENVRML_API inline sound_source_node *
+    node_cast<sound_source_node *>(node * n) throw ()
     {
         return n
             ? n->to_sound_source()
@@ -614,7 +626,8 @@ namespace openvrml {
     }
 
     template <>
-    inline texture_node * node_cast<texture_node *>(node * n) throw ()
+    OPENVRML_API inline texture_node * node_cast<texture_node *>(node * n)
+        throw ()
     {
         return n
             ? n->to_texture()
@@ -622,7 +635,7 @@ namespace openvrml {
     }
 
     template <>
-    inline texture_coordinate_node *
+    OPENVRML_API inline texture_coordinate_node *
     node_cast<texture_coordinate_node *>(node * n) throw ()
     {
         return n
@@ -631,7 +644,7 @@ namespace openvrml {
     }
 
     template <>
-    inline texture_transform_node *
+    OPENVRML_API inline texture_transform_node *
     node_cast<texture_transform_node *>(node * n) throw ()
     {
         return n
@@ -640,7 +653,8 @@ namespace openvrml {
     }
 
     template <>
-    inline transform_node * node_cast<transform_node *>(node * n) throw ()
+    OPENVRML_API inline transform_node * node_cast<transform_node *>(node * n)
+        throw ()
     {
         return n
             ? n->to_transform()
@@ -648,7 +662,8 @@ namespace openvrml {
     }
 
     template <>
-    inline viewpoint_node * node_cast<viewpoint_node *>(node * n) throw ()
+    OPENVRML_API inline viewpoint_node * node_cast<viewpoint_node *>(node * n)
+        throw ()
     {
         return n
             ? n->to_viewpoint()
@@ -656,7 +671,7 @@ namespace openvrml {
     }
 
 
-    class appearance_node : public virtual node {
+    class OPENVRML_API appearance_node : public virtual node {
     public:
         virtual ~appearance_node() throw () = 0;
 
@@ -679,7 +694,7 @@ namespace openvrml {
     };
 
 
-    class bounded_volume_node : public virtual node {
+    class OPENVRML_API bounded_volume_node : public virtual node {
         mutable bool bounding_volume_dirty_;
 
     public:
@@ -702,7 +717,7 @@ namespace openvrml {
     };
 
 
-    class child_node : public virtual bounded_volume_node {
+    class OPENVRML_API child_node : public virtual bounded_volume_node {
     public:
         virtual ~child_node() throw () = 0;
 
@@ -723,7 +738,7 @@ namespace openvrml {
     };
 
 
-    class color_node : public virtual node {
+    class OPENVRML_API color_node : public virtual node {
     public:
         virtual ~color_node() throw () = 0;
 
@@ -740,7 +755,7 @@ namespace openvrml {
     };
 
 
-    class coordinate_node : public virtual node {
+    class OPENVRML_API coordinate_node : public virtual node {
     public:
         virtual ~coordinate_node() throw () = 0;
 
@@ -756,7 +771,7 @@ namespace openvrml {
     };
 
 
-    class font_style_node : public virtual node {
+    class OPENVRML_API font_style_node : public virtual node {
     public:
         virtual ~font_style_node() throw () = 0;
 
@@ -782,7 +797,7 @@ namespace openvrml {
     };
 
 
-    class geometry_node : public virtual bounded_volume_node {
+    class OPENVRML_API geometry_node : public virtual bounded_volume_node {
         viewer::object_t geometry_reference;
 
     public:
@@ -807,7 +822,7 @@ namespace openvrml {
     };
 
 
-    class grouping_node : public virtual child_node {
+    class OPENVRML_API grouping_node : public virtual child_node {
     public:
         virtual ~grouping_node() throw () = 0;
 
@@ -828,7 +843,7 @@ namespace openvrml {
     };
 
 
-    class light_node : public virtual child_node {
+    class OPENVRML_API light_node : public virtual child_node {
     public:
         virtual ~light_node() throw () = 0;
 
@@ -842,7 +857,7 @@ namespace openvrml {
     };
 
 
-    class material_node : public virtual node {
+    class OPENVRML_API material_node : public virtual node {
     public:
         virtual ~material_node() throw () = 0;
 
@@ -863,7 +878,7 @@ namespace openvrml {
     };
 
 
-    class navigation_info_node : public virtual child_node {
+    class OPENVRML_API navigation_info_node : public virtual child_node {
     public:
         virtual ~navigation_info_node() throw () = 0;
 
@@ -883,7 +898,7 @@ namespace openvrml {
     };
 
 
-    class normal_node : public virtual node {
+    class OPENVRML_API normal_node : public virtual node {
     public:
         virtual ~normal_node() throw () = 0;
 
@@ -898,7 +913,8 @@ namespace openvrml {
     };
 
 
-    class pointing_device_sensor_node : public virtual child_node {
+    class OPENVRML_API pointing_device_sensor_node :
+        public virtual child_node {
     public:
         virtual ~pointing_device_sensor_node() throw () = 0;
 
@@ -918,7 +934,7 @@ namespace openvrml {
     };
 
 
-    class scoped_light_node : public virtual light_node {
+    class OPENVRML_API scoped_light_node : public virtual light_node {
     public:
         virtual ~scoped_light_node() throw () = 0;
 
@@ -935,7 +951,7 @@ namespace openvrml {
     };
 
 
-    class sound_source_node : public virtual node {
+    class OPENVRML_API sound_source_node : public virtual node {
     public:
         virtual ~sound_source_node() throw () = 0;
 
@@ -949,7 +965,7 @@ namespace openvrml {
     };
 
 
-    class texture_node : public virtual node {
+    class OPENVRML_API texture_node : public virtual node {
         viewer::texture_object_t texture_reference;
 
     public:
@@ -973,7 +989,7 @@ namespace openvrml {
     };
 
 
-    class texture_coordinate_node : public virtual node {
+    class OPENVRML_API texture_coordinate_node : public virtual node {
     public:
         virtual ~texture_coordinate_node() throw () = 0;
 
@@ -990,7 +1006,7 @@ namespace openvrml {
     };
 
 
-    class texture_transform_node : public virtual node {
+    class OPENVRML_API texture_transform_node : public virtual node {
     public:
         virtual ~texture_transform_node() throw () = 0;
 
@@ -1009,7 +1025,7 @@ namespace openvrml {
     };
 
 
-    class transform_node : public virtual grouping_node {
+    class OPENVRML_API transform_node : public virtual grouping_node {
     public:
         virtual ~transform_node() throw () = 0;
 
@@ -1025,7 +1041,7 @@ namespace openvrml {
     };
 
 
-    class viewpoint_node : public virtual child_node {
+    class OPENVRML_API viewpoint_node : public virtual child_node {
     public:
         virtual ~viewpoint_node() throw () = 0;
 
@@ -1046,7 +1062,7 @@ namespace openvrml {
     };
 
 
-    class node_traverser : boost::noncopyable {
+    class OPENVRML_API node_traverser : boost::noncopyable {
         std::set<node *> traversed_nodes;
         bool halt;
 
@@ -1066,7 +1082,7 @@ namespace openvrml {
         virtual void on_entering(node & n);
         virtual void on_leaving(node & n);
 
-        void do_traversal(node & n);
+        OPENVRML_LOCAL void do_traversal(node & n);
     };
 }
 

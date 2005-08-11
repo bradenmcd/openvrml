@@ -88,13 +88,14 @@ namespace {
     const double inv_pi = 0.31830988618379067154;
 
     template <typename Float>
-    inline Float fabs(const Float f)
+    OPENVRML_GL_LOCAL inline Float fabs(const Float f)
     {
         return f < 0.0 ? -f : f;
     }
 
     template <typename Float>
-    struct fequal : std::binary_function<Float, Float, bool> {
+    struct OPENVRML_GL_LOCAL fequal :
+        std::binary_function<Float, Float, bool> {
         bool operator()(Float a, Float b) const
         {
             const Float diff = fabs(a - b);
@@ -104,11 +105,11 @@ namespace {
         }
     };
 
-    inline double length(const float vec[3]) {
+    OPENVRML_GL_LOCAL inline double length(const float vec[3]) {
         return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
     }
 
-    inline void normalize(float vec[3]) {
+    OPENVRML_GL_LOCAL inline void normalize(float vec[3]) {
         const float len = float(length(vec));
         if (!fequal<float>()(len, 0.0f)) {
             vec[0] /= len;
@@ -117,7 +118,7 @@ namespace {
         }
     }
 
-    class gl_capabilities {
+    class OPENVRML_GL_LOCAL gl_capabilities {
     public:
         GLint max_modelview_stack_depth;
         GLint max_texture_size;
@@ -149,7 +150,7 @@ namespace {
     }
 
 
-    struct vertex_data {
+    struct OPENVRML_GL_LOCAL vertex_data {
         GLdouble coord[3];
         const openvrml::color * color;
         const openvrml::vec3f * normal;
@@ -165,14 +166,14 @@ namespace {
     {}
 
 
-    struct combined_vertex_data_ {
+    struct OPENVRML_GL_LOCAL combined_vertex_data_ {
         openvrml::color color;
         openvrml::vec3f normal;
         openvrml::vec2f tex_coord;
     };
 
 
-    struct shell_tess_user_data {
+    struct OPENVRML_GL_LOCAL shell_tess_user_data {
         size_t face_index;
         const std::vector<openvrml::color> * face_color;
         const std::vector<openvrml::int32> * face_color_index;
@@ -196,7 +197,7 @@ namespace {
     /**
      * @internal
      */
-    struct ShellData {
+    struct OPENVRML_GL_LOCAL ShellData {
         unsigned int mask;
         const std::vector<openvrml::vec3f> & coord;
         const std::vector<openvrml::int32> & coordIndex;
@@ -251,7 +252,7 @@ namespace {
     {}
 
     // Generate a normal from 3 indexed points.
-    const openvrml::vec3f
+    OPENVRML_GL_LOCAL const openvrml::vec3f
     indexFaceNormal(const size_t i1,
                     const size_t i2,
                     const size_t i3,
@@ -831,7 +832,7 @@ namespace {
     // Project an x, y pair onto a sphere of radius r OR a hyperbolic sheet
     // if we are away from the center of the sphere.
     //
-    float tb_project_to_sphere(float r, float x, float y)
+    OPENVRML_GL_LOCAL float tb_project_to_sphere(float r, float x, float y)
     {
         static const double sqrt2 = sqrt(2.0);
         static const double sqrt2_2 = sqrt2 / 2.0;
@@ -859,7 +860,10 @@ namespace {
     // It is assumed that the arguments to this routine are in the range
     // (-1.0 ... 1.0)
     //
-    const rotation trackball(float p1x, float p1y, float p2x, float p2y)
+    OPENVRML_GL_LOCAL const rotation trackball(float p1x,
+                                            float p1y,
+                                            float p2x,
+                                            float p2y)
     {
         //
         // This size should really be based on the distance from the center of

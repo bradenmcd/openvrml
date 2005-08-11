@@ -22,6 +22,7 @@
 # ifndef OPENVRML_NODE_PTR_H
 #   define OPENVRML_NODE_PTR_H
 
+#   include <openvrml-common.h>
 #   include <cassert>
 #   include <map>
 #   include <memory>
@@ -30,11 +31,12 @@ namespace openvrml {
 
     class node_ptr;
 
-    bool operator==(const node_ptr & lhs, const node_ptr & rhs) throw ();
+    OPENVRML_API bool operator==(const node_ptr & lhs, const node_ptr & rhs)
+        throw ();
 
     class node;
 
-    class node_ptr {
+    class OPENVRML_API node_ptr {
         friend class script_node;
         friend bool operator==(const node_ptr & lhs, const node_ptr & rhs)
             throw ();
@@ -64,7 +66,8 @@ namespace openvrml {
         void share(std::map<node *, size_t>::value_type * count_ptr) throw ();
     };
 
-    bool operator!=(const node_ptr & lhs, const node_ptr & rhs) throw ();
+    OPENVRML_API bool operator!=(const node_ptr & lhs, const node_ptr & rhs)
+        throw ();
 
 
     inline node_ptr::~node_ptr() throw ()

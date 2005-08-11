@@ -1326,7 +1326,9 @@ namespace {
      */
     typedef std::map<std::string, openvrml::node *> named_node_map_t;
 
-    struct node_is_ : std::unary_function<named_node_map_t::value_type, bool> {
+    struct OPENVRML_LOCAL node_is_ :
+        std::unary_function<named_node_map_t::value_type, bool> {
+
         explicit node_is_(const openvrml::node & n):
             n(&n)
         {}
@@ -1975,7 +1977,9 @@ void openvrml::node::emit_event(openvrml::event_emitter & emitter,
 namespace {
     const short indent_increment_ = 4;
 
-    struct print_field_ : std::unary_function<openvrml::node_interface, void> {
+    struct OPENVRML_LOCAL print_field_ :
+        std::unary_function<openvrml::node_interface, void> {
+
         print_field_(const openvrml::node & n,
                      std::ostream & out,
                      const size_t indent):
@@ -2099,8 +2103,8 @@ void openvrml::node::do_shutdown(double) throw ()
 
 namespace {
     template <typename FieldValue>
-    bool add_listener(openvrml::event_emitter & emitter,
-                      openvrml::event_listener & listener)
+    OPENVRML_LOCAL bool add_listener(openvrml::event_emitter & emitter,
+                                     openvrml::event_listener & listener)
         throw (std::bad_alloc, std::bad_cast)
     {
         using openvrml::field_value_emitter;
@@ -2219,8 +2223,8 @@ bool openvrml::add_route(node & from,
 
 namespace {
     template <typename FieldValue>
-    bool remove_listener(openvrml::event_emitter & emitter,
-                         openvrml::event_listener & listener)
+    OPENVRML_LOCAL bool remove_listener(openvrml::event_emitter & emitter,
+                                        openvrml::event_listener & listener)
         throw (std::bad_cast)
     {
         using openvrml::field_value_emitter;

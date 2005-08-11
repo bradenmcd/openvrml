@@ -44,7 +44,7 @@
 
 namespace openvrml {
 
-    class null_node_class : public node_class {
+    class OPENVRML_LOCAL null_node_class : public node_class {
     public:
         explicit null_node_class(openvrml::browser & browser) throw ();
         virtual ~null_node_class() throw ();
@@ -57,7 +57,7 @@ namespace openvrml {
     };
 
 
-    class null_node_type : public node_type {
+    class OPENVRML_LOCAL null_node_type : public node_type {
     public:
         explicit null_node_type(null_node_class & nodeClass) throw ();
         virtual ~null_node_type() throw ();
@@ -88,7 +88,7 @@ namespace {
      * Through the <code>proto_node::proto_node_type</code> intermediary, it
      * facilitates spawning any number of <code>proto_node</code> instances.
      */
-    class proto_node_class : public node_class {
+    class OPENVRML_LOCAL proto_node_class : public node_class {
         friend class proto_node;
         friend class proto_impl_cloner;
 
@@ -198,7 +198,7 @@ namespace {
      * <code>proto_node_class</code>, on the other hand, includes metadata
      * about how these event pathways @e should be created.
      */
-    class proto_node : public node {
+    class OPENVRML_LOCAL proto_node : public node {
         template <typename FieldValue>
         class proto_eventin : public field_value_listener<FieldValue> {
             typedef std::set<field_value_listener<FieldValue> *> listeners;
@@ -387,7 +387,7 @@ namespace {
     };
 
 
-    class node_path_element {
+    class OPENVRML_LOCAL node_path_element {
     public:
         std::vector<node_ptr>::size_type index;
         std::string field_id;
@@ -401,7 +401,7 @@ namespace {
 
     typedef std::list<node_path_element> node_path_t;
 
-    class path_getter : boost::noncopyable {
+    class OPENVRML_LOCAL path_getter : boost::noncopyable {
         const node & objective;
         node_path_t & node_path;
         bool found;
@@ -496,8 +496,8 @@ namespace {
         }
     }
 
-    const node_path_t get_path(const std::vector<node_ptr> & root,
-                               const node & objective)
+    OPENVRML_LOCAL const node_path_t
+    get_path(const std::vector<node_ptr> & root, const node & objective)
         throw (std::bad_alloc)
     {
         node_path_t path;
@@ -505,8 +505,8 @@ namespace {
         return path;
     }
 
-    node * resolve_node_path(const node_path_t & path,
-                             const std::vector<node_ptr> & root)
+    OPENVRML_LOCAL node * resolve_node_path(const node_path_t & path,
+                                            const std::vector<node_ptr> & root)
     {
         using boost::next;
         using boost::prior;
@@ -535,7 +535,7 @@ namespace {
         return result;
     }
 
-    class field_value_cloner {
+    class OPENVRML_LOCAL field_value_cloner {
     protected:
         const boost::shared_ptr<openvrml::scope> & target_scope;
         std::set<node *> traversed_nodes;
@@ -657,7 +657,7 @@ namespace {
     //
     // Clone the implementation nodes.
     //
-    class proto_impl_cloner : public field_value_cloner {
+    class OPENVRML_LOCAL proto_impl_cloner : public field_value_cloner {
         const proto_node_class & node_class;
         const initial_value_map & initial_values_;
 
@@ -2434,7 +2434,8 @@ namespace {
     }
 
 
-    class default_navigation_info : public navigation_info_node {
+    class OPENVRML_LOCAL default_navigation_info :
+        public navigation_info_node {
     public:
         explicit default_navigation_info(const null_node_type & type) throw ();
         virtual ~default_navigation_info() throw ();
@@ -2594,7 +2595,7 @@ namespace {
     }
 
 
-    class default_viewpoint : public viewpoint_node {
+    class OPENVRML_LOCAL default_viewpoint : public viewpoint_node {
         mat4f userViewTransform;
 
     public:
@@ -2736,7 +2737,7 @@ namespace {
     }
 
 
-    class uri {
+    class OPENVRML_LOCAL uri {
         static const boost::regex regex_;
         enum subexpression_index {
             scheme_ = 2,

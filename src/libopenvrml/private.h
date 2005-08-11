@@ -22,6 +22,8 @@
 # ifndef OPENVRML_PRIVATE_H
 #   define OPENVRML_PRIVATE_H
 
+#   include <openvrml-common.h>
+
 #   ifndef NDEBUG
 #     include <iostream>
 #   endif
@@ -71,13 +73,14 @@ namespace {
         const double inv_pi = 0.31830988618379067154;
 
         template <typename Float>
-        inline Float fabs(const Float f)
+        OPENVRML_LOCAL inline Float fabs(const Float f)
         {
             return f < 0.0 ? -f : f;
         }
 
         template <typename Float>
-        struct fequal : std::binary_function<Float, Float, bool> {
+        struct OPENVRML_LOCAL fequal :
+            std::binary_function<Float, Float, bool> {
             bool operator()(Float a, Float b) const
             {
                 const Float diff = fabs(a - b);
@@ -91,7 +94,8 @@ namespace {
         };
 
         template <typename Float>
-        struct fless_equal : std::binary_function<Float, Float, bool> {
+        struct OPENVRML_LOCAL fless_equal :
+            std::binary_function<Float, Float, bool> {
             bool operator()(Float a, Float b) const
             {
                 return a < b || fequal<Float>()(a, b);
@@ -99,7 +103,8 @@ namespace {
         };
 
         template <typename Float>
-        struct fgreater_equal : std::binary_function<Float, Float, bool> {
+        struct OPENVRML_LOCAL fgreater_equal :
+            std::binary_function<Float, Float, bool> {
             bool operator()(Float a, Float b) const
             {
                 return a > b || fequal<Float>()(a, b);
@@ -107,7 +112,7 @@ namespace {
         };
 
 
-        class scope_guard_impl_base {
+        class OPENVRML_LOCAL scope_guard_impl_base {
         protected:
             mutable bool dismissed;
 
@@ -142,7 +147,7 @@ namespace {
         }
 
         template <typename Function, typename Param>
-        class scope_guard_impl1 : public scope_guard_impl_base {
+        class OPENVRML_LOCAL scope_guard_impl1 : public scope_guard_impl_base {
             Function function;
             const Param param;
 
@@ -165,7 +170,7 @@ namespace {
         }
 
         template <typename Function, typename Param>
-        scope_guard_impl1<Function, Param>
+        OPENVRML_LOCAL scope_guard_impl1<Function, Param>
         make_guard(const Function & function, const Param & param)
         {
             return scope_guard_impl1<Function, Param>(function, param);
@@ -175,7 +180,7 @@ namespace {
                   typename Param1,
                   typename Param2,
                   typename Param3>
-        class scope_guard_impl3 : public scope_guard_impl_base {
+        class OPENVRML_LOCAL scope_guard_impl3 : public scope_guard_impl_base {
             Function function;
             const Param1 param1;
             const Param2 param2;
@@ -220,7 +225,7 @@ namespace {
                   typename Param1,
                   typename Param2,
                   typename Param3>
-        scope_guard_impl3<Function, Param1, Param2, Param3>
+        OPENVRML_LOCAL scope_guard_impl3<Function, Param1, Param2, Param3>
         make_guard(const Function & function,
                    const Param1 & param1,
                    const Param2 & param2,
@@ -231,7 +236,8 @@ namespace {
         }
 
         template <typename Object, typename MemberFunction>
-        class obj_scope_guard_impl0 : public scope_guard_impl_base {
+        class OPENVRML_LOCAL obj_scope_guard_impl0 :
+            public scope_guard_impl_base {
             Object & obj;
             MemberFunction mem_fun;
 
@@ -256,14 +262,15 @@ namespace {
         }
 
         template <typename Object, typename MemberFunction>
-        obj_scope_guard_impl0<Object, MemberFunction>
+        OPENVRML_LOCAL obj_scope_guard_impl0<Object, MemberFunction>
         make_obj_guard(Object & obj, MemberFunction mem_fun)
         {
             return obj_scope_guard_impl0<Object, MemberFunction>(obj, mem_fun);
         }
 
         template <typename Object, typename MemberFunction, typename Param>
-        class obj_scope_guard_impl1 : public scope_guard_impl_base {
+        class OPENVRML_LOCAL obj_scope_guard_impl1 :
+            public scope_guard_impl_base {
             Object & obj;
             MemberFunction mem_fun;
             const Param param;
@@ -296,7 +303,7 @@ namespace {
         }
 
         template <typename Object, typename MemberFunction, typename Param>
-        obj_scope_guard_impl1<Object, MemberFunction, Param>
+        OPENVRML_LOCAL obj_scope_guard_impl1<Object, MemberFunction, Param>
         make_obj_guard(Object & obj,
                        MemberFunction mem_fun,
                        const Param & param)
@@ -307,7 +314,7 @@ namespace {
 
 
         template <typename MemberBase, typename Object>
-        class ptr_to_polymorphic_mem {
+        class OPENVRML_LOCAL ptr_to_polymorphic_mem {
         public:
             virtual ~ptr_to_polymorphic_mem() = 0;
             virtual MemberBase & deref(Object & obj) = 0;
@@ -320,7 +327,7 @@ namespace {
 
 
         template <typename MemberBase, typename Member, typename Object>
-        class ptr_to_polymorphic_mem_impl :
+        class OPENVRML_LOCAL ptr_to_polymorphic_mem_impl :
             public ptr_to_polymorphic_mem<MemberBase, Object> {
 
             Member Object::* ptr_to_mem;

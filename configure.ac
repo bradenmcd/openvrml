@@ -16,7 +16,9 @@ AC_CONFIG_FILES([Makefile]
                 [java/vrml/field/Makefile]
                 [src/Makefile]
                 [src/libopenvrml/Makefile]
+                [src/libopenvrml/openvrml-config.h]
                 [src/libopenvrml-gl/Makefile]
+                [src/libopenvrml-gl/openvrml-gl-config.h]
                 [examples/Makefile]
                 [tests/Makefile]
                 [tests/atlocal]
@@ -51,6 +53,19 @@ AC_PATH_PROG([DOXYGEN], [doxygen])
 
 AC_ARG_VAR([REZ], [Mac OS X resource fork compiler])
 AC_PATH_PROG([REZ], [Rez], [$PATH:/Developer/Tools])
+
+#
+# Checks for compiler features
+#
+OV_CXX_VISIBILITY(
+[OPENVRML_API="__attribute__((visibility(\"default\")))"
+OPENVRML_LOCAL="__attribute__((visibility(\"hidden\")))"
+OPENVRML_GL_API="__attribute__((visibility(\"default\")))"
+OPENVRML_GL_LOCAL="__attribute__((visibility(\"hidden\")))"])
+AC_SUBST([OPENVRML_API])
+AC_SUBST([OPENVRML_LOCAL])
+AC_SUBST([OPENVRML_GL_API])
+AC_SUBST([OPENVRML_GL_LOCAL])
 
 #
 # Checks for libraries/headers.

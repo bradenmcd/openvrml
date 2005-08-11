@@ -33,7 +33,7 @@ namespace openvrml {
     class node;
     class browser;
 
-    class viewer : boost::noncopyable {
+    class OPENVRML_API viewer : boost::noncopyable {
         friend class browser;
 
         openvrml::browser * browser_;

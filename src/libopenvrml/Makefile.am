@@ -1,5 +1,8 @@
 lib_LTLIBRARIES = libopenvrml.la
 
+pkginclude_HEADERS = \
+        openvrml-config.h \
+        openvrml-common.h
 openvrml_includedir = $(pkgincludedir)/openvrml
 openvrml_include_HEADERS = \
         openvrml/basetypes.h \
@@ -80,6 +83,8 @@ libopenvrml_la_LDFLAGS = \
 libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
 
 EXTRA_DIST = \
+        openvrml-gl-config.h.in \
+        openvrml-gl-common.h \
         openvrml/Vrml97TokenTypes.txt \
         openvrml/Vrml97Parser.g \
         openvrml/Vrml97ParserTokenTypes.txt

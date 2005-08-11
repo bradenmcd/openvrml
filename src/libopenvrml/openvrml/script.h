@@ -31,7 +31,7 @@ namespace openvrml {
 
     class script_node;
 
-    class script : boost::noncopyable {
+    class OPENVRML_API script : boost::noncopyable {
         typedef std::map<openvrml::event_listener *,
                          boost::shared_ptr<field_value> >
             direct_output_map_t;
@@ -67,11 +67,11 @@ namespace openvrml {
         virtual void do_events_processed(double timestamp) = 0;
         virtual void do_shutdown(double timestamp) = 0;
 
-        void process_direct_output(double timestamp);
+        OPENVRML_LOCAL void process_direct_output(double timestamp);
     };
 
 
-    class script_node_class : public node_class {
+    class OPENVRML_API script_node_class : public node_class {
     public:
         script_node_class(openvrml::browser & browser);
         virtual ~script_node_class() throw ();
@@ -84,7 +84,7 @@ namespace openvrml {
     };
 
 
-    class script_node : public child_node {
+    class OPENVRML_API script_node : public child_node {
         friend class script;
 
     public:
@@ -264,11 +264,13 @@ namespace openvrml {
         const eventout_map_t & eventout_map() const throw ();
 
     private:
-        script * create_script();
+        OPENVRML_LOCAL script * create_script();
 
-        void assign_with_self_ref_check(const sfnode &, sfnode &) const
+        OPENVRML_LOCAL void assign_with_self_ref_check(const sfnode &,
+                                                       sfnode &) const
             throw ();
-        void assign_with_self_ref_check(const mfnode &, mfnode &) const
+        OPENVRML_LOCAL void assign_with_self_ref_check(const mfnode &,
+                                                       mfnode &) const
             throw ();
 
         virtual script_node * to_script() throw ();
