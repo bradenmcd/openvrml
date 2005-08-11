@@ -1,3 +1,16 @@
+2005-08-11 Braden McDaniel  <braden@endoframe.com>
+
+	Added abstract node type openvrml::pointing_device_sensor_node.
+	Anchor, CylinderSensor, PlaneSensor, SphereSensor, and
+	TouchSensor implementations now inherit this type.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
 2005-08-03 Braden McDaniel  <braden@endoframe.com>
 
 	Removed virtual destructor from openvrml::scope.  The only

@@ -1467,20 +1467,16 @@ namespace openvrml {
 
             virtual bool modified() const;
 
-            virtual const std::vector<node_ptr> & children() const throw ();
-            virtual void activate(double timeStamp, bool isOver, bool isActive,
-                                  double *p);
-
-            void render_nocull(openvrml::viewer & viewer,
-                               rendering_context context);
-
         protected:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
             virtual const openvrml::bounding_volume &
             do_bounding_volume() const;
+            virtual const std::vector<node_ptr> & do_children() const throw ();
 
             void recalc_bsphere();
+            void render_nocull(openvrml::viewer & viewer,
+                               rendering_context context);
         };
 
         template <typename Derived>
@@ -1724,15 +1720,11 @@ namespace openvrml {
                         if (node_cast<light_node *>(child)
                             && !(node_cast<scoped_light_node *>(child))) {
                             child->render_child(viewer, context);
-                        } else if ((child->to_touch_sensor()
-                                    && child->to_touch_sensor()->enabled())
-                                   || (child->to_plane_sensor()
-                                       && child->to_plane_sensor()->enabled())
-                                   || (child->to_cylinder_sensor()
-                                       && child->to_cylinder_sensor()->enabled())
-                                   || (child->to_sphere_sensor()
-                                       && child->to_sphere_sensor()->isEnabled())) {
-                            if (++nSensors == 1) { viewer.set_sensitive(this); }
+                        } else if (
+                            node_cast<pointing_device_sensor_node *>(child)) {
+                            if (++nSensors == 1) {
+                                viewer.set_sensitive(this);
+                            }
                         }
                     }
                 }
@@ -1742,12 +1734,7 @@ namespace openvrml {
                     child_node * const child =
                         node_cast<child_node *>(
                             this->children_.mfnode::value[i].get());
-                    if (child
-                        && !(node_cast<light_node *>(child)
-//                             || child->to_plane_sensor()
-//                             || child->to_cylinder_sensor()
-//                             || child->to_sphere_sensor()
-                             || child->to_touch_sensor())) {
+                    if (child && !(node_cast<light_node *>(child))) {
                         child->render_child(viewer, context);
                     }
                 }
@@ -1763,41 +1750,9 @@ namespace openvrml {
 
         template <typename Derived>
         const std::vector<openvrml::node_ptr> &
-        grouping_node_base<Derived>::children() const throw ()
+        grouping_node_base<Derived>::do_children() const throw ()
         {
             return this->children_.mfnode::value;
-        }
-
-        template <typename Derived>
-        void
-        grouping_node_base<Derived>::activate(double time,
-                                              bool isOver,
-                                              bool isActive,
-                                              double *p)
-        {
-            for (size_t i = 0; i < this->children_.mfnode::value.size(); ++i) {
-                const node_ptr & node = this->children_.mfnode::value[i];
-                if (node) {
-                    if (node->to_touch_sensor()
-                        && node->to_touch_sensor()->enabled()) {
-                        node->to_touch_sensor()->activate(time,
-                                                          isOver,
-                                                          isActive,
-                                                          p);
-                    } else if (node->to_plane_sensor()
-                               && node->to_plane_sensor()->enabled()) {
-                        node->to_plane_sensor()->activate(time, isActive, p);
-                    } else if (node->to_cylinder_sensor()
-                               && node->to_cylinder_sensor()->enabled()) {
-                        node->to_cylinder_sensor()->activate(time,
-                                                             isActive,
-                                                             p);
-                    } else if (node->to_sphere_sensor()
-                               && node->to_sphere_sensor()->isEnabled()) {
-                        node->to_sphere_sensor()->activate(time, isActive, p);
-                    }
-                }
-            }
         }
 
         template <typename Derived>
@@ -1841,7 +1796,8 @@ namespace openvrml {
                 throw (unsupported_interface, std::bad_alloc);
         };
 
-        class anchor_node : public grouping_node_base<anchor_node> {
+        class anchor_node : public grouping_node_base<anchor_node>,
+                            public pointing_device_sensor_node {
             friend class anchor_class;
 
             exposedfield<sfstring> description_;
@@ -1853,13 +1809,11 @@ namespace openvrml {
                         const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~anchor_node() throw ();
 
-            virtual anchor_node * to_anchor() const;
-
-            void activate_anchor();
-
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
+            virtual void do_activate(double timestamp, bool over, bool active,
+                                     const double (&point)[3]);
         };
 
 
@@ -2436,7 +2390,7 @@ namespace openvrml {
 
         class cylinder_sensor_node :
             public abstract_base<cylinder_sensor_node>,
-            public child_node {
+            public pointing_device_sensor_node {
 
             friend class cylinder_sensor_class;
 
@@ -2465,15 +2419,11 @@ namespace openvrml {
                 const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~cylinder_sensor_node() throw ();
 
-            virtual cylinder_sensor_node * to_cylinder_sensor() const;
-
-            void activate(double timeStamp, bool isActive, double *p);
-
-            bool enabled() const;
-
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
+            virtual void do_activate(double timestamp, bool over, bool active,
+                                     const double (&point)[3]);
         };
 
 
@@ -2976,13 +2926,10 @@ namespace openvrml {
                         const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~inline_node() throw ();
 
-            virtual const std::vector<node_ptr> & children() const throw ();
-            virtual void activate(double timestamp, bool over, bool active,
-                                  double * p);
-
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
+            virtual const std::vector<node_ptr> & do_children() const throw ();
 
             void load();
         };
@@ -3016,17 +2963,13 @@ namespace openvrml {
             virtual ~lod_node() throw ();
 
             virtual bool modified() const;
-            virtual const std::vector<node_ptr> & children() const throw ();
-            virtual void activate(double timestamp, bool over, bool active,
-                                  double * p);
 
         private:
             virtual const openvrml::bounding_volume &
             do_bounding_volume() const;
-
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
+            virtual const std::vector<node_ptr> & do_children() const throw ();
             virtual void recalcBSphere();
         };
 
@@ -3376,7 +3319,7 @@ namespace openvrml {
         };
 
         class plane_sensor_node : public abstract_base<plane_sensor_node>,
-                                  public child_node {
+                                  public pointing_device_sensor_node {
             friend class plane_sensor_class;
 
             exposedfield<sfbool> auto_offset_;
@@ -3402,15 +3345,11 @@ namespace openvrml {
                 const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~plane_sensor_node() throw ();
 
-            virtual plane_sensor_node * to_plane_sensor() const;
-
-            void activate( double timeStamp, bool isActive, double *p );
-
-            bool enabled() const;
-
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
+            virtual void do_activate(double timestamp, bool over, bool active,
+                                     const double (&point)[3]);
         };
 
 
@@ -3567,8 +3506,9 @@ namespace openvrml {
             sftime_emitter exit_time_emitter_;
 
         public:
-            proximity_sensor_node(const node_type & type,
-                                  const boost::shared_ptr<openvrml::scope> & scope);
+            proximity_sensor_node(
+                const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~proximity_sensor_node() throw ();
 
         private:
@@ -3743,7 +3683,7 @@ namespace openvrml {
         };
 
         class sphere_sensor_node : public abstract_base<sphere_sensor_node>,
-                                   public child_node {
+                                   public pointing_device_sensor_node {
             friend class sphere_sensor_class;
 
             exposedfield<sfbool> auto_offset_;
@@ -3761,18 +3701,16 @@ namespace openvrml {
             mat4f modelview;
 
         public:
-            sphere_sensor_node(const node_type & type,
-                               const boost::shared_ptr<openvrml::scope> & scope);
+            sphere_sensor_node(
+                const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~sphere_sensor_node() throw ();
-
-            virtual sphere_sensor_node * to_sphere_sensor() const;
-
-            void activate(double timeStamp, bool isActive, double * p);
-            bool isEnabled() const throw ();
 
         private:
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
+            virtual void do_activate(double timestamp, bool over, bool active,
+                                     const double (&point)[3]);
         };
 
 
@@ -3862,17 +3800,13 @@ namespace openvrml {
             virtual ~switch_node() throw ();
 
             virtual bool modified() const;
-            virtual const std::vector<node_ptr> & children() const throw ();
-            virtual void activate(double timestamp, bool over, bool active,
-                                  double * p);
 
         private:
             virtual const openvrml::bounding_volume &
             do_bounding_volume() const;
-
             virtual void do_render_child(openvrml::viewer & viewer,
                                          rendering_context context);
-
+            virtual const std::vector<node_ptr> & do_children() const throw ();
             virtual void recalcBSphere();
         };
 
@@ -4157,7 +4091,7 @@ namespace openvrml {
         };
 
         class touch_sensor_node : public abstract_base<touch_sensor_node>,
-                                  public child_node {
+                                  public pointing_device_sensor_node {
             friend class touch_sensor_class;
 
             exposedfield<sfbool> enabled_;
@@ -4180,12 +4114,9 @@ namespace openvrml {
                 const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~touch_sensor_node() throw ();
 
-            virtual touch_sensor_node * to_touch_sensor() const;
-
-            void activate(double timeStamp, bool isOver, bool isActive,
-                          double *p );
-
-            bool enabled() const;
+        private:
+            virtual void do_activate(double timestamp, bool over, bool active,
+                                     const double (&point)[3]);
         };
 
 

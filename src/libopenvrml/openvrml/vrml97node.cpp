@@ -1891,17 +1891,11 @@ openvrml::vrml97_node::vrml97_node_type::~vrml97_node_type() throw ()
  */
 
 /**
- * @fn const std::vector<openvrml::node_ptr> & openvrml::vrml97_node::grouping_node_base<Derived>::children() const throw ()
+ * @fn const std::vector<openvrml::node_ptr> & openvrml::vrml97_node::grouping_node_base<Derived>::do_children() const throw ()
  *
  * @brief Get the children in the scene graph.
  *
  * @return the child nodes in the scene graph.
- */
-
-/**
- * @fn void openvrml::vrml97_node::grouping_node_base<Derived>::activate(double time, bool isOver, bool isActive, double *p)
- *
- * Pass on to enabled touchsensor child.
  */
 
 /**
@@ -2137,6 +2131,7 @@ anchor_node(const node_type & type,
     child_node(type, scope),
     grouping_node(type, scope),
     grouping_node_base<anchor_node>(type, scope),
+    pointing_device_sensor_node(type, scope),
     description_(*this),
     parameter_(*this),
     url_(*this)
@@ -2149,17 +2144,6 @@ anchor_node(const node_type & type,
  */
 openvrml::vrml97_node::anchor_node::~anchor_node() throw ()
 {}
-
-/**
- * @brief Cast to an anchor.
- *
- * @return a pointer to this node.
- */
-openvrml::vrml97_node::anchor_node *
-openvrml::vrml97_node::anchor_node::to_anchor() const
-{
-    return const_cast<anchor_node *>(this);
-}
 
 /**
  * @brief Render the node.
@@ -2182,11 +2166,21 @@ do_render_child(openvrml::viewer & viewer, const rendering_context context)
 /**
  * @brief Handle a click by loading the url.
  */
-void openvrml::vrml97_node::anchor_node::activate_anchor()
+void openvrml::vrml97_node::anchor_node::do_activate(double,
+                                                     const bool over,
+                                                     const bool active,
+                                                     const double (&)[3])
 {
     assert(this->scene());
-    this->scene()->load_url(this->url_.mfstring::value,
-                            this->parameter_.mfstring::value);
+    //
+    // @todo This should really be (is_over && !is_active && n->was_active)
+    // (ie, button up over the anchor after button down over the
+    // anchor)
+    //
+    if (over && active) {
+        this->scene()->load_url(this->url_.mfstring::value,
+                                this->parameter_.mfstring::value);
+    }
 }
 
 /**
@@ -6234,8 +6228,9 @@ cylinder_sensor_node(const node_type & type,
                      const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     bounded_volume_node(type, scope),
-    abstract_base<cylinder_sensor_node>(type, scope),
     child_node(type, scope),
+    abstract_base<cylinder_sensor_node>(type, scope),
+    pointing_device_sensor_node(type, scope),
     auto_offset_(*this, true),
     disk_angle_(*this, 0.262f),
     enabled_(*this, true),
@@ -6258,17 +6253,6 @@ openvrml::vrml97_node::cylinder_sensor_node::~cylinder_sensor_node() throw ()
 {}
 
 /**
- * @brief Cast to a cylinder_sensor_node.
- *
- * @return a pointer to the cylinder_sensor_node.
- */
-openvrml::vrml97_node::cylinder_sensor_node *
-openvrml::vrml97_node::cylinder_sensor_node::to_cylinder_sensor() const
-{
-    return (cylinder_sensor_node*) this;
-}
-
-/**
  * @brief Render the node.
  *
  * @param viewer    a viewer.
@@ -6288,104 +6272,99 @@ do_render_child(openvrml::viewer &, rendering_context context)
 /**
  * @brief Called in response to user interaction.
  */
-void openvrml::vrml97_node::cylinder_sensor_node::activate(double timestamp,
-                                                           bool isActive,
-                                                           double * p)
+void
+openvrml::vrml97_node::cylinder_sensor_node::do_activate(double timestamp,
+                                                         bool,
+                                                         bool active,
+                                                         const double (&p)[3])
 {
     using openvrml_::pi;
     using openvrml_::pi_2;
 
-    // Become active
-    if (isActive && !this->is_active_.value) {
-        this->is_active_.value = isActive;
+    if (this->enabled_.sfbool::value) {
+        // Become active
+        if (active && !this->is_active_.value) {
+            this->is_active_.value = active;
 
-        // set activation point in local coords
-        vec3f v(static_cast<float>(p[0]),
-                static_cast<float>(p[1]),
-                static_cast<float>(p[2]));
-        this->activationMatrix = this->modelview.inverse();
-        v *= this->activationMatrix;
-        this->activationPoint = v;
-        // Bearing vector in local coordinate system
-        v.x(this->activationMatrix[2][0]);
-        v.y(this->activationMatrix[2][1]);
-        v.z(this->activationMatrix[2][2]);
-        const vec3f bearing = v.normalize();
-        const vec3f up(0.0, 1.0, 0.0);
-        double ang = acos(bearing.dot(up));
-        if (ang > pi_2) { ang = pi - ang; }
-        this->disk = (ang < this->disk_angle_.sffloat::value);
-        // send message
-        node::emit_event(this->is_active_emitter_, timestamp);
-    }
-
-    // Become inactive
-    else if (!isActive && this->is_active_.value) {
-        this->is_active_.value = isActive;
-        node::emit_event(this->is_active_emitter_, timestamp);
-
-        // save auto offset of rotation
-        if (this->auto_offset_.sfbool::value) {
-            this->offset_.sffloat::value = rotation_val;
-            node::emit_event(this->offset_, timestamp);
+            // set activation point in local coords
+            vec3f v(static_cast<float>(p[0]),
+                    static_cast<float>(p[1]),
+                    static_cast<float>(p[2]));
+            this->activationMatrix = this->modelview.inverse();
+            v *= this->activationMatrix;
+            this->activationPoint = v;
+            // Bearing vector in local coordinate system
+            v.x(this->activationMatrix[2][0]);
+            v.y(this->activationMatrix[2][1]);
+            v.z(this->activationMatrix[2][2]);
+            const vec3f bearing = v.normalize();
+            const vec3f up(0.0, 1.0, 0.0);
+            double ang = acos(bearing.dot(up));
+            if (ang > pi_2) { ang = pi - ang; }
+            this->disk = (ang < this->disk_angle_.sffloat::value);
+            // send message
+            node::emit_event(this->is_active_emitter_, timestamp);
         }
-    }
 
-        // Tracking
-    else if (isActive) {
-        using openvrml_::fequal;
+        // Become inactive
+        else if (!active && this->is_active_.value) {
+            this->is_active_.value = active;
+            node::emit_event(this->is_active_emitter_, timestamp);
 
-        // get local coord for touch point
-        vec3f Vec(static_cast<float>(p[0]),
-                  static_cast<float>(p[1]),
-                  static_cast<float>(p[2]));
-        Vec = Vec * this->activationMatrix;
-        this->track_point_changed_.value = Vec;
-        node::emit_event(this->track_point_changed_emitter_, timestamp);
-        vec3f tempv;
-        float rot, radius;
-        vec3f dir1(Vec[0], 0, Vec[2]);
-        radius = this->disk
-               ? 1.0f
-               : dir1.length();
-        dir1 = dir1.normalize();
-        vec3f dir2(this->activationPoint.x(), 0, this->activationPoint.z());
-        dir2 = dir2.normalize();
-        tempv = dir2 * dir1;
-        vec3f cx(tempv);
-        cx = cx.normalize();
-        if (cx.length() == 0.0) { return; }
-        rot = radius * float(acos(dir2.dot(dir1)));
-        if (fequal<float>()(cx.y(), -1.0f)) { rot = -rot; }
-        if (this->auto_offset_.sfbool::value) {
-            rot = this->offset_.sffloat::value + rot;
-        }
-        if (this->min_angle_.sffloat::value
-            < this->max_angle_.sffloat::value) {
-            if (rot < this->min_angle_.sffloat::value) {
-                rot = this->min_angle_.sffloat::value;
-            } else if (rot > this->max_angle_.sffloat::value) {
-                rot = this->max_angle_.sffloat::value;
+            // save auto offset of rotation
+            if (this->auto_offset_.sfbool::value) {
+                this->offset_.sffloat::value = rotation_val;
+                node::emit_event(this->offset_, timestamp);
             }
         }
-        this->rotation_val = rot;
-        this->rotation_changed_.sfrotation::value =
-            openvrml::rotation(0, 1, 0, rot);
 
-        node::emit_event(this->rotation_changed_emitter_, timestamp);
+        // Tracking
+        else if (active) {
+            using openvrml_::fequal;
+
+            // get local coord for touch point
+            vec3f Vec(static_cast<float>(p[0]),
+                      static_cast<float>(p[1]),
+                      static_cast<float>(p[2]));
+            Vec = Vec * this->activationMatrix;
+            this->track_point_changed_.value = Vec;
+            node::emit_event(this->track_point_changed_emitter_, timestamp);
+            vec3f tempv;
+            float rot, radius;
+            vec3f dir1(Vec[0], 0, Vec[2]);
+            radius = this->disk
+                ? 1.0f
+                : dir1.length();
+            dir1 = dir1.normalize();
+            vec3f dir2(this->activationPoint.x(),
+                       0,
+                       this->activationPoint.z());
+            dir2 = dir2.normalize();
+            tempv = dir2 * dir1;
+            vec3f cx(tempv);
+            cx = cx.normalize();
+            if (cx.length() == 0.0) { return; }
+            rot = radius * float(acos(dir2.dot(dir1)));
+            if (fequal<float>()(cx.y(), -1.0f)) { rot = -rot; }
+            if (this->auto_offset_.sfbool::value) {
+                rot = this->offset_.sffloat::value + rot;
+            }
+            if (this->min_angle_.sffloat::value
+                < this->max_angle_.sffloat::value) {
+                if (rot < this->min_angle_.sffloat::value) {
+                    rot = this->min_angle_.sffloat::value;
+                } else if (rot > this->max_angle_.sffloat::value) {
+                    rot = this->max_angle_.sffloat::value;
+                }
+            }
+            this->rotation_val = rot;
+            this->rotation_changed_.sfrotation::value =
+                openvrml::rotation(0, 1, 0, rot);
+
+            node::emit_event(this->rotation_changed_emitter_, timestamp);
+        }
     }
 }
-
-/**
- * @brief Indicate whether the sensor is enabled.
- *
- * @return @c true if the sensor is enabled; @c false otherwise.
- */
-bool openvrml::vrml97_node::cylinder_sensor_node::enabled() const
-{
-    return this->enabled_.sfbool::value;
-}
-
 
 /**
  * @class openvrml::vrml97_node::directional_light_class
@@ -9967,41 +9946,12 @@ do_render_child(openvrml::viewer & viewer,
  * @return the child nodes in the scene graph.
  */
 const std::vector<openvrml::node_ptr> &
-openvrml::vrml97_node::inline_node::children() const throw ()
+openvrml::vrml97_node::inline_node::do_children() const throw ()
 {
     static const std::vector<openvrml::node_ptr> empty;
     return this->inlineScene
             ? this->inlineScene->nodes()
             : empty;
-}
-
-/**
- * Pass on to enabled touchsensor child.
- */
-void openvrml::vrml97_node::inline_node::activate(double time,
-                                                  bool isOver,
-                                                  bool isActive,
-                                                  double *p)
-{
-    const std::vector<node_ptr> & children = this->children();
-    for (size_t i = 0; i < children.size(); ++i) {
-        const node_ptr & node = children[i];
-        if (node) {
-            if (node->to_touch_sensor()
-                    && node->to_touch_sensor()->enabled()) {
-                node->to_touch_sensor()->activate(time, isOver, isActive, p);
-            } else if (node->to_plane_sensor()
-                    && node->to_plane_sensor()->enabled()) {
-                node->to_plane_sensor()->activate(time, isActive, p);
-            } else if (node->to_cylinder_sensor()
-                    && node->to_cylinder_sensor()->enabled()) {
-                node->to_cylinder_sensor()->activate(time, isActive, p);
-            } else if (node->to_sphere_sensor()
-                    && node->to_sphere_sensor()->isEnabled()) {
-                node->to_sphere_sensor()->activate(time, isActive, p);
-            }
-        }
-    }
 }
 
 /**
@@ -10286,35 +10236,9 @@ openvrml::vrml97_node::lod_node::do_bounding_volume() const
  * @return the child nodes in the scene graph.
  */
 const std::vector<openvrml::node_ptr> &
-openvrml::vrml97_node::lod_node::children() const throw ()
+openvrml::vrml97_node::lod_node::do_children() const throw ()
 {
     return this->children_.value;
-}
-
-/**
- * Pass on to enabled touchsensor child.
- */
-void openvrml::vrml97_node::lod_node::activate(double time,
-                                               bool isOver,
-                                               bool isActive,
-                                               double *p)
-{
-    const std::vector<node_ptr> & children = this->children();
-    const node_ptr & node = children[0];
-    if (node) {
-        if (node->to_touch_sensor() && node->to_touch_sensor()->enabled()) {
-            node->to_touch_sensor()->activate(time, isOver, isActive, p);
-        } else if (node->to_plane_sensor()
-                && node->to_plane_sensor()->enabled()) {
-            node->to_plane_sensor()->activate(time, isActive, p);
-        } else if (node->to_cylinder_sensor()
-                && node->to_cylinder_sensor()->enabled()) {
-            node->to_cylinder_sensor()->activate(time, isActive, p);
-        } else if (node->to_sphere_sensor()
-                && node->to_sphere_sensor()->isEnabled()) {
-            node->to_sphere_sensor()->activate(time, isActive, p);
-        }
-    }
 }
 
 /**
@@ -13052,8 +12976,9 @@ plane_sensor_node(const node_type & type,
                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     bounded_volume_node(type, scope),
-    abstract_base<plane_sensor_node>(type, scope),
     child_node(type, scope),
+    abstract_base<plane_sensor_node>(type, scope),
+    pointing_device_sensor_node(type, scope),
     auto_offset_(*this, true),
     enabled_(*this, true),
     max_position_(*this, vec2f(-1.0, -1.0)),
@@ -13072,17 +12997,6 @@ plane_sensor_node(const node_type & type,
  */
 openvrml::vrml97_node::plane_sensor_node::~plane_sensor_node() throw ()
 {}
-
-/**
- * @brief Cast to a plane_sensor_node.
- *
- * @return a pointer to the plane_sensor_node.
- */
-openvrml::vrml97_node::plane_sensor_node *
-openvrml::vrml97_node::plane_sensor_node::to_plane_sensor() const
-{
-    return (plane_sensor_node*) this;
-}
 
 /**
  * @brief Render the node.
@@ -13104,89 +13018,88 @@ do_render_child(openvrml::viewer &, const rendering_context context)
 }
 
 /**
+ * @brief Activate the plane sensor.
+ *
  * @todo The local coords are computed for one instance; do we need to convert
  *       @p p to local coords for each instance (USE) of the sensor?
- */
-void openvrml::vrml97_node::plane_sensor_node::activate(double timestamp,
-                                                        bool isActive,
-                                                        double * p)
-{
-    // Become active
-    if (isActive && !this->is_active_.value) {
-        this->is_active_.value = isActive;
-
-        vec3f V(static_cast<float>(p[0]),
-                static_cast<float>(p[1]),
-                static_cast<float>(p[2]));
-        this->activationMatrix = this->modelview.inverse();
-        V *= this->activationMatrix;
-        this->activationPoint.value = V;
-        node::emit_event(this->is_active_emitter_, timestamp);
-    }
-
-    // Become inactive
-    else if (!isActive && this->is_active_.value) {
-        this->is_active_.value = isActive;
-        node::emit_event(this->is_active_emitter_, timestamp);
-
-        // auto offset
-        if (this->auto_offset_.sfbool::value) {
-            this->offset_.sfvec3f::value = this->translation_changed_.value;
-            node::emit_event(this->offset_, timestamp);
-        }
-    }
-
-    // Tracking
-    else if (isActive) {
-        vec3f V(static_cast<float>(p[0]),
-                static_cast<float>(p[1]),
-                static_cast<float>(p[2]));
-        V *= this->activationMatrix;
-        this->track_point_changed_.value = V;
-        node::emit_event(this->track_point_changed_emitter_, timestamp);
-
-        vec3f t(V[0] - this->activationPoint.value.x()
-                + this->offset_.sfvec3f::value.x(),
-                V[1] - this->activationPoint.value.y()
-                + this->offset_.sfvec3f::value.y(),
-                0.0);
-
-        const vec2f & min_pos = this->min_position_.sfvec2f::value;
-        const vec2f & max_pos = this->max_position_.sfvec2f::value;
-
-        if (min_pos.x() == max_pos.x()) {
-            t.x(min_pos.x());
-        } else if (min_pos.x() < max_pos.x()) {
-            if (t.x() < min_pos.x()) {
-                t.x(min_pos.x());
-            } else if (t.x() > max_pos.x()) {
-                t.x(max_pos.x());
-            }
-        }
-
-        if (min_pos.y() == max_pos.y()) {
-            t.y(min_pos.y());
-        } else if (min_pos.y() < max_pos.y()) {
-            if (t.y() < min_pos.y()) {
-                t.y(min_pos.y());
-            } else if (t.y() > max_pos.y()) {
-                t.y(max_pos.y());
-            }
-        }
-
-        this->translation_changed_.value = t;
-        node::emit_event(this->translation_changed_emitter_, timestamp);
-    }
-}
-
-/**
- * @brief Return whether the PlaneSensor is enabled.
  *
- * @return @c true if the PlaneSensor is enabled, @c false otherwise.
+ * @param timestamp the current time.
+ * @param over      whether the pointer is over affected geometry.
+ * @param active    whether the pointer is active; e.g., the mouse button is
+ *                  depressed.
+ * @param p         the point on the affected geometry "under" the pointer.
  */
-bool openvrml::vrml97_node::plane_sensor_node::enabled() const
+void
+openvrml::vrml97_node::plane_sensor_node::do_activate(const double timestamp,
+                                                      bool,
+                                                      const bool active,
+                                                      const double (&p)[3])
 {
-    return this->enabled_.sfbool::value;
+    if (this->enabled_.sfbool::value) {
+        if (active && !this->is_active_.value) {
+            // Become active
+            this->is_active_.value = active;
+
+            vec3f V(static_cast<float>(p[0]),
+                    static_cast<float>(p[1]),
+                    static_cast<float>(p[2]));
+            this->activationMatrix = this->modelview.inverse();
+            V *= this->activationMatrix;
+            this->activationPoint.value = V;
+            node::emit_event(this->is_active_emitter_, timestamp);
+        } else if (!active && this->is_active_.value) {
+            // Become inactive
+            this->is_active_.value = active;
+            node::emit_event(this->is_active_emitter_, timestamp);
+
+            // auto offset
+            if (this->auto_offset_.sfbool::value) {
+                this->offset_.sfvec3f::value =
+                    this->translation_changed_.value;
+                node::emit_event(this->offset_, timestamp);
+            }
+        } else if (active) {
+            // Tracking
+            vec3f V(static_cast<float>(p[0]),
+                    static_cast<float>(p[1]),
+                    static_cast<float>(p[2]));
+            V *= this->activationMatrix;
+            this->track_point_changed_.value = V;
+            node::emit_event(this->track_point_changed_emitter_, timestamp);
+
+            vec3f t(V[0] - this->activationPoint.value.x()
+                    + this->offset_.sfvec3f::value.x(),
+                    V[1] - this->activationPoint.value.y()
+                    + this->offset_.sfvec3f::value.y(),
+                    0.0);
+
+            const vec2f & min_pos = this->min_position_.sfvec2f::value;
+            const vec2f & max_pos = this->max_position_.sfvec2f::value;
+
+            if (min_pos.x() == max_pos.x()) {
+                t.x(min_pos.x());
+            } else if (min_pos.x() < max_pos.x()) {
+                if (t.x() < min_pos.x()) {
+                    t.x(min_pos.x());
+                } else if (t.x() > max_pos.x()) {
+                    t.x(max_pos.x());
+                }
+            }
+
+            if (min_pos.y() == max_pos.y()) {
+                t.y(min_pos.y());
+            } else if (min_pos.y() < max_pos.y()) {
+                if (t.y() < min_pos.y()) {
+                    t.y(min_pos.y());
+                } else if (t.y() > max_pos.y()) {
+                    t.y(max_pos.y());
+                }
+            }
+
+            this->translation_changed_.value = t;
+            node::emit_event(this->translation_changed_emitter_, timestamp);
+        }
+    }
 }
 
 
@@ -15677,8 +15590,9 @@ sphere_sensor_node(const node_type & type,
                    const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     bounded_volume_node(type, scope),
-    abstract_base<sphere_sensor_node>(type, scope),
     child_node(type, scope),
+    abstract_base<sphere_sensor_node>(type, scope),
+    pointing_device_sensor_node(type, scope),
     auto_offset_(*this, true),
     enabled_(*this, true),
     offset_(*this, openvrml::rotation(0.0, 1.0, 0.0, 0.0)),
@@ -15695,17 +15609,6 @@ sphere_sensor_node(const node_type & type,
  */
 openvrml::vrml97_node::sphere_sensor_node::~sphere_sensor_node() throw ()
 {}
-
-/**
- * @brief Cast to a sphere_sensor_node.
- *
- * @return a pointer to the node.
- */
-openvrml::vrml97_node::sphere_sensor_node *
-openvrml::vrml97_node::sphere_sensor_node::to_sphere_sensor() const
-{
-    return const_cast<sphere_sensor_node *>(this);
-}
 
 /**
  * @brief Render the node.
@@ -15732,97 +15635,94 @@ do_render_child(openvrml::viewer &, const rendering_context context)
  * when the button is released at the end of the operation.
  *
  * @param timestamp the current time.
- * @param isActive  @c true if the drag operation is in progress; @c false
+ * @param over      @c true if the pointer is over affected geometry; @c false
+ *                  otherwise.
+ * @param active    @c true if the drag operation is in progress; @c false
  *                  otherwise.
  * @param p         the pointing device position.
  */
-void openvrml::vrml97_node::sphere_sensor_node::activate(double timestamp,
-                                                         bool isActive,
-                                                         double * p)
+void
+openvrml::vrml97_node::sphere_sensor_node::do_activate(double timestamp,
+                                                       bool,
+                                                       bool active,
+                                                       const double (&p)[3])
 {
-    // Become active
-    if (isActive && !this->is_active_.value) {
-        this->is_active_.value = isActive;
+    if (this->enabled_.sfbool::value) {
+        // Become active
+        if (active && !this->is_active_.value) {
+            this->is_active_.value = active;
 
-        // set activation point in world coords
-        const vec3f floatVec(static_cast<float>(p[0]),
-                             static_cast<float>(p[1]),
-                             static_cast<float>(p[2]));
-        this->activationPoint.value = floatVec;
+            // set activation point in world coords
+            const vec3f floatVec(static_cast<float>(p[0]),
+                                 static_cast<float>(p[1]),
+                                 static_cast<float>(p[2]));
+            this->activationPoint.value = floatVec;
 
-        if (this->auto_offset_.sfbool::value) {
-            this->rotation_changed_ = this->offset_;
+            if (this->auto_offset_.sfbool::value) {
+                this->rotation_changed_ = this->offset_;
+            }
+
+            // calculate the center of the object in world coords
+            vec3f V;
+            mat4f M = this->modelview.inverse();
+            V = V * M;
+            this->centerPoint.value = V;
+
+            // send message
+            node::emit_event(this->is_active_emitter_, timestamp);
         }
+        // Become inactive
+        else if (!active && this->is_active_.value) {
+            this->is_active_.value = active;
+            node::emit_event(this->is_active_emitter_, timestamp);
 
-        // calculate the center of the object in world coords
-        vec3f V;
-        mat4f M = this->modelview.inverse();
-        V = V * M;
-        this->centerPoint.value = V;
+            // save auto offset of rotation
+            if (this->auto_offset_.sfbool::value) {
+                this->offset_.sfrotation::value =
+                    this->rotation_changed_.value;
+                node::emit_event(this->offset_, timestamp);
+            }
+        }
+        // Tracking
+        else if (active) {
+            // get local coord for touch point
+            vec3f V(static_cast<float>(p[0]),
+                    static_cast<float>(p[1]),
+                    static_cast<float>(p[2]));
+            mat4f M = this->modelview.inverse();
+            V = V * M;
+            this->track_point_changed_.value = V;
+            node::emit_event(this->track_point_changed_emitter_, timestamp);
 
-        // send message
-        node::emit_event(this->is_active_emitter_, timestamp);
-    }
-    // Become inactive
-    else if (!isActive && this->is_active_.value) {
-        this->is_active_.value = isActive;
-        node::emit_event(this->is_active_emitter_, timestamp);
+            vec3f V2(static_cast<float>(p[0]),
+                     static_cast<float>(p[1]),
+                     static_cast<float>(p[2]));
+            vec3f tempv = V2 - this->centerPoint.value;
+            vec3f dir1(tempv);
 
-        // save auto offset of rotation
-        if (this->auto_offset_.sfbool::value) {
-            this->offset_.sfrotation::value = this->rotation_changed_.value;
-            node::emit_event(this->offset_, timestamp);
+            //
+            // Get the length of the pre-normalized vector.
+            //
+            const float dist = dir1.length();
+
+            dir1 = dir1.normalize();
+            tempv = this->activationPoint.value - this->centerPoint.value;
+            vec3f dir2(tempv);
+            dir2 = dir2.normalize();
+
+            tempv = dir1 * dir2;
+            vec3f cx(tempv);
+            cx = cx.normalize();
+
+            openvrml::rotation newRot(cx, dist * float(acos(dir1.dot(dir2))));
+            if (this->auto_offset_.sfbool::value) {
+                newRot = newRot * this->offset_.sfrotation::value;
+            }
+            this->rotation_changed_.value = newRot;
+
+            node::emit_event(this->rotation_changed_emitter_, timestamp);
         }
     }
-    // Tracking
-    else if (isActive) {
-        // get local coord for touch point
-        vec3f V(static_cast<float>(p[0]),
-                static_cast<float>(p[1]),
-                static_cast<float>(p[2]));
-        mat4f M = this->modelview.inverse();
-        V = V * M;
-        this->track_point_changed_.value = V;
-        node::emit_event(this->track_point_changed_emitter_, timestamp);
-
-        vec3f V2(static_cast<float>(p[0]),
-                 static_cast<float>(p[1]),
-                 static_cast<float>(p[2]));
-        vec3f tempv = V2 - this->centerPoint.value;
-        vec3f dir1(tempv);
-
-        //
-        // Get the length of the pre-normalized vector.
-        //
-        const float dist = dir1.length();
-
-        dir1 = dir1.normalize();
-        tempv = this->activationPoint.value - this->centerPoint.value;
-        vec3f dir2(tempv);
-        dir2 = dir2.normalize();
-
-        tempv = dir1 * dir2;
-        vec3f cx(tempv);
-        cx = cx.normalize();
-
-        openvrml::rotation newRot(cx, dist * float(acos(dir1.dot(dir2))));
-        if (this->auto_offset_.sfbool::value) {
-            newRot = newRot * this->offset_.sfrotation::value;
-        }
-        this->rotation_changed_.value = newRot;
-
-        node::emit_event(this->rotation_changed_emitter_, timestamp);
-    }
-}
-
-/**
- * @brief Determine whether the SphereSensor is enabled.
- *
- * @return @c true if the SphereSensor is enabled; @c false otherwise.
- */
-bool openvrml::vrml97_node::sphere_sensor_node::isEnabled() const throw ()
-{
-    return this->enabled_.sfbool::value;
 }
 
 
@@ -16528,35 +16428,9 @@ openvrml::vrml97_node::switch_node::do_bounding_volume() const
  * @return the child nodes in the scene graph.
  */
 const std::vector<openvrml::node_ptr> &
-openvrml::vrml97_node::switch_node::children() const throw ()
+openvrml::vrml97_node::switch_node::do_children() const throw ()
 {
     return this->children_.value;
-}
-
-/**
- * Pass on to enabled touchsensor child.
- */
-void openvrml::vrml97_node::switch_node::activate(double time,
-                                                  bool isOver,
-                                                  bool isActive,
-                                                  double *p)
-{
-    const std::vector<node_ptr> & children = this->children();
-    const node_ptr & node = children[0];
-    if (node) {
-        if (node->to_touch_sensor() && node->to_touch_sensor()->enabled()) {
-            node->to_touch_sensor()->activate(time, isOver, isActive, p);
-        } else if (node->to_plane_sensor()
-                && node->to_plane_sensor()->enabled()) {
-            node->to_plane_sensor()->activate(time, isActive, p);
-        } else if (node->to_cylinder_sensor()
-                && node->to_cylinder_sensor()->enabled()) {
-            node->to_cylinder_sensor()->activate(time, isActive, p);
-        } else if (node->to_sphere_sensor()
-                && node->to_sphere_sensor()->isEnabled()) {
-            node->to_sphere_sensor()->activate(time, isActive, p);
-        }
-    }
 }
 
 /**
@@ -19679,8 +19553,9 @@ touch_sensor_node(const node_type & type,
                   const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     bounded_volume_node(type, scope),
-    abstract_base<touch_sensor_node>(type, scope),
     child_node(type, scope),
+    abstract_base<touch_sensor_node>(type, scope),
+    pointing_device_sensor_node(type, scope),
     enabled_(*this, true),
     hit_normal_changed_emitter_(*this, this->hit_normal_changed_),
     hit_point_changed_emitter_(*this, this->hit_point_changed_),
@@ -19702,50 +19577,31 @@ openvrml::vrml97_node::touch_sensor_node::~touch_sensor_node() throw ()
 {}
 
 /**
- * @brief Cast to a touch_sensor_node.
- *
- * @return a pointer to the object.
- */
-openvrml::vrml97_node::touch_sensor_node *
-openvrml::vrml97_node::touch_sensor_node::to_touch_sensor() const
-{
-    return (touch_sensor_node*) this;
-}
-
-/**
  * @todo Doesn't compute the xxx_changed eventOuts yet...
  */
-void openvrml::vrml97_node::touch_sensor_node::activate(double timestamp,
-                                                        bool isOver,
-                                                        bool isActive,
-                                                        double *)
+void openvrml::vrml97_node::touch_sensor_node::do_activate(double timestamp,
+                                                           const bool over,
+                                                           const bool active,
+                                                           const double (&)[3])
 {
-    if (isOver && !isActive && this->is_active_.value) {
-        this->touch_time_.value = timestamp;
-        node::emit_event(this->touch_time_emitter_, timestamp);
-    }
+    if (this->enabled_.sfbool::value) {
+        if (over && !active && this->is_active_.value) {
+            this->touch_time_.value = timestamp;
+            node::emit_event(this->touch_time_emitter_, timestamp);
+        }
 
-    if (isOver != this->is_over_.value) {
-        this->is_over_.value = isOver;
-        node::emit_event(this->is_over_emitter_, timestamp);
-    }
+        if (over != this->is_over_.value) {
+            this->is_over_.value = over;
+            node::emit_event(this->is_over_emitter_, timestamp);
+        }
 
-    if (isActive != this->is_active_.value) {
-        this->is_active_.value = isActive;
-        node::emit_event(this->is_active_emitter_, timestamp);
+        if (active != this->is_active_.value) {
+            this->is_active_.value = active;
+            node::emit_event(this->is_active_emitter_, timestamp);
+        }
+        // if (over && any routes from eventOuts)
+        //   generate xxx_changed eventOuts...
     }
-    // if (isOver && any routes from eventOuts)
-    //   generate xxx_changed eventOuts...
-}
-
-/**
- * @brief Return whether the TouchSensor is enabled.
- *
- * @return @c true if the TouchSensor is enabled, @c false otherwise.
- */
-bool openvrml::vrml97_node::touch_sensor_node::enabled() const
-{
-    return this->enabled_.sfbool::value;
 }
 
 

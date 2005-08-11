@@ -1775,6 +1775,21 @@ openvrml::normal_node * openvrml::node::to_normal() throw ()
 /**
  * @internal
  *
+ * @brief Cast to a <code>pointing_device_sensor_node</code>.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+openvrml::pointing_device_sensor_node *
+openvrml::node::to_pointing_device_sensor() throw ()
+{
+    return 0;
+}
+
+/**
+ * @internal
+ *
  * @brief Cast to a <code>scoped_light_node</code>.
  *
  * @return 0.
@@ -1871,16 +1886,6 @@ openvrml::viewpoint_node * openvrml::node::to_viewpoint() throw ()
 }
 
 /**
- * @brief Cast to an anchor_node.
- *
- * @return 0.
- */
-openvrml::vrml97_node::anchor_node * openvrml::node::to_anchor() const
-{
-    return 0;
-}
-
-/**
  * @brief Cast to an audio_clip_node.
  *
  * @return 0.
@@ -1902,56 +1907,12 @@ openvrml::node::to_movie_texture() const
 }
 
 /**
- * @brief Cast to a plane_sensor_node.
- *
- * @return 0.
- */
-openvrml::vrml97_node::plane_sensor_node *
-openvrml::node::to_plane_sensor() const
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a sphere_sensor_node.
- *
- * @return 0.
- */
-openvrml::vrml97_node::sphere_sensor_node *
-openvrml::node::to_sphere_sensor() const
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a cylinder_sensor_node.
- *
- * @return 0.
- */
-openvrml::vrml97_node::cylinder_sensor_node *
-openvrml::node::to_cylinder_sensor() const
-{
-    return 0;
-}
-
-/**
  * @brief Cast to a time_sensor_node.
  *
  * @return 0.
  */
 openvrml::vrml97_node::time_sensor_node *
 openvrml::node::to_time_sensor() const
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a touch_sensor_node.
- *
- * @return 0.
- */
-openvrml::vrml97_node::touch_sensor_node *
-openvrml::node::to_touch_sensor() const
 {
     return 0;
 }
@@ -3269,7 +3230,20 @@ openvrml::grouping_node * openvrml::grouping_node::to_grouping() throw ()
 }
 
 /**
- * @fn const std::vector<openvrml::node_ptr> & openvrml::grouping_node::children() const throw ()
+ * @brief Get the children in the scene graph.
+ *
+ * This function delegates to <code>node::do_children</code>.
+ *
+ * @return the children in the scene graph.
+ */
+const std::vector<openvrml::node_ptr> &
+openvrml::grouping_node::children() const throw ()
+{
+    return this->do_children();
+}
+
+/**
+ * @fn const std::vector<openvrml::node_ptr> & openvrml::grouping_node::do_children() const throw ()
  *
  * @brief Get the children in the scene graph.
  *
@@ -3277,16 +3251,40 @@ openvrml::grouping_node * openvrml::grouping_node::to_grouping() throw ()
  */
 
 /**
- * @fn void openvrml::grouping_node::activate(double timestamp, bool over, bool active, double * p)
- *
  * @brief Called in response to user interaction to activate any child pointing
  *        device sensor nodes.
+ *
+ * Delegates to <code>grouping_node::do_activate</code>.
  *
  * @param timestamp the current time.
  * @param over      whether the pointer is over sensitive geometry.
  * @param active    whether the pointer has activated sensitive geometry.
  * @param p         the activation point.
  */
+void
+openvrml::grouping_node::
+activate_pointing_device_sensors(const double timestamp,
+                                 const bool over,
+                                 const bool active,
+                                 const double (&p)[3])
+{
+    using std::vector;
+    const vector<node_ptr> & children(this->children());
+    for (vector<node_ptr>::const_iterator child = children.begin();
+         child != children.end();
+         ++child) {
+        if (pointing_device_sensor_node * pointing_device_sensor =
+            node_cast<pointing_device_sensor_node *>(child->get())) {
+            pointing_device_sensor->activate(timestamp, over, active, p);
+        } else if (grouping_node * grouping =
+                   node_cast<grouping_node *>(child->get())) {
+            grouping->activate_pointing_device_sensors(timestamp,
+                                                       over,
+                                                       active,
+                                                       p);
+        }
+    }
+}
 
 
 /**
@@ -3543,9 +3541,83 @@ openvrml::normal_node * openvrml::normal_node::to_normal() throw ()
 
 
 /**
+ * @class openvrml::pointing_device_sensor_node
+ *
+ * @brief A node that can be affected by a pointing device.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param type  the <code>node_type</code>.
+ * @param scope the <code>scope</code> to which the node belongs.
+ */
+openvrml::pointing_device_sensor_node::
+pointing_device_sensor_node(const node_type & type,
+                            const boost::shared_ptr<openvrml::scope> & scope):
+    node(type, scope),
+    bounded_volume_node(type, scope),
+    child_node(type, scope)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::pointing_device_sensor_node::~pointing_device_sensor_node() throw ()
+{}
+
+/**
+ * @brief Convey a pointing device state change.
+ *
+ * This function delegates to
+ * <code>pointing_device_sensor_node::do_activate</code>.
+ *
+ * @param timestamp the current time.
+ * @param over      whether the pointing device is over the geometry affected
+ *                  by the pointing device sensor.
+ * @param active    whether the pointing device is "active"; e.g., whether
+ *                  a mouse button is currently depressed.
+ * @param point     the position of the pointer on the affected geometry.
+ */
+void openvrml::pointing_device_sensor_node::activate(double timestamp,
+                                                     bool over,
+                                                     bool active,
+                                                     const double (&point)[3])
+{
+    this->do_activate(timestamp, over, active, point);
+}
+
+/**
+ * @fn void openvrml::pointing_device_sensor_node::do_activate(double timestamp, bool over, bool active, const double (&point)[3])
+ *
+ * @brief Called to convey a pointing device state change.
+ *
+ * @param timestamp the current time.
+ * @param over      whether the pointing device is over the geometry affected
+ *                  by the pointing device sensor.
+ * @param active    whether the pointing device is "active"; e.g., whether
+ *                  a mouse button is currently depressed.
+ * @param point     the position of the pointer on the affected geometry.
+ */
+
+/**
+ * @internal
+ *
+ * @brief Cast to a <code>pointing_device_sensor_node</code>
+ *
+ * @return a pointer to the object.
+ */
+openvrml::pointing_device_sensor_node *
+openvrml::pointing_device_sensor_node::to_pointing_device_sensor() throw ()
+{
+    return this;
+}
+
+
+/**
  * @class openvrml::scoped_light_node
  *
- * A light that falls within a specified area.
+ * @brief A light that falls within a specified area.
  */
 
 /**

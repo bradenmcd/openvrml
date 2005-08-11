@@ -253,7 +253,8 @@ namespace openvrml {
         bool remove_listener(browser_listener & listener) throw ();
 
         void sensitive_event(node * object, double timestamp,
-                             bool is_over, bool is_active, double * point);
+                             bool is_over, bool is_active,
+                             const double (&point)[3]);
 
         double frame_rate() const;
 

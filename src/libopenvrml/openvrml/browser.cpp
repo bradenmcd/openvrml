@@ -6199,27 +6199,25 @@ void openvrml::browser::sensitive_event(node * const n,
                                         const double timestamp,
                                         const bool is_over,
                                         const bool is_active,
-                                        double * const point)
+                                        const double (&point)[3])
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (n) {
-        vrml97_node::anchor_node * a = n->to_anchor();
-        if (a) {
-            //
-            // This should really be (isOver && !isActive && n->wasActive)
-            // (ie, button up over the anchor after button down over the
-            // anchor)
-            //
-            if (is_active && is_over) { a->activate_anchor(); }
-        } else {
+        if (pointing_device_sensor_node * pointing_device_sensor =
+            node_cast<pointing_device_sensor_node *>(n)) {
+            pointing_device_sensor->activate(timestamp,
+                                             is_over,
+                                             is_active,
+                                             point);
+        } else if (grouping_node * g = node_cast<grouping_node *>(n)) {
             //
             // The parent grouping node is registered for Touch/Drag Sensors.
             //
-            grouping_node * const g = node_cast<grouping_node *>(n);
-            if (g) {
-                g->activate(timestamp, is_over, is_active, point);
-                this->modified(true);
-            }
+            g->activate_pointing_device_sensors(timestamp,
+                                                is_over,
+                                                is_active,
+                                                point);
+            this->modified(true);
         }
     }
 }

@@ -267,6 +267,7 @@ namespace openvrml {
     class material_node;
     class navigation_info_node;
     class normal_node;
+    class pointing_device_sensor_node;
     class scoped_light_node;
     class sound_source_node;
     class texture_node;
@@ -276,14 +277,9 @@ namespace openvrml {
     class viewpoint_node;
 
     namespace vrml97_node {
-        class anchor_node;
         class audio_clip_node;
-        class cylinder_sensor_node;
         class movie_texture_node;
-        class plane_sensor_node;
-        class sphere_sensor_node;
         class time_sensor_node;
-        class touch_sensor_node;
     }
 
     class scene;
@@ -319,6 +315,8 @@ namespace openvrml {
         friend navigation_info_node *
         node_cast<navigation_info_node *>(node * n) throw ();
         friend normal_node * node_cast<normal_node *>(node * n) throw ();
+        friend pointing_device_sensor_node *
+        node_cast<pointing_device_sensor_node *>(node * n) throw ();
         friend scoped_light_node * node_cast<scoped_light_node *>(node * n)
             throw ();
         friend sound_source_node * node_cast<sound_source_node *>(node * n)
@@ -403,14 +401,9 @@ namespace openvrml {
             throw (unsupported_interface);
         void shutdown(double timestamp) throw ();
 
-        virtual vrml97_node::anchor_node * to_anchor() const;
         virtual vrml97_node::audio_clip_node * to_audio_clip() const;
-        virtual vrml97_node::cylinder_sensor_node * to_cylinder_sensor() const;
         virtual vrml97_node::movie_texture_node * to_movie_texture() const;
-        virtual vrml97_node::plane_sensor_node * to_plane_sensor() const;
-        virtual vrml97_node::sphere_sensor_node * to_sphere_sensor() const;
         virtual vrml97_node::time_sensor_node * to_time_sensor() const;
-        virtual vrml97_node::touch_sensor_node * to_touch_sensor() const;
 
         virtual bool modified() const;
         void modified(bool value);
@@ -451,6 +444,8 @@ namespace openvrml {
         virtual material_node * to_material() throw ();
         virtual navigation_info_node * to_navigation_info() throw ();
         virtual normal_node * to_normal() throw ();
+        virtual pointing_device_sensor_node * to_pointing_device_sensor()
+            throw ();
         virtual scoped_light_node * to_scoped_light() throw ();
         virtual sound_source_node * to_sound_source() throw ();
         virtual texture_node * to_texture() throw ();
@@ -575,6 +570,15 @@ namespace openvrml {
     }
 
     template <>
+    inline navigation_info_node * node_cast<navigation_info_node *>(node * n)
+        throw ()
+    {
+        return n
+            ? n->to_navigation_info()
+            : 0;
+    }
+
+    template <>
     inline normal_node * node_cast<normal_node *>(node * n) throw ()
     {
         return n
@@ -583,11 +587,11 @@ namespace openvrml {
     }
 
     template <>
-    inline navigation_info_node * node_cast<navigation_info_node *>(node * n)
-        throw ()
+    inline pointing_device_sensor_node *
+    node_cast<pointing_device_sensor_node *>(node * n) throw ()
     {
         return n
-            ? n->to_navigation_info()
+            ? n->to_pointing_device_sensor()
             : 0;
     }
 
@@ -807,9 +811,11 @@ namespace openvrml {
     public:
         virtual ~grouping_node() throw () = 0;
 
-        virtual const std::vector<node_ptr> & children() const throw () = 0;
-        virtual void activate(double timestamp, bool over, bool active,
-                              double *p) = 0;
+        const std::vector<node_ptr> & children() const throw ();
+        void activate_pointing_device_sensors(double timestamp,
+                                              bool over,
+                                              bool active,
+                                              const double (&p)[3]);
 
     protected:
         grouping_node(const node_type & type,
@@ -818,6 +824,7 @@ namespace openvrml {
 
     private:
         virtual grouping_node * to_grouping() throw ();
+        virtual const std::vector<node_ptr> & do_children() const throw () = 0;
     };
 
 
@@ -888,6 +895,26 @@ namespace openvrml {
 
     private:
         virtual normal_node * to_normal() throw ();
+    };
+
+
+    class pointing_device_sensor_node : public virtual child_node {
+    public:
+        virtual ~pointing_device_sensor_node() throw () = 0;
+
+        void activate(double timestamp, bool over, bool active,
+                      const double (&point)[3]);
+
+    protected:
+        pointing_device_sensor_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
+
+    private:
+        virtual void do_activate(double timestamp, bool over, bool active,
+                                 const double (&point)[3]) = 0;
+        virtual pointing_device_sensor_node * to_pointing_device_sensor()
+            throw ();
     };
 
 
