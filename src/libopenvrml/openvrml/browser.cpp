@@ -388,6 +388,7 @@ namespace {
         virtual texture_node * to_texture() throw ();
         virtual texture_coordinate_node * to_texture_coordinate() throw ();
         virtual texture_transform_node * to_texture_transform() throw ();
+        virtual time_dependent_node * to_time_dependent() throw ();
         virtual transform_node * to_transform() throw ();
         virtual viewpoint_node * to_viewpoint() throw ();
     };
@@ -2441,6 +2442,19 @@ namespace {
         assert(!this->impl_nodes.empty());
         assert(this->impl_nodes[0]);
         return node_cast<texture_transform_node *>(this->impl_nodes[0].get());
+    }
+
+    /**
+     * @brief Cast to a <code>time_dependent_node</code>.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a <code>time_dependent_node</code>, or 0 otherwise.
+     */
+    time_dependent_node * proto_node::to_time_dependent() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<time_dependent_node *>(this->impl_nodes[0].get());
     }
 
     /**
@@ -5563,25 +5577,9 @@ openvrml::browser::create_root_scope(const std::string & uri)
 /**
  * @internal
  *
- * @var std::list<openvrml::node *> openvrml::browser::timers
+ * @var std::list<openvrml::time_dependent_node *> openvrml::browser::timers
  *
  * @brief A list of all the TimeSensor nodes in the browser.
- */
-
-/**
- * @internal
- *
- * @var std::list<openvrml::node *> openvrml::browser::audio_clips
- *
- * @brief A list of all the AudioClip nodes in the browser.
- */
-
-/**
- * @internal
- *
- * @var std::list<openvrml::node *> openvrml::browser::movies
- *
- * @brief A list of all the MovieTexture nodes in the browser.
  */
 
 /**
@@ -5720,8 +5718,6 @@ openvrml::browser::~browser() throw ()
     assert(this->scoped_lights.empty());
     assert(this->scripts.empty());
     assert(this->timers.empty());
-    assert(this->audio_clips.empty());
-    assert(this->movies.empty());
 }
 
 /**
@@ -6154,8 +6150,6 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
     assert(this->scoped_lights.empty());
     assert(this->scripts.empty());
     assert(this->timers.empty());
-    assert(this->audio_clips.empty());
-    assert(this->movies.empty());
 
     //
     // Create the new scene.
@@ -6328,38 +6322,27 @@ namespace {
  */
 bool openvrml::browser::update(double current_time)
 {
+    using std::for_each;
+
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
 
     if (current_time <= 0.0) { current_time = browser::current_time(); }
 
     this->delta_time = DEFAULT_DELTA;
 
+    //
     // Update each of the timers.
-    std::list<node *>::iterator i, end = this->timers.end();
-    for (i = this->timers.begin(); i != end; ++i) {
-        vrml97_node::time_sensor_node * t = (*i)->to_time_sensor();
-        if (t) { t->update(current_time); }
-    }
-
-    // Update each of the clips.
-    end = this->audio_clips.end();
-    for (i = this->audio_clips.begin(); i != end; ++i) {
-        vrml97_node::audio_clip_node * c = (*i)->to_audio_clip();
-        if (c) { c->update(current_time); }
-    }
-
-    // Update each of the movies.
-    end = this->movies.end();
-    for (i = this->movies.begin(); i != end; ++i) {
-        vrml97_node::movie_texture_node * m = (*i)->to_movie_texture();
-        if (m) { m->update(current_time); }
-    }
+    //
+    for_each(this->timers.begin(), this->timers.end(),
+             boost::bind2nd(boost::mem_fun(&time_dependent_node::update),
+                            current_time));
 
     //
     // Update each of the scripts.
     //
-    std::for_each(this->scripts.begin(), this->scripts.end(),
-                  UpdatePolledNode_<script_node *>(current_time));
+    for_each(this->scripts.begin(), this->scripts.end(),
+             boost::bind2nd(boost::mem_fun(&script_node::update),
+                            current_time));
 
     // Signal a redisplay if necessary
     return this->modified();
@@ -6539,39 +6522,6 @@ remove_scoped_light(scoped_light_node & light)
 }
 
 /**
- * @brief Add a MovieTexture node to the browser.
- *
- * @param movie a MovieTexture node.
- *
- * @pre @p movie is not in the list of MovieTexture nodes for the browser.
- */
-void openvrml::browser::add_movie(vrml97_node::movie_texture_node & movie)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(std::find(this->movies.begin(), this->movies.end(), &movie)
-            == this->movies.end());
-    this->movies.push_back(&movie);
-}
-
-/**
- * @brief Remove a movie_texture node from the browser.
- *
- * @param movie the movie_texture node to remove.
- *
- * @pre @p movie is in the list of movie_texture nodes for the browser.
- */
-void openvrml::browser::remove_movie(vrml97_node::movie_texture_node & movie)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(!this->movies.empty());
-    const std::list<node *>::iterator end = this->movies.end();
-    const std::list<node *>::iterator pos =
-            std::find(this->movies.begin(), end, &movie);
-    assert(pos != end);
-    this->movies.erase(pos);
-}
-
-/**
  * @brief Add a Script node to the browser.
  *
  * @param script    a Script node.
@@ -6606,74 +6556,40 @@ void openvrml::browser::remove_script(script_node & script)
 }
 
 /**
- * @brief Add a TimeSensor node to the browser.
+ * @brief Add a time-dependent node to the browser.
  *
- * @param timer a TimeSensor node.
+ * @param n a <code>time_dependent_node</code>.
  *
- * @pre @p timer is not in the list of TimeSensor nodes for the browser.
+ * @pre @p n is not in the list of <code>time_dependent_node</code>s for the
+ *      browser.
  */
-void openvrml::browser::add_time_sensor(vrml97_node::time_sensor_node & timer)
+void openvrml::browser::add_time_dependent(time_dependent_node & n)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(std::find(this->timers.begin(), this->timers.end(), &timer)
+    assert(std::find(this->timers.begin(), this->timers.end(), &n)
            == this->timers.end());
-    this->timers.push_back(&timer);
+    this->timers.push_back(&n);
 }
 
 /**
- * @brief Remove a time_sensor node from the browser.
+ * @brief Remove a time-dependent node from the browser.
  *
- * @param timer the time_sensor node to remove.
+ * @param n the <code>time_dependent_node</code> to remove.
  *
- * @pre @p timer is in the list of time_sensor nodes for the browser.
+ * @pre @p n is in the list of <code>time_dependent_node</code>s for the
+ *      browser.
  */
 void
-openvrml::browser::remove_time_sensor(vrml97_node::time_sensor_node & timer)
+openvrml::browser::remove_time_dependent(time_dependent_node & n)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     assert(!this->timers.empty());
-    const std::list<node *>::iterator end = this->timers.end();
-    const std::list<node *>::iterator pos =
-            std::find(this->timers.begin(), end, &timer);
+    const std::list<time_dependent_node *>::iterator end = this->timers.end();
+    const std::list<time_dependent_node *>::iterator pos =
+            std::find(this->timers.begin(), end, &n);
     assert(pos != end);
     this->timers.erase(pos);
 }
-
-
-/**
- * @brief Add an AudioClip node to the browser.
- *
- * @param audio_clip    an audio_clip node.
- *
- * @pre @p audio_clip is not in the list of audio_clip nodes for the browser.
- */
-void
-openvrml::browser::add_audio_clip(vrml97_node::audio_clip_node & audio_clip)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(std::find(this->audio_clips.begin(), this->audio_clips.end(),
-                     &audio_clip) == this->audio_clips.end());
-    this->audio_clips.push_back(&audio_clip);
-}
-
-/**
- * @brief Remove an audio_clip node from the browser.
- *
- * @param audio_clip    the audio_clip node to remove.
- *
- * @pre @p audio_clip is in the list of audio_clip nodes for the browser.
- */
-void browser::remove_audio_clip(vrml97_node::audio_clip_node & audio_clip)
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(!this->audio_clips.empty());
-    const std::list<node *>::iterator end = this->audio_clips.end();
-    const std::list<node *>::iterator pos =
-            std::find(this->audio_clips.begin(), end, &audio_clip);
-    assert(pos != end);
-    this->audio_clips.erase(pos);
-}
-
 
 /**
  * @brief Propagate the bvolume dirty flag from children to ancestors.

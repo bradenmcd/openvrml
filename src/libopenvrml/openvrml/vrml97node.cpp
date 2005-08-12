@@ -2749,6 +2749,7 @@ audio_clip_node(const node_type & type,
                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_base<audio_clip_node>(type, scope),
+    time_dependent_node(type, scope),
     description_(*this),
     loop_(*this),
     pitch_(*this, 1.0),
@@ -2766,24 +2767,13 @@ openvrml::vrml97_node::audio_clip_node::~audio_clip_node() throw ()
 {}
 
 /**
- * @brief Cast to an audio_clip_node node.
- *
- * @return a pointer to this node.
- */
-openvrml::vrml97_node::audio_clip_node *
-openvrml::vrml97_node::audio_clip_node::to_audio_clip() const
-{
-    return (audio_clip_node*)this;
-}
-
-/**
  * @brief Called to update the AudioClip for the current time.
  *
  * @param time  the current time.
  *
  * @todo Implement me!
  */
-void openvrml::vrml97_node::audio_clip_node::update(double)
+void openvrml::vrml97_node::audio_clip_node::do_update(double)
 {}
 
 /**
@@ -2798,7 +2788,7 @@ openvrml::vrml97_node::audio_clip_node::do_initialize(double)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser().add_audio_clip(*this);
+    this->scene()->browser().add_time_dependent(*this);
 }
 
 /**
@@ -2810,7 +2800,7 @@ void
 openvrml::vrml97_node::audio_clip_node::do_shutdown(double) throw ()
 {
     assert(this->scene());
-    this->scene()->browser().remove_audio_clip(*this);
+    this->scene()->browser().remove_time_dependent(*this);
 }
 
 
@@ -10938,6 +10928,7 @@ movie_texture_node(const node_type & type,
                    const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     abstract_texture_node<movie_texture_node>(type, scope),
+    time_dependent_node(type, scope),
     loop_(*this, false),
     set_speed_(*this),
     speed_(1.0),
@@ -10956,20 +10947,11 @@ openvrml::vrml97_node::movie_texture_node::~movie_texture_node() throw ()
 {}
 
 /**
- * @brief Cast to a movie_texture_node.
- *
- * @return a pointer to the movie_texture_node.
- */
-openvrml::vrml97_node::movie_texture_node *
-openvrml::vrml97_node::movie_texture_node::to_movie_texture() const
-{ return (movie_texture_node*) this; }
-
-/**
  * @brief Update the node for the current timestamp.
  *
  * @param time  the current time.
  */
-void openvrml::vrml97_node::movie_texture_node::update(double /* time */)
+void openvrml::vrml97_node::movie_texture_node::do_update(double /* time */)
 {
 # if 0
     if (this->modified()) {
@@ -11128,7 +11110,7 @@ openvrml::vrml97_node::movie_texture_node::do_initialize(double)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser().add_movie(*this);
+    this->scene()->browser().add_time_dependent(*this);
 }
 
 /**
@@ -11141,7 +11123,7 @@ openvrml::vrml97_node::movie_texture_node::do_shutdown(double)
     throw ()
 {
     assert(this->scene());
-    this->scene()->browser().remove_movie(*this);
+    this->scene()->browser().remove_time_dependent(*this);
 }
 
 /**
@@ -19154,6 +19136,7 @@ time_sensor_node(const node_type & type,
     node(type, scope),
     bounded_volume_node(type, scope),
     abstract_base<time_sensor_node>(type, scope),
+    time_dependent_node(type, scope),
     child_node(type, scope),
     set_cycle_interval_listener_(*this),
     cycle_interval_(1.0),
@@ -19197,7 +19180,8 @@ openvrml::vrml97_node::time_sensor_node::to_time_sensor() const
  * Should ensure continuous events are delivered before discrete ones
  * (such as cycleTime, isActive).
  */
-void openvrml::vrml97_node::time_sensor_node::update(const double currentTime)
+void
+openvrml::vrml97_node::time_sensor_node::do_update(const double currentTime)
 {
     sftime timeNow(currentTime);
 
@@ -19302,7 +19286,7 @@ openvrml::vrml97_node::time_sensor_node::do_initialize(double)
     throw (std::bad_alloc)
 {
     assert(this->scene());
-    this->scene()->browser().add_time_sensor(*this);
+    this->scene()->browser().add_time_dependent(*this);
 }
 
 /**
@@ -19315,7 +19299,7 @@ openvrml::vrml97_node::time_sensor_node::do_shutdown(double)
     throw ()
 {
     assert(this->scene());
-    this->scene()->browser().remove_time_sensor(*this);
+    this->scene()->browser().remove_time_dependent(*this);
 }
 
 

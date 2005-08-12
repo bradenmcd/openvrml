@@ -1879,7 +1879,9 @@ namespace openvrml {
         };
 
         class OPENVRML_API audio_clip_node :
-            public abstract_base<audio_clip_node> {
+            public abstract_base<audio_clip_node>,
+            public time_dependent_node {
+
             friend class audio_clip_class;
 
             exposedfield<sfstring> description_;
@@ -1898,14 +1900,11 @@ namespace openvrml {
                             const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~audio_clip_node() throw ();
 
-            void update(double time);
-
-            virtual audio_clip_node * to_audio_clip() const;
-
         private:
             virtual void do_initialize(double timestamp)
                 throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
+            virtual void do_update(double time);
         };
 
 
@@ -3050,7 +3049,8 @@ namespace openvrml {
         };
 
         class OPENVRML_API movie_texture_node :
-            public abstract_texture_node<movie_texture_node> {
+            public abstract_texture_node<movie_texture_node>,
+            public time_dependent_node {
 
             friend class movie_texture_class;
 
@@ -3086,10 +3086,6 @@ namespace openvrml {
                 const boost::shared_ptr<openvrml::scope> & scope);
             virtual ~movie_texture_node() throw ();
 
-            virtual movie_texture_node * to_movie_texture() const;
-
-            void update(double time);
-
             virtual const openvrml::image & image() const throw ();
 
         private:
@@ -3097,6 +3093,7 @@ namespace openvrml {
                 throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
             virtual viewer::texture_object_t do_render_texture(viewer & v);
+            virtual void do_update(double time);
         };
 
 
@@ -4037,6 +4034,7 @@ namespace openvrml {
 
         class OPENVRML_API time_sensor_node :
             public abstract_base<time_sensor_node>,
+            public time_dependent_node,
             public child_node {
 
             friend class time_sensor_class;
@@ -4104,12 +4102,11 @@ namespace openvrml {
 
             virtual time_sensor_node * to_time_sensor() const;
 
-            void update(double time);
-
         private:
             virtual void do_initialize(double timestamp)
                 throw (std::bad_alloc);
             virtual void do_shutdown(double timestamp) throw ();
+            virtual void do_update(double time);
         };
 
 

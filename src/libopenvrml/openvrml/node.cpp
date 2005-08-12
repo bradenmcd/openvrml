@@ -1862,6 +1862,20 @@ openvrml::node::to_texture_transform() throw ()
 /**
  * @internal
  *
+ * @brief Cast to a time_dependent_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+openvrml::time_dependent_node * openvrml::node::to_time_dependent() throw ()
+{
+    return 0;
+}
+
+/**
+ * @internal
+ *
  * @brief Cast to a transform_node.
  *
  * Default implementation returns 0.
@@ -1883,38 +1897,6 @@ openvrml::transform_node * openvrml::node::to_transform() throw ()
  * @return 0
  */
 openvrml::viewpoint_node * openvrml::node::to_viewpoint() throw ()
-{
-    return 0;
-}
-
-/**
- * @brief Cast to an audio_clip_node.
- *
- * @return 0.
- */
-openvrml::vrml97_node::audio_clip_node * openvrml::node::to_audio_clip() const
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a movie_texture_node.
- *
- * @return 0.
- */
-openvrml::vrml97_node::movie_texture_node *
-openvrml::node::to_movie_texture() const
-{
-    return 0;
-}
-
-/**
- * @brief Cast to a time_sensor_node.
- *
- * @return 0.
- */
-openvrml::vrml97_node::time_sensor_node *
-openvrml::node::to_time_sensor() const
 {
     return 0;
 }
@@ -3942,6 +3924,63 @@ void openvrml::texture_transform_node::do_render_texture_transform(viewer &)
 openvrml::texture_transform_node *
 openvrml::texture_transform_node::to_texture_transform()
     throw ()
+{
+    return this;
+}
+
+/**
+ * @class openvrml::time_dependent_node
+ *
+ * @ingroup nodes
+ *
+ * @brief Abstract base class for time-dependent nodes.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param type  the <code>node_type</code> associated with the node.
+ * @param scope the <code>scope</code> the node belongs to.
+ */
+openvrml::time_dependent_node::
+time_dependent_node(const node_type & type,
+                    const boost::shared_ptr<openvrml::scope> & scope) throw ():
+    node(type, scope)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::time_dependent_node::~time_dependent_node() throw ()
+{}
+
+/**
+ * @brief Update with the current time.
+ *
+ * This function delegates to <code>time_dependent_node::do_update</code>.
+ *
+ * @param time  the current time.
+ */
+void openvrml::time_dependent_node::update(double time)
+{
+    this->do_update(time);
+}
+
+/**
+ * @fn void openvrml::time_dependent_node::do_update(double time)
+ *
+ * @brief Update with the current time.
+ *
+ * @param time  the current time.
+ */
+
+/**
+ * @brief Cast to a <code>time_dependent_node</code>.
+ *
+ * @return a pointer to the object.
+ */
+openvrml::time_dependent_node *
+openvrml::time_dependent_node::to_time_dependent() throw ()
 {
     return this;
 }

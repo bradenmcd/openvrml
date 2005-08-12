@@ -195,9 +195,7 @@ namespace openvrml {
         std::list<viewpoint_node *> viewpoint_list;
         std::list<scoped_light_node *> scoped_lights;
         std::list<script_node *> scripts;
-        std::list<node *> timers;
-        std::list<node *> audio_clips;
-        std::list<node *> movies;
+        std::list<time_dependent_node *> timers;
         std::set<browser_listener *> listeners_;
         bool new_view;
         double delta_time;
@@ -271,14 +269,8 @@ namespace openvrml {
         void add_scoped_light(scoped_light_node &);
         void remove_scoped_light(scoped_light_node &);
 
-        void add_time_sensor(vrml97_node::time_sensor_node &);
-        void remove_time_sensor(vrml97_node::time_sensor_node &);
-
-        void add_audio_clip(vrml97_node::audio_clip_node &);
-        void remove_audio_clip(vrml97_node::audio_clip_node &);
-
-        void add_movie(vrml97_node::movie_texture_node &);
-        void remove_movie(vrml97_node::movie_texture_node &);
+        void add_time_dependent(time_dependent_node & n);
+        void remove_time_dependent(time_dependent_node & n);
 
         void add_script(script_node &);
         void remove_script(script_node &);

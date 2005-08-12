@@ -1,5 +1,18 @@
 2005-08-12 Braden McDaniel  <braden@endoframe.com>
 
+	Added openvrml::time_dependent_node abstract node type.
+	AudioClip, MovieTexture, and TimeSensor node implementations
+	inherit this type.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
+2005-08-12 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp:  Added missing cast
 	functions to_bounded_volume, to_light, to_navigation_info,
 	to_pointing_device_sensor, and to_scoped_light to proto_node.

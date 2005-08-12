@@ -276,15 +276,9 @@ namespace openvrml {
     class texture_node;
     class texture_coordinate_node;
     class texture_transform_node;
+    class time_dependent_node;
     class transform_node;
     class viewpoint_node;
-
-    namespace vrml97_node {
-        class audio_clip_node;
-        class movie_texture_node;
-        class time_sensor_node;
-    }
-
     class scene;
 
     OPENVRML_API std::ostream & operator<<(std::ostream & out, const node & n);
@@ -329,6 +323,8 @@ namespace openvrml {
         node_cast<texture_coordinate_node *>(node * n) throw ();
         friend texture_transform_node *
         node_cast<texture_transform_node *>(node * n) throw ();
+        friend time_dependent_node * node_cast<time_dependent_node *>(node * n)
+            throw ();
         friend transform_node * node_cast<transform_node *>(node * n) throw ();
         friend viewpoint_node * node_cast<viewpoint_node *>(node * n) throw ();
 
@@ -404,10 +400,6 @@ namespace openvrml {
             throw (unsupported_interface);
         void shutdown(double timestamp) throw ();
 
-        virtual vrml97_node::audio_clip_node * to_audio_clip() const;
-        virtual vrml97_node::movie_texture_node * to_movie_texture() const;
-        virtual vrml97_node::time_sensor_node * to_time_sensor() const;
-
         virtual bool modified() const;
         void modified(bool value);
 
@@ -454,6 +446,7 @@ namespace openvrml {
         virtual texture_node * to_texture() throw ();
         virtual texture_coordinate_node * to_texture_coordinate() throw ();
         virtual texture_transform_node * to_texture_transform() throw ();
+        virtual time_dependent_node * to_time_dependent() throw ();
         virtual transform_node * to_transform() throw ();
         virtual viewpoint_node * to_viewpoint() throw ();
     };
@@ -649,6 +642,16 @@ namespace openvrml {
     {
         return n
             ? n->to_texture_transform()
+            : 0;
+    }
+
+    template <>
+    OPENVRML_API inline time_dependent_node *
+    node_cast<time_dependent_node *>(node * n)
+        throw ()
+    {
+        return n
+            ? n->to_time_dependent()
             : 0;
     }
 
@@ -1022,6 +1025,24 @@ namespace openvrml {
         virtual texture_transform_node * to_texture_transform() throw ();
 
         virtual void do_render_texture_transform(viewer & v);
+    };
+
+
+    class OPENVRML_API time_dependent_node : public virtual node {
+    public:
+        virtual ~time_dependent_node() throw () = 0;
+
+        void update(double time);
+
+    protected:
+        time_dependent_node(const node_type & type,
+                            const boost::shared_ptr<openvrml::scope> & scope)
+            throw ();
+
+    private:
+        virtual time_dependent_node * to_time_dependent() throw ();
+
+        virtual void do_update(double time) = 0;
     };
 
 
