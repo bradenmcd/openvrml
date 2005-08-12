@@ -370,14 +370,20 @@ namespace {
 
         virtual script_node * to_script() throw ();
         virtual appearance_node * to_appearance() throw ();
+        virtual bounded_volume_node * to_bounded_volume() throw ();
         virtual child_node * to_child() throw ();
         virtual color_node * to_color() throw ();
         virtual coordinate_node * to_coordinate() throw ();
         virtual font_style_node * to_font_style() throw () ;
         virtual geometry_node * to_geometry() throw ();
         virtual grouping_node * to_grouping() throw ();
+        virtual light_node * to_light() throw ();
         virtual material_node * to_material() throw ();
+        virtual navigation_info_node * to_navigation_info() throw ();
         virtual normal_node * to_normal() throw ();
+        virtual pointing_device_sensor_node * to_pointing_device_sensor()
+            throw ();
+        virtual scoped_light_node * to_scoped_light() throw ();
         virtual sound_source_node * to_sound_source() throw ();
         virtual texture_node * to_texture() throw ();
         virtual texture_coordinate_node * to_texture_coordinate() throw ();
@@ -2215,6 +2221,19 @@ namespace {
     }
 
     /**
+     * @brief Cast to a <code>bounded_volume_node</code>.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a <code>bounded_volume_node</code>, or 0 otherwise.
+     */
+    bounded_volume_node * proto_node::to_bounded_volume() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<bounded_volume_node *>(this->impl_nodes[0].get());
+    }
+
+    /**
      * @brief Cast to a child_node.
      *
      * @return a pointer to the first node in the implementation if that node
@@ -2280,16 +2299,29 @@ namespace {
     }
 
     /**
-     * @brief Cast to a grouping_node.
+     * @brief Cast to a <code>grouping_node</code>.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a geometry_node, or 0 otherwise.
+     *         is a <code>grouping_node</code>, or 0 otherwise.
      */
     grouping_node * proto_node::to_grouping() throw ()
     {
         assert(!this->impl_nodes.empty());
         assert(this->impl_nodes[0]);
         return node_cast<grouping_node *>(this->impl_nodes[0].get());
+    }
+
+    /**
+     * @brief Cast to a <code>light_node</code>.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a <code>light_node</code>, or 0 otherwise.
+     */
+    light_node * proto_node::to_light() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<light_node *>(this->impl_nodes[0].get());
     }
 
     /**
@@ -2306,6 +2338,19 @@ namespace {
     }
 
     /**
+     * @brief Cast to a <code>navigation_info_node</code>.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a <code>navigation_info_node</code>, or 0 otherwise.
+     */
+    navigation_info_node * proto_node::to_navigation_info() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<navigation_info_node *>(this->impl_nodes[0].get());
+    }
+
+    /**
      * @brief Cast to a normal_node.
      *
      * @return a pointer to the first node in the implementation if that node
@@ -2316,6 +2361,34 @@ namespace {
         assert(!this->impl_nodes.empty());
         assert(this->impl_nodes[0]);
         return node_cast<normal_node *>(this->impl_nodes[0].get());
+    }
+
+    /**
+     * @brief Cast to a <code>pointing_device_sensor_node</code>.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a <code>pointing_device_sensor_node</code>, or 0 otherwise.
+     */
+    pointing_device_sensor_node * proto_node::to_pointing_device_sensor()
+        throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<pointing_device_sensor_node *>(
+            this->impl_nodes[0].get());
+    }
+
+    /**
+     * @brief Cast to a <code>scoped_light_node</code>.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a <code>scoped_light_node</code>, or 0 otherwise.
+     */
+    scoped_light_node * proto_node::to_scoped_light() throw ()
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<scoped_light_node *>(this->impl_nodes[0].get());
     }
 
     /**

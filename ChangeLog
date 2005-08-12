@@ -1,3 +1,9 @@
+2005-08-12 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp:  Added missing cast
+	functions to_bounded_volume, to_light, to_navigation_info,
+	to_pointing_device_sensor, and to_scoped_light to proto_node.
+
 2005-08-11 Braden McDaniel  <braden@endoframe.com>
 
 	Initial support for gcc 4.0's symbol visibility attribute.
