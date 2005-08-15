@@ -1,3 +1,8 @@
+2005-08-15 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/Doxyfile:  Define away OPENVRML_API, OPENVRML_LOCAL
+	macros.
+
 2005-08-12 Braden McDaniel  <braden@endoframe.com>
 
 	Added openvrml::time_dependent_node abstract node type.

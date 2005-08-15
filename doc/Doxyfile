@@ -1,4 +1,4 @@
-# Doxyfile 1.4.3
+# Doxyfile 1.4.4
 
 #---------------------------------------------------------------------------
 # Project related configuration options
@@ -22,12 +22,13 @@ JAVADOC_AUTOBRIEF      = NO
 MULTILINE_CPP_IS_BRIEF = NO
 DETAILS_AT_TOP         = YES
 INHERIT_DOCS           = NO
-DISTRIBUTE_GROUP_DOC   = NO
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 8
 ALIASES                = 
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
+BUILTIN_STL_SUPPORT    = YES
+DISTRIBUTE_GROUP_DOC   = NO
 SUBGROUPING            = YES
 #---------------------------------------------------------------------------
 # Build related configuration options
@@ -186,7 +187,9 @@ SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = 
 PREDEFINED             = BOOST_CLASS_REQUIRE(a,b,c)= \
-                         OPENVRML_GL_CALLBACK_=
+                         OPENVRML_API= \
+                         OPENVRML_LOCAL= \
+                         OPENVRML_GL_CALLBACK_= 
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------
