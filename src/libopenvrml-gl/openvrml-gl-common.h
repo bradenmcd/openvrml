@@ -25,4 +25,5 @@
 #  ifndef OPENVRML_GL_API
 #    define OPENVRML_GL_API __declspec(dllimport)
 #  endif
+#  define OPENVRML_GL_LOCAL
 # endif

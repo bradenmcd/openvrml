@@ -68,8 +68,8 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="TRUE"
-				AdditionalIncludeDirectories="&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\..\..\..\..\src\libopenvrml"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;HAVE_WINDOWS_H"
+				AdditionalIncludeDirectories="&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\..\..\..\..\src\libopenvrml;..\openvrml;."
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;HAVE_WINDOWS_H;OPENVRML_API=;OPENVRML_GL_API="
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
@@ -118,6 +118,12 @@
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc">
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml-gl\openvrml-gl-common.h">
+			</File>
+			<File
+				RelativePath=".\openvrml-gl-config.h">
+			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml-gl\openvrml\gl\viewer.h">
 			</File>

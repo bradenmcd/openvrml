@@ -858,7 +858,9 @@ namespace {
      */
     class OPENVRML_LOCAL text_class : public node_class {
     public:
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         FT_Library freeTypeLibrary;
+# endif
 
         explicit text_class(openvrml::browser & browser);
         virtual ~text_class() throw ();
@@ -2543,7 +2545,7 @@ namespace {
 
         virtual bool modified() const;
 
-        virtual const color_node * color() const throw ();
+        virtual const openvrml::color_node * color() const throw ();
 
     protected:
         abstract_indexed_set_node(
@@ -5001,12 +5003,14 @@ namespace {
             std::vector<vec2f> tex_coord;
         };
 
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         typedef std::vector<std::vector<FcChar32> > ucs4_string_t;
         typedef std::map<FT_UInt, glyph_geometry> glyph_geometry_map_t;
 
         ucs4_string_t ucs4_string;
         FT_Face face;
         glyph_geometry_map_t glyph_geometry_map;
+# endif
         text_geometry text_geometry_;
 
     public:
@@ -21427,8 +21431,10 @@ namespace {
         string_(*this),
         font_style_(*this),
         length_(*this),
-        max_extent_(*this),
-        face(0)
+        max_extent_(*this)
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+        ,face(0)
+# endif
     {}
 
     /**

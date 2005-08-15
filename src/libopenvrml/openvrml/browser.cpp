@@ -2583,7 +2583,7 @@ namespace {
     const std::vector<float> & default_navigation_info::avatar_size() const
         throw ()
     {
-        static const float array[] = { 0.25, 1.6, 0.75 };
+        static const float array[] = { 0.25f, 1.6f, 0.75f };
         static const std::vector<float> vec(array, array + 3);
         return vec;
     }
@@ -6010,7 +6010,11 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
                 }
             } catch (std::exception & ex) {
                 std::ostream & err = this->browser().err;
-                err << ex.what() << std::endl;
+                //
+                // For some reason the Microsoft compiler (13.10.3077) has a
+                // problem with the "normal" operator<< syntax here.
+                //
+                err.operator<<(ex.what()).operator<<(std::endl);
             }
             this->browser().modified(true);
             this->browser().new_view = true; // Force resetUserNav
@@ -6274,7 +6278,7 @@ void openvrml::browser::render()
     }
     navigation_info_node & nav_info = this->active_navigation_info();
     const float avatarSize = nav_info.avatar_size().empty()
-        ? 0.25
+        ? 0.25f
         : nav_info.avatar_size()[0];
     const float visibilityLimit = nav_info.visibility_limit();
 
@@ -6693,8 +6697,7 @@ namespace {
             }
             std::replace_if(resolved_path,
                             resolved_path + strlen(resolved_path) + 1,
-                            bind2nd(equal_to<char>(), '\\'), '/');
-            --resolvedPath;
+                            std::bind2nd(std::equal_to<char>(), '\\'), '/');
             assert(resolved_path == buffer);
 # else
             char buffer[PATH_MAX];

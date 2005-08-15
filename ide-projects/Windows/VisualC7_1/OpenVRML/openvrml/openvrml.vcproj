@@ -21,8 +21,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm400"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\..\src\libopenvrml;..\..\..\..\..\lib\antlr;..\..\..\..\..\lib\regex"
-				PreprocessorDefinitions="WIN32;PACKAGE_VERSION=\&quot;0.15.99\&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\..\src\libopenvrml;..\..\..\..\..\lib\antlr;..\..\..\..\..\lib\regex;."
+				PreprocessorDefinitions="WIN32;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_API="
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -70,8 +70,8 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="TRUE"
-				AdditionalIncludeDirectories="..\..\..\..\..\src\libopenvrml;..\..\..\..\..\lib\antlr;..\..\..\..\..\lib\regex"
-				PreprocessorDefinitions="WIN32;NDEBUG;PACKAGE_VERSION=\&quot;0.15.99\&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\..\src\libopenvrml;..\..\..\..\..\lib\antlr;..\..\..\..\..\lib\regex;."
+				PreprocessorDefinitions="WIN32;NDEBUG;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_API="
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
@@ -136,9 +136,6 @@
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\frustum.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\img.cpp">
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\node.cpp">
 			</File>
 			<File
@@ -155,9 +152,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\ScriptJDK.cpp">
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\system.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\viewer.cpp">
@@ -201,16 +195,19 @@
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\frustum.h">
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\img.h">
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\node.h">
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\node_ptr.h">
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\private.h">
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml-common.h">
+			</File>
+			<File
+				RelativePath=".\openvrml-config.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\private.h">
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\rendering_context.h">
@@ -223,9 +220,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\ScriptJDK.h">
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\system.h">
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\viewer.h">
