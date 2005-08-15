@@ -1,5 +1,13 @@
 2005-08-15 Braden McDaniel  <braden@endoframe.com>
 
+	Moved VRML97 node implementations out of the API.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+
+2005-08-15 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/Doxyfile:  Define away OPENVRML_API, OPENVRML_LOCAL
 	macros.
 
