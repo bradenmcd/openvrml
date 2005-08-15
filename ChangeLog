@@ -1,5 +1,20 @@
 2005-08-15 Braden McDaniel  <braden@endoframe.com>
 
+	Fixes to build with Microsoft Visual C++ 7.1.
+
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml-config.h:
+	Added file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml-gl/openvrml-gl-config.h:
+	Added file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* src/libopenvrml/openvrml-common.h
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml-gl/openvrml-gl-common.h
+
+2005-08-15 Braden McDaniel  <braden@endoframe.com>
+
 	Moved VRML97 node implementations out of the API.
 
 	* src/libopenvrml/openvrml/browser.cpp
@@ -996,7 +1011,7 @@
 
 	* src/libopenvrml/openvrml/vrml97node.cpp
 	* src/libopenvrml/openvrml/vrml97node.h
-	
+
 2004-12-29 Braden McDaniel  <braden@endoframe.com>
 
 	Merged changes from 0.15.4 release.
