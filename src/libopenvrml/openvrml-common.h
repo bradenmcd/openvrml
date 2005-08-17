@@ -19,11 +19,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# include <openvrml-config.h>
+# ifndef OPENVRML_COMMON_H
+#   define OPENVRML_COMMON_H
 
-# ifdef _WIN32
-#  ifndef OPENVRML_API
-#    define OPENVRML_API __declspec(dllimport)
-#  endif
-#  define OPENVRML_LOCAL
-# endif
+#   include <openvrml-config.h>
+
+# endif // ifndef OPENVRML_COMMON_H

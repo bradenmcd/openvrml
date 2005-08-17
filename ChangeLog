@@ -1,4 +1,25 @@
-2005-08-15 Braden McDaniel  <braden@endoframe.com>
+2005-08-17 Braden McDaniel  <braden@endoframe.com>
+
+	Removed obsolete lookat project for Microsoft Visual Studio.
+	Added sdl-viewer project for Microsoft Visual Studio.  Require
+	one of OPENVRML_BUILD_LIB, OPENVRML_USE_LIB, OPENVRML_BUILD_DLL,
+	or OPENVRML_USE_DLL to be defined when building the openvrml
+	library.  Require one of OPENVRML_GL_BUILD_LIB,
+	OPENVRML_GL_USE_LIB, OPENVRML_BUILD_DLL, or OPENVRML_USE_DLL to
+	be defined when building the openvrml-gl library.
+
+	* examples/sdl_viewer.cpp
+	* ide-projects/Windows/VisualC7_1/OpenVRML/OpenVRML.sln
+	* ide-projects/Windows/VisualC7_1/OpenVRML/lookat/lookat.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml-config.h
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml-gl/openvrml-gl.vcproj:
+	Added file.
+	* src/libopenvrml/openvrml-common.h
+	* src/libopenvrml-gl/openvrml-gl-common.h
+
+2005-08-16 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp:  Removed obsolete code.
 

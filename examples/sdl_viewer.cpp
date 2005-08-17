@@ -104,8 +104,10 @@ int main(int argc, char * argv[])
         v.run();
     } catch (std::exception & ex) {
         cerr << ex.what() << endl;
-        throw;
+        return EXIT_FAILURE;
     }
+
+    return EXIT_SUCCESS;
 }
 
 namespace {

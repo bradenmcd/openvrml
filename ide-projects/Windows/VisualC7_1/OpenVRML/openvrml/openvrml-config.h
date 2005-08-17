@@ -23,4 +23,18 @@
 # ifndef OPENVRML_CONFIG_H
 #   define OPENVRML_CONFIG_H
 
+#   if defined(OPENVRML_BUILD_DLL)
+#     define OPENVRML_API __declspec(dllexport)
+#   elif defined(OPENVRML_USE_DLL)
+#     define OPENVRML_API __declspec(dllimport)
+#   elif defined(OPENVRML_BUILD_LIB)
+#     define OPENVRML_API
+#   elif defined(OPENVRML_USE_LIB)
+#     define OPENVRML_API
+#   else
+#     error Must define one of OPENVRML_BUILD_DLL, OPENVRML_USE_DLL, OPENVRML_BUILD_LIB, or OPENVRML_USE_LIB.
+#   endif
+
+#   define OPENVRML_LOCAL
+
 # endif // ifndef OPENVRML_CONFIG_H

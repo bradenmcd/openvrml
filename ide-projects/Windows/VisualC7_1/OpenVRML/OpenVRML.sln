@@ -1,7 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openvrml", "openvrml\openvrml.vcproj", "{E5287CD2-4BAC-4341-AF28-A1F9C0F5949C}"
 	ProjectSection(ProjectDependencies) = postProject
-		{ED407BF6-F8A1-4C7E-9952-E5454896AC63} = {ED407BF6-F8A1-4C7E-9952-E5454896AC63}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "antlr", "antlr\antlr.vcproj", "{ED407BF6-F8A1-4C7E-9952-E5454896AC63}"
@@ -10,13 +9,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "antlr", "antlr\antlr.vcproj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openvrml-gl", "openvrml-gl\openvrml-gl.vcproj", "{141F90C2-6630-4D7A-834F-D5D57C6CFC24}"
 	ProjectSection(ProjectDependencies) = postProject
-		{E5287CD2-4BAC-4341-AF28-A1F9C0F5949C} = {E5287CD2-4BAC-4341-AF28-A1F9C0F5949C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lookat", "lookat\lookat.vcproj", "{58B212F8-7F6A-49BC-AA95-FF9FA87884B8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sdl-viewer", "sdl-viewer\sdl-viewer.vcproj", "{2DD5D192-3E85-4E64-854B-DF7A1FF06B76}"
 	ProjectSection(ProjectDependencies) = postProject
 		{141F90C2-6630-4D7A-834F-D5D57C6CFC24} = {141F90C2-6630-4D7A-834F-D5D57C6CFC24}
 		{E5287CD2-4BAC-4341-AF28-A1F9C0F5949C} = {E5287CD2-4BAC-4341-AF28-A1F9C0F5949C}
+		{ED407BF6-F8A1-4C7E-9952-E5454896AC63} = {ED407BF6-F8A1-4C7E-9952-E5454896AC63}
 	EndProjectSection
 EndProject
 Global
@@ -37,10 +36,10 @@ Global
 		{141F90C2-6630-4D7A-834F-D5D57C6CFC24}.Debug.Build.0 = Debug|Win32
 		{141F90C2-6630-4D7A-834F-D5D57C6CFC24}.Release.ActiveCfg = Release|Win32
 		{141F90C2-6630-4D7A-834F-D5D57C6CFC24}.Release.Build.0 = Release|Win32
-		{58B212F8-7F6A-49BC-AA95-FF9FA87884B8}.Debug.ActiveCfg = Debug|Win32
-		{58B212F8-7F6A-49BC-AA95-FF9FA87884B8}.Debug.Build.0 = Debug|Win32
-		{58B212F8-7F6A-49BC-AA95-FF9FA87884B8}.Release.ActiveCfg = Release|Win32
-		{58B212F8-7F6A-49BC-AA95-FF9FA87884B8}.Release.Build.0 = Release|Win32
+		{2DD5D192-3E85-4E64-854B-DF7A1FF06B76}.Debug.ActiveCfg = Debug|Win32
+		{2DD5D192-3E85-4E64-854B-DF7A1FF06B76}.Debug.Build.0 = Debug|Win32
+		{2DD5D192-3E85-4E64-854B-DF7A1FF06B76}.Release.ActiveCfg = Release|Win32
+		{2DD5D192-3E85-4E64-854B-DF7A1FF06B76}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

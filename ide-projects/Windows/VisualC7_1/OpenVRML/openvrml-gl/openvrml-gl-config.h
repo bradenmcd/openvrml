@@ -23,4 +23,18 @@
 # ifndef OPENVRML_GL_CONFIG_H
 #   define OPENVRML_GL_CONFIG_H
 
+#   if defined(OPENVRML_GL_BUILD_DLL)
+#     define OPENVRML_GL_API __declspec(dllexport)
+#   elif defined(OPENVRML_GL_USE_DLL)
+#     define OPENVRML_GL_API __declspec(dllimport)
+#   elif defined(OPENVRML_GL_BUILD_LIB)
+#     define OPENVRML_GL_API
+#   elif defined(OPENVRML_GL_USE_LIB)
+#     define OPENVRML_GL_API
+#   else
+#     error Must define one of OPENVRML_GL_BUILD_DLL, OPENVRML_GL_USE_DLL, OPENVRML_GL_BUILD_LIB, or OPENVRML_GL_USE_LIB.
+#   endif
+
+#   define OPENVRML_GL_LOCAL
+
 # endif // ifndef OPENVRML_GL_CONFIG_H

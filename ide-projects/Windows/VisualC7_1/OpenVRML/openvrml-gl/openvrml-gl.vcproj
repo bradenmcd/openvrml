@@ -69,7 +69,7 @@
 				InlineFunctionExpansion="1"
 				OmitFramePointers="TRUE"
 				AdditionalIncludeDirectories="&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\..\..\..\..\src\libopenvrml;..\openvrml;."
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;HAVE_WINDOWS_H;OPENVRML_API=;OPENVRML_GL_API="
+				PreprocessorDefinitions="WIN32;NDEBUG;HAVE_WINDOWS_H;OPENVRML_GL_BUILD_LIB;OPENVRML_USE_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
