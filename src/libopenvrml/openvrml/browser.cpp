@@ -6188,29 +6188,6 @@ void openvrml::browser::sensitive_event(node * const n,
     }
 }
 
-namespace {
-    template <typename T>
-    struct UpdatePolledNode_ : std::unary_function<T, void> {
-        explicit UpdatePolledNode_(double time): time(time) {}
-
-        void operator()(T node) const { node->update(time); }
-
-    private:
-        double time;
-    };
-
-    template <typename FieldValue>
-    void process_event(event_listener & listener,
-                       const field_value & value,
-                       const double timestamp)
-    {
-        assert(dynamic_cast<field_value_listener<FieldValue> *>(&listener));
-        assert(dynamic_cast<const FieldValue *>(&value));
-        static_cast<field_value_listener<FieldValue> &>(listener)
-            .process_event(static_cast<const FieldValue &>(value), timestamp);
-    }
-}
-
 /**
  * @brief Process events (update the browser).
  *

@@ -1,5 +1,9 @@
 2005-08-15 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp:  Removed obsolete code.
+
+2005-08-15 Braden McDaniel  <braden@endoframe.com>
+
 	Fixes to build with Microsoft Visual C++ 7.1.
 
 	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml-config.h:
