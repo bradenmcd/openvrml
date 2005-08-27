@@ -1,3 +1,18 @@
+2005-08-26 Braden McDaniel  <braden@endoframe.com>
+
+	Implemented openvrml::browser::create_from_from_url.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* tests/Makefile.am:  Removed test program
+	tests/browser_create_vrml_from_stream; added tests/browser.
+	* tests/browser.cpp:  Added file.  Boost-based test suite for
+	openvrml::browser.  Currently tests
+	openvrml::browser::create_vrml_from_stream and
+	openvrml::browser::create_vrml_from_url.
+	* tests/browser_create_vrml_from_stream.cpp:  Removed file.
+	Obsoleted by tests/browser.cpp.
+
 2005-08-17 Braden McDaniel  <braden@endoframe.com>
 
 	Removed obsolete lookat project for Microsoft Visual Studio.

@@ -6104,15 +6104,70 @@ openvrml::browser::create_vrml_from_stream(std::istream & in)
     return nodes;
 }
 
+struct OPENVRML_LOCAL openvrml::browser::vrml_from_url_creator {
+    vrml_from_url_creator(openvrml::browser & browser,
+                          const std::vector<std::string> & url,
+                          const node_ptr & node,
+                          const std::string & event)
+        throw (unsupported_interface, std::bad_cast):
+        browser_(&browser),
+        url_(&url),
+        node_(node),
+        listener_(&dynamic_cast<mfnode_listener &>(
+                      node->event_listener(event)))
+    {}
+
+    void operator()() const throw () try {
+        try {
+            std::auto_ptr<resource_istream> in =
+                this->browser_->scene_->get_resource(*this->url_);
+            if (!(*in)) { throw unreachable_url(); }
+            mfnode nodes;
+            nodes.value = this->browser_->create_vrml_from_stream(*in);
+            this->listener_->process_event(nodes, browser::current_time());
+        } catch (std::bad_alloc & ex) {
+            this->browser_->err << ex.what() << std::endl;
+            throw unreachable_url();
+        } catch (...) {
+            throw unreachable_url();
+        }
+    } catch (std::exception & ex) {
+        this->browser_->err << ex.what() << std::endl;
+    }
+
+private:
+    openvrml::browser * const browser_;
+    const std::vector<std::string> * const url_;
+    const node_ptr node_;
+    mfnode_listener * const listener_;
+};
+
 /**
- * @todo Implement me!
+ * @brief Create nodes from a URI.
+ *
+ * This function executes asynchronously. When the nodes have been completely
+ * loaded, they are sent to the @p event MFNode eventIn of @p node.
+ *
+ * @param url       an alternative URI list.
+ * @param node      the node to which the nodes loaded from @p url should be
+ *                  sent as an event.
+ * @param event     the event of @p node to which the new nodes will be sent.
+ *
+ * @exception unsupported_interface         if @p node has no eventIn @p event.
+ * @exception std::bad_cast                 if the @p event eventIn of @p node
+ *                                          is not an MFNode.
+ * @exception boost::thread_resource_error  if thread creation fails.
  */
 void
 openvrml::browser::
-create_vrml_from_url(const std::vector<std::string> & /* url */,
-                     const node_ptr & /* node */,
-                     const std::string & /* event */)
-{}
+create_vrml_from_url(const std::vector<std::string> & url,
+                     const node_ptr & node,
+                     const std::string & event)
+    throw (unsupported_interface, std::bad_cast, boost::thread_resource_error)
+{
+    boost::function0<void> f = vrml_from_url_creator(*this, url, node, event);
+    boost::thread t(f);
+}
 
 /**
  * @brief Add a listener for <code>browser_event</code>s.

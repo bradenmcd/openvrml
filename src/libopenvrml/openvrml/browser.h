@@ -152,6 +152,8 @@ namespace openvrml {
     class OPENVRML_API browser : boost::noncopyable {
         friend class Vrml97Parser;
 
+        class vrml_from_url_creator;
+
         class node_class_map {
             mutable boost::mutex mutex_;
             typedef std::map<std::string, boost::shared_ptr<node_class> >
@@ -246,7 +248,9 @@ namespace openvrml {
         const std::vector<node_ptr> create_vrml_from_stream(std::istream & in);
         void create_vrml_from_url(const std::vector<std::string> & url,
                                   const node_ptr & node,
-                                  const std::string & event);
+                                  const std::string & event)
+            throw (unsupported_interface, std::bad_cast,
+                   boost::thread_resource_error);
         bool add_listener(browser_listener & listener) throw (std::bad_alloc);
         bool remove_listener(browser_listener & listener) throw ();
 
