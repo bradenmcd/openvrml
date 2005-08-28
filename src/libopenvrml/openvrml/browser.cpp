@@ -35,7 +35,8 @@
 # endif
 # include <boost/bind.hpp>
 # include <boost/functional.hpp>
-# include <boost/regex.hpp>
+# include <boost/spirit.hpp>
+# include <boost/spirit/phoenix.hpp>
 # include <boost/thread/thread.hpp>
 # include <boost/utility.hpp>
 # include <private.h>
@@ -2825,17 +2826,88 @@ namespace {
 
 
     class OPENVRML_LOCAL uri {
-        static const boost::regex regex_;
-        enum subexpression_index {
-            scheme_ = 2,
-            scheme_specific_part_ = 3,
-            authority_ = 5,
-            path_ = 6,
-            query_ = 7,
-            fragment_ = 10
+        struct grammar : public boost::spirit::grammar<grammar> {
+            struct absolute_uri_closure :
+                boost::spirit::closure<absolute_uri_closure,
+                                       std::string::const_iterator,
+                                       std::string::const_iterator> {
+                member1 scheme_begin;
+                member2 scheme_end;
+            };
+
+            struct server_closure :
+                boost::spirit::closure<server_closure,
+                                       std::string::const_iterator,
+                                       std::string::const_iterator> {
+                member1 userinfo_begin;
+                member2 userinfo_end;
+            };
+
+            template <typename ScannerT>
+            struct definition {
+                typedef boost::spirit::rule<ScannerT> rule_type;
+                typedef boost::spirit::rule<ScannerT,
+                                            absolute_uri_closure::context_t>
+                    absolute_uri_rule_type;
+                typedef boost::spirit::rule<ScannerT,
+                                            server_closure::context_t>
+                    server_rule_type;
+
+                rule_type uri_reference;
+                absolute_uri_rule_type absolute_uri;
+                rule_type relative_uri;
+                rule_type hier_part;
+                rule_type opaque_part;
+                rule_type uric_no_slash;
+                rule_type net_path;
+                rule_type abs_path;
+                rule_type rel_path;
+                rule_type rel_segment;
+                rule_type scheme;
+                rule_type authority;
+                rule_type reg_name;
+                server_rule_type server;
+                rule_type userinfo;
+                rule_type hostport;
+                rule_type host;
+                rule_type hostname;
+                rule_type domainlabel;
+                rule_type toplabel;
+                rule_type ipv4address;
+                rule_type port;
+                rule_type path_segments;
+                rule_type segment;
+                rule_type param;
+                rule_type pchar;
+                rule_type query;
+                rule_type fragment;
+                rule_type uric;
+                rule_type reserved;
+                rule_type unreserved;
+                rule_type mark;
+                rule_type escaped;
+
+                explicit definition(const grammar & self);
+
+                const boost::spirit::rule<ScannerT> & start() const;
+            };
+
+            mutable uri & uri_ref;
+
+            explicit grammar(uri & uri_ref) throw ();
         };
-        boost::smatch match_results_;
+
         std::string str_;
+        std::string::const_iterator scheme_begin, scheme_end;
+        std::string::const_iterator scheme_specific_part_begin,
+                                    scheme_specific_part_end;
+        std::string::const_iterator authority_begin, authority_end;
+        std::string::const_iterator userinfo_begin, userinfo_end;
+        std::string::const_iterator host_begin, host_end;
+        std::string::const_iterator port_begin, port_end;
+        std::string::const_iterator path_begin, path_end;
+        std::string::const_iterator query_begin, query_end;
+        std::string::const_iterator fragment_begin, fragment_end;
 
     public:
         uri() throw (std::bad_alloc);
@@ -2858,16 +2930,297 @@ namespace {
             throw (std::bad_alloc);
     };
 
-    const boost::regex uri::regex_(
-        "^(([^:/?#]+):)?((//([^/?#]*))?([^?#]*)([?]([^#]*))?(#(.*))?)");
-    //    |+- scheme    ||  |          |       |   |        | +- fragment-id
-    //    +- scheme ':' ||  |          |       |   |        +- '#' fragment-id
-    //                  ||  |          |       |   +- query
-    //                  ||  |          |       +- '?' query
-    //                  ||  |          +- path
-    //                  ||  +- authority
-    //                  |+- "//" authority
-    //                  +- scheme-specific-part
+    uri::grammar::grammar(uri & uri_ref) throw ():
+        uri_ref(uri_ref)
+    {}
+
+    template <typename ScannerT>
+    uri::grammar::definition<ScannerT>::definition(const grammar & self)
+    {
+        using namespace boost::spirit;
+        using namespace phoenix;
+
+        BOOST_SPIRIT_DEBUG_NODE(uri_reference);
+        BOOST_SPIRIT_DEBUG_NODE(absolute_uri);
+        BOOST_SPIRIT_DEBUG_NODE(relative_uri);
+        BOOST_SPIRIT_DEBUG_NODE(hier_part);
+        BOOST_SPIRIT_DEBUG_NODE(opaque_part);
+        BOOST_SPIRIT_DEBUG_NODE(uric_no_slash);
+        BOOST_SPIRIT_DEBUG_NODE(net_path);
+        BOOST_SPIRIT_DEBUG_NODE(abs_path);
+        BOOST_SPIRIT_DEBUG_NODE(rel_path);
+        BOOST_SPIRIT_DEBUG_NODE(rel_segment);
+        BOOST_SPIRIT_DEBUG_NODE(scheme);
+        BOOST_SPIRIT_DEBUG_NODE(authority);
+        BOOST_SPIRIT_DEBUG_NODE(reg_name);
+        BOOST_SPIRIT_DEBUG_NODE(server);
+        BOOST_SPIRIT_DEBUG_NODE(userinfo);
+        BOOST_SPIRIT_DEBUG_NODE(hostport);
+        BOOST_SPIRIT_DEBUG_NODE(host);
+        BOOST_SPIRIT_DEBUG_NODE(hostname);
+        BOOST_SPIRIT_DEBUG_NODE(domainlabel);
+        BOOST_SPIRIT_DEBUG_NODE(toplabel);
+        BOOST_SPIRIT_DEBUG_NODE(ipv4address);
+        BOOST_SPIRIT_DEBUG_NODE(port);
+        BOOST_SPIRIT_DEBUG_NODE(path_segments);
+        BOOST_SPIRIT_DEBUG_NODE(segment);
+        BOOST_SPIRIT_DEBUG_NODE(param);
+        BOOST_SPIRIT_DEBUG_NODE(pchar);
+        BOOST_SPIRIT_DEBUG_NODE(query);
+        BOOST_SPIRIT_DEBUG_NODE(fragment);
+        BOOST_SPIRIT_DEBUG_NODE(uric);
+        BOOST_SPIRIT_DEBUG_NODE(reserved);
+        BOOST_SPIRIT_DEBUG_NODE(unreserved);
+        BOOST_SPIRIT_DEBUG_NODE(mark);
+        BOOST_SPIRIT_DEBUG_NODE(escaped);
+
+        uri & uri_ref = self.uri_ref;
+
+        uri_reference
+            =   !(absolute_uri | relative_uri) >> !('#' >> fragment)
+            ;
+
+        absolute_uri
+            =   (scheme[
+                    absolute_uri.scheme_begin = arg1,
+                    absolute_uri.scheme_end = arg2
+                ] >> ':')[
+                    var(uri_ref.scheme_begin) = absolute_uri.scheme_begin,
+                    var(uri_ref.scheme_end) = absolute_uri.scheme_end
+                ] >> (hier_part | opaque_part)[
+                    var(uri_ref.scheme_specific_part_begin) = arg1,
+                    var(uri_ref.scheme_specific_part_end) = arg2
+                ]
+            ;
+
+        relative_uri
+            =   (net_path | abs_path | rel_path) >> !('?' >> query)
+            ;
+
+        hier_part
+            =   (net_path | abs_path) >> !('?' >> query)
+            ;
+
+        opaque_part
+            =   uric_no_slash >> *uric
+            ;
+
+        uric_no_slash
+            =   unreserved
+            |   escaped
+            |   ';'
+            |   '?'
+            |   ':'
+            |   '@'
+            |   '&'
+            |   '='
+            |   '+'
+            |   '$'
+            |   ','
+            ;
+
+        net_path
+            =   "//" >> authority >> !abs_path
+            ;
+
+        abs_path
+            =   ('/' >> path_segments)[
+                    var(uri_ref.path_begin) = arg1,
+                    var(uri_ref.path_end) = arg2
+                ]
+            ;
+
+        rel_path
+            =   (rel_segment >> !abs_path)[
+                    var(uri_ref.path_begin) = arg1,
+                    var(uri_ref.path_end) = arg2
+                ]
+            ;
+
+        rel_segment
+            =  +(   unreserved
+                |   escaped
+                |   ';'
+                |   '@'
+                |   '&'
+                |   '='
+                |   '+'
+                |   '$'
+                |   ','
+                )
+            ;
+
+        scheme
+            =   (alpha_p >> *(alpha_p | digit_p | '+' | '-' | '.'))
+            ;
+
+        authority
+            =   (server | reg_name)[
+                    var(uri_ref.authority_begin) = arg1,
+                    var(uri_ref.authority_end) = arg2
+                ]
+            ;
+
+        reg_name
+            =  +(   unreserved
+                |   escaped
+                |   '$'
+                |   ','
+                |   ';'
+                |   ':'
+                |   '@'
+                |   '&'
+                |   '='
+                |   '+'
+                )
+            ;
+
+        server
+            =  !(
+                    !(userinfo[
+                        server.userinfo_begin = arg1,
+                        server.userinfo_end = arg2
+                    ] >> '@')[
+                        var(uri_ref.userinfo_begin) = server.userinfo_begin,
+                        var(uri_ref.userinfo_end) = server.userinfo_end
+                    ]
+                    >> hostport
+                )
+            ;
+
+        userinfo
+            =  *(   unreserved
+                |   escaped
+                |   ';'
+                |   ':'
+                |   '&'
+                |   '='
+                |   '+'
+                |   '$'
+                |   ','
+                )
+            ;
+
+        hostport
+            =   host >> !(':' >> port)
+            ;
+
+        host
+            =   (hostname | ipv4address)[
+                    var(uri_ref.host_begin) = arg1,
+                    var(uri_ref.host_end) = arg2
+                ]
+            ;
+
+        hostname
+            =   *(domainlabel >> '.') >> toplabel >> !ch_p('.')
+            ;
+
+        domainlabel
+            =   alnum_p >> *(*ch_p('-') >> alnum_p)
+            ;
+
+        toplabel
+            =   alpha_p >> *(*ch_p('-') >> alnum_p)
+            ;
+
+        ipv4address
+            =   +digit_p >> '.' >> +digit_p >> '.' >> +digit_p >> '.'
+                >> +digit_p
+            ;
+
+        port
+            =   (*digit_p)[
+                    var(uri_ref.port_begin) = arg1,
+                    var(uri_ref.port_end) = arg2
+                ]
+            ;
+
+        path_segments
+            =   segment >> *('/' >> segment)
+            ;
+
+        segment
+            =   *pchar >> *(';' >> param)
+            ;
+
+        param
+            =   *pchar
+            ;
+
+        pchar
+            =   unreserved
+            |   escaped
+            |   ':'
+            |   '@'
+            |   '&'
+            |   '='
+            |   '+'
+            |   '$'
+            |   ','
+            ;
+
+        query
+            =   (*uric)[
+                    var(uri_ref.query_begin) = arg1,
+                    var(uri_ref.query_end) = arg2
+                ]
+            ;
+
+        fragment
+            =   (*uric)[
+                    var(uri_ref.fragment_begin) = arg1,
+                    var(uri_ref.fragment_end) = arg2
+                ]
+            ;
+
+        uric
+            =   reserved
+            |   unreserved
+            |   escaped
+            ;
+
+        reserved
+            =   ch_p(';')
+            |   '/'
+            |   '?'
+            |   ':'
+            |   '@'
+            |   '&'
+            |   '='
+            |   '+'
+            |   '$'
+            |   ','
+            ;
+
+        unreserved
+            =   alnum_p
+            |   mark
+            ;
+
+        mark
+            =   ch_p('-')
+            |   '_'
+            |   '.'
+            |   '!'
+            |   '~'
+            |   '*'
+            |   '\''
+            |   '('
+            |   ')'
+            ;
+
+        escaped
+            =   '%' >> xdigit_p >> xdigit_p
+            ;
+    }
+
+    template <typename ScannerT>
+    const boost::spirit::rule<ScannerT> &
+    uri::grammar::definition<ScannerT>::start() const
+    {
+        return uri_reference;
+    }
 
     uri::uri() throw (std::bad_alloc)
     {}
@@ -2876,7 +3229,15 @@ namespace {
         throw (openvrml::invalid_url, std::bad_alloc):
         str_(str)
     {
-        if (!regex_match(this->str_, this->match_results_, uri::regex_)) {
+        using std::string;
+        using namespace boost::spirit;
+
+        grammar g(*this);
+
+        string::const_iterator begin = this->str_.begin();
+        string::const_iterator end = this->str_.end();
+
+        if (!parse(begin, end, g, space_p).full) {
             throw openvrml::invalid_url();
         }
     }
@@ -2888,55 +3249,49 @@ namespace {
 
     const std::string uri::scheme() const throw (std::bad_alloc)
     {
-        return std::string(this->match_results_[scheme_].first,
-                           this->match_results_[scheme_].second);
+        return std::string(this->scheme_begin, this->scheme_end);
     }
 
     const std::string uri::scheme_specific_part() const
         throw (std::bad_alloc)
     {
-        return std::string(
-            this->match_results_[scheme_specific_part_].first,
-            this->match_results_[scheme_specific_part_].second);
+        return std::string(this->scheme_specific_part_begin,
+                           this->scheme_specific_part_end);
     }
 
     const std::string uri::authority() const throw (std::bad_alloc)
     {
-        return std::string(this->match_results_[authority_].first,
-                           this->match_results_[authority_].second);
+        return std::string(this->authority_begin, this->authority_end);
     }
 
     const std::string uri::userinfo() const throw (std::bad_alloc)
     {
-        return std::string();
+        return std::string(this->userinfo_begin, this->userinfo_end);
     }
 
     const std::string uri::host() const throw (std::bad_alloc)
     {
-        return std::string();
+        return std::string(this->host_begin, this->host_end);
     }
 
     const std::string uri::port() const throw (std::bad_alloc)
     {
-        return std::string();
+        return std::string(this->port_begin, this->port_end);
     }
 
     const std::string uri::path() const throw (std::bad_alloc)
     {
-        return std::string(this->match_results_[path_].first,
-                           this->match_results_[path_].second);
+        return std::string(this->path_begin, this->path_end);
     }
 
     const std::string uri::query() const throw (std::bad_alloc)
     {
-        return std::string(this->match_results_[query_].first,
-                           this->match_results_[query_].second);
+        return std::string(this->query_begin, this->query_end);
     }
 
     const std::string uri::fragment() const throw (std::bad_alloc)
     {
-        return std::string(this->match_results_[fragment_].first,
-                           this->match_results_[fragment_].second);
+        return std::string(this->fragment_begin, this->fragment_end);
     }
 
     const uri uri::resolve_against(const uri & absolute_uri) const

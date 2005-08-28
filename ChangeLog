@@ -1,3 +1,14 @@
+2005-08-28 Braden McDaniel  <braden@endoframe.com>
+
+	Reverted to using boost::spirit to parse URIs rather than
+	boost::regex.  BOOST_SPIRIT_THREADSAFE is defined, so Spirit
+	should be thread-safe now.
+
+	* openvrml.pc.in
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* src/libopenvrml/Makefile.am
+	* src/libopenvrml/openvrml/browser.cpp
+
 2005-08-26 Braden McDaniel  <braden@endoframe.com>
 
 	Implemented openvrml::browser::create_from_from_url.

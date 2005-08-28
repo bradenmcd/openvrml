@@ -45,7 +45,8 @@ AM_CPPFLAGS = \
         -I$(top_builddir)/java \
         -I$(top_srcdir)/src/libopenvrml \
         -DOPENVRML_LIBDIR_=\"$(libdir)\" \
-        -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\"
+        -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
+        -DBOOST_SPIRIT_THREADSAFE
 AM_CXXFLAGS = \
         @PTHREAD_CFLAGS@ \
         @FONTCONFIG_CFLAGS@ \
@@ -77,7 +78,7 @@ libopenvrml_la_LDFLAGS = \
         @FREETYPE_LIBS@ \
         @JS_LIBS@ \
         @JNI_LIBS@ \
-        -lboost_regex -lboost_thread \
+        -lboost_thread \
         @PTHREAD_LIBS@
 
 libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
