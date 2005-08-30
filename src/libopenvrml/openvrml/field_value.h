@@ -73,11 +73,10 @@ namespace openvrml {
 
         virtual ~field_value() throw () = 0;
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc) = 0;
-        virtual field_value & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc) = 0;
-        virtual type_id type() const throw () = 0;
+        std::auto_ptr<field_value> clone() const throw (std::bad_alloc);
+        field_value & assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        type_id type() const throw ();
 
     protected:
         field_value() throw ();
@@ -85,6 +84,11 @@ namespace openvrml {
         field_value & operator=(const field_value & value) throw ();
 
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc) = 0;
+        virtual field_value & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc) = 0;
+        virtual type_id do_type() const throw () = 0;
         virtual void print(std::ostream & out) const = 0;
     };
 
@@ -144,13 +148,12 @@ namespace openvrml {
 
         // Use compiler-defined copy ctor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual sfbool & assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfbool & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream & out) const;
     };
 
@@ -173,13 +176,12 @@ namespace openvrml {
 
         // Use compiler-defined copy ctor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual sfcolor & assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfcolor & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream & out) const;
     };
 
@@ -202,13 +204,12 @@ namespace openvrml {
 
         // Use compiler-defined copy ctor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual sffloat & assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sffloat & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream & out) const;
     };
 
@@ -231,13 +232,12 @@ namespace openvrml {
 
         // Use compiler-defined copy constructor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual sfimage & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfimage & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream & out) const;
     };
 
@@ -260,13 +260,12 @@ namespace openvrml {
 
         // Use compiler-defined copy ctor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual sfint32 & assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfint32 & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -289,13 +288,12 @@ namespace openvrml {
 
         // Use compiler-defined copy ctor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual sfnode & assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfnode & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -318,13 +316,12 @@ namespace openvrml {
 
         // Use compiler-defined copy ctor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual sfrotation & assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfrotation & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream & out) const;
     };
 
@@ -350,13 +347,12 @@ namespace openvrml {
 
         // Use compiler-defined copy ctor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual sfstring & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfstring & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -379,13 +375,12 @@ namespace openvrml {
 
         // Use compiler-defined copy ctor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual sftime & assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sftime & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -408,13 +403,12 @@ namespace openvrml {
 
         // Use compiler-defined copy ctor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual sfvec2f & assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfvec2f & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -437,13 +431,12 @@ namespace openvrml {
 
         // Use compiler-defined copy constructor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual sfvec3f & assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfvec3f & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -472,13 +465,12 @@ namespace openvrml {
 
         // Use compiler-defined copy constructor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual mfcolor & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfcolor & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -516,13 +508,12 @@ namespace openvrml {
 
         // Use compiler-defined copy constructor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual mffloat & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mffloat & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -559,13 +550,12 @@ namespace openvrml {
 
         // Use compiler-defined copy constructor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual mfint32 & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfint32 & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -603,13 +593,12 @@ namespace openvrml {
 
         // Use compiler-defined copy constructor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual mfnode & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfnode & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -647,13 +636,12 @@ namespace openvrml {
 
         // Use compiler-defined copy constructor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual mfrotation & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfrotation & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -693,13 +681,12 @@ namespace openvrml {
 
         // Use compiler-defined copy constructor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual mfstring & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfstring & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -737,13 +724,12 @@ namespace openvrml {
 
         // Use compiler-defined copy constructor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual mftime & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mftime & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -781,13 +767,12 @@ namespace openvrml {
 
         // Use compiler-defined copy constructor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual mfvec2f & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfvec2f & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 
@@ -825,13 +810,12 @@ namespace openvrml {
 
         // Use compiler-defined copy constructor and operator=.
 
-        virtual std::auto_ptr<field_value> clone() const
-            throw (std::bad_alloc);
-        virtual mfvec3f & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id type() const throw ();
-
     private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfvec3f & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
         virtual void print(std::ostream &) const;
     };
 

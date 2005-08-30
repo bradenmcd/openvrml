@@ -1,3 +1,11 @@
+2005-08-30 Braden McDaniel  <braden@endoframe.com>
+
+	Employ NVI (nonvirtual interface) idiom on
+	openvrml::field_value.
+
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/field_value.h
+
 2005-08-28 Braden McDaniel  <braden@endoframe.com>
 
 	Reverted to using boost::spirit to parse URIs rather than
