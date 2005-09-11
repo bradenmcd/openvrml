@@ -3548,7 +3548,7 @@ data_available(const std::vector<unsigned char> & data)
 
 namespace {
 
-    struct stream_reader {
+    struct OPENVRML_LOCAL stream_reader {
         stream_reader(std::auto_ptr<openvrml::resource_istream> in,
                       std::auto_ptr<openvrml::stream_listener> listener):
             in_(in),
@@ -3866,8 +3866,8 @@ namespace {
     typedef std::map<std::string, boost::shared_ptr<openvrml::node_class> >
         node_class_map_t;
 
-    struct init_node_class : std::unary_function<void,
-                                                 node_class_map_t::value_type>
+    struct OPENVRML_LOCAL init_node_class :
+        std::unary_function<void, node_class_map_t::value_type>
     {
         init_node_class(openvrml::viewpoint_node * initial_viewpoint,
                         const double time)
@@ -3944,7 +3944,7 @@ openvrml::browser::node_class_map::find(const std::string & id) const
 
 namespace {
 
-    struct render_node_class :
+    struct OPENVRML_LOCAL render_node_class :
             std::unary_function<void, node_class_map_t::value_type> {
         explicit render_node_class(openvrml::viewer & viewer):
             viewer(&viewer)
@@ -3975,7 +3975,8 @@ namespace {
     /**
      * @internal
      */
-    class vrml97_node_interface_set_ : public openvrml::node_interface_set {
+    class OPENVRML_LOCAL vrml97_node_interface_set_ :
+        public openvrml::node_interface_set {
     public:
         vrml97_node_interface_set_(
             const openvrml::node_interface * const begin,
@@ -7037,7 +7038,7 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
 
 namespace {
 
-    class bad_path : public openvrml::bad_url {
+    class OPENVRML_LOCAL bad_path : public openvrml::bad_url {
     public:
         explicit bad_path(const std::string & message);
         virtual ~bad_path() throw ();
@@ -7058,7 +7059,7 @@ namespace {
      * @exception bad_path          if @p relative_uri cannot be resolved.
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    const uri create_file_url(const uri & relative_uri)
+    OPENVRML_LOCAL const uri create_file_url(const uri & relative_uri)
         throw (bad_path, std::bad_alloc)
     {
         assert(relative_uri.scheme().empty());
