@@ -1,5 +1,14 @@
 2005-09-11 Braden McDaniel  <braden@endoframe.com>
 
+	Added openvrml::node_traverser::traversed function.  This allows
+	an openvrml::node_traverser subclass to determine whether a node
+	has already been traversed.
+
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+
+2005-09-11 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/Makefile.am:  Use check_ instead of noinst_ for test
 	programs and libraries.
 

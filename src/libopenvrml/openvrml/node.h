@@ -1098,6 +1098,7 @@ namespace openvrml {
     protected:
         void halt_traversal() throw ();
         bool halted() throw ();
+        bool traversed(node & n) throw ();
 
     private:
         virtual void on_entering(node & n);

@@ -4297,6 +4297,18 @@ bool openvrml::node_traverser::halted() throw ()
 }
 
 /**
+ * @brief Check whether a <code>node</code> has been traversed.
+ *
+ * @param n the <code>node</code> to check.
+ *
+ * @return @c true if @p n has been traversed; @c false otherwise.
+ */
+bool openvrml::node_traverser::traversed(node & n) throw ()
+{
+    return this->traversed_nodes.find(&n) != this->traversed_nodes.end();
+}
+
+/**
  * @internal
  *
  * @brief Traverse a <code>node</code>.
