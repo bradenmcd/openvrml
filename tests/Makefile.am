@@ -12,8 +12,8 @@ TESTS = \
         parse_anchor \
         node_interface_set
 
-noinst_LTLIBRARIES = libtest-openvrml.la
-noinst_PROGRAMS = $(TESTS) parse
+check_LTLIBRARIES = libtest-openvrml.la
+check_PROGRAMS = $(TESTS) parse
 noinst_HEADERS = test_browser.h
 
 libtest_openvrml_la_SOURCES = test_browser.cpp

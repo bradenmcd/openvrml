@@ -1,3 +1,8 @@
+2005-09-11 Braden McDaniel  <braden@endoframe.com>
+
+	* tests/Makefile.am:  Use check_ instead of noinst_ for test
+	programs and libraries.
+
 2005-08-30 Braden McDaniel  <braden@endoframe.com>
 
 	Employ NVI (nonvirtual interface) idiom on
