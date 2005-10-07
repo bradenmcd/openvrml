@@ -100,6 +100,7 @@ namespace openvrml {
     typedef field_value_listener<sfbool> sfbool_listener;
     typedef field_value_listener<sfcolor> sfcolor_listener;
     typedef field_value_listener<sffloat> sffloat_listener;
+    typedef field_value_listener<sfdouble> sfdouble_listener;
     typedef field_value_listener<sfimage> sfimage_listener;
     typedef field_value_listener<sfint32> sfint32_listener;
     typedef field_value_listener<sfnode> sfnode_listener;
@@ -107,16 +108,21 @@ namespace openvrml {
     typedef field_value_listener<sfstring> sfstring_listener;
     typedef field_value_listener<sftime> sftime_listener;
     typedef field_value_listener<sfvec2f> sfvec2f_listener;
+    typedef field_value_listener<sfvec2d> sfvec2d_listener;
     typedef field_value_listener<sfvec3f> sfvec3f_listener;
+    typedef field_value_listener<sfvec3d> sfvec3d_listener;
     typedef field_value_listener<mfcolor> mfcolor_listener;
     typedef field_value_listener<mffloat> mffloat_listener;
+    typedef field_value_listener<mfdouble> mfdouble_listener;
     typedef field_value_listener<mfint32> mfint32_listener;
     typedef field_value_listener<mfnode> mfnode_listener;
     typedef field_value_listener<mfrotation> mfrotation_listener;
     typedef field_value_listener<mfstring> mfstring_listener;
     typedef field_value_listener<mftime> mftime_listener;
     typedef field_value_listener<mfvec2f> mfvec2f_listener;
+    typedef field_value_listener<mfvec2d> mfvec2d_listener;
     typedef field_value_listener<mfvec3f> mfvec3f_listener;
+    typedef field_value_listener<mfvec3d> mfvec3d_listener;
 
 
     class OPENVRML_API event_emitter : boost::noncopyable {
@@ -216,6 +222,7 @@ namespace openvrml {
     typedef field_value_emitter<sfbool> sfbool_emitter;
     typedef field_value_emitter<sfcolor> sfcolor_emitter;
     typedef field_value_emitter<sffloat> sffloat_emitter;
+    typedef field_value_emitter<sfdouble> sfdouble_emitter;
     typedef field_value_emitter<sfimage> sfimage_emitter;
     typedef field_value_emitter<sfint32> sfint32_emitter;
     typedef field_value_emitter<sfnode> sfnode_emitter;
@@ -223,16 +230,21 @@ namespace openvrml {
     typedef field_value_emitter<sfstring> sfstring_emitter;
     typedef field_value_emitter<sftime> sftime_emitter;
     typedef field_value_emitter<sfvec2f> sfvec2f_emitter;
+    typedef field_value_emitter<sfvec2d> sfvec2d_emitter;
     typedef field_value_emitter<sfvec3f> sfvec3f_emitter;
+    typedef field_value_emitter<sfvec3d> sfvec3d_emitter;
     typedef field_value_emitter<mfcolor> mfcolor_emitter;
     typedef field_value_emitter<mffloat> mffloat_emitter;
+    typedef field_value_emitter<mfdouble> mfdouble_emitter;
     typedef field_value_emitter<mfint32> mfint32_emitter;
     typedef field_value_emitter<mfnode> mfnode_emitter;
     typedef field_value_emitter<mfrotation> mfrotation_emitter;
     typedef field_value_emitter<mfstring> mfstring_emitter;
     typedef field_value_emitter<mftime> mftime_emitter;
     typedef field_value_emitter<mfvec2f> mfvec2f_emitter;
+    typedef field_value_emitter<mfvec2d> mfvec2d_emitter;
     typedef field_value_emitter<mfvec3f> mfvec3f_emitter;
+    typedef field_value_emitter<mfvec3d> mfvec3d_emitter;
 }
 
 # endif

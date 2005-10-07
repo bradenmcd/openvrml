@@ -208,14 +208,14 @@ void openvrml::color::hsv(float h, const float s, const float v) throw ()
         const float q = float(v * (1.0 - s * f));
         const float t = float(v * (1.0 - s * (1.0 - f)));
         switch (int(i)) {
-	default:
-	case 0: this->rgb[0] = v; this->rgb[1] = t; this->rgb[2] = p; break;
-	case 1: this->rgb[0] = q; this->rgb[1] = v; this->rgb[2] = p; break;
-	case 2: this->rgb[0] = p; this->rgb[1] = v; this->rgb[2] = t; break;
-	case 3: this->rgb[0] = p; this->rgb[1] = q; this->rgb[2] = v; break;
-	case 4: this->rgb[0] = t; this->rgb[1] = p; this->rgb[2] = v; break;
-	case 5: this->rgb[0] = v; this->rgb[1] = p; this->rgb[2] = q; break;
-	}
+        default:
+        case 0: this->rgb[0] = v; this->rgb[1] = t; this->rgb[2] = p; break;
+        case 1: this->rgb[0] = q; this->rgb[1] = v; this->rgb[2] = p; break;
+        case 2: this->rgb[0] = p; this->rgb[1] = v; this->rgb[2] = t; break;
+        case 3: this->rgb[0] = p; this->rgb[1] = q; this->rgb[2] = v; break;
+        case 4: this->rgb[0] = t; this->rgb[1] = p; this->rgb[2] = v; break;
+        case 5: this->rgb[0] = v; this->rgb[1] = p; this->rgb[2] = q; break;
+        }
     }
 }
 
@@ -269,7 +269,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
 
 
 /**
- * @class openvrml::vec2f
+ * @class openvrml::vec2<T>
  *
  * @ingroup basetypes
  *
@@ -279,7 +279,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
 /**
  * @internal
  *
- * @var float openvrml::vec2f::vec[2]
+ * @var T openvrml::vec2<T>::vec[2]
  *
  * @brief Vector components.
  */
@@ -287,7 +287,8 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
 /**
  * @brief Construct.
  */
-openvrml::vec2f::vec2f() throw ()
+template<typename T>
+openvrml::vec2<T>::vec2() throw ()
 {
     this->vec[0] = 0.0;
     this->vec[1] = 0.0;
@@ -300,7 +301,8 @@ openvrml::vec2f::vec2f() throw ()
  *
  * @param vec   an array comprising the vector components.
  */
-openvrml::vec2f::vec2f(const float (&vec)[2]) throw ()
+template<typename T>
+openvrml::vec2<T>::vec2(const T (&vec)[2]) throw ()
 {
     //
     // Ensure elements of vec are not NaN.
@@ -320,7 +322,8 @@ openvrml::vec2f::vec2f(const float (&vec)[2]) throw ()
  * @param x x component.
  * @param y y component.
  */
-openvrml::vec2f::vec2f(const float x, const float y) throw ()
+template<typename T>
+openvrml::vec2<T>::vec2(const T x, const T y) throw ()
 {
     //
     // Ensure x and y are not NaN.
@@ -339,7 +342,8 @@ openvrml::vec2f::vec2f(const float x, const float y) throw ()
  *
  * @return a reference to the object.
  */
-openvrml::vec2f & openvrml::vec2f::operator*=(const float scalar) throw ()
+template<typename T>
+openvrml::vec2<T> & openvrml::vec2<T>::operator*=(const T scalar) throw ()
 {
     this->vec[0] *= scalar;
     this->vec[1] *= scalar;
@@ -347,7 +351,7 @@ openvrml::vec2f & openvrml::vec2f::operator*=(const float scalar) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec2f
+ * @relatesalso openvrml::vec2<T>
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -356,15 +360,16 @@ openvrml::vec2f & openvrml::vec2f::operator*=(const float scalar) throw ()
  *
  * @return the result vector.
  */
-const openvrml::vec2f openvrml::operator*(const vec2f & lhs, const float rhs)
+template<typename T>
+const openvrml::vec2<T> openvrml::vec2<T>::operator*(const T rhs) const
     throw ()
 {
-    vec2f result(lhs);
+    vec2<T> result(*this);
     return result *= rhs;
 }
 
 /**
- * @relatesalso openvrml::vec2f
+ * @relatesalso openvrml::vec2<T>
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -373,10 +378,26 @@ const openvrml::vec2f openvrml::operator*(const vec2f & lhs, const float rhs)
  *
  * @return the result vector.
  */
-const openvrml::vec2f openvrml::operator*(const float lhs, const vec2f & rhs)
+const openvrml::vec2<float> openvrml::operator*(const float lhs, const vec2<float> & rhs)
     throw ()
 {
-    vec2f result(rhs);
+    vec2<float> result(rhs);
+    return result *= lhs;
+}
+/**
+ * @relatesalso openvrml::vec2<T>
+ *
+ * @brief Multiply a vector by a scalar.
+ *
+ * @param lhs   left-hand operand (the scalar).
+ * @param rhs   right-hand operand (the vector).
+ *
+ * @return the result vector.
+ */
+const openvrml::vec2<double> openvrml::operator*(const double lhs, const vec2<double> & rhs)
+    throw ()
+{
+    vec2<double> result(rhs);
     return result *= lhs;
 }
 
@@ -389,7 +410,8 @@ const openvrml::vec2f openvrml::operator*(const float lhs, const vec2f & rhs)
  *
  * @return a reference to the object.
  */
-openvrml::vec2f & openvrml::vec2f::operator/=(const float scalar) throw ()
+template<typename T>
+openvrml::vec2<T> & openvrml::vec2<T>::operator/=(const T scalar) throw ()
 {
     assert(scalar != 0.0);
     this->vec[0] /= scalar;
@@ -398,7 +420,7 @@ openvrml::vec2f & openvrml::vec2f::operator/=(const float scalar) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec2f
+ * @relatesalso openvrml::vec2<T>
  *
  * @brief Divide a vector by a scalar.
  *
@@ -409,10 +431,11 @@ openvrml::vec2f & openvrml::vec2f::operator/=(const float scalar) throw ()
  *
  * @return the result vector.
  */
-const openvrml::vec2f openvrml::operator/(const vec2f & lhs, const float rhs)
+template<typename T>
+const openvrml::vec2<T> openvrml::vec2<T>::operator/(const T rhs) const
     throw ()
 {
-    vec2f result(lhs);
+    vec2<T> result(*this);
     return result /= rhs;
 }
 
@@ -423,7 +446,8 @@ const openvrml::vec2f openvrml::operator/(const vec2f & lhs, const float rhs)
  *
  * @return a reference to the object.
  */
-openvrml::vec2f & openvrml::vec2f::operator+=(const vec2f & vec) throw ()
+template<typename T>
+openvrml::vec2<T> & openvrml::vec2<T>::operator+=(const vec2<T> & vec) throw ()
 {
     this->vec[0] += vec[0];
     this->vec[1] += vec[1];
@@ -431,7 +455,7 @@ openvrml::vec2f & openvrml::vec2f::operator+=(const vec2f & vec) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec2f
+ * @relatesalso openvrml::vec2<T>
  *
  * @brief Add two vectors.
  *
@@ -440,10 +464,11 @@ openvrml::vec2f & openvrml::vec2f::operator+=(const vec2f & vec) throw ()
  *
  * @return the result vector.
  */
-const openvrml::vec2f openvrml::operator+(const vec2f & lhs, const vec2f & rhs)
+template<typename T>
+const openvrml::vec2<T> openvrml::vec2<T>::operator+(const vec2<T> & rhs) const
     throw ()
 {
-    vec2f result(lhs);
+    vec2<T> result(*this);
     return result += rhs;
 }
 
@@ -454,7 +479,8 @@ const openvrml::vec2f openvrml::operator+(const vec2f & lhs, const vec2f & rhs)
  *
  * @return a reference to the object.
  */
-openvrml::vec2f & openvrml::vec2f::operator-=(const vec2f & vec) throw ()
+template<typename T>
+openvrml::vec2<T> & openvrml::vec2<T>::operator-=(const vec2<T> & vec) throw ()
 {
     this->vec[0] -= vec[0];
     this->vec[1] -= vec[1];
@@ -462,7 +488,7 @@ openvrml::vec2f & openvrml::vec2f::operator-=(const vec2f & vec) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec2f
+ * @relatesalso openvrml::vec2<T>
  *
  * @brief Subtract two vectors.
  *
@@ -471,10 +497,11 @@ openvrml::vec2f & openvrml::vec2f::operator-=(const vec2f & vec) throw ()
  *
  * @return the result vector.
  */
-const openvrml::vec2f openvrml::operator-(const vec2f & lhs, const vec2f & rhs)
+template<typename T>
+const openvrml::vec2<T> openvrml::vec2<T>::operator-( const vec2<T> & rhs) const
     throw ()
 {
-    vec2f result(lhs);
+    vec2<T> result(*this);
     return result -= rhs;
 }
 
@@ -483,13 +510,14 @@ const openvrml::vec2f openvrml::operator-(const vec2f & lhs, const vec2f & rhs)
  *
  * @return the additive inverse of the vector.
  */
-const openvrml::vec2f openvrml::vec2f::operator-() const throw ()
+template<typename T>
+const openvrml::vec2<T> openvrml::vec2<T>::operator-() const throw ()
 {
-    return vec2f(-this->vec[0], -this->vec[1]);
+    return vec2<T>(-this->vec[0], -this->vec[1]);
 }
 
 /**
- * @fn const float & openvrml::vec2f::operator[](const size_t index) const throw ()
+ * @fn const T & openvrml::vec2<T>::operator[](const size_t index) const throw ()
  *
  * @brief Index-based component access.
  *
@@ -502,7 +530,7 @@ const openvrml::vec2f openvrml::vec2f::operator-() const throw ()
  */
 
 /**
- * @fn float openvrml::vec2f::x() const throw ()
+ * @fn T openvrml::vec2<T>::x() const throw ()
  *
  * @brief Get the x component.
  *
@@ -510,7 +538,7 @@ const openvrml::vec2f openvrml::vec2f::operator-() const throw ()
  */
 
 /**
- * @fn float openvrml::vec2f::y() const throw ()
+ * @fn T openvrml::vec2<T>::y() const throw ()
  *
  * @brief Get the y component.
  *
@@ -518,7 +546,7 @@ const openvrml::vec2f openvrml::vec2f::operator-() const throw ()
  */
 
 /**
- * @fn void openvrml::vec2f::x(float value) throw ()
+ * @fn void openvrml::vec2<T>::x(T value) throw ()
  *
  * @brief Set the x component.
  *
@@ -528,7 +556,7 @@ const openvrml::vec2f openvrml::vec2f::operator-() const throw ()
  */
 
 /**
- * @fn void openvrml::vec2f::y(float value) throw ()
+ * @fn void openvrml::vec2<T>::y(T value) throw ()
  *
  * @brief Set the y component.
  *
@@ -544,7 +572,8 @@ const openvrml::vec2f openvrml::vec2f::operator-() const throw ()
  *
  * @return the dot product of the vector and @p vec.
  */
-float openvrml::vec2f::dot(const vec2f & vec) const throw ()
+template<typename T>
+T openvrml::vec2<T>::dot(const vec2<T> & vec) const throw ()
 {
     return this->vec[0] * vec[0]
         + this->vec[1] * vec[1];
@@ -555,27 +584,29 @@ float openvrml::vec2f::dot(const vec2f & vec) const throw ()
  *
  * @return the length of the vector.
  */
-float openvrml::vec2f::length() const throw ()
+template<typename T>
+T openvrml::vec2<T>::length() const throw ()
 {
-    return float(sqrt(this->dot(*this)));
+    return T(sqrt(this->dot(*this)));
 }
 
 /**
  * @brief Normalize.
  *
- * @return a vec2f that is the vector normalized.
+ * @return a vec2<T> that is the vector normalized.
  */
-const openvrml::vec2f openvrml::vec2f::normalize() const throw ()
+template<typename T>
+const openvrml::vec2<T> openvrml::vec2<T>::normalize() const throw ()
 {
     using openvrml_::fequal;
-    const float len = this->length();
-    vec2f result(*this);
-    if (fequal<float>()(len, 0.0)) { result /= len; }
+    const T len = this->length();
+    vec2<T> result(*this);
+    if (!fequal<T>()(len, 0.0)) { result /= len; }
     return result;
 }
 
 /**
- * @relatesalso openvrml::vec2f
+ * @relatesalso openvrml::vec2<T>
  *
  * @brief Compare for equality.
  *
@@ -585,14 +616,15 @@ const openvrml::vec2f openvrml::vec2f::normalize() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const vec2f & lhs, const vec2f & rhs) throw ()
+template<typename T>
+bool openvrml::vec2<T>::operator==(const vec2<T> & rhs) const throw ()
 {
     using openvrml_::fequal;
-    return std::equal(&lhs[0], &lhs[0] + 2, &rhs[0], fequal<float>());
+    return std::equal(&(*this)[0], &(*this)[0] + 2, &rhs[0], fequal<T>());
 }
 
 /**
- * @relatesalso openvrml::vec2f
+ * @relatesalso openvrml::vec2<T>
  *
  * @brief Compare for inequality.
  *
@@ -602,13 +634,14 @@ bool openvrml::operator==(const vec2f & lhs, const vec2f & rhs) throw ()
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator!=(const vec2f & lhs, const vec2f & rhs) throw ()
+template<typename T>
+bool openvrml::vec2<T>::operator!=(const vec2<T> & rhs) const throw ()
 {
-    return !(lhs == rhs);
+    return !(*this == rhs);
 }
 
 /**
- * @relatesalso openvrml::vec2f
+ * @relatesalso openvrml::vec2<T>
  *
  * @brief Stream output.
  *
@@ -617,14 +650,34 @@ bool openvrml::operator!=(const vec2f & lhs, const vec2f & rhs) throw ()
  *
  * @return @p out.
  */
-std::ostream & openvrml::operator<<(std::ostream & out, const vec2f & v)
+std::ostream & openvrml::operator<<(std::ostream & out, const vec2<float> & v)
 {
     return out << v.x() << ' ' << v.y();
 }
 
+/**
+ * @relatesalso openvrml::vec2<T>
+ *
+ * @brief Stream output.
+ *
+ * @param out   output stream.
+ * @param v     a 2-component vector.
+ *
+ * @return @p out.
+ */
+std::ostream & openvrml::operator<<(std::ostream & out, const vec2<double> & v)
+{
+    return out << v.x() << ' ' << v.y();
+}
+
+//
+// Explicitly instantiate vec2<float> and vec2<double> for vec2f and vec2d.
+//
+template class openvrml::vec2<float>;
+template class openvrml::vec2<double>;
 
 /**
- * @class openvrml::vec3f
+ * @class openvrml::vec3<T>
  *
  * @ingroup basetypes
  *
@@ -634,7 +687,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2f & v)
 /**
  * @internal
  *
- * @var float openvrml::vec3f::vec[3]
+ * @var T openvrml::vec3<T>::vec[3]
  *
  * @brief Vector components.
  */
@@ -642,7 +695,8 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2f & v)
 /**
  * @brief Construct.
  */
-openvrml::vec3f::vec3f() throw ()
+template<typename T>
+openvrml::vec3<T>::vec3() throw ()
 {
     this->vec[0] = 0.0;
     this->vec[1] = 0.0;
@@ -656,7 +710,8 @@ openvrml::vec3f::vec3f() throw ()
  *
  * @param vec   an array comprising the vector components.
  */
-openvrml::vec3f::vec3f(const float (&vec)[3]) throw ()
+template<typename T>
+openvrml::vec3<T>::vec3(const T (&vec)[3]) throw ()
 {
     //
     // Ensure the elements of vec are not NaN.
@@ -679,7 +734,8 @@ openvrml::vec3f::vec3f(const float (&vec)[3]) throw ()
  * @param y y component.
  * @param z z component.
  */
-openvrml::vec3f::vec3f(const float x, const float y, const float z) throw ()
+template<typename T>
+openvrml::vec3<T>::vec3(const T x, const T y, const T z) throw ()
 {
     //
     // Ensure x, y, and z are not NaN.
@@ -700,9 +756,10 @@ openvrml::vec3f::vec3f(const float x, const float y, const float z) throw ()
  *
  * @return a reference to the object.
  */
-openvrml::vec3f & openvrml::vec3f::operator*=(const vec3f & vec) throw ()
+template<typename T>
+openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const vec3<T> & vec) throw ()
 {
-    vec3f temp;
+    vec3<T> temp;
     temp.x(this->y() * vec.z() - this->z() * vec.y());
     temp.y(this->z() * vec.x() - this->x() * vec.z());
     temp.z(this->x() * vec.y() - this->y() * vec.x());
@@ -711,7 +768,7 @@ openvrml::vec3f & openvrml::vec3f::operator*=(const vec3f & vec) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3f
+ * @relatesalso openvrml::vec3<T>
  *
  * @brief Cross multiply two vectors.
  *
@@ -720,10 +777,11 @@ openvrml::vec3f & openvrml::vec3f::operator*=(const vec3f & vec) throw ()
  *
  * @return the result vector.
  */
-const openvrml::vec3f openvrml::operator*(const vec3f & lhs, const vec3f & rhs)
+template<typename T>
+const openvrml::vec3<T> openvrml::vec3<T>::operator*(const vec3<T> & rhs) const
     throw ()
 {
-    vec3f result(lhs);
+    vec3<T> result(*this);
     return result *= rhs;
 }
 
@@ -734,15 +792,16 @@ const openvrml::vec3f openvrml::operator*(const vec3f & lhs, const vec3f & rhs)
  *
  * @return a reference to the object.
  */
-openvrml::vec3f & openvrml::vec3f::operator*=(const mat4f & mat) throw ()
+template<typename T>
+openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const mat4f & mat) throw ()
 {
-    const float x = this->vec[0] * mat[0][0] + this->vec[1] * mat[1][0]
+    const T x = this->vec[0] * mat[0][0] + this->vec[1] * mat[1][0]
                     + this->vec[2] * mat[2][0] + mat[3][0];
-    const float y = this->vec[0] * mat[0][1] + this->vec[1] * mat[1][1]
+    const T y = this->vec[0] * mat[0][1] + this->vec[1] * mat[1][1]
                     + this->vec[2] * mat[2][1] + mat[3][1];
-    const float z = this->vec[0] * mat[0][2] + this->vec[1] * mat[1][2]
+    const T z = this->vec[0] * mat[0][2] + this->vec[1] * mat[1][2]
                     + this->vec[2] * mat[2][2] + mat[3][2];
-    const float w = this->vec[0] * mat[0][3] + this->vec[1] * mat[1][3]
+    const T w = this->vec[0] * mat[0][3] + this->vec[1] * mat[1][3]
                     + this->vec[2] * mat[2][3] + mat[3][3];
     this->vec[0] = x / w;
     this->vec[1] = y / w;
@@ -751,7 +810,7 @@ openvrml::vec3f & openvrml::vec3f::operator*=(const mat4f & mat) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3f
+ * @relatesalso openvrml::vec3<T>
  *
  * @brief Multiply a vector by a matrix.
  *
@@ -760,15 +819,16 @@ openvrml::vec3f & openvrml::vec3f::operator*=(const mat4f & mat) throw ()
  *
  * @return the result vector.
  */
-const openvrml::vec3f openvrml::operator*(const vec3f & vec, const mat4f & mat)
+template<typename T>
+const openvrml::vec3<T> openvrml::vec3<T>::operator*(const mat4f & mat) const
     throw ()
 {
-    vec3f result(vec);
+    vec3<T> result(*this);
     return result *= mat;
 }
 
 /**
- * @relatesalso openvrml::vec3f
+ * @relatesalso openvrml::vec3<T>
  *
  * @brief Multiply a matrix by a vector.
  *
@@ -777,18 +837,29 @@ const openvrml::vec3f openvrml::operator*(const vec3f & vec, const mat4f & mat)
  *
  * @return the result vector.
  */
-const openvrml::vec3f openvrml::operator*(const mat4f & mat, const vec3f & vec)
-    throw ()
+namespace {
+    template<typename T>
+        const openvrml::vec3<T> do_vec3_mat_mult(const openvrml::mat4f & mat, const openvrml::vec3<T> & vec)
+        throw ()
+    {
+        const T x = mat[0][0] * vec[0] + mat[0][1] * vec[1]
+                        + mat[0][2] * vec[2] + mat[0][3];
+        const T y = mat[1][0] * vec[0] + mat[1][1] * vec[1]
+                        + mat[1][2] * vec[2] + mat[1][3];
+        const T z = mat[2][0] * vec[0] + mat[2][1] * vec[1]
+                        + mat[2][2] * vec[2] + mat[2][3];
+        const T w = mat[3][0] * vec[0] + mat[3][1] * vec[1]
+                        + mat[3][2] * vec[2] + mat[3][3];
+        return openvrml::vec3<T>(x / w, y / w, z / w);
+    }
+}
+const openvrml::vec3<float> openvrml::operator*(const mat4f & mat, const vec3<float> & vec) throw ()
 {
-    const float x = mat[0][0] * vec[0] + mat[0][1] * vec[1]
-                    + mat[0][2] * vec[2] + mat[0][3];
-    const float y = mat[1][0] * vec[0] + mat[1][1] * vec[1]
-                    + mat[1][2] * vec[2] + mat[1][3];
-    const float z = mat[2][0] * vec[0] + mat[2][1] * vec[1]
-                    + mat[2][2] * vec[2] + mat[2][3];
-    const float w = mat[3][0] * vec[0] + mat[3][1] * vec[1]
-                    + mat[3][2] * vec[2] + mat[3][3];
-    return vec3f(x / w, y / w, z / w);
+    return do_vec3_mat_mult(mat, vec);
+}
+const openvrml::vec3<double> openvrml::operator*(const mat4f & mat, const vec3<double> & vec) throw ()
+{
+    return do_vec3_mat_mult(mat, vec);
 }
 
 /**
@@ -798,7 +869,8 @@ const openvrml::vec3f openvrml::operator*(const mat4f & mat, const vec3f & vec)
  *
  * @return a reference to the object.
  */
-openvrml::vec3f & openvrml::vec3f::operator*=(const float scalar) throw ()
+template<typename T>
+openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const T scalar) throw ()
 {
     this->vec[0] *= scalar;
     this->vec[1] *= scalar;
@@ -807,7 +879,7 @@ openvrml::vec3f & openvrml::vec3f::operator*=(const float scalar) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3f
+ * @relatesalso openvrml::vec3<T>
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -816,15 +888,16 @@ openvrml::vec3f & openvrml::vec3f::operator*=(const float scalar) throw ()
  *
  * @return the result vector.
  */
-const openvrml::vec3f openvrml::operator*(const vec3f & lhs, const float rhs)
+template<typename T>
+const openvrml::vec3<T> openvrml::vec3<T>::operator*(const T rhs) const
     throw ()
 {
-    vec3f result(lhs);
+    vec3<T> result(*this);
     return result *= rhs;
 }
 
 /**
- * @relatesalso openvrml::vec3f
+ * @relatesalso openvrml::vec3<T>
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -833,11 +906,28 @@ const openvrml::vec3f openvrml::operator*(const vec3f & lhs, const float rhs)
  *
  * @return the result vector.
  */
-const openvrml::vec3f openvrml::operator*(const float lhs, const vec3f & rhs)
+const openvrml::vec3<float> openvrml::operator*(const float lhs, const openvrml::vec3<float> & rhs)
     throw ()
 {
-    vec3f result(rhs);
-    return result *= lhs;
+    vec3<float> result(rhs);
+    return result *= rhs;
+}
+
+/**
+ * @relatesalso openvrml::vec3<T>
+ *
+ * @brief Multiply a vector by a scalar.
+ *
+ * @param lhs   left-hand operand (the scalar).
+ * @param rhs   right-hand operand (the vector).
+ *
+ * @return the result vector.
+ */
+const openvrml::vec3<double> openvrml::operator*(const double lhs, const openvrml::vec3<double> & rhs)
+    throw ()
+{
+    vec3<double> result(rhs);
+    return result *= rhs;
 }
 
 /**
@@ -849,7 +939,8 @@ const openvrml::vec3f openvrml::operator*(const float lhs, const vec3f & rhs)
  *
  * @return a reference to the object.
  */
-openvrml::vec3f & openvrml::vec3f::operator/=(const float scalar) throw ()
+template<typename T>
+openvrml::vec3<T> & openvrml::vec3<T>::operator/=(const T scalar) throw ()
 {
     assert(scalar != 0.0);
     this->vec[0] /= scalar;
@@ -859,7 +950,7 @@ openvrml::vec3f & openvrml::vec3f::operator/=(const float scalar) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3f
+ * @relatesalso openvrml::vec3<T>
  *
  * @brief Divide a vector by a scalar.
  *
@@ -870,10 +961,11 @@ openvrml::vec3f & openvrml::vec3f::operator/=(const float scalar) throw ()
  *
  * @return the result vector.
  */
-const openvrml::vec3f openvrml::operator/(const vec3f & lhs, const float rhs)
+template<typename T>
+const openvrml::vec3<T> openvrml::vec3<T>::operator/(const T rhs) const
     throw ()
 {
-    vec3f result(lhs);
+    vec3<T> result(*this);
     return result /= rhs;
 }
 
@@ -884,7 +976,8 @@ const openvrml::vec3f openvrml::operator/(const vec3f & lhs, const float rhs)
  *
  * @return a reference to the object.
  */
-openvrml::vec3f & openvrml::vec3f::operator+=(const vec3f & vec) throw ()
+template<typename T>
+openvrml::vec3<T> & openvrml::vec3<T>::operator+=(const vec3<T> & vec) throw ()
 {
     this->vec[0] += vec[0];
     this->vec[1] += vec[1];
@@ -893,7 +986,7 @@ openvrml::vec3f & openvrml::vec3f::operator+=(const vec3f & vec) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3f
+ * @relatesalso openvrml::vec3<T>
  *
  * @brief Add two vectors.
  *
@@ -902,10 +995,11 @@ openvrml::vec3f & openvrml::vec3f::operator+=(const vec3f & vec) throw ()
  *
  * @return the result vector.
  */
-const openvrml::vec3f openvrml::operator+(const vec3f & lhs, const vec3f & rhs)
+template<typename T>
+const openvrml::vec3<T> openvrml::vec3<T>::operator+(const vec3<T> & rhs) const
     throw ()
 {
-    vec3f result(lhs);
+    vec3<T> result(*this);
     return result += rhs;
 }
 
@@ -916,7 +1010,8 @@ const openvrml::vec3f openvrml::operator+(const vec3f & lhs, const vec3f & rhs)
  *
  * @return a reference to the object.
  */
-openvrml::vec3f & openvrml::vec3f::operator-=(const vec3f & vec) throw ()
+template<typename T>
+openvrml::vec3<T> & openvrml::vec3<T>::operator-=(const vec3<T> & vec) throw ()
 {
     this->vec[0] -= vec[0];
     this->vec[1] -= vec[1];
@@ -925,7 +1020,7 @@ openvrml::vec3f & openvrml::vec3f::operator-=(const vec3f & vec) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3f
+ * @relatesalso openvrml::vec3<T>
  *
  * @brief Subtract two vectors.
  *
@@ -934,10 +1029,11 @@ openvrml::vec3f & openvrml::vec3f::operator-=(const vec3f & vec) throw ()
  *
  * @return the result vector.
  */
-const openvrml::vec3f openvrml::operator-(const vec3f & lhs, const vec3f & rhs)
+template<typename T>
+const openvrml::vec3<T> openvrml::vec3<T>::operator-(const vec3<T> & rhs) const
     throw ()
 {
-    vec3f result(lhs);
+    vec3<T> result(*this);
     return result -= rhs;
 }
 
@@ -946,13 +1042,14 @@ const openvrml::vec3f openvrml::operator-(const vec3f & lhs, const vec3f & rhs)
  *
  * @return the additive inverse of the vector.
  */
-const openvrml::vec3f openvrml::vec3f::operator-() const throw()
+template<typename T>
+const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
 {
-    return vec3f(-this->vec[0], -this->vec[1], -this->vec[2]);
+    return vec3<T>(-this->vec[0], -this->vec[1], -this->vec[2]);
 }
 
 /**
- * @fn const float & openvrml::vec3f::operator[](size_t index) const throw ()
+ * @fn const T & openvrml::vec3<T>::operator[](size_t index) const throw ()
  *
  * @brief Index-based component access.
  *
@@ -965,7 +1062,7 @@ const openvrml::vec3f openvrml::vec3f::operator-() const throw()
  */
 
 /**
- * @fn float openvrml::vec3f::x() const throw ()
+ * @fn T openvrml::vec3<T>::x() const throw ()
  *
  * @brief Get the x component.
  *
@@ -973,7 +1070,7 @@ const openvrml::vec3f openvrml::vec3f::operator-() const throw()
  */
 
 /**
- * @fn float openvrml::vec3f::y() const throw ()
+ * @fn T openvrml::vec3<T>::y() const throw ()
  *
  * @brief Get the y component.
  *
@@ -981,7 +1078,7 @@ const openvrml::vec3f openvrml::vec3f::operator-() const throw()
  */
 
 /**
- * @fn float openvrml::vec3f::z() const throw ()
+ * @fn T openvrml::vec3<T>::z() const throw ()
  *
  * @brief Get the z component.
  *
@@ -989,7 +1086,7 @@ const openvrml::vec3f openvrml::vec3f::operator-() const throw()
  */
 
 /**
- * @fn void openvrml::vec3f::x(float value) throw ()
+ * @fn void openvrml::vec3<T>::x(T value) throw ()
  *
  * @brief Set the x component.
  *
@@ -999,7 +1096,7 @@ const openvrml::vec3f openvrml::vec3f::operator-() const throw()
  */
 
 /**
- * @fn void openvrml::vec3f::y(float value) throw ()
+ * @fn void openvrml::vec3<T>::y(T value) throw ()
  *
  * @brief Set the y component.
  *
@@ -1009,7 +1106,7 @@ const openvrml::vec3f openvrml::vec3f::operator-() const throw()
  */
 
 /**
- * @fn void openvrml::vec3f::z(float value) throw ()
+ * @fn void openvrml::vec3<T>::z(T value) throw ()
  *
  * @brief Set the z component.
  *
@@ -1025,7 +1122,8 @@ const openvrml::vec3f openvrml::vec3f::operator-() const throw()
  *
  * @return the dot product of the vector and @p vec.
  */
-float openvrml::vec3f::dot(const vec3f & vec) const throw()
+template<typename T>
+T openvrml::vec3<T>::dot(const vec3<T> & vec) const throw()
 {
     return this->vec[0] * vec[0]
         + this->vec[1] * vec[1]
@@ -1037,27 +1135,29 @@ float openvrml::vec3f::dot(const vec3f & vec) const throw()
  *
  * @return the length of the vector.
  */
-float openvrml::vec3f::length() const throw ()
+template<typename T>
+T openvrml::vec3<T>::length() const throw ()
 {
-    return float(sqrt(this->dot(*this)));
+    return T(sqrt(this->dot(*this)));
 }
 
 /**
  * @brief Normalize.
  *
- * @return a vec3f that is the vector normalized.
+ * @return a vec3<T> that is the vector normalized.
  */
-const openvrml::vec3f openvrml::vec3f::normalize() const throw ()
+template<typename T>
+const openvrml::vec3<T> openvrml::vec3<T>::normalize() const throw ()
 {
     using openvrml_::fequal;
-    const float len = this->length();
-    vec3f result(*this);
-    if (!fequal<float>()(len, 0.0f)) { result /= len; }
+    const T len = this->length();
+    vec3<T> result(*this);
+    if (!fequal<T>()(len, 0.0f)) { result /= len; }
     return result;
 }
 
 /**
- * @relatesalso openvrml::vec3f
+ * @relatesalso openvrml::vec3<T>
  *
  * @brief Compare for equality.
  *
@@ -1067,14 +1167,15 @@ const openvrml::vec3f openvrml::vec3f::normalize() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const vec3f & lhs, const vec3f & rhs) throw ()
+template<typename T>
+bool openvrml::vec3<T>::operator==(const vec3<T> & rhs) const throw ()
 {
     using openvrml_::fequal;
-    return std::equal(&lhs[0], &lhs[0] + 3, &rhs[0], fequal<float>());
+    return std::equal(&(*this)[0], &(*this)[0] + 3, &rhs[0], fequal<T>());
 }
 
 /**
- * @relatesalso openvrml::vec3f
+ * @relatesalso openvrml::vec3<T>
  *
  * @brief Compare for inequality.
  *
@@ -1084,13 +1185,14 @@ bool openvrml::operator==(const vec3f & lhs, const vec3f & rhs) throw ()
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const vec3f & lhs, const vec3f & rhs) throw ()
+template<typename T>
+bool openvrml::vec3<T>::operator!=(const vec3<T> & rhs) const throw ()
 {
-    return !(lhs == rhs);
+    return !(*this == rhs);
 }
 
 /**
- * @relatesalso openvrml::vec3f
+ * @relatesalso openvrml::vec3<T>
  *
  * @brief Stream output.
  *
@@ -1099,11 +1201,31 @@ bool openvrml::operator!=(const vec3f & lhs, const vec3f & rhs) throw ()
  *
  * @return @p out.
  */
-std::ostream & openvrml::operator<<(std::ostream & out, const vec3f & v)
+std::ostream & openvrml::operator<<(std::ostream & out, const vec3<float> & v)
 {
     return out << v.x() << ' ' << v.y() << ' ' << v.z();
 }
 
+/**
+ * @relatesalso openvrml::vec3<T>
+ *
+ * @brief Stream output.
+ *
+ * @param out   output stream.
+ * @param v     a 3-component vector.
+ *
+ * @return @p out.
+ */
+std::ostream & openvrml::operator<<(std::ostream & out, const vec3<double> & v)
+{
+    return out << v.x() << ' ' << v.y() << ' ' << v.z();
+}
+
+//
+// Explicitly instantiate vec3<float> and vec3<double> for vec3f and vec3d.
+//
+template class openvrml::vec3<float>;
+template class openvrml::vec3<double>;
 
 /**
  * @class openvrml::rotation
@@ -3098,7 +3220,7 @@ void openvrml::image::resize(const size_t x, const size_t y)
  *
  * @param value number of components.
  */
- void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
+void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
 {
     assert(value <= 4);
     this->array_.resize(this->x_ * this->y_ * value);

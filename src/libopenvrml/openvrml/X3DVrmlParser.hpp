@@ -1,159 +1,144 @@
-#ifndef INC_Vrml97Parser_hpp_
-#define INC_Vrml97Parser_hpp_
+#ifndef INC_X3DVrmlParser_hpp_
+#define INC_X3DVrmlParser_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.4: "Vrml97Parser.g" -> "Vrml97Parser.hpp"$ */
+/* $ANTLR 2.7.4: "expandedX3DVrmlParser.g" -> "X3DVrmlParser.hpp"$ */
 #include <antlr/TokenStream.hpp>
 #include <antlr/TokenBuffer.hpp>
-#include "Vrml97ParserTokenTypes.hpp"
+#include "X3DVrmlParserTokenTypes.hpp"
 #include <antlr/LLkParser.hpp>
 
-#line 22 "Vrml97Parser.g"
+#line 1 "expandedX3DVrmlParser.g"
 
-# include <memory>
-# include <boost/shared_ptr.hpp>
-# include "field_value.h"
-# include "node_ptr.h"
-# define ANTLR_LBRACE {
-# define ANTLR_RBRACE }
-
-namespace openvrml {
-    class scope;
-    class script_node;
-    class node_type;
-}
+# include "Vrml97Parser.hpp"
 
 namespace {
-    class Vrml97Scanner : public antlr::TokenStream {
+    class X3DVrmlScanner : public Vrml97Scanner {
     public:
-        static const int EOF_;
         //
         // The following identifiers for constants must match those in the file
-        // Vrml97TokenTypes.txt.
+        // X3DVrmlTokenTypes.txt.
         //
-        static const int PERIOD;
-        static const int LBRACKET;
-        static const int RBRACKET;
-        static const int LBRACE;
-        static const int RBRACE;
-        static const int ID;
-        static const int INTEGER;
-        static const int HEX_INTEGER;
-        static const int REAL;
-        static const int STRING;
-        static const int KEYWORD_DEF;
-        static const int KEYWORD_EVENTIN;
-        static const int KEYWORD_EVENTOUT;
-        static const int KEYWORD_EXPOSEDFIELD;
-        static const int KEYWORD_EXTERNPROTO;
-        static const int KEYWORD_FALSE;
-        static const int KEYWORD_FIELD;
-        static const int KEYWORD_IS;
-        static const int KEYWORD_NULL;
-        static const int KEYWORD_PROTO;
-        static const int KEYWORD_ROUTE;
-        static const int KEYWORD_TO;
-        static const int KEYWORD_TRUE;
-        static const int KEYWORD_USE;
-        static const int FIELDTYPE_SFBOOL;
-        static const int FIELDTYPE_SFCOLOR;
-        static const int FIELDTYPE_SFFLOAT;
-        static const int FIELDTYPE_SFIMAGE;
-        static const int FIELDTYPE_SFINT32;
-        static const int FIELDTYPE_SFNODE;
-        static const int FIELDTYPE_SFROTATION;
-        static const int FIELDTYPE_SFSTRING;
-        static const int FIELDTYPE_SFTIME;
-        static const int FIELDTYPE_SFVEC2F;
-        static const int FIELDTYPE_SFVEC3F;
-        static const int FIELDTYPE_MFCOLOR;
-        static const int FIELDTYPE_MFFLOAT;
-        static const int FIELDTYPE_MFINT32;
-        static const int FIELDTYPE_MFNODE;
-        static const int FIELDTYPE_MFROTATION;
-        static const int FIELDTYPE_MFSTRING;
-        static const int FIELDTYPE_MFTIME;
-        static const int FIELDTYPE_MFVEC2F;
-        static const int FIELDTYPE_MFVEC3F;
+        static const int COLON;
+        static const int KEYWORD_AS;
+        static const int KEYWORD_COMPONENT;
+        static const int KEYWORD_EXPORT;
+        static const int KEYWORD_IMPORT;
+        static const int KEYWORD_META;
+        static const int KEYWORD_PROFILE;
+        static const int KEYWORD_INPUTONLY;
+        static const int KEYWORD_OUTPUTONLY;
+        static const int KEYWORD_INPUTOUTPUT;
+        static const int KEYWORD_INITIALIZEONLY;
+        static const int FIELDTYPE_SFCOLORRGBA;
+        static const int FIELDTYPE_SFDOUBLE;
+        static const int FIELDTYPE_SFVEC2D;
+        static const int FIELDTYPE_SFVEC3D;
+        static const int FIELDTYPE_MFBOOL;
+        static const int FIELDTYPE_MFCOLORRGBA;
+        static const int FIELDTYPE_MFDOUBLE;
+        static const int FIELDTYPE_MFIMAGE;
+        static const int FIELDTYPE_MFVEC2D;
+        static const int FIELDTYPE_MFVEC3D;
 
-        Vrml97Scanner(std::istream &);
-
-        virtual antlr::RefToken nextToken();
+        X3DVrmlScanner(std::istream &);
 
     protected:
-        void expectFieldType();
-        virtual void identifyKeyword(antlr::Token &);
         virtual void identifyFieldType(antlr::Token &);
 
     private:
-        void getNextChar();
-        void identifyTerminalSymbol(antlr::Token &);
-
-        std::istream & in_;
-        size_t      line_;
-        size_t      col_;
-        int         c_;
-        int         prev_char_;
-        int         prev_token_type_;
-        bool        read_too_much_;
-        bool        expecting_field_type_;
+        virtual void identifyKeyword(antlr::Token &);
     };
-
-    //
-    // Per-node list of IS mappings. A multimap is used for no other reason
-    // than that redundancies are checked later.
-    //
-    typedef std::multimap<std::string, std::string> is_list;
 }
 
 namespace openvrml ANTLR_LBRACE
 
-#line 112 "Vrml97Parser.hpp"
-class CUSTOM_API Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
+#line 57 "X3DVrmlParser.hpp"
+class CUSTOM_API X3DVrmlParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public X3DVrmlParserTokenTypes
 {
-#line 614 "Vrml97Parser.g"
+#line 164 "expandedX3DVrmlParser.g"
 
 public:
-    Vrml97Parser(antlr::TokenStream & lexer, const std::string & uri):
+    X3DVrmlParser(antlr::TokenStream & lexer, const std::string & uri):
         antlr::LLkParser(lexer, 1),
         uri(uri)
     {}
 
 private:
     const std::string uri;
-#line 116 "Vrml97Parser.hpp"
+#line 61 "X3DVrmlParser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:
-	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf, int k);
+	X3DVrmlParser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf, int k);
 public:
-	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf);
+	X3DVrmlParser(ANTLR_USE_NAMESPACE(antlr)TokenBuffer& tokenBuf);
 protected:
-	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenStream& lexer, int k);
+	X3DVrmlParser(ANTLR_USE_NAMESPACE(antlr)TokenStream& lexer, int k);
 public:
-	Vrml97Parser(ANTLR_USE_NAMESPACE(antlr)TokenStream& lexer);
-	Vrml97Parser(const ANTLR_USE_NAMESPACE(antlr)ParserSharedInputState& state);
+	X3DVrmlParser(ANTLR_USE_NAMESPACE(antlr)TokenStream& lexer);
+	X3DVrmlParser(const ANTLR_USE_NAMESPACE(antlr)ParserSharedInputState& state);
 	int getNumTokens() const
 	{
-		return Vrml97Parser::NUM_TOKENS;
+		return X3DVrmlParser::NUM_TOKENS;
 	}
 	const char* getTokenName( int type ) const
 	{
 		if( type > getNumTokens() ) return 0;
-		return Vrml97Parser::tokenNames[type];
+		return X3DVrmlParser::tokenNames[type];
 	}
 	const char* const* getTokenNames() const
 	{
-		return Vrml97Parser::tokenNames;
+		return X3DVrmlParser::tokenNames;
 	}
 	public: void vrmlScene(
 		openvrml::scene & scene,
           std::vector<node_ptr> & nodes
 	);
+	public: openvrml::profile_id  profileStatement();
+	public: void componentStatement();
+	public: void metaStatement();
 	public: void statement(
 		openvrml::browser & browser,
           std::vector<node_ptr> & nodes,
           const boost::shared_ptr<openvrml::scope> & scope
+	);
+	public: int32  intValue();
+	public: std::string  stringValue();
+	public: openvrml::field_value::type_id  fieldType();
+	public: boost::shared_ptr<field_value>  nonNodeFieldValue(
+		openvrml::field_value::type_id ft
+	);
+	public: boost::shared_ptr<field_value>  sfBoolValue();
+	public: boost::shared_ptr<field_value>  sfColorValue();
+	public: boost::shared_ptr<field_value>  sfFloatValue();
+	public: boost::shared_ptr<field_value>  sfDoubleValue();
+	public: boost::shared_ptr<field_value>  sfImageValue();
+	public: boost::shared_ptr<field_value>  sfInt32Value();
+	public: boost::shared_ptr<field_value>  sfRotationValue();
+	public: boost::shared_ptr<field_value>  sfStringValue();
+	public: boost::shared_ptr<field_value>  sfTimeValue();
+	public: boost::shared_ptr<field_value>  sfVec2fValue();
+	public: boost::shared_ptr<field_value>  sfVec2dValue();
+	public: boost::shared_ptr<field_value>  sfVec3fValue();
+	public: boost::shared_ptr<field_value>  sfVec3dValue();
+	public: boost::shared_ptr<field_value>  mfColorValue();
+	public: boost::shared_ptr<field_value>  mfFloatValue();
+	public: boost::shared_ptr<field_value>  mfDoubleValue();
+	public: boost::shared_ptr<field_value>  mfInt32Value();
+	public: boost::shared_ptr<field_value>  mfRotationValue();
+	public: boost::shared_ptr<field_value>  mfStringValue();
+	public: boost::shared_ptr<field_value>  mfTimeValue();
+	public: boost::shared_ptr<field_value>  mfVec2fValue();
+	public: boost::shared_ptr<field_value>  mfVec2dValue();
+	public: boost::shared_ptr<field_value>  mfVec3fValue();
+	public: boost::shared_ptr<field_value>  mfVec3dValue();
+	public: double  doubleValue();
+	public: void vec2dValue(
+		vec2d & v
+	);
+	public: void vec3dValue(
+		vec3d & v
 	);
 	public: node_ptr  nodeStatement(
 		openvrml::browser & browser,
@@ -195,7 +180,6 @@ public:
           proto_node_class::routes_t & routes
 	);
 	public: node_interface::type_id  eventInterfaceType();
-	public: openvrml::field_value::type_id  fieldType();
 	public: node_interface::type_id  fieldInterfaceType();
 	public: boost::shared_ptr<field_value>  fieldValue(
 		openvrml::browser & browser,
@@ -236,7 +220,6 @@ public:
 	);
 	public: mfstring  externprotoUrlList();
 	public: node_interface::type_id  interfaceType();
-	public: std::string  stringValue();
 	public: void nodeBodyElement(
 		browser & b,
                 const boost::shared_ptr<openvrml::scope> & scope,
@@ -310,9 +293,6 @@ public:
                openvrml::field_value::type_id ft,
                const std::string & script_node_id
 	);
-	public: boost::shared_ptr<field_value>  nonNodeFieldValue(
-		openvrml::field_value::type_id ft
-	);
 	public: boost::shared_ptr<field_value>  protoNodeFieldValue(
 		openvrml::browser & browser,
                     const boost::shared_ptr<openvrml::scope> & scope,
@@ -322,24 +302,6 @@ public:
                     field_value::type_id ft,
                     const std::string & script_node_id
 	);
-	public: boost::shared_ptr<field_value>  sfBoolValue();
-	public: boost::shared_ptr<field_value>  sfColorValue();
-	public: boost::shared_ptr<field_value>  sfFloatValue();
-	public: boost::shared_ptr<field_value>  sfImageValue();
-	public: boost::shared_ptr<field_value>  sfInt32Value();
-	public: boost::shared_ptr<field_value>  sfRotationValue();
-	public: boost::shared_ptr<field_value>  sfStringValue();
-	public: boost::shared_ptr<field_value>  sfTimeValue();
-	public: boost::shared_ptr<field_value>  sfVec2fValue();
-	public: boost::shared_ptr<field_value>  sfVec3fValue();
-	public: boost::shared_ptr<field_value>  mfColorValue();
-	public: boost::shared_ptr<field_value>  mfFloatValue();
-	public: boost::shared_ptr<field_value>  mfInt32Value();
-	public: boost::shared_ptr<field_value>  mfRotationValue();
-	public: boost::shared_ptr<field_value>  mfStringValue();
-	public: boost::shared_ptr<field_value>  mfTimeValue();
-	public: boost::shared_ptr<field_value>  mfVec2fValue();
-	public: boost::shared_ptr<field_value>  mfVec3fValue();
 	public: boost::shared_ptr<field_value>  sfNodeValue(
 		openvrml::browser & browser,
             const boost::shared_ptr<openvrml::scope> & scope,
@@ -372,11 +334,9 @@ public:
 	);
 	public: float  colorComponent();
 	public: float  floatValue();
-	public: int32  intValue();
 	public: void rotationValue(
 		rotation & r
 	);
-	public: double  doubleValue();
 	public: void vec2fValue(
 		vec2f & v
 	);
@@ -394,10 +354,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 48;
+	static const int NUM_TOKENS = 69;
 #else
 	enum {
-		NUM_TOKENS = 48
+		NUM_TOKENS = 69
 	};
 #endif
 	
@@ -417,6 +377,10 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_6;
 	static const unsigned long _tokenSet_7_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_7;
+	static const unsigned long _tokenSet_8_data_[];
+	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_8;
+	static const unsigned long _tokenSet_9_data_[];
+	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_9;
 };
 
-#endif /*INC_Vrml97Parser_hpp_*/
+#endif /*INC_X3DVrmlParser_hpp_*/

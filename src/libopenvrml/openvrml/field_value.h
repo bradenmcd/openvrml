@@ -49,6 +49,7 @@ namespace openvrml {
             sfbool_id,
             sfcolor_id,
             sffloat_id,
+            sfdouble_id,
             sfimage_id,
             sfint32_id,
             sfnode_id,
@@ -56,16 +57,21 @@ namespace openvrml {
             sfstring_id,
             sftime_id,
             sfvec2f_id,
+            sfvec2d_id,
             sfvec3f_id,
+            sfvec3d_id,
             mfcolor_id,
             mffloat_id,
+            mfdouble_id,
             mfint32_id,
             mfnode_id,
             mfrotation_id,
             mfstring_id,
             mftime_id,
             mfvec2f_id,
-            mfvec3f_id
+            mfvec2d_id,
+            mfvec3f_id,
+            mfvec3d_id
         };
 
         static std::auto_ptr<field_value> create(type_id type)
@@ -218,6 +224,33 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const sffloat & lhs, const sffloat & rhs)
         throw ();
 
+    class OPENVRML_API sfdouble : public field_value {
+    public:
+        typedef double value_type;
+
+        static const type_id field_value_type_id;
+
+        double value;
+
+        explicit sfdouble(double value = 0.0) throw ();
+        sfdouble(float value) throw ();
+        virtual ~sfdouble() throw ();
+
+        // Use compiler-defined copy ctor and operator=.
+
+    private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfdouble & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
+        virtual void print(std::ostream & out) const;
+    };
+
+    OPENVRML_API bool operator==(const sfdouble & lhs, const sfdouble & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfdouble & lhs, const sfdouble & rhs)
+        throw ();
 
     class OPENVRML_API sfimage : public field_value {
     public:
@@ -417,6 +450,34 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const sfvec2f & lhs, const sfvec2f & rhs)
         throw ();
 
+    class OPENVRML_API sfvec2d : public field_value {
+    public:
+        typedef vec2d value_type;
+
+        static const type_id field_value_type_id;
+
+        vec2d value;
+
+        explicit sfvec2d(const vec2d & vec = vec2d()) throw ();
+        sfvec2d(const vec2f & vec) throw ();
+        virtual ~sfvec2d() throw ();
+
+        // Use compiler-defined copy ctor and operator=.
+
+    private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfvec2d & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
+        virtual void print(std::ostream &) const;
+    };
+
+    OPENVRML_API bool operator==(const sfvec2d & lhs, const sfvec2d & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfvec2d & lhs, const sfvec2d & rhs)
+        throw ();
+
 
     class OPENVRML_API sfvec3f : public field_value {
     public:
@@ -445,6 +506,33 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs)
         throw ();
 
+    class OPENVRML_API sfvec3d : public field_value {
+    public:
+        typedef vec3d value_type;
+
+        static const type_id field_value_type_id;
+
+        vec3d value;
+
+        explicit sfvec3d(const vec3d & vec = vec3d()) throw ();
+        sfvec3d(const vec3f & vec) throw ();
+        virtual ~sfvec3d() throw ();
+
+        // Use compiler-defined copy constructor and operator=.
+
+    private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfvec3d & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
+        virtual void print(std::ostream &) const;
+    };
+
+    OPENVRML_API bool operator==(const sfvec3d & lhs, const sfvec3d & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfvec3d & lhs, const sfvec3d & rhs)
+        throw ();
 
     class OPENVRML_API mfcolor : public field_value {
     public:
@@ -531,6 +619,49 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mffloat & lhs, const mffloat & rhs)
         throw ();
 
+    class OPENVRML_API mfdouble : public field_value {
+    public:
+        typedef std::vector<double> value_type;
+
+        static const type_id field_value_type_id;
+
+        std::vector<double> value;
+
+        explicit mfdouble(std::vector<double>::size_type n = 0,
+                         double value = 0.0f)
+            throw (std::bad_alloc);
+        explicit mfdouble(const std::vector<double> & value)
+            throw (std::bad_alloc);
+        mfdouble(const std::vector<float> & value)
+            throw (std::bad_alloc);
+        template <typename InputIterator>
+        mfdouble(InputIterator first, InputIterator last);
+        virtual ~mfdouble() throw ();
+
+        // Use compiler-defined copy constructor and operator=.
+
+    private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfdouble & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
+        virtual void print(std::ostream &) const;
+    };
+
+    template <typename InputIterator>
+    mfdouble::mfdouble(InputIterator first, InputIterator last):
+        value(first, last)
+    {
+        using boost::function_requires;
+        using boost::InputIteratorConcept;
+        function_requires<InputIteratorConcept<InputIterator> >();
+    }
+
+    OPENVRML_API bool operator==(const mfdouble & lhs, const mfdouble & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfdouble & lhs, const mfdouble & rhs)
+        throw ();
 
     class OPENVRML_API mfint32 : public field_value {
     public:
@@ -791,6 +922,51 @@ namespace openvrml {
         throw ();
 
 
+    class OPENVRML_API mfvec2d : public field_value {
+    public:
+        typedef std::vector<vec2d> value_type;
+
+        static const type_id field_value_type_id;
+
+        std::vector<vec2d> value;
+
+        explicit mfvec2d(std::vector<vec2d>::size_type n = 0,
+                         const vec2d & value = vec2d())
+            throw (std::bad_alloc);
+        explicit mfvec2d(const std::vector<vec2d> & value)
+            throw (std::bad_alloc);
+        mfvec2d(const std::vector<vec2f> & value)
+            throw (std::bad_alloc);
+        template <typename InputIterator>
+        mfvec2d(InputIterator first, InputIterator last);
+        virtual ~mfvec2d() throw ();
+
+        // Use compiler-defined copy constructor and operator=.
+
+    private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfvec2d & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
+        virtual void print(std::ostream &) const;
+    };
+
+    template <typename InputIterator>
+    mfvec2d::mfvec2d(InputIterator first, InputIterator last):
+        value(first, last)
+    {
+        using boost::function_requires;
+        using boost::InputIteratorConcept;
+        function_requires<InputIteratorConcept<InputIterator> >();
+    }
+
+    OPENVRML_API bool operator==(const mfvec2d & lhs, const mfvec2d & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfvec2d & lhs, const mfvec2d & rhs)
+        throw ();
+
+
     class OPENVRML_API mfvec3f : public field_value {
     public:
         typedef std::vector<vec3f> value_type;
@@ -831,6 +1007,50 @@ namespace openvrml {
     OPENVRML_API bool operator==(const mfvec3f & lhs, const mfvec3f & rhs)
         throw ();
     OPENVRML_API bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs)
+        throw ();
+
+    class OPENVRML_API mfvec3d : public field_value {
+    public:
+        typedef std::vector<vec3d> value_type;
+
+        static const type_id field_value_type_id;
+
+        std::vector<vec3d> value;
+
+        explicit mfvec3d(std::vector<vec3d>::size_type n = 0,
+                         const vec3d & value = vec3d())
+            throw (std::bad_alloc);
+        explicit mfvec3d(const std::vector<vec3d> & value)
+            throw (std::bad_alloc);
+        mfvec3d(const std::vector<vec3f> & value)
+            throw (std::bad_alloc);
+        template <typename InputIterator>
+        mfvec3d(InputIterator first, InputIterator last);
+        virtual ~mfvec3d() throw ();
+
+        // Use compiler-defined copy constructor and operator=.
+
+    private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfvec3d & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
+        virtual void print(std::ostream &) const;
+    };
+
+    template <typename InputIterator>
+    mfvec3d::mfvec3d(InputIterator first, InputIterator last):
+        value(first, last)
+    {
+        using boost::function_requires;
+        using boost::InputIteratorConcept;
+        function_requires<InputIteratorConcept<InputIterator> >();
+    }
+
+    OPENVRML_API bool operator==(const mfvec3d & lhs, const mfvec3d & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
         throw ();
 }
 

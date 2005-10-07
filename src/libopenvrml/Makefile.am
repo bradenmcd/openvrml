@@ -25,6 +25,9 @@ noinst_HEADERS = \
         openvrml/Vrml97Parser.cpp \
         openvrml/Vrml97Parser.hpp \
         openvrml/Vrml97ParserTokenTypes.hpp \
+        openvrml/X3DVrmlParser.cpp \
+        openvrml/X3DVrmlParser.hpp \
+        openvrml/X3DVrmlParserTokenTypes.hpp \
         openvrml/ScriptJDK.h
 
 LIBRARY_VERSION = 5:3:0
@@ -88,4 +91,7 @@ EXTRA_DIST = \
         openvrml-gl-common.h \
         openvrml/Vrml97TokenTypes.txt \
         openvrml/Vrml97Parser.g \
-        openvrml/Vrml97ParserTokenTypes.txt
+        openvrml/Vrml97ParserTokenTypes.txt \
+        openvrml/X3DVrmlTokenTypes.txt \
+        openvrml/X3DVrmlParser.g \
+        openvrml/X3DVrmlParserTokenTypes.txt

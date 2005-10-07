@@ -2143,6 +2143,9 @@ bool openvrml::add_route(node & from,
         case field_value::sffloat_id:
             added_route = add_listener<sffloat>(emitter, listener);
             break;
+        case field_value::sfdouble_id:
+            added_route = add_listener<sfdouble>(emitter, listener);
+            break;
         case field_value::sfimage_id:
             added_route = add_listener<sfimage>(emitter, listener);
             break;
@@ -2164,14 +2167,23 @@ bool openvrml::add_route(node & from,
         case field_value::sfvec2f_id:
             added_route = add_listener<sfvec2f>(emitter, listener);
             break;
+        case field_value::sfvec2d_id:
+            added_route = add_listener<sfvec2d>(emitter, listener);
+            break;
         case field_value::sfvec3f_id:
             added_route = add_listener<sfvec3f>(emitter, listener);
+            break;
+        case field_value::sfvec3d_id:
+            added_route = add_listener<sfvec3d>(emitter, listener);
             break;
         case field_value::mfcolor_id:
             added_route = add_listener<mfcolor>(emitter, listener);
             break;
         case field_value::mffloat_id:
             added_route = add_listener<mffloat>(emitter, listener);
+            break;
+        case field_value::mfdouble_id:
+            added_route = add_listener<mfdouble>(emitter, listener);
             break;
         case field_value::mfint32_id:
             added_route = add_listener<mfint32>(emitter, listener);
@@ -2191,8 +2203,14 @@ bool openvrml::add_route(node & from,
         case field_value::mfvec2f_id:
             added_route = add_listener<mfvec2f>(emitter, listener);
             break;
+        case field_value::mfvec2d_id:
+            added_route = add_listener<mfvec2d>(emitter, listener);
+            break;
         case field_value::mfvec3f_id:
             added_route = add_listener<mfvec3f>(emitter, listener);
+            break;
+        case field_value::mfvec3d_id:
+            added_route = add_listener<mfvec3d>(emitter, listener);
             break;
         case field_value::invalid_type_id:
             assert(false);
@@ -2259,6 +2277,9 @@ bool openvrml::delete_route(node & from,
         case field_value::sffloat_id:
             deleted_route = remove_listener<sffloat>(emitter, listener);
             break;
+        case field_value::sfdouble_id:
+            deleted_route = remove_listener<sfdouble>(emitter, listener);
+            break;
         case field_value::sfimage_id:
             deleted_route = remove_listener<sfimage>(emitter, listener);
             break;
@@ -2280,14 +2301,23 @@ bool openvrml::delete_route(node & from,
         case field_value::sfvec2f_id:
             deleted_route = remove_listener<sfvec2f>(emitter, listener);
             break;
+        case field_value::sfvec2d_id:
+            deleted_route = remove_listener<sfvec2d>(emitter, listener);
+            break;
         case field_value::sfvec3f_id:
             deleted_route = remove_listener<sfvec3f>(emitter, listener);
+            break;
+        case field_value::sfvec3d_id:
+            deleted_route = remove_listener<sfvec3d>(emitter, listener);
             break;
         case field_value::mfcolor_id:
             deleted_route = remove_listener<mfcolor>(emitter, listener);
             break;
         case field_value::mffloat_id:
             deleted_route = remove_listener<mffloat>(emitter, listener);
+            break;
+        case field_value::mfdouble_id:
+            deleted_route = remove_listener<mfdouble>(emitter, listener);
             break;
         case field_value::mfint32_id:
             deleted_route = remove_listener<mfint32>(emitter, listener);
@@ -2307,8 +2337,14 @@ bool openvrml::delete_route(node & from,
         case field_value::mfvec2f_id:
             deleted_route = remove_listener<mfvec2f>(emitter, listener);
             break;
+        case field_value::mfvec2d_id:
+            deleted_route = remove_listener<mfvec2d>(emitter, listener);
+            break;
         case field_value::mfvec3f_id:
             deleted_route = remove_listener<mfvec3f>(emitter, listener);
+            break;
+        case field_value::mfvec3d_id:
+            deleted_route = remove_listener<mfvec3d>(emitter, listener);
             break;
         case field_value::invalid_type_id:
             assert(false);

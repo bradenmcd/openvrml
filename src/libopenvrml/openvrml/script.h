@@ -152,6 +152,7 @@ namespace openvrml {
         typedef script_event_listener<sfbool> sfbool_listener;
         typedef script_event_listener<sfcolor> sfcolor_listener;
         typedef script_event_listener<sffloat> sffloat_listener;
+        typedef script_event_listener<sfdouble> sfdouble_listener;
         typedef script_event_listener<sfimage> sfimage_listener;
         typedef script_event_listener<sfint32> sfint32_listener;
         typedef script_event_listener<sfnode> sfnode_listener;
@@ -159,16 +160,21 @@ namespace openvrml {
         typedef script_event_listener<sfstring> sfstring_listener;
         typedef script_event_listener<sftime> sftime_listener;
         typedef script_event_listener<sfvec2f> sfvec2f_listener;
+        typedef script_event_listener<sfvec2d> sfvec2d_listener;
         typedef script_event_listener<sfvec3f> sfvec3f_listener;
+        typedef script_event_listener<sfvec3d> sfvec3d_listener;
         typedef script_event_listener<mfcolor> mfcolor_listener;
         typedef script_event_listener<mffloat> mffloat_listener;
+        typedef script_event_listener<mfdouble> mfdouble_listener;
         typedef script_event_listener<mfint32> mfint32_listener;
         typedef script_event_listener<mfnode> mfnode_listener;
         typedef script_event_listener<mfrotation> mfrotation_listener;
         typedef script_event_listener<mfstring> mfstring_listener;
         typedef script_event_listener<mftime> mftime_listener;
         typedef script_event_listener<mfvec2f> mfvec2f_listener;
+        typedef script_event_listener<mfvec2d> mfvec2d_listener;
         typedef script_event_listener<mfvec3f> mfvec3f_listener;
+        typedef script_event_listener<mfvec3d> mfvec3d_listener;
 
         static const boost::shared_ptr<openvrml::event_listener>
         create_listener(field_value::type_id type, const std::string & id,

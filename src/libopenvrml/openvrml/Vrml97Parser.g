@@ -90,10 +90,13 @@ namespace {
 
         virtual antlr::RefToken nextToken();
 
+    protected:
+        void expectFieldType();
+        virtual void identifyKeyword(antlr::Token &);
+        virtual void identifyFieldType(antlr::Token &);
+
     private:
         void getNextChar();
-        void identifyKeyword(antlr::Token &);
-        void identifyFieldType(antlr::Token &);
         void identifyTerminalSymbol(antlr::Token &);
 
         std::istream & in_;
@@ -452,19 +455,24 @@ inline void Vrml97Scanner::getNextChar()
     }
 }
 
+inline void Vrml97Scanner::expectFieldType()
+{
+    this->expecting_field_type_ = true;
+}
+
 inline void Vrml97Scanner::identifyKeyword(antlr::Token & token)
 {
     std::string const token_text(token.getText());
     if      (token_text == "DEF")          { token.setType(KEYWORD_DEF); }
-    else if (token_text == "eventIn")      { expecting_field_type_ = true;
+    else if (token_text == "eventIn")      { this->expectFieldType();
                                              token.setType(KEYWORD_EVENTIN); }
-    else if (token_text == "eventOut")     { expecting_field_type_ = true;
+    else if (token_text == "eventOut")     { this->expectFieldType();
                                              token.setType(KEYWORD_EVENTOUT); }
-    else if (token_text == "exposedField") { expecting_field_type_ = true;
+    else if (token_text == "exposedField") { this->expectFieldType();
                                              token.setType(KEYWORD_EXPOSEDFIELD); }
     else if (token_text == "EXTERNPROTO")  { token.setType(KEYWORD_EXTERNPROTO); }
     else if (token_text == "FALSE")        { token.setType(KEYWORD_FALSE); }
-    else if (token_text == "field")        { expecting_field_type_ = true;
+    else if (token_text == "field")        { this->expectFieldType();
                                              token.setType(KEYWORD_FIELD); }
     else if (token_text == "IS")           { token.setType(KEYWORD_IS); }
     else if (token_text == "NULL")         { token.setType(KEYWORD_NULL); }
@@ -614,15 +622,15 @@ private:
     const std::string uri;
 }
 
-vrmlScene[openvrml::browser & browser,
+vrmlScene[openvrml::scene & scene,
           std::vector<node_ptr> & nodes]
 options { defaultErrorHandler=false; }
 {
     std::auto_ptr<openvrml::scope> root_scope_auto_ptr =
-        browser.create_root_scope(this->uri);
+        scene.browser().create_root_scope(this->uri);
     const boost::shared_ptr<openvrml::scope> root_scope(root_scope_auto_ptr);
 }
-    :   (statement[browser, nodes, root_scope])*
+    :   (statement[scene.browser(), nodes, root_scope])*
     ;
 
 statement[openvrml::browser & browser,
@@ -978,7 +986,7 @@ options { defaultErrorHandler=false; }
             if (!succeeded) {
                 using std::string;
                 using boost::lexical_cast;
-            	throw SemanticException("Interface \""
+                throw SemanticException("Interface \""
                                         + lexical_cast<string>(interface)
                                         + "\" conflicts with previous "
                                         "declaration",
@@ -1829,7 +1837,7 @@ options { defaultErrorHandler=false; }
     :   i0:INTEGER {
             std::istringstream(i0->getText()) >> val;
         }
-    |  	i1:HEX_INTEGER  {
+    |   i1:HEX_INTEGER  {
             std::istringstream(i1->getText()) >> std::hex >> val;
         }
     ;

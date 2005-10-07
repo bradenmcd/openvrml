@@ -1,3 +1,94 @@
+2005-10-07 Braden McDaniel  <braden@endoframe.com>
+
+	Applied (modified) patch from <sgrieve@users.sourceforge.net> to
+	add double-precision field types and initial support for parsing
+	VRML-encoded X3D.  In its current form, the X3D parser will
+	always fail; correcting this depends on adding support for,
+	at least, the nodes in X3D's Core profile.
+
+	* java/Makefile.am
+	* java/vrml/field/ConstMFDouble.java:  Added file.
+	* java/vrml/field/ConstMFVec2d.java:  Added file.
+	* java/vrml/field/ConstMFVec3d.java:  Added file.
+	* java/vrml/field/ConstSFDouble.java:  Added file.
+	* java/vrml/field/ConstSFVec2d.java:  Added file.
+	* java/vrml/field/ConstSFVec3d.java:  Added file.
+	* java/vrml/field/MFDouble.java:  Added file.
+	* java/vrml/field/MFVec2d.java:  Added file.
+	* java/vrml/field/MFVec3d.java:  Added file.
+	* java/vrml/field/SFDouble.java:  Added file.
+	* java/vrml/field/SFVec2d.java:  Added file.
+	* java/vrml/field/SFVec3d.java:  Added file.
+	* src/libopenvrml/Makefile.am
+	* src/libopenvrml/openvrml/ScriptJDK.cpp:  Added Java bindings
+	for SFDouble, MFDouble, SFVec2d, MFVec2d, SFVec3d, and MFVec3d.
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g:  Modified
+	Vrml97Parser.vrmlScene to take an openvrml::scene rather than an
+	openvrml::browser.  Made Vrml97Scanner::identifyKeyword and
+	Vrml97Scanner::identifyFieldType protected and virtual.  Added
+	protected member function Vrml97Scanner::expectFieldType.
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp
+	* src/libopenvrml/openvrml/X3DVrmlParser.cpp:  Added file.
+	* src/libopenvrml/openvrml/X3DVrmlParser.g:  Added file.
+	* src/libopenvrml/openvrml/X3DVrmlParser.hpp:  Added file.
+	* src/libopenvrml/openvrml/X3DVrmlParserTokenTypes.hpp:  Added
+	file.
+	* src/libopenvrml/openvrml/X3DVrmlParserTokenTypes.txt:  Added
+	file.
+	* src/libopenvrml/openvrml/X3DVrmlTokenTypes.txt:  Added file.
+	* src/libopenvrml/openvrml/basetypes.cpp:  Added openvrml::vec2d
+	and openvrml::vec3d types.  openvrml::vec2f and openvrml::vec2d
+	are now instantiations of the openvrml::vec2 class template; and
+	openvrml::vec3f and openvrml::vec3d are now instantiations of
+	the openvrml::vec3 class template.  These templates are not
+	intended to be instantiated outside libopenvrml.
+	* src/libopenvrml/openvrml/basetypes.h:  Added openvrml::vec2d
+	and openvrml::vec3d types.  openvrml::vec2f and openvrml::vec2d
+	are now instantiations of the openvrml::vec2 class template; and
+	openvrml::vec3f and openvrml::vec3d are now instantiations of
+	the openvrml::vec3 class template.  These templates are not
+	intended to be instantiated outside libopenvrml.
+	* src/libopenvrml/openvrml/browser.cpp
+	(proto_node::create_eventin, proto_node::eventin_is):  Added
+	support for double-precision field types.
+	(openvrml::browser::browser):  Instantiate the initial scene
+	with openvrml::invalid_profile_id.  Allow specification of the
+	root scene profile via the browser constructor.
+	(openvrml::browser::create_vrml_from_stream):  Select a parser
+	based on the root scene profile.
+	(openvrml::scene::scene):  Allow specification of the scene
+	profile.
+	(openvrml::scene::profile):  Added accessor.
+	(openvrml::scene::load_scene::operator()):  Select a parser
+	based on the media type of the stream.
+	* src/libopenvrml/openvrml/browser.h:  Added
+	openvrml::bad_media_type exception.  Added openvrml::profile_id
+	enumerated type.  Added openvrml::invalid_profile exception.
+	openvrml::browser and openvrml::scene can now be constructed
+	with an openvrml::profile_id; added openvrml::scene::profile
+	accessor.
+	* src/libopenvrml/openvrml/event.h:  Added field_value_emitter
+	typedefs for double-precision types.
+	* src/libopenvrml/openvrml/field_value.cpp:  Added double-
+	precision field types openvrml::sfdouble, openvrml::mfdouble,
+	openvrml::sfvec2d, openvrml::mfvec2d, openvrml::sfvec3d,
+	and openvrml::mfvec3d.
+	* src/libopenvrml/openvrml/field_value.h:  Added double-
+	precision field types openvrml::sfdouble, openvrml::mfdouble,
+	openvrml::sfvec2d, openvrml::mfvec2d, openvrml::sfvec3d,
+	and openvrml::mfvec3d.
+	* src/libopenvrml/openvrml/node.cpp:  Added support for double-
+	precision types to openvrml::add_route and
+	openvrml::delete_route.
+	* src/libopenvrml/openvrml/node.h:  Added friend declarations
+	for double-precision listeners and exposedfields.
+	* src/libopenvrml/openvrml/script.cpp:  Added JavaScript
+	bindings for SFDouble, MFDouble, SFVec2d, MFVec2d, SFVec3d, and
+	MFVec3d.
+	* src/libopenvrml/openvrml/script.h:  Added
+	script_event_listener typedefs for double-precision types.
+
 2005-09-11 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp:  Applied OPENVRML_LOCAL

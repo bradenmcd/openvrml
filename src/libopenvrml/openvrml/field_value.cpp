@@ -213,6 +213,8 @@ std::auto_ptr<openvrml::field_value>
         return auto_ptr<field_value>(new sfcolor);
     case field_value::sffloat_id:
         return auto_ptr<field_value>(new sffloat);
+    case field_value::sfdouble_id:
+        return auto_ptr<field_value>(new sfdouble);
     case field_value::sfimage_id:
         return auto_ptr<field_value>(new sfimage);
     case field_value::sfint32_id:
@@ -227,12 +229,18 @@ std::auto_ptr<openvrml::field_value>
         return auto_ptr<field_value>(new sftime);
     case field_value::sfvec2f_id:
         return auto_ptr<field_value>(new sfvec2f);
+    case field_value::sfvec2d_id:
+        return auto_ptr<field_value>(new sfvec2d);
     case field_value::sfvec3f_id:
         return auto_ptr<field_value>(new sfvec3f);
+    case field_value::sfvec3d_id:
+        return auto_ptr<field_value>(new sfvec3d);
     case field_value::mfcolor_id:
         return auto_ptr<field_value>(new mfcolor);
     case field_value::mffloat_id:
         return auto_ptr<field_value>(new mffloat);
+    case field_value::mfdouble_id:
+        return auto_ptr<field_value>(new mfdouble);
     case field_value::mfint32_id:
         return auto_ptr<field_value>(new mfint32);
     case field_value::mfnode_id:
@@ -245,8 +253,12 @@ std::auto_ptr<openvrml::field_value>
         return auto_ptr<field_value>(new mftime);
     case field_value::mfvec2f_id:
         return auto_ptr<field_value>(new mfvec2f);
+    case field_value::mfvec2d_id:
+        return auto_ptr<field_value>(new mfvec2d);
     case field_value::mfvec3f_id:
         return auto_ptr<field_value>(new mfvec3f);
+    case field_value::mfvec3d_id:
+        return auto_ptr<field_value>(new mfvec3d);
     default:
         assert(false);
     }
@@ -380,6 +392,7 @@ namespace {
         "SFBool",
         "SFColor",
         "SFFloat",
+        "SFDouble",
         "SFImage",
         "SFInt32",
         "SFNode",
@@ -387,16 +400,21 @@ namespace {
         "SFString",
         "SFTime",
         "SFVec2f",
+        "SFVec2d",
         "SFVec3f",
+        "SFVec3d",
         "MFColor",
         "MFFloat",
+        "MFDouble",
         "MFInt32",
         "MFNode",
         "MFRotation",
         "MFString",
         "MFTime",
         "MFVec2f",
-        "MFVec3f"
+        "MFVec2d",
+        "MFVec3f",
+        "MFVec3d"
     };
 }
 
@@ -920,6 +938,146 @@ bool openvrml::operator!=(const sffloat & lhs, const sffloat & rhs) throw ()
     return !(lhs == rhs);
 }
 
+/**
+ * @class openvrml::sfdouble
+ *
+ * @ingroup fieldvalues
+ *
+ * @brief A single precision doubleing point node field value.
+ *
+ * @par Model of
+ * @link openvrml::FieldValueConcept Field Value@endlink
+ */
+
+/**
+ * @typedef openvrml::sfdouble::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const openvrml::field_value::type_id
+openvrml::sfdouble::field_value_type_id(sfdouble_id);
+
+/**
+ * @var openvrml::sfdouble::value
+ *
+ * @brief Single precision doubleing point value.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value
+ */
+openvrml::sfdouble::sfdouble(const double value) throw ():
+    value(value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value
+ */
+openvrml::sfdouble::sfdouble(const float value) throw ():
+    value(value)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::sfdouble::~sfdouble() throw ()
+{}
+
+/**
+ * @brief Print to an output stream.
+ *
+ * @param out   an output stream.
+ */
+void openvrml::sfdouble::print(std::ostream & out) const
+{
+    out << this->value;
+}
+
+/**
+ * @brief Virtual copy constructor.
+ *
+ * @return a pointer to a copy of the object.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<openvrml::field_value> openvrml::sfdouble::do_clone() const
+    throw (std::bad_alloc)
+{
+    return std::auto_ptr<field_value>(new sfdouble(*this));
+}
+
+/**
+ * @brief Virtual assignment.
+ *
+ * @param value the new value to give the object.
+ *
+ * @return a reference to the object.
+ *
+ * @exception std::bad_cast if @p value is not an sfdouble.
+ */
+openvrml::sfdouble & openvrml::sfdouble::do_assign(const field_value & value)
+    throw (std::bad_cast)
+{
+    //allow to convert from a float to a double
+    const sffloat * float_val = dynamic_cast<const sffloat *>(&value);
+    if (float_val != NULL)
+    {
+        this->value = float_val->value;
+        return *this;
+    }
+
+    return (*this = dynamic_cast<const sfdouble &>(value));
+}
+
+/**
+ * @brief Get the field_value::type_id associated with this class.
+ *
+ * @return @c field_value::sfdouble.
+ */
+openvrml::field_value::type_id openvrml::sfdouble::do_type() const throw ()
+{
+    return field_value::sfdouble_id;
+}
+
+/**
+ * @relatesalso openvrml::sfdouble
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator==(const sfdouble & lhs, const sfdouble & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
+
+/**
+ * @relatesalso openvrml::sfdouble
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator!=(const sfdouble & lhs, const sfdouble & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 /**
  * @class openvrml::sfimage
@@ -1822,6 +1980,147 @@ bool openvrml::operator!=(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
     return !(lhs == rhs);
 }
 
+/**
+ * @class openvrml::sfvec2d
+ *
+ * @ingroup fieldvalues
+ *
+ * @brief A 2-component vector node field value.
+ *
+ * @par Model of
+ * @link openvrml::FieldValueConcept Field Value@endlink
+ */
+
+/**
+ * @typedef openvrml::sfvec2d::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const openvrml::field_value::type_id
+openvrml::sfvec2d::field_value_type_id(sfvec2d_id);
+
+/**
+ * @var openvrml::sfvec2d::value
+ *
+ * @brief 2-component vector value.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param vec   initial value.
+ */
+openvrml::sfvec2d::sfvec2d(const vec2d & vec) throw ():
+    value(vec)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param vec   initial value.
+ */
+openvrml::sfvec2d::sfvec2d(const vec2f & vec) throw ():
+    value(vec[0], vec[1])
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::sfvec2d::~sfvec2d() throw ()
+{}
+
+/**
+ * @brief Virtual copy constructor.
+ *
+ * @return a pointer to a copy of the object.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<openvrml::field_value> openvrml::sfvec2d::do_clone() const
+    throw (std::bad_alloc)
+{
+    return std::auto_ptr<field_value>(new sfvec2d(*this));
+}
+
+/**
+ * @brief Virtual assignment.
+ *
+ * @param value the new value to give the object.
+ *
+ * @return a reference to the object.
+ *
+ * @exception std::bad_cast if @p value is not an sfvec2d.
+ */
+openvrml::sfvec2d & openvrml::sfvec2d::do_assign(const field_value & value)
+    throw (std::bad_cast)
+{
+    //allow to convert from a float to a double
+    const sfvec2f * float_val = dynamic_cast<const sfvec2f *>(&value);
+    if (float_val != NULL)
+    {
+        this->value = vec2d(float_val->value[0], float_val->value[1]);
+        return *this;
+    }
+
+    return (*this = dynamic_cast<const sfvec2d &>(value));
+}
+
+/**
+ * @brief Get the <code>field_value::type_id</code> associated with this class.
+ *
+ * @return @c field_value::sfvec2d.
+ */
+openvrml::field_value::type_id openvrml::sfvec2d::do_type() const throw ()
+{
+    return field_value::sfvec2d_id;
+}
+
+/**
+ * @brief Print to an output stream.
+ *
+ * @param out   an output stream.
+ */
+void openvrml::sfvec2d::print(std::ostream & out) const
+{
+    out << this->value;
+}
+
+/**
+ * @relatesalso openvrml::sfvec2d
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator==(const sfvec2d & lhs, const sfvec2d & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
+
+/**
+ * @relatesalso openvrml::sfvec2d
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+bool openvrml::operator!=(const sfvec2d & lhs, const sfvec2d & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
+
 
 /**
  * @class openvrml::sfvec3f
@@ -1947,6 +2246,143 @@ bool openvrml::operator!=(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
     return !(lhs == rhs);
 }
 
+/**
+ * @class openvrml::sfvec3d
+ *
+ * @ingroup fieldvalues
+ *
+ * @brief A 3-component vector node field value.
+ *
+ * @par Model of
+ * @link openvrml::FieldValueConcept Field Value@endlink
+ */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const openvrml::field_value::type_id
+openvrml::sfvec3d::field_value_type_id(sfvec3d_id);
+
+/**
+ * @typedef openvrml::sfvec3d::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
+ * @var openvrml::sfvec3d::value
+ *
+ * @brief 3-component vector value.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param vec   initial value.
+ */
+openvrml::sfvec3d::sfvec3d(const vec3d & vec) throw ():
+    value(vec)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param vec   initial value.
+ */
+openvrml::sfvec3d::sfvec3d(const vec3f & vec) throw ():
+    value(vec[0], vec[1], vec[2])
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::sfvec3d::~sfvec3d() throw ()
+{}
+
+/**
+ * @brief Virtual copy constructor.
+ *
+ * @return a pointer to a copy of the object.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<openvrml::field_value> openvrml::sfvec3d::do_clone() const
+    throw (std::bad_alloc)
+{
+    return std::auto_ptr<field_value>(new sfvec3d(*this));
+}
+
+/**
+ * @brief Virtual assignment.
+ *
+ * @param value the new value to give the object.
+ *
+ * @return a reference to the object.
+ *
+ * @exception std::bad_cast if @p value is not an SFBool.
+ */
+openvrml::sfvec3d & openvrml::sfvec3d::do_assign(const field_value & value)
+    throw (std::bad_cast)
+{
+    //allow to convert from a float to a double
+    const sfvec3f * float_val = dynamic_cast<const sfvec3f *>(&value);
+    if (float_val != NULL)
+        return *this = sfvec3d(float_val->value);
+    
+    return (*this = dynamic_cast<const sfvec3d &>(value));
+}
+
+/**
+ * @brief Get the <code>field_value::type_id</code> associated with this class.
+ *
+ * @return @c field_value::sfvec3d.
+ */
+openvrml::field_value::type_id openvrml::sfvec3d::do_type() const throw ()
+{
+    return field_value::sfvec3d_id;
+}
+
+/**
+ * @brief Print to an output stream.
+ *
+ * @param out   an output stream.
+ */
+void openvrml::sfvec3d::print(std::ostream & out) const
+{
+    out << this->value;
+}
+
+/**
+ * @relatesalso openvrml::sfvec3d
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator==(const sfvec3d & lhs, const sfvec3d & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
+
+/**
+ * @relatesalso openvrml::sfvec3d
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+bool openvrml::operator!=(const sfvec3d & lhs, const sfvec3d & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 /**
  * @class openvrml::mfcolor
@@ -2283,6 +2719,196 @@ bool openvrml::operator==(const mffloat & lhs, const mffloat & rhs) throw ()
  *      otherwise.
  */
 bool openvrml::operator!=(const mffloat & lhs, const mffloat & rhs) throw ()
+{
+    return lhs.value != rhs.value;
+}
+
+/**
+ * @class openvrml::mfdouble
+ *
+ * @ingroup fieldvalues
+ *
+ * @brief A double array node field value.
+ *
+ * @par Model of
+ * @link openvrml::FieldValueConcept Field Value@endlink
+ */
+
+/**
+ * @typedef openvrml::mfdouble::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const openvrml::field_value::type_id
+openvrml::mfdouble::field_value_type_id(mfdouble_id);
+
+/**
+ * @var std::vector<double> openvrml::mfdouble::value
+ *
+ * @brief Single precision doubleing point values.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * Creates an <code>mfdouble</code> with @p n copies of @p value.
+ *
+ * @param n     the number of elements in the <code>mfdouble</code>.
+ * @param value used to initialize the <code>mfdouble</code>.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @post size is @p n. Every element is a copy of @p value.
+ */
+openvrml::mfdouble::mfdouble(const std::vector<double>::size_type n,
+                           const double value)
+    throw (std::bad_alloc):
+    value(n, value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfdouble::mfdouble(const std::vector<double> & value)
+    throw (std::bad_alloc):
+    value(value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfdouble::mfdouble(const std::vector<float> & value)
+    throw (std::bad_alloc)
+{
+    //convert floats to doubles
+    std::vector<float>::const_iterator iter = value.begin();
+    for (; iter < value.end(); ++iter)
+        this->value.push_back( *iter);
+}
+
+/**
+ * @fn template <typename InputIterator> openvrml::mfdouble::mfdouble(InputIterator first, InputIterator last)
+ *
+ * @brief Create an <code>mfdouble</code> with a copy of a range.
+ *
+ * Creates an <code>mfdouble</code> with a @a value that is a copy of the range
+ * [@p first, @p last).
+ *
+ * @param first an iterator pointing to the beginning of the range.
+ * @param last  an iterator pointing one past the end of the range.
+ */
+
+/**
+ * @brief Destroy.
+ *
+ * Each of the <code>mfdouble</code>'s @a value elements is destroyed, and
+ * memory allocated for them (if any) is deallocated.
+ */
+openvrml::mfdouble::~mfdouble() throw ()
+{}
+
+/**
+ * @brief Virtual copy constructor.
+ *
+ * @return a pointer to a copy of the object.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<openvrml::field_value> openvrml::mfdouble::do_clone() const
+    throw (std::bad_alloc)
+{
+    return std::auto_ptr<field_value>(new mfdouble(*this));
+}
+
+/**
+ * @brief Virtual assignment.
+ *
+ * @return a reference to the object.
+ *
+ * @exception std::bad_cast     if  @p value is not an mfdouble object.
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfdouble & openvrml::mfdouble::do_assign(const field_value & value)
+    throw (std::bad_cast, std::bad_alloc)
+{
+    //allow to convert from a float to a double
+    const mffloat * float_val = dynamic_cast<const mffloat *>(&value);
+    if (float_val != NULL)
+        return *this = mfdouble(float_val->value);
+    
+    return (*this = dynamic_cast<const mfdouble &>(value));
+}
+
+/**
+ * @brief Get the type identifier for the class.
+ *
+ * @return @c field_value::mfdouble_id.
+ */
+openvrml::field_value::type_id openvrml::mfdouble::do_type() const throw ()
+{
+    return field_value::mfdouble_id;
+}
+
+/**
+ * @brief Print to an output stream.
+ *
+ * @param out   an output stream.
+ */
+void openvrml::mfdouble::print(std::ostream & out) const
+{
+    out << '[';
+    if (this->value.size() > 1) {
+        for (std::vector<double>::const_iterator i(this->value.begin());
+                i != this->value.end() - 1; ++i) {
+            out << *i << ", ";
+        }
+    }
+    if (!this->value.empty()) {
+        out << this->value.back();
+    }
+    out << ']';
+}
+
+/**
+ * @relatesalso openvrml::mfdouble
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator==(const mfdouble & lhs, const mfdouble & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
+
+/**
+ * @relatesalso openvrml::mfdouble
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+bool openvrml::operator!=(const mfdouble & lhs, const mfdouble & rhs) throw ()
 {
     return lhs.value != rhs.value;
 }
@@ -3316,6 +3942,197 @@ bool openvrml::operator!=(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
     return lhs.value != rhs.value;
 }
 
+/**
+ * @class openvrml::mfvec2d
+ *
+ * @ingroup fieldvalues
+ *
+ * @brief A 2-component vector array node field value.
+ *
+ * @par Model of
+ * @link openvrml::FieldValueConcept Field Value@endlink
+ */
+
+/**
+ * @typedef openvrml::mfvec2d::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const openvrml::field_value::type_id
+openvrml::mfvec2d::field_value_type_id(mfvec2d_id);
+
+/**
+ * @var std::vector<openvrml::vec2d> openvrml::mfvec2d::value
+ *
+ * @brief 2-component vector values.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * Creates an <code>mfvec2d</code> with @p n copies of @p value.
+ *
+ * @param n     the number elements in @a mfvec2d::value.
+ * @param value used to initialize @a mfvec2d::value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @post <code>mfvec2d::value.size()</code> is @p n. Every element in
+ *      @a mfvec2d::value is a copy of @p value.
+ */
+openvrml::mfvec2d::mfvec2d(const std::vector<vec2d>::size_type n,
+                           const vec2d & value)
+    throw (std::bad_alloc):
+    value(n, value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfvec2d::mfvec2d(const std::vector<vec2d> & value)
+    throw (std::bad_alloc):
+    value(value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfvec2d::mfvec2d(const std::vector<vec2f> & value)
+    throw (std::bad_alloc)
+{
+    //convert floats to doubles
+    std::vector<vec2f>::const_iterator iter = value.begin();
+    for (; iter < value.end(); ++iter)
+        this->value.push_back( vec2d(iter->x(), iter->y()) );
+}
+
+/**
+ * @fn template <typename InputIterator> openvrml::mfvec2d::mfvec2d(InputIterator first, InputIterator last)
+ *
+ * @brief Create an <code>mfvec2d</code> with a copy of a range.
+ *
+ * Creates an <code>mfvec2d</code> with a @a value that is a copy of the range
+ * [@p first, @p last).
+ *
+ * @param first an iterator pointing to the beginning of the range.
+ * @param last  an iterator pointing one past the end of the range.
+ */
+
+/**
+ * @brief Destroy.
+ *
+ * Each of the <code>mfvec2d</code>'s @a value elements is destroyed, and
+ * memory allocated for them (if any) is deallocated.
+ */
+openvrml::mfvec2d::~mfvec2d() throw ()
+{}
+
+/**
+ * @brief Virtual copy constructor.
+ *
+ * @return a pointer to a copy of the object.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<openvrml::field_value>
+openvrml::mfvec2d::do_clone() const throw (std::bad_alloc)
+{
+    return std::auto_ptr<field_value>(new mfvec2d(*this));
+}
+
+/**
+ * @brief Virtual assignment.
+ *
+ * @return a reference to the object.
+ *
+ * @exception std::bad_cast     if  @p value is not an mfvec2d object.
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfvec2d & openvrml::mfvec2d::do_assign(const field_value & value)
+    throw (std::bad_cast, std::bad_alloc)
+{
+    //allow to convert from a float to a double
+    const mfvec2f * float_val = dynamic_cast<const mfvec2f *>(&value);
+    if (float_val != NULL)
+        return *this = mfvec2d(float_val->value);
+    
+    return (*this = dynamic_cast<const mfvec2d &>(value));
+}
+
+/**
+ * @brief Get the <code>field_value::type_id</code> associated with this class.
+ *
+ * @return @c field_value::mfvec2d_id.
+ */
+openvrml::field_value::type_id openvrml::mfvec2d::do_type() const throw ()
+{
+    return field_value::mfvec2d_id;
+}
+
+/**
+ * @brief Print to an output stream.
+ *
+ * @param out   an output stream.
+ */
+void openvrml::mfvec2d::print(std::ostream & out) const
+{
+    out << '[';
+    if (this->value.size() > 1) {
+        for (std::vector<vec2d>::const_iterator i(this->value.begin());
+                i != this->value.end() - 1; ++i) {
+            out << *i << ", ";
+        }
+    }
+    if (!this->value.empty()) {
+        out << this->value.back();
+    }
+    out << ']';
+}
+
+/**
+ * @relatesalso openvrml::mfvec2d
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator==(const mfvec2d & lhs, const mfvec2d & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
+
+/**
+ * @relatesalso openvrml::mfvec2d
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+bool openvrml::operator!=(const mfvec2d & lhs, const mfvec2d & rhs) throw ()
+{
+    return lhs.value != rhs.value;
+}
+
 
 /**
  * @class openvrml::mfvec3f
@@ -3488,6 +4305,197 @@ bool openvrml::operator!=(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
     return lhs.value != rhs.value;
 }
 
+/**
+ * @class openvrml::mfvec3d
+ *
+ * @ingroup fieldvalues
+ *
+ * @brief A 3-component vector array node field value.
+ *
+ * @par Model of
+ * @link openvrml::FieldValueConcept Field Value@endlink
+ */
+
+/**
+ * @typedef openvrml::mfvec3d::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const openvrml::field_value::type_id
+openvrml::mfvec3d::field_value_type_id(mfvec3d_id);
+
+/**
+ * @var std::vector<openvrml::vec3d> openvrml::mfvec3d::value
+ *
+ * @brief 3-component vector values.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * Creates an <code>mfvec3d</code> with @p n copies of @p value.
+ *
+ * @param n     the number elements in @a mfvec3d::value.
+ * @param value used to initialize @a mfvec3d::value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @post <code>mfvec3d::value.size()</code> is @p n. Every element in
+ *      @a mfvec3d::value is a copy of @p value.
+ */
+openvrml::mfvec3d::mfvec3d(const std::vector<vec3d>::size_type n,
+                           const vec3d & value)
+    throw (std::bad_alloc):
+    value(n, value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfvec3d::mfvec3d(const std::vector<vec3d> & value)
+    throw (std::bad_alloc):
+    value(value)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfvec3d::mfvec3d(const std::vector<vec3f> & value)
+    throw (std::bad_alloc)
+{
+    //convert floats to doubles
+    std::vector<vec3f>::const_iterator iter = value.begin();
+    for (; iter < value.end(); ++iter)
+        this->value.push_back( vec3d(iter->x(), iter->y(), iter->z()) );
+}
+
+/**
+ * @fn template <typename InputIterator> openvrml::mfvec3d::mfvec3d(InputIterator first, InputIterator last)
+ *
+ * @brief Create an <code>mfvec3d</code> with a copy of a range.
+ *
+ * Creates an <code>mfvec3d</code> with a @a value that is a copy of the range
+ * [@p first, @p last).
+ *
+ * @param first an iterator pointing to the beginning of the range.
+ * @param last  an iterator pointing one past the end of the range.
+ */
+
+/**
+ * @brief Destroy.
+ *
+ * Each of the <code>mfvec3d</code>'s @a value elements is destroyed, and
+ * memory allocated for them (if any) is deallocated.
+ */
+openvrml::mfvec3d::~mfvec3d() throw ()
+{}
+
+/**
+ * @brief Virtual copy constructor.
+ *
+ * @return a pointer to a copy of the object.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<openvrml::field_value> openvrml::mfvec3d::do_clone() const
+    throw (std::bad_alloc)
+{
+    return std::auto_ptr<field_value>(new mfvec3d(*this));
+}
+
+/**
+ * @brief Virtual assignment.
+ *
+ * @return a reference to the object.
+ *
+ * @exception std::bad_cast     if @p value is not an <code>mfvec3d</code>
+ *                              object.
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfvec3d & openvrml::mfvec3d::do_assign(const field_value & value)
+    throw (std::bad_cast, std::bad_alloc)
+{
+    //allow to convert from a float to a double
+    const mfvec3f * float_val = dynamic_cast<const mfvec3f *>(&value);
+    if (float_val != NULL)
+        return *this = mfvec3d(float_val->value);
+    
+    return (*this = dynamic_cast<const mfvec3d &>(value));
+}
+
+/**
+ * @brief Get the <code>field_value::type_id</code> associated with this class.
+ *
+ * @return @c field_value::mfvec3d_id.
+ */
+openvrml::field_value::type_id openvrml::mfvec3d::do_type() const throw ()
+{
+    return field_value::mfvec3d_id;
+}
+
+/**
+ * @brief Print to an output stream.
+ *
+ * @param out   an output stream.
+ */
+void openvrml::mfvec3d::print(std::ostream & out) const
+{
+    out << '[';
+    if (this->value.size() > 1) {
+        for (std::vector<vec3d>::const_iterator i(this->value.begin());
+                i != this->value.end() - 1; ++i) {
+            out << *i << ", ";
+        }
+    }
+    if (!this->value.empty()) {
+        out << this->value.back();
+    }
+    out << ']';
+}
+
+/**
+ * @relatesalso openvrml::mfvec3d
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator==(const mfvec3d & lhs, const mfvec3d & rhs) throw ()
+{
+    return lhs.value == rhs.value;
+}
+
+/**
+ * @relatesalso openvrml::mfvec3d
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs) throw ()
+{
+    return lhs.value != rhs.value;
+}
 
 /**
  * @fn template <> void std::swap(openvrml::mfcolor & a, openvrml::mfcolor & b)

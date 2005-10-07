@@ -33,6 +33,7 @@
 # else
 #   include <sys/time.h>
 # endif
+# include <boost/algorithm/string/predicate.hpp>
 # include <boost/bind.hpp>
 # include <boost/functional.hpp>
 # include <boost/spirit.hpp>
@@ -1081,6 +1082,9 @@ namespace {
         case field_value::sffloat_id:
             result.reset(new proto_eventin<sffloat>(node));
             break;
+        case field_value::sfdouble_id:
+            result.reset(new proto_eventin<sfdouble>(node));
+            break;
         case field_value::sfimage_id:
             result.reset(new proto_eventin<sfimage>(node));
             break;
@@ -1102,8 +1106,14 @@ namespace {
         case field_value::sfvec2f_id:
             result.reset(new proto_eventin<sfvec2f>(node));
             break;
+        case field_value::sfvec2d_id:
+            result.reset(new proto_eventin<sfvec2d>(node));
+            break;
         case field_value::sfvec3f_id:
             result.reset(new proto_eventin<sfvec3f>(node));
+            break;
+        case field_value::sfvec3d_id:
+            result.reset(new proto_eventin<sfvec3d>(node));
             break;
         case field_value::mfcolor_id:
             result.reset(new proto_eventin<mfcolor>(node));
@@ -1129,8 +1139,14 @@ namespace {
         case field_value::mfvec2f_id:
             result.reset(new proto_eventin<mfvec2f>(node));
             break;
+        case field_value::mfvec2d_id:
+            result.reset(new proto_eventin<mfvec2d>(node));
+            break;
         case field_value::mfvec3f_id:
             result.reset(new proto_eventin<mfvec3f>(node));
+            break;
+        case field_value::mfvec3d_id:
+            result.reset(new proto_eventin<mfvec3d>(node));
             break;
         default:
             assert(false);
@@ -1178,6 +1194,11 @@ namespace {
                 dynamic_cast<proto_eventin<sffloat> &>(interface_eventin)
                 .is(dynamic_cast<sffloat_listener &>(impl_eventin));
             break;
+        case field_value::sfdouble_id:
+            succeeded =
+                dynamic_cast<proto_eventin<sfdouble> &>(interface_eventin)
+                .is(dynamic_cast<sfdouble_listener &>(impl_eventin));
+            break;
         case field_value::sfimage_id:
             succeeded =
                 dynamic_cast<proto_eventin<sfimage> &>(interface_eventin)
@@ -1213,10 +1234,20 @@ namespace {
                 dynamic_cast<proto_eventin<sfvec2f> &>(interface_eventin)
                 .is(dynamic_cast<sfvec2f_listener &>(impl_eventin));
             break;
+        case field_value::sfvec2d_id:
+            succeeded =
+                dynamic_cast<proto_eventin<sfvec2d> &>(interface_eventin)
+                .is(dynamic_cast<sfvec2d_listener &>(impl_eventin));
+            break;
         case field_value::sfvec3f_id:
             succeeded =
                 dynamic_cast<proto_eventin<sfvec3f> &>(interface_eventin)
                 .is(dynamic_cast<sfvec3f_listener &>(impl_eventin));
+            break;
+        case field_value::sfvec3d_id:
+            succeeded =
+                dynamic_cast<proto_eventin<sfvec3d> &>(interface_eventin)
+                .is(dynamic_cast<sfvec3d_listener &>(impl_eventin));
             break;
         case field_value::mfcolor_id:
             succeeded =
@@ -1227,6 +1258,11 @@ namespace {
             succeeded =
                 dynamic_cast<proto_eventin<mffloat> &>(interface_eventin)
                 .is(dynamic_cast<mffloat_listener &>(impl_eventin));
+            break;
+        case field_value::mfdouble_id:
+            succeeded =
+                dynamic_cast<proto_eventin<mfdouble> &>(interface_eventin)
+                .is(dynamic_cast<mfdouble_listener &>(impl_eventin));
             break;
         case field_value::mfint32_id:
             succeeded =
@@ -1258,10 +1294,20 @@ namespace {
                 dynamic_cast<proto_eventin<mfvec2f> &>(interface_eventin)
                 .is(dynamic_cast<mfvec2f_listener &>(impl_eventin));
             break;
+        case field_value::mfvec2d_id:
+            succeeded =
+                dynamic_cast<proto_eventin<mfvec2d> &>(interface_eventin)
+                .is(dynamic_cast<mfvec2d_listener &>(impl_eventin));
+            break;
         case field_value::mfvec3f_id:
             succeeded =
                 dynamic_cast<proto_eventin<mfvec3f> &>(interface_eventin)
                 .is(dynamic_cast<mfvec3f_listener &>(impl_eventin));
+            break;
+        case field_value::mfvec3d_id:
+            succeeded =
+                dynamic_cast<proto_eventin<mfvec3d> &>(interface_eventin)
+                .is(dynamic_cast<mfvec3d_listener &>(impl_eventin));
             break;
         default:
             assert(false);
@@ -1471,6 +1517,9 @@ namespace {
         case field_value::sffloat_id:
             result.reset(new proto_eventout<sffloat>(node));
             break;
+        case field_value::sfdouble_id:
+            result.reset(new proto_eventout<sfdouble>(node));
+            break;
         case field_value::sfimage_id:
             result.reset(new proto_eventout<sfimage>(node));
             break;
@@ -1492,14 +1541,23 @@ namespace {
         case field_value::sfvec2f_id:
             result.reset(new proto_eventout<sfvec2f>(node));
             break;
+        case field_value::sfvec2d_id:
+            result.reset(new proto_eventout<sfvec2d>(node));
+            break;
         case field_value::sfvec3f_id:
             result.reset(new proto_eventout<sfvec3f>(node));
+            break;
+        case field_value::sfvec3d_id:
+            result.reset(new proto_eventout<sfvec3d>(node));
             break;
         case field_value::mfcolor_id:
             result.reset(new proto_eventout<mfcolor>(node));
             break;
         case field_value::mffloat_id:
             result.reset(new proto_eventout<mffloat>(node));
+            break;
+        case field_value::mfdouble_id:
+            result.reset(new proto_eventout<mfdouble>(node));
             break;
         case field_value::mfint32_id:
             result.reset(new proto_eventout<mfint32>(node));
@@ -1519,8 +1577,14 @@ namespace {
         case field_value::mfvec2f_id:
             result.reset(new proto_eventout<mfvec2f>(node));
             break;
+        case field_value::mfvec2d_id:
+            result.reset(new proto_eventout<mfvec2d>(node));
+            break;
         case field_value::mfvec3f_id:
             result.reset(new proto_eventout<mfvec3f>(node));
+            break;
+        case field_value::mfvec3d_id:
+            result.reset(new proto_eventout<mfvec3d>(node));
             break;
         default:
             assert(false);
@@ -1568,6 +1632,11 @@ namespace {
                 dynamic_cast<proto_eventout<sffloat> *>(&interface_eventout)
                 ->is(*dynamic_cast<sffloat_emitter *>(&impl_eventout));
             break;
+        case field_value::sfdouble_id:
+            succeeded =
+                dynamic_cast<proto_eventout<sfdouble> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfdouble_emitter *>(&impl_eventout));
+            break;
         case field_value::sfimage_id:
             succeeded =
                 dynamic_cast<proto_eventout<sfimage> *>(&interface_eventout)
@@ -1603,10 +1672,20 @@ namespace {
                 dynamic_cast<proto_eventout<sfvec2f> *>(&interface_eventout)
                 ->is(*dynamic_cast<sfvec2f_emitter *>(&impl_eventout));
             break;
+        case field_value::sfvec2d_id:
+            succeeded =
+                dynamic_cast<proto_eventout<sfvec2d> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfvec2d_emitter *>(&impl_eventout));
+            break;
         case field_value::sfvec3f_id:
             succeeded =
                 dynamic_cast<proto_eventout<sfvec3f> *>(&interface_eventout)
                 ->is(*dynamic_cast<sfvec3f_emitter *>(&impl_eventout));
+            break;
+        case field_value::sfvec3d_id:
+            succeeded =
+                dynamic_cast<proto_eventout<sfvec3d> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfvec3d_emitter *>(&impl_eventout));
             break;
         case field_value::mfcolor_id:
             succeeded =
@@ -1617,6 +1696,11 @@ namespace {
             succeeded =
                 dynamic_cast<proto_eventout<mffloat> *>(&interface_eventout)
                 ->is(*dynamic_cast<mffloat_emitter *>(&impl_eventout));
+            break;
+        case field_value::mfdouble_id:
+            succeeded =
+                dynamic_cast<proto_eventout<mfdouble> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfdouble_emitter *>(&impl_eventout));
             break;
         case field_value::mfint32_id:
             succeeded =
@@ -1648,10 +1732,20 @@ namespace {
                 dynamic_cast<proto_eventout<mfvec2f> *>(&interface_eventout)
                 ->is(*dynamic_cast<mfvec2f_emitter *>(&impl_eventout));
             break;
+        case field_value::mfvec2d_id:
+            succeeded =
+                dynamic_cast<proto_eventout<mfvec2d> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfvec2d_emitter *>(&impl_eventout));
+            break;
         case field_value::mfvec3f_id:
             succeeded =
                 dynamic_cast<proto_eventout<mfvec3f> *>(&interface_eventout)
                 ->is(*dynamic_cast<mfvec3f_emitter *>(&impl_eventout));
+            break;
+        case field_value::mfvec3d_id:
+            succeeded =
+                dynamic_cast<proto_eventout<mfvec3d> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfvec3d_emitter *>(&impl_eventout));
             break;
         default:
             assert(false);
@@ -1746,6 +1840,12 @@ namespace {
                     node,
                     *polymorphic_downcast<const sffloat *>(&initial_value)));
             break;
+        case field_value::sfdouble_id:
+            result.reset(
+                new proto_exposedfield<sfdouble>(
+                    node,
+                    *polymorphic_downcast<const sfdouble *>(&initial_value)));
+            break;
         case field_value::sfimage_id:
             result.reset(
                 new proto_exposedfield<sfimage>(
@@ -1789,11 +1889,23 @@ namespace {
                     node,
                     *polymorphic_downcast<const sfvec2f *>(&initial_value)));
             break;
+        case field_value::sfvec2d_id:
+            result.reset(
+                new proto_exposedfield<sfvec2d>(
+                    node,
+                    *polymorphic_downcast<const sfvec2d *>(&initial_value)));
+            break;
         case field_value::sfvec3f_id:
             result.reset(
                 new proto_exposedfield<sfvec3f>(
                     node,
                     *polymorphic_downcast<const sfvec3f *>(&initial_value)));
+            break;
+        case field_value::sfvec3d_id:
+            result.reset(
+                new proto_exposedfield<sfvec3d>(
+                    node,
+                    *polymorphic_downcast<const sfvec3d *>(&initial_value)));
             break;
         case field_value::mfcolor_id:
             result.reset(
@@ -1806,6 +1918,12 @@ namespace {
                 new proto_exposedfield<mffloat>(
                     node,
                     *polymorphic_downcast<const mffloat *>(&initial_value)));
+            break;
+        case field_value::mfdouble_id:
+            result.reset(
+                new proto_exposedfield<mfdouble>(
+                    node,
+                    *polymorphic_downcast<const mfdouble *>(&initial_value)));
             break;
         case field_value::mfint32_id:
             result.reset(
@@ -1844,11 +1962,23 @@ namespace {
                     node,
                     *polymorphic_downcast<const mfvec2f *>(&initial_value)));
             break;
+        case field_value::mfvec2d_id:
+            result.reset(
+                new proto_exposedfield<mfvec2d>(
+                    node,
+                    *polymorphic_downcast<const mfvec2d *>(&initial_value)));
+            break;
         case field_value::mfvec3f_id:
             result.reset(
                 new proto_exposedfield<mfvec3f>(
                     node,
                     *polymorphic_downcast<const mfvec3f *>(&initial_value)));
+            break;
+        case field_value::mfvec3d_id:
+            result.reset(
+                new proto_exposedfield<mfvec3d>(
+                    node,
+                    *polymorphic_downcast<const mfvec3d *>(&initial_value)));
             break;
         default:
             assert(false);
@@ -3396,6 +3526,8 @@ namespace {
 //
 #include "Vrml97Parser.cpp"
 } // Close "namespace openvrml", opened in Vrml97Parser.cpp.
+#include "X3DVrmlParser.cpp"
+} // Close "namespace openvrml", opened in X3DVrmlParser.cpp.
 
 // Max time in seconds between updates. Make this user
 // setable to balance performance with cpu usage.
@@ -3792,6 +3924,26 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
  *
  * @param event the <code>browser_event</code> to send.
  */
+
+
+/**
+ * @class openvrml::invalid_profile
+ *
+ * @brief Thrown to indicate that a <code>scene</code> has an invalid profile.
+ */
+
+/**
+ * @brief Construct.
+ */
+openvrml::invalid_profile::invalid_profile() throw():
+    std::logic_error("invalid profile")
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::invalid_profile::~invalid_profile() throw ()
+{}
 
 
 /**
@@ -5937,7 +6089,43 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
     null_node_type_(new null_node_type(*null_node_class_)),
     node_class_map_(*this),
     script_node_class_(*this),
-    scene_(new scene(*this)),
+    scene_(new scene(*this, invalid_profile_id)),
+    default_viewpoint_(new default_viewpoint(*null_node_type_)),
+    active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint_.get())),
+    default_navigation_info_(new default_navigation_info(*null_node_type_)),
+    active_navigation_info_(
+        node_cast<navigation_info_node *>(default_navigation_info_.get())),
+    new_view(false),
+    delta_time(DEFAULT_DELTA),
+    viewer_(0),
+    modified_(false),
+    frame_rate_(0.0),
+    out(out),
+    err(err),
+    flags_need_updating(false)
+{
+    assert(this->active_viewpoint_);
+    assert(this->active_navigation_info_);
+}
+
+/**
+ * @brief Constructor.
+ *
+ * @param profile   the profile of the root scene.
+ * @param out       output stream for console output.
+ * @param err       output stream for error console output.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::browser::browser(profile_id profile,
+                           std::ostream & out,
+                           std::ostream & err)
+    throw (std::bad_alloc):
+    null_node_class_(new null_node_class(*this)),
+    null_node_type_(new null_node_type(*null_node_class_)),
+    node_class_map_(*this),
+    script_node_class_(*this),
+    scene_(new scene(*this, profile)),
     default_viewpoint_(new default_viewpoint(*null_node_type_)),
     active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint_.get())),
     default_navigation_info_(new default_navigation_info(*null_node_type_)),
@@ -6438,6 +6626,8 @@ void openvrml::browser::description(const std::string & description)
  *
  * @return the root nodes generated from @p in.
  *
+ * @exception invalid_profile   if the root scene does not have a valid
+ *                              profile.
  * @exception invalid_vrml      if @p in has invalid VRML syntax.
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -6446,9 +6636,30 @@ openvrml::browser::create_vrml_from_stream(std::istream & in)
 {
     std::vector<node_ptr> nodes;
     try {
-        Vrml97Scanner scanner(in);
-        Vrml97Parser parser(scanner, "");
-        parser.vrmlScene(*this, nodes);
+        assert(this->scene_);
+        switch (this->scene_->profile()) {
+        case vrml97_profile_id:
+        {
+            Vrml97Scanner scanner(in);
+            Vrml97Parser parser(scanner, "");
+            parser.vrmlScene(*this->scene_, nodes);
+        }
+        break;
+        case x3d_core_profile_id:
+        case x3d_interchange_profile_id:
+        case x3d_interactive_profile_id:
+        case x3d_mpeg4_interactive_profile_id:
+        case x3d_immersive_profile_id:
+        case x3d_full_profile_id:
+        {
+            X3DVrmlScanner scanner(in);
+            X3DVrmlParser parser(scanner, "");
+            parser.vrmlScene(*this->scene_, nodes);
+        }
+        break;
+        case invalid_profile_id:
+            throw invalid_profile();
+        }
     } catch (antlr::RecognitionException & ex) {
         throw invalid_vrml(ex.getFilename(),
                            ex.getLine(),
@@ -6481,7 +6692,7 @@ struct OPENVRML_LOCAL openvrml::browser::vrml_from_url_creator {
             mfnode nodes;
             nodes.value = this->browser_->create_vrml_from_stream(*in);
             this->listener_->process_event(nodes, browser::current_time());
-        } catch (std::bad_alloc & ex) {
+        } catch (std::exception & ex) {
             this->browser_->err << ex.what() << std::endl;
             throw unreachable_url();
         } catch (...) {
@@ -6938,6 +7149,29 @@ openvrml::invalid_url::~invalid_url() throw ()
 
 
 /**
+ * @class openvrml::bad_media_type
+ *
+ * @brief Thrown when an unexpected media type is received.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param received_type the media type that was unexpectedly received.
+ */
+openvrml::bad_media_type::bad_media_type(const std::string & received_type)
+    throw ():
+    bad_url("unexpected media type \"" + received_type + "\"")
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::bad_media_type::~bad_media_type() throw ()
+{}
+
+
+/**
  * @class unreachable_url
  *
  * @brief Thrown when a URI cannot be reached.
@@ -7126,6 +7360,27 @@ namespace {
 openvrml::scene::scene(openvrml::browser & browser, scene * parent) throw ():
     browser_(&browser),
     parent_(parent),
+    profile_(invalid_profile_id),
+    url_mutex_(boost::read_write_scheduling_policy::writer_priority)
+{}
+
+/**
+ * @brief Construct.
+ *
+ * If @p profile is <code>openvrml::invalid_profile_id</code>, the profile of
+ * the scene will be set according to the resource loaded by
+ * <code>scene::load</code>.
+ *
+ * @param browser   the browser associated with the scene.
+ * @param profile   the profile for the scene.
+ * @param parent    the parent scene.
+ */
+openvrml::scene::scene(openvrml::browser & browser,
+                       const profile_id profile,
+                       scene * parent) throw ():
+    browser_(&browser),
+    parent_(parent),
+    profile_(profile),
     url_mutex_(boost::read_write_scheduling_policy::writer_priority)
 {}
 
@@ -7156,6 +7411,22 @@ openvrml::scene * openvrml::scene::parent() const throw ()
     return this->parent_;
 }
 
+/**
+ * @brief Get the profile for the <code>scene</code>.
+ *
+ * The profile can be set when constructing the <code>scene</code>.  It is
+ * overridden by calls to <code>scene::load</code> with the profile of the
+ * loaded resource.  If the <code>scene</code> is not constructed with a
+ * profile and no resource has been loaded, this function returns
+ * <code>invalid_profile_id</code>.
+ *
+ * @return the profile for the scene.
+ */
+openvrml::profile_id openvrml::scene::profile() const throw ()
+{
+    return this->profile_;
+}
+
 struct openvrml::scene::load_scene {
 
     load_scene(openvrml::scene & scene,
@@ -7165,6 +7436,7 @@ struct openvrml::scene::load_scene {
     {}
         
     void operator()() const throw () try {
+        using std::endl;
         using std::string;
         using std::vector;
 
@@ -7175,21 +7447,35 @@ struct openvrml::scene::load_scene {
 
         vector<node_ptr> nodes;
         try {
+            using boost::algorithm::iequals;
+            
             std::auto_ptr<resource_istream> in = scene.get_resource(url);
             if (!(*in)) { throw unreachable_url(); }
             scene.url(in->url());
-            Vrml97Scanner scanner(*in);
-            Vrml97Parser parser(scanner, in->url());
-            parser.vrmlScene(scene.browser(), nodes);
+            if (iequals(in->type(), "model/vrml")
+                || iequals(in->type(), "x-world/x-vrml")) {
+                scene.profile_ = vrml97_profile_id;
+                Vrml97Scanner scanner(*in);
+                Vrml97Parser parser(scanner, in->url());
+                parser.vrmlScene(scene, nodes);
+            } else if (iequals(in->type(), "model/x3d+vrml")) {
+                X3DVrmlScanner scanner(*in);
+                X3DVrmlParser parser(scanner, in->url());
+                parser.vrmlScene(scene, nodes);
+            } else {
+                throw bad_media_type(in->type());
+            }
+        } catch (bad_media_type & ex) {
+            scene.browser().err << ex.what() << endl;
         } catch (antlr::RecognitionException & ex) {
             throw invalid_vrml(ex.getFilename(),
                                ex.getLine(),
                                ex.getColumn(),
                                ex.getMessage());
         } catch (antlr::ANTLRException & ex) {
-            scene.browser().err << ex.getMessage() << std::endl;
+            scene.browser().err << ex.getMessage() << endl;
         } catch (std::bad_alloc & ex) {
-            scene.browser().err << ex.what() << std::endl;
+            scene.browser().err << ex.what() << endl;
             throw unreachable_url();
         } catch (...) {
             throw unreachable_url();
@@ -7266,6 +7552,9 @@ const std::vector<node_ptr> & scene::nodes() const throw()
 
 /**
  * @brief Set the root nodes for the scene.
+ *
+ * @todo This function should validate that the nodes in @p n are all part of
+ *       the same profile as <code>scene::profile</code>.
  *
  * @param n the new root nodes for the scene.
  *

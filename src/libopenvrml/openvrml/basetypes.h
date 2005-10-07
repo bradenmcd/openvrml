@@ -106,65 +106,73 @@ namespace openvrml {
     }
 
 
-    class OPENVRML_API vec2f {
-        float vec[2];
+    template<typename T>
+    class OPENVRML_API vec2 {
+        T vec[2];
 
     public:
-        vec2f() throw ();
-        explicit vec2f(const float (&vec)[2]) throw ();
-        vec2f(float x, float y) throw ();
+        vec2() throw ();
+        explicit vec2(const T (&vec)[2]) throw ();
+        explicit vec2(T x, T y) throw ();
 
-        vec2f & operator*=(float scalar) throw ();
-        vec2f & operator/=(float scalar) throw ();
-        vec2f & operator+=(const vec2f & vec) throw ();
-        vec2f & operator-=(const vec2f & vec) throw ();
+        vec2<T> & operator*=(T scalar) throw ();
+        vec2<T> & operator/=(T scalar) throw ();
+        vec2<T> & operator+=(const vec2<T> & vec) throw ();
+        vec2<T> & operator-=(const vec2<T> & vec) throw ();
 
-        const vec2f operator-() const throw ();
+        const vec2<T> operator-() const throw ();
+        const vec2<T> operator*(T rhs) const throw ();
+        const vec2<T> operator/(T rhs) const throw ();
+        const vec2<T> operator+(const vec2<T> & rhs) const throw ();
+        const vec2<T> operator-(const vec2<T> & rhs) const throw ();
+        bool operator==(const vec2<T> & rhs) const throw ();
+        bool operator!=(const vec2<T> & rhs) const throw ();
 
-        const float & operator[](size_t index) const throw ();
+        const T & operator[](size_t index) const throw ();
 
-        float x() const throw ();
-        float y() const throw ();
+        T x() const throw ();
+        T y() const throw ();
 
-        void x(float value) throw ();
-        void y(float value) throw ();
+        void x(T value) throw ();
+        void y(T value) throw ();
 
-        float dot(const vec2f & vec) const throw ();
-        float length() const throw ();
-        const vec2f normalize() const throw ();
+        T dot(const vec2<T> & vec) const throw ();
+        T length() const throw ();
+        const vec2<T> normalize() const throw ();
     };
 
-    OPENVRML_API const vec2f operator*(const vec2f & lhs, float rhs) throw ();
-    OPENVRML_API const vec2f operator*(float lhs, const vec2f & rhs) throw ();
-    OPENVRML_API const vec2f operator/(const vec2f & lhs, float rhs) throw ();
-    OPENVRML_API const vec2f operator+(const vec2f & lhs, const vec2f & rhs)
-        throw ();
-    OPENVRML_API const vec2f operator-(const vec2f & lhs, const vec2f & rhs)
-        throw ();
-    OPENVRML_API bool operator==(const vec2f & lhs, const vec2f & rhs)
-        throw ();
-    OPENVRML_API bool operator!=(const vec2f & lhs, const vec2f & rhs)
+    OPENVRML_API const vec2<float> operator*(float lhs,
+                                             const vec2<float> & rhs)
         throw ();
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
-                                           const vec2f & v);
+                                           const vec2<float> & v);
+    OPENVRML_API const vec2<double> operator*(double lhs,
+                                              const vec2<double> & rhs)
+        throw ();
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const vec2<double> & v);
 
-    inline const float & vec2f::operator[](const size_t index) const throw ()
+    template<typename T>
+    inline const T & vec2<T>::operator[](const size_t index) const throw ()
     {
         assert(index < 2);
         return this->vec[index];
     }
 
-    inline float vec2f::x() const throw ()
+    template<typename T>
+    inline T vec2<T>::x() const throw ()
     {
         return this->vec[0];
     }
 
-    inline float vec2f::y() const throw ()
+    template<typename T>
+    inline T vec2<T>::y() const throw ()
     {
         return this->vec[1];
     }
 
-    inline void vec2f::x(const float value) throw ()
+    template<typename T>
+    inline void vec2<T>::x(const T value) throw ()
     {
         //
         // Ensure value is not NaN.
@@ -174,7 +182,8 @@ namespace openvrml {
         this->vec[0] = value;
     }
 
-    inline void vec2f::y(const float value) throw ()
+    template<typename T>
+    inline void vec2<T>::y(const T value) throw ()
     {
         //
         // Ensure value is not NaN.
@@ -184,86 +193,98 @@ namespace openvrml {
         this->vec[1] = value;
     }
 
+    typedef vec2<float> vec2f;
+    typedef vec2<double> vec2d;
+
 
     class mat4f;
 
-    class OPENVRML_API vec3f {
-        float vec[3];
+    template<typename T>
+    class OPENVRML_API vec3 {
+        T vec[3];
 
     public:
-        vec3f() throw ();
-        explicit vec3f(const float (&vec)[3]) throw ();
-        vec3f(float x, float y, float z) throw ();
+        vec3() throw ();
+        explicit vec3(const T (&vec)[3]) throw ();
+        vec3(T x, T y, T z) throw ();
 
-        vec3f & operator*=(const vec3f & vec) throw ();
-        vec3f & operator*=(const mat4f & mat) throw ();
-        vec3f & operator*=(float scalar) throw ();
-        vec3f & operator/=(float scalar) throw ();
-        vec3f & operator+=(const vec3f & vec) throw ();
-        vec3f & operator-=(const vec3f & vec) throw ();
+        vec3<T> & operator*=(const vec3<T> & vec) throw ();
+        vec3<T> & operator*=(const mat4f & mat) throw ();
+        vec3<T> & operator*=(T scalar) throw ();
+        vec3<T> & operator/=(T scalar) throw ();
+        vec3<T> & operator+=(const vec3<T> & vec) throw ();
+        vec3<T> & operator-=(const vec3<T> & vec) throw ();
 
-        const vec3f operator-() const throw ();
+        const vec3<T> operator-() const throw ();
+        const vec3<T> operator*(const vec3<T> & rhs) const throw ();
+        const vec3<T> operator*(const T rhs) const throw ();
+        const vec3<T> operator*(const mat4f & mat) const throw ();
+        const vec3<T> operator/(const T rhs) const throw ();
+        const vec3<T> operator+(const vec3<T> & rhs) const throw ();
+        const vec3<T> operator-(const vec3<T> & rhs) const throw ();
+        bool operator==(const vec3<T> & rhs) const throw ();
+        bool operator!=(const vec3<T> & rhs) const throw ();
 
-        const float & operator[](size_t index) const throw ();
+        const T & operator[](size_t index) const throw ();
 
-        float x() const throw ();
-        float y() const throw ();
-        float z() const throw ();
+        T x() const throw ();
+        T y() const throw ();
+        T z() const throw ();
 
-        void x(float value) throw ();
-        void y(float value) throw ();
-        void z(float value) throw ();
+        void x(T value) throw ();
+        void y(T value) throw ();
+        void z(T value) throw ();
 
-        float dot(const vec3f & vec) const throw ();
-        float length() const throw ();
-        const vec3f normalize() const throw ();
+        T dot(const vec3<T> & vec) const throw ();
+        T length() const throw ();
+        const vec3<T> normalize() const throw ();
     };
 
-    OPENVRML_API const vec3f operator*(const vec3f & lhs, const vec3f & rhs)
+    OPENVRML_API const vec3<float> operator*(const float lhs,
+                                             const vec3<float> & rhs)
         throw ();
-    OPENVRML_API const vec3f operator*(const vec3f & lhs, const float rhs)
-        throw ();
-    OPENVRML_API const vec3f operator*(const float lhs, const vec3f & rhs)
-        throw ();
-    OPENVRML_API const vec3f operator*(const vec3f & vec, const mat4f & mat)
-        throw ();
-    OPENVRML_API const vec3f operator*(const mat4f & mat, const vec3f & vec)
-        throw ();
-    OPENVRML_API const vec3f operator/(const vec3f & lhs, const float rhs)
-        throw ();
-    OPENVRML_API const vec3f operator+(const vec3f & lhs, const vec3f & rhs)
-        throw ();
-    OPENVRML_API const vec3f operator-(const vec3f & lhs, const vec3f & rhs)
-        throw ();
-    OPENVRML_API bool operator==(const vec3f & lhs, const vec3f & rhs)
-        throw ();
-    OPENVRML_API bool operator!=(const vec3f & lhs, const vec3f & rhs)
+    OPENVRML_API const vec3<float> operator*(const mat4f & mat,
+                                             const vec3<float> & vec)
         throw ();
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
-                                           const vec3f & v);
+                                           const vec3<float> & v);
+    OPENVRML_API const vec3<double> operator*(const double lhs,
+                                              const vec3<double> & rhs)
+        throw ();
+    OPENVRML_API const vec3<double> operator*(const mat4f & mat,
+                                              const vec3<double> & vec)
+        throw ();
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const vec3<double> & v);
 
-    inline const float & vec3f::operator[](const size_t index) const throw ()
+
+    template<typename T>
+    inline const T & vec3<T>::operator[](const size_t index) const throw ()
     {
         assert(index < 3);
         return this->vec[index];
     }
 
-    inline float vec3f::x() const throw ()
+    template<typename T>
+    inline T vec3<T>::x() const throw ()
     {
         return this->vec[0];
     }
 
-    inline float vec3f::y() const throw ()
+    template<typename T>
+    inline T vec3<T>::y() const throw ()
     {
         return this->vec[1];
     }
 
-    inline float vec3f::z() const throw ()
+    template<typename T>
+    inline T vec3<T>::z() const throw ()
     {
         return this->vec[2];
     }
 
-    inline void vec3f::x(const float value) throw ()
+    template<typename T>
+    inline void vec3<T>::x(const T value) throw ()
     {
         //
         // Ensure value is not NaN.
@@ -273,7 +294,8 @@ namespace openvrml {
         this->vec[0] = value;
     }
 
-    inline void vec3f::y(const float value) throw ()
+    template<typename T>
+    inline void vec3<T>::y(const T value) throw ()
     {
         //
         // Ensure value is not NaN.
@@ -283,7 +305,8 @@ namespace openvrml {
         this->vec[1] = value;
     }
 
-    inline void vec3f::z(const float value) throw ()
+    template<typename T>
+    inline void vec3<T>::z(const T value) throw ()
     {
         //
         // Ensure value is not NaN.
@@ -292,6 +315,9 @@ namespace openvrml {
 
         this->vec[2] = value;
     }
+
+    typedef vec3<float> vec3f;
+    typedef vec3<double> vec3d;
 
 
     class quatf;

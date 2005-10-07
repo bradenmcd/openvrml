@@ -48,6 +48,7 @@
 #   include <vrml_field_SFBool.h>
 #   include <vrml_field_SFColor.h>
 #   include <vrml_field_SFFloat.h>
+#   include <vrml_field_SFDouble.h>
 #   include <vrml_field_SFImage.h>
 #   include <vrml_field_SFInt32.h>
 #   include <vrml_field_SFNode.h>
@@ -55,19 +56,25 @@
 #   include <vrml_field_SFString.h>
 #   include <vrml_field_SFTime.h>
 #   include <vrml_field_SFVec2f.h>
+#   include <vrml_field_SFVec2d.h>
 #   include <vrml_field_SFVec3f.h>
+#   include <vrml_field_SFVec3d.h>
 #   include <vrml_field_MFColor.h>
 #   include <vrml_field_MFFloat.h>
+#   include <vrml_field_MFDouble.h>
 #   include <vrml_field_MFInt32.h>
 #   include <vrml_field_MFNode.h>
 #   include <vrml_field_MFRotation.h>
 #   include <vrml_field_MFString.h>
 #   include <vrml_field_MFTime.h>
 #   include <vrml_field_MFVec2f.h>
+#   include <vrml_field_MFVec2d.h>
 #   include <vrml_field_MFVec3f.h>
+#   include <vrml_field_MFVec3d.h>
 #   include <vrml_field_ConstSFBool.h>
 #   include <vrml_field_ConstSFColor.h>
 #   include <vrml_field_ConstSFFloat.h>
+#   include <vrml_field_ConstSFDouble.h>
 #   include <vrml_field_ConstSFImage.h>
 #   include <vrml_field_ConstSFInt32.h>
 #   include <vrml_field_ConstSFNode.h>
@@ -75,16 +82,21 @@
 #   include <vrml_field_ConstSFString.h>
 #   include <vrml_field_ConstSFTime.h>
 #   include <vrml_field_ConstSFVec2f.h>
+#   include <vrml_field_ConstSFVec2d.h>
 #   include <vrml_field_ConstSFVec3f.h>
+#   include <vrml_field_ConstSFVec3d.h>
 #   include <vrml_field_ConstMFColor.h>
 #   include <vrml_field_ConstMFFloat.h>
+#   include <vrml_field_ConstMFDouble.h>
 #   include <vrml_field_ConstMFInt32.h>
 #   include <vrml_field_ConstMFNode.h>
 #   include <vrml_field_ConstMFRotation.h>
 #   include <vrml_field_ConstMFString.h>
 #   include <vrml_field_ConstMFTime.h>
 #   include <vrml_field_ConstMFVec2f.h>
+#   include <vrml_field_ConstMFVec2d.h>
 #   include <vrml_field_ConstMFVec3f.h>
+#   include <vrml_field_ConstMFVec3d.h>
 #   include <vrml_node_Node.h>
 #   include <vrml_node_Script.h>
 
@@ -139,6 +151,7 @@ const char * ftn[] = {
   "SFBool",
   "SFColor",
   "SFFloat",
+  "SFDouble",
   "SFImage",
   "SFInt32",
   "SFNode",
@@ -146,16 +159,21 @@ const char * ftn[] = {
   "SFString",
   "SFTime",
   "SFVec2f",
+  "SFVec2d",
   "SFVec3f",
+  "SFVec3d",
   "MFColor",
   "MFFloat",
+  "MFDouble",
   "MFInt32",
   "MFNode",
   "MFRotation",
   "MFString",
   "MFTime",
   "MFVec2f",
-  "MFVec3f"
+  "MFVec2d",
+  "MFVec3f",
+  "MFVec3d"
 };
 
 // Static members
@@ -180,7 +198,7 @@ JNIEnv *ScriptJDK::d_env = 0;
  */
 ScriptJDK::ScriptJDK(script_node & node,
                      const char * className,
-		     const char * classDir):
+             const char * classDir):
     script(node),
     d_class(0),
     d_object(0),
@@ -188,7 +206,7 @@ ScriptJDK::ScriptJDK(script_node & node,
     d_processEventID(0),
     d_eventsProcessedID(0)
 {
-  if (! d_jvm)			// Initialize static members
+  if (! d_jvm)            // Initialize static members
   {
     JavaVMInitArgs vm_args;
     jint res;
@@ -200,7 +218,7 @@ ScriptJDK::ScriptJDK(script_node & node,
     std::ostringstream appendedClassPath;
 
     appendedClassPath << "-Djava.class.path=."
-		      << PATH_SEPARATOR << classDir;
+              << PATH_SEPARATOR << classDir;
 
     // Only append CLASSPATH if non-null
     if (classPath)
@@ -235,7 +253,7 @@ ScriptJDK::ScriptJDK(script_node & node,
     }
   }
 
-  if (d_jvm && d_env)		// Per-object initialization
+  if (d_jvm && d_env)        // Per-object initialization
   {
     char fqClassName[1024];
     strcpy(fqClassName, "");
@@ -441,9 +459,9 @@ void ScriptJDK::do_shutdown(const double timestamp)
  * @param argv Array of arguments
  */
 void ScriptJDK::activate( double timeStamp,
-			  const std::string& fname,
-			  size_t argc,
-			  const field_value* const argv[] )
+              const std::string& fname,
+              size_t argc,
+              const field_value* const argv[] )
 {
   if (argc == 2 && d_processEventID)
   {
@@ -505,6 +523,8 @@ static field_value* newField(field_value::type_id fieldtype)
       return new sfcolor;
     case field_value::sffloat_id:
       return new sffloat;
+    case field_value::sfdouble_id:
+      return new sfdouble;
     case field_value::sfimage_id:
       return new sfimage;
     case field_value::sfint32_id:
@@ -519,12 +539,18 @@ static field_value* newField(field_value::type_id fieldtype)
       return new sftime;
     case field_value::sfvec2f_id:
       return new sfvec2f;
+    case field_value::sfvec2d_id:
+      return new sfvec2d;
     case field_value::sfvec3f_id:
       return new sfvec3f;
+    case field_value::sfvec3d_id:
+      return new sfvec3d;
     case field_value::mfcolor_id:
       return new mfcolor;
     case field_value::mffloat_id:
       return new mffloat;
+    case field_value::mfdouble_id:
+      return new mfdouble;
     case field_value::mfint32_id:
       return new mfint32;
     case field_value::mfnode_id:
@@ -537,8 +563,12 @@ static field_value* newField(field_value::type_id fieldtype)
       return new mftime;
     case field_value::mfvec2f_id:
       return new mfvec2f;
+    case field_value::mfvec2d_id:
+      return new mfvec2d;
     case field_value::mfvec3f_id:
       return new mfvec3f;
+    case field_value::mfvec3d_id:
+      return new mfvec3d;
     default:
       return NULL;
   }
@@ -1130,6 +1160,148 @@ jstring JNICALL Java_vrml_field_SFFloat_toString
   return fieldToString(env, obj);
 }
 
+adsfadsf
+/**
+ * @brief JNI implementation of ConstSFDouble::CreateObject.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFDouble object
+ * @param value Initial value for object
+ */
+void JNICALL Java_vrml_field_ConstSFDouble_CreateObject
+  (JNIEnv *env, jobject obj, jdouble value)
+{
+    try {
+        jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+        if (!fid) { return; }
+        std::auto_ptr<openvrml::sfdouble> sfdouble(new openvrml::sfdouble(value));
+        env->SetIntField(obj, fid, reinterpret_cast<int>(sfdouble.release()));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of ConstSFDouble::getValue.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFDouble object
+ * @return Value of field.
+ */
+jdouble JNICALL Java_vrml_field_ConstSFDouble_getValue(JNIEnv * env,
+                                                     jobject obj)
+{
+    sfdouble * sff = static_cast<sfdouble *>(getFieldValue(env, obj));
+    if (!sff) { return 0.0; }
+    return sff->value;
+}
+
+/**
+ * @brief JNI implementation of ConstSFDouble::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFDouble object
+ * @return String representation of ConstSFDouble.
+ */
+jstring JNICALL Java_vrml_field_ConstSFDouble_toString
+  (JNIEnv *env, jobject obj)
+{
+  return fieldToString(env, obj);
+}
+
+/**
+ * @brief JNI implementation of SFDouble::CreateObject.
+ *
+ * @param env JNI environment
+ * @param obj SFDouble object
+ * @param value Initial value for object
+ */
+void JNICALL Java_vrml_field_SFDouble_CreateObject
+  (JNIEnv *env, jobject obj, jdouble value)
+{
+  Java_vrml_field_ConstSFDouble_CreateObject(env, obj, value);
+}
+
+/**
+ * @brief JNI implementation of SFDouble::getValue.
+ *
+ * @param env JNI environment
+ * @param obj SFDouble object
+ * @return Value of field.
+ */
+jdouble JNICALL Java_vrml_field_SFDouble_getValue
+  (JNIEnv *env, jobject obj)
+{
+  return Java_vrml_field_ConstSFDouble_getValue(env, obj);
+}
+
+/**
+ * @brief JNI implementation of SFDouble::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFDouble object
+ * @param f Desired value
+ */
+void JNICALL Java_vrml_field_SFDouble_setValue__F(JNIEnv * env,
+                                                 jobject obj,
+                                                 jdouble f)
+{
+    sfdouble * sff = static_cast<sfdouble *>(getFieldValue(env, obj));
+    if (!sff) { return; }
+    sff->value = f;
+}
+
+/**
+ * @brief JNI implementation of SFDouble::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFDouble object
+ * @param value Desired value
+ */
+void JNICALL
+Java_vrml_field_SFDouble_setValue__Lvrml_field_ConstSFDouble_2
+  (JNIEnv *env, jobject obj, jobject value)
+{
+    sfdouble* sff = static_cast<sfdouble*>(getFieldValue(env, obj));
+    sfdouble* newSFDouble = static_cast<sfdouble*>(getFieldValue(env, value));
+    if (!sff || !newSFDouble) return;
+    sff->value = newSFDouble->value;
+}
+
+/**
+ * @brief JNI implementation of SFDouble::setValue.
+ *
+ * @param env JNI environment
+ * @param obj SFDouble object
+ * @param value Desired value
+ */
+void JNICALL
+Java_vrml_field_SFDouble_setValue__Lvrml_field_SFDouble_2
+  (JNIEnv *env, jobject obj, jobject value)
+{
+  Java_vrml_field_SFDouble_setValue__Lvrml_field_ConstSFDouble_2
+    (env, obj, value);
+}
+
+/**
+ * @brief JNI implementation of SFDouble::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFDouble object
+ * @return String representation of SFDouble.
+ */
+jstring JNICALL Java_vrml_field_SFDouble_toString
+  (JNIEnv *env, jobject obj)
+{
+  return fieldToString(env, obj);
+}
 /**
  * @brief JNI implementation of ConstSFImage::CreateObject.
  *
@@ -2265,6 +2437,206 @@ void JNICALL Java_vrml_field_ConstSFVec3f_CreateObject(JNIEnv * env,
     }
 }
 
+void JNICALL Java_vrml_field_ConstSFVec2d_CreateObject
+  (JNIEnv *env, jobject obj, jdouble x, jdouble y)
+{
+    try {
+        std::auto_ptr<openvrml::sfvec2d>
+            sfvec2d(new openvrml::sfvec2d(vec2d(x, y)));
+        jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+        if (!fid) { return; }
+        env->SetIntField(obj, fid, reinterpret_cast<int>(sfvec2d.release()));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of ConstSFVec2d::getValue.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFVec2d object
+ * @param jarr Value of field as a double array
+ */
+void JNICALL Java_vrml_field_ConstSFVec2d_getValue(JNIEnv * env,
+                                                   jobject obj,
+                                                   jdoubleArray jarr)
+{
+    sfvec2d * sfv = static_cast<sfvec2d *>(getFieldValue(env, obj));
+    if (!sfv) { return; }
+    env->SetFloatArrayRegion(jarr, 0, 2, const_cast<double *>(&sfv->value[0]));
+}
+
+/**
+ * @brief JNI implementation of ConstSFVec2d::getX.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFVec2d object
+ * @return X-component of vector
+ */
+jdouble JNICALL Java_vrml_field_ConstSFVec2d_getX(JNIEnv * env, jobject obj)
+{
+    sfvec2d * sfv = static_cast<sfvec2d*>(getFieldValue(env, obj));
+    if (!sfv) { return 0.0; }
+    return sfv->value.x();
+}
+
+/**
+ * @brief JNI implementation of ConstSFVec2d::getY.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFVec2d object
+ * @return Y-component of vector
+ */
+jdouble JNICALL Java_vrml_field_ConstSFVec2d_getY(JNIEnv * env, jobject obj)
+{
+    sfvec2d * sfv = static_cast<sfvec2d*>(getFieldValue(env, obj));
+    if (!sfv) { return 0.0; }
+    return sfv->value.y();
+}
+
+/**
+ * @brief JNI implementation of ConstSFVec2d::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFVec2d object
+ * @return String representation of ConstSFVec2d.
+ */
+jstring JNICALL Java_vrml_field_ConstSFVec2d_toString
+  (JNIEnv *env, jobject obj)
+{
+  return fieldToString(env, obj);
+}
+
+void JNICALL Java_vrml_field_SFVec2d_CreateObject
+  (JNIEnv *env, jobject obj, jdouble x, jdouble y)
+{
+  Java_vrml_field_ConstSFVec2d_CreateObject(env, obj, x, y);
+}
+
+/**
+ * @brief JNI implementation of SFVec2d::getValue.
+ *
+ * @param env JNI environment
+ * @param obj SFVec2d object
+ * @param jarr Value of field as a double array
+ */
+void JNICALL Java_vrml_field_SFVec2d_getValue
+  (JNIEnv *env, jobject obj, jdoubleArray jarr)
+{
+  Java_vrml_field_ConstSFVec2d_getValue(env, obj, jarr);
+}
+
+/**
+ * @brief JNI implementation of SFVec2d::getX.
+ *
+ * @param env JNI environment
+ * @param obj SFVec2d object
+ * @return X-component of vector
+ */
+jdouble JNICALL Java_vrml_field_SFVec2d_getX
+  (JNIEnv *env, jobject obj)
+{
+  return Java_vrml_field_ConstSFVec2d_getX(env, obj);
+}
+
+/**
+ * @brief JNI implementation of SFVec2d::getY.
+ *
+ * @param env JNI environment
+ * @param obj SFVec2d object
+ * @return Y-component of vector
+ */
+jdouble JNICALL Java_vrml_field_SFVec2d_getY
+  (JNIEnv *env, jobject obj)
+{
+  return Java_vrml_field_ConstSFVec2d_getY(env, obj);
+}
+
+void JNICALL Java_vrml_field_SFVec2d_setValue___3F(JNIEnv * env,
+                                                   jobject obj,
+                                                   jdoubleArray jarr)
+{
+    sfvec2d * sfv = static_cast<sfvec2d*>(getFieldValue(env, obj));
+    if (!sfv) return;
+    jdouble * pjf = env->GetFloatArrayElements(jarr, NULL);
+    sfv->value = vec2d(pjf[0], pjf[1]);
+    env->ReleaseFloatArrayElements(jarr, pjf, JNI_ABORT);
+}
+
+void JNICALL Java_vrml_field_SFVec2d_setValue__FF(JNIEnv * env,
+                                                  jobject obj,
+                                                  jdouble x,
+                                                  jdouble y)
+{
+    sfvec2d * sfv = static_cast<sfvec2d*>(getFieldValue(env, obj));
+    if (!sfv) return;
+    sfv->value = vec2d(x, y);
+}
+
+void JNICALL
+Java_vrml_field_SFVec2d_setValue__Lvrml_field_ConstSFVec2d_2(JNIEnv * env,
+                                                             jobject obj,
+                                                             jobject value)
+{
+    sfvec2d * sfv = static_cast<sfvec2d*>(getFieldValue(env, obj));
+    sfvec2d * newSFVec2d = static_cast<sfvec2d*>(getFieldValue(env, value));
+    if (!sfv || !newSFVec2d) { return; }
+    sfv->value = newSFVec2d->value;
+}
+
+void JNICALL
+Java_vrml_field_SFVec2d_setValue__Lvrml_field_SFVec2d_2
+  (JNIEnv *env, jobject obj, jobject value)
+{
+  Java_vrml_field_SFVec2d_setValue__Lvrml_field_ConstSFVec2d_2(env, obj,
+                                                               value);
+}
+
+/**
+ * @brief JNI implementation of SFVec2d::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFVec2d object
+ * @return String representation of SFVec2d.
+ */
+jstring JNICALL Java_vrml_field_SFVec2d_toString
+  (JNIEnv *env, jobject obj)
+{
+  return fieldToString(env, obj);
+}
+
+void JNICALL Java_vrml_field_ConstSFVec3f_CreateObject(JNIEnv * env,
+                                                       jobject obj,
+                                                       jdouble x,
+                                                       jdouble y,
+                                                       jdouble z)
+{
+    try {
+        std::auto_ptr<openvrml::sfvec3f>
+            sfvec3f(new openvrml::sfvec3f(vec3f(x, y, z)));
+        jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+        if (!fid) { return; }
+        env->SetIntField(obj, fid, reinterpret_cast<int>(sfvec3f.release()));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
 /**
  * @brief JNI implementation of ConstSFVec3f::getValue.
  *
@@ -2443,6 +2815,214 @@ Java_vrml_field_SFVec3f_setValue__Lvrml_field_SFVec3f_2
  * @return String representation of SFVec3f.
  */
 jstring JNICALL Java_vrml_field_SFVec3f_toString
+  (JNIEnv *env, jobject obj)
+{
+  return fieldToString(env, obj);
+}
+
+
+void JNICALL Java_vrml_field_ConstSFVec3d_CreateObject(JNIEnv * env,
+                                                       jobject obj,
+                                                       jdouble x,
+                                                       jdouble y,
+                                                       jdouble z)
+{
+    try {
+        std::auto_ptr<openvrml::sfvec3d>
+            sfvec3d(new openvrml::sfvec3d(vec3f(x, y, z)));
+        jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+        if (!fid) { return; }
+        env->SetIntField(obj, fid, reinterpret_cast<int>(sfvec3d.release()));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of ConstSFVec3d::getValue.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFVec3d object
+ * @param jarr Value of field as a double array
+ */
+void JNICALL Java_vrml_field_ConstSFVec3d_getValue(JNIEnv * env,
+                                                   jobject obj,
+                                                   jdoubleArray jarr)
+{
+    sfvec3d * sfv = static_cast<sfvec3d*>(getFieldValue(env, obj));
+    if (!sfv) { return; }
+    env->SetDoubleArrayRegion(jarr, 0, 3, const_cast<double *>(&sfv->value[0]));
+}
+
+/**
+ * @brief JNI implementation of ConstSFVec3d::getX.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFVec3d object
+ * @return X-component of vector
+ */
+jdouble JNICALL Java_vrml_field_ConstSFVec3d_getX(JNIEnv * env, jobject obj)
+{
+    sfvec3d * sfv = static_cast<sfvec3d *>(getFieldValue(env, obj));
+    if (!sfv) { return 0.0; }
+    return sfv->value.x();
+}
+
+/**
+ * @brief JNI implementation of ConstSFVec3d::getY.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFVec3d object
+ * @return Y-component of vector
+ */
+jdouble JNICALL Java_vrml_field_ConstSFVec3d_getY(JNIEnv * env, jobject obj)
+{
+    sfvec3d * sfv = static_cast<sfvec3d *>(getFieldValue(env, obj));
+    if (!sfv) { return 0.0; }
+    return sfv->value.y();
+}
+
+/**
+ * @brief JNI implementation of ConstSFVec3d::getZ.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFVec3d object
+ * @return Z-component of vector
+ */
+jdouble JNICALL Java_vrml_field_ConstSFVec3d_getZ(JNIEnv * env, jobject obj)
+{
+    sfvec3d * sfv = static_cast<sfvec3d *>(getFieldValue(env, obj));
+    if (!sfv) { return 0.0; }
+    return sfv->value.z();
+}
+
+/**
+ * @brief JNI implementation of ConstSFVec3d::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstSFVec3d object
+ * @return String representation of ConstSFVec3d.
+ */
+jstring JNICALL Java_vrml_field_ConstSFVec3d_toString
+  (JNIEnv *env, jobject obj)
+{
+  return fieldToString(env, obj);
+}
+
+void JNICALL Java_vrml_field_SFVec3d_CreateObject
+  (JNIEnv *env, jobject obj, jdouble x, jdouble y, jdouble z)
+{
+  Java_vrml_field_ConstSFVec3d_CreateObject(env, obj, x, y, z);
+}
+
+/**
+ * @brief JNI implementation of SFVec3d::getValue.
+ *
+ * @param env JNI environment
+ * @param obj SFVec3d object
+ * @param jarr Value of field as a double array
+ */
+void JNICALL Java_vrml_field_SFVec3d_getValue
+  (JNIEnv *env, jobject obj, jdoubleArray jarr)
+{
+  Java_vrml_field_ConstSFVec3d_getValue(env, obj, jarr);
+}
+
+/**
+ * @brief JNI implementation of SFVec3d::getX.
+ *
+ * @param env JNI environment
+ * @param obj SFVec3d object
+ * @return X-component of vector
+ */
+jdouble JNICALL Java_vrml_field_SFVec3d_getX
+  (JNIEnv *env, jobject obj)
+{
+  return Java_vrml_field_ConstSFVec3d_getX(env, obj);
+}
+
+/**
+ * @brief JNI implementation of SFVec3d::getY.
+ *
+ * @param env JNI environment
+ * @param obj SFVec3d object
+ * @return Y-component of vector
+ */
+jdouble JNICALL Java_vrml_field_SFVec3d_getY
+  (JNIEnv *env, jobject obj)
+{
+  return Java_vrml_field_ConstSFVec3d_getY(env, obj);
+}
+
+/**
+ * @brief JNI implementation of SFVec3d::getZ.
+ *
+ * @param env JNI environment
+ * @param obj SFVec3d object
+ * @return Z-component of vector
+ */
+jdouble JNICALL Java_vrml_field_SFVec3d_getZ
+  (JNIEnv *env, jobject obj)
+{
+  return Java_vrml_field_ConstSFVec3d_getZ(env, obj);
+}
+
+void JNICALL Java_vrml_field_SFVec3d_setValue___3F(JNIEnv * env,
+                                                   jobject obj,
+                                                   jdoubleArray jarr)
+{
+    sfvec3d * sfv = static_cast<sfvec3d *>(getFieldValue(env, obj));
+    if (!sfv) { return; }
+    jdouble * pjf = env->GetDoubleArrayElements(jarr, NULL);
+    sfv->value = vec3f(pjf[0], pjf[1], pjf[2]);
+    env->ReleaseDoubleArrayElements(jarr, pjf, JNI_ABORT);
+}
+
+void JNICALL Java_vrml_field_SFVec3d_setValue__FFF(JNIEnv * env,
+                                                   jobject obj,
+                                                   jdouble x,
+                                                   jdouble y,
+                                                   jdouble z)
+{
+    sfvec3d * sfv = static_cast<sfvec3d*>(getFieldValue(env, obj));
+    if (!sfv) { return; }
+    sfv->value = vec3f(x, y, z);
+}
+
+void JNICALL
+Java_vrml_field_SFVec3d_setValue__Lvrml_field_ConstSFVec3d_2(JNIEnv * env,
+                                                             jobject obj,
+                                                             jobject value)
+{
+    sfvec3d * sfv = static_cast<sfvec3d*>(getFieldValue(env, obj));
+    sfvec3d * newSFVec3d = static_cast<sfvec3d*>(getFieldValue(env, value));
+    if (!sfv || !newSFVec3d) { return; }
+    sfv->value = newSFVec3d->value; // Does not throw.
+}
+
+void JNICALL
+Java_vrml_field_SFVec3d_setValue__Lvrml_field_SFVec3d_2
+  (JNIEnv *env, jobject obj, jobject value)
+{
+  Java_vrml_field_SFVec3d_setValue__Lvrml_field_ConstSFVec3d_2(env, obj,
+                                                               value);
+}
+
+/**
+ * @brief JNI implementation of SFVec3d::toString.
+ *
+ * @param env JNI environment
+ * @param obj SFVec3d object
+ * @return String representation of SFVec3d.
+ */
+jstring JNICALL Java_vrml_field_SFVec3d_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
@@ -3241,6 +3821,7 @@ Java_vrml_field_MFFloat_set1Value__ILvrml_field_SFFloat_2
     (env, obj, index, sffloat);
 }
 
+
 /**
  * @brief JNI implementation of MFFloat::addValue.
  *
@@ -3371,6 +3952,360 @@ Java_vrml_field_MFFloat_insertValue__ILvrml_field_SFFloat_2
  * @return String representation of MFFloat.
  */
 jstring JNICALL Java_vrml_field_MFFloat_toString
+  (JNIEnv *env, jobject obj)
+{
+  return fieldToString(env, obj);
+}
+
+
+void JNICALL Java_vrml_field_ConstMFDouble_CreateObject
+  (JNIEnv *env, jobject obj, jint size, jdoubleArray value)
+{
+    try {
+        jdouble *pjf = env->GetDoubleArrayElements(value, NULL);
+        std::auto_ptr<openvrml::mfdouble>
+            mfdouble(new openvrml::mfdouble(pjf, pjf + size));
+        env->ReleaseDoubleArrayElements(value, pjf, JNI_ABORT);
+        jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+        if (!fid) { return; }
+        env->SetIntField(obj, fid, reinterpret_cast<int>(mfdouble.release()));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+jint JNICALL Java_vrml_field_ConstMFDouble_getSize(JNIEnv * env, jobject obj) {
+    mfdouble * mff = static_cast<mfdouble *>(getFieldValue(env, obj));
+    if (!mff) return 0;
+    return mff->value.size();
+}
+
+void JNICALL Java_vrml_field_ConstMFDouble_getValue(JNIEnv * env,
+                                                   jobject obj,
+                                                   jdoubleArray jarr)
+{
+    const mfdouble * const mff =
+        static_cast<mfdouble *>(getFieldValue(env, obj));
+    if (!mff) { return; }
+    const size_t size = mff->value.size();
+    if (size > 0) {
+        env->SetDoubleArrayRegion(jarr, 0, size,
+                                 const_cast<jdouble *>(&mff->value[0]));
+    }
+}
+
+jdouble JNICALL Java_vrml_field_ConstMFDouble_get1Value(JNIEnv * env,
+                                                      jobject obj,
+                                                      jint index)
+{
+    mfdouble * mff = static_cast<mfdouble *>(getFieldValue(env, obj));
+    if (!mff) { return 0.0; }
+    return mff->value[index];
+}
+
+/**
+ * @brief JNI implementation of ConstMFDouble::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstMFDouble object
+ * @return String representation of ConstMFDouble.
+ */
+jstring JNICALL Java_vrml_field_ConstMFDouble_toString
+  (JNIEnv *env, jobject obj)
+{
+  return fieldToString(env, obj);
+}
+
+void JNICALL Java_vrml_field_MFDouble_CreateObject
+  (JNIEnv *env, jobject obj, jint size, jdoubleArray value)
+{
+  Java_vrml_field_ConstMFDouble_CreateObject(env, obj, size, value);
+}
+
+jint JNICALL Java_vrml_field_MFDouble_getSize
+  (JNIEnv *env, jobject obj)
+{
+  return Java_vrml_field_ConstMFDouble_getSize(env, obj);
+}
+
+void JNICALL Java_vrml_field_MFDouble_clear(JNIEnv * env, jobject obj)
+{
+    mfdouble * const mff = static_cast<mfdouble *>(getFieldValue(env, obj));
+    if (!mff) { return; }
+    mff->value.clear();
+}
+
+void JNICALL Java_vrml_field_MFDouble_delete(JNIEnv * env,
+                                            jobject obj,
+                                            jint index)
+{
+    mfdouble * mff = static_cast<mfdouble*>(getFieldValue(env, obj));
+    if (!mff) { return; }
+    if (!(size_t(index) < mff->value.size())) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, "index out of bounds");
+        return;
+    }
+    mff->value.erase(mff->value.begin() + index);
+}
+
+void JNICALL Java_vrml_field_MFDouble_getValue
+  (JNIEnv *env, jobject obj, jdoubleArray jarr)
+{
+  Java_vrml_field_ConstMFDouble_getValue(env, obj, jarr);
+}
+
+jdouble JNICALL Java_vrml_field_MFDouble_get1Value
+  (JNIEnv *env, jobject obj, jint index)
+{
+  return Java_vrml_field_ConstMFDouble_get1Value(env, obj, index);
+}
+
+void JNICALL Java_vrml_field_MFDouble_setValue__I_3F(JNIEnv * env,
+                                                    jobject obj,
+                                                    jint size,
+                                                    jdoubleArray value)
+{
+    try {
+        mfdouble * const mff = static_cast<mfdouble *>(getFieldValue(env, obj));
+        if (!mff) { return; }
+        mff->value.resize(size); // Throws bad_alloc.
+        jdouble * const doubles = env->GetDoubleArrayElements(value, 0);
+        if (!doubles) {
+            // Presumably we raised an OutOfMemoryError.
+            return;
+        }
+        for (size_t i = 0; i < mff->value.size(); ++i) {
+            if (!(jint(i) < env->GetArrayLength(value))) {
+                env->ExceptionDescribe();
+                env->ExceptionClear();
+                jclass exceptionClass =
+                    env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+                if (!exceptionClass) {
+                    // Presumably FindClass raised an exception.
+                    break;
+                }
+                env->ThrowNew(exceptionClass, "size larger than "
+                                              "values.length");
+                break;
+            }
+            mff->value[i] = doubles[i];
+        }
+        env->ReleaseDoubleArrayElements(value, doubles, JNI_ABORT);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFDouble_setValue__Lvrml_field_MFDouble_2(JNIEnv * env,
+                                                        jobject obj,
+                                                        jobject value)
+{
+    mfdouble * const mff = static_cast<mfdouble *>(getFieldValue(env, obj));
+    const mfdouble * const newMFDouble =
+        static_cast<mfdouble*>(getFieldValue(env, value));
+    if (!mff || !newMFDouble) return;
+    try {
+        *mff = *newMFDouble; // Throws bad_alloc.
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFDouble_setValue__Lvrml_field_ConstMFDouble_2
+  (JNIEnv *env, jobject obj, jobject value)
+{
+  Java_vrml_field_MFDouble_setValue__Lvrml_field_MFDouble_2(env, obj, value);
+}
+
+void JNICALL Java_vrml_field_MFDouble_set1Value__IF(JNIEnv * env,
+                                                   jobject obj,
+                                                   jint index,
+                                                   jdouble value)
+{
+    mfdouble * mff = static_cast<mfdouble *>(getFieldValue(env, obj));
+    mff->value[index] = value;
+}
+
+void JNICALL
+Java_vrml_field_MFDouble_set1Value__ILvrml_field_ConstSFDouble_2
+  (JNIEnv *env, jobject obj, jint index, jobject sfdoubleObj)
+{
+    mfdouble * mff = static_cast<mfdouble*>(getFieldValue(env, obj));
+    sfdouble * sff = static_cast<sfdouble*>(getFieldValue(env, sfdoubleObj));
+    if (!mff || !sff) { return; }
+    mff->value[index] = sff->value;
+}
+
+void JNICALL
+Java_vrml_field_MFDouble_set1Value__ILvrml_field_SFDouble_2
+  (JNIEnv *env, jobject obj, jint index, jobject sfdouble)
+{
+  Java_vrml_field_MFDouble_set1Value__ILvrml_field_ConstSFDouble_2
+    (env, obj, index, sfdouble);
+}
+
+
+/**
+ * @brief JNI implementation of MFDouble::addValue.
+ *
+ * @param env JNI environment
+ * @param obj MFDouble object
+ * @param value Value to add to end of list
+ */
+void JNICALL Java_vrml_field_MFDouble_addValue__F(JNIEnv * env,
+                                                 jobject obj,
+                                                 jdouble value)
+{
+    mfdouble * mff = static_cast<mfdouble*>(getFieldValue(env, obj));
+    if (!mff) { return; }
+    try {
+        mff->value.push_back(value);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of MFDouble::addValue.
+ *
+ * @param env JNI environment
+ * @param obj MFDouble object
+ * @param value Value to add to end of list
+ */
+void JNICALL
+Java_vrml_field_MFDouble_addValue__Lvrml_field_ConstSFDouble_2(JNIEnv * env,
+                                                             jobject obj,
+                                                             jobject value)
+{
+    mfdouble * mff = static_cast<mfdouble*>(getFieldValue(env, obj));
+    sfdouble * sff = static_cast<sfdouble*>(getFieldValue(env, value));
+    if (!mff || !sff) { return; }
+    try {
+        mff->value.push_back(sff->value);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of MFDouble::addValue.
+ *
+ * @param env JNI environment
+ * @param obj MFDouble object
+ * @param value Value to add to end of list
+ */
+void JNICALL
+Java_vrml_field_MFDouble_addValue__Lvrml_field_SFDouble_2
+  (JNIEnv *env, jobject obj, jobject value)
+{
+  Java_vrml_field_MFDouble_addValue__Lvrml_field_ConstSFDouble_2(env, obj,
+                                                               value);
+}
+
+void JNICALL Java_vrml_field_MFDouble_insertValue__IF(JNIEnv * env,
+                                                     jobject obj,
+                                                     jint index,
+                                                     jdouble value)
+{
+    mfdouble * mff = static_cast<mfdouble *>(getFieldValue(env, obj));
+    if (!mff) { return; }
+    if (!(size_t(index) < mff->value.size())) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, "index out of bounds");
+    }
+    try {
+        mff->value.insert(mff->value.begin() + index, value);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFDouble_insertValue__ILvrml_field_ConstSFDouble_2(JNIEnv * env,
+                                                                 jobject obj,
+                                                                 jint index,
+                                                                 jobject value)
+{
+    sfdouble * sff = static_cast<sfdouble*>(getFieldValue(env, value));
+    if (!sff) { return; }
+    Java_vrml_field_MFDouble_insertValue__IF(env, obj, index, sff->value);
+}
+
+void JNICALL
+Java_vrml_field_MFDouble_insertValue__ILvrml_field_SFDouble_2
+  (JNIEnv *env, jobject obj, jint index, jobject value)
+{
+  Java_vrml_field_MFDouble_insertValue__ILvrml_field_ConstSFDouble_2
+    (env, obj, index, value);
+}
+
+/**
+ * @brief JNI implementation of MFDouble::toString.
+ *
+ * @param env JNI environment
+ * @param obj MFDouble object
+ * @return String representation of MFDouble.
+ */
+jstring JNICALL Java_vrml_field_MFDouble_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
@@ -6012,6 +6947,545 @@ Java_vrml_field_MFVec2f_insertValue__ILvrml_field_SFVec2f_2
     (env, obj, index, sfvec2f);
 }
 
+void JNICALL Java_vrml_field_ConstMFVec2d_CreateObject___3_3F(JNIEnv * env,
+                                                              jobject obj,
+                                                              jobjectArray jarr)
+{
+    try {
+        std::auto_ptr<openvrml::mfvec2d>
+            mfvec2d(new openvrml::mfvec2d(env->GetArrayLength(jarr)));
+        jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+        if (!fid) return;
+        env->SetIntField(obj, fid, reinterpret_cast<int>(mfvec2d.release()));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+    Java_vrml_field_MFVec2d_setValue___3_3F(env, obj, jarr);
+}
+
+void JNICALL Java_vrml_field_ConstMFVec2d_CreateObject__I_3F(JNIEnv * env,
+                                                             jobject obj,
+                                                             jint size,
+                                                             jdoubleArray jarr)
+{
+    try {
+        std::auto_ptr<openvrml::mfvec2d> mfvec2d(new openvrml::mfvec2d(size));
+        jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+        if (!fid) return;
+        env->SetIntField(obj, fid, reinterpret_cast<int>(mfvec2d.release()));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+    Java_vrml_field_MFVec2d_setValue__I_3F(env, obj, size, jarr);
+}
+
+jint JNICALL Java_vrml_field_ConstMFVec2d_getSize(JNIEnv * env, jobject obj)
+{
+    mfvec2d * mfv = static_cast<mfvec2d *>(getFieldValue(env, obj));
+    if (!mfv) { return 0; }
+    return mfv->value.size();
+}
+
+void JNICALL Java_vrml_field_ConstMFVec2d_getValue___3_3F(JNIEnv * env,
+                                                          jobject obj,
+                                                          jobjectArray jarr)
+{
+    const mfvec2d * const mfv =
+            static_cast<mfvec2d *>(getFieldValue(env, obj));
+    if (!mfv) return;
+    for (size_t i = 0; i < mfv->value.size(); ++i) {
+        jdoubleArray element =
+                static_cast<jdoubleArray>(env->GetObjectArrayElement(jarr, i));
+        if (!element) {
+            // Presumably we raised an ArrayIndexOutOfBoundsException.
+            return;
+        }
+        env->SetFloatArrayRegion(element, 0, 2,
+                                 const_cast<jdouble *>(&mfv->value[i][0]));
+        if (env->ExceptionOccurred()) {
+            // Presumably we raised an ArrayIndexOutOfBoundsException.
+            return;
+        }
+    }
+}
+
+void JNICALL Java_vrml_field_ConstMFVec2d_getValue___3F(JNIEnv * env,
+                                                        jobject obj,
+                                                        jdoubleArray jarr)
+{
+    const mfvec2d * const mfv =
+            static_cast<mfvec2d *>(getFieldValue(env, obj));
+    if (!mfv) return;
+    for (size_t i = 0; i < mfv->value.size(); ++i) {
+        env->SetFloatArrayRegion(jarr, i * 2, 2,
+                                 const_cast<jdouble *>(&mfv->value[i][0]));
+        if (env->ExceptionOccurred()) {
+            // Presumably we raised an ArrayIndexOutOfBoundsException.
+            return;
+        }
+    }
+}
+
+/**
+ * @brief JNI implementation of ConstMFVec2d::get1Value.
+ *
+ * @param env JNI environment
+ * @param obj ConstMFVec2d object
+ * @param element Position of object to retrieve
+ * @param jarr Array to store retrieved x,y value
+ */
+void JNICALL Java_vrml_field_ConstMFVec2d_get1Value__I_3F
+  (JNIEnv *env, jobject obj, jint element, jdoubleArray jarr)
+{
+    mfvec2d* mfv = static_cast<mfvec2d*>(getFieldValue(env, obj));
+    if (!mfv) return;
+    try {
+        jdouble * const arrayRegion =
+                const_cast<jdouble*>(&mfv->value.at(element)[0]);
+        env->SetFloatArrayRegion(jarr, 0, 2, arrayRegion);
+    } catch (std::out_of_range & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of ConstMFVec2d::get1Value.
+ *
+ * @param env JNI environment
+ * @param obj ConstMFVec2d object
+ * @param element Position of object to retrieve
+ * @param sfvec2dObj SFVec2d to store retrieved object in
+ */
+void JNICALL
+Java_vrml_field_ConstMFVec2d_get1Value__ILvrml_field_SFVec2d_2(
+        JNIEnv * env,
+        jobject obj,
+        jint element,
+        jobject sfvec2d_object)
+{
+    const mfvec2d * const mfv =
+            static_cast<mfvec2d *>(getFieldValue(env, obj));
+    if (!mfv) return;
+    sfvec2d * const sfv =
+        static_cast<sfvec2d *>(getFieldValue(env, sfvec2d_object));
+    if (!sfv) { return; }
+    try {
+        sfv->value = mfv->value.at(element);
+    } catch (std::out_of_range & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of ConstMFVec2d::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstMFVec2d object
+ * @return String representation of ConstMFVec2d.
+ */
+jstring JNICALL Java_vrml_field_ConstMFVec2d_toString
+  (JNIEnv *env, jobject obj)
+{
+  return fieldToString(env, obj);
+}
+
+void JNICALL Java_vrml_field_MFVec2d_CreateObject___3_3F
+  (JNIEnv *env, jobject obj, jobjectArray jarr)
+{
+  Java_vrml_field_ConstMFVec2d_CreateObject___3_3F(env, obj, jarr);
+}
+
+void JNICALL Java_vrml_field_MFVec2d_CreateObject__I_3F
+  (JNIEnv *env, jobject obj, jint size, jdoubleArray jarr)
+{
+  Java_vrml_field_ConstMFVec2d_CreateObject__I_3F(env, obj, size, jarr);
+}
+
+jint JNICALL Java_vrml_field_MFVec2d_getSize
+  (JNIEnv *env, jobject obj)
+{
+  return Java_vrml_field_ConstMFVec2d_getSize(env, obj);
+}
+
+void JNICALL Java_vrml_field_MFVec2d_clear(JNIEnv * env, jobject obj)
+{
+    mfvec2d * const mfv = static_cast<mfvec2d *>(getFieldValue(env, obj));
+    if (!mfv) return;
+    mfv->value.clear();
+}
+
+void JNICALL Java_vrml_field_MFVec2d_delete
+  (JNIEnv *env, jobject obj, jint n)
+{
+    mfvec2d* mfv = static_cast<mfvec2d*>(getFieldValue(env, obj));
+    if (!mfv) return;
+    if (!(size_t(n) < mfv->value.size())) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, "index out of bounds");
+        return;
+    }
+    mfv->value.erase(mfv->value.begin() + n);
+}
+
+void JNICALL Java_vrml_field_MFVec2d_getValue___3_3F
+  (JNIEnv *env, jobject obj, jobjectArray jarr)
+{
+  Java_vrml_field_ConstMFVec2d_getValue___3_3F(env, obj, jarr);
+}
+
+void JNICALL Java_vrml_field_MFVec2d_getValue___3F
+  (JNIEnv *env, jobject obj, jdoubleArray jarr)
+{
+  Java_vrml_field_ConstMFVec2d_getValue___3F(env, obj, jarr);
+}
+
+/**
+ * @brief JNI implementation of MFVec2d::get1Value.
+ *
+ * @param env JNI environment
+ * @param obj MFVec2d object
+ * @param element Position of object to retrieve
+ * @param jarr Array to store retrieved x,y value
+ */
+void JNICALL Java_vrml_field_MFVec2d_get1Value__I_3F
+  (JNIEnv *env, jobject obj, jint element, jdoubleArray jarr)
+{
+  Java_vrml_field_ConstMFVec2d_get1Value__I_3F(env, obj, element, jarr);
+}
+
+/**
+ * @brief JNI implementation of MFVec2d::get1Value.
+ *
+ * @param env JNI environment
+ * @param obj MFVec2d object
+ * @param element Position of object to retrieve
+ * @param sfvec2d SFVec2d to store retrieved object in
+ */
+void JNICALL
+Java_vrml_field_MFVec2d_get1Value__ILvrml_field_SFVec2d_2
+  (JNIEnv *env, jobject obj, jint element, jobject sfvec2d)
+{
+  Java_vrml_field_ConstMFVec2d_get1Value__ILvrml_field_SFVec2d_2
+    (env, obj, element, sfvec2d);
+}
+
+void JNICALL Java_vrml_field_MFVec2d_setValue___3_3F(JNIEnv * env,
+                                                     jobject obj,
+                                                     jobjectArray value)
+{
+    try {
+        mfvec2d * const mfv =
+                static_cast<mfvec2d *>(getFieldValue(env, obj));
+        if (!mfv) return;
+        mfv->value.resize(env->GetArrayLength(value)); // Throws bad_alloc.
+
+        for (size_t i = 0; i < mfv->value.size(); ++i) {
+            jdoubleArray element =
+                static_cast<jdoubleArray>(env->GetObjectArrayElement(value, i));
+            if (!element) {
+                // Presumably we raised an ArrayIndexOutOfBoundsException.
+                return;
+            }
+            jdouble * const v = env->GetFloatArrayElements(element, 0);
+            if (!v) {
+                // Presumably we raised an OutOfMemoryError.
+                return;
+            }
+            const vec2d vec(v[0], v[1]);
+            env->ReleaseFloatArrayElements(element, v, JNI_ABORT);
+            mfv->value[i] = vec;
+        }
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL Java_vrml_field_MFVec2d_setValue__I_3F(JNIEnv * env,
+                                                    jobject obj,
+                                                    jint size,
+                                                    jdoubleArray value)
+{
+    try {
+        mfvec2d * const mfv =
+                static_cast<mfvec2d *>(getFieldValue(env, obj));
+        if (!mfv) return;
+        mfv->value.resize(size); // throws bad_alloc
+        jdouble * const vecs = env->GetFloatArrayElements(value, 0);
+        if (!vecs) {
+            // Presumably we raised an OutOfMemoryError.
+            return;
+        }
+        for (jint i = 0; i < size; ++i) {
+            if (!(i * 2 + 1 < env->GetArrayLength(value))) {
+                env->ExceptionDescribe();
+                env->ExceptionClear();
+                jclass exceptionClass =
+                    env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+                if (!exceptionClass) {
+                    // Presumably FindClass raised an exception.
+                    break;
+                }
+                env->ThrowNew(exceptionClass, "size larger than vec2s.length");
+                break;
+            }
+            const vec2d vec(vecs[2 * i], vecs[2 * i + 1]);
+            mfv->value[i] = vec;
+        }
+        env->ReleaseFloatArrayElements(value, vecs, JNI_ABORT);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFVec2d_setValue__Lvrml_field_MFVec2d_2(JNIEnv * env,
+                                                        jobject obj,
+                                                        jobject value)
+{
+    mfvec2d * const mfv = static_cast<mfvec2d *>(getFieldValue(env, obj));
+    const mfvec2d * const newMFVec2d =
+            static_cast<mfvec2d *>(getFieldValue(env, value));
+    if (!mfv || !newMFVec2d) return;
+    try {
+        *mfv = *newMFVec2d; // Throws bad_alloc.
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFVec2d_setValue__Lvrml_field_ConstMFVec2d_2
+  (JNIEnv *env, jobject obj, jobject value)
+{
+  Java_vrml_field_MFVec2d_setValue__Lvrml_field_MFVec2d_2(env, obj, value);
+}
+
+void JNICALL Java_vrml_field_MFVec2d_set1Value__IFF
+  (JNIEnv *env, jobject obj, jint index, jdouble x, jdouble y)
+{
+    mfvec2d* mfv = static_cast<mfvec2d*>(getFieldValue(env, obj));
+    if (!mfv) return;
+    try {
+        mfv->value.at(index) = vec2d(x, y);
+    } catch (std::out_of_range & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFVec2d_set1Value__ILvrml_field_ConstSFVec2d_2
+  (JNIEnv *env, jobject obj, jint index, jobject sfvec2dObj)
+{
+    mfvec2d* mfv = static_cast<mfvec2d*>(getFieldValue(env, obj));
+    sfvec2d* sfv = static_cast<sfvec2d*>(getFieldValue(env, sfvec2dObj));
+    if (!mfv || !sfv) return;
+    try {
+        mfv->value.at(index) = sfv->value;
+    } catch (std::out_of_range & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFVec2d_set1Value__ILvrml_field_SFVec2d_2
+  (JNIEnv *env, jobject obj, jint index, jobject sfvec2d)
+{
+  Java_vrml_field_MFVec2d_set1Value__ILvrml_field_ConstSFVec2d_2
+    (env, obj, index, sfvec2d);
+}
+
+/**
+ * @brief JNI implementation of MFVec2d::addValue.
+ *
+ * @param env JNI environment
+ * @param obj MFVec2d object
+ * @param x X-component of vector to add to end of list
+ * @param y Y-component of vector to add to end of list
+ */
+void JNICALL Java_vrml_field_MFVec2d_addValue__FF
+  (JNIEnv *env, jobject obj, jdouble x, jdouble y)
+{
+    mfvec2d* mfv = static_cast<mfvec2d*>(getFieldValue(env, obj));
+    if (!mfv) return;
+    try {
+        mfv->value.push_back(vec2d(x, y));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of MFVec2d::addValue.
+ *
+ * @param env JNI environment
+ * @param obj MFVec2d object
+ * @param sfvec2dObj Value to add to end of list
+ */
+void JNICALL
+Java_vrml_field_MFVec2d_addValue__Lvrml_field_ConstSFVec2d_2
+  (JNIEnv *env, jobject obj, jobject sfvec2dObj)
+{
+    mfvec2d* mfv = static_cast<mfvec2d*>(getFieldValue(env, obj));
+    sfvec2d* sfv = static_cast<sfvec2d*>(getFieldValue(env, sfvec2dObj));
+    if (!mfv || !sfv) return;
+    try {
+        mfv->value.push_back(sfv->value);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of MFVec2d::addValue.
+ *
+ * @param env JNI environment
+ * @param obj MFVec2d object
+ * @param sfvec2d Value to add to end of list
+ */
+void JNICALL
+Java_vrml_field_MFVec2d_addValue__Lvrml_field_SFVec2d_2
+  (JNIEnv *env, jobject obj, jobject sfvec2d)
+{
+  Java_vrml_field_MFVec2d_addValue__Lvrml_field_ConstSFVec2d_2
+    (env, obj, sfvec2d);
+}
+
+void JNICALL Java_vrml_field_MFVec2d_insertValue__IFF
+  (JNIEnv *env, jobject obj, jint index, jdouble x, jdouble y)
+{
+    mfvec2d* mfv = static_cast<mfvec2d*>(getFieldValue(env, obj));
+    if (!mfv) return;
+    try {
+        mfv->value.insert(mfv->value.begin() + index, vec2d(x, y));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFVec2d_insertValue__ILvrml_field_ConstSFVec2d_2
+  (JNIEnv *env, jobject obj, jint index, jobject sfvec2dObj)
+{
+    mfvec2d* mfv = static_cast<mfvec2d*>(getFieldValue(env, obj));
+    sfvec2d* sfv = static_cast<sfvec2d*>(getFieldValue(env, sfvec2dObj));
+    if (!mfv || !sfv) return;
+    try {
+        mfv->value.insert(mfv->value.begin() + index, sfv->value);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFVec2d_insertValue__ILvrml_field_SFVec2d_2
+  (JNIEnv *env, jobject obj, jint index, jobject sfvec2d)
+{
+  Java_vrml_field_MFVec2d_insertValue__ILvrml_field_ConstSFVec2d_2
+    (env, obj, index, sfvec2d);
+}
+
 /**
  * @brief JNI implementation of MFVec2f::toString.
  *
@@ -6514,7 +7988,7 @@ Java_vrml_field_MFVec3f_addValue__Lvrml_field_SFVec3f_2
   (JNIEnv *env, jobject obj, jobject value)
 {
   Java_vrml_field_MFVec3f_addValue__Lvrml_field_ConstSFVec3f_2(env, obj,
-							       value);
+                                   value);
 }
 
 void JNICALL Java_vrml_field_MFVec3f_insertValue__IFFF(JNIEnv * env,
@@ -6579,6 +8053,566 @@ Java_vrml_field_MFVec3f_insertValue__ILvrml_field_SFVec3f_2
  * @return String representation of MFVec3f.
  */
 jstring JNICALL Java_vrml_field_MFVec3f_toString
+  (JNIEnv *env, jobject obj)
+{
+  return fieldToString(env, obj);
+}
+
+
+void JNICALL Java_vrml_field_ConstMFVec3d_CreateObject___3_3F(JNIEnv * env,
+                                                              jobject obj,
+                                                              jobjectArray jarr)
+{
+    try {
+        std::auto_ptr<openvrml::mfvec3d>
+            mfvec3d(new openvrml::mfvec3d(env->GetArrayLength(jarr)));
+        jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+        if (!fid) return;
+        env->SetIntField(obj, fid, reinterpret_cast<int>(mfvec3d.release()));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+    Java_vrml_field_MFVec3d_setValue___3_3F(env, obj, jarr);
+}
+
+void JNICALL Java_vrml_field_ConstMFVec3d_CreateObject__I_3F(JNIEnv * env,
+                                                             jobject obj,
+                                                             jint size,
+                                                             jdoubleArray jarr)
+{
+    try {
+        std::auto_ptr<openvrml::mfvec3d> mfvec3d(new openvrml::mfvec3d(size));
+        jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+        if (!fid) return;
+        env->SetIntField(obj, fid, reinterpret_cast<int>(mfvec3d.release()));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+    Java_vrml_field_MFVec3d_setValue__I_3F(env, obj, size, jarr);
+}
+
+jint JNICALL Java_vrml_field_ConstMFVec3d_getSize(JNIEnv * env, jobject obj)
+{
+    mfvec3d * mfv = static_cast<mfvec3d *>(getFieldValue(env, obj));
+    if (!mfv) return 0;
+    return mfv->value.size();
+}
+
+void JNICALL Java_vrml_field_ConstMFVec3d_getValue___3_3F(JNIEnv * env,
+                                                          jobject obj,
+                                                          jobjectArray jarr)
+{
+    const mfvec3d * const mfv =
+            static_cast<mfvec3d *>(getFieldValue(env, obj));
+    if (!mfv) return;
+    for (size_t i = 0; i < mfv->value.size(); ++i) {
+        jdoubleArray element =
+                static_cast<jdoubleArray>(env->GetObjectArrayElement(jarr, i));
+        if (!element) {
+            // Presumably we raised an ArrayIndexOutOfBoundsException.
+            return;
+        }
+        env->SetFloatArrayRegion(element, 0, 3,
+                                 const_cast<jdouble *>(&mfv->value[i][0]));
+        if (env->ExceptionOccurred()) {
+            // Presumably we raised an ArrayIndexOutOfBoundsException.
+            return;
+        }
+    }
+}
+
+void JNICALL Java_vrml_field_ConstMFVec3d_getValue___3F(JNIEnv * env,
+                                                        jobject obj,
+                                                        jdoubleArray jarr)
+{
+    const mfvec3d * const mfv =
+            static_cast<mfvec3d *>(getFieldValue(env, obj));
+    if (!mfv) return;
+    for (size_t i = 0; i < mfv->value.size(); ++i) {
+        env->SetFloatArrayRegion(jarr, i * 3, 3,
+                                 const_cast<jdouble *>(&mfv->value[i][0]));
+        if (env->ExceptionOccurred()) {
+            // Presumably we raised an ArrayIndexOutOfBoundsException.
+            return;
+        }
+    }
+}
+
+/**
+ * @brief JNI implementation of ConstMFVec3d::get1Value.
+ *
+ * @param env JNI environment
+ * @param obj ConstMFVec3d object
+ * @param element Position of object to retrieve
+ * @param jarr Array to store retrieved x,y,z value
+ */
+void JNICALL Java_vrml_field_ConstMFVec3d_get1Value__I_3F
+  (JNIEnv *env, jobject obj, jint element, jdoubleArray jarr)
+{
+    mfvec3d* mfv = static_cast<mfvec3d*>(getFieldValue(env, obj));
+    if (!mfv) return;
+    try {
+        jdouble * const arrayRegion =
+                const_cast<jdouble*>(&mfv->value.at(element)[0]);
+        env->SetFloatArrayRegion(jarr, 0, 3, arrayRegion);
+    } catch (std::out_of_range & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of ConstMFVec3d::get1Value.
+ *
+ * @param env JNI environment
+ * @param obj ConstMFVec3d object
+ * @param element Position of object to retrieve
+ * @param sfvec3dObj SFVec3d to store retrieved object in
+ */
+void JNICALL
+Java_vrml_field_ConstMFVec3d_get1Value__ILvrml_field_SFVec3d_2(
+        JNIEnv * env,
+        jobject obj,
+        jint element,
+        jobject sfvec3dObj)
+{
+    const mfvec3d * const mfv =
+            static_cast<mfvec3d *>(getFieldValue(env, obj));
+    if (!mfv) return;
+    sfvec3d * const sfv =
+            static_cast<sfvec3d *>(getFieldValue(env, sfvec3dObj));
+    if (!sfv) return;
+    try {
+        sfv->value = mfv->value.at(element);
+    } catch (std::out_of_range & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of ConstMFVec3d::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstMFVec3d object
+ * @return String representation of ConstMFVec3d.
+ */
+jstring JNICALL Java_vrml_field_ConstMFVec3d_toString
+  (JNIEnv *env, jobject obj)
+{
+  return fieldToString(env, obj);
+}
+
+void JNICALL Java_vrml_field_MFVec3d_CreateObject___3_3F
+  (JNIEnv *env, jobject obj, jobjectArray jarr)
+{
+  Java_vrml_field_ConstMFVec3d_CreateObject___3_3F(env, obj, jarr);
+}
+
+void JNICALL Java_vrml_field_MFVec3d_CreateObject__I_3F
+  (JNIEnv *env, jobject obj, jint size, jdoubleArray jarr)
+{
+  Java_vrml_field_ConstMFVec3d_CreateObject__I_3F(env, obj, size, jarr);
+}
+
+jint JNICALL Java_vrml_field_MFVec3d_getSize
+  (JNIEnv *env, jobject obj)
+{
+  return Java_vrml_field_ConstMFVec3d_getSize(env, obj);
+}
+
+void JNICALL Java_vrml_field_MFVec3d_clear(JNIEnv * env, jobject obj)
+{
+    mfvec3d * const mfv = static_cast<mfvec3d *>(getFieldValue(env, obj));
+    if (!mfv) return;
+    mfv->value.clear();
+}
+
+void JNICALL Java_vrml_field_MFVec3d_delete
+  (JNIEnv *env, jobject obj, jint n)
+{
+    mfvec3d* mfv = static_cast<mfvec3d*>(getFieldValue(env, obj));
+    if (!mfv) return;
+    if (!(size_t(n) < mfv->value.size())) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, "index out of bounds");
+        return;
+    }
+    mfv->value.erase(mfv->value.begin() + n);
+}
+
+void JNICALL Java_vrml_field_MFVec3d_getValue___3_3F
+  (JNIEnv *env, jobject obj, jobjectArray jarr)
+{
+  Java_vrml_field_ConstMFVec3d_getValue___3_3F(env, obj, jarr);
+}
+
+void JNICALL Java_vrml_field_MFVec3d_getValue___3F
+  (JNIEnv *env, jobject obj, jdoubleArray jarr)
+{
+  Java_vrml_field_ConstMFVec3d_getValue___3F(env, obj, jarr);
+}
+
+/**
+ * @brief JNI implementation of MFVec3d::get1Value.
+ *
+ * @param env JNI environment
+ * @param obj MFVec3d object
+ * @param element Position of object to retrieve
+ * @param jarr Array to store retrieved x,y,z value
+ */
+void JNICALL Java_vrml_field_MFVec3d_get1Value__I_3F
+  (JNIEnv *env, jobject obj, jint element, jdoubleArray jarr)
+{
+  Java_vrml_field_ConstMFVec3d_get1Value__I_3F(env, obj, element, jarr);
+}
+
+/**
+ * @brief JNI implementation of MFVec3d::get1Value.
+ *
+ * @param env JNI environment
+ * @param obj MFVec3d object
+ * @param element Position of object to retrieve
+ * @param sfvec3d SFVec3d to store retrieved object in
+ */
+void JNICALL
+Java_vrml_field_MFVec3d_get1Value__ILvrml_field_SFVec3d_2
+  (JNIEnv *env, jobject obj, jint element, jobject sfvec3d)
+{
+  Java_vrml_field_ConstMFVec3d_get1Value__ILvrml_field_SFVec3d_2
+    (env, obj, element, sfvec3d);
+}
+
+void JNICALL Java_vrml_field_MFVec3d_setValue___3_3F(JNIEnv * env,
+                                                     jobject obj,
+                                                     jobjectArray value)
+{
+    try {
+        mfvec3d * const mfv =
+                static_cast<mfvec3d *>(getFieldValue(env, obj));
+        if (!mfv) return;
+        mfv->value.resize(env->GetArrayLength(value)); // Throws bad_alloc.
+
+        for (size_t i = 0; i < mfv->value.size(); ++i) {
+            jdoubleArray element =
+                static_cast<jdoubleArray>(env->GetObjectArrayElement(value, i));
+            if (!element) {
+                // Presumably we raised an ArrayIndexOutOfBoundsException.
+                return;
+            }
+            jdouble * const v = env->GetFloatArrayElements(element, 0);
+            if (!v) {
+                // Presumably we raised an OutOfMemoryError.
+                return;
+            }
+            const vec3d vec(v[0], v[1], v[2]);
+            env->ReleaseFloatArrayElements(element, v, JNI_ABORT);
+            mfv->value[i] = vec;
+        }
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL Java_vrml_field_MFVec3d_setValue__I_3F(JNIEnv * env,
+                                                    jobject obj,
+                                                    jint size,
+                                                    jdoubleArray value)
+{
+    try {
+        mfvec3d * const mfv =
+                static_cast<mfvec3d *>(getFieldValue(env, obj));
+        if (!mfv) return;
+        mfv->value.resize(size); // Throws std::bad_alloc.
+        jdouble * const vecs = env->GetFloatArrayElements(value, 0);
+        if (!vecs) {
+            // Presumably we raised an OutOfMemoryError.
+            return;
+        }
+        for (jint i = 0; i < size; ++i) {
+            if (!(i * 3 + 2 < env->GetArrayLength(value))) {
+                env->ExceptionDescribe();
+                env->ExceptionClear();
+                jclass exceptionClass =
+                        env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+                if (!exceptionClass) {
+                    // Presumably FindClass raised an exception.
+                    break;
+                }
+                env->ThrowNew(exceptionClass, "size larger than vec3s.length");
+                break;
+            }
+            const vec3d vec(vecs[3 * i], vecs[3 * i + 1], vecs[3 * i + 2]);
+            mfv->value[i] = vec;
+        }
+        env->ReleaseFloatArrayElements(value, vecs, JNI_ABORT);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFVec3d_setValue__Lvrml_field_MFVec3d_2(JNIEnv * env,
+                                                        jobject obj,
+                                                        jobject value)
+{
+    mfvec3d * const mfv = static_cast<mfvec3d *>(getFieldValue(env, obj));
+    const mfvec3d * const newMFVec3d =
+            static_cast<mfvec3d *>(getFieldValue(env, value));
+    if (!mfv || !newMFVec3d) return;
+    try {
+        *mfv = *newMFVec3d; // Throws bad_alloc.
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFVec3d_setValue__Lvrml_field_ConstMFVec3d_2
+  (JNIEnv *env, jobject obj, jobject value)
+{
+  Java_vrml_field_MFVec3d_setValue__Lvrml_field_MFVec3d_2(env, obj, value);
+}
+
+void JNICALL Java_vrml_field_MFVec3d_set1Value__IFFF
+  (JNIEnv *env, jobject obj, jint index, jdouble x, jdouble y, jdouble z)
+{
+    mfvec3d* mfv = static_cast<mfvec3d*>(getFieldValue(env, obj));
+    if (!mfv) return;
+    try {
+        mfv->value.at(index) = vec3d(x, y, z);
+    } catch (std::out_of_range & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFVec3d_set1Value__ILvrml_field_ConstSFVec3d_2
+  (JNIEnv *env, jobject obj, jint index, jobject sfvec3dObj)
+{
+    mfvec3d* mfv = static_cast<mfvec3d*>(getFieldValue(env, obj));
+    sfvec3d* sfv = static_cast<sfvec3d*>(getFieldValue(env, sfvec3dObj));
+    if (!mfv || !sfv) return;
+    try {
+        mfv->value.at(index) = sfv->value;
+    } catch (std::out_of_range & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFVec3d_set1Value__ILvrml_field_SFVec3d_2
+  (JNIEnv *env, jobject obj, jint index, jobject sfvec3d)
+{
+  Java_vrml_field_MFVec3d_set1Value__ILvrml_field_ConstSFVec3d_2
+    (env, obj, index, sfvec3d);
+}
+
+/**
+ * @brief JNI implementation of MFVec3d::addValue.
+ *
+ * @param env JNI environment
+ * @param obj MFVec3d object
+ * @param x X-component of vector to add to end of list
+ * @param y Y-component of vector to add to end of list
+ * @param z Z-component of vector to add to end of list
+ */
+void JNICALL Java_vrml_field_MFVec3d_addValue__FFF
+  (JNIEnv *env, jobject obj, jdouble x, jdouble y, jdouble z)
+{
+    mfvec3d* mfv = static_cast<mfvec3d*>(getFieldValue(env, obj));
+    if (!mfv) return;
+    try {
+        mfv->value.push_back(vec3d(x, y, z));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of MFVec3d::addValue.
+ *
+ * @param env JNI environment
+ * @param obj MFVec3d object
+ * @param sfvec3dObj Value to add to end of list
+ */
+void JNICALL
+Java_vrml_field_MFVec3d_addValue__Lvrml_field_ConstSFVec3d_2
+  (JNIEnv *env, jobject obj, jobject sfvec3dObj)
+{
+    mfvec3d* mfv = static_cast<mfvec3d*>(getFieldValue(env, obj));
+    sfvec3d* sfv = static_cast<sfvec3d*>(getFieldValue(env, sfvec3dObj));
+    if (!mfv || !sfv) return;
+    try {
+        mfv->value.push_back(sfv->value);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of MFVec3d::addValue.
+ *
+ * @param env JNI environment
+ * @param obj MFVec3d object
+ * @param value Value to add to end of list
+ */
+void JNICALL
+Java_vrml_field_MFVec3d_addValue__Lvrml_field_SFVec3d_2
+  (JNIEnv *env, jobject obj, jobject value)
+{
+  Java_vrml_field_MFVec3d_addValue__Lvrml_field_ConstSFVec3d_2(env, obj,
+                                   value);
+}
+
+void JNICALL Java_vrml_field_MFVec3d_insertValue__IFFF(JNIEnv * env,
+                                                       jobject obj,
+                                                       jint index,
+                                                       jdouble x,
+                                                       jdouble y,
+                                                       jdouble z)
+{
+    mfvec3d* mfv = static_cast<mfvec3d*>(getFieldValue(env, obj));
+    if (!mfv) { return; }
+    if (!(size_t(index) < mfv->value.size())) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, "index out of bounds");
+    }
+    try {
+        mfv->value.insert(mfv->value.begin() + index, vec3d(x, y, z));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFVec3d_insertValue__ILvrml_field_ConstSFVec3d_2
+  (JNIEnv *env, jobject obj, jint index, jobject sfvec3dObj)
+{
+    sfvec3d* sfv = static_cast<sfvec3d*>(getFieldValue(env, sfvec3dObj));
+    if (!sfv) { return; }
+    Java_vrml_field_MFVec3d_insertValue__IFFF(env, obj, index,
+                                              sfv->value.x(),
+                                              sfv->value.y(),
+                                              sfv->value.z());
+}
+
+void JNICALL
+Java_vrml_field_MFVec3d_insertValue__ILvrml_field_SFVec3d_2
+  (JNIEnv *env, jobject obj, jint index, jobject sfvec3d)
+{
+  Java_vrml_field_MFVec3d_insertValue__ILvrml_field_ConstSFVec3d_2
+    (env, obj, index, sfvec3d);
+}
+
+/**
+ * @brief JNI implementation of MFVec3d::toString.
+ *
+ * @param env JNI environment
+ * @param obj MFVec3d object
+ * @return String representation of MFVec3d.
+ */
+jstring JNICALL Java_vrml_field_MFVec3d_toString
   (JNIEnv *env, jobject obj)
 {
   return fieldToString(env, obj);
